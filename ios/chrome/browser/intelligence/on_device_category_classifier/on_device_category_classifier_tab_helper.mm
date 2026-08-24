@@ -4,10 +4,12 @@
 
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/on_device_category_classifier_tab_helper.h"
 
+#import "base/check.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/numerics/safe_conversions.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/page_content_annotations/core/page_content_annotations_common.h"
 #import "components/page_content_annotations/core/simple_page_content_verbalization.h"
@@ -115,6 +117,7 @@ void OnDeviceCategoryClassifierTabHelper::WebStateDestroyed(
 #pragma mark - Private
 
 void OnDeviceCategoryClassifierTabHelper::StartClassification() {
+  CHECK(IsGeminiContextualSuggestionsCuesEnabled());
   weak_ptr_factory_.InvalidateWeakPtrs();
   page_context_wrapper_ = nil;
   page_stability_monitor_.reset();
@@ -123,8 +126,13 @@ void OnDeviceCategoryClassifierTabHelper::StartClassification() {
     return;
   }
 
-  const GURL& url = web_state_->GetVisibleURL();
+  const GURL& url = web_state_->GetLastCommittedURL();
   if (!url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
+  if (IsGeminiContextualSuggestionsCuesTitleAndUrlOnlyEnabled()) {
+    ClassifyTitleAndUrl();
     return;
   }
 
@@ -150,28 +158,66 @@ void OnDeviceCategoryClassifierTabHelper::StartClassification() {
   }
 }
 
-void OnDeviceCategoryClassifierTabHelper::ExtractPageContextAndClassify() {
+InProcessCategoryClassificationService*
+OnDeviceCategoryClassifierTabHelper::GetClassificationService() const {
+  if (!web_state_) {
+    return nullptr;
+  }
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
   if (!profile || profile->IsOffTheRecord()) {
+    return nullptr;
+  }
+  return InProcessCategoryClassificationService::GetForProfile(profile);
+}
+
+void OnDeviceCategoryClassifierTabHelper::DispatchClassification(
+    const GURL& url,
+    const std::string& title,
+    const std::string& page_content) {
+  InProcessCategoryClassificationService* service = GetClassificationService();
+  if (!service) {
     return;
   }
 
-  InProcessCategoryClassificationService* service =
-      InProcessCategoryClassificationService::GetForProfile(profile);
-  // Check the cached embeddings before extracting APC. Use the committed URL
-  // to ensure classification matches the finalized page state.
-  if (service) {
-    const GURL& url = web_state_->GetLastCommittedURL();
-    if (service->HasCachedEmbeddings(url)) {
-      ukm::SourceId source_id = ukm::GetSourceIdForWebStateDocument(web_state_);
-      auto callback = base::BindOnce(
-          &OnDeviceCategoryClassifierTabHelper::OnCategoriesClassified,
-          weak_ptr_factory_.GetWeakPtr(), source_id);
-      service->ClassifyWithCachedEmbeddings(url, source_id,
-                                            std::move(callback));
-      return;
-    }
+  ukm::SourceId source_id = ukm::GetSourceIdForWebStateDocument(web_state_);
+  auto callback = base::BindOnce(
+      &OnDeviceCategoryClassifierTabHelper::OnCategoriesClassified,
+      weak_ptr_factory_.GetWeakPtr(), source_id);
+
+  if (service->HasCachedEmbeddings(url)) {
+    service->ClassifyWithCachedEmbeddings(url, source_id, std::move(callback));
+    return;
+  }
+
+  service->ClassifyPageContext(url, title, page_content, source_id,
+                               std::move(callback));
+}
+
+void OnDeviceCategoryClassifierTabHelper::ClassifyTitleAndUrl() {
+  const GURL& url = web_state_->GetLastCommittedURL();
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
+  std::string title = base::UTF16ToUTF8(web_state_->GetTitle());
+  if (title.empty()) {
+    title = std::string(url.host());
+  }
+
+  DispatchClassification(url, title, /*page_content=*/"");
+}
+
+void OnDeviceCategoryClassifierTabHelper::ExtractPageContextAndClassify() {
+  InProcessCategoryClassificationService* service = GetClassificationService();
+  if (!service) {
+    return;
+  }
+
+  const GURL& url = web_state_->GetLastCommittedURL();
+  if (service->HasCachedEmbeddings(url)) {
+    DispatchClassification(url, /*title=*/"", /*page_content=*/"");
+    return;
   }
 
   base::OnceCallback<void(PageContextWrapperCallbackResponse)> callback =
@@ -233,23 +279,7 @@ void OnDeviceCategoryClassifierTabHelper::OnPageContextExtracted(
   if (page_content.empty() || !web_state_) {
     return;
   }
-
-  ProfileIOS* profile =
-      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
-  if (!profile) {
-    return;
-  }
-
-  InProcessCategoryClassificationService* service =
-      InProcessCategoryClassificationService::GetForProfile(profile);
-  if (service) {
-    ukm::SourceId source_id = ukm::GetSourceIdForWebStateDocument(web_state_);
-    auto callback = base::BindOnce(
-        &OnDeviceCategoryClassifierTabHelper::OnCategoriesClassified,
-        weak_ptr_factory_.GetWeakPtr(), source_id);
-    service->ClassifyPageContext(url, title, page_content, source_id,
-                                 std::move(callback));
-  }
+  DispatchClassification(url, title, page_content);
 }
 
 void OnDeviceCategoryClassifierTabHelper::OnCategoriesClassified(

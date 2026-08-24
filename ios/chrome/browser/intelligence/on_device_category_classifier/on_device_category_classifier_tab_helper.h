@@ -24,6 +24,7 @@ class PageStabilityMonitor;
 }  // namespace actor
 
 @class PageContextWrapper;
+class InProcessCategoryClassificationService;
 
 // Tab helper that orchestrates on-device category classification.
 // This is the iOS counterpart to `PageContentAnnotationsWebContentsObserver`
@@ -73,6 +74,9 @@ class OnDeviceCategoryClassifierTabHelper
   // Starts category classification for the current web state.
   void StartClassification();
 
+  // Classifies using Title and URL only (matching Desktop).
+  void ClassifyTitleAndUrl();
+
   // Extracts page context and executes classification after page stability is
   // reached.
   void ExtractPageContextAndClassify();
@@ -90,6 +94,16 @@ class OnDeviceCategoryClassifierTabHelper
   void OnCategoriesClassified(
       ukm::SourceId source_id,
       const std::vector<page_content_annotations::Category>& categories);
+
+  // Returns the classification service for the current profile, or nullptr if
+  // off-the-record or unavailable.
+  InProcessCategoryClassificationService* GetClassificationService() const;
+
+  // Dispatches classification for the given URL, title, and page content,
+  // checking the cache first.
+  void DispatchClassification(const GURL& url,
+                              const std::string& title,
+                              const std::string& page_content);
 
   raw_ptr<web::WebState> web_state_ = nullptr;
   PageContextWrapper* page_context_wrapper_ = nil;

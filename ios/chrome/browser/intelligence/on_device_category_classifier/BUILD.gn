@@ -58,6 +58,7 @@ source_set("unit_tests") {
     "//components/page_content_annotations/core",
     "//components/passage_embeddings/core",
     "//components/ukm:test_support",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/web/public/test",

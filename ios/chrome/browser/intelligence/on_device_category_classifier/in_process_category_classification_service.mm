@@ -217,11 +217,6 @@ void InProcessCategoryClassificationService::ClassifyPageContext(
     return;
   }
 
-  if (page_content.empty()) {
-    std::move(callback).Run({});
-    return;
-  }
-
   // In-Memory Cache hit: Reuse existing embeddings without re-embedding.
   if (HasCachedEmbeddings(url)) {
     ClassifyWithCachedEmbeddings(url, source_id, std::move(callback));
@@ -244,26 +239,34 @@ void InProcessCategoryClassificationService::ClassifyPageContext(
     return;
   }
 
-  const size_t max_words_per_aggregate_passage =
-      passage_embeddings::kMaxWordsPerAggregatePassage.Get();
-  const size_t min_words_per_passage =
-      passage_embeddings::kMinWordsPerPassage.Get();
-
-  // Create candidate passages matching Desktop's GenerateEmbeddingsCandidates
-  // in page_content_annotations/content/embeddings_candidate_generator.cc.
-  std::vector<std::string> content_passages =
-      page_content_annotations::CreatePassagesFromText(
-          page_content, max_words_per_aggregate_passage, min_words_per_passage);
-
   std::vector<std::string> string_passages;
   std::vector<page_content_annotations::EmbeddingPassageType> passage_types;
-  string_passages.reserve(content_passages.size() + 1);
-  passage_types.reserve(content_passages.size() + 1);
 
-  for (std::string& passage : content_passages) {
-    string_passages.push_back(std::move(passage));
-    passage_types.push_back(
-        page_content_annotations::EmbeddingPassageType::kPageContent);
+  // If no page content is provided, only create a title and URL embedding.
+  if (!page_content.empty()) {
+    const size_t max_words_per_aggregate_passage =
+        passage_embeddings::kMaxWordsPerAggregatePassage.Get();
+    const size_t min_words_per_passage =
+        passage_embeddings::kMinWordsPerPassage.Get();
+
+    // Create candidate passages matching Desktop's GenerateEmbeddingsCandidates
+    // in page_content_annotations/content/embeddings_candidate_generator.cc.
+    std::vector<std::string> content_passages =
+        page_content_annotations::CreatePassagesFromText(
+            page_content, max_words_per_aggregate_passage,
+            min_words_per_passage);
+
+    string_passages.reserve(content_passages.size() + 1);
+    passage_types.reserve(content_passages.size() + 1);
+
+    for (std::string& passage : content_passages) {
+      string_passages.push_back(std::move(passage));
+      passage_types.push_back(
+          page_content_annotations::EmbeddingPassageType::kPageContent);
+    }
+  } else {
+    string_passages.reserve(1);
+    passage_types.reserve(1);
   }
 
   string_passages.push_back(base::StrCat({title, " - ", url.spec()}));

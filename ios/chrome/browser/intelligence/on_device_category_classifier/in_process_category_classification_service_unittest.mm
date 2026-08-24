@@ -77,14 +77,20 @@ class InProcessCategoryClassificationServiceTest : public PlatformTest {
   std::unique_ptr<TestCategoryClassificationService> service_;
 };
 
-// Tests that empty page content triggers the callback immediately with no
-// results.
-TEST_F(InProcessCategoryClassificationServiceTest, ClassifyEmptyContent) {
+// Tests that empty page content (Title and URL only) queues classification
+// and executes when the model is loaded.
+TEST_F(InProcessCategoryClassificationServiceTest,
+       ClassifyEmptyContentDispatchesTitleUrl) {
   base::test::TestFuture<const std::vector<page_content_annotations::Category>&>
       future;
   service_->ClassifyPageContext(GURL("https://example.com"), "Title", "",
                                 ukm::SourceId(), future.GetCallback());
 
+  EXPECT_FALSE(future.IsReady());
+
+  service_->OnPassageEmbedderLoadedForTesting(1, 768, /*success=*/true);
+
+  ASSERT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get().empty());
 }
 
@@ -266,6 +272,28 @@ TEST_F(InProcessCategoryClassificationServiceTest,
                                 ukm::SourceId(), future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get().empty());
+}
+
+// Tests caching when only a TitleAndUrl embedding is returned (no passages).
+TEST_F(InProcessCategoryClassificationServiceTest,
+       InMemoryCacheStoresTitleUrlOnlyEmbedding) {
+  service_->OnPassageEmbedderLoadedForTesting(1, 768, /*success=*/true);
+
+  GURL url("https://example.com");
+  std::vector<page_content_annotations::EmbeddingPassageType> passage_types = {
+      page_content_annotations::EmbeddingPassageType::kTitleAndUrl};
+
+  std::vector<passage_embeddings::mojom::PassageEmbeddingsResultPtr> results;
+  results.push_back(CreateNormalizedResult(768, 0));
+
+  service_->OnGotEmbeddings(url, ukm::SourceId(), passage_types,
+                            std::move(results));
+
+  std::optional<InProcessCategoryClassificationService::CachedEmbeddings>
+      cached = service_->GetCachedEmbeddings(url);
+  ASSERT_TRUE(cached.has_value());
+  ASSERT_TRUE(cached->title_url_embedding.has_value());
+  EXPECT_TRUE(cached->passage_embeddings.empty());
 }
 
 // Tests HasCachedEmbeddings and ClassifyWithCachedEmbeddings.

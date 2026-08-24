@@ -394,6 +394,14 @@ extern const char kGeminiContextualSuggestionsCuesAllowGpuExecutionParam[];
 // contextual suggestions cues.
 bool IsGeminiContextualSuggestionsCuesAllowGpuExecutionEnabled();
 
+// Feature parameter for using Title and URL only (matching Desktop) for
+// category classification.
+extern const char kGeminiContextualSuggestionsCuesTitleAndUrlOnlyParam[];
+
+// Returns true if category classification should only use Title and URL
+// instead of extracting APC and generating passages.
+bool IsGeminiContextualSuggestionsCuesTitleAndUrlOnlyEnabled();
+
 #pragma mark - Debugging Features
 
 // Holds the variations of the BWG Promo Consent flow for debugging.

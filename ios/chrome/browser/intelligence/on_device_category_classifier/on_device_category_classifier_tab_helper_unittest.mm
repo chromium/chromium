@@ -10,12 +10,14 @@
 #import "base/functional/bind.h"
 #import "base/no_destructor.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/page_content_annotations/core/page_content_annotation_type.h"
 #import "components/passage_embeddings/core/passage_embeddings_types.h"
 #import "components/ukm/test_ukm_recorder.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -63,6 +65,8 @@ class OnDeviceCategoryClassifierTabHelperTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
+    scoped_feature_list_.InitWithFeatures(
+        {kPageActionMenu, kGeminiContextualSuggestionsCues}, {});
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         InProcessCategoryClassificationService::GetFactory(),
@@ -103,6 +107,7 @@ class OnDeviceCategoryClassifierTabHelperTest : public PlatformTest {
     tab_helper->OnCategoriesClassified(source_id, categories);
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::FakeWebState> web_state_;
@@ -530,4 +535,48 @@ TEST_F(OnDeviceCategoryClassifierTabHelperTest,
 
   CallExtractPageContextAndClassify(tab_helper);
   EXPECT_EQ(GetPageContextWrapper(tab_helper), nil);
+}
+
+// Tests that when TitleAndUrlOnly mode is enabled (the default), PageLoaded
+// classifies directly without allocating PageContextWrapper.
+TEST_F(OnDeviceCategoryClassifierTabHelperTest, TitleAndUrlOnlyModeEnabled) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{kPageActionMenu, {}},
+       {kGeminiContextualSuggestionsCues,
+        {{kGeminiContextualSuggestionsCuesTitleAndUrlOnlyParam, "true"}}}},
+      {});
+
+  web_state_->SetCurrentURL(GURL("https://example.com"));
+  web_state_->SetTitle(u"Example Title");
+
+  OnDeviceCategoryClassifierTabHelper::CreateForWebState(web_state_.get());
+  auto* tab_helper =
+      OnDeviceCategoryClassifierTabHelper::FromWebState(web_state_.get());
+
+  tab_helper->PageLoaded(web_state_.get(),
+                         web::PageLoadCompletionStatus::SUCCESS);
+
+  // In Title & URL mode, PageContextWrapper is never allocated.
+  EXPECT_EQ(GetPageContextWrapper(tab_helper), nil);
+}
+
+// Tests that when TitleAndUrlOnly mode is disabled, PageLoaded triggers
+// the APC / PageStabilityMonitor extraction path.
+TEST_F(OnDeviceCategoryClassifierTabHelperTest, ApcAndPassagesModeEnabled) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{kPageActionMenu, {}},
+       {kGeminiContextualSuggestionsCues,
+        {{kGeminiContextualSuggestionsCuesTitleAndUrlOnlyParam, "false"}}}},
+      {});
+
+  web_state_->SetCurrentURL(GURL("https://example.com"));
+
+  OnDeviceCategoryClassifierTabHelper::CreateForWebState(web_state_.get());
+  auto* tab_helper =
+      OnDeviceCategoryClassifierTabHelper::FromWebState(web_state_.get());
+
+  tab_helper->PageLoaded(web_state_.get(),
+                         web::PageLoadCompletionStatus::SUCCESS);
 }
