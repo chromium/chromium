@@ -10,8 +10,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
-import android.app.Activity;
-
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
@@ -86,7 +84,6 @@ public class BatchUploadCardMediatorTest {
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
 
-    private Activity mActivity;
     private BatchUploadCardMediator mMediator;
     private final boolean mIsIdentityManagerSourceOfAccounts;
 

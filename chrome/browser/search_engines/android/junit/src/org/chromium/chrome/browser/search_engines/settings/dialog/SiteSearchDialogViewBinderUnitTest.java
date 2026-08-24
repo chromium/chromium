@@ -39,7 +39,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class SiteSearchDialogViewBinderUnitTest {
 
     private Activity mActivity;
-    private View mView;
     private PropertyModel mModel;
 
     private EditText mNameInput;

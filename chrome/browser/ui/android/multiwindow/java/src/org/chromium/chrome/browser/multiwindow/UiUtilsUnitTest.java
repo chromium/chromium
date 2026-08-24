@@ -57,7 +57,6 @@ public class UiUtilsUnitTest {
     private static final String NO_TABS = "No tabs";
     private static final String TWO_TABS_ONE_INCOGNITO = "2 tabs, 1 incognito";
     private static final String CURRENT = "Current";
-    private static final String OPEN = "Window is open";
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock Context mContext;
