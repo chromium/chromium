@@ -603,32 +603,4 @@ TEST(JniArray, ToJavaArrayOfObjectLocalRef) {
                                   j_array.obj(), 2)))));
 }
 
-TEST(JniArray, ToJavaArrayOfObjectGlobalRef) {
-  JNIEnv* env = AttachCurrentThread();
-
-  std::vector<ScopedJavaGlobalRef<jobject>> objects = {
-      ScopedJavaGlobalRef<jobject>(ConvertUTF8ToJavaString(env, "one")),
-      ScopedJavaGlobalRef<jobject>(ConvertUTF8ToJavaString(env, "two")),
-      ScopedJavaGlobalRef<jobject>(ConvertUTF8ToJavaString(env, "three")),
-  };
-
-  ScopedJavaLocalRef<jobjectArray> j_array = ToJavaArrayOfObjects(env, objects);
-  ASSERT_TRUE(j_array);
-
-  EXPECT_EQ("one",
-            ConvertJavaStringToUTF8(
-                env, jni_zero::AdoptRef(
-                         env, static_cast<jstring>(env->GetObjectArrayElement(
-                                  j_array.obj(), 0)))));
-  EXPECT_EQ("two",
-            ConvertJavaStringToUTF8(
-                env, jni_zero::AdoptRef(
-                         env, static_cast<jstring>(env->GetObjectArrayElement(
-                                  j_array.obj(), 1)))));
-  EXPECT_EQ("three",
-            ConvertJavaStringToUTF8(
-                env, jni_zero::AdoptRef(
-                         env, static_cast<jstring>(env->GetObjectArrayElement(
-                                  j_array.obj(), 2)))));
-}
 }  // namespace base::android

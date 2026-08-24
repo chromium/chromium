@@ -410,20 +410,26 @@ class JNI_ZERO_TRIVIAL_ABI JavaRef : public JavaRef<jobject> {
     return static_cast<size_t>(GetLength(env));
   }
 
-  ScopedJavaLocalRef<jobject> Get(JNIEnv* env, int32_t index) const
+  ScopedJavaLocalRef<jobject> Get(JNIEnv* env, size_t index) const
     requires std::is_same_v<T, jobjectArray>;
 
   template <typename U>
-  U GetAs(JNIEnv* env, int32_t index) const
+  auto GetAs(JNIEnv* env, size_t index) const
     requires std::is_same_v<T, jobjectArray>
   {
-    return Get(env, index).template ConvertTo<U>(env);
+    // Make GetAs<JFoo>() an alias of GetAs<ScopedJavaLocalRef<JFoo>>().
+    if constexpr (internal::IsJobject<U>) {
+      return Get(env, index).template As<U>();
+    } else {
+      return Get(env, index).template ConvertTo<U>(env);
+    }
   }
 
-  void Set(JNIEnv* env, int32_t index, const JavaRef<jobject>& value) const
+  void Set(JNIEnv* env, size_t index, const JavaRef<jobject>& value) const
     requires std::is_same_v<T, jobjectArray>
   {
-    env->SetObjectArrayElement(this->obj(), index, value.obj());
+    env->SetObjectArrayElement(this->obj(), static_cast<int32_t>(index),
+                               value.obj());
   }
 
   template <typename U>
@@ -436,6 +442,9 @@ class JNI_ZERO_TRIVIAL_ABI JavaRef : public JavaRef<jobject> {
              sizeof(DestType) ==
                  sizeof(typename internal::_JArrayElementType<T>::type))
   void CopyTo(JNIEnv* env, DestType* dest, size_t size) const {
+    if (size == 0) {
+      return;
+    }
     using ElementType = typename internal::_JArrayElementType<T>::type;
     internal::_JniFuncMappings<ElementType>::GetArrayRegion(
         env, static_cast<JArray<ElementType>>(this->obj()), 0,
@@ -490,17 +499,23 @@ class JNI_ZERO_TRIVIAL_ABI
     return JavaRef<internal::_JObjectArray<T>*>(env, obj);
   }
 
-  ScopedJavaLocalRef<T> Get(JNIEnv* env, int32_t index) const;
+  ScopedJavaLocalRef<T> Get(JNIEnv* env, size_t index) const;
 
   template <typename U>
-  U GetAs(JNIEnv* env, int32_t index) const {
-    return Get(env, index).template ConvertTo<U>(env);
+  auto GetAs(JNIEnv* env, size_t index) const {
+    // Make GetAs<JFoo>() an alias of GetAs<ScopedJavaLocalRef<JFoo>>().
+    if constexpr (internal::IsJobject<U>) {
+      return Get(env, index).template As<U>();
+    } else {
+      return Get(env, index).template ConvertTo<U>(env);
+    }
   }
 
   template <typename U>
     requires internal::IsConvertibleJObject<T, U>
-  void Set(JNIEnv* env, int32_t index, const JavaRef<U>& value) const {
-    env->SetObjectArrayElement(this->obj(), index, value.obj());
+  void Set(JNIEnv* env, size_t index, const JavaRef<U>& value) const {
+    env->SetObjectArrayElement(this->obj(), static_cast<int32_t>(index),
+                               value.obj());
   }
 
   JArrayView<T> CreateView(JNIEnv* env) const [[clang::lifetimebound]] {
@@ -875,10 +890,11 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JNI_ZERO_TRIVIAL_ABI LeakedJavaGlobalRef
 template <typename T>
   requires internal::IsJobject<T>
 inline ScopedJavaLocalRef<jobject> JavaRef<T>::Get(JNIEnv* env,
-                                                   int32_t index) const
+                                                   size_t index) const
   requires std::is_same_v<T, jobjectArray>
 {
-  jobject obj = env->GetObjectArrayElement(this->obj(), index);
+  jobject obj =
+      env->GetObjectArrayElement(this->obj(), static_cast<int32_t>(index));
   return jni_zero::AdoptRef(env, obj);
 }
 
@@ -901,8 +917,9 @@ template <typename T>
   requires internal::IsJobject<T>
 inline ScopedJavaLocalRef<T> JavaRef<internal::_JObjectArray<T>*>::Get(
     JNIEnv* env,
-    int32_t index) const {
-  jobject obj = env->GetObjectArrayElement(this->obj(), index);
+    size_t index) const {
+  jobject obj =
+      env->GetObjectArrayElement(this->obj(), static_cast<int32_t>(index));
   return jni_zero::AdoptRef(env, static_cast<T>(obj));
 }
 

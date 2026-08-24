@@ -9,6 +9,7 @@
 
 #include <jni.h>
 
+#include <array>
 #include <cstdint>
 #include <initializer_list>
 #include <iterator>
@@ -19,6 +20,9 @@
 #include "third_party/jni_zero/java_refs.h"
 #include "third_party/jni_zero/jni_methods.h"
 #include "third_party/jni_zero/logging.h"
+
+// Workaround for clang-format bug.
+#define JNI_LIFETIME_BOUND [[clang::lifetimebound]]
 
 // Wrapper used to receive int when calling Java from native.
 // The wrapper disallows automatic conversion of long to int.
@@ -478,6 +482,8 @@ class JArrayViewCritical<T> : public JArrayViewBase<T> {
   }
 
   JArrayViewCritical(const JArrayViewCritical&) = delete;
+  JArrayViewCritical& operator=(const JArrayViewCritical&) = delete;
+  JArrayViewCritical& operator=(JArrayViewCritical&&) = delete;
   JArrayViewCritical(JArrayViewCritical&& other) noexcept
       : JArrayViewBase<T>(other.env_, other.array_, other.length_),
         data_(std::exchange(other.data_, nullptr)) {
@@ -493,25 +499,26 @@ class JArrayViewCritical<T> : public JArrayViewBase<T> {
 
   T operator[](size_t index) const { return Get(static_cast<int32_t>(index)); }
 
-  const T* data() const noexcept [[clang::lifetimebound]] { return data_; }
+  const T* data() const noexcept JNI_LIFETIME_BOUND { return data_; }
 
-  const T* begin() const noexcept [[clang::lifetimebound]] { return data_; }
+  const T* begin() const noexcept JNI_LIFETIME_BOUND { return data_; }
 
-  const T* end() const noexcept [[clang::lifetimebound]] {
+  const T* end() const noexcept JNI_LIFETIME_BOUND {
 #pragma clang unsafe_buffer_usage begin
     return data_ + length_;
 #pragma clang unsafe_buffer_usage end
   }
 
-  std::span<const T> as_span() const noexcept [[clang::lifetimebound]] {
+  std::span<const T> as_span() const noexcept JNI_LIFETIME_BOUND {
     return std::span<const T>(data_, static_cast<size_t>(length_));
   }
 
- std::string_view as_string_view() const noexcept
-     [[clang::lifetimebound]] requires(sizeof(T) == 1) {
-   return std::string_view(reinterpret_cast<const char*>(data_),
-                           static_cast<size_t>(length_));
- }
+  std::string_view as_string_view() const noexcept JNI_LIFETIME_BOUND
+    requires(sizeof(T) == 1)
+  {
+    return std::string_view(reinterpret_cast<const char*>(data_),
+                            static_cast<size_t>(length_));
+  }
 
  private:
   T* data_;
@@ -520,9 +527,10 @@ class JArrayViewCritical<T> : public JArrayViewBase<T> {
 template <typename T>
   requires internal::IsPrimitiveType<T>
 static ScopedJavaLocalRef<JArray<T>> NewArray(JNIEnv* env, size_t size) {
-  return jni_zero::AdoptRef(
-      env, static_cast<JArray<T>>(
-               internal::_JniFuncMappings<T>::NewArray(env, size)));
+  JArray<T> ret = static_cast<JArray<T>>(
+      internal::_JniFuncMappings<T>::NewArray(env, size));
+  CheckException(env);
+  return jni_zero::AdoptRef(env, ret);
 }
 
 template <typename T>
@@ -544,8 +552,8 @@ NewArray(JNIEnv* env, std::span<const ScopedJavaLocalRef<T>> buf, jclass cls) {
   JArray<T> ret =
       static_cast<JArray<T>>(env->NewObjectArray(length, cls, nullptr));
   CheckException(env);
-  for (int32_t i = 0; i < length; i++) {
-    env->SetObjectArrayElement(ret, i, buf[i].obj());
+  for (size_t i = 0; i < buf.size(); i++) {
+    env->SetObjectArrayElement(ret, static_cast<int32_t>(i), buf[i].obj());
   }
   return jni_zero::AdoptRef(env, ret);
 }
@@ -559,8 +567,9 @@ static ScopedJavaLocalRef<JArray<T>> NewArray(JNIEnv* env,
   JArray<T> ret =
       static_cast<JArray<T>>(env->NewObjectArray(length, cls, nullptr));
   CheckException(env);
-  for (int32_t i = 0; i < length; i++) {
-    env->SetObjectArrayElement(ret, i, ToJniType(env, buf[i]).obj());
+  for (size_t i = 0; i < buf.size(); i++) {
+    env->SetObjectArrayElement(ret, static_cast<int32_t>(i),
+                               ToJniType(env, buf[i]).obj());
   }
   return jni_zero::AdoptRef(env, ret);
 }
@@ -569,12 +578,12 @@ template <typename T>
   requires internal::IsPrimitiveType<T>
 static ScopedJavaLocalRef<JArray<T>> NewArray(JNIEnv* env,
                                               std::span<const T> buf) {
-  int32_t length = static_cast<int32_t>(buf.size());
+  size_t size = buf.size();
   JArray<T> ret = static_cast<JArray<T>>(
-      internal::_JniFuncMappings<T>::NewArray(env, length));
+      internal::_JniFuncMappings<T>::NewArray(env, size));
   CheckException(env);
-  internal::_JniFuncMappings<T>::SetArrayRegion(env, ret, 0, length,
-                                                buf.data());
+  internal::_JniFuncMappings<T>::SetArrayRegion(
+      env, ret, 0, static_cast<int32_t>(size), buf.data());
   return jni_zero::AdoptRef(env, ret);
 }
 
@@ -634,13 +643,23 @@ static ScopedJavaLocalRef<JArray<T>> NewArray(JNIEnv* env,
     // A std::vector<bool> stores each bool using 1 bit rather than 1 byte,
     // and thus we are not allowed to directly convert std::vector<bool> to
     // std::span<bool>.
+    if (buf.size() <= 1024) {
+      std::array<bool, 1024> bool_arr;
+      for (size_t i = 0; i < buf.size(); ++i) {
+        bool_arr[i] = buf[i];
+      }
+      return NewArray<bool>(env,
+                            std::span<const bool>(bool_arr.data(), buf.size()));
+    }
     std::vector<uint8_t> bool_vec;
+    bool_vec.reserve(buf.size());
     for (bool b : buf) {
       bool_vec.push_back(static_cast<uint8_t>(b));
     }
-    std::span<const bool> bool_span(
-        reinterpret_cast<const bool*>(bool_vec.data()), bool_vec.size());
-    return NewArray<bool>(env, bool_span);
+    return NewArray<bool>(
+        env,
+        std::span<const bool>(reinterpret_cast<const bool*>(bool_vec.data()),
+                              bool_vec.size()));
   } else {
     return NewArray<T>(env, std::span<const T>(buf));
   }
@@ -703,5 +722,7 @@ static ScopedJavaLocalRef<JArray<jstring>> NewStringArray(
 }
 
 }  // namespace jni_zero
+
+#undef JNI_LIFETIME_BOUND
 
 #endif  // JNI_ZERO_JNI_WRAPPERS_H_
