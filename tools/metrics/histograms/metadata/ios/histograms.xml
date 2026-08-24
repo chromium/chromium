@@ -3738,7 +3738,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.IncognitoInterstitial"
-    enum="IncognitoInterstitialActionType" expires_after="2025-08-10">
+    enum="IncognitoInterstitialActionType" expires_after="2027-08-24">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -3748,16 +3748,22 @@ chromium-metrics-reviews@google.com.
     opening the URL. Starting M113, it only contains times the user triggered
     the Cancel button, and new &quot;Learn more about Incognito&quot; and
     &quot;Dismissed by external event&quot; buckets are added.
+
+    Warning: this histogram was expired from 2025-08-10 to 2026-08-24; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="IOS.IncognitoInterstitial.Settings"
-    enum="IncognitoInterstitialSettingsActionType" expires_after="2024-06-16">
+    enum="IncognitoInterstitialSettingsActionType" expires_after="2027-08-24">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     Logged when the &quot;Ask to Open Links from Other Apps in Incognito&quot;
     setting is enabled or disabled by the user.
+
+    Warning: this histogram was expired from 2024-06-16 to 2026-08-24; data may
+    be missing.
   </summary>
 </histogram>
 
