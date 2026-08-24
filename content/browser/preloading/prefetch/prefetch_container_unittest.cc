@@ -159,15 +159,6 @@ class PrefetchContainerTestBase : public PrefetchingMetricsTestBase,
         std::move(prefetch_request), std::move(pre_prefetch_container));
   }
 
-  std::unique_ptr<PrefetchContainer> CreateBrowserContextPrefetchContainer(
-      const GURL& prefetch_url,
-      const net::HttpRequestHeaders& additional_headers = {},
-      bool should_append_additional_headers = true) {
-    return PrefetchContainer::CreateForTesting(
-        CreateBrowserContextPrefetchRequest(prefetch_url, additional_headers,
-                                            should_append_additional_headers));
-  }
-
   std::unique_ptr<const PrefetchRequest> CreateBrowserContextPrefetchRequest(
       const GURL& prefetch_url,
       const net::HttpRequestHeaders& additional_headers = {},
