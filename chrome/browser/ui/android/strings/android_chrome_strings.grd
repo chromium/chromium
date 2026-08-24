@@ -7930,46 +7930,46 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
 
       <!-- Immersive Playback Confirmation strings -->
-      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_MESSAGE" desc="Message in the snackbar asking the user if they want to view the video in immersive mode." translateable="false">
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_MESSAGE" desc="Message in the snackbar asking the user if they want to view the video in immersive mode.">
         Watch with immersive playback?
       </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_YES" desc="Text for the positive button in the snackbar to proceed to format selection." translateable="false">
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_YES" desc="Text for the positive button in the snackbar to proceed to format selection.">
         Yes
       </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_FORMAT_TITLE" desc="Title of the dialog for selecting immersive playback format." translateable="false">
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_FORMAT_TITLE" desc="Title of the dialog for selecting immersive playback format.">
         Immersive format
       </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_OPTION_RECOMMENDED" desc="Option for detected custom projection in the immersive playback confirmation dialog." translateable="false">
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_OPTION_RECOMMENDED" desc="Option for detected custom projection in the immersive playback confirmation dialog.">
         Detected
       </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_FORMAT_STANDARD" desc="Standard immersive playback format description." translateable="false">
+      <message name="IDS_IMMERSIVE_PLAYBACK_FORMAT_STANDARD" desc="Standard immersive playback format description.">
         Standard
       </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_FORMAT_STEREOSCOPIC" desc="Stereoscopic immersive playback format description." translateable="false">
+      <message name="IDS_IMMERSIVE_PLAYBACK_FORMAT_STEREOSCOPIC" desc="Stereoscopic immersive playback format description.">
         Stereoscopic
       </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_FORMAT_360" desc="360° immersive playback format description." translateable="false">
+      <message name="IDS_IMMERSIVE_PLAYBACK_FORMAT_360" desc="360° immersive playback format description.">
         360°
       </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_FORMAT_360_STEREOSCOPIC" desc="360° stereoscopic immersive playback format description." translateable="false">
+      <message name="IDS_IMMERSIVE_PLAYBACK_FORMAT_360_STEREOSCOPIC" desc="360° stereoscopic immersive playback format description.">
         360° Stereoscopic
       </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_FORMAT_180" desc="180° immersive playback format description." translateable="false">
+      <message name="IDS_IMMERSIVE_PLAYBACK_FORMAT_180" desc="180° immersive playback format description.">
         180°
       </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_FORMAT_180_STEREOSCOPIC" desc="180° stereoscopic immersive playback format description." translateable="false">
+      <message name="IDS_IMMERSIVE_PLAYBACK_FORMAT_180_STEREOSCOPIC" desc="180° stereoscopic immersive playback format description.">
         180° Stereoscopic
       </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_OK" desc="Text for the positive button in the format selection dialog." translateable="false">
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_OK" desc="Text for the positive button in the format selection dialog.">
         OK
       </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_CANCEL" desc="Text for the negative button in the format selection dialog." translateable="false">
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_CANCEL" desc="Text for the negative button in the format selection dialog.">
         Cancel
       </message>
-      <message name="IDS_ACCESSIBILITY_IMMERSIVE_VIDEO_FORMAT" desc="Content description for a button that opens the format selection popup in immersive video playback." translateable="false">
+      <message name="IDS_ACCESSIBILITY_IMMERSIVE_VIDEO_FORMAT" desc="Content description for a button that opens the format selection popup in immersive video playback.">
         Select video format
       </message>
-      <message name="IDS_ACCESSIBILITY_EXIT_IMMERSIVE_PLAYBACK" desc="Content description for a button that exits immersive video playback." translateable="false">
+      <message name="IDS_ACCESSIBILITY_EXIT_IMMERSIVE_PLAYBACK" desc="Content description for a button that exits immersive video playback.">
         Exit immersive playback
       </message>
 
