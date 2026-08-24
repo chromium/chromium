@@ -238,6 +238,12 @@
   <message name="IDS_SITE_SETTINGS_TYPE_SERIAL_PORTS_MID_SENTENCE" desc="The label used for the serial ports site settings controls when used mid-sentence.">
     serial ports
   </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_HID_DEVICES" desc="The label used for the HID site settings controls.">
+    HID devices
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_HID_DEVICES_MID_SENTENCE" desc="The label used for the HID site settings controls when used mid-sentence.">
+    HID devices
+  </message>
 
   <!-- Site Settings desktop-only -->
   <if expr="not is_android">
@@ -252,12 +258,6 @@
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_HANDLERS_MID_SENTENCE" desc="The label used for the protocol handlers (e.g. mailto) site settings controls when used mid-sentence.">
     protocol handlers
-  </message>
-  <message name="IDS_SITE_SETTINGS_TYPE_HID_DEVICES" desc="The label used for the HID site settings controls.">
-    HID devices
-  </message>
-  <message name="IDS_SITE_SETTINGS_TYPE_HID_DEVICES_MID_SENTENCE" desc="The label used for the HID site settings controls when used mid-sentence.">
-    HID devices
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_IMAGES" desc="The label used for images site settings controls.">
     Images

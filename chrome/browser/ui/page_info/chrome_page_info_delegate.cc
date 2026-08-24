@@ -12,6 +12,8 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
+#include "chrome/browser/hid/hid_chooser_context.h"
+#include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/infobars/browser_infobar_manager.h"
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
@@ -73,8 +75,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #else
 #include "chrome/browser/certificate_viewer.h"
-#include "chrome/browser/hid/hid_chooser_context.h"
-#include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/lookalikes/safety_tip_ui_helper.h"
 #include "chrome/browser/ui/browser.h"
@@ -168,11 +168,7 @@ ChromePageInfoDelegate::GetChooserContext(ContentSettingsType type) {
     case ContentSettingsType::SERIAL_CHOOSER_DATA:
       return SerialChooserContextFactory::GetForProfile(GetProfile());
     case ContentSettingsType::HID_CHOOSER_DATA:
-#if !BUILDFLAG(IS_ANDROID)
       return HidChooserContextFactory::GetForProfile(GetProfile());
-#else
-      NOTREACHED();
-#endif
     case ContentSettingsType::SMART_CARD_DATA:
 #if BUILDFLAG(IS_CHROMEOS)
       if (base::FeatureList::IsEnabled(blink::features::kSmartCard)) {

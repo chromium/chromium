@@ -35,6 +35,7 @@
 #include "media/base/media_switches.h"
 #include "net/base/features.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/events/event.h"
 #include "url/origin.h"
@@ -222,6 +223,9 @@ void PageInfoControllerAndroid::SetPermissionInfo(
   permissions_to_display.push_back(ContentSettingsType::SERIAL_GUARD);
   if (cmd->HasSwitch(switches::kEnableExperimentalWebPlatformFeatures)) {
     permissions_to_display.push_back(ContentSettingsType::BLUETOOTH_SCANNING);
+  }
+  if (base::FeatureList::IsEnabled(blink::features::kWebHID)) {
+    permissions_to_display.push_back(ContentSettingsType::HID_GUARD);
   }
   permissions_to_display.push_back(ContentSettingsType::VR);
   permissions_to_display.push_back(ContentSettingsType::AR);

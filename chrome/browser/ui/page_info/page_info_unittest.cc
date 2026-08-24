@@ -381,9 +381,7 @@ TEST_F(PageInfoTest, PermissionStringsHaveMidSentenceVersion) {
       case ContentSettingsType::MIDI_SYSEX:
       case ContentSettingsType::NFC:
       case ContentSettingsType::USB_GUARD:
-#if !BUILDFLAG(IS_ANDROID)
       case ContentSettingsType::HID_GUARD:
-#endif
         EXPECT_EQ(normal, mid_sentence);
         break;
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
