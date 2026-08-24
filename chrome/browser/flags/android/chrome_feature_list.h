@@ -28,6 +28,7 @@ namespace chrome::android {
 // go/keep-sorted start
 BASE_DECLARE_FEATURE(kAccountForSuppressedKeyboardInsets);
 BASE_DECLARE_FEATURE(kAccountPickerDialog);
+BASE_DECLARE_FEATURE(kActorLiveNotification);
 BASE_DECLARE_FEATURE(kActorNotificationIntentRouting);
 BASE_DECLARE_FEATURE(kActorStepProgressNotification);
 BASE_DECLARE_FEATURE(kAllocInstanceIdIncreasedDefaultRange);
