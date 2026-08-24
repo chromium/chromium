@@ -193,13 +193,36 @@ std::optional<SysInfo::DiskSpaceInfo> SysInfo::AmountOfDiskSpace(
   }
 
   // Report the actual space in `path`'s filesystem.
-  int64_t available;
-  int64_t total;
-  if (!GetDiskSpaceInfo(path, &available, &total)) {
+  int64_t available_bytes;
+  int64_t total_bytes;
+  if (!GetDiskSpaceInfo(path, &available_bytes, &total_bytes)) {
     return std::nullopt;
   }
-  return DiskSpaceInfo{.total = ByteSize(static_cast<uint64_t>(total)),
-                       .available = ByteSize(static_cast<uint64_t>(available))};
+
+  // In Fuchsia, there are filesystems for which available and total values
+  // cannot be provided (e.g. memfs). Those filesystems return values of 0 bytes
+  // used and UINT64_MAX bytes available.
+  //
+  // There is a bug for creating an API that would be able to explicitly
+  // communicate this (https://fxbug.dev/293966900) but given that Chromium uses
+  // the Posix compatibility API, that might not be applicable here.
+  //
+  // In any case, in this situation cap the "available" value at some
+  // arbitrarily-chosen large value that is not the maximum. This is done only
+  // for the ByteSize versions of the calls for two reasons:
+  //
+  // 1. This is less disruptive to the existing code that calls into the
+  //    non-ByteSize functions. As the non-ByteSize functions are deprecated,
+  //    this allows slow and measured migration.
+  // 2. ByteSize does overflow checking, so it's more important to cap at a
+  //    non-maximum value to allow reasonable space calculations without
+  //    requiring every caller to handle avoidance of an overflow kill.
+
+  ByteSize available = ByteSize(std::min(static_cast<uint64_t>(available_bytes),
+                                         ByteSize::Max().InBytes() / 2));
+  ByteSize total = ByteSize(static_cast<uint64_t>(total_bytes));
+
+  return DiskSpaceInfo{.total = total, .available = available};
 }
 
 // static
