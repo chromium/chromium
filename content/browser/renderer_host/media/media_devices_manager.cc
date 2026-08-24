@@ -877,11 +877,17 @@ void MediaDevicesManager::StartMonitoringAndPopulateCache(
     audio_service_device_listener_ =
         std::make_unique<AudioServiceDeviceListener>(
             /*invalidate_cache_cb=*/base::BindRepeating(
-                &MediaDevicesManager::InvalidateCache, base::Unretained(this),
-                MediaDeviceType::kMediaAudioInput),
+                [](MediaDevicesManager* mdm) {
+                  mdm->InvalidateCache(MediaDeviceType::kMediaAudioInput);
+                  mdm->InvalidateCache(MediaDeviceType::kMediaAudioOutput);
+                },
+                base::Unretained(this)),
             /*enumerate_system_devices_cb=*/base::BindRepeating(
-                &MediaDevicesManager::HandleDevicesChanged,
-                base::Unretained(this), MediaDeviceType::kMediaAudioInput));
+                [](MediaDevicesManager* mdm) {
+                  mdm->HandleDevicesChanged(MediaDeviceType::kMediaAudioInput);
+                  mdm->HandleDevicesChanged(MediaDeviceType::kMediaAudioOutput);
+                },
+                base::Unretained(this)));
   }
 #endif
   if ((start_audio_device_monitoring && !monitoring_started_for_audio_) ||
