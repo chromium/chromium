@@ -16,7 +16,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
@@ -272,7 +272,7 @@ class PopupRowViewTestBase : public UiBrowserTest {
     widget_ = CreateWidget();
 
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     ON_CALL(controller(), GetWebContents()).WillByDefault(Return(web_contents));
   }
 

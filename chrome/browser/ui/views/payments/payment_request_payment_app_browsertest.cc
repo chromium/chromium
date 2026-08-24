@@ -8,7 +8,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
@@ -62,7 +62,7 @@ class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
 
   permissions::PermissionRequestManager* GetPermissionRequestManager() {
     return permissions::PermissionRequestManager::FromWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
   }
 
   // Starts the test severs.

@@ -10,9 +10,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/permission_bubble/permission_bubble_test_util.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -131,8 +131,7 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBaseViewBrowserTest,
   BrowserWindowCreateParams params(
       BrowserWindowInterface::TYPE_PICTURE_IN_PICTURE, GetProfile(),
       /*from_user_gesture=*/true);
-  Browser* pip_browser =
-      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* pip_browser = CreateBrowserWindow(std::move(params));
   chrome::AddTabAt(pip_browser, GURL(), -1, true);
   pip_browser->GetWindow()->Show();
 

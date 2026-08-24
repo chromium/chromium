@@ -6,8 +6,8 @@
 
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/views/chrome_test_widget.h"
@@ -53,8 +53,9 @@ class PriceTrackingEmailDialogViewBrowserTest : public InProcessBrowserTest {
 
  protected:
   void CreateAndShowDialog() {
-    dialog_coordinator_->Show(browser()->tab_strip_model()->GetWebContentsAt(0),
-                              GetProfile(), base::DoNothing());
+    dialog_coordinator_->Show(
+        browser()->GetTabStripModel()->GetWebContentsAt(0), GetProfile(),
+        base::DoNothing());
   }
 
   PriceTrackingEmailDialogCoordinator* GetCoordinator() {

@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverDiscardPolicyInteractiveTest,
 
   base::CallbackListSubscription subscription =
       RecentlyAudibleHelper::FromWebContents(
-          browser()->tab_strip_model()->GetWebContentsAt(0))
+          browser()->GetTabStripModel()->GetWebContentsAt(0))
           ->RegisterRecentlyAudibleChangedCallback(
               base::BindRepeating(&MemorySaverDiscardPolicyInteractiveTest::
                                       OnRecentlyAudibleCallback,
@@ -354,7 +354,7 @@ class MemorySaverChipInteractiveTest
   auto SetTabPreDiscardMemoryUsage(size_t index, base::ByteSize usage) {
     return Do(base::BindLambdaForTesting([=, this]() {
       content::WebContents* web_contents =
-          browser()->tab_strip_model()->GetWebContentsAt(index);
+          browser()->GetTabStripModel()->GetWebContentsAt(index);
       auto* pre_discard_resource_usage =
           performance_manager::user_tuning::UserPerformanceTuningManager::
               PreDiscardResourceUsage::FromWebContents(web_contents);
@@ -590,7 +590,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
                                       kTabDiscardingExceptionsWithTime);
         EXPECT_EQ(1u, discard_exception.size());
         std::string current_site_host = browser()
-                                            ->tab_strip_model()
+                                            ->GetTabStripModel()
                                             ->GetActiveWebContents()
                                             ->GetURL()
                                             .GetHost();
@@ -608,7 +608,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
       PressButton(MemorySaverBubbleView::kMemorySaverDialogCancelButton),
       WaitForHide(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       Check(base::BindLambdaForTesting(
-          [&]() { return browser()->tab_strip_model()->count() == 3; })),
+          [&]() { return browser()->GetTabStripModel()->count() == 3; })),
       InstrumentTab(kPerformanceSettingsTab, 2),
       WaitForWebContentsReady(
           kPerformanceSettingsTab,
@@ -744,7 +744,7 @@ class MemorySaverImprovedFaviconTreatmentTest
     return views::AsViewClass<TabIcon>(
         GetTabStripView()
             ->GetTabAnchorView(browser()
-                                   ->tab_strip_model()
+                                   ->GetTabStripModel()
                                    ->GetTabAtIndex(tab_index)
                                    ->GetHandle())
             ->GetViewByElementId(kTabIconElementId));

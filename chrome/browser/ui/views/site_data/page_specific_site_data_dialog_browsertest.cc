@@ -10,7 +10,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
 #include "chrome/browser/ui/views/site_data/site_data_row_view.h"
@@ -77,7 +77,7 @@ class PageSpecificSiteDataDialogBrowserTest
     ASSERT_TRUE(https_server()->Start());
 
     content::CookieChangeObserver observer(
-        browser()->tab_strip_model()->GetActiveWebContents(), 2);
+        browser()->GetTabStripModel()->GetActiveWebContents(), 2);
 
     // Load a page with cookies.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -92,7 +92,7 @@ class PageSpecificSiteDataDialogBrowserTest
     std::string widget_name = "PageSpecificSiteDataDialog";
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          widget_name);
-    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
     PageSpecificSiteDataDialogController::CreateAndShowForWebContents(
         web_contents);
     return waiter.WaitIfNeededAndGet();
@@ -137,7 +137,7 @@ class PageSpecificSiteDataDialogBrowserTest
 
   size_t infobar_count() const {
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     return web_contents
                ? infobars::ContentInfoBarManager::FromWebContents(web_contents)
                      ->infobars()
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL("b.test", "/cookie2.html")));
 
-  browser()->tab_strip_model()->GetActiveWebContents()->Close();
+  browser()->GetTabStripModel()->GetActiveWebContents()->Close();
   EXPECT_TRUE(dialog->IsClosed());
 }
 
@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
 
   EXPECT_FALSE(row_view->GetVisible());
 
-  browser()->tab_strip_model()->GetActiveWebContents()->Close();
+  browser()->GetTabStripModel()->GetActiveWebContents()->Close();
   EXPECT_TRUE(dialog->IsClosed());
   EXPECT_EQ(0u, infobar_count());
 }
@@ -388,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
       static_cast<int>(content_settings::CookieControlsMode::kOff));
 
   content::CookieChangeObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents(), 8);
+      browser()->GetTabStripModel()->GetActiveWebContents(), 8);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL(
@@ -449,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
       static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
 
   content::CookieChangeObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents(), 9);
+      browser()->GetTabStripModel()->GetActiveWebContents(), 9);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL(

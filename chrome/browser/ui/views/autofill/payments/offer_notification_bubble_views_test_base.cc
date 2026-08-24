@@ -10,7 +10,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
@@ -224,7 +224,7 @@ bool OfferNotificationBubbleViewsTestBase::IsIconVisible() {
 
 content::WebContents*
 OfferNotificationBubbleViewsTestBase::GetActiveWebContents() {
-  return browser()->tab_strip_model()->GetActiveWebContents();
+  return browser()->GetTabStripModel()->GetActiveWebContents();
 }
 
 void OfferNotificationBubbleViewsTestBase::AddEventObserverToController(

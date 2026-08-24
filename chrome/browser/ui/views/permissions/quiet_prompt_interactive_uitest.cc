@@ -4,8 +4,8 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -143,7 +143,7 @@ class QuietPromptInteractiveUITest : public InteractiveBrowserTest {
   permissions::PermissionActionsHistory* GetPermissionActionsHistory() {
     return permissions::PermissionsClient::Get()->GetPermissionActionsHistory(
         browser()
-            ->tab_strip_model()
+            ->GetTabStripModel()
             ->GetActiveWebContents()
             ->GetBrowserContext());
   }

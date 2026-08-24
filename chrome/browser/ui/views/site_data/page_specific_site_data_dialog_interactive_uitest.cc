@@ -14,7 +14,6 @@
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -253,7 +252,7 @@ class PageSpecificSiteDataDialogInteractiveUiTest
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                        FirstPartyAllowed) {
   CookieChangeObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents(), 6);
+      browser()->GetTabStripModel()->GetActiveWebContents(), 6);
   RunTestSequence(
       NavigateAndOpenDialog(kPageSpecificSiteDataDialogFirstPartySection,
                             &observer),
@@ -290,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                        ThirdPartyBlocked) {
   CookieChangeObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents(), 6);
+      browser()->GetTabStripModel()->GetActiveWebContents(), 6);
   RunTestSequence(
       NavigateAndOpenDialog(kPageSpecificSiteDataDialogThirdPartySection,
                             &observer),
@@ -325,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                        OnlyPartitionedBlockedThirdPartyCookies) {
   CookieChangeObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents(), 6);
+      browser()->GetTabStripModel()->GetActiveWebContents(), 6);
   RunTestSequence(
       NavigateAndOpenDialog(kPageSpecificSiteDataDialogThirdPartySection,
                             &observer),
@@ -356,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                        MixedPartitionedBlockedThirdPartyCookies) {
   CookieChangeObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents(), 6);
+      browser()->GetTabStripModel()->GetActiveWebContents(), 6);
   RunTestSequence(
       NavigateAndOpenDialog(kPageSpecificSiteDataDialogThirdPartySection,
                             &observer),
@@ -476,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(
     RelatedApplicationsSectionInBrowserTab) {
   // Unrelated to the RelatedApplications tests, but needed to avoid crashing.
   CookieChangeObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents(), 6);
+      browser()->GetTabStripModel()->GetActiveWebContents(), 6);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Make sure the system web apps are installed since the app management page
@@ -517,7 +516,7 @@ IN_PROC_BROWSER_TEST_F(
     RelatedApplicationsSectionInAppWindow) {
   // Unrelated to the RelatedApplications tests, but needed to avoid crashing.
   CookieChangeObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents(), 6);
+      browser()->GetTabStripModel()->GetActiveWebContents(), 6);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Make sure the system web apps are installed since the app management page

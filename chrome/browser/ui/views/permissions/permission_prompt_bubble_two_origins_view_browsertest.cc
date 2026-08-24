@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/permissions/permission_util.h"
@@ -119,7 +119,7 @@ class PermissionPromptBubbleTwoOriginsViewBrowserTest
   std::unique_ptr<PermissionPromptBubbleBaseView> CreateBubble(
       TestDelegateTwoOrigins* delegate) {
     return std::make_unique<PermissionPromptBubbleTwoOriginsView>(
-        browser()->tab_strip_model()->GetActiveWebContents(),
+        browser()->GetTabStripModel()->GetActiveWebContents(),
         delegate->GetWeakPtr(), PermissionPromptStyle::kBubbleOnly);
   }
 };

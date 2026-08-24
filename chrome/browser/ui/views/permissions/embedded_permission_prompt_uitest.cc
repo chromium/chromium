@@ -7,7 +7,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -37,7 +37,7 @@ class EmbeddedPermissionPromptUiTest : public DialogBrowserTest {
                        "example.com", "/permissions/permission_element.html")));
 
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     permissions::PermissionRequestObserver observer(web_contents);
 
     ASSERT_TRUE(content::ExecJs(

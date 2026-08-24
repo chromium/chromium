@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_ui.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_confirmation_bubble_view.h"
@@ -39,7 +39,7 @@ class MandatoryReauthBubbleViewUiTest : public InProcessBrowserTest {
 
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
-    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
     MandatoryReauthBubbleControllerImpl::CreateForWebContents(web_contents);
     MandatoryReauthBubbleControllerImpl* controller = GetController();
     DCHECK(controller);
@@ -72,13 +72,13 @@ class MandatoryReauthBubbleViewUiTest : public InProcessBrowserTest {
   bool IsIconVisible() { return GetIconView() && GetIconView()->GetVisible(); }
 
   MandatoryReauthBubbleControllerImpl* GetController() {
-    if (!browser() || !browser()->tab_strip_model() ||
-        !browser()->tab_strip_model()->GetActiveWebContents()) {
+    if (!browser() || !browser()->GetTabStripModel() ||
+        !browser()->GetTabStripModel()->GetActiveWebContents()) {
       return nullptr;
     }
 
     return MandatoryReauthBubbleControllerImpl::FromWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
   }
 
   views::BubbleDialogDelegate* GetReauthBubble() {

@@ -12,9 +12,9 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
@@ -151,7 +151,7 @@ class PermissionChipInteractiveUITest : public InProcessBrowserTest {
 
   content::RenderFrameHost* GetActiveMainFrame() {
     return browser()
-        ->tab_strip_model()
+        ->GetTabStripModel()
         ->GetActiveWebContents()
         ->GetPrimaryMainFrame();
   }
@@ -444,7 +444,7 @@ class PageInfoChangedWithin1mUmaTest : public PermissionChipInteractiveUITest {
                                                                   url_, 1);
     content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
     content::WebContents* embedder_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     ASSERT_TRUE(embedder_contents);
 
     permissions::PermissionRequestObserver observer(embedder_contents);
@@ -1103,7 +1103,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/title1.html"));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::RenderFrameHost* main_rfh =
       ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
                                                                 1);
@@ -1191,7 +1191,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/title1.html"));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::RenderFrameHost* main_rfh =
       ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
                                                                 1);
@@ -1268,7 +1268,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/title1.html"));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::RenderFrameHost* main_rfh =
       ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
                                                                 1);
@@ -1440,7 +1440,7 @@ IN_PROC_BROWSER_TEST_F(PermissionChipGestureGatedDisabledInteractiveUITest,
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/title1.html"));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::RenderFrameHost* main_rfh =
       ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
                                                                 1);
@@ -1514,7 +1514,7 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveUITest,
   EXPECT_EQ(false, content::EvalJs(main_rfh, kCheckNotifications));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
 
   auto* manager =
@@ -1647,7 +1647,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
                        GetCurrentPosition) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* embedder_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(embedder_contents);
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
   content::RenderFrameHost* main_rfh =
@@ -1682,7 +1682,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
                        WatchPositionAndClearWatch) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* embedder_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(embedder_contents);
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
   content::RenderFrameHost* main_rfh =
@@ -1724,7 +1724,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
                        GetCurrentPositionWhileWatchingPosition) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* embedder_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(embedder_contents);
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
   content::RenderFrameHost* main_rfh =
@@ -1771,7 +1771,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
                        StartGeolocationInDifferentTab) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* embedder_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(embedder_contents);
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
   content::RenderFrameHost* main_rfh =
@@ -1793,7 +1793,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
 
   // Watch geolocation on different tab.
   // The usage will not record on main tab even they have the same origin.
-  TabStripModel* tab_strip = browser()->tab_strip_model();
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
   chrome::NewTabToRight(browser());
   EXPECT_EQ(2, tab_strip->count());
   tab_strip->ActivateTabAt(1);
@@ -1801,7 +1801,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
       ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
                                                                 1);
   content::WebContents* web_contents_2 =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   TestWebContentsObserver observer_2(web_contents_2);
   ASSERT_TRUE(content::ExecJs(rfh_tab_1, kWatchPosition));
   observer_2.Wait();
@@ -1813,7 +1813,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
 IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest, ReloadPage) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* embedder_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(embedder_contents);
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
   content::RenderFrameHost* main_rfh =

@@ -7,9 +7,9 @@
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
@@ -83,7 +83,7 @@ class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
     EXPECT_TRUE(test_api_->manager());
 
     test_api_->AddSimpleRequest(browser()
-                                    ->tab_strip_model()
+                                    ->GetTabStripModel()
                                     ->GetActiveWebContents()
                                     ->GetPrimaryMainFrame(),
                                 permissions::RequestType::kGeolocation);
@@ -142,14 +142,14 @@ class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
     // so it doesn't matter which direction is taken (it wraps).
     chrome::FocusLocationBar(browser());
     SendAcceleratorSync(ui::VKEY_OEM_4, true, false);
-    EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+    EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
     OpenBubbleIfRequestChipUiIsShown();
     EnsureWindowActive(test_api_->GetPromptWindow(),
                        "switch to permission tab with curly brace");
     EXPECT_TRUE(test_api_->GetPromptWindow());
 
     SendAcceleratorSync(ui::VKEY_OEM_4, true, false);
-    EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+    EXPECT_EQ(1, browser()->GetTabStripModel()->active_index());
     browser()->GetWindow()->Activate();
     EnsureWindowActive(browser()->GetWindow(), "switch away with curly brace");
     EXPECT_FALSE(test_api_->GetPromptWindow());
@@ -194,12 +194,12 @@ IN_PROC_BROWSER_TEST_F(PermissionBubbleInteractiveUITest,
 // Ctrl+Shift+Tab at aura and using Cmd+Alt+Left/Right and curly braces at
 // MacOS.
 IN_PROC_BROWSER_TEST_F(PermissionBubbleInteractiveUITest, MAYBE_SwitchTabs) {
-  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
   EXPECT_TRUE(test_api_->GetPromptWindow());
 
   // Add a blank tab in the foreground.
   AddBlankTabAndShow(browser());
-  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->active_index());
 
 #if BUILDFLAG(IS_MAC)
   // The bubble should hide and give focus back to the browser. However, the
@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(PermissionBubbleInteractiveUITest, MAYBE_SwitchTabs) {
   chrome::FocusLocationBar(browser());
 
   JumpToPreviousOpenTab();
-  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
 
   OpenBubbleIfRequestChipUiIsShown();
 
@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(PermissionBubbleInteractiveUITest, MAYBE_SwitchTabs) {
 
   // Ensure we can switch away with the bubble active.
   JumpToNextOpenTab();
-  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->active_index());
 
   browser()->GetWindow()->Activate();
   EnsureWindowActive(browser()->GetWindow(),

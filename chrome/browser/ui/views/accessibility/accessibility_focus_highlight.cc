@@ -8,7 +8,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
@@ -225,7 +225,7 @@ void AccessibilityFocusHighlight::RemoveLayer() {
 void AccessibilityFocusHighlight::AddOrRemoveObservers() {
   Browser* browser = browser_view_->browser();
   PrefService* prefs = browser->GetProfile()->GetPrefs();
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
+  TabStripModel* tab_strip_model = browser->GetTabStripModel();
 
   if (prefs->GetBoolean(prefs::kAccessibilityFocusHighlightEnabled)) {
     // Listen for focus changes. Automatically deregisters when destroyed,

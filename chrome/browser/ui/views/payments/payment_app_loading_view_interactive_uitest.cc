@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/payments/payment_app_loading_view.h"
+
 #include <memory>
 
 #include "base/test/mock_callback.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/payments/payment_app_loading_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
@@ -84,7 +85,7 @@ class PaymentAppLoadingViewInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   SkBitmap icon_;

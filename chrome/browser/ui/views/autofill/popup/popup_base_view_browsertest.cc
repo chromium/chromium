@@ -10,8 +10,8 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -79,7 +79,7 @@ class PopupBaseViewBrowsertest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     gfx::NativeView native_view = web_contents->GetNativeView();
     EXPECT_CALL(mock_delegate_, container_view())
         .WillRepeatedly(Return(native_view));

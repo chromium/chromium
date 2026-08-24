@@ -80,7 +80,7 @@ class MemorySaverBubbleViewTest
 
   void AddNewTab(base::ByteSize memory_savings,
                  mojom::LifecycleUnitDiscardReason discard_reason) {
-    TabStripModel* tab_strip_model = browser()->tab_strip_model();
+    TabStripModel* tab_strip_model = browser()->GetTabStripModel();
     if (tab_strip_model->count() == 1 &&
         (tab_strip_model->GetWebContentsAt(0)
              ->GetLastCommittedURL()
@@ -107,7 +107,7 @@ class MemorySaverBubbleViewTest
       mojom::LifecycleUnitDiscardReason reason =
           ::mojom::LifecycleUnitDiscardReason::PROACTIVE;
       content::WebContents* const old_contents =
-          browser()->tab_strip_model()->GetWebContentsAt(tab_index);
+          browser()->GetTabStripModel()->GetWebContentsAt(tab_index);
       if (auto* old_usage =
               performance_manager::user_tuning::UserPerformanceTuningManager::
                   PreDiscardResourceUsage::FromWebContents(old_contents)) {
@@ -118,7 +118,7 @@ class MemorySaverBubbleViewTest
       TryDiscardTabAt(tab_index);
 
       content::WebContents* const new_contents =
-          browser()->tab_strip_model()->GetWebContentsAt(tab_index);
+          browser()->GetTabStripModel()->GetWebContentsAt(tab_index);
       if (auto* new_usage =
               performance_manager::user_tuning::UserPerformanceTuningManager::
                   PreDiscardResourceUsage::FromWebContents(new_contents)) {
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
                                            GetURL("foo.com", "/title1.html")));
 
   content::WebContents* const contents =
-      guest_browser->tab_strip_model()->GetActiveWebContents();
+      guest_browser->GetTabStripModel()->GetActiveWebContents();
   performance_manager::user_tuning::UserPerformanceTuningManager::
       PreDiscardResourceUsage::CreateForWebContents(
           contents, kMemorySavings,
@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
 IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
                        ShouldCollapseChipAfterNavigatingTabsWithDialogOpen) {
   AddNewTab(kMemorySavings, ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   EXPECT_EQ(2, tab_strip_model->count());
 
   tab_strip_model->ActivateTabAt(0);

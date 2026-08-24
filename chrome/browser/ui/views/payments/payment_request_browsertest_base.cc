@@ -17,7 +17,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/payments/payment_request_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/payments/editor_view_controller.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
@@ -526,7 +526,7 @@ void PaymentRequestBrowserTestBase::ClickOnCancel() {
 }
 
 content::WebContents* PaymentRequestBrowserTestBase::GetActiveWebContents() {
-  return browser()->tab_strip_model()->GetActiveWebContents();
+  return browser()->GetTabStripModel()->GetActiveWebContents();
 }
 
 const std::vector<PaymentRequest*>

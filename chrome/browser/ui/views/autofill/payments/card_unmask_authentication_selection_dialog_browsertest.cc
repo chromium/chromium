@@ -5,8 +5,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/autofill/payments/card_unmask_authentication_selection_dialog_view.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -29,7 +29,7 @@ class CardUnmaskAuthenticationSelectionDialogBrowserTestBase
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
 
     card_unmask_authentication_selection_dialog_controller_ =
         std::make_unique<CardUnmaskAuthenticationSelectionDialogControllerImpl>(
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_P(
       test::GetCardUnmaskChallengeOptions(GetChallengeOptionTypes()));
   ShowUi("");
   VerifyUi();
-  browser()->tab_strip_model()->GetActiveWebContents()->Close();
+  browser()->GetTabStripModel()->GetActiveWebContents()->Close();
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(
       histogram_tester.GetAllSamples(

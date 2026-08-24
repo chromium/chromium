@@ -293,7 +293,7 @@ bool PermissionDashboardController::Update(
       const permissions::PermissionIndicatorsTabData*
           permission_indicators_tab_data =
               location_bar_->GetBrowser()
-                  ->tab_strip_model()
+                  ->GetTabStripModel()
                   ->GetActiveTab()
                   ->GetTabFeatures()
                   ->permission_indicators_tab_data();
@@ -362,7 +362,7 @@ void PermissionDashboardController::OnCollapseAnimationEnded() {
 
   permissions::PermissionIndicatorsTabData* permission_indicators_tab_data =
       location_bar_->GetBrowser()
-          ->tab_strip_model()
+          ->GetTabStripModel()
           ->GetActiveTab()
           ->GetTabFeatures()
           ->permission_indicators_tab_data();

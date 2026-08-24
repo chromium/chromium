@@ -6,8 +6,8 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_saver_browser_test_mixin.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
@@ -34,7 +34,7 @@ class MemorySaverExclusionListBrowserTest
 
     GURL test_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
     content::NavigateToURLBlockUntilNavigationsComplete(
-        browser()->tab_strip_model()->GetActiveWebContents(), test_url, 1);
+        browser()->GetTabStripModel()->GetActiveWebContents(), test_url, 1);
     ASSERT_TRUE(AddTabAtIndexToBrowser(
         browser(), 1, test_url, ui::PageTransition::PAGE_TRANSITION_LINK));
   }
@@ -42,7 +42,7 @@ class MemorySaverExclusionListBrowserTest
   // Navigates the first tab to the given url and attempts to
   // discard that tab. Returns whether if the tab was successfully discarded
   bool NavigateAndDiscardFirstTab(GURL url) {
-    TabStripModel* tab_strip_model = browser()->tab_strip_model();
+    TabStripModel* tab_strip_model = browser()->GetTabStripModel();
     EXPECT_NE(tab_strip_model->active_index(), 0);
     content::NavigateToURLBlockUntilNavigationsComplete(
         tab_strip_model->GetWebContentsAt(0), url, 1);

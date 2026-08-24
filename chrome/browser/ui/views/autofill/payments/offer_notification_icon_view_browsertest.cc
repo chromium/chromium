@@ -100,7 +100,7 @@ class OfferNotificationIconViewBrowserTest
 
  protected:
   content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   page_actions::PageActionView* GetIcon() {

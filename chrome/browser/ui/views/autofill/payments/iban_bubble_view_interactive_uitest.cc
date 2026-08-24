@@ -390,7 +390,7 @@ class IbanBubbleViewFullFormBrowserTest
   }
 
   content::WebContents* GetActiveWebContents() {
-    return GetBrowser(0)->tab_strip_model()->GetActiveWebContents();
+    return GetBrowser(0)->GetTabStripModel()->GetActiveWebContents();
   }
 
   void AddEventObserverToController() {

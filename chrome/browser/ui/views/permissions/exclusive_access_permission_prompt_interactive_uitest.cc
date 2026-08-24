@@ -126,7 +126,7 @@ class ExclusiveAccessPermissionPromptInteractiveTest
         [=, this]() {
           return BrowserWebContentsDelegate::From(browser())
               ->IsWaitingForPointerLockPrompt(
-                  browser()->tab_strip_model()->GetActiveWebContents());
+                  browser()->GetTabStripModel()->GetActiveWebContents());
         },
         displayed));
   }
@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_P(ExclusiveAccessPermissionPromptInteractiveTest,
       HideTabModalUI(), ClickOnElement(TestContentSettings::kKeyboardLock),
       PressPromptButton(GetButtonViewId(CONTENT_SETTING_ALLOW)), Do([&]() {
         auto* manager = permissions::PermissionRequestManager::FromWebContents(
-            browser()->tab_strip_model()->GetActiveWebContents());
+            browser()->GetTabStripModel()->GetActiveWebContents());
         ASSERT_FALSE(manager->has_pending_requests());
       }));
 }

@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(BatterySaverHelpPromoTest, PromoCustomActionClicked) {
   EXPECT_TRUE(promo_active);
 
   content::TestNavigationObserver navigation_observer(
-      browser()->tab_strip_model()->GetWebContentsAt(0));
+      browser()->GetTabStripModel()->GetWebContentsAt(0));
   auto* const button =
       BrowserElementsViews::From(browser())->GetViewAs<views::Button>(
           user_education::HelpBubbleView::kFirstNonDefaultButtonIdForTesting);

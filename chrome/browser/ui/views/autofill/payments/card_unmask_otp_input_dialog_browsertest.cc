@@ -6,8 +6,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/autofill/payments/card_unmask_otp_input_dialog_views.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -41,7 +41,7 @@ class CardUnmaskOtpInputDialogBrowserTest
     controller_->ShowDialog(base::BindOnce(
         &CreateAndShowOtpInputDialog, controller_->GetWeakPtr(),
         base::Unretained(
-            browser()->tab_strip_model()->GetActiveWebContents())));
+            browser()->GetTabStripModel()->GetActiveWebContents())));
   }
 
   CardUnmaskOtpInputDialogViews* GetDialog() {
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_P(CardUnmaskOtpInputDialogBrowserTest,
                        CanCloseTabWhileDialogShowing) {
   ShowUi("");
   VerifyUi();
-  browser()->tab_strip_model()->GetActiveWebContents()->Close();
+  browser()->GetTabStripModel()->GetActiveWebContents()->Close();
   base::RunLoop().RunUntilIdle();
 }
 

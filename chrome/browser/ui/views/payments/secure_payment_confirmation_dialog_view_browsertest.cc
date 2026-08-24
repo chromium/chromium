@@ -15,8 +15,8 @@
 #include "cc/test/pixel_test_utils.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_views_util.h"
 #include "chrome/browser/ui/views/payments/test_secure_payment_confirmation_payment_request_delegate.h"
@@ -85,7 +85,7 @@ class SecurePaymentConfirmationDialogViewTest
   }
 
   content::WebContents* GetActiveWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   base::WeakPtr<SecurePaymentConfirmationDialogViewTest> GetWeakPtr() {

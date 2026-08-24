@@ -6,7 +6,7 @@
 
 #include "base/win/scoped_variant.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/accessibility/uia_accessibility_event_waiter.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -73,7 +73,7 @@ class AutofillAccessibilityWinBrowserTest : public InProcessBrowserTest {
   void TearDownOnMainThread() override { scoped_accessibility_mode_.reset(); }
 
   content::WebContents* GetWebContents() const {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   HWND GetWebPageHwnd() const {

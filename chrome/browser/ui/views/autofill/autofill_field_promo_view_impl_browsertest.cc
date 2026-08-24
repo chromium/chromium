@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_view.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -78,7 +78,7 @@ class AutofillFieldPromoViewImplBrowserTest : public InProcessBrowserTest {
   }
 
   content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   const ui::ElementIdentifier& element_identifier() {

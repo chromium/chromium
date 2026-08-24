@@ -22,9 +22,9 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/page_action/page_action_observer.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -410,7 +410,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
   void CloseAllTabs() {
     closed_all_tabs_ = true;
-    GetBrowser(0)->tab_strip_model()->CloseAllTabs();
+    GetBrowser(0)->GetTabStripModel()->CloseAllTabs();
   }
 
   void NavigateToAndWaitForForm(const std::string& file_path) {
@@ -806,7 +806,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
   }
 
   content::WebContents* GetActiveWebContents() {
-    return GetBrowser(0)->tab_strip_model()->GetActiveWebContents();
+    return GetBrowser(0)->GetTabStripModel()->GetActiveWebContents();
   }
 
   void ResetEventWaiterForSequence(std::list<DialogEvent> event_sequence) {

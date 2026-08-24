@@ -7,8 +7,8 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller_impl.h"
@@ -94,7 +94,7 @@ class AutofillErrorDialogViewNativeViewsBrowserTest
   }
 
   content::WebContents* contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
  private:
@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_P(AutofillErrorDialogViewNativeViewsBrowserTest,
 
   ShowUi("temporary");
   VerifyUi();
-  browser()->tab_strip_model()->GetActiveWebContents()->Close();
+  browser()->GetTabStripModel()->GetActiveWebContents()->Close();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.ErrorDialogShown"),

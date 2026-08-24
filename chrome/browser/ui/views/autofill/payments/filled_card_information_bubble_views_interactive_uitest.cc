@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/autofill/payments/filled_card_information_bubble_views.h"
+
 #include <memory>
 #include <string>
 
@@ -14,10 +16,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/payments/filled_card_information_bubble_controller_impl.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/autofill/payments/filled_card_information_bubble_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
@@ -112,7 +113,7 @@ class FilledCardInformationBubbleViewsInteractiveUiTest
     FilledCardInformationBubbleControllerImpl* controller =
         static_cast<FilledCardInformationBubbleControllerImpl*>(
             FilledCardInformationBubbleControllerImpl::GetOrCreate(
-                browser()->tab_strip_model()->GetActiveWebContents()));
+                browser()->GetTabStripModel()->GetActiveWebContents()));
     DCHECK(controller);
     controller->SetEventObserverForTesting(this);
   }
@@ -153,13 +154,13 @@ class FilledCardInformationBubbleViewsInteractiveUiTest
   }
 
   FilledCardInformationBubbleControllerImpl* GetController() {
-    if (!browser() || !browser()->tab_strip_model() ||
-        !browser()->tab_strip_model()->GetActiveWebContents()) {
+    if (!browser() || !browser()->GetTabStripModel() ||
+        !browser()->GetTabStripModel()->GetActiveWebContents()) {
       return nullptr;
     }
 
     return FilledCardInformationBubbleControllerImpl::FromWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
   }
 
   FilledCardInformationBubbleViews* GetBubbleViews() {
@@ -457,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
   // Mock browser being closed.
   views::test::WidgetDestroyedWaiter destroyed_waiter(
       GetBubbleViews()->GetWidget());
-  browser()->tab_strip_model()->CloseAllTabs();
+  browser()->GetTabStripModel()->CloseAllTabs();
   destroyed_waiter.Wait();
 
   // Confirm metrics.
@@ -764,7 +765,7 @@ class FilledCardInformationBubbleViewsPrerenderTest
   }
 
   content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
  protected:

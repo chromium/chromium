@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFocusHighlightBrowserTest,
 
   // Focus something.
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   std::string script("document.getElementById('div').focus();");
   EXPECT_TRUE(content::ExecJs(web_contents, script));
 
@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFocusHighlightBrowserTest,
                       "</a>")));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::FocusChangedObserver observer(web_contents);
   std::string script("document.getElementById('link').focus();");
   ASSERT_TRUE(content::ExecJs(web_contents, script));
@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFocusHighlightBrowserTest,
                                                 "</a>")));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::FocusChangedObserver observer(web_contents);
   std::string script("document.getElementById('link').focus();");
   ASSERT_TRUE(content::ExecJs(web_contents, script));

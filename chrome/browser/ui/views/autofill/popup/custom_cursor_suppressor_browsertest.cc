@@ -7,8 +7,8 @@
 #include <vector>
 
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
@@ -69,7 +69,7 @@ class CustomCursorSuppressorBrowserTest : public InProcessBrowserTest {
   }
 
   GlobalRenderFrameHostId GetRfhIdOfActiveWebContents(Browser& browser) {
-    return browser.tab_strip_model()
+    return browser.GetTabStripModel()
         ->GetActiveWebContents()
         ->GetPrimaryMainFrame()
         ->GetGlobalId();
@@ -84,17 +84,17 @@ IN_PROC_BROWSER_TEST_F(CustomCursorSuppressorBrowserTest,
 
   CustomCursorSuppressor suppressor;
   EXPECT_FALSE(suppressor.IsSuppressing(
-      *browser()->tab_strip_model()->GetActiveWebContents()));
+      *browser()->GetTabStripModel()->GetActiveWebContents()));
 
   suppressor.Start();
   EXPECT_TRUE(suppressor.IsSuppressing(
-      *browser()->tab_strip_model()->GetActiveWebContents()));
+      *browser()->GetTabStripModel()->GetActiveWebContents()));
   EXPECT_THAT(suppressor.SuppressedRenderFrameHostIdsForTesting(),
               UnorderedElementsAre(GetRfhIdOfActiveWebContents(*browser())));
 
   suppressor.Stop();
   EXPECT_FALSE(suppressor.IsSuppressing(
-      *browser()->tab_strip_model()->GetActiveWebContents()));
+      *browser()->GetTabStripModel()->GetActiveWebContents()));
 }
 
 // Tests that a navigation that results in a different `RenderFrameHost` for the
@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(CustomCursorSuppressorBrowserTest,
   suppressor.Start();
 
   EXPECT_TRUE(suppressor.IsSuppressing(
-      *browser()->tab_strip_model()->GetActiveWebContents()));
+      *browser()->GetTabStripModel()->GetActiveWebContents()));
   std::vector<GlobalRenderFrameHostId> expected_suppressed_ids = {
       GetRfhIdOfActiveWebContents(*browser())};
 
@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(CustomCursorSuppressorBrowserTest,
             expected_suppressed_ids.front());
   expected_suppressed_ids.push_back(GetRfhIdOfActiveWebContents(*browser()));
   EXPECT_TRUE(suppressor.IsSuppressing(
-      *browser()->tab_strip_model()->GetActiveWebContents()));
+      *browser()->GetTabStripModel()->GetActiveWebContents()));
   EXPECT_THAT(suppressor.SuppressedRenderFrameHostIdsForTesting(),
               UnorderedElementsAreArray(expected_suppressed_ids));
 }
@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(CustomCursorSuppressorBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl1()));
   ASSERT_TRUE(AddTab(browser(), GetUrl2()));
   ASSERT_THAT(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       GetUrl2());
 
   CustomCursorSuppressor suppressor;
@@ -142,9 +142,9 @@ IN_PROC_BROWSER_TEST_F(CustomCursorSuppressorBrowserTest,
 
   // Activating the tab with `GetUrl1()` (at index 0) adds a new suppression
   // scope.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
   ASSERT_THAT(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       GetUrl1());
   expected_suppressed_ids.push_back(GetRfhIdOfActiveWebContents(*browser()));
   EXPECT_THAT(suppressor.SuppressedRenderFrameHostIdsForTesting(),
@@ -152,9 +152,9 @@ IN_PROC_BROWSER_TEST_F(CustomCursorSuppressorBrowserTest,
 
   // Switching back to the previously focused tab does not add another
   // suppression scope, since one already exists.
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
   ASSERT_THAT(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       GetUrl2());
   EXPECT_THAT(suppressor.SuppressedRenderFrameHostIdsForTesting(),
               UnorderedElementsAreArray(expected_suppressed_ids));
@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(CustomCursorSuppressorBrowserTest,
                        SingleBrowserWithForegroundTabAddition) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl1()));
   ASSERT_THAT(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       GetUrl1());
 
   CustomCursorSuppressor suppressor;
@@ -177,10 +177,10 @@ IN_PROC_BROWSER_TEST_F(CustomCursorSuppressorBrowserTest,
   // Adding a new tab adds a new suppression scope.
   ASSERT_TRUE(AddTab(browser(), GetUrl2()));
   ASSERT_THAT(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       GetUrl2());
   EXPECT_TRUE(suppressor.IsSuppressing(
-      *browser()->tab_strip_model()->GetActiveWebContents()));
+      *browser()->GetTabStripModel()->GetActiveWebContents()));
   EXPECT_THAT(suppressor.SuppressedRenderFrameHostIdsForTesting(),
               Contains(GetRfhIdOfActiveWebContents(*browser())));
 }
@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(CustomCursorSuppressorBrowserTest,
                        SingleBrowserWithBackgroundTabAddition) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl1()));
   ASSERT_THAT(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       GetUrl1());
 
   CustomCursorSuppressor suppressor;
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(CustomCursorSuppressorBrowserTest,
   // Adding a new background tab does not lead to a new suppression scope.
   ASSERT_TRUE(AddBackgroundTab(browser(), GetUrl2()));
   ASSERT_THAT(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       GetUrl1());
   EXPECT_THAT(suppressor.SuppressedRenderFrameHostIdsForTesting(),
               UnorderedElementsAre(GetRfhIdOfActiveWebContents(*browser())));
@@ -222,9 +222,9 @@ IN_PROC_BROWSER_TEST_F(CustomCursorSuppressorBrowserTest, MultipleBrowsers) {
   CustomCursorSuppressor suppressor;
   suppressor.Start();
   EXPECT_TRUE(suppressor.IsSuppressing(
-      *browser()->tab_strip_model()->GetActiveWebContents()));
+      *browser()->GetTabStripModel()->GetActiveWebContents()));
   EXPECT_TRUE(suppressor.IsSuppressing(
-      *browser2->tab_strip_model()->GetActiveWebContents()));
+      *browser2->GetTabStripModel()->GetActiveWebContents()));
   EXPECT_THAT(suppressor.SuppressedRenderFrameHostIdsForTesting(),
               UnorderedElementsAre(GetRfhIdOfActiveWebContents(*browser()),
                                    GetRfhIdOfActiveWebContents(*browser2)));
@@ -245,9 +245,9 @@ IN_PROC_BROWSER_TEST_F(CustomCursorSuppressorBrowserTest, BrowserAddition) {
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   ASSERT_TRUE(AddTab(browser2, GetUrl2()));
   EXPECT_TRUE(suppressor.IsSuppressing(
-      *browser()->tab_strip_model()->GetActiveWebContents()));
+      *browser()->GetTabStripModel()->GetActiveWebContents()));
   EXPECT_TRUE(suppressor.IsSuppressing(
-      *browser2->tab_strip_model()->GetActiveWebContents()));
+      *browser2->GetTabStripModel()->GetActiveWebContents()));
   EXPECT_THAT(suppressor.SuppressedRenderFrameHostIdsForTesting(),
               Contains(GetRfhIdOfActiveWebContents(*browser())));
   EXPECT_THAT(suppressor.SuppressedRenderFrameHostIdsForTesting(),

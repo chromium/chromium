@@ -178,7 +178,7 @@ const GURL OpenSiteSettingsForUrl(Browser* browser, const GURL& url) {
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS);
   ClickAndWaitForSettingsPageToOpen(site_settings_button);
 
-  return browser->tab_strip_model()
+  return browser->GetTabStripModel()
       ->GetActiveWebContents()
       ->GetLastCommittedURL();
 }
@@ -263,7 +263,7 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
   }
 
   content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   net::EmbeddedTestServer* bad_https_server() { return &bad_https_server_; }
@@ -694,7 +694,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
           std::vector<base::FilePath>{test_file}));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents)
       ->set_auto_response_for_test(permissions::PermissionAction::GRANTED);
@@ -777,7 +777,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
       chrome::GetSettingsUrl(chrome::kFileSystemSettingsSubpage), kParamRequest,
       origin_string);
   content::WebContents* updated_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_EQ(link_destination, updated_web_contents->GetVisibleURL().spec());
   EXPECT_TRUE(base::DeleteFile(test_file));
 }
@@ -1162,7 +1162,7 @@ class PageInfoBubbleViewAboutThisSiteBrowserTest : public InProcessBrowserTest {
   }
 
   content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   void TriggerSafeBrowsingWarning() {

@@ -8,8 +8,8 @@
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_button_controller.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -86,7 +86,7 @@ class WebUIPerformanceInterventionInteractiveTest
       const std::vector<int>& tab_indices,
       Browser* browser) {
     std::vector<resource_attribution::PageContext> page_contexts;
-    TabStripModel* const tab_strip_model = browser->tab_strip_model();
+    TabStripModel* const tab_strip_model = browser->GetTabStripModel();
     for (int index : tab_indices) {
       std::optional<resource_attribution::PageContext> context =
           resource_attribution::PageContext::FromWebContents(
@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(WebUIPerformanceInterventionInteractiveTest,
       WaitForShow(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
       Do([this]() {
-        browser()->tab_strip_model()->CloseWebContentsAt(0, CLOSE_NONE);
+        browser()->GetTabStripModel()->CloseWebContentsAt(0, CLOSE_NONE);
       }),
       WaitForHide(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody));
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(WebUIPerformanceInterventionInteractiveTest,
       WaitForShow(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
       Do([this]() {
-        browser()->tab_strip_model()->CloseWebContentsAt(0, CLOSE_NONE);
+        browser()->GetTabStripModel()->CloseWebContentsAt(0, CLOSE_NONE);
         NotifyActionableTabListChange({0}, browser());
       }),
       WaitForButtonShown(true));

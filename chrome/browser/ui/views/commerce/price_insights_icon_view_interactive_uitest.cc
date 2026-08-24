@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
   // Get the LifecycleUnit for the first tab (kShoppingTab).
   auto* lifecycle_unit =
       resource_coordinator::TabLifecycleUnitSource::GetTabLifecycleUnitExternal(
-          browser()->tab_strip_model()->GetWebContentsAt(0));
+          browser()->GetTabStripModel()->GetWebContentsAt(0));
 
   RunTestSequence(
       InstrumentTab(kShoppingTab),

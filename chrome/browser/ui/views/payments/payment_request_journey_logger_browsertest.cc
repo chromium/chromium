@@ -7,7 +7,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -735,7 +735,7 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestIframeFeatureParamTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   GURL iframe_url =
       https_server()->GetURL("d.com", "/payment_request_iframe.html");

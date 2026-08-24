@@ -17,10 +17,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/accessibility/caption_bubble_context_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -154,7 +154,7 @@ class CaptionBubbleControllerViewsTest
   CaptionBubbleContext* GetCaptionBubbleContext() {
     if (!caption_bubble_context_) {
       caption_bubble_context_ = CaptionBubbleContextBrowser::Create(
-          browser()->tab_strip_model()->GetActiveWebContents());
+          browser()->GetTabStripModel()->GetActiveWebContents());
     }
     return caption_bubble_context_.get();
   }
@@ -445,7 +445,7 @@ class CaptionBubbleControllerViewsTest
 
   content::RenderFrameHost* GetPrimaryMainFrame() {
     return browser()
-        ->tab_strip_model()
+        ->GetTabStripModel()
         ->GetActiveWebContents()
         ->GetPrimaryMainFrame();
   }
@@ -603,7 +603,7 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
 
 IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
                        BubblePositioningSmallBrowserContext) {
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   SetWindowBounds({{0, 0}, {300, 100}});
 
   OnPartialTranscription("Mantis shrimp have 12-16 photoreceptors");
@@ -659,7 +659,7 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, ShowsAndHidesError) {
 
   // The error should not be visible on a different media stream.
   auto media_1 = CaptionBubbleContextBrowser::Create(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   OnPartialTranscription("Elephants are vegetarians.", media_1.get());
   EXPECT_TRUE(GetTitle()->GetVisible());
   EXPECT_TRUE(GetLabel()->GetVisible());
@@ -1143,7 +1143,7 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, ChangeMedia) {
   // Media 1 has the text "A snail can sleep for two years".
   CaptionBubbleContext* media_0 = GetCaptionBubbleContext();
   auto media_1 = CaptionBubbleContextBrowser::Create(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   // Send final transcription from media 0.
   OnPartialTranscription("Polar bears are the largest", media_0);
@@ -1227,7 +1227,7 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, ExpandsAndCollapses) {
 
   // Switch media. The bubble should remain expanded.
   auto media_1 = CaptionBubbleContextBrowser::Create(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   OnPartialTranscription("Nearly all ants are female.", media_1.get());
   EXPECT_TRUE(GetCollapseButton()->GetVisible());
   EXPECT_FALSE(GetExpandButton()->GetVisible());
@@ -1362,7 +1362,7 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
                        AccessibleTextChangesWhenMediaChanges) {
   CaptionBubbleContext* media_0 = GetCaptionBubbleContext();
   auto media_1 = CaptionBubbleContextBrowser::Create(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   OnPartialTranscription("3 dogs survived the Titanic sinking.", media_0);
   EXPECT_EQ(1u, GetAXLineText().size());
@@ -1436,10 +1436,10 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
                        BackToTabButtonActivatesTab) {
   OnPartialTranscription("Whale sharks are the world's largest fish.");
   chrome::AddTabAt(browser(), GURL(), -1, true);
-  browser()->tab_strip_model()->ActivateTabAt(1);
-  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  browser()->GetTabStripModel()->ActivateTabAt(1);
+  EXPECT_EQ(1, browser()->GetTabStripModel()->active_index());
   ClickButton(GetBackToTabButton());
-  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
   // TODO(crbug.com/40119836): Test that browser window is active. It works in
   // app but the tests aren't working.
 }
@@ -1709,19 +1709,19 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
       "Whale songs are so low in frequency that they can travel for thousands "
       "of miles underwater.");
   content::WebContents* original_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(original_web_contents);
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
 
   ui_test_utils::TabAddedWaiter tab_waiter(browser());
   CaptionSettingsButtonPressed();
   tab_waiter.Wait();
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
 
   // Activate the tab that was just launched.
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
   content::WebContents* new_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(original_web_contents != new_web_contents);
   content::TestNavigationObserver navigation_observer(new_web_contents, 1);
   navigation_observer.Wait();

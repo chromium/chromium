@@ -10,9 +10,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.h"
 #include "chrome/browser/ui/views/controls/subpage_view.h"
@@ -312,7 +312,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   OfferNotificationBubbleControllerImpl* controller =
       static_cast<OfferNotificationBubbleControllerImpl*>(
           OfferNotificationBubbleController::GetOrCreate(
-              browser()->tab_strip_model()->GetWebContentsAt(1)));
+              browser()->GetTabStripModel()->GetWebContentsAt(1)));
   ASSERT_TRUE(controller);
   AddEventObserverToController(controller);
 
@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   controller = static_cast<OfferNotificationBubbleControllerImpl*>(
       OfferNotificationBubbleController::GetOrCreate(
-          browser()->tab_strip_model()->GetWebContentsAt(2)));
+          browser()->GetTabStripModel()->GetWebContentsAt(2)));
   ASSERT_TRUE(controller);
   AddEventObserverToController(controller);
 
@@ -333,7 +333,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
 
   // Change to the first background tab.
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
   ASSERT_TRUE(WaitForObservedEvent());
   // Icon should always be visible, and the bubble should be visible too.
   EXPECT_TRUE(IsIconVisible());
@@ -344,14 +344,14 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   // checks.
   views::test::WidgetDestroyedWaiter destroyed_waiter(
       GetOfferNotificationBubbleViews()->GetWidget());
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
   destroyed_waiter.Wait();
   // The icon and the bubble should not be visible.
   EXPECT_FALSE(IsIconVisible());
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 
   // Change to the second background tab.
-  browser()->tab_strip_model()->ActivateTabAt(2);
+  browser()->GetTabStripModel()->ActivateTabAt(2);
   // Icon should be visible and the bubble should not be visible.
   EXPECT_TRUE(IsIconVisible());
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
@@ -420,7 +420,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   // Simulate clicking on see details part of the text.
   GetOfferNotificationBubbleViews()->OnPromoCodeSeeDetailsClicked();
   EXPECT_EQ(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       GURL(GetDefaultTestDetailsUrlString()));
 }
 
@@ -472,7 +472,7 @@ IN_PROC_BROWSER_TEST_P(
     // Simulate clicking on see details part of the text.
     GetOfferNotificationBubbleViews()->OnPromoCodeSeeDetailsClicked();
     EXPECT_EQ(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+        browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
         GURL(GetDefaultTestDetailsUrlString()));
   }
 }

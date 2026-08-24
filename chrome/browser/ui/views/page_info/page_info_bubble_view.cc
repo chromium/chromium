@@ -8,7 +8,6 @@
 
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"

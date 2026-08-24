@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/lookalikes/safety_tip_ui_helper.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -235,12 +234,11 @@ void ShowSafetyTipDialog(
 
   bubble_anchor_util::AnchorConfiguration configuration =
       bubble_anchor_util::GetPageInfoAnchorConfiguration(
-          browser->GetBrowserForMigrationOnly(),
-          bubble_anchor_util::Anchor::kLocationBar);
-  gfx::Rect anchor_rect = configuration.anchor.IsNull()
-                              ? bubble_anchor_util::GetPageInfoAnchorRect(
-                                    browser->GetBrowserForMigrationOnly())
-                              : gfx::Rect();
+          browser, bubble_anchor_util::Anchor::kLocationBar);
+  gfx::Rect anchor_rect =
+      configuration.anchor.IsNull()
+          ? bubble_anchor_util::GetPageInfoAnchorRect(browser)
+          : gfx::Rect();
   gfx::NativeWindow parent_window = browser->GetWindow()->GetNativeWindow();
   gfx::NativeView parent_view = platform_util::GetViewForWindow(parent_window);
 

@@ -71,7 +71,7 @@ class AutofillAiLocalSaveNotificationViewBrowsertest
   void ShowUi(const std::string& name) override {
     auto bubble = std::make_unique<AutofillAiLocalSaveNotificationView>(
         views::BubbleAnchor(),
-        browser()->tab_strip_model()->GetActiveWebContents(),
+        browser()->GetTabStripModel()->GetActiveWebContents(),
         &mock_controller());
     bubble->set_has_parent(false);
     bubble_ = bubble.get();

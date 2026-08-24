@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -38,7 +38,7 @@ class PermissionPromptMetricsTest : public InProcessBrowserTest {
 
   content::RenderFrameHost* GetActiveMainFrame() {
     return browser()
-        ->tab_strip_model()
+        ->GetTabStripModel()
         ->GetActiveWebContents()
         ->GetPrimaryMainFrame();
   }
@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptMetricsTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
 
-  TabStripModel* tab_strip = browser()->tab_strip_model();
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
   content::WebContents* embedder_contents_tab_0 =
       tab_strip->GetActiveWebContents();
   ASSERT_TRUE(embedder_contents_tab_0);
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptMetricsTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
 
-  TabStripModel* tab_strip = browser()->tab_strip_model();
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
   content::WebContents* embedder_contents_tab_0 =
       tab_strip->GetActiveWebContents();
   ASSERT_TRUE(embedder_contents_tab_0);
@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptMetricsTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
 
-  TabStripModel* tab_strip = browser()->tab_strip_model();
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
   content::WebContents* embedder_contents_tab_0 =
       tab_strip->GetActiveWebContents();
   ASSERT_TRUE(embedder_contents_tab_0);
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptMetricsTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
 
-  TabStripModel* tab_strip = browser()->tab_strip_model();
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
   content::WebContents* embedder_contents_tab_0 =
       tab_strip->GetActiveWebContents();
   ASSERT_TRUE(embedder_contents_tab_0);

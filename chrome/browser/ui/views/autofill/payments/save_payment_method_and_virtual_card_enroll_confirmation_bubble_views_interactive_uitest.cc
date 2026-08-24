@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
@@ -65,18 +65,18 @@ class SaveCardConfirmationBubbleViewsInteractiveUiTest
     SaveCardBubbleControllerImpl* save_card_controller =
         static_cast<SaveCardBubbleControllerImpl*>(
             SaveCardBubbleControllerImpl::GetOrCreate(
-                browser()->tab_strip_model()->GetActiveWebContents()));
+                browser()->GetTabStripModel()->GetActiveWebContents()));
     CHECK(save_card_controller);
   }
 
   SaveCardBubbleControllerImpl* GetController() {
-    if (!browser() || !browser()->tab_strip_model() ||
-        !browser()->tab_strip_model()->GetActiveWebContents()) {
+    if (!browser() || !browser()->GetTabStripModel() ||
+        !browser()->GetTabStripModel()->GetActiveWebContents()) {
       return nullptr;
     }
 
     return SaveCardBubbleControllerImpl::FromWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
   }
 
   SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews* BubbleView() {
@@ -343,18 +343,18 @@ class VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest
     VirtualCardEnrollBubbleControllerImpl* virtual_card_enroll_controller =
         static_cast<VirtualCardEnrollBubbleControllerImpl*>(
             VirtualCardEnrollBubbleControllerImpl::GetOrCreate(
-                browser()->tab_strip_model()->GetActiveWebContents()));
+                browser()->GetTabStripModel()->GetActiveWebContents()));
     CHECK(virtual_card_enroll_controller);
   }
 
   VirtualCardEnrollBubbleControllerImpl* GetController() {
-    if (!browser() || !browser()->tab_strip_model() ||
-        !browser()->tab_strip_model()->GetActiveWebContents()) {
+    if (!browser() || !browser()->GetTabStripModel() ||
+        !browser()->GetTabStripModel()->GetActiveWebContents()) {
       return nullptr;
     }
 
     return VirtualCardEnrollBubbleControllerImpl::FromWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
   }
 
   SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews* BubbleView() {

@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
@@ -67,7 +66,7 @@ class PopupPixelTest : public UiBrowserTest,
     scoped_rtl_.emplace(IsBrowserLanguageRTL(this->GetParam()));
 
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     ON_CALL(controller(), GetWebContents())
         .WillByDefault(testing::Return(web_contents));
     ON_CALL(controller(), container_view())

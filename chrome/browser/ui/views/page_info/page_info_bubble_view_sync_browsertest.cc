@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewSyncBrowserTest,
           GetPasswordProtectionService(GetProfile(0));
   service->set_username_for_last_shown_warning("user@gmail.com");
   content::WebContents* contents =
-      GetBrowser(0)->tab_strip_model()->GetActiveWebContents();
+      GetBrowser(0)->GetTabStripModel()->GetActiveWebContents();
   safe_browsing::ReusedPasswordAccountType account_type;
   account_type.set_account_type(
       safe_browsing::ReusedPasswordAccountType::GMAIL);

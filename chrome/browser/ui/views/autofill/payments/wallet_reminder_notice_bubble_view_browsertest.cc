@@ -6,7 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/payments/wallet_reminder_notice_bubble_controller.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/tabs/public/tab_interface.h"

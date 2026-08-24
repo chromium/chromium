@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_bubble_views.h"
+
 #include <memory>
 #include <string>
 
@@ -11,11 +13,10 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
-#include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_bubble_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
@@ -63,7 +64,7 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
     VirtualCardEnrollBubbleControllerImpl* controller =
         static_cast<VirtualCardEnrollBubbleControllerImpl*>(
             VirtualCardEnrollBubbleControllerImpl::GetOrCreate(
-                browser()->tab_strip_model()->GetActiveWebContents()));
+                browser()->GetTabStripModel()->GetActiveWebContents()));
     DCHECK(controller);
     CreateVirtualCardEnrollmentFields();
   }
@@ -123,13 +124,13 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
   }
 
   VirtualCardEnrollBubbleControllerImpl* GetController() {
-    if (!browser() || !browser()->tab_strip_model() ||
-        !browser()->tab_strip_model()->GetActiveWebContents()) {
+    if (!browser() || !browser()->GetTabStripModel() ||
+        !browser()->GetTabStripModel()->GetActiveWebContents()) {
       return nullptr;
     }
 
     return VirtualCardEnrollBubbleControllerImpl::FromWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
   }
 
   VirtualCardEnrollBubbleViews* GetBubbleViews() {
@@ -236,7 +237,7 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
                                VIRTUAL_CARD_ENROLLMENT_BUBBLE_NOT_INTERACTED) {
       GetBubbleViews()->GetWidget()->CloseWithReason(closed_reason);
     } else {
-      browser()->tab_strip_model()->CloseAllTabs();
+      browser()->GetTabStripModel()->CloseAllTabs();
     }
 
     destroyed_waiter.Wait();
@@ -654,7 +655,7 @@ IN_PROC_BROWSER_TEST_P(
       true, 1);
 
   // Switch back to the tab containing the bubble
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   // Verify close metrics: never closed
   histogram_tester.ExpectTotalCount(

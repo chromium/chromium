@@ -176,7 +176,7 @@ class PageInfoBubbleViewFocusInteractiveUiTest : public InProcessBrowserTest {
       const PageInfoBubbleViewFocusInteractiveUiTest& test) = delete;
 
   content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   void TriggerReloadPromptOnClose() const {

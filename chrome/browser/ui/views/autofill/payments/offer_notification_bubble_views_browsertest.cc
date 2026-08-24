@@ -4,7 +4,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"

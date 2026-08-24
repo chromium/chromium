@@ -5,7 +5,7 @@
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 
 #include "chrome/browser/autofill/autofill_uitest_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -55,7 +55,7 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
   }
 
   content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   void NavigateToAndWaitForForm(const GURL& url) {

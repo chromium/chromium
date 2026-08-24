@@ -156,7 +156,7 @@ class PerformanceInterventionInteractiveTest
       const std::vector<int>& tab_indices,
       Browser* browser) {
     std::vector<resource_attribution::PageContext> page_contexts;
-    TabStripModel* const tab_strip_model = browser->tab_strip_model();
+    TabStripModel* const tab_strip_model = browser->GetTabStripModel();
     for (int index : tab_indices) {
       content::WebContents* const web_contents =
           tab_strip_model->GetWebContentsAt(index);
@@ -183,14 +183,14 @@ class PerformanceInterventionInteractiveTest
 
   auto CloseTab(int index) {
     return Do(base::BindLambdaForTesting([=, this]() {
-      browser()->tab_strip_model()->CloseWebContentsAt(
+      browser()->GetTabStripModel()->CloseWebContentsAt(
           index, TabCloseTypes::CLOSE_NONE);
     }));
   }
 
   auto CheckTabDiscardStatus(int index, bool discarded) {
     return Check([=, this]() {
-      TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+      TabStripModel* const tab_strip_model = browser()->GetTabStripModel();
       return tab_strip_model->GetWebContentsAt(index)->WasDiscarded() ==
              discarded;
     });

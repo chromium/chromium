@@ -17,9 +17,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -144,7 +144,7 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
       chrome::NewTab(current_browser_, NewTabTypes::kNoUserAction);
     } else if (options == INITIALIZATION_CLOSETAB_NEWTAB) {
       chrome::NewTabToRight(current_browser_);
-      current_browser_->tab_strip_model()->CloseWebContentsAt(
+      current_browser_->GetTabStripModel()->CloseWebContentsAt(
           0, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
     }
     ASSERT_TRUE(current_browser_);
@@ -152,7 +152,7 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
         current_browser_, url, 1));
 
     SetFrameForScriptExecutionToCurrent(
-        current_browser_->tab_strip_model()->GetActiveWebContents());
+        current_browser_->GetTabStripModel()->GetActiveWebContents());
   }
 
   void SetFrameForScriptExecutionToCurrent(content::WebContents* contents) {
@@ -162,14 +162,14 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
   void CloseLastLocalStreamAt(int index) {
     IndicatorObserver observer;
     WebRtcTestBase::CloseLastLocalStream(
-        current_browser()->tab_strip_model()->GetWebContentsAt(index));
+        current_browser()->GetTabStripModel()->GetWebContentsAt(index));
     observer.Wait();
   }
 
   void FireRunningExpirationTimers() {
     OneTimePermissionsTrackerFactory::GetForBrowserContext(
         current_browser()
-            ->tab_strip_model()
+            ->GetTabStripModel()
             ->GetActiveWebContents()
             ->GetBrowserContext())
         ->FireRunningTimersForTesting();
@@ -179,7 +179,7 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
       permissions::PermissionRequestManager::AutoResponseType auto_response,
       bool expect_prompt) {
     content::WebContents* contents =
-        current_browser()->tab_strip_model()->GetActiveWebContents();
+        current_browser()->GetTabStripModel()->GetActiveWebContents();
     SetFrameForScriptExecutionToCurrent(contents);
     permissions::PermissionRequestManager::FromWebContents(contents)
         ->set_auto_response_for_test(auto_response);
@@ -216,7 +216,7 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
       bool expect_prompt,
       int tab_index = 0) {
     content::WebContents* contents =
-        current_browser()->tab_strip_model()->GetWebContentsAt(tab_index);
+        current_browser()->GetTabStripModel()->GetWebContentsAt(tab_index);
     SetFrameForScriptExecutionToCurrent(contents);
     permissions::PermissionRequestManager::FromWebContents(contents)
         ->set_auto_response_for_test(auto_response);
@@ -230,7 +230,7 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
 
   void DiscardTabAt(int index) {
     resource_coordinator::TabLifecycleUnitSource::GetTabLifecycleUnitExternal(
-        browser()->tab_strip_model()->GetWebContentsAt(index))
+        browser()->GetTabStripModel()->GetWebContentsAt(index))
         ->DiscardTab(mojom::LifecycleUnitDiscardReason::URGENT);
   }
 
@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
   auto* autoblocker =
       permissions::PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
           browser()
-              ->tab_strip_model()
+              ->GetTabStripModel()
               ->GetWebContentsAt(0)
               ->GetBrowserContext());
   EXPECT_EQ(0, autoblocker->GetDismissCount(GetGeolocationGurl(),
@@ -462,11 +462,11 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
   // timers that are running at this point in time will fire their callbacks and
   // are stopped.
   OneTimePermissionsTrackerFactory::GetForBrowserContext(
-      browser()->tab_strip_model()->GetWebContentsAt(0)->GetBrowserContext())
+      browser()->GetTabStripModel()->GetWebContentsAt(0)->GetBrowserContext())
       ->FireRunningTimersForTesting();
 
   // Go to previous tab.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   // Ensure that a prompt is triggered again when requesting permission
   WatchPositionAndExpectGrantedPermission(
@@ -532,7 +532,7 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
   FireRunningExpirationTimers();
 
   // Switch back to previous tab
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   // Request cam/mic permission, expect a prompt is triggered.
   GetUserMediaAndExpectGrantedPermission(
@@ -571,7 +571,7 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
   FireRunningExpirationTimers();
 
   // Switch back to previous tab
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   // Request cam/mic permission, expect no prompt is triggered.
   GetUserMediaAndExpectGrantedPermission(

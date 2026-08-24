@@ -5,8 +5,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_window_user_consent_dialog_view.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/autofill/core/browser/metrics/payments/payments_window_metrics.h"
@@ -60,10 +60,10 @@ class PaymentsWindowUserConsentDialogBrowserTest
           &CreateAndShowPaymentsWindowUserConsentDialog,
           controller_->GetWeakPtr(),
           // The callback is run instantly, so `base::Unretained()` is safe here
-          // as `browser()->tab_strip_model()->GetActiveWebContents()` will
+          // as `browser()->GetTabStripModel()->GetActiveWebContents()` will
           // always be present when the callback is run.
           base::Unretained(
-              browser()->tab_strip_model()->GetActiveWebContents())));
+              browser()->GetTabStripModel()->GetActiveWebContents())));
     });
   }
 };
@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogBrowserTest,
       // TriggerDialogAndWaitForShow() changes the context, so the same context
       // must be used.
       InSameContext(Do([this]() {
-        browser()->tab_strip_model()->GetActiveWebContents()->Close();
+        browser()->GetTabStripModel()->GetActiveWebContents()->Close();
       })));
 }
 
@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(
       // must be used.
       InSameContext(
           Do([this]() {
-            browser()->tab_strip_model()->GetActiveWebContents()->Close();
+            browser()->GetTabStripModel()->GetActiveWebContents()->Close();
           }),
           Check([this]() {
             return histogram_tester_.GetBucketCount(
