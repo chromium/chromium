@@ -149,8 +149,10 @@ bool AutofillProfileComparator::AreMergeable(const AutofillProfile& p1,
     return false;
   }
 
-  if (!HaveMergeableCompanyNames(p1, p2)) {
-    DVLOG(1) << "Different email company names.";
+  CompanyInfo company;
+  if (MergeCompanyNames(p1, p2, company) ==
+      AutofillProfile::ProfileMergeResult::kMergeFailed) {
+    DVLOG(1) << "Different company names.";
     return false;
   }
 
@@ -227,39 +229,49 @@ AutofillProfileComparator::MergeEmailAddresses(
                    kMergeSucceededWithModification;
 }
 
-bool AutofillProfileComparator::MergeCompanyNames(
-    const AutofillProfile& new_profile,
-    const AutofillProfile& old_profile,
-    CompanyInfo& company_info) const {
-  const std::u16string& c1 = new_profile.GetInfo(COMPANY_NAME, app_locale_);
-  const std::u16string& c2 = old_profile.GetInfo(COMPANY_NAME, app_locale_);
-  const std::u16string* best = nullptr;
+AutofillProfile::ProfileMergeResult
+AutofillProfileComparator::MergeCompanyNames(const AutofillProfile& new_profile,
+                                             const AutofillProfile& old_profile,
+                                             CompanyInfo& company_info) const {
+  const std::u16string& new_company_name =
+      new_profile.GetInfo(COMPANY_NAME, app_locale_);
+  const std::u16string& old_company_name =
+      old_profile.GetInfo(COMPANY_NAME, app_locale_);
+  std::u16string_view best;
 
-  DCHECK(HaveMergeableCompanyNames(new_profile, old_profile))
-      << "Company names are not mergeable: '" << c1 << "' vs '" << c2 << "'";
+  if (normalization::HasOnlySkippableCharacters(new_company_name)) {
+    company_info.SetInfo(COMPANY_NAME, old_company_name, app_locale_);
+    return AutofillProfile::ProfileMergeResult::
+        kMergeSucceededWithoutModification;
+  }
+  if (normalization::HasOnlySkippableCharacters(old_company_name)) {
+    company_info.SetInfo(COMPANY_NAME, new_company_name, app_locale_);
+    return AutofillProfile::ProfileMergeResult::kMergeSucceededWithModification;
+  }
 
-  CompareTokensResult result =
-      CompareTokens(normalization::NormalizeForComparison(c1),
-                    normalization::NormalizeForComparison(c2));
-  switch (result) {
+  switch (
+      CompareTokens(normalization::NormalizeForComparison(new_company_name),
+                    normalization::NormalizeForComparison(old_company_name))) {
     case DIFFERENT_TOKENS:
-    default:
-      NOTREACHED() << "Unexpected mismatch: '" << c1 << "' vs '" << c2 << "'";
+      return AutofillProfile::ProfileMergeResult::kMergeFailed;
     case S1_CONTAINS_S2:
-      best = &c1;
+      best = new_company_name;
       break;
     case S2_CONTAINS_S1:
-      best = &c2;
+      best = old_company_name;
       break;
     case SAME_TOKENS:
       best = old_profile.usage_history().use_date() >
                      new_profile.usage_history().use_date()
-                 ? &c2
-                 : &c1;
+                 ? old_company_name
+                 : new_company_name;
       break;
   }
-  company_info.SetInfo(COMPANY_NAME, *best, app_locale_);
-  return true;
+  company_info.SetInfo(COMPANY_NAME, best, app_locale_);
+  return best == old_company_name ? AutofillProfile::ProfileMergeResult::
+                                        kMergeSucceededWithoutModification
+                                  : AutofillProfile::ProfileMergeResult::
+                                        kMergeSucceededWithModification;
 }
 
 AutofillProfile::ProfileMergeResult
@@ -464,7 +476,10 @@ AutofillProfileComparator::NonMergeableSettingVisibleTypes(
                        a.GetNameInfo(), a.GetAddressCountryCode(),
                        b.GetNameInfo(), b.GetAddressCountryCode()));
   }
-  maybe_add_type(COMPANY_NAME, HaveMergeableCompanyNames(a, b));
+  CompanyInfo company;
+  maybe_add_type(COMPANY_NAME,
+                 MergeCompanyNames(a, b, company) !=
+                     AutofillProfile::ProfileMergeResult::kMergeFailed);
   PhoneNumber phone(&a);
   maybe_add_type(PHONE_HOME_WHOLE_NUMBER,
                  MergePhoneNumbers(a, b, phone) !=
@@ -557,18 +572,6 @@ std::u16string AutofillProfileComparator::GetNonEmptyOf(
     return s1;
   }
   return p2.GetInfo(t, app_locale_);
-}
-
-bool AutofillProfileComparator::HaveMergeableCompanyNames(
-    const AutofillProfile& p1,
-    const AutofillProfile& p2) const {
-  const std::u16string& company_name_1 = p1.GetInfo(COMPANY_NAME, app_locale_);
-  const std::u16string& company_name_2 = p2.GetInfo(COMPANY_NAME, app_locale_);
-  return normalization::HasOnlySkippableCharacters(company_name_1) ||
-         normalization::HasOnlySkippableCharacters(company_name_2) ||
-         CompareTokens(normalization::NormalizeForComparison(company_name_1),
-                       normalization::NormalizeForComparison(company_name_2)) !=
-             DIFFERENT_TOKENS;
 }
 
 bool AutofillProfileComparator::HaveMergeableAddresses(

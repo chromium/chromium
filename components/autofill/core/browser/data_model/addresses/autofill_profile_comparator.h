@@ -115,15 +115,18 @@ class AutofillProfileComparator {
       EmailInfo& email_info) const;
 
   // Populates `company_info` with the result of merging the company names in
-  // `new_profile` and `old_profile`. Returns true if successful. Expects that
-  // `new_profile` and `old_profile` have already been found to be mergeable.
+  // `new_profile` and `old_profile` if the merge succeeds. Returns the merge
+  // result.
   //
   // Heuristic: If one is empty, use the other; otherwise, if the tokens in one
   // company name are a superset of those in the other, prefer the former; and,
   // as a tiebreaker, prefer the most recently used version of the company name.
-  bool MergeCompanyNames(const AutofillProfile& new_profile,
-                         const AutofillProfile& old_profile,
-                         CompanyInfo& company_info) const;
+  // TODO(crbug.com/453945181): Return a newly created `CompanyInfo` instead of
+  // modifying `company_info`.
+  AutofillProfile::ProfileMergeResult MergeCompanyNames(
+      const AutofillProfile& new_profile,
+      const AutofillProfile& old_profile,
+      CompanyInfo& company_info) const;
 
   // Populates `phone_number` with the result of merging the phone numbers in
   // `new_profile` and `old_profile` if the merge succeeds. Returns the merge
@@ -192,15 +195,6 @@ class AutofillProfileComparator {
   std::u16string GetNonEmptyOf(const AutofillProfile& p1,
                                const AutofillProfile& p2,
                                AutofillType t) const;
-
-  // Returns true if `p1` and `p2` have company names which are equivalent for
-  // the purposes of merging the two profiles. This means one of the company
-  // names is empty, or the normalized company names are the same (modulo case).
-  //
-  // Note that this method does not provide any guidance on actually merging
-  // the company names.
-  bool HaveMergeableCompanyNames(const AutofillProfile& p1,
-                                 const AutofillProfile& p2) const;
 
   // Returns true if `p1` and `p2` have addresses which are equivalent for the
   // purposes of merging the two profiles. This means one of the addresses is

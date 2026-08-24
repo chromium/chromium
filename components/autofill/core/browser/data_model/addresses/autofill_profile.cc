@@ -751,7 +751,8 @@ AutofillProfile::ProfileMergeResult AutofillProfile::MergeDataFrom(
       // objects instead of passing them by reference.
       comparator.MergeEmailAddresses(profile, *this, email) ==
           ProfileMergeResult::kMergeFailed ||
-      !comparator.MergeCompanyNames(profile, *this, company) ||
+      comparator.MergeCompanyNames(profile, *this, company) ==
+          ProfileMergeResult::kMergeFailed ||
       comparator.MergePhoneNumbers(profile, *this, phone_number) ==
           ProfileMergeResult::kMergeFailed ||
       !comparator.MergeAddresses(profile, *this, address)) {

@@ -347,12 +347,6 @@ class AutofillProfile : public FormGroup {
   // Returns a constant reference to the `address_` field.
   const Address& GetAddress() const { return address_; }
 
-  // Returns a constant reference to the `email_` field.
-  const EmailInfo& GetEmailInfo() const { return email_; }
-
-  // Returns a constant reference to the `phone_number_` field.
-  const PhoneNumber& GetPhoneNumber() const { return phone_number_; }
-
   // Returns the profile country code.
   AddressCountryCode GetAddressCountryCode() const;
 
