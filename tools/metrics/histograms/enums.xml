@@ -12798,6 +12798,7 @@ from previous Chrome versions.
   <int value="-588491904" label="glic-reset-mi-enabled-by-tier:disabled"/>
   <int value="-588245348"
       label="history-clusters-should-show-all-clusters-on-prominent-ui-surfaces"/>
+  <int value="-588197788" label="NtpRichImageSuggestions:disabled"/>
   <int value="-588163454"
       label="AccessibilitySelectToSpeakHoverTextImprovements:enabled"/>
   <int value="-587446483" label="(Obsolete) LacrosOnly:disabled"/>
@@ -17934,6 +17935,7 @@ from previous Chrome versions.
   <int value="1021573543" label="QuickSettingsPWA:disabled"/>
   <int value="1021848000" label="SharedHighlightingUseBlocklist:disabled"/>
   <int value="1022006626" label="DesktopAndroidTWADisclosures:enabled"/>
+  <int value="1022270409" label="NtpRichImageSuggestions:enabled"/>
   <int value="1022424308" label="SignedExchangeSubresourcePrefetch:enabled"/>
   <int value="1022504679" label="UseMultipleOverlays:enabled"/>
   <int value="1022853086"

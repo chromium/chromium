@@ -7465,6 +7465,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpRealboxCr23ThemingVariations,
                                     "NtpRealboxCr23Theming")},
 
+    {"ntp-rich-image-suggestions",
+     flag_descriptions::kNtpRichImageSuggestionsName,
+     flag_descriptions::kNtpRichImageSuggestionsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpRichImageSuggestions)},
+
     {"ntp-scaled-action-chips", flag_descriptions::kNtpScaledActionChipsName,
      flag_descriptions::kNtpScaledActionChipsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpScaledActionChips)},

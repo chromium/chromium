@@ -7401,6 +7401,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "ntp-rich-image-suggestions",
+    "owners": [ "yvonneshi@google.com", "chrome-desktop-ntp@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "ntp-scaled-action-chips",
     "owners": [ "rtatum@google.com", "chrome-desktop-ntp@google.com" ],
     "expiry_milestone": 160

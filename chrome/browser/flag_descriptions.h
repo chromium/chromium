@@ -7026,6 +7026,12 @@ inline constexpr char kNtpRealboxCr23ThemingName[] =
 inline constexpr char kNtpRealboxCr23ThemingDescription[] =
     "CR23 theming will be applied in Realbox when enabled.";
 
+inline constexpr char kNtpRichImageSuggestionsName[] =
+    "NTP Rich Image Suggestions";
+inline constexpr char kNtpRichImageSuggestionsDescription[] =
+    "Enables richer image suggestions in the NTP Composebox for image "
+    "generation.";
+
 inline constexpr char kNtpScaledActionChipsName[] = "NTP Scaled Action Chips";
 inline constexpr char kNtpScaledActionChipsDescription[] =
     "Enables scaled merchandising action chips (e.g., dynamic tool suggestions "
