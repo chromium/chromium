@@ -27,6 +27,7 @@ rust_static_library("interop_tests") {
     "//base/test:test_support_rust",
     "//mojo/public/cpp/bindings",
     "//testing/rust_gtest_interop",
+    "//third_party/rust/ordered_float/v5:lib",
   ]
 }
 

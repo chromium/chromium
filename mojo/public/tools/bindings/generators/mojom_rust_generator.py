@@ -23,8 +23,8 @@ _mojom_primitive_type_to_rust_type = {
   mojom.UINT16: "u16",
   mojom.UINT32: "u32",
   mojom.UINT64: "u64",
-  mojom.FLOAT: "f32",
-  mojom.DOUBLE: "f64",
+  mojom.FLOAT: "OrderedFloat<f32>",
+  mojom.DOUBLE: "OrderedFloat<f64>",
   mojom.STRING: "String",
   mojom.HANDLE: "system::mojo_types::UntypedHandle",
   mojom.MSGPIPE: "system::message_pipe::MessageEndpoint",
@@ -133,9 +133,6 @@ def _MojomTypeToRustType(
     key_ty = _MojomTypeToRustType(
       ty.key_kind, current_module, source_to_target_map, typemap
     )
-    # Rust requires comparison operators to use floats as keys in a map
-    if ty.key_kind == mojom.FLOAT or ty.key_kind == mojom.DOUBLE:
-      key_ty = f"OrderedFloat<{key_ty}>"
     value_ty = _MojomTypeToRustType(
       ty.value_kind, current_module, source_to_target_map, typemap
     )

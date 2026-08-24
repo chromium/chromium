@@ -1092,7 +1092,7 @@ fn test_unions() {
         BaseUnion::f1(FourInts { a: 5, b: 6, c: 7, d: 8 }),
         base_union_mojom_f1(four_ints_mojom(5, 6, 7, 8)),
     );
-    BASE_UNION_TY.validate_mojomparse(BaseUnion::fl(3.14), base_union_mojom_fl(3.14));
+    BASE_UNION_TY.validate_mojomparse(BaseUnion::fl(OrderedFloat(3.14)), base_union_mojom_fl(3.14));
 
     expect_true!(try_from_mojom_value::<BaseUnion>(MojomValue::Union(
         99,
@@ -1132,7 +1132,7 @@ fn test_unions() {
             u1: NestedUnion::n(50),
             i1: 11,
             u2: NestederUnion::b(false),
-            d1: 3.14159,
+            d1: OrderedFloat(3.14159),
             u3: BaseUnion::n1(55),
             u4: NestederUnion::n(12),
             i2: 33,
@@ -1492,7 +1492,7 @@ fn test_arrays() {
             bool_sized: [
                 false, false, true, false, true, true, false, false, true, false, true, true, false,
             ],
-            floats: vec![1.1, 2.2, 3.3],
+            floats: vec![OrderedFloat(1.1), OrderedFloat(2.2), OrderedFloat(3.3)],
             enums: vec![TestEnum::Four, TestEnum::Zero, TestEnum::Seven],
             unions: vec![BaseUnion::n1(12), BaseUnion::u1(22), BaseUnion::e1(TestEnum::Four)],
             unions_nested: vec![NestedUnion::n(32), NestedUnion::u(BaseUnion::n1(42))],
@@ -2333,8 +2333,8 @@ fn test_nullables() {
             empty: Some(Empty {}),
             e: Some(TestEnum::Four),
             fourints: Some(FourInts { a: 1, b: 2, c: 3, d: 4 }),
-            f1: Some(3.14),
-            f2: Some(2.71828),
+            f1: Some(OrderedFloat(3.14)),
+            f2: Some(OrderedFloat(2.71828)),
         },
         nullable_basics_mojom(
             Some(true),

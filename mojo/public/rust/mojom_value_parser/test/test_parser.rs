@@ -485,7 +485,7 @@ fn test_unions() -> anyhow::Result<()> {
             "[anchr]f1_ptr [u4]24 [u4]0 [s1]5 [u1]0 [s2]6 [s4]7 [s8]8", // FourInts
         ),
     )?;
-    validate_parsing(BaseUnion::fl(3.14f32), "[u4]16 [u4]7 [f]3.14 [u4]0")?;
+    validate_parsing(BaseUnion::fl(OrderedFloat(3.14f32)), "[u4]16 [u4]7 [f]3.14 [u4]0")?;
 
     validate_parsing_failure::<BaseUnion>("[u4]16 [u4]99 [u8]0")?;
     validate_parsing_failure::<BaseUnion>("[u4]16 [u4]6 [u8]0")?;
@@ -573,7 +573,7 @@ fn test_unions() -> anyhow::Result<()> {
             u1: NestedUnion::n(50),
             i1: 11,
             u2: NestederUnion::b(false),
-            d1: 3.14159,
+            d1: OrderedFloat(3.14159),
             u3: BaseUnion::n1(55),
             u4: NestederUnion::n(12),
             i2: 33,
@@ -597,7 +597,7 @@ fn test_unions() -> anyhow::Result<()> {
             u1: NestedUnion::u(BaseUnion::b1(true)),
             i1: -1,
             u2: NestederUnion::u(NestedUnion::u(BaseUnion::e1(TestEnum::Seven))),
-            d1: 2.71828,
+            d1: OrderedFloat(2.71828),
             u3: BaseUnion::b2(false),
             u4: NestederUnion::w(WithNestedUnion {
                 n1: 2000,
@@ -1081,7 +1081,7 @@ fn test_nullable_parsing() -> anyhow::Result<()> {
             e: None,
             fourints: Some(FourInts { a: 1, b: 2, c: 3, d: 4 }),
             f1: None,
-            f2: Some(2.71828),
+            f2: Some(OrderedFloat(2.71828)),
         },
         concat!(
             "[u4]48 [u4]0 [b]01001011 [u1]12 [u2]0 [u4]0 [u8]0 [dist8]fourints_ptr [f]0 [u4]0 [d]2.71828 ",
@@ -1097,7 +1097,7 @@ fn test_nullable_parsing() -> anyhow::Result<()> {
             empty: Some(Empty {}),
             e: Some(TestEnum::Four),
             fourints: None,
-            f1: Some(3.14),
+            f1: Some(OrderedFloat(3.14)),
             f2: None,
         },
         concat!(
@@ -1114,8 +1114,8 @@ fn test_nullable_parsing() -> anyhow::Result<()> {
             empty: Some(Empty {}),
             e: Some(TestEnum::Zero),
             fourints: Some(FourInts { a: 1, b: 2, c: 3, d: 4 }),
-            f1: Some(1.23),
-            f2: Some(4.56),
+            f1: Some(OrderedFloat(1.23)),
+            f2: Some(OrderedFloat(4.56)),
         },
         concat!(
             "[u4]48 [u4]0 [b]01111101 [u1]22 [u2]44 [u4]0 [dist8]empty_ptr [dist8]fourints_ptr [f]1.23 [u4]0 [d]4.56 ",
