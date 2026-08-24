@@ -8882,19 +8882,11 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "RequireOriginTrialTokens": "false",
-                        "SchemaVersion": "4"
-                    },
                     "enable_features": [
-                        "DeviceBoundSessions",
-                        "DeviceBoundSessionsFederatedRegistration",
                         "DeviceBoundSessionsForRestrictedSites",
                         "EnableChromeRefreshTokenBinding",
                         "EnableOAuthMultiloginStandardCookiesBinding",
-                        "EnableOAuthMultiloginStandardCookiesBindingForSecondaryPartitions",
-                        "UnexportableKeyDeletion",
-                        "UseUnexportableKeyServiceInBrowserProcess"
+                        "EnableOAuthMultiloginStandardCookiesBindingForSecondaryPartitions"
                     ]
                 }
             ]

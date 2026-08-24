@@ -438,7 +438,7 @@ BASE_FEATURE(kUseNetworkPathMonitorForNetworkChangeNotifier,
 );
 #endif  // BUILDFLAG(IS_APPLE)
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 BASE_FEATURE(kDeviceBoundSessions, base::FEATURE_ENABLED_BY_DEFAULT);
 #else
 BASE_FEATURE(kDeviceBoundSessions, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -461,7 +461,15 @@ BASE_FEATURE_PARAM(int,
                    kDeviceBoundSessionsSchemaVersion,
                    &kDeviceBoundSessions,
                    "SchemaVersion",
-                   3);
+#if BUILDFLAG(IS_MAC)
+                   // Schema version on Mac has been set to 4 to 100% of clients
+                   // via Finch, so it should be kept at this value to avoid
+                   // wiping user data.
+                   4
+#else
+                   3
+#endif
+);
 
 BASE_FEATURE(kDeviceBoundSessionsFederatedRegistration,
              base::FEATURE_ENABLED_BY_DEFAULT);
