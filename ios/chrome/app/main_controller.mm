@@ -66,6 +66,7 @@
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/app/safe_mode_app_state_agent.h"
 #import "ios/chrome/app/scene_identifier_map.h"
+#import "ios/chrome/app/startup/app_startup_utils.h"
 #import "ios/chrome/app/startup/chrome_app_startup_parameters.h"
 #import "ios/chrome/app/startup/chrome_main_starter.h"
 #import "ios/chrome/app/startup/client_registration.h"
@@ -1347,23 +1348,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 // Some experiments value may be useful for first-party applications, so save
 // the value in the shared application group.
 - (void)saveFieldTrialValuesForGroupApp {
-  NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
-  NSNumber* supportsShowDefaultBrowserPromo = @YES;
-
-  NSMutableDictionary* capabilities = [[NSMutableDictionary alloc] init];
-  [capabilities setObject:supportsShowDefaultBrowserPromo
-                   forKey:app_group::kChromeShowDefaultBrowserPromoCapability];
-
-  [capabilities
-      setObject:@(IsShareDefaultBrowserStatusEnabled())
-         forKey:app_group::kChromeSupportShareDefaultBrowserStatusCapability];
-
-  [capabilities
-      setObject:@[ app_group::kYoutubeBundleID ]
-         forKey:app_group::kChromeSupportOpenLinksParametersFromCapability];
-
-  [sharedDefaults setObject:capabilities
-                     forKey:app_group::kChromeCapabilitiesPreference];
+  SaveFieldTrialValuesForGroupApp();
 }
 
 // Some extensions need the value of field trials but can't get them because the

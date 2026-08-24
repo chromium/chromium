@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_capabilities_manager_impl.h"
 
+#import "base/check.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_availability.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -35,33 +36,14 @@ void GeminiCapabilitiesManagerImpl::OnGeminiEligibilityChanged() {
 }
 
 void GeminiCapabilitiesManagerImpl::UpdateCapabilities() {
+  CHECK(IsAppSwitcherAISummarizationEnabled());
+
   NSUserDefaults* shared_defaults = app_group::GetCommonGroupUserDefaults();
-
-  // If the feature is disabled, clean up all capabilities and return early.
-  if (!IsAppSwitcherAISummarizationEnabled()) {
-    UpdateHashedUserID(shared_defaults, /*has_primary_identity=*/false);
-
-    NSDictionary* existing_capabilities = [shared_defaults
-        dictionaryForKey:app_group::kChromeCapabilitiesPreference];
-    if (existing_capabilities) {
-      NSMutableDictionary* capabilities = [existing_capabilities mutableCopy];
-      [capabilities removeObjectForKey:
-                        app_group::kChromeSupportsAISummarizationCapability];
-      [capabilities removeObjectForKey:
-                        app_group::kChromeUserIsEligibleForGeminiCapability];
-      if (![existing_capabilities isEqualToDictionary:capabilities]) {
-        [shared_defaults setObject:capabilities
-                            forKey:app_group::kChromeCapabilitiesPreference];
-      }
-    }
-    return;
-  }
-
   NSDictionary* existing_capabilities = [shared_defaults
       dictionaryForKey:app_group::kChromeCapabilitiesPreference];
   NSMutableDictionary* capabilities = existing_capabilities
                                           ? [existing_capabilities mutableCopy]
-                                          : [NSMutableDictionary dictionary];
+                                          : [[NSMutableDictionary alloc] init];
 
   bool has_primary_identity =
       authentication_service_ && authentication_service_->HasPrimaryIdentity();

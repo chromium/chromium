@@ -5,7 +5,9 @@
 #import "ios/chrome/app/startup/app_startup_utils.h"
 
 #import "base/apple/bundle_locations.h"
+#import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 
 namespace {
 
@@ -103,4 +105,37 @@ bool IsCallerAppAllowListedForApplicationMode(NSString* caller_app_id) {
     return true;
   }
   return false;
+}
+
+void SaveFieldTrialValuesForGroupApp() {
+  NSUserDefaults* shared_defaults = app_group::GetCommonGroupUserDefaults();
+  NSNumber* supports_show_default_browser_promo = @YES;
+
+  NSMutableDictionary* capabilities = [[shared_defaults
+      dictionaryForKey:app_group::kChromeCapabilitiesPreference] mutableCopy];
+  if (!capabilities) {
+    capabilities = [[NSMutableDictionary alloc] init];
+  }
+
+  [capabilities setObject:supports_show_default_browser_promo
+                   forKey:app_group::kChromeShowDefaultBrowserPromoCapability];
+
+  [capabilities
+      setObject:@(IsShareDefaultBrowserStatusEnabled())
+         forKey:app_group::kChromeSupportShareDefaultBrowserStatusCapability];
+
+  [capabilities
+      setObject:@[ app_group::kYoutubeBundleID ]
+         forKey:app_group::kChromeSupportOpenLinksParametersFromCapability];
+
+  if (!IsAppSwitcherAISummarizationEnabled()) {
+    [capabilities
+        removeObjectForKey:app_group::kChromeSupportsAISummarizationCapability];
+    [capabilities
+        removeObjectForKey:app_group::kChromeUserIsEligibleForGeminiCapability];
+    [shared_defaults removeObjectForKey:app_group::kAppSwitcherHashedUserID];
+  }
+
+  [shared_defaults setObject:capabilities
+                      forKey:app_group::kChromeCapabilitiesPreference];
 }

@@ -16,4 +16,8 @@ bool IsCallerAppAllowListedForAISummarization(NSString* caller_app_id);
 // Checks if the caller app is allowed for the youtube incognito experiment.
 bool IsCallerAppAllowListedForApplicationMode(NSString* caller_app_id);
 
+// Saves field trial values and capabilities for the group app in shared
+// NSUserDefaults.
+void SaveFieldTrialValuesForGroupApp();
+
 #endif  // IOS_CHROME_APP_STARTUP_APP_STARTUP_UTILS_H_
