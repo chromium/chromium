@@ -184,6 +184,13 @@ template("chrome_common_apk_or_module_tmpl") {
     _manifest_package = chrome_public_manifest_package
   }
 
+  _target_sdk_version = default_target_sdk_version
+  if (defined(invoker.override_target_sdk)) {
+    _target_sdk_version = invoker.override_target_sdk
+  } else if (defined(invoker.target_sdk_version)) {
+    _target_sdk_version = invoker.target_sdk_version
+  }
+
   _android_manifest = "$target_gen_dir/$target_name/AndroidManifest.xml"
   _split_android_manifest =
       "$target_gen_dir/$target_name/AndroidManifest_split.xml"
@@ -194,8 +201,10 @@ template("chrome_common_apk_or_module_tmpl") {
     split_output = _split_android_manifest
     includes = []
     output = _android_manifest
-    variables = default_chrome_public_jinja_variables +
-                [ "manifest_package=$_manifest_package" ]
+    variables = default_chrome_public_jinja_variables + [
+                  "manifest_package=$_manifest_package",
+                  "target_sdk_version=$_target_sdk_version",
+                ]
     if (_is_trichrome) {
       input = "//chrome/android/java/AndroidManifest_trichrome_chrome.xml"
       includes = [ "//chrome/android/java/AndroidManifest.xml" ]
