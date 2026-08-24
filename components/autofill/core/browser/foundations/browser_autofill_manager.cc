@@ -660,6 +660,43 @@ void ReorderWebAuthnSuggestionsToFooter(std::vector<Suggestion>& suggestions) {
   }
 }
 
+// Clears some of the suggestions based on priorities, and then converts the
+// map's key from `SuggestionDataSource` to `FillingProduct`.
+std::map<FillingProduct, std::vector<Suggestion>>
+FilterSuggestionsByPrioritization(
+    base::flat_map<SuggestionGenerator::SuggestionDataSource,
+                   std::vector<Suggestion>> all_suggestions) {
+  using SuggestionDataSource = SuggestionGenerator::SuggestionDataSource;
+
+  // 1. Find the highest priority suggestion data source S that returned data.
+  // 2. Keep only data from sources that are mergeable with S, discard the rest.
+  const DenseSet<SuggestionDataSource>* supported_mergeable_sources = nullptr;
+  std::map<FillingProduct, std::vector<Suggestion>> prioritized_suggestions;
+
+  for (SuggestionDataSource source :
+       SuggestionGenerator::kOrderedPrioritizedSources) {
+    if (!all_suggestions.contains(source) || all_suggestions[source].empty()) {
+      continue;
+    }
+
+    if (!supported_mergeable_sources) {
+      supported_mergeable_sources =
+          &SuggestionGenerator::kSupportedMerges.at(source);
+    } else if (!supported_mergeable_sources->contains(source)) {
+      continue;
+    }
+
+    // This checks that no two `SuggestionDataSource` mapping to the same
+    // `FillingProduct` returned non-empty suggestions.
+    CHECK(prioritized_suggestions
+              .emplace(GetFillingProductFromSuggestionDataSource(source),
+                       std::move(all_suggestions[source]))
+              .second);
+  }
+
+  return prioritized_suggestions;
+}
+
 }  // namespace
 
 BrowserAutofillManager::MetricsState::MetricsState(
@@ -1187,37 +1224,8 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
     all_suggestions[SuggestionDataSource::kCreditCard].clear();
   }
 
-  // Clear some of the suggestions based on priorities:
-  // 1. Find the highest priority suggestion data source S that returned data.
-  // 2. Keep only data from sources that are mergeable with S, discard the rest.
-  std::optional<SuggestionDataSource> highest_priority_source;
-  const DenseSet<SuggestionDataSource>* supported_mergeable_sources;
-  for (SuggestionDataSource source :
-       SuggestionGenerator::kOrderedPrioritizedSources) {
-    if (!all_suggestions.contains(source) || all_suggestions[source].empty()) {
-      continue;
-    }
-    if (!highest_priority_source.has_value()) {
-      highest_priority_source = source;
-      supported_mergeable_sources =
-          base::FindOrNull(SuggestionGenerator::kSupportedMerges,
-                           highest_priority_source.value());
-      continue;
-    }
-    if (!supported_mergeable_sources ||
-        !supported_mergeable_sources->contains(source)) {
-      all_suggestions.erase(source);
-    }
-  }
-
-  std::map<FillingProduct, std::vector<Suggestion>> prioritized_suggestions;
-  for (auto& [suggestion_data_source, suggestions] : all_suggestions) {
-    if (suggestions.empty()) {
-      continue;
-    }
-    prioritized_suggestions[GetFillingProductFromSuggestionDataSource(
-        suggestion_data_source)] = std::move(suggestions);
-  }
+  std::map<FillingProduct, std::vector<Suggestion>> prioritized_suggestions =
+      FilterSuggestionsByPrioritization(std::move(all_suggestions));
 
   auto passkey_suggestions =
       prioritized_suggestions.extract(FillingProduct::kPasskey);
