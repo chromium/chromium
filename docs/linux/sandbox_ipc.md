@@ -1,5 +1,8 @@
 # Linux Sandbox IPC
 
+***These days, only the out-of-process localtime implementation uses the
+Sandbox IPC file-descriptor based system.***
+
 The Sandbox IPC system is separate from the 'main' IPC system. The sandbox IPC
 is a lower level system which deals with cases where we need to route requests
 from the bottom of the call stack up into the browser.
@@ -7,10 +10,6 @@ from the bottom of the call stack up into the browser.
 The motivating example used to be Skia, which uses fontconfig to load
 fonts. Howvever, the OOP IPC for FontConfig was moved to using Font Service and
 the `components/services/font/public/cpp/font_loader.h` interface.
-
-These days, only the out-of-process localtime implementation as well as
-an OOP call for making a shared memory segment are using the Sandbox IPC
-file-descriptor based system. See `sandbox/linux/services/libc_interceptor.cc`.
 
 Thus we define a small IPC system which doesn't depend on anything but `base`
 and which can make synchronous requests to the browser process.
@@ -36,7 +35,7 @@ The browser side of the processing occurs in
 could occur anywhere, but the browser side has to know about all the possible
 requests so that should be a good starting point.
 
-Here is a (possibly incomplete) list of endpoints in the renderer:
+Here is a list of endpoints in the renderer:
 
 ### localtime
 
@@ -45,5 +44,4 @@ implemented in `sandbox/linux/services/libc_interceptor.cc`.
 
 ### Creating a shared memory segment
 
-`content/browser/sandbox_ipc_linux.h` defines HandleMakeSharedMemorySegment
-which is implemented in `content/browser/sandbox_ipc_linux.cc`.
+This has moved to `mojo::Core::Broker`, see crbug.com/40454515.

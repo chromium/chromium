@@ -7,13 +7,7 @@
 #ifndef CONTENT_BROWSER_SANDBOX_IPC_LINUX_H_
 #define CONTENT_BROWSER_SANDBOX_IPC_LINUX_H_
 
-#include <memory>
-#include <vector>
-
-#include "base/files/scoped_file.h"
-#include "base/pickle.h"
 #include "base/threading/simple_thread.h"
-#include "third_party/icu/source/common/unicode/uchar.h"
 
 namespace content {
 
@@ -33,10 +27,6 @@ class SandboxIPCHandler : public base::DelegateSimpleThread::Delegate {
 
  private:
   void HandleRequestFromChild(int fd);
-
-  void SendRendererReply(const std::vector<base::ScopedFD>& fds,
-                         const base::Pickle& reply,
-                         int reply_fd);
 
   const int lifeline_fd_;
   const int browser_socket_;

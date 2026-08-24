@@ -7,23 +7,17 @@
 #include <fcntl.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <string.h>
 #include <sys/poll.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
 
-#include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/scoped_file.h"
 #include "base/linux_util.h"
 #include "base/logging.h"
-#include "base/memory/platform_shared_memory_region.h"
+#include "base/pickle.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/unix_domain_socket.h"
-#include "base/process/launch.h"
-#include "base/strings/string_number_conversions.h"
-#include "content/public/common/content_switches.h"
 #include "sandbox/linux/services/libc_interceptor.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 
@@ -104,6 +98,9 @@ void SandboxIPCHandler::HandleRequestFromChild(int fd) {
       PCHECK(false) << "Recvmsg failed";
     }
   }
+  // Note that FDs may be exhausted in this process, in which case len == 0. No
+  // op here. The sender should get EOF; see
+  // UnixDomainSocket::SendRecvMsgWithFlags.
   if (fds.empty())
     return;
 
@@ -114,47 +111,7 @@ void SandboxIPCHandler::HandleRequestFromChild(int fd) {
   if (!iter.ReadInt(&kind))
     return;
 
-  // Give sandbox first shot at request, if it is not handled, then
-  // false is returned and we continue on.
-  if (sandbox::HandleInterceptedCall(kind, fd, iter, fds))
-    return;
-
-  NOTREACHED();
-}
-
-void SandboxIPCHandler::SendRendererReply(
-    const std::vector<base::ScopedFD>& fds,
-    const base::Pickle& reply,
-    int reply_fd) {
-  struct msghdr msg = {};
-  struct iovec iov = {const_cast<uint8_t*>(reply.data()), reply.size()};
-  msg.msg_iov = &iov;
-  msg.msg_iovlen = 1;
-
-  char control_buffer[CMSG_SPACE(sizeof(reply_fd))];
-
-  if (reply_fd != -1) {
-    struct stat st;
-    if (fstat(reply_fd, &st) == 0 && S_ISDIR(st.st_mode)) {
-      LOG(FATAL) << "Tried to send a directory descriptor over sandbox IPC";
-      // We must never send directory descriptors to a sandboxed process
-      // because they can use openat with ".." elements in the path in order
-      // to escape the sandbox and reach the real filesystem.
-    }
-
-    struct cmsghdr* cmsg;
-    msg.msg_control = control_buffer;
-    msg.msg_controllen = sizeof(control_buffer);
-    cmsg = CMSG_FIRSTHDR(&msg);
-    cmsg->cmsg_level = SOL_SOCKET;
-    cmsg->cmsg_type = SCM_RIGHTS;
-    cmsg->cmsg_len = CMSG_LEN(sizeof(reply_fd));
-    UNSAFE_TODO(memcpy(CMSG_DATA(cmsg), &reply_fd, sizeof(reply_fd)));
-    msg.msg_controllen = cmsg->cmsg_len;
-  }
-
-  if (HANDLE_EINTR(sendmsg(fds[0].get(), &msg, MSG_DONTWAIT)) < 0)
-    PLOG(ERROR) << "sendmsg";
+  CHECK(sandbox::HandleInterceptedCall(kind, fd, iter, fds));
 }
 
 SandboxIPCHandler::~SandboxIPCHandler() {

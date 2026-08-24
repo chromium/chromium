@@ -170,23 +170,23 @@ ssize_t UnixDomainSocket::RecvMsgWithFlags(int fd,
     }
   }
 
-  if (msg_hdr.msg_flags & MSG_TRUNC || msg_hdr.msg_flags & MSG_CTRUNC) {
-    if (msg_hdr.msg_flags & MSG_CTRUNC) {
-      // Extraordinary case, not caller fixable. Log something.
-      LOG(ERROR) << "recvmsg returned MSG_CTRUNC flag, buffer len is "
-                 << msg_hdr.msg_controllen;
-    }
-    for (size_t i = 0; i < wire_fds_len; ++i) {
-      close(UNSAFE_TODO(wire_fds[i]));
-    }
-    errno = EMSGSIZE;
-    return -1;
-  }
-
   if (wire_fds) {
     for (size_t i = 0; i < wire_fds_len; ++i) {
       fds->emplace_back(UNSAFE_TODO(wire_fds[i]));
     }
+  }
+
+  if (msg_hdr.msg_flags & MSG_TRUNC) {
+    fds->clear();
+    errno = EMSGSIZE;
+    return -1;
+  }
+
+  if (msg_hdr.msg_flags & MSG_CTRUNC) {
+    // This can happen if this process is out of FDs and can't receive a FD.
+    LOG(ERROR) << "recvmsg returned MSG_CTRUNC flag, FD exhaustion?";
+    fds->clear();
+    return 0;
   }
 
   if (out_pid) {
