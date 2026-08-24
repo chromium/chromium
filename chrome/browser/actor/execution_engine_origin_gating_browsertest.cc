@@ -2363,6 +2363,49 @@ IN_PROC_BROWSER_TEST_P(OutOfTurnNavigationBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_P(OutOfTurnNavigationBrowserTest,
+                       PausedTask_OutOfTurnNavigation) {
+  const OutOfTurnTestParam& param = GetParam();
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL target_url = embedded_https_test_server().GetURL(
+      param.target_host, "/actor/blank.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+  actor_task().AddTab(active_tab()->GetHandle(), /*stop_task_on_detach=*/true,
+                      base::DoNothing());
+  CHECK(actor_task().HasTab(active_tab()->GetHandle()));
+
+  // Pause the task so that it is in user control / paused state.
+  actor_task().Pause(/*from_actor=*/true);
+  ASSERT_TRUE(actor_task().IsUnderUserControl());
+  ASSERT_FALSE(actor_task().IsActingOnTab(active_tab()->GetHandle()));
+  ASSERT_TRUE(actor_task().HasTab(active_tab()->GetHandle()));
+
+  SetUpUiPrompt(param.ui_prompt_type);
+
+  content::TestNavigationObserver nav_observer(web_contents());
+
+  // Trigger out-of-turn navigation via JavaScript while paused.
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("window.location.href = $1;", target_url)));
+
+  WaitAndResolveUiPromptIfNeeded(param.ui_prompt_type, target_url,
+                                 param.expects_permission_granted);
+
+  nav_observer.Wait();
+
+  if (param.expects_permission_granted) {
+    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(web_contents()->GetLastCommittedURL(), target_url);
+  } else {
+    EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(web_contents()->GetLastCommittedURL(), start_url);
+  }
+}
+
 // TODO(crbug.com/482434165): Flaky test on win-asan builder.
 #if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
 #define MAYBE_InterleavedAction_OutOfTurnNavigation \

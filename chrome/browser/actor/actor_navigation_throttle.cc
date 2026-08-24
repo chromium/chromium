@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
+#include "components/actor/core/actor_features.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/tabs/public/tab_interface.h"
@@ -47,27 +48,31 @@ void ActorNavigationThrottle::MaybeCreateAndAdd(
   if (!tab) {
     return;
   }
-  const tabs::TabHandle tab_handle = tab->GetHandle();
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (!profile) {
+    return;
+  }
 
   auto* actor_service = actor::ActorKeyedService::Get(profile);
   if (!actor_service) {
     return;
   }
 
-  const auto& tasks = actor_service->GetActiveTasks();
-  auto task_it = std::ranges::find_if(tasks, [tab_handle](const auto& t) {
-    const ActorTask* task = t.second;
-    return task->IsActingOnTab(tab_handle);
-  });
-  if (task_it == tasks.end()) {
+  const ActorTask* task = actor_service->GetTaskFromTab(*tab);
+  if (!task) {
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          kGlicAttachNavigationThrottleToPausedTasks) &&
+      !task->IsActingOnTab(tab->GetHandle())) {
     return;
   }
 
   registry.AddThrottle(std::make_unique<ActorNavigationThrottle>(
-      base::PassKey<ActorNavigationThrottle>(), registry, *task_it->second));
+      base::PassKey<ActorNavigationThrottle>(), registry, *task));
 }
 
 ActorNavigationThrottle ActorNavigationThrottle::CreateForTesting(

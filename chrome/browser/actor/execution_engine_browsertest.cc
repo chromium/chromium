@@ -368,9 +368,9 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, ClickLinkToBlockedSite) {
               mojom::ActionResultCode::kTriggeredNavigationBlocked);
 }
 
-// Ensure that the block list is only active while the actor task is in
-// progress.
-IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, AllowBlockedSiteWhenPaused) {
+// Ensure that the block list is still active while the actor task is paused.
+IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest,
+                       DisallowBlockedSiteWhenPaused) {
   const GURL start_url = embedded_https_test_server().GetURL(
       "example.com", "/actor/blocked_links.html");
   const GURL blocked_url = embedded_https_test_server().GetURL(
@@ -383,8 +383,8 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, AllowBlockedSiteWhenPaused) {
   EXPECT_TRUE(content::ExecJs(
       web_contents(), content::JsReplace("setBlockedSite($1);", blocked_url)));
 
-  // Pause the task as if the user took over. Blocked links should now be
-  // allowed.
+  // Pause the task as if the user took over. Blocked links should still be
+  // disallowed.
   actor_task().Pause(true);
 
   content::TestNavigationManager main_manager(web_contents(), blocked_url);
@@ -393,9 +393,9 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, AllowBlockedSiteWhenPaused) {
       web_contents(), "document.getElementById('directToBlocked').click()"));
 
   ASSERT_TRUE(main_manager.WaitForNavigationFinished());
-  EXPECT_TRUE(main_manager.was_committed());
-  EXPECT_TRUE(main_manager.was_successful());
-  EXPECT_EQ(web_contents()->GetURL(), blocked_url);
+  EXPECT_FALSE(main_manager.was_committed());
+  EXPECT_FALSE(main_manager.was_successful());
+  EXPECT_EQ(web_contents()->GetURL(), start_url);
 }
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest,

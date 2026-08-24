@@ -48,6 +48,8 @@ BASE_DECLARE_FEATURE_PARAM(bool, kGlicEnforceComponentUpdaterBlockListEntries);
 // Controls whether tool requests can implicitly allow new origins.
 BASE_DECLARE_FEATURE_PARAM(bool, kGlicAllowImplicitToolOriginGrants);
 
+BASE_DECLARE_FEATURE(kGlicAttachNavigationThrottleToPausedTasks);
+
 // When enabled, `beforeunload` dialog will not be displayed and the callback
 // indicating the dialog outcome will be called with `true`.
 // Warning: Enabling this feature can lead to data loss when navigating.
