@@ -98,9 +98,7 @@ void SkiaImageDecoderBase::OnSetData(scoped_refptr<SegmentReader> data) {
           return;
         }
         if (!IgnoresColorSpace()) {
-          if (const skcms_ICCProfile* profile = codec_->getICCProfile()) {
-            SetEmbeddedColorProfile(skia::ColorProfile::Make(*profile));
-          }
+          SetEmbeddedColorProfile(skia::ColorProfile::Make(codec_.get()));
           if (codec_->getHdrMetadata() != skhdr::Metadata::MakeEmpty()) {
             hdr_metadata_ = gfx::HDRMetadata(codec_->getHdrMetadata());
           }

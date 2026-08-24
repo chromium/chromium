@@ -891,9 +891,8 @@ bool AVIFImageDecoder::UpdateDemuxer() {
         return false;
       }
 
-      skcms_ICCProfile profile;
-      sk_color_space->toProfile(&profile);
-      SetEmbeddedColorProfile(skia::ColorProfile::Make(profile));
+      SetEmbeddedColorProfile(
+          skia::ColorProfile::Make(std::move(sk_color_space)));
     }
   }
 

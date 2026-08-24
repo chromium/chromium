@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "skia/ext/cicp.h"
+#include "third_party/skia/include/codec/SkCodec.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/private/chromium/SkCodecsICCProfileChromium.h"
 
@@ -80,30 +81,55 @@ void ColorProfile::ComputeSkColorSpace() {
   is_sk_color_space_exact_ = false;
 }
 
-ColorProfile::ColorProfile(const skcms_ICCProfile& profile)
-    : profile_(profile) {
-  ComputeSkColorSpace();
-}
-
-ColorProfile::ColorProfile(
-    std::unique_ptr<SkCodecs::ICCProfileChromium> skia_profile)
-    : profile_(skia_profile->GetProfile()),
-      skia_profile_(std::move(skia_profile)) {
-  ComputeSkColorSpace();
-}
-
+ColorProfile::ColorProfile() = default;
 ColorProfile::~ColorProfile() = default;
 
-sk_sp<ColorProfile> ColorProfile::Make(const skcms_ICCProfile& profile) {
-  return sk_sp<ColorProfile>(new ColorProfile(profile));
+sk_sp<ColorProfile> ColorProfile::Make(sk_sp<SkColorSpace> sk_color_space) {
+  if (!sk_color_space) {
+    return nullptr;
+  }
+  sk_sp<ColorProfile> result(new ColorProfile());
+  result->sk_color_space_ = std::move(sk_color_space);
+  result->sk_color_space_->toProfile(&result->profile_);
+  result->is_sk_color_space_exact_ = true;
+  return result;
+}
+
+sk_sp<ColorProfile> ColorProfile::Make(const SkCodec* codec) {
+  if (!codec) {
+    return nullptr;
+  }
+  const skcms_ICCProfile* profile = codec->getICCProfile();
+  if (!profile) {
+    return nullptr;
+  }
+  sk_sp<ColorProfile> result(new ColorProfile());
+  result->profile_ = *profile;
+  result->ComputeSkColorSpace();
+  return result;
 }
 
 sk_sp<ColorProfile> ColorProfile::Make(
-    std::unique_ptr<SkCodecs::ICCProfileChromium> skia_profile) {
-  if (!skia_profile) {
+    const SkColorSpacePrimaries& primaries,
+    const skcms_TransferFunction& red_trfn,
+    const skcms_TransferFunction& green_trfn,
+    const skcms_TransferFunction& blue_trfn) {
+  skcms_Matrix3x3 to_xyzd50;
+  if (!primaries.toXYZD50(&to_xyzd50)) {
     return nullptr;
   }
-  return sk_sp<ColorProfile>(new ColorProfile(std::move(skia_profile)));
+  sk_sp<ColorProfile> result(new ColorProfile());
+  skcms_Init(&result->profile_);
+  skcms_SetXYZD50(&result->profile_, &to_xyzd50);
+  result->profile_.has_trc = true;
+  result->profile_.trc[0].table_entries = 0;
+  result->profile_.trc[0].parametric = red_trfn;
+  result->profile_.trc[1].table_entries = 0;
+  result->profile_.trc[1].parametric = green_trfn;
+  result->profile_.trc[2].table_entries = 0;
+  result->profile_.trc[2].parametric = blue_trfn;
+  result->ComputeSkColorSpace();
+  return result;
 }
 
 sk_sp<ColorProfile> ColorProfile::Make(base::span<const uint8_t> buffer) {
@@ -112,7 +138,11 @@ sk_sp<ColorProfile> ColorProfile::Make(base::span<const uint8_t> buffer) {
   if (!skia_profile) {
     return nullptr;
   }
-  return Make(std::move(skia_profile));
+  sk_sp<ColorProfile> result(new ColorProfile());
+  result->profile_ = skia_profile->GetProfile();
+  result->skia_profile_ = std::move(skia_profile);
+  result->ComputeSkColorSpace();
+  return result;
 }
 
 void ColorProfile::TransformInPlace(

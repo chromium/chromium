@@ -18,6 +18,8 @@
 #include "third_party/skia/include/core/SkTypes.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 
+class SkCodec;
+
 namespace SkCodecs {
 class ICCProfileChromium;
 }
@@ -26,12 +28,19 @@ namespace skia {
 
 class SK_API ColorProfile final : public SkRefCnt {
  public:
-  // TODO(https://crbug.com/540759552): Remove this interface.
-  static sk_sp<ColorProfile> Make(const skcms_ICCProfile& profile);
+  // Make a ColorProfile for an SkColorSpace.
+  static sk_sp<ColorProfile> Make(sk_sp<SkColorSpace> sk_color_space);
 
-  // TODO(https://crbug.com/540759552): Remove this interface.
-  static sk_sp<ColorProfile> Make(
-      std::unique_ptr<SkCodecs::ICCProfileChromium> skia_profile);
+  // Make a ColorProfile from an SkCodec. Returns nullptr if the codec is null
+  // or has no ICC profile.
+  static sk_sp<ColorProfile> Make(const SkCodec* codec);
+
+  // Make a ColorProfile from SkColorSpacePrimaries and transfer functions for
+  // each channel.
+  static sk_sp<ColorProfile> Make(const SkColorSpacePrimaries& primaries,
+                                  const skcms_TransferFunction& red_trfn,
+                                  const skcms_TransferFunction& green_trfn,
+                                  const skcms_TransferFunction& blue_trfn);
 
   // Make a ColorProfile from ICC profile data.
   // TODO(https://crbug.com/540759552): Make this take an SkData.
@@ -77,9 +86,7 @@ class SK_API ColorProfile final : public SkRefCnt {
       std::optional<SkAlphaType> override_src_alpha_type = std::nullopt) const;
 
  private:
-  explicit ColorProfile(const skcms_ICCProfile& profile);
-  explicit ColorProfile(
-      std::unique_ptr<SkCodecs::ICCProfileChromium> skia_profile);
+  ColorProfile();
 
   void ComputeSkColorSpace();
 
