@@ -206,8 +206,11 @@ class ContextHubService : public KeyedService,
   std::optional<MemoryBankEntry> GetPendingMemoryBankEntry() const;
 
   // Commits the current pending memory bank entry to the memory bank with the
-  // provided tags, and clears the pending entry.
-  bool SavePendingMemoryBankEntry(const std::vector<std::string>& tags);
+  // provided tags, note, and collection, and clears the pending entry.
+  bool SavePendingMemoryBankEntry(
+      std::vector<std::string> tags = {},
+      std::optional<std::string> note = std::nullopt,
+      std::optional<std::string> collection = std::nullopt);
 
   // Memory bank wrappers that forward operations to the underlying storage
   // backend.

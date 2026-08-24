@@ -1704,6 +1704,14 @@ TEST_F(ContextHubPageHandlerTest, SaveMemoryBankEntry_WithContext) {
   base::test::TestFuture<bool> future;
   handler_->SaveMemoryBankEntry(std::move(annotations), future.GetCallback());
   EXPECT_TRUE(future.Get());
+
+  base::test::TestFuture<std::vector<MemoryBankEntry>> entries_future;
+  service->GetAllEntries(entries_future.GetCallback());
+  auto entries = entries_future.Take();
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(entries[0].note, "Test Note");
+  EXPECT_EQ(entries[0].collection, "Test Collection");
+  EXPECT_THAT(entries[0].tags, testing::ElementsAre("tag1"));
 }
 
 }  // namespace

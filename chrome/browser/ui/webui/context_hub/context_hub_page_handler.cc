@@ -264,8 +264,10 @@ void ContextHubPageHandler::SaveMemoryBankEntry(
   auto* service = ContextHubServiceFactory::GetForProfile(profile_);
   if (service && annotations) {
     std::vector<std::string> tags =
-        annotations->tags.value_or(std::vector<std::string>{});
-    bool success = service->SavePendingMemoryBankEntry(tags);
+        std::move(annotations->tags).value_or(std::vector<std::string>{});
+    bool success = service->SavePendingMemoryBankEntry(
+        std::move(tags), std::move(annotations->note),
+        std::move(annotations->collection));
     std::move(callback).Run(success);
     return;
   }

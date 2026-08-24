@@ -795,15 +795,18 @@ std::optional<MemoryBankEntry> ContextHubService::GetPendingMemoryBankEntry()
 }
 
 bool ContextHubService::SavePendingMemoryBankEntry(
-    const std::vector<std::string>& tags) {
+    std::vector<std::string> tags,
+    std::optional<std::string> note,
+    std::optional<std::string> collection) {
   if (!pending_memory_bank_entry_.has_value()) {
     return false;
   }
   MemoryBankEntry entry = std::move(*pending_memory_bank_entry_);
   pending_memory_bank_entry_.reset();
 
-  entry.tags = tags;
-  // TODO(crbug.com/523377643): Add support for notes and collections.
+  entry.tags = std::move(tags);
+  entry.note = std::move(note);
+  entry.collection = std::move(collection);
   SaveMemoryBankEntry(std::move(entry), base::DoNothing());
   return true;
 }

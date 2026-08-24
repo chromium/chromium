@@ -2106,8 +2106,9 @@ TEST_F(ContextHubServiceTest, PendingMemoryBankEntryLifecycle) {
   EXPECT_EQ(fetched->tab_title, "Pending Title");
   EXPECT_EQ(fetched->selected_text, "Pending selected text");
 
-  // Save pending entry with tags.
-  bool saved = service.SavePendingMemoryBankEntry({"tag1", "tag2"});
+  // Save pending entry with tags, note, and collection.
+  bool saved = service.SavePendingMemoryBankEntry(
+      {"tag1", "tag2"}, "Pending Note", "Pending Collection");
   EXPECT_TRUE(saved);
 
   // After saving, the pending entry should no longer exist.
@@ -2122,6 +2123,39 @@ TEST_F(ContextHubServiceTest, PendingMemoryBankEntryLifecycle) {
   EXPECT_EQ(entries[0].tab_title, "Pending Title");
   EXPECT_EQ(entries[0].selected_text, "Pending selected text");
   EXPECT_THAT(entries[0].tags, UnorderedElementsAre("tag1", "tag2"));
+  EXPECT_EQ(entries[0].note, "Pending Note");
+  EXPECT_EQ(entries[0].collection, "Pending Collection");
+}
+
+TEST_F(ContextHubServiceTest,
+       PendingMemoryBankEntryLifecycleDefaultParameters) {
+  ContextHubService service(
+      &profile_, identity_test_environment_.identity_manager(),
+      &mock_personal_context_service_, &mock_remote_model_executor_,
+      &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      std::make_unique<InMemoryMemoryBank>(),
+      std::make_unique<InMemoryTabGroupStore>(),
+      /*context_hub_backend=*/nullptr,
+      std::make_unique<InMemoryAutoTodosStore>());
+
+  MemoryBankEntry pending(MemoryBankType::kTextSelection,
+                          GURL("https://example.com/pending"), "Pending Title",
+                          "Pending selected text");
+  service.SetPendingMemoryBankEntry(std::move(pending));
+
+  // Save pending entry using default parameters (no tags, note, or collection).
+  bool saved = service.SavePendingMemoryBankEntry();
+  EXPECT_TRUE(saved);
+  EXPECT_FALSE(service.GetPendingMemoryBankEntry().has_value());
+
+  base::test::TestFuture<std::vector<MemoryBankEntry>> entries_future;
+  service.GetAllEntries(entries_future.GetCallback());
+  auto entries = entries_future.Take();
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(entries[0].url, GURL("https://example.com/pending"));
+  EXPECT_TRUE(entries[0].tags.empty());
+  EXPECT_FALSE(entries[0].note.has_value());
+  EXPECT_FALSE(entries[0].collection.has_value());
 }
 
 }  // namespace
