@@ -48,6 +48,10 @@ source_set("lifetime") {
     ]
   }
 
+  if (is_win || is_mac || is_linux) {
+    public += [ "scheduled_restart_manager.h" ]
+  }
+
   if (!is_android && !is_chromeos) {
     public += [ "switch_utils.h" ]
   }
@@ -168,6 +172,14 @@ source_set("impl") {
     ]
   }
 
+  if (is_win || is_mac || is_linux) {
+    sources += [ "scheduled_restart_manager.cc" ]
+    deps += [
+      "//chrome/common:constants",
+      "//components/prefs",
+    ]
+  }
+
   if (!is_android && !is_chromeos) {
     sources += [ "switch_utils.cc" ]
   }
@@ -206,8 +218,14 @@ if (!is_android) {
         "//content/test:test_support",
         "//testing/gtest",
       ]
-    } else {
+    }
+
+    if (!is_android && !is_chromeos) {
       sources += [ "switch_utils_unittest.cc" ]
+    }
+
+    if (is_win || is_mac || is_linux) {
+      sources += [ "scheduled_restart_manager_unittest.cc" ]
     }
   }
 

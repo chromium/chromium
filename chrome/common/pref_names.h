@@ -1565,6 +1565,13 @@ inline constexpr char kRestartLastSessionOnShutdown[] =
 inline constexpr char kRestartInBackgroundOnShutdown[] =
     "restart.in.background.on.shutdown";
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Timestamp of when the scheduled restart nudge dialog was last shown
+// to the user, used for nudge cooldown calculations.
+inline constexpr char kScheduledRestartLastNudgeTime[] =
+    "restart.scheduled_restart_last_nudge_time";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 #if !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS)
 // Boolean that specifies whether or not to show security warnings for some

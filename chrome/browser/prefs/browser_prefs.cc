@@ -540,6 +540,7 @@
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
 #include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
+#include "chrome/browser/lifetime/scheduled_restart_manager.h"
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -1567,6 +1568,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  scheduled_restart::ScheduledRestartManager::RegisterLocalStatePrefs(registry);
   WhatsNewUI::RegisterLocalStatePrefs(registry);
 #endif
 
