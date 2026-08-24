@@ -16,6 +16,8 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {VisualBrowserProxy} from '../app/visual_browser_proxy.js';
+import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
 import type {SettingsPrefs} from '../content/read_anything_types.js';
 import {DEFAULT_SETTINGS, SettingsOption, ToolbarEvent} from '../content/read_anything_types.js';
 import {openMenu} from '../shared/common.js';
@@ -222,6 +224,8 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   private pointerEventCallback_: (e: Event) => void = () => {};
   private keyDownCallback_: (e: KeyboardEvent) => void = () => {};
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
+  private visualBrowserProxy_: VisualBrowserProxy =
+      VisualBrowserProxyImpl.getInstance();
 
   // Used to check if focus is currently on the PreviewPlayButton of the
   // VOICE_SELECTION submenu.
@@ -264,12 +268,12 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       SettingsOption.VOICE_HIGHLIGHT,
     ];
 
-    if (chrome.readingMode.isLineFocusEnabled) {
+    if (this.visualBrowserProxy_.isLineFocusEnabled()) {
       optionIDs.push(SettingsOption.LINE_FOCUS);
     }
 
     optionIDs.push(SettingsOption.PRESENTATION);
-    if (chrome.readingMode.isReadAnythingTranslateEntryPointEnabled) {
+    if (this.visualBrowserProxy_.isReadAnythingTranslateEntryPointEnabled()) {
       optionIDs.push(SettingsOption.TRANSLATION_REQUESTED);
     }
     optionIDs.push(SettingsOption.LINKS);
@@ -291,7 +295,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       SettingsOption.VOICE_HIGHLIGHT,
     ];
 
-    if (chrome.readingMode.isReadAnythingTranslateEntryPointEnabled) {
+    if (this.visualBrowserProxy_.isReadAnythingTranslateEntryPointEnabled()) {
       optionIDs.push(SettingsOption.TRANSLATION_REQUESTED);
     }
 
@@ -304,8 +308,8 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
 
   private initializeMenuOptions_() {
     let optionIDs: SettingsOption[];
-    if (chrome.readingMode.isReadAnythingImprovedUiEnabled &&
-        chrome.readingMode.isImmersiveEnabled) {
+    if (this.visualBrowserProxy_.isReadAnythingImprovedUiEnabled() &&
+        this.visualBrowserProxy_.isImmersiveEnabled()) {
       optionIDs = this.initializeMenuOptionsForImprovedUi_();
     } else {
       optionIDs = this.initializeMenuOptionsLegacy_();
@@ -319,13 +323,13 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       let disabled = false;
 
       if (id === SettingsOption.IMAGES) {
-        checked = chrome.readingMode.imagesEnabled;
+        checked = this.visualBrowserProxy_.isImagesEnabled();
         disabled = this.isSpeechActive;
         ariaLabel = this.getImageItemLabels();
       }
 
       if (id === SettingsOption.LINKS) {
-        checked = chrome.readingMode.linksEnabled;
+        checked = this.visualBrowserProxy_.isLinksEnabled();
         ariaLabel = this.getLinkItemLabels();
         // Since links are disabled when read aloud is playing, the links
         // toggle should also be disabled.
@@ -369,7 +373,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   private getLinkItemLabels() {
-    if (chrome.readingMode.linksEnabled) {
+    if (this.visualBrowserProxy_.isLinksEnabled()) {
       return loadTimeData.getString('disableLinksLabel');
     }
 
@@ -377,7 +381,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   private getImageItemLabels() {
-    if (chrome.readingMode.imagesEnabled) {
+    if (this.visualBrowserProxy_.isImagesEnabled()) {
       return loadTimeData.getString('disableImagesLabel');
     }
 
@@ -447,20 +451,20 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     if (item.id === SettingsOption.LINKS) {
       this.logger_.logTextSettingsChange(
           ReadAnythingSettingsChange.LINKS_ENABLED_CHANGE);
-      chrome.readingMode.onLinksEnabledToggled();
+      this.visualBrowserProxy_.onLinksEnabledToggled();
       this.fire(ToolbarEvent.LINKS);
       item.ariaLabel = this.getLinkItemLabels();
-      item.checked = chrome.readingMode.linksEnabled;
+      item.checked = this.visualBrowserProxy_.isLinksEnabled();
     } else if (item.id === SettingsOption.IMAGES) {
       this.logger_.logTextSettingsChange(
           ReadAnythingSettingsChange.IMAGES_ENABLED_CHANGE);
-      chrome.readingMode.onImagesEnabledToggled();
+      this.visualBrowserProxy_.onImagesEnabledToggled();
       this.fire(ToolbarEvent.IMAGES);
       item.ariaLabel = this.getImageItemLabels();
-      item.checked = chrome.readingMode.imagesEnabled;
+      item.checked = this.visualBrowserProxy_.isImagesEnabled();
     } else if (item.id === SettingsOption.PINNED_TO_TOOLBAR) {
-      chrome.readingMode.togglePinState();
-      chrome.readingMode.sendPinStateRequest();
+      this.visualBrowserProxy_.togglePinState();
+      this.visualBrowserProxy_.sendPinStateRequest();
     }
 
     this.requestUpdate();
@@ -582,7 +586,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   open(anchor: HTMLElement) {
-    if (chrome.readingMode.isLineFocusEnabled) {
+    if (this.visualBrowserProxy_.isLineFocusEnabled()) {
       userEducationProxyFactory.getInstance()
           .handler.maybeShowNewBadgeFor(LINE_FOCUS_FEATURE_NAME)
           .then(({shouldShow}) => {

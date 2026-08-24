@@ -5,22 +5,22 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {MENU_SHOW_DELAY_MS} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {MENU_SHOW_DELAY_MS, SettingsOption, ToolbarEvent, VisualBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingToolbarElement, SettingsMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {SettingsOption, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {stubAnimationFrame} from './common.js';
-import {FakeReadingMode} from './fake_reading_mode.js';
+import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('Toolbar Settings Menu', () => {
   let toolbar: ReadAnythingToolbarElement;
   let shadowRoot: ShadowRoot;
   let menuButton: CrIconButtonElement;
   let settingsMenu: SettingsMenuElement;
+  let visualBrowserProxy: TestVisualBrowserProxy;
 
   const preventResizeClose = (e: Event) => e.stopImmediatePropagation();
 
@@ -50,8 +50,8 @@ suite('Toolbar Settings Menu', () => {
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const readingMode = new FakeReadingMode();
-    chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
+    visualBrowserProxy = new TestVisualBrowserProxy();
+    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
     stubAnimationFrame();
     await createToolbar();
 
@@ -106,8 +106,8 @@ suite('Toolbar Settings Menu', () => {
   test(
       'settings menu opens appearance submenu on click when flag enabled',
       async () => {
-        chrome.readingMode.isReadAnythingImprovedUiEnabled = true;
         settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
+        visualBrowserProxy.readAnythingImprovedUiEnabled = true;
         await microtasksFinished();
         const targetItem = getMenuItem(SettingsOption.APPEARANCE);
         assertTrue(!!targetItem);
@@ -254,12 +254,8 @@ suite('Toolbar Settings Menu', () => {
     assertTrue(!!targetItem);
     targetItem.focus();
 
-    let didToggleLinks = false;
-    chrome.readingMode.onLinksEnabledToggled = () => {
-      didToggleLinks = true;
-    };
     keyDownOn(settingsMenu, 0, undefined, 'ArrowRight');
-    assertFalse(didToggleLinks);
+    assertEquals(0, visualBrowserProxy.getCallCount('onLinksEnabledToggled'));
   });
 
   test(
@@ -340,14 +336,10 @@ suite('Toolbar Settings Menu', () => {
         assertTrue(fontSubmenu.$.menu.$.lazyMenu.get().open);
       });
 
-  test('translate event from settings menu invokes readingMode', () => {
-    chrome.readingMode.isReadAnythingTranslateEntryPointEnabled = true;
-    let translateCalled = false;
-    chrome.readingMode.onTranslationRequested = () => {
-      translateCalled = true;
-    };
+  test('translate event from settings menu invokes visualBrowserProxy', () => {
+    visualBrowserProxy.translateEntryPointEnabled = true;
     settingsMenu.dispatchEvent(
         new CustomEvent(ToolbarEvent.TRANSLATION_REQUESTED));
-    assertTrue(translateCalled);
+    assertEquals(1, visualBrowserProxy.getCallCount('onTranslationRequested'));
   });
 });

@@ -11,6 +11,7 @@ export interface VisualBrowserProxy {
   getInHiddenPresentationState(): number;
   getActivePresentationState(): number;
   isImmersiveEnabled(): boolean;
+  isReadAnythingImprovedUiEnabled(): boolean;
   isReadAnythingReadAloudExperimentalPlaybackUiEnabled(): boolean;
   isReadAnythingTranslateEntryPointEnabled(): boolean;
   isImagesEnabled(): boolean;
@@ -76,6 +77,8 @@ export interface VisualBrowserProxy {
   onTranslationRequested(): void;
 
   togglePresentation(): void;
+  togglePinState(): void;
+  sendPinStateRequest(): void;
   close(): void;
 }
 
@@ -323,6 +326,18 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
 
   onImagesEnabledToggled(): void {
     chrome.readingMode.onImagesEnabledToggled();
+  }
+
+  isReadAnythingImprovedUiEnabled(): boolean {
+    return chrome.readingMode.isReadAnythingImprovedUiEnabled;
+  }
+
+  togglePinState(): void {
+    chrome.readingMode.togglePinState();
+  }
+
+  sendPinStateRequest(): void {
+    chrome.readingMode.sendPinStateRequest();
   }
 
   static getInstance(): VisualBrowserProxy {

@@ -57,6 +57,7 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   experimentalPlaybackUiEnabled: boolean = false;
   imagesEnabled: boolean = true;
   linksEnabled: boolean = true;
+  readAnythingImprovedUiEnabled: boolean = false;
   fetchedImages: number[] = [];
 
   constructor() {
@@ -111,8 +112,11 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
       'isReadAnythingTranslateEntryPointEnabled',
       'onTranslationRequested',
       'togglePresentation',
+      'togglePinState',
+      'sendPinStateRequest',
       'close',
       'isImmersiveEnabled',
+      'isReadAnythingImprovedUiEnabled',
       'isImagesEnabled',
       'isLinksEnabled',
       'getActivePresentationState',
@@ -430,5 +434,18 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   onImagesEnabledToggled(): void {
     this.methodCalled('onImagesEnabledToggled');
     this.imagesEnabled = !this.imagesEnabled;
+  }
+
+  isReadAnythingImprovedUiEnabled(): boolean {
+    this.methodCalled('isReadAnythingImprovedUiEnabled');
+    return this.readAnythingImprovedUiEnabled;
+  }
+
+  togglePinState(): void {
+    this.methodCalled('togglePinState');
+  }
+
+  sendPinStateRequest(): void {
+    this.methodCalled('sendPinStateRequest');
   }
 }

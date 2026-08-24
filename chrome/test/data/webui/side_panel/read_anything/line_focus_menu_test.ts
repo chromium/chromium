@@ -11,7 +11,6 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome-un
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {assertCheckMarksForDropdown, assertTestSettingsAreNotDefaultSettings, mockMetrics, stubAnimationFrame} from './common.js';
-import {FakeReadingMode} from './fake_reading_mode.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestUserEducationBrowserProxy} from './test_user_education_browser_proxy.js';
 
@@ -27,8 +26,6 @@ suite('LineFocusMenuElement', () => {
   setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const readingMode = new FakeReadingMode();
-    chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     metrics = mockMetrics();
     userEducationProxy = new TestUserEducationBrowserProxy();
     userEducationProxyFactory.setInstance(userEducationProxy);
