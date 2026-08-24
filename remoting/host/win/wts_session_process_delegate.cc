@@ -92,6 +92,15 @@ class WtsSessionProcessDelegate::Core
 
   bool AssignProcessToJobForTesting(base::ProcessHandle process);
   void SetCoreDeletedCallbackForTesting(base::OnceClosure callback);
+  void SimulateJobNotificationForTesting(DWORD event, base::ProcessId pid);
+  base::ProcessId GetWorkerProcessPidForTesting() const;
+  void SetElevatedLauncherPidForTesting(base::ProcessId pid);
+  void SetWorkerProcessPidForTesting(base::ProcessId pid);
+  void OnProcessLaunchDetectedForTesting(base::ProcessId pid);
+  void SetElevatedServerEndpointForTesting(
+      mojo::PlatformChannelServerEndpoint endpoint);
+  void SetFatalErrorCallbackForTesting(base::OnceClosure callback);
+  void SetProcessLaunchedCallbackForTesting(base::OnceClosure callback);
 
  private:
   friend class base::RefCountedThreadSafe<Core>;
@@ -198,6 +207,8 @@ class WtsSessionProcessDelegate::Core
   bool job_process_assigned_ = false;
 
   base::OnceClosure deleted_callback_for_testing_;
+  base::OnceClosure fatal_error_callback_for_testing_;
+  base::OnceClosure process_launched_callback_for_testing_;
 };
 
 WtsSessionProcessDelegate::Core::Core(
@@ -297,6 +308,7 @@ void WtsSessionProcessDelegate::Core::CloseChannel() {
   channel_.reset();
   elevated_server_endpoint_.reset();
   elevated_launcher_pid_ = base::kNullProcessId;
+  worker_process_pid_ = base::kNullProcessId;
   mojo_invitation_ = {};
 }
 
@@ -345,6 +357,56 @@ void WtsSessionProcessDelegate::Core::SetCoreDeletedCallbackForTesting(
   deleted_callback_for_testing_ = std::move(callback);
 }
 
+void WtsSessionProcessDelegate::Core::SimulateJobNotificationForTesting(
+    DWORD event,
+    base::ProcessId pid) {
+  if (!io_task_runner_->BelongsToCurrentThread()) {
+    io_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&Core::SimulateJobNotificationForTesting,
+                                  this, event, pid));
+    return;
+  }
+  OnIOCompleted(reinterpret_cast<base::MessagePumpForIO::IOContext*>(
+                    static_cast<uintptr_t>(pid)),
+                event, 0);
+}
+
+base::ProcessId WtsSessionProcessDelegate::Core::GetWorkerProcessPidForTesting()
+    const {
+  return worker_process_pid_.load();
+}
+
+void WtsSessionProcessDelegate::Core::SetElevatedLauncherPidForTesting(
+    base::ProcessId pid) {
+  elevated_launcher_pid_ = pid;
+}
+
+void WtsSessionProcessDelegate::Core::SetWorkerProcessPidForTesting(
+    base::ProcessId pid) {
+  worker_process_pid_ = pid;
+}
+
+void WtsSessionProcessDelegate::Core::OnProcessLaunchDetectedForTesting(
+    base::ProcessId pid) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  OnProcessLaunchDetected(pid);
+}
+
+void WtsSessionProcessDelegate::Core::SetElevatedServerEndpointForTesting(
+    mojo::PlatformChannelServerEndpoint endpoint) {
+  elevated_server_endpoint_ = std::move(endpoint);
+}
+
+void WtsSessionProcessDelegate::Core::SetFatalErrorCallbackForTesting(
+    base::OnceClosure callback) {
+  fatal_error_callback_for_testing_ = std::move(callback);
+}
+
+void WtsSessionProcessDelegate::Core::SetProcessLaunchedCallbackForTesting(
+    base::OnceClosure callback) {
+  process_launched_callback_for_testing_ = std::move(callback);
+}
+
 WtsSessionProcessDelegate::Core::~Core() {
   DCHECK(!channel_);
   DCHECK(!event_handler_);
@@ -382,7 +444,8 @@ void WtsSessionProcessDelegate::Core::OnIOCompleted(
       }
       break;
     }
-    case JOB_OBJECT_MSG_EXIT_PROCESS: {
+    case JOB_OBJECT_MSG_EXIT_PROCESS:
+    case JOB_OBJECT_MSG_ABNORMAL_EXIT_PROCESS: {
       if (process_id == worker_process_pid_.load()) {
         // In official builds the first launch of a UiAccess enabled binary
         // will fail due to 'STATUS_ELEVATION_REQUIRED'.  This is an artifact of
@@ -654,6 +717,16 @@ void WtsSessionProcessDelegate::Core::OnProcessLaunchDetected(
     ReportFatalError();
     return;
   }
+
+  BOOL is_in_job = FALSE;
+  if (!job_.is_valid() ||
+      !::IsProcessInJob(worker_process.Get(), job_.Get(), &is_in_job) ||
+      !is_in_job) {
+    LOG(ERROR) << "Process " << pid << " is not in the expected job object.";
+    ReportFatalError();
+    return;
+  }
+
   elevated_launcher_pid_ = base::kNullProcessId;
   mojo::OutgoingInvitation::Send(std::move(mojo_invitation_),
                                  worker_process.Get(),
@@ -668,7 +741,12 @@ void WtsSessionProcessDelegate::Core::ReportFatalError() {
 
   WorkerProcessLauncher* event_handler = event_handler_;
   event_handler_ = nullptr;
-  event_handler->OnFatalError();
+  if (event_handler) {
+    event_handler->OnFatalError();
+  }
+  if (fatal_error_callback_for_testing_) {
+    std::move(fatal_error_callback_for_testing_).Run();
+  }
 }
 
 void WtsSessionProcessDelegate::Core::ReportProcessLaunched(
@@ -692,8 +770,11 @@ void WtsSessionProcessDelegate::Core::ReportProcessLaunched(
   }
   ScopedHandle limited_handle(temp_handle);
 
-  if (delegate_) {
+  if (delegate_ && event_handler_) {
     delegate_->WatchProcess(std::move(limited_handle));
+  }
+  if (process_launched_callback_for_testing_) {
+    std::move(process_launched_callback_for_testing_).Run();
   }
 }
 
@@ -738,14 +819,58 @@ void WtsSessionProcessDelegate::KillProcess() {
   core_->KillProcess();
 }
 
-bool WtsSessionProcessDelegate::AssignProcessToJobForTesting(
+WtsSessionProcessDelegate::TestApi::TestApi(WtsSessionProcessDelegate* delegate)
+    : delegate_(delegate) {}
+
+bool WtsSessionProcessDelegate::TestApi::AssignProcessToJob(
     base::ProcessHandle process) {
-  return core_->AssignProcessToJobForTesting(process);  // IN-TEST
+  return delegate_->core_->AssignProcessToJobForTesting(process);
 }
 
-void WtsSessionProcessDelegate::SetCoreDeletedCallbackForTesting(
+void WtsSessionProcessDelegate::TestApi::SetCoreDeletedCallback(
     base::OnceClosure callback) {
-  core_->SetCoreDeletedCallbackForTesting(std::move(callback));  // IN-TEST
+  delegate_->core_->SetCoreDeletedCallbackForTesting(std::move(callback));
+}
+
+void WtsSessionProcessDelegate::TestApi::SimulateJobNotification(
+    DWORD event,
+    base::ProcessId pid) {
+  delegate_->core_->SimulateJobNotificationForTesting(event, pid);
+}
+
+base::ProcessId WtsSessionProcessDelegate::TestApi::GetWorkerProcessPid()
+    const {
+  return delegate_->core_->GetWorkerProcessPidForTesting();
+}
+
+void WtsSessionProcessDelegate::TestApi::SetElevatedLauncherPid(
+    base::ProcessId pid) {
+  delegate_->core_->SetElevatedLauncherPidForTesting(pid);
+}
+
+void WtsSessionProcessDelegate::TestApi::SetWorkerProcessPid(
+    base::ProcessId pid) {
+  delegate_->core_->SetWorkerProcessPidForTesting(pid);
+}
+
+void WtsSessionProcessDelegate::TestApi::OnProcessLaunchDetected(
+    base::ProcessId pid) {
+  delegate_->core_->OnProcessLaunchDetectedForTesting(pid);
+}
+
+void WtsSessionProcessDelegate::TestApi::SetElevatedServerEndpoint(
+    mojo::PlatformChannelServerEndpoint endpoint) {
+  delegate_->core_->SetElevatedServerEndpointForTesting(std::move(endpoint));
+}
+
+void WtsSessionProcessDelegate::TestApi::SetFatalErrorCallback(
+    base::OnceClosure callback) {
+  delegate_->core_->SetFatalErrorCallbackForTesting(std::move(callback));
+}
+
+void WtsSessionProcessDelegate::TestApi::SetProcessLaunchedCallback(
+    base::OnceClosure callback) {
+  delegate_->core_->SetProcessLaunchedCallbackForTesting(std::move(callback));
 }
 
 }  // namespace remoting
