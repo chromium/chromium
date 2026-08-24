@@ -4,7 +4,7 @@ Version: N/A
 Revision: 15a0449f686ad8263ff01ccf815881480eb35b27
 Update Mechanism: Autoroll
 License: Apache-2.0
-License File: LICENSE
+License File: src/LICENSE
 Shipped: yes
 Security Critical: yes
 
