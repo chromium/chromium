@@ -16,11 +16,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
-#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_untrusted_ui.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/page_context_monitor.h"
@@ -32,22 +29,37 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/codec/jpeg_codec.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/actions/actions.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
-#include "ui/display/screen.h"
-#include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/menus/simple_menu_model.h"
-#include "url/url_util.h"
+#endif
 
 namespace {
 
+content::WebContents* GetActiveWebContentsFromBrowser(
+    BrowserWindowInterface* browser) {
+#if !BUILDFLAG(IS_ANDROID)
+  return browser->GetTabStripModel()->GetActiveWebContents();
+#else
+  return nullptr;
+#endif
+}
+
+#if !BUILDFLAG(IS_ANDROID)
 class AnimatedIconSource : public gfx::CanvasImageSource {
  public:
   static constexpr int kIconSize = ui::SimpleMenuModel::kDefaultIconSize;  // 16
@@ -91,6 +103,7 @@ class AnimatedIconSource : public gfx::CanvasImageSource {
   float energy_;
   SkColor color_;
 };
+#endif
 
 void SaveDebugFileAsync(base::FilePath dir_path,
                         base::FilePath file_path,
@@ -172,6 +185,7 @@ void AiOverlayDialogPageHandler::GetMockAudioData(
 }
 
 void AiOverlayDialogPageHandler::UpdateAudioEnergy(float energy) {
+#if !BUILDFLAG(IS_ANDROID)
   if (!overlay_action_item_) {
     overlay_action_item_ = actions::ActionManager::Get().FindAction(
         kActionShowAiOverlayDialog,
@@ -200,6 +214,7 @@ void AiOverlayDialogPageHandler::UpdateAudioEnergy(float energy) {
         gfx::Size(AnimatedIconSource::kCanvasSize,
                   AnimatedIconSource::kCanvasSize)));
   }
+#endif
 }
 
 void AiOverlayDialogPageHandler::Close() {
@@ -262,8 +277,7 @@ void AiOverlayDialogPageHandler::GetCursorPosition(
   gfx::Point cursor_screen = screen->GetCursorScreenPoint();
 
   content::WebContents* web_contents =
-      browser_ ? browser_->GetTabStripModel()->GetActiveWebContents()
-               : nullptr;
+      GetActiveWebContentsFromBrowser(browser_);
 
   if (!web_contents) {
     std::move(callback).Run(std::nullopt);
@@ -287,7 +301,7 @@ void AiOverlayDialogPageHandler::CaptureRawViewportRegion(
     int32_t height,
     CaptureRawViewportRegionCallback callback) {
   content::WebContents* web_contents =
-      browser_ ? browser_->GetTabStripModel()->GetActiveWebContents() : nullptr;
+      GetActiveWebContentsFromBrowser(browser_);
 
   if (!web_contents) {
     std::move(callback).Run(nullptr);
@@ -405,11 +419,7 @@ void AiOverlayDialogPageHandler::SaveDebugFile(
 void AiOverlayDialogPageHandler::GetImageBytes(
     const blink::DOMNodeIdType& dom_node_id,
     GetImageBytesCallback callback) {
-  content::WebContents* contents =
-      browser_ ? (browser_->GetActiveTabInterface()
-                      ? browser_->GetActiveTabInterface()->GetContents()
-                      : nullptr)
-               : nullptr;
+  content::WebContents* contents = GetActiveWebContentsFromBrowser(browser_);
   if (!contents || !contents->GetPrimaryMainFrame()) {
     std::move(callback).Run(nullptr);
     return;
