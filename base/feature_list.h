@@ -216,10 +216,14 @@ class BASE_EXPORT FeatureList {
   void SetVariationCountry(std::string_view variation_country);
 
   // Enables runtime mutability for the given `feature` and registers the given
-  // `callback` to be invoked when the feature's state changes at runtime. This
-  // method should only be called once per feature and *MUST* be called before
-  // attempting to inspect the feature state of a runtime mutable feature (i.e.
-  // calling `IsEnabled()` or looking up a FeatureParam value).
+  // callbacks to be invoked when the feature's state changes at runtime.
+  // `pre_mutation_callback` is invoked right before the feature's state
+  // is about to change, and `post_mutation_callback` is invoked right after the
+  // feature's state has changed.
+  //
+  // This method should only be called once per feature and *MUST* be
+  // called before attempting to inspect the feature state of a runtime mutable
+  // feature (i.e. calling `IsEnabled()` or looking up a FeatureParam value).
   //
   // This method may only be called during FeatureList initialization and on
   // the main sequence. Implementers of runtime-mutable features should update
@@ -227,7 +231,13 @@ class BASE_EXPORT FeatureList {
   // their platform(s) to call this method for their runtime-mutable feature(s).
   void EnableRuntimeMutability(
       const Feature& feature,
-      OnRuntimeMutableFeatureStateChangedCallback callback);
+      OnRuntimeMutableFeatureStateChangedCallback pre_mutation_callback,
+      OnRuntimeMutableFeatureStateChangedCallback post_mutation_callback);
+  // Convenience method for the above when only a post-mutation callback is
+  // needed.
+  void EnableRuntimeMutability(
+      const Feature& feature,
+      OnRuntimeMutableFeatureStateChangedCallback post_mutation_callback);
 
   // Returns the set of runtime mutable features and their current state.
   // Must be called on the main sequence.

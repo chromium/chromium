@@ -1355,6 +1355,9 @@ TEST_F(VariationsServiceTest,
   auto feature_list = std::make_unique<base::FeatureList>();
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
@@ -1385,6 +1388,9 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_PolicyRestriction) {
   auto feature_list = std::make_unique<base::FeatureList>();
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
@@ -1437,6 +1443,9 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_NotNull) {
   auto feature_list = std::make_unique<base::FeatureList>();
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
@@ -1467,9 +1476,15 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_StrictKillswitch) {
   auto feature_list = std::make_unique<base::FeatureList>();
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureB,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
@@ -1556,6 +1571,9 @@ TEST_F(VariationsServiceTest,
   auto feature_list = std::make_unique<base::FeatureList>();
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   // Create a no-op FieldTrial at startup with no features associated.
   base::FieldTrial* trial =
@@ -1646,6 +1664,9 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_NoOpOverride) {
   auto feature_list = std::make_unique<base::FeatureList>();
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
@@ -1720,6 +1741,9 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_NotStartsActive) {
   auto feature_list = std::make_unique<base::FeatureList>();
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
@@ -1751,6 +1775,9 @@ TEST_F(VariationsServiceTest,
   auto feature_list = std::make_unique<base::FeatureList>();
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
@@ -1791,6 +1818,9 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_AlreadyApplied) {
   auto feature_list = std::make_unique<base::FeatureList>();
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   base::FieldTrial* trial =
       base::FieldTrialList::CreateFieldTrial("Killswitch", "Disabled50");
@@ -1889,6 +1919,9 @@ TEST_F(VariationsServiceTest,
   auto feature_list = std::make_unique<base::FeatureList>();
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
@@ -1938,6 +1971,9 @@ TEST_F(VariationsServiceTest,
   auto feature_list = std::make_unique<base::FeatureList>();
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
@@ -1972,6 +2008,9 @@ TEST_F(VariationsServiceTest,
   auto feature_list = std::make_unique<base::FeatureList>();
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   base::FieldTrial* trial =
       base::FieldTrialList::CreateFieldTrial("MyTrial", "Group1");
@@ -2011,9 +2050,15 @@ TEST_F(VariationsServiceTest,
   auto feature_list = std::make_unique<base::FeatureList>();
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureB,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
@@ -2047,9 +2092,15 @@ TEST_F(VariationsServiceTest,
   auto feature_list = std::make_unique<base::FeatureList>();
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureB,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   feature_list->InitFromCommandLine(kTestRuntimeFeatureB.name, "");
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
@@ -2095,9 +2146,15 @@ TEST_F(VariationsServiceTest,
   auto feature_list = std::make_unique<base::FeatureList>();
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureB,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   base::FieldTrial* trial1 =
       base::FieldTrialList::CreateFieldTrial("Trial1", "Group1");
@@ -2221,9 +2278,15 @@ TEST_F(VariationsServiceTest,
   auto feature_list = std::make_unique<base::FeatureList>();
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureB,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   base::FieldTrial* trial =
       base::FieldTrialList::CreateFieldTrial("Trial1", "Group1");
@@ -2300,9 +2363,15 @@ TEST_F(VariationsServiceTest,
   auto feature_list = std::make_unique<base::FeatureList>();
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureB,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   base::FieldTrial* trial =
       base::FieldTrialList::CreateFieldTrial("Trial1", "Group1");
@@ -2396,6 +2465,9 @@ TEST_F(VariationsServiceTest,
   // "Trial1".
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   base::FieldTrial* trial =
       base::FieldTrialList::CreateFieldTrial("Trial1", "Group1");
@@ -2435,12 +2507,21 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_FeaturesWithNoTrials) {
   auto feature_list = std::make_unique<base::FeatureList>();
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureB,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureC,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
@@ -2561,9 +2642,15 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_TrialNameCollision) {
   auto feature_list = std::make_unique<base::FeatureList>();
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureB,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   base::FieldTrial* trial1 =
       base::FieldTrialList::CreateFieldTrial("Trial1", "Group1");
@@ -2726,12 +2813,21 @@ TEST_F(VariationsServiceTest,
   auto feature_list = std::make_unique<base::FeatureList>();
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureB,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   feature_list->EnableRuntimeMutability(
       kTestRuntimeFeatureC,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 

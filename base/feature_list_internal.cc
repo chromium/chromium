@@ -8,8 +8,13 @@ namespace base::internal {
 
 RuntimeMutableFeatureState::RuntimeMutableFeatureState(
     const Feature& feature,
-    FeatureList::OnRuntimeMutableFeatureStateChangedCallback callback)
-    : feature(feature), callback(std::move(callback)) {}
+    FeatureList::OnRuntimeMutableFeatureStateChangedCallback
+        pre_mutation_callback,
+    FeatureList::OnRuntimeMutableFeatureStateChangedCallback
+        post_mutation_callback)
+    : feature(feature),
+      pre_mutation_callback(std::move(pre_mutation_callback)),
+      post_mutation_callback(std::move(post_mutation_callback)) {}
 
 RuntimeMutableFeatureState::~RuntimeMutableFeatureState() = default;
 

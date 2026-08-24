@@ -65,7 +65,10 @@ enum class RuntimeMutabilityResult {
 struct BASE_EXPORT RuntimeMutableFeatureState {
   RuntimeMutableFeatureState(
       const Feature& feature,
-      FeatureList::OnRuntimeMutableFeatureStateChangedCallback callback);
+      FeatureList::OnRuntimeMutableFeatureStateChangedCallback
+          pre_mutation_callback,
+      FeatureList::OnRuntimeMutableFeatureStateChangedCallback
+          post_mutation_callback);
   ~RuntimeMutableFeatureState();
 
   RuntimeMutableFeatureState(const RuntimeMutableFeatureState&);
@@ -76,8 +79,13 @@ struct BASE_EXPORT RuntimeMutableFeatureState {
   // The feature that has runtime mutability enabled.
   std::reference_wrapper<const Feature> feature;
 
-  // Callback to be invoked when the feature state is changed.
-  FeatureList::OnRuntimeMutableFeatureStateChangedCallback callback;
+  // Callback to be invoked right before a state change is about to happen.
+  FeatureList::OnRuntimeMutableFeatureStateChangedCallback
+      pre_mutation_callback;
+
+  // Callback to be invoked right after a state change happens.
+  FeatureList::OnRuntimeMutableFeatureStateChangedCallback
+      post_mutation_callback;
 
   // The runtime override state of the feature, or OVERRIDE_USE_DEFAULT if the
   // feature is not runtime overridden.

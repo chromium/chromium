@@ -481,7 +481,8 @@ void FeatureList::SetVariationCountry(std::string_view variation_country) {
 
 void FeatureList::EnableRuntimeMutability(
     const base::Feature& feature,
-    OnRuntimeMutableFeatureStateChangedCallback callback) {
+    OnRuntimeMutableFeatureStateChangedCallback pre_mutation_callback,
+    OnRuntimeMutableFeatureStateChangedCallback post_mutation_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // EnableRuntimeMutability() may only be called during initialization and on
@@ -506,10 +507,22 @@ void FeatureList::EnableRuntimeMutability(
   // Runtime mutable features must be registered exactly once, during feature
   // list initialization, and before first use.
   CHECK(!FeatureWasAccessedEarly(cached_value));
-  bool inserted = runtime_mutable_overrides_
-                      .try_emplace(feature.name, feature, std::move(callback))
-                      .second;
+  bool inserted =
+      runtime_mutable_overrides_
+          .try_emplace(feature.name, feature, std::move(pre_mutation_callback),
+                       std::move(post_mutation_callback))
+          .second;
   CHECK(inserted);
+}
+
+void FeatureList::EnableRuntimeMutability(
+    const base::Feature& feature,
+    OnRuntimeMutableFeatureStateChangedCallback post_mutation_callback) {
+  EnableRuntimeMutability(feature,
+                          /*pre_mutation_callback=*/
+                          OnRuntimeMutableFeatureStateChangedCallback(),
+                          /*post_mutation_callback=*/
+                          std::move(post_mutation_callback));
 }
 
 const base::flat_map<std::string, internal::RuntimeMutableFeatureState>&
@@ -562,15 +575,19 @@ bool FeatureList::UpdateRuntimeMutableFeatureState(
   auto& runtime_override_entry = it->second;
   const auto& feature = runtime_override_entry.feature.get();
 
+  // Notify the pre-mutation callback.
+  if (!runtime_override_entry.pre_mutation_callback.is_null()) {
+    runtime_override_entry.pre_mutation_callback.Run(
+        feature, field_trial_name, group_name, override_state);
+  }
+
   runtime_override_entry.override_state = override_state;
-  // TODO: http://crbug.com/482450776 - Update field trial activations.
   runtime_override_entry.field_trial_name = std::string(field_trial_name);
 
-  // Notify the callback.
-  if (!runtime_override_entry.callback.is_null()) {
-    // Consider posting the callback as a separate task to the main sequence.
-    runtime_override_entry.callback.Run(feature, field_trial_name, group_name,
-                                        override_state);
+  // Notify the post-mutation callback.
+  if (!runtime_override_entry.post_mutation_callback.is_null()) {
+    runtime_override_entry.post_mutation_callback.Run(
+        feature, field_trial_name, group_name, override_state);
   }
 
   LogRuntimeMutabilityResult(feature_name, RuntimeMutabilityResult::kSuccess);
