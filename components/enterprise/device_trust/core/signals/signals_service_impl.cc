@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/task/bind_post_task.h"
 #include "base/values.h"
 #include "components/enterprise/device_trust/core/metrics_utils.h"
 #include "components/enterprise/device_trust/core/signals/decorators/common/signals_decorator.h"
@@ -41,9 +42,10 @@ void SignalsServiceImpl::CollectSignals(CollectSignalsCallback callback) {
 
   auto barrier_closure = base::BarrierClosure(
       signals_decorators_.size(),
-      base::BindOnce(&SignalsServiceImpl::OnSignalsDecorated,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     start_time, std::move(signals)));
+      base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&SignalsServiceImpl::OnSignalsDecorated,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                         start_time, std::move(signals))));
 
   for (const auto& decorator : signals_decorators_) {
     decorator->Decorate(*signals_ptr, barrier_closure);
@@ -58,9 +60,11 @@ void SignalsServiceImpl::OnSignalsDecorated(
 
   if (!signals) {
     base::DictValue empty_dictionary;
+    // Must be the last statement: the callback may destroy 'this'.
     std::move(callback).Run(std::move(empty_dictionary));
   } else {
     signals_filterer_->Filter(*signals);
+    // Must be the last statement: the callback may destroy 'this'.
     std::move(callback).Run(std::move(*signals));
   }
 }
