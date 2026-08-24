@@ -90,8 +90,6 @@ typedef int (*DLL_MAIN)(HINSTANCE,
                         int64_t preread_begin_ticks,
                         int64_t preread_end_ticks);
 
-typedef void (*RelaunchChromeBrowserWithNewCommandLineIfNeededFunc)();
-
 // Properties for the main module to be loaded.
 struct ModuleProperties {
   // The basename of the module (e.g., "chrome.dll").
@@ -305,19 +303,6 @@ int MainDllLoader::Launch(HINSTANCE instance,
   return rc;
 }
 
-void MainDllLoader::RelaunchChromeBrowserWithNewCommandLineIfNeeded() {
-  // The relaunch-if-needed behavior is a NOP for processes other than the
-  // browser process, so early out here.
-  if (!dll_ || !process_type_.empty())
-    return;
-
-  RelaunchChromeBrowserWithNewCommandLineIfNeededFunc relaunch_function =
-      reinterpret_cast<RelaunchChromeBrowserWithNewCommandLineIfNeededFunc>(
-          ::GetProcAddress(dll_,
-                           "RelaunchChromeBrowserWithNewCommandLineIfNeeded"));
-  CHECK(relaunch_function);
-  relaunch_function();
-}
 
 //=============================================================================
 

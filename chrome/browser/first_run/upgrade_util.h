@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_FIRST_RUN_UPGRADE_UTIL_H_
 #define CHROME_BROWSER_FIRST_RUN_UPGRADE_UTIL_H_
 
-#include <memory>
-
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 
@@ -24,15 +22,6 @@ namespace upgrade_util {
 bool RelaunchChromeBrowser(const base::CommandLine& command_line);
 
 #if !BUILDFLAG(IS_MAC)
-
-// Sets a command line to be used to relaunch the browser upon exit.
-void SetNewCommandLine(std::unique_ptr<base::CommandLine> new_command_line);
-
-// Launches a new instance of the browser using a command line previously
-// provided to SetNewCommandLine. This is typically used to finalize an in-use
-// update that was detected while the browser was in persistent mode.
-void RelaunchChromeBrowserWithNewCommandLineIfNeeded();
-
 // Windows:
 //  Checks if chrome_new.exe is present in the current instance's install.
 // Linux:

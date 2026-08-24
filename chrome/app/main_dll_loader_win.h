@@ -31,10 +31,6 @@ class MainDllLoader {
   // upon termination.
   int Launch(HINSTANCE instance, base::TimeTicks exe_entry_point_ticks);
 
-  // Launches a new instance of the browser if the current instance in
-  // persistent mode an upgrade is detected.
-  void RelaunchChromeBrowserWithNewCommandLineIfNeeded();
-
  protected:
   // Called after chrome.dll has been loaded but before the entry point is
   // invoked. Derived classes can implement custom actions here. `process_type`

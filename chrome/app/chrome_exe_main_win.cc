@@ -377,7 +377,6 @@ int main() {
   VLOG(1) << "About to load main DLL.";
   MainDllLoader* loader = MakeMainDllLoader();
   int rc = loader->Launch(instance, exe_entry_point_ticks);
-  loader->RelaunchChromeBrowserWithNewCommandLineIfNeeded();
   delete loader;
 
   // Process shutdown is hard and some process types have been crashing during

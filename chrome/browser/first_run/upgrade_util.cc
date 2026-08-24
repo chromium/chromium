@@ -4,20 +4,14 @@
 
 #include "chrome/browser/first_run/upgrade_util.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/functional/callback.h"
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "build/build_config.h"
-#include "content/public/browser/browser_thread.h"
 
 namespace {
-
-#if !BUILDFLAG(IS_MAC)
-base::CommandLine* command_line = nullptr;
-#endif
 
 // A test seam for whole-browser tests to override browser relaunch.
 upgrade_util::RelaunchChromeBrowserCallback*
@@ -36,28 +30,6 @@ bool RelaunchChromeBrowser(const base::CommandLine& command_line) {
 
   return RelaunchChromeBrowserImpl(command_line);
 }
-
-#if !BUILDFLAG(IS_MAC)
-
-void SetNewCommandLine(std::unique_ptr<base::CommandLine> new_command_line) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  delete command_line;
-  command_line = new_command_line.release();
-}
-
-void RelaunchChromeBrowserWithNewCommandLineIfNeeded() {
-  if (command_line) {
-    if (!RelaunchChromeBrowser(*command_line)) {
-      DLOG(ERROR) << "Launching a new instance of the browser failed.";
-    } else {
-      DLOG(WARNING) << "Launched a new instance of the browser.";
-    }
-    delete command_line;
-    command_line = nullptr;
-  }
-}
-
-#endif  // !BUILDFLAG(IS_MAC)
 
 RelaunchChromeBrowserCallback SetRelaunchChromeBrowserCallbackForTesting(
     RelaunchChromeBrowserCallback callback) {

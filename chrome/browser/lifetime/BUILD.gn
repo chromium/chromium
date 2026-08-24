@@ -127,7 +127,10 @@ source_set("impl") {
   }
 
   if (is_win) {
-    deps += [ "//chrome/browser/win" ]
+    deps += [
+      "//chrome/browser/win",
+      "//components/app_launch_prefetch",
+    ]
   }
 
   if (!is_android) {
@@ -241,6 +244,10 @@ if (!is_android) {
 
     if (enable_background_mode) {
       deps += [ "//chrome/browser/background/extensions" ]
+    }
+
+    if (is_win) {
+      deps += [ "//components/app_launch_prefetch" ]
     }
 
     if (!is_chromeos) {

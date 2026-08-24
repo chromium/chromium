@@ -4,6 +4,8 @@
 
 #include "chrome/browser/lifetime/application_lifetime.h"
 
+#include <algorithm>
+
 #include "base/command_line.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/browser_process.h"
@@ -27,12 +29,23 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "components/app_launch_prefetch/app_launch_prefetch.h"
+#endif
+
 namespace {
 
 // A gMock matcher that is satisfied when its argument is a command line
 // containing a given switch.
 MATCHER_P(HasSwitch, switch_name, "") {
   return arg.HasSwitch(switch_name);
+}
+
+// A gMock matcher that is satisfied when its argument is a command line
+// containing a given argument.
+MATCHER_P(HasArg, arg_name, "") {
+  const auto& args = arg.GetArgs();
+  return std::find(args.begin(), args.end(), arg_name) != args.end();
 }
 
 }  // namespace
@@ -134,4 +147,34 @@ IN_PROC_BROWSER_TEST_F(ApplicationLifetimeTest, AttemptRestart) {
   // Cancel the effects of us calling chrome::AttemptRestart. Otherwise
   // this test and tests ran after this one will fail.
   browser_shutdown::SetTryingToQuit(false);
+}
+
+// Ensures that a background restart launches with the background switch and
+// the background prefetch argument.
+class AttemptRestartInBackgroundTest : public InProcessBrowserTest {
+ protected:
+  AttemptRestartInBackgroundTest() = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    // Expect a browser relaunch late in browser shutdown.
+    testing::Matcher<const base::CommandLine&> matcher =
+        HasSwitch(switches::kNoStartupWindow);
+#if BUILDFLAG(IS_WIN)
+    matcher = testing::AllOf(
+        matcher, HasArg(app_launch_prefetch::GetPrefetchSwitch(
+                     app_launch_prefetch::SubprocessType::kBrowserBackground)));
+#endif
+    EXPECT_CALL(mock_relaunch_callback_, Run(matcher));
+  }
+
+ private:
+  base::MockCallback<upgrade_util::RelaunchChromeBrowserCallback>
+      mock_relaunch_callback_;
+  upgrade_util::ScopedRelaunchChromeBrowserOverride relaunch_chrome_override_{
+      mock_relaunch_callback_.Get()};
+};
+
+IN_PROC_BROWSER_TEST_F(AttemptRestartInBackgroundTest,
+                       AttemptRestartInBackground) {
+  chrome::AttemptRestartWithMode(chrome::RelaunchMode::kBackground);
 }

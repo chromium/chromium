@@ -60,7 +60,6 @@
 #include "chrome/browser/icon_manager.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
-#include "chrome/browser/lifetime/switch_utils.h"
 #include "chrome/browser/media/audio_process_ml_model_forwarder.h"
 #include "chrome/browser/media/chrome_media_session_client.h"
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
@@ -97,7 +96,6 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -152,14 +150,12 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/buildflags.h"
-#include "content/public/common/content_switches.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "printing/buildflags/buildflags.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/network_switches.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
@@ -170,7 +166,6 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
 #include "chrome/installer/util/install_util.h"
-#include "components/app_launch_prefetch/app_launch_prefetch.h"
 #include "components/os_crypt/async/browser/dpapi_key_provider.h"
 #elif BUILDFLAG(IS_MAC)
 #include "chrome/browser/chrome_browser_main_mac.h"
@@ -1952,44 +1947,8 @@ bool BrowserProcessImpl::IsRunningInBackground() const {
 }
 
 void BrowserProcessImpl::RestartBackgroundInstance() {
-  base::CommandLine* old_cl = base::CommandLine::ForCurrentProcess();
-  auto new_cl = std::make_unique<base::CommandLine>(old_cl->GetProgram());
-
-  base::CommandLine::SwitchMap switches = old_cl->GetSwitches();
-  switches::RemoveSwitchesForAutostart(&switches);
-
-  // Append the rest of the switches (along with their values, if any)
-  // to the new command line
-  for (const auto& it : switches) {
-    const auto& switch_name = it.first;
-    const auto& switch_value = it.second;
-    if (switch_value.empty()) {
-      new_cl->AppendSwitch(switch_name);
-    } else {
-      new_cl->AppendSwitchNative(switch_name, switch_value);
-    }
-  }
-
-  // Switches to add when auto-restarting Chrome.
-  static constexpr const char* kSwitchesToAddOnAutorestart[] = {
-      switches::kNoStartupWindow};
-
-  // Ensure that our desired switches are set on the new process.
-  for (const char* switch_to_add : kSwitchesToAddOnAutorestart) {
-    if (!new_cl->HasSwitch(switch_to_add)) {
-      new_cl->AppendSwitch(switch_to_add);
-    }
-  }
-
-#if BUILDFLAG(IS_WIN)
-  new_cl->AppendArgNative(app_launch_prefetch::GetPrefetchSwitch(
-      app_launch_prefetch::SubprocessType::kBrowserBackground));
-#endif  // BUILDFLAG(IS_WIN)
-
-  DLOG(WARNING) << "Shutting down current instance of the browser.";
-  chrome::AttemptExit();
-
-  upgrade_util::SetNewCommandLine(std::move(new_cl));
+  DLOG(WARNING) << "Detected update. Restarting background browser instance.";
+  chrome::AttemptRestartWithMode(chrome::RelaunchMode::kBackground);
 }
 
 void BrowserProcessImpl::OnAutoupdateTimer() {

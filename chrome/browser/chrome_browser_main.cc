@@ -9,7 +9,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/at_exit.h"
 #include "base/base_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -996,22 +995,7 @@ void ChromeBrowserMainParts::RecordBrowserStartupTime() {
 // -----------------------------------------------------------------------------
 // TODO(viettrungluu): move more/rest of BrowserMain() into BrowserMainParts.
 
-#if BUILDFLAG(IS_WIN)
-#define DLLEXPORT __declspec(dllexport)
 
-// We use extern C for the prototype DLLEXPORT to avoid C++ name mangling.
-extern "C" {
-DLLEXPORT void __cdecl RelaunchChromeBrowserWithNewCommandLineIfNeeded();
-}
-
-DLLEXPORT void __cdecl RelaunchChromeBrowserWithNewCommandLineIfNeeded() {
-  // Need an instance of AtExitManager to handle singleton creations and
-  // deletions.  We need this new instance because, the old instance created
-  // in ChromeMain() got destructed when the function returned.
-  base::AtExitManager exit_manager;
-  upgrade_util::RelaunchChromeBrowserWithNewCommandLineIfNeeded();
-}
-#endif
 
 // content::BrowserMainParts implementation ------------------------------------
 
