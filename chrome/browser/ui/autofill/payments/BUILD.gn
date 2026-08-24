@@ -263,6 +263,10 @@ if (!is_android) {
       "//content/test:test_support",
       "//testing/gtest",
     ]
+
+    if (toolkit_views) {
+      deps += [ "//chrome/browser/ui/views/autofill/payments:virtual_card_enroll_bubble_views" ]
+    }
   }
 }
 

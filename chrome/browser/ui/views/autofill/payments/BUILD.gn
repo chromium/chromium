@@ -363,3 +363,95 @@ source_set("save_and_fill_dialog") {
     "//ui/gfx",
   ]
 }
+
+source_set("filled_card_information_bubble_views") {
+  public = [ "filled_card_information_bubble_views.h" ]
+  sources = [ "filled_card_information_bubble_views.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/autofill/payments",
+    "//chrome/browser/ui/views/autofill:autofill_location_bar_bubble",
+    "//ui/base/metadata",
+  ]
+  deps = [
+    ":payments_view_util",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/autofill/core/browser",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/color",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
+
+source_set("offer_notification_bubble_views") {
+  public = [ "offer_notification_bubble_views.h" ]
+  sources = [ "offer_notification_bubble_views.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/autofill/payments",
+    "//chrome/browser/ui/views/autofill:autofill_location_bar_bubble",
+    "//chrome/browser/ui/views/controls",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+  deps = [
+    ":payments_view_util",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/autofill/core/browser",
+    "//components/strings:components_strings",
+    "//net",
+    "//ui/base/mojom:ui_base_types",
+  ]
+}
+
+source_set("payments_churned_users_bubble_view") {
+  public = [ "payments_churned_users_bubble_view.h" ]
+  sources = [ "payments_churned_users_bubble_view.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/views/autofill:autofill_location_bar_bubble",
+  ]
+  deps = [
+    ":dialog_view_ids",
+    ":payments_view_util",
+    "//chrome/browser:resources",
+    "//chrome/browser/ui/autofill/payments",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/signin/public/identity_manager",
+    "//components/strings:components_strings",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/views",
+  ]
+}
+
+source_set("virtual_card_enroll_bubble_views") {
+  public = [ "virtual_card_enroll_bubble_views.h" ]
+  sources = [ "virtual_card_enroll_bubble_views.cc" ]
+  public_deps = [
+    ":payments_view_util",
+    "//base",
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/views/autofill:autofill_location_bar_bubble",
+  ]
+  deps = [
+    ":dialog_view_ids",
+    "//chrome/browser:resources",
+    "//chrome/browser/ui/autofill/payments",
+    "//chrome/browser/ui/dialogs",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common:features",
+    "//components/strings:components_strings",
+    "//ui/base",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/views",
+    "//url",
+  ]
+}
