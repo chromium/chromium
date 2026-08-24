@@ -16,12 +16,10 @@
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
-#include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -35,8 +33,7 @@
 #include "ui/accessibility/accessibility_features.h"
 
 class ReadAnythingOmniboxControllerTest
-    : public PageActionInteractiveTestMixin<InteractiveFeaturePromoTest>,
-      public testing::WithParamInterface<bool> {
+    : public PageActionInteractiveTestMixin<InteractiveFeaturePromoTest> {
  public:
   template <typename... Args>
   explicit ReadAnythingOmniboxControllerTest(Args&&... args)
@@ -45,23 +42,15 @@ class ReadAnythingOmniboxControllerTest
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kReadAnythingOmniboxChip,
-        feature_engagement::kIPHReadingModePageActionLabelFeature};
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (IsImmersiveEnabled()) {
-      enabled_features.push_back(features::kImmersiveReadAnything);
-    } else {
-      disabled_features.push_back(features::kImmersiveReadAnything);
-    }
-    features_.InitWithFeatures(enabled_features, disabled_features);
+    features_.InitWithFeatures(
+        {features::kReadAnythingOmniboxChip,
+         feature_engagement::kIPHReadingModePageActionLabelFeature},
+        {});
     distillable_url_ = embedded_test_server()->GetURL("/long_text_page.html");
     non_distillable_url_ = GURL("chrome://blank");
     ReadAnythingController::SetFreezeDistillationOnCreationForTesting(true);
     InteractiveFeaturePromoTest::SetUp();
   }
-
-  bool IsImmersiveEnabled() const { return GetParam(); }
 
   void SetUpOnMainThread() override {
     InteractiveFeaturePromoTest::SetUpOnMainThread();
@@ -124,17 +113,11 @@ class ReadAnythingOmniboxControllerTest
       tabs::TabInterface* tab_interface =
           browser()->GetTabStripModel()->GetTabForWebContents(contents);
       CHECK(tab_interface);
-      if (IsImmersiveEnabled()) {
-        auto* read_anything_controller =
-            ReadAnythingController::From(tab_interface);
-        CHECK(read_anything_controller);
-        read_anything_controller->SetDwellTimeForTesting(
-            base::TimeTicks::Now() - base::Seconds(4));
-      } else {
-        tab_interface->GetTabFeatures()
-            ->read_anything_side_panel_controller()
-            ->SetDwellTimeForTesting(base::TimeTicks::Now() - base::Seconds(4));
-      }
+      auto* read_anything_controller =
+          ReadAnythingController::From(tab_interface);
+      CHECK(read_anything_controller);
+      read_anything_controller->SetDwellTimeForTesting(base::TimeTicks::Now() -
+                                                       base::Seconds(4));
     }));
   }
 
@@ -146,7 +129,7 @@ class ReadAnythingOmniboxControllerTest
   base::HistogramTester histogram_tester_;
 };
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
+IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerTest,
                        ShowAndHideOmniboxAfterTabSwitch) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
@@ -163,7 +146,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
       SelectTab(kTabStripElementId, 0), WaitForPageActionChipNotVisible());
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
+IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerTest,
                        ShowOmniboxChipImmediatelyAfterReadingModeClosed) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   RunTestSequence(
@@ -183,7 +166,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
       WaitForPageActionChipVisible());
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
+IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerTest,
                        ShowAndHideOmniboxAfterNavigation) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   RunTestSequence(
@@ -194,7 +177,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
       WaitForWebContentsReady(kActiveTab), WaitForPageActionChipNotVisible());
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
+IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerTest,
                        HideOmniboxAfterEntryShown) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   RunTestSequence(InstrumentTab(kActiveTab),
@@ -204,7 +187,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
                   WaitForPageActionChipNotVisible());
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
+IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerTest,
                        ShowAndHideIphAfterTabSwitch) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
@@ -224,7 +207,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
+IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerTest,
                        ShowAndHideIphAfterNavigation) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   RunTestSequence(
@@ -239,7 +222,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
+IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerTest,
                        HideIPHAfterEntryShown) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   RunTestSequence(
@@ -251,7 +234,3 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerTest,
       WaitForHide(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ReadAnythingOmniboxControllerTest,
-                         testing::Bool());

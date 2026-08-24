@@ -6212,9 +6212,6 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        Screen2xDistillationStatus_LogsOnReopenOnNewPage) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kImmersiveReadAnything);
-
   // 1. Open RM on first page (Page A)
   controller().OnGetPresentationState(
       read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
