@@ -619,6 +619,31 @@ TEST_F(TabTest, LayeredThrobber) {
   EXPECT_FALSE(icon->GetShowingLoadingAnimation());
 }
 
+TEST_F(TabTest, EmptyBoundsDeferPaintToLayer) {
+  TabIcon icon;
+  icon.SetCanPaintToLayer(true);
+  ASSERT_TRUE(icon.GetContentsBounds().IsEmpty());
+
+  tabs::TabData data;
+  data.network_state = tabs::TabNetworkState::kWaiting;
+  icon.SetData(data);
+  EXPECT_FALSE(icon.layer());
+
+  icon.SetBounds(0, 0, gfx::kFaviconSize, gfx::kFaviconSize);
+  ASSERT_FALSE(icon.GetContentsBounds().IsEmpty());
+  EXPECT_TRUE(icon.layer());
+
+  icon.SetBounds(0, 0, 0, 0);
+  EXPECT_TRUE(icon.layer());
+
+  data.network_state = tabs::TabNetworkState::kNone;
+  icon.SetData(data);
+  EXPECT_FALSE(icon.layer());
+
+  icon.SetBounds(0, 0, gfx::kFaviconSize, gfx::kFaviconSize);
+  EXPECT_FALSE(icon.layer());
+}
+
 TEST_F(TabTest, TitleHiddenWhenSmall) {
   FakeTabSlotController tab_slot_controller;
   Tab tab(tabs::TabHandle(1), &tab_slot_controller);

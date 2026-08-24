@@ -616,6 +616,12 @@ void TabIcon::UpdateThrobber() {
       can_paint_to_layer_ &&
       (GetShowingLoadingAnimation() || favicon_size_animation_.is_animating() ||
        tab_discard_animation_.is_animating());
+  // SetData() can update loading state before layout assigns icon bounds. Avoid
+  // allocating compositor resources for a layer that cannot paint while still
+  // updating the lifecycle of an existing layer.
+  if (GetContentsBounds().IsEmpty() && should_paint_to_layer && !layer()) {
+    should_paint_to_layer = false;
+  }
   if (should_paint_to_layer != !!layer()) {
     TRACE_EVENT0("ui", "TabIcon::UpdateThrobber (Toggle Layer)");
     std::optional<base::ScopedUmaHistogramTimer> not_cached_timer;
