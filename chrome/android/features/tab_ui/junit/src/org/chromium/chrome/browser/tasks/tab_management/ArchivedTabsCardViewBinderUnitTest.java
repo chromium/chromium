@@ -38,7 +38,6 @@ import java.util.concurrent.TimeoutException;
 @Config(manifest = Config.NONE)
 public class ArchivedTabsCardViewBinderUnitTest {
     private static final int ARCHIVED_TABS = 10;
-    private static final int TIME_DELTA = 14;
 
     private final CallbackHelper mCallbackHelper = new CallbackHelper();
 

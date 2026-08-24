@@ -78,7 +78,6 @@ import java.util.function.Supplier;
 @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
 public class TabGridContextMenuCoordinatorUnitTest {
     private static @TabId final int TAB_ID = 1;
-    private static final int MENU_WIDTH = 300;
     private static final String LOCALHOST_URL = "localhost://";
     private static final String CHROME_URL = "chrome://";
 

@@ -63,7 +63,6 @@ import java.util.Set;
 /** Unit tests for {@link TabListEditorMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class TabListEditorMediatorUnitTest {
-    private static final String SYNC_ID = "sync_id_test_guid";
     private static final TabListEditorItemSelectionId TAB_ID_1 =
             TabListEditorItemSelectionId.createTabId(1);
     private static final TabListEditorItemSelectionId TAB_ID_2 =

@@ -52,8 +52,6 @@ public class TabGroupLabellerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static final Token GROUP_ID1 = new Token(1L, 11L);
-    private static final int ROOT_ID1 = 0;
-    private static final int TAB_ID0 = 0;
     private static final int TAB_ID1 = 1;
 
     @Mock private Profile mProfile;
