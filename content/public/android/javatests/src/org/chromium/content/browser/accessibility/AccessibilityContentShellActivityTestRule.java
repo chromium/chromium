@@ -613,15 +613,15 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     }
 
     /**
-     * {@return the WebView's full AccessibilityNodeInfo tree as a String, excluding screen size
-     * dependent attributes}
+     * Returns the WebView's full AccessibilityNodeInfo tree as a String, excluding screen size
+     * dependent attributes.
      */
     public String generateAccessibilityNodeInfoTree() {
         return generateAccessibilityNodeInfoTree(false);
     }
 
     /**
-     * {@return the WebView's full AccessibilityNodeInfo tree as a String}
+     * Returns the WebView's full AccessibilityNodeInfo tree as a String.
      *
      * @param includeScreenSizeDependentAttributes whether to include attributes that depend on
      *     screen size (e.g. bounds).
@@ -731,7 +731,7 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     }
 
     /**
-     * {@return the AccessibilityNodeInfoCompat object for the given virtual view ID}
+     * Returns the AccessibilityNodeInfoCompat object for the given virtual view ID.
      *
      * @param virtualViewId the virtual view ID of the node to create.
      */

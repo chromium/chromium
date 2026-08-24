@@ -186,10 +186,10 @@ public class ChildProcessLauncherTest {
     ;
 
     /**
-     * Creates a ChildProcessLauncher, using {@param boundConnectionToUse} if non null, and tests
-     * that all callbacks on the client and in the service are called appropriately.
-     * The service echos back the delegate calls through the IBinder callback so that the test can
-     * validate them.
+     * Creates a ChildProcessLauncher, using {@code boundConnectionToUse} if non null, and tests
+     * that all callbacks on the client and in the service are called appropriately. The service
+     * echos back the delegate calls through the IBinder callback so that the test can validate
+     * them.
      */
     private void testProcessLauncher(final AlreadyBoundConnection boundConnectionToUse)
             throws TimeoutException {

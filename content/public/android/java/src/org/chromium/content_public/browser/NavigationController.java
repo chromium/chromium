@@ -190,7 +190,7 @@ public interface NavigationController {
     void setEntryExtraData(int index, String key, String value);
 
     /**
-     * Copies the navigation controller state from {@param sourceNavigationController} to this.
+     * Copies the navigation controller state from {@code sourceNavigationController} to this.
      *
      * @param sourceNavigationController The {@link NavigationController} to copy from.
      */
