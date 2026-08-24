@@ -63,14 +63,24 @@ bool SetAsDefaultBrowser() {
     return false;
   }
 
-  [NSWorkspace.sharedWorkspace setDefaultApplicationAtURL:app_bundle
-                                     toOpenURLsWithScheme:@"http"
-                                        completionHandler:^(NSError*){
-                                        }];
-  [NSWorkspace.sharedWorkspace setDefaultApplicationAtURL:app_bundle
-                                     toOpenURLsWithScheme:@"https"
-                                        completionHandler:^(NSError*){
-                                        }];
+  [NSWorkspace.sharedWorkspace
+      setDefaultApplicationAtURL:app_bundle
+            toOpenURLsWithScheme:@"http"
+               completionHandler:^(NSError* err) {
+                 // If the user declined the system permission dialog (e.g.,
+                 // "Keep Safari" was chosen), attempting to set app_bundle as
+                 // the https handler will result in the user being prompted a
+                 // second time (https://crbug.com/496408111).
+                 if (err) {
+                   return;
+                 }
+
+                 [NSWorkspace.sharedWorkspace
+                     setDefaultApplicationAtURL:app_bundle
+                           toOpenURLsWithScheme:@"https"
+                              completionHandler:nil];
+               }];
+
   // On macOS 26.4+, setting the HTML content type triggers a separate Finder
   // confirmation dialog in addition to the System Settings dialog for URL
   // schemes, resulting in duplicate prompts. Skip the content type registration
@@ -78,8 +88,7 @@ bool SetAsDefaultBrowser() {
   if (base::mac::MacOSVersion() < 26'04'00) {
     [NSWorkspace.sharedWorkspace setDefaultApplicationAtURL:app_bundle
                                           toOpenContentType:UTTypeHTML
-                                          completionHandler:^(NSError*){
-                                          }];
+                                          completionHandler:nil];
   }
   // TODO(https://crbug.com/40248220): Passing empty completion handlers,
   // above, is kinda broken, but given that this API is synchronous, nothing
