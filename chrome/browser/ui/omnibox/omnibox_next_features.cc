@@ -46,7 +46,7 @@ BASE_FEATURE(kWebUIOmniboxAimPopup, ENABLED);
 
 // If enabled, the Omnibox Popup will enable a different UI state when on a
 // webpage.
-BASE_FEATURE(kWebUIOmniboxSimplification, DISABLED);
+BASE_FEATURE(kWebUIOmniboxSimplification, ENABLED);
 
 }  // namespace internal
 
@@ -64,7 +64,7 @@ const base::FeatureParam<AddContextButtonVariant>
 // If true, hides the "Add Context" button in the "classic" popup.
 const base::FeatureParam<bool> kHideClassicContextButton{
     &internal::kWebUIOmniboxSimplification, "Omnibox_HideClassicContextButton",
-    true};
+    false};
 
 // When enabled, clicking aim button in omnibox always navigates directly to
 // g.com/aimode, e.g. instead of opening the AI Mode popup
@@ -410,10 +410,10 @@ const base::FeatureParam<bool> kShowContextMenuHeaders(
     true);
 const base::FeatureParam<bool> kContextButtonHasBackground{
     &internal::kWebUIOmniboxSimplification,
-    "Omnibox_ContextButtonHasBackground", false};
+    "Omnibox_ContextButtonHasBackground", true};
 const base::FeatureParam<bool> kContextButtonShapeIsOblong{
     &internal::kWebUIOmniboxSimplification,
-    "Omnibox_ContextButtonShapeIsOblong", false};
+    "Omnibox_ContextButtonShapeIsOblong", true};
 const base::FeatureParam<bool> kContextButtonShowSuggestionLabel{
     &internal::kWebUIOmniboxSimplification,
     "Omnibox_ContextButtonShowSuggestionLabel", false};
