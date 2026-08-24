@@ -3827,11 +3827,7 @@
     // it. This flag can be used to test the WebView API for this feature.
     "expiry_milestone": -1
   },
-  {
-    "name": "enable-force-download-to-onedrive",
-    "owners": [ "eliashomsi@google.com", "cbe-cep-eng@google.com" ],
-    "expiry_milestone": 150
-  },
+
   {
     "name": "enable-fullscreen-to-any-screen-android",
     "owners": [ "wzwonarz@chromium.org", "lt-web-apps-team@google.com" ],

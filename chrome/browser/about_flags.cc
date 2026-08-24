@@ -6738,11 +6738,6 @@ const FeatureEntry kFeatureEntries[] = {
          kContextualSuggestionsAblateOthersWhenPresentVariations,
          "ContextualSuggestionsAblateOthersWhenPresent")},
 
-    {"enable-force-download-to-onedrive",
-     flag_descriptions::kEnableForceDownloadToOneDriveName,
-     flag_descriptions::kEnableForceDownloadToOneDriveDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         enterprise_data_protection::kEnableForceDownloadToOneDrive)},
 
     {"omnibox-contextual-search-on-focus-suggestions",
      flag_descriptions::kOmniboxContextualSearchOnFocusSuggestionsName,

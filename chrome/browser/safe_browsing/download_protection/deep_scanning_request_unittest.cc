@@ -424,79 +424,39 @@ GetForceSaveToCloudPrioritizationTestCases() {
                       enterprise_connectors::TriggeredRule::CORP_ONEDRIVE});
 
   return {
-      // Both features enabled
-      {{dp_features::kEnableForceDownloadToCloud,
-        dp_features::kEnableForceDownloadToOneDrive},
+      // Cloud feature enabled
+      {{dp_features::kEnableForceDownloadToCloud},
        {},
        response_gdrive,
        DownloadCheckResult::FORCE_SAVE_TO_GDRIVE,
-       "BothEnabledGDriveResponse"},
-      {{dp_features::kEnableForceDownloadToCloud,
-        dp_features::kEnableForceDownloadToOneDrive},
+       "CloudEnabledGDriveResponse"},
+      {{dp_features::kEnableForceDownloadToCloud},
        {},
        response_onedrive,
        DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE,
-       "BothEnabledOneDriveResponse"},
-      {{dp_features::kEnableForceDownloadToCloud,
-        dp_features::kEnableForceDownloadToOneDrive},
+       "CloudEnabledOneDriveResponse"},
+      {{dp_features::kEnableForceDownloadToCloud},
        {},
        response_both,
        DownloadCheckResult::FORCE_SAVE_TO_GDRIVE,
-       "BothEnabledBothResponse"},
+       "CloudEnabledBothResponse"},
 
-      // Only GDrive feature enabled.
-      {{dp_features::kEnableForceDownloadToCloud},
-       {dp_features::kEnableForceDownloadToOneDrive},
-       response_gdrive,
-       DownloadCheckResult::FORCE_SAVE_TO_GDRIVE,
-       "GDriveEnabledGDriveResponse"},
-      {{dp_features::kEnableForceDownloadToCloud},
-       {dp_features::kEnableForceDownloadToOneDrive},
-       response_onedrive,
-       DownloadCheckResult::SENSITIVE_CONTENT_BLOCK,
-       "GDriveEnabledOneDriveResponse"},
-      {{dp_features::kEnableForceDownloadToCloud},
-       {dp_features::kEnableForceDownloadToOneDrive},
-       response_both,
-       DownloadCheckResult::FORCE_SAVE_TO_GDRIVE,
-       "GDriveEnabledBothResponse"},
-
-      // Only OneDrive feature enabled.
-      {{dp_features::kEnableForceDownloadToOneDrive},
+      // Cloud feature disabled (OneDrive falls back as conditionally allowed)
+      {{},
        {dp_features::kEnableForceDownloadToCloud},
        response_gdrive,
        DownloadCheckResult::SENSITIVE_CONTENT_BLOCK,
-       "OneDriveEnabledGDriveResponse"},
-      {{dp_features::kEnableForceDownloadToOneDrive},
+       "CloudDisabledGDriveResponse"},
+      {{},
        {dp_features::kEnableForceDownloadToCloud},
        response_onedrive,
        DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE,
-       "OneDriveEnabledOneDriveResponse"},
-      {{dp_features::kEnableForceDownloadToOneDrive},
+       "CloudDisabledOneDriveResponse"},
+      {{},
        {dp_features::kEnableForceDownloadToCloud},
        response_both,
        DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE,
-       "OneDriveEnabledBothResponse"},
-
-      // Both features disabled.
-      {{},
-       {dp_features::kEnableForceDownloadToCloud,
-        dp_features::kEnableForceDownloadToOneDrive},
-       response_gdrive,
-       DownloadCheckResult::SENSITIVE_CONTENT_BLOCK,
-       "BothDisabledGDriveResponse"},
-      {{},
-       {dp_features::kEnableForceDownloadToCloud,
-        dp_features::kEnableForceDownloadToOneDrive},
-       response_onedrive,
-       DownloadCheckResult::SENSITIVE_CONTENT_BLOCK,
-       "BothDisabledOneDriveResponse"},
-      {{},
-       {dp_features::kEnableForceDownloadToCloud,
-        dp_features::kEnableForceDownloadToOneDrive},
-       response_both,
-       DownloadCheckResult::SENSITIVE_CONTENT_BLOCK,
-       "BothDisabledBothResponse"},
+       "CloudDisabledBothResponse"},
   };
 }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
@@ -2002,11 +1962,6 @@ TEST_F(DeepScanningReportingTest, ReportForceSaveToOneDrive) {
       /*destination=*/"OneDrive");
 
   validator.ExpectSensitiveDataEvent(std::move(expected_event));
-
-  // Enable the feature to allow FORCE_SAVE_TO_ONEDRIVE result.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {enterprise_data_protection::kEnableForceDownloadToOneDrive}, {});
 
   request.Start();
 
@@ -3525,11 +3480,6 @@ TEST_P(DeepScanningDownloadRestrictionsTest,
   expected_event.set_destination("OneDrive");
 
   validator.ExpectUnscannedFileEvent(std::move(expected_event));
-
-  // Enable the feature to allow FORCE_SAVE_TO_ONEDRIVE result.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {enterprise_data_protection::kEnableForceDownloadToOneDrive}, {});
 
   request.Start();
 

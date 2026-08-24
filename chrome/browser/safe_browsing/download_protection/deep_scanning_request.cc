@@ -87,10 +87,8 @@ GetHighestPrecedenceForceSaveToCloudDestination(
       (destination_1 == TriggeredRule::CORP_G_DRIVE ||
        destination_2 == TriggeredRule::CORP_G_DRIVE)) {
     return TriggeredRule::CORP_G_DRIVE;
-  } else if (base::FeatureList::IsEnabled(
-                 enterprise_data_protection::kEnableForceDownloadToOneDrive) &&
-             (destination_1 == TriggeredRule::CORP_ONEDRIVE ||
-              destination_2 == TriggeredRule::CORP_ONEDRIVE)) {
+  } else if (destination_1 == TriggeredRule::CORP_ONEDRIVE ||
+             destination_2 == TriggeredRule::CORP_ONEDRIVE) {
     return TriggeredRule::CORP_ONEDRIVE;
   }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
@@ -1152,12 +1150,9 @@ content::WebContents* DeepScanningRequest::MaybeGetWebContentsForForceSave(
     return nullptr;
   }
 
-  const auto& force_save_to_cloud_feature =
-      result == DownloadCheckResult::FORCE_SAVE_TO_GDRIVE
-          ? enterprise_data_protection::kEnableForceDownloadToCloud
-          : enterprise_data_protection::kEnableForceDownloadToOneDrive;
-
-  if (!base::FeatureList::IsEnabled(force_save_to_cloud_feature)) {
+  if (result == DownloadCheckResult::FORCE_SAVE_TO_GDRIVE &&
+      !base::FeatureList::IsEnabled(
+          enterprise_data_protection::kEnableForceDownloadToCloud)) {
     result = DownloadCheckResult::SENSITIVE_CONTENT_BLOCK;
     return nullptr;
   }

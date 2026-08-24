@@ -12,7 +12,6 @@ namespace enterprise_data_protection {
 
 BASE_DECLARE_FEATURE(kEnableForceDownloadToCloud);
 
-BASE_DECLARE_FEATURE(kEnableForceDownloadToOneDrive);
 
 BASE_DECLARE_FEATURE(kEnableTabSharingProtection);
 

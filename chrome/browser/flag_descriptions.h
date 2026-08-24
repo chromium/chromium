@@ -6165,10 +6165,6 @@ inline constexpr char kEnableEscapeHandlingForSecondaryActivitiesName[] =
 inline constexpr char kEnableEscapeHandlingForSecondaryActivitiesDescription[] =
     "Enables handling escape events on secondary activities and native pages.";
 
-inline constexpr char kEnableForceDownloadToOneDriveName[] =
-    "Enable forced download to OneDrive";
-inline constexpr char kEnableForceDownloadToOneDriveDescription[] =
-    "Enables forced download to OneDrive for enterprise users.";
 
 inline constexpr char kEnableSwipeToSwitchPaneName[] =
     "Enable Swipe To Switch Pane";
