@@ -105,6 +105,9 @@ source_set("unit_tests") {
       "geic_pwc_manager_unittest.cc",
     ]
     deps += [
+      "//chrome/browser/ui/browser_window/test:test_support",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs:test_support",
       "//components/tabs:public",
       "//components/tabs:test_support",
     ]
