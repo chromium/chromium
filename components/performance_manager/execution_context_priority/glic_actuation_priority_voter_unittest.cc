@@ -223,4 +223,84 @@ TEST_F(GlicActuationPriorityVoterTest, FencedFrameNavigationNoCrash) {
       ->SetGlicActuationStateForTesting(GlicActuationState::kNone);
 }
 
+// Tests that when Glic actuation state resets to kNone (e.g. after a timeout),
+// subsequent frame removal properly cleans up without crashing.
+TEST_F(GlicActuationPriorityVoterTest, FrameRemovedAfterActuationReset) {
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+  auto* page_node = mock_graph.page.get();
+  auto* main_frame_node = mock_graph.frame.get();
+
+  // Actuation starts -> vote cast.
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
+      ->SetGlicActuationStateForTesting(
+          GlicActuationState::kActuatingOnVisibleTab);
+  EXPECT_EQ(observer_.GetVoteCount(), 1u);
+  EXPECT_TRUE(
+      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
+
+  // Actuation times out or finishes -> state resets to kNone.
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
+      ->SetGlicActuationStateForTesting(GlicActuationState::kNone);
+  EXPECT_EQ(observer_.GetVoteCount(), 0u);
+
+  // Frame is removed.
+  glic_voter_.OnBeforeFrameNodeRemoved(main_frame_node);
+  EXPECT_EQ(observer_.GetVoteCount(), 0u);
+}
+
+// Tests that removing a frame while actuation is still active properly cleans
+// up.
+TEST_F(GlicActuationPriorityVoterTest, FrameRemovedWhileActuating) {
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+  auto* page_node = mock_graph.page.get();
+  auto* main_frame_node = mock_graph.frame.get();
+
+  // Actuation starts -> vote cast.
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
+      ->SetGlicActuationStateForTesting(
+          GlicActuationState::kActuatingOnVisibleTab);
+  EXPECT_EQ(observer_.GetVoteCount(), 1u);
+  EXPECT_TRUE(
+      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
+
+  // Frame is removed while still actuating.
+  glic_voter_.OnBeforeFrameNodeRemoved(main_frame_node);
+  EXPECT_EQ(observer_.GetVoteCount(), 0u);
+
+  // Clean up.
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
+      ->SetGlicActuationStateForTesting(GlicActuationState::kNone);
+}
+
+// Tests that if the primary main frame becomes inactive before actuation
+// resets, resetting actuation to kNone still cleans up the vote across all main
+// frames.
+TEST_F(GlicActuationPriorityVoterTest,
+       ActuationResetWhenPrimaryMainFrameIsInactive) {
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+  auto* page_node = mock_graph.page.get();
+  auto* main_frame_node = mock_graph.frame.get();
+
+  // Actuation starts -> vote cast.
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
+      ->SetGlicActuationStateForTesting(
+          GlicActuationState::kActuatingOnVisibleTab);
+  EXPECT_EQ(observer_.GetVoteCount(), 1u);
+  EXPECT_TRUE(
+      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
+
+  // Frame becomes inactive (e.g. entering BFCache or navigating away).
+  main_frame_node->SetIsActive(false);
+  EXPECT_EQ(page_node->primary_main_frame_node(), nullptr);
+
+  // Actuation resets to kNone while primary main frame is nullptr.
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
+      ->SetGlicActuationStateForTesting(GlicActuationState::kNone);
+  EXPECT_EQ(observer_.GetVoteCount(), 0u);
+
+  // Frame is removed -> no crash, 0 votes.
+  glic_voter_.OnBeforeFrameNodeRemoved(main_frame_node);
+  EXPECT_EQ(observer_.GetVoteCount(), 0u);
+}
+
 }  // namespace performance_manager::execution_context_priority

@@ -50,6 +50,14 @@ void GlicActuationPriorityVoter::OnGlicActuationStateChanged(
       PageLiveStateDecorator::Data::FromPageNode(page_node)
           ->GetGlicActuationState();
 
+  if (state == GlicActuationState::kNone) {
+    for (const FrameNode* main_frame_node : page_node->GetMainFrameNodes()) {
+      voting_channel_.SetVote(GetExecutionContext(main_frame_node),
+                              std::nullopt);
+    }
+    return;
+  }
+
   auto* main_frame_node = page_node->GetPrimaryMainFrameNode();
   if (main_frame_node) {
     UpdateFrameNodeVote(main_frame_node, state);
@@ -92,39 +100,26 @@ void GlicActuationPriorityVoter::OnBeforeFrameNodeAdded(
 
 void GlicActuationPriorityVoter::OnBeforeFrameNodeRemoved(
     const FrameNode* frame_node) {
-  if (frame_node->GetParentOrOuterDocument()) {
-    return;
-  }
-  const GlicActuationState state =
-      PageLiveStateDecorator::Data::FromPageNode(frame_node->GetPageNode())
-          ->GetGlicActuationState();
-  if (frame_node->IsCurrent() && state != GlicActuationState::kNone) {
-    voting_channel_.SetVote(GetExecutionContext(frame_node), std::nullopt);
-  }
+  voting_channel_.SetVote(GetExecutionContext(frame_node), std::nullopt);
 }
 
 void GlicActuationPriorityVoter::OnCurrentFrameChanged(
     const FrameNode* previous_frame_node,
     const FrameNode* current_frame_node) {
-  const FrameNode* frame_node =
-      current_frame_node ? current_frame_node : previous_frame_node;
-  CHECK(frame_node);
-  if (frame_node->GetParentOrOuterDocument()) {
-    return;
-  }
-  GlicActuationState state =
-      PageLiveStateDecorator::Data::FromPageNode(frame_node->GetPageNode())
-          ->GetGlicActuationState();
-  if (state == GlicActuationState::kNone) {
-    return;
-  }
-
-  if (current_frame_node) {
-    UpdateFrameNodeVote(current_frame_node, state);
-  }
   if (previous_frame_node) {
     voting_channel_.SetVote(GetExecutionContext(previous_frame_node),
                             std::nullopt);
+  }
+
+  if (!current_frame_node || current_frame_node->GetParentOrOuterDocument()) {
+    return;
+  }
+
+  const GlicActuationState state = PageLiveStateDecorator::Data::FromPageNode(
+                                       current_frame_node->GetPageNode())
+                                       ->GetGlicActuationState();
+  if (state != GlicActuationState::kNone) {
+    UpdateFrameNodeVote(current_frame_node, state);
   }
 }
 
