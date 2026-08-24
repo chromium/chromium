@@ -520,9 +520,15 @@ std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
   CSSParserLocalContext local_context =
       CSSParserLocalContext::CreateWithoutPropertyForAtRules();
   if (media_feature == media_feature_names::kFallbackMediaFeature) {
-    if (CSSValue* fallback_value =
+    if (const CSSValue* fallback_value =
             css_parsing_utils::ConsumeAnchoredFallbackQueryValue(
                 stream, context, local_context)) {
+      // Make sure the fallback_value does not have needs_tree_scope_population_
+      // set to true. The evaluation code uses the StyleBuilderConverter which
+      // checks that all values have been properly populated with tree-scopes.
+      // anchored(fallback: --foo) matches --foo in any tree-scope, so use
+      // nullptr here for simplicity.
+      fallback_value = &fallback_value->EnsureScopedValue(nullptr);
       return MediaQueryExpValue(*fallback_value);
     }
   }

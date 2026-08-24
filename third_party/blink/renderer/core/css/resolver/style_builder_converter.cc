@@ -2290,7 +2290,7 @@ ScopedCSSName* StyleBuilderConverter::ConvertCustomIdent(
   state.SetHasTreeScopedReference();
   return MakeGarbageCollected<ScopedCSSName>(
       ConvertCustomIdentUnscoped(state, value),
-      To<CSSCustomIdentValue>(value).GetTreeScope());
+      To<CSSCustomIdentValue>(value).GetPopulatedTreeScope());
 }
 
 AtomicString StyleBuilderConverter::ConvertNoneOrCustomIdentUnscoped(
@@ -2372,7 +2372,7 @@ StyleNameScope StyleBuilderConverter::ConvertNameScope(
     CHECK_EQ(scoped_keyword_value->GetValueID(), CSSValueID::kAll);
     state.SetHasTreeScopedReference();
     return StyleNameScope(StyleNameScope::Type::kAll,
-                          scoped_keyword_value->GetTreeScope(),
+                          scoped_keyword_value->GetPopulatedTreeScope(),
                           /* names */ nullptr);
   }
   if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {

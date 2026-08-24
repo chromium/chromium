@@ -3229,7 +3229,7 @@ void Content::ApplyValue(StyleResolverState& state,
               ? g_empty_atom
               : counter_value->ListStyleName(),
           AtomicString(counter_value->Separator()),
-          counter_value->GetTreeScope(),
+          counter_value->GetPopulatedTreeScope(),
           counter_value->ListStyleIsSymbolsFunction()
               ? &counter_value->ListStyleSymbolsFunction()
               : nullptr);
@@ -3285,7 +3285,7 @@ void Content::ApplyValue(StyleResolverState& state,
                 ? g_empty_atom
                 : counter_value->ListStyleName(),
             AtomicString(counter_value->Separator()),
-            counter_value->GetTreeScope(),
+            counter_value->GetPopulatedTreeScope(),
             counter_value->ListStyleIsSymbolsFunction()
                 ? &counter_value->ListStyleSymbolsFunction()
                 : nullptr);
@@ -6698,7 +6698,7 @@ void ListStyleType::ApplyValue(StyleResolverState& state,
     state.SetHasTreeScopedReference();
   }
   builder.SetListStyleType(ListStyleTypeData::CreateCounterStyle(
-      custom_ident_value.Value(), custom_ident_value.GetTreeScope()));
+      custom_ident_value.Value(), custom_ident_value.GetPopulatedTreeScope()));
 }
 
 bool MarginBlockEnd::IsLayoutDependent(const ComputedStyle* style,
@@ -8129,9 +8129,7 @@ const CSSValue* ViewTransitionClass::CSSValueFromComputedStyleInternal(
   }
   CSSValueList* ident_list = CSSValueList::CreateSpaceSeparated();
   for (const auto& class_name : view_transition_class->GetNames()) {
-    auto* value =
-        MakeGarbageCollected<CSSCustomIdentValue>(class_name->GetName());
-    value->EnsureScopedValue(class_name->GetTreeScope());
+    auto* value = MakeGarbageCollected<CSSCustomIdentValue>(*class_name);
     ident_list->Append(*value);
   }
   return ident_list;

@@ -75,6 +75,10 @@ class CSSCounterContentValue : public CSSValue {
   }
   const String& Separator() const { return separator_->Value(); }
   const TreeScope* GetTreeScope() const { return identifier_->GetTreeScope(); }
+  const TreeScope* GetPopulatedTreeScope() const {
+    CHECK(IsScopedValue());
+    return GetTreeScope();
+  }
 
   bool Equals(const CSSCounterContentValue& other) const {
     return Identifier() == other.Identifier() &&
