@@ -44,7 +44,7 @@ class BrowserTabStripControllerTestBase : public InProcessBrowserTest {
     tabs::TabCreationMetricsController::SetTaskRunnerForTesting(nullptr);
   }
 
-  TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
+  TabStripModel* tab_strip_model() { return browser()->GetTabStripModel(); }
   TabStrip* tabstrip() {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->horizontal_tab_strip_for_testing();
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(
   // Tabs [0, 1] in group
   const tab_groups::TabGroupId group = tab_strip_model()->AddToNewGroup({0, 1});
   // Active tab in group
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
   int next_available_index = 2;  // Tab 2 is outside group
 
   // Expect: group is collapsed, active tab switched to next available tab.
@@ -207,7 +207,8 @@ IN_PROC_BROWSER_TEST_F(
       group, ToggleTabGroupCollapsedStateOrigin::kMouse);
 
   // Verify active tab switched to the next available tab outside group
-  EXPECT_EQ(browser()->tab_strip_model()->active_index(), next_available_index);
+  EXPECT_EQ(browser()->GetTabStripModel()->active_index(),
+            next_available_index);
   EXPECT_TRUE(controller()->IsGroupCollapsed(group));
 }
 
@@ -219,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(tab_strip_model()->count(), 1);  // 0
   const tab_groups::TabGroupId group = tab_strip_model()->AddToNewGroup({0});
   // Active tab in group
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   // Expect: group collapse is cancelled temporarily, new tab is created outside
   // group and activated.

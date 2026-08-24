@@ -91,7 +91,7 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
-  TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
+  TabStripModel* tab_strip_model() { return browser()->GetTabStripModel(); }
 
   BrowserView* browser_view() {
     return BrowserView::GetBrowserViewForBrowser(browser());

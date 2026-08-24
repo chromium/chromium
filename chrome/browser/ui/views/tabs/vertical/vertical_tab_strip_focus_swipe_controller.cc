@@ -8,7 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"

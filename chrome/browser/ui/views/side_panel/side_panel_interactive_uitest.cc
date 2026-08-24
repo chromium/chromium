@@ -9,7 +9,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -158,12 +157,12 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, SidePanelNotShownOnPwa) {
       // Add a second tab to the tab strip
       AddInstrumentedTab(kSecondTabElementId, second_tab_url),
       CheckResult(
-          ([&]() { return browser()->tab_strip_model()->active_index(); }), 1),
+          ([&]() { return browser()->GetTabStripModel()->active_index(); }), 1),
       // Ensure the side panel isn't open
       EnsureNotPresent(kSidePanelElementId),
       CheckResult(([&]() {
                     return browser()
-                        ->tab_strip_model()
+                        ->GetTabStripModel()
                         ->GetActiveWebContents()
                         ->GetLastCommittedURL();
                   }),
@@ -194,12 +193,11 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, SidePanelNotShownOnPwa) {
   // picker.
   BrowserWindowInterface* app_browser =
       web_app::ReparentWebContentsIntoAppBrowser(
-          browser()->tab_strip_model()->GetActiveWebContents(), app_id);
+          browser()->GetTabStripModel()->GetActiveWebContents(), app_id);
   EXPECT_TRUE(app_browser->GetType() == BrowserWindowInterface::TYPE_APP);
 
   // App does not show side panel.
-  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(
-                   app_browser->GetBrowserForMigrationOnly())
+  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(app_browser)
                    ->side_panel()
                    ->GetVisible());
 }
@@ -627,7 +625,7 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
       // Add a second tab to the tab strip
       AddInstrumentedTab(kSecondTabElementId, GURL(url::kAboutBlankURL)),
       CheckResult(
-          ([&]() { return browser()->tab_strip_model()->active_index(); }),
+          ([&]() { return browser()->GetTabStripModel()->active_index(); }),
           testing::Eq(1)),
       // Ensure the side panel isn't open
       EnsureNotPresent(kSidePanelElementId),

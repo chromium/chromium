@@ -88,11 +88,11 @@ IN_PROC_BROWSER_TEST_P(TabCollectionNodeInteractiveUiTest,
   }
 
   // Final Order: [D, E] [[A, B, C], F].
-  auto group_id = browser()->tab_strip_model()->AddToNewGroup({1, 2});
-  browser()->tab_strip_model()->SetTabPinned(3, true);
-  browser()->tab_strip_model()->SetTabPinned(4, true);
-  browser()->tab_strip_model()->AddToExistingGroup({2}, group_id);
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  auto group_id = browser()->GetTabStripModel()->AddToNewGroup({1, 2});
+  browser()->GetTabStripModel()->SetTabPinned(3, true);
+  browser()->GetTabStripModel()->SetTabPinned(4, true);
+  browser()->GetTabStripModel()->AddToExistingGroup({2}, group_id);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   const auto& pinned_node = GetRootNode()->children()[0];
   EXPECT_EQ(pinned_node->type(), TabCollectionNode::Type::PINNED);
@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_P(TabCollectionNodeInteractiveUiTest,
       // Setup the group.
       Do([this]() {
         GetFocusManager()->SetKeyboardAccessible(true);
-        browser()->tab_strip_model()->AddToNewGroup({0});
+        browser()->GetTabStripModel()->AddToNewGroup({0});
         RunScheduledLayouts();
       }),
 
@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_P(TabCollectionNodeInteractiveUiTest,
 
       // Remove the tab from the group.
       Do([this]() {
-        browser()->tab_strip_model()->RemoveFromGroup({0});
+        browser()->GetTabStripModel()->RemoveFromGroup({0});
         RunScheduledLayouts();
       }),
 
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_P(TabCollectionNodeInteractiveUiTest,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
   ASSERT_EQ(model->count(), 3);
 
   const auto& unpinned_node = GetRootNode()->children()[1];

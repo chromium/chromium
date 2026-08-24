@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -66,7 +65,7 @@ TEST_F(NewTabButtonTest, TriggerableEventFlags) {
 }
 
 TEST_F(NewTabButtonTest, LeftClickButtonCreatesNewTabAndUpdatesInkDrop) {
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   const int initial_count = tab_strip_model->count();
 
   ui::MouseEvent press_event(ui::EventType::kMousePressed, gfx::Point(5, 5),

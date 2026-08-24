@@ -8,8 +8,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_device_button.h"
@@ -77,7 +77,7 @@ class SendTabToSelfInteractiveUiTest : public InteractiveBrowserTest {
   auto ShowBubble() {
     return Do([this]() {
       SendTabToSelfBubbleController::GetOrCreateForWebContents(
-          browser()->tab_strip_model()->GetActiveWebContents())
+          browser()->GetTabStripModel()->GetActiveWebContents())
           ->ShowBubble(ShareEntryPoint::kToolbarIcon);
     });
   }
@@ -104,7 +104,7 @@ class SendTabToSelfInteractiveUiTest : public InteractiveBrowserTest {
   SendTabToSelfDevicePickerBubbleView* GetBubbleView() {
     return static_cast<SendTabToSelfDevicePickerBubbleView*>(
         SendTabToSelfBubbleController::GetOrCreateForWebContents(
-            browser()->tab_strip_model()->GetActiveWebContents())
+            browser()->GetTabStripModel()->GetActiveWebContents())
             ->send_tab_to_self_bubble_view());
   }
 
@@ -150,23 +150,23 @@ class SendTabToSelfInteractiveUiTest : public InteractiveBrowserTest {
 // a success toast after a device is selected.
 IN_PROC_BROWSER_TEST_F(SendTabToSelfInteractiveUiTest,
                        SendTabShowsBubbleAndToast) {
-  RunTestSequence(
-      SetUpSingleDeviceAndShowBubble(), Do([this]() {
-        SendTabToSelfBubbleController::GetOrCreateForWebContents(
-            browser()->tab_strip_model()->GetActiveWebContents())
-            ->OnDeviceSelected("device_1", "device_1");
-      }),
-      WaitForShow(toasts::ToastView::kToastViewId), StopToastTimer(),
-      Screenshot(toasts::ToastView::kToastViewId,
-                 /*screenshot_name=*/"SendTabToSelfSuccessToast",
-                 /*baseline_cl=*/kScreenshotBaselineCL),
-      Do([this]() {
-        SendTabToSelfBubbleController::GetOrCreateForWebContents(
-            browser()->tab_strip_model()->GetActiveWebContents())
-            ->HideBubble();
-      }),
-      WaitForHide(SendTabToSelfDevicePickerBubbleView::
-                      kSendTabToSelfDevicePickerBubbleId));
+  RunTestSequence(SetUpSingleDeviceAndShowBubble(), Do([this]() {
+                    SendTabToSelfBubbleController::GetOrCreateForWebContents(
+                        browser()->GetTabStripModel()->GetActiveWebContents())
+                        ->OnDeviceSelected("device_1", "device_1");
+                  }),
+                  WaitForShow(toasts::ToastView::kToastViewId),
+                  StopToastTimer(),
+                  Screenshot(toasts::ToastView::kToastViewId,
+                             /*screenshot_name=*/"SendTabToSelfSuccessToast",
+                             /*baseline_cl=*/kScreenshotBaselineCL),
+                  Do([this]() {
+                    SendTabToSelfBubbleController::GetOrCreateForWebContents(
+                        browser()->GetTabStripModel()->GetActiveWebContents())
+                        ->HideBubble();
+                  }),
+                  WaitForHide(SendTabToSelfDevicePickerBubbleView::
+                                  kSendTabToSelfDevicePickerBubbleId));
 }
 
 class SendTabToSelfDeviceSelectionInteractiveUiTest
@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfDeviceSelectionInteractiveUiTest,
       WaitForShow(toasts::ToastView::kToastViewId), StopToastTimer(),
       Do([this]() {
         SendTabToSelfBubbleController::GetOrCreateForWebContents(
-            browser()->tab_strip_model()->GetActiveWebContents())
+            browser()->GetTabStripModel()->GetActiveWebContents())
             ->HideBubble();
       }),
       WaitForHide(SendTabToSelfDevicePickerBubbleView::
@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfDeviceSelectionInteractiveUiTest,
       WaitForShow(toasts::ToastView::kToastViewId), StopToastTimer(),
       Do([this]() {
         SendTabToSelfBubbleController::GetOrCreateForWebContents(
-            browser()->tab_strip_model()->GetActiveWebContents())
+            browser()->GetTabStripModel()->GetActiveWebContents())
             ->HideBubble();
       }),
       WaitForHide(SendTabToSelfDevicePickerBubbleView::
@@ -286,12 +286,12 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfDeviceSelectionInteractiveUiTest,
           SendTabToSelfDevicePickerBubbleView::kManageDevicesLinkElementId),
       WaitForHide(SendTabToSelfDevicePickerBubbleView::
                       kSendTabToSelfDevicePickerBubbleId),
-      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+      CheckResult([this]() { return browser()->GetTabStripModel()->count(); },
                   2),
       CheckResult(
           [this]() {
             return browser()
-                ->tab_strip_model()
+                ->GetTabStripModel()
                 ->GetActiveWebContents()
                 ->GetVisibleURL();
           },

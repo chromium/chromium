@@ -154,10 +154,10 @@ class RecentActivityBubbleDialogViewInteractiveUiTest
   GURL GetAvatarURL() { return embedded_test_server()->GetURL(avatar_url_); }
 
   tabs::TabInterface* CreateTab() {
-    auto index = browser()->tab_strip_model()->count();
+    auto index = browser()->GetTabStripModel()->count();
     CHECK(AddTabAtIndex(index, GURL(chrome::kChromeUINewTabPageURL),
                         ui::PAGE_TRANSITION_TYPED));
-    auto* tab = browser()->tab_strip_model()->GetTabAtIndex(index);
+    auto* tab = browser()->GetTabStripModel()->GetTabAtIndex(index);
     CHECK(tab);
     return tab;
   }
@@ -170,9 +170,9 @@ class RecentActivityBubbleDialogViewInteractiveUiTest
     std::vector<int> tab_indices = {};
     for (auto* tab : tabs) {
       tab_indices.emplace_back(
-          browser()->tab_strip_model()->GetIndexOfTab(tab));
+          browser()->GetTabStripModel()->GetIndexOfTab(tab));
     }
-    return browser()->tab_strip_model()->AddToNewGroup(tab_indices);
+    return browser()->GetTabStripModel()->AddToNewGroup(tab_indices);
   }
 
   SavedTabGroup ShareTabGroup(TabGroupId group_id,
@@ -193,7 +193,7 @@ class RecentActivityBubbleDialogViewInteractiveUiTest
     return WithView(kTabStripElementId, [&, activity_log](TabStrip* tab_strip) {
       BubbleCoordinator()->Show(
           views::BubbleAnchor(tab_strip),
-          browser()->tab_strip_model()->GetWebContentsAt(0), activity_log,
+          browser()->GetTabStripModel()->GetWebContentsAt(0), activity_log,
           browser()->GetProfile());
     });
   }
@@ -203,7 +203,7 @@ class RecentActivityBubbleDialogViewInteractiveUiTest
     return WithView(kTabStripElementId, [&, activity_log](TabStrip* tab_strip) {
       BubbleCoordinator()->ShowForCurrentTab(
           views::BubbleAnchor(tab_strip),
-          browser()->tab_strip_model()->GetWebContentsAt(0), {}, activity_log,
+          browser()->GetTabStripModel()->GetWebContentsAt(0), {}, activity_log,
           browser()->GetProfile());
     });
   }

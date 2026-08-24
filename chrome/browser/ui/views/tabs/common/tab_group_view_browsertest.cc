@@ -55,9 +55,9 @@ class TabGroupViewTest
   }
 
   void ActivateTab(const tabs::TabInterface* tab) {
-    int index = browser()->tab_strip_model()->GetIndexOfTab(tab);
+    int index = browser()->GetTabStripModel()->GetIndexOfTab(tab);
     CHECK(index != TabStripModel::kNoTab);
-    browser()->tab_strip_model()->ActivateTabAt(
+    browser()->GetTabStripModel()->ActivateTabAt(
         index, TabStripUserGestureDetails(
                    TabStripUserGestureDetails::GestureType::kOther));
     RunScheduledLayouts();
@@ -67,12 +67,12 @@ class TabGroupViewTest
     AppendTab();
     AppendTab();
 
-    browser()->tab_strip_model()->ActivateTabAt(
+    browser()->GetTabStripModel()->ActivateTabAt(
         1, TabStripUserGestureDetails(
                TabStripUserGestureDetails::GestureType::kOther));
 
     tab_groups::TabGroupId group_id =
-        browser()->tab_strip_model()->AddToNewGroup({1});
+        browser()->GetTabStripModel()->AddToNewGroup({1});
     RunScheduledLayouts();
     return group_id;
   }
@@ -82,9 +82,9 @@ class TabGroupViewTest
     AppendTab();
 
     tab_groups::TabGroupId group_id =
-        browser()->tab_strip_model()->AddToNewGroup({1});
+        browser()->GetTabStripModel()->AddToNewGroup({1});
 
-    browser()->tab_strip_model()->ActivateTabAt(
+    browser()->GetTabStripModel()->ActivateTabAt(
         2, TabStripUserGestureDetails(
                TabStripUserGestureDetails::GestureType::kOther));
     RunScheduledLayouts();
@@ -93,7 +93,7 @@ class TabGroupViewTest
 
   void UngroupTabGroup(tab_groups::TabGroupId group_id) {
     const gfx::Range tab_range = browser()
-                                     ->tab_strip_model()
+                                     ->GetTabStripModel()
                                      ->group_model()
                                      ->GetTabGroup(group_id)
                                      ->ListTabs();
@@ -104,7 +104,7 @@ class TabGroupViewTest
       tab_indices.push_back(i);
     }
 
-    browser()->tab_strip_model()->RemoveFromGroup(tab_indices);
+    browser()->GetTabStripModel()->RemoveFromGroup(tab_indices);
     RunScheduledLayouts();
   }
 
@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupViewTest,
 
 IN_PROC_BROWSER_TEST_F(TabGroupViewTest,
                        CollapsingGroupWithOnlyTabInStripAddsNewTab) {
-  browser()->tab_strip_model()->AddToNewGroup({0});
+  browser()->GetTabStripModel()->AddToNewGroup({0});
 
   // The unpinned collection should only have one child, the tab group.
   EXPECT_EQ(unpinned_collection_node()->children().size(), 1u);
@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupViewTest, AttentionIndicator) {
   EXPECT_TRUE(base::test::RunUntil([&]() { return !tab->GetVisible(); }));
   // Set the attention indicator to true and verify its visibility.
   browser()
-      ->tab_strip_model()
+      ->GetTabStripModel()
       ->group_model()
       ->GetTabGroup(group_id)
       ->GetTabGroupFeatures()
@@ -387,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupViewTest, AttentionIndicator) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupViewTest, ShiftGroupUp_PastSingleTab) {
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
 
   AppendTab();
   AppendTab();
@@ -411,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupViewTest, ShiftGroupUp_PastSingleTab) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupViewTest, ShiftGroupDown_PastTabGroup) {
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
 
   AppendTab();
   AppendTab();
@@ -439,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupViewTest, ShiftGroupDown_PastTabGroup) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupViewTest, ShiftGroupUp_AlreadyAtTop) {
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
 
   AppendTab();
   AppendTab();
@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupViewTest, ShiftGroupUp_AlreadyAtTop) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupViewTest, ShiftGroupDown_AlreadyAtBottom) {
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
 
   AppendTab();
   AppendTab();
@@ -512,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupViewTest,
   EXPECT_EQ(tab->x(), TabGroupView::kTabLeadingPadding);
 
   // Focus the group.
-  browser()->tab_strip_model()->SetFocusedGroup(group_id);
+  browser()->GetTabStripModel()->SetFocusedGroup(group_id);
   RunScheduledLayouts();
 
   // In focus mode, group line should be hidden and tab should be aligned at x =
@@ -521,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupViewTest,
   EXPECT_EQ(tab->x(), 0);
 
   // Unfocus the group.
-  browser()->tab_strip_model()->SetFocusedGroup(std::nullopt);
+  browser()->GetTabStripModel()->SetFocusedGroup(std::nullopt);
   RunScheduledLayouts();
 
   // Group line should be restored and tab indented again.

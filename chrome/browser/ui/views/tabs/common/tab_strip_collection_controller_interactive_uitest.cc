@@ -138,11 +138,12 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
                                         1),
       // Verify active tab is at index 1.
       CheckResult(
-          [this]() { return browser()->tab_strip_model()->active_index(); }, 1),
+          [this]() { return browser()->GetTabStripModel()->active_index(); },
+          1),
       // Select tab at index 0 and verify active index.
       MoveMouseTo(kFirstTabName), ClickMouse(ui_controls::LEFT),
       CheckResult(
-          [this]() { return browser()->tab_strip_model()->active_index(); },
+          [this]() { return browser()->GetTabStripModel()->active_index(); },
           0));
 }
 
@@ -155,7 +156,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
       EnsurePresent(kNewTabButtonElementId),
       PressButton(kNewTabButtonElementId,
                   ui::test::InteractionTestUtil::InputType::kDontCare),
-      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+      CheckResult([this]() { return browser()->GetTabStripModel()->count(); },
                   2),
       // Name views so we can interact with them.
       NameDescendantViewByType<TabView>(kBrowserViewElementId, kFirstTabName,
@@ -177,7 +178,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
 #else
       ClickMouse(ui_controls::MIDDLE),
 #endif
-      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+      CheckResult([this]() { return browser()->GetTabStripModel()->count(); },
                   1),
       WaitForHide(kFirstTabName));
 }
@@ -192,7 +193,7 @@ IN_PROC_BROWSER_TEST_P(
       EnsurePresent(kNewTabButtonElementId),
       PressButton(kNewTabButtonElementId,
                   ui::test::InteractionTestUtil::InputType::kDontCare),
-      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+      CheckResult([this]() { return browser()->GetTabStripModel()->count(); },
                   2),
       // Name views so we can interact with them.
       NameDescendantViewByType<TabView>(kBrowserViewElementId, kFirstTabName,
@@ -211,7 +212,7 @@ IN_PROC_BROWSER_TEST_P(
                  view->OnMouseReleased(event);
                }),
       // Verify that the tab count is still 2 (the tab did not close).
-      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+      CheckResult([this]() { return browser()->GetTabStripModel()->count(); },
                   2));
 }
 
@@ -227,7 +228,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
       PressButton(kNewTabButtonElementId,
                   ui::test::InteractionTestUtil::InputType::kDontCare),
       // Wait for model to update.
-      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+      CheckResult([this]() { return browser()->GetTabStripModel()->count(); },
                   3),
       // Name views so we can interact with them.
       NameDescendantViewByType<TabView>(kBrowserViewElementId, kFirstTabName,
@@ -240,36 +241,38 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
       WaitForShow(kSecondTabName),
       WithView(kSecondTabName, ClickWithFlags(ui::EF_LEFT_MOUSE_BUTTON)),
       CheckResult(
-          [this]() { return browser()->tab_strip_model()->active_index(); }, 1),
+          [this]() { return browser()->GetTabStripModel()->active_index(); },
+          1),
       // Shift + Click Tab 3.
       WaitForShow(kThirdTabName),
       WithView(kThirdTabName, ClickWithFlags(kShift)),
       CheckResult(
-          [this]() { return browser()->tab_strip_model()->IsTabSelected(0); },
+          [this]() { return browser()->GetTabStripModel()->IsTabSelected(0); },
           false),
       CheckResult(
-          [this]() { return browser()->tab_strip_model()->IsTabSelected(1); },
+          [this]() { return browser()->GetTabStripModel()->IsTabSelected(1); },
           true),
       CheckResult(
-          [this]() { return browser()->tab_strip_model()->IsTabSelected(2); },
+          [this]() { return browser()->GetTabStripModel()->IsTabSelected(2); },
           true),
       CheckResult(
-          [this]() { return browser()->tab_strip_model()->active_index(); }, 2),
+          [this]() { return browser()->GetTabStripModel()->active_index(); },
+          2),
       // Ctrl/Command + Shift + Click Tab 1.
       WithView(kFirstTabName,
                ClickWithFlags(kShift | GetPlatformDependentAccelerator())),
       // Verify all Tabs are selected, Tab 1 is active.
       CheckResult(
-          [this]() { return browser()->tab_strip_model()->IsTabSelected(0); },
+          [this]() { return browser()->GetTabStripModel()->IsTabSelected(0); },
           true),
       CheckResult(
-          [this]() { return browser()->tab_strip_model()->IsTabSelected(1); },
+          [this]() { return browser()->GetTabStripModel()->IsTabSelected(1); },
           true),
       CheckResult(
-          [this]() { return browser()->tab_strip_model()->IsTabSelected(2); },
+          [this]() { return browser()->GetTabStripModel()->IsTabSelected(2); },
           true),
       CheckResult(
-          [this]() { return browser()->tab_strip_model()->active_index(); },
+          [this]() { return browser()->GetTabStripModel()->active_index(); },
           0));
 }
 
@@ -290,31 +293,33 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
       // Set Tab 1 to be active.
       MoveMouseTo(kFirstTabName), ClickMouse(ui_controls::LEFT),
       CheckResult(
-          [this]() { return browser()->tab_strip_model()->active_index(); }, 0),
+          [this]() { return browser()->GetTabStripModel()->active_index(); },
+          0),
       // Shift + Click Tab 2.
       WithView(kSecondTabName,
                ClickWithFlags(GetPlatformDependentAccelerator())),
       // Verify both tabs are selected, but tab 1 is active.
       CheckResult(
-          [this]() { return browser()->tab_strip_model()->IsTabSelected(0); },
+          [this]() { return browser()->GetTabStripModel()->IsTabSelected(0); },
           true),
       CheckResult(
-          [this]() { return browser()->tab_strip_model()->IsTabSelected(1); },
+          [this]() { return browser()->GetTabStripModel()->IsTabSelected(1); },
           true),
       CheckResult(
-          [this]() { return browser()->tab_strip_model()->active_index(); }, 1),
+          [this]() { return browser()->GetTabStripModel()->active_index(); },
+          1),
       // Shift + Click Tab 2.
       WithView(kSecondTabName,
                ClickWithFlags(GetPlatformDependentAccelerator())),
       // Verify only tab 1 is selected and active.
       CheckResult(
-          [this]() { return browser()->tab_strip_model()->IsTabSelected(0); },
+          [this]() { return browser()->GetTabStripModel()->IsTabSelected(0); },
           true),
       CheckResult(
-          [this]() { return browser()->tab_strip_model()->IsTabSelected(1); },
+          [this]() { return browser()->GetTabStripModel()->IsTabSelected(1); },
           false),
       CheckResult(
-          [this]() { return browser()->tab_strip_model()->active_index(); },
+          [this]() { return browser()->GetTabStripModel()->active_index(); },
           0));
 }
 
@@ -337,11 +342,12 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
       // Move to left (Tab 0) and verify active index.
       SendAccelerator(kBrowserViewElementId, previous_tab_accelerator),
       CheckResult(
-          [this]() { return browser()->tab_strip_model()->active_index(); }, 0),
+          [this]() { return browser()->GetTabStripModel()->active_index(); },
+          0),
       // Move to right (Tab 1) and verify active index.
       SendAccelerator(kBrowserViewElementId, next_tab_accelerator),
       CheckResult(
-          [this]() { return browser()->tab_strip_model()->active_index(); },
+          [this]() { return browser()->GetTabStripModel()->active_index(); },
           1));
 }
 
@@ -372,7 +378,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
       CheckResult(
           [this]() {
             return browser()
-                ->tab_strip_model()
+                ->GetTabStripModel()
                 ->group_model()
                 ->ListTabGroups()
                 .size();
@@ -388,7 +394,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
       CheckResult(
           [this]() {
             return browser()
-                ->tab_strip_model()
+                ->GetTabStripModel()
                 ->group_model()
                 ->ListTabGroups()
                 .size();
@@ -396,7 +402,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
           1),
       CheckResult(
           [this]() {
-            auto* group_model = browser()->tab_strip_model()->group_model();
+            auto* group_model = browser()->GetTabStripModel()->group_model();
             return group_model
                 ->GetTabGroup(group_model->ListTabGroups().front())
                 ->ListTabs()
@@ -409,7 +415,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
       CheckResult(
           [this]() {
             return browser()
-                ->tab_strip_model()
+                ->GetTabStripModel()
                 ->group_model()
                 ->ListTabGroups()
                 .size();
@@ -430,7 +436,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
       WaitForShow(TabMenuModel::kAddNewTabAdjacentMenuItem),
       SelectMenuItem(TabMenuModel::kAddNewTabAdjacentMenuItem),
       // Verify functionality of command in the Tab Context Menu.
-      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+      CheckResult([this]() { return browser()->GetTabStripModel()->count(); },
                   2));
 }
 
@@ -472,14 +478,15 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
       // Verify that the original tab that the context menu was opened on is the
       // one that was duplicated, not the tab inserted after the context menu
       // was opened.
-      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+      CheckResult([this]() { return browser()->GetTabStripModel()->count(); },
                   4),
       CheckResult(
-          [this]() { return browser()->tab_strip_model()->active_index(); }, 3),
+          [this]() { return browser()->GetTabStripModel()->active_index(); },
+          3),
       CheckResult(
           [this]() {
             return browser()
-                ->tab_strip_model()
+                ->GetTabStripModel()
                 ->GetActiveTab()
                 ->GetContents()
                 ->GetLastCommittedURL()
@@ -515,23 +522,23 @@ IN_PROC_BROWSER_TEST_F(
                   ui::test::InteractionTestUtil::InputType::kDontCare),
       Do([this]() {
         EXPECT_FALSE(CheckBrowserHasColorOverride());
-        browser()->tab_strip_model()->AddToNewGroup({0, 1});
+        browser()->GetTabStripModel()->AddToNewGroup({0, 1});
       }),
       WaitForShow(kTabGroupHeaderElementId), Do([this]() {
         std::optional<tab_groups::TabGroupId> group =
-            browser()->tab_strip_model()->GetActiveTab()->GetGroup();
+            browser()->GetTabStripModel()->GetActiveTab()->GetGroup();
         EXPECT_TRUE(group.has_value());
 
         // Focus on the group, which should override the tab strip color.
-        browser()->tab_strip_model()->SetFocusedGroup(group.value());
+        browser()->GetTabStripModel()->SetFocusedGroup(group.value());
         EXPECT_TRUE(CheckBrowserHasColorOverride());
 
         // Unset focused group, which should remove the override.
-        browser()->tab_strip_model()->SetFocusedGroup(std::nullopt);
+        browser()->GetTabStripModel()->SetFocusedGroup(std::nullopt);
         EXPECT_FALSE(CheckBrowserHasColorOverride());
 
         // Focus on the group again, which should override the tab strip color.
-        browser()->tab_strip_model()->SetFocusedGroup(group.value());
+        browser()->GetTabStripModel()->SetFocusedGroup(group.value());
         EXPECT_TRUE(CheckBrowserHasColorOverride());
       }));
 }
@@ -546,18 +553,18 @@ IN_PROC_BROWSER_TEST_F(
       EnsurePresent(kNewTabButtonElementId),
       PressButton(kNewTabButtonElementId,
                   ui::test::InteractionTestUtil::InputType::kDontCare),
-      Do([this]() { browser()->tab_strip_model()->AddToNewGroup({0, 1}); }),
+      Do([this]() { browser()->GetTabStripModel()->AddToNewGroup({0, 1}); }),
       WaitForShow(kTabGroupHeaderElementId), Do([this]() {
         std::optional<tab_groups::TabGroupId> group =
-            browser()->tab_strip_model()->GetActiveTab()->GetGroup();
+            browser()->GetTabStripModel()->GetActiveTab()->GetGroup();
         EXPECT_TRUE(group.has_value());
 
         // Focus on the group, which should show the unfocus button.
-        browser()->tab_strip_model()->SetFocusedGroup(group.value());
+        browser()->GetTabStripModel()->SetFocusedGroup(group.value());
       }),
       WaitForShow(kUnfocusTabGroupButtonElementId), Do([this]() {
         // Unset focused group, which should hide the button.
-        browser()->tab_strip_model()->SetFocusedGroup(std::nullopt);
+        browser()->GetTabStripModel()->SetFocusedGroup(std::nullopt);
       }),
       WaitForHide(kUnfocusTabGroupButtonElementId));
 }
@@ -573,7 +580,7 @@ IN_PROC_BROWSER_TEST_F(
                   PressButton(kNewTabButtonElementId),
                   PressButton(kNewTabButtonElementId),
                   PressButton(kNewTabButtonElementId), Do([&]() {
-                    TabStripModel* model = browser()->tab_strip_model();
+                    TabStripModel* model = browser()->GetTabStripModel();
                     ASSERT_EQ(model->count(), 4);
                     group1 = model->AddToNewGroup({0});
                     group2 = model->AddToNewGroup({1, 2});
@@ -668,8 +675,8 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
                        ScrollingUnpinnedContainerClosesTabGroupEditorBubble) {
   RunTestSequence(
       WaitForShow(kNewTabButtonElementId), Do([this]() {
-        browser()->tab_strip_model()->ExecuteContextMenuCommand(
-            browser()->tab_strip_model()->active_index(),
+        browser()->GetTabStripModel()->ExecuteContextMenuCommand(
+            browser()->GetTabStripModel()->active_index(),
             TabStripModel::ContextMenuCommand::
                 CommandAddToNewGroupFromMenuItem);
       }),
@@ -714,7 +721,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
                        CloseLastGroupedTabCreatesNewTab) {
   RunTestSequence(
       WaitForShow(kNewTabButtonElementId), Do([this]() {
-        TabStripModel* model = browser()->tab_strip_model();
+        TabStripModel* model = browser()->GetTabStripModel();
         model->AddToNewGroup({0});
         ASSERT_TRUE(model->GetTabAtIndex(0)->GetGroup().has_value());
 

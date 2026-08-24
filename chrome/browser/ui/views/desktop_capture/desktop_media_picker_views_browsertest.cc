@@ -12,8 +12,8 @@
 #include "build/buildflag.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_list.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -56,7 +56,7 @@ class DesktopMediaPickerViewsBrowserTest : public DialogBrowserTest {
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     picker_ = std::make_unique<DesktopMediaPickerImpl>();
-    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
     gfx::NativeWindow native_window = browser()->GetWindow()->GetNativeWindow();
 
     std::vector<std::unique_ptr<DesktopMediaList>> sources;

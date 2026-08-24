@@ -16,7 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
@@ -67,7 +67,7 @@ using TabSharingInfoBarButton =
 constexpr int kNullTabIndex = -1;
 
 content::WebContents* GetWebContents(Browser* browser, int tab) {
-  return browser->tab_strip_model()->GetWebContentsAt(tab);
+  return browser->GetTabStripModel()->GetWebContentsAt(tab);
 }
 
 content::GlobalRenderFrameHostId GetGlobalId(Browser* browser, int tab) {
@@ -189,7 +189,7 @@ ContentsCaptureBorderView* GetContentsBorder(Browser* browser,
   }
   return browser_view
       ->GetContentsContainerViewFor(
-          browser->tab_strip_model()->GetWebContentsAt(tab_index))
+          browser->GetTabStripModel()->GetWebContentsAt(tab_index))
       ->capture_contents_border_view();
 }
 
@@ -199,14 +199,14 @@ scoped_refptr<MediaStreamCaptureIndicator> GetCaptureIndicator() {
 }
 
 void ActivateTab(Browser* browser, int tab) {
-  browser->tab_strip_model()->ActivateTabAt(
+  browser->GetTabStripModel()->ActivateTabAt(
       tab, TabStripUserGestureDetails(
                TabStripUserGestureDetails::GestureType::kMouse));
   base::RunLoop().RunUntilIdle();
 }
 
 bool IsActive(Browser* browser, int tab) {
-  return browser->tab_strip_model()->GetActiveWebContents() ==
+  return browser->GetTabStripModel()->GetActiveWebContents() ==
          GetWebContents(browser, tab);
 }
 
@@ -231,14 +231,14 @@ class TabSharingUIViewsBrowserTestBase : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    DCHECK_EQ(browser()->tab_strip_model()->count(), 1);
+    DCHECK_EQ(browser()->GetTabStripModel()->count(), 1);
     embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
   Browser* CreateBrowser(Profile* profile) {
     Browser* const browser = InProcessBrowserTest::CreateBrowser(profile);
-    TabStripModel* const tab_strip_model = browser->tab_strip_model();
+    TabStripModel* const tab_strip_model = browser->GetTabStripModel();
     EXPECT_EQ(tab_strip_model->count(), 1);  // Treat as an assertion.
     return browser;
   }
@@ -300,7 +300,7 @@ class TabSharingUIViewsBrowserTestBase : public InProcessBrowserTest {
            (capturing_tab == kNullTabIndex && captured_tab == kNullTabIndex));
 
     auto capture_indicator = GetCaptureIndicator();
-    for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
+    for (int i = 0; i < browser->GetTabStripModel()->count(); ++i) {
       // All tabs have |infobar_count| tab sharing infobars.
       infobars::ContentInfoBarManager* infobar_manager =
           GetInfoBarManager(browser, i);
@@ -323,7 +323,7 @@ class TabSharingUIViewsBrowserTestBase : public InProcessBrowserTest {
         BrowserView* const browser_view =
             BrowserView::GetBrowserViewForBrowser(browser);
         content::WebContents* const web_contents =
-            browser->tab_strip_model()->GetWebContentsAt(i);
+            browser->GetTabStripModel()->GetWebContentsAt(i);
         EXPECT_EQ(contents_border->GetBoundsInScreen(),
                   browser_view->GetContentsContainerViewFor(web_contents)
                       ->GetBoundsInScreen());
@@ -373,7 +373,7 @@ class TabSharingUIViewsBrowserTestBase : public InProcessBrowserTest {
   }
 
   void AddTab(Browser* browser, const GURL& url) {
-    const int next_index = browser->tab_strip_model()->count();
+    const int next_index = browser->GetTabStripModel()->count();
     ASSERT_TRUE(AddTabAtIndexToBrowser(browser, next_index, url,
                                        ui::PAGE_TRANSITION_LINK, true));
   }
@@ -415,7 +415,7 @@ class TabSharingUIViewsBrowserTest : public TabSharingUIViewsBrowserTestBase {
 
 IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, StartSharing) {
   AddTabs(browser(), 2);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
 
   // Test that before sharing there are no infobars, content border or tab
   // capture indicator.
@@ -440,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, StartSharing) {
 
 IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, SwitchSharedTab) {
   AddTabs(browser(), 2);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
   CreateUiAndStartSharing(browser(), /*capturing_tab=*/0, /*captured_tab=*/1);
 
   // Share a different tab.
@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, SwitchSharedTab) {
 
 IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, StopSharing) {
   AddTabs(browser(), 2);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
   CreateUiAndStartSharing(browser(), /*capturing_tab=*/0, /*captured_tab=*/1);
 
   tab_sharing_ui_views()->StopSharing("reason");
@@ -470,12 +470,12 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, StopSharing) {
 
 IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, CloseTab) {
   AddTabs(browser(), 2);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
   CreateUiAndStartSharing(browser(), /*capturing_tab=*/0, /*captured_tab=*/1);
 
   // Close a tab different than the shared one and wait until it's actually
   // closed, then test that the UI has not changed.
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   content::WebContentsDestroyedWatcher tab_2_destroyed_watcher(
       tab_strip_model->GetWebContentsAt(2));
   tab_strip_model->CloseWebContentsAt(2, TabCloseTypes::CLOSE_NONE);
@@ -499,7 +499,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
                        BorderWidgetShouldCloseWhenBrowserCloses) {
   Browser* new_browser = CreateBrowser(browser()->GetProfile());
   AddTabs(new_browser, 2);
-  ASSERT_EQ(new_browser->tab_strip_model()->count(), 3);
+  ASSERT_EQ(new_browser->GetTabStripModel()->count(), 3);
   CreateUiAndStartSharing(new_browser, /*capturing_tab=*/0, /*captured_tab=*/1);
 
   // Share a different tab.
@@ -521,14 +521,14 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
 IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
                        CloseTabInIncognitoBrowser) {
   AddTabs(browser(), 2);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
 
   // Start sharing a tab in an incognito browser.
   Browser* incognito_browser = CreateIncognitoBrowser();
-  DCHECK_EQ(incognito_browser->tab_strip_model()->count(), 1);
+  DCHECK_EQ(incognito_browser->GetTabStripModel()->count(), 1);
 
   AddTabs(incognito_browser, 3);
-  ASSERT_EQ(incognito_browser->tab_strip_model()->count(), 4);
+  ASSERT_EQ(incognito_browser->GetTabStripModel()->count(), 4);
   CreateUiAndStartSharing(incognito_browser, /*capturing_tab=*/0,
                           /*captured_tab=*/1);
   VerifyUi(UiExpectations{
@@ -544,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
 
   // Close a tab different than the shared one and test that the UI has not
   // changed.
-  TabStripModel* tab_strip_model = incognito_browser->tab_strip_model();
+  TabStripModel* tab_strip_model = incognito_browser->GetTabStripModel();
   tab_strip_model->CloseWebContentsAt(2, TabCloseTypes::CLOSE_NONE);
   VerifyUi(UiExpectations{
       .browser = incognito_browser, .capturing_tab = 0, .captured_tab = 1});
@@ -559,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
 
   // Close the shared tab in the incognito browser and test that the UI is
   // removed.
-  incognito_browser->tab_strip_model()->CloseWebContentsAt(
+  incognito_browser->GetTabStripModel()->CloseWebContentsAt(
       1, TabCloseTypes::CLOSE_NONE);
   VerifyUi(UiExpectations{.browser = incognito_browser,
                           .capturing_tab = kNullTabIndex,
@@ -577,7 +577,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, KillTab) {
   AddTabs(browser(), 2);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
   CreateUiAndStartSharing(browser(), /*capturing_tab=*/1, /*captured_tab=*/2);
 
   // Kill a tab different than the shared one.
@@ -600,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, KillTab) {
 
 IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, KillSharedTab) {
   AddTabs(browser(), 2);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
   CreateUiAndStartSharing(browser(), /*capturing_tab=*/0, /*captured_tab=*/1);
 
   // Kill the shared tab.
@@ -623,7 +623,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, KillSharedTab) {
 IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
                        InfobarLabelUpdatedOnNavigation) {
   AddTabs(browser(), 1);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 2);
 
   constexpr int kCapturingTab = 0;
   constexpr int kCapturedTab = 1;
@@ -652,7 +652,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
 
   // Set up a tab-capture session.
   AddTabs(browser(), 2);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
 
   CreateUiAndStartSharing(browser(), kCapturingTab, kCapturedTab);
 
@@ -679,7 +679,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
 
   // Set up a tab-capture session.
   AddTabs(browser(), 2);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
 
   CreateUiAndStartSharing(browser(), kCapturingTab, kCapturedTab);
 
@@ -698,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
 
   // Set up a tab-capture session.
   AddTabs(browser(), 2);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
 
   CreateUiAndStartSharing(browser(), kCapturingTab, kCapturedTab);
 
@@ -733,7 +733,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
 
   // Start actual test
   AddTabs(browser(), 2);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
 
   // Create UI and start sharing the tab at index 1.
   CreateUiAndStartSharing(browser(), /*capturing_tab=*/0, /*captured_tab=*/1);
@@ -751,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
 
   constexpr int kRestrictedTab = 2;
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(kRestrictedTab);
+      browser()->GetTabStripModel()->GetWebContentsAt(kRestrictedTab);
   // Navigate to restricted URL.
   ASSERT_TRUE(content::NavigateToURL(web_contents, kUrlRestricted));
 
@@ -791,7 +791,7 @@ class TabSharingMessageLinksBrowserTest
     // for the capturee and a third-party tab.
     AddTab(browser(), kCapturedTabUrl);
     AddTab(browser(), kOtherTabUrl);
-    ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
+    ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
   }
 
  protected:
@@ -907,13 +907,13 @@ class MultipleTabSharingUIViewsBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, VerifyUi) {
   AddTabs(browser(), 3);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 4);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 4);
   CreateUIsAndStartSharing(browser(), /*capturing_tab=*/0,
                            /*captured_tab_first=*/1, /*captured_tab_last=*/3);
 
   // Check that all tabs have 3 infobars corresponding to the 3 sharing
   // sessions.
-  int tab_count = browser()->tab_strip_model()->count();
+  int tab_count = browser()->GetTabStripModel()->count();
   for (int i = 0; i < tab_count; ++i) {
     EXPECT_EQ(3u, GetInfoBarManager(browser(), i)->infobars().size());
   }
@@ -942,7 +942,7 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, VerifyUi) {
 
 IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, StopSharing) {
   AddTabs(browser(), 3);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 4);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 4);
   CreateUIsAndStartSharing(browser(), /*capturing_tab=*/0,
                            /*captured_tab_first=*/1, /*captured_tab_last=*/3);
 
@@ -950,7 +950,7 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, StopSharing) {
   size_t shared_tab_count = 3;
   while (shared_tab_count) {
     tab_sharing_ui_views(--shared_tab_count)->StopSharing("reason");
-    for (int j = 0; j < browser()->tab_strip_model()->count(); ++j) {
+    for (int j = 0; j < browser()->GetTabStripModel()->count(); ++j) {
       ASSERT_EQ(shared_tab_count,
                 GetInfoBarManager(browser(), j)->infobars().size());
     }
@@ -959,12 +959,12 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, StopSharing) {
 
 IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, CloseTabs) {
   AddTabs(browser(), 3);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 4);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 4);
   CreateUIsAndStartSharing(browser(), /*capturing_tab=*/0,
                            /*captured_tab_first=*/1, /*captured_tab_last=*/3);
 
   // Close shared tabs one by one and check that infobars are removed as well.
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   while (tab_strip_model->count() > 1) {
     tab_strip_model->CloseWebContentsAt(1, TabCloseTypes::CLOSE_NONE);
     for (int i = 0; i < tab_strip_model->count(); ++i) {
@@ -982,12 +982,12 @@ IN_PROC_BROWSER_TEST_F(
   // Create a guest-mode browser.
   Browser* const guest_browser = CreateGuestBrowser();
   AddTabs(guest_browser, 1);
-  ASSERT_EQ(guest_browser->tab_strip_model()->count(), 2);
+  ASSERT_EQ(guest_browser->GetTabStripModel()->count(), 2);
 
   // Create a normal-mode browser.
   Browser* const main_browser = CreateBrowser(browser()->GetProfile());
   AddTabs(main_browser, 1);
-  ASSERT_EQ(main_browser->tab_strip_model()->count(), 2);
+  ASSERT_EQ(main_browser->GetTabStripModel()->count(), 2);
 
   // Start a capture in the normal-mode capture.
   CreateUIsAndStartSharing(main_browser, /*capturing_tab=*/0,
@@ -1010,7 +1010,7 @@ IN_PROC_BROWSER_TEST_F(
   // Create a normal-mode browser.
   Browser* const main_browser = CreateBrowser(browser()->GetProfile());
   AddTabs(main_browser, 1);
-  ASSERT_EQ(main_browser->tab_strip_model()->count(), 2);
+  ASSERT_EQ(main_browser->GetTabStripModel()->count(), 2);
 
   // Start a capture in the normal-mode capture.
   CreateUIsAndStartSharing(main_browser, /*capturing_tab=*/0,
@@ -1019,7 +1019,7 @@ IN_PROC_BROWSER_TEST_F(
   // Create a guest-mode browser.
   Browser* const guest_browser = CreateGuestBrowser();
   AddTabs(guest_browser, 1);
-  ASSERT_EQ(guest_browser->tab_strip_model()->count(), 2);
+  ASSERT_EQ(guest_browser->GetTabStripModel()->count(), 2);
 
   // Expectation #1: The capture infobar is created in the profile
   // where capture is happening.
@@ -1038,12 +1038,12 @@ IN_PROC_BROWSER_TEST_F(
   // Create a normal-mode browser.
   Browser* const main_browser = CreateBrowser(browser()->GetProfile());
   AddTabs(main_browser, 1);
-  ASSERT_EQ(main_browser->tab_strip_model()->count(), 2);
+  ASSERT_EQ(main_browser->GetTabStripModel()->count(), 2);
 
   // Create a guest-mode browser.
   Browser* const guest_browser = CreateGuestBrowser();
   AddTabs(guest_browser, 1);
-  ASSERT_EQ(guest_browser->tab_strip_model()->count(), 2);
+  ASSERT_EQ(guest_browser->GetTabStripModel()->count(), 2);
 
   // Start a capture in the guest-mode browser.
   CreateUIsAndStartSharing(guest_browser, /*capturing_tab=*/0,
@@ -1066,7 +1066,7 @@ IN_PROC_BROWSER_TEST_F(
   // Create a guest-mode browser.
   Browser* const guest_browser = CreateGuestBrowser();
   AddTabs(guest_browser, 1);
-  ASSERT_EQ(guest_browser->tab_strip_model()->count(), 2);
+  ASSERT_EQ(guest_browser->GetTabStripModel()->count(), 2);
 
   // Start a capture in the guest-mode browser.
   CreateUIsAndStartSharing(guest_browser, /*capturing_tab=*/0,
@@ -1075,7 +1075,7 @@ IN_PROC_BROWSER_TEST_F(
   // Create a normal-mode browser.
   Browser* const main_browser = CreateBrowser(browser()->GetProfile());
   AddTabs(main_browser, 1);
-  ASSERT_EQ(main_browser->tab_strip_model()->count(), 2);
+  ASSERT_EQ(main_browser->GetTabStripModel()->count(), 2);
 
   // Expectation #1: The capture infobar is created in the profile
   // where capture is happening.
@@ -1093,7 +1093,7 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest,
   // Create a guest-mode browser.
   Browser* const guest_browser = CreateGuestBrowser();
   AddTabs(guest_browser, 1);
-  ASSERT_EQ(guest_browser->tab_strip_model()->count(), 2);
+  ASSERT_EQ(guest_browser->GetTabStripModel()->count(), 2);
 
   // Start a capture in the guest-mode browser.
   CreateUIsAndStartSharing(guest_browser, /*capturing_tab=*/0,
@@ -1105,7 +1105,7 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest,
 
   // Test focus - when adding a tab in guest mode, that tab has an infobar.
   AddTabs(guest_browser, 1);
-  ASSERT_EQ(guest_browser->tab_strip_model()->count(), 3);
+  ASSERT_EQ(guest_browser->GetTabStripModel()->count(), 3);
   EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/2)->infobars().size(), 1u);
 }
 #endif

@@ -73,7 +73,7 @@ void SharingBrowserTest::Init(
   GURL url = embedded_test_server()->GetURL("mock.http", GetTestPageURL());
   ASSERT_TRUE(sessions_helper::OpenTab(0, url));
 
-  web_contents_ = GetBrowser(0)->tab_strip_model()->GetWebContentsAt(0);
+  web_contents_ = GetBrowser(0)->GetTabStripModel()->GetWebContentsAt(0);
   ASSERT_TRUE(NavigateToURL(web_contents_, url));
 
   sharing_service_ = SharingServiceFactory::GetForBrowserContext(GetProfile(0));

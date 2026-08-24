@@ -7,8 +7,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -76,10 +76,10 @@ class MediaRouterDialogControllerViewsTest : public InProcessBrowserTest {
 
 void MediaRouterDialogControllerViewsTest::CreateDialogController() {
   // Start with one window with one tab.
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
 
   // Create a reference to initiator contents.
-  initiator_ = browser()->tab_strip_model()->GetActiveWebContents();
+  initiator_ = browser()->GetTabStripModel()->GetActiveWebContents();
 
   dialog_controller_ = static_cast<MediaRouterDialogControllerViews*>(
       MediaRouterDialogController::GetOrCreateForWebContents(initiator_));
@@ -197,11 +197,11 @@ IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest,
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  ASSERT_NE(initiator_, browser()->tab_strip_model()->GetActiveWebContents());
+  ASSERT_NE(initiator_, browser()->GetTabStripModel()->GetActiveWebContents());
 
   ShowDialogForPresentation();
   // |initiator_| should become active after the GMC dialog is open.
-  ASSERT_EQ(initiator_, browser()->tab_strip_model()->GetActiveWebContents());
+  ASSERT_EQ(initiator_, browser()->GetTabStripModel()->GetActiveWebContents());
 }
 
 #endif

@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripBottomContainerInteractiveUiTest,
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
   RunTestSequence(
-      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+      CheckResult([this]() { return browser()->GetTabStripModel()->count(); },
                   1),
       Do([&]() {
         histogram_tester.ExpectTotalCount(
@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripBottomContainerInteractiveUiTest,
       EnsurePresent(kNewTabButtonElementId),
       PressButton(kNewTabButtonElementId,
                   ui::test::InteractionTestUtil::InputType::kDontCare),
-      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+      CheckResult([this]() { return browser()->GetTabStripModel()->count(); },
                   2),
       Do([&]() {
         histogram_tester.ExpectTotalCount(
@@ -98,12 +98,12 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripBottomContainerInteractiveUiTest,
   }
 
   RunTestSequence(
-      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+      CheckResult([this]() { return browser()->GetTabStripModel()->count(); },
                   1),
       WaitForShow(kNewTabButtonElementId), MoveMouseTo(kNewTabButtonElementId),
       ClickMouse(ui_controls::MIDDLE),
       PollState(kTabCountState,
-                [this]() { return browser()->tab_strip_model()->count(); }),
+                [this]() { return browser()->GetTabStripModel()->count(); }),
       WaitForState(kTabCountState, 2), StopObservingState(kTabCountState),
       Do([&]() {
         EXPECT_EQ(1, user_action_tester.GetActionCount(
@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(NewTabButtonContextMenuInteractiveUITest,
       ClickMouse(ui_controls::RIGHT),
       WaitForShow(NewTabButtonMenuModel::kNewTab),
       SelectMenuItem(NewTabButtonMenuModel::kNewTab),
-      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+      CheckResult([this]() { return browser()->GetTabStripModel()->count(); },
                   2));
 }
 

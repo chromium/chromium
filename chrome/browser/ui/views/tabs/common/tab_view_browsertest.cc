@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(TabViewTest, TitleLoading) {
 #endif
   base::RunLoop run_loop;
   NewTabTitleObserver observer(
-      browser()->tab_strip_model(), root_node(),
+      browser()->GetTabStripModel(), root_node(),
       base::BindRepeating(
           [&](base::RepeatingClosure quit_closure,
               std::u16string expected_title, std::u16string_view title) {
@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(TabViewTest, TitleLoading) {
           },
           run_loop.QuitClosure(), expected_title));
   ASSERT_TRUE(
-      ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+      ExecJs(browser()->GetTabStripModel()->GetActiveWebContents(),
              "setTimeout(() => "
              "document.getElementById('new-page-link').click(), 1000);"));
   run_loop.Run();

@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/record_replay/save_recording_bubble_view.h"
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -52,7 +52,7 @@ class SaveRecordingBubbleViewTest : public DialogBrowserTest {
         "https://example.com");
 
     widget_ = SaveRecordingBubbleView::Show(
-        anchor, browser()->tab_strip_model()->GetActiveWebContents(),
+        anchor, browser()->GetTabStripModel()->GetActiveWebContents(),
         std::move(controller));
   }
 

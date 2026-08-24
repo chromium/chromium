@@ -220,13 +220,13 @@ IN_PROC_BROWSER_TEST_F(TestNewTabButtonContextMenu,
   controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
   controller()->CreateNewTab(NewTabTypes::kNewTabCommand);
 
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_EQ(tab_strip_model->count(), 4);
 
-  browser()->tab_strip_model()->AddToNewGroup({1});
+  browser()->GetTabStripModel()->AddToNewGroup({1});
   tab_groups::TabGroupId group =
-      browser()->tab_strip_model()->AddToNewGroup({2});
-  browser()->tab_strip_model()->AddToNewGroup({3});
+      browser()->GetTabStripModel()->AddToNewGroup({2});
+  browser()->GetTabStripModel()->AddToNewGroup({3});
 
   RunTestSequence(
       FinishTabstripAnimations(), SelectTab(kTabStripElementId, 1),
@@ -303,7 +303,7 @@ class NewTabButtonBoundsObserver : public views::ViewObserver {
 IN_PROC_BROWSER_TEST_F(
     TabStripInteractiveUiTest,
     NewTabButtonPositionStableDuringGroupRenameUnconstrained) {
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_EQ(tab_strip_model->count(), 1);
 
   // Create a tab group containing the single tab.
@@ -343,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(
 // at the right edge without any 1-2px jitter.
 IN_PROC_BROWSER_TEST_F(TabStripInteractiveUiTest,
                        NewTabButtonPositionStableDuringGroupRenameConstrained) {
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   // Add many tabs to fill up the tab strip and force it into a shrunk state.
   for (int i = 0; i < 15; ++i) {
     chrome::NewTab(browser(), NewTabTypes::kNewTabCommand);
@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(TabStripInteractiveUiTest,
 // left without any backward jitter (jumping to the right) on any frame.
 IN_PROC_BROWSER_TEST_F(TabStripInteractiveUiTest,
                        NewTabButtonPositionStableDuringTabClose) {
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
 
   // Add a second tab so we can close one.
   chrome::NewTab(browser(), NewTabTypes::kNewTabCommand);

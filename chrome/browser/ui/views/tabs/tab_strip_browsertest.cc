@@ -72,7 +72,7 @@ class TabStripBrowsertest : public InProcessBrowserTest {
              features::kTabGroupHoverCards});
   }
 
-  TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
+  TabStripModel* tab_strip_model() { return browser()->GetTabStripModel(); }
 
   TabStrip* tab_strip() {
     return views::AsViewClass<HorizontalTabStripRegionView>(
@@ -996,7 +996,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AccessibleName) {
   tab_groups::TabGroupId group = AddTabToNewGroup(1);
   std::u16string tab_title =
       WindowMetadataController::From(browser())->GetTitleForTab(
-          browser()->tab_strip_model()->GetTabAtIndex(1)->GetHandle());
+          browser()->GetTabStripModel()->GetTabAtIndex(1)->GetHandle());
   std::u16string group_title = tab_strip()->GetGroupTitle(group);
   std::u16string title =
       group_title.empty()
@@ -1428,7 +1428,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 // IDC_SELECT_LAST_TAB. The tab navigation accelerators should ignore tabs in
 // collapsed groups.
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, TabGroupTabNavigationAccelerators) {
-  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+  ASSERT_TRUE(browser()->GetTabStripModel()->SupportsTabGroups());
   // Create five tabs.
   for (int i = 0; i < 4; i++) {
     AppendTab();
@@ -1742,7 +1742,7 @@ IN_PROC_BROWSER_TEST_F(TabStripSaveBrowsertest, AttentionIndicatorIsShown) {
   auto* group_header = tab_strip()->group_header(group);
 
   TabGroup* tab_group =
-      browser()->tab_strip_model()->group_model()->GetTabGroup(group);
+      browser()->GetTabStripModel()->group_model()->GetTabGroup(group);
 
   TabGroupAttentionIndicator* attention_indicator =
       tab_group->GetTabGroupFeatures()->attention_indicator();

@@ -9,7 +9,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/eye_dropper.h"
@@ -36,7 +36,7 @@ class EyeDropperBrowserTest : public UiBrowserTest,
   void ShowUi(const std::string& name) override {
 #if BUILDFLAG(IS_WIN)
     content::RenderFrameHost* parent_frame = browser()
-                                                 ->tab_strip_model()
+                                                 ->GetTabStripModel()
                                                  ->GetActiveWebContents()
                                                  ->GetPrimaryMainFrame();
     parent_frame->GetView()->Focus();

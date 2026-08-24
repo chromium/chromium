@@ -17,7 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharing/shared_clipboard/remote_copy_message_handler.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/sharing_message/shared_clipboard/remote_copy_handle_message_result.h"

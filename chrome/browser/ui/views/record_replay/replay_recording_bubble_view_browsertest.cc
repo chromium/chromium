@@ -8,7 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -32,7 +32,7 @@ class ReplayRecordingBubbleViewTest : public DialogBrowserTest {
     record_replay::Recording recording;
     recording.set_name("Test Recording");
     auto* bubble = new ReplayRecordingBubbleView(
-        anchor, browser()->tab_strip_model()->GetActiveWebContents(),
+        anchor, browser()->GetTabStripModel()->GetActiveWebContents(),
         {recording}, nullptr /* manager */);
     views::BubbleDialogDelegateView::CreateBubble(bubble);
     bubble->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);

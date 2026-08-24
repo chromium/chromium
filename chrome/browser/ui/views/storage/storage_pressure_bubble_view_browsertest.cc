@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/storage/storage_pressure_bubble_view.h"
 
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/storage_pressure_bubble.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -40,18 +40,16 @@ IN_PROC_BROWSER_TEST_F(StoragePressureBubbleViewTest, AcceptDialog) {
   views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
   ASSERT_NE(widget, nullptr);
 
-  int initial_tab_count = browser()->tab_strip_model()->count();
+  int initial_tab_count = browser()->GetTabStripModel()->count();
 
   views::test::WidgetDestroyedWaiter destroy_waiter(widget);
   views::test::AcceptDialog(widget);
   destroy_waiter.Wait();
 
-  EXPECT_EQ(browser()->tab_strip_model()->count(), initial_tab_count + 1);
-  EXPECT_EQ(browser()
-                ->tab_strip_model()
-                ->GetActiveWebContents()
-                ->GetVisibleURL(),
-            GURL("chrome://settings/content/all?sort=data-stored"));
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), initial_tab_count + 1);
+  EXPECT_EQ(
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
+      GURL("chrome://settings/content/all?sort=data-stored"));
 }
 
 IN_PROC_BROWSER_TEST_F(StoragePressureBubbleViewTest, CancelDialog) {
@@ -62,11 +60,11 @@ IN_PROC_BROWSER_TEST_F(StoragePressureBubbleViewTest, CancelDialog) {
   views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
   ASSERT_NE(widget, nullptr);
 
-  int initial_tab_count = browser()->tab_strip_model()->count();
+  int initial_tab_count = browser()->GetTabStripModel()->count();
 
   views::test::WidgetDestroyedWaiter destroy_waiter(widget);
   widget->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
   destroy_waiter.Wait();
 
-  EXPECT_EQ(browser()->tab_strip_model()->count(), initial_tab_count);
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), initial_tab_count);
 }

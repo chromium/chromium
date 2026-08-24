@@ -30,10 +30,10 @@ class TabGroupHeaderInteractiveUiTest
   ~TabGroupHeaderInteractiveUiTest() override = default;
 
   tabs::TabInterface* CreateTab() {
-    auto index = browser()->tab_strip_model()->count();
+    auto index = browser()->GetTabStripModel()->count();
     CHECK(AddTabAtIndex(index, chrome::ChromeUINewTabPageURLAsGURL(),
                         ui::PAGE_TRANSITION_TYPED));
-    auto* tab = browser()->tab_strip_model()->GetTabAtIndex(index);
+    auto* tab = browser()->GetTabStripModel()->GetTabAtIndex(index);
     CHECK(tab);
     return tab;
   }
@@ -43,9 +43,9 @@ class TabGroupHeaderInteractiveUiTest
     std::vector<int> tab_indices = {};
     for (auto* tab : tabs) {
       tab_indices.emplace_back(
-          browser()->tab_strip_model()->GetIndexOfTab(tab));
+          browser()->GetTabStripModel()->GetIndexOfTab(tab));
     }
-    return browser()->tab_strip_model()->AddToNewGroup(tab_indices);
+    return browser()->GetTabStripModel()->AddToNewGroup(tab_indices);
   }
 
   TabStrip* GetTabStrip() {
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupHeaderInteractiveUiTest,
       MoveMouseTo(kTabGroupHeaderElementId), ClickMouse(action), Do([&]() {
         // Set the attention indicator to true.
         browser()
-            ->tab_strip_model()
+            ->GetTabStripModel()
             ->group_model()
             ->GetTabGroup(group_id)
             ->GetTabGroupFeatures()

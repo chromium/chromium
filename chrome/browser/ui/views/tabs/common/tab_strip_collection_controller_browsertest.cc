@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
       std::get<tabs::ConstDanglingUntriagedTabInterface>(
           first_tab_node->GetNodeData());
   std::optional<int> tab_index =
-      browser()->tab_strip_model()->GetIndexOfTab(tab);
+      browser()->GetTabStripModel()->GetIndexOfTab(tab);
   ASSERT_TRUE(tab_index.has_value());
 
   TabContextMenuController context_menu_controller(
@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
   auto model = menu_model_factory.Create(
       &context_menu_controller,
       browser()->GetFeatures().tab_menu_model_delegate(),
-      browser()->tab_strip_model(), tab_index.value());
+      browser()->GetTabStripModel(), tab_index.value());
 
   auto check_menu_has_string = [&](int message_id) {
     std::u16string expected = l10n_util::GetStringUTF16(message_id);
@@ -129,9 +129,9 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
   AppendTab();
   AppendTab();
   tab_groups::TabGroupId group_id =
-      browser()->tab_strip_model()->AddToNewGroup({0, 1});
+      browser()->GetTabStripModel()->AddToNewGroup({0, 1});
   TabGroup* group =
-      browser()->tab_strip_model()->group_model()->GetTabGroup(group_id);
+      browser()->GetTabStripModel()->group_model()->GetTabGroup(group_id);
 
   TabCollectionNode* group_node =
       unpinned_collection_node()->GetChildNodeOfType(
@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
 IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest, ShiftTabNext) {
   AppendTab();
 
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
   ASSERT_EQ(2, model->count());
 
   // Tab Starts at Index 0.
@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
                        ShiftTabPrevious) {
   AppendTab();
 
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
   ASSERT_EQ(2, model->count());
 
   // Tab Starts at Index 1.
@@ -218,13 +218,13 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
       browser()->GetWindow()->GetNativeWindow());
 #endif
 
-  browser()->tab_strip_model()->ActivateTabAt(0);
-  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+  EXPECT_EQ(browser()->GetTabStripModel()->active_index(), 0);
 
   event_generator.MoveMouseTo(last_tab_view->GetBoundsInScreen().CenterPoint());
   event_generator.ClickLeftButton();
 
-  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 1);
+  EXPECT_EQ(browser()->GetTabStripModel()->active_index(), 1);
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ToolbarView* toolbar = browser_view->toolbar();
@@ -291,7 +291,7 @@ class TabGroupHoverCardTest
 IN_PROC_BROWSER_TEST_P(TabGroupHoverCardTest, TabGroupHeaderHoverCardUnnamed) {
   AppendTab();
   AppendTab();
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
 
   model->AddToNewGroup({1, 2});
   RunScheduledLayouts();
@@ -334,7 +334,7 @@ IN_PROC_BROWSER_TEST_P(TabGroupHoverCardTest, TabGroupHeaderHoverCardNamed) {
   // Create a group with some tabs and a name.
   AppendTab();
   AppendTab();
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
   tab_groups::TabGroupId group_id = model->AddToNewGroup({1, 2});
   std::u16string group_title = u"My Group";
   model->ChangeTabGroupVisuals(
@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
   AppendTab();
   AppendTab();
 
-  auto* tab_model = browser()->tab_strip_model();
+  auto* tab_model = browser()->GetTabStripModel();
   ASSERT_EQ(3, tab_model->count());
 
   auto* tab0 = tab_model->GetTabAtIndex(0);
@@ -448,7 +448,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
   AppendTab();
   AppendTab();
 
-  auto* tab_model = browser()->tab_strip_model();
+  auto* tab_model = browser()->GetTabStripModel();
   ASSERT_EQ(3, tab_model->count());
 
   tab_model->SetTabPinned(0, true);
@@ -484,7 +484,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
   AppendTab();
   AppendTab();
 
-  auto* tab_model = browser()->tab_strip_model();
+  auto* tab_model = browser()->GetTabStripModel();
   ASSERT_EQ(3, tab_model->count());
 
   // Create a group containing the last tab.
@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
                        ShiftTabOutOfGroup) {
   AppendTab();
 
-  auto* tab_model = browser()->tab_strip_model();
+  auto* tab_model = browser()->GetTabStripModel();
   ASSERT_EQ(2, tab_model->count());
 
   // Create a group containing the first tab.
@@ -528,7 +528,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
   AppendTab();
   AppendTab();
 
-  auto* tab_model = browser()->tab_strip_model();
+  auto* tab_model = browser()->GetTabStripModel();
   ASSERT_EQ(4, tab_model->count());
 
   // Ungrouped (Tab 0), Grouped (Tab 1, Tab 2), Ungrouped (Tab 3)
@@ -596,7 +596,7 @@ IN_PROC_BROWSER_TEST_P(TabStripControllerFocusingVisibilityBrowserTest,
   AppendTab();
   AppendTab();
 
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
   ASSERT_EQ(3, model->count());
 
   // Pin the first tab.
@@ -643,7 +643,7 @@ IN_PROC_BROWSER_TEST_P(TabStripControllerFocusingVisibilityBrowserTest,
   AppendTab();
   AppendTab();
 
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
   ASSERT_EQ(3, model->count());
 
   // Add tabs 1 and 2 to a new group.
@@ -706,7 +706,7 @@ class TabStripControllerFocusFreezingBrowserTest
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     tabs::TabInterface* tab =
-        browser()->tab_strip_model()->GetTabAtIndex(model_index);
+        browser()->GetTabStripModel()->GetTabAtIndex(model_index);
     views::View* const view =
         browser_view->tab_strip_view()->GetTabAnchorView(tab->GetHandle());
     return views::AsViewClass<TabView>(view);
@@ -723,7 +723,7 @@ IN_PROC_BROWSER_TEST_P(TabStripControllerFocusFreezingBrowserTest,
   AppendTab();
   AppendTab();
   AppendTab();
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
   ASSERT_EQ(4, model->count());
 
   const tab_groups::TabGroupId group1 = model->AddToNewGroup({0, 1});
@@ -766,7 +766,7 @@ IN_PROC_BROWSER_TEST_P(TabStripControllerFocusFreezingBrowserTest,
   AppendTab();
   AppendTab();
   AppendTab();
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
   ASSERT_EQ(4, model->count());
 
   model->SetTabPinned(0, true);
@@ -803,7 +803,7 @@ IN_PROC_BROWSER_TEST_P(TabStripControllerFocusFreezingBrowserTest,
   AppendTab();
   AppendTab();
   AppendTab();
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
   ASSERT_EQ(4, model->count());
 
   const tab_groups::TabGroupId group1 = model->AddToNewGroup({0, 1});
@@ -837,7 +837,7 @@ IN_PROC_BROWSER_TEST_P(TabStripControllerFocusFreezingBrowserTest,
   AppendTab();
   AppendTab();
   AppendTab();
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
   ASSERT_EQ(4, model->count());
 
   const tab_groups::TabGroupId group1 = model->AddToNewGroup({0, 1});

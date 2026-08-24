@@ -4,7 +4,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/media_router/app_menu_test_api.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"

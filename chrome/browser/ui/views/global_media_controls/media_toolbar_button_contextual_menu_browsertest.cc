@@ -9,7 +9,7 @@
 
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -27,7 +27,7 @@ IN_PROC_BROWSER_TEST_F(MediaToolbarButtonContextualMenuBrowserTest,
       model->GetIndexOfCommandId(IDC_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE);
   ASSERT_TRUE(index.has_value());
   model->ActivatedAt(index.value(), 0);
-  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents()->GetURL(),
+  EXPECT_EQ(browser()->GetTabStripModel()->GetActiveWebContents()->GetURL(),
             GURL("chrome://cast-feedback"));
 #else
   GTEST_SKIP()

@@ -71,7 +71,7 @@ class TabCollectionNodeBrowserTest
 
   views::View* parent_view() { return root_node()->view()->parent(); }
 
-  TabStripModel* GetTabStripModel() { return browser()->tab_strip_model(); }
+  TabStripModel* GetTabStripModel() { return browser()->GetTabStripModel(); }
 
   // Appends a new unpinned tab to the end of the tab strip.
   content::WebContents* AppendTab() {

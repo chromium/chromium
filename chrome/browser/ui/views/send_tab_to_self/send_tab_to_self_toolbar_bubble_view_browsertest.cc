@@ -16,7 +16,6 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"

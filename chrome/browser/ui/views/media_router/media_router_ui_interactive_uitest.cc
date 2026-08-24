@@ -7,9 +7,9 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_controller.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -44,7 +44,7 @@ class MediaRouterUIInteractiveUITest : public InProcessBrowserTest {
   // Returns the dialog controller for the active WebContents.
   MediaRouterDialogController* GetDialogController() {
     return MediaRouterDialogController::GetOrCreateForWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
   }
 
   views::Widget* GetDialogWidget() {
@@ -103,10 +103,10 @@ class MediaRouterUIInteractiveUITest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(MediaRouterUIInteractiveUITest,
                        OpenDialogFromContextMenu) {
   // Start with one tab showing about:blank.
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   MediaRouterDialogController* dialog_controller = GetDialogController();
   content::ContextMenuParams params;
   params.page_url =
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIInteractiveUITest,
 
 IN_PROC_BROWSER_TEST_F(MediaRouterUIInteractiveUITest, OpenDialogFromAppMenu) {
   // Start with one tab showing about:blank.
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
 
   std::unique_ptr<test::AppMenuTestApi> app_menu_test_api =
       test::AppMenuTestApi::Create(browser());
@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIInteractiveUITest,
   MediaRouterDialogController* dialog_controller = GetDialogController();
   // We start off at about:blank page.
   // Make sure there is 1 tab and media router is enabled.
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
 
   SetAlwaysShowActionPref(true);
   EXPECT_TRUE(ToolbarIconExists());
@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIInteractiveUITest,
   {
     views::test::WidgetDestroyedWaiter waiter(GetDialogWidget());
     content::TestNavigationObserver reload_observer(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
     chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
     reload_observer.Wait();
 
