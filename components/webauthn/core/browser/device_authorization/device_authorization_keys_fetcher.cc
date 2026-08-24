@@ -8,11 +8,14 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/types/expected.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/sync_util.h"
+#include "components/webauthn/core/browser/device_authorization/proto/device_authorization_key.pb.h"
+#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
@@ -26,6 +29,7 @@ DeviceAuthorizationKeysFetcher::DeviceAuthorizationKeysFetcher(
 DeviceAuthorizationKeysFetcher::~DeviceAuthorizationKeysFetcher() = default;
 
 void DeviceAuthorizationKeysFetcher::FetchDeviceAuthorizationKeys(
+    const sync_pb::GetDeviceAuthorizationKeyRequest& request,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
     FetchKeysCallback callback) {
@@ -33,7 +37,7 @@ void DeviceAuthorizationKeysFetcher::FetchDeviceAuthorizationKeys(
   CHECK(identity_manager);
   CHECK(callback);
   if (endpoint_fetcher_) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(base::unexpected(Error::kAlreadyInProgress));
     return;
   }
 
@@ -87,6 +91,8 @@ void DeviceAuthorizationKeysFetcher::FetchDeviceAuthorizationKeys(
           .SetHeaders(std::vector<
                       endpoint_fetcher::EndpointFetcher::RequestParams::Header>{
               {"User-Agent", syncer::MakeUserAgentForSync(channel_)}})
+          .SetPostData(request.SerializeAsString())
+          .SetContentType("application/x-protobuf")
           .Build());
   endpoint_fetcher_->Fetch(
       base::BindOnce(&DeviceAuthorizationKeysFetcher::OnFetchCompleted,
@@ -98,7 +104,29 @@ void DeviceAuthorizationKeysFetcher::OnFetchCompleted(
     std::unique_ptr<endpoint_fetcher::EndpointResponse> response) {
   endpoint_fetcher_.reset();
   // TODO(crbug.com/405036154): Record metrics.
-  std::move(callback).Run(std::move(response));
+  if (!response) {
+    std::move(callback).Run(base::unexpected(Error::kNetworkError));
+    return;
+  }
+
+  if (response->http_status_code > 0 &&
+      response->http_status_code != net::HTTP_OK) {
+    std::move(callback).Run(base::unexpected(Error::kHttpError));
+    return;
+  }
+
+  if (response->error_type.has_value()) {
+    std::move(callback).Run(base::unexpected(Error::kNetworkError));
+    return;
+  }
+
+  sync_pb::GetDeviceAuthorizationKeyResponse response_proto;
+  if (!response_proto.ParseFromString(response->response)) {
+    std::move(callback).Run(base::unexpected(Error::kProtoParseError));
+    return;
+  }
+
+  std::move(callback).Run(std::move(response_proto));
 }
 
 }  // namespace webauthn

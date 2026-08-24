@@ -8,17 +8,22 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "base/version_info/channel.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/webauthn/core/browser/device_authorization/proto/device_authorization_key.pb.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,7 +31,11 @@ namespace webauthn {
 namespace {
 
 constexpr char kTestAccountEmail[] = "test@example.com";
-constexpr char kFakeResponseBody[] = R"({"deviceAuthorizationKeys": {}})";
+constexpr char kTestKey[] = "test_device_authorization_key_material";
+constexpr char kTestPlt[] = "test_plt_token";
+constexpr char kTestWebFallbackUrl[] = "https://example.com/reauth";
+
+using Error = DeviceAuthorizationKeysFetcher::Error;
 
 class DeviceAuthorizationKeysFetcherTest : public testing::Test {
  protected:
@@ -42,15 +51,18 @@ class DeviceAuthorizationKeysFetcherTest : public testing::Test {
 
   // Synchronously fetches device authorization keys using `fetcher_`,
   // responding with `status_code` and `response_body`.
-  std::unique_ptr<endpoint_fetcher::EndpointResponse>
-  FetchDeviceAuthorizationKeys(net::HttpStatusCode status_code,
-                               const std::string& response_body) {
+  base::expected<sync_pb::GetDeviceAuthorizationKeyResponse, Error>
+  FetchDeviceAuthorizationKeys(
+      const sync_pb::GetDeviceAuthorizationKeyRequest& request,
+      net::HttpStatusCode status_code,
+      const std::string& response_body) {
     test_url_loader_factory_.AddResponse(kDeviceAuthorizationKeyEndpointUrl,
                                          response_body, status_code);
-    base::test::TestFuture<std::unique_ptr<endpoint_fetcher::EndpointResponse>>
+    base::test::TestFuture<
+        base::expected<sync_pb::GetDeviceAuthorizationKeyResponse, Error>>
         future;
     fetcher_.FetchDeviceAuthorizationKeys(
-        shared_url_loader_factory_,
+        request, shared_url_loader_factory_,
         identity_test_environment_.identity_manager(), future.GetCallback());
     return future.Take();
   }
@@ -62,71 +74,178 @@ class DeviceAuthorizationKeysFetcherTest : public testing::Test {
   DeviceAuthorizationKeysFetcher fetcher_{version_info::Channel::DEFAULT};
 };
 
+// Tests that device authorization keys request completes successfully when
+// the backend returns device authorization keys.
+TEST_F(DeviceAuthorizationKeysFetcherTest, ReturnsDeviceAuthorizationKeys) {
+  sync_pb::GetDeviceAuthorizationKeyRequest request;
+  request.set_reauth_proof_token("sample_rapt");
+
+  std::string intercepted_body;
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& req) {
+        intercepted_body = network::GetUploadData(req);
+      }));
+
+  sync_pb::GetDeviceAuthorizationKeyResponse response_proto;
+  sync_pb::GetDeviceAuthorizationKeyResponse::DeviceAuthorizationKeys*
+      keys_proto = response_proto.mutable_device_authorization_keys();
+  sync_pb::GetDeviceAuthorizationKeyResponse::DeviceAuthorizationKey* key =
+      keys_proto->add_keys();
+  key->set_version(1);
+  key->set_key(kTestKey);
+
+  base::expected<sync_pb::GetDeviceAuthorizationKeyResponse, Error> result =
+      FetchDeviceAuthorizationKeys(request, net::HTTP_OK,
+                                   response_proto.SerializeAsString());
+
+  ASSERT_TRUE(result.has_value());
+  EXPECT_TRUE(result->has_device_authorization_keys());
+  ASSERT_EQ(result->device_authorization_keys().keys_size(), 1);
+  EXPECT_EQ(result->device_authorization_keys().keys(0).version(), 1);
+  EXPECT_EQ(result->device_authorization_keys().keys(0).key(), kTestKey);
+
+  // Verify the request body sent matches serialized proto.
+  EXPECT_EQ(intercepted_body, request.SerializeAsString());
+}
+
+// Tests that device authorization keys request completes successfully when
+// the backend returns re-auth parameters.
+TEST_F(DeviceAuthorizationKeysFetcherTest, ReturnsReAuthParams) {
+  sync_pb::GetDeviceAuthorizationKeyRequest request;
+
+  sync_pb::GetDeviceAuthorizationKeyResponse response_proto;
+  sync_pb::GetDeviceAuthorizationKeyResponse::ReAuthParams* re_auth_params =
+      response_proto.mutable_re_auth_params();
+  re_auth_params->set_plt(kTestPlt);
+  re_auth_params->set_web_fallback_url(kTestWebFallbackUrl);
+
+  base::expected<sync_pb::GetDeviceAuthorizationKeyResponse, Error> result =
+      FetchDeviceAuthorizationKeys(request, net::HTTP_OK,
+                                   response_proto.SerializeAsString());
+
+  ASSERT_TRUE(result.has_value());
+  EXPECT_TRUE(result->has_re_auth_params());
+  EXPECT_EQ(result->re_auth_params().plt(), kTestPlt);
+  EXPECT_EQ(result->re_auth_params().web_fallback_url(), kTestWebFallbackUrl);
+}
+
 // Tests that device authorization keys request handles failure to fetch an
 // access token.
 TEST_F(DeviceAuthorizationKeysFetcherTest,
-       ShouldReturnErrorWhenAccessTokenFetchFails) {
+       ReturnsErrorWhenAccessTokenFetchFails) {
   identity_test_environment_.SetAutomaticIssueOfAccessTokens(false);
-  base::test::TestFuture<std::unique_ptr<endpoint_fetcher::EndpointResponse>>
+  sync_pb::GetDeviceAuthorizationKeyRequest request;
+
+  base::test::TestFuture<
+      base::expected<sync_pb::GetDeviceAuthorizationKeyResponse, Error>>
       future;
   fetcher_.FetchDeviceAuthorizationKeys(
-      shared_url_loader_factory_, identity_test_environment_.identity_manager(),
-      future.GetCallback());
+      request, shared_url_loader_factory_,
+      identity_test_environment_.identity_manager(), future.GetCallback());
   identity_test_environment_
       .WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
           GoogleServiceAuthError::FromServiceError(""));
 
-  std::unique_ptr<endpoint_fetcher::EndpointResponse> response = future.Take();
-  ASSERT_TRUE(response);
-  EXPECT_TRUE(response->error_type.has_value());
+  base::expected<sync_pb::GetDeviceAuthorizationKeyResponse, Error> result =
+      future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), Error::kNetworkError);
+}
+
+// Tests that device authorization keys request handles transport/network
+// errors.
+TEST_F(DeviceAuthorizationKeysFetcherTest,
+       ReturnsNetworkErrorWhenTransportFails) {
+  sync_pb::GetDeviceAuthorizationKeyRequest request;
+  test_url_loader_factory_.AddResponse(
+      GURL(kDeviceAuthorizationKeyEndpointUrl),
+      network::CreateURLResponseHead(net::HTTP_OK), "",
+      network::URLLoaderCompletionStatus(net::ERR_CONNECTION_FAILED));
+
+  base::test::TestFuture<
+      base::expected<sync_pb::GetDeviceAuthorizationKeyResponse, Error>>
+      future;
+  fetcher_.FetchDeviceAuthorizationKeys(
+      request, shared_url_loader_factory_,
+      identity_test_environment_.identity_manager(), future.GetCallback());
+
+  base::expected<sync_pb::GetDeviceAuthorizationKeyResponse, Error> result =
+      future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), Error::kNetworkError);
 }
 
 // Tests that device authorization keys request handles HTTP server errors.
 TEST_F(DeviceAuthorizationKeysFetcherTest,
-       ShouldReturnErrorWhenHttpErrorOccurs) {
-  std::unique_ptr<endpoint_fetcher::EndpointResponse> response =
-      FetchDeviceAuthorizationKeys(net::HTTP_INTERNAL_SERVER_ERROR, "");
-  ASSERT_TRUE(response);
-  EXPECT_EQ(response->http_status_code, net::HTTP_INTERNAL_SERVER_ERROR);
+       ReturnsHttpErrorWhenHttpErrorOccurs) {
+  sync_pb::GetDeviceAuthorizationKeyRequest request;
+
+  for (net::HttpStatusCode status : {net::HTTP_BAD_REQUEST, net::HTTP_FORBIDDEN,
+                                     net::HTTP_INTERNAL_SERVER_ERROR}) {
+    base::expected<sync_pb::GetDeviceAuthorizationKeyResponse, Error> result =
+        FetchDeviceAuthorizationKeys(request, status, "");
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(result.error(), Error::kHttpError);
+    test_url_loader_factory_.ClearResponses();
+  }
 }
 
-// Tests that device authorization keys request completes successfully with a
-// valid response.
+// Tests that device authorization keys request handles corrupt or invalid
+// response protobuf body.
 TEST_F(DeviceAuthorizationKeysFetcherTest,
-       ShouldSuccessfullyFetchDeviceAuthorizationKeys) {
-  std::unique_ptr<endpoint_fetcher::EndpointResponse> response =
-      FetchDeviceAuthorizationKeys(net::HTTP_OK, kFakeResponseBody);
-  ASSERT_TRUE(response);
-  EXPECT_EQ(response->http_status_code, net::HTTP_OK);
-  EXPECT_EQ(response->response, kFakeResponseBody);
+       ReturnsProtoParseErrorWhenResponseCorrupt) {
+  sync_pb::GetDeviceAuthorizationKeyRequest request;
+  // An invalid protobuf payload that cannot be deserialized as
+  // GetDeviceAuthorizationKeyResponse.
+  const std::string kCorruptProto = "\xff\xff\xff\xff";
+
+  base::expected<sync_pb::GetDeviceAuthorizationKeyResponse, Error> result =
+      FetchDeviceAuthorizationKeys(request, net::HTTP_OK, kCorruptProto);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), Error::kProtoParseError);
 }
 
 // Tests that calling fetch while another fetch is in progress immediately
-// completes the second request with nullptr.
+// completes the second request with kAlreadyInProgress.
 TEST_F(DeviceAuthorizationKeysFetcherTest,
-       ShouldReturnNullptrWhenFetchAlreadyInProgress) {
-  base::test::TestFuture<std::unique_ptr<endpoint_fetcher::EndpointResponse>>
+       ReturnsAlreadyInProgressForConcurrentFetch) {
+  sync_pb::GetDeviceAuthorizationKeyRequest request;
+
+  base::test::TestFuture<
+      base::expected<sync_pb::GetDeviceAuthorizationKeyResponse, Error>>
       future_first;
   fetcher_.FetchDeviceAuthorizationKeys(
-      shared_url_loader_factory_, identity_test_environment_.identity_manager(),
+      request, shared_url_loader_factory_,
+      identity_test_environment_.identity_manager(),
       future_first.GetCallback());
 
-  base::test::TestFuture<std::unique_ptr<endpoint_fetcher::EndpointResponse>>
+  base::test::TestFuture<
+      base::expected<sync_pb::GetDeviceAuthorizationKeyResponse, Error>>
       future_second;
   fetcher_.FetchDeviceAuthorizationKeys(
-      shared_url_loader_factory_, identity_test_environment_.identity_manager(),
+      request, shared_url_loader_factory_,
+      identity_test_environment_.identity_manager(),
       future_second.GetCallback());
 
-  // The second request should immediately return nullptr.
-  EXPECT_EQ(future_second.Take(), nullptr);
+  // The second request should immediately return kAlreadyInProgress.
+  base::expected<sync_pb::GetDeviceAuthorizationKeyResponse, Error>
+      result_second = future_second.Take();
+  ASSERT_FALSE(result_second.has_value());
+  EXPECT_EQ(result_second.error(), Error::kAlreadyInProgress);
 
   // Complete the first request.
+  sync_pb::GetDeviceAuthorizationKeyResponse response_proto;
+  sync_pb::GetDeviceAuthorizationKeyResponse::DeviceAuthorizationKeys* keys =
+      response_proto.mutable_device_authorization_keys();
+  keys->add_keys()->set_version(1);
+
   test_url_loader_factory_.AddResponse(kDeviceAuthorizationKeyEndpointUrl,
-                                       kFakeResponseBody, net::HTTP_OK);
-  std::unique_ptr<endpoint_fetcher::EndpointResponse> response_first =
-      future_first.Take();
-  ASSERT_TRUE(response_first);
-  EXPECT_EQ(response_first->http_status_code, net::HTTP_OK);
+                                       response_proto.SerializeAsString(),
+                                       net::HTTP_OK);
+  base::expected<sync_pb::GetDeviceAuthorizationKeyResponse, Error>
+      result_first = future_first.Take();
+  ASSERT_TRUE(result_first.has_value());
+  EXPECT_TRUE(result_first->has_device_authorization_keys());
 }
 
 }  // namespace

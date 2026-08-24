@@ -3,11 +3,11 @@ include_rules = [
   "+components/signin/public",
   "+components/sync/base",
   "+components/version_info",
+  "+net/http",
 ]
 
 specific_include_rules = {
   ".*_unittest\\.cc": [
     "+google_apis/gaia",
-    "+net/http",
   ],
 }

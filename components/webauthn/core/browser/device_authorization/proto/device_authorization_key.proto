@@ -1,0 +1,52 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Keep in sync with server-side definitions, last updated at cl/953212908.
+// Messages not used in Chrome have been omitted.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+message GetDeviceAuthorizationKeyRequest {
+  optional string reauth_proof_token = 1;
+
+  message TrustedVaultKeyAvailability {
+    optional string security_domain = 1;
+    optional bool key_available = 2;
+  }
+  repeated TrustedVaultKeyAvailability trusted_vault_key_availability = 2;
+
+  message IosGuardSignals {
+    optional bytes signals = 1;
+    optional bytes salt = 2;
+  }
+
+  oneof guard_signal {
+    IosGuardSignals ios_guard_signals = 4;
+  }
+}
+
+message GetDeviceAuthorizationKeyResponse {
+  message DeviceAuthorizationKey {
+    optional int32 version = 1;
+    optional bytes key = 2;
+  }
+
+  message DeviceAuthorizationKeys {
+    repeated DeviceAuthorizationKey keys = 1;
+  }
+
+  message ReAuthParams {
+    optional string plt = 1;
+    optional string web_fallback_url = 2;
+  }
+
+  oneof response {
+    DeviceAuthorizationKeys device_authorization_keys = 1;
+    ReAuthParams re_auth_params = 2;
+  }
+}
