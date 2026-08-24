@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import android.content.res.Resources;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
@@ -61,8 +63,12 @@ class UrlBarContextMenuHelper {
         mAnchorView = anchorView;
         mDelegate = delegate;
         mListItems = new ModelList();
+        mListMenuHost = new ListMenuHost(mAnchorView, /* attrs= */ null);
 
-        mListMenuHost = new ListMenuHost(mAnchorView, null);
+        Resources res = mAnchorView.getContext().getResources();
+        @Px int maxWidth = res.getDimensionPixelSize(R.dimen.url_bar_context_menu_max_width);
+        mListMenuHost.tryToFitLargestItem(true);
+        mListMenuHost.setMenuMaxWidth(maxWidth);
         // Keep the soft keyboard visible while the omnibox context menu is up. The popup stays
         // focusable (for accessibility and key navigation) but does not take input-method focus;
         // otherwise showing it would move IME focus off the url bar and dismiss the keyboard,
@@ -121,7 +127,8 @@ class UrlBarContextMenuHelper {
                             new ListItemBuilder()
                                     .withTitle(title != null ? title.toString() : "")
                                     .withMenuId(itemId)
-                                    .withEnabled(item.isEnabled());
+                                    .withEnabled(item.isEnabled())
+                                    .withIsTextEllipsizedAtEnd(true);
 
                     if (item.isCheckable() && item.isChecked()) {
                         builder.withEndIconRes(R.drawable.ic_done_blue);

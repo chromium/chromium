@@ -21,6 +21,7 @@ found in the LICENSE file.
     <dimen name="omnibox_verbose_text_negative_start_margin">-12dp</dimen>
     <dimen name="status_view_verbose_highlight_height">32dp</dimen>
     <dimen name="status_view_verbose_highlight_width">102dp</dimen>
+    <dimen name="url_bar_context_menu_max_width">400dp</dimen>
     <dimen name="url_bar_vertical_padding">
         @dimen/modern_toolbar_background_vertical_offset
     </dimen>
