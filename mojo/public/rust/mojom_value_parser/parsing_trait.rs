@@ -25,6 +25,8 @@ use itertools::Itertools;
 use ordered_float::OrderedFloat;
 use std::collections::HashMap;
 
+use system::buffer::SharedBuffer;
+use system::data_pipe::{DataPipeConsumerHandle, DataPipeProducerHandle};
 use system::message_pipe::MessageEndpoint;
 use system::mojo_types::UntypedHandle;
 
@@ -146,6 +148,9 @@ mojomparse_leaf_impl!(String, String);
 
 mojomparse_leaf_impl!(UntypedHandle, Handle);
 mojomparse_leaf_impl!(MessageEndpoint, Handle);
+mojomparse_leaf_impl!(DataPipeConsumerHandle, Handle);
+mojomparse_leaf_impl!(DataPipeProducerHandle, Handle);
+mojomparse_leaf_impl!(SharedBuffer, Handle);
 
 // Implement MojomParse for any type that implements PrimitiveEnum and the other
 // requirements for MojomParse.
