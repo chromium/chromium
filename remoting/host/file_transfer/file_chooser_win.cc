@@ -23,11 +23,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/win/object_watcher.h"
 #include "base/win/scoped_handle.h"
-#include "mojo/public/cpp/bindings/message.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/switches.h"
 #include "remoting/host/file_transfer/file_chooser_common_win.h"
-#include "remoting/host/mojom/desktop_session.mojom.h"
 
 namespace remoting {
 
@@ -171,18 +169,8 @@ void FileChooserWindows::OnObjectSignaled(HANDLE object) {
     return;
   }
 
-  mojo::Message serialized_message(base::span(response_bytes).first(bytes_read),
-                                   base::span<mojo::ScopedHandle>());
-
-  FileChooser::Result result;
-  if (!mojom::FileChooserResult::DeserializeFromMessage(
-          std::move(serialized_message), &result)) {
-    LOG(ERROR) << "Failed to deserialize response.";
-    std::move(callback_).Run(MakeFileTransferError(
-        FROM_HERE, protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR));
-    return;
-  }
-
+  FileChooser::Result result =
+      ParseFileChooserResponse(base::span(response_bytes).first(bytes_read));
   std::move(callback_).Run(std::move(result));
 }
 

@@ -20,7 +20,6 @@ source_set("file_transfer") {
     frameworks = [ "AppKit.framework" ]
   } else if (is_win) {
     sources += [
-      "file_chooser_common_win.h",
       "file_chooser_main_win.cc",
       "file_chooser_win.cc",
     ]
@@ -91,9 +90,11 @@ source_set("common") {
       "ensure_user_mac.cc",
     ]
   } else if (is_win) {
+    public += [ "file_chooser_common_win.h" ]
     sources += [
       "directory_helpers_win.cc",
       "ensure_user_win.cc",
+      "file_chooser_common_win.cc",
     ]
   } else if (is_chromeos) {
     sources += [
@@ -182,6 +183,9 @@ source_set("unit_tests") {
     ]
   } else {
     sources += [ "local_file_operations_unittest.cc" ]
+    if (is_win) {
+      sources += [ "file_chooser_win_unittest.cc" ]
+    }
     if (remoting_multi_process) {
       sources += [ "ipc_file_operations_unittest.cc" ]
     }

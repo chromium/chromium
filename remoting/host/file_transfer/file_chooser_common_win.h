@@ -6,6 +6,10 @@
 #define REMOTING_HOST_FILE_TRANSFER_FILE_CHOOSER_COMMON_WIN_H_
 
 #include <cstddef>
+#include <cstdint>
+
+#include "base/containers/span.h"
+#include "remoting/host/file_transfer/file_chooser.h"
 
 namespace remoting {
 
@@ -16,6 +20,12 @@ namespace remoting {
 // be safe in any event, and is more than big enough to return any path we're
 // likely to see on Windows.
 constexpr std::size_t kFileChooserPipeBufferSize = 4096;
+
+// Parses and deserializes the response bytes received from the file chooser
+// child process. Validates the Mojo message header to ensure safe handling
+// across privilege boundaries.
+FileChooser::Result ParseFileChooserResponse(
+    base::span<const uint8_t> response_bytes);
 
 }  // namespace remoting
 
