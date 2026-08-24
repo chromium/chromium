@@ -665,7 +665,7 @@ void WebView::SetNativeViewHostAccessibleParent(View* parent) {
     holder_->SetParentAccessible(parent_accessible);
   }
 
-  if (web_contents()) {
+  if (web_contents() && ::features::IsAccessibilityTreeForViewsEnabled()) {
     web_contents()->NotifyAccessibilityParentChanged();
   }
 }
