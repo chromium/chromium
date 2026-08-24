@@ -17,6 +17,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "components/sync_sessions/synced_tab_delegate.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace sync_sessions {
 
@@ -28,9 +29,9 @@ SyncedTabDelegate* GetSyncedTabDelegateFromWebContents(
   TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
   return tab ? tab->GetSyncedTabDelegate() : nullptr;
 #else
-  SyncedTabDelegate* delegate =
-      BrowserSyncedTabDelegate::FromWebContents(web_contents);
-  return delegate;
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  return tab ? BrowserSyncedTabDelegate::From(tab) : nullptr;
 #endif
 }
 

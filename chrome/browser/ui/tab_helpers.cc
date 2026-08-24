@@ -191,7 +191,6 @@
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_desktop.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/search/search_tab_helper.h"
-#include "chrome/browser/ui/sync/browser_synced_tab_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/uma_browsing_activity_observer.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
@@ -724,7 +723,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
     webapps::AppBannerManagerDesktop::CreateForWebContents(web_contents);
   }
   BookmarkTabHelper::CreateForWebContents(web_contents);
-  BrowserSyncedTabDelegate::CreateForWebContents(web_contents);
   javascript_dialogs::TabModalDialogManager::CreateForWebContents(
       web_contents,
       std::make_unique<JavaScriptTabModalDialogManagerDelegateDesktop>(

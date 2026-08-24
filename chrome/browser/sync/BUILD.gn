@@ -116,6 +116,7 @@ source_set("sync") {
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/webauthn",
     "//chrome/browser/webdata_services",
+    "//components/tabs:public",
 
     # TODO(crbug.com/374910357): Investigate for a better dependency injection.
     "//chrome/browser/account_settings",
@@ -343,12 +344,15 @@ source_set("unit_tests") {
     "//components/sync:test_support",
     "//components/sync/base",
     "//components/sync_device_info:test_support",
+    "//components/tabs:public",
+    "//components/tabs:test_support",
     "//components/variations",
     "//components/variations:test_support",
     "//content/test:test_support",
     "//google_apis",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base/unowned_user_data",
     "//ui/webui:buildflags",
     "//url",
   ]

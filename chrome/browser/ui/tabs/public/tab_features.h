@@ -37,6 +37,7 @@
 class AskBeforeHttpDialogController;
 class BookmarkBarPreloadPipelineManager;
 class BookmarkPageActionController;
+class BrowserSyncedTabDelegate;
 class CollaborationMessagingPageActionController;
 class CommitLimitOOMRecoveryTracker;
 class ConnectionHelpTabHelper;
@@ -443,6 +444,9 @@ class TabFeatures {
   // Forwards tab-related events to sync.
   std::unique_ptr<sync_sessions::SyncSessionsRouterTabHelper>
       sync_sessions_router_;
+
+  // Provides this tab's session identity to sync.
+  std::unique_ptr<BrowserSyncedTabDelegate> browser_synced_tab_delegate_;
 
   // Responsible for keeping a tab within a tab group in sync with its remote
   // tab counterpart from sync.

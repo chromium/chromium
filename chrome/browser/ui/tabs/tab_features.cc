@@ -80,6 +80,7 @@
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/sync/browser_synced_tab_delegate.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/back_to_opener/back_to_opener_controller.h"
@@ -509,6 +510,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           ChromeTranslateClient::FromWebContents(tab.GetContents()),
           favicon::ContentFaviconDriver::FromWebContents(tab.GetContents()));
 
+  browser_synced_tab_delegate_ =
+      GetUserDataFactory().CreateInstance<BrowserSyncedTabDelegate>(
+          tab, tab, tab.GetContents());
+
   focus_tab_after_navigation_helper_ =
       std::make_unique<FocusTabAfterNavigationHelper>(tab.GetContents());
 
@@ -810,6 +815,14 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
               profile),
           ChromeTranslateClient::FromWebContents(new_contents),
           favicon::ContentFaviconDriver::FromWebContents(new_contents));
+
+  // The reset() must happen first so that the old instance deregisters
+  // itself from the UnownedUserDataHost before the new instance registers
+  // itself.
+  browser_synced_tab_delegate_.reset();
+  browser_synced_tab_delegate_ =
+      GetUserDataFactory().CreateInstance<BrowserSyncedTabDelegate>(
+          *tab, *tab, new_contents);
 
   if (permission_indicators_tab_data_) {
     permission_indicators_tab_data_ =

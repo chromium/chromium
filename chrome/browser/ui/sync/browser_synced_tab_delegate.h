@@ -7,7 +7,7 @@
 
 #include "chrome/browser/ui/sync/tab_contents_synced_tab_delegate.h"
 #include "components/sessions/core/session_id.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace content {
 class WebContents;
@@ -17,16 +17,29 @@ namespace sync_sessions {
 class SyncedTabDelegate;
 }
 
+namespace tabs {
+class TabInterface;
+}
+
 // A BrowserSyncedTabDelegate is the desktop implementation for
-// SyncedTabDelegate, which essentially reads session IDs from SessionTabHelper.
-class BrowserSyncedTabDelegate
-    : public TabContentsSyncedTabDelegate,
-      public content::WebContentsUserData<BrowserSyncedTabDelegate> {
+// SyncedTabDelegate, which essentially reads session IDs from
+// SessionTabHelper. It is owned by the tab's TabFeatures.
+class BrowserSyncedTabDelegate : public TabContentsSyncedTabDelegate {
  public:
+  DECLARE_USER_DATA(BrowserSyncedTabDelegate);
+
+  // `web_contents` is passed explicitly because during a discard the helper
+  // is recreated for the incoming WebContents before `tab` swaps its
+  // contents.
+  BrowserSyncedTabDelegate(tabs::TabInterface& tab,
+                           content::WebContents* web_contents);
+
   BrowserSyncedTabDelegate(const BrowserSyncedTabDelegate&) = delete;
   BrowserSyncedTabDelegate& operator=(const BrowserSyncedTabDelegate&) = delete;
 
   ~BrowserSyncedTabDelegate() override;
+
+  static BrowserSyncedTabDelegate* From(tabs::TabInterface* tab);
 
   // SyncedTabDelegate:
   SessionID GetWindowId() const override;
@@ -36,10 +49,7 @@ class BrowserSyncedTabDelegate
       sync_sessions::SyncSessionsClient* sessions_client) override;
 
  private:
-  explicit BrowserSyncedTabDelegate(content::WebContents* web_contents);
-  friend class content::WebContentsUserData<BrowserSyncedTabDelegate>;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  ui::ScopedUnownedUserData<BrowserSyncedTabDelegate> scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_UI_SYNC_BROWSER_SYNCED_TAB_DELEGATE_H_

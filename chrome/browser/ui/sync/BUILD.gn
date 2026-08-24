@@ -11,6 +11,7 @@ source_set("sync") {
     "//base",
     "//components/sessions:session_id",
     "//components/sync_sessions",
+    "//ui/base/unowned_user_data",
   ]
 
   if (!is_android) {
@@ -43,6 +44,7 @@ source_set("impl") {
     "//components/sessions",
     "//components/sync/base:features",
     "//components/sync_sessions",
+    "//components/tabs:public",
     "//content/public/browser",
     "//extensions/buildflags",
   ]
