@@ -10,6 +10,7 @@
 #include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
@@ -25,7 +26,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
-#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/views/passwords/password_auto_sign_in_view.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -254,23 +255,14 @@ class PasswordAutoSignInToastTest : public base::test::WithFeatureOverride,
     return browser()->GetFeatures().toast_controller();
   }
 
-  IconLabelBubbleView* GetIconView() {
-    auto* provider = BrowserView::GetBrowserViewForBrowser(browser())
-                         ->toolbar_button_provider();
-    return page_actions::GetIconLabelBubbleViewForTesting(
-        provider->GetPageActionViewInterface(kActionShowPasswordsBubbleOrPage),
-        kActionShowPasswordsBubbleOrPage);
+  page_actions::PageActionTestAccessor GetIconAccessor() {
+    return page_actions::PageActionTestAccessor(
+        browser(), kActionShowPasswordsBubbleOrPage);
   }
 
-  void WaitForIconVisibility(IconLabelBubbleView* icon, bool visible) {
-    if (icon->GetVisible() == visible) {
-      return;
-    }
-    base::test::TestFuture<void> future;
-    auto subscription =
-        icon->AddVisibleChangedCallback(future.GetRepeatingCallback());
-    EXPECT_TRUE(future.Wait());
-    EXPECT_EQ(icon->GetVisible(), visible);
+  void WaitForIconVisibility(bool visible) {
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return GetIconAccessor().GetVisible() == visible; }));
   }
 };
 
@@ -307,12 +299,9 @@ IN_PROC_BROWSER_TEST_P(PasswordAutoSignInToastTest, CheckIconVisibility) {
 
   SetupAutoSignin(std::move(local_credentials));
 
-  IconLabelBubbleView* icon = GetIconView();
-  ASSERT_TRUE(icon);
-
   if (IsParamFeatureEnabled()) {
     // With Unified UI enabled, the icon should be HIDDEN while toast is shown.
-    EXPECT_FALSE(icon->GetVisible());
+    EXPECT_FALSE(GetIconAccessor().GetVisible());
 
     // Wait for the toast to be destroyed.
     base::test::TestFuture<void> toast_destroyed;
@@ -326,10 +315,10 @@ IN_PROC_BROWSER_TEST_P(PasswordAutoSignInToastTest, CheckIconVisibility) {
     EXPECT_TRUE(toast_destroyed.Wait());
 
     // The icon should reappear.
-    WaitForIconVisibility(icon, true);
+    WaitForIconVisibility(true);
   } else {
     // With Legacy UI, the icon should be VISIBLE.
-    EXPECT_TRUE(icon->GetVisible());
+    EXPECT_TRUE(GetIconAccessor().GetVisible());
   }
 }
 
@@ -349,9 +338,8 @@ IN_PROC_BROWSER_TEST_P(PasswordAutoSignInToastTest, TabSwitch) {
 
   SetupAutoSignin(std::move(local_credentials));
 
-  IconLabelBubbleView* icon = GetIconView();
   // Icon should be hidden initially when toast is shown.
-  EXPECT_FALSE(icon->GetVisible());
+  EXPECT_FALSE(GetIconAccessor().GetVisible());
 
   // Open a new tab (Tab 1) and switch to it.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
@@ -372,13 +360,13 @@ IN_PROC_BROWSER_TEST_P(PasswordAutoSignInToastTest, TabSwitch) {
   }
 
   // The icon should still be hidden, as the tab is not visible.
-  EXPECT_FALSE(icon->GetVisible());
+  EXPECT_FALSE(GetIconAccessor().GetVisible());
 
   // Switch back to Tab 0.
   browser()->GetTabStripModel()->ActivateTabAt(0);
 
   // Verify Icon is now VISIBLE on Tab 0.
-  WaitForIconVisibility(icon, true);
+  WaitForIconVisibility(true);
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PasswordAutoSignInToastTest);

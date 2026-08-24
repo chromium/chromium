@@ -291,6 +291,11 @@ IN_PROC_BROWSER_TEST_F(
   RunTestSequence(
       OpenTabWithPageUrlAndFocusOmnibox(/*is_ntp=*/true),
       CheckChipVisible(true), Do([this]() {
+        if (features::IsWebUILocationBarEnabled()) {
+          // TODO(crbug.com/545160323): Support background color test in WebUI
+          // location bar.
+          return;
+        }
         auto* provider = BrowserView::GetBrowserViewForBrowser(browser())
                              ->toolbar_button_provider();
         auto* view = static_cast<page_actions::PageActionView*>(

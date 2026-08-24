@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/payments/filled_card_information_bubble_controller_impl.h"
@@ -22,7 +23,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
-#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -45,45 +47,14 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/test/widget_test.h"
-#include "ui/views/view_observer.h"
 
 namespace autofill {
 
-class ViewVisibilityWaiter : public views::ViewObserver {
- public:
-  explicit ViewVisibilityWaiter(views::View* observed_view,
-                                bool expected_visible)
-      : view_(observed_view), expected_visible_(expected_visible) {
-    observation_.Observe(view_.get());
-  }
-  ViewVisibilityWaiter(const ViewVisibilityWaiter&) = delete;
-  ViewVisibilityWaiter& operator=(const ViewVisibilityWaiter&) = delete;
-
-  ~ViewVisibilityWaiter() override = default;
-
-  // Wait for changes to occur, or return immediately if view already has
-  // expected visibility.
-  void Wait() {
-    if (expected_visible_ != view_->GetVisible()) {
-      run_loop_.Run();
-    }
-  }
-
- private:
-  // views::ViewObserver:
-  void OnViewVisibilityChanged(views::View* observed_view,
-                               views::View* starting_view,
-                               bool visible) override {
-    if (expected_visible_ == observed_view->GetVisible()) {
-      run_loop_.Quit();
-    }
-  }
-
-  raw_ptr<views::View> view_;
-  const bool expected_visible_;
-  base::RunLoop run_loop_;
-  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
-};
+void WaitForVisibility(page_actions::PageActionTestAccessor accessor,
+                       bool expected_visible) {
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return accessor.GetVisible() == expected_visible; }));
+}
 
 class FilledCardInformationBubbleViewsInteractiveUiTest
     : public InProcessBrowserTest,
@@ -143,7 +114,12 @@ class FilledCardInformationBubbleViewsInteractiveUiTest
     ASSERT_TRUE(event_waiter_->Wait());
   }
 
-  bool IsIconVisible() { return GetIconView() && GetIconView()->GetVisible(); }
+  page_actions::PageActionTestAccessor GetIconAccessor() {
+    return page_actions::PageActionTestAccessor(browser(),
+                                                kActionFilledCardInformation);
+  }
+
+  bool IsIconVisible() { return GetIconAccessor().GetVisible(); }
 
   std::u16string GetValueForField(FilledCardInformationBubbleField field) {
     return GetController()->GetValueForField(field);
@@ -173,13 +149,12 @@ class FilledCardInformationBubbleViewsInteractiveUiTest
         controller->GetBubble());
   }
 
-  IconLabelBubbleView* GetIconView() {
+  page_actions::PageActionViewInterface* GetIconView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     auto* provider = browser_view->toolbar_button_provider();
-    IconLabelBubbleView* icon = page_actions::GetIconLabelBubbleViewForTesting(
-        provider->GetPageActionViewInterface(kActionFilledCardInformation),
-        kActionFilledCardInformation);
+    auto* icon =
+        provider->GetPageActionViewInterface(kActionFilledCardInformation);
     DCHECK(icon);
     return icon;
   }
@@ -226,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
       ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
   destroyed_waiter.Wait();
   EXPECT_FALSE(GetBubbleViews());
-  EXPECT_FALSE(GetIconView()->GetVisible());
+  EXPECT_FALSE(GetIconAccessor().GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
@@ -515,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
                        IconViewAccessibleName) {
   ShowBubble();
   EXPECT_EQ(
-      GetIconView()->GetViewAccessibility().GetCachedName(),
+      GetIconView()->GetAccessibleName(),
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_FILLED_CARD_INFORMATION_ICON_TOOLTIP_VIRTUAL_CARD));
 }
@@ -783,7 +758,7 @@ IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsPrerenderTest,
   // Show the bubble and wait until the icon visibility changes.
   {
     ShowBubble();
-    ViewVisibilityWaiter(GetIconView(), true).Wait();
+    WaitForVisibility(GetIconAccessor(), true);
   }
 
   ASSERT_TRUE(GetBubbleViews());
@@ -803,7 +778,7 @@ IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsPrerenderTest,
   // Activate a prerendered page and wait until the icon visibility changes.
   {
     prerender_helper_.NavigatePrimaryPage(url);
-    ViewVisibilityWaiter(GetIconView(), false).Wait();
+    WaitForVisibility(GetIconAccessor(), false);
   }
 
   // Ensure the bubble hides after prerender Activation.

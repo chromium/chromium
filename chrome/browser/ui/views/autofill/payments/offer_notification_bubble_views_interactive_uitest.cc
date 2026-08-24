@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.h"
 #include "chrome/browser/ui/views/controls/subpage_view.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -486,9 +487,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                        MAYBE_IconViewAccessibleName) {
   ShowBubbleForOfferAndVerify();
-  EXPECT_EQ(GetOfferNotificationPageActionView()
-                ->GetViewAccessibility()
-                .GetCachedName(),
+  EXPECT_EQ(GetOfferNotificationPageActionView()->GetAccessibleName(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
   EXPECT_EQ(GetOfferNotificationPageActionView()->GetTooltipText(),

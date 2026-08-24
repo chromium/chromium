@@ -24,7 +24,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
-#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -80,14 +81,9 @@ class PaymentsChurnedUsersBubbleViewsBrowserTest
   }
 
   bool IsIconVisible() {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    auto* provider = browser_view->toolbar_button_provider();
-    IconLabelBubbleView* icon = page_actions::GetIconLabelBubbleViewForTesting(
-        provider->GetPageActionViewInterface(
-            kActionShowPaymentsChurnedUsersBubble),
-        kActionShowPaymentsChurnedUsersBubble);
-    return icon && icon->GetVisible();
+    return page_actions::PageActionTestAccessor(
+               browser(), kActionShowPaymentsChurnedUsersBubble)
+        .GetVisible();
   }
 
   bool IsBubbleShowing() {

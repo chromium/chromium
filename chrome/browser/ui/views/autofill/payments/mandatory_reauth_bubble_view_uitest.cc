@@ -17,7 +17,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
-#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -69,7 +70,11 @@ class MandatoryReauthBubbleViewUiTest : public InProcessBrowserTest {
     }
   }
 
-  bool IsIconVisible() { return GetIconView() && GetIconView()->GetVisible(); }
+  bool IsIconVisible() {
+    return page_actions::PageActionTestAccessor(browser(),
+                                                kActionAutofillMandatoryReauth)
+        .GetVisible();
+  }
 
   MandatoryReauthBubbleControllerImpl* GetController() {
     if (!browser() || !browser()->GetTabStripModel() ||
@@ -109,14 +114,13 @@ class MandatoryReauthBubbleViewUiTest : public InProcessBrowserTest {
         controller->GetBubbleView());
   }
 
-  IconLabelBubbleView* GetIconView() {
+  page_actions::PageActionViewInterface* GetIconView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
 
     auto* provider = browser_view->toolbar_button_provider();
-    IconLabelBubbleView* icon = page_actions::GetIconLabelBubbleViewForTesting(
-        provider->GetPageActionViewInterface(kActionAutofillMandatoryReauth),
-        kActionAutofillMandatoryReauth);
+    auto* icon =
+        provider->GetPageActionViewInterface(kActionAutofillMandatoryReauth);
 
     DCHECK(icon);
     return icon;

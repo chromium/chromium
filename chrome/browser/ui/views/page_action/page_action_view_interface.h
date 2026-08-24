@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "chrome/browser/ui/page_action/page_action_triggers.h"
 #include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/controls/button/button.h"
 

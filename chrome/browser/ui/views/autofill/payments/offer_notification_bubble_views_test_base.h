@@ -28,7 +28,9 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
-class IconLabelBubbleView;
+namespace page_actions {
+class PageActionViewInterface;
+}  // namespace page_actions
 
 namespace autofill {
 
@@ -99,7 +101,7 @@ class OfferNotificationBubbleViewsTestBase
 
   OfferNotificationBubbleViews* GetOfferNotificationBubbleViews();
 
-  IconLabelBubbleView* GetOfferNotificationPageActionView();
+  page_actions::PageActionViewInterface* GetOfferNotificationPageActionView();
 
   bool IsIconVisible();
 

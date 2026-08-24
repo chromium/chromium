@@ -76,6 +76,7 @@
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
@@ -5063,22 +5064,16 @@ std::vector<Profile*> WebAppIntegrationTestDriver::GetAllProfiles() {
   return profiles;
 }
 
-IconLabelBubbleView* WebAppIntegrationTestDriver::pwa_install_view() {
-  IconLabelBubbleView* pwa_install_view =
-      page_actions::GetIconLabelBubbleViewForTesting(
-          BrowserView::GetBrowserViewForBrowser(browser())
-              ->toolbar_button_provider()
-              ->GetPageActionViewInterface(kActionInstallPwa),
-          kActionInstallPwa);
-  CHECK(pwa_install_view);
-  return pwa_install_view;
+page_actions::PageActionViewInterface*
+WebAppIntegrationTestDriver::pwa_install_view() {
+  return BrowserView::GetBrowserViewForBrowser(browser())
+      ->toolbar_button_provider()
+      ->GetPageActionViewInterface(kActionInstallPwa);
 }
 
 bool WebAppIntegrationTestDriver::IsPwaInstallIconVisible() {
-  ui::ElementContext context = views::ElementTrackerViews::GetContextForView(
-      BrowserView::GetBrowserViewForBrowser(browser()));
-  return ui::ElementTracker::GetElementTracker()->IsElementVisible(
-      kInstallPwaElementId, context);
+  return page_actions::PageActionTestAccessor(browser(), kActionInstallPwa)
+      .GetVisible();
 }
 
 const net::EmbeddedTestServer&

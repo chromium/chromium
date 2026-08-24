@@ -6,12 +6,16 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_TEST_SUPPORT_PAGE_ACTION_INTERACTIVE_TEST_MIXIN_H_
 
 #include <concepts>
+#include <string_view>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "ui/actions/actions.h"
@@ -34,15 +38,17 @@ class PageActionInteractiveTestMixin : public T {
  protected:
   // Utility to reliably wait for the page action view to be visible.
   auto WaitForPageActionButtonVisible(actions::ActionId action_id) {
-    auto* provider = BrowserView::GetBrowserViewForBrowser(T::browser())
-                         ->toolbar_button_provider();
-    IconLabelBubbleView* page_action =
-        page_actions::GetIconLabelBubbleViewForTesting(
-            provider->GetPageActionViewInterface(action_id), action_id);
-
-    constexpr char kPageActionId[] = "page action view";
-    return T::Steps(T::NameView(kPageActionId, page_action),
-                    T::WaitForShow(kPageActionId));
+    page_actions::PageActionPropertiesProvider provider;
+    CHECK(provider.Contains(action_id));
+    ui::ElementIdentifier element_id =
+        provider.GetProperties(action_id).element_identifier;
+    if (element_id) {
+      return T::Steps(T::WaitForShow(element_id));
+    }
+    return WaitForPageActionState(
+        action_id,
+        base::BindRepeating(&page_actions::PageActionTestAccessor::GetVisible),
+        "WaitForPageActionButtonVisible()");
   }
 
   // Utility to invoke the page action.
@@ -61,60 +67,51 @@ class PageActionInteractiveTestMixin : public T {
   // Utility to reliably wait for the page action view to be visible in chip
   // state.
   auto WaitForPageActionChipVisible(actions::ActionId action_id) {
-    auto steps = T::Steps(
-        T::PollState(
-            kPageActionButtonVisible,
-            [this, action_id]() {
-              auto* provider =
-                  BrowserView::GetBrowserViewForBrowser(T::browser())
-                      ->toolbar_button_provider();
-              auto* view = page_actions::GetIconLabelBubbleViewForTesting(
-                  provider->GetPageActionViewInterface(action_id), action_id);
-              return view->GetVisible() && !view->is_animating_label();
-            }),
-        T::WaitForState(kPageActionButtonVisible, true),
-        T::StopObservingState(kPageActionButtonVisible));
-    T::AddDescriptionPrefix(steps, "WaitForPageActionChipVisible()");
-    return steps;
+    return WaitForPageActionState(
+        action_id,
+        base::BindRepeating([](page_actions::PageActionTestAccessor* accessor) {
+          return accessor->IsChipVisible() && !accessor->IsAnimating();
+        }),
+        "WaitForPageActionChipVisible()");
   }
 
   // Utility to reliably wait for the page action view to be visible in icon
   // state.
   auto WaitForPageActionIconVisible(actions::ActionId action_id) {
-    auto steps = T::Steps(
-        T::PollState(
-            kPageActionButtonVisible,
-            [this, action_id]() {
-              auto* provider =
-                  BrowserView::GetBrowserViewForBrowser(T::browser())
-                      ->toolbar_button_provider();
-              auto* view = page_actions::GetIconLabelBubbleViewForTesting(
-                  provider->GetPageActionViewInterface(action_id), action_id);
-              return view->GetVisible() && !view->ShouldShowLabel();
-            }),
-        T::WaitForState(kPageActionButtonVisible, true),
-        T::StopObservingState(kPageActionButtonVisible));
-    T::AddDescriptionPrefix(steps, "WaitForPageActionIconVisible()");
-    return steps;
+    return WaitForPageActionState(
+        action_id,
+        base::BindRepeating(
+            &page_actions::PageActionTestAccessor::IsIconVisible),
+        "WaitForPageActionIconVisible()");
   }
 
   // Utility to reliably wait for the page action view to not be visible in chip
   // state.
   auto WaitForPageActionChipNotVisible(actions::ActionId action_id) {
-    auto steps = T::Steps(
-        T::PollState(
-            kPageActionButtonVisible,
-            [this, action_id]() {
-              auto* provider =
-                  BrowserView::GetBrowserViewForBrowser(T::browser())
-                      ->toolbar_button_provider();
-              auto* view = page_actions::GetIconLabelBubbleViewForTesting(
-                  provider->GetPageActionViewInterface(action_id), action_id);
-              return view->GetVisible() && !view->is_animating_label();
-            }),
-        T::WaitForState(kPageActionButtonVisible, false),
-        T::StopObservingState(kPageActionButtonVisible));
-    T::AddDescriptionPrefix(steps, "WaitForPageActionChipNotVisible()");
+    return WaitForPageActionState(
+        action_id,
+        base::BindRepeating([](page_actions::PageActionTestAccessor* accessor) {
+          return !accessor->IsChipVisible() && !accessor->IsAnimating();
+        }),
+        "WaitForPageActionChipNotVisible()");
+  }
+
+ private:
+  auto WaitForPageActionState(
+      actions::ActionId action_id,
+      base::RepeatingCallback<bool(page_actions::PageActionTestAccessor*)>
+          matcher,
+      std::string_view description) {
+    auto steps =
+        T::Steps(T::PollState(kPageActionButtonVisible,
+                              [this, action_id, matcher]() {
+                                page_actions::PageActionTestAccessor accessor(
+                                    T::browser(), action_id);
+                                return matcher.Run(&accessor);
+                              }),
+                 T::WaitForState(kPageActionButtonVisible, true),
+                 T::StopObservingState(kPageActionButtonVisible));
+    T::AddDescriptionPrefix(steps, description);
     return steps;
   }
 };

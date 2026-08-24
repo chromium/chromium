@@ -50,7 +50,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
-#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
@@ -855,12 +855,9 @@ class ExecutionEngineFileSystemAccessApiBrowserTest
   }
 
   bool IsUsageIndicatorVisible(BrowserWindowInterface* browser) {
-    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-    auto* provider = browser_view->toolbar_button_provider();
-    auto* icon_view = page_actions::GetIconLabelBubbleViewForTesting(
-        provider->GetPageActionViewInterface(kActionShowFileSystemAccess),
-        kActionShowFileSystemAccess);
-    return icon_view && icon_view->GetVisible();
+    return page_actions::PageActionTestAccessor(browser,
+                                                kActionShowFileSystemAccess)
+        .GetVisible();
   }
 
  private:

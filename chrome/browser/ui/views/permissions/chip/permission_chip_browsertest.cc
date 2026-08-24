@@ -256,14 +256,7 @@ class PermissionChipBrowserTest : public InProcessBrowserTest {
   }
 
   void ClickOnChip(ChipController* controller) {
-    views::test::ButtonTestApi(
-        views::AsViewClass<views::Button>(
-            views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-                PermissionChipView::kPermissionRequestChipElementId,
-                views::ElementTrackerViews::GetContextForView(browser_view()))))
-        .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
-                                    gfx::Point(), ui::EventTimeForNow(),
-                                    ui::EF_LEFT_MOUSE_BUTTON, 0));
+    controller->chip()->ExecuteForTesting();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -369,11 +362,8 @@ IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest, ClickOnRequestChipTest) {
   EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
 
   EXPECT_TRUE(chip_controller->IsAnimating());
-  views::AsViewClass<PermissionChipView>(
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          PermissionChipView::kPermissionRequestChipElementId,
-          views::ElementTrackerViews::GetContextForView(browser_view())))
-      ->StopAnimationForTesting();
+  chip_controller->chip()->ResetAnimation(
+      PermissionChipInterface::AnimationState::kExpanded);
   chip_controller->OnExpandAnimationEnded();
   EXPECT_FALSE(chip_controller->IsAnimating());
 
@@ -416,11 +406,8 @@ IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest,
   EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
 
   EXPECT_TRUE(chip_controller->IsAnimating());
-  views::AsViewClass<PermissionChipView>(
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          PermissionChipView::kPermissionRequestChipElementId,
-          views::ElementTrackerViews::GetContextForView(browser_view())))
-      ->StopAnimationForTesting();
+  chip_controller->chip()->ResetAnimation(
+      PermissionChipInterface::AnimationState::kExpanded);
   chip_controller->OnExpandAnimationEnded();
   EXPECT_FALSE(chip_controller->IsAnimating());
 
@@ -459,11 +446,8 @@ IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest,
   ChipController* chip_controller =
       chip_prompt.get_chip_controller_for_testing();
 
-  views::AsViewClass<PermissionChipView>(
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          PermissionChipView::kPermissionRequestChipElementId,
-          views::ElementTrackerViews::GetContextForView(browser_view())))
-      ->StopAnimationForTesting();
+  chip_controller->chip()->ResetAnimation(
+      PermissionChipInterface::AnimationState::kExpanded);
   chip_controller->OnExpandAnimationEnded();
 
   // Open a permission popup bubble.

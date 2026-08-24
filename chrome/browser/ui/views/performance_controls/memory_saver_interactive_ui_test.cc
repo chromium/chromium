@@ -297,11 +297,12 @@ class MemorySaverChipInteractiveTest
   }
 
   auto CheckChipIsExpandedState(bool is_expanded) {
-    MultiStep steps =
-        Steps(WaitForPageActionChipVisible(),
-              CheckViewProperty(kMemorySaverChipElementId,
-                                &page_actions::PageActionView::ShouldShowLabel,
-                                is_expanded));
+    MultiStep steps = Steps(
+        is_expanded ? WaitForPageActionChipVisible(kActionShowMemorySaverChip)
+                    : WaitForPageActionIconVisible(kActionShowMemorySaverChip),
+        CheckViewProperty(kMemorySaverChipElementId,
+                          &page_actions::PageActionView::ShouldShowLabel,
+                          is_expanded));
     AddDescriptionPrefix(steps, "CheckChipIsExpandedState()");
     return steps;
   }
@@ -324,8 +325,9 @@ class MemorySaverChipInteractiveTest
   }
 
   auto PressPageActionButton() {
-    MultiStep steps = Steps(WaitForPageActionChipVisible(),
-                            PressButton(kMemorySaverChipElementId));
+    MultiStep steps =
+        Steps(WaitForPageActionButtonVisible(kActionShowMemorySaverChip),
+              PressButton(kMemorySaverChipElementId));
     AddDescriptionPrefix(steps, "PressPageActionButton()");
     return steps;
   }
@@ -336,7 +338,7 @@ class MemorySaverChipInteractiveTest
   // in tests will not. See crbug.com/395901614.
   auto MousePressPageActionButton() {
     MultiStep steps =
-        Steps(WaitForPageActionChipVisible(),
+        Steps(WaitForPageActionButtonVisible(kActionShowMemorySaverChip),
               MoveMouseTo(kMemorySaverChipElementId), ClickMouse());
     AddDescriptionPrefix(steps, "MousePressPageActionButton()");
     return steps;

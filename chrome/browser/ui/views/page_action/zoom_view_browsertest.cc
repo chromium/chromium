@@ -10,43 +10,35 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_coordinator.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
-#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/test/widget_test.h"
 
 using ZoomViewBrowserTest = InProcessBrowserTest;
 
-namespace {
-
-views::View* GetZoomView(Browser* browser) {
-  auto* provider =
-      BrowserView::GetBrowserViewForBrowser(browser)->toolbar_button_provider();
-  return page_actions::GetIconLabelBubbleViewForTesting(
-      provider->GetPageActionViewInterface(kActionShowZoomBubble),
-      kActionShowZoomBubble);
-}
-
-}  // namespace
-
 IN_PROC_BROWSER_TEST_F(ZoomViewBrowserTest, SharedPageVisibility) {
-  auto* zoom_icon = GetZoomView(browser());
-  auto* second_zoom_icon = GetZoomView(CreateBrowser(browser()->GetProfile()));
+  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  page_actions::PageActionTestAccessor zoom_icon(browser(),
+                                                 kActionShowZoomBubble);
+  page_actions::PageActionTestAccessor second_zoom_icon(second_browser,
+                                                        kActionShowZoomBubble);
 
   ZoomBubbleCoordinator* zoom_bubble_coordinator =
       ZoomBubbleCoordinator::From(browser());
 
   // Initially no icon.
   EXPECT_FALSE(zoom_bubble_coordinator->bubble());
-  EXPECT_FALSE(zoom_icon->GetVisible());
-  EXPECT_FALSE(second_zoom_icon->GetVisible());
+  EXPECT_FALSE(zoom_icon.GetVisible());
+  EXPECT_FALSE(second_zoom_icon.GetVisible());
 
   // Zooming in one browser should show the icon in all browsers on the same
   // URL.
   chrome::Zoom(browser(), content::PAGE_ZOOM_IN);
   EXPECT_TRUE(zoom_bubble_coordinator->bubble());
-  EXPECT_TRUE(zoom_icon->GetVisible());
-  EXPECT_TRUE(second_zoom_icon->GetVisible());
+  EXPECT_TRUE(zoom_icon.GetVisible());
+  EXPECT_TRUE(second_zoom_icon.GetVisible());
 
   views::test::WidgetDestroyedWaiter waiter(
       zoom_bubble_coordinator->bubble()->GetWidget());
@@ -58,6 +50,6 @@ IN_PROC_BROWSER_TEST_F(ZoomViewBrowserTest, SharedPageVisibility) {
   // the one where the interaction occurred because the bubble is showing there.
   chrome::Zoom(browser(), content::PAGE_ZOOM_RESET);
   EXPECT_TRUE(zoom_bubble_coordinator->bubble());
-  EXPECT_TRUE(zoom_icon->GetVisible());
-  EXPECT_FALSE(second_zoom_icon->GetVisible());
+  EXPECT_TRUE(zoom_icon.GetVisible());
+  EXPECT_FALSE(second_zoom_icon.GetVisible());
 }

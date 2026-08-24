@@ -69,6 +69,7 @@ class PermissionChipView : public views::MdTextButton,
   void SetVisible(bool visible) override;
   bool GetVisible() const override;
   PermissionChipTheme GetThemeForTesting() const override;
+  std::u16string GetTooltipText() const override;
   std::u16string GetTextForTesting() const override;
   bool GetIsRequestForTesting() const override;
   void SetChipIcon(const gfx::VectorIcon& icon) override;
@@ -99,6 +100,7 @@ class PermissionChipView : public views::MdTextButton,
   views::BubbleAnchor GetAnchor() override;
   void SetBubbleOwner(
       PermissionChipInterface::BubbleOwnerDelegate* owner) override;
+  void ExecuteForTesting() override;
 
   // Views-specific formatting.
   void UpdateForDividerVisibility(bool is_divider_visible,

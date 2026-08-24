@@ -19,8 +19,8 @@
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
-#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
@@ -115,7 +115,11 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
 
   void ReshowBubble() { GetController()->ReshowBubble(); }
 
-  bool IsIconVisible() { return GetIconView() && GetIconView()->GetVisible(); }
+  bool IsIconVisible() {
+    return page_actions::PageActionTestAccessor(browser(),
+                                                kActionVirtualCardEnroll)
+        .GetVisible();
+  }
 
   bool IsLoadingProgressRowVisible() {
     return GetBubbleViews() &&
@@ -155,13 +159,11 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
         payments::GetVirtualCardEnrollmentSupportUrl());
   }
 
-  IconLabelBubbleView* GetIconView() {
+  page_actions::PageActionViewInterface* GetIconView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     auto* provider = browser_view->toolbar_button_provider();
-    IconLabelBubbleView* icon = page_actions::GetIconLabelBubbleViewForTesting(
-        provider->GetPageActionViewInterface(kActionVirtualCardEnroll),
-        kActionVirtualCardEnroll);
+    auto* icon = provider->GetPageActionViewInterface(kActionVirtualCardEnroll);
     DCHECK(icon);
     return icon;
   }
@@ -682,7 +684,7 @@ IN_PROC_BROWSER_TEST_P(
       GetFieldsForSource(virtual_card_enrollment_source), base::DoNothing(),
       base::DoNothing());
 
-  EXPECT_EQ(GetIconView()->GetViewAccessibility().GetCachedName(),
+  EXPECT_EQ(GetIconView()->GetAccessibleName(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_FALLBACK_ICON_TOOLTIP));
 }

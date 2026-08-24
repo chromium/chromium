@@ -19,7 +19,8 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view_controller.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
-#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -88,9 +89,8 @@ class CookieControlsBubbleViewPixelTestBase : public DialogBrowserTest {
 
     auto* provider = BrowserView::GetBrowserViewForBrowser(browser())
                          ->toolbar_button_provider();
-    cookie_controls_icon_ = page_actions::GetIconLabelBubbleViewForTesting(
-        provider->GetPageActionViewInterface(kActionShowCookieControls),
-        kActionShowCookieControls);
+    cookie_controls_icon_ =
+        provider->GetPageActionViewInterface(kActionShowCookieControls);
     ASSERT_TRUE(cookie_controls_icon_);
 
     controller_ = std::make_unique<content_settings::CookieControlsController>(
@@ -139,7 +139,9 @@ class CookieControlsBubbleViewPixelTestBase : public DialogBrowserTest {
                                        "/third_party_partitioned_cookies.html");
   }
 
-  IconLabelBubbleView* cookie_controls_icon() { return cookie_controls_icon_; }
+  page_actions::PageActionViewInterface* cookie_controls_icon() {
+    return cookie_controls_icon_;
+  }
   net::EmbeddedTestServer* https_test_server() { return https_server_.get(); }
 
   CookieControlsBubbleViewController* view_controller() {
@@ -164,7 +166,7 @@ class CookieControlsBubbleViewPixelTestBase : public DialogBrowserTest {
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   content::ContentMockCertVerifier mock_cert_verifier_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<IconLabelBubbleView> cookie_controls_icon_;
+  raw_ptr<page_actions::PageActionViewInterface> cookie_controls_icon_;
   std::unique_ptr<content_settings::CookieControlsController> controller_;
   std::unique_ptr<content_settings::CookieControlsController>
       incognito_controller_;
@@ -210,7 +212,9 @@ class CookieControlsBubbleViewPixelTest
   void ShowUi(const std::string& name_with_param_suffix) override {
     BlockThirdPartyCookies();
     NavigateToUrlWithThirdPartyCookies();
-    ASSERT_TRUE(cookie_controls_icon()->GetVisible());
+    ASSERT_TRUE(page_actions::PageActionTestAccessor(browser(),
+                                                     kActionShowCookieControls)
+                    .GetVisible());
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "CookieControlsBubbleViewImpl");
     actions::ActionManager::Get()

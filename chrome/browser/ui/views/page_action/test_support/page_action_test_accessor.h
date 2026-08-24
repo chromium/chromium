@@ -30,8 +30,8 @@ class PageActionTestAccessor {
  public:
   PageActionTestAccessor(BrowserWindowInterface* browser,
                          actions::ActionId action_id);
-  PageActionTestAccessor(const PageActionTestAccessor&) = delete;
-  PageActionTestAccessor& operator=(const PageActionTestAccessor&) = delete;
+  PageActionTestAccessor(const PageActionTestAccessor&) = default;
+  PageActionTestAccessor& operator=(const PageActionTestAccessor&) = default;
   ~PageActionTestAccessor();
 
   bool GetVisible();

@@ -16,8 +16,8 @@
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
-#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -85,13 +85,17 @@ class SaveCardConfirmationBubbleViewsInteractiveUiTest
         GetController()->GetPaymentBubbleView());
   }
 
-  IconLabelBubbleView* IconView() {
+  page_actions::PageActionTestAccessor GetIconAccessor() {
+    return page_actions::PageActionTestAccessor(
+        browser(), kActionShowPaymentsBubbleOrPage);
+  }
+
+  page_actions::PageActionViewInterface* IconView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     auto* provider = browser_view->toolbar_button_provider();
-    IconLabelBubbleView* icon = page_actions::GetIconLabelBubbleViewForTesting(
-        provider->GetPageActionViewInterface(kActionShowPaymentsBubbleOrPage),
-        kActionShowPaymentsBubbleOrPage);
+    auto* icon =
+        provider->GetPageActionViewInterface(kActionShowPaymentsBubbleOrPage);
     CHECK(icon);
     return icon;
   }
@@ -174,11 +178,11 @@ IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
   }
   EXPECT_EQ(BubbleView()->buttons(),
             static_cast<int>(ui::mojom::DialogButton::kNone));
-  EXPECT_TRUE(IconView()->GetVisible());
+  EXPECT_TRUE(GetIconAccessor().GetVisible());
 
   HideBubble(views::Widget::ClosedReason::kLostFocus);
   EXPECT_EQ(BubbleView(), nullptr);
-  EXPECT_FALSE(IconView()->GetVisible());
+  EXPECT_FALSE(GetIconAccessor().GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
@@ -254,11 +258,11 @@ IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
       BubbleView()->GetOkButton()->GetViewAccessibility().GetCachedName(),
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUTTON_TEXT));
-  EXPECT_TRUE(IconView()->GetVisible());
+  EXPECT_TRUE(GetIconAccessor().GetVisible());
 
   HideBubble(views::Widget::ClosedReason::kLostFocus);
   EXPECT_EQ(BubbleView(), nullptr);
-  EXPECT_FALSE(IconView()->GetVisible());
+  EXPECT_FALSE(GetIconAccessor().GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
@@ -363,13 +367,16 @@ class VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest
         GetController()->GetVirtualCardBubbleView());
   }
 
-  IconLabelBubbleView* IconView() {
+  page_actions::PageActionTestAccessor GetIconAccessor() {
+    return page_actions::PageActionTestAccessor(browser(),
+                                                kActionVirtualCardEnroll);
+  }
+
+  page_actions::PageActionViewInterface* IconView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     auto* provider = browser_view->toolbar_button_provider();
-    IconLabelBubbleView* icon = page_actions::GetIconLabelBubbleViewForTesting(
-        provider->GetPageActionViewInterface(kActionVirtualCardEnroll),
-        kActionVirtualCardEnroll);
+    auto* icon = provider->GetPageActionViewInterface(kActionVirtualCardEnroll);
     CHECK(icon);
     return icon;
   }
@@ -428,11 +435,11 @@ IN_PROC_BROWSER_TEST_P(
           IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
   EXPECT_EQ(BubbleView()->buttons(),
             static_cast<int>(ui::mojom::DialogButton::kNone));
-  EXPECT_TRUE(IconView()->GetVisible());
+  EXPECT_TRUE(GetIconAccessor().GetVisible());
 
   GetController()->HideIconAndBubble();
   EXPECT_EQ(BubbleView(), nullptr);
-  EXPECT_FALSE(IconView()->GetVisible());
+  EXPECT_FALSE(GetIconAccessor().GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -508,11 +515,11 @@ IN_PROC_BROWSER_TEST_P(
       BubbleView()->GetOkButton()->GetViewAccessibility().GetCachedName(),
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUTTON_TEXT));
-  EXPECT_TRUE(IconView()->GetVisible());
+  EXPECT_TRUE(GetIconAccessor().GetVisible());
 
   GetController()->HideIconAndBubble();
   EXPECT_EQ(BubbleView(), nullptr);
-  EXPECT_FALSE(IconView()->GetVisible());
+  EXPECT_FALSE(GetIconAccessor().GetVisible());
 }
 
 INSTANTIATE_TEST_SUITE_P(

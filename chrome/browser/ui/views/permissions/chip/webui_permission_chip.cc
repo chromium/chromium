@@ -92,6 +92,10 @@ bool WebUIPermissionChip::GetVisible() const {
   return is_visible_;
 }
 
+std::u16string WebUIPermissionChip::GetTooltipText() const {
+  return tooltip_;
+}
+
 void WebUIPermissionChip::SetChipIcon(const gfx::VectorIcon& icon) {
   icon_name_ = icon.name;
   UpdateState();
@@ -265,6 +269,12 @@ views::BubbleAnchor WebUIPermissionChip::GetAnchor() {
 
 void WebUIPermissionChip::SetBubbleOwner(BubbleOwnerDelegate* owner) {
   bubble_owner_ = owner;
+}
+
+void WebUIPermissionChip::ExecuteForTesting() {
+  if (pressed_callback_) {
+    pressed_callback_.Run(/*is_pointer_interaction=*/false);
+  }
 }
 
 void WebUIPermissionChip::OnExpandAnimationEnded() {

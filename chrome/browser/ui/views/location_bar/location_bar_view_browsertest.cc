@@ -39,7 +39,8 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
-#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -112,14 +113,9 @@ class LocationBarViewBrowserTest : public InProcessBrowserTest {
     return browser_view->GetLocationBarView();
   }
 
-  views::View* GetZoomView() {
-    auto* toolbar_button_provider =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar_button_provider();
-    return page_actions::GetIconLabelBubbleViewForTesting(
-        toolbar_button_provider->GetPageActionViewInterface(
-            kActionShowZoomBubble),
-        kActionShowZoomBubble);
+  page_actions::PageActionTestAccessor GetZoomAccessor() {
+    return page_actions::PageActionTestAccessor(browser(),
+                                                kActionShowZoomBubble);
   }
 
   ContentSettingImageView& GetContentSettingImageView(
@@ -141,41 +137,39 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, LocationBarDecoration) {
       browser()->GetTabStripModel()->GetActiveWebContents();
   zoom::ZoomController* zoom_controller =
       zoom::ZoomController::FromWebContents(web_contents);
-  auto* zoom_view = GetZoomView();
 
-  ASSERT_TRUE(zoom_view);
-  EXPECT_FALSE(zoom_view->GetVisible());
+  EXPECT_FALSE(GetZoomAccessor().GetVisible());
   EXPECT_FALSE(zoom_bubble_coordinator_->bubble());
 
   // Altering zoom should display a bubble. Note ZoomBubbleView closes
   // asynchronously, so precede checks with a run loop flush.
   zoom_controller->SetZoomLevel(blink::ZoomFactorToZoomLevel(1.5));
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(zoom_view->GetVisible());
+  EXPECT_TRUE(GetZoomAccessor().GetVisible());
   EXPECT_TRUE(zoom_bubble_coordinator_->bubble());
 
   // Close the bubble at other than 100% zoom. Icon should remain visible.
   zoom_bubble_coordinator_->Hide();
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(zoom_view->GetVisible());
+  EXPECT_TRUE(GetZoomAccessor().GetVisible());
   EXPECT_FALSE(zoom_bubble_coordinator_->bubble());
 
   // Show the bubble again.
   zoom_controller->SetZoomLevel(blink::ZoomFactorToZoomLevel(2.0));
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(zoom_view->GetVisible());
+  EXPECT_TRUE(GetZoomAccessor().GetVisible());
   EXPECT_TRUE(zoom_bubble_coordinator_->bubble());
 
   // Remains visible at 100% until the bubble is closed.
   zoom_controller->SetZoomLevel(blink::ZoomFactorToZoomLevel(1.0));
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(zoom_view->GetVisible());
+  EXPECT_TRUE(GetZoomAccessor().GetVisible());
   EXPECT_TRUE(zoom_bubble_coordinator_->bubble());
 
   // Closing at 100% hides the icon.
   zoom_bubble_coordinator_->Hide();
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(zoom_view->GetVisible());
+  EXPECT_FALSE(GetZoomAccessor().GetVisible());
   EXPECT_FALSE(zoom_bubble_coordinator_->bubble());
 }
 
@@ -227,14 +221,12 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, BubblesCloseOnHide) {
       browser()->GetTabStripModel()->GetActiveWebContents();
   zoom::ZoomController* zoom_controller =
       zoom::ZoomController::FromWebContents(web_contents);
-  auto* zoom_view = GetZoomView();
 
-  ASSERT_TRUE(zoom_view);
-  EXPECT_FALSE(zoom_view->GetVisible());
+  EXPECT_FALSE(GetZoomAccessor().GetVisible());
 
   zoom_controller->SetZoomLevel(blink::ZoomFactorToZoomLevel(1.5));
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(zoom_view->GetVisible());
+  EXPECT_TRUE(GetZoomAccessor().GetVisible());
   EXPECT_TRUE(zoom_bubble_coordinator_->bubble());
 
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);

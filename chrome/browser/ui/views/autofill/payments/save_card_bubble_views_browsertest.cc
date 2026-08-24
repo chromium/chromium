@@ -34,7 +34,8 @@
 #include "chrome/browser/ui/views/autofill/payments/save_card_manage_cards_bubble_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -794,14 +795,17 @@ class SaveCardBubbleViewsFullFormBrowserTest
     return static_cast<SaveCardBubbleViews*>(save_card_bubble_view);
   }
 
-  IconLabelBubbleView* GetSaveCardPageActionView() {
+  page_actions::PageActionTestAccessor GetSaveCardPageActionAccessor() {
+    return page_actions::PageActionTestAccessor(
+        GetBrowser(0), kActionShowPaymentsBubbleOrPage);
+  }
+
+  page_actions::PageActionViewInterface* GetSaveCardPageActionView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(GetBrowser(0));
     auto* provider = browser_view->toolbar_button_provider();
-    IconLabelBubbleView* icon = page_actions::GetIconLabelBubbleViewForTesting(
-        provider->GetPageActionViewInterface(kActionShowPaymentsBubbleOrPage),
-        kActionShowPaymentsBubbleOrPage);
-    CHECK(browser_view->GetLocationBarView()->Contains(icon));
+    auto* icon =
+        provider->GetPageActionViewInterface(kActionShowPaymentsBubbleOrPage);
     return icon;
   }
 
@@ -1936,7 +1940,7 @@ IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsFullFormBrowserTest,
   SubmitForm();
   ASSERT_TRUE(WaitForObservedEvent());
 
-  EXPECT_FALSE(GetSaveCardPageActionView()->GetVisible());
+  EXPECT_FALSE(GetSaveCardPageActionAccessor().GetVisible());
   EXPECT_FALSE(GetSaveCardBubbleViews());
 
   // Verify that the correct histogram entry was logged.
@@ -1996,7 +2000,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(WaitForObservedEvent());
 
   // Post migration, the page action will not show after max strikes.
-  EXPECT_FALSE(GetSaveCardPageActionView()->GetVisible());
+  EXPECT_FALSE(GetSaveCardPageActionAccessor().GetVisible());
   EXPECT_FALSE(GetSaveCardBubbleViews());
 
   // Verify that the correct histogram entry was logged.
@@ -2182,7 +2186,7 @@ IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsFullFormBrowserTest,
   EXPECT_EQ(nullptr, GetSaveCardBubbleViews());
 
   // Entrypoint for manage card bubble will not show post migration.
-  EXPECT_FALSE(GetSaveCardPageActionView()->GetVisible());
+  EXPECT_FALSE(GetSaveCardPageActionAccessor().GetVisible());
 }
 
 // Tests the local save bubble. Ensures that the bubble always surfaces the

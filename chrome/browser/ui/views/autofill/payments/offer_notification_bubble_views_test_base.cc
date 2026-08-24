@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -208,18 +208,17 @@ OfferNotificationBubbleViewsTestBase::GetOfferNotificationBubbleViews() {
       controller->GetOfferNotificationBubbleView());
 }
 
-IconLabelBubbleView*
+page_actions::PageActionViewInterface*
 OfferNotificationBubbleViewsTestBase::GetOfferNotificationPageActionView() {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   auto* provider = browser_view->toolbar_button_provider();
-  return page_actions::GetIconLabelBubbleViewForTesting(
-      provider->GetPageActionViewInterface(kActionOffersAndRewardsForPage),
-      kActionOffersAndRewardsForPage);
+  return provider->GetPageActionViewInterface(kActionOffersAndRewardsForPage);
 }
 
 bool OfferNotificationBubbleViewsTestBase::IsIconVisible() {
-  return GetOfferNotificationPageActionView() &&
-         GetOfferNotificationPageActionView()->GetVisible();
+  return page_actions::PageActionTestAccessor(browser(),
+                                              kActionOffersAndRewardsForPage)
+      .GetVisible();
 }
 
 content::WebContents*
