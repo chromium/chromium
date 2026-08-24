@@ -163,10 +163,23 @@ class ContextHubTabProviderDesktopTest : public testing::Test {
         AddTabTypes::ADD_ACTIVE | AddTabTypes::ADD_INHERIT_OPENER);
   }
 
-  int64_t GetTabId(TestBrowserInstance* target_browser, int index) {
+  int64_t GetTabId(TabStripModel* tab_strip_model, int index) {
     content::WebContents* wc =
-        target_browser->tab_strip_model()->GetWebContentsAt(index);
+        tab_strip_model->GetWebContentsAt(index);
     return sessions::SessionTabHelper::IdForTab(wc).id();
+  }
+
+  int64_t GetTabId(int index) {
+    return GetTabId(browser()->tab_strip_model(), index);
+  }
+
+  int64_t GetTabHandleId(TabStripModel* tab_strip_model, int index) {
+    tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(index);
+    return tab ? tab->GetHandle().raw_value() : -1;
+  }
+
+  int64_t GetTabHandleId(int index) {
+    return GetTabHandleId(browser()->tab_strip_model(), index);
   }
 
   const tabs::TabModel::PreventFeatureInitializationForTesting
@@ -227,8 +240,8 @@ TEST_F(ContextHubTabProviderDesktopTest, ConfirmTabGroups_IgnoresPinnedTabs) {
   AddTab(browser(), GURL("https://example.com/pinned"));
   browser()->tab_strip_model()->SetTabPinned(0, true);
 
-  int64_t pinned_id = GetTabId(browser(), 0);
-  int64_t normal_id = GetTabId(browser(), 1);
+  int64_t pinned_id = GetTabId(0);
+  int64_t normal_id = GetTabId(1);
 
   TabGroupEntry group;
   group.label = "Test Group";
@@ -252,7 +265,7 @@ TEST_F(ContextHubTabProviderDesktopTest, SwitchToTab_ActivatesTab) {
   browser()->tab_strip_model()->ActivateTabAt(0);
   EXPECT_EQ(browser()->tab_strip_model()->active_index(), 0);
 
-  int64_t target_id = GetTabId(browser(), 2);
+  int64_t target_id = GetTabId(2);
   provider_->SwitchToTab(target_id);
 
   EXPECT_EQ(browser()->tab_strip_model()->active_index(), 2);
@@ -265,7 +278,7 @@ TEST_F(ContextHubTabProviderDesktopTest, CloseTab_ClosesTab) {
 
   EXPECT_EQ(browser()->tab_strip_model()->count(), 3);
 
-  int64_t target_id = GetTabId(browser(), 1);
+  int64_t target_id = GetTabId(1);
   provider_->CloseTab(target_id);
 
   EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
@@ -293,8 +306,8 @@ TEST_F(ContextHubTabProviderDesktopTest, ConfirmTabGroups_SingleWindow) {
   AddTab(browser(), GURL("https://example.com/2"));
   AddTab(browser(), GURL("https://example.com/3"));
 
-  int64_t id1 = GetTabId(browser(), 0);
-  int64_t id2 = GetTabId(browser(), 1);
+  int64_t id1 = GetTabId(0);
+  int64_t id2 = GetTabId(1);
 
   TabGroupEntry group;
   group.label = "Test Group";
@@ -313,7 +326,7 @@ TEST_F(ContextHubTabProviderDesktopTest, ConfirmTabGroups_SingleWindow) {
 TEST_F(ContextHubTabProviderDesktopTest, ConfirmTabGroups_CrossWindow) {
   // Window 1 has 1 tab.
   AddTab(browser(), GURL("https://example.com/1"));
-  int64_t id1 = GetTabId(browser(), 0);
+  int64_t id1 = GetTabId(0);
 
   // Window 2 has 2 tabs (majority).
   auto second_browser = std::make_unique<TestBrowserInstance>(
@@ -321,8 +334,8 @@ TEST_F(ContextHubTabProviderDesktopTest, ConfirmTabGroups_CrossWindow) {
       /*supports_tab_groups=*/true);
   AddTab(second_browser.get(), GURL("https://example.com/2"));
   AddTab(second_browser.get(), GURL("https://example.com/3"));
-  int64_t id2 = GetTabId(second_browser.get(), 0);
-  int64_t id3 = GetTabId(second_browser.get(), 1);
+  int64_t id2 = GetTabId(second_browser->tab_strip_model(), 0);
+  int64_t id3 = GetTabId(second_browser->tab_strip_model(), 1);
 
   TabGroupEntry group;
   group.label = "Consolidated Group";
@@ -338,6 +351,91 @@ TEST_F(ContextHubTabProviderDesktopTest, ConfirmTabGroups_CrossWindow) {
   ASSERT_TRUE(group_id.has_value());
   EXPECT_EQ(second_browser->tab_strip_model()->GetTabGroupForTab(1), group_id);
   EXPECT_EQ(second_browser->tab_strip_model()->GetTabGroupForTab(2), group_id);
+
+  // Close tabs in second_browser before destroying.
+  second_browser->tab_strip_model()->CloseAllTabs();
+}
+
+TEST_F(ContextHubTabProviderDesktopTest,
+       ConfirmTabGroups_ReassignsAlreadyGroupedTabs) {
+  AddTab(browser(), GURL("https://example.com/1"));
+  AddTab(browser(), GURL("https://example.com/2"));
+  AddTab(browser(), GURL("https://example.com/3"));
+
+  int64_t id1 = GetTabId(0);
+  int64_t id2 = GetTabId(1);
+  int64_t id3 = GetTabId(2);
+
+  // Turn 1: Group tab 1 and tab 2 into Group 1.
+  TabGroupEntry group1;
+  group1.label = "Initial Group";
+  group1.tab_ids = {id1, id2};
+  EXPECT_TRUE(provider_->ConfirmTabGroups({group1}));
+
+  std::optional<tab_groups::TabGroupId> initial_group_id =
+      browser()->tab_strip_model()->GetTabGroupForTab(0);
+  ASSERT_TRUE(initial_group_id.has_value());
+  EXPECT_EQ(browser()->tab_strip_model()->GetTabGroupForTab(1),
+            initial_group_id);
+  EXPECT_FALSE(
+      browser()->tab_strip_model()->GetTabGroupForTab(2).has_value());
+
+  // Turn 2: Regroup tab 2 and tab 3 into a new group (reassigning tab 2).
+  TabGroupEntry group2;
+  group2.label = "Regrouped Group";
+  group2.tab_ids = {id2, id3};
+  EXPECT_TRUE(provider_->ConfirmTabGroups({group2}));
+
+  std::optional<tab_groups::TabGroupId> new_group_id =
+      browser()->tab_strip_model()->GetTabGroupForTab(1);
+  ASSERT_TRUE(new_group_id.has_value());
+  EXPECT_NE(new_group_id, initial_group_id);
+  EXPECT_EQ(browser()->tab_strip_model()->GetTabGroupForTab(2), new_group_id);
+  EXPECT_EQ(browser()->tab_strip_model()->GetTabGroupForTab(0),
+            initial_group_id);
+}
+
+TEST_F(ContextHubTabProviderDesktopTest,
+       ConfirmTabGroups_WithTabHandleIds) {
+  AddTab(browser(), GURL("https://example.com/1"));
+  AddTab(browser(), GURL("https://example.com/2"));
+  AddTab(browser(), GURL("https://example.com/3"));
+
+  int64_t handle_id1 = GetTabHandleId(0);
+  int64_t handle_id2 = GetTabHandleId(1);
+  ASSERT_NE(handle_id1, -1);
+  ASSERT_NE(handle_id2, -1);
+
+  TabGroupEntry group;
+  group.label = "TabHandle Group";
+  group.tab_ids = {handle_id1, handle_id2};
+
+  EXPECT_TRUE(provider_->ConfirmTabGroups({group}));
+
+  std::optional<tab_groups::TabGroupId> group_id =
+      browser()->tab_strip_model()->GetTabGroupForTab(0);
+  ASSERT_TRUE(group_id.has_value());
+  EXPECT_EQ(browser()->tab_strip_model()->GetTabGroupForTab(1), group_id);
+  EXPECT_FALSE(
+      browser()->tab_strip_model()->GetTabGroupForTab(2).has_value());
+}
+
+TEST_F(ContextHubTabProviderDesktopTest,
+       GetSessionIdForTabHandle_ResolvesCorrectly) {
+  AddTab(browser(), GURL("https://example.com/1"));
+  int64_t session_id = GetTabId(0);
+  int64_t handle_id = GetTabHandleId(0);
+  ASSERT_NE(session_id, SessionID::InvalidValue().id());
+  ASSERT_NE(handle_id, -1);
+
+  EXPECT_EQ(
+      ContextHubTabProviderDesktop::GetSessionIdForTabHandle(handle_id),
+      session_id);
+  EXPECT_EQ(ContextHubTabProviderDesktop::GetSessionIdForTabHandle(999999),
+            SessionID::InvalidValue().id());
+  EXPECT_EQ(ContextHubTabProviderDesktop::GetSessionIdForTabHandle(
+                INT64_C(0x7FFFFFFFFFFFFFFF)),
+            SessionID::InvalidValue().id());
 }
 
 TEST_F(ContextHubTabProviderDesktopTest,

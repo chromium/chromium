@@ -361,8 +361,6 @@ void ContextHubPageHandler::RetrieveAndGroupTabs(
     return;
   }
 
-  // TODO(crbug.com/546564997): Include confirmed tab groups in the request
-  // payload for model execution workflow for regrouping.
   service->GroupTabs(
       GetOpenUngroupedTabs(tab_provider_.get()), user_command,
       base::BindOnce(

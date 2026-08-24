@@ -942,14 +942,38 @@ void ContextHubService::ConnectLocalTabGroup(
 }
 
 // TODO(crbug.com/531938478): Update to handle APC ingestion.
-// TODO(crbug.com/542642727): Include confirmed tab groups in the request
-// payload for model execution workflow for regrouping.
 void ContextHubService::GenerateTabGroups(std::vector<TabData> tabs,
                                           const std::string& user_command,
                                           GroupTabsCallback callback) {
   optimization_guide::proto::ContextHubRequest request;
   request.set_request_type(
       optimization_guide::proto::CONTEXT_HUB_REQUEST_TYPE_GROUPING);
+
+  std::vector<TabGroupEntry> confirmed_groups = GetConfirmedTabGroups();
+  base::flat_set<int64_t> existing_ids =
+      base::MakeFlatSet<int64_t>(tabs, {}, &TabData::id);
+
+  for (const TabGroupEntry& confirmed_group : confirmed_groups) {
+    optimization_guide::proto::TabGroupMinimal* group_proto =
+        request.add_pre_existing_tab_groups();
+    group_proto->set_label(confirmed_group.label);
+    group_proto->set_group_id(confirmed_group.id);
+    for (const TabData& tab : confirmed_group.tabs) {
+      if (tab.id != SessionID::InvalidValue().id()) {
+        group_proto->add_tab_ids(tab.id);
+        if (!existing_ids.contains(tab.id)) {
+          existing_ids.insert(tab.id);
+          tabs.push_back(tab);
+        }
+      }
+    }
+  }
+
+  if (tabs.size() < 2) {
+    std::move(callback).Run({}, std::move(tabs), /*text_response=*/"");
+    return;
+  }
+
   for (const TabData& tab : tabs) {
     optimization_guide::proto::EntryItem* entry_item =
         request.add_entry_items();
@@ -1120,11 +1144,6 @@ void ContextHubService::HandleTabGroupModelExecutionResult(
 void ContextHubService::GroupTabs(std::vector<TabData> tabs,
                                   const std::string& user_command,
                                   GroupTabsCallback callback) {
-  if (tabs.size() < 2) {
-    std::move(callback).Run({}, std::move(tabs), /*text_response=*/"");
-    return;
-  }
-
   GenerateTabGroups(std::move(tabs), user_command, std::move(callback));
 }
 

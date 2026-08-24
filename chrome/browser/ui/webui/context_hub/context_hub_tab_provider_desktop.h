@@ -32,6 +32,9 @@ class ContextHubTabProviderDesktop : public ContextHubPageHandler::TabProvider {
 
   ~ContextHubTabProviderDesktop() override;
 
+  // Resolves a TabHandle raw value to its corresponding SessionID.
+  static int64_t GetSessionIdForTabHandle(int64_t handle_value);
+
   // ContextHubPageHandler::TabProvider:
   std::vector<content::WebContents*> GetTabs() override;
   std::vector<content::WebContents*> GetUngroupedTabs() override;

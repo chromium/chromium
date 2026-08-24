@@ -1166,6 +1166,90 @@ TEST_F(ContextHubServiceTest, GroupTabs_WithTabs) {
                     testing::Ne(base::Time()), testing::Ne(base::Time()))));
 }
 
+TEST_F(ContextHubServiceTest, GroupTabs_WithConfirmedGroupsPayload) {
+  tab_groups::SavedTabGroup confirmed_group(
+      u"Confirmed Group", tab_groups::TabGroupColorId::kBlue, {},
+      /*position=*/std::nullopt);
+  tab_groups::SavedTabGroupTab confirmed_tab1(
+      GURL("https://example1.com"), u"Tab 1", confirmed_group.saved_guid(),
+      /*position=*/0, /*saved_tab_guid=*/std::nullopt, /*local_tab_id=*/1);
+  tab_groups::SavedTabGroupTab confirmed_tab2(
+      GURL("https://example2.com"), u"Tab 2", confirmed_group.saved_guid(),
+      /*position=*/1, /*saved_tab_guid=*/std::nullopt, /*local_tab_id=*/2);
+  confirmed_group.AddTabLocally(confirmed_tab1);
+  confirmed_group.AddTabLocally(confirmed_tab2);
+  fake_tab_group_sync_service_.AddGroup(confirmed_group);
+
+  std::vector<TabData> ungrouped_tabs = {
+      {3, "Tab 3", GURL("https://example3.com")},
+      {4, "Tab 4", GURL("https://example4.com")}};
+
+  EXPECT_CALL(
+      mock_remote_model_executor_,
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub, _,
+                   _, _))
+      .WillOnce([confirmed_guid =
+                     confirmed_group.saved_guid().AsLowercaseString()](
+                    optimization_guide::ModelBasedCapabilityKey feature,
+                    const google::protobuf::MessageLite& request_metadata,
+                    const optimization_guide::ModelExecutionOptions& options,
+                    optimization_guide::
+                        OptimizationGuideModelExecutionResultCallback
+                            callback) {
+        const auto& request =
+            static_cast<const optimization_guide::proto::ContextHubRequest&>(
+                request_metadata);
+        EXPECT_EQ(request.user_command(), "regroup");
+        EXPECT_EQ(request.entry_items_size(), 4);
+        ASSERT_EQ(request.pre_existing_tab_groups_size(), 1);
+        EXPECT_EQ(request.pre_existing_tab_groups(0).label(),
+                  "Confirmed Group");
+        EXPECT_EQ(request.pre_existing_tab_groups(0).group_id(),
+                  confirmed_guid);
+        ASSERT_EQ(request.pre_existing_tab_groups(0).tab_ids_size(), 2);
+        EXPECT_EQ(request.pre_existing_tab_groups(0).tab_ids(0), 1);
+        EXPECT_EQ(request.pre_existing_tab_groups(0).tab_ids(1), 2);
+
+        optimization_guide::proto::ContextHubResponse response;
+        optimization_guide::proto::GroupResponse* group_response =
+            response.mutable_group_response();
+        optimization_guide::proto::TabGroupMinimal* group1 =
+            group_response->add_minimal_tab_groups();
+        group1->set_label("Regrouped");
+        group1->add_tab_ids(1);
+        group1->add_tab_ids(3);
+
+        optimization_guide::proto::Any any_response;
+        any_response.set_type_url(
+            "type.googleapis.com/optimization_guide.proto.ContextHubResponse");
+        response.SerializeToString(any_response.mutable_value());
+
+        std::move(callback).Run(
+            optimization_guide::OptimizationGuideModelExecutionResult(
+                base::ok(std::move(any_response)), nullptr),
+            nullptr);
+      });
+
+  base::test::TestFuture<std::vector<TabGroupEntry>, std::vector<TabData>,
+                         std::string>
+      future;
+  service_.GroupTabs(
+      std::move(ungrouped_tabs), "regroup",
+      future.GetCallback<std::vector<TabGroupEntry>, std::vector<TabData>,
+                         std::string>());
+  auto [groups, ungrouped, text_response] = future.Take();
+
+  ASSERT_EQ(groups.size(), 1u);
+  EXPECT_EQ(groups[0].label, "Regrouped");
+  ASSERT_EQ(groups[0].tabs.size(), 2u);
+  EXPECT_EQ(groups[0].tabs[0].id, 1);
+  EXPECT_EQ(groups[0].tabs[1].id, 3);
+
+  ASSERT_EQ(ungrouped.size(), 2u);
+  EXPECT_EQ(ungrouped[0].id, 4);
+  EXPECT_EQ(ungrouped[1].id, 2);
+}
+
 TEST_F(ContextHubServiceTest, GroupTabs_MESError) {
   std::vector<TabData> input_tabs = {
       {1, "Tab 1", GURL("https://example1.com")},
