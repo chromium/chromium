@@ -13,7 +13,9 @@ message SiteToken {
   string token = 2;
 }
 
-message GeneratePlatformSiteTokensRequest {}
+message GeneratePlatformSiteTokensRequest {
+  string name = 1;
+}
 
 message GeneratePlatformSiteTokensResponse {
   repeated SiteToken site_tokens = 1;

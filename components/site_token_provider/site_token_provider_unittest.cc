@@ -32,6 +32,8 @@ using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::StrictMock;
 
+constexpr char kUsersMeResourceName[] = "users/me";
+
 // Mock version of the core SiteTokenProvider engine for testing.
 class MockSiteTokenProvider : public SiteTokenProvider {
  public:
@@ -206,6 +208,7 @@ TEST_F(SiteTokenProviderTest, FetchesSuccessfully) {
                                          .AsStringPiece());
         }
         ASSERT_TRUE(request_proto.ParseFromString(request_body));
+        EXPECT_EQ(request_proto.name(), kUsersMeResourceName);
       }));
 
   identity_test_env_.MakePrimaryAccountAvailable("test@gmail.com",

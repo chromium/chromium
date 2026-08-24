@@ -29,6 +29,7 @@ std::string NormalizeDomain(std::string_view domain) {
 
 namespace {
 
+constexpr char kUsersMeResourceName[] = "users/me";
 constexpr base::TimeDelta kFetchTimeout = base::Seconds(30);
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
@@ -90,6 +91,7 @@ class SiteTokenProviderImpl : public SiteTokenProvider {
   void UpdateState() override {
     CHECK(callback_);
     proto::GeneratePlatformSiteTokensRequest request;
+    request.set_name(kUsersMeResourceName);
     std::string post_data;
     if (!request.SerializeToString(&post_data)) {
       callback_.Run({});
