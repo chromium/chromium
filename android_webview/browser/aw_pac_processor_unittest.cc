@@ -24,6 +24,11 @@ const std::string kScriptDnsResolve =
     "\treturn \"PROXY \" + x + \":80\";\n"
     "}";
 
+const std::string kScriptMyIpAddress =
+    "function FindProxyForURL(url, host) {\n"
+    "\treturn \"PROXY \" + myIpAddress() + \":80\";\n"
+    "}";
+
 const std::string kRequestUrl = "http://testurl.test";
 }  // namespace
 
@@ -46,6 +51,15 @@ TEST_F(AwPacProcessorTest, MakeProxyRequest) {
 
 TEST_F(AwPacProcessorTest, MakeProxyRequestDnsResolve) {
   EXPECT_TRUE(pac_processor_->SetProxyScript(kScriptDnsResolve));
+  std::string result;
+  EXPECT_TRUE(pac_processor_->MakeProxyRequest(kRequestUrl, &result));
+  EXPECT_EQ("PROXY 127.0.0.1:80", result);
+}
+
+TEST_F(AwPacProcessorTest, MyIpAddressWithUnspecifiedNetwork) {
+  pac_processor_->SetNetworkAndLinkAddresses(nullptr, NETWORK_UNSPECIFIED, {});
+  EXPECT_TRUE(pac_processor_->SetProxyScript(kScriptMyIpAddress));
+
   std::string result;
   EXPECT_TRUE(pac_processor_->MakeProxyRequest(kRequestUrl, &result));
   EXPECT_EQ("PROXY 127.0.0.1:80", result);

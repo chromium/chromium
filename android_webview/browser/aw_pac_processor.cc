@@ -165,6 +165,7 @@ class HostResolver : public proxy_resolver::ProxyHostResolver {
       // NetworkCallback#onLinkPropertiesChanged.
       // See SetNetworkAndLinkAddresses.
       if (IsNetworkSpecified()) {
+        CHECK(!link_addresses_.empty());
         results_.push_back(link_addresses_.front());
         return true;
       }
@@ -177,6 +178,7 @@ class HostResolver : public proxy_resolver::ProxyHostResolver {
 
     bool MyIpAddressExImpl() {
       if (IsNetworkSpecified()) {
+        CHECK(!link_addresses_.empty());
         results_ = link_addresses_;
         return true;
       }

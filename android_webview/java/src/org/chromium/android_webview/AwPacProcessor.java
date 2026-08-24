@@ -56,7 +56,9 @@ public class AwPacProcessor {
     private void updateNetworkLinkAddress(Network network, LinkProperties linkProperties) {
         long networkHandle = NETWORK_UNSPECIFIED;
         ArrayList<String> addresses = new ArrayList<>();
-        if (network != null && linkProperties != null) {
+        if (network != null
+                && linkProperties != null
+                && !linkProperties.getLinkAddresses().isEmpty()) {
             networkHandle = network.getNetworkHandle();
             for (LinkAddress addr : linkProperties.getLinkAddresses()) {
                 addresses.add(addr.getAddress().getHostAddress());
