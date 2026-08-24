@@ -127,7 +127,6 @@ public class ChildProcessConnectionTest {
             return mImportanceInGroup;
         }
     }
-    ;
 
     private final ChildServiceConnectionFactory mServiceConnectionFactory =
             new ChildServiceConnectionFactory() {

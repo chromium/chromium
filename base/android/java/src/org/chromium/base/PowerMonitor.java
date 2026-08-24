@@ -64,7 +64,7 @@ public class PowerMonitor {
         int GET_POWER_MONITOR_READINGS_TIMEOUT = 2;
         int COUNT = 3;
         // LINT.ThenChange(/tools/metrics/histograms/metadata/power/enums.xml:SystemHealthManagerError)
-    };
+    }
 
     @Retention(RetentionPolicy.SOURCE)
     @interface PowerStatus {
