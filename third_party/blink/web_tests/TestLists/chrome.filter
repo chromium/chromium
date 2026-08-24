@@ -90,7 +90,9 @@ virtual/webui-browser/*
 # Extension APIs can reach into the `//chrome` layer.
 external/wpt/web-extensions/*
 
-# Payment Request API relies on the `//chrome` layer.
+# Web Payments APIs (Payment Request, Payment Handler, Payment Method Manifest,
+# etc) rely on the `//chrome` layer.
+external/wpt/payment-method-manifest/*
 virtual/connection-allowlist/external/wpt/connection-allowlist/tentative/payment-request-app-manifest-blocked.https.window.html
 virtual/connection-allowlist/external/wpt/connection-allowlist/tentative/payment-request-head-blocked.https.window.html
 virtual/connection-allowlist/external/wpt/connection-allowlist/tentative/payment-request-manifests-allowed.https.window.html
