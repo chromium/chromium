@@ -41,13 +41,13 @@ extension ObjectGroup {
         methods: [
             "getEnum": [
                 .plain(.string),
-            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetEnumResponse),
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetEnum_ResponseParams),
             "enumForEnum": [
                 .plain(.jsGoldenPrimary_NestedEnum),
-            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_EnumForEnumResponse),
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_EnumForEnum_ResponseParams),
             "syncEnumForEnum": [
                 .plain(.jsGoldenPrimary_NestedEnum),
-            ] => .jsGoldenPrimary_SyncEnumForEnumResponse,
+            ] => .jsGoldenPrimary_SyncEnumForEnum_ResponseParams,
         ]
     )
 
@@ -74,43 +74,43 @@ extension ObjectGroup {
 /// Structs
 ///
 extension ILType {
-    fileprivate static let jsGoldenPrimary_GetEnumResponse: ILType = .object(
-        ofGroup: "golden.Primary_GetEnumResponse",
+    fileprivate static let jsGoldenPrimary_GetEnum_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_GetEnum_ResponseParams",
         withProperties: [
             "result",
         ])
-    fileprivate static let jsGoldenPrimary_EnumForEnumResponse: ILType = .object(
-        ofGroup: "golden.Primary_EnumForEnumResponse",
+    fileprivate static let jsGoldenPrimary_EnumForEnum_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_EnumForEnum_ResponseParams",
         withProperties: [
             "enumResult",
         ])
-    fileprivate static let jsGoldenPrimary_SyncEnumForEnumResponse: ILType = .object(
-        ofGroup: "golden.Primary_SyncEnumForEnumResponse",
+    fileprivate static let jsGoldenPrimary_SyncEnumForEnum_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_SyncEnumForEnum_ResponseParams",
         withProperties: [
             "enumResult",
         ])
 }
 
 extension ObjectGroup {
-    fileprivate static let goldenPrimaryGetEnumResponse = ObjectGroup(
-        name: "golden.Primary_GetEnumResponse",
-        instanceType: .jsGoldenPrimary_GetEnumResponse,
+    fileprivate static let goldenPrimaryGetEnumResponseParams = ObjectGroup(
+        name: "golden.Primary_GetEnum_ResponseParams",
+        instanceType: .jsGoldenPrimary_GetEnum_ResponseParams,
         properties: [
             "result": .jsGoldenPrimary_NestedEnum,
         ],
         methods: [:]
     )
-    fileprivate static let goldenPrimaryEnumForEnumResponse = ObjectGroup(
-        name: "golden.Primary_EnumForEnumResponse",
-        instanceType: .jsGoldenPrimary_EnumForEnumResponse,
+    fileprivate static let goldenPrimaryEnumForEnumResponseParams = ObjectGroup(
+        name: "golden.Primary_EnumForEnum_ResponseParams",
+        instanceType: .jsGoldenPrimary_EnumForEnum_ResponseParams,
         properties: [
             "enumResult": .jsGoldenExternalEnum,
         ],
         methods: [:]
     )
-    fileprivate static let goldenPrimarySyncEnumForEnumResponse = ObjectGroup(
-        name: "golden.Primary_SyncEnumForEnumResponse",
-        instanceType: .jsGoldenPrimary_SyncEnumForEnumResponse,
+    fileprivate static let goldenPrimarySyncEnumForEnumResponseParams = ObjectGroup(
+        name: "golden.Primary_SyncEnumForEnum_ResponseParams",
+        instanceType: .jsGoldenPrimary_SyncEnumForEnum_ResponseParams,
         properties: [
             "enumResult": .jsGoldenExternalEnum,
         ],
@@ -243,9 +243,9 @@ let mojoPrimaryProfile = Profile(
         .goldenPrimaryRemote,
         .goldenPrimaryRemoteWrapper,
         .goldenPrimaryPendingReceiver,
-        .goldenPrimaryGetEnumResponse,
-        .goldenPrimaryEnumForEnumResponse,
-        .goldenPrimarySyncEnumForEnumResponse,
+        .goldenPrimaryGetEnumResponseParams,
+        .goldenPrimaryEnumForEnumResponseParams,
+        .goldenPrimarySyncEnumForEnumResponseParams,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
         .jsGoldenPrimary_NestedEnum,

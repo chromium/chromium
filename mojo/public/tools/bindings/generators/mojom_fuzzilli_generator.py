@@ -70,7 +70,11 @@ class Generator(generator.Generator):
     self.enums = {}
     self.unions = {}
     self.structs = {}
-    self.response_structs = {}  # structs representing methods' return values
+    # Synchronous methods return JavaScript objects in the JavaScript bindings.
+    # Represent these return values as `mojom.Struct` objects, since we can then
+    # handle them the same way we handle Mojo structs in a few parts of the
+    # templates.
+    self.response_structs = {}
 
   def GetFilters(self):
     return {
@@ -209,9 +213,8 @@ class Generator(generator.Generator):
 
       if not method.response_parameters:
         continue
-      method.res_struct = self._CreateResponseStruct(method)
-      name = self._FormatUniqueName(method.res_struct)
-      self.response_structs[name] = method.res_struct
+      name = self._FormatUniqueName(method.response_param_struct)
+      self.response_structs[name] = method.response_param_struct
       for param in method.response_parameters:
         self._CollectInterfaceAndTypes(param.kind, not is_in_js)
 
@@ -366,24 +369,6 @@ class Generator(generator.Generator):
       or mojom.IsEnumKind(kind)
       or mojom.IsUnionKind(kind)
     )
-
-  # Synchronous methods return JavaScript objects in the JavaScript bindings.
-  # Represent these return values as `mojom.Struct` objects, since we can then
-  # handle them the same way we handle Mojo structs in a few parts of the
-  # templates.
-  def _CreateResponseStruct(self, method):
-    res = mojom.Struct(f"{method.mojom_name}Response", method.interface.module)
-    res.parent_kind = method.interface
-    for res_param in method.response_parameters:
-      res.AddField(
-        res_param.mojom_name,
-        res_param.kind,
-        res_param.ordinal,
-        res_param.default,
-        res_param.attributes,
-      )
-    res.Stylize(JavaScriptStylizer())
-    return res
 
   def _FormatCallbackReceiverName(self, method):
     return (

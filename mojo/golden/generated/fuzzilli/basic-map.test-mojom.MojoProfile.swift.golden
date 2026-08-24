@@ -42,13 +42,13 @@ extension ObjectGroup {
             "passMap": [
                 .plain(.jsString_GoldenEntryMap),
                 .plain(.string),
-            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_PassMapResponse),
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_PassMap_ResponseParams),
             "passNestedMap": [
                 .plain(.jsInteger_String_GoldenEntryMapMap),
                 .plain(.integer),
-            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_PassNestedMapResponse),
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_PassNestedMap_ResponseParams),
             "getMap": [
-            ] => .jsGoldenPrimary_GetMapResponse,
+            ] => .jsGoldenPrimary_GetMap_ResponseParams,
         ]
     )
 
@@ -81,18 +81,18 @@ extension ILType {
         ])
     fileprivate static let jsGoldenEntryConstructor: ILType = .constructor([
     ] => .jsGoldenEntry)
-    fileprivate static let jsGoldenPrimary_PassMapResponse: ILType = .object(
-        ofGroup: "golden.Primary_PassMapResponse",
+    fileprivate static let jsGoldenPrimary_PassMap_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_PassMap_ResponseParams",
         withProperties: [
             "result",
         ])
-    fileprivate static let jsGoldenPrimary_PassNestedMapResponse: ILType = .object(
-        ofGroup: "golden.Primary_PassNestedMapResponse",
+    fileprivate static let jsGoldenPrimary_PassNestedMap_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_PassNestedMap_ResponseParams",
         withProperties: [
             "result",
         ])
-    fileprivate static let jsGoldenPrimary_GetMapResponse: ILType = .object(
-        ofGroup: "golden.Primary_GetMapResponse",
+    fileprivate static let jsGoldenPrimary_GetMap_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_GetMap_ResponseParams",
         withProperties: [
             "result",
         ])
@@ -105,25 +105,25 @@ extension ObjectGroup {
         properties: [:],
         methods: [:]
     )
-    fileprivate static let goldenPrimaryPassMapResponse = ObjectGroup(
-        name: "golden.Primary_PassMapResponse",
-        instanceType: .jsGoldenPrimary_PassMapResponse,
+    fileprivate static let goldenPrimaryPassMapResponseParams = ObjectGroup(
+        name: "golden.Primary_PassMap_ResponseParams",
+        instanceType: .jsGoldenPrimary_PassMap_ResponseParams,
         properties: [
             "result": .jsGoldenEntry,
         ],
         methods: [:]
     )
-    fileprivate static let goldenPrimaryPassNestedMapResponse = ObjectGroup(
-        name: "golden.Primary_PassNestedMapResponse",
-        instanceType: .jsGoldenPrimary_PassNestedMapResponse,
+    fileprivate static let goldenPrimaryPassNestedMapResponseParams = ObjectGroup(
+        name: "golden.Primary_PassNestedMap_ResponseParams",
+        instanceType: .jsGoldenPrimary_PassNestedMap_ResponseParams,
         properties: [
             "result": .jsString_GoldenEntryMap,
         ],
         methods: [:]
     )
-    fileprivate static let goldenPrimaryGetMapResponse = ObjectGroup(
-        name: "golden.Primary_GetMapResponse",
-        instanceType: .jsGoldenPrimary_GetMapResponse,
+    fileprivate static let goldenPrimaryGetMapResponseParams = ObjectGroup(
+        name: "golden.Primary_GetMap_ResponseParams",
+        instanceType: .jsGoldenPrimary_GetMap_ResponseParams,
         properties: [
             "result": .jsFloat_BooleanMap,
         ],
@@ -322,9 +322,9 @@ let mojoPrimaryProfile = Profile(
         .goldenPrimaryRemoteWrapper,
         .goldenPrimaryPendingReceiver,
         .goldenEntry,
-        .goldenPrimaryPassMapResponse,
-        .goldenPrimaryPassNestedMapResponse,
-        .goldenPrimaryGetMapResponse,
+        .goldenPrimaryPassMapResponseParams,
+        .goldenPrimaryPassNestedMapResponseParams,
+        .goldenPrimaryGetMapResponseParams,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
     ] + commonMojoEnumerations,

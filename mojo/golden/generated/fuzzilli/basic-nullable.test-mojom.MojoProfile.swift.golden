@@ -70,22 +70,22 @@ extension ObjectGroup {
             "getArrayValue": [
                 .plain(.jsFloatArray),
                 .plain(.integer),
-            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetArrayValueResponse),
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetArrayValue_ResponseParams),
             "getMapValue": [
                 .plain(.jsString_IntegerMap),
                 .plain(.string),
-            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetMapValueResponse),
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetMapValue_ResponseParams),
             "sendObserver": [
                 .either(.jsGoldenObserverRemote, .undefined),
             ] => .undefined,
             "syncGetArrayValue": [
                 .plain(.jsFloatArray),
                 .plain(.integer),
-            ] => .jsGoldenPrimary_SyncGetArrayValueResponse,
+            ] => .jsGoldenPrimary_SyncGetArrayValue_ResponseParams,
             "syncGetMapValue": [
                 .plain(.jsString_IntegerMap),
                 .plain(.string),
-            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_SyncGetMapValueResponse),
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_SyncGetMapValue_ResponseParams),
         ]
     )
 
@@ -191,23 +191,23 @@ extension ILType {
         ])
     fileprivate static let jsGoldenTokenConstructor: ILType = .constructor([
     ] => .jsGoldenToken)
-    fileprivate static let jsGoldenPrimary_GetArrayValueResponse: ILType = .object(
-        ofGroup: "golden.Primary_GetArrayValueResponse",
+    fileprivate static let jsGoldenPrimary_GetArrayValue_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_GetArrayValue_ResponseParams",
         withProperties: [
             "result",
         ])
-    fileprivate static let jsGoldenPrimary_GetMapValueResponse: ILType = .object(
-        ofGroup: "golden.Primary_GetMapValueResponse",
+    fileprivate static let jsGoldenPrimary_GetMapValue_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_GetMapValue_ResponseParams",
         withProperties: [
             "result",
         ])
-    fileprivate static let jsGoldenPrimary_SyncGetArrayValueResponse: ILType = .object(
-        ofGroup: "golden.Primary_SyncGetArrayValueResponse",
+    fileprivate static let jsGoldenPrimary_SyncGetArrayValue_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_SyncGetArrayValue_ResponseParams",
         withProperties: [
             "result",
         ])
-    fileprivate static let jsGoldenPrimary_SyncGetMapValueResponse: ILType = .object(
-        ofGroup: "golden.Primary_SyncGetMapValueResponse",
+    fileprivate static let jsGoldenPrimary_SyncGetMapValue_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_SyncGetMapValue_ResponseParams",
         withProperties: [
             "result",
         ])
@@ -230,33 +230,33 @@ extension ObjectGroup {
         properties: [:],
         methods: [:]
     )
-    fileprivate static let goldenPrimaryGetArrayValueResponse = ObjectGroup(
-        name: "golden.Primary_GetArrayValueResponse",
-        instanceType: .jsGoldenPrimary_GetArrayValueResponse,
+    fileprivate static let goldenPrimaryGetArrayValueResponseParams = ObjectGroup(
+        name: "golden.Primary_GetArrayValue_ResponseParams",
+        instanceType: .jsGoldenPrimary_GetArrayValue_ResponseParams,
         properties: [
             "result": .float,
         ],
         methods: [:]
     )
-    fileprivate static let goldenPrimaryGetMapValueResponse = ObjectGroup(
-        name: "golden.Primary_GetMapValueResponse",
-        instanceType: .jsGoldenPrimary_GetMapValueResponse,
+    fileprivate static let goldenPrimaryGetMapValueResponseParams = ObjectGroup(
+        name: "golden.Primary_GetMapValue_ResponseParams",
+        instanceType: .jsGoldenPrimary_GetMapValue_ResponseParams,
         properties: [
             "result": .integer,
         ],
         methods: [:]
     )
-    fileprivate static let goldenPrimarySyncGetArrayValueResponse = ObjectGroup(
-        name: "golden.Primary_SyncGetArrayValueResponse",
-        instanceType: .jsGoldenPrimary_SyncGetArrayValueResponse,
+    fileprivate static let goldenPrimarySyncGetArrayValueResponseParams = ObjectGroup(
+        name: "golden.Primary_SyncGetArrayValue_ResponseParams",
+        instanceType: .jsGoldenPrimary_SyncGetArrayValue_ResponseParams,
         properties: [
             "result": .float,
         ],
         methods: [:]
     )
-    fileprivate static let goldenPrimarySyncGetMapValueResponse = ObjectGroup(
-        name: "golden.Primary_SyncGetMapValueResponse",
-        instanceType: .jsGoldenPrimary_SyncGetMapValueResponse,
+    fileprivate static let goldenPrimarySyncGetMapValueResponseParams = ObjectGroup(
+        name: "golden.Primary_SyncGetMapValue_ResponseParams",
+        instanceType: .jsGoldenPrimary_SyncGetMapValue_ResponseParams,
         properties: [
             "result": .integer,
         ],
@@ -499,10 +499,10 @@ let mojoPrimaryProfile = Profile(
         .goldenObserverSendDelegateCallbackReceiver,
         .goldenSimpleStruct,
         .goldenToken,
-        .goldenPrimaryGetArrayValueResponse,
-        .goldenPrimaryGetMapValueResponse,
-        .goldenPrimarySyncGetArrayValueResponse,
-        .goldenPrimarySyncGetMapValueResponse,
+        .goldenPrimaryGetArrayValueResponseParams,
+        .goldenPrimaryGetMapValueResponseParams,
+        .goldenPrimarySyncGetArrayValueResponseParams,
+        .goldenPrimarySyncGetMapValueResponseParams,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
     ] + commonMojoEnumerations,

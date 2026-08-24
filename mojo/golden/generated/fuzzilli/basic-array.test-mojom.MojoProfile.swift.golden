@@ -46,15 +46,15 @@ extension ObjectGroup {
             "get": [
                 .plain(.jsGoldenEntryArray),
                 .plain(.integer),
-            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetResponse),
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_Get_ResponseParams),
             "syncGetBools": [
-            ] => .jsGoldenPrimary_SyncGetBoolsResponse,
+            ] => .jsGoldenPrimary_SyncGetBools_ResponseParams,
             "syncGetStrings": [
-            ] => .jsGoldenPrimary_SyncGetStringsResponse,
+            ] => .jsGoldenPrimary_SyncGetStrings_ResponseParams,
             "getBools": [
-            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetBoolsResponse),
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetBools_ResponseParams),
             "getStrings": [
-            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetStringsResponse),
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetStrings_ResponseParams),
             "passFloats": [
                 .plain(.jsFloatArray),
             ] => .undefined,
@@ -93,28 +93,28 @@ extension ILType {
         ])
     fileprivate static let jsGoldenEntryConstructor: ILType = .constructor([
     ] => .jsGoldenEntry)
-    fileprivate static let jsGoldenPrimary_GetResponse: ILType = .object(
-        ofGroup: "golden.Primary_GetResponse",
+    fileprivate static let jsGoldenPrimary_Get_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_Get_ResponseParams",
         withProperties: [
             "result",
         ])
-    fileprivate static let jsGoldenPrimary_SyncGetBoolsResponse: ILType = .object(
-        ofGroup: "golden.Primary_SyncGetBoolsResponse",
+    fileprivate static let jsGoldenPrimary_SyncGetBools_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_SyncGetBools_ResponseParams",
         withProperties: [
             "bools",
         ])
-    fileprivate static let jsGoldenPrimary_SyncGetStringsResponse: ILType = .object(
-        ofGroup: "golden.Primary_SyncGetStringsResponse",
+    fileprivate static let jsGoldenPrimary_SyncGetStrings_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_SyncGetStrings_ResponseParams",
         withProperties: [
             "strings",
         ])
-    fileprivate static let jsGoldenPrimary_GetBoolsResponse: ILType = .object(
-        ofGroup: "golden.Primary_GetBoolsResponse",
+    fileprivate static let jsGoldenPrimary_GetBools_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_GetBools_ResponseParams",
         withProperties: [
             "bools",
         ])
-    fileprivate static let jsGoldenPrimary_GetStringsResponse: ILType = .object(
-        ofGroup: "golden.Primary_GetStringsResponse",
+    fileprivate static let jsGoldenPrimary_GetStrings_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_GetStrings_ResponseParams",
         withProperties: [
             "strings",
         ])
@@ -127,41 +127,41 @@ extension ObjectGroup {
         properties: [:],
         methods: [:]
     )
-    fileprivate static let goldenPrimaryGetResponse = ObjectGroup(
-        name: "golden.Primary_GetResponse",
-        instanceType: .jsGoldenPrimary_GetResponse,
+    fileprivate static let goldenPrimaryGetResponseParams = ObjectGroup(
+        name: "golden.Primary_Get_ResponseParams",
+        instanceType: .jsGoldenPrimary_Get_ResponseParams,
         properties: [
             "result": .jsGoldenEntry,
         ],
         methods: [:]
     )
-    fileprivate static let goldenPrimarySyncGetBoolsResponse = ObjectGroup(
-        name: "golden.Primary_SyncGetBoolsResponse",
-        instanceType: .jsGoldenPrimary_SyncGetBoolsResponse,
+    fileprivate static let goldenPrimarySyncGetBoolsResponseParams = ObjectGroup(
+        name: "golden.Primary_SyncGetBools_ResponseParams",
+        instanceType: .jsGoldenPrimary_SyncGetBools_ResponseParams,
         properties: [
             "bools": .jsBooleanArray,
         ],
         methods: [:]
     )
-    fileprivate static let goldenPrimarySyncGetStringsResponse = ObjectGroup(
-        name: "golden.Primary_SyncGetStringsResponse",
-        instanceType: .jsGoldenPrimary_SyncGetStringsResponse,
+    fileprivate static let goldenPrimarySyncGetStringsResponseParams = ObjectGroup(
+        name: "golden.Primary_SyncGetStrings_ResponseParams",
+        instanceType: .jsGoldenPrimary_SyncGetStrings_ResponseParams,
         properties: [
             "strings": .jsStringArray,
         ],
         methods: [:]
     )
-    fileprivate static let goldenPrimaryGetBoolsResponse = ObjectGroup(
-        name: "golden.Primary_GetBoolsResponse",
-        instanceType: .jsGoldenPrimary_GetBoolsResponse,
+    fileprivate static let goldenPrimaryGetBoolsResponseParams = ObjectGroup(
+        name: "golden.Primary_GetBools_ResponseParams",
+        instanceType: .jsGoldenPrimary_GetBools_ResponseParams,
         properties: [
             "bools": .jsBooleanArray,
         ],
         methods: [:]
     )
-    fileprivate static let goldenPrimaryGetStringsResponse = ObjectGroup(
-        name: "golden.Primary_GetStringsResponse",
-        instanceType: .jsGoldenPrimary_GetStringsResponse,
+    fileprivate static let goldenPrimaryGetStringsResponseParams = ObjectGroup(
+        name: "golden.Primary_GetStrings_ResponseParams",
+        instanceType: .jsGoldenPrimary_GetStrings_ResponseParams,
         properties: [
             "strings": .jsStringArray,
         ],
@@ -364,11 +364,11 @@ let mojoPrimaryProfile = Profile(
         .goldenPrimaryRemoteWrapper,
         .goldenPrimaryPendingReceiver,
         .goldenEntry,
-        .goldenPrimaryGetResponse,
-        .goldenPrimarySyncGetBoolsResponse,
-        .goldenPrimarySyncGetStringsResponse,
-        .goldenPrimaryGetBoolsResponse,
-        .goldenPrimaryGetStringsResponse,
+        .goldenPrimaryGetResponseParams,
+        .goldenPrimarySyncGetBoolsResponseParams,
+        .goldenPrimarySyncGetStringsResponseParams,
+        .goldenPrimaryGetBoolsResponseParams,
+        .goldenPrimaryGetStringsResponseParams,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
     ] + commonMojoEnumerations,

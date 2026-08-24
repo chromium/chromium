@@ -69,9 +69,9 @@ extension ObjectGroup {
             ] => {{ "" }}
             {%- if method.response_parameters -%}
                 {%- if method|is_synchronous_method -%}
-                .{{method.res_struct|format_il_type}}
+                .{{method.response_param_struct|format_il_type}}
                 {%- else -%}
-                .jsPromise(resolvingTo: .{{method.res_struct|format_il_type}})
+                .jsPromise(resolvingTo: .{{method.response_param_struct|format_il_type}})
                 {%- endif -%}
             {%- else -%}
                 .undefined

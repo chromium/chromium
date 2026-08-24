@@ -44,10 +44,10 @@ extension ObjectGroup {
             ] => .undefined,
             "getUnion": [
                 .plain(.boolean),
-            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetUnionResponse),
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetUnion_ResponseParams),
             "syncGetUnion": [
                 .plain(.boolean),
-            ] => .jsGoldenPrimary_SyncGetUnionResponse,
+            ] => .jsGoldenPrimary_SyncGetUnion_ResponseParams,
         ]
     )
 
@@ -82,13 +82,13 @@ extension ILType {
     fileprivate static let jsGoldenTokenConstructor: ILType = .constructor([
         .plain(.integer),
     ] => .jsGoldenToken)
-    fileprivate static let jsGoldenPrimary_GetUnionResponse: ILType = .object(
-        ofGroup: "golden.Primary_GetUnionResponse",
+    fileprivate static let jsGoldenPrimary_GetUnion_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_GetUnion_ResponseParams",
         withProperties: [
             "result",
         ])
-    fileprivate static let jsGoldenPrimary_SyncGetUnionResponse: ILType = .object(
-        ofGroup: "golden.Primary_SyncGetUnionResponse",
+    fileprivate static let jsGoldenPrimary_SyncGetUnion_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_SyncGetUnion_ResponseParams",
         withProperties: [
             "result",
         ])
@@ -103,17 +103,17 @@ extension ObjectGroup {
         ],
         methods: [:]
     )
-    fileprivate static let goldenPrimaryGetUnionResponse = ObjectGroup(
-        name: "golden.Primary_GetUnionResponse",
-        instanceType: .jsGoldenPrimary_GetUnionResponse,
+    fileprivate static let goldenPrimaryGetUnionResponseParams = ObjectGroup(
+        name: "golden.Primary_GetUnion_ResponseParams",
+        instanceType: .jsGoldenPrimary_GetUnion_ResponseParams,
         properties: [
             "result": .jsGoldenSimpleUnion,
         ],
         methods: [:]
     )
-    fileprivate static let goldenPrimarySyncGetUnionResponse = ObjectGroup(
-        name: "golden.Primary_SyncGetUnionResponse",
-        instanceType: .jsGoldenPrimary_SyncGetUnionResponse,
+    fileprivate static let goldenPrimarySyncGetUnionResponseParams = ObjectGroup(
+        name: "golden.Primary_SyncGetUnion_ResponseParams",
+        instanceType: .jsGoldenPrimary_SyncGetUnion_ResponseParams,
         properties: [
             "result": .jsGoldenSimpleUnion,
         ],
@@ -280,8 +280,8 @@ let mojoPrimaryProfile = Profile(
         .goldenPrimaryRemoteWrapper,
         .goldenPrimaryPendingReceiver,
         .goldenToken,
-        .goldenPrimaryGetUnionResponse,
-        .goldenPrimarySyncGetUnionResponse,
+        .goldenPrimaryGetUnionResponseParams,
+        .goldenPrimarySyncGetUnionResponseParams,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
     ] + commonMojoEnumerations,

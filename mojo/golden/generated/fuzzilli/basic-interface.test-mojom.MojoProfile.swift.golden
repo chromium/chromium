@@ -41,14 +41,14 @@ extension ObjectGroup {
         methods: [
             "method": [
                 .plain(.boolean),
-            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_MethodResponse),
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_Method_ResponseParams),
             "methodWithoutResponse": [
                 .plain(.string),
                 .either(.boolean, .undefined),
             ] => .undefined,
             "syncMethod": [
                 .plain(.boolean),
-            ] => .jsGoldenPrimary_SyncMethodResponse,
+            ] => .jsGoldenPrimary_SyncMethod_ResponseParams,
         ]
     )
 
@@ -75,30 +75,30 @@ extension ObjectGroup {
 /// Structs
 ///
 extension ILType {
-    fileprivate static let jsGoldenPrimary_MethodResponse: ILType = .object(
-        ofGroup: "golden.Primary_MethodResponse",
+    fileprivate static let jsGoldenPrimary_Method_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_Method_ResponseParams",
         withProperties: [
             "result",
         ])
-    fileprivate static let jsGoldenPrimary_SyncMethodResponse: ILType = .object(
-        ofGroup: "golden.Primary_SyncMethodResponse",
+    fileprivate static let jsGoldenPrimary_SyncMethod_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_SyncMethod_ResponseParams",
         withProperties: [
             "result",
         ])
 }
 
 extension ObjectGroup {
-    fileprivate static let goldenPrimaryMethodResponse = ObjectGroup(
-        name: "golden.Primary_MethodResponse",
-        instanceType: .jsGoldenPrimary_MethodResponse,
+    fileprivate static let goldenPrimaryMethodResponseParams = ObjectGroup(
+        name: "golden.Primary_Method_ResponseParams",
+        instanceType: .jsGoldenPrimary_Method_ResponseParams,
         properties: [
             "result": .string,
         ],
         methods: [:]
     )
-    fileprivate static let goldenPrimarySyncMethodResponse = ObjectGroup(
-        name: "golden.Primary_SyncMethodResponse",
-        instanceType: .jsGoldenPrimary_SyncMethodResponse,
+    fileprivate static let goldenPrimarySyncMethodResponseParams = ObjectGroup(
+        name: "golden.Primary_SyncMethod_ResponseParams",
+        instanceType: .jsGoldenPrimary_SyncMethod_ResponseParams,
         properties: [
             "result": .string,
         ],
@@ -219,8 +219,8 @@ let mojoPrimaryProfile = Profile(
         .goldenPrimaryRemote,
         .goldenPrimaryRemoteWrapper,
         .goldenPrimaryPendingReceiver,
-        .goldenPrimaryMethodResponse,
-        .goldenPrimarySyncMethodResponse,
+        .goldenPrimaryMethodResponseParams,
+        .goldenPrimarySyncMethodResponseParams,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
     ] + commonMojoEnumerations,

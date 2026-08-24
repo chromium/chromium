@@ -109,19 +109,19 @@ extension ObjectGroup {
             "sendObserver": [
                 .plain(.boolean),
                 .plain(.jsGoldenObserverOneRemote),
-            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_SendObserverResponse),
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_SendObserver_ResponseParams),
             "sendDelegateTwo": [
                 .plain(.jsGoldenDelegateTwoPendingReceiver),
                 .plain(.integer),
             ] => .undefined,
             "getDelegateOne": [
-            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetDelegateOneResponse),
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetDelegateOne_ResponseParams),
             "getObserverTwo": [
                 .plain(.float),
-            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetObserverTwoResponse),
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetObserverTwo_ResponseParams),
             "syncGetObserverTwo": [
                 .plain(.float),
-            ] => .jsGoldenPrimary_SyncGetObserverTwoResponse,
+            ] => .jsGoldenPrimary_SyncGetObserverTwo_ResponseParams,
         ]
     )
 
@@ -310,29 +310,29 @@ extension ObjectGroup {
 /// Structs
 ///
 extension ILType {
-    fileprivate static let jsGoldenObserverOne_SendDelegateTwoResponse: ILType = .object(
-        ofGroup: "golden.ObserverOne_SendDelegateTwoResponse",
+    fileprivate static let jsGoldenObserverOne_SendDelegateTwo_ResponseParams: ILType = .object(
+        ofGroup: "golden.ObserverOne_SendDelegateTwo_ResponseParams",
         withProperties: [
             "result",
         ])
-    fileprivate static let jsGoldenPrimary_SendObserverResponse: ILType = .object(
-        ofGroup: "golden.Primary_SendObserverResponse",
+    fileprivate static let jsGoldenPrimary_SendObserver_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_SendObserver_ResponseParams",
         withProperties: [
             "result",
         ])
-    fileprivate static let jsGoldenPrimary_GetDelegateOneResponse: ILType = .object(
-        ofGroup: "golden.Primary_GetDelegateOneResponse",
+    fileprivate static let jsGoldenPrimary_GetDelegateOne_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_GetDelegateOne_ResponseParams",
         withProperties: [
             "delegate",
         ])
-    fileprivate static let jsGoldenPrimary_GetObserverTwoResponse: ILType = .object(
-        ofGroup: "golden.Primary_GetObserverTwoResponse",
+    fileprivate static let jsGoldenPrimary_GetObserverTwo_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_GetObserverTwo_ResponseParams",
         withProperties: [
             "observer",
             "flag",
         ])
-    fileprivate static let jsGoldenPrimary_SyncGetObserverTwoResponse: ILType = .object(
-        ofGroup: "golden.Primary_SyncGetObserverTwoResponse",
+    fileprivate static let jsGoldenPrimary_SyncGetObserverTwo_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_SyncGetObserverTwo_ResponseParams",
         withProperties: [
             "observer",
             "flag",
@@ -340,42 +340,42 @@ extension ILType {
 }
 
 extension ObjectGroup {
-    fileprivate static let goldenObserverOneSendDelegateTwoResponse = ObjectGroup(
-        name: "golden.ObserverOne_SendDelegateTwoResponse",
-        instanceType: .jsGoldenObserverOne_SendDelegateTwoResponse,
+    fileprivate static let goldenObserverOneSendDelegateTwoResponseParams = ObjectGroup(
+        name: "golden.ObserverOne_SendDelegateTwo_ResponseParams",
+        instanceType: .jsGoldenObserverOne_SendDelegateTwo_ResponseParams,
         properties: [
             "result": .boolean,
         ],
         methods: [:]
     )
-    fileprivate static let goldenPrimarySendObserverResponse = ObjectGroup(
-        name: "golden.Primary_SendObserverResponse",
-        instanceType: .jsGoldenPrimary_SendObserverResponse,
+    fileprivate static let goldenPrimarySendObserverResponseParams = ObjectGroup(
+        name: "golden.Primary_SendObserver_ResponseParams",
+        instanceType: .jsGoldenPrimary_SendObserver_ResponseParams,
         properties: [
             "result": .string,
         ],
         methods: [:]
     )
-    fileprivate static let goldenPrimaryGetDelegateOneResponse = ObjectGroup(
-        name: "golden.Primary_GetDelegateOneResponse",
-        instanceType: .jsGoldenPrimary_GetDelegateOneResponse,
+    fileprivate static let goldenPrimaryGetDelegateOneResponseParams = ObjectGroup(
+        name: "golden.Primary_GetDelegateOne_ResponseParams",
+        instanceType: .jsGoldenPrimary_GetDelegateOne_ResponseParams,
         properties: [
             "delegate": .jsGoldenDelegateOneRemote,
         ],
         methods: [:]
     )
-    fileprivate static let goldenPrimaryGetObserverTwoResponse = ObjectGroup(
-        name: "golden.Primary_GetObserverTwoResponse",
-        instanceType: .jsGoldenPrimary_GetObserverTwoResponse,
+    fileprivate static let goldenPrimaryGetObserverTwoResponseParams = ObjectGroup(
+        name: "golden.Primary_GetObserverTwo_ResponseParams",
+        instanceType: .jsGoldenPrimary_GetObserverTwo_ResponseParams,
         properties: [
             "observer": .jsGoldenObserverTwoPendingReceiver,
             "flag": .boolean,
         ],
         methods: [:]
     )
-    fileprivate static let goldenPrimarySyncGetObserverTwoResponse = ObjectGroup(
-        name: "golden.Primary_SyncGetObserverTwoResponse",
-        instanceType: .jsGoldenPrimary_SyncGetObserverTwoResponse,
+    fileprivate static let goldenPrimarySyncGetObserverTwoResponseParams = ObjectGroup(
+        name: "golden.Primary_SyncGetObserverTwo_ResponseParams",
+        instanceType: .jsGoldenPrimary_SyncGetObserverTwo_ResponseParams,
         properties: [
             "observer": .jsGoldenObserverTwoPendingReceiver,
             "flag": .boolean,
@@ -548,11 +548,11 @@ let mojoPrimaryProfile = Profile(
         .goldenObserverTwoRemote,
         .goldenObserverTwoRemoteWrapper,
         .goldenObserverTwoPendingReceiver,
-        .goldenObserverOneSendDelegateTwoResponse,
-        .goldenPrimarySendObserverResponse,
-        .goldenPrimaryGetDelegateOneResponse,
-        .goldenPrimaryGetObserverTwoResponse,
-        .goldenPrimarySyncGetObserverTwoResponse,
+        .goldenObserverOneSendDelegateTwoResponseParams,
+        .goldenPrimarySendObserverResponseParams,
+        .goldenPrimaryGetDelegateOneResponseParams,
+        .goldenPrimaryGetObserverTwoResponseParams,
+        .goldenPrimarySyncGetObserverTwoResponseParams,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
     ] + commonMojoEnumerations,
