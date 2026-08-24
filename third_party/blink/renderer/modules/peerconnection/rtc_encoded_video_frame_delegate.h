@@ -35,7 +35,7 @@ class RTCEncodedVideoFrameDelegate
       std::unique_ptr<webrtc::TransformableVideoFrameInterface> webrtc_frame);
 
   V8RTCEncodedVideoFrameType::Enum Type() const;
-  uint32_t RtpTimestamp() const;
+  std::optional<uint32_t> RtpTimestamp() const;
   std::optional<webrtc::Timestamp> PresentationTimestamp() const;
   DOMArrayBuffer* CreateDataBuffer(v8::Isolate* isolate) const;
   void SetData(const DOMArrayBuffer* data);
@@ -74,7 +74,7 @@ class RTCEncodedVideoFrameDelegate
     std::optional<base::TimeTicks> receive_time;
     std::optional<CaptureTimeInfo> capture_time;
     std::optional<base::TimeDelta> sender_capture_time_offset;
-    uint32_t rtp_timestamp = 0;
+    std::optional<webrtc::RtpTimestampInfo> rtp_timestamp_info;
     std::optional<webrtc::Timestamp> presentation_timestamp;
   };
   // This field is set after the frame is neutered (e.g., written to a stream or

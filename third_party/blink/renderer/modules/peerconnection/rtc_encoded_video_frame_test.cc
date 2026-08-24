@@ -8,10 +8,12 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "media/media_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_codec_specifics_vp_8.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_metadata.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_type.h"
@@ -20,6 +22,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/webrtc/api/test/mock_transformable_video_frame.h"
 #include "third_party/webrtc/api/units/time_delta.h"
@@ -615,8 +618,9 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorWithFeatureAllowsModifications) {
 TEST_F(RTCEncodedVideoFrameTest, ConstructorFromNull) {
   V8TestingScope v8_scope;
   DummyExceptionStateForTesting exception_state;
+  RTCEncodedVideoFrame* original_frame = nullptr;
   RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
-      v8_scope.GetExecutionContext(), nullptr, exception_state);
+      v8_scope.GetExecutionContext(), original_frame, exception_state);
 
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
@@ -940,6 +944,205 @@ TEST_F(RTCEncodedVideoFrameTest, ReceiverFrameWithCaptureTime) {
     // The error is slightly more than 0.1; use 0.2 to avoid flakes.
     EXPECT_LE(std::abs(metadata->getCaptureTimeOr(0.0) - capture_time), 0.2);
   }
+}
+
+TEST_F(RTCEncodedVideoFrameTest, ConstructorFromInitDictionary) {
+  V8TestingScope v8_scope;
+
+  DOMArrayBuffer* buffer =
+      DOMArrayBuffer::Create(/*num_elements=*/10, /*element_byte_size=*/1);
+
+  auto* init = RTCEncodedVideoFrameInit::Create();
+  init->setType(
+      V8RTCEncodedVideoFrameType(V8RTCEncodedVideoFrameType::Enum::kKey));
+  init->setPayloadType(100);
+  init->setRtpTimestampWithoutOffset(123456u);
+  init->setData(buffer);
+
+  double capture_time_ms = GetTimeOriginNtp(v8_scope) + 5000.0;
+  init->setCaptureTime(capture_time_ms);
+  init->setContributingSources({11u, 22u});
+  init->setMimeType("video/VP8");
+  init->setTimestamp(9876);
+
+  DummyExceptionStateForTesting exception_state;
+  RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
+      v8_scope.GetExecutionContext(), init, exception_state);
+
+  EXPECT_FALSE(exception_state.HadException()) << exception_state.Message();
+  ASSERT_NE(new_frame, nullptr);
+
+  EXPECT_EQ(new_frame->type().AsEnum(), V8RTCEncodedVideoFrameType::Enum::kKey);
+  // An outgoing frame created without offset (using the constructor) returns 0
+  // for RtpTimestamp.
+  EXPECT_EQ(new_frame->timestamp(), 0u);
+
+  DOMArrayBuffer* frame_data = new_frame->data(v8_scope.GetExecutionContext());
+  ASSERT_NE(frame_data, nullptr);
+  EXPECT_EQ(frame_data->ByteLength(), 10u);
+
+  RTCEncodedVideoFrameMetadata* metadata =
+      new_frame->getMetadata(v8_scope.GetExecutionContext());
+  ASSERT_NE(metadata, nullptr);
+  EXPECT_TRUE(metadata->hasPayloadType());
+  EXPECT_EQ(metadata->payloadType(), 100);
+
+  EXPECT_TRUE(metadata->hasMimeType());
+  EXPECT_EQ(metadata->mimeType(), "video/VP8");
+
+  EXPECT_TRUE(metadata->hasTimestamp());
+  EXPECT_EQ(metadata->timestamp(), 9876);
+
+  EXPECT_TRUE(metadata->hasContributingSources());
+  EXPECT_THAT(metadata->contributingSources(), testing::ElementsAre(11u, 22u));
+
+  EXPECT_FALSE(metadata->hasCaptureTime());
+}
+
+TEST_F(RTCEncodedVideoFrameTest,
+       ConstructorFromInitDictionaryWithoutOptionals) {
+  V8TestingScope v8_scope;
+
+  DOMArrayBuffer* buffer =
+      DOMArrayBuffer::Create(/*num_elements=*/5, /*element_byte_size=*/1);
+
+  auto* init = RTCEncodedVideoFrameInit::Create();
+  init->setType(
+      V8RTCEncodedVideoFrameType(V8RTCEncodedVideoFrameType::Enum::kDelta));
+  init->setPayloadType(96);
+  init->setRtpTimestampWithoutOffset(101010u);
+  init->setData(buffer);
+  init->setMimeType("video/VP8");
+
+  DummyExceptionStateForTesting exception_state;
+  RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
+      v8_scope.GetExecutionContext(), init, exception_state);
+
+  EXPECT_FALSE(exception_state.HadException()) << exception_state.Message();
+  ASSERT_NE(new_frame, nullptr);
+
+  EXPECT_EQ(new_frame->type().AsEnum(),
+            V8RTCEncodedVideoFrameType::Enum::kDelta);
+  EXPECT_EQ(new_frame->timestamp(), 0u);
+
+  DOMArrayBuffer* frame_data = new_frame->data(v8_scope.GetExecutionContext());
+  ASSERT_NE(frame_data, nullptr);
+  EXPECT_EQ(frame_data->ByteLength(), 5u);
+
+  RTCEncodedVideoFrameMetadata* metadata =
+      new_frame->getMetadata(v8_scope.GetExecutionContext());
+  ASSERT_NE(metadata, nullptr);
+  EXPECT_TRUE(metadata->hasPayloadType());
+  EXPECT_EQ(metadata->payloadType(), 96);
+
+  EXPECT_TRUE(metadata->hasMimeType());
+  EXPECT_EQ(metadata->mimeType(), "video/VP8");
+  EXPECT_FALSE(metadata->hasTimestamp());
+  EXPECT_TRUE(metadata->hasContributingSources());
+  EXPECT_TRUE(metadata->contributingSources().empty());
+  EXPECT_FALSE(metadata->hasCaptureTime());
+}
+
+TEST_F(RTCEncodedVideoFrameTest, StringToVideoCodecType) {
+  // VP8
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("VP8"),
+            webrtc::kVideoCodecVP8);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("vp8"),
+            webrtc::kVideoCodecVP8);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("video/vp8"),
+            webrtc::kVideoCodecVP8);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("video/VP8"),
+            webrtc::kVideoCodecVP8);
+
+  // VP9
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("VP9"),
+            webrtc::kVideoCodecVP9);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("vp9"),
+            webrtc::kVideoCodecVP9);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("video/vp9"),
+            webrtc::kVideoCodecVP9);
+
+  // H264
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("H264"),
+            webrtc::kVideoCodecH264);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("h264"),
+            webrtc::kVideoCodecH264);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("video/h264"),
+            webrtc::kVideoCodecH264);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("avc1"),
+            webrtc::kVideoCodecH264);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("avc3"),
+            webrtc::kVideoCodecH264);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("video/avc1.64001f"),
+            webrtc::kVideoCodecH264);
+#else
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("H264"),
+            webrtc::kVideoCodecGeneric);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("h264"),
+            webrtc::kVideoCodecGeneric);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("video/h264"),
+            webrtc::kVideoCodecGeneric);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("avc1"),
+            webrtc::kVideoCodecGeneric);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("avc3"),
+            webrtc::kVideoCodecGeneric);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("video/avc1.64001f"),
+            webrtc::kVideoCodecGeneric);
+#endif
+
+  // H265 / HEVC
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("H265"),
+            webrtc::kVideoCodecH265);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("h265"),
+            webrtc::kVideoCodecH265);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("video/h265"),
+            webrtc::kVideoCodecH265);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("hvc1"),
+            webrtc::kVideoCodecH265);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("hev1"),
+            webrtc::kVideoCodecH265);
+  EXPECT_EQ(
+      RTCEncodedVideoFrame::StringToVideoCodecType("video/hev1.1.6.L93.B0"),
+      webrtc::kVideoCodecH265);
+#else
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("H265"),
+            webrtc::kVideoCodecGeneric);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("h265"),
+            webrtc::kVideoCodecGeneric);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("video/h265"),
+            webrtc::kVideoCodecGeneric);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("hvc1"),
+            webrtc::kVideoCodecGeneric);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("hev1"),
+            webrtc::kVideoCodecGeneric);
+  EXPECT_EQ(
+      RTCEncodedVideoFrame::StringToVideoCodecType("video/hev1.1.6.L93.B0"),
+      webrtc::kVideoCodecGeneric);
+#endif
+
+  // AV1
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("AV1"),
+            webrtc::kVideoCodecAV1);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("av1"),
+            webrtc::kVideoCodecAV1);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("video/av1"),
+            webrtc::kVideoCodecAV1);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("av01"),
+            webrtc::kVideoCodecAV1);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("video/av01.0.05M.08"),
+            webrtc::kVideoCodecAV1);
+
+  // Fallback to Generic
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("unknown"),
+            webrtc::kVideoCodecGeneric);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("video/unknown"),
+            webrtc::kVideoCodecGeneric);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("foo"),
+            webrtc::kVideoCodecGeneric);
+  EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType(""),
+            webrtc::kVideoCodecGeneric);
 }
 
 }  // namespace

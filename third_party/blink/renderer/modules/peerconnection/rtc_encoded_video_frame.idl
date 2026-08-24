@@ -16,6 +16,8 @@ enum RTCEncodedVideoFrameType {
 ] interface RTCEncodedVideoFrame {
     [Measure, RaisesException, CallWith=ExecutionContext]
     constructor (RTCEncodedVideoFrame originalFrame, optional RTCEncodedVideoFrameOptions options = {});
+    [RuntimeEnabled=RTCEncodedVideoFrameConstructor, Measure, CallWith=ExecutionContext, RaisesException]
+    constructor (RTCEncodedVideoFrameInit init);
     readonly attribute RTCEncodedVideoFrameType type;
     [Measure] readonly attribute unsigned long timestamp;  // RTP timestamp.
     [CallWith=ExecutionContext] attribute ArrayBuffer data;

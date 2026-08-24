@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/webrtc/api/video/video_codec_type.h"
 
 namespace webrtc {
 class TransformableVideoFrameInterface;
@@ -27,6 +28,7 @@ namespace blink {
 
 class DOMArrayBuffer;
 class RTCEncodedVideoFrameDelegate;
+class RTCEncodedVideoFrameInit;
 class RTCEncodedVideoFrameMetadata;
 class RTCEncodedVideoFrameOptions;
 class V8RTCEncodedVideoFrameType;
@@ -46,6 +48,10 @@ class MODULES_EXPORT RTCEncodedVideoFrame final : public ScriptWrappable {
       RTCEncodedVideoFrame* original_frame,
       const RTCEncodedVideoFrameOptions* options_dict,
       ExceptionState& exception_state);
+  static RTCEncodedVideoFrame* Create(ExecutionContext* context,
+                                      const RTCEncodedVideoFrameInit* init,
+                                      ExceptionState& exception_state);
+  static webrtc::VideoCodecType StringToVideoCodecType(const String& mime_type);
   explicit RTCEncodedVideoFrame(
       std::unique_ptr<webrtc::TransformableVideoFrameInterface> webrtc_frame);
   explicit RTCEncodedVideoFrame(

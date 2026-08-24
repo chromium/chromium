@@ -40,14 +40,17 @@ V8RTCEncodedVideoFrameType::Enum RTCEncodedVideoFrameDelegate::Type() const {
   return webrtc_frame_ ? ComputeType() : post_neuter_metadata_.frame_type;
 }
 
-uint32_t RTCEncodedVideoFrameDelegate::RtpTimestamp() const {
+std::optional<uint32_t> RTCEncodedVideoFrameDelegate::RtpTimestamp() const {
   base::AutoLock lock(lock_);
-  if (!webrtc_frame_) {
-    return post_neuter_metadata_.rtp_timestamp;
+  std::optional<webrtc::RtpTimestampInfo> rtp_timestamp_info =
+      webrtc_frame_ ? std::make_optional(webrtc_frame_->GetRtpTimestampInfo())
+                    : post_neuter_metadata_.rtp_timestamp_info;
+  if (rtp_timestamp_info &&
+      std::holds_alternative<webrtc::RtpTimestampWithOffset>(
+          *rtp_timestamp_info)) {
+    return std::get<webrtc::RtpTimestampWithOffset>(*rtp_timestamp_info);
   }
-  webrtc::RtpTimestampInfo info = webrtc_frame_->GetRtpTimestampInfo();
-  CHECK(std::holds_alternative<webrtc::RtpTimestampWithOffset>(info));
-  return std::get<webrtc::RtpTimestampWithOffset>(info);
+  return std::nullopt;
 }
 
 std::optional<webrtc::Timestamp>
@@ -192,10 +195,8 @@ RTCEncodedVideoFrameDelegate::PassWebRtcFrame() {
       post_neuter_metadata_.capture_time = ComputeCaptureTime();
       post_neuter_metadata_.sender_capture_time_offset =
           ComputeSenderCaptureTimeOffset();
-      webrtc::RtpTimestampInfo info = webrtc_frame_->GetRtpTimestampInfo();
-      CHECK(std::holds_alternative<webrtc::RtpTimestampWithOffset>(info));
-      post_neuter_metadata_.rtp_timestamp =
-          std::get<webrtc::RtpTimestampWithOffset>(info);
+      post_neuter_metadata_.rtp_timestamp_info =
+          webrtc_frame_->GetRtpTimestampInfo();
       post_neuter_metadata_.presentation_timestamp =
           webrtc_frame_->GetPresentationTimestamp();
     }

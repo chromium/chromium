@@ -5223,6 +5223,10 @@
       name: "RTCEncodedVideoFrameAdditionalMetadata",
       status: "experimental",
     },
+    {
+      name: "RTCEncodedVideoFrameConstructor",
+      status: "experimental",
+    },
     // Enables the use of jitterBufferTarget attribute in WebRTC.
     // Spec: https://w3c.github.io/webrtc-extensions/#dom-rtcrtpreceiver-jitterbuffertarget
     {

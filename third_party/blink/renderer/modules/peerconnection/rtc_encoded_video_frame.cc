@@ -8,17 +8,25 @@
 
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "media/media_buildflags.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_codec_specifics_vp_8.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_metadata.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/webrtc/api/frame_transformer_factory.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
+#include "third_party/webrtc/api/units/timestamp.h"
+#include "third_party/webrtc/api/video/video_frame_metadata.h"
+#include "third_party/webrtc/api/video/video_frame_type.h"
+#include "third_party/webrtc/api/video_codecs/video_codec.h"
 
 namespace blink {
 
@@ -94,6 +102,35 @@ base::expected<void, String> ValidateMetadata(
 
 }  // namespace
 
+webrtc::VideoCodecType RTCEncodedVideoFrame::StringToVideoCodecType(
+    const String& mime_type) {
+  String lower_mime_type = mime_type.ToAsciiLower();
+  if (lower_mime_type.contains("vp8")) {
+    return webrtc::kVideoCodecVP8;
+  }
+  if (lower_mime_type.contains("vp9")) {
+    return webrtc::kVideoCodecVP9;
+  }
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  if (lower_mime_type.contains("h264") || lower_mime_type.contains("avc1") ||
+      lower_mime_type.contains("avc3")) {
+    return webrtc::kVideoCodecH264;
+  }
+#endif
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  if (lower_mime_type.contains("h265") || lower_mime_type.contains("hvc1") ||
+      lower_mime_type.contains("hev1")) {
+    return webrtc::kVideoCodecH265;
+  }
+#endif
+  // TODO(crbug.com/40923648): Remove the wrong AV1 codecs string, "av1", once
+  // we confirm nobody uses this in product.
+  if (lower_mime_type.contains("av1") || lower_mime_type.contains("av01")) {
+    return webrtc::kVideoCodecAV1;
+  }
+  return webrtc::kVideoCodecGeneric;
+}
+
 RTCEncodedVideoFrame* RTCEncodedVideoFrame::Create(
     ExecutionContext* context,
     RTCEncodedVideoFrame* original_frame,
@@ -130,6 +167,50 @@ RTCEncodedVideoFrame* RTCEncodedVideoFrame::Create(
   return new_frame;
 }
 
+RTCEncodedVideoFrame* RTCEncodedVideoFrame::Create(
+    ExecutionContext* context,
+    const RTCEncodedVideoFrameInit* init,
+    ExceptionState& exception_state) {
+  DOMArrayBuffer* payload_data_buffer = init->data();
+  base::span<uint8_t> buffer_span = payload_data_buffer->ByteSpan();
+
+  auto frame_type = webrtc::VideoFrameType::kEmptyFrame;
+  if (init->type().AsEnum() == V8RTCEncodedVideoFrameType::Enum::kKey) {
+    frame_type = webrtc::VideoFrameType::kVideoFrameKey;
+  } else if (init->type().AsEnum() ==
+             V8RTCEncodedVideoFrameType::Enum::kDelta) {
+    frame_type = webrtc::VideoFrameType::kVideoFrameDelta;
+  } else {
+    NOTREACHED();
+  }
+
+  uint8_t payload_type = init->payloadType();
+  uint32_t rtp_timestamp_without_offset = init->rtpTimestampWithoutOffset();
+
+  std::optional<int64_t> absolute_capture_timestamp_ms;
+  if (init->hasCaptureTime()) {
+    base::TimeDelta capture_time = RTCEncodedFrameTimestampToCaptureTime(
+        context, init->captureTime(), CaptureTimeInfo::ClockType::kTimeTicks);
+    absolute_capture_timestamp_ms = capture_time.InMilliseconds();
+  }
+
+  std::vector<uint32_t> csrcs(init->contributingSources().begin(),
+                              init->contributingSources().end());
+
+  webrtc::VideoCodecType codec_type = StringToVideoCodecType(init->mimeType());
+
+  std::optional<webrtc::Timestamp> presentation_timestamp;
+  if (init->hasTimestamp()) {
+    presentation_timestamp = webrtc::Timestamp::Micros(init->timestamp());
+  }
+
+  return MakeGarbageCollected<RTCEncodedVideoFrame>(
+      webrtc::CreateOutgoingVideoFrame(
+          frame_type, payload_type, rtp_timestamp_without_offset, buffer_span,
+          absolute_capture_timestamp_ms, csrcs, codec_type,
+          presentation_timestamp));
+}
+
 RTCEncodedVideoFrame::RTCEncodedVideoFrame(
     std::unique_ptr<webrtc::TransformableVideoFrameInterface> webrtc_frame)
     : RTCEncodedVideoFrame(std::move(webrtc_frame),
@@ -154,7 +235,7 @@ V8RTCEncodedVideoFrameType RTCEncodedVideoFrame::type() const {
 }
 
 uint32_t RTCEncodedVideoFrame::timestamp() const {
-  return delegate_->RtpTimestamp();
+  return delegate_->RtpTimestamp().value_or(0);
 }
 
 DOMArrayBuffer* RTCEncodedVideoFrame::data(ExecutionContext* context) const {
@@ -207,7 +288,9 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata(
   metadata->setHeight(webrtc_metadata->GetHeight());
   metadata->setSpatialIndex(webrtc_metadata->GetSpatialIndex());
   metadata->setTemporalIndex(webrtc_metadata->GetTemporalIndex());
-  metadata->setRtpTimestamp(delegate_->RtpTimestamp());
+  if (delegate_->RtpTimestamp().has_value()) {
+    metadata->setRtpTimestamp(*delegate_->RtpTimestamp());
+  }
 
   if (RuntimeEnabledFeatures::RTCEncodedFrameTimestampsEnabled()) {
     if (std::optional<base::TimeTicks> receive_time =
@@ -316,9 +399,13 @@ String RTCEncodedVideoFrame::toString(ExecutionContext* context) const {
   }
 
   StringBuilder sb;
-  sb.Append("RTCEncodedVideoFrame{rtpTimestamp: ");
-  sb.AppendNumber(timestamp());
-  sb.Append(", size: ");
+  sb.Append("RTCEncodedVideoFrame{");
+  if (const std::optional<uint32_t> rtp_timestamp = delegate_->RtpTimestamp()) {
+    sb.Append("rtpTimestamp: ");
+    sb.AppendNumber(*rtp_timestamp);
+    sb.Append(", ");
+  }
+  sb.Append("size: ");
   sb.AppendNumber(data(context)->ByteLength());
   sb.Append(" bytes, type: ");
   sb.Append(type().AsCStr());

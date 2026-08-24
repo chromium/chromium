@@ -1,0 +1,16 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO(https://crbug.com/524901718): Add spec link when available.
+
+dictionary RTCEncodedVideoFrameInit {
+    required RTCEncodedVideoFrameType type;
+    required octet payloadType;
+    required unsigned long rtpTimestampWithoutOffset;
+    required ArrayBuffer data;
+    [RuntimeEnabled=RTCEncodedFrameTimestamps] DOMHighResTimeStamp captureTime;
+    sequence<unsigned long> contributingSources = [];
+    required DOMString mimeType;
+    long long timestamp;    // microseconds
+};
