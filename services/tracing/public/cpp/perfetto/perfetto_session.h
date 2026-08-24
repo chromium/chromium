@@ -5,15 +5,13 @@
 #ifndef SERVICES_TRACING_PUBLIC_CPP_PERFETTO_PERFETTO_SESSION_H_
 #define SERVICES_TRACING_PUBLIC_CPP_PERFETTO_PERFETTO_SESSION_H_
 
-#include <set>
 #include <string>
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/task/sequenced_task_runner.h"
-
-#include "base/task/sequenced_task_runner.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
+#include "third_party/perfetto/protos/perfetto/common/track_event_descriptor.gen.h"
 
 namespace perfetto {
 namespace protos {
@@ -51,6 +49,13 @@ void COMPONENT_EXPORT(TRACING_CPP) ReadTraceAsProtobuf(
     base::OnceCallback<void(std::unique_ptr<std::string>)> on_data_callback,
     base::OnceClosure on_data_complete_callback,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+
+void COMPONENT_EXPORT(TRACING_CPP) QueryTrackEventCategories(
+    std::unique_ptr<perfetto::TracingSession> session,
+    base::OnceCallback<
+        void(std::vector<perfetto::protos::gen::TrackEventCategory>)> callback,
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner =
+        base::SequencedTaskRunner::GetCurrentDefault());
 
 }  // namespace tracing
 

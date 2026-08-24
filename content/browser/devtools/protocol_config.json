@@ -204,7 +204,7 @@
             },
             {
                 "domain": "Tracing",
-                "async": ["start", "getCategories", "requestMemoryDump"]
+                "async": ["start", "getCategories", "requestMemoryDump", "getTrackEventDescriptor"]
             },
             {
                 "domain": "VisualDebugger",

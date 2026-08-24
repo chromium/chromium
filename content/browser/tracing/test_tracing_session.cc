@@ -6,6 +6,9 @@
 
 #include "base/notimplemented.h"
 #include "base/task/thread_pool.h"
+#include "third_party/perfetto/protos/perfetto/common/data_source_descriptor.gen.h"
+#include "third_party/perfetto/protos/perfetto/common/tracing_service_state.gen.h"
+#include "third_party/perfetto/protos/perfetto/common/track_event_descriptor.gen.h"
 #include "third_party/perfetto/protos/perfetto/config/data_source_config.gen.h"
 #include "third_party/perfetto/protos/perfetto/config/trace_config.gen.h"
 
@@ -139,8 +142,30 @@ void TestTracingSession::GetTraceStats(GetTraceStatsCallback stats_callback) {
           stats_callback));
 }
 
-void TestTracingSession::QueryServiceState(QueryServiceStateCallback) {
-  NOTIMPLEMENTED();
+void TestTracingSession::QueryServiceState(QueryServiceStateCallback callback) {
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(
+          [](QueryServiceStateCallback callback) {
+            perfetto::protos::gen::TrackEventDescriptor ted;
+            auto* cat = ted.add_available_categories();
+            cat->set_name("test_cat");
+            cat->set_description("test description");
+
+            perfetto::protos::gen::TracingServiceState service_state;
+            auto* ds = service_state.add_data_sources();
+            ds->mutable_ds_descriptor()->set_name("track_event");
+            ds->mutable_ds_descriptor()->set_track_event_descriptor_raw(
+                ted.SerializeAsString());
+
+            callback(QueryServiceStateCallbackArgs{
+                .success = true,
+                .service_state_data = service_state.SerializeAsArray(),
+            });
+          },
+          callback));
 }
 
 }  // namespace content

@@ -328,7 +328,7 @@ class TracingControllerTest : public ContentBrowserTest {
 #endif
 
 IN_PROC_BROWSER_TEST_F(TracingControllerTest, GetCategories) {
-  Navigate(shell());
+  TestStartAndStopTracingString();
 
   TracingController* controller = TracingController::GetInstance();
 

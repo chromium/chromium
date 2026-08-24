@@ -946,10 +946,14 @@ void TracingHandler::GetCategories(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-Response TracingHandler::GetTrackEventDescriptor(Binary* out_descriptor) {
-  *out_descriptor = Binary::fromVector(
-      TracingController::GetInstance()->GetTrackEventDescriptor());
-  return Response::Success();
+void TracingHandler::GetTrackEventDescriptor(
+    std::unique_ptr<GetTrackEventDescriptorCallback> callback) {
+  TracingController::GetInstance()->GetTrackEventDescriptor(base::BindOnce(
+      [](std::unique_ptr<GetTrackEventDescriptorCallback> callback,
+         std::vector<uint8_t> descriptor) {
+        callback->sendSuccess(Binary::fromVector(std::move(descriptor)));
+      },
+      std::move(callback)));
 }
 
 void TracingHandler::OnRecordingEnabled(std::unique_ptr<StartCallback> callback,

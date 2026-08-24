@@ -53,18 +53,18 @@
 #include "net/log/net_log_util.h"
 #include "services/tracing/public/cpp/perfetto/metadata_data_source.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_session.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/traced_process_impl.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "services/tracing/public/mojom/constants.mojom.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/perfetto/include/perfetto/protozero/message.h"
+#include "third_party/perfetto/protos/perfetto/common/tracing_service_state.gen.h"
 #include "third_party/perfetto/protos/perfetto/common/track_event_descriptor.gen.h"
 #include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_trace_event.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/extension_descriptor.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
-#include "third_party/webrtc_overrides/init_webrtc.h"
-#include "v8/include/v8-trace-categories.h"
 #include "v8/include/v8-version-string.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -99,41 +99,6 @@ inline constexpr char kUserAgentKey[] = "user-agent";
 inline constexpr char kRevisionMetadataKey[] = "revision";
 
 TracingControllerImpl* g_tracing_controller = nullptr;
-
-void AddCategoriesToSet(
-    const perfetto::internal::TrackEventCategoryRegistry& registry,
-    std::set<std::string>& category_set) {
-  for (size_t i = 0; i < registry.category_count(); ++i) {
-    if (registry.GetCategory(i)->IsGroup()) {
-      continue;
-    }
-    category_set.insert(registry.GetCategory(i)->name);
-  }
-}
-
-void AddCategoriesToDescriptor(
-    const perfetto::internal::TrackEventCategoryRegistry& registry,
-    perfetto::protos::gen::TrackEventDescriptor& descriptor) {
-  for (size_t i = 0; i < registry.category_count(); ++i) {
-    const auto* category = registry.GetCategory(i);
-    if (category->IsGroup()) {
-      continue;
-    }
-    auto* proto_category = descriptor.add_available_categories();
-    proto_category->set_name(category->name);
-    if (category->description) {
-      proto_category->set_description(category->description);
-    }
-    std::vector<std::string> tags_vector;
-    for (const char* tag : category->tags) {
-      if (!tag) {
-        break;
-      }
-      tags_vector.push_back(tag);
-    }
-    *proto_category->mutable_tags() = std::move(tags_vector);
-  }
-}
 
 }  // namespace
 
@@ -228,28 +193,42 @@ TracingControllerImpl* TracingControllerImpl::GetInstance() {
 }
 
 bool TracingControllerImpl::GetCategories(GetCategoriesDoneCallback callback) {
-  std::set<std::string> category_set;
-
-  AddCategoriesToSet(base::perfetto_track_event::internal::kCategoryRegistry,
-                     category_set);
-#ifdef V8_USE_PERFETTO
-  AddCategoriesToSet(v8::GetTrackEventCategoryRegistry(), category_set);
-#endif  // V8_USE_PERFETTO
-  AddCategoriesToSet(GetWebRtcTrackEventCategoryRegistry(), category_set);
-
-  std::move(callback).Run(category_set);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  ConnectToServiceIfNeeded();
+  tracing::QueryTrackEventCategories(
+      perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend),
+      base::BindOnce(
+          [](GetCategoriesDoneCallback callback,
+             std::vector<perfetto::protos::gen::TrackEventCategory>
+                 categories) {
+            std::set<std::string> category_set;
+            for (const auto& category : categories) {
+              category_set.insert(category.name());
+            }
+            std::move(callback).Run(std::move(category_set));
+          },
+          std::move(callback)));
   return true;
 }
 
-std::vector<uint8_t> TracingControllerImpl::GetTrackEventDescriptor() {
-  perfetto::protos::gen::TrackEventDescriptor track_event;
-  AddCategoriesToDescriptor(
-      base::perfetto_track_event::internal::kCategoryRegistry, track_event);
-#ifdef V8_USE_PERFETTO
-  AddCategoriesToDescriptor(v8::GetTrackEventCategoryRegistry(), track_event);
-#endif  // V8_USE_PERFETTO
-  AddCategoriesToDescriptor(GetWebRtcTrackEventCategoryRegistry(), track_event);
-  return track_event.SerializeAsArray();
+bool TracingControllerImpl::GetTrackEventDescriptor(
+    GetTrackEventDescriptorDoneCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  ConnectToServiceIfNeeded();
+  tracing::QueryTrackEventCategories(
+      perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend),
+      base::BindOnce(
+          [](GetTrackEventDescriptorDoneCallback callback,
+             std::vector<perfetto::protos::gen::TrackEventCategory>
+                 categories) {
+            perfetto::protos::gen::TrackEventDescriptor ted;
+            for (const auto& category : categories) {
+              *ted.add_available_categories() = category;
+            }
+            std::move(callback).Run(ted.SerializeAsArray());
+          },
+          std::move(callback)));
+  return true;
 }
 
 bool TracingControllerImpl::StartTracingImpl(

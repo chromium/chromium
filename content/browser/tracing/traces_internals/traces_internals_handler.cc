@@ -23,10 +23,11 @@
 #include "services/tracing/public/cpp/background_tracing/trace_report_database.h"
 #include "services/tracing/public/cpp/background_tracing/trace_upload_list.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_session.h"
+#include "third_party/perfetto/protos/perfetto/common/data_source_descriptor.gen.h"
+#include "third_party/perfetto/protos/perfetto/common/tracing_service_state.gen.h"
+#include "third_party/perfetto/protos/perfetto/common/track_event_descriptor.gen.h"
 #include "third_party/perfetto/protos/perfetto/config/trace_config.gen.h"
 #include "third_party/snappy/src/snappy.h"
-#include "third_party/webrtc_overrides/init_webrtc.h"
-#include "v8/include/v8-trace-categories.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/functional/bind.h"
@@ -108,29 +109,6 @@ class TraceReader : public base::RefCountedThreadSafe<TraceReader> {
 
   ~TraceReader() = default;
 };
-
-void AddCategoriesToList(
-    const perfetto::internal::TrackEventCategoryRegistry& registry,
-    std::vector<traces_internals::mojom::TraceCategoryPtr>& categories) {
-  for (size_t i = 0; i < registry.category_count(); ++i) {
-    const auto* category = registry.GetCategory(i);
-    auto mojom_category = traces_internals::mojom::TraceCategory::New();
-    mojom_category->name = category->name;
-    mojom_category->is_group = category->IsGroup();
-    if (category->description) {
-      mojom_category->description = category->description;
-    }
-    std::vector<std::string> tags_vector;
-    for (const char* tag : category->tags) {
-      if (!tag) {
-        break;
-      }
-      tags_vector.push_back(tag);
-    }
-    mojom_category->tags = std::move(tags_vector);
-    categories.push_back(std::move(mojom_category));
-  }
-}
 
 }  // namespace
 
@@ -279,16 +257,27 @@ void TracesInternalsHandler::StopTraceSession(
 
 void TracesInternalsHandler::GetTrackEventCategories(
     GetTrackEventCategoriesCallback callback) {
-  std::vector<traces_internals::mojom::TraceCategoryPtr> categories;
-
-  AddCategoriesToList(base::perfetto_track_event::internal::kCategoryRegistry,
-                      categories);
-#ifdef V8_USE_PERFETTO
-  AddCategoriesToList(v8::GetTrackEventCategoryRegistry(), categories);
-#endif  // V8_USE_PERFETTO
-  AddCategoriesToList(GetWebRtcTrackEventCategoryRegistry(), categories);
-
-  std::move(callback).Run(std::move(categories));
+  tracing::QueryTrackEventCategories(
+      CreateTracingSession(),
+      base::BindOnce(
+          [](GetTrackEventCategoriesCallback callback,
+             std::vector<perfetto::protos::gen::TrackEventCategory>
+                 categories) {
+            std::vector<traces_internals::mojom::TraceCategoryPtr>
+                mojom_categories;
+            for (const auto& category : categories) {
+              auto mojom_category =
+                  traces_internals::mojom::TraceCategory::New();
+              mojom_category->name = category.name();
+              mojom_category->is_group = false;
+              mojom_category->description = category.description();
+              mojom_category->tags = category.tags();
+              mojom_categories.push_back(std::move(mojom_category));
+            }
+            std::move(callback).Run(std::move(mojom_categories));
+          },
+          std::move(callback)),
+      task_runner_);
 }
 
 void TracesInternalsHandler::GetBufferUsage(GetBufferUsageCallback callback) {

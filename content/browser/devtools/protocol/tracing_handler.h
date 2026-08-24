@@ -88,7 +88,8 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
              std::unique_ptr<StartCallback> callback) override;
   Response End() override;
   void GetCategories(std::unique_ptr<GetCategoriesCallback> callback) override;
-  Response GetTrackEventDescriptor(Binary* out_descriptor) override;
+  void GetTrackEventDescriptor(
+      std::unique_ptr<GetTrackEventDescriptorCallback> callback) override;
   void RequestMemoryDump(
       std::optional<bool> deterministic,
       std::optional<std::string> level_of_detail,

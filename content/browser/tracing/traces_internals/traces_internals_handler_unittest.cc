@@ -408,6 +408,24 @@ TEST_F(TracesInternalsHandlerTest, DownloadTrace) {
   handler_->DownloadTrace(uuid, callback.Get());
 }
 
+TEST_F(TracesInternalsHandlerTest, GetTrackEventCategories) {
+  base::MockCallback<
+      traces_internals::mojom::PageHandler::GetTrackEventCategoriesCallback>
+      callback;
+  base::RunLoop run_loop;
+  EXPECT_CALL(callback, Run)
+      .WillOnce(
+          [&run_loop](std::vector<traces_internals::mojom::TraceCategoryPtr>
+                          categories) {
+            ASSERT_EQ(categories.size(), 1u);
+            EXPECT_EQ(categories[0]->name, "test_cat");
+            EXPECT_EQ(categories[0]->description, "test description");
+            run_loop.Quit();
+          });
+  handler_->GetTrackEventCategories(callback.Get());
+  run_loop.Run();
+}
+
 #if BUILDFLAG(IS_WIN)
 // Tests that TracesInternalsHandler delegates GetSystemTracingState to the
 // TracingDelegate.
