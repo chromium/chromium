@@ -265,26 +265,10 @@ INSTANTIATE_TEST_SUITE_P(
         base::win::ScopedAzureADJoinStateForTesting::AzureADJoinType::kDevice));
 
 TEST_P(AzureActiveDirectoryManagementServiceTests,
-       AzureActiveDirectoryProviders) {
+       AzureActiveDirectoryDeviceStatusProvider) {
   base::test::TaskEnvironment task_environment;
   base::win::ScopedAzureADJoinStateForTesting scoped_azure_ad_join_state(
       GetParam());
-
-  // AzureActiveDirectoryStatusProvider returns CLOUD_DOMAIN for both workplace
-  // and device join.
-  {
-    std::vector<std::unique_ptr<ManagementStatusProvider>> providers;
-    providers.push_back(std::make_unique<AzureActiveDirectoryStatusProvider>());
-    TestManagementService management_service(std::move(providers));
-    management_service.UsePrefServiceAsCache(prefs());
-
-    base::test::TestFuture<ManagementAuthorityTrustworthiness,
-                           ManagementAuthorityTrustworthiness>
-        test_future;
-    management_service.RefreshCache(test_future.GetCallback());
-    EXPECT_EQ(test_future.Get<1>(),
-              ManagementAuthorityTrustworthiness::FULLY_TRUSTED);
-  }
 
   // AzureActiveDirectoryDeviceStatusProvider returns CLOUD_DOMAIN for device
   // join and NONE for workplace join.
@@ -306,16 +290,33 @@ TEST_P(AzureActiveDirectoryManagementServiceTests,
             : ManagementAuthorityTrustworthiness::NONE;
     EXPECT_EQ(test_future.Get<1>(), expected_trustworthiness);
   }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        features::kFilterSensitivePoliciesOnWorkplaceJoinedDevices);
+
+    std::vector<std::unique_ptr<ManagementStatusProvider>> providers;
+    providers.push_back(
+        std::make_unique<AzureActiveDirectoryDeviceStatusProvider>());
+    TestManagementService management_service(std::move(providers));
+    management_service.UsePrefServiceAsCache(prefs());
+
+    base::test::TestFuture<ManagementAuthorityTrustworthiness,
+                           ManagementAuthorityTrustworthiness>
+        test_future;
+    management_service.RefreshCache(test_future.GetCallback());
+    EXPECT_EQ(test_future.Get<1>(),
+              ManagementAuthorityTrustworthiness::FULLY_TRUSTED);
+  }
 }
 
-// TODO(crbug.com/531448879): Revert this change when AzureAD logic migration is
-// complete.
 TEST_P(AzureActiveDirectoryManagementServiceTests,
-       PlatformManagementServicePolicyLoadingTrust) {
+       PlatformManagementServiceAzureADTrust) {
   base::test::TaskEnvironment task_environment;
   // Ensure actual host AD domain join state does not affect test results, so
   // this test works on developer machines. If join state is true,
-  // GetManagementAuthorityTrustworthinessForPolicyLoading will be TRUSTED,
+  // GetManagementAuthorityTrustworthiness will be TRUSTED,
   // which breaks the kWorkplace case, which expects it to be NONE.
   base::win::ScopedDomainStateForTesting scoped_domain_state(false);
   base::win::ScopedAzureADJoinStateForTesting scoped_azure_ad_join_state(
@@ -332,20 +333,12 @@ TEST_P(AzureActiveDirectoryManagementServiceTests,
   service->RefreshCache(test_future.GetCallback());
   ASSERT_TRUE(test_future.Wait());
 
-  // General trustworthiness includes AzureActiveDirectoryStatusProvider
-  // (CLOUD_DOMAIN).
-  EXPECT_EQ(service->GetManagementAuthorityTrustworthiness(),
-            ManagementAuthorityTrustworthiness::FULLY_TRUSTED);
-
-  // Policy loading trustworthiness excludes AzureActiveDirectoryStatusProvider,
-  // checking only AzureActiveDirectoryDeviceStatusProvider (FULLY_TRUSTED for
-  // device join, NONE for workplace join).
   ManagementAuthorityTrustworthiness expected_trustworthiness =
       GetParam() == base::win::ScopedAzureADJoinStateForTesting::
                         AzureADJoinType::kDevice
           ? ManagementAuthorityTrustworthiness::FULLY_TRUSTED
           : ManagementAuthorityTrustworthiness::NONE;
-  EXPECT_EQ(service->GetManagementAuthorityTrustworthinessForPolicyLoading(),
+  EXPECT_EQ(service->GetManagementAuthorityTrustworthiness(),
             expected_trustworthiness);
 
   {
@@ -359,7 +352,7 @@ TEST_P(AzureActiveDirectoryManagementServiceTests,
     service->RefreshCache(disabled_future.GetCallback());
     ASSERT_TRUE(disabled_future.Wait());
 
-    EXPECT_EQ(service->GetManagementAuthorityTrustworthinessForPolicyLoading(),
+    EXPECT_EQ(service->GetManagementAuthorityTrustworthiness(),
               ManagementAuthorityTrustworthiness::FULLY_TRUSTED);
   }
 }

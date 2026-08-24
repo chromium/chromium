@@ -72,8 +72,7 @@ void AsyncPolicyLoader::Reload(bool force) {
     ui_thread_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(
-            &ManagementService::
-                GetManagementAuthorityTrustworthinessForPolicyLoading,
+            &ManagementService::GetManagementAuthorityTrustworthiness,
             base::Unretained(management_service_)),
         base::BindOnce(
             &AsyncPolicyLoader::SetPlatformManagementTrustworthinessAndReload,
@@ -140,8 +139,7 @@ PolicyBundle AsyncPolicyLoader::InitialLoad(
   if (management_service_) {
     DCHECK_EQ(management_service_, PlatformManagementService::GetInstance());
     platform_management_trustworthiness_ =
-        management_service_
-            ->GetManagementAuthorityTrustworthinessForPolicyLoading();
+        management_service_->GetManagementAuthorityTrustworthiness();
   }
   PolicyBundle bundle = Load();
   platform_management_trustworthiness_.reset();
