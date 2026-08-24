@@ -5140,7 +5140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.{UploadEvent}.Throttled" enum="BooleanHit"
-    expires_after="2026-10-04">
+    expires_after="2027-10-04">
   <owner>alxchn@chromium.org</owner>
   <owner>cbe-cep-eng@google.com</owner>
   <summary>
