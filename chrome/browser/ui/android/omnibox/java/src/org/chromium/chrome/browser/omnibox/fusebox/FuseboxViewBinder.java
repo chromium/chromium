@@ -16,6 +16,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,12 +40,14 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxSta
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.BackgroundStyle;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonType;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxViewHolder.AnchoringMode;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -721,24 +724,50 @@ class FuseboxViewBinder {
 
     private static void reanchorViewsForCompactFusebox(
             PropertyModel model, FuseboxViewHolder view) {
-
-        boolean singleLine = model.get(FuseboxProperties.FUSEBOX_STATE) != FuseboxState.EXPANDED;
-        int topToTop;
-        int topToBottom;
-        int bottomToBottom;
-
+        long startTime = SystemClock.elapsedRealtime();
+        @AnchoringMode int targetMode;
         if (model.get(FuseboxProperties.FUSEBOX_LAYOUT_MODE)
                 == FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
-            topToTop = ConstraintSet.UNSET;
-            topToBottom = R.id.omnibox_suggestions_dropdown;
-            bottomToBottom = ConstraintSet.PARENT_ID;
+            targetMode = AnchoringMode.POPOVER;
+        } else if (model.get(FuseboxProperties.FUSEBOX_STATE) == FuseboxState.EXPANDED) {
+            targetMode = AnchoringMode.TOOLBAR_MULTI_LINE;
         } else {
-            topToTop = singleLine ? R.id.url_bar : ConstraintSet.UNSET;
-            topToBottom = singleLine ? ConstraintSet.UNSET : R.id.url_bar;
-            bottomToBottom = singleLine ? ConstraintSet.UNSET : ConstraintSet.PARENT_ID;
+            targetMode = AnchoringMode.TOOLBAR_SINGLE_LINE;
         }
 
-        var cs = new ConstraintSet();
+        // TODO(crbug.com/546568339): Refactor layout anchoring mode into PropertyModel once this
+        // optimization feature is cleaned up.
+        if (OmniboxFeatures.sModelPickerOptimizations.getValue()) {
+            if (view.currentAnchoringMode == targetMode) {
+                FuseboxMetrics.recordReanchorViewsDuration(startTime);
+                return;
+            }
+        }
+
+        int topToTop = ConstraintSet.UNSET;
+        int topToBottom = ConstraintSet.UNSET;
+        int bottomToBottom = ConstraintSet.UNSET;
+        int expectedUrlBarEndToStart = R.id.action_buttons_segment;
+
+        switch (targetMode) {
+            case AnchoringMode.POPOVER -> {
+                topToBottom = R.id.omnibox_suggestions_dropdown;
+                bottomToBottom = ConstraintSet.PARENT_ID;
+            }
+            case AnchoringMode.TOOLBAR_SINGLE_LINE -> {
+                topToTop = R.id.url_bar;
+            }
+            case AnchoringMode.TOOLBAR_MULTI_LINE -> {
+                topToBottom = R.id.url_bar;
+                bottomToBottom = ConstraintSet.PARENT_ID;
+                expectedUrlBarEndToStart = R.id.action_buttons_segment_multimodal;
+            }
+            default -> {
+                assert false : "Unsupported AnchoringMode: " + targetMode;
+            }
+        }
+
+        ConstraintSet cs = new ConstraintSet();
         cs.clone(view.parentView);
 
         int id = view.plusButton.getId();
@@ -756,13 +785,12 @@ class FuseboxViewBinder {
             cs.connect(id, ConstraintSet.BOTTOM, bottomToBottom, ConstraintSet.BOTTOM);
         }
 
-        cs.connect(
-                R.id.url_bar,
-                ConstraintSet.END,
-                singleLine ? R.id.action_buttons_segment : R.id.action_buttons_segment_multimodal,
-                ConstraintSet.START);
+        cs.connect(R.id.url_bar, ConstraintSet.END, expectedUrlBarEndToStart, ConstraintSet.START);
 
         cs.applyTo(view.parentView);
+
+        view.currentAnchoringMode = targetMode;
+        FuseboxMetrics.recordReanchorViewsDuration(startTime);
     }
 
     private static void updateForCurrentTabFavicon(

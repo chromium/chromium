@@ -55,6 +55,10 @@ public class FuseboxMetrics {
     /* package */ static final String SET_ACTIVE_MODEL_SOURCE_HISTOGRAM =
             "Android.Omnibox.MobileFusebox.SetActiveModelSource";
 
+    @VisibleForTesting
+    /* package */ static final String REANCHOR_VIEWS_DURATION_HISTOGRAM =
+            "Android.Omnibox.MobileFusebox.ReanchorViews.Duration";
+
     // LINT.IfChange(ToolMode)
     @VisibleForTesting /* package */ static final int TOOL_MODE_HISTOGRAM_BOUND = 12;
     // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:OmniboxToolMode)
@@ -167,6 +171,11 @@ public class FuseboxMetrics {
     static void notifySetActiveModelSource(@SetActiveModelSource int source) {
         RecordHistogram.recordEnumeratedHistogram(
                 SET_ACTIVE_MODEL_SOURCE_HISTOGRAM, source, SetActiveModelSource.COUNT);
+    }
+
+    static void recordReanchorViewsDuration(long startTime) {
+        RecordHistogram.recordTimesHistogram(
+                REANCHOR_VIEWS_DURATION_HISTOGRAM, SystemClock.elapsedRealtime() - startTime);
     }
 
     static void notifyAttachmentSizeLimitCheck(@FuseboxAttachmentSizeLimitCheck int result) {

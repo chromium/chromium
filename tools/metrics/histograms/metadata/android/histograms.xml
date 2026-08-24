@@ -4134,6 +4134,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Omnibox.MobileFusebox.ReanchorViews.Duration"
+    units="ms" expires_after="2027-10-01">
+  <owner>skym@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the duration of reanchorViewsForCompactFusebox in FuseboxViewBinder
+    when updating layout constraints. Recorded each time the binder reanchors
+    views.
+  </summary>
+</histogram>
+
 <histogram name="Android.Omnibox.MobileFusebox.SetActiveModelSource"
     enum="SetActiveModelSource" expires_after="2027-03-20">
   <owner>skym@chromium.org</owner>
