@@ -453,7 +453,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ink
   # and whatever else without interference from each other.
-  'ink_revision': '15a0449f686ad8263ff01ccf815881480eb35b27',
+  'ink_revision': 'b604020babf1147bd9fb1e6e78d675b2f523bff7',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ios_webkit
   # and whatever else without interference from each other.

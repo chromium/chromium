@@ -112,21 +112,21 @@ base::DictValue SampleFinishTextAnnotationDataWithSource(
     std::string_view source);
 
 MATCHER_P6(InkAffineTransformEq,
-           expected_a,
-           expected_b,
-           expected_c,
-           expected_d,
-           expected_e,
-           expected_f,
+           expected_m00,
+           expected_m10,
+           expected_m20,
+           expected_m01,
+           expected_m11,
+           expected_m21,
            "") {
   using testing::FloatEq;
   using testing::Matches;
-  return Matches(FloatEq(expected_a))(arg.A()) &&
-         Matches(FloatEq(expected_b))(arg.B()) &&
-         Matches(FloatEq(expected_c))(arg.C()) &&
-         Matches(FloatEq(expected_d))(arg.D()) &&
-         Matches(FloatEq(expected_e))(arg.E()) &&
-         Matches(FloatEq(expected_f))(arg.F());
+  return Matches(FloatEq(expected_m00))(arg.M00()) &&
+         Matches(FloatEq(expected_m10))(arg.M10()) &&
+         Matches(FloatEq(expected_m20))(arg.M20()) &&
+         Matches(FloatEq(expected_m01))(arg.M01()) &&
+         Matches(FloatEq(expected_m11))(arg.M11()) &&
+         Matches(FloatEq(expected_m21))(arg.M21());
 }
 
 bool InkTextInfoEquals(const InkTextInfo& lhs, const InkTextInfo& rhs);
