@@ -1269,7 +1269,7 @@ public class ToolbarManager
 
         tabObscuringHandler.addObserver(this);
 
-        Runnable scrimClickAction = this::endFuseboxInput;
+        Runnable scrimClickAction = this::onScrimClicked;
         View scrimTarget = mCompositorViewHolder;
         mLocationBarFocusHandler =
                 new LocationBarFocusScrimHandler(
@@ -3446,6 +3446,11 @@ public class ToolbarManager
     public void suspendFuseboxInput() {
         if (mIsDestroyed || mLocationBar == null || mLocationBar.getOmniboxStub() == null) return;
         assumeNonNull(mLocationBar.getOmniboxStub()).suspendInput();
+    }
+
+    private void onScrimClicked() {
+        if (mIsDestroyed || mLocationBar == null || mLocationBar.getOmniboxStub() == null) return;
+        assumeNonNull(mLocationBar.getOmniboxStub()).onScrimClicked();
     }
 
     /**
