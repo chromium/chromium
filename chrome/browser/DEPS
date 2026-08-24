@@ -547,7 +547,6 @@ include_rules = [
   # chrome/browser/glic/actor/new_glic_actor_functional_browsertest.h instead.
   "!chrome/browser/glic/actor/glic_actor_functional_browsertest.h",
   "!chrome/browser/glic/host/glic_actor_interactive_uitest_common.h",
-  "!chrome/browser/glic/test_support/glic_api_test.h",
   "!chrome/browser/glic/test_support/glic_functional_browsertest.h",
   "!chrome/browser/glic/test_support/interactive_glic_test.h",
   "!chrome/browser/glic/test_support/non_interactive_glic_test.h",
