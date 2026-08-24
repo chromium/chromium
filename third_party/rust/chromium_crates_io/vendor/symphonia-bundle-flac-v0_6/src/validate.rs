@@ -88,7 +88,7 @@ fn copy_as_i24<'a>(
             .chunks_exact_mut(SIZE_OF_I24)
             .skip(ch)
             .step_by(n_channels)
-            .zip(samples.plane(ch).unwrap())
+            .zip(samples.plane(ch).expect("ch is bounded to n_channels"))
         {
             out.copy_from_slice(&sample.to_le_bytes()[0..SIZE_OF_I24]);
         }
@@ -110,7 +110,7 @@ macro_rules! copy_as {
                     .chunks_exact_mut(mem::size_of::<$type>())
                     .skip(ch)
                     .step_by(n_channels)
-                    .zip(samples.plane(ch).unwrap())
+                    .zip(samples.plane(ch).expect("ch is bounded to n_channels"))
                 {
                     out.copy_from_slice(&(*sample as $type).to_le_bytes());
                 }

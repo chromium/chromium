@@ -84,7 +84,7 @@ lazy_static! {
         m.insert("mood"                        , parse_mood);
         m.insert("movement"                    , parse_movement_total);
         m.insert("movementname"                , parse_movement_name);
-        m.insert("movementtotal"               , parse_mood);
+        m.insert("movementtotal"               , parse_movement_total);
         m.insert("mp3gain_album_minmax"        , parse_mp3gain_album_min_max);
         m.insert("mp3gain_minmax"              , parse_mp3gain_min_max);
         m.insert("mp3gain_undo"                , parse_mp3gain_undo);
@@ -174,7 +174,7 @@ enum ApeVersion {
 struct ApeHeader {
     version: ApeVersion,
     num_items: u32,
-    size: u32,
+    size: u64,
     is_header: bool,
     has_header: bool,
     has_footer: bool,
@@ -205,7 +205,7 @@ impl ApeHeader {
         let version = ApeHeader::read_identity(reader)?;
 
         // The size of the tag excluding any header.
-        let size = reader.read_u32()?;
+        let size = u64::from(reader.read_u32()?);
         let num_items = reader.read_u32()?;
         let flags = reader.read_u32()?;
         let _reserved = reader.read_u64()?;
@@ -363,7 +363,7 @@ impl MetadataReader for ApeReader<'_> {
         if !header.is_header {
             // The current position is the first byte after the APE footer. After the seek, the
             // reader will be at the header (if the tag contains one), or the first item.
-            self.reader.seek(SeekFrom::Current(-(i64::from(header.size))))?;
+            self.reader.seek(SeekFrom::Current(-(header.size as i64)))?;
 
             // If the APE tag contains a header, read it and do some verification checks. All header
             // and footer fields should match other than the `is_header` flag.
@@ -503,7 +503,7 @@ fn try_parse_image_data(buf: Box<[u8]>, tags: &mut Vec<Tag>) -> (Box<[u8]>, Opti
         // Split at the null-terminator.
         let (left, right) = buf.split_at(pos);
         // Drop the null-terminator.
-        let right = right.split_first().unwrap().1;
+        let right = right.split_first().expect("right starts with null byte at pos").1;
 
         // Try to detect an image after the null-terminator.
         if let Some(info) = try_get_image_info(right) {

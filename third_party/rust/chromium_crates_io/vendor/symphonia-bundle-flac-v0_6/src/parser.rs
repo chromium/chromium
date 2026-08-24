@@ -138,10 +138,10 @@ impl Fragment {
     }
 
     /// Parse the frame header from the fragment.
-    fn parse_header(&self) -> FrameHeader {
+    fn parse_header(&self) -> Option<FrameHeader> {
         let mut reader = BufReader::new(&self.data);
-        let sync = reader.read_be_u16().unwrap();
-        read_frame_header(&mut reader, sync).unwrap()
+        let sync = reader.read_be_u16().ok()?;
+        read_frame_header(&mut reader, sync).ok()
     }
 }
 
@@ -229,7 +229,7 @@ impl PacketBuilder {
     fn try_build(&mut self, stream_info: &StreamInfo, frag: Fragment) -> Option<ParsedPacket> {
         let (header, data) = if frag.crc_match {
             // The fragment has a CRC that matches the expected CRC.
-            (frag.parse_header(), frag.data)
+            (frag.parse_header()?, frag.data)
         }
         else {
             // The fragment does not have a CRC that matches the expected CRC.
@@ -256,7 +256,7 @@ impl PacketBuilder {
 
                 data.extend_from_slice(&frag.data);
 
-                (self.frags[i].parse_header(), data.into_boxed_slice())
+                (self.frags[i].parse_header()?, data.into_boxed_slice())
             }
             else {
                 // A range of fragments has not been found that forms a packet.

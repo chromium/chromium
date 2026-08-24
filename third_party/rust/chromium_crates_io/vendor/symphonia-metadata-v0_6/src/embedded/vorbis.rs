@@ -388,11 +388,9 @@ pub fn read_vorbis_comment<B: ReadBytes>(
         // Read the comment string length in bytes.
         let comment_length = reader.read_u32()?;
 
-        // TODO: Apply a limit.
-
         // Read the comment string.
-        let mut comment_data = vec![0; comment_length as usize];
-        reader.read_buf_exact(&mut comment_data)?;
+        // TODO: Apply a limit.
+        let comment_data = reader.read_boxed_slice_exact(comment_length as usize)?;
 
         // Parse the Vorbis comment and handle the parsed output.
         match parse_vorbis_comment(&comment_data) {

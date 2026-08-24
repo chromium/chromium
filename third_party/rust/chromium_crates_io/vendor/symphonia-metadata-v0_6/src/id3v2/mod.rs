@@ -291,7 +291,7 @@ fn read_id3v2_body<B: ReadBytes + FiniteStream>(
             4 => read_id3v2p4_extended_header(reader)?,
             _ => unreachable!(),
         };
-        trace!("{:#?}", &extended);
+        trace!("{:#?}", extended);
     }
 
     let min_frame_size = min_frame_size(header.major_version);
@@ -428,7 +428,7 @@ impl ChapterGroupBuilder {
     fn add_toc(&mut self, toc: Id3v2TableOfContents) {
         // Do not allow non-unique element IDs.
         if !self.is_unique_key(&toc.id) {
-            debug!("id3v2: toc id '{}' is not unique", &toc.id);
+            debug!("id3v2: toc id '{}' is not unique", toc.id);
             return self.error();
         }
 
@@ -448,7 +448,7 @@ impl ChapterGroupBuilder {
     fn add_chapter(&mut self, mut chap: Id3v2Chapter) {
         // Do not allow non-unique element IDs.
         if !self.is_unique_key(&chap.id) {
-            debug!("id3v2: chapter id '{}' is not unique", &chap.id);
+            debug!("id3v2: chapter id '{}' is not unique", chap.id);
             return self.error();
         }
 

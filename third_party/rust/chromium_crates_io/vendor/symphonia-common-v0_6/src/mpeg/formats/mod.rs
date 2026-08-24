@@ -213,16 +213,18 @@ impl ObjectDescriptor for ESDescriptor {
         scoped.ignore()?;
 
         // Decoder configuration descriptor is mandatory.
-        if dec_config.is_none() {
+        let Some(dec_config) = dec_config
+        else {
             return decode_error("common (mp4): missing decoder config descriptor");
-        }
+        };
 
         // SL descriptor is mandatory.
-        if sl_config.is_none() {
+        let Some(sl_config) = sl_config
+        else {
             return decode_error("common (mp4): missing sl config descriptor");
-        }
+        };
 
-        Ok(ESDescriptor { es_id, dec_config: dec_config.unwrap(), sl_config: sl_config.unwrap() })
+        Ok(ESDescriptor { es_id, dec_config, sl_config })
     }
 }
 

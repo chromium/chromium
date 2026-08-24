@@ -24,6 +24,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/symphonia-common-v0_6/src/mpeg/video/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/symphonia-common-v0_6/src/xiph/audio/flac/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/symphonia-common-v0_6/src/xiph/audio/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-common-v0_6/src/xiph/audio/opus/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/symphonia-common-v0_6/src/xiph/audio/vorbis/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/symphonia-common-v0_6/src/xiph/mod.rs",
   ]
@@ -35,7 +36,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "symphonia-common"
   cargo_pkg_description = "Project Symphonia utilities for codecs and formats."
   cargo_pkg_repository = "https://github.com/pdeljanov/Symphonia"
-  cargo_pkg_version = "0.6.0"
+  cargo_pkg_version = "0.6.1"
 
   allow_unsafe = false
 

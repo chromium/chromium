@@ -145,7 +145,7 @@ fn read_date(reader: &mut BufReader<'_>) -> Result<String> {
     }
 
     // Safety: The data array only contains ASCII digits.
-    Ok(str::from_utf8(&date).unwrap().to_string())
+    Ok(str::from_utf8(&date).expect("date contains only ASCII digits").to_string())
 }
 
 /// Read and validate an encoding indicator.
@@ -174,7 +174,11 @@ fn read_lang_code(reader: &mut BufReader<'_>) -> Result<Option<String>> {
     }
     else {
         // Convert to lowercase string.
-        Some(std::str::from_utf8(&code).unwrap().to_ascii_lowercase())
+        Some(
+            std::str::from_utf8(&code)
+                .expect("lang code contains only ASCII alphabetic chars")
+                .to_ascii_lowercase(),
+        )
     };
 
     Ok(code)
@@ -850,7 +854,9 @@ pub fn read_tipl_frame(mut reader: BufReader<'_>, frame: &FrameInfo<'_>) -> Resu
             // Iterate over all pairs, and parse them into standard tags.
             for pair in list.chunks_exact(2) {
                 // Safety: Pre-checked above all pairs can be parsed.
-                let parser = TIPL_FUNC_PARSERS.get(pair[0].as_str()).unwrap();
+                let parser = TIPL_FUNC_PARSERS
+                    .get(pair[0].as_str())
+                    .expect("pre-checked that pair key exists in TIPL_FUNC_PARSERS");
 
                 // Parse raw value into standard tag.
                 match parser(Arc::new(pair[1].clone())) {

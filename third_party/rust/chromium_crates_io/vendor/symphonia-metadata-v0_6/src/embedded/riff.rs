@@ -81,7 +81,7 @@ mod info {
         }
 
         // Safety: Key is always ASCII.
-        let key = str::from_utf8(&chunk_id).unwrap();
+        let key = str::from_utf8(&chunk_id).expect("chunk_id contains only ASCII bytes");
         let value = String::from_utf8_lossy(buf);
 
         builder.add_mapped_tags(RawTag::new(key, value), &RIFF_INFO_MAP);

@@ -248,7 +248,7 @@ impl FlacDecoder {
 impl AudioDecoder for FlacDecoder {
     fn codec_info(&self) -> &CodecInfo {
         // Only one codec is supported.
-        &Self::supported_codecs().first().unwrap().info
+        &Self::supported_codecs().first().expect("at least one codec registered").info
     }
 
     fn reset(&mut self) {
@@ -286,8 +286,12 @@ impl AudioDecoder for FlacDecoder {
                     let mut expected_s = String::with_capacity(32);
                     let mut decoded_s = String::with_capacity(32);
 
-                    expected.iter().for_each(|b| write!(expected_s, "{b:02x}").unwrap());
-                    decoded.iter().for_each(|b| write!(decoded_s, "{b:02x}").unwrap());
+                    expected.iter().for_each(|b| {
+                        write!(expected_s, "{b:02x}").expect("write to String never fails")
+                    });
+                    decoded.iter().for_each(|b| {
+                        write!(decoded_s, "{b:02x}").expect("write to String never fails")
+                    });
 
                     debug!("verification: expected md5 = {expected_s}");
                     debug!("verification: decoded md5  = {decoded_s}");
@@ -481,7 +485,7 @@ fn decode_linear<B: ReadBitsLtr>(bs: &mut B, bps: u32, order: u32, buf: &mut [i3
         // Helper function to dispatch to a predictor with a maximum order of N.
         #[inline(always)]
         fn lpc<const N: usize>(order: u32, coeffs: &[i32; 32], coeff_shift: i32, buf: &mut [i32]) {
-            let coeffs_n = (&coeffs[32 - N..32]).try_into().unwrap();
+            let coeffs_n = (&coeffs[32 - N..32]).try_into().expect("slice has exactly N elements");
             lpc_predict::<N>(order as usize, coeffs_n, coeff_shift as u32, buf);
         }
 
