@@ -24,8 +24,11 @@ import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
@@ -50,7 +53,7 @@ public class WebappsUtils {
     // sCheckedIfRequestPinShortcutSupported and sIsRequestPinShortcutSupported.
     private static final Object sLock = new Object();
 
-    private static @Nullable Boolean sIsTwaInstallerPackage;
+    private static @TriState int sIsTwaInstallerPackage;
 
     /**
      * Creates an intent that will add a shortcut to the home screen.
@@ -279,8 +282,8 @@ public class WebappsUtils {
     }
 
     public static void isTwaInstallerPackage(String title, Callback<Boolean> callback) {
-        if (sIsTwaInstallerPackage != null) {
-            callback.onResult(sIsTwaInstallerPackage);
+        if (sIsTwaInstallerPackage != TriState.NOT_SET) {
+            callback.onResult(sIsTwaInstallerPackage == TriState.TRUE);
             return;
         }
         var aconfigFlaggedApiDelegate = AconfigFlaggedApiDelegate.getInstance();
@@ -298,7 +301,8 @@ public class WebappsUtils {
      *
      * @param installed Whether TwaInstallerPackage is installed.
      */
-    public static void setIsTwaInstallerPackageForTesting(Boolean installed) {
-        sIsTwaInstallerPackage = installed;
+    public static void setIsTwaInstallerPackageForTesting(boolean installed) {
+        sIsTwaInstallerPackage = TriStateUtils.from(installed);
+        ResettersForTesting.register(() -> sIsTwaInstallerPackage = TriState.NOT_SET);
     }
 }
