@@ -7,22 +7,25 @@ package org.chromium.components.contextual_search;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import java.util.Map;
-
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.omnibox.AimModelsProto.ModelMode;
 import org.chromium.components.omnibox.InputTypeConfigProto.InputTypeConfig;
 import org.chromium.components.omnibox.InputTypeProto.InputType;
 import org.chromium.components.omnibox.ModelConfigProto.ModelConfig;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.SectionConfigProto.SectionConfig;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
+
+import java.util.Map;
 
 /** Unit tests for {@link InputState}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -175,5 +178,201 @@ public class InputStateTest {
                         .build();
         assertTrue(stateBothDisabled.isImageGenToolVisible());
         assertFalse(stateBothDisabled.isImageGenToolEnabled());
+    }
+
+    @Test
+    public void testLazyProtobufParsing_whenOptimizationsEnabled() {
+        OmniboxFeatures.sModelPickerOptimizations.setForTesting(true);
+
+        InputTypeConfig inputTypeConfig =
+                InputTypeConfig.newBuilder()
+                        .setInputTypeValue(InputType.INPUT_TYPE_LENS_IMAGE_VALUE)
+                        .setMenuLabel("Lens Image")
+                        .build();
+        ToolConfig toolConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .setMenuLabel("Deep Search")
+                        .setChipLabel("Deep Search Chip")
+                        .build();
+        SectionConfig toolsSectionConfig =
+                SectionConfig.newBuilder().setHeader("Tools Header").build();
+        ModelConfig modelConfig =
+                ModelConfig.newBuilder()
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setMenuLabel("Pro")
+                        .build();
+        SectionConfig modelSectionConfig =
+                SectionConfig.newBuilder().setHeader("Models Header").build();
+
+        InputState state =
+                new InputState.Builder()
+                        .withInputTypeConfigs(new byte[][] {inputTypeConfig.toByteArray()})
+                        .withToolConfigs(new byte[][] {toolConfig.toByteArray()})
+                        .withToolsSectionConfig(toolsSectionConfig.toByteArray())
+                        .withModelConfigs(new byte[][] {modelConfig.toByteArray()})
+                        .withModelSectionConfig(modelSectionConfig.toByteArray())
+                        .build();
+
+        // 1. Check deserialized values match expectations.
+        assertEquals(1, state.getInputTypeConfigs().size());
+        assertEquals("Lens Image", state.getInputTypeConfigs().get(0).getMenuLabel());
+
+        assertEquals(1, state.getToolConfigs().size());
+        assertEquals("Deep Search", state.getToolConfigs().get(0).getMenuLabel());
+
+        assertEquals("Tools Header", state.getToolsSectionConfig().getHeader());
+
+        assertEquals(1, state.getModelConfigs().size());
+        assertEquals("Pro", state.getModelConfigs().get(0).getMenuLabel());
+
+        assertEquals("Models Header", state.getModelSectionConfig().getHeader());
+
+        // 2. Check memoization (subsequent calls return the exact same parsed instances).
+        assertSame(state.getInputTypeConfigs(), state.getInputTypeConfigs());
+        assertSame(state.getToolConfigs(), state.getToolConfigs());
+        assertSame(state.getToolsSectionConfig(), state.getToolsSectionConfig());
+        assertSame(state.getModelConfigs(), state.getModelConfigs());
+        assertSame(state.getModelSectionConfig(), state.getModelSectionConfig());
+    }
+
+    @Test
+    public void testEagerProtobufParsing_whenOptimizationsDisabled() {
+        OmniboxFeatures.sModelPickerOptimizations.setForTesting(false);
+
+        InputTypeConfig inputTypeConfig =
+                InputTypeConfig.newBuilder()
+                        .setInputTypeValue(InputType.INPUT_TYPE_LENS_IMAGE_VALUE)
+                        .setMenuLabel("Lens Image")
+                        .build();
+        ToolConfig toolConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .setMenuLabel("Deep Search")
+                        .build();
+        SectionConfig toolsSectionConfig =
+                SectionConfig.newBuilder().setHeader("Tools Header").build();
+        ModelConfig modelConfig =
+                ModelConfig.newBuilder()
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setMenuLabel("Pro")
+                        .build();
+        SectionConfig modelSectionConfig =
+                SectionConfig.newBuilder().setHeader("Models Header").build();
+
+        InputState state =
+                new InputState.Builder()
+                        .withInputTypeConfigs(new byte[][] {inputTypeConfig.toByteArray()})
+                        .withToolConfigs(new byte[][] {toolConfig.toByteArray()})
+                        .withToolsSectionConfig(toolsSectionConfig.toByteArray())
+                        .withModelConfigs(new byte[][] {modelConfig.toByteArray()})
+                        .withModelSectionConfig(modelSectionConfig.toByteArray())
+                        .build();
+
+        assertEquals(1, state.getInputTypeConfigs().size());
+        assertEquals("Lens Image", state.getInputTypeConfigs().get(0).getMenuLabel());
+        assertEquals(1, state.getToolConfigs().size());
+        assertEquals("Deep Search", state.getToolConfigs().get(0).getMenuLabel());
+        assertEquals("Tools Header", state.getToolsSectionConfig().getHeader());
+        assertEquals(1, state.getModelConfigs().size());
+        assertEquals("Pro", state.getModelConfigs().get(0).getMenuLabel());
+        assertEquals("Models Header", state.getModelSectionConfig().getHeader());
+    }
+
+    @Test
+    public void testEmptyAndNullConfigs() {
+        InputState state = new InputState.Builder().build();
+
+        assertNotNull(state.getInputTypeConfigs());
+        assertTrue(state.getInputTypeConfigs().isEmpty());
+
+        assertNotNull(state.getToolConfigs());
+        assertTrue(state.getToolConfigs().isEmpty());
+
+        assertNotNull(state.getToolsSectionConfig());
+        assertEquals(SectionConfig.getDefaultInstance(), state.getToolsSectionConfig());
+
+        assertNotNull(state.getModelConfigs());
+        assertTrue(state.getModelConfigs().isEmpty());
+
+        assertNotNull(state.getModelSectionConfig());
+        assertEquals(SectionConfig.getDefaultInstance(), state.getModelSectionConfig());
+
+        // Test with null elements inside arrays
+        InputState stateWithNullElements =
+                new InputState.Builder()
+                        .withInputTypeConfigs(new byte[][] {null})
+                        .withToolConfigs(new byte[][] {null})
+                        .withModelConfigs(new byte[][] {null})
+                        .build();
+        assertTrue(stateWithNullElements.getInputTypeConfigs().isEmpty());
+        assertTrue(stateWithNullElements.getToolConfigs().isEmpty());
+        assertTrue(stateWithNullElements.getModelConfigs().isEmpty());
+    }
+
+    @Test
+    public void testInvalidProtoBytesGracefulFallback() {
+        byte[] invalidBytes = new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
+        InputState state =
+                new InputState.Builder()
+                        .withInputTypeConfigs(new byte[][] {invalidBytes})
+                        .withToolConfigs(new byte[][] {invalidBytes})
+                        .withToolsSectionConfig(invalidBytes)
+                        .withModelConfigs(new byte[][] {invalidBytes})
+                        .withModelSectionConfig(invalidBytes)
+                        .build();
+
+        assertTrue(state.getInputTypeConfigs().isEmpty());
+        assertTrue(state.getToolConfigs().isEmpty());
+        assertEquals(SectionConfig.getDefaultInstance(), state.getToolsSectionConfig());
+        assertTrue(state.getModelConfigs().isEmpty());
+        assertEquals(SectionConfig.getDefaultInstance(), state.getModelSectionConfig());
+    }
+
+    @Test
+    public void testEqualsAndHashCode_lazyAndEager() {
+        InputTypeConfig inputTypeConfig =
+                InputTypeConfig.newBuilder()
+                        .setInputTypeValue(InputType.INPUT_TYPE_LENS_IMAGE_VALUE)
+                        .setMenuLabel("Lens Image")
+                        .build();
+        ToolConfig toolConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .setMenuLabel("Deep Search")
+                        .build();
+        SectionConfig toolsSectionConfig =
+                SectionConfig.newBuilder().setHeader("Tools Header").build();
+        ModelConfig modelConfig =
+                ModelConfig.newBuilder()
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setMenuLabel("Pro")
+                        .build();
+        SectionConfig modelSectionConfig =
+                SectionConfig.newBuilder().setHeader("Models Header").build();
+
+        OmniboxFeatures.sModelPickerOptimizations.setForTesting(true);
+        InputState lazyState =
+                new InputState.Builder()
+                        .withInputTypeConfigs(new byte[][] {inputTypeConfig.toByteArray()})
+                        .withToolConfigs(new byte[][] {toolConfig.toByteArray()})
+                        .withToolsSectionConfig(toolsSectionConfig.toByteArray())
+                        .withModelConfigs(new byte[][] {modelConfig.toByteArray()})
+                        .withModelSectionConfig(modelSectionConfig.toByteArray())
+                        .build();
+
+        OmniboxFeatures.sModelPickerOptimizations.setForTesting(false);
+        InputState eagerState =
+                new InputState.Builder()
+                        .withInputTypeConfigs(new byte[][] {inputTypeConfig.toByteArray()})
+                        .withToolConfigs(new byte[][] {toolConfig.toByteArray()})
+                        .withToolsSectionConfig(toolsSectionConfig.toByteArray())
+                        .withModelConfigs(new byte[][] {modelConfig.toByteArray()})
+                        .withModelSectionConfig(modelSectionConfig.toByteArray())
+                        .build();
+
+        assertEquals(lazyState, eagerState);
+        assertEquals(eagerState, lazyState);
+        assertEquals(lazyState.hashCode(), eagerState.hashCode());
     }
 }

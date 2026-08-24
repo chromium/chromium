@@ -1783,6 +1783,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.ComposeboxQueryController.OnInputStateChangedDuration"
+    units="ms" expires_after="2027-08-21">
+  <owner>skym@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the duration to construct the Java InputState object and dispatch
+    onInputStateChanged from the C++ ComposeboxQueryControllerBridge. Recorded
+    whenever the input state changes and is pushed to Java.
+  </summary>
+</histogram>
+
 <histogram name="Android.Compositor.IsRequestingOpaqueSurface" enum="Boolean"
     expires_after="2025-04-13">
   <owner>wenyufu@chromium.org</owner>

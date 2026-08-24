@@ -659,6 +659,7 @@ void ComposeboxQueryControllerBridge::OnInputStateChanged(
     model_section_config.assign(serialized.begin(), serialized.end());
   }
 
+  base::TimeTicks start_time = base::TimeTicks::Now();
   base::android::ScopedJavaLocalRef<jobject> j_input_state =
       contextual_search::Java_InputState_Constructor(
           env, state.hint_text, state.allowed_input_types,
@@ -675,6 +676,9 @@ void ComposeboxQueryControllerBridge::OnInputStateChanged(
 
   Java_ComposeboxQueryControllerBridge_onInputStateChanged(env, java_obj_,
                                                            j_input_state);
+  base::UmaHistogramTimes(
+      "Android.ComposeboxQueryController.OnInputStateChangedDuration",
+      base::TimeTicks::Now() - start_time);
 }
 
 void ComposeboxQueryControllerBridge::ResetInputStateModel() {

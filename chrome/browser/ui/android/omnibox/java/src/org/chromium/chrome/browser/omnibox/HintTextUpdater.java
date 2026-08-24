@@ -245,7 +245,7 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
 
         int activeTool =
                 ToolModeUtils.getToolModeForRequestType(requestType, /* hasAttachments= */ false);
-        for (ToolConfig config : inputState.toolConfigs) {
+        for (ToolConfig config : inputState.getToolConfigs()) {
             if (config.getToolValue() == activeTool) {
                 return config.getHintText();
             }

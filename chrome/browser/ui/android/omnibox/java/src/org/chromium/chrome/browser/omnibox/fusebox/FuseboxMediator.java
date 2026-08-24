@@ -1040,7 +1040,7 @@ import java.util.function.Supplier;
         if (inputState.activeTool == ToolMode.TOOL_MODE_UNSPECIFIED_VALUE) {
             return mContext.getString(R.string.ai_mode_entrypoint_label);
         }
-        for (ToolConfig toolConfig : inputState.toolConfigs) {
+        for (ToolConfig toolConfig : inputState.getToolConfigs()) {
             if (toolConfig.getToolValue() == inputState.activeTool) {
                 return toolConfig.getChipLabel();
             }
@@ -1433,14 +1433,14 @@ import java.util.function.Supplier;
 
         mModel.set(
                 FuseboxProperties.POPUP_TOOL_HEADER_TEXT,
-                inputState.toolsSectionConfig.getHeader());
+                inputState.getToolsSectionConfig().getHeader());
 
         List<PopupButtonData> toolButtonDataList = new ArrayList<>();
         if (!OmniboxCapabilities.isDesktopPlatform()) {
             toolButtonDataList.add(createAiModeToolButtonData());
         }
 
-        for (ToolConfig toolConfig : inputState.toolConfigs) {
+        for (ToolConfig toolConfig : inputState.getToolConfigs()) {
             int toolMode = toolConfig.getToolValue();
             if (!inputState.isToolVisible(toolMode)) continue;
 
@@ -1480,7 +1480,7 @@ import java.util.function.Supplier;
                 mInput != null && ToolModeUtils.isAimRequest(mInput.getRequestType());
 
         List<PopupButtonData> modelButtonDataList = new ArrayList<>();
-        for (ModelConfig modelConfig : inputState.modelConfigs) {
+        for (ModelConfig modelConfig : inputState.getModelConfigs()) {
             int modelMode = modelConfig.getModelValue();
             if (inputState.isModelVisible(modelMode)) {
                 boolean selected = isAimRequest && inputState.activeModel == modelMode;
@@ -1507,7 +1507,7 @@ import java.util.function.Supplier;
         mModel.set(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE, showModelPicker);
         mModel.set(
                 FuseboxProperties.POPUP_MODEL_HEADER_TEXT,
-                inputState.modelSectionConfig.getHeader());
+                inputState.getModelSectionConfig().getHeader());
         mModel.set(
                 FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST,
                 showModelPicker ? modelButtonDataList : List.of());
