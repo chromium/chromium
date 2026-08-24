@@ -45,11 +45,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.core.content.ContextCompat;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import com.google.android.material.color.MaterialColors;
 import com.google.android.material.tabs.TabLayout;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -62,6 +62,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
+import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
@@ -104,10 +106,6 @@ public class HubToolbarViewUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule
-    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(TestActivity.class);
-
     @Rule public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
     private final CallbackHelper mOnButtonHelper = new CallbackHelper();
@@ -117,6 +115,7 @@ public class HubToolbarViewUnitTest {
     @Captor ArgumentCaptor<PaneButtonLookup> mPaneButtonLookupCaptor;
 
     private SettableMonotonicObservableSupplier<Pane> mFocusedPaneSupplier;
+    private ActivityController<TestActivity> mActivityController;
     private Activity mActivity;
     private FrameLayout mToolbarContainer;
     private Button mActionButton;
@@ -134,7 +133,13 @@ public class HubToolbarViewUnitTest {
     public void setUp() throws Exception {
         DeviceInfo.setIsXrForTesting(mIsXrDevice);
 
-        mActivityScenarioRule.getScenario().onActivity(this::onActivity);
+        mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
+        onActivity(mActivityController.get());
+    }
+
+    @After
+    public void tearDown() {
+        mActivityController.close();
     }
 
     private void onActivity(TestActivity activity) {

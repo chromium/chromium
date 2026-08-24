@@ -17,9 +17,9 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,6 +27,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
@@ -58,10 +60,6 @@ import org.chromium.ui.base.TestActivity;
 public class HubProviderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule
-    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(TestActivity.class);
-
     private final SettableNonNullObservableSupplier<Integer> mTabCountSupplier =
             ObservableSuppliers.createNonNull(0);
     private final SettableNullableObservableSupplier<Tab> mTabSupplierMock =
@@ -90,6 +88,7 @@ public class HubProviderUnitTest {
     @Mock private MenuButtonCoordinator mMenuButtonCoordinator;
     @Mock private SearchActivityClient mSearchActivityClient;
 
+    private ActivityController<TestActivity> mActivityController;
     private Activity mActivity;
     private HubProvider mHubProvider;
 
@@ -113,7 +112,13 @@ public class HubProviderUnitTest {
 
         when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mTabSupplierMock);
         when(mTabModelSelector.getCurrentModelTabCountSupplier()).thenReturn(mTabCountSupplier);
-        mActivityScenarioRule.getScenario().onActivity(this::onActivity);
+        mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
+        onActivity(mActivityController.get());
+    }
+
+    @After
+    public void tearDown() {
+        mActivityController.close();
     }
 
     private void onActivity(Activity activity) {

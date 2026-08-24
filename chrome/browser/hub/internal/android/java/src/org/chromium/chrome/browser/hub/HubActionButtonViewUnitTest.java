@@ -21,8 +21,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
-
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,6 +31,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
+import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -70,16 +71,12 @@ public class HubActionButtonViewUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule
-    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(TestActivity.class);
-
     @Rule public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
     private final CallbackHelper mOnButtonHelper = new CallbackHelper();
 
+    private ActivityController<TestActivity> mActivityController;
     private Activity mActivity;
-    private FrameLayout mActionButtonContainer;
     private Button mActionButton;
     private PropertyModel mPropertyModel;
     private HubColorMixer mColorMixer;
@@ -89,11 +86,8 @@ public class HubActionButtonViewUnitTest {
     public void setUp() throws Exception {
         DeviceInfo.setIsXrForTesting(mIsXrDevice);
 
-        mActivityScenarioRule.getScenario().onActivity(this::onActivity);
-    }
-
-    private void onActivity(TestActivity activity) {
-        mActivity = activity;
+        mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
+        mActivity = mActivityController.get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         LayoutInflater inflater = LayoutInflater.from(mActivity);
@@ -195,5 +189,10 @@ public class HubActionButtonViewUnitTest {
             // Behaves differently on XR devices.
             verify(mColorMixer).registerBlend(any());
         }
+    }
+
+    @After
+    public void tearDown() {
+        mActivityController.close();
     }
 }

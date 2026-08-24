@@ -15,8 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
-
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,6 +23,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarView;
@@ -31,28 +32,27 @@ import org.chromium.ui.base.TestActivity;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class HubBottomBarBottomToolbarDelegateImplUnitTest {
-    @Rule
-    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(TestActivity.class);
-
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private PaneManager mPaneManager;
     @Mock private HubColorMixer mHubColorMixer;
     @Mock private BottomBarView mBottomBarView;
 
+    private ActivityController<TestActivity> mActivityController;
     private Activity mActivity;
     private ViewGroup mContainer;
 
     @Before
     public void setUp() {
-        mActivityScenarioRule.getScenario().onActivity(this::onActivity);
-    }
-
-    private void onActivity(TestActivity activity) {
-        mActivity = activity;
+        mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
+        mActivity = mActivityController.get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mContainer = new FrameLayout(mActivity);
+    }
+
+    @After
+    public void tearDown() {
+        mActivityController.close();
     }
 
     @Test

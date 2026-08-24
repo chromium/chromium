@@ -36,8 +36,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
-
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,6 +46,8 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
@@ -69,10 +70,6 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     private static final int WIDTH = 100;
     private static final int HEIGHT = 1000;
 
-    @Rule
-    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(TestActivity.class);
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Spy private HubLayoutAnimationListener mListener;
@@ -81,6 +78,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     @Mock private Bitmap mBitmap;
     @Mock private DoubleConsumer mOnAlphaChange;
 
+    private ActivityController<TestActivity> mActivityController;
     private Activity mActivity;
     private FrameLayout mRootView;
     private HubContainerView mHubContainerView;
@@ -88,17 +86,23 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
 
     @Before
     public void setUp() {
-        mActivityScenarioRule.getScenario().onActivity(this::onActivityCreated);
+        mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
+        mActivity = mActivityController.get();
+        onActivityCreated(mActivity);
         RobolectricUtil.runAllBackgroundAndUi();
         mAnimationDataSupplier = new SyncOneshotSupplierImpl<>();
     }
 
-    private void onActivityCreated(Activity activity) {
-        mActivity = activity;
-        mRootView = new FrameLayout(mActivity);
-        mActivity.setContentView(mRootView);
+    @After
+    public void tearDown() {
+        mActivityController.close();
+    }
 
-        mHubContainerView = new HubContainerView(mActivity);
+    private void onActivityCreated(Activity activity) {
+        mRootView = new FrameLayout(activity);
+        activity.setContentView(mRootView);
+
+        mHubContainerView = new HubContainerView(activity);
         mHubContainerView.setVisibility(View.INVISIBLE);
         View hubLayout = LayoutInflater.from(activity).inflate(R.layout.hub_layout, null);
         mHubContainerView.addView(hubLayout);

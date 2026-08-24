@@ -28,8 +28,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
-
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,6 +37,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -58,15 +59,12 @@ import java.util.concurrent.TimeUnit;
 public class HubPaneHostViewUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule
-    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(TestActivity.class);
-
     @Mock Runnable mOnActionButton;
     @Mock Callback<ViewGroup> mSnackbarContainerCallback;
     @Mock private HubColorMixer mColorMixer;
     @Mock private VelocityTracker mVelocityTracker;
 
+    private ActivityController<TestActivity> mActivityController;
     private Activity mActivity;
     private HubPaneHostView mPaneHost;
     private ViewGroup mSnackbarContainer;
@@ -74,11 +72,8 @@ public class HubPaneHostViewUnitTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityScenarioRule.getScenario().onActivity(this::onActivity);
-    }
-
-    private void onActivity(TestActivity activity) {
-        mActivity = activity;
+        mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
+        mActivity = mActivityController.get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         LayoutInflater inflater = LayoutInflater.from(mActivity);
@@ -101,6 +96,11 @@ public class HubPaneHostViewUnitTest {
 
         // Inject mocked VelocityTracker.
         mPaneHost.setVelocityTrackerForTesting(mVelocityTracker);
+    }
+
+    @After
+    public void tearDown() {
+        mActivityController.close();
     }
 
     @Test

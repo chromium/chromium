@@ -18,8 +18,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
 
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
-
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,6 +27,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarUtils;
@@ -42,24 +43,18 @@ import java.util.List;
 /** Unit tests for {@link BottomBarHubColorMixerAdapter}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BottomBarHubColorMixerAdapterUnitTest {
-    @Rule
-    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(TestActivity.class);
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private HubColorMixer mHubColorMixer;
 
+    private ActivityController<TestActivity> mActivityController;
     private Activity mActivity;
     private BottomBarView mBottomBarView;
 
     @Before
     public void setUp() {
-        mActivityScenarioRule.getScenario().onActivity(this::onActivity);
-    }
-
-    private void onActivity(TestActivity activity) {
-        mActivity = activity;
+        mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
+        mActivity = mActivityController.get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mBottomBarView =
                 (BottomBarView)
@@ -71,6 +66,11 @@ public class BottomBarHubColorMixerAdapterUnitTest {
                                         false);
         mBottomBarView.setNewTabBackgroundVisible(true);
         mBottomBarView.resetColors();
+    }
+
+    @After
+    public void tearDown() {
+        mActivityController.close();
     }
 
     @Test

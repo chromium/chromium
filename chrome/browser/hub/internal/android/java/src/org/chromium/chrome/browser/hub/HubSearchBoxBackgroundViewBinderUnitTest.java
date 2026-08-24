@@ -16,13 +16,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.core.content.ContextCompat;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -33,29 +34,27 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** Unit tests for {@link HubSearchBoxBackgroundViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class HubSearchBoxBackgroundViewBinderUnitTest {
-    @Rule
-    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(TestActivity.class);
-
+    private ActivityController<TestActivity> mActivityController;
     private Activity mActivity;
-    private View mHubToolbarLayout;
     private View mSearchBoxBackgroundView;
     private PropertyModel mModel;
 
     @Before
     public void setUp() {
-        mActivityScenarioRule.getScenario().onActivity(this::onActivity);
+        mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
+        mActivity = mActivityController.get();
+        View hubToolbarLayout =
+                LayoutInflater.from(mActivity).inflate(R.layout.hub_toolbar_layout, null);
 
-        mSearchBoxBackgroundView = mHubToolbarLayout.findViewById(R.id.search_box_background);
+        mSearchBoxBackgroundView = hubToolbarLayout.findViewById(R.id.search_box_background);
         mModel = new PropertyModel.Builder(ALL_KEYS).build();
         PropertyModelChangeProcessor.create(
                 mModel, mSearchBoxBackgroundView, HubSearchBoxBackgroundViewBinder::bind);
     }
 
-    private void onActivity(Activity activity) {
-        mActivity = activity;
-        mHubToolbarLayout =
-                LayoutInflater.from(mActivity).inflate(R.layout.hub_toolbar_layout, null);
+    @After
+    public void tearDown() {
+        mActivityController.close();
     }
 
     @Test

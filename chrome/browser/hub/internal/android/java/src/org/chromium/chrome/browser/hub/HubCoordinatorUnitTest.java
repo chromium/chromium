@@ -22,8 +22,6 @@ import static org.mockito.Mockito.when;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,6 +33,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
+import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.LazyOneshotSupplier;
@@ -80,10 +80,6 @@ public class HubCoordinatorUnitTest {
     private static final int TAB_ID = 7;
     private static final int INCOGNITO_TAB_ID = 9;
 
-    @Rule
-    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(TestActivity.class);
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
@@ -121,6 +117,7 @@ public class HubCoordinatorUnitTest {
     private final SettableNullableObservableSupplier<ColorBlendProgress>
             mSwipeAnimationProgressSupplier = ObservableSuppliers.createNullable();
     private PaneManager mPaneManager;
+    private ActivityController<TestActivity> mActivityController;
     private FrameLayout mRootView;
     private HubCoordinator mHubCoordinator;
 
@@ -180,7 +177,8 @@ public class HubCoordinatorUnitTest {
 
         assertTrue(mPaneManager.focusPane(PaneId.TAB_SWITCHER));
         assertEquals(mTabSwitcherPane, mPaneManager.getFocusedPaneSupplier().get());
-        mActivityScenarioRule.getScenario().onActivity(this::onActivity);
+        mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
+        onActivity(mActivityController.get());
     }
 
     private void onActivity(TestActivity activity) {
@@ -215,6 +213,7 @@ public class HubCoordinatorUnitTest {
         assertFalse(mPreviousLayoutTypeSupplier.hasObservers());
         assertFalse(mIncognitoTabSwitcherBackPressSupplier.hasObservers());
         assertFalse(mTabSupplier.hasObservers());
+        mActivityController.close();
     }
 
     @Test
@@ -411,36 +410,35 @@ public class HubCoordinatorUnitTest {
         EmptyHubBottomToolbarDelegate emptyDelegate = new EmptyHubBottomToolbarDelegate();
         HubBottomToolbarDelegateFactory.setDelegateForTesting(emptyDelegate);
 
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        activity -> {
-                            mRootView = new FrameLayout(activity);
-                            activity.setContentView(mRootView);
+        ActivityController<TestActivity> activityController =
+                Robolectric.buildActivity(TestActivity.class).setup();
+        TestActivity activity = activityController.get();
+        mRootView = new FrameLayout(activity);
+        activity.setContentView(mRootView);
 
-                            // Create coordinator with empty delegate
-                            HubCoordinator coordinator =
-                                    new HubCoordinator(
-                                            activity,
-                                            mProfileProviderSupplier,
-                                            mRootView,
-                                            mPaneManager,
-                                            mHubLayoutController,
-                                            mTabSupplier,
-                                            mMenuButtonCoordinator,
-                                            mSearchActivityClient,
-                                            mEdgeToEdgeSupplier,
-                                            mHubColorMixer,
-                                            mSwipeAnimationProgressSupplier,
-                                            null,
-                                            /* defaultPaneId= */ PaneId.TAB_SWITCHER);
+        // Create coordinator with empty delegate
+        HubCoordinator coordinator =
+                new HubCoordinator(
+                        activity,
+                        mProfileProviderSupplier,
+                        mRootView,
+                        mPaneManager,
+                        mHubLayoutController,
+                        mTabSupplier,
+                        mMenuButtonCoordinator,
+                        mSearchActivityClient,
+                        mEdgeToEdgeSupplier,
+                        mHubColorMixer,
+                        mSwipeAnimationProgressSupplier,
+                        null,
+                        /* defaultPaneId= */ PaneId.TAB_SWITCHER);
 
-                            // EmptyDelegate.isBottomToolbarEnabled() returns false,
-                            // so no bottom toolbar coordinator should be created
-                            assertNull(coordinator.getHubBottomToolbarCoordinatorForTesting());
+        // EmptyDelegate.isBottomToolbarEnabled() returns false,
+        // so no bottom toolbar coordinator should be created
+        assertNull(coordinator.getHubBottomToolbarCoordinatorForTesting());
 
-                            coordinator.destroy();
-                        });
+        coordinator.destroy();
+        activityController.close();
     }
 
     @Test
@@ -455,34 +453,33 @@ public class HubCoordinatorUnitTest {
                 };
         HubBottomToolbarDelegateFactory.setDelegateForTesting(enabledDelegate);
 
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        activity -> {
-                            mRootView = new FrameLayout(activity);
-                            activity.setContentView(mRootView);
+        ActivityController<TestActivity> activityController =
+                Robolectric.buildActivity(TestActivity.class).setup();
+        TestActivity activity = activityController.get();
+        mRootView = new FrameLayout(activity);
+        activity.setContentView(mRootView);
 
-                            // Create coordinator with enabled delegate
-                            HubCoordinator coordinator =
-                                    new HubCoordinator(
-                                            activity,
-                                            mProfileProviderSupplier,
-                                            mRootView,
-                                            mPaneManager,
-                                            mHubLayoutController,
-                                            mTabSupplier,
-                                            mMenuButtonCoordinator,
-                                            mSearchActivityClient,
-                                            mEdgeToEdgeSupplier,
-                                            mHubColorMixer,
-                                            mSwipeAnimationProgressSupplier,
-                                            null,
-                                            /* defaultPaneId= */ PaneId.TAB_SWITCHER);
+        // Create coordinator with enabled delegate
+        HubCoordinator coordinator =
+                new HubCoordinator(
+                        activity,
+                        mProfileProviderSupplier,
+                        mRootView,
+                        mPaneManager,
+                        mHubLayoutController,
+                        mTabSupplier,
+                        mMenuButtonCoordinator,
+                        mSearchActivityClient,
+                        mEdgeToEdgeSupplier,
+                        mHubColorMixer,
+                        mSwipeAnimationProgressSupplier,
+                        null,
+                        /* defaultPaneId= */ PaneId.TAB_SWITCHER);
 
-                            assertNotNull(coordinator.getHubBottomToolbarCoordinatorForTesting());
+        assertNotNull(coordinator.getHubBottomToolbarCoordinatorForTesting());
 
-                            coordinator.destroy();
-                        });
+        coordinator.destroy();
+        activityController.close();
     }
 
     @Test

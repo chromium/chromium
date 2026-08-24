@@ -44,8 +44,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
 
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -60,6 +58,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
+import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -137,10 +137,6 @@ public class HubLayoutUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule
-    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(TestActivity.class);
-
     @Rule public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
     @Mock private LayoutUpdateHost mUpdateHost;
@@ -177,6 +173,7 @@ public class HubLayoutUnitTest {
 
     private UserActionTester mActionTester;
 
+    private ActivityController<TestActivity> mActivityController;
     private Activity mActivity;
     private FrameLayout mFrameLayout;
 
@@ -293,7 +290,8 @@ public class HubLayoutUnitTest {
                 .when(mHubController)
                 .getBackgroundColor(any());
 
-        mActivityScenarioRule.getScenario().onActivity(this::onActivityCreated);
+        mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
+        onActivityCreated(mActivityController.get());
 
         doAnswer(
                         invocation -> {
@@ -360,6 +358,7 @@ public class HubLayoutUnitTest {
     public void tearDown() {
         mHubLayout.destroy();
         mActionTester.tearDown();
+        mActivityController.close();
     }
 
     @Test

@@ -17,9 +17,9 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,6 +28,8 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
@@ -40,10 +42,6 @@ public class TranslateHubLayoutAnimationFactoryImplUnitTest {
     private static final long TIMEOUT_MS = 100L;
     private static final float FLOAT_TOLERANCE = 0.001f;
 
-    @Rule
-    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(TestActivity.class);
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Spy private HubLayoutAnimationListener mListener;
@@ -51,28 +49,30 @@ public class TranslateHubLayoutAnimationFactoryImplUnitTest {
     @Mock private ScrimController mScrimController;
     @Mock private HubColorMixer mHubColorMixer;
 
+    private ActivityController<TestActivity> mActivityController;
     private Activity mActivity;
     private FrameLayout mRootView;
     private HubContainerView mHubContainerView;
 
     @Before
     public void setUp() {
-        mActivityScenarioRule
-                .getScenario()
-                .onActivity(
-                        (activity) -> {
-                            mActivity = activity;
-                            mRootView = new FrameLayout(mActivity);
-                            mActivity.setContentView(mRootView);
+        mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
+        mActivity = mActivityController.get();
+        mRootView = new FrameLayout(mActivity);
+        mActivity.setContentView(mRootView);
 
-                            mHubContainerView = new HubContainerView(mActivity);
-                            mHubContainerView.setVisibility(View.INVISIBLE);
-                            mRootView.addView(mHubContainerView);
+        mHubContainerView = new HubContainerView(mActivity);
+        mHubContainerView.setVisibility(View.INVISIBLE);
+        mRootView.addView(mHubContainerView);
 
-                            // Force a layout to ensure width and height are defined.
-                            mHubContainerView.layout(0, 0, 100, 100);
-                        });
+        // Force a layout to ensure width and height are defined.
+        mHubContainerView.layout(0, 0, 100, 100);
         RobolectricUtil.runAllBackgroundAndUi();
+    }
+
+    @After
+    public void tearDown() {
+        mActivityController.close();
     }
 
     @Test
