@@ -79,6 +79,11 @@ data/ssl/certificates/client_rsa1024.pem
 data/ssl/certificates/client_rsa1024.pk8
 data/ssl/certificates/client_rsa1024_ca.pem
 data/ssl/certificates/client_with_ec_key.p12
+data/ssl/certificates/client_x25519.key
+data/ssl/certificates/client_x25519.p12
+data/ssl/certificates/client_x25519.pem
+data/ssl/certificates/client_x25519.pk8
+data/ssl/certificates/client_x25519_ca.pem
 data/ssl/certificates/common_name_only.pem
 data/ssl/certificates/crit-codeSigning-chain.pem
 data/ssl/certificates/crlset_blocked_interception_by_intermediate.raw

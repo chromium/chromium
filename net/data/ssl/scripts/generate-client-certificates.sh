@@ -24,6 +24,7 @@
 #   - L (end-entity, ML-DSA-44) -> E -> C (self-signed root)
 #   - M (end-entity, ML-DSA-65) -> E -> C (self-signed root)
 #   - N (end-entity, ML-DSA-87) -> E -> C (self-signed root)
+#   - O (end-entity, X25519) -> E -> C (self-signed root)
 #
 # In which the certificates all have distinct keypairs. The client
 # certificates share the same root, but are issued by different
@@ -78,9 +79,10 @@ keygen out/K.key ../certificates/client_ed25519.key -algorithm ed25519
 keygen out/L.key ../certificates/client_mldsa44.key -algorithm ML-DSA-44
 keygen out/M.key ../certificates/client_mldsa65.key -algorithm ML-DSA-65
 keygen out/N.key ../certificates/client_mldsa87.key -algorithm ML-DSA-87
+keygen out/O.key ../certificates/client_x25519.key -algorithm x25519
 
 echo "Store the keys also in PKCS#8 format."
-for id in A D F G H I J K L M N
+for id in A D F G H I J K L M N O
 do
   try openssl pkcs8 \
     -provparam ml-dsa.output_formats=seed-only \
@@ -163,7 +165,7 @@ COMMON_NAME="Client Cert F" \
     -extensions san_user_cert \
     -config client-certs.cnf
 
-for id in G H I J K L M N
+for id in G H I J K L M N O
 do
   echo E signs $id
   COMMON_NAME="Client Cert $id" \
@@ -181,7 +183,7 @@ done
 echo Package the client certs and private keys into PKCS12 files
 # This is done for easily importing all of the certs needed for clients.
 try /bin/sh -c "cat out/A.pem out/A.key out/B.pem out/C.pem > out/A-chain.pem"
-for id in D F G H I J K L M N
+for id in D F G H I J K L M N O
 do
   try /bin/sh -c \
     "cat out/$id.pem out/$id.key out/E.pem out/C.pem > out/$id-chain.pem"
@@ -257,6 +259,12 @@ try openssl pkcs12 \
   -passout pass:chrome
 
 try openssl pkcs12 \
+  -in out/O-chain.pem \
+  -out out/client_x25519.p12 \
+  -export \
+  -passout pass:chrome
+
+try openssl pkcs12 \
   -inkey out/A.key \
   -in out/A.pem \
   -out out/client_1_u16_password.p12 \
@@ -321,7 +329,12 @@ try cp out/N.key ../certificates/client_mldsa87.key
 try cp out/N.pk8 ../certificates/client_mldsa87.pk8
 try cp out/E.pem ../certificates/client_mldsa87_ca.pem
 
-for name in 1 1_u16_password 2 3 p256 p384 p521 rsa1024 ed25519 mldsa44 mldsa65 mldsa87;
+try cp out/O.pem ../certificates/client_x25519.pem
+try cp out/O.key ../certificates/client_x25519.key
+try cp out/O.pk8 ../certificates/client_x25519.pk8
+try cp out/E.pem ../certificates/client_x25519_ca.pem
+
+for name in 1 1_u16_password 2 3 p256 p384 p521 rsa1024 ed25519 mldsa44 mldsa65 mldsa87 x25519;
 do
   try cp out/client_$name.p12 ../certificates/client_$name.p12
 done

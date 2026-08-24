@@ -246,6 +246,10 @@ certificates.
      - client_mldsa44.pem is similar to client_2.pem but is an ML-DSA-44 key.
      - client_mldsa65.pem is similar to client_2.pem but is an ML-DSA-65 key.
      - client_mldsa87.pem is similar to client_2.pem but is an ML-DSA-87 key.
+     - client_x25519.pem is similar to client_2.pem but is an X25519 key. X25519
+       is not a signature algorith, so these are not actually usable as a TLS
+       client certificate key. They are only included to test that we reject
+       unsupported key types.
      - client_root_ca.pem is the CA certificate which signed client_*_ca.pem.
      - client_1_u16_password.p12 contains the client_1.key and client_1.pem key
        and certificate, but is encoded as a PKCS#12 file and has a password with
