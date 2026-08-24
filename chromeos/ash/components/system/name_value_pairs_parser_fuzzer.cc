@@ -7,11 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <string>
-
-#include "base/containers/span.h"
-#include "base/strings/string_view_util.h"
-#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
+#include "base/compiler_specific.h"
 
 namespace ash::system {
 
@@ -19,8 +15,8 @@ namespace ash::system {
 // input to private methods that underpin the public methods.
 class NameValuePairsParserFuzzer {
  public:
-  void testOneInput(base::span<const uint8_t> data) {
-    const std::string input(base::as_string_view(data));
+  void testOneInput(const uint8_t* data, size_t size) {
+    const std::string input = std::string(data, UNSAFE_TODO(data + size));
 
     name_value_map_.clear();
 
@@ -64,8 +60,8 @@ class NameValuePairsParserFuzzer {
 
 }  // namespace ash::system
 
-DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> bytes) {
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   ash::system::NameValuePairsParserFuzzer fuzzer;
-  fuzzer.testOneInput(bytes);
+  fuzzer.testOneInput(data, size);
   return 0;
 }
