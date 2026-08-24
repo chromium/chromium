@@ -522,6 +522,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser") {
 
   deps = [
     ":chrome_test_java_helper",
+    "//chrome/browser/actor/android:java",
     "//chrome/browser/ui/android/bars_common:java",
   ]
 }

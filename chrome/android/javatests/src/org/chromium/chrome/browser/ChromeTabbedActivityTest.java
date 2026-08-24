@@ -31,7 +31,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -51,6 +53,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.actor.ActorForegroundServiceController;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
@@ -1377,5 +1380,29 @@ public class ChromeTabbedActivityTest {
         Assert.assertNull(
                 "MinimizeAppAndCloseTabBackPressHandler should be null on Desktop Android.",
                 manager.getHandlersForTesting()[BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB]);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.GLIC_BACKGROUND_ACTUATION})
+    public void testWarmStartRestoresActiveWindowBackgroundTabs() {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        ActorForegroundServiceController mockController =
+                Mockito.mock(ActorForegroundServiceController.class);
+        ActorForegroundServiceController.setInstanceForTesting(mockController);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.onPause());
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.onStop());
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.onWindowFocusChanged(false));
+
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.onWindowFocusChanged(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.onStart());
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.onResume());
+
+        Mockito.verify(mockController)
+                .restoreActiveWindowBackgroundTabs(
+                        ArgumentMatchers.eq(activity.getTabModelSelector()),
+                        ArgumentMatchers.any(),
+                        ArgumentMatchers.any());
     }
 }

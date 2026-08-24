@@ -1822,6 +1822,18 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         super.onStartWithNative();
 
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)) {
+            TabModelSelector tabModelSelector = getTabModelSelector();
+            assert tabModelSelector != null;
+            TabModelUtils.runOnTabStateInitialized(
+                    tabModelSelector,
+                    (selector) -> {
+                        ActorForegroundServiceController.get()
+                                .restoreActiveWindowBackgroundTabs(
+                                        selector, getWindowAndroid(), getTabDelegateFactory());
+                    });
+        }
+
         FirstDrawDetector.waitForFirstDrawStrict(
                 mContentContainer,
                 () -> {
@@ -3833,14 +3845,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     public void onTabStateInitialized() {
                         if (mMultiInstanceManager != null) {
                             mMultiInstanceManager.onTabStateInitialized();
-                        }
-                        if (ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)) {
-                            ActorForegroundServiceController.get()
-                                    .restoreActiveWindowBackgroundTabs(
-                                            getTabModelSelector(),
-                                            getWindowAndroid(),
-                                            getTabDelegateFactory());
                         }
                     }
                 };
