@@ -1162,30 +1162,34 @@ void EmbeddedWorkerInstance::BindCacheStorageInternal() {
     return;
   }
 
-  for (auto& request : pending_cache_storage_requests_) {
-    mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-        coep_reporter_remote;
-    if (coep_reporter_) {
-      coep_reporter_->Clone(
-          coep_reporter_remote.InitWithNewPipeAndPassReceiver());
+  while (!pending_cache_storage_requests_.empty()) {
+    std::vector<CacheStorageRequest> requests;
+    requests.swap(pending_cache_storage_requests_);
+    for (auto& request : requests) {
+      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+          coep_reporter_remote;
+      if (coep_reporter_) {
+        coep_reporter_->Clone(
+            coep_reporter_remote.InitWithNewPipeAndPassReceiver());
+      }
+
+      mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+          dip_reporter_remote;
+      if (dip_reporter_) {
+        dip_reporter_->Clone(
+            dip_reporter_remote.InitWithNewPipeAndPassReceiver());
+      }
+
+      auto* rph = RenderProcessHost::FromID(process_id());
+      if (!rph) {
+        return;
+      }
+
+      rph->BindCacheStorage(*coep, std::move(coep_reporter_remote), *dip,
+                            std::move(dip_reporter_remote), request.bucket,
+                            std::move(request.receiver));
     }
-
-    mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
-        dip_reporter_remote;
-    if (dip_reporter_) {
-      dip_reporter_->Clone(
-          dip_reporter_remote.InitWithNewPipeAndPassReceiver());
-    }
-
-    auto* rph = RenderProcessHost::FromID(process_id());
-    if (!rph)
-      return;
-
-    rph->BindCacheStorage(*coep, std::move(coep_reporter_remote), *dip,
-                          std::move(dip_reporter_remote), request.bucket,
-                          std::move(request.receiver));
   }
-  pending_cache_storage_requests_.clear();
 }
 
 mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>

@@ -77,6 +77,10 @@ class ServiceWorkerUnregisterJob : public ServiceWorkerRegisterJobBase {
   const ServiceWorkerRegistration::DeleteInitiator initiator_;
   std::vector<UnregistrationCallback> callbacks_;
   bool is_promise_resolved_ = false;
+  int64_t promise_resolved_registration_id_ =
+      blink::mojom::kInvalidServiceWorkerRegistrationId;
+  blink::ServiceWorkerStatusCode promise_resolved_status_ =
+      blink::ServiceWorkerStatusCode::kOk;
   base::WeakPtrFactory<ServiceWorkerUnregisterJob> weak_factory_{this};
 };
 }  // namespace content

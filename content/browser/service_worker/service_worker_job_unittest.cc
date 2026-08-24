@@ -2688,4 +2688,94 @@ TEST_P(ServiceWorkerJobTest, TimeoutBadJobs) {
   observer.RunUntilStatusChange(version.get(), ServiceWorkerVersion::ACTIVATED);
 }
 
+TEST_P(ServiceWorkerJobTest, Unregister_ReentrantUnregister) {
+  GURL scope("https://www.example.com/");
+  const blink::StorageKey key = GetTestStorageKey(scope);
+  blink::mojom::ServiceWorkerRegistrationOptions options;
+  options.scope = scope;
+
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      RunRegisterJob(GURL("https://www.example.com/service_worker.js"), key,
+                     options);
+  ASSERT_TRUE(registration);
+
+  base::RunLoop run_loop;
+  bool callback1_called = false;
+  bool callback2_called = false;
+
+  job_coordinator()->Unregister(
+      scope, key, /*is_immediate=*/false,
+      ServiceWorkerRegistration::DeleteInitiator::kTest,
+      base::BindLambdaForTesting(
+          [&](int64_t registration_id, blink::ServiceWorkerStatusCode status) {
+            EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
+            callback1_called = true;
+            // Call Unregister from within the completion callback.
+            job_coordinator()->Unregister(
+                scope, key, /*is_immediate=*/false,
+                ServiceWorkerRegistration::DeleteInitiator::kTest,
+                base::BindLambdaForTesting(
+                    [&](int64_t id2, blink::ServiceWorkerStatusCode status2) {
+                      EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status2);
+                      callback2_called = true;
+                      run_loop.Quit();
+                    }));
+          }));
+
+  run_loop.Run();
+  EXPECT_TRUE(callback1_called);
+  EXPECT_TRUE(callback2_called);
+}
+
+TEST_P(ServiceWorkerJobTest, Register_ReentrantRegister) {
+  GURL scope("https://www.example.com/");
+  const blink::StorageKey key = GetTestStorageKey(scope);
+  blink::mojom::ServiceWorkerRegistrationOptions options;
+  options.scope = scope;
+
+  base::RunLoop run_loop;
+  bool callback1_called = false;
+  bool callback2_called = false;
+
+  scoped_refptr<ServiceWorkerRegistration> registration1;
+  scoped_refptr<ServiceWorkerRegistration> registration2;
+
+  job_coordinator()->Register(
+      GURL("https://www.example.com/service_worker.js"), options, key,
+      CreateFetchClientSettingsObject(),
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+      /*ancestor_frame_type=*/blink::mojom::AncestorFrameType::kNormalFrame,
+      base::BindLambdaForTesting(
+          [&](blink::ServiceWorkerStatusCode status,
+              const std::string& status_message,
+              ServiceWorkerRegistration* registration) {
+            EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
+            callback1_called = true;
+            registration1 = registration;
+
+            // Trigger another Register job from within the completion callback.
+            job_coordinator()->Register(
+                GURL("https://www.example.com/service_worker.js"), options, key,
+                CreateFetchClientSettingsObject(),
+                /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+                /*ancestor_frame_type=*/
+                blink::mojom::AncestorFrameType::kNormalFrame,
+                base::BindLambdaForTesting(
+                    [&](blink::ServiceWorkerStatusCode status2,
+                        const std::string& status_message2,
+                        ServiceWorkerRegistration* reg2) {
+                      EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status2);
+                      callback2_called = true;
+                      registration2 = reg2;
+                      run_loop.Quit();
+                    }),
+                PolicyContainerPolicies());
+          }),
+      PolicyContainerPolicies());
+
+  run_loop.Run();
+  EXPECT_TRUE(callback1_called);
+  EXPECT_TRUE(callback2_called);
+}
+
 }  // namespace content

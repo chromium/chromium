@@ -116,6 +116,7 @@ FORWARD_DECLARE_TEST(ServiceWorkerVersionTest, DevToolsAttachThenDetach);
 FORWARD_DECLARE_TEST(ServiceWorkerVersionTest,
                      DefaultTimeoutRequestDoesNotAffectMaxTimeoutRequest);
 FORWARD_DECLARE_TEST(ServiceWorkerVersionTest, Doom);
+FORWARD_DECLARE_TEST(ServiceWorkerVersionTest, SetStatus_ReentrantSkipWaiting);
 }  // namespace service_worker_version_unittest
 
 FORWARD_DECLARE_TEST(ServiceWorkerRegistryTest, ScriptResponseTime);
@@ -910,6 +911,9 @@ class CONTENT_EXPORT ServiceWorkerVersion
   FRIEND_TEST_ALL_PREFIXES(
       service_worker_version_unittest::ServiceWorkerVersionTest,
       Doom);
+  FRIEND_TEST_ALL_PREFIXES(
+      service_worker_version_unittest::ServiceWorkerVersionTest,
+      SetStatus_ReentrantSkipWaiting);
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerRegistryTest, ScriptResponseTime);
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerBrowserTest,
                            WarmUpAndStartServiceWorker);

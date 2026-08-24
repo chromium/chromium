@@ -2982,5 +2982,57 @@ TEST_P(ServiceWorkerVersionTest, FocusClient_NoPendingEvent) {
       bad_message_observer.WaitForBadMessage());
 }
 
+TEST_P(ServiceWorkerVersionTest, SetStatus_ReentrantSkipWaiting) {
+  registration_->SetWaitingVersion(version_);
+  version_->SetStatus(ServiceWorkerVersion::INSTALLED);
+  bool callback1_called = false;
+  bool callback2_called = false;
+
+  version_->SkipWaiting(base::BindLambdaForTesting([&](bool success) {
+    EXPECT_TRUE(success);
+    callback1_called = true;
+    // Call SkipWaiting from inside the callback.
+    version_->SkipWaiting(base::BindLambdaForTesting([&](bool success2) {
+      EXPECT_TRUE(success2);
+      callback2_called = true;
+    }));
+  }));
+
+  // Transitioning to ACTIVATED resolves skip waiting promises.
+  version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
+  EXPECT_TRUE(callback1_called);
+  EXPECT_TRUE(callback2_called);
+}
+
+TEST_P(ServiceWorkerVersionTest, OnStopped_MultipleInflightRequests) {
+  ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
+            StartServiceWorker(version_.get()));
+  version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
+
+  bool error_callback1_called = false;
+  bool error_callback2_called = false;
+  base::RunLoop run_loop;
+
+  version_->StartRequest(
+      ServiceWorkerMetrics::EventType::FETCH_MAIN_FRAME,
+      base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
+        EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed, status);
+        error_callback1_called = true;
+      }));
+
+  version_->StartRequest(
+      ServiceWorkerMetrics::EventType::SYNC,
+      base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
+        EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed, status);
+        error_callback2_called = true;
+      }));
+
+  version_->StopWorker(run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(error_callback1_called);
+  EXPECT_TRUE(error_callback2_called);
+}
+
 }  // namespace service_worker_version_unittest
 }  // namespace content

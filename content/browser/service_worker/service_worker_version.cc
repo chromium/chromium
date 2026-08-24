@@ -405,21 +405,25 @@ void ServiceWorkerVersion::SetStatus(Status status) {
       case ACTIVATING:
         // Do nothing until ACTIVATED time.
         break;
-      case ACTIVATED:
+      case ACTIVATED: {
         // Resolve skip waiting promises.
         ClearTick(&skip_waiting_time_);
-        for (SkipWaitingCallback& callback : pending_skip_waiting_requests_) {
+        std::vector<SkipWaitingCallback> callbacks;
+        callbacks.swap(pending_skip_waiting_requests_);
+        for (SkipWaitingCallback& callback : callbacks) {
           std::move(callback).Run(true);
         }
-        pending_skip_waiting_requests_.clear();
         break;
-      case REDUNDANT:
+      }
+      case REDUNDANT: {
         // Fail any pending skip waiting requests since this version is dead.
-        for (SkipWaitingCallback& callback : pending_skip_waiting_requests_) {
+        std::vector<SkipWaitingCallback> callbacks;
+        callbacks.swap(pending_skip_waiting_requests_);
+        for (SkipWaitingCallback& callback : callbacks) {
           std::move(callback).Run(false);
         }
-        pending_skip_waiting_requests_.clear();
         break;
+      }
     }
   }
 
@@ -3296,6 +3300,7 @@ void ServiceWorkerVersion::OnStoppedInternal(
   // Let all message callbacks fail (this will also fire and clear all
   // callbacks for events).
   // TODO(kinuko): Consider if we want to add queue+resend mechanism here.
+  std::vector<StatusCallback> error_callbacks;
   base::IDMap<std::unique_ptr<InflightRequest>>::iterator iter(
       &inflight_requests_);
   while (!iter.IsAtEnd()) {
@@ -3305,14 +3310,17 @@ void ServiceWorkerVersion::OnStoppedInternal(
         perfetto::TerminatingFlow::FromPointer(iter.GetCurrentValue(),
                                                "ServiceWorkerVersion::Request"),
         "Error", "Worker Stopped");
-    std::move(iter.GetCurrentValue()->error_callback)
-        .Run(blink::ServiceWorkerStatusCode::kErrorFailed);
+    error_callbacks.push_back(
+        std::move(iter.GetCurrentValue()->error_callback));
     iter.Advance();
   }
   inflight_requests_.Clear();
   request_timeouts_.clear();
   external_request_uuid_to_request_id_.clear();
   latest_external_keepalive_sequence_number_ = 0;
+  for (auto& callback : error_callbacks) {
+    std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorFailed);
+  }
   service_worker_remote_.reset();
   is_endpoint_ready_ = false;
   remote_controller_.reset();
@@ -3340,19 +3348,19 @@ void ServiceWorkerVersion::OnStoppedInternal(
 
 void ServiceWorkerVersion::FinishStartWorker(
     blink::ServiceWorkerStatusCode status) {
+  is_running_start_callbacks_ = true;
   std::vector<StatusCallback> callbacks;
   callbacks.swap(start_callbacks_);
-  is_running_start_callbacks_ = true;
   for (auto& callback : callbacks) {
     std::move(callback).Run(status);
   }
-  is_running_start_callbacks_ = false;
 
   std::vector<StatusCallback> warm_up_callbacks;
   warm_up_callbacks.swap(warm_up_callbacks_);
   for (auto& callback : warm_up_callbacks) {
     std::move(callback).Run(status);
   }
+  is_running_start_callbacks_ = false;
 }
 
 void ServiceWorkerVersion::CleanUpExternalRequest(

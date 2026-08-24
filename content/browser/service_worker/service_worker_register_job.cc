@@ -979,11 +979,12 @@ void ServiceWorkerRegisterJob::ResolvePromise(
 
   is_promise_resolved_ = true;
   promise_resolved_status_ = status;
-  promise_resolved_status_message_ = status_message,
+  promise_resolved_status_message_ = status_message;
   promise_resolved_registration_ = registration;
-  for (RegistrationCallback& callback : callbacks_)
+  std::vector<RegistrationCallback> callbacks;
+  callbacks.swap(callbacks_);
+  for (RegistrationCallback& callback : callbacks)
     std::move(callback).Run(status, status_message, registration);
-  callbacks_.clear();
 }
 
 void ServiceWorkerRegisterJob::AddRegistrationToMatchingContainerHosts(

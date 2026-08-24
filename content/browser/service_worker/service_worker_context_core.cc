@@ -758,8 +758,8 @@ void ServiceWorkerContextCore::AddWarmUpRequest(
   while (warm_up_requests_.size() > kRequestQueueLength) {
     auto [front_url, front_key, front_callback] =
         std::move(warm_up_requests_.front());
-    std::move(front_callback).Run();
     warm_up_requests_.pop_front();
+    std::move(front_callback).Run();
   }
 }
 
