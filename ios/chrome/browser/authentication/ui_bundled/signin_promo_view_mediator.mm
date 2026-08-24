@@ -825,7 +825,7 @@ id<SystemIdentity> GetDisplayedIdentity(
 
 - (void)dealloc {
   CHECK_EQ(SigninPromoViewState::kDisconnected, _signinPromoViewState,
-           base::NotFatalUntil::M151)
+           base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
 }
 
@@ -841,7 +841,7 @@ id<SystemIdentity> GetDisplayedIdentity(
       // received yet. Let's update the promo identity.
       [self accountsOnDeviceDidChange];
     }
-    CHECK(self.displayedIdentity, base::NotFatalUntil::M151)
+    CHECK(self.displayedIdentity, base::NotFatalUntil::M156)
         << base::SysNSStringToUTF8([self description]);
     SigninPromoViewConfigurator* configurator =
         [[SigninPromoViewConfigurator alloc]
@@ -895,7 +895,7 @@ id<SystemIdentity> GetDisplayedIdentity(
 }
 
 - (void)signinPromoViewIsVisible {
-  CHECK(![self isClosedOrDisconnected], base::NotFatalUntil::M151)
+  CHECK(![self isClosedOrDisconnected], base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
   if (self.signinPromoViewVisible) {
     return;
@@ -962,7 +962,7 @@ id<SystemIdentity> GetDisplayedIdentity(
 }
 
 - (void)signinPromoViewIsHidden {
-  CHECK(![self isClosedOrDisconnected], base::NotFatalUntil::M151)
+  CHECK(![self isClosedOrDisconnected], base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
   self.signinPromoViewVisible = NO;
 }
@@ -1100,7 +1100,7 @@ id<SystemIdentity> GetDisplayedIdentity(
 // before the sign-in button is pressed, if the current access point supports
 // it.
 - (void)sendImpressionsTillSigninButtonsHistogram {
-  CHECK([self isUsable], base::NotFatalUntil::M151)
+  CHECK([self isUsable], base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
   const char* displayedCountPreferenceKey =
       DisplayedCountPreferenceKey(self.accessPoint);
@@ -1146,7 +1146,7 @@ id<SystemIdentity> GetDisplayedIdentity(
 // Shows account settings.
 // The user must be signed-in and sign-in must be enabled.
 - (void)showAccountSettings {
-  CHECK(self.accountSettingsPresenter, base::NotFatalUntil::M151);
+  CHECK(self.accountSettingsPresenter, base::NotFatalUntil::M156);
   self.signinPromoViewState = SigninPromoViewState::kUserInteracted;
   [self.accountSettingsPresenter showAccountSettings];
 }
@@ -1154,7 +1154,7 @@ id<SystemIdentity> GetDisplayedIdentity(
 // Changes the promo view state, and records the metrics.
 - (void)signinPromoViewIsRemoved {
   CHECK_NE(SigninPromoViewState::kDisconnected, self.signinPromoViewState,
-           base::NotFatalUntil::M151)
+           base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
   self.signinPromoViewState = SigninPromoViewState::kDisconnected;
   self.signinPromoViewVisible = NO;
@@ -1188,15 +1188,15 @@ id<SystemIdentity> GetDisplayedIdentity(
 
 - (void)signinPromoViewDidTapSigninWithNewAccount:
     (SigninPromoView*)signinPromoView {
-  CHECK(!self.displayedIdentity, base::NotFatalUntil::M151)
+  CHECK(!self.displayedIdentity, base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
   // The promo on top of the feed is only logged as visible when most of it can
   // be seen, so it can be used without `self.signinPromoViewVisible`.
   CHECK(self.signinPromoViewVisible ||
             self.accessPoint == signin_metrics::AccessPoint::kNtpFeedTopPromo,
-        base::NotFatalUntil::M151)
+        base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
-  CHECK([self isUsable], base::NotFatalUntil::M151)
+  CHECK([self isUsable], base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
   [self sendImpressionsTillSigninButtonsHistogram];
   // On iOS, the promo does not have a button to add and account when there is
@@ -1224,11 +1224,11 @@ id<SystemIdentity> GetDisplayedIdentity(
 
 - (void)signinPromoViewDidTapPrimaryButtonWithDefaultAccount:
     (SigninPromoView*)signinPromoView {
-  CHECK(self.displayedIdentity, base::NotFatalUntil::M151)
+  CHECK(self.displayedIdentity, base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
-  CHECK(self.signinPromoViewVisible, base::NotFatalUntil::M151)
+  CHECK(self.signinPromoViewVisible, base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
-  CHECK([self isUsable], base::NotFatalUntil::M151)
+  CHECK([self isUsable], base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
   switch (self.signinPromoAction) {
     case SigninPromoAction::kInstantSignin:
@@ -1262,11 +1262,11 @@ id<SystemIdentity> GetDisplayedIdentity(
 
 - (void)signinPromoViewDidTapSigninWithOtherAccount:
     (SigninPromoView*)signinPromoView {
-  CHECK(self.displayedIdentity, base::NotFatalUntil::M151)
+  CHECK(self.displayedIdentity, base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
-  CHECK(self.signinPromoViewVisible, base::NotFatalUntil::M151)
+  CHECK(self.signinPromoViewVisible, base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
-  CHECK([self isUsable], base::NotFatalUntil::M151)
+  CHECK([self isUsable], base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
   [self sendImpressionsTillSigninButtonsHistogram];
   signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
@@ -1293,20 +1293,20 @@ id<SystemIdentity> GetDisplayedIdentity(
 }
 
 - (void)signinPromoViewCloseButtonWasTapped:(SigninPromoView*)view {
-  CHECK([self isUsable], base::NotFatalUntil::M151)
+  CHECK([self isUsable], base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
   // The promo on top of the feed is only logged as visible when most of it can
   // be seen, so it can be dismissed without `self.signinPromoViewVisible`.
   CHECK(self.signinPromoViewVisible ||
             self.accessPoint == signin_metrics::AccessPoint::kNtpFeedTopPromo,
-        base::NotFatalUntil::M151)
+        base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
   base::RecordAction(base::UserMetricsAction("Signin_Promo_Close"));
   self.signinPromoViewState = SigninPromoViewState::kClosed;
   const char* alreadySeenSigninViewPreferenceKey =
       AlreadySeenSigninViewPreferenceKey(self.accessPoint,
                                          self.signinPromoAction);
-  CHECK(alreadySeenSigninViewPreferenceKey, base::NotFatalUntil::M151)
+  CHECK(alreadySeenSigninViewPreferenceKey, base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
   self.prefService->SetBoolean(alreadySeenSigninViewPreferenceKey, true);
 
