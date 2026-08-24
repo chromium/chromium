@@ -13,7 +13,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -93,7 +92,7 @@ public class ActorTaskHelper implements ActorKeyedService.Observer, StartStopWit
 
     @Override
     public void onStopWithNative() {
-        if (ChromeFeatureList.sGlicBackgroundActuation.isEnabled()) {
+        if (ActorUtils.isBackgroundActuationEnabled()) {
             TabModelSelector selector = mTabModelSelectorSupplier.get();
             assert selector != null;
             ActorForegroundServiceController.get().transitionActiveTasksToBackground(selector);
@@ -164,6 +163,9 @@ public class ActorTaskHelper implements ActorKeyedService.Observer, StartStopWit
 
     /** Stops any active Actor tasks that belong to this window when the activity is destroyed. */
     public void onDestroy() {
+        if (ActorUtils.isBackgroundActuationEnabled()) {
+            return;
+        }
         forEachActiveTask(
                 task -> {
                     if (isTaskInCurrentWindow(task) && mActorService != null) {

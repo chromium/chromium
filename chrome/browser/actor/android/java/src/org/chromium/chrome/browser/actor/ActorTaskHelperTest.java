@@ -15,6 +15,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.view.WindowManager;
 
 import org.junit.After;
@@ -32,11 +34,16 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -63,6 +70,7 @@ public class ActorTaskHelperTest {
 
     @Before
     public void setUp() {
+        NotificationProxyUtils.setNotificationEnabledForTest(false);
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
 
         mProfileSupplier = ObservableSuppliers.createMonotonic();
@@ -203,6 +211,66 @@ public class ActorTaskHelperTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testOnStop_BackgroundActuationAndNotificationsEnabled_TransitionsToBackground() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        ActorForegroundServiceController mockFgsController =
+                mock(ActorForegroundServiceController.class);
+        ActorForegroundServiceController.setInstanceForTesting(mockFgsController);
+
+        TabModelSelector selector = mock(TabModelSelector.class);
+        SettableMonotonicObservableSupplier<TabModelSelector> selectorSupplier =
+                ObservableSuppliers.createMonotonic();
+        selectorSupplier.set(selector);
+
+        ActorTaskHelper helper =
+                new ActorTaskHelper(
+                        mActivity,
+                        mProfileSupplier,
+                        selectorSupplier,
+                        mActivityLifecycleDispatcher);
+
+        helper.onStopWithNative();
+
+        verify(mockFgsController).transitionActiveTasksToBackground(selector);
+        verify(mActorService, never()).stopTask(anyInt(), anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testOnStop_BackgroundActuationEnabled_NotificationsDisabled_PausesTasks() {
+        NotificationProxyUtils.setNotificationEnabledForTest(false);
+        ActorForegroundServiceController mockFgsController =
+                mock(ActorForegroundServiceController.class);
+        ActorForegroundServiceController.setInstanceForTesting(mockFgsController);
+
+        TabModelSelector selector = mock(TabModelSelector.class);
+        SettableMonotonicObservableSupplier<TabModelSelector> selectorSupplier =
+                ObservableSuppliers.createMonotonic();
+        selectorSupplier.set(selector);
+
+        ActorTaskHelper helper =
+                new ActorTaskHelper(
+                        mActivity,
+                        mProfileSupplier,
+                        selectorSupplier,
+                        mActivityLifecycleDispatcher);
+
+        ActorTask taskInWindow = mock(ActorTask.class);
+        when(taskInWindow.getState()).thenReturn(ActorTaskState.ACTING);
+        when(taskInWindow.getTabs()).thenReturn(Collections.singleton(101));
+        Tab tab101 = mock(Tab.class);
+        when(selector.getTabById(101)).thenReturn(tab101);
+
+        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(taskInWindow));
+
+        helper.onStopWithNative();
+
+        verify(mockFgsController, never()).transitionActiveTasksToBackground(any());
+        verify(taskInWindow).pause();
+    }
+
+    @Test
     public void testOnDestroy_OnlyCurrentWindow() {
         TabModelSelector selector = mock(TabModelSelector.class);
         SettableMonotonicObservableSupplier<TabModelSelector> selectorSupplier =
@@ -234,6 +302,143 @@ public class ActorTaskHelperTest {
 
         verify(mActorService).stopTask(101, StoppedReason.SHUTDOWN);
         verify(mActorService, never()).stopTask(102, StoppedReason.SHUTDOWN);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testOnDestroy_BackgroundActuationAndNotificationsEnabled_DoesNotStopTasks() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        TabModelSelector selector = mock(TabModelSelector.class);
+        SettableMonotonicObservableSupplier<TabModelSelector> selectorSupplier =
+                ObservableSuppliers.createMonotonic();
+        selectorSupplier.set(selector);
+
+        ActorTaskHelper helper =
+                new ActorTaskHelper(
+                        mActivity,
+                        mProfileSupplier,
+                        selectorSupplier,
+                        mActivityLifecycleDispatcher);
+
+        ActorTask taskInWindow = mock(ActorTask.class);
+        when(taskInWindow.getId()).thenReturn(101);
+        when(taskInWindow.getTabs()).thenReturn(Collections.singleton(101));
+        Tab tab101 = mock(Tab.class);
+        when(selector.getTabById(101)).thenReturn(tab101);
+
+        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(taskInWindow));
+
+        helper.onDestroy();
+
+        verify(mActorService, never()).stopTask(anyInt(), anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testOnDestroy_BackgroundActuationEnabled_NotificationsDisabled_StopsTasks() {
+        NotificationProxyUtils.setNotificationEnabledForTest(false);
+        TabModelSelector selector = mock(TabModelSelector.class);
+        SettableMonotonicObservableSupplier<TabModelSelector> selectorSupplier =
+                ObservableSuppliers.createMonotonic();
+        selectorSupplier.set(selector);
+
+        ActorTaskHelper helper =
+                new ActorTaskHelper(
+                        mActivity,
+                        mProfileSupplier,
+                        selectorSupplier,
+                        mActivityLifecycleDispatcher);
+
+        ActorTask taskInWindow = mock(ActorTask.class);
+        when(taskInWindow.getId()).thenReturn(101);
+        when(taskInWindow.getTabs()).thenReturn(Collections.singleton(101));
+        Tab tab101 = mock(Tab.class);
+        when(selector.getTabById(101)).thenReturn(tab101);
+
+        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(taskInWindow));
+
+        helper.onDestroy();
+
+        verify(mActorService).stopTask(101, StoppedReason.SHUTDOWN);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testOnStop_BackgroundActuationEnabled_ChannelBlocked_PausesTasks() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        NotificationManagerProxy mockNotificationManager = mock(NotificationManagerProxy.class);
+        NotificationChannel channel = mock(NotificationChannel.class);
+        when(channel.getImportance()).thenReturn(NotificationManager.IMPORTANCE_NONE);
+        when(mockNotificationManager.getNotificationChannel(
+                        ChromeChannelDefinitions.ChannelId.ACTOR))
+                .thenReturn(channel);
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(mockNotificationManager);
+
+        ActorForegroundServiceController mockFgsController =
+                mock(ActorForegroundServiceController.class);
+        ActorForegroundServiceController.setInstanceForTesting(mockFgsController);
+
+        TabModelSelector selector = mock(TabModelSelector.class);
+        SettableMonotonicObservableSupplier<TabModelSelector> selectorSupplier =
+                ObservableSuppliers.createMonotonic();
+        selectorSupplier.set(selector);
+
+        ActorTaskHelper helper =
+                new ActorTaskHelper(
+                        mActivity,
+                        mProfileSupplier,
+                        selectorSupplier,
+                        mActivityLifecycleDispatcher);
+
+        ActorTask taskInWindow = mock(ActorTask.class);
+        when(taskInWindow.getState()).thenReturn(ActorTaskState.ACTING);
+        when(taskInWindow.getTabs()).thenReturn(Collections.singleton(101));
+        Tab tab101 = mock(Tab.class);
+        when(selector.getTabById(101)).thenReturn(tab101);
+
+        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(taskInWindow));
+
+        helper.onStopWithNative();
+
+        verify(mockFgsController, never()).transitionActiveTasksToBackground(any());
+        verify(taskInWindow).pause();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testOnDestroy_BackgroundActuationEnabled_ChannelBlocked_StopsTasks() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        NotificationManagerProxy mockNotificationManager = mock(NotificationManagerProxy.class);
+        NotificationChannel channel = mock(NotificationChannel.class);
+        when(channel.getImportance()).thenReturn(NotificationManager.IMPORTANCE_NONE);
+        when(mockNotificationManager.getNotificationChannel(
+                        ChromeChannelDefinitions.ChannelId.ACTOR))
+                .thenReturn(channel);
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(mockNotificationManager);
+
+        TabModelSelector selector = mock(TabModelSelector.class);
+        SettableMonotonicObservableSupplier<TabModelSelector> selectorSupplier =
+                ObservableSuppliers.createMonotonic();
+        selectorSupplier.set(selector);
+
+        ActorTaskHelper helper =
+                new ActorTaskHelper(
+                        mActivity,
+                        mProfileSupplier,
+                        selectorSupplier,
+                        mActivityLifecycleDispatcher);
+
+        ActorTask taskInWindow = mock(ActorTask.class);
+        when(taskInWindow.getId()).thenReturn(101);
+        when(taskInWindow.getTabs()).thenReturn(Collections.singleton(101));
+        Tab tab101 = mock(Tab.class);
+        when(selector.getTabById(101)).thenReturn(tab101);
+
+        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(taskInWindow));
+
+        helper.onDestroy();
+
+        verify(mActorService).stopTask(101, StoppedReason.SHUTDOWN);
     }
 
     @Test

@@ -4,7 +4,14 @@
 
 package org.chromium.chrome.browser.actor;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 
 /** Utility methods for Actor tasks. */
 @NullMarked
@@ -51,5 +58,25 @@ public class ActorUtils {
         if (isCompletedState(prevTaskState) && isCompletedState(newTaskState)) return true;
         return prevTaskState == ActorTaskState.WAITING_ON_USER
                 && newTaskState == ActorTaskState.WAITING_ON_USER;
+    }
+
+    /** Returns whether both app-level notifications and the Actor channel are enabled. */
+    public static boolean areActorNotificationsEnabled() {
+        if (!NotificationProxyUtils.areNotificationsEnabled()) {
+            return false;
+        }
+        NotificationChannel channel =
+                NotificationManagerProxyImpl.getInstance()
+                        .getNotificationChannel(ChromeChannelDefinitions.ChannelId.ACTOR);
+        return channel == null || channel.getImportance() != NotificationManager.IMPORTANCE_NONE;
+    }
+
+    /**
+     * Returns whether background actuation is enabled and allowed (i.e. the feature flag is enabled
+     * and Actor notifications are not blocked).
+     */
+    public static boolean isBackgroundActuationEnabled() {
+        return ChromeFeatureList.sGlicBackgroundActuation.isEnabled()
+                && areActorNotificationsEnabled();
     }
 }

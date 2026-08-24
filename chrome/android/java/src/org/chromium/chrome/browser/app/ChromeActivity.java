@@ -88,6 +88,7 @@ import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
 import org.chromium.chrome.browser.actor.ActorMetrics;
 import org.chromium.chrome.browser.actor.ActorPictureInPictureController;
+import org.chromium.chrome.browser.actor.ActorUtils;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.app.download.DownloadMessageUiDelegate;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
@@ -1464,7 +1465,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 || !GlicEnabling.isProfileEligible(
                         getProfileProviderSupplier().get().getOriginalProfile())
                 || DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)
-                || ChromeFeatureList.sGlicBackgroundActuation.isEnabled()) {
+                || ActorUtils.isBackgroundActuationEnabled()) {
             return;
         }
 
