@@ -860,4 +860,59 @@ public class SettingsPageFragmentDelegateImplTest {
         mDelegate.destroySettings();
         verify(mMockSettingsHostFragment).setSaveInstanceStateCallback(null);
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testUpdateForUrl_ShowsFragment() {
+        mDelegate.initSettings(mContainerView, "");
+        when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
+        when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
+        when(mMultiColumnSettings.getView()).thenReturn(mFragmentView);
+
+        mDelegate.updateForUrl("chrome://settings/appearance");
+
+        verify(mMockSettingsHostFragment)
+                .showFragment(any(Fragment.class), eq(false), eq((String) null));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testUpdateForUrl_RootUrlClearsInitialUrl() {
+        mDelegate.initSettings(mContainerView, "");
+        when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
+        when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
+        when(mMultiColumnSettings.getView()).thenReturn(mFragmentView);
+
+        mDelegate.updateForUrl("chrome://settings");
+
+        verify(mMockSettingsHostFragment).clearInitialUrl();
+        verify(mMockSettingsHostFragment).showFragment(eq(null), eq(false), eq((String) null));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testUpdateForUrl_DefersWhenViewNull() {
+        mDelegate.initSettings(mContainerView, "");
+        when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
+        when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
+        when(mMultiColumnSettings.getView()).thenReturn(null);
+
+        mDelegate.updateForUrl("chrome://settings/appearance");
+
+        verify(mMockSettingsHostFragment).setInitialUrl("chrome://settings/appearance");
+        verify(mMockSettingsHostFragment, never())
+                .showFragment(any(Fragment.class), anyBoolean(), any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testHandleBackPress_WithUrlNavEnabled_FallsThroughWhenBackStackEmpty() {
+        mDelegate.initSettings(mContainerView, "");
+        when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
+        when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
+        when(mMultiColumnSettings.getBackStackEntryCount()).thenReturn(0);
+        when(mMultiColumnSettings.getView()).thenReturn(mFragmentView);
+
+        assertEquals(BackPressResult.FAILURE, mDelegate.handleBackPress());
+    }
 }
