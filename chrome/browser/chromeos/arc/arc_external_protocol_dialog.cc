@@ -13,14 +13,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
-#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_package.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
@@ -81,35 +78,6 @@ constexpr char kPackageForOpeningArcImeSettingsPage[] =
     "org.chromium.arc.applauncher";
 constexpr char kActivityForOpeningArcImeSettingsPage[] =
     "org.chromium.arc.applauncher.InputMethodSettingsActivity";
-
-bool ShowIntentPicker(const std::optional<url::Origin>& initiating_origin,
-                      WebContents* web_contents,
-                      std::vector<apps::IntentPickerAppInfo> app_info,
-                      bool show_stay_in_chrome,
-                      bool show_remember_selection,
-                      IntentPickerResponse callback) {
-  ash::BrowserDelegate* browser =
-      web_contents ? ash::BrowserController::GetInstance()->GetBrowserForTab(
-                         web_contents)
-                   : nullptr;
-  if (!browser) {
-    return false;
-  }
-
-  if (app_info.empty()) {
-    return false;
-  }
-
-  IntentPickerTabHelper::ShowOrHideIcon(web_contents,
-                                        /*should_show_icon=*/true);
-  BrowserWindow::FromBrowser(&browser->GetBrowser())
-      ->ShowIntentPickerBubble(std::move(app_info), show_stay_in_chrome,
-                               show_remember_selection,
-                               apps::IntentPickerBubbleType::kExternalProtocol,
-                               initiating_origin, std::move(callback));
-
-  return true;
-}
 
 void CloseTabIfNeeded(base::WeakPtr<WebContents> web_contents,
                       bool safe_to_bypass_ui) {
@@ -429,16 +397,7 @@ void OnIntentPickerClosed(
   DCHECK(mojo_delegate);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Even if ArcExternalProtocolDialog shares the same icon on the omnibox as an
-  // http(s) request (via AppsNavigationThrottle), the UI here shouldn't stay in
-  // the omnibox since the decision should be taken right away in a kind of
-  // blocking fashion.
   auto* context = web_contents ? web_contents->GetBrowserContext() : nullptr;
-
-  if (web_contents) {
-    IntentPickerTabHelper::ShowOrHideIcon(web_contents.get(),
-                                          /*should_show_icon=*/false);
-  }
 
   // If the user selected an app to continue the navigation, confirm that the
   // |package_name| matches a valid option and return the index.
@@ -527,18 +486,10 @@ void OnAppIconsReceived(
                           handler.package_name, handler.name);
   }
 
-  ash::BrowserDelegate* browser =
-      web_contents ? ash::BrowserController::GetInstance()->GetBrowserForTab(
-                         web_contents.get())
-                   : nullptr;
-  if (!browser) {
-    return std::move(handled_cb).Run(false);
-  }
-
-  bool handled = ShowIntentPicker(
-      initiating_origin, web_contents.get(), std::move(app_info),
-      show_stay_in_chrome,
+  bool handled = ash::BrowserController::GetInstance()->ShowIntentPicker(
+      web_contents, std::move(app_info), show_stay_in_chrome,
       /*show_remember_selection=*/true,
+      apps::IntentPickerBubbleType::kExternalProtocol, initiating_origin,
       base::BindOnce(OnIntentPickerClosed, web_contents, url, safe_to_bypass_ui,
                      std::move(handlers), std::move(mojo_delegate)));
   return std::move(handled_cb).Run(handled);
@@ -551,10 +502,10 @@ void ShowExternalProtocolDialogWithoutApps(
     std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
     base::OnceCallback<void(bool)> handled_cb) {
   // Try to show the intent picker and fallback to the default dialog otherwise.
-  bool handled = ShowIntentPicker(
-      initiating_origin, web_contents.get(),
-      /*app_info=*/{}, /*stay_in_chrome=*/false,
+  bool handled = ash::BrowserController::GetInstance()->ShowIntentPicker(
+      web_contents, /*app_info=*/{}, /*show_stay_in_chrome=*/false,
       /*show_remember_selection=*/false,
+      apps::IntentPickerBubbleType::kExternalProtocol, initiating_origin,
       base::BindOnce(
           OnIntentPickerClosed, web_contents, url,
           /*safe_to_bypass_ui=*/false,

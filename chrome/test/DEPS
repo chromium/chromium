@@ -11,6 +11,7 @@ include_rules = [
   "+components/account_manager_core",
   "+components/activity_reporter",
   "+components/application_locale_storage",
+  "+components/apps/link_capturing",
   "+components/autofill/content",
   "+components/autofill/core",
   "+components/bookmarks/browser",

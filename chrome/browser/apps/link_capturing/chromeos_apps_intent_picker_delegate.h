@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/link_capturing/apps_intent_picker_delegate.h"
-#include "chrome/browser/apps/link_capturing/intent_picker_info.h"
+#include "components/apps/link_capturing/intent_picker_info.h"
 #include "url/gurl.h"
 
 namespace content {

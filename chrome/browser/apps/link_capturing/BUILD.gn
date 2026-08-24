@@ -10,8 +10,6 @@ assert(!is_android)
 source_set("link_capturing") {
   sources = [
     "apps_intent_picker_delegate.h",
-    "intent_picker_info.cc",
-    "intent_picker_info.h",
     "link_capturing_tab_data.cc",
     "link_capturing_tab_data.h",
   ]
@@ -22,6 +20,8 @@ source_set("link_capturing") {
       "mac_intent_picker_helpers.mm",
     ]
   }
+
+  public_deps = [ "//components/apps/link_capturing" ]
 
   deps = [
     "//base",

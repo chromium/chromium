@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -344,6 +345,49 @@ BrowserControllerImpl::CreateSimpleWebViewForSigninScreen(
     views::SimpleWebViewDialogDelegate* delegate) {
   return std::make_unique<SimpleWebViewDialog>(
       ash::ProfileHelper::GetSigninProfile(), delegate);
+}
+
+bool BrowserControllerImpl::ShowIntentPicker(
+    base::WeakPtr<content::WebContents> web_contents,
+    std::vector<apps::IntentPickerAppInfo> app_info,
+    bool show_stay_in_chrome,
+    bool show_remember_selection,
+    apps::IntentPickerBubbleType bubble_type,
+    base::optional_ref<const url::Origin> initiating_origin,
+    IntentPickerResponse callback) {
+  BrowserDelegate* browser =
+      web_contents ? GetBrowserForTab(web_contents.get()) : nullptr;
+  if (!browser || app_info.empty()) {
+    return false;
+  }
+
+  auto* browser_window = BrowserWindow::FromBrowser(&browser->GetBrowser());
+  if (!browser_window) {
+    return false;
+  }
+
+  IntentPickerTabHelper::ShowOrHideIcon(web_contents.get(),
+                                        /*should_show_icon=*/true);
+
+  auto wrapped_callback = base::BindOnce(
+      [](base::WeakPtr<content::WebContents> web_contents,
+         IntentPickerResponse callback, const std::string& launch_name,
+         apps::PickerEntryType entry_type,
+         apps::IntentPickerCloseReason close_reason, bool should_persist) {
+        if (web_contents) {
+          IntentPickerTabHelper::ShowOrHideIcon(web_contents.get(),
+                                                /*should_show_icon=*/false);
+        }
+        std::move(callback).Run(launch_name, entry_type, close_reason,
+                                should_persist);
+      },
+      web_contents, std::move(callback));
+
+  browser_window->ShowIntentPickerBubble(
+      std::move(app_info), show_stay_in_chrome, show_remember_selection,
+      bubble_type, initiating_origin.CopyAsOptional(),
+      std::move(wrapped_callback));
+  return true;
 }
 
 }  // namespace ash

@@ -13,8 +13,8 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/link_capturing/apps_intent_picker_delegate.h"
-#include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "components/apps/link_capturing/intent_picker_info.h"
 #include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 

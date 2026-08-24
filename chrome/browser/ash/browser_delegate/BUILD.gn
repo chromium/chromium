@@ -16,6 +16,7 @@ static_library("browser_delegate") {
   public_deps = [
     "//base",
     "//components/account_id",
+    "//components/apps/link_capturing",
     "//components/sessions:session_id",
     "//components/tab_groups",
     "//components/tabs:public",

@@ -50,17 +50,23 @@ class BrowserControllerImpl : public BrowserController,
                                 webapps::AppId app_id,
                                 BrowserType browser_type,
                                 const CreateParams& params) override;
-  void CreateAutofillClientForWebContents(
-      content::WebContents* web_contents) override;
-  std::unique_ptr<views::SimpleWebView> CreateSimpleWebViewForSigninScreen(
-      views::SimpleWebViewDialogDelegate* delegate) override;
   void MayCloseAllBrowsers() override;
   void MayCloseAllBrowsersAndQuit() override;
   bool IsTryingToQuit() override;
   bool HasShutdownStarted() override;
-
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+  void CreateAutofillClientForWebContents(
+      content::WebContents* web_contents) override;
+  std::unique_ptr<views::SimpleWebView> CreateSimpleWebViewForSigninScreen(
+      views::SimpleWebViewDialogDelegate* delegate) override;
+  bool ShowIntentPicker(base::WeakPtr<content::WebContents> web_contents,
+                        std::vector<apps::IntentPickerAppInfo> app_info,
+                        bool show_stay_in_chrome,
+                        bool show_remember_selection,
+                        apps::IntentPickerBubbleType bubble_type,
+                        base::optional_ref<const url::Origin> initiating_origin,
+                        IntentPickerResponse callback) override;
 
   // BrowserCollectionObserver:
   void OnBrowserCreated(BrowserWindowInterface* browser) override;

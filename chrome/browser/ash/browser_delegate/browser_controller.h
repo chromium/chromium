@@ -5,12 +5,17 @@
 #ifndef CHROME_BROWSER_ASH_BROWSER_DELEGATE_BROWSER_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_BROWSER_DELEGATE_BROWSER_CONTROLLER_H_
 
+#include <optional>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/functional/function_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/ash/browser_delegate/browser_type.h"
+#include "components/apps/link_capturing/intent_picker_info.h"
 #include "components/webapps/common/web_app_id.h"
 #include "ui/views/controls/webview/simple_web_view.h"
 #include "url/gurl.h"
@@ -26,9 +31,13 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace views {
 class SimpleWebViewDialogDelegate;
-}
+}  // namespace views
 
 namespace ash {
 
@@ -198,6 +207,19 @@ class BrowserController {
   virtual std::unique_ptr<views::SimpleWebView>
   CreateSimpleWebViewForSigninScreen(
       views::SimpleWebViewDialogDelegate* delegate) = 0;
+
+  // Shows the intent picker bubble for the browser window containing
+  // `web_contents`, and manages showing/hiding the omnibox icon on that tab.
+  // Returns false if `web_contents` is invalid, no browser was found for it,
+  // or `app_info` is empty.
+  virtual bool ShowIntentPicker(
+      base::WeakPtr<content::WebContents> web_contents,
+      std::vector<apps::IntentPickerAppInfo> app_info,
+      bool show_stay_in_chrome,
+      bool show_remember_selection,
+      apps::IntentPickerBubbleType bubble_type,
+      base::optional_ref<const url::Origin> initiating_origin,
+      IntentPickerResponse callback) = 0;
 
  protected:
   BrowserController();

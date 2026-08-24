@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_LINK_CAPTURING_METRICS_INTENT_HANDLING_METRICS_H_
 #define CHROME_BROWSER_APPS_LINK_CAPTURING_METRICS_INTENT_HANDLING_METRICS_H_
 
-#include "chrome/browser/apps/link_capturing/intent_picker_info.h"
+#include "components/apps/link_capturing/intent_picker_info.h"
 
 namespace content {
 class BrowserContext;

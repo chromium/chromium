@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 #include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
+#include "components/apps/link_capturing/intent_picker_info.h"
 #include "ui/base/models/image_model.h"
 #include "url/gurl.h"
 
