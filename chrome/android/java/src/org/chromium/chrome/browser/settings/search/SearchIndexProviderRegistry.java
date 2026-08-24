@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.PersonalizeGoogleServicesSettings;
-import org.chromium.chrome.browser.sync.settings.SignInPreference;
 import org.chromium.chrome.browser.tasks.tab_management.TabArchiveSettingsFragment;
 import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
 import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment;
@@ -136,7 +135,6 @@ public final class SearchIndexProviderRegistry {
                     SafetyCheckSettingsFragment.SEARCH_INDEX_DATA_PROVIDER,
                     TabsSettings.SEARCH_INDEX_DATA_PROVIDER,
                     ManageSyncSettings.SEARCH_INDEX_DATA_PROVIDER,
-                    SignInPreference.SEARCH_INDEX_DATA_PROVIDER,
                     ThemeSettingsFragment.SEARCH_INDEX_DATA_PROVIDER,
                     DownloadSettings.SEARCH_INDEX_DATA_PROVIDER,
                     DeveloperSettings.SEARCH_INDEX_DATA_PROVIDER,

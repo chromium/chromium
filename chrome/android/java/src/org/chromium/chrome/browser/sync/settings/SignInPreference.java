@@ -24,7 +24,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -39,7 +38,6 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoor
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
-import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountsChangeObserver;
@@ -328,22 +326,4 @@ public class SignInPreference extends Preference
     public void onAccountsChanged() {
         update();
     }
-
-    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
-            new ChromeBaseSearchIndexProvider(SignInPreference.class.getName(), 0) {
-
-                @Override
-                public int getXmlRes(Profile profile) {
-                    if (!isSignedIn(profile)) return 0;
-
-                    return ManageSyncSettings.SEARCH_INDEX_DATA_PROVIDER.getXmlRes(profile);
-                }
-
-                @Override
-                public void updateDynamicPreferences(
-                        Context context, SettingsIndexData indexData, Profile profile) {
-                    ManageSyncSettings.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
-                            context, indexData, profile);
-                }
-            };
 }
