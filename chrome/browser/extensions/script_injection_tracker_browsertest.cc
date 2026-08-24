@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/trace_event/trace_log.h"
 #include "build/buildflag.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -28,6 +29,7 @@
 #include "components/version_info/channel.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/tracing_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -2917,6 +2919,61 @@ IN_PROC_BROWSER_TEST_F(
   // content scripts, because the frame is an error document.
   EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
       *child_frame->GetProcess(), extension->id()));
+}
+
+// Tests that RenderProcessHost destruction while tracing is enabled does not
+// crash when tearing down ScriptInjectionTracker's UserData.
+IN_PROC_BROWSER_TEST_F(ScriptInjectionTrackerBrowserTest,
+                       TracingDuringProcessDestruction) {
+  base::RunLoop run_loop;
+  ASSERT_TRUE(content::TracingController::GetInstance()->StartTracing(
+      base::trace_event::TraceConfig("extensions", ""),
+      run_loop.QuitClosure()));
+  run_loop.Run();
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  TestExtensionDir dir;
+  const char kManifestTemplate[] = R"(
+      {
+        "name": "ScriptInjectionTrackerBrowserTest - Tracing",
+        "version": "1.0",
+        "manifest_version": 2,
+        "permissions": [ "tabs", "<all_urls>" ],
+        "background": {"scripts": ["background_script.js"]}
+      } )";
+  dir.WriteManifest(kManifestTemplate);
+  dir.WriteFile(FILE_PATH_LITERAL("background_script.js"), "");
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  GURL page_url = embedded_test_server()->GetURL("foo.com", "/title1.html");
+  NavigateToURLInNewTab(page_url);
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  const char kContentScript[] = R"(
+      document.body.innerText = 'content script has run';
+  )";
+  ExecuteProgrammaticContentScript(web_contents, extension->id(),
+                                   kContentScript);
+
+  EXPECT_TRUE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
+
+  // Close the tab to allow the RenderProcessHost to be destroyed while tracing
+  // is enabled.
+  content::RenderProcessHostWatcher process_watcher(
+      web_contents->GetPrimaryMainFrame()->GetProcess(),
+      content::RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
+  browser()->tab_strip_model()->CloseSelectedTabs();
+  process_watcher.Wait();
+
+  base::RunLoop stop_loop;
+  ASSERT_TRUE(content::TracingController::GetInstance()->StopTracing(
+      content::TracingController::CreateStringEndpoint(
+          base::BindLambdaForTesting(
+              [&](std::unique_ptr<std::string>) { stop_loop.Quit(); }))));
+  stop_loop.Run();
 }
 
 }  // namespace extensions
