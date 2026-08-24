@@ -100,7 +100,6 @@ public class SpareChildConnectionTest {
             mConnection = null;
         }
     }
-    ;
 
     private final TestConnectionFactory mTestConnectionFactory = new TestConnectionFactory();
 

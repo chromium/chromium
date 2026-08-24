@@ -2084,7 +2084,6 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             }
         }
     }
-    ;
 
     @Override
     public void destroySelectActionMode() {

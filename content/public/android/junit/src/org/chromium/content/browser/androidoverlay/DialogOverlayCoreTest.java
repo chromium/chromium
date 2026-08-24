@@ -163,7 +163,6 @@ public class DialogOverlayCoreTest {
             return mDestroyedCount;
         }
     }
-    ;
 
     HostMock mHost = new HostMock();
 

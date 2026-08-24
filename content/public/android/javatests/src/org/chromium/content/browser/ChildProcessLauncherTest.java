@@ -183,7 +183,6 @@ public class ChildProcessLauncherTest {
             mOnRunMainHelper.waitForCallback(/* currentCallCount= */ 0);
         }
     }
-    ;
 
     /**
      * Creates a ChildProcessLauncher, using {@code boundConnectionToUse} if non null, and tests

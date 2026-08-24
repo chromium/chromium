@@ -71,7 +71,6 @@ public abstract class ActionModeCallbackHelper {
             return false;
         }
     }
-    ;
 
     /**
      * @return {@code true} if selection action mode is started and in proper working state. if

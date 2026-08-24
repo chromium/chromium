@@ -909,7 +909,6 @@ public class JavaBridgeBasicsTest {
                     }
 
                     private void method() {}
-                    ;
                 },
                 "testObject",
                 null);
