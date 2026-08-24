@@ -385,8 +385,9 @@ bool ReportScheduler::IsTriggerEnabled(ReportTrigger trigger) const {
 
 void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
   if (!IsTriggerEnabled(trigger)) {
-    VLOG(1) << "Discarding report trigger: " << ReportTriggerToString(trigger)
-            << " (reporting is disabled)";
+    VLOG_POLICY(1, REPORTING)
+        << "Discarding report trigger: " << ReportTriggerToString(trigger)
+        << " (reporting is disabled)";
     return;
   }
 
@@ -397,8 +398,7 @@ void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
     }
   }
 
-  if (active_report_generation_config_.report_trigger != kTriggerNone &&
-      !active_report_generation_config_.is_retrying) {
+  if (active_report_generation_config_.report_trigger != kTriggerNone) {
     // A report is already being generated. Remember this trigger to be handled
     // once the current report completes.
     if (trigger == ReportTrigger::kTriggerTimer &&
@@ -415,12 +415,16 @@ void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
     return;
   }
 
-  if (trigger == ReportTrigger::kTriggerTimer &&
-      !active_report_generation_config_.is_retrying) {
+  if (trigger == ReportTrigger::kTriggerTimer) {
     base::UmaHistogramBoolean("Enterprise.CloudReporting.SchedulerOverrun",
                               false);
   }
 
+  StartReportGeneration(trigger, /*is_retrying=*/false);
+}
+
+void ReportScheduler::StartReportGeneration(ReportTrigger trigger,
+                                            bool is_retrying) {
   report_generation_start_time_ = base::TimeTicks::Now();
 
   ReportType report_type = TriggerToReportType(trigger);
@@ -428,6 +432,7 @@ void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
 
   // Set active config trigger so we know we are generating.
   active_report_generation_config_.report_trigger = trigger;
+  active_report_generation_config_.is_retrying = is_retrying;
 
   if (NeedChallenge(trigger, signals_mode)) {
     cloud_policy_client_->GenerateChromeProfileChallenge(
@@ -515,8 +520,15 @@ void ReportScheduler::ContinueGenerateAndUploadReport(
 
 void ReportScheduler::OnReportWillRetry(const ReportGenerationConfig& config) {
   CHECK_EQ(config, active_report_generation_config_);
-  active_report_generation_config_.is_retrying = true;
-  GenerateAndUploadReport(config.report_trigger);
+  if (!IsTriggerEnabled(config.report_trigger)) {
+    VLOG_POLICY(1, REPORTING) << "Discarding report retry: "
+                              << ReportTriggerToString(config.report_trigger)
+                              << " (reporting is disabled)";
+    OnReportUploaded(ReportUploader::kTransientError);
+    return;
+  }
+
+  StartReportGeneration(config.report_trigger, /*is_retrying=*/true);
 }
 
 void ReportScheduler::OnReportGenerated(
@@ -547,7 +559,7 @@ void ReportScheduler::OnReportGenerated(
     RunPendingTriggers();
     return;
   }
-  VLOG(1) << "Uploading enterprise report.";
+  VLOG_POLICY(1, REPORTING) << "Uploading enterprise report.";
   if (!report_uploader_ && report_uploaders_for_test_.size() > 0) {
     report_uploader_ = std::move(report_uploaders_for_test_.front());
     report_uploaders_for_test_.erase(report_uploaders_for_test_.begin());
@@ -556,12 +568,10 @@ void ReportScheduler::OnReportGenerated(
         std::make_unique<ReportUploader>(cloud_policy_client_, kMaximumRetry);
   }
 
-  if (!active_report_generation_config_.is_retrying) {
+  if (active_report_generation_config_.security_signals_mode !=
+      SecuritySignalsMode::kNoSignals) {
     CHECK(!report_uploader_->HasListener(this));
-    if (active_report_generation_config_.security_signals_mode !=
-        SecuritySignalsMode::kNoSignals) {
-      report_uploader_->SetListener(this);
-    }
+    report_uploader_->SetListener(this);
   }
 
   if (!active_report_generation_config_.is_retrying) {
@@ -585,7 +595,8 @@ void ReportScheduler::OnReportUploaded(ReportUploader::ReportStatus status) {
       ReportTrigger::kTriggerNone) {
     return;
   }
-  VLOG(1) << "The enterprise report upload result " << status << ".";
+  VLOG_POLICY(1, REPORTING)
+      << "The enterprise report upload result " << status << ".";
   if (report_uploader_) {
     report_uploader_->RemoveListener(this);
   }

@@ -15,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -1728,6 +1729,94 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
   // if profile-open reporting is enabled.
   EXPECT_EQ(upload_report_on_profile_open_enabled(),
             scheduler_->IsNextReportScheduledForTesting());
+}
+
+TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
+       TriggerWhileRetryingIsQueuedAndHandled) {
+  TestingProfile* profile = profile_manager_.CreateTestingProfile("profile");
+
+  profile->GetTestingPrefService()->SetManagedPref(
+      kCloudProfileReportingEnabled, std::make_unique<base::Value>(true));
+  SetUserSecuritySignalsPolicy(profile, /*enabled=*/true);
+
+  base::ListValue policy_value;
+  base::DictValue selector;
+  base::DictValue issuer;
+  issuer.Set("CN", "IssuerCN");
+  selector.Set("ISSUER", std::move(issuer));
+  policy_value.Append(std::move(selector));
+  profile->GetTestingPrefService()->SetManagedPref(
+      kSecuritySignalsClientCertificatesSelectors,
+      base::Value(policy_value.Clone()));
+
+  em::GenerateChromeProfileChallengeResponse challenge_response;
+  challenge_response.set_challenge("test_challenge");
+
+  em::GenerateChromeProfileChallengeResponse retry_challenge_response;
+  retry_challenge_response.set_challenge("new_challenge_for_retry");
+
+  ReportTrigger expected_trigger = upload_report_on_profile_open_enabled()
+                                       ? ReportTrigger::kTriggerProfileOpened
+                                       : ReportTrigger::kTriggerSecurity;
+  SecuritySignalsMode expected_mode =
+      upload_report_on_profile_open_enabled()
+          ? SecuritySignalsMode::kSignalsAttached
+          : SecuritySignalsMode::kSignalsOnly;
+
+  EXPECT_CALL(*client_, GenerateChromeProfileChallenge(_))
+      .WillOnce(
+          RunOnceCallback<0>(policy::DM_STATUS_SUCCESS, challenge_response));
+
+  EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
+      .WillOnce(WithArgs<0>(ScheduleProfileRequestGeneratorCallback()));
+
+  // Initial upload attempt.
+  EXPECT_CALL(
+      *uploader_,
+      SetRequestAndUpload(
+          ReportGenerationConfig(
+              expected_trigger, ReportType::kProfileReport, expected_mode,
+              /*use_cookies=*/false, "test_challenge", policy_value.Clone()),
+          _, _));
+
+  CreateSchedulerForProfileReporting(profile);
+  ASSERT_TRUE(scheduler_->IsNextReportScheduledForTesting());
+
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  // ReportUploader informs scheduler of retry.
+  EXPECT_CALL(*client_, GenerateChromeProfileChallenge(_))
+      .WillOnce(RunOnceCallback<0>(policy::DM_STATUS_SUCCESS,
+                                   retry_challenge_response));
+
+  EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
+      .WillOnce(WithArgs<0>(ScheduleProfileRequestGeneratorCallback()));
+
+  EXPECT_CALL(
+      *uploader_,
+      SetRequestAndUpload(
+          ReportGenerationConfig(
+              expected_trigger, ReportType::kProfileReport, expected_mode,
+              /*use_cookies=*/false, "new_challenge_for_retry",
+              policy_value.Clone(), /*is_retrying=*/true),
+          _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
+
+  uploader_->NotifyReportWillRetry(ReportGenerationConfig(
+      expected_trigger, ReportType::kProfileReport, expected_mode,
+      /*use_cookies=*/false, "test_challenge", policy_value.Clone()));
+
+  // While retry is in progress (generator task is queued), a new trigger
+  // arrives (e.g. manual report).
+  base::test::TestFuture<void> manual_report_future;
+  scheduler_->UploadReport(manual_report_future.GetCallback());
+  EXPECT_FALSE(manual_report_future.IsReady());
+
+  // Run pending tasks to execute generator callback and complete retry upload.
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  // Manual report callback was resolved upon retry completion.
+  EXPECT_TRUE(manual_report_future.IsReady());
 }
 
 TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,

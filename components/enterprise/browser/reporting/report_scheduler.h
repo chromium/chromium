@@ -150,6 +150,9 @@ class ReportScheduler : public ReportUploader::Listener {
   // Starts report generation in response to |trigger|.
   void GenerateAndUploadReport(ReportTrigger trigger);
 
+  // Starts report generation workflow.
+  void StartReportGeneration(ReportTrigger trigger, bool is_retrying);
+
   // Returns true if we need to fetch a challenge before generating the report.
   bool NeedChallenge(ReportTrigger trigger,
                      SecuritySignalsMode signals_mode) const;
