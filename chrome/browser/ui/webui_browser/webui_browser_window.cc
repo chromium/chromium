@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/browser_window_theme_observer.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -113,6 +114,14 @@ class WebUIBrowserWindow::WidgetDelegate : public views::WidgetDelegate {
       WebUIBrowserWindow* window,
       WebUIBrowserWebContentsDelegate* web_contents_delegate);
 
+  // views::WidgetDelegate:
+  bool ShouldSaveWindowPlacement() const override;
+  void SaveWindowPlacement(const gfx::Rect& bounds,
+                           ui::mojom::WindowShowState show_state) override;
+  bool GetSavedWindowPlacement(
+      const views::Widget* widget,
+      gfx::Rect* bounds,
+      ui::mojom::WindowShowState* show_state) const override;
   views::ClientView* CreateClientView(views::Widget* widget) override;
   std::u16string GetWindowTitle() const override;
   bool ShouldDescendIntoChildForEventHandling(
@@ -146,7 +155,8 @@ WebUIBrowserWindow::WebUIBrowserWindow(Browser* browser) : browser_(browser) {
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   params.name = "WebUIBrowserWindow";
-  params.bounds = gfx::Rect(0, 0, 800, 600);
+  chrome::GetSavedWindowBoundsAndShowState(browser_, &params.bounds,
+                                           &params.show_state);
   params.delegate = widget_delegate_.get();
   params.native_widget = CreateNativeWidget();
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1246,6 +1256,31 @@ WebUIBrowserWindow::WidgetDelegate::WidgetDelegate(
                        ->create_params()
                        .can_fullscreen);
   SetCanMinimize(true);
+}
+
+bool WebUIBrowserWindow::WidgetDelegate::ShouldSaveWindowPlacement() const {
+  // If IsFullscreen() is true, we've just changed into fullscreen mode, and
+  // we're catching the going-into-fullscreen sizing and positioning calls,
+  // which we want to ignore.
+  return !browser_window_->IsFullscreen() &&
+         chrome::ShouldSaveWindowPlacement(browser_window_->browser());
+}
+
+void WebUIBrowserWindow::WidgetDelegate::SaveWindowPlacement(
+    const gfx::Rect& bounds,
+    ui::mojom::WindowShowState show_state) {
+  CHECK(ShouldSaveWindowPlacement());
+  views::WidgetDelegate::SaveWindowPlacement(bounds, show_state);
+  chrome::SaveWindowPlacement(browser_window_->browser(), bounds, show_state);
+}
+
+bool WebUIBrowserWindow::WidgetDelegate::GetSavedWindowPlacement(
+    const views::Widget* widget,
+    gfx::Rect* bounds,
+    ui::mojom::WindowShowState* show_state) const {
+  chrome::GetSavedWindowBoundsAndShowState(browser_window_->browser(), bounds,
+                                           show_state);
+  return true;
 }
 
 views::ClientView* WebUIBrowserWindow::WidgetDelegate::CreateClientView(
