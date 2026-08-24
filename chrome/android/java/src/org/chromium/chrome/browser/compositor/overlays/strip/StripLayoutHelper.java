@@ -3803,7 +3803,7 @@ public class StripLayoutHelper
                 tab.addLoadingSpinnerRotation(degrees);
                 tabHasSpinner = true;
             }
-            if (tab.getAlertState() != null && tab.getAlertState() == TabAlert.ACTOR_ACCESSING) {
+            if (tab.getAlertState() == TabAlert.ACTOR_ACCESSING) {
                 tab.addAlertIndicatorOverlayRotation(degrees);
                 tabHasSpinner = true;
             }
@@ -4474,7 +4474,7 @@ public class StripLayoutHelper
                         mUpdateHost,
                         mIncognito,
                         /* isPinned= */ false,
-                        /* alertState= */ null);
+                        /* alertState= */ TabAlert.NONE);
         mTabDelegate.setIsTabPlaceholder(tab, true);
 
         // TODO(crbug.com/40942588): Added placeholder a11y descriptions to prevent crash due
@@ -4488,10 +4488,8 @@ public class StripLayoutHelper
         return tab;
     }
 
-    // TODO(crbug.com/546133121): Add NONE value to Java TabAlert enum
     @VisibleForTesting
-    StripLayoutTab createStripTab(
-            int id, boolean isPinned, @Nullable @TabAlert Integer alertState) {
+    StripLayoutTab createStripTab(int id, boolean isPinned, @TabAlert int alertState) {
         // TODO: Cache these
         StripLayoutTab tab =
                 new StripLayoutTab(
@@ -5879,7 +5877,7 @@ public class StripLayoutHelper
      * @param tab The {@link Tab} whose alert state changed.
      * @param alertState The {@link TabAlert} state of the tab.
      */
-    public void onAlertStateChanged(Tab tab, @Nullable @TabAlert Integer alertState) {
+    public void onAlertStateChanged(Tab tab, @TabAlert int alertState) {
         StripLayoutTab stripLayoutTab = findTabById(tab.getId());
         // This state may get reset after the tab has already closed, so ignore if null.
         if (stripLayoutTab == null) return;

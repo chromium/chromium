@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.tabmodel.NextTabSelectionUtil;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
+import org.chromium.components.tabs.TabAlert;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -42,7 +43,7 @@ public class TestTabModel extends EmptyTabModel {
         when(mockTab.getId()).thenReturn(tabId);
         when(mockTab.getTitle()).thenReturn(title);
         when(mockTab.getParentId()).thenReturn(Tab.INVALID_TAB_ID);
-        when(mockTab.getAlertState()).thenReturn(null);
+        when(mockTab.getAlertState()).thenReturn(TabAlert.NONE);
         mMockTabs.add(mockTab);
     }
 

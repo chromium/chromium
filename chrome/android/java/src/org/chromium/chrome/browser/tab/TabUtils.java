@@ -308,8 +308,7 @@ public class TabUtils {
      *
      * @param alertState The {@link TabAlert} for which to get the corresponding media state.
      */
-    public static @MediaState int getMediaStateForAlert(@Nullable @TabAlert Integer alertState) {
-        if (alertState == null) return MediaState.NONE;
+    public static @MediaState int getMediaStateForAlert(@TabAlert int alertState) {
         return switch (alertState) {
             case TabAlert.AUDIO_PLAYING -> MediaState.AUDIBLE;
             case TabAlert.AUDIO_MUTING -> MediaState.MUTED;
@@ -327,8 +326,7 @@ public class TabUtils {
      *
      * @param alertState The {@link TabAlert} for which to get the indicator drawable.
      */
-    public static @DrawableRes int getTabAlertDrawable(@Nullable @TabAlert Integer alertState) {
-        if (alertState == null) return Resources.ID_NULL;
+    public static @DrawableRes int getTabAlertDrawable(@TabAlert int alertState) {
         return switch (alertState) {
             case TabAlert.ACTOR_ACCESSING, TabAlert.ACTOR_WAITING_ON_USER ->
                     R.drawable.ic_arrow_selector_spark_24dp;
@@ -359,8 +357,7 @@ public class TabUtils {
      * @param defaultTint The default tint to use.
      */
     public static @ColorInt int getTabAlertTintColor(
-            Context context, @Nullable @TabAlert Integer alertState, @ColorInt int defaultTint) {
-        if (alertState == null) return defaultTint;
+            Context context, @TabAlert int alertState, @ColorInt int defaultTint) {
         return switch (alertState) {
             case TabAlert.ACTOR_ACCESSING,
                     TabAlert.ACTOR_WAITING_ON_USER,
@@ -381,8 +378,7 @@ public class TabUtils {
      *
      * @param alertState The {@link TabAlert} for which to get the description.
      */
-    public static @StringRes int getTabAlertDescriptionRes(@Nullable @TabAlert Integer alertState) {
-        if (alertState == null) return Resources.ID_NULL;
+    public static @StringRes int getTabAlertDescriptionRes(@TabAlert int alertState) {
         return switch (alertState) {
             case TabAlert.ACTOR_ACCESSING, TabAlert.ACTOR_WAITING_ON_USER ->
                     R.string.tooltip_tab_alert_state_actor_accessing;
@@ -417,7 +413,7 @@ public class TabUtils {
      *
      * @param mediaState The {@link MediaState} for which to get the indicator.
      * @deprecated Android is migrating from {@link MediaState} to {@link TabAlert}. Use {@link
-     *     #getTabAlertDrawable(Integer)} instead.
+     *     #getTabAlertDrawable(int)} instead.
      */
     @Deprecated
     public static @DrawableRes int getMediaIndicatorDrawable(@MediaState int mediaState) {
@@ -438,7 +434,7 @@ public class TabUtils {
      * @param mediaState The {@link MediaState} for which to get the tint.
      * @param defaultTint The default tint to use.
      * @deprecated Android is migrating from {@link MediaState} to {@link TabAlert}. Use {@link
-     *     #getTabAlertTintColor(Context, Integer, int)} instead.
+     *     #getTabAlertTintColor(Context, int, int)} instead.
      */
     @Deprecated
     public static @ColorInt int getMediaIndicatorTintColor(

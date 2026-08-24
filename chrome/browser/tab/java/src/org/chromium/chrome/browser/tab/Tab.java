@@ -482,10 +482,11 @@ public interface Tab extends TabLifecycle {
      */
     void setIsPinned(boolean isPinned);
 
-    /** Returns the active alert state for this tab, or null if no alert applies. */
-    @Nullable
+    /**
+     * Returns the active alert state for this tab, or {@link TabAlert#NONE} if no alert applies.
+     */
     @TabAlert
-    Integer getAlertState();
+    int getAlertState();
 
     /** Returns the media state of the tab. */
     @MediaState

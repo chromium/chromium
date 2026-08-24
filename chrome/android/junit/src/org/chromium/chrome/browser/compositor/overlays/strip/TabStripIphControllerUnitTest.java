@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.tabs.TabAlert;
 import org.chromium.ui.base.LocalizationUtils;
 
 /** Unit tests for {@link TabStripIphController}. */
@@ -108,7 +109,7 @@ public class TabStripIphControllerUnitTest {
                         mUpdateHost,
                         /* incognito= */ false,
                         /* isPinned= */ false,
-                        /* alertState= */ null);
+                        /* alertState= */ TabAlert.NONE);
         mGroupTitle.setWidth(GROUP_TITLE_WIDTH);
         mGroupTitle.setHeight(TAB_STRIP_HEIGHT);
         mTab.setWidth(TAB_WIDTH);

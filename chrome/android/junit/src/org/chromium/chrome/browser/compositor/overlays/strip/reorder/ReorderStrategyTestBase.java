@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.components.tabs.TabAlert;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -131,7 +132,7 @@ public abstract class ReorderStrategyTestBase {
                         null,
                         false,
                         false,
-                        /* alertState= */ null);
+                        /* alertState= */ TabAlert.NONE);
         setDrawProperties(tab, x);
         return tab;
     }

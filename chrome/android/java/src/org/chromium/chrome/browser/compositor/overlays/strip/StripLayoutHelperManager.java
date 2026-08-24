@@ -1680,8 +1680,7 @@ public class StripLayoutHelperManager
                     }
 
                     @Override
-                    public void onAlertStateChanged(
-                            Tab tab, @Nullable @TabAlert Integer alertState) {
+                    public void onAlertStateChanged(Tab tab, @TabAlert int alertState) {
                         getStripLayoutHelper(tab.isIncognito())
                                 .onAlertStateChanged(tab, alertState);
                         mRenderHost.requestRender();

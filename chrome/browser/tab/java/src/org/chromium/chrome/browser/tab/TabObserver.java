@@ -488,7 +488,8 @@ public interface TabObserver {
      * Called when the alert state of the tab changes.
      *
      * @param tab The notifying {@link Tab}.
-     * @param alertState The {@link TabAlert} state of the tab, or {@code null} if no alerts apply.
+     * @param alertState The {@link TabAlert} state of the tab, or {@link TabAlert#NONE} if no
+     *     alerts apply.
      */
-    default void onAlertStateChanged(Tab tab, @Nullable @TabAlert Integer alertState) {}
+    default void onAlertStateChanged(Tab tab, @TabAlert int alertState) {}
 }

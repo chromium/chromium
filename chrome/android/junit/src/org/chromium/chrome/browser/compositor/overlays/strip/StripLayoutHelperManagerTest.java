@@ -122,6 +122,7 @@ import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrarJni;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tabs.TabAlert;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.ActivityResultTracker;
@@ -1311,7 +1312,7 @@ public class StripLayoutHelperManagerTest {
                         mUpdateHost,
                         false,
                         false,
-                        /* alertState= */ null);
+                        /* alertState= */ TabAlert.NONE);
 
         // Inject the strip tab into the helper via reflection.
         Field tabsField = StripLayoutHelper.class.getDeclaredField("mStripTabs");
@@ -1400,7 +1401,7 @@ public class StripLayoutHelperManagerTest {
                         mUpdateHost,
                         false,
                         false,
-                        /* alertState= */ null);
+                        /* alertState= */ TabAlert.NONE);
 
         Field tabsField = StripLayoutHelper.class.getDeclaredField("mStripTabs");
         tabsField.setAccessible(true);

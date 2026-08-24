@@ -292,8 +292,7 @@ public class TabHoverCardView extends FrameLayout {
             mHoveredTabObserver =
                     new TabObserver() {
                         @Override
-                        public void onAlertStateChanged(
-                                Tab tab, @Nullable @TabAlert Integer alertState) {
+                        public void onAlertStateChanged(Tab tab, @TabAlert int alertState) {
                             if (tab.getId() == mLastHoveredTabId && mIsShowing) {
                                 updateAlertStatusView(alertState);
                             }
@@ -327,7 +326,7 @@ public class TabHoverCardView extends FrameLayout {
         mUrlView.setText(url);
     }
 
-    private void updateAlertStatusView(@Nullable @TabAlert Integer alertState) {
+    private void updateAlertStatusView(@TabAlert int alertState) {
         @DrawableRes int iconRes = TabUtils.getTabAlertDrawable(alertState);
         @StringRes int stringRes = TabUtils.getTabAlertDescriptionRes(alertState);
 

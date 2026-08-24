@@ -121,6 +121,8 @@ const gfx::VectorIcon& GetAlertIcon(TabAlert alert_state) {
     case TabAlert::kGlicSharing:
       return glic::GlicVectorIconManager::GetVectorIcon(
           IDR_GLIC_ACCESSING_ICON);
+    case TabAlert::kNone:
+      NOTREACHED();
   }
 }
 

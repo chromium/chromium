@@ -212,7 +212,7 @@ public class StripLayoutTab extends StripLayoutView {
     private boolean mForceHideEndDivider;
     private float mBottomMargin;
     private float mContainerOpacity;
-    private @Nullable @TabAlert Integer mAlertState;
+    private @TabAlert int mAlertState;
     private float mAlertIndicatorOverlayRotation;
     private boolean mIsUnderlined;
     // The offset of the left-to-right wave/shimmer effect on the tab underline (from 0.f to 1.f).
@@ -269,7 +269,7 @@ public class StripLayoutTab extends StripLayoutView {
             LayoutUpdateHost updateHost,
             boolean incognito,
             boolean isPinned,
-            @Nullable @TabAlert Integer alertState) {
+            @TabAlert int alertState) {
         super(
                 incognito,
                 clickHandler,
@@ -384,12 +384,15 @@ public class StripLayoutTab extends StripLayoutView {
         return mIsPinned;
     }
 
-    /* package */ void setAlertState(@Nullable @TabAlert Integer alertState) {
+    /* package */ void setAlertState(@TabAlert int alertState) {
         mAlertState = alertState;
     }
 
-    /** Returns the {@link TabAlert} state of this tab, or null if no alert is active. */
-    public @Nullable @TabAlert Integer getAlertState() {
+    /**
+     * Returns the {@link TabAlert} state of this tab, or {@link TabAlert#NONE} if no alert is
+     * active.
+     */
+    public @TabAlert int getAlertState() {
         return mAlertState;
     }
 
@@ -414,9 +417,7 @@ public class StripLayoutTab extends StripLayoutView {
 
     /** Returns whether an alert indicator should be shown. */
     public boolean shouldShowAlertIndicator() {
-        if (mAlertState != null
-                && (mAlertState == TabAlert.GLIC_ACCESSING
-                        || mAlertState == TabAlert.GLIC_SHARING)) {
+        if (mAlertState == TabAlert.GLIC_ACCESSING || mAlertState == TabAlert.GLIC_SHARING) {
             // Tab underlines replace the alert indicator for Glic accessing and sharing states on
             // the tab strip.
             return false;
@@ -440,7 +441,7 @@ public class StripLayoutTab extends StripLayoutView {
 
     /** Returns the resource ID of the alert indicator overlay to show. */
     public @DrawableRes int getAlertIndicatorOverlayRes() {
-        if (mAlertState != null && mAlertState == TabAlert.ACTOR_ACCESSING) {
+        if (mAlertState == TabAlert.ACTOR_ACCESSING) {
             return R.drawable.tab_indicator_spinner;
         }
         return Resources.ID_NULL;
@@ -1092,7 +1093,7 @@ public class StripLayoutTab extends StripLayoutView {
 
     /** Returns the width of the alert indicator. */
     public float getAlertIndicatorWidth() {
-        if (mAlertState != null && mAlertState == TabAlert.ACTOR_ACCESSING) {
+        if (mAlertState == TabAlert.ACTOR_ACCESSING) {
             return DYNAMIC_GLIC_ACTUATION_INDICATOR_WIDTH;
         }
         return ALERT_INDICATOR_WIDTH;

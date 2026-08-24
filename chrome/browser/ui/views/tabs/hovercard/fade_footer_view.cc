@@ -65,6 +65,8 @@ ui::ColorId GetTabAlertColor(tabs::TabAlert alert_state) {
     case tabs::TabAlert::kVrPresentingInHeadset:
       icon_color = kColorHoverCardTabAlertAudioPlayingIcon;
       break;
+    case tabs::TabAlert::kNone:
+      NOTREACHED();
   }
 
   return icon_color;

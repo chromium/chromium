@@ -340,7 +340,7 @@ public class StripLayoutTabTest {
                         null,
                         incognito,
                         false,
-                        /* alertState= */ null);
+                        TabAlert.NONE);
         tab.setWidth(TAB_WIDTH);
         return tab;
     }

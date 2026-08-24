@@ -444,10 +444,8 @@ void TabAndroid::InitWebContents(
 void TabAndroid::OnAlertStateChanged(
     std::optional<tabs::TabAlert> alert_state) {
   JNIEnv* env = AttachCurrentThread();
-  std::optional<int32_t> alert_val =
-      alert_state.has_value()
-          ? std::make_optional<int32_t>(std::to_underlying(*alert_state))
-          : std::nullopt;
+  int32_t alert_val =
+      std::to_underlying(alert_state.value_or(tabs::TabAlert::kNone));
   Java_TabImpl_onAlertStateChanged(env, GetJavaObject(env), alert_val);
 }
 

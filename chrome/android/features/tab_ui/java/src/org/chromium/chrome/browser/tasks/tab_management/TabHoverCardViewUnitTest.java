@@ -197,10 +197,10 @@ public class TabHoverCardViewUnitTest {
                 mAlertStatusView.getCompoundDrawablesRelative()[0]);
 
         // Verify alert status is gone when tab has no alert.
-        when(mHoveredTab.getAlertState()).thenReturn(null);
+        when(mHoveredTab.getAlertState()).thenReturn(TabAlert.NONE);
         mTabHoverCardView.show(mHoveredTab, 10f, 20f);
         assertEquals(
-                "Alert status view should be hidden when alert state is null.",
+                "Alert status view should be hidden when alert state is NONE.",
                 View.GONE,
                 mAlertStatusView.getVisibility());
     }
@@ -521,7 +521,7 @@ public class TabHoverCardViewUnitTest {
         when(mHoveredTab.getTitle()).thenReturn(title);
         when(mHoveredTab.getUrl()).thenReturn(url);
         when(mHoveredTab.getId()).thenReturn(1);
-        when(mHoveredTab.getAlertState()).thenReturn(null);
+        when(mHoveredTab.getAlertState()).thenReturn(TabAlert.NONE);
 
         Runnable heightChangedCallback = mock(Runnable.class);
         mTabHoverCardView.setOnCardHeightChangedCallback(heightChangedCallback);

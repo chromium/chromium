@@ -43,6 +43,8 @@ EnumTraits<MojoTabNetworkState, NativeTabNetworkState>::FromMojom(
 MojoTabAlertState EnumTraits<MojoTabAlertState, NativeTabAlertState>::ToMojom(
     NativeTabAlertState input) {
   switch (input) {
+    case NativeTabAlertState::kNone:
+      return MojoTabAlertState::kNone;
     case NativeTabAlertState::kMediaRecording:
       return MojoTabAlertState::kMediaRecording;
     case NativeTabAlertState::kTabCapturing:
@@ -87,6 +89,8 @@ NativeTabAlertState
 EnumTraits<MojoTabAlertState, NativeTabAlertState>::FromMojom(
     MojoTabAlertState in) {
   switch (in) {
+    case MojoTabAlertState::kNone:
+      return NativeTabAlertState::kNone;
     case MojoTabAlertState::kMediaRecording:
       return NativeTabAlertState::kMediaRecording;
     case MojoTabAlertState::kTabCapturing:

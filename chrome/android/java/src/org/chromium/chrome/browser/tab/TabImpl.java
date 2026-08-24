@@ -328,7 +328,7 @@ class TabImpl implements Tab, TabInternal {
     private @Nullable Token mTabGroupId;
     private boolean mTabHasSensitiveContent;
     private boolean mIsPinned;
-    private @Nullable @TabAlert Integer mAlertState;
+    private @TabAlert int mAlertState = TabAlert.NONE;
     private @MediaState int mMediaState;
     private @TabUserAgent int mUserAgent = TabUserAgent.DEFAULT;
 
@@ -3161,14 +3161,13 @@ class TabImpl implements Tab, TabInternal {
     }
 
     @Override
-    public @Nullable @TabAlert Integer getAlertState() {
+    public @TabAlert int getAlertState() {
         return mAlertState;
     }
 
     @CalledByNative
-    public void onAlertStateChanged(
-            @JniType("std::optional<int32_t>") @Nullable @TabAlert Integer alertState) {
-        if (Objects.equals(mAlertState, alertState)) return;
+    public void onAlertStateChanged(@TabAlert int alertState) {
+        if (mAlertState == alertState) return;
         mAlertState = alertState;
         for (TabObserver observer : mObservers) {
             observer.onAlertStateChanged(this, alertState);
