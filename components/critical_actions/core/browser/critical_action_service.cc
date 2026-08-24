@@ -125,6 +125,10 @@ void CriticalActionService::AddCriticalAction(
   if (!backend_) {
     return;
   }
+  base::UmaHistogramEnumeration(
+      base::StrCat({"CriticalActions.EventLogged.",
+                    ActionSourceToString(entry.action_source)}),
+      entry.action_type);
   backend_.AsyncCall(&CriticalActionBackend::AddCriticalAction).WithArgs(entry);
 }
 

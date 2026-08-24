@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "sql/error_delegate_util.h"
+#include "sql/sqlite_result_code.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
 #include "url/gurl.h"
@@ -347,6 +348,8 @@ void CriticalActionDatabase::Close() {
 void CriticalActionDatabase::DatabaseErrorCallback(int extended_error,
                                                    sql::Statement* statement) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sql::UmaHistogramSqliteResult("CriticalActions.Database.SqliteError",
+                                extended_error);
   if (sql::IsErrorCatastrophic(extended_error)) {
     db_.RazeAndPoison();
   } else if (!sql::Database::IsExpectedSqliteError(extended_error)) {

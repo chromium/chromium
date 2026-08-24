@@ -22,6 +22,21 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(CriticalActionType) -->
+
+<enum name="CriticalActionType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="FormFill"/>
+  <int value="2" label="Download"/>
+  <int value="3" label="SettingChange"/>
+  <int value="4" label="CredentialAccess"/>
+  <int value="5" label="GooglePasswordManager"/>
+  <int value="6" label="FederatedLogin"/>
+  <int value="7" label="CredentialsOtp"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_types.h:CriticalActionType) -->
+
 <!-- LINT.IfChange(CriticalActionVisitIdResolutionOutcome) -->
 
 <enum name="CriticalActionVisitIdResolutionOutcome">

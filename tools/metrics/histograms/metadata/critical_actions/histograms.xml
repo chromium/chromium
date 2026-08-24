@@ -24,6 +24,39 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.IfChange(ActionSource) -->
 
+<variants name="ActionSource">
+  <variant name="Actor" summary="Actor agent events"/>
+  <variant name="PasswordManager" summary="password manager fill events"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_types.h:ActionSource) -->
+
+<histogram name="CriticalActions.Database.SqliteError"
+    enum="SqliteLoggedResultCode" expires_after="2026-11-01">
+  <owner>kalinino@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    Records SQLite result and error codes (e.g. constraint violations, disk I/O
+    errors, corruption) encountered during SQLite operations in
+    CriticalActionDatabase. Recorded in
+    CriticalActionDatabase::DatabaseErrorCallback whenever a database operation
+    or statement execution returns an error code.
+  </summary>
+</histogram>
+
+<histogram name="CriticalActions.EventLogged.{ActionSource}"
+    enum="CriticalActionType" expires_after="2026-11-01">
+  <owner>kalinino@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    Records the ActionType category (e.g. form fill, password manager login,
+    federated login, download, OTP) of a critical action. Recorded in
+    CriticalActionService::AddCriticalAction whenever a new critical action is
+    added to the service to be persisted to the database by {ActionSource}.
+  </summary>
+  <token key="ActionSource" variants="ActionSource"/>
+</histogram>
+
 <histogram name="CriticalActions.VisitIdResolutionOutcome.{ActionSource}"
     enum="CriticalActionVisitIdResolutionOutcome" expires_after="2026-11-01">
   <owner>kutylbeky@google.com</owner>
@@ -34,13 +67,8 @@ chromium-metrics-reviews@google.com.
     when the navigation ID is resolved to a Visit ID or when the pending action
     is dropped prior to persistence.
   </summary>
-  <token key="ActionSource">
-    <variant name="Actor" summary="Actor agent events"/>
-    <variant name="PasswordManager" summary="password manager fill events"/>
-  </token>
+  <token key="ActionSource" variants="ActionSource"/>
 </histogram>
-
-<!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_types.h:ActionSource) -->
 
 </histograms>
 

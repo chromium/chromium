@@ -17,6 +17,7 @@ namespace critical_actions {
 
 // Enum defining list of critical categories supported by Critical Action
 // History.
+// LINT.IfChange(CriticalActionType)
 enum class ActionType {
   kUnknown = 0,
   kFormFill = 1,
@@ -28,6 +29,7 @@ enum class ActionType {
   kCredentialsOtp = 7,
   kMaxValue = kCredentialsOtp,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_actions/enums.xml:CriticalActionType)
 
 // Source features that generate critical actions.
 // LINT.IfChange(ActionSource)

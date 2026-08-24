@@ -7,9 +7,11 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/rand_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "sql/sqlite_result_code.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/sqlite/sqlite3.h"
@@ -64,6 +66,7 @@ TEST_F(CriticalActionDatabaseTest, AddAndGetEntry) {
 }
 
 TEST_F(CriticalActionDatabaseTest, AddDuplicateEntryFails) {
+  base::HistogramTester histogram_tester;
   CriticalActionDatabase database(db_path_);
   ASSERT_TRUE(database.Init());
 
@@ -80,6 +83,10 @@ TEST_F(CriticalActionDatabaseTest, AddDuplicateEntryFails) {
   // Primary key constraint should make duplicate insertion fail (return false).
   EXPECT_FALSE(database.AddCriticalAction(entry));
   EXPECT_TRUE(expecter.SawExpectedErrors());
+
+  histogram_tester.ExpectBucketCount(
+      "CriticalActions.Database.SqliteError",
+      sql::SqliteLoggedResultCode::kConstraintPrimaryKey, 1);
 
   database.Close();
 }

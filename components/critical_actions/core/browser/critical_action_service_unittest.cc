@@ -388,4 +388,31 @@ TEST_F(CriticalActionServiceTest,
       VisitIdResolutionOutcome::kEvictedServiceShutdown, 1);
 }
 
+TEST_F(CriticalActionServiceTest, EventLoggedHistogramEmitted) {
+  base::HistogramTester histogram_tester;
+
+  CriticalActionEntry actor_entry;
+  actor_entry.critical_action_id =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  actor_entry.timestamp = base::Time::Now();
+  actor_entry.visit_id = 1001;
+  actor_entry.action_type = ActionType::kGooglePasswordManager;
+  actor_entry.action_source = ActionSource::kActor;
+  service_->AddCriticalAction(actor_entry);
+
+  CriticalActionEntry pwm_entry;
+  pwm_entry.critical_action_id =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  pwm_entry.timestamp = base::Time::Now();
+  pwm_entry.visit_id = 1002;
+  pwm_entry.action_type = ActionType::kFormFill;
+  pwm_entry.action_source = ActionSource::kPasswordManager;
+  service_->AddCriticalAction(pwm_entry);
+
+  histogram_tester.ExpectUniqueSample("CriticalActions.EventLogged.Actor",
+                                      ActionType::kGooglePasswordManager, 1);
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.EventLogged.PasswordManager", ActionType::kFormFill, 1);
+}
+
 }  // namespace critical_actions
