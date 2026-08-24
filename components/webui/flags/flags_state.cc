@@ -62,7 +62,6 @@ const char kOriginListValueSeparator[] = ",";
 // LINT.IfChange(kRenamedFlags)
 constexpr auto kRenamedFlags =
     base::MakeFixedFlatMap<std::string_view, std::string_view>({
-        {"classifier-api-for-tiny-model", "classifier-api"},
         {"prompt-api-for-gemini-nano", "prompt-api"},
         {"prompt-api-for-gemini-nano-multimodal-input",
          "prompt-api-multimodal-input"},

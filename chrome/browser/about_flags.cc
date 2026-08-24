@@ -4724,11 +4724,6 @@ const FeatureEntry::Choice kAISemanticEmbedderChoices[] = {
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
      "AIEmbeddingsAPI,AIEmbeddingsAPIForWorkers"}};
 
-// Classifier requires LiteRT-LM.
-const FeatureEntry::Choice kAIClassifierChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
-     "AIClassifierAPI,OnDeviceModelLitertLmBackend"}};
 
 const FeatureEntry::Choice kGemma4Choices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
@@ -10505,9 +10500,6 @@ const FeatureEntry kFeatureEntries[] = {
      MULTI_VALUE_TYPE(kAISemanticEmbedderChoices),
      flag_descriptions::kAIAPIsLinks},
 
-    {"classifier-api", flag_descriptions::kClassifierAPIName,
-     flag_descriptions::kClassifierAPIDescription, kOsDesktop,
-     MULTI_VALUE_TYPE(kAIClassifierChoices), flag_descriptions::kAIAPIsLinks},
 
     {"gemma4-for-built-in-ai", flag_descriptions::kGemma4ForBuiltInAIName,
      flag_descriptions::kGemma4ForBuiltInAIDescription, kOsDesktop,

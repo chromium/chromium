@@ -53,7 +53,6 @@ import {ImportExportFileProxyImpl} from './import_export_file_proxy.js';
  */
 // LINT.IfChange(FLAG_REDIRECTS)
 const FLAG_REDIRECTS: Record<string, string> = {
-  '#classifier-api-for-tiny-model': '#classifier-api',
   '#prompt-api-for-gemini-nano': '#prompt-api',
   '#prompt-api-for-gemini-nano-multimodal-input':
       '#prompt-api-multimodal-input',

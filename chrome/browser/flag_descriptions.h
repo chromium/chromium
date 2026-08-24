@@ -5329,12 +5329,6 @@ inline constexpr char kSemanticEmbedderAPIDescription[] =
     "The API may be subject to changes including the supported options. "
     "Please refer to the built-in AI documentation [1] for details.";
 
-inline constexpr char kClassifierAPIName[] = "Classifier API";
-inline constexpr char kClassifierAPIDescription[] =
-    "Enables the Classifier API, allowing you to classify a piece of text "
-    "with a built-in small expert model. "
-    "The API may be subject to changes including the supported options. "
-    "Please refer to the built-in AI documentation [1] for details.";
 
 inline constexpr char kSummarizerAPIWithPerformancePreferenceName[] =
     "Summarizer API Performance Preference";
