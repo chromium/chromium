@@ -7,12 +7,12 @@ package org.chromium.chrome.browser.readaloud.player.expanded;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator class responsible for controlling Read Aloud expanded player. */
 @NullMarked
-public class ExpandedPlayerMediator extends EmptyBottomSheetObserver {
+public class ExpandedPlayerMediator implements BottomSheetObserver {
     private final PropertyModel mModel;
 
     public ExpandedPlayerMediator(PropertyModel model) {

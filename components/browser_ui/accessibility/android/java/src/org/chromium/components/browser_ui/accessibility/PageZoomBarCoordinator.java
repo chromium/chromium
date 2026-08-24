@@ -19,7 +19,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
@@ -83,7 +82,7 @@ public class PageZoomBarCoordinator {
         if (mBottomSheetController != null) {
             if (mBottomSheetObserver == null) {
                 mBottomSheetObserver =
-                        new EmptyBottomSheetObserver() {
+                        new BottomSheetObserver() {
                             @Override
                             public void onSheetOpened(int reason) {
                                 hide();

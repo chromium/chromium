@@ -27,7 +27,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
@@ -127,7 +126,7 @@ public class MerchantTrustBottomSheetCoordinator implements View.OnLayoutChangeL
                         this::closeSheet);
 
         mBottomSheetObserver =
-                new EmptyBottomSheetObserver() {
+                new BottomSheetObserver() {
                     private int mCloseReason;
 
                     @Override

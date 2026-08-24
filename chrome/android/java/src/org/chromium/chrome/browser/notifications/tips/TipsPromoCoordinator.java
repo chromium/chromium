@@ -55,7 +55,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.LocalizationUtils;
@@ -451,16 +450,14 @@ public class TipsPromoCoordinator {
             mScrollView = mContentView.findViewById(R.id.main_page_scrollview);
 
             mBottomSheetOpenedObserver =
-                    new EmptyBottomSheetObserver() {
+                    new BottomSheetObserver() {
                         @Override
                         public void onSheetOpened(@StateChangeReason int reason) {
-                            super.onSheetOpened(reason);
                             mBackPressStateChangedSupplier.set(true);
                         }
 
                         @Override
                         public void onSheetClosed(@StateChangeReason int reason) {
-                            super.onSheetClosed(reason);
                             mBackPressStateChangedSupplier.set(false);
                             mBottomSheetController.removeObserver(mBottomSheetOpenedObserver);
 

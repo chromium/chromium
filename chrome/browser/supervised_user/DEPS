@@ -1,3 +1,7 @@
+include_rules = [
+  "+components/browser_ui/bottomsheet/android",
+]
+
 specific_include_rules = {
     "supervised_user_navigation_throttle_browsertest\\.cc": [
         "+ash/shell.h",

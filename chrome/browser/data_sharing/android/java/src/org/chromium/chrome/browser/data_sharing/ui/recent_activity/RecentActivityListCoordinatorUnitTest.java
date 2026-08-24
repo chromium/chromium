@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivit
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListCoordinator.FaviconProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.collaboration.messaging.ActivityLogItem;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.MessageAttribution;
@@ -62,7 +62,7 @@ public class RecentActivityListCoordinatorUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Captor private ArgumentCaptor<EmptyBottomSheetObserver> mBottomSheetObserverCaptor;
+    @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
     @Captor private ArgumentCaptor<BottomSheetContent> mBottomSheetContentCaptor;
 
     @Mock private MessagingBackendService mMessagingBackendService;

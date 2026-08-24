@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -41,7 +41,7 @@ import java.util.function.Supplier;
  * otherwise shouldn't know about.
  */
 @NullMarked
-class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObserver {
+class BottomSheetManager implements BottomSheetObserver, DestroyObserver {
     /** A means of accessing the focus state of the omnibox. */
     private final MonotonicObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
 
@@ -328,7 +328,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
     // of bottom sheet peek mode height;
     // when bottom sheet is not used as controls, the layer will attach on top of the browser
     // controls, making the controls non-scrollable.
-    private class BottomSheetLayer extends EmptyBottomSheetObserver implements BottomControlsLayer {
+    private class BottomSheetLayer implements BottomSheetObserver, BottomControlsLayer {
         private int mContributedHeight;
         private int mContributedVisibility;
 

@@ -91,7 +91,6 @@ import org.chromium.chrome.modules.readaloud.contentjs.Highlighter.Mode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -248,47 +247,52 @@ public class ReadAloudController
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   static class ReadabilityInfo {
-      private final Map<PlaybackArgs.PlaybackMode, ReadAloudReadabilityHooks.ReadabilityResult> mReadabilityInfoPerMode;
+        private final Map<PlaybackArgs.PlaybackMode, ReadAloudReadabilityHooks.ReadabilityResult>
+                mReadabilityInfoPerMode;
       private final long mResponseTimestamp;
 
-      /**
-       * Constructor.
-      *
-      * @param readabilityInfoPerMode Readability info per mode.
-      * @param responseTimestamp Timestamp when readability request responded.
-      */
-      ReadabilityInfo(
-          Map<PlaybackArgs.PlaybackMode, ReadAloudReadabilityHooks.ReadabilityResult>
-              readabilityInfoPerMode,
-          long responseTimestamp) {
+        /**
+         * Constructor.
+         *
+         * @param readabilityInfoPerMode Readability info per mode.
+         * @param responseTimestamp Timestamp when readability request responded.
+         */
+        ReadabilityInfo(
+                Map<PlaybackArgs.PlaybackMode, ReadAloudReadabilityHooks.ReadabilityResult>
+                        readabilityInfoPerMode,
+                long responseTimestamp) {
           mReadabilityInfoPerMode = readabilityInfoPerMode;
           mResponseTimestamp = responseTimestamp;
       }
 
       static ReadabilityInfo entirelyUnsupported(long responseTimestamp) {
-          return new ReadabilityInfo(
-              ImmutableMap.of(
-                  PlaybackArgs.PlaybackMode.CLASSIC,
-                  new ReadAloudReadabilityHooks.ReadabilityResult(false, false),
-                  PlaybackArgs.PlaybackMode.OVERVIEW,
-                      new ReadAloudReadabilityHooks.ReadabilityResult(false, false)),
-                  responseTimestamp);
+            return new ReadabilityInfo(
+                    ImmutableMap.of(
+                            PlaybackArgs.PlaybackMode.CLASSIC,
+                            new ReadAloudReadabilityHooks.ReadabilityResult(false, false),
+                            PlaybackArgs.PlaybackMode.OVERVIEW,
+                            new ReadAloudReadabilityHooks.ReadabilityResult(false, false)),
+                    responseTimestamp);
       }
 
-      static ReadabilityInfo forTimepoints(boolean timepointsSupported, long responseTimestamp) {
-          return new ReadabilityInfo(
-            ImmutableMap.of(
-                PlaybackArgs.PlaybackMode.CLASSIC,
-                new ReadAloudReadabilityHooks.ReadabilityResult(true, timepointsSupported),
-                PlaybackArgs.PlaybackMode.OVERVIEW,
-                new ReadAloudReadabilityHooks.ReadabilityResult(true, timepointsSupported)),
-            responseTimestamp);
+        static ReadabilityInfo forTimepoints(boolean timepointsSupported, long responseTimestamp) {
+            return new ReadabilityInfo(
+                    ImmutableMap.of(
+                            PlaybackArgs.PlaybackMode.CLASSIC,
+                            new ReadAloudReadabilityHooks.ReadabilityResult(
+                                    true, timepointsSupported),
+                            PlaybackArgs.PlaybackMode.OVERVIEW,
+                            new ReadAloudReadabilityHooks.ReadabilityResult(
+                                    true, timepointsSupported)),
+                    responseTimestamp);
       }
 
       boolean isReadable() {
-          // For audio overviews, we don't account for the language in the readability phase (we will check it during playback).
-          return isReadable(PlaybackArgs.PlaybackMode.CLASSIC)
-                  || (isAudioOverviewsAllowed() && isReadable(PlaybackArgs.PlaybackMode.OVERVIEW));
+            // For audio overviews, we don't account for the language in the
+            // readability phase (we will check it during playback).
+            return isReadable(PlaybackArgs.PlaybackMode.CLASSIC)
+                    || (isAudioOverviewsAllowed()
+                            && isReadable(PlaybackArgs.PlaybackMode.OVERVIEW));
       }
 
       boolean isReadable(String tabLanguage) {
@@ -658,7 +662,7 @@ public class ReadAloudController
         mFullscreenManager.addObserver(mFullscreenObserver);
 
         mBottomSheetObserver =
-                new EmptyBottomSheetObserver() {
+                new BottomSheetObserver() {
                     @Override
                     public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
                         if (newContent == null) {
@@ -991,16 +995,19 @@ public class ReadAloudController
             int sanitizedUrlHash = urlToHash(stripUserData(nonNullTab.getUrl()).getSpec());
             ReadabilityInfo info = getReadabilityInfoIfUnexpired(sanitizedUrlHash);
             if (info != null) {
-              if (ReadAloudFeatures.shouldConsiderLanguageInOverviewReadability()) {
-                return info.isReadable(tabLanguageStatus.mLanguage);
-              }
-              return info.isReadable();
+                if (ReadAloudFeatures.shouldConsiderLanguageInOverviewReadability()) {
+                    return info.isReadable(tabLanguageStatus.mLanguage);
+                }
+                return info.isReadable();
             }
         }
         return false;
     }
 
-    /** Returns which mode would be played if the user chooses to listen to this page, or UNSPECIFIED if unsupported. */
+    /**
+     * Returns which mode would be played if the user chooses to listen to this page, or UNSPECIFIED
+     * if unsupported.
+     */
     public PlaybackMode getModeToPlay(@Nullable Tab tab) {
         // If we don't have a valid Profile, playback won't work.
         // TODO(crbug.com/41491180): Remove when valid profile is guaranteed.
@@ -1013,9 +1020,13 @@ public class ReadAloudController
         if (tabLanguageStatus.mSupported && isAvailable()) {
             int sanitizedUrlHash = urlToHash(stripUserData(nonNullTab.getUrl()).getSpec());
             ReadabilityInfo info = getReadabilityInfoIfUnexpired(sanitizedUrlHash);
-            if (info != null && (ReadAloudFeatures.shouldConsiderLanguageInOverviewReadability() ? info.isReadable(tabLanguageStatus.mLanguage) : info.isReadable())) {
-              List<PlaybackMode> playbackModes = getPlaybackModesForNewPlayback(info, tabLanguageStatus.mLanguage);
-              return playbackModes.size() > 0 ? playbackModes.get(0) : PlaybackMode.UNSPECIFIED;
+            if (info != null
+                    && (ReadAloudFeatures.shouldConsiderLanguageInOverviewReadability()
+                            ? info.isReadable(tabLanguageStatus.mLanguage)
+                            : info.isReadable())) {
+                List<PlaybackMode> playbackModes =
+                        getPlaybackModesForNewPlayback(info, tabLanguageStatus.mLanguage);
+                return playbackModes.size() > 0 ? playbackModes.get(0) : PlaybackMode.UNSPECIFIED;
             }
         }
         return PlaybackMode.UNSPECIFIED;

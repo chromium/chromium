@@ -11,7 +11,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 
 import java.util.HashSet;
 import java.util.function.Supplier;
@@ -44,7 +43,7 @@ public class EducationalTipModuleUtils {
      */
     public static BottomSheetObserver createBottomSheetObserver(
             Supplier<Boolean> shouldSkipUpdate, Runnable updateCallback) {
-        return new EmptyBottomSheetObserver() {
+        return new BottomSheetObserver() {
             @Override
             public void onSheetStateChanged(int newState, int reason) {
                 if (newState == BottomSheetController.SheetState.HIDDEN) {

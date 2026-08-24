@@ -11,7 +11,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.List;
@@ -28,10 +27,9 @@ public class AtMemoryBottomSheetCoordinator {
     public static final int ITEM_TYPE_ILLUSTRATION_CARD = 3;
 
     private final BottomSheetObserver mBottomSheetObserver =
-            new EmptyBottomSheetObserver() {
+            new BottomSheetObserver() {
                 @Override
                 public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
-                    super.onSheetClosed(reason);
                     if (mBottomSheetController.getCurrentSheetContent() != null
                             && mBottomSheetController.getCurrentSheetContent() == mContent) {
                         onDismissed();

@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageQueueDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -122,8 +122,8 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
                 }
             };
 
-    private final EmptyBottomSheetObserver mBottomSheetObserver =
-            new EmptyBottomSheetObserver() {
+    private final BottomSheetObserver mBottomSheetObserver =
+            new BottomSheetObserver() {
                 private int mToken = TokenHolder.INVALID_TOKEN;
 
                 @Override

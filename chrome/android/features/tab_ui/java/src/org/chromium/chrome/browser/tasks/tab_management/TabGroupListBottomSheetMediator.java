@@ -22,7 +22,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -52,7 +51,7 @@ public class TabGroupListBottomSheetMediator {
     private boolean mCurrentlyShowing;
 
     private final BottomSheetObserver mBottomSheetObserver =
-            new EmptyBottomSheetObserver() {
+            new BottomSheetObserver() {
 
                 @Override
                 public void onSheetClosed(@StateChangeReason int reason) {

@@ -25,7 +25,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
 
 import java.util.function.Supplier;
@@ -47,7 +46,7 @@ public class ChromeActivitySnackbarHelper implements ChangeObserver {
     private final BottomSheetController mBottomSheetController;
     private final Supplier<BottomControlsLayer> mBottomControlsLayerSupplier;
     private final BottomSheetObserver mBottomSheetObserver =
-            new EmptyBottomSheetObserver() {
+            new BottomSheetObserver() {
                 @Override
                 public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
                     updateMargin();

@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.components.autofill.SaveIbanPromptOffer;
 import org.chromium.components.autofill.SaveIbanPromptResult;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 
 /**
  * Mediator class for the autofill IBAN save UI.
@@ -33,8 +33,8 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
  * <p>This mediator sends UI events (OnUiCanceled, OnUiAccepted, etc.) to the bridge.
  */
 @NullMarked
-/*package*/ class AutofillSaveIbanBottomSheetMediator extends EmptyBottomSheetObserver
-        implements TabModelObserver, LayoutStateObserver {
+/*package*/ class AutofillSaveIbanBottomSheetMediator
+        implements BottomSheetObserver, TabModelObserver, LayoutStateObserver {
     @VisibleForTesting
     static final String SAVE_IBAN_PROMPT_OFFER_HISTOGRAM = "Autofill.SaveIbanPromptOffer";
 
@@ -126,7 +126,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
         mTabModel.removeObserver(this);
     }
 
-    // Overrides EmptyBottomSheetObserver onSheetClosed method for BottomSheetController.
+    // Overrides BottomSheetObserver onSheetClosed method for BottomSheetController.
     @Override
     public void onSheetClosed(@StateChangeReason int reason) {
         switch (reason) {

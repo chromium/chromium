@@ -28,7 +28,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.webapps.AddToHomescreenProperties;
 import org.chromium.components.webapps.InstallTrigger;
 import org.chromium.components.webapps.R;
@@ -61,7 +60,7 @@ public class PwaBottomSheetController implements View.OnClickListener {
      * to the native version of this class, and track when the sheet is dismissed.
      */
     private final BottomSheetObserver mBottomSheetObserver =
-            new EmptyBottomSheetObserver() {
+            new BottomSheetObserver() {
                 @Override
                 public void onSheetStateChanged(
                         @SheetState int state, @StateChangeReason int reason) {

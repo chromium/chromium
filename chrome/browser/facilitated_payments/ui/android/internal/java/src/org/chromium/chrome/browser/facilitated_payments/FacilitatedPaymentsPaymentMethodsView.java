@@ -22,7 +22,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.facilitated_payments.core.ui_utils.UiEvent;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -47,7 +46,7 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
     private boolean mHasCustomLifecycle;
 
     private final BottomSheetObserver mBottomSheetObserver =
-            new EmptyBottomSheetObserver() {
+            new BottomSheetObserver() {
                 @Override
                 public void onSheetClosed(@StateChangeReason int reason) {
                     assert mUiEventListener != null;

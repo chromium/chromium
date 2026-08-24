@@ -10,11 +10,11 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 
 /** The secure payment confirmation implementation of the bottoms sheet observer. */
 @NullMarked
-/*package*/ class SecurePaymentConfirmationBottomSheetObserver extends EmptyBottomSheetObserver {
+/*package*/ class SecurePaymentConfirmationBottomSheetObserver implements BottomSheetObserver {
     /** Controller callbacks for secure payment confirmation. */
     interface ControllerDelegate {
         void onCancel();
@@ -52,7 +52,8 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
         mFinished = false;
     }
 
-    // Overrides EmptyBottomSheetObserver onSheetClosed method for BottomSheetController.
+    // Overrides BottomSheetObserver onSheetClosed method for
+    // BottomSheetController.
     @Override
     public void onSheetClosed(@StateChangeReason int reason) {
         if (reason == StateChangeReason.INTERACTION_COMPLETE) {

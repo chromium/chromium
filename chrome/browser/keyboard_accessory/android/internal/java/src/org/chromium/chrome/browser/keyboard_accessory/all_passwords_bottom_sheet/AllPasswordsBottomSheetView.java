@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.base.LocalizationUtils;
 
 /**
@@ -40,10 +39,9 @@ class AllPasswordsBottomSheetView implements BottomSheetContent {
     private final LinearLayout mContentView;
 
     private final BottomSheetObserver mBottomSheetObserver =
-            new EmptyBottomSheetObserver() {
+            new BottomSheetObserver() {
                 @Override
                 public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
-                    super.onSheetClosed(reason);
                     assert mDismissHandler != null;
                     mDismissHandler.onResult(reason);
                     mBottomSheetController.removeObserver(mBottomSheetObserver);
@@ -51,7 +49,6 @@ class AllPasswordsBottomSheetView implements BottomSheetContent {
 
                 @Override
                 public void onSheetStateChanged(int newState, int reason) {
-                    super.onSheetStateChanged(newState, reason);
                     assert mDismissHandler != null;
                     if (newState != BottomSheetController.SheetState.HIDDEN) return;
                     // This is a fail-safe for cases where onSheetClosed isn't triggered.

@@ -1,5 +1,6 @@
 include_rules = [
   "+ash/shell.h",
+  "+components/browser_ui/bottomsheet/android",
   "+components/webauthn/android",
   "+components/externalauth/android",
   "+device/fido",

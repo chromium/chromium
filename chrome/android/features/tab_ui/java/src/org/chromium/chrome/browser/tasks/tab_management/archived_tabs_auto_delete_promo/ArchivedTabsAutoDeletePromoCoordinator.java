@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabArchiveSettingsFragme
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -127,7 +126,7 @@ public class ArchivedTabsAutoDeletePromoCoordinator {
         mSheetContent = new ArchivedTabsAutoDeletePromoSheetContent(contentView, descriptionString);
 
         mSheetObserver =
-                new EmptyBottomSheetObserver() {
+                new BottomSheetObserver() {
                     @Override
                     public void onSheetClosed(@StateChangeReason int reason) {
                         if (reason != StateChangeReason.INTERACTION_COMPLETE) {

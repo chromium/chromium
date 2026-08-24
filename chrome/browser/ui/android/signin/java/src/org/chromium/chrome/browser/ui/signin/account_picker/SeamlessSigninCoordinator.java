@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
@@ -45,7 +44,7 @@ public class SeamlessSigninCoordinator implements SigninBottomSheetUiCoordinator
     private boolean mIsDestroyed;
 
     private final BottomSheetObserver mBottomSheetObserver =
-            new EmptyBottomSheetObserver() {
+            new BottomSheetObserver() {
                 @Override
                 public void onSheetClosed(@StateChangeReason int reason) {
                     mDismissalLogger.logBottomSheetDismissal(reason);

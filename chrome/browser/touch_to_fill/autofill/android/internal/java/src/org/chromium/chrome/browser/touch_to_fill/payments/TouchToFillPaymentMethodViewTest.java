@@ -176,8 +176,8 @@ import org.chromium.components.autofill.payments.BnplIssuerContext;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -195,7 +195,7 @@ import java.util.function.Consumer;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TouchToFillPaymentMethodViewTest {
     /** An observer used to record events that occur with respect to the bottom sheet. */
-    private static class TestSheetObserver extends EmptyBottomSheetObserver {
+    private static class TestSheetObserver implements BottomSheetObserver {
         /** A {@link CallbackHelper} that can wait for the `onOffsetChanged` event. */
         public final CallbackHelper mOffsetChangedCallbackHelper = new CallbackHelper();
 

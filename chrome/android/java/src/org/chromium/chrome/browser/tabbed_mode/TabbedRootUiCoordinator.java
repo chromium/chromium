@@ -270,7 +270,7 @@ import org.chromium.chrome.browser.user_education.UserEducationUtils.OptionalPro
 import org.chromium.chrome.browser.webapps.PwaRestorePromoUtils;
 import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
@@ -1132,7 +1132,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             var controller = getBottomSheetController();
             assert controller != null;
             controller.addObserver(
-                    new EmptyBottomSheetObserver() {
+                    new BottomSheetObserver() {
                         @Override
                         public void onSheetClosed(int reason) {
                             var bottomSheetController = getBottomSheetController();

@@ -42,7 +42,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content.webid.IdentityRequestDialogDisclosureField;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
@@ -73,8 +72,9 @@ class AccountSelectionMediator {
     private boolean mRegisteredObservers;
     private boolean mWasDismissed;
     private boolean mCanShowUi = true;
-    // Keeps track of the last bottom sheet seen by the BottomSheetObserver. Used to know whether a
-    // sheet state change affects the BottomSheet owned by this object or not.
+    // Keeps track of the last bottom sheet seen by the BottomSheetObserver.
+    // Used to know whether a sheet state change affects the BottomSheet owned
+    // by this object or not.
     private BottomSheetContent mLastSheetSeen;
     @VisibleForTesting private final Tab mTab;
     private final AccountSelectionComponent.Delegate mDelegate;
@@ -202,7 +202,7 @@ class AccountSelectionMediator {
         }
 
         mBottomSheetObserver =
-                new EmptyBottomSheetObserver() {
+                new BottomSheetObserver() {
                     // Sends focus events to the relevant views for accessibility.
                     // TODO(crbug.com/40262629): Add tests for TalkBack on FedCM.
                     private void focusForAccessibility() {
@@ -246,7 +246,6 @@ class AccountSelectionMediator {
                             if (reason == BottomSheetController.StateChangeReason.NONE) {
                                 mBottomSheetController.hideContent(mBottomSheetContent, true);
                             } else {
-                                super.onSheetClosed(reason);
                                 @IdentityRequestDialogDismissReason
                                 int dismissReason = IdentityRequestDialogDismissReason.OTHER;
                                 if (reason == BottomSheetController.StateChangeReason.SWIPE) {

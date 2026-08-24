@@ -62,7 +62,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
@@ -725,7 +724,7 @@ public class BottomSheetControllerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSheetController.addObserver(
-                            new EmptyBottomSheetObserver() {
+                            new BottomSheetObserver() {
                                 @Override
                                 public void onSheetClosed(@StateChangeReason int reason) {
                                     closedHelper.notifyCalled();
@@ -746,7 +745,7 @@ public class BottomSheetControllerTest {
         requestContentInSheet(mHighPriorityContent, true);
         CallbackHelper closedCallbackHelper = new CallbackHelper();
         BottomSheetObserver observer =
-                new EmptyBottomSheetObserver() {
+                new BottomSheetObserver() {
                     @Override
                     public void onSheetClosed(@StateChangeReason int reason) {
                         closedCallbackHelper.notifyCalled();

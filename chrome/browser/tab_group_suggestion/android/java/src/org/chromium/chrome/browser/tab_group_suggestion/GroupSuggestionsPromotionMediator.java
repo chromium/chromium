@@ -18,7 +18,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestion;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestions;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestionsService;
@@ -41,7 +41,7 @@ public class GroupSuggestionsPromotionMediator implements GroupSuggestionsServic
     private final TabModel mTabModel;
     private final OnClickListener mOnAcceptClickListener;
     private final OnClickListener mOnRejectClickListener;
-    private final EmptyBottomSheetObserver mBottomSheetObserver;
+    private final BottomSheetObserver mBottomSheetObserver;
 
     private @Nullable GroupSuggestionsBottomSheetContent mCurrentSheetContent;
 
@@ -97,7 +97,7 @@ public class GroupSuggestionsPromotionMediator implements GroupSuggestionsServic
                     mCurrentSheetContent = null;
                 };
         mBottomSheetObserver =
-                new EmptyBottomSheetObserver() {
+                new BottomSheetObserver() {
                     @Override
                     public void onSheetClosed(int reason) {
                         if (mCurrentSheetContent != null) {

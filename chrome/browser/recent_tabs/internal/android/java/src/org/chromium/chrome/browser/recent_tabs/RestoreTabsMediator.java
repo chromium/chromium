@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -84,10 +83,9 @@ public class RestoreTabsMediator {
                 });
 
         mBottomSheetDismissedObserver =
-                new EmptyBottomSheetObserver() {
+                new BottomSheetObserver() {
                     @Override
                     public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
-                        super.onSheetClosed(reason);
                         dismiss();
                         assumeNonNull(mBottomSheetController)
                                 .removeObserver(mBottomSheetDismissedObserver);

@@ -69,14 +69,13 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
     private @Nullable RecyclerView mSheetItemListView;
 
     private final BottomSheetObserver mBottomSheetObserver =
-            new EmptyBottomSheetObserver() {
+            new BottomSheetObserver() {
                 @Override
                 public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
                     if (mBottomSheetController.getCurrentSheetContent()
                             != BottomSheetListViewBase.this) {
                         return;
                     }
-                    super.onSheetClosed(reason);
                     assert mDismissHandler != null;
                     mDismissHandler.onResult(reason);
                     mBottomSheetController.removeObserver(mBottomSheetObserver);
@@ -89,7 +88,6 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
                             != BottomSheetListViewBase.this) {
                         return;
                     }
-                    super.onSheetStateChanged(newState, reason);
                     BottomSheetListViewBase.this.onSheetStateChanged(newState, reason);
                     if (newState == BottomSheetController.SheetState.FULL) {
                         // The list of items should be scrollable in full state.
@@ -102,7 +100,9 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
                         // until the user scrolls to the top.
                         assumeNonNull(mSheetItemListView).suppressLayout(true);
                     }
-                    if (newState != BottomSheetController.SheetState.HIDDEN) return;
+                    if (newState != BottomSheetController.SheetState.HIDDEN) {
+                        return;
+                    }
                     // This is a fail-safe for cases where onSheetClosed isn't triggered.
                     assumeNonNull(mDismissHandler);
                     mDismissHandler.onResult(BottomSheetController.StateChangeReason.NONE);

@@ -33,7 +33,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
@@ -392,7 +391,7 @@ public class TabBottomSheetCoordinator {
     }
 
     private BottomSheetObserver buildBottomSheetObserver() {
-        return new EmptyBottomSheetObserver() {
+        return new BottomSheetObserver() {
             private @SheetState int mLastStableState = SheetState.HIDDEN;
 
             @Override

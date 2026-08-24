@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.touch_to_fill.payments.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 
 /**
  * This class is responsible for rendering the bottom sheet which displays the TouchToFillAutofill
@@ -29,14 +28,13 @@ class TouchToFillAutofillView implements BottomSheetContent {
     private boolean mIsShowing;
 
     private final BottomSheetObserver mBottomSheetObserver =
-            new EmptyBottomSheetObserver() {
+            new BottomSheetObserver() {
                 @Override
                 public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
                     if (mBottomSheetController.getCurrentSheetContent()
                             != TouchToFillAutofillView.this) {
                         return;
                     }
-                    super.onSheetClosed(reason);
                     mIsShowing = false;
                     if (mDismissHandler != null) {
                         mDismissHandler.run();

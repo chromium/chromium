@@ -12,7 +12,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.base.WindowAndroid;
@@ -23,7 +23,7 @@ import org.chromium.ui.base.WindowAndroid;
  * deregisters itself once the sheet is closed.
  */
 @NullMarked
-public class BottomSheetFocusHelper extends EmptyBottomSheetObserver {
+public class BottomSheetFocusHelper implements BottomSheetObserver {
     private final WindowAndroid mWindowAndroid;
     private final BottomSheetController mBottomSheetController;
     private @Nullable WebContentsAccessibility mWebContentsAccessibility;

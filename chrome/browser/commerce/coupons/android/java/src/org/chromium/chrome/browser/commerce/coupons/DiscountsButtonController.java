@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.function.Supplier;
@@ -56,7 +55,7 @@ public class DiscountsButtonController extends BaseButtonDataProvider {
 
         mBottomSheetController = bottomSheetController;
         mBottomSheetObserver =
-                new EmptyBottomSheetObserver() {
+                new BottomSheetObserver() {
                     @Override
                     public void onSheetStateChanged(int newState, int reason) {
                         mButtonData.setEnabled(newState == SheetState.HIDDEN);

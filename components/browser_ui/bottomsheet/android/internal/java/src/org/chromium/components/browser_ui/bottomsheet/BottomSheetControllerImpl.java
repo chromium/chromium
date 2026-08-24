@@ -258,7 +258,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         PropertyModel scrimProperties = createScrimParams();
 
         mBottomSheet.addObserver(
-                new EmptyBottomSheetObserver() {
+                new BottomSheetObserver() {
                     /**
                      * Whether the scrim was shown for the last content. TODO(mdjones): We should
                      * try to make sure the content in the sheet is not nulled prior to the close

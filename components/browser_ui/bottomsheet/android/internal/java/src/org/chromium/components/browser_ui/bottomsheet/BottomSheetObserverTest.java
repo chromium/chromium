@@ -45,24 +45,48 @@ import java.util.function.Supplier;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class BottomSheetObserverTest {
-    /** An observer used to record events that occur with respect to the bottom sheet. */
-    public static class TestSheetObserver extends EmptyBottomSheetObserver {
-        /** A {@link CallbackHelper} that can wait for the bottom sheet to be closed. */
-        public final CallbackHelper mClosedCallbackHelper = new CallbackHelper();
+    /**
+     * An observer used to record events that occur with respect to the bottom
+     * sheet.
+     */
+    public static class TestSheetObserver implements BottomSheetObserver {
+        /**
+         * A {@link CallbackHelper} that can wait for the bottom sheet to be
+         * closed.
+         */
+        public final CallbackHelper mClosedCallbackHelper =
+                new CallbackHelper();
 
-        /** A {@link CallbackHelper} that can wait for the bottom sheet to be opened. */
+        /**
+         * A {@link CallbackHelper} that can wait for the bottom sheet to be
+         * opened.
+         */
         public final CallbackHelper mOpenedCallbackHelper = new CallbackHelper();
 
-        /** A {@link CallbackHelper} that can wait for the onOffsetChanged event. */
-        public final CallbackHelper mOffsetChangedCallbackHelper = new CallbackHelper();
+        /**
+         * A {@link CallbackHelper} that can wait for the onOffsetChanged event.
+         */
+        public final CallbackHelper mOffsetChangedCallbackHelper =
+                new CallbackHelper();
 
-        /** A {@link CallbackHelper} that can wait for the onContainerBottomMarginChanged event. */
-        public final CallbackHelper mBottomMarginChangedCallbackHelper = new CallbackHelper();
+        /**
+         * A {@link CallbackHelper} that can wait for the
+         * onContainerBottomMarginChanged event.
+         */
+        public final CallbackHelper mBottomMarginChangedCallbackHelper =
+                new CallbackHelper();
 
-        /** A {@link CallbackHelper} that can wait for the onSheetContentChanged event. */
-        public final CallbackHelper mContentChangedCallbackHelper = new CallbackHelper();
+        /**
+         * A {@link CallbackHelper} that can wait for the onSheetContentChanged
+         * event.
+         */
+        public final CallbackHelper mContentChangedCallbackHelper =
+                new CallbackHelper();
 
-        /** A {@link CallbackHelper} that can wait for the sheet to be in its full state. */
+        /**
+         * A {@link CallbackHelper} that can wait for the sheet to be in its
+         * full state.
+         */
         public final CallbackHelper mFullCallbackHelper = new CallbackHelper();
 
         /** A {@link CallbackHelper} that can wait for the sheet to be hidden. */

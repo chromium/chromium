@@ -21,7 +21,6 @@ import org.chromium.chrome.modules.readaloud.Player.Delegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -31,7 +30,7 @@ public class ExpandedPlayerCoordinator implements ConfigurationChangedObserver {
     private boolean mSheetVisible;
 
     private final BottomSheetObserver mBottomSheetObserver =
-            new EmptyBottomSheetObserver() {
+            new BottomSheetObserver() {
                 private @Nullable BottomSheetContent mTrackedContent;
 
                 @Override

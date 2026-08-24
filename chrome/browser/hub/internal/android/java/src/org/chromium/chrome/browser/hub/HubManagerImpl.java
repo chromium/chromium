@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -68,7 +67,7 @@ public class HubManagerImpl implements HubManager, HubController {
     private final SettableNonNullObservableSupplier<Integer> mSnackbarMarginSupplier =
             ObservableSuppliers.createNonNull(0);
     private final BottomSheetObserver mBottomSheetObserver =
-            new EmptyBottomSheetObserver() {
+            new BottomSheetObserver() {
                 @Override
                 public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
                     mSnackbarMarginSupplier.set(Math.round(offsetPx));

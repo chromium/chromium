@@ -51,7 +51,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -163,7 +163,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final Callback<Boolean> mFormFieldViewOffsetCallback;
     private final Callback<Integer> mControlContainerTranslationCallback;
     private final Callback<Integer> mControlContainerHeightCallback;
-    private final EmptyBottomSheetObserver mBottomSheetObserver;
+    private final BottomSheetObserver mBottomSheetObserver;
     private final BrowserControlsStateProvider.Observer mBrowserControlsObserver;
     private final SharedPreferences mSharedPreferences;
     private final TopInsetProvider.Observer mTopInsetProviderObserver;
@@ -393,7 +393,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                 mControlContainerHeightCallback);
 
         mBottomSheetObserver =
-                new EmptyBottomSheetObserver() {
+                new BottomSheetObserver() {
                     @Override
                     public void onSheetStateChanged(
                             @SheetState int newState, @StateChangeReason int reason) {

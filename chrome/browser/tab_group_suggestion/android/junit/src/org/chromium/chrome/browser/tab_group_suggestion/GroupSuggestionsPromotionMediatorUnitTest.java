@@ -47,7 +47,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestion;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestions;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestionsService;
@@ -85,7 +85,7 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
     @Mock Tab mTab1;
     @Mock Tab mTab2;
 
-    @Captor ArgumentCaptor<EmptyBottomSheetObserver> mBottomSheetObserver;
+    @Captor ArgumentCaptor<BottomSheetObserver> mBottomSheetObserver;
 
     private PropertyModel mModel;
     private GroupSuggestionsPromotionMediator mMediator;

@@ -24,7 +24,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** The bottom sheet content for the Restore Tabs promo. */
@@ -50,16 +49,14 @@ public class RestoreTabsPromoSheetContent implements BottomSheetContent {
         mBackPressHandler = new RestoreTabsBackPressHandler(model);
 
         mBottomSheetOpenedObserver =
-                new EmptyBottomSheetObserver() {
+                new BottomSheetObserver() {
                     @Override
                     public void onSheetOpened(@BottomSheetController.StateChangeReason int reason) {
-                        super.onSheetOpened(reason);
                         mBackPressStateChangedSupplier.set(true);
                     }
 
                     @Override
                     public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
-                        super.onSheetClosed(reason);
                         mBackPressStateChangedSupplier.set(false);
                         mBottomSheetController.removeObserver(mBottomSheetOpenedObserver);
                     }

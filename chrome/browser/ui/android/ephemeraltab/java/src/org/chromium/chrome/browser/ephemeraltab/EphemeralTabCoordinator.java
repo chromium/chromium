@@ -33,7 +33,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -68,7 +68,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
     private @Nullable WebContents mWebContents;
     private @Nullable ContentView mContentView;
     private @Nullable EphemeralTabSheetContent mSheetContent;
-    private @Nullable EmptyBottomSheetObserver mSheetObserver;
+    private @Nullable BottomSheetObserver mSheetObserver;
 
     private @MonotonicNonNull GURL mUrl;
     private @Nullable GURL mFullPageUrl;
@@ -205,7 +205,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
             assert mSheetContent == null;
             createWebContents(profile);
             mSheetObserver =
-                    new EmptyBottomSheetObserver() {
+                    new BottomSheetObserver() {
                         @Override
                         public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
                             if (newContent != mSheetContent) {

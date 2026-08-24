@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -101,7 +100,7 @@ public class PriceInsightsBottomSheetCoordinator {
                         priceInsightsDelegate,
                         propertyModel);
         mBottomSheetObserver =
-                new EmptyBottomSheetObserver() {
+                new BottomSheetObserver() {
 
                     @Override
                     public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
