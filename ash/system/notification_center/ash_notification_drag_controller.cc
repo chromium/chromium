@@ -11,7 +11,6 @@
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
-#include "base/metrics/histogram_functions.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
@@ -37,14 +36,14 @@ void AshNotificationDragController::OnDragStarted() {
     // A drag-and-drop session could start before an async drop finishes. In
     // this case, neither `OnDropCompleted()` nor `OnDragCancelled()` is called.
     // Therefore, clean up the active notification drag handling.
-    CleanUp(DragEndState::kInterruptedByNewDrag);
+    CleanUp();
   } else {
     drag_in_progress_ = true;
   }
 }
 
 void AshNotificationDragController::OnDragCancelled() {
-  CleanUp(DragEndState::kCancelled);
+  CleanUp();
 }
 
 void AshNotificationDragController::OnDropCompleted(
@@ -52,14 +51,12 @@ void AshNotificationDragController::OnDropCompleted(
   // Remove the dragged notification from the message center if drag-and-drop
   // ends with copy. `MessageCenter::RemoveNotification()` guarantees that only
   // unpinned notifications are removable to users.
-  DragEndState state = DragEndState::kCompletedWithoutDrop;
   if (drag_operation == ui::mojom::DragOperation::kCopy) {
     message_center::MessageCenter::Get()->RemoveNotification(
         *dragged_notification_id_, /*by_user=*/true);
-    state = DragEndState::kCompletedWithDrop;
   }
 
-  CleanUp(state);
+  CleanUp();
 }
 
 void AshNotificationDragController::WriteDragDataForView(
@@ -143,7 +140,7 @@ bool AshNotificationDragController::CanStartDragForView(
     // this case, neither `OnDropCompleted()` nor `OnDragCancelled()` is called.
     // Therefore, clean up the active notification drag handling.
     if (drag_in_progress_) {
-      CleanUp(DragEndState::kInterruptedByNewDrag);
+      CleanUp();
     }
   }
 
@@ -174,9 +171,6 @@ void AshNotificationDragController::OnNotificationDragWillStart(
       message_center::MessageCenter::Get();
   message_center::Notification* notification =
       message_center_ptr->FindNotificationById(*dragged_notification_id_);
-  base::UmaHistogramEnumeration("Ash.NotificationView.ImageDrag.Start",
-                                notification->notifier_id().catalog_name);
-
   // Hide the message center bubble if it is open.
   if (message_center_ptr->IsMessageCenterVisible()) {
     StatusAreaWidget* status_area_widget =
@@ -214,14 +208,11 @@ void AshNotificationDragController::OnNotificationDragWillStart(
       /*mark_notification_as_read=*/true);
 }
 
-void AshNotificationDragController::CleanUp(DragEndState state) {
+void AshNotificationDragController::CleanUp() {
   DCHECK(drag_in_progress_);
   drag_in_progress_ = false;
   dragged_notification_id_.reset();
   drag_drop_client_observer_.Reset();
-
-  base::UmaHistogramEnumeration("Ash.NotificationView.ImageDrag.EndState",
-                                state);
 }
 
 }  // namespace ash

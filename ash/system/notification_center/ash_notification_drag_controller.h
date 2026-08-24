@@ -46,27 +46,6 @@ class AshNotificationDragController
  private:
   FRIEND_TEST_ALL_PREFIXES(AshNotificationViewDragTest, Basics);
 
-  // Lists notification drag end states.
-  // NOTE: used by metrics. Therefore, current values should not be renumbered
-  // or removed. This should be kept in sync with the enum
-  // `NotificationImageDragEndState` in
-  // tools/metrics/histograms/metadata/ash/enums.xml.
-  enum class DragEndState {
-    // Interrupted by a new drag session before the current one finishes.
-    kInterruptedByNewDrag = 0,
-
-    // Cancelled by users.
-    kCancelled = 1,
-
-    // Drag completes and the notification image is dropped to the target.
-    kCompletedWithDrop = 2,
-
-    // Drag completes and the notification image is NOT dropped to the target.
-    kCompletedWithoutDrop = 3,
-
-    kMaxValue = kCompletedWithoutDrop,
-  };
-
   // aura::client::DragDropClientObserver:
   void OnDragStarted() override;
   void OnDragCancelled() override;
@@ -91,7 +70,7 @@ class AshNotificationDragController
   // 2. Drop is completed; or
   // 3. A new drag-and-drop session starts without waiting for the current
   // async drop to finish.
-  void CleanUp(DragEndState state);
+  void CleanUp();
 
   // True if there is a notification drag being handled.
   bool drag_in_progress_ = false;
