@@ -15,10 +15,6 @@ bool PositionTryFallback::operator==(const PositionTryFallback& other) const {
 bool PositionTryFallback::Matches(const PositionTryFallback& other) const {
   AtomicString name;
   AtomicString other_name;
-  // TODO(crbug.com/417621241): Currently, TreeScope is ignored, which means
-  // anchored(fallback: --foo) will match --foo from any tree, regardless of
-  // where the @container rule or position-try-fallbacks property value
-  // originates from.
   if (position_try_name_) {
     name = position_try_name_->GetName();
   }
