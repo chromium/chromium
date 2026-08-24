@@ -2711,16 +2711,6 @@ static_library("ui") {
       "views/tab_search_bubble_host.h",
       "views/tabs/browser_tab_strip_controller.cc",
       "views/tabs/browser_tab_strip_controller.h",
-      "views/tabs/dragging/drag_session_data.cc",
-      "views/tabs/dragging/drag_session_data.h",
-      "views/tabs/dragging/dragging_tabs_session.cc",
-      "views/tabs/dragging/dragging_tabs_session.h",
-      "views/tabs/dragging/tab_drag_context.cc",
-      "views/tabs/dragging/tab_drag_context.h",
-      "views/tabs/dragging/tab_drag_controller.cc",
-      "views/tabs/dragging/tab_drag_controller.h",
-      "views/tabs/dragging/window_finder.cc",
-      "views/tabs/dragging/window_finder.h",
       "views/tabs/groups/color_picker_view.cc",
       "views/tabs/groups/color_picker_view.h",
       "views/tabs/groups/recent_activity_bubble_dialog_view.cc",
@@ -3038,6 +3028,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/tab_contents",
       "//chrome/browser/ui/views/tab_sharing",
       "//chrome/browser/ui/views/tabs/common",
+      "//chrome/browser/ui/views/tabs/dragging",
+      "//chrome/browser/ui/views/tabs/dragging:impl",
       "//chrome/browser/ui/views/tabs/dragging:tab_drag_target",
       "//chrome/browser/ui/views/tabs/groups",
       "//chrome/browser/ui/views/tabs/horizontal",
@@ -3301,15 +3293,26 @@ static_library("ui") {
       "//chrome/browser/ui/views/tabs/tab:impl",
 
       # TODO(crbug.com/451609048): Remove this circular dependency when the
+      # following header gets componentized:
+      # - c/b/ui/views/tabs/tab_slot_view.h
+      "//chrome/browser/ui/views/tabs/dragging",
+
+      # TODO(crbug.com/451609048): Remove this circular dependency when the
+      # following headers get componentized:
+      # - c/b/ui/browser_commands.h
+      # - c/b/ui/views/frame/browser_view.h
+      # - c/b/ui/views/tabs/tab.h
+      # - c/b/ui/views/tabs/tab_slot_view.h
+      # - c/b/ui/views/tabs/tab_strip.h
+      "//chrome/browser/ui/views/tabs/dragging:impl",
+
+      # TODO(crbug.com/451609048): Remove this circular dependency when the
       # following headers get componentized:
       # - c/b/ui/browser_commands.h
       # - c/b/ui/views/frame/browser_frame_view.h
       # - c/b/ui/views/frame/browser_view.h
       # - c/b/ui/views/frame/themed_background.h
       # - c/b/ui/views/frame/vertical_tab_strip_region_view.h
-      # - c/b/ui/views/tabs/dragging/drag_session_data.h
-      # - c/b/ui/views/tabs/dragging/tab_drag_context.h
-      # - c/b/ui/views/tabs/dragging/tab_drag_controller.h
       # - c/b/ui/views/tabs/groups/tab_group_accessibility.h
       # - c/b/ui/views/tabs/hovercard/hover_card_anchor_target.h
       # - c/b/ui/views/tabs/hovercard/tab_hover_card_controller.h

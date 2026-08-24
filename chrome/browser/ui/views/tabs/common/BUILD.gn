@@ -143,6 +143,7 @@ source_set("impl") {
     ":common",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/tabs/alert:tab_alert",
+    "//chrome/browser/ui/views/tabs/dragging",
   ]
 }
 
