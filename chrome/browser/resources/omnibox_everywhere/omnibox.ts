@@ -170,6 +170,7 @@ export class OmniboxEverywhereOmniboxElement extends
   private callbackRouter_: PageCallbackRouter;
   private autocompleteResultChangedListenerId_: number|null = null;
   private inputStateListenerId_: number|null = null;
+  private aimPopupEligibilityListenerId_: number|null = null;
 
   constructor() {
     super();
@@ -190,6 +191,11 @@ export class OmniboxEverywhereOmniboxElement extends
             (inputState: InputState) => {
               this.inputState_ = inputState;
             });
+    this.aimPopupEligibilityListenerId_ =
+        this.callbackRouter_.updateAimPopupEligibility.addListener(
+            (eligible: boolean) => {
+              this.composeButtonEnabled = eligible;
+            });
     this.pageHandler_.getInputState().then((response) => {
       this.inputState_ = response.state;
     });
@@ -205,6 +211,10 @@ export class OmniboxEverywhereOmniboxElement extends
     if (this.inputStateListenerId_ !== null) {
       this.callbackRouter_.removeListener(this.inputStateListenerId_);
       this.inputStateListenerId_ = null;
+    }
+    if (this.aimPopupEligibilityListenerId_ !== null) {
+      this.callbackRouter_.removeListener(this.aimPopupEligibilityListenerId_);
+      this.aimPopupEligibilityListenerId_ = null;
     }
   }
 

@@ -24,10 +24,14 @@
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/ntp_tiles/pref_names.h"
+#include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/context_menu_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/menus/simple_menu_model.h"
@@ -938,16 +942,37 @@ TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuModelEditableElement) {
   const ui::SimpleMenuModel* model =
       ui_manager->context_menu_model_for_testing();
   ASSERT_TRUE(model);
-  EXPECT_EQ(model->GetItemCount(), 5u);
-  EXPECT_EQ(model->GetCommandIdAt(0),
+
+  size_t index = 0;
+  EXPECT_EQ(model->GetCommandIdAt(index++),
+            omnibox_everywhere::OmniboxEverywhereUIManager::kUndo);
+  EXPECT_EQ(model->GetTypeAt(index++), ui::MenuModel::ItemType::TYPE_SEPARATOR);
+  EXPECT_EQ(model->GetCommandIdAt(index++),
             omnibox_everywhere::OmniboxEverywhereUIManager::kCut);
-  EXPECT_EQ(model->GetCommandIdAt(1),
+  EXPECT_EQ(model->GetCommandIdAt(index++),
             omnibox_everywhere::OmniboxEverywhereUIManager::kCopy);
-  EXPECT_EQ(model->GetCommandIdAt(2),
+  EXPECT_EQ(model->GetCommandIdAt(index++),
             omnibox_everywhere::OmniboxEverywhereUIManager::kPaste);
-  EXPECT_EQ(model->GetTypeAt(3), ui::MenuModel::ItemType::TYPE_SEPARATOR);
-  EXPECT_EQ(model->GetCommandIdAt(4),
+  EXPECT_EQ(model->GetCommandIdAt(index++),
+            omnibox_everywhere::OmniboxEverywhereUIManager::kPasteAndSearch);
+  EXPECT_EQ(model->GetCommandIdAt(index++),
+            omnibox_everywhere::OmniboxEverywhereUIManager::kDelete);
+  EXPECT_EQ(model->GetTypeAt(index++), ui::MenuModel::ItemType::TYPE_SEPARATOR);
+  EXPECT_EQ(model->GetCommandIdAt(index++),
             omnibox_everywhere::OmniboxEverywhereUIManager::kSelectAll);
+  EXPECT_EQ(model->GetTypeAt(index++), ui::MenuModel::ItemType::TYPE_SEPARATOR);
+  EXPECT_EQ(
+      model->GetCommandIdAt(index++),
+      omnibox_everywhere::OmniboxEverywhereUIManager::kManageSearchEngines);
+  EXPECT_EQ(model->GetTypeAt(index++), ui::MenuModel::ItemType::TYPE_SEPARATOR);
+  EXPECT_EQ(model->GetCommandIdAt(index++),
+            omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts);
+  EXPECT_EQ(model->GetCommandIdAt(index++),
+            omnibox_everywhere::OmniboxEverywhereUIManager::
+                kCustomizeKeyboardShortcut);
+  EXPECT_EQ(model->GetCommandIdAt(index++),
+            omnibox_everywhere::OmniboxEverywhereUIManager::kSettings);
+  EXPECT_EQ(model->GetItemCount(), index);
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest,
@@ -968,16 +993,27 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   const ui::SimpleMenuModel* model =
       ui_manager->context_menu_model_for_testing();
   ASSERT_TRUE(model);
-  EXPECT_EQ(model->GetItemCount(), 3u);
+  EXPECT_EQ(model->GetItemCount(), 9u);
   EXPECT_EQ(model->GetCommandIdAt(0),
             omnibox_everywhere::OmniboxEverywhereUIManager::kCopy);
   EXPECT_EQ(model->GetTypeAt(1), ui::MenuModel::ItemType::TYPE_SEPARATOR);
   EXPECT_EQ(model->GetCommandIdAt(2),
             omnibox_everywhere::OmniboxEverywhereUIManager::kSelectAll);
+  EXPECT_EQ(model->GetTypeAt(3), ui::MenuModel::ItemType::TYPE_SEPARATOR);
+  EXPECT_EQ(
+      model->GetCommandIdAt(4),
+      omnibox_everywhere::OmniboxEverywhereUIManager::kManageSearchEngines);
+  EXPECT_EQ(model->GetTypeAt(5), ui::MenuModel::ItemType::TYPE_SEPARATOR);
+  EXPECT_EQ(model->GetCommandIdAt(6),
+            omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts);
+  EXPECT_EQ(model->GetCommandIdAt(7),
+            omnibox_everywhere::OmniboxEverywhereUIManager::
+                kCustomizeKeyboardShortcut);
+  EXPECT_EQ(model->GetCommandIdAt(8),
+            omnibox_everywhere::OmniboxEverywhereUIManager::kSettings);
 }
 
-TEST_F(OmniboxEverywhereUIManagerTest,
-       ContextMenuSuppressedOnNonEditableBackground) {
+TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuModelNonEditableBackground) {
   auto ui_manager = CreateUIManager();
   ui_manager->ShowForProfile(&profile_, GetContext());
   ASSERT_TRUE(ui_manager->widget());
@@ -990,28 +1026,54 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   content::ContextMenuParams params;
   params.is_editable = false;
   params.selection_text = u"";
-
-  bool menu_runner_created = false;
-  ui_manager->SetMenuRunnerFactoryForTesting(base::BindRepeating(
-      [](bool* created, ui::MenuModel* model,
-         base::RepeatingClosure on_closed) {
-        *created = true;
-        auto runner = std::make_unique<views::MenuRunner>(
-            model,
-            views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU,
-            on_closed);
-        views::test::MenuRunnerTestAPI(runner.get())
-            .SetMenuRunnerHandler(std::make_unique<TestMenuRunnerHandler>());
-        return runner;
-      },
-      &menu_runner_created));
-
-  // Should return true (consumed/handled) but NOT create or open a context
-  // menu.
   EXPECT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
-  EXPECT_FALSE(menu_runner_created);
-  EXPECT_FALSE(ui_manager->is_context_menu_open_for_testing());
-  EXPECT_FALSE(ui_manager->context_menu_model_for_testing());
+
+  const ui::SimpleMenuModel* model =
+      ui_manager->context_menu_model_for_testing();
+  ASSERT_TRUE(model);
+  EXPECT_EQ(model->GetItemCount(), 5u);
+  EXPECT_EQ(
+      model->GetCommandIdAt(0),
+      omnibox_everywhere::OmniboxEverywhereUIManager::kManageSearchEngines);
+  EXPECT_EQ(model->GetTypeAt(1), ui::MenuModel::ItemType::TYPE_SEPARATOR);
+  EXPECT_EQ(model->GetCommandIdAt(2),
+            omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts);
+  EXPECT_EQ(model->GetCommandIdAt(3),
+            omnibox_everywhere::OmniboxEverywhereUIManager::
+                kCustomizeKeyboardShortcut);
+  EXPECT_EQ(model->GetCommandIdAt(4),
+            omnibox_everywhere::OmniboxEverywhereUIManager::kSettings);
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       ShowContextMenuForViewOpensBackgroundContextMenu) {
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+
+  views::View* contents_view = ui_manager->widget()->GetContentsView();
+  ASSERT_TRUE(contents_view);
+
+  // Trigger context menu via views::ContextMenuController (e.g. right-click on
+  // draggable background region).
+  ui_manager->ShowContextMenuForView(contents_view, gfx::Point(50, 50),
+                                     ui::mojom::MenuSourceType::kMouse);
+
+  const ui::SimpleMenuModel* model =
+      ui_manager->context_menu_model_for_testing();
+  ASSERT_TRUE(model);
+  EXPECT_EQ(model->GetItemCount(), 5u);
+  EXPECT_EQ(
+      model->GetCommandIdAt(0),
+      omnibox_everywhere::OmniboxEverywhereUIManager::kManageSearchEngines);
+  EXPECT_EQ(model->GetTypeAt(1), ui::MenuModel::ItemType::TYPE_SEPARATOR);
+  EXPECT_EQ(model->GetCommandIdAt(2),
+            omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts);
+  EXPECT_EQ(model->GetCommandIdAt(3),
+            omnibox_everywhere::OmniboxEverywhereUIManager::
+                kCustomizeKeyboardShortcut);
+  EXPECT_EQ(model->GetCommandIdAt(4),
+            omnibox_everywhere::OmniboxEverywhereUIManager::kSettings);
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuCommandEnablement) {
@@ -1026,9 +1088,13 @@ TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuCommandEnablement) {
   content::ContextMenuParams params;
   params.is_editable = true;
   params.edit_flags = blink::ContextMenuDataEditFlags::kCanCut |
-                      blink::ContextMenuDataEditFlags::kCanCopy;
+                      blink::ContextMenuDataEditFlags::kCanCopy |
+                      blink::ContextMenuDataEditFlags::kCanUndo |
+                      blink::ContextMenuDataEditFlags::kCanDelete;
   ui_manager->HandleContextMenu(*rfh, params);
 
+  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kUndo));
   EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
       omnibox_everywhere::OmniboxEverywhereUIManager::kCut));
   EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
@@ -1036,21 +1102,149 @@ TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuCommandEnablement) {
   EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
       omnibox_everywhere::OmniboxEverywhereUIManager::kPaste));
   EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kDelete));
+  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
       omnibox_everywhere::OmniboxEverywhereUIManager::kSelectAll));
+  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kManageSearchEngines));
+  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode));
+  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts));
+  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::
+          kCustomizeKeyboardShortcut));
+  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kSettings));
 
-  // Without edit flags, Cut and Copy should be disabled if selection is empty.
+  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kPaste));
+  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kPasteAndSearch));
+
+  // Without edit flags, Cut, Copy, Undo, and Delete should be disabled if
+  // selection is empty.
   params.edit_flags = 0;
   params.selection_text = u"";
   ui_manager->HandleContextMenu(*rfh, params);
 
   EXPECT_FALSE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kUndo));
+  EXPECT_FALSE(ui_manager->IsCommandIdEnabled(
       omnibox_everywhere::OmniboxEverywhereUIManager::kCut));
   EXPECT_FALSE(ui_manager->IsCommandIdEnabled(
       omnibox_everywhere::OmniboxEverywhereUIManager::kCopy));
+  EXPECT_FALSE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kDelete));
   EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
       omnibox_everywhere::OmniboxEverywhereUIManager::kPaste));
   EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kPasteAndSearch));
+  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
       omnibox_everywhere::OmniboxEverywhereUIManager::kSelectAll));
+
+  // When not editable and without kCanPaste flag, Paste is disabled.
+  params.is_editable = false;
+  ui_manager->HandleContextMenu(*rfh, params);
+  EXPECT_FALSE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kPaste));
+
+  // When not editable but kCanPaste flag is explicitly present, Paste is
+  // enabled.
+  params.edit_flags = blink::ContextMenuDataEditFlags::kCanPaste;
+  ui_manager->HandleContextMenu(*rfh, params);
+  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kPaste));
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, ExecutePasteAndSearchCommand) {
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteText(u"https://example.com/");
+  }
+
+  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kPasteAndSearch));
+  ui_manager->ExecuteCommand(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kPasteAndSearch, 0);
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       ContextMenuManageSearchEnginesSafetyGuard) {
+  auto ui_manager = CreateUIManager();
+  // Before showing (no WebContents / no profile), commands are disabled.
+  EXPECT_FALSE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kManageSearchEngines));
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kManageSearchEngines));
+
+  ui_manager->Shutdown();
+  EXPECT_FALSE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kManageSearchEngines));
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuAlwaysShowAiModeToggle) {
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+
+  profile_.GetPrefs()->SetBoolean(omnibox::kShowAiModeOmniboxButton, true);
+  EXPECT_TRUE(ui_manager->IsCommandIdChecked(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode));
+
+  ui_manager->ExecuteCommand(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode, 0);
+  EXPECT_FALSE(
+      profile_.GetPrefs()->GetBoolean(omnibox::kShowAiModeOmniboxButton));
+  EXPECT_FALSE(ui_manager->IsCommandIdChecked(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode));
+
+  ui_manager->ExecuteCommand(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode, 0);
+  EXPECT_TRUE(
+      profile_.GetPrefs()->GetBoolean(omnibox::kShowAiModeOmniboxButton));
+  EXPECT_TRUE(ui_manager->IsCommandIdChecked(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kAlwaysShowAiMode));
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuShowShortcutsToggle) {
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetInteger(
+        omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts,
+        static_cast<int>(
+            omnibox_everywhere::prefs::ShowShortcutsPrefValue::kEnabled));
+    EXPECT_TRUE(ui_manager->IsCommandIdChecked(
+        omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts));
+
+    ui_manager->ExecuteCommand(
+        omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts, 0);
+    EXPECT_EQ(
+        g_browser_process->local_state()->GetInteger(
+            omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts),
+        static_cast<int>(
+            omnibox_everywhere::prefs::ShowShortcutsPrefValue::kDisabled));
+    EXPECT_FALSE(ui_manager->IsCommandIdChecked(
+        omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts));
+
+    ui_manager->ExecuteCommand(
+        omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts, 0);
+    EXPECT_EQ(g_browser_process->local_state()->GetInteger(
+                  omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts),
+              static_cast<int>(
+                  omnibox_everywhere::prefs::ShowShortcutsPrefValue::kEnabled));
+    EXPECT_TRUE(ui_manager->IsCommandIdChecked(
+        omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts));
+  }
 }
 
 // TODO(crbug.com/546710681): Re-enable test on linux

@@ -8,11 +8,12 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-class OmniboxEverywhereService;
 class MetricsReporter;
+class OmniboxEverywhereService;
 
 namespace content {
 class WebUI;
@@ -70,7 +71,10 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler {
   void CleanupDrivePicker() override;
 
  private:
+  void OnAimEligibilityChanged();
+
   raw_ptr<OmniboxEverywhereService> service_;
+  PrefChangeRegistrar pref_change_registrar_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_OMNIBOX_EVERYWHERE_OMNIBOX_EVERYWHERE_HANDLER_H_

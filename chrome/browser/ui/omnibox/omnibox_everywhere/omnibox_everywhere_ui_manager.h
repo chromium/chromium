@@ -24,6 +24,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/menus/simple_menu_model.h"
+#include "ui/views/context_menu_controller.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -44,10 +45,14 @@ class OmniboxEverywhereWidgetDelegate;
 
 // Manages the desktop Omnibox Everywhere native window (views::Widget)
 // lifecycle and handles switching between different profiles.
+// TODO(b/543460015): Factor out ui::SimpleMenuModel::Delegate and
+// views::ContextMenuController implementation into a dedicated
+// OmniboxEverywhereContextMenuController class.
 class OmniboxEverywhereUIManager : public views::WidgetObserver,
                                    public WebUIContentsWrapper::Host,
                                    public BrowserCollectionObserver,
-                                   public ui::SimpleMenuModel::Delegate {
+                                   public ui::SimpleMenuModel::Delegate,
+                                   public views::ContextMenuController {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOmniboxEverywhereElementId);
 
@@ -62,10 +67,18 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
       base::Milliseconds(500);
 
   enum ContextMenuCommandId {
-    kCut = 1,
-    kCopy = 2,
-    kPaste = 3,
-    kSelectAll = 4,
+    kUndo = 1,
+    kCut = 2,
+    kCopy = 3,
+    kPaste = 4,
+    kPasteAndSearch = 5,
+    kDelete = 6,
+    kSelectAll = 7,
+    kManageSearchEngines = 8,
+    kAlwaysShowAiMode = 9,
+    kShowShortcuts = 10,
+    kCustomizeKeyboardShortcut = 11,
+    kSettings = 12,
   };
 
   using ContentsWrapperFactory =
@@ -135,6 +148,13 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
   bool IsCommandIdEnabled(int command_id) const override;
+  bool IsCommandIdChecked(int command_id) const override;
+
+  // views::ContextMenuController:
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
   void OnFileChooserOpened();
   void OnFileChooserClosed();
@@ -210,6 +230,11 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void ReleaseKeepAlives();
 
   std::unique_ptr<WebUIContentsWrapper> CreateContentsWrapper(Profile* profile);
+
+  void BuildInputContextMenu(const content::ContextMenuParams& params);
+  void BuildSelectionContextMenu(const content::ContextMenuParams& params);
+  void BuildBackgroundContextMenu(const content::ContextMenuParams& params);
+  void AppendSettingsContextMenu();
 
   void CleanUpWidget();
   void OnWidgetClosed(views::Widget::ClosedReason reason);

@@ -8,6 +8,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -16,9 +17,13 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_omnibox_client.h"
+#include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
+#include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/searchbox.mojom-shared.h"
 #include "components/omnibox/browser/searchbox_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/search/search.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -36,6 +41,12 @@ namespace {
 // recognition, allowing Google Search to return voice-optimized results.
 constexpr char kVoiceSearchQueryParameterKey[] = "gs_ivs";
 constexpr char kVoiceSearchQueryParameterValue[] = "1";
+
+bool IsAimEligible(Profile* profile) {
+  auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile);
+  return aim_eligibility_service && aim_eligibility_service->IsAimEligible();
+}
 
 class OmniboxEverywhereClient : public ContextualOmniboxClient {
  public:
@@ -108,6 +119,11 @@ OmniboxEverywhereHandler::OmniboxEverywhereHandler(
       base::BindRepeating(&OmniboxEverywhereHandler::GetSuggestInputs,
                           base::Unretained(this)));
   autocomplete_controller_observation_.Observe(autocomplete_controller());
+  pref_change_registrar_.Init(profile_->GetPrefs());
+  pref_change_registrar_.Add(
+      omnibox::kShowAiModeOmniboxButton,
+      base::BindRepeating(&OmniboxEverywhereHandler::OnAimEligibilityChanged,
+                          base::Unretained(this)));
 }
 
 OmniboxEverywhereHandler::~OmniboxEverywhereHandler() = default;
@@ -261,4 +277,12 @@ OmniboxEverywhereHandler::CreateAutocompleteMatch(
   }
 
   return mojom_match;
+}
+
+void OmniboxEverywhereHandler::OnAimEligibilityChanged() {
+  if (page()) {
+    page()->UpdateAimPopupEligibility(
+        IsAimEligible(profile_) &&
+        profile_->GetPrefs()->GetBoolean(omnibox::kShowAiModeOmniboxButton));
+  }
 }

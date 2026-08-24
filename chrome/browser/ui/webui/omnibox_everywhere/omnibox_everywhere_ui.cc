@@ -38,6 +38,7 @@
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
+#include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search/ntp_features.h"
@@ -258,7 +259,10 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
 
   AddMostVisitedSourceStrings(source);
 
-  source->AddBoolean("searchboxShowComposeEntrypoint", IsAimEligible(profile_));
+  source->AddBoolean(
+      "searchboxShowComposeEntrypoint",
+      IsAimEligible(profile_) &&
+          profile_->GetPrefs()->GetBoolean(omnibox::kShowAiModeOmniboxButton));
   source->AddBoolean("isFuseboxEnabled", IsFuseboxEligible(profile_));
   source->AddBoolean("ntpRealboxDynamicAiModeButton",
                      IsFuseboxEligible(profile_) &&
