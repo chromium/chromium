@@ -117,7 +117,7 @@ public class NotificationManagerTest {
         verify(mBridgeMock)
                 .markEntryActivated(
                         any(), eq(GUID), eq(ShareActivatedEntryPoint.MOBILE_NOTIFICATION));
-        verify(mMetricsMock).recordNotificationOpened();
+        verify(mMetricsMock).recordNotificationStatus(NotificationStatus.OPENED);
 
         // Verify that the started intent is explicit and targets Chrome.
         Intent startedIntent =
@@ -169,7 +169,7 @@ public class NotificationManagerTest {
         verify(mBridgeMock)
                 .markEntryActivated(
                         any(), eq(guid), eq(ShareActivatedEntryPoint.MOBILE_NOTIFICATION));
-        verify(mMetricsMock).recordNotificationOpened();
+        verify(mMetricsMock).recordNotificationStatus(NotificationStatus.OPENED);
 
         // Verify that the started intent is implicit and doesn't target Chrome.
         Intent startedIntent =
@@ -220,7 +220,7 @@ public class NotificationManagerTest {
         verify(mBridgeMock)
                 .markEntryActivated(
                         any(), eq(guid), eq(ShareActivatedEntryPoint.MOBILE_NOTIFICATION));
-        verify(mMetricsMock).recordNotificationOpened();
+        verify(mMetricsMock).recordNotificationStatus(NotificationStatus.OPENED);
 
         // Verify that the started intent targets Chrome (because feature is disabled by default).
         Intent startedIntent =
@@ -430,5 +430,27 @@ public class NotificationManagerTest {
         Assert.assertNotNull(tapIntent);
         Assert.assertNull(
                 tapIntent.getByteArrayExtra(IntentHandler.EXTRA_SEND_TAB_TO_SELF_PAGE_CONTEXT));
+    }
+
+    /**
+     * Verifies that showing, dismissing, and timing out a notification correctly record the unified
+     * NotificationStatus metric.
+     */
+    @Test
+    @SmallTest
+    public void testNotificationStatusMetricsOnShowDismissAndTimeout() {
+        NotificationManager.showNotification(
+                GUID, URL, "title", "device", 100000000L, BroadcastReceiver.class, null, null);
+        verify(mMetricsMock).recordNotificationStatus(NotificationStatus.SHOWN);
+
+        Intent dismissIntent = new Intent(NotificationManager.NOTIFICATION_ACTION_DISMISS);
+        dismissIntent.putExtra(NotificationManager.NOTIFICATION_GUID_EXTRA, GUID);
+        NotificationManager.handleIntent(dismissIntent);
+        verify(mMetricsMock).recordNotificationStatus(NotificationStatus.DISMISSED);
+
+        Intent timeoutIntent = new Intent(NotificationManager.NOTIFICATION_ACTION_TIMEOUT);
+        timeoutIntent.putExtra(NotificationManager.NOTIFICATION_GUID_EXTRA, GUID);
+        NotificationManager.handleIntent(timeoutIntent);
+        verify(mMetricsMock).recordNotificationStatus(NotificationStatus.TIMED_OUT);
     }
 }

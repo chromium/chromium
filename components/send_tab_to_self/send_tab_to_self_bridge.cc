@@ -514,7 +514,8 @@ const SendTabToSelfEntry* SendTabToSelfBridge::SendEntry(
   if (mru_entry && url == mru_entry->GetURL() &&
       target_device_cache_guid == mru_entry->GetTargetDeviceSyncCacheGuid() &&
       shared_time - mru_entry->GetSharedTime() < kDedupeTime) {
-    send_tab_to_self::RecordNotificationThrottled();
+    send_tab_to_self::RecordNotificationStatus(
+        send_tab_to_self::NotificationStatus::kThrottled);
     std::move(commit_confirmation_with_metrics)
         .Run(SendTabToSelfResult::kSuccessThrottled);
     return mru_entry;

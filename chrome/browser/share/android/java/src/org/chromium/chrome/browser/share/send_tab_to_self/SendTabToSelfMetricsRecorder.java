@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.share.send_tab_to_self;
 import android.text.TextUtils;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.metrics.RecordUserAction;
@@ -21,10 +22,6 @@ import org.chromium.content_public.browser.WebContents;
 public class SendTabToSelfMetricsRecorder {
     public static void recordCrossDeviceTabJourney() {
         RecordUserAction.record("MobileCrossDeviceTabJourney");
-    }
-
-    public static void recordNotificationShown() {
-        SendTabToSelfMetricsRecorderJni.get().recordNotificationShown();
     }
 
     /**
@@ -48,17 +45,11 @@ public class SendTabToSelfMetricsRecorder {
         SendTabToSelfMetricsRecorderJni.get().recordHasScrollPositionOnOpened(hasScrollPosition);
     }
 
-    public static void recordNotificationOpened() {
-        RecordUserAction.record("MobileCrossDeviceTabJourney");
-        SendTabToSelfMetricsRecorderJni.get().recordNotificationOpened();
-    }
-
-    public static void recordNotificationDismissed() {
-        SendTabToSelfMetricsRecorderJni.get().recordNotificationDismissed();
-    }
-
-    public static void recordNotificationTimedOut() {
-        SendTabToSelfMetricsRecorderJni.get().recordNotificationTimedOut();
+    public static void recordNotificationStatus(@NotificationStatus int status) {
+        if (status == NotificationStatus.OPENED) {
+            RecordUserAction.record("MobileCrossDeviceTabJourney");
+        }
+        SendTabToSelfMetricsRecorderJni.get().recordNotificationStatus(status);
     }
 
     public static void recordScrollPositionGenerationOutcome(
@@ -80,17 +71,12 @@ public class SendTabToSelfMetricsRecorder {
 
     @NativeMethods
     interface Natives {
-        void recordNotificationShown();
+        void recordNotificationStatus(
+                @JniType("send_tab_to_self::NotificationStatus") @NotificationStatus int status);
 
         void attachScrollObserver(WebContents webContents, boolean hasScrollPosition);
 
         void recordHasScrollPositionOnOpened(boolean hasScrollPosition);
-
-        void recordNotificationOpened();
-
-        void recordNotificationDismissed();
-
-        void recordNotificationTimedOut();
 
         void recordScrollPositionGenerationOutcome(@ScrollPositionGenerationOutcome int outcome);
 

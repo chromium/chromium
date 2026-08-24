@@ -25805,7 +25805,7 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="Throttled"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/send_tab_to_self/metrics_util.cc:SendTabToSelfNotificationStatus) -->
+<!-- LINT.ThenChange(/components/send_tab_to_self/metrics_util.h:SendTabToSelfNotificationStatus) -->
 
 <enum name="SendWebPushMessageResult">
   <int value="0" label="Successful"/>

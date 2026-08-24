@@ -43,6 +43,25 @@ enum class ShareEntryPoint {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sharing/enums.xml:SendTabToSelfShareEntryPoint)
 
+// Status of received STTS notifications.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// GENERATED_JAVA_ENUM_PACKAGE: (
+//   org.chromium.chrome.browser.share.send_tab_to_self)
+// LINT.IfChange(SendTabToSelfNotificationStatus)
+enum class NotificationStatus {
+  kShown = 0,
+  kDismissed = 1,
+  kOpened = 2,
+  kTimedOut = 3,
+  // kSent = 4,
+  // kDismissReasonUnknown = 5,
+  kThrottled = 6,
+  kMaxValue = kThrottled,
+};
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml:SendTabToSelfNotificationStatus)
+
 // Records the entry point from which the Send Tab to Self feature was invoked.
 void RecordEntryPointInvoked(ShareEntryPoint entry_point);
 
@@ -53,20 +72,8 @@ void RecordEntryPointSent(ShareEntryPoint entry_point);
 // Records the result of attempting to send a tab.
 void RecordSendResult(SendTabToSelfResult result);
 
-// Records when a received STTS notification is shown.
-void RecordNotificationShown();
-
-// Records when a received STTS notification is dismissed.
-void RecordNotificationDismissed();
-
-// Records when a received STTS notification is opened.
-void RecordNotificationOpened();
-
-// Records when a received STTS notification is shown and times out.
-void RecordNotificationTimedOut();
-
-// Records when a received STTS notification is throttled from being sent.
-void RecordNotificationThrottled();
+// Records the status of a received STTS notification.
+void RecordNotificationStatus(NotificationStatus status);
 
 // Status of the auto-open attempt for a received STTS tab.
 // These values are persisted to logs. Entries should not be renumbered and

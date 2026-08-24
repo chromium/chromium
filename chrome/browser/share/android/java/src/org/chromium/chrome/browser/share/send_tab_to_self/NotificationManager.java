@@ -190,16 +190,18 @@ public class NotificationManager {
                 SendTabToSelfAndroidBridge.markEntryOpened(profile, guid);
                 SendTabToSelfAndroidBridge.markEntryActivated(
                         profile, guid, ShareActivatedEntryPoint.MOBILE_NOTIFICATION);
-                SendTabToSelfMetricsRecorder.recordNotificationOpened();
+                SendTabToSelfMetricsRecorder.recordNotificationStatus(NotificationStatus.OPENED);
                 break;
             case NOTIFICATION_ACTION_DISMISS:
                 hideNotification(guid);
                 SendTabToSelfAndroidBridge.dismissEntry(profile, guid);
-                SendTabToSelfMetricsRecorder.recordNotificationDismissed();
+                SendTabToSelfMetricsRecorder.recordNotificationStatus(
+                        NotificationStatus.DISMISSED);
                 break;
             case NOTIFICATION_ACTION_TIMEOUT:
                 SendTabToSelfAndroidBridge.dismissEntry(profile, guid);
-                SendTabToSelfMetricsRecorder.recordNotificationTimedOut();
+                SendTabToSelfMetricsRecorder.recordNotificationStatus(
+                        NotificationStatus.TIMED_OUT);
                 break;
         }
     }
@@ -343,7 +345,7 @@ public class NotificationManager {
                             PendingIntent.FLAG_UPDATE_CURRENT
                                     | IntentUtils.getPendingIntentMutabilityFlag(false)));
         }
-        SendTabToSelfMetricsRecorder.recordNotificationShown();
+        SendTabToSelfMetricsRecorder.recordNotificationStatus(NotificationStatus.SHOWN);
         return true;
     }
 }

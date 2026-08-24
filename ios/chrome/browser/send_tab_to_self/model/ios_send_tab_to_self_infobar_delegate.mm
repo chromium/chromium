@@ -154,7 +154,8 @@ int IOSSendTabToSelfInfoBarDelegate::GetIconId() const {
 }
 
 void IOSSendTabToSelfInfoBarDelegate::InfoBarDismissed() {
-  send_tab_to_self::RecordNotificationDismissed();
+  send_tab_to_self::RecordNotificationStatus(
+      send_tab_to_self::NotificationStatus::kDismissed);
   Cancel();
 }
 
@@ -179,7 +180,8 @@ std::u16string IOSSendTabToSelfInfoBarDelegate::GetMessageText() const {
 }
 
 bool IOSSendTabToSelfInfoBarDelegate::Accept() {
-  send_tab_to_self::RecordNotificationOpened();
+  send_tab_to_self::RecordNotificationStatus(
+      send_tab_to_self::NotificationStatus::kOpened);
   SendConclusionNotification();
 
   const SendTabToSelfEntry* entry = model_->GetEntryByGUID(guid_);

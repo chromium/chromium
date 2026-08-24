@@ -226,7 +226,8 @@ void SendTabToSelfToolbarIconController::ShowBubbleWithAnchor(
   }
   send_tab_to_self::SendTabToSelfToolbarBubbleController::From(browser.get())
       ->ShowBubble(entry, anchor.value());
-  send_tab_to_self::RecordNotificationShown();
+  send_tab_to_self::RecordNotificationStatus(
+      send_tab_to_self::NotificationStatus::kShown);
 }
 
 void SendTabToSelfToolbarIconController::SwitchToLatestTabsOpenedInBackground(

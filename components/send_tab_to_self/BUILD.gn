@@ -122,6 +122,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "entry_point_display_reason_unittest.cc",
+    "metrics_util_unittest.cc",
     "outgoing_tab_form_field_extractor_unittest.cc",
     "proto_conversions_unittest.cc",
     "received_tab_forms_filler_unittest.cc",

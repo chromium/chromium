@@ -122,7 +122,8 @@ SendTabToSelfToolbarBubbleView::SendTabToSelfToolbarBubbleView(
 
 void SendTabToSelfToolbarBubbleView::OpenInNewTab() {
   opened_ = true;
-  send_tab_to_self::RecordNotificationOpened();
+  send_tab_to_self::RecordNotificationStatus(
+      send_tab_to_self::NotificationStatus::kOpened);
   OpenEntryInNewForegroundTab(
       browser_->GetProfile(), entry_,
       send_tab_to_self::ShareActivatedEntryPoint::kDesktopToolbarBubble);
@@ -130,13 +131,15 @@ void SendTabToSelfToolbarBubbleView::OpenInNewTab() {
 }
 
 void SendTabToSelfToolbarBubbleView::Timeout() {
-  send_tab_to_self::RecordNotificationTimedOut();
+  send_tab_to_self::RecordNotificationStatus(
+      send_tab_to_self::NotificationStatus::kTimedOut);
   GetWidget()->Close();
 }
 
 void SendTabToSelfToolbarBubbleView::Hide() {
   if (!opened_) {
-    send_tab_to_self::RecordNotificationDismissed();
+    send_tab_to_self::RecordNotificationStatus(
+        send_tab_to_self::NotificationStatus::kDismissed);
   }
   SendTabToSelfClientServiceFactory::GetForProfile(browser_->GetProfile())
       ->GetReceivingUiHandler()

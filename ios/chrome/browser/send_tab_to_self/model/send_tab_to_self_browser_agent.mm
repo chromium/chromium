@@ -413,7 +413,8 @@ void SendTabToSelfBrowserAgent::DisplayInfoBar(
     return;
   }
 
-  send_tab_to_self::RecordNotificationShown();
+  send_tab_to_self::RecordNotificationStatus(
+      send_tab_to_self::NotificationStatus::kShown);
 
   infobar_manager->AddInfoBar(CreateConfirmInfoBar(
       send_tab_to_self::IOSSendTabToSelfInfoBarDelegate::Create(

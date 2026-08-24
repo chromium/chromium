@@ -15,9 +15,13 @@
 
 namespace send_tab_to_self {
 
-static void JNI_SendTabToSelfMetricsRecorder_RecordNotificationShown(
-    JNIEnv* env) {
-  RecordNotificationShown();
+static void JNI_SendTabToSelfMetricsRecorder_RecordNotificationStatus(
+    JNIEnv* env,
+    NotificationStatus status) {
+  RecordNotificationStatus(status);
+  if (status == NotificationStatus::kOpened) {
+    RecordAutoOpenOutcome(AutoOpenOutcome::kTabOpenedViaNotification);
+  }
 }
 
 static void JNI_SendTabToSelfMetricsRecorder_AttachScrollObserver(
@@ -36,22 +40,6 @@ static void JNI_SendTabToSelfMetricsRecorder_RecordHasScrollPositionOnOpened(
     JNIEnv* env,
     jboolean has_scroll_position) {
   RecordHasScrollPositionOnOpened(has_scroll_position);
-}
-
-static void JNI_SendTabToSelfMetricsRecorder_RecordNotificationOpened(
-    JNIEnv* env) {
-  RecordNotificationOpened();
-  RecordAutoOpenOutcome(AutoOpenOutcome::kTabOpenedViaNotification);
-}
-
-static void JNI_SendTabToSelfMetricsRecorder_RecordNotificationDismissed(
-    JNIEnv* env) {
-  RecordNotificationDismissed();
-}
-
-static void JNI_SendTabToSelfMetricsRecorder_RecordNotificationTimedOut(
-    JNIEnv* env) {
-  RecordNotificationTimedOut();
 }
 
 static void

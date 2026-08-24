@@ -14,22 +14,6 @@ namespace send_tab_to_self {
 
 namespace {
 
-// Status of received STTS notifications.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(SendTabToSelfNotificationStatus)
-enum class NotificationStatus {
-  kShown = 0,
-  kDismissed = 1,
-  kOpened = 2,
-  kTimedOut = 3,
-  // kSent = 4,
-  // kDismissReasonUnknown = 5,
-  kThrottled = 6,
-  kMaxValue = kThrottled,
-};
-// LINT.ThenChange(/tools/metrics/histograms/enums.xml:SendTabToSelfNotificationStatus)
-
 SendTabToSelfFormFactorCombination GetFormFactorCombination(
     syncer::DeviceInfo::FormFactor sender_form_factor,
     syncer::DeviceInfo::FormFactor target_form_factor) {
@@ -150,29 +134,9 @@ std::string GetEntryPointSuffix(ShareEntryPoint entry_point) {
 
 }  // namespace
 
-void RecordNotificationShown() {
+void RecordNotificationStatus(NotificationStatus status) {
   base::UmaHistogramEnumeration("Sharing.SendTabToSelf.NotificationStatus",
-                                NotificationStatus::kShown);
-}
-
-void RecordNotificationDismissed() {
-  base::UmaHistogramEnumeration("Sharing.SendTabToSelf.NotificationStatus",
-                                NotificationStatus::kDismissed);
-}
-
-void RecordNotificationOpened() {
-  base::UmaHistogramEnumeration("Sharing.SendTabToSelf.NotificationStatus",
-                                NotificationStatus::kOpened);
-}
-
-void RecordNotificationTimedOut() {
-  base::UmaHistogramEnumeration("Sharing.SendTabToSelf.NotificationStatus",
-                                NotificationStatus::kTimedOut);
-}
-
-void RecordNotificationThrottled() {
-  base::UmaHistogramEnumeration("Sharing.SendTabToSelf.NotificationStatus",
-                                NotificationStatus::kThrottled);
+                                status);
 }
 
 void RecordAutoOpenOutcome(AutoOpenOutcome outcome) {
