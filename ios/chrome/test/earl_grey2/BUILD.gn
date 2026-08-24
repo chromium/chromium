@@ -59,6 +59,7 @@ _integration_eg2tests_deps = [
   "//ios/chrome/browser/device_sharing/model:eg2_tests",
   "//ios/chrome/browser/feature_engagement/model:eg2_tests",
   "//ios/chrome/browser/find_in_page/model:eg2_tests",
+  "//ios/chrome/browser/google_one/test:eg2_tests",
   "//ios/chrome/browser/https_upgrades/model:eg2_tests",
   "//ios/chrome/browser/incognito_reauth/ui_bundled:eg2_tests",
   "//ios/chrome/browser/integration_tests:eg2_tests",

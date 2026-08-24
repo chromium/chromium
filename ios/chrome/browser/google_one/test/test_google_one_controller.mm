@@ -46,4 +46,12 @@
     (GoogleOneConfiguration*)configuration {
   return [[TestGoogleOneController alloc] init];
 }
+
+- (BOOL)canHandleURL:(NSURL*)url {
+  return [[url host] isEqualToString:@"one.google.com"];
+}
+
+- (NSString*)emailFromURL:(NSURL*)url {
+  return nil;
+}
 @end
