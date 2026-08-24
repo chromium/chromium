@@ -1,0 +1,20 @@
+[package]
+name = "symphonia-format-mkv"
+description = "Pure Rust MKV/WebM demuxer (a part of project Symphonia)."
+authors = ["Dariusz Niedoba <dariusz.niedoba@gmail.com>", "Philip Deljanov <philip.deljanov@gmail.com>"]
+readme = "README.md"
+categories = ["multimedia", "multimedia::audio", "multimedia::encoding"]
+keywords = ["media", "demuxer", "mkv", "matroska", "webm"]
+# Common package metadata located in workspace Cargo.toml.
+edition.workspace = true
+homepage.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[dependencies]
+log = { workspace = true }
+lazy_static = { workspace = true }
+symphonia-core = { version = "0.6.0", path = "../symphonia-core" }
+symphonia-common = { version = "0.6.0", path = "../symphonia-common" }

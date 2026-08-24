@@ -1,0 +1,120 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "symphonia_format_isomp4"
+  epoch = "0.6"
+  crate_type = "rlib"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/alac.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/avcc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/co64.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/ctts.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/dac3.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/dec3.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/dovi.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/edts.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/elst.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/esds.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/flac.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/ftyp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/hdlr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/hvcc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/ilst.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/mdhd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/mdia.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/mehd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/meta.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/mfhd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/minf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/moof.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/moov.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/mvex.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/mvhd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/opus.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/sidx.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/smhd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/stbl.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/stco.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/stsc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/stsd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/stss.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/stsz.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/stts.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/tfhd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/tkhd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/traf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/trak.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/trex.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/trun.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/udta.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/atoms/wave.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/demuxer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/fp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-format-isomp4-v0_6/src/stream.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2024"
+  cargo_pkg_authors = "Philip Deljanov <philip.deljanov@gmail.com>"
+  cargo_pkg_name = "symphonia-format-isomp4"
+  cargo_pkg_description =
+      "Pure Rust ISO/MP4 demuxer (a part of project Symphonia)."
+  cargo_pkg_repository = "https://github.com/pdeljanov/Symphonia"
+  cargo_pkg_version = "0.6.0"
+
+  allow_unsafe = false
+
+  deps = [
+    "//third_party/rust/log/v0_4:lib",
+    "//third_party/rust/symphonia_common/v0_6:lib",
+    "//third_party/rust/symphonia_core/v0_6:lib",
+    "//third_party/rust/symphonia_metadata/v0_6:lib",
+  ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
+}

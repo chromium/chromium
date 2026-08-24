@@ -1,0 +1,30 @@
+[package]
+name = "symphonia-format-riff"
+description = "Pure Rust RIFF demuxer (a part of project Symphonia)."
+authors = ["Philip Deljanov <philip.deljanov@gmail.com>", "dedobbin <dedobbindedobbin@gmail.com>"]
+readme = "README.md"
+categories = ["multimedia", "multimedia::audio", "multimedia::encoding"]
+keywords = ["audio", "media", "demuxer", "aiff", "wav"]
+# Common package metadata located in workspace Cargo.toml.
+edition.workspace = true
+homepage.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[features]
+default = ["aiff", "wav"]
+aiff = ["symphonia-metadata/riff-id3"]
+wav = ["symphonia-metadata/riff-info"]
+
+[dependencies]
+extended = "0.1.0"
+log = { workspace = true }
+symphonia-core = { version = "0.6.0", path = "../symphonia-core" }
+
+[dependencies.symphonia-metadata]
+version = "0.6.0"
+path = "../symphonia-metadata"
+default-features = false
+features = []

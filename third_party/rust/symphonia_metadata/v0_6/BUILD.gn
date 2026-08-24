@@ -55,6 +55,7 @@ cargo_crate("lib") {
   ]
   features = [
     "flac",
+    "riff-info",
     "vorbis",
   ]
 

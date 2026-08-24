@@ -341,6 +341,9 @@ group = 'test'
 allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
+[crate.extended]
+extra_kv = { allow_unsafe = false }
+
 [crate.fastbloom]
 extra_input_roots = ["../README.md"]
 extra_kv = { allow_unsafe = false }
@@ -931,6 +934,18 @@ extra_kv = { allow_unsafe = false }
 
 [crate.symphonia-core.extra_kv]
 allow_unsafe = false
+
+[crate.symphonia-format-isomp4]
+extra_kv = { allow_unsafe = false }
+
+[crate.symphonia-format-mkv]
+extra_kv = { allow_unsafe = false }
+
+[crate.symphonia-format-ogg]
+extra_kv = { allow_unsafe = false }
+
+[crate.symphonia-format-riff]
+extra_kv = { allow_unsafe = false }
 
 [crate.symphonia-metadata.extra_kv]
 allow_unsafe = false

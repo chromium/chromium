@@ -1,0 +1,12 @@
+Name: extended
+URL: https://crates.io/crates/extended
+Version: 0.1.0
+Revision: dc18803769dd6702c9cf91b033f91e200c98a684
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/extended-v0_1/LICENSE.txt
+Shipped: yes
+Security Critical: yes
+
+Description: Extended precision 80-bit floating-point numbers (f80).
+

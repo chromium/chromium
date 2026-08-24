@@ -177,7 +177,7 @@ version = "0.6.0"
 # codecs specifically added in `features`. Enabling new codec support requires a
 # package configuration through gnrt vendor and gnrt gen.
 default-features = false
-features = ["flac", "mpa", "pcm", "vorbis", "opt-simd"]
+features = ["flac", "mp3", "ogg", "wav", "mkv", "pcm", "isomp4", "vorbis", "opt-simd"]
 
 # TODO(https://crbug.com/540235303): Remove direct dependency on syn-v2 after
 # migrating Crubit, WebRTC, and other third-party libraries to syn-v3.

@@ -9,54 +9,31 @@
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
-  crate_name = "symphonia"
-  epoch = "0.6"
+  crate_name = "extended"
+  epoch = "0.1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/symphonia-v0_6/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/extended-v0_1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/symphonia-v0_6/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/extended-v0_1/src/lib.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
-  edition = "2024"
-  cargo_pkg_authors = "Philip Deljanov <philip.deljanov@gmail.com>"
-  cargo_pkg_name = "symphonia"
+  edition = "2021"
+  cargo_pkg_authors = "Dietrich Epp <depp@zdome.net>"
+  cargo_pkg_name = "extended"
   cargo_pkg_description =
-      "Pure Rust media container and audio decoding library."
-  cargo_pkg_repository = "https://github.com/pdeljanov/Symphonia"
-  cargo_pkg_version = "0.6.0"
+      "Extended precision 80-bit floating-point numbers (f80)."
+  cargo_pkg_repository = "https://github.com/depp/extended-rs"
+  cargo_pkg_version = "0.1.0"
 
   allow_unsafe = false
 
-  deps = [
-    "//third_party/rust/lazy_static/v1:lib",
-    "//third_party/rust/symphonia_bundle_flac/v0_6:lib",
-    "//third_party/rust/symphonia_bundle_mp3/v0_6:lib",
-    "//third_party/rust/symphonia_codec_pcm/v0_6:lib",
-    "//third_party/rust/symphonia_codec_vorbis/v0_6:lib",
-    "//third_party/rust/symphonia_core/v0_6:lib",
-    "//third_party/rust/symphonia_format_isomp4/v0_6:lib",
-    "//third_party/rust/symphonia_format_mkv/v0_6:lib",
-    "//third_party/rust/symphonia_format_ogg/v0_6:lib",
-    "//third_party/rust/symphonia_format_riff/v0_6:lib",
-    "//third_party/rust/symphonia_metadata/v0_6:lib",
-  ]
-  features = [
-    "flac",
-    "isomp4",
-    "mkv",
-    "mp3",
-    "ogg",
-    "opt-simd",
-    "opt-simd-avx",
-    "opt-simd-neon",
-    "opt-simd-sse",
-    "pcm",
-    "vorbis",
-    "wav",
-  ]
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
 
   #####################################################################
   # Tweaking which GN `config`s apply to this target.
