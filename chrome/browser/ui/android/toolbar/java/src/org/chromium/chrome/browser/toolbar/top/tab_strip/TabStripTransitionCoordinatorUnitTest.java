@@ -1355,6 +1355,24 @@ public class TabStripTransitionCoordinatorUnitTest {
                 0f);
     }
 
+    @Test
+    public void testDesktopWindowingTransitionControlContainerMinHeight() {
+        // Initialize the coordinator in wide normal window (fullscreen)
+        setUpTabStripTransitionCoordinator(true, LARGE_NORMAL_WINDOW_WIDTH);
+
+        // Transition into desktop windowing with a narrow window (narrow desktop window width)
+        simulateAppHeaderStateChanged(NARROW_DESKTOP_WINDOW_WIDTH, true);
+        simulateLayoutChange(NARROW_DESKTOP_WINDOW_WIDTH);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        // Control container minHeight should be updated to TEST_TAB_STRIP_HEIGHT +
+        // mReservedTopPadding
+        // and NOT 0 (which would happen if showTabStrip=false caused tabStripHeight=0).
+        int expectedMinHeight = TEST_TAB_STRIP_HEIGHT + mReservedTopPadding;
+        verify(mSpyControlContainer, org.mockito.Mockito.atLeastOnce())
+                .setMinimumHeight(expectedMinHeight);
+    }
+
     // Due to the complexity to use the real views for top toolbar in robolectric tests, use view
     // mocks for the sake of unit tests.
     static class TestControlContainerView extends FrameLayout {
