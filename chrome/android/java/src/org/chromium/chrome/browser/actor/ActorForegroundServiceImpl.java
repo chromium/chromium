@@ -133,10 +133,9 @@ public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
                 ChromeFeatureList.sGlicBackgroundTriggering.isEnabled();
         Log.d(
                 TAG,
-                "ActorForegroundService onStartCommand. mIsForeground: "
-                        + mIsForeground
-                        + ", featureEnabled: "
-                        + isGlicBackgroundTriggerEnabled);
+                "ActorForegroundService onStartCommand. mIsForeground: %b, featureEnabled: %b",
+                mIsForeground,
+                isGlicBackgroundTriggerEnabled);
         if (mStartTime == 0) {
             mStartTime = SystemClock.elapsedRealtime();
         }

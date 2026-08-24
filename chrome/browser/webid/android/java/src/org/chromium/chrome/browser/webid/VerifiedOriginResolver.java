@@ -59,7 +59,7 @@ public class VerifiedOriginResolver {
         PackageManager packageManager = context.getPackageManager();
         List<ResolveInfo> services = packageManager.queryIntentServices(intent, 0);
 
-        Log.d(TAG, "Discovered FedCM services: " + services);
+        Log.d(TAG, "Discovered FedCM services: %s", services);
 
         if (services.isEmpty()) {
             notifyResolved("", "");
