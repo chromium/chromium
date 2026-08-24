@@ -701,6 +701,7 @@ export class HistoryListElement extends HistoryListElementBase {
       oldTarget.removeEventListener('scroll', this.scrollListener_);
     }
     if (this.scrollTarget) {
+      this.lastOffsetHeight_ = this.scrollTarget.offsetHeight;
       this.resizeObserver_.observe(this.scrollTarget);
       this.scrollTarget.addEventListener('scroll', this.scrollListener_);
       this.fillCurrentViewport();

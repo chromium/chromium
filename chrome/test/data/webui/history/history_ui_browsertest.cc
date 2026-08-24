@@ -203,20 +203,11 @@ IN_PROC_BROWSER_TEST_F(HistoryListTest, AnnouncesExactMatches) {
   RunTestCase("AnnouncesExactMatches");
 }
 
-// TODO(crbug.com/542945025): Re-enable flaky/timing out tests on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ScrollingLoadsMore DISABLED_ScrollingLoadsMore
-#define MAYBE_ResizingLoadsMore DISABLED_ResizingLoadsMore
-#else
-#define MAYBE_ScrollingLoadsMore ScrollingLoadsMore
-#define MAYBE_ResizingLoadsMore ResizingLoadsMore
-#endif
-
-IN_PROC_BROWSER_TEST_F(HistoryListTest, MAYBE_ScrollingLoadsMore) {
+IN_PROC_BROWSER_TEST_F(HistoryListTest, ScrollingLoadsMore) {
   RunTestCase("ScrollingLoadsMore");
 }
 
-IN_PROC_BROWSER_TEST_F(HistoryListTest, MAYBE_ResizingLoadsMore) {
+IN_PROC_BROWSER_TEST_F(HistoryListTest, ResizingLoadsMore) {
   RunTestCase("ResizingLoadsMore");
 }
 

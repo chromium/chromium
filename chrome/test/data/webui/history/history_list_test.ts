@@ -57,13 +57,11 @@ suite('HistoryListTest', function() {
   });
 
   /**
-   * @param queryResults The query results to initialize
-   *     the page with.
+   * @param queryResults The query results to initialize the page with.
    * @param query The query to use in the QueryInfo.
-   * @return Promise that resolves when initialization is complete
-   *     and the lazy loaded module has been loaded.
+   * @return Promise that resolves when initialization is complete.
    */
-  function finishSetup(
+  async function finishSetup(
       queryResults: HistoryEntry[], finished: boolean = true,
       query?: string): Promise<void> {
     testProxy.handler.setResultFor('queryHistory', Promise.resolve({
@@ -77,13 +75,11 @@ suite('HistoryListTest', function() {
     const queryManager = app.shadowRoot.querySelector('history-query-manager');
     assertTrue(!!queryManager);
     queryManager.queryState = {...queryManager.queryState, incremental: true};
-    return Promise
-        .all([
-          testProxy.handler.whenCalled('queryHistory'),
-          microtasksFinished(),
-          eventToPromise('viewport-filled', element.$.infiniteList),
-        ])
-        .then(() => {});
+    await Promise.all([
+      testProxy.handler.whenCalled('queryHistory'),
+      eventToPromise('viewport-filled', element.$.infiniteList),
+    ]);
+    await microtasksFinished();
   }
 
   function getHistoryData(): HistoryEntry[] {
@@ -914,7 +910,6 @@ suite('HistoryListTest', function() {
         ],
       },
     }));
-
 
     // Simulate resizing the window. More results should be loaded.
     document.body.style.maxHeight = '800px';
