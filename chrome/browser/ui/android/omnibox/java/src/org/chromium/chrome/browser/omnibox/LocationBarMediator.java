@@ -2309,7 +2309,7 @@ class LocationBarMediator
     }
 
     /**
-     * @see FuseboxAttachmentChangeListener#onAttachmentsListChanged()
+     * @see FuseboxAttachmentChangeListener#onAttachmentListChanged()
      */
     @Override
     public void onAttachmentListChanged() {
