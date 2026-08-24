@@ -29,7 +29,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -247,7 +246,7 @@ class ConditionalStep : public IfView {
 
 bool HasTabGroups(const BrowserView* browser_view) {
   return !browser_view->browser()
-              ->tab_strip_model()
+              ->GetTabStripModel()
               ->group_model()
               ->ListTabGroups()
               .empty();
@@ -466,7 +465,7 @@ void MaybeRegisterChromeFeaturePromos(
                  user_education::FeaturePromoHandle promo_handle) {
                 Browser* const browser = GetBrowser(ctx);
                 TabStripModel* const tab_strip_model =
-                    browser->tab_strip_model();
+                    browser->GetTabStripModel();
                 if (!tab_strip_model) {
                   return;
                 }
@@ -674,7 +673,7 @@ void MaybeRegisterChromeFeaturePromos(
                 if (!tutorial_service) {
                   return;
                 }
-                TabStripModel* tab_strip_model = browser->tab_strip_model();
+                TabStripModel* tab_strip_model = browser->GetTabStripModel();
                 if (tab_strip_model) {
                   content::WebContents* web_contents =
                       tab_strip_model->GetActiveWebContents();

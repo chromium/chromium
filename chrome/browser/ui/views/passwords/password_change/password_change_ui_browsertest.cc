@@ -8,7 +8,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -87,7 +87,7 @@ class PasswordChangeUiBrowserTest : public DialogBrowserTest {
     form.change_password_url = password_change_url;
     CHECK(form.change_password_url.is_valid());
     ManagePasswordsUIController::FromWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents())
+        browser()->GetTabStripModel()->GetActiveWebContents())
         ->OnCredentialLeak(password_manager::LeakedPasswordDetails(
             password_manager::CreateLeakType(
                 password_manager::IsSaved(true),

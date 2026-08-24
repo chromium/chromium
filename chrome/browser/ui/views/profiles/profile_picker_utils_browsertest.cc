@@ -18,7 +18,7 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/mock_policy_service.h"
@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerUtilsBrowserTest, OpenLearnMorePopup) {
   EXPECT_NE(popup_browser, browser());
   EXPECT_EQ(popup_browser->GetType(), BrowserWindowInterface::Type::TYPE_POPUP);
   EXPECT_EQ(popup_browser->GetProfile(), browser()->GetProfile());
-  EXPECT_EQ(popup_browser->tab_strip_model()->GetActiveWebContents(),
+  EXPECT_EQ(popup_browser->GetTabStripModel()->GetActiveWebContents(),
             raw_contents);
 }
 

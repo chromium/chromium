@@ -16,7 +16,7 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -90,7 +90,8 @@ class DiceWebSigninInterceptionBubbleBrowserTest
     return ::GetAvatarButton(browser());
   }
 
-  views::BubbleAnchor GetAvatarAnchor(Browser* browser_arg = nullptr) {
+  views::BubbleAnchor GetAvatarAnchor(
+      BrowserWindowInterface* browser_arg = nullptr) {
     if (!browser_arg) {
       browser_arg = browser();
     }
@@ -482,8 +483,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   run_loop.Run();
   BrowserWindowCreateParams browser_params(new_profile,
                                            /*from_user_gesture=*/true);
-  Browser* new_browser = CreateBrowserWindow(std::move(browser_params))
-                             ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* new_browser =
+      CreateBrowserWindow(std::move(browser_params));
   new_browser->GetWindow()->Show();
 
   // Create a bubble using the temporary profile, but not attached to its view
@@ -568,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   new_tab_observer.Wait();
 
   content::WebContents* new_tab_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_NE(new_tab_web_contents, bubble_web_contents);
   EXPECT_EQ(new_tab_web_contents->GetVisibleURL(), learn_more_url);
   EXPECT_FALSE(widget->IsClosed());

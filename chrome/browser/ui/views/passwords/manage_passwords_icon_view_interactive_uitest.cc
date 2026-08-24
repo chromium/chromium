@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
@@ -56,7 +56,7 @@ class ManagePasswordsIconViewTestToolbarPinningOnly
     : public ManagePasswordsIconViewTest {
  protected:
   raw_ptr<content::WebContents> GetActiveWebContents() const {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
   bool IsBubbleShowing() const {
     return PasswordBubbleViewBase::manage_password_bubble() &&
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTestToolbarPinningOnly,
   EXPECT_TRUE(button->GetStatusIndicatorForTesting()->GetVisible());
 
   // Switch back to Tab 0.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   // Underline should NOT be visible on Tab 0.
   EXPECT_FALSE(button->GetStatusIndicatorForTesting()->GetVisible());

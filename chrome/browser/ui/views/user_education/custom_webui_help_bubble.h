@@ -10,7 +10,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/user_education/custom_webui_help_bubble_controller.h"

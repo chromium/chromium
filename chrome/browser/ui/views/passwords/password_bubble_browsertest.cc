@@ -160,7 +160,7 @@ class PasswordBubbleBrowserTest
           std::make_unique<password_manager::PasswordForm>(*test_form()));
 
       ChromePasswordManagerClient::FromWebContents(
-          browser()->tab_strip_model()->GetActiveWebContents())
+          browser()->GetTabStripModel()->GetActiveWebContents())
           ->PromptUserToChooseCredentials(std::move(local_credentials),
                                           url::Origin::Create(test_form()->url),
                                           base::DoNothing());
@@ -365,7 +365,7 @@ IN_PROC_BROWSER_TEST_P(PasswordAutoSignInToastTest, TabSwitch) {
         }
       }));
 
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
   if (GetToastController()->GetToastCloseTimerForTesting()->IsRunning()) {
     GetToastController()->GetToastCloseTimerForTesting()->FireNow();
     EXPECT_TRUE(toast_destroyed.Wait());
@@ -375,7 +375,7 @@ IN_PROC_BROWSER_TEST_P(PasswordAutoSignInToastTest, TabSwitch) {
   EXPECT_FALSE(icon->GetVisible());
 
   // Switch back to Tab 0.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   // Verify Icon is now VISIBLE on Tab 0.
   WaitForIconVisibility(icon, true);

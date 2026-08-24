@@ -12,7 +12,6 @@
 #include "chrome/browser/enterprise/browser_management/management_identity.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_window.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
@@ -99,8 +98,7 @@ std::unique_ptr<ConsentRequester> ConsentRequester::CreateConsentRequester(
   if (!browser) {
     return nullptr;
   }
-  return std::make_unique<ConsentDialogCoordinator>(
-      browser->GetBrowserForMigrationOnly(), profile);
+  return std::make_unique<ConsentDialogCoordinator>(browser, profile);
 }
 
 // static
@@ -110,8 +108,9 @@ void ConsentRequester::SetConsentRequesterForTest(
   *GetTestInstanceStorage() = std::move(consent_requester);
 }
 
-ConsentDialogCoordinator::ConsentDialogCoordinator(Browser* browser,
-                                                   Profile* profile)
+ConsentDialogCoordinator::ConsentDialogCoordinator(
+    BrowserWindowInterface* browser,
+    Profile* profile)
     : browser_(browser), profile_(profile) {}
 
 ConsentDialogCoordinator::~ConsentDialogCoordinator() {

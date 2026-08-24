@@ -17,7 +17,7 @@
 #include "base/win/hstring_reference.h"
 #include "base/win/scoped_hstring.h"
 #include "base/win/windows_version.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -93,7 +93,7 @@ void PenIdBrowserTest::TearDown() {
 }
 
 content::WebContents* PenIdBrowserTest::GetDefaultWebContents() const {
-  return browser()->tab_strip_model()->GetActiveWebContents();
+  return browser()->GetTabStripModel()->GetActiveWebContents();
 }
 
 void PenIdBrowserTest::SimulatePenPointerEventAndStop(

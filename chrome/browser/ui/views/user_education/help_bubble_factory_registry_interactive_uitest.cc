@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRegistryInteractiveUitest,
               views::View* tab =
                   GetBrowserView()->tab_strip_view()->GetTabAnchorView(
                       browser()
-                          ->tab_strip_model()
+                          ->GetTabStripModel()
                           ->GetTabAtIndex(0)
                           ->GetHandle());
               tab->ShowContextMenu(tab->bounds().CenterPoint(),

@@ -31,9 +31,9 @@
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -109,7 +109,7 @@ class ParentPermissionDialogViewHarness
     gfx::ImageSkia icon = gfx::ImageSkia::CreateFrom1xBitmap(
         *gfx::Image(extensions::util::GetDefaultExtensionIcon()).ToSkBitmap());
     content::WebContents* contents =
-        browser->tab_strip_model()->GetActiveWebContents();
+        browser->GetTabStripModel()->GetActiveWebContents();
 
     dialog_ = CreatePermissionDialog(
         dialog_input, browser, contents, icon,

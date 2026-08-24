@@ -20,7 +20,7 @@ namespace views {
 class Widget;
 }
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 using RequestConsentCallback = base::RepeatingCallback<void()>;
@@ -49,7 +49,7 @@ class ConsentRequester {
 // Concrete implementation that manages the device signals consent dialog.
 class ConsentDialogCoordinator : public ConsentRequester {
  public:
-  ConsentDialogCoordinator(Browser* browser, Profile* profile);
+  ConsentDialogCoordinator(BrowserWindowInterface* browser, Profile* profile);
   ~ConsentDialogCoordinator() override;
 
   ConsentDialogCoordinator(const ConsentDialogCoordinator&) = delete;
@@ -73,7 +73,7 @@ class ConsentDialogCoordinator : public ConsentRequester {
 
   void OnConsentPreferenceUpdated(RequestConsentCallback callback);
 
-  raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
   raw_ptr<Profile> profile_ = nullptr;
   raw_ptr<views::Widget> dialog_widget_ = nullptr;
   PrefChangeRegistrar pref_observer_;

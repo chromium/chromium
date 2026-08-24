@@ -19,7 +19,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller_mock.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -242,7 +242,7 @@ class PasswordDialogViewTest : public base::test::WithFeatureOverride,
       target_browser = browser();
     }
     content::WebContents* web_contents =
-        target_browser->tab_strip_model()->GetActiveWebContents();
+        target_browser->GetTabStripModel()->GetActiveWebContents();
     return web_contents ? static_cast<TestManagePasswordsUIController*>(
                               ManagePasswordsUIController::FromWebContents(
                                   web_contents))
@@ -251,7 +251,7 @@ class PasswordDialogViewTest : public base::test::WithFeatureOverride,
 
   ChromePasswordManagerClient* client() const {
     return ChromePasswordManagerClient::FromWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
   }
 
   MOCK_METHOD(void,
@@ -310,7 +310,7 @@ content::WebContents* PasswordDialogViewTest::SetupTabWithTestController(
     Browser* browser) {
   // Open a new tab with modified ManagePasswordsUIController.
   content::WebContents* tab =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   std::unique_ptr<content::WebContents> new_tab = content::WebContents::Create(
       content::WebContents::CreateParams(tab->GetBrowserContext()));
   content::WebContents* raw_new_tab = new_tab.get();
@@ -322,7 +322,7 @@ content::WebContents* PasswordDialogViewTest::SetupTabWithTestController(
   ChromePasswordManagerClient::CreateForWebContents(raw_new_tab);
   EXPECT_TRUE(ChromePasswordManagerClient::FromWebContents(raw_new_tab));
   new TestManagePasswordsUIController(raw_new_tab);
-  browser->tab_strip_model()->AppendWebContents(std::move(new_tab), true);
+  browser->GetTabStripModel()->AppendWebContents(std::move(new_tab), true);
 
   // Navigate to a Web URL.
   EXPECT_NO_FATAL_FAILURE(EXPECT_TRUE(
@@ -708,7 +708,7 @@ void PasswordDialogViewTest::ShowUi(const std::string& name) {
             Return(url::Origin::Create(GURL("https://terracottaand.co"))));
 
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     remote_actor_view_ = std::make_unique<PasswordCombinedSelectorView>(
         remote_actor_mock_controller_.get(), web_contents);
     remote_actor_view_->ShowAccountChooser();
@@ -1023,7 +1023,7 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
 
   // 2. Instantiate and show the view
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   auto view = std::make_unique<PasswordCombinedSelectorView>(&mock_controller,
                                                              web_contents);
   // ShowAccountChooser internally creates the widget and maps it.
@@ -1116,7 +1116,7 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
 
   // 2. Instantiate and show the view
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   auto view = std::make_unique<PasswordCombinedSelectorView>(&mock_controller,
                                                              web_contents);
   // ShowAccountChooser internally creates the widget and maps it.
@@ -1219,7 +1219,7 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
 
   // 2. Instantiate and show the view
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   auto view = std::make_unique<PasswordCombinedSelectorView>(&mock_controller,
                                                              web_contents);
   // ShowAccountChooser internally creates the widget and maps it.

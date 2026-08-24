@@ -10,7 +10,7 @@
 #include "base/test/mock_callback.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/test/base/in_process_browser_test.h"

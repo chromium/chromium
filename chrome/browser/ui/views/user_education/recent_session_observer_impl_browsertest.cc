@@ -9,7 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/user_education/recent_session_policy.h"
 #include "chrome/browser/user_education/browser_user_education_storage_service.h"
 #include "chrome/test/base/in_process_browser_test.h"

@@ -25,8 +25,8 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tab_dialogs.h"
@@ -180,7 +180,7 @@ class PasswordBubbleInteractiveUiTestBase : public ManagePasswordsTest {
     actor::ActorTask* task = actor_keyed_service->GetTask(task_id);
     base::RunLoop loop;
     task->AddTab(
-        browser()->tab_strip_model()->GetActiveTab()->GetHandle(),
+        browser()->GetTabStripModel()->GetActiveTab()->GetHandle(),
         /*stop_task_on_detach=*/true,
         base::BindLambdaForTesting(
             [&](actor::mojom::ActionResultPtr result) { loop.Quit(); }));
@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, BasicOpenAndClose) {
 
   // And, just for grins, ensure that we can re-open the bubble.
   TabDialogs::FromWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents())
+      browser()->GetTabStripModel()->GetActiveWebContents())
       ->ShowManagePasswordsBubble(true /* user_action */);
   EXPECT_TRUE(IsBubbleShowing());
   bubble = PasswordBubbleViewBase::manage_password_bubble();
@@ -480,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnKey) {
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::FocusChangedObserver focus_observer(web_contents);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
@@ -555,31 +555,31 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
         ASSERT_TRUE(AddTabAtIndex(
             1, embedded_test_server()->GetURL("/empty.html"),
             ui::PAGE_TRANSITION_TYPED));
-        browser()->tab_strip_model()->ActivateTabAt(
+        browser()->GetTabStripModel()->ActivateTabAt(
             1, TabStripUserGestureDetails(
                    TabStripUserGestureDetails::GestureType::kOther));
 #if BUILDFLAG(IS_MAC)
         // On Mac, tab switches in swarming test environments do not reliably
         // call WasHidden() via OS window visibility signals. Explicitly notify
         // the tab (crbug.com/542160939).
-        browser()->tab_strip_model()->GetWebContentsAt(0)->WasHidden();
+        browser()->GetTabStripModel()->GetWebContentsAt(0)->WasHidden();
 #endif
       }),
       // 3. Wait for the bubble to hide due to the tab switch.
       WaitForHide(PasswordSaveUpdateView::kPasswordBubbleElementId),
       Check([this]() {
-        return browser()->tab_strip_model()->active_index() == 1;
+        return browser()->GetTabStripModel()->active_index() == 1;
       }),
       // 4. Show bubble on tab 1.
       Do([this]() { SetupPendingPassword(); }),
       WaitForShow(PasswordSaveUpdateView::kPasswordBubbleElementId),
       // 5. Switch back to tab 0.
       Do([this]() {
-        browser()->tab_strip_model()->ActivateTabAt(
+        browser()->GetTabStripModel()->ActivateTabAt(
             0, TabStripUserGestureDetails(
                    TabStripUserGestureDetails::GestureType::kOther));
 #if BUILDFLAG(IS_MAC)
-        browser()->tab_strip_model()->GetWebContentsAt(1)->WasHidden();
+        browser()->GetTabStripModel()->GetWebContentsAt(1)->WasHidden();
 #endif
       }),
       // 6. Wait for the bubble to hide again.
@@ -591,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   // Set up the second tab and bring the bubble there.
   ASSERT_TRUE(AddTabAtIndex(1, embedded_test_server()->GetURL("/empty.html"),
                             ui::PAGE_TRANSITION_TYPED));
-  TabStripModel* tab_model = browser()->tab_strip_model();
+  TabStripModel* tab_model = browser()->GetTabStripModel();
   tab_model->ActivateTabAt(
       1, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
@@ -1634,7 +1634,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleWithUnifiedUiDisabledInteractiveUiTest,
   EXPECT_FALSE(IsBubbleShowing());
   content::RunAllPendingInMessageLoop();
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_EQ(password_manager::ui::MANAGE_STATE,
             PasswordsModelDelegateFromWebContents(web_contents)->GetState());
 }

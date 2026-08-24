@@ -11,7 +11,6 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/popup_test_base.h"
@@ -43,7 +42,7 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
 
   void PreShow() override {
     delegate_ = std::make_unique<FakeDelegate>(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
     account_selection_view_ = std::make_unique<FedCmAccountSelectionView>(
         delegate(), browser()->GetActiveTabInterface());
   }
@@ -124,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, CloseAllTabs) {
   ASSERT_TRUE(GetDialog());
   EXPECT_TRUE(GetDialog()->IsVisible());
 
-  browser()->tab_strip_model()->CloseAllTabs();
+  browser()->GetTabStripModel()->CloseAllTabs();
 
   // The dialog should be closed after the WebContents is Hidden.
   ASSERT_FALSE(GetDialog());
@@ -146,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ReShow) {
 
   // The dialog is initially shown on the visible tab.
   tabs::TabInterface* tab_with_dialog =
-      browser()->tab_strip_model()->GetTabAtIndex(0);
+      browser()->GetTabStripModel()->GetTabAtIndex(0);
   ASSERT_TRUE(tab_with_dialog->IsVisible());
 
   ASSERT_TRUE(GetDialog());
@@ -167,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ReShow) {
       base::BindRepeating(&tabs::TabInterface::IsVisible,
                           base::Unretained(tab_with_dialog)),
       true);
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   // The dialog should be reshown after the tab is made visible again.
   ASSERT_TRUE(show_tab_waiter.Wait());
@@ -191,9 +190,9 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ShowWhileHidden) {
   views::test::PropertyWaiter show_tab_waiter(
       base::BindRepeating(
           &tabs::TabInterface::IsVisible,
-          base::Unretained(browser()->tab_strip_model()->GetTabAtIndex(0))),
+          base::Unretained(browser()->GetTabStripModel()->GetTabAtIndex(0))),
       true);
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
   ASSERT_TRUE(show_tab_waiter.Wait());
 
   ASSERT_TRUE(GetDialog());
@@ -202,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ShowWhileHidden) {
 
 IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
                        ShowWhileCannotFitInWebContents) {
-  browser()->tab_strip_model()->GetActiveWebContents()->Resize(
+  browser()->GetTabStripModel()->GetActiveWebContents()->Resize(
       gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/10, /*height=*/10));
 
   Show();
@@ -232,14 +231,14 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, DetachAndDelete) {
   Show();
-  browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
+  browser()->GetTabStripModel()->DetachAndDeleteWebContentsAt(0);
   EXPECT_FALSE(GetDialog());
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
                        DetachForInsertion) {
   Show();
-  browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
+  browser()->GetTabStripModel()->DetachAndDeleteWebContentsAt(0);
   // TODO(npm): it would be better if the dialog actually moves with the
   // corresponding tab, instead of being altogether deleted.
   EXPECT_FALSE(GetDialog());
@@ -274,12 +273,12 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, AddTabHidesUI) {
   ASSERT_TRUE(GetDialog());
   EXPECT_FALSE(GetDialog()->IsVisible());
 
-  browser()->tab_strip_model()->CloseWebContentsAt(
+  browser()->GetTabStripModel()->CloseWebContentsAt(
       2, TabCloseTypes::CLOSE_USER_GESTURE);
   ASSERT_TRUE(GetDialog());
   EXPECT_FALSE(GetDialog()->IsVisible());
 
-  browser()->tab_strip_model()->CloseWebContentsAt(
+  browser()->GetTabStripModel()->CloseWebContentsAt(
       1, TabCloseTypes::CLOSE_USER_GESTURE);
 
   // FedCM UI becomes visible again.
@@ -297,13 +296,13 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
   // Add a new tab and detach the FedCM tab without closing it.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
   std::unique_ptr<tabs::TabModel> tab =
-      browser()->tab_strip_model()->DetachTabAtForInsertion(0);
+      browser()->GetTabStripModel()->DetachTabAtForInsertion(0);
 
   ASSERT_FALSE(GetDialog());
 
   // Add the the FedCM tab back in to the tabstrip to complete the transfer so
   // we can tear down cleanly.
-  browser()->tab_strip_model()->AppendTab(std::move(tab), true);
+  browser()->GetTabStripModel()->AppendTab(std::move(tab), true);
 }
 
 // Test that the dialog is disabled when occluded by a PiP window.
@@ -620,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(FedCmBrowserTest, InputDisabledForModalDialog) {
                    ->ShouldIgnoreInputEventsForTesting());
 
   // If we switch to original tab input should be disabled.
-  browser()->tab_strip_model()->ActivateTabAt(/*index=*/0);
+  browser()->GetTabStripModel()->ActivateTabAt(/*index=*/0);
   EXPECT_TRUE(browser()
                   ->GetActiveTabInterface()
                   ->GetContents()

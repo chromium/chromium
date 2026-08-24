@@ -11,8 +11,8 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_dialog_view.h"
@@ -152,7 +152,7 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
 
   void ShowUi(const std::string& name) override {
     content::WebContents* const web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     CHECK(web_contents);
 
     dialog_model_->relying_party_id = "example.com";
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogViewTest, InvokeUi_ReplaceSheet) {
 IN_PROC_BROWSER_TEST_F(AuthenticatorDialogViewTest,
                        HoverListViewInputEventProtection) {
   content::WebContents* const web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   CHECK(web_contents);
 
   int mechanism_callback_count_ = 0;

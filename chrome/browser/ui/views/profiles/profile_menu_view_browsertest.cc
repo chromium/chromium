@@ -276,7 +276,7 @@ class ProfileMenuViewTestBase {
                     base::Unretained(this)))),
         override_testing_factories_(override_testing_factories) {}
 
-  void OpenProfileMenu(Browser* target_browser = nullptr) {
+  void OpenProfileMenu(BrowserWindowInterface* target_browser = nullptr) {
     if (target_browser == nullptr) {
       target_browser = target_browser_;
     }
@@ -299,7 +299,9 @@ class ProfileMenuViewTestBase {
     return coordinator ? coordinator->GetProfileMenuViewBaseForTesting()
                        : nullptr;
   }
-  void SetTargetBrowser(Browser* browser) { target_browser_ = browser; }
+  void SetTargetBrowser(BrowserWindowInterface* browser) {
+    target_browser_ = browser;
+  }
 
   BatchUploadServiceTestHelper& batch_upload_test_helper() {
     return batch_upload_test_helper_;
@@ -393,7 +395,8 @@ class ProfileMenuViewTestBase {
   // e.g. using `SyncTest` base class.
   bool override_testing_factories_ = true;
 
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> target_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged>
+      target_browser_ = nullptr;
 
   BatchUploadServiceTestHelper batch_upload_test_helper_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -543,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, ThemeChanged) {
 // Profile chooser view should close when a tab is added.
 // Regression test for http://crbug.com/40553680
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseBubbleOnTadAdded) {
-  TabStripModel* tab_strip = browser()->tab_strip_model();
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
   ASSERT_EQ(1, tab_strip->count());
   ASSERT_EQ(0, tab_strip->active_index());
 
@@ -560,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseBubbleOnTadAdded) {
 // Regression test for http://crbug.com/40553680
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
                        CloseBubbleOnActiveTabChanged) {
-  TabStripModel* tab_strip = browser()->tab_strip_model();
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
   ASSERT_FALSE(AddTabAtIndex(1, GURL("https://test_url.com"),
                              ui::PageTransition::PAGE_TRANSITION_LINK));
   ASSERT_EQ(2, tab_strip->count());
@@ -577,7 +580,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
 // Regression test for http://crbug.com/40553680
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
                        CloseBubbleOnActiveTabClosed) {
-  TabStripModel* tab_strip = browser()->tab_strip_model();
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
   ASSERT_FALSE(AddTabAtIndex(1, GURL("https://test_url.com"),
                              ui::PageTransition::PAGE_TRANSITION_LINK));
   ASSERT_EQ(2, tab_strip->count());
@@ -594,7 +597,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
 // Regression test for http://crbug.com/40553680
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
                        CloseBubbleOnLastTabClosed) {
-  TabStripModel* tab_strip = browser()->tab_strip_model();
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
   ASSERT_EQ(1, tab_strip->count());
   ASSERT_EQ(0, tab_strip->active_index());
 
@@ -737,7 +740,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTest, OpenLogoutTab) {
   // Start from a page that is not the NTP.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
-  TabStripModel* tab_strip = browser()->tab_strip_model();
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
   EXPECT_EQ(1, tab_strip->count());
   EXPECT_EQ(0, tab_strip->active_index());
   EXPECT_NE(chrome::ChromeUINewTabURLAsGURL(),
@@ -761,7 +764,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTest, SignoutFromNTP) {
   // Start from the NTP.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            chrome::ChromeUINewTabURLAsGURL()));
-  TabStripModel* tab_strip = browser()->tab_strip_model();
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
   EXPECT_EQ(1, tab_strip->count());
   EXPECT_EQ(0, tab_strip->active_index());
   EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(),
@@ -854,7 +857,7 @@ IN_PROC_BROWSER_TEST_P(ProfileMenuViewSignoutTestWithNetwork, Signout) {
   // The test starts from about://blank, which causes the logout to happen in
   // the current tab.
   ASSERT_TRUE(Signout());
-  TabStripModel* tab_strip = browser()->tab_strip_model();
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
   content::WebContents* logout_page = tab_strip->GetActiveWebContents();
   EXPECT_EQ(logout_page->GetURL(), GetExpectedLogoutURL());
 
@@ -930,7 +933,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSyncErrorButtonTest, OpenReauthTab) {
   // Start from a page that is not the NTP.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
-  TabStripModel* tab_strip = browser()->tab_strip_model();
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
   EXPECT_EQ(1, tab_strip->count());
   EXPECT_EQ(0, tab_strip->active_index());
   EXPECT_NE(chrome::ChromeUINewTabURLAsGURL(),
@@ -1526,7 +1529,7 @@ IN_PROC_BROWSER_TEST_P(ProfileMenuViewBookmarksLimitExceededTest,
   ASSERT_TRUE(focused_item);
 
   // Store the tab count.
-  int tab_count = GetBrowser(0)->tab_strip_model()->count();
+  int tab_count = GetBrowser(0)->GetTabStripModel()->count();
 
   // Click the focused item (which should be the error button).
   ui_test_utils::TabAddedWaiter tab_waiter(GetBrowser(0));
@@ -1534,10 +1537,12 @@ IN_PROC_BROWSER_TEST_P(ProfileMenuViewBookmarksLimitExceededTest,
   tab_waiter.Wait();
 
   // Check that a new tab was opened.
-  EXPECT_EQ(GetBrowser(0)->tab_strip_model()->count(), tab_count + 1);
-  EXPECT_EQ(
-      GetBrowser(0)->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
-      GURL(kBookmarksLimitExceededHelpCenter));
+  EXPECT_EQ(GetBrowser(0)->GetTabStripModel()->count(), tab_count + 1);
+  EXPECT_EQ(GetBrowser(0)
+                ->GetTabStripModel()
+                ->GetActiveWebContents()
+                ->GetVisibleURL(),
+            GURL(kBookmarksLimitExceededHelpCenter));
 
   // Check that the error is cleared.
   EXPECT_NE(GetSyncService(0)->GetUserActionableError(),

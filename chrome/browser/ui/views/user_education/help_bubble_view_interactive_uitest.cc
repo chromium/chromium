@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
 #endif
 IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
                        MAYBE_BubblePreventsCloseOnLossOfFocus) {
-  browser()->tab_strip_model()->AddToNewGroup({0});
+  browser()->GetTabStripModel()->AddToNewGroup({0});
 
   HelpBubbleParams params;
   params.body_text = u"foo";
