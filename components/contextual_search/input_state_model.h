@@ -119,9 +119,6 @@ class InputStateModel {
     return browser_identity_matches_aim_identity_;
   }
 
-  DriveConsentState drive_consent_state_for_testing() const {
-    return drive_consent_state_;
-  }
 
   // Gets the `PrefService`.
   void SetPrefService(PrefService* pref_service);
@@ -195,7 +192,6 @@ class InputStateModel {
   // must persist through state updates. Persists after Initialize() is called.
   std::vector<InputType> permanently_disabled_input_types_;
 
-  DriveConsentState drive_consent_state_ = DriveConsentState::kNotReady;
 
   bool is_smart_tab_sharing_active_ = false;
 
