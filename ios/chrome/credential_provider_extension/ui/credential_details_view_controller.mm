@@ -20,10 +20,6 @@
 
 namespace {
 
-// Desired space between the bottom of the nav bar and the top of the table
-// view.
-const CGFloat kTableViewTopSpace = 14;
-
 NSString* const kCellIdentifier = @"cdvcCell";
 
 NSString* const kMaskedPassword = @"••••••••";
@@ -69,12 +65,9 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
       [[UINavigationBarAppearance alloc] init];
   [appearance configureWithDefaultBackground];
   appearance.backgroundColor = backgroundColor;
+  self.navigationItem.standardAppearance = appearance;
   self.navigationItem.scrollEdgeAppearance = appearance;
   self.navigationItem.rightBarButtonItem = [self navigationEnterButton];
-  // UITableViewStyleInsetGrouped adds space to the top of the table view by
-  // default. Remove that space and add in the desired amount.
-  self.tableView.contentInset = UIEdgeInsetsMake(
-      -kUITableViewInsetGroupedTopSpace + kTableViewTopSpace, 0, 0, 0);
   self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 
   NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];

@@ -26,10 +26,6 @@
 
 namespace {
 
-// Desired space between the bottom of the nav bar and the top of the table
-// view.
-const CGFloat kTableViewTopSpace = 14;
-
 // Minimal amount of characters in password note to display the warning.
 const int kMinNoteCharAmountForWarning = 901;
 
@@ -101,15 +97,11 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       [[UINavigationBarAppearance alloc] init];
   [appearance configureWithDefaultBackground];
   appearance.backgroundColor = backgroundColor;
+  self.navigationItem.standardAppearance = appearance;
   self.navigationItem.scrollEdgeAppearance = appearance;
   self.title = CredentialProviderNewPasswordTitleString();
   self.navigationItem.leftBarButtonItem = [self navigationCancelButton];
   self.navigationItem.rightBarButtonItem = [self navigationSaveButton];
-
-  // UITableViewStyleInsetGrouped adds space to the top of the table view by
-  // default. Remove that space and add in the desired amount.
-  self.tableView.contentInset = UIEdgeInsetsMake(
-      -kUITableViewInsetGroupedTopSpace + kTableViewTopSpace, 0, 0, 0);
 
   [self.tableView registerClass:[NewPasswordTableCell class]
          forCellReuseIdentifier:NewPasswordTableCell.reuseID];

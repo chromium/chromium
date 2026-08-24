@@ -41,8 +41,6 @@ UIImage* DefaultSymbolWithPointSize(NSString* symbol_name, CGFloat point_size) {
 
 }  // namespace
 
-const CGFloat kUITableViewInsetGroupedTopSpace = 35;
-
 NSString* PromptForServiceIdentifiers(
     NSArray<ASCredentialServiceIdentifier*>* serviceIdentifiers) {
   NSString* IDForPrompt = credential_provider::HostForIdentifier(

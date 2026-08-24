@@ -9,8 +9,6 @@
 
 @class ASCredentialServiceIdentifier;
 
-extern const CGFloat kUITableViewInsetGroupedTopSpace;
-
 // Prompt for the top of the navigation controller telling what the current site
 // is.
 NSString* PromptForServiceIdentifiers(
