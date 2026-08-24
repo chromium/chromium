@@ -1,0 +1,17 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "autofill.personal_context.find_and_fill_with_gemini_settings",
+      "default_value": 0,
+      "default_for_enterprise_users": 1,
+      "values_to_test": [
+        0,
+        1,
+        2
+      ]
+    }
+  }
+]

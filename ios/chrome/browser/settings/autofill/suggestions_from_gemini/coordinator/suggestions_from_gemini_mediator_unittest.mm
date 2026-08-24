@@ -26,9 +26,7 @@ class SuggestionsFromGeminiMediatorTest : public PlatformTest {
         personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
         true);
     pref_service_.registry()->RegisterIntegerPref(
-        optimization_guide::prefs::
-            kAutofillPredictionImprovementsEnterprisePolicyAllowed,
-        0);
+        optimization_guide::prefs::kFindAndFillWithGeminiSettings, 0);
     mediator_ = [[SuggestionsFromGeminiMediator alloc]
         initWithPrefService:&pref_service_];
     mock_consumer_ = OCMProtocolMock(@protocol(SuggestionsFromGeminiConsumer));
@@ -69,8 +67,7 @@ TEST_F(SuggestionsFromGeminiMediatorTest,
   mediator_.consumer = nil;
 
   pref_service_.SetManagedPref(
-      optimization_guide::prefs::
-          kAutofillPredictionImprovementsEnterprisePolicyAllowed,
+      optimization_guide::prefs::kFindAndFillWithGeminiSettings,
       std::make_unique<base::Value>(
           static_cast<int>(optimization_guide::model_execution::prefs::
                                ModelExecutionEnterprisePolicyValue::kDisable)));
@@ -91,8 +88,7 @@ TEST_F(SuggestionsFromGeminiMediatorTest,
   mediator_.consumer = nil;
 
   pref_service_.SetManagedPref(
-      optimization_guide::prefs::
-          kAutofillPredictionImprovementsEnterprisePolicyAllowed,
+      optimization_guide::prefs::kFindAndFillWithGeminiSettings,
       std::make_unique<base::Value>(static_cast<int>(
           optimization_guide::model_execution::prefs::
               ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging)));

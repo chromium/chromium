@@ -43,5 +43,6 @@ future_on:
 - android
 - chrome.*
 - chrome_os
+- ios
 tags: []
 type: int-enum
