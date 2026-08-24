@@ -118,14 +118,14 @@ IN_PROC_BROWSER_TEST_F(CertificateSelectorTest, GetRowText) {
   EXPECT_EQ(u"B CA", model->GetText(0, IDS_CERT_SELECTOR_ISSUER_COLUMN));
   EXPECT_EQ(std::u16string(),
             model->GetText(0, IDS_CERT_SELECTOR_PROVIDER_COLUMN));
-  EXPECT_EQ(u"2000", model->GetText(0, IDS_CERT_SELECTOR_SERIAL_COLUMN));
+  EXPECT_EQ(u"2003", model->GetText(0, IDS_CERT_SELECTOR_SERIAL_COLUMN));
 
   EXPECT_EQ(u"Client Cert D",
             model->GetText(1, IDS_CERT_SELECTOR_SUBJECT_COLUMN));
   EXPECT_EQ(u"E CA", model->GetText(1, IDS_CERT_SELECTOR_ISSUER_COLUMN));
   EXPECT_EQ(std::u16string(),
             model->GetText(1, IDS_CERT_SELECTOR_PROVIDER_COLUMN));
-  EXPECT_EQ(u"2002", model->GetText(1, IDS_CERT_SELECTOR_SERIAL_COLUMN));
+  EXPECT_EQ(u"2004", model->GetText(1, IDS_CERT_SELECTOR_SERIAL_COLUMN));
 }
 
 IN_PROC_BROWSER_TEST_F(CertificateSelectorTest, GetSelectedCert) {

@@ -38,16 +38,6 @@ try () {
 try rm -rf out
 try mkdir out
 
-echo Create the serial number files and indices.
-serial=2000
-for i in B C E
-do
-  try /bin/sh -c "echo $serial > out/$i-serial"
-  serial=$(expr $serial + 1)
-  touch out/$i-index.txt
-  touch out/$i-index.txt.attr
-done
-
 keygen() {
   local out_path=$1; shift
   local final_path=$1; shift
@@ -89,78 +79,9 @@ keygen out/L.key ../certificates/client_mldsa44.key -algorithm ML-DSA-44
 keygen out/M.key ../certificates/client_mldsa65.key -algorithm ML-DSA-65
 keygen out/N.key ../certificates/client_mldsa87.key -algorithm ML-DSA-87
 
-echo Generate the C CSR
-COMMON_NAME="C Root CA" \
-  CA_DIR=out \
-  ID=C \
-  try openssl req \
-    -new \
-    -key out/C.key \
-    -out out/C.csr \
-    -config client-certs.cnf
-
-echo C signs itself.
-COMMON_NAME="C Root CA" \
-  CA_DIR=out \
-  ID=C \
-  try openssl x509 \
-    -req -days 3650 \
-    -in out/C.csr \
-    -extensions ca_cert \
-    -extfile client-certs.cnf \
-    -signkey out/C.key \
-    -out out/C.pem
-
-echo Generate the intermediates
-COMMON_NAME="B CA" \
-  CA_DIR=out \
-  ID=B \
-  try openssl req \
-    -new \
-    -key out/B.key \
-    -out out/B.csr \
-    -config client-certs.cnf
-
-COMMON_NAME="C CA" \
-  CA_DIR=out \
-  ID=C \
-  try openssl ca \
-    -batch \
-    -extensions ca_cert \
-    -in out/B.csr \
-    -out out/B.pem \
-    -config client-certs.cnf
-
-COMMON_NAME="E CA" \
-  CA_DIR=out \
-  ID=E \
-  try openssl req \
-    -new \
-    -key out/E.key \
-    -out out/E.csr \
-    -config client-certs.cnf
-
-COMMON_NAME="C CA" \
-  CA_DIR=out \
-  ID=C \
-  try openssl ca \
-    -batch \
-    -extensions ca_cert \
-    -in out/E.csr \
-    -out out/E.pem \
-    -config client-certs.cnf
-
-echo Generate the leaf certs
+echo "Store the keys also in PKCS#8 format."
 for id in A D F G H I J K L M N
 do
-  COMMON_NAME="Client Cert $id" \
-  ID=$id \
-  try openssl req \
-    -new \
-    -key out/$id.key \
-    -out out/$id.csr \
-    -config client-certs.cnf
-  # Store the private key also in PKCS#8 format.
   try openssl pkcs8 \
     -provparam ml-dsa.output_formats=seed-only \
     -topk8 -nocrypt \
@@ -169,50 +90,91 @@ do
     -out out/$id.pk8
 done
 
-echo B signs A
+validity="-not_before 20200101000000Z -not_after 20401231235959Z"
+serial=8192
+
+echo C signs itself
+COMMON_NAME="C Root CA" \
+  CA_DIR=out \
+  try openssl req \
+    -new -x509 -text \
+    $validity -set_serial $((serial++)) \
+    -key out/C.key \
+    -out out/C.pem \
+    -extensions ca_cert \
+    -config client-certs.cnf
+
+echo Generate the intermediates
 COMMON_NAME="B CA" \
   CA_DIR=out \
-  ID=B \
-  try openssl ca \
-    -batch \
-    -extensions user_cert \
-    -in out/A.csr \
+  try openssl req \
+    -new -text \
+    -CA out/C.pem -CAkey out/C.key \
+    $validity -set_serial $((serial++)) \
+    -key out/B.key \
+    -out out/B.pem \
+    -extensions ca_cert \
+    -config client-certs.cnf
+
+COMMON_NAME="E CA" \
+  CA_DIR=out \
+  try openssl req \
+    -new -text \
+    -CA out/C.pem -CAkey out/C.key \
+    $validity -set_serial $((serial++)) \
+    -key out/E.key \
+    -out out/E.pem \
+    -extensions ca_cert \
+    -config client-certs.cnf
+
+echo B signs A
+COMMON_NAME="Client Cert A" \
+  CA_DIR=out \
+  try openssl req \
+    -new -text \
+    -CA out/B.pem -CAkey out/B.key \
+    $validity -set_serial $((serial++)) \
+    -key out/A.key \
     -out out/A.pem \
+    -extensions user_cert \
     -config client-certs.cnf
 
 echo E signs D
-COMMON_NAME="E CA" \
+COMMON_NAME="Client Cert D" \
   CA_DIR=out \
-  ID=E \
-  try openssl ca \
-    -batch \
-    -extensions user_cert \
-    -in out/D.csr \
+  try openssl req \
+    -new -text \
+    -CA out/E.pem -CAkey out/E.key \
+    $validity -set_serial $((serial++)) \
+    -key out/D.key \
     -out out/D.pem \
+    -extensions user_cert \
     -config client-certs.cnf
 
 echo E signs F
-COMMON_NAME="E CA" \
+COMMON_NAME="Client Cert F" \
   CA_DIR=out \
-  ID=E \
-  try openssl ca \
-    -batch \
-    -extensions san_user_cert \
-    -in out/F.csr \
+  try openssl req \
+    -new -text \
+    -CA out/E.pem -CAkey out/E.key \
+    $validity -set_serial $((serial++)) \
+    -key out/F.key \
     -out out/F.pem \
+    -extensions san_user_cert \
     -config client-certs.cnf
 
 for id in G H I J K L M N
 do
   echo E signs $id
-  COMMON_NAME="E CA" \
+  COMMON_NAME="Client Cert $id" \
     CA_DIR=out \
-    ID=E \
-    try openssl ca \
-      -batch \
-      -extensions user_cert \
-      -in out/$id.csr \
+    try openssl req \
+      -new -text \
+      -CA out/E.pem -CAkey out/E.key \
+      $validity -set_serial $((serial++)) \
+      -key out/$id.key \
       -out out/$id.pem \
+      -extensions user_cert \
       -config client-certs.cnf
 done
 
