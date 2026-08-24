@@ -353,9 +353,10 @@ TEST(BrowserAccessibilityStateImplAndroidTest,
      RecordAccessibilityTechHistograms) {
   base::HistogramTester histogram_tester;
 
-  static constexpr std::array<uint32_t, 7> service_hashes = {
+  static constexpr std::array<uint32_t, 8> service_hashes = {
       0x1630cddb,  // Switch Access
       0x349d4b1a,  // TalkBack
+      0x4cacc6c4,  // Samsung TalkBack
       0xa5a469fc,  // Sound Amplifier
       0xb13e6179,  // Action Blocks
       0xb38ef877,  // Voice Access

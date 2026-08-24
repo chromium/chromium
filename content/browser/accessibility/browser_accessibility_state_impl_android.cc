@@ -33,9 +33,10 @@ enum class AccessibilityAndroidAccessibilityTools {
   kSwitchAccess = 5,
   kAccessibilityMenu = 6,
   kBrailleBack = 7,
-  kMaxValue = kBrailleBack,
+  kSamsungTalkBack = 8,
+  kMaxValue = kSamsungTalkBack,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/histograms.xml:AccessibilityAndroidAccessibilityTools)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilityAndroidAccessibilityTools)
 
 // These are hashes of different accessibility services which are generally used
 // as part of an assistive technology, mapped to their corresponding enum
@@ -44,6 +45,7 @@ constexpr auto kAssistiveTechMap =
     base::MakeFixedFlatMap<uint32_t, AccessibilityAndroidAccessibilityTools>(
         {{0x1630cddb, AccessibilityAndroidAccessibilityTools::kSwitchAccess},
          {0x349d4b1a, AccessibilityAndroidAccessibilityTools::kTalkBack},
+         {0x4cacc6c4, AccessibilityAndroidAccessibilityTools::kSamsungTalkBack},
          {0xa5a469fc, AccessibilityAndroidAccessibilityTools::kSoundAmplifier},
          {0xb13e6179, AccessibilityAndroidAccessibilityTools::kActionBlocks},
          {0xb38ef877, AccessibilityAndroidAccessibilityTools::kVoiceAccess},

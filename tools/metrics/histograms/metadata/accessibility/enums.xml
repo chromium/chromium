@@ -26,7 +26,7 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<!-- LINT.IfChange(AccessibilityAndroidAssistiveTools) -->
+<!-- LINT.IfChange(AccessibilityAndroidAccessibilityTools) -->
 
 <enum name="AccessibilityAndroidAccessibilityTools">
   <summary>
@@ -45,9 +45,10 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Switch Access"/>
   <int value="6" label="Accessibility Menu"/>
   <int value="7" label="BrailleBack"/>
+  <int value="8" label="Samsung TalkBack"/>
 </enum>
 
-<!-- LINT.ThenChange(//content/browser/accessibility/browser_accessibility_state_impl_android.cc:AccessibilityAndroidAssistiveTools) -->
+<!-- LINT.ThenChange(//content/browser/accessibility/browser_accessibility_state_impl_android.cc:AccessibilityAndroidAccessibilityTools) -->
 
 <!-- LINT.IfChange(AccessibilityAndroidServiceInfoEnum)-->
 
