@@ -6,16 +6,18 @@
 
 #include "base/containers/span.h"
 #include "base/format_macros.h"
-#include "base/hash/sha1.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "third_party/boringssl/src/include/openssl/sha2.h"
 
 namespace base::trace_event {
 
 namespace {
 
 uint64_t HashString(const std::string& str) {
-  SHA1Digest digest = SHA1Hash(base::as_byte_span(str));
+  std::array<uint8_t, SHA256_DIGEST_LENGTH> digest;
+  ::SHA256(reinterpret_cast<const uint8_t*>(str.data()), str.size(),
+           digest.data());
   return base::U64FromLittleEndian(base::span(digest).first<8u>());
 }
 
