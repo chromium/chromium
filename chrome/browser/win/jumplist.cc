@@ -41,7 +41,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/install_static/install_util.h"
-#include "components/enterprise/isolated_mode/prefs.h"
 #include "components/enterprise/isolated_mode/settings.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/history/core/browser/history_service.h"
@@ -282,19 +281,13 @@ JumpList::JumpList(Profile* profile)
   // recently closed tabs have changes.
   tab_restore_service->AddObserver(this);
 
-  // kIncognitoModeAvailability and kEnterpriseIsolatedModeSettings are
-  // monitored for changes. The isolated launch item replaces the incognito
-  // item when it's enabled by policy.
+  // kIncognitoModeAvailability is monitored for changes on Incognito mode.
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(profile_->GetPrefs());
   // base::Unretained is safe since |this| is guaranteed to outlive
   // pref_change_registrar_.
   pref_change_registrar_->Add(
       policy::policy_prefs::kIncognitoModeAvailability,
-      base::BindRepeating(&JumpList::OnIncognitoAvailabilityChanged,
-                          base::Unretained(this)));
-  pref_change_registrar_->Add(
-      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
       base::BindRepeating(&JumpList::OnIncognitoAvailabilityChanged,
                           base::Unretained(this)));
 
