@@ -2959,6 +2959,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Mojo.Ipcz.BufferPoolAllocateBlockResult" enum="BooleanSuccess"
+    expires_after="2027-02-01">
+  <owner>pasko@chromium.org</owner>
+  <owner>nafisabedin@google.com</owner>
+  <summary>
+    Logs whether an ipcz BufferPool successfully allocated a fixed-size shared
+    memory block from its block allocator pools. Logged on every block
+    allocation attempt in BufferPool::AllocateBlock. Subsampled to 1/1000.
+  </summary>
+</histogram>
+
 <histogram name="Mojo.SharedMemoryVersion.SharedMemoryAllocationSucceeded"
     enum="Boolean" expires_after="2025-11-09">
   <owner>olivierli@chromium.org</owner>

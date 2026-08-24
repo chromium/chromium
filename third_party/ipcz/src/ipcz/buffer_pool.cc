@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "ipcz/block_allocator_pool.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -13,6 +15,16 @@
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
 
 namespace ipcz {
+
+namespace {
+
+void RecordAllocateBlockResult(bool success) {
+  if (base::ShouldRecordSubsampledMetric(0.001)) {
+    UMA_HISTOGRAM_BOOLEAN("Mojo.Ipcz.BufferPoolAllocateBlockResult", success);
+  }
+}
+
+}  // namespace
 
 BufferPool::BufferPool() = default;
 
@@ -122,6 +134,7 @@ Fragment BufferPool::AllocateBlock(size_t block_size) {
     absl::MutexLock lock(&mutex_);
     auto it = block_allocator_pools_.lower_bound(block_size);
     if (it == block_allocator_pools_.end()) {
+      RecordAllocateBlockResult(false);
       return {};
     }
 
@@ -131,7 +144,9 @@ Fragment BufferPool::AllocateBlock(size_t block_size) {
     pool = it->second.get();
   }
 
-  return pool->Allocate();
+  Fragment fragment = pool->Allocate();
+  RecordAllocateBlockResult(!fragment.is_null());
+  return fragment;
 }
 
 Fragment BufferPool::AllocateBlockBestEffort(size_t preferred_block_size) {

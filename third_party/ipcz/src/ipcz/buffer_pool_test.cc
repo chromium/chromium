@@ -6,6 +6,8 @@
 
 #include <vector>
 
+#include "base/rand_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "ipcz/block_allocator.h"
 #include "ipcz/driver_memory.h"
 #include "ipcz/driver_memory_mapping.h"
@@ -308,6 +310,31 @@ TEST_F(BufferPoolTest, BestEffortBlockAllocation) {
   EXPECT_TRUE(partial_fragment.is_addressable());
   EXPECT_EQ(id1, partial_fragment.buffer_id());
   EXPECT_EQ(kBuffer1BlockSize, partial_fragment.size());
+}
+
+TEST_F(BufferPoolTest, AllocateBlockResultHistogram) {
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
+  base::HistogramTester histogram_tester;
+  BufferPool pool;
+
+  // Check allocation result with an empty pool.
+  Fragment failed = pool.AllocateBlock(64);
+  EXPECT_TRUE(failed.is_null());
+  histogram_tester.ExpectBucketCount("Mojo.Ipcz.BufferPoolAllocateBlockResult",
+                                     false, 1);
+
+  // Check successful allocation.
+  constexpr size_t kBufferSize = 4096;
+  constexpr size_t kBlockSize = 64;
+  DriverMemoryMapping mapping = AllocateDriverMemory(kBufferSize);
+  const BlockAllocator allocator(mapping.bytes(), kBlockSize);
+  EXPECT_TRUE(
+      pool.AddBlockBuffer(BufferId(0), std::move(mapping), {&allocator, 1}));
+
+  Fragment fragment = pool.AllocateBlock(64);
+  EXPECT_FALSE(fragment.is_null());
+  histogram_tester.ExpectBucketCount("Mojo.Ipcz.BufferPoolAllocateBlockResult",
+                                     true, 1);
 }
 
 }  // namespace

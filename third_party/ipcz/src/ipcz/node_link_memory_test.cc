@@ -7,6 +7,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/rand_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "ipcz/driver_memory.h"
 #include "ipcz/driver_transport.h"
 #include "ipcz/features.h"
@@ -355,6 +357,33 @@ TEST_F(NodeLinkMemoryTest, AdoptFragmentRefIfValid) {
   ASSERT_TRUE(adopted_object.is_addressable());
   EXPECT_EQ(5, adopted_object->x);
   EXPECT_EQ(42, adopted_object->y);
+}
+
+TEST_F(NodeLinkMemoryTest, AllocateFragmentHistogram) {
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
+  base::HistogramTester histogram_tester;
+
+  // Successful allocation.
+  Fragment fragment = memory_a().AllocateFragment(64);
+  EXPECT_TRUE(fragment.is_addressable());
+  histogram_tester.ExpectBucketCount("Mojo.Ipcz.BufferPoolAllocateBlockResult",
+                                     true, 1);
+}
+
+TEST_F(NodeLinkMemoryTest, AllocateRouterLinkStateHistogram) {
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
+  base::HistogramTester histogram_tester;
+
+  // AllocateRouterLinkState.
+  bool callback_run = false;
+  memory_a().AllocateRouterLinkState(
+      [&](FragmentRef<RouterLinkState> async_state) {
+        EXPECT_TRUE(async_state.is_addressable());
+        callback_run = true;
+      });
+  EXPECT_TRUE(callback_run);
+  histogram_tester.ExpectBucketCount("Mojo.Ipcz.BufferPoolAllocateBlockResult",
+                                     true, 1);
 }
 
 }  // namespace

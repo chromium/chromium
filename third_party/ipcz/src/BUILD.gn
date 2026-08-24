@@ -328,6 +328,7 @@ source_set("tests_sources") {
     ":reference_drivers",
     ":util",
     "//base",
+    "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
