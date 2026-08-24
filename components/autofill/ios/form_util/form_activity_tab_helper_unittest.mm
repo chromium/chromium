@@ -948,6 +948,116 @@ TEST_P(FormMutationTest, OptimizedFormMutations_ThrottledAcrossTicks) {
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(FormMutationTest);
 
+class FormContentEditableTest : public base::test::WithFeatureOverride,
+                                public FormActivityTabHelperTest {
+ public:
+  FormContentEditableTest()
+      : base::test::WithFeatureOverride(kAutofillSupportContentEditableIos) {}
+};
+
+// Tests focusing a contenteditable element when the feature is enabled vs
+// disabled.
+TEST_P(FormContentEditableTest, FocusContentEditable) {
+  LoadHtml(@"<div contenteditable='true' id='editable'>Hello</div>");
+  ASSERT_FALSE(observer_->form_activity_info());
+  ExecuteJavaScript(@"var el = document.getElementById('editable');"
+                    @"el.focus();"
+                    @"el.dispatchEvent(new Event('focus', {bubbles: true}));");
+  TestFormActivityObserver* block_observer = observer_.get();
+  if (IsParamFeatureEnabled()) {
+    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+      return block_observer->form_activity_info() != nullptr;
+    }));
+    TestFormActivityInfo* info = observer_->form_activity_info();
+    ASSERT_TRUE(info);
+    EXPECT_EQ(FormActivityParams::ActivityType::kFocus,
+              info->form_activity.type);
+    EXPECT_EQ(FormActivityParams::FieldType::kContentEditable,
+              info->form_activity.field_type);
+    EXPECT_EQ("Hello", info->form_activity.value);
+  } else {
+    // Use 50ms to reduce waiting time for expected timeout.
+    EXPECT_FALSE(WaitUntilConditionOrTimeout(base::Milliseconds(50), ^{
+      return block_observer->form_activity_info() != nullptr;
+    }));
+  }
+}
+
+// Tests that focusing a child element inside a contenteditable container
+// correctly delivers a focus form activity event when enabled, and no event
+// when disabled.
+TEST_P(FormContentEditableTest, FocusContentEditableChildElement) {
+  LoadHtml(@"<div contenteditable='true' id='editable'>"
+           @"Hello <b id='child'>world</b></div>");
+  ASSERT_FALSE(observer_->form_activity_info());
+  ExecuteJavaScript(
+      @"var container = document.getElementById('editable');"
+      @"var child = document.getElementById('child');"
+      @"container.focus();"
+      @"child.dispatchEvent(new Event('focus', {bubbles: true}));");
+  TestFormActivityObserver* block_observer = observer_.get();
+  if (IsParamFeatureEnabled()) {
+    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+      return block_observer->form_activity_info() != nullptr;
+    }));
+    TestFormActivityInfo* info = observer_->form_activity_info();
+    ASSERT_TRUE(info);
+    EXPECT_EQ(FormActivityParams::ActivityType::kFocus,
+              info->form_activity.type);
+    EXPECT_EQ(FormActivityParams::FieldType::kContentEditable,
+              info->form_activity.field_type);
+    EXPECT_EQ("world", info->form_activity.value);
+  } else {
+    // Use 50ms to reduce waiting time for expected timeout.
+    EXPECT_FALSE(WaitUntilConditionOrTimeout(base::Milliseconds(50), ^{
+      return block_observer->form_activity_info() != nullptr;
+    }));
+  }
+}
+
+// Tests focusing sibling contenteditable elements when enabled vs disabled.
+TEST_P(FormContentEditableTest, FocusContentEditableSiblingElement) {
+  LoadHtml(@"<div contenteditable='true' id='editable'>Hello</div>"
+           @"<div contenteditable='true' id='sibling'>Other</div>");
+  ASSERT_FALSE(observer_->form_activity_info());
+  ExecuteJavaScript(
+      @"var editable = document.getElementById('editable');"
+      @"editable.focus();"
+      @"editable.dispatchEvent(new Event('focus', {bubbles: true}));");
+  TestFormActivityObserver* block_observer = observer_.get();
+  if (IsParamFeatureEnabled()) {
+    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+      return block_observer->form_activity_info() != nullptr;
+    }));
+    EXPECT_EQ("Hello", observer_->form_activity_info()->form_activity.value);
+
+    // Focus the sibling element.
+    ExecuteJavaScript(
+        @"var sibling = document.getElementById('sibling');"
+        @"sibling.focus();"
+        @"sibling.dispatchEvent(new Event('focus', {bubbles: true}));");
+    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+      return block_observer->form_activity_info() != nullptr &&
+             block_observer->form_activity_info()->form_activity.value ==
+                 "Other";
+    }));
+    TestFormActivityInfo* info = observer_->form_activity_info();
+    ASSERT_TRUE(info);
+    EXPECT_EQ(FormActivityParams::ActivityType::kFocus,
+              info->form_activity.type);
+    EXPECT_EQ(FormActivityParams::FieldType::kContentEditable,
+              info->form_activity.field_type);
+    EXPECT_EQ("Other", info->form_activity.value);
+  } else {
+    // Use 50ms to reduce waiting time for expected timeout.
+    EXPECT_FALSE(WaitUntilConditionOrTimeout(base::Milliseconds(50), ^{
+      return block_observer->form_activity_info() != nullptr;
+    }));
+  }
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(FormContentEditableTest);
+
 // Test fixture verifying the behavior of FormActivityTabHelper when handling
 // mutations involving form control elements.
 class FormMutationFormControlElements

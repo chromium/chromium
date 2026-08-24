@@ -56,6 +56,9 @@ BASE_FEATURE(kAutofillReportFormSubmissionErrors,
 
 BASE_FEATURE(kAutofillStickyInfobarIos, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAutofillSupportContentEditableIos,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // LINT.IfChange(autofill_support_date_input)
 BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kAutofillSupportDateInput,
                                        base::FEATURE_ENABLED_FOR_COUNTRIES,

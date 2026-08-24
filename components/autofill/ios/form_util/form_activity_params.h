@@ -81,6 +81,7 @@ struct FormActivityParams : public BaseFormActivityParams {
     kButton,
     kCheckbox,
     kColor,
+    kContentEditable,
     kDate,
     kDateTimeLocal,
     kEmail,

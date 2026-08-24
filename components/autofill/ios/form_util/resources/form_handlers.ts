@@ -156,6 +156,35 @@ function isAutofillTrackFormMutationsOptimizationEnabled(): boolean {
 }
 
 /**
+ * Returns true if autofill support contenteditable is enabled.
+ */
+function isAutofillSupportContentEditableEnabled(): boolean {
+  return (window as any).gCrWebPlaceholderAutofillSupportContentEditable;
+}
+
+/**
+ * Checks if an element is contenteditable.
+ */
+function isContentEditable(element: Element): boolean {
+  if (!isAutofillSupportContentEditableEnabled()) {
+    return false;
+  }
+  return Boolean((element as HTMLElement).isContentEditable);
+}
+
+/**
+ * Returns true if element1 and element2 have an ancestor/descendant
+ * (parent-child) relationship directly or indirectly.
+ */
+function areElementsRelated(
+    element1: Element|null, element2: Element|null): boolean {
+  if (!element1 || !element2) {
+    return false;
+  }
+  return element1.contains(element2) || element2.contains(element1);
+}
+
+/**
  * Returns true if the password fields tracking feature is enabled.
  */
 function isTrackPasswordFieldsEnabled(): boolean {
@@ -201,7 +230,7 @@ function formActivity(evt: Event): void {
   }
 
   let target = evt.target as Element;
-  if (!FORM_TAGS.has(target.tagName)) {
+  if (!FORM_TAGS.has(target.tagName) && !isContentEditable(target)) {
     const path = evt.composedPath() as Element[];
     let foundValidTagName = false;
 
@@ -209,7 +238,8 @@ function formActivity(evt: Event): void {
     // of the event target is not valid itself.
     if (path) {
       for (const htmlElement of path) {
-        if (FORM_TAGS.has(htmlElement.tagName)) {
+        if (FORM_TAGS.has(htmlElement.tagName) ||
+            isContentEditable(htmlElement)) {
           target = htmlElement;
           foundValidTagName = true;
           break;
@@ -227,7 +257,9 @@ function formActivity(evt: Event): void {
     wasEditedByUser.set(target, evt.isTrusted);
   }
 
-  if (evt.target !== lastFocusedElement) {
+  const isTargetEditable = isContentEditable(target);
+  if (evt.target !== lastFocusedElement &&
+      (!isTargetEditable || !areElementsRelated(lastFocusedElement, target))) {
     return;
   }
   const form =
@@ -237,8 +269,13 @@ function formActivity(evt: Event): void {
   const formRendererID = fillUtil.getUniqueID(form);
   const fieldRendererID = fillUtil.getUniqueID(field);
 
-  const fieldType = 'type' in target ? target.type : '';
-  const fieldValue = 'value' in target ? target.value : '';
+  let fieldType = 'type' in target ? target.type : '';
+  if (!fieldType && isTargetEditable) {
+    fieldType = 'contenteditable';
+  }
+  const fieldValue = 'value' in target ?
+      target.value :
+      (isTargetEditable ? (target.textContent ?? '') : '');
 
   const msg = {
     'command': 'form.activity',

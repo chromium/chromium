@@ -26,6 +26,7 @@ constexpr char kActivityTypeUnknown[] = "unknown";
 constexpr char kFieldTypeButton[] = "button";
 constexpr char kFieldTypeCheckbox[] = "checkbox";
 constexpr char kFieldTypeColor[] = "color";
+constexpr char kFieldTypeContentEditable[] = "contenteditable";
 constexpr char kFieldTypeDate[] = "date";
 constexpr char kFieldTypeDateTimeLocal[] = "datetime-local";
 constexpr char kFieldTypeEmail[] = "email";
@@ -75,6 +76,8 @@ const char* ToString(FormActivityParams::FieldType field_type) {
       return kFieldTypeCheckbox;
     case FormActivityParams::FieldType::kColor:
       return kFieldTypeColor;
+    case FormActivityParams::FieldType::kContentEditable:
+      return kFieldTypeContentEditable;
     case FormActivityParams::FieldType::kDate:
       return kFieldTypeDate;
     case FormActivityParams::FieldType::kDateTimeLocal:
@@ -266,6 +269,9 @@ FormActivityParams::FieldType FormActivityParams::StringToFieldType(
   }
   if (field_type == kFieldTypeColor) {
     return FieldType::kColor;
+  }
+  if (field_type == kFieldTypeContentEditable) {
+    return FieldType::kContentEditable;
   }
   if (field_type == kFieldTypeDate) {
     return FieldType::kDate;

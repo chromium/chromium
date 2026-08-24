@@ -51,6 +51,11 @@ std::vector<web::JavaScriptFeature::FeatureScript> GetFeatureScripts() {
                       features::kAutofillTrackFormMutationsOptimizationIos)
               ? @"true"
               : @"false",
+          @"window.gCrWebPlaceholderAutofillSupportContentEditable" :
+                  base::FeatureList::IsEnabled(
+                      kAutofillSupportContentEditableIos)
+              ? @"true"
+              : @"false",
         };
       });
 

@@ -76,6 +76,9 @@ BASE_DECLARE_FEATURE(kAutofillReportFormSubmissionErrors);
 // timeout but will be dismissed once navigating from an explicit user gesture.
 BASE_DECLARE_FEATURE(kAutofillStickyInfobarIos);
 
+// Enables support for contenteditable elements in Autofill on iOS.
+BASE_DECLARE_FEATURE(kAutofillSupportContentEditableIos);
+
 // Enables support for <input type="date"> fields in Autofill.
 BASE_DECLARE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kAutofillSupportDateInput);
 
