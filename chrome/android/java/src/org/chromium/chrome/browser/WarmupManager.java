@@ -48,11 +48,11 @@ import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -85,7 +85,7 @@ public class WarmupManager {
     private static final String TAG = "WarmupManager";
 
     /** Records stats, observes crashes, and cleans up spareTab object. */
-    private class HiddenTabObserver extends EmptyTabObserver {
+    private class HiddenTabObserver implements TabObserver {
         // This WindowAndroid is "owned" by the Tab and should be destroyed when it is no longer
         // needed by the Tab or when the Tab is destroyed.
         private WindowAndroid mOwnedWindowAndroid;

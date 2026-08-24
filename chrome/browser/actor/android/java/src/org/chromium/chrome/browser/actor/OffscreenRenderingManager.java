@@ -14,8 +14,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
@@ -39,7 +39,7 @@ public class OffscreenRenderingManager {
     private final Set<Tab> mOffscreenTabs = new HashSet<>();
     private final ManagerTabObserver mTabObserver = new ManagerTabObserver(this);
 
-    private static class ManagerTabObserver extends EmptyTabObserver {
+    private static class ManagerTabObserver implements TabObserver {
         private final OffscreenRenderingManager mManager;
 
         ManagerTabObserver(OffscreenRenderingManager manager) {

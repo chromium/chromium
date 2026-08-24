@@ -12,8 +12,8 @@ import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -31,7 +31,7 @@ import org.chromium.url.GURL;
  * The tab navigates away to a non-PDF page.
  */
 @NullMarked
-public class PdfTabHelper extends EmptyTabObserver implements UserData {
+public class PdfTabHelper implements TabObserver, UserData {
     private static final Class<PdfTabHelper> USER_DATA_KEY = PdfTabHelper.class;
 
     private final Tab mTab;

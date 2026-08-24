@@ -54,7 +54,6 @@ import org.chromium.chrome.browser.page_info.ChromePageInfoControllerDelegate;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -229,7 +228,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
         assert isContentsInitialized();
 
         mInitiatorTabObserver =
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onClosingStateChanged(Tab tab, boolean closing) {
                         if (closing) {

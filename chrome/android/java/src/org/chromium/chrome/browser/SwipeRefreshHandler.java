@@ -26,8 +26,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BottomOverscrollHandler;
 import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabWebContentsUserData;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
@@ -88,7 +88,7 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
     // The Tab where the swipe occurs.
     private final Tab mTab;
 
-    private final EmptyTabObserver mTabObserver;
+    private final TabObserver mTabObserver;
 
     // Async runnable for ending the refresh animation after the page first
     // loads a frame. This is used to provide a reasonable minimum animation time.
@@ -161,7 +161,7 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
         super(tab);
         mTab = tab;
         mTabObserver =
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onActivityAttachmentChanged(
                             Tab tab, @Nullable WindowAndroid window) {

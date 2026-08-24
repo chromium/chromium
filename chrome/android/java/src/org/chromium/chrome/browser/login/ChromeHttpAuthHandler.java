@@ -17,9 +17,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.components.autofill.AndroidAutofillFeatures;
 import org.chromium.components.browser_ui.http_auth.LoginPrompt;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -27,16 +27,15 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 /**
- * Represents an HTTP authentication request to be handled by the UI.
- * The request can be fulfilled or canceled using setAuth() or cancelAuth().
- * This class also provides strings for building a login form.
+ * Represents an HTTP authentication request to be handled by the UI. The request can be fulfilled
+ * or canceled using setAuth() or cancelAuth(). This class also provides strings for building a
+ * login form.
  *
- * Note: this class supercedes android.webkit.HttpAuthHandler, but does not
- * extend HttpAuthHandler due to the private access of HttpAuthHandler's
- * constructor.
+ * <p>Note: this class supercedes android.webkit.HttpAuthHandler, but does not extend
+ * HttpAuthHandler due to the private access of HttpAuthHandler's constructor.
  */
 @NullMarked
-public class ChromeHttpAuthHandler extends EmptyTabObserver implements LoginPrompt.Observer {
+public class ChromeHttpAuthHandler implements TabObserver, LoginPrompt.Observer {
     private static @Nullable Callback<ChromeHttpAuthHandler> sTestCreationCallback;
 
     private long mNativeChromeHttpAuthHandler;

@@ -16,7 +16,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
@@ -40,7 +39,7 @@ public class MediaSessionTabHelper implements MediaSessionHelper.Delegate, UserD
 
     @VisibleForTesting
     final TabObserver mTabObserver =
-            new EmptyTabObserver() {
+            new TabObserver() {
                 @Override
                 public void onContentChanged(Tab tab) {
                     assert tab == mTab;

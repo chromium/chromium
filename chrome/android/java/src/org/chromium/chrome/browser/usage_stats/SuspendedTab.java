@@ -28,8 +28,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.media.MediaCaptureDevicesDispatcherAndroid;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.TabViewProvider;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -45,7 +45,7 @@ import java.util.function.Supplier;
  * domain name (FQDN) has been suspended via Digital Wellbeing.
  */
 @NullMarked
-public class SuspendedTab extends EmptyTabObserver implements UserData, TabViewProvider {
+public class SuspendedTab implements TabObserver, UserData, TabViewProvider {
     private static final String DIGITAL_WELLBEING_SITE_DETAILS_ACTION =
             "org.chromium.chrome.browser.usage_stats.action.SHOW_WEBSITE_DETAILS";
     private static final String EXTRA_FQDN_NAME =

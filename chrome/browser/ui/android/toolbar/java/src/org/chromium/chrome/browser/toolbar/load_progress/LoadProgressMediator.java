@@ -11,8 +11,8 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressProperties.CompletionState;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -42,7 +42,7 @@ public class LoadProgressMediator {
         mTabObserver =
                 new CurrentTabObserver(
                         tabSupplier,
-                        new EmptyTabObserver() {
+                        new TabObserver() {
                             @Override
                             public void onDidStartNavigationInPrimaryMainFrame(
                                     Tab tab, NavigationHandle navigation) {

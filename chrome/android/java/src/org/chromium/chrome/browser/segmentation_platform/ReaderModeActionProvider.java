@@ -21,9 +21,9 @@ import org.chromium.chrome.browser.dom_distiller.ReaderModeMetrics;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider.DistillabilityObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -37,8 +37,7 @@ import java.util.Objects;
 public class ReaderModeActionProvider implements ContextualPageActionController.ActionProvider {
     // DistillabilityObserver which automatically un/registers itself as an observer when there is a
     // result.
-    private class OneshotDistillabilityObserver extends EmptyTabObserver
-            implements DistillabilityObserver {
+    private class OneshotDistillabilityObserver implements TabObserver, DistillabilityObserver {
         private final Tab mTab;
         private final TabDistillabilityProvider mDistillabilityProvider;
         private final SignalAccumulator mSignalAccumulator;
@@ -91,7 +90,7 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
             mDistillabilityProvider.removeObserver(this);
         }
 
-        // EmptyTabObserver implementation.
+        // TabObserver implementation.
 
         @Override
         public void onHidden(Tab tab, @TabHidingType int type) {

@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -170,7 +169,7 @@ class TabBottomSheetSuppressionController {
     }
 
     private TabObserver buildTabObserver() {
-        return new EmptyTabObserver() {
+        return new TabObserver() {
             @Override
             public void onDidStartNavigationInPrimaryMainFrame(
                     Tab tab, NavigationHandle navigationHandle) {

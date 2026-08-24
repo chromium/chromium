@@ -10,7 +10,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -54,10 +53,10 @@ public class NtpFeedSurfaceLifecycleManager extends FeedSurfaceLifecycleManager 
         mTab = tab;
         start();
 
-        // We don't need to handle EmptyTabObserver#onDestroy here since this class will be
-        // destroyed when the associated NewTabPage is destroyed.
+        // We don't need to handle TabObserver#onDestroy here since this class will be destroyed
+        // when the associated NewTabPage is destroyed.
         mTabObserver =
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
                         if (isInteractable) {

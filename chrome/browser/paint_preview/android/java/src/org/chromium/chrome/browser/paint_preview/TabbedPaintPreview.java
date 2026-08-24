@@ -28,7 +28,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabServiceFactory;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -83,7 +82,7 @@ public class TabbedPaintPreview implements UserData {
         mTabbedPaintPreviewViewProvider = new TabbedPaintPreviewViewProvider();
         mPaintPreviewTabService = PaintPreviewTabServiceFactory.getServiceInstance();
         mTabObserver =
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onHidden(Tab tab, @TabHidingType int hidingType) {
                         releasePersistentToolbar();

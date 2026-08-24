@@ -22,7 +22,7 @@ import org.chromium.build.annotations.Nullable;
  * Activity.
  */
 @NullMarked
-public class TabSupplierObserver extends EmptyTabObserver implements Destroyable {
+public class TabSupplierObserver implements TabObserver, Destroyable {
     /** A handle to the tab supplier. */
     private final NullableObservableSupplier<Tab> mTabSupplier;
 

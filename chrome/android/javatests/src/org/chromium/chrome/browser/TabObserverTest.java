@@ -28,8 +28,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
@@ -46,7 +46,7 @@ import java.util.concurrent.TimeoutException;
 @Batch(Batch.PER_CLASS)
 public class TabObserverTest {
     /** A {@link TabObserver} that has callback helpers for each event. */
-    private static class TestTabObserver extends EmptyTabObserver {
+    private static class TestTabObserver implements TabObserver {
         private final CallbackHelper mInteractabilityHelper = new CallbackHelper();
         private final CallbackHelper mUrlUpdatedHelper = new CallbackHelper();
 

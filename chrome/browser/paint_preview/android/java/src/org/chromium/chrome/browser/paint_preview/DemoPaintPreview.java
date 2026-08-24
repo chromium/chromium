@@ -10,8 +10,8 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.paintpreview.player.PlayerManager;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -144,7 +144,7 @@ public class DemoPaintPreview implements PlayerManager.Listener {
         }
     }
 
-    private class DemoPaintPreviewTabObserver extends EmptyTabObserver {
+    private class DemoPaintPreviewTabObserver implements TabObserver {
         @Override
         public void onDidStartNavigationInPrimaryMainFrame(
                 Tab tab, NavigationHandle navigationHandle) {

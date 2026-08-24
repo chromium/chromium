@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.open_in_app.OpenInAppUtils;
 import org.chromium.chrome.browser.password_manager.CctPasswordSavingMetricsRecorderBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -75,7 +74,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
         mTabModelSelectorSupplier = TabModelSelectorSupplier.from(tab.getWindowAndroid());
         mApplicationContext = ContextUtils.getApplicationContext();
         mTabObserver =
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onDestroyed(Tab tab) {
                         mIsTabDestroyed = true;

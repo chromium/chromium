@@ -13,8 +13,8 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -72,7 +72,7 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
         mTabObserver =
                 new CurrentTabObserver(
                         tabSupplier,
-                        new EmptyTabObserver() {
+                        new TabObserver() {
                             @Override
                             public void onDidChangeThemeColor(Tab tab, @ColorInt int themeColor) {
                                 updateColor(tab, themeColor, true);

@@ -16,10 +16,10 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.CompositorViewHolderSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
@@ -238,8 +238,8 @@ public class ActorBackgroundActuationManager {
 
     private void loadBlankThenCallback(Tab tab, Callback<@Nullable Tab> callback) {
         ThreadUtils.assertOnUiThread();
-        EmptyTabObserver observer =
-                new EmptyTabObserver() {
+        TabObserver observer =
+                new TabObserver() {
                     private boolean mInitialLoadFinished;
 
                     @Override

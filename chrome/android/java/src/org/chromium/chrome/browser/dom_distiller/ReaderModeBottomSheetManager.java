@@ -17,8 +17,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -28,7 +28,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 
 /** Manages the lifespan of the {@link ReaderModeBottomSheetCoordinator}. */
 @NullMarked
-public class ReaderModeBottomSheetManager extends EmptyTabObserver implements Destroyable {
+public class ReaderModeBottomSheetManager implements Destroyable {
     // Delay before the bottom sheet automatically peeks on initial load.
     private static int sBottomSheetPeekDelay = 1500;
 
@@ -36,8 +36,8 @@ public class ReaderModeBottomSheetManager extends EmptyTabObserver implements De
         sBottomSheetPeekDelay = delayMs;
     }
 
-    private final EmptyTabObserver mEmptyTabObserver =
-            new EmptyTabObserver() {
+    private final TabObserver mTabObserver =
+            new TabObserver() {
                 @Override
                 public void onDidFinishNavigationInPrimaryMainFrame(
                         Tab tab, NavigationHandle navigationHandle) {
@@ -138,13 +138,13 @@ public class ReaderModeBottomSheetManager extends EmptyTabObserver implements De
 
     private void addTabObservers() {
         if (mActiveTab != null) {
-            mActiveTab.addObserver(mEmptyTabObserver);
+            mActiveTab.addObserver(mTabObserver);
         }
     }
 
     private void removeTabObservers() {
         if (mActiveTab != null) {
-            mActiveTab.removeObserver(mEmptyTabObserver);
+            mActiveTab.removeObserver(mTabObserver);
         }
     }
 

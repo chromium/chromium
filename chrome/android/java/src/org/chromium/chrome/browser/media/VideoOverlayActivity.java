@@ -20,8 +20,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.components.thinwebview.CompositorView;
 import org.chromium.content_public.browser.WebContents;
@@ -48,7 +48,7 @@ public abstract class VideoOverlayActivity extends AsyncInitializationActivity {
 
     private @Nullable CompositorView mCompositorView;
 
-    private class InitiatorTabObserver extends EmptyTabObserver {
+    private class InitiatorTabObserver implements TabObserver {
         @Override
         public void onClosingStateChanged(Tab tab, boolean closing) {
             if (closing) {

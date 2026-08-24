@@ -77,7 +77,6 @@ import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.components.VirtualView.VirtualViewPriority;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -347,7 +346,7 @@ public class CompositorViewHolder extends FrameLayout
                     });
 
     private final TabObserver mTabObserver =
-            new EmptyTabObserver() {
+            new TabObserver() {
                 @Override
                 public void onContentChanged(Tab tab) {
                     CompositorViewHolder.this.onContentChanged();

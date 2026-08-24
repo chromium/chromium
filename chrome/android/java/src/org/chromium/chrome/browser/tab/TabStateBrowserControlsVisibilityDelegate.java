@@ -96,7 +96,7 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
     public TabStateBrowserControlsVisibilityDelegate(Tab tab) {
         mTab = (TabImpl) tab;
         mTab.addObserver(
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @SuppressLint("HandlerLeak")
                     private final Handler mHandler =
                             new Handler() {
@@ -238,8 +238,6 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
 
                     @Override
                     public void onDestroyed(Tab tab) {
-                        super.onDestroyed(tab);
-
                         // Remove pending handler actions to prevent memory leaks.
                         mHandler.removeCallbacksAndMessages(null);
                     }

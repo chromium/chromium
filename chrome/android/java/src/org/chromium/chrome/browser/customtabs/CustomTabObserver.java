@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -51,7 +50,7 @@ import java.util.List;
 
 /** A {@link TabObserver} that also handles custom tabs specific logging and messaging. */
 @NullMarked
-public class CustomTabObserver extends EmptyTabObserver {
+public class CustomTabObserver implements TabObserver {
     private final @Nullable CustomTabsConnection mCustomTabsConnection;
     private final @Nullable SessionHolder<?> mSession;
 

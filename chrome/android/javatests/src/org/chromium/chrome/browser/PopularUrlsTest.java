@@ -22,8 +22,8 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Manual;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -240,7 +240,7 @@ public class PopularUrlsTest {
         final CallbackHelper crashedCallback = new CallbackHelper();
 
         tab.addObserver(
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onPageLoadFinished(Tab tab, GURL url) {
                         loadedCallback.notifyCalled();

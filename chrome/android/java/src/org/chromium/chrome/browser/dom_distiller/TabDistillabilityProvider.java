@@ -12,8 +12,8 @@ import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.components.dom_distiller.content.DistillablePageUtils;
 import org.chromium.components.dom_distiller.content.DistillablePageUtils.PageDistillableDelegate;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
@@ -27,8 +27,7 @@ import java.lang.annotation.RetentionPolicy;
 
 /** A mechanism for clients interested in the distillability of a page to receive updates. */
 @NullMarked
-public class TabDistillabilityProvider extends EmptyTabObserver
-        implements PageDistillableDelegate, UserData {
+public class TabDistillabilityProvider implements TabObserver, PageDistillableDelegate, UserData {
     public static final Class<TabDistillabilityProvider> USER_DATA_KEY =
             TabDistillabilityProvider.class;
 

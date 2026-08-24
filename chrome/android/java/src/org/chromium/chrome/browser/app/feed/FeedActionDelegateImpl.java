@@ -28,8 +28,8 @@ import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFa
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
@@ -279,7 +279,7 @@ public class FeedActionDelegateImpl
      * A {@link TabObserver} that observes navigation related events that originate from Feed
      * interactions. Calls reportPageLoaded when navigation completes.
      */
-    private static class FeedTabNavigationObserver extends EmptyTabObserver {
+    private static class FeedTabNavigationObserver implements TabObserver {
         private final boolean mInNewTab;
         private final int mPageId;
         private @Nullable PageLoadObserver mPageLoadObserver;

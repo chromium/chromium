@@ -54,7 +54,7 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     InterceptNavigationDelegateClientImpl(Tab tab) {
         mTab = (TabImpl) tab;
         mTabObserver =
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onContentChanged(Tab tab) {
                         mInterceptNavigationDelegate.associateWithWebContents(tab.getWebContents());

@@ -16,7 +16,7 @@ import org.chromium.ui.base.WindowAndroid;
 
 /** Monitor changes that indicate a theme color change may be needed from tab contents. */
 @NullMarked
-public class TabThemeColorHelper extends EmptyTabObserver {
+public class TabThemeColorHelper implements TabObserver {
     private final Callback<Integer> mUpdateCallback;
 
     TabThemeColorHelper(Tab tab, Callback<Integer> updateCallback) {

@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManag
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSupplierObserver;
@@ -253,7 +252,7 @@ public class EdgeToEdgeControllerImpl
                     }
                 };
         mTabObserver =
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onContentChanged(Tab tab) {
                         assert tab.getWebContents() != null

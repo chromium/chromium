@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.pdf.PdfUtils;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -29,7 +28,7 @@ import org.chromium.ui.base.PageTransition;
  * download UI.
  */
 @NullMarked
-public class CustomTabDownloadObserver extends EmptyTabObserver implements DestroyObserver {
+public class CustomTabDownloadObserver implements TabObserver, DestroyObserver {
     private final Activity mActivity;
     private final TabObserverRegistrar mTabObserverRegistrar;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;

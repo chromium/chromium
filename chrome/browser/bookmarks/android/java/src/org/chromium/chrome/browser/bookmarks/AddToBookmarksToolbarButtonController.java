@@ -18,8 +18,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
@@ -108,7 +108,7 @@ public class AddToBookmarksToolbarButtonController extends BaseButtonDataProvide
         mCurrentTabObserver =
                 new CurrentTabObserver(
                         activeTabSupplier,
-                        new EmptyTabObserver() {
+                        new TabObserver() {
                             @Override
                             public void onUrlUpdated(Tab tab) {
                                 refreshBookmarkIcon();

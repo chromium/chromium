@@ -13,10 +13,10 @@ import org.jni_zero.NativeMethods;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -31,7 +31,7 @@ import org.chromium.ui.base.PageTransition;
  */
 @JNINamespace("feed::android")
 @NullMarked
-public class NavigationRecorder extends EmptyTabObserver {
+public class NavigationRecorder implements TabObserver {
     private @Nullable Profile mProfile;
     private final int mSurfaceId;
 

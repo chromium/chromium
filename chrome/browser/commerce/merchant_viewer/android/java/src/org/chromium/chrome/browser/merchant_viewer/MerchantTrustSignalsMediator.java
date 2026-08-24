@@ -9,9 +9,9 @@ import android.text.TextUtils;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.content_public.browser.NavigationHandle;
 
 /**
@@ -38,7 +38,7 @@ class MerchantTrustSignalsMediator {
         mCurrentTabObserver =
                 new CurrentTabObserver(
                         tabSupplier,
-                        new EmptyTabObserver() {
+                        new TabObserver() {
                             @Override
                             public void onDidFinishNavigationInPrimaryMainFrame(
                                     Tab tab, NavigationHandle navigation) {

@@ -29,8 +29,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.notifications.NotificationIntentInterceptor;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.WebContents;
@@ -666,7 +666,7 @@ public class FullscreenVideoPictureInPictureController {
      * A class to dismiss the Activity when the tab closes /re-parents (attaches to a different
      * activity) / crashes / leaves fullscreen.
      */
-    private class DismissActivityOnTabEventObserver extends EmptyTabObserver {
+    private class DismissActivityOnTabEventObserver implements TabObserver {
         private final Activity mActivity;
         private final Tab mTab;
         private @Nullable WebContents mWebContents;

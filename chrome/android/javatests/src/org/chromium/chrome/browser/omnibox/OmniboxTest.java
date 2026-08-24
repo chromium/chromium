@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
@@ -240,7 +239,7 @@ public class OmniboxTest {
                         ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
         CallbackHelper onSSLStateUpdatedCallbackHelper = new CallbackHelper();
         TabObserver observer =
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onSSLStateUpdated(Tab tab) {
                         onSSLStateUpdatedCallbackHelper.notifyCalled();
@@ -281,7 +280,7 @@ public class OmniboxTest {
                         ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
         CallbackHelper onSSLStateUpdatedCallbackHelper = new CallbackHelper();
         TabObserver observer =
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onSSLStateUpdated(Tab tab) {
                         onSSLStateUpdatedCallbackHelper.notifyCalled();
@@ -330,7 +329,7 @@ public class OmniboxTest {
                         ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
         CallbackHelper onSSLStateUpdatedCallbackHelper = new CallbackHelper();
         TabObserver observer =
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onSSLStateUpdated(Tab tab) {
                         onSSLStateUpdatedCallbackHelper.notifyCalled();

@@ -19,7 +19,7 @@ import org.chromium.url.GURL;
  * efforts, specially tab restoring and eviction. All calls must be made from the UI thread.
  */
 @NullMarked
-public class TabUma extends EmptyTabObserver implements UserData {
+public class TabUma implements TabObserver, UserData {
     private static final Class<TabUma> USER_DATA_KEY = TabUma.class;
 
     // TabStatus defined in tools/metrics/histograms/histograms.xml.

@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityMan
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -81,7 +80,7 @@ class ActorOverlayMediator
         updateTakeOverButtonVisibility();
 
         mTabObserver =
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onShown(Tab tab, int type) {
                         updateVisibility();

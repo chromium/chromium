@@ -97,7 +97,7 @@ public class TabStateAttributes {
         // TODO(crbug.com/40242471): Should this also handle mTab.getPendingLoadParams(), and ignore
         //                      URL updates when the URL matches the pending load?
         mTab.addObserver(
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onHidden(Tab tab, int reason) {
                         if (!mTab.isClosing() && mDirtinessState == DirtinessState.UNTIDY) {

@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.customtabs.content.TabCreationMode;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabBuilder;
@@ -154,7 +153,7 @@ public class CustomTabResumeManager {
         mIntentDataProvider = intentDataProvider;
         mCipherFactory = cipherFactory;
         mTabObserver =
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onHidden(Tab tab, int reason) {
                         Log.i(
@@ -284,7 +283,7 @@ public class CustomTabResumeManager {
                     "requestFocus: tabView is null (frozen tab), deferring requestFocus until"
                             + " content changes");
             tab.addObserver(
-                    new EmptyTabObserver() {
+                    new TabObserver() {
                         @Override
                         public void onContentChanged(Tab tab) {
                             View view = tab.getView();

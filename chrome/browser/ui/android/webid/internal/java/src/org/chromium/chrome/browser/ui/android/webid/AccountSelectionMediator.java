@@ -19,7 +19,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -343,7 +342,7 @@ class AccountSelectionMediator {
                 };
 
         mTabObserver =
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onDidStartNavigationInPrimaryMainFrame(
                             Tab tab, NavigationHandle navigationHandle) {

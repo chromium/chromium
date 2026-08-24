@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSupplierObserver;
@@ -92,7 +91,7 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer, 
         // Observing the events when 1) a Tab shows its native page or 2) a native page
         // navigates to a URL for web page. This observer is only added when needed.
         mTabObserver =
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onContentChanged(Tab tab) {
                         if (tab != mTrackingTab) return;

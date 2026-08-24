@@ -14,7 +14,6 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -81,7 +80,7 @@ public class CloseListenerManager implements BackPressHandler, Destroyable {
         if (mTab == null) return;
 
         mTabObserver =
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onNavigationStateChanged() {
                         onBackPressStateChanged();

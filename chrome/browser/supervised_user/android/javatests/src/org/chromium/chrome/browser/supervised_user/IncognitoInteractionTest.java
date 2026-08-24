@@ -21,8 +21,8 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -49,7 +49,7 @@ public class IncognitoInteractionTest {
     private RegularNewTabPageStation mNtp;
 
     /** Waits until the Incognito Tab is closed. */
-    private static class TabClosedWaiter extends EmptyTabObserver {
+    private static class TabClosedWaiter implements TabObserver {
         private final CallbackHelper mCallbackHelper;
 
         public TabClosedWaiter() {

@@ -27,7 +27,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp.NewTabPage;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -195,7 +194,7 @@ public class TabThemeTest {
         CallbackHelper initialResetHelper = new CallbackHelper();
         CallbackHelper themeColorHelper = new CallbackHelper();
         TabObserver observer =
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onDidChangeThemeColor(Tab tab, int color) {
                         if (color == TabState.UNSPECIFIED_THEME_COLOR) {

@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.prefs.CrossDevicePrefTrackerFactory;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -145,7 +144,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final Supplier<@Nullable SnackbarManager> mSnackbarManagerSupplier;
     private final TabObserver mTabObserver =
-            new EmptyTabObserver() {
+            new TabObserver() {
                 @Override
                 public void onContentChanged(Tab tab) {
                     onTabChangeOrGainFocus(tab);

@@ -64,7 +64,6 @@ import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAcces
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.PasswordAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.utils.ManualFillingMetricsRecorder;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -153,7 +152,7 @@ class ManualFillingMediator
     private @Nullable BrowserControlsManager mControlsManager;
 
     private final TabObserver mTabObserver =
-            new EmptyTabObserver() {
+            new TabObserver() {
                 @Override
                 public void onHidden(Tab tab, @TabHidingType int type) {
                     pause();

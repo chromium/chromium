@@ -28,8 +28,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.SendTabToSelfTabCardLabelData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -537,7 +537,7 @@ public class SendTabToSelfAndroidBridge {
         }
 
         tab.addObserver(
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onContentChanged(Tab t) {
                         WebContents contents = t.getWebContents();

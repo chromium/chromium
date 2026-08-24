@@ -38,9 +38,9 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
@@ -184,7 +184,7 @@ public class PermissionTestRule implements TestRule {
      * Waits till a JavaScript callback which updates the page title is called the specified number
      * of times. The page title is expected to be of the form <prefix>: <count>.
      */
-    public static class PermissionUpdateWaiter extends EmptyTabObserver {
+    public static class PermissionUpdateWaiter implements TabObserver {
         private final CallbackHelper mCallbackHelper;
         private final String mPrefix;
         private String mExpectedTitle;

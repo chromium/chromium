@@ -14,9 +14,9 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -54,7 +54,7 @@ public class LinkToTextIphController {
         mTabModelSelector = tabModelSelector;
         new CurrentTabObserver(
                 tabSupplier,
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onPageLoadFinished(Tab tab, GURL url) {
                         if (!LinkToTextHelper.hasTextFragment(url)) return;

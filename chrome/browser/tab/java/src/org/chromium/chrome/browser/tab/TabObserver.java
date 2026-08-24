@@ -32,21 +32,23 @@ public interface TabObserver {
      * @param tab The notifying {@link Tab}.
      * @param appId ID of the external app that opened this tab.
      */
-    void onInitialized(Tab tab, @Nullable String appId);
+    default void onInitialized(Tab tab, @Nullable String appId) {}
 
     /**
      * Called when a {@link Tab} is shown.
+     *
      * @param tab The notifying {@link Tab}.
      * @param type Specifies how the tab was selected.
      */
-    void onShown(Tab tab, @TabSelectionType int type);
+    default void onShown(Tab tab, @TabSelectionType int type) {}
 
     /**
      * Called when a {@link Tab} is hidden.
+     *
      * @param tab The notifying {@link Tab}.
      * @param type Specifies how the tab was hidden.
      */
-    void onHidden(Tab tab, @TabHidingType int type);
+    default void onHidden(Tab tab, @TabHidingType int type) {}
 
     /**
      * Called when a {@link Tab}'s closing state has changed.
@@ -54,19 +56,21 @@ public interface TabObserver {
      * @param tab The notifying {@link Tab}.
      * @param closing Whether the {@link Tab} is currently marked for closure.
      */
-    void onClosingStateChanged(Tab tab, boolean closing);
+    default void onClosingStateChanged(Tab tab, boolean closing) {}
 
     /**
      * Called when a {@link Tab} is being destroyed.
+     *
      * @param tab The notifying {@link Tab}.
      */
-    void onDestroyed(Tab tab);
+    default void onDestroyed(Tab tab) {}
 
     /**
      * Called when the tab content changes (to/from native pages or swapping native WebContents).
+     *
      * @param tab The notifying {@link Tab}.
      */
-    void onContentChanged(Tab tab);
+    default void onContentChanged(Tab tab) {}
 
     /**
      * Called when loadUrl is triggered on a a {@link Tab}.
@@ -75,28 +79,30 @@ public interface TabObserver {
      * @param params The params describe the page being loaded.
      * @param loadUrlResult The result of the loadUrl.
      */
-    void onLoadUrl(Tab tab, LoadUrlParams params, LoadUrlResult loadUrlResult);
+    default void onLoadUrl(Tab tab, LoadUrlParams params, LoadUrlResult loadUrlResult) {}
 
     /**
      * Called when a tab has started to load a page.
-     * <p>
-     * This will occur when the main frame starts the navigation, and will also occur in instances
-     * where we need to simulate load progress (i.e. swapping in a not fully loaded pre-rendered
-     * page).
-     * <p>
-     * For visual loading indicators/throbbers, {@link #onLoadStarted(Tab)} and
-     * {@link #onLoadStopped(Tab)} should be used to drive updates.
-     *  @param tab The notifying {@link Tab}.
+     *
+     * <p>This will occur when the main frame starts the navigation, and will also occur in
+     * instances where we need to simulate load progress (i.e. swapping in a not fully loaded
+     * pre-rendered page).
+     *
+     * <p>For visual loading indicators/throbbers, {@link #onLoadStarted(Tab)} and {@link
+     * #onLoadStopped(Tab)} should be used to drive updates.
+     *
+     * @param tab The notifying {@link Tab}.
      * @param url The committed URL being navigated to.
      */
-    void onPageLoadStarted(Tab tab, GURL url);
+    default void onPageLoadStarted(Tab tab, GURL url) {}
 
     /**
      * Called when a tab has finished loading a page.
-     *  @param tab The notifying {@link Tab}.
+     *
+     * @param tab The notifying {@link Tab}.
      * @param url The committed URL that was navigated to.
      */
-    void onPageLoadFinished(Tab tab, GURL url);
+    default void onPageLoadFinished(Tab tab, GURL url) {}
 
     /**
      * Called when a tab has failed loading a page.
@@ -104,7 +110,7 @@ public interface TabObserver {
      * @param tab The notifying {@link Tab}.
      * @param errorCode The error code that causes the page to fail loading.
      */
-    void onPageLoadFailed(Tab tab, int errorCode);
+    default void onPageLoadFailed(Tab tab, int errorCode) {}
 
     /**
      * Called when the favicon of a {@link Tab} has been updated.
@@ -113,7 +119,7 @@ public interface TabObserver {
      * @param icon The favicon that was received.
      * @param iconUrl The URL that the icon was fetched from.
      */
-    void onFaviconUpdated(Tab tab, @Nullable Bitmap icon, @Nullable GURL iconUrl);
+    default void onFaviconUpdated(Tab tab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {}
 
     /**
      * Called when the media state changes
@@ -121,83 +127,92 @@ public interface TabObserver {
      * @param tab The notifying {@link Tab}.
      * @param mediaState The {@link MediaState} of the tab.
      */
-    void onMediaStateChanged(Tab tab, @MediaState int mediaState);
+    default void onMediaStateChanged(Tab tab, @MediaState int mediaState) {}
 
     /**
      * Called when the title of a {@link Tab} changes.
      *
      * @param tab The notifying {@link Tab}.
      */
-    void onTitleUpdated(Tab tab);
+    default void onTitleUpdated(Tab tab) {}
 
     /**
      * Called when the URL of a {@link Tab} changes.
      *
      * @param tab The notifying {@link Tab}.
      */
-    void onUrlUpdated(Tab tab);
+    default void onUrlUpdated(Tab tab) {}
 
     /**
      * Called when the SSL state of a {@link Tab} changes.
+     *
      * @param tab The notifying {@link Tab}.
      */
-    void onSSLStateUpdated(Tab tab);
+    default void onSSLStateUpdated(Tab tab) {}
 
     /**
      * Called when the ContentView of a {@link Tab} crashes.
+     *
      * @param tab The notifying {@link Tab}.
      */
-    void onCrash(Tab tab);
+    default void onCrash(Tab tab) {}
 
     /**
      * Called when restore of the corresponding tab is triggered.
+     *
      * @param tab The notifying {@link Tab}.
      */
-    void onRestoreStarted(Tab tab);
+    default void onRestoreStarted(Tab tab) {}
 
     /**
      * Called when restoration of the corresponding tab failed.
+     *
      * @param tab The notifying {@link Tab}.
      */
-    void onRestoreFailed(Tab tab);
+    default void onRestoreFailed(Tab tab) {}
 
     /**
      * Called when a context menu is shown for a {@link WebContents} owned by a {@link Tab}.
-     * @param tab  The notifying {@link Tab}.
+     *
+     * @param tab The notifying {@link Tab}.
      */
-    void onContextMenuShown(Tab tab);
+    default void onContextMenuShown(Tab tab) {}
 
     // WebContentsDelegateAndroid methods ---------------------------------------------------------
 
     /**
      * Called when the WebContents is closed.
+     *
      * @param tab The notifying {@link Tab}.
      */
-    void onCloseContents(Tab tab);
+    default void onCloseContents(Tab tab) {}
 
     /**
-     * Called when the WebContents starts loading. Different from
-     * {@link #onPageLoadStarted(Tab, GURL)}, if the user is navigated to a different url while
-     * staying in the same html document, {@link #onLoadStarted(Tab)} will be called, while
-     * {@link #onPageLoadStarted(Tab, GURL)} will not.
+     * Called when the WebContents starts loading. Different from {@link #onPageLoadStarted(Tab,
+     * GURL)}, if the user is navigated to a different url while staying in the same html document,
+     * {@link #onLoadStarted(Tab)} will be called, while {@link #onPageLoadStarted(Tab, GURL)} will
+     * not.
+     *
      * @param tab The notifying {@link Tab}.
-     * @param toDifferentDocument Whether this navigation will transition between
-     * documents (i.e., not a fragment navigation or JS History API call).
+     * @param toDifferentDocument Whether this navigation will transition between documents (i.e.,
+     *     not a fragment navigation or JS History API call).
      */
-    void onLoadStarted(Tab tab, boolean toDifferentDocument);
+    default void onLoadStarted(Tab tab, boolean toDifferentDocument) {}
 
     /**
      * Called when the contents loading stops.
+     *
      * @param tab The notifying {@link Tab}.
      */
-    void onLoadStopped(Tab tab, boolean toDifferentDocument);
+    default void onLoadStopped(Tab tab, boolean toDifferentDocument) {}
 
     /**
      * Called when the load progress of a {@link Tab} changes.
-     * @param tab      The notifying {@link Tab}.
+     *
+     * @param tab The notifying {@link Tab}.
      * @param progress The new progress from [0,1].
      */
-    void onLoadProgressChanged(Tab tab, float progress);
+    default void onLoadProgressChanged(Tab tab, float progress) {}
 
     /**
      * Called when the URL of a {@link Tab} changes.
@@ -205,7 +220,7 @@ public interface TabObserver {
      * @param tab The notifying {@link Tab}.
      * @param url The new URL.
      */
-    void onUpdateTargetUrl(Tab tab, GURL url);
+    default void onUpdateTargetUrl(Tab tab, GURL url) {}
 
     // WebContentsObserver methods ---------------------------------------------------------
 
@@ -216,31 +231,33 @@ public interface TabObserver {
      * @param navigationHandle Pointer to a NavigationHandle representing the navigation. Its
      *     lifetime end at the end of onDidFinishNavigation().
      */
-    void onDidStartNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigationHandle);
+    default void onDidStartNavigationInPrimaryMainFrame(
+            Tab tab, NavigationHandle navigationHandle) {}
 
     /**
      * TODO(crbug.com/40264745) Temporary fix for LocationBarModel not properly caching same
      * document navigation state. Will be removed later, see bug for more details.
      */
-    void onDidFinishNavigationEnd();
+    default void onDidFinishNavigationEnd() {}
 
     /**
      * Called when a navigation is redirected in the WebContents.
+     *
      * @param tab The notifying {@link Tab}.
-     * @param navigationHandle Pointer to a NavigationHandle representing the navigation.
-     *                         Its lifetime end at the end of onDidFinishNavigation().
+     * @param navigationHandle Pointer to a NavigationHandle representing the navigation. Its
+     *     lifetime end at the end of onDidFinishNavigation().
      */
-    void onDidRedirectNavigation(Tab tab, NavigationHandle navigationHandle);
+    default void onDidRedirectNavigation(Tab tab, NavigationHandle navigationHandle) {}
 
     /**
      * Called when a navigation is finished i.e. committed, aborted or replaced by a new one, in the
      * primary main frame.
      *
      * @param tab The notifying {@link Tab}.
-     * @param navigationHandle Pointer to a NavigationHandle representing the navigation. Its
-     *     lifetime end at the end of this function.
+     * @param navigation Pointer to a NavigationHandle representing the navigation. Its lifetime end
+     *     at the end of this function.
      */
-    void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation);
+    default void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation) {}
 
     /**
      * Called when the document has finished loading for the primary main frame.
@@ -254,34 +271,37 @@ public interface TabObserver {
      *
      * @param tab The notifying {@link Tab}.
      */
-    void didFirstVisuallyNonEmptyPaint(Tab tab);
+    default void didFirstVisuallyNonEmptyPaint(Tab tab) {}
 
     /**
      * Called when the theme color is changed
-     * @param tab   The notifying {@link Tab}.
+     *
+     * @param tab The notifying {@link Tab}.
      * @param color the new color in ARGB format.
      */
-    void onDidChangeThemeColor(Tab tab, int color);
+    default void onDidChangeThemeColor(Tab tab, int color) {}
 
     /**
      * Called when the background color for the tab has changed.
+     *
      * @param tab The notifying {@link Tab}.
      * @param color The current background color.
      */
-    void onBackgroundColorChanged(Tab tab, int color);
+    default void onBackgroundColorChanged(Tab tab, int color) {}
 
     /**
      * Called when the virtual keyboard mode in the tab's current page has been changed.
+     *
      * @param tab The notifying {@link Tab}.
      * @param mode The current virtual keyboard mode.
      */
-    void onVirtualKeyboardModeChanged(Tab tab, @VirtualKeyboardMode.EnumType int mode);
+    default void onVirtualKeyboardModeChanged(Tab tab, @VirtualKeyboardMode.EnumType int mode) {}
 
     /**
      * Called when the Tab is attached or detached from an {@code Activity}. By default, this will
      * automatically unregister the tab observer if the Tab is detached from the window.
      *
-     * TabObservers that are scoped to the Tab itself (either by direct ownership or through
+     * <p>TabObservers that are scoped to the Tab itself (either by direct ownership or through
      * UserData) will need to override this behavior. To do so, ensure there's a functional hook to
      * unregister the TabObserver to prevent leaking. When overriding this, keep in mind that tabs
      * can outlive the activity in some cases (change of theme, changing from phone/tablet,
@@ -289,7 +309,7 @@ public interface TabObserver {
      *
      * @param tab The notifying {@link Tab}.
      * @param window {@link WindowAndroid} which the Tab is being associated with. {@code null} if
-     *         the tab is being detached.
+     *     the tab is being detached.
      */
     default void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
         if (tab == null || window != null) return;
@@ -298,44 +318,47 @@ public interface TabObserver {
 
     /**
      * A notification when tab changes whether or not it is interactable and is accepting input.
+     *
      * @param tab The notifying {@link Tab}.
      * @param isInteractable Whether or not the tab is interactable.
      */
-    void onInteractabilityChanged(Tab tab, boolean isInteractable);
+    default void onInteractabilityChanged(Tab tab, boolean isInteractable) {}
 
     /**
      * Called when renderer changes its state about being responsive to requests.
      *
      * @param tab The notifying {@link Tab}.
-     * @param {@code true} if the renderer becomes responsive, otherwise {@code false}.
+     * @param isResponsive {@code true} if the renderer becomes responsive, otherwise {@code false}.
      */
-    void onRendererResponsiveStateChanged(Tab tab, boolean isResponsive);
+    default void onRendererResponsiveStateChanged(Tab tab, boolean isResponsive) {}
 
     /**
      * Called when navigation entries of a tab have been appended while the tab is frozen.
      *
      * @param tab The notifying {@link Tab}.
      */
-    void onNavigationEntriesAppended(Tab tab);
+    default void onNavigationEntriesAppended(Tab tab) {}
 
     /**
      * Called when navigation entries of a tab have been deleted.
      *
      * @param tab The notifying {@link Tab}.
      */
-    void onNavigationEntriesDeleted(Tab tab);
+    default void onNavigationEntriesDeleted(Tab tab) {}
 
     /**
      * Called when a find result is received.
+     *
      * @param result Detail information on the find result.
      */
-    void onFindResultAvailable(FindNotificationDetails result);
+    default void onFindResultAvailable(FindNotificationDetails result) {}
 
     /**
      * Called when the rects corresponding to the find matches are received.
+     *
      * @param result Detail information on the matched rects.
      */
-    void onFindMatchRectsAvailable(FindMatchRectsDetails result);
+    default void onFindMatchRectsAvailable(FindMatchRectsDetails result) {}
 
     /**
      * Called when offset values related with the browser controls have been changed by the
@@ -347,58 +370,59 @@ public interface TabObserver {
      * @param topControlsMinHeightOffsetY The Y offset of the current top controls min-height.
      * @param bottomControlsMinHeightOffsetY The Y offset of the current bottom controls min-height.
      */
-    void onBrowserControlsOffsetChanged(
+    default void onBrowserControlsOffsetChanged(
             Tab tab,
             int topControlsOffsetY,
             int bottomControlsOffsetY,
             int contentOffsetY,
             int topControlsMinHeightOffsetY,
-            int bottomControlsMinHeightOffsetY);
+            int bottomControlsMinHeightOffsetY) {}
 
     /**
      * @see BrowserControlsStateProvider.Observer#onControlsConstraintsChanged
      */
-    void onOffsetTagsInfoChanged(
+    default void onOffsetTagsInfoChanged(
             Tab tab,
             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
             BrowserControlsOffsetTagsInfo offsetTagsInfo,
-            @BrowserControlsState int constraints);
+            @BrowserControlsState int constraints) {}
 
     /**
      * Called when the tab is about to notify its renderer to show the browser controls.
      *
      * @param tab The notifying {@link Tab}.
-     * @param tab Whether the current page has opted in to same-origin view transitions.
+     * @param viewTransitionOptIn Whether the current page has opted in to same-origin view
+     *     transitions.
      */
-    void onWillShowBrowserControls(Tab tab, boolean viewTransitionOptIn);
+    default void onWillShowBrowserControls(Tab tab, boolean viewTransitionOptIn) {}
 
     /**
      * Called when scrolling state of Tab's content view changes.
      *
      * @param scrolling {@code true} if scrolling started; {@code false} if stopped.
      */
-    void onContentViewScrollingStateChanged(boolean scrolling);
+    default void onContentViewScrollingStateChanged(boolean scrolling) {}
 
     /**
      * Called when the gesture begin event is received. Seems to correspond to the second through
      * n-th finger on the screen.
      */
-    void onGestureBegin();
+    default void onGestureBegin() {}
 
     /**
      * Called when the gesture end event is received. Seems to correspond to the second through n-th
      * finger on the screen.
      */
-    void onGestureEnd();
+    default void onGestureEnd() {}
 
     /** Called at the very start of a touch interaction, when the first finger/click starts. */
-    void onTouchDown();
+    default void onTouchDown() {}
 
     /** Called at the very end of a touch interaction, when the last finger leaves the screen. */
-    void onTouchUp();
+    default void onTouchUp() {}
 
     /** Back press refactor related. Called when navigation state is invalidated. */
-    void onNavigationStateChanged();
+    default void onNavigationStateChanged() {}
 
     /**
      * CloseWatcher web API support. If the currently focused frame has a CloseWatcher registered in
@@ -406,7 +430,7 @@ public interface TabObserver {
      * convention for closing is. This function is called when the focused frame changes or a
      * CloseWatcher registered/unregistered to update whether the CloseWatcher should intercept.
      */
-    void onDidChangeCloseSignalInterceptStatus();
+    default void onDidChangeCloseSignalInterceptStatus() {}
 
     /**
      * Broadcast that the timestamp on a {@link Tab} has changed

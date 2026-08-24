@@ -93,7 +93,7 @@ public class TabUnitTest {
     @Mock private AutofillProvider mAutofillProvider;
     @Mock private Profile mProfile;
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private EmptyTabObserver mObserver;
+    @Mock private TabObserver mObserver;
     @Mock private Context mContext;
     @Mock private WeakReference<Context> mWeakReferenceContext;
     @Mock private WeakReference<Activity> mWeakReferenceActivity;

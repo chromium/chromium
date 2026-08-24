@@ -34,7 +34,6 @@ import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.back_press.BackPressMetrics;
 import org.chromium.chrome.browser.gesturenav.BackActionDelegate.ActionType;
 import org.chromium.chrome.browser.gesturenav.NavigationBubble.CloseTarget;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -131,7 +130,7 @@ class NavigationHandler implements TouchEventObserver {
     private boolean mBackGestureForTabHistoryInProgress;
     private boolean mStartNavDuringOngoingGesture;
     private final TabObserver mTabObserver =
-            new EmptyTabObserver() {
+            new TabObserver() {
                 @Override
                 public void onDidStartNavigationInPrimaryMainFrame(
                         Tab tab, NavigationHandle navigationHandle) {

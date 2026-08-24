@@ -67,7 +67,7 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
         }
 
         mTabObserver =
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onActivityAttachmentChanged(
                             Tab tab, @Nullable WindowAndroid window) {

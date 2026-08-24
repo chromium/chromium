@@ -17,10 +17,10 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -37,7 +37,7 @@ import java.util.function.Supplier;
  */
 @SuppressLint("NewApi")
 @NullMarked
-public class PageViewObserver extends EmptyTabObserver {
+public class PageViewObserver implements TabObserver {
     private static final String TAG = "PageViewObserver";
 
     // The following fields are non-final so they can be cleared in destroy() to break the leak

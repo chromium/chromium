@@ -16,7 +16,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewMetrics.ExitCause;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewMetrics.PaintPreviewMetricsObserver;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -303,7 +302,7 @@ public class StartupPaintPreview implements PlayerManager.Listener {
         return mStartupTabObserver;
     }
 
-    private class StartupPaintPreviewTabObserver extends EmptyTabObserver {
+    private class StartupPaintPreviewTabObserver implements TabObserver {
         @Override
         public void onPageLoadFinished(Tab tab, GURL url) {
             // onWebContentsFirstMeaningfulPaint won't be called if we're loading an offline page,

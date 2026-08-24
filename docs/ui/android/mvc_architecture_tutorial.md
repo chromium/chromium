@@ -56,7 +56,7 @@ Note that there are several ways to acquire the view. If this MVC component owns
 The class that handles all of the signals coming from the outside world. External classes should never interact with this class directly.
 
 ```java
-class SimpleProgressMediator extends EmptyTabObserver {
+class SimpleProgressMediator implements TabObserver {
 
    private final PropertyModel mModel;
    private final Tab mObservedTab;

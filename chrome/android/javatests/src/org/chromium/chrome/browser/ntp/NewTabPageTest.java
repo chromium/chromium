@@ -83,8 +83,8 @@ import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
 import org.chromium.chrome.browser.suggestions.tile.TilesLinearLayout;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -469,7 +469,7 @@ public class NewTabPageTest {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         mTab.addObserver(
-                                new EmptyTabObserver() {
+                                new TabObserver() {
                                     @Override
                                     public void onPageLoadFinished(Tab tab, GURL url) {
                                         loadedCallback.notifyCalled();

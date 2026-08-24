@@ -10,7 +10,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid.ImmersivePlaybackConfirmationCallback;
@@ -42,7 +41,7 @@ public class ImmersivePlaybackMessageController {
     private final Tab mTab;
     private final @Nullable FullscreenManager mFullscreenManager;
     private final TabObserver mTabObserver =
-            new EmptyTabObserver() {
+            new TabObserver() {
                 @Override
                 public void onPageLoadStarted(Tab tab, GURL url) {
                     dismiss();

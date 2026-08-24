@@ -36,8 +36,8 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -71,7 +71,7 @@ public class ReaderModeBottomSheetManagerTest {
     @Mock private ThemeColorProvider mThemeColorProvider;
 
     @Captor private ArgumentCaptor<Callback<Tab>> mActivityTabObserverCaptor;
-    @Captor private ArgumentCaptor<EmptyTabObserver> mEmptyTabObserverCaptor;
+    @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
     @Captor
     private ArgumentCaptor<BrowserControlsStateProvider.Observer> mBrowserControlsObserverCaptor;
@@ -121,7 +121,7 @@ public class ReaderModeBottomSheetManagerTest {
                         mActivityTabProvider,
                         mBrowserControlsVisibilityManager,
                         mThemeColorProvider);
-        verify(mTab).addObserver(mEmptyTabObserverCaptor.capture());
+        verify(mTab).addObserver(mTabObserverCaptor.capture());
     }
 
     @Test
@@ -165,7 +165,7 @@ public class ReaderModeBottomSheetManagerTest {
 
         // Start a new navigation to a non-distilled page.
         updateUrl("https://www.google.com");
-        mEmptyTabObserverCaptor
+        mTabObserverCaptor
                 .getValue()
                 .onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
 
@@ -196,7 +196,7 @@ public class ReaderModeBottomSheetManagerTest {
         verify(mBottomSheetController, never()).requestShowContent(any(), anyBoolean());
 
         updateUrl(DISTILLED_URL);
-        mEmptyTabObserverCaptor
+        mTabObserverCaptor
                 .getValue()
                 .onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
         verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
@@ -208,7 +208,7 @@ public class ReaderModeBottomSheetManagerTest {
         verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
 
         updateUrl("https://www.google.com");
-        mEmptyTabObserverCaptor
+        mTabObserverCaptor
                 .getValue()
                 .onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
         verify(mBottomSheetController).hideContent(any(), anyBoolean());
@@ -221,7 +221,7 @@ public class ReaderModeBottomSheetManagerTest {
         verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
 
         // When the tab is closing, the sheet should be hidden.
-        mEmptyTabObserverCaptor.getValue().onClosingStateChanged(mTab, true);
+        mTabObserverCaptor.getValue().onClosingStateChanged(mTab, true);
         verify(mBottomSheetController).hideContent(any(), anyBoolean());
     }
 

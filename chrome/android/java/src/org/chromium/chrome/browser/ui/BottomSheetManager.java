@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -155,7 +154,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
         // TODO(crbug.com/40134698): We should wait to instantiate all of these observers until the
         // bottom sheet is actually used.
         mTabObserver =
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onPageLoadStarted(Tab tab, GURL url) {
                         controller.clearRequestsAndHide();

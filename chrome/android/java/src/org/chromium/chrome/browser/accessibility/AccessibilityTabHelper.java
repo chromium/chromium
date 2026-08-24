@@ -9,15 +9,15 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Helper class that wraps accessibility state information for {@link Tab}. */
 @NullMarked
-public class AccessibilityTabHelper extends EmptyTabObserver implements UserData {
+public class AccessibilityTabHelper implements TabObserver, UserData {
     public static final Class<AccessibilityTabHelper> USER_DATA_KEY = AccessibilityTabHelper.class;
 
     private final Tab mTab;

@@ -32,10 +32,10 @@ import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preloading.PreloadingDataBridge;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -108,7 +108,7 @@ public class HiddenTabHolder {
         }
     }
 
-    private class HiddenTabObserver extends EmptyTabObserver {
+    private class HiddenTabObserver implements TabObserver {
         @Override
         public void onCrash(Tab tab) {
             if (mSpeculation == null || mSpeculation.hiddenTab.tab != tab) return;

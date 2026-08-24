@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.proto.ShoppingPersistedTabData.ShoppingPersistedTabDataProto;
@@ -94,7 +93,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     protected SettableMonotonicObservableSupplier<Boolean> mIsTabSaveEnabledSupplier =
             ObservableSuppliers.createMonotonic();
 
-    @VisibleForTesting protected EmptyTabObserver mUrlUpdatedObserver;
+    @VisibleForTesting protected TabObserver mUrlUpdatedObserver;
 
     static {
         PersistedTabData.addSupportedMaintenanceClass(USER_DATA_KEY);
@@ -127,7 +126,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             this.tab = new WeakReference<>(tab);
             this.callback = callback;
             this.observer =
-                    new EmptyTabObserver() {
+                    new TabObserver() {
                         @Override
                         public void onDestroyed(Tab tab) {
                             tab.removeObserver(this);
@@ -309,7 +308,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         // data but at that point, OptimizationGuide is not returning results yet - so we
         // essentially can't persisted any price drops of the active Tab across restarts.
         mUrlUpdatedObserver =
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onDidStartNavigationInPrimaryMainFrame(
                             Tab tab, NavigationHandle navigationHandle) {
@@ -350,7 +349,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         mPriceDropData = new PriceDropData();
     }
 
-    public EmptyTabObserver getUrlUpdatedObserverForTesting() {
+    public TabObserver getUrlUpdatedObserverForTesting() {
         return mUrlUpdatedObserver;
     }
 

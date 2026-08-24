@@ -262,7 +262,6 @@ import org.chromium.chrome.browser.single_tab.SingleTabModuleBuilder;
 import org.chromium.chrome.browser.survey.ChromeSurveyController;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.ui.SyncErrorMessage;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
@@ -274,6 +273,7 @@ import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabModelObserver;
 import org.chromium.chrome.browser.tab_group_suggestion.GroupSuggestionsPromotionCoordinator;
@@ -2605,7 +2605,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     // not a native Tab, so we don't wait for it to be created, otherwise it hangs
                     // the rendering thread.
                     currentTab.addObserver(
-                            new EmptyTabObserver() {
+                            new TabObserver() {
                                 @Override
                                 public void onContentChanged(Tab tab) {
                                     tab.removeObserver(this);
@@ -4773,7 +4773,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             return false;
         }
         tab.addObserver(
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onActivityAttachmentChanged(
                             Tab tab, @Nullable WindowAndroid window) {

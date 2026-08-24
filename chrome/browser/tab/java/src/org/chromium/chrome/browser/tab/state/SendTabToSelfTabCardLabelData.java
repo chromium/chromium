@@ -23,9 +23,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.send_tab_to_self.ShareActivatedEntryPoint;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.R;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.proto.SendTabToSelfPersistedTabData.SendTabToSelfPersistedTabDataProto;
 
@@ -58,8 +58,8 @@ public class SendTabToSelfTabCardLabelData extends PersistedTabData {
      * Observer that removes the SendTabToSelfTabCardLabelData from the UserDataHost when the tab is
      * interacted with by the user.
      */
-    private final EmptyTabObserver mObserver =
-            new EmptyTabObserver() {
+    private final TabObserver mObserver =
+            new TabObserver() {
                 @Override
                 public void onShown(Tab tab, @TabSelectionType int type) {
                     if (tab != mTab) return;

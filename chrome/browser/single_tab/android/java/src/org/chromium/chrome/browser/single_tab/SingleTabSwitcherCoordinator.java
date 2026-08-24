@@ -20,7 +20,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -105,7 +104,7 @@ public class SingleTabSwitcherCoordinator implements ModuleProvider {
         if (mLastActiveTab == null) return;
 
         mLastActiveTabObserver =
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onClosingStateChanged(Tab tab, boolean closing) {
                         if (closing) {

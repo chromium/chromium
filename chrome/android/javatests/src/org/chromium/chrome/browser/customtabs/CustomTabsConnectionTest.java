@@ -50,8 +50,8 @@ import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.test.util.PrefetchTestUtil;
@@ -241,7 +241,7 @@ public class CustomTabsConnectionTest {
                     Tab tab = mCustomTabsConnection.getSpeculationParamsForTesting().hiddenTab.tab;
                     Assert.assertNotNull("No first tab", tab);
                     tab.addObserver(
-                            new EmptyTabObserver() {
+                            new TabObserver() {
                                 @Override
                                 public void onDestroyed(Tab destroyedTab) {
                                     tabDestroyedHelper.notifyCalled();
@@ -298,7 +298,7 @@ public class CustomTabsConnectionTest {
                             mCustomTabsConnection.getSpeculationParamsForTesting().hiddenTab.tab;
                     Assert.assertNotNull("Null speculation tab", speculationTab);
                     speculationTab.addObserver(
-                            new EmptyTabObserver() {
+                            new TabObserver() {
                                 @Override
                                 public void onDestroyed(Tab tab) {
                                     tabDestroyedHelper.notifyCalled();

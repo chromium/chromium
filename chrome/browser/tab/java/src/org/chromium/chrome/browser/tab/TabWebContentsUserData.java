@@ -20,7 +20,7 @@ public abstract class TabWebContentsUserData implements UserData {
 
     public TabWebContentsUserData(Tab tab) {
         tab.addObserver(
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onContentChanged(Tab tab) {
                         if (mWebContents == tab.getWebContents()) return;

@@ -57,7 +57,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
@@ -587,7 +586,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
 
         if (!tab.isOffTheRecord() && mSession != null) {
             TabObserver observer =
-                    new EmptyTabObserver() {
+                    new TabObserver() {
                         @Override
                         public void onContentChanged(Tab tab) {
                             if (tab.getWebContents() != null) {
@@ -661,8 +660,8 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         tabView.setBackgroundColor(backgroundColor);
 
         // Unset the background when the page has rendered.
-        EmptyTabObserver mediaObserver =
-                new EmptyTabObserver() {
+        TabObserver mediaObserver =
+                new TabObserver() {
                     @Override
                     public void didFirstVisuallyNonEmptyPaint(final Tab tab) {
                         tab.removeObserver(this);
@@ -767,7 +766,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     private boolean delayPrepareTabBackgroundForResumption(Tab tab, @Nullable View tabView) {
         if (mResumeManager != null && tabView == null) {
             tab.addObserver(
-                    new EmptyTabObserver() {
+                    new TabObserver() {
                         @Override
                         public void onContentChanged(Tab tab) {
                             tab.removeObserver(this);

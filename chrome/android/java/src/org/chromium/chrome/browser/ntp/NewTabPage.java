@@ -85,7 +85,6 @@ import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegateImpl;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
 import org.chromium.chrome.browser.suggestions.tile.TileGroupDelegateImpl;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -491,7 +490,7 @@ public class NewTabPage
         mTemplateUrlService.addObserver(this);
 
         mTabObserver =
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onShown(Tab tab, @TabSelectionType int type) {
                         // Showing the NTP is only meaningful when the page has been loaded already.
@@ -778,12 +777,12 @@ public class NewTabPage
      * <p>This method is invoked during:
      *
      * <ul>
-     *   <li>Cold/Warm Starts (via {@link #onLoadingComplete} and {@link EmptyTabObserver#onShown}):
+     *   <li>Cold/Warm Starts (via {@link #onLoadingComplete} and {@link TabObserver#onShown}):
      *       Updating background state once native initialization and page loading finish.
      *   <li>Hot Starts / Foregrounding (via {@link
      *       PauseResumeWithNativeObserver#onResumeWithNative}): When returning to an already-loaded
      *       NTP.
-     *   <li>Tab Switching (via {@link EmptyTabObserver#onShown}): When switching back to an
+     *   <li>Tab Switching (via {@link TabObserver#onShown}): When switching back to an
      *       already-loaded NTP tab.
      * </ul>
      */

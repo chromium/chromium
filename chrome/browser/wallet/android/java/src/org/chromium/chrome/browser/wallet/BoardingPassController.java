@@ -8,8 +8,8 @@ import org.chromium.base.Log;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.List;
 public class BoardingPassController {
     private static final String TAG = "BoardingPassCtrl";
 
-    private final EmptyTabObserver mTabObserver;
+    private final TabObserver mTabObserver;
     private final CurrentTabObserver mCurrentTabObserver;
 
     public BoardingPassController(NullableObservableSupplier<Tab> tabSupplier) {
@@ -27,8 +27,8 @@ public class BoardingPassController {
         mCurrentTabObserver = new CurrentTabObserver(tabSupplier, mTabObserver);
     }
 
-    private EmptyTabObserver createTabObserver() {
-        return new EmptyTabObserver() {
+    private TabObserver createTabObserver() {
+        return new TabObserver() {
             @Override
             public void onPageLoadFinished(Tab tab, GURL url) {
                 if (BoardingPassBridge.shouldDetect(url.getSpec())) {

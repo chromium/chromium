@@ -13,15 +13,15 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 
 /**
  * A ScrollCaptureManager is responsible for providing snapshots of the active tab to be used for
  * long screenshots.
  */
 @NullMarked
-public class ScrollCaptureManager extends EmptyTabObserver implements Callback<@Nullable Tab> {
+public class ScrollCaptureManager implements TabObserver, Callback<@Nullable Tab> {
     private final NullableObservableSupplier<Tab> mTabSupplier;
     private final ScrollCaptureManagerDelegate mDelegate;
     private @Nullable Tab mCurrentTab;

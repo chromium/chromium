@@ -13,8 +13,8 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.Coordinates;
@@ -22,7 +22,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
 /** Monitors that a Tab starts loading and stops loading a URL. */
-public class TabLoadObserver extends EmptyTabObserver {
+public class TabLoadObserver implements TabObserver {
     private static final float FLOAT_EPSILON = 0.001f;
 
     private final CallbackHelper mTabLoadStartedCallback = new CallbackHelper();

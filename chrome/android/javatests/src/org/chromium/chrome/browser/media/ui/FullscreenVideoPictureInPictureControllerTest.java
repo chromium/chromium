@@ -35,8 +35,8 @@ import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureController;
 import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureController.MetricsEndReason;
 import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureController.PipEntered;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -371,7 +371,7 @@ public class FullscreenVideoPictureInPictureControllerTest {
     }
 
     /** A TabObserver that tracks whether a navigation has occurred. */
-    private static class NavigationObserver extends EmptyTabObserver {
+    private static class NavigationObserver implements TabObserver {
         private boolean mNavigationOccurred;
 
         public boolean didNavigationOccur() {

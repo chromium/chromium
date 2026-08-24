@@ -35,8 +35,8 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -126,7 +126,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
         mPageLoadObserver =
                 new CurrentTabObserver(
                         activityTabSupplier,
-                        new EmptyTabObserver() {
+                        new TabObserver() {
                             @Override
                             public void onPageLoadFinished(Tab tab, GURL url) {
                                 handlePageLoadFinished();

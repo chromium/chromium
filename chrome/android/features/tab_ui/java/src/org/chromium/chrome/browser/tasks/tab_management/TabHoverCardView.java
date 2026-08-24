@@ -28,7 +28,6 @@ import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -291,7 +290,7 @@ public class TabHoverCardView extends FrameLayout {
     private TabObserver getTabObserver() {
         if (mHoveredTabObserver == null) {
             mHoveredTabObserver =
-                    new EmptyTabObserver() {
+                    new TabObserver() {
                         @Override
                         public void onAlertStateChanged(
                                 Tab tab, @Nullable @TabAlert Integer alertState) {

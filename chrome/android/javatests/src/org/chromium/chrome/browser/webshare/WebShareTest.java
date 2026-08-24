@@ -23,8 +23,8 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -61,7 +61,7 @@ public class WebShareTest {
     private WebPageStation mPage;
 
     /** Waits until the JavaScript code supplies a result. */
-    private class WebShareUpdateWaiter extends EmptyTabObserver {
+    private class WebShareUpdateWaiter implements TabObserver {
         private final CallbackHelper mCallbackHelper;
         private String mStatus;
 

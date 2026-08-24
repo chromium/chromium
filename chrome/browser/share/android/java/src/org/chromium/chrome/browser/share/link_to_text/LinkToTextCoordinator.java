@@ -28,9 +28,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -41,7 +41,7 @@ import org.chromium.url.GURL;
 
 /** Handles the Link To Text action in the Sharing Hub. */
 @NullMarked
-public class LinkToTextCoordinator extends EmptyTabObserver {
+public class LinkToTextCoordinator implements TabObserver {
     @IntDef({LinkGeneration.TEXT, LinkGeneration.LINK, LinkGeneration.FAILURE, LinkGeneration.MAX})
     public @interface LinkGeneration {
         int TEXT = 0;

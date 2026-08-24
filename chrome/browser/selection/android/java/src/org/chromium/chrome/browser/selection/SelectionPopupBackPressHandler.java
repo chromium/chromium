@@ -11,8 +11,8 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -25,8 +25,8 @@ import org.chromium.content_public.browser.SelectionPopupController;
  * press.
  */
 @NullMarked
-public class SelectionPopupBackPressHandler extends EmptyTabObserver
-        implements BackPressHandler, TabModelObserver, Destroyable {
+public class SelectionPopupBackPressHandler
+        implements TabObserver, BackPressHandler, TabModelObserver, Destroyable {
     private final SettableNonNullObservableSupplier<Boolean> mBackPressChangedSupplier =
             ObservableSuppliers.createNonNull(false);
     private final Callback<Boolean> mCallback = this::onActionBarShowingChanged;

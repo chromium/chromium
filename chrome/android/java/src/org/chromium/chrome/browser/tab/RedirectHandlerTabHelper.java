@@ -24,7 +24,7 @@ import org.chromium.ui.base.WindowAndroid;
 
 /** This class glues RedirectHandler instances to Tabs. */
 @NullMarked
-public class RedirectHandlerTabHelper extends EmptyTabObserver implements UserData {
+public class RedirectHandlerTabHelper implements TabObserver, UserData {
     private static final Class<RedirectHandlerTabHelper> USER_DATA_KEY =
             RedirectHandlerTabHelper.class;
 

@@ -11,7 +11,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.url.GURL;
@@ -54,7 +53,7 @@ public class TabLoadingService {
     }
 
     private static final TabObserver sObserver =
-            new EmptyTabObserver() {
+            new TabObserver() {
                 @Override
                 public void onPageLoadFinished(Tab tab, GURL url) {
                     getInstance().onTabLoadFinished(tab, LoadResult.SUCCESS);

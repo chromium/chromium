@@ -58,8 +58,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -84,8 +84,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 // TODO(http://crbug.com/495529795): Enable side panel and fix this test.
 @DisableFeatures({ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL})
 public class ChromeTabModalPresenterTest {
-    private class TestObserver extends EmptyTabObserver
-            implements UrlFocusChangeListener, ModalDialogTestUtils.TestDialogDismissedObserver {
+    private class TestObserver
+            implements TabObserver,
+                    UrlFocusChangeListener,
+                    ModalDialogTestUtils.TestDialogDismissedObserver {
         public final CallbackHelper onUrlFocusChangedCallback = new CallbackHelper();
         public final CallbackHelper onDialogDismissedCallback = new CallbackHelper();
         public final CallbackHelper onTabInteractabilityChangedCallback = new CallbackHelper();

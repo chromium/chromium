@@ -162,11 +162,11 @@ import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
 import org.chromium.chrome.browser.tab.AutofillSessionLifetimeController;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObscuringHandlerSupplier;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
@@ -1498,7 +1498,7 @@ public class RootUiCoordinator
         CurrentTabObserver observer =
                 new CurrentTabObserver(
                         mActivityTabProvider.asObservable(),
-                        new EmptyTabObserver() {
+                        new TabObserver() {
                             @Override
                             public void onDidFinishNavigationInPrimaryMainFrame(
                                     Tab tab, NavigationHandle navigationHandle) {

@@ -33,8 +33,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.readaloud.ReadAloudControllerSupplier;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.signin.ForcedSigninStatusProvider;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
@@ -49,8 +49,8 @@ import org.chromium.url.GURL;
 
 /** Manages the enabling and disabling and gesture listeners for ContextualSearch on a given Tab. */
 @NullMarked
-public class ContextualSearchTabHelper extends EmptyTabObserver
-        implements NetworkChangeNotifier.ConnectionTypeObserver, UserData {
+public class ContextualSearchTabHelper
+        implements TabObserver, NetworkChangeNotifier.ConnectionTypeObserver, UserData {
     private static final String TAG = "ContextualSearch";
 
     private static final Class<ContextualSearchTabHelper> USER_DATA_KEY =
@@ -167,7 +167,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
     }
 
     // ============================================================================================
-    // EmptyTabObserver overrides.
+    // TabObserver overrides.
     // ============================================================================================
 
     @Override

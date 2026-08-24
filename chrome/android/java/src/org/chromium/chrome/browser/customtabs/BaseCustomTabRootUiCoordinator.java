@@ -90,9 +90,9 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -479,7 +479,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             var csManager = mContextualSearchManagerSupplier.get();
             if (csManager != null) {
                 tabController.registerTabObserver(
-                        new EmptyTabObserver() {
+                        new TabObserver() {
                             @Override
                             public void didFirstVisuallyNonEmptyPaint(Tab tab) {
                                 csManager.setCanHideAndroidBrowserControls(false);

@@ -38,7 +38,7 @@ import org.chromium.url.GURL;
  * moving this to its own target.
  */
 @NullMarked
-public class SadTab extends EmptyTabObserver implements UserData, TabViewProvider {
+public class SadTab implements TabObserver, UserData, TabViewProvider {
     private static final Class<SadTab> USER_DATA_KEY = SadTab.class;
 
     private final Tab mTab;

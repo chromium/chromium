@@ -163,11 +163,11 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -377,7 +377,7 @@ public class CustomTabActivityTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tab.addObserver(
-                            new EmptyTabObserver() {
+                            new TabObserver() {
                                 @Override
                                 public void onLoadUrl(
                                         Tab tab,
@@ -1059,7 +1059,7 @@ public class CustomTabActivityTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tab.addObserver(
-                            new EmptyTabObserver() {
+                            new TabObserver() {
                                 @Override
                                 public void onPageLoadFinished(Tab tab, GURL url) {
                                     pageLoadFinishedHelper.notifyCalled();
@@ -1132,7 +1132,7 @@ public class CustomTabActivityTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tab.addObserver(
-                            new EmptyTabObserver() {
+                            new TabObserver() {
                                 @Override
                                 public void onLoadUrl(
                                         Tab tab,
@@ -1181,7 +1181,7 @@ public class CustomTabActivityTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tab.addObserver(
-                            new EmptyTabObserver() {
+                            new TabObserver() {
                                 @Override
                                 public void onLoadUrl(
                                         Tab tab,

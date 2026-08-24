@@ -11,7 +11,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -217,7 +216,7 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
      * A class for observing the activity tab. When the activity tab changes, the observer is
      * switched to that tab.
      */
-    public abstract static class CustomTabTabObserver extends EmptyTabObserver {
+    public abstract static class CustomTabTabObserver implements TabObserver {
         /**
          * Called when the initial tab is created or the observer is registered with {@link
          * TabObserverRegistrar}, whichever occurs last.

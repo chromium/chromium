@@ -26,8 +26,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab_group_suggestion.toolbar.GroupSuggestionsButtonController;
 import org.chromium.chrome.browser.tab_group_suggestion.toolbar.GroupSuggestionsButtonControllerFactory;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonController;
@@ -122,7 +122,7 @@ public class ContextualPageActionController {
                     mCurrentTabObserver =
                             new CurrentTabObserver(
                                     tabSupplier,
-                                    new EmptyTabObserver() {
+                                    new TabObserver() {
                                         @Override
                                         public void didFirstVisuallyNonEmptyPaint(Tab tab) {
                                             if (tab != null) maybeShowContextualPageAction();

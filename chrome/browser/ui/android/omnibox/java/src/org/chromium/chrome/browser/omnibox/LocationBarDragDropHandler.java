@@ -22,8 +22,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.PageTransition;
@@ -258,7 +258,7 @@ public class LocationBarDragDropHandler implements OnDragListener {
      * A TabObserver that releases DragAndDropPermissions when the page finishes loading, fails to
      * load, or the tab is destroyed. It also removes itself from the tab's observers.
      */
-    private static class DragAndDropPermissionsReleaseObserver extends EmptyTabObserver {
+    private static class DragAndDropPermissionsReleaseObserver implements TabObserver {
         private final Tab mTab;
         private final DragAndDropPermissions mPermissions;
 

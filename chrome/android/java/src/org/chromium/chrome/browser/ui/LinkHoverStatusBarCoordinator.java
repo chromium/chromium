@@ -27,8 +27,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.components.browser_ui.styles.IncognitoColors;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -37,8 +37,7 @@ import org.chromium.url.GURL;
 
 /** Coordinator for the link hover status bar. */
 @NullMarked
-public class LinkHoverStatusBarCoordinator extends EmptyTabObserver
-        implements View.OnHoverListener {
+public class LinkHoverStatusBarCoordinator implements TabObserver, View.OnHoverListener {
     private static final int EXPAND_HOVER_DELAY_MS = 1600;
     private static final int FADE_IN_DURATION_MS = 120;
     private static final int FADE_OUT_DURATION_MS = 200;

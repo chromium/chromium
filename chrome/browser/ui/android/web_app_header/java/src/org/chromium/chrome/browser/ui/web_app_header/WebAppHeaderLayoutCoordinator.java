@@ -38,8 +38,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
@@ -81,8 +81,9 @@ import java.util.function.Supplier;
  */
 @NullMarked
 @RequiresApi(api = Build.VERSION_CODES.VANILLA_ICE_CREAM)
-public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
-        implements DesktopWindowStateManager.AppHeaderObserver,
+public class WebAppHeaderLayoutCoordinator
+        implements TabObserver,
+                DesktopWindowStateManager.AppHeaderObserver,
                 WebAppHeaderDelegate,
                 BrowserControlsStateProvider.Observer,
                 ThemeColorProvider.TintObserver {

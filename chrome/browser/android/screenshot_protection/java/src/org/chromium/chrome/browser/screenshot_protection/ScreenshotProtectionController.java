@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
@@ -90,7 +89,7 @@ public class ScreenshotProtectionController
                 }
             };
     private final TabObserver mTabObserver =
-            new EmptyTabObserver() {
+            new TabObserver() {
                 @Override
                 public void onDestroyed(Tab tab) {
                     DataProtectionBridge.clearScreenshotSubscriptionCallback(tab);

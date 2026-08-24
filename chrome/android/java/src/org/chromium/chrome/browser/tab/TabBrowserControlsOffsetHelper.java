@@ -17,7 +17,7 @@ import org.chromium.ui.base.WindowAndroid;
  * Helper that coordinates the browser controls offsets from the perspective of a particular Tab.
  */
 @NullMarked
-public class TabBrowserControlsOffsetHelper extends EmptyTabObserver implements UserData {
+public class TabBrowserControlsOffsetHelper implements TabObserver, UserData {
     @VisibleForTesting
     public static final Class<TabBrowserControlsOffsetHelper> USER_DATA_KEY =
             TabBrowserControlsOffsetHelper.class;
@@ -118,7 +118,6 @@ public class TabBrowserControlsOffsetHelper extends EmptyTabObserver implements 
 
     @Override
     public void onCrash(Tab tab) {
-        super.onCrash(tab);
         mTopControlsOffset = 0;
         mBottomControlsOffset = 0;
         mContentOffset = 0;

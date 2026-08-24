@@ -19,7 +19,7 @@ import java.util.function.Supplier;
  * the associated tab was opened.
  */
 @NullMarked
-public final class TabParentIntent extends EmptyTabObserver implements UserData {
+public final class TabParentIntent implements TabObserver, UserData {
     private static final Class<TabParentIntent> USER_DATA_KEY = TabParentIntent.class;
 
     private final Tab mTab;

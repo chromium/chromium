@@ -27,7 +27,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -267,10 +266,9 @@ public class SingleTabSwitcherOnNtpMediator {
         assumeNonNull(mMostRecentTab);
         if (mMostRecentTab.isLoading() && TextUtils.isEmpty(mMostRecentTab.getTitle())) {
             TabObserver tabObserver =
-                    new EmptyTabObserver() {
+                    new TabObserver() {
                         @Override
                         public void onPageLoadFinished(Tab tab, GURL url) {
-                            super.onPageLoadFinished(tab, url);
                             mPropertyModel.set(TITLE, tab.getTitle());
                             mPropertyModel.set(URL, getDomainUrl(tab.getUrl()));
                             tab.removeObserver(this);

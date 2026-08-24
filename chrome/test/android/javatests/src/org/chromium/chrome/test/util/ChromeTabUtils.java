@@ -24,11 +24,11 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabClosingSource;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabWebContentsObserver;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
@@ -90,7 +90,7 @@ public class ChromeTabUtils {
      * onLoadStopped without a preceding onPageLoadFinished indicates that we're dealing with either
      * scenario #2 *or* #3, so we have to keep watching for a call to onCrash.
      */
-    private static class TabPageLoadedObserver extends EmptyTabObserver {
+    private static class TabPageLoadedObserver implements TabObserver {
         private final CallbackHelper mCallback;
         private final String mExpectedUrl;
 
@@ -302,7 +302,7 @@ public class ChromeTabUtils {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tab.addObserver(
-                            new EmptyTabObserver() {
+                            new TabObserver() {
                                 @Override
                                 public void onPageLoadStarted(Tab tab, GURL url) {
                                     if (expectedUrl == null

@@ -45,8 +45,8 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -159,7 +159,7 @@ public class BookmarkTabletTest {
                 () -> {
                     Tab tab = mActivityTestRule.getActivity().getActivityTab();
                     tab.addObserver(
-                            new EmptyTabObserver() {
+                            new TabObserver() {
                                 NativePage mBookmarksNativePage;
 
                                 @Override

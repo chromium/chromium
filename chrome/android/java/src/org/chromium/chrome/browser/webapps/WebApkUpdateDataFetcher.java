@@ -24,8 +24,8 @@ import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
 import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.components.webapps.WebApkDistributor;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.webapk.lib.common.splash.SplashLayout;
@@ -39,7 +39,7 @@ import java.util.List;
  * constructor.
  */
 @NullMarked
-public class WebApkUpdateDataFetcher extends EmptyTabObserver {
+public class WebApkUpdateDataFetcher implements TabObserver {
     /** Observes fetching of the Web Manifest. */
     public interface Observer {
         /**

@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceState.MultiInstanceStateObserver;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -111,7 +110,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
 
     private @Nullable Tab mActiveTab;
     private final TabObserver mActiveTabObserver =
-            new EmptyTabObserver() {
+            new TabObserver() {
                 @Override
                 public void onTitleUpdated(Tab tab) {
                     if (!tab.isIncognito()) {

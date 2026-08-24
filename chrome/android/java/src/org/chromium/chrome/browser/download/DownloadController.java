@@ -13,8 +13,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -124,7 +124,7 @@ public class DownloadController {
         param.setShouldReplaceCurrentEntry(downloadUrl.equals(tab.getUrl().getSpec()));
         tab.loadUrl(param);
         tab.addObserver(
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onDestroyed(Tab tab) {
                         DownloadControllerJni.get()

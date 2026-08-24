@@ -101,13 +101,13 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.InterceptNavigationDelegateClientImpl;
 import org.chromium.chrome.browser.tab.InterceptNavigationDelegateTabHelper;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelJniBridge;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -280,7 +280,7 @@ public class UrlOverridingTest {
 
     @Spy private RedirectHandler mSpyRedirectHandler;
 
-    private static class TestTabObserver extends EmptyTabObserver {
+    private static class TestTabObserver implements TabObserver {
         private final CallbackHelper mFinishCallback;
         private final CallbackHelper mDestroyedCallback;
         private final CallbackHelper mFailCallback;
@@ -1028,8 +1028,8 @@ public class UrlOverridingTest {
         final Tab tab = mTabbedActivityTestRule.getActivityTab();
 
         final CallbackHelper subframeRedirect = new CallbackHelper();
-        EmptyTabObserver observer =
-                new EmptyTabObserver() {
+        TabObserver observer =
+                new TabObserver() {
                     @Override
                     public void onDidStartNavigationInPrimaryMainFrame(
                             Tab tab, NavigationHandle navigation) {
@@ -1290,8 +1290,8 @@ public class UrlOverridingTest {
 
         final CallbackHelper subframeExternalProtocol = new CallbackHelper();
         final CallbackHelper subframeRedirect = new CallbackHelper();
-        EmptyTabObserver observer =
-                new EmptyTabObserver() {
+        TabObserver observer =
+                new TabObserver() {
                     @Override
                     public void onDidStartNavigationInPrimaryMainFrame(
                             Tab tab, NavigationHandle navigation) {
@@ -1490,8 +1490,8 @@ public class UrlOverridingTest {
         final CallbackHelper finishCallback = new CallbackHelper();
         final CallbackHelper syncHelper = new CallbackHelper();
         AtomicReference<NavigationHandle> lastNavigationHandle = new AtomicReference<>(null);
-        EmptyTabObserver observer =
-                new EmptyTabObserver() {
+        TabObserver observer =
+                new TabObserver() {
                     @Override
                     public void onDidFinishNavigationInPrimaryMainFrame(
                             Tab tab, NavigationHandle navigation) {
@@ -1993,8 +1993,8 @@ public class UrlOverridingTest {
         final Tab tab = mTabbedActivityTestRule.getActivityTab();
 
         final CallbackHelper subframeRedirect = new CallbackHelper();
-        EmptyTabObserver observer =
-                new EmptyTabObserver() {
+        TabObserver observer =
+                new TabObserver() {
                     @Override
                     public void onDidStartNavigationInPrimaryMainFrame(
                             Tab tab, NavigationHandle navigation) {
@@ -2044,8 +2044,8 @@ public class UrlOverridingTest {
         final Tab tab = incognitoPage.getTab();
 
         final CallbackHelper subframeRedirect = new CallbackHelper();
-        EmptyTabObserver observer =
-                new EmptyTabObserver() {
+        TabObserver observer =
+                new TabObserver() {
                     @Override
                     public void onDidStartNavigationInPrimaryMainFrame(
                             Tab tab, NavigationHandle navigation) {
@@ -2327,8 +2327,8 @@ public class UrlOverridingTest {
         final Tab tab = mTabbedActivityTestRule.getActivityTab();
 
         final AtomicInteger navCount = new AtomicInteger(0);
-        EmptyTabObserver observer =
-                new EmptyTabObserver() {
+        TabObserver observer =
+                new TabObserver() {
                     @Override
                     public void onDidStartNavigationInPrimaryMainFrame(
                             Tab tab, NavigationHandle navigation) {
@@ -2381,8 +2381,8 @@ public class UrlOverridingTest {
         final Tab tab = mTabbedActivityTestRule.getActivityTab();
 
         final AtomicInteger navCount = new AtomicInteger(0);
-        EmptyTabObserver observer =
-                new EmptyTabObserver() {
+        TabObserver observer =
+                new TabObserver() {
                     @Override
                     public void onDidStartNavigationInPrimaryMainFrame(
                             Tab tab, NavigationHandle navigation) {

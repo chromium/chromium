@@ -23,7 +23,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -80,7 +79,7 @@ public class TabStripNavigationFailureTest {
                                         boolean markedForSelection) {
                                     bgTabHolder[0] = tab;
                                     tab.addObserver(
-                                            new EmptyTabObserver() {
+                                            new TabObserver() {
                                                 @Override
                                                 public void onPageLoadFailed(
                                                         Tab tab, int errorCode) {

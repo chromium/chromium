@@ -12,8 +12,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.net.NetError;
 import org.chromium.net.NetworkChangeNotifier;
@@ -23,7 +23,7 @@ import org.chromium.net.NetworkChangeNotifier;
  * URL.
  */
 @NullMarked
-public class WebApkSplashNetworkErrorObserver extends EmptyTabObserver {
+public class WebApkSplashNetworkErrorObserver implements TabObserver {
     private final Activity mActivity;
     private @Nullable WebApkOfflineDialog mOfflineDialog;
 

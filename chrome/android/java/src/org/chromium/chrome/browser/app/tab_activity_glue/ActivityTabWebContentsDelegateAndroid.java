@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.media.immersive_playback.ImmersivePlaybackMes
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.policy.PolicyAuditor.AuditEvent;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.InterceptNavigationDelegateTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -146,7 +145,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                                 fullscreenManager)
                         : null;
         mTabObserver =
-                new EmptyTabObserver() {
+                new TabObserver() {
                     @Override
                     public void onActivityAttachmentChanged(
                             Tab tab, @Nullable WindowAndroid window) {

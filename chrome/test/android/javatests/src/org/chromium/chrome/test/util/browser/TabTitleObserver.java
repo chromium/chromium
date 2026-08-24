@@ -7,17 +7,17 @@ import android.text.TextUtils;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * A utility class to get notified of title change in a tab. Subclasses can
- * override doesTitleMatch() to customize title matching.
+ * A utility class to get notified of title change in a tab. Subclasses can override
+ * doesTitleMatch() to customize title matching.
  */
-public class TabTitleObserver extends EmptyTabObserver {
+public class TabTitleObserver implements TabObserver {
     private final String mExpectedTitle;
     private final CallbackHelper mCallback;
 

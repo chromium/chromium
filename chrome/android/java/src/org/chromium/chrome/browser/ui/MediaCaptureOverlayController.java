@@ -11,9 +11,9 @@ import android.view.ViewGroup.MarginLayoutParams;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsOffsetHelper;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -33,7 +33,7 @@ public class MediaCaptureOverlayController {
     private final SparseArray<Tab> mCapturedTabs = new SparseArray<>();
     private @Nullable Tab mVisibleTab;
 
-    private class CaptureOverlayTabObserver extends EmptyTabObserver {
+    private class CaptureOverlayTabObserver implements TabObserver {
         /**
          * When the Tab Switcher UI is summoned this is fired; though this does
          * not get fired when the omnibox appears (that is currently handled due

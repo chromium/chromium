@@ -10,7 +10,6 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabmodel.AllTabObserver;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -71,7 +70,7 @@ public class MediaCapturePickerTabObserver implements AllTabObserver.Observer {
     private final Set<Tab> mObservedTabs = new HashSet<>();
 
     private final TabObserver mTabObserver =
-            new EmptyTabObserver() {
+            new TabObserver() {
                 @Override
                 public void onTitleUpdated(Tab tab) {
                     maybeUpdatePickableTab(tab, mObserverDelegate::onTabTitleUpdated);

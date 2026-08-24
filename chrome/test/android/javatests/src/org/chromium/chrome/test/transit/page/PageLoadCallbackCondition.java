@@ -7,8 +7,8 @@ package org.chromium.chrome.test.transit.page;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.UiThreadCondition;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
 
@@ -51,7 +51,7 @@ public class PageLoadCallbackCondition extends UiThreadCondition {
         return "onPageLoadStarted() and onPageLoadFinished() received";
     }
 
-    private class TabLoadEventLogger extends EmptyTabObserver {
+    private class TabLoadEventLogger implements TabObserver {
         @Override
         public void onInitialized(Tab tab, String appId) {
             mCallbacks.add("onInitialized");

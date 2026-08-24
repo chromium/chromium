@@ -38,9 +38,9 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
@@ -79,8 +79,7 @@ import java.util.function.Supplier;
  * loading.
  */
 @NullMarked
-public class ReaderModeManager extends EmptyTabObserver
-        implements UserData, NightModeStateProvider.Observer {
+public class ReaderModeManager implements TabObserver, UserData, NightModeStateProvider.Observer {
 
     // LINT.IfChange(DomDistillerEntryPoint)
 

@@ -35,7 +35,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -435,7 +434,7 @@ public class StripDragShadowView extends FrameLayout {
     }
 
     private TabObserver getFaviconUpdateTabObserver() {
-        return new EmptyTabObserver() {
+        return new TabObserver() {
             @Override
             public void onFaviconUpdated(Tab tab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
                 if (icon == null) {
