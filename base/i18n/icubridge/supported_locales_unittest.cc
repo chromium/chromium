@@ -106,9 +106,7 @@ constexpr auto kExcludedTags = base::MakeFixedFlatSet<LanguageTag>({
     GetKnownLanguageTag("yi"),
 #endif
     GetKnownLanguageTag("yue"),
-    GetKnownLanguageTag("zh-CN"),
     GetKnownLanguageTag("zh-HK"),
-    GetKnownLanguageTag("zh-TW"),
 });
 
 class SupportedLocalesTest : public testing::Test {
