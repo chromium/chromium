@@ -9384,7 +9384,7 @@
   {
     "name": "symphonia-audio-decoding",
     "owners": [ "jophba@google.com", "media-dev@chromium.org" ],
-    "expiry_milestone": 152
+    "expiry_milestone": 160
   },
   {
     "name": "sync-account-settings",
