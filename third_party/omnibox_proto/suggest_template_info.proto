@@ -36,7 +36,7 @@ message SuggestTemplateInfo {
   // The style of the suggestion.
   optional StandardSuggestStyle style = 1;
 
-  // Next ID: 15
+  // Next ID: 18
   enum IconType {
     // Unspecified.
     ICON_TYPE_UNSPECIFIED = 0;
@@ -70,6 +70,12 @@ message SuggestTemplateInfo {
     SCHOOL = 13;
     // Ink pen icon, used for writing suggestions.
     INK_PEN = 14;
+    // Tab icon, used for "Ask about tabs" suggestions.
+    TAB = 15;
+    // Photo spark icon, used for create image suggestions.
+    PHOTO_SPARK = 16;
+    // Bolt icon, may be used for brainstorm suggestions.
+    BOLT = 17;
   }
 
   // The icon type of the suggestion, this is typically the icon in front of

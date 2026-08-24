@@ -38,6 +38,9 @@ enum IconType {
   kAttachFile = 12,
   kSchool = 13,
   kInkPen = 14,
+  kTab = 15,
+  kPhotoSpark = 16,
+  kBolt = 17,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:ActionChipIconType)
