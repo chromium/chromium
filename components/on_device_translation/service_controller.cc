@@ -55,6 +55,8 @@ using mojom::OnDeviceTranslationServiceConfigPtr;
 constexpr std::string_view kCreateTranslatorMetricActionName =
     "CreateTranslator";
 constexpr std::string_view kCanTranslateMetricActionName = "CanTranslate";
+constexpr std::string_view kCreateFailedLanguagePairMetricName =
+    "Translate.OnDeviceTranslation.CreateFailed.LanguagePair";
 
 constexpr std::string_view
     kCreateTranslatorSourceLanguageIsSupportedMetricName =
@@ -280,7 +282,8 @@ void OnDeviceTranslationServiceController::CreateTranslatorImpl(
       source_lang, target_lang, std::move(pending_receiver),
       mojo::WrapCallbackWithDropHandler(
           base::BindOnce(
-              [](base::OnceCallback<void(
+              [](const std::string& source_lang, const std::string& target_lang,
+                 base::OnceCallback<void(
                      base::expected<
                          mojo::PendingRemote<mojom::OnDeviceTranslator>,
                          CreateTranslatorError>)> callback,
@@ -289,11 +292,14 @@ void OnDeviceTranslationServiceController::CreateTranslatorImpl(
                 if (result == CreateTranslatorResult::kSuccess) {
                   std::move(callback).Run(std::move(pending_remote));
                 } else {
+                  RecordLanguagePairUma(kCreateFailedLanguagePairMetricName,
+                                        source_lang, target_lang);
                   std::move(callback).Run(
                       base::unexpected(ToCreateTranslatorError(result)));
                 }
               },
-              std::move(callbacks.first), std::move(pending_remote)),
+              source_lang, target_lang, std::move(callbacks.first),
+              std::move(pending_remote)),
           base::BindOnce(
               std::move(callbacks.second),
               base::unexpected(CreateTranslatorError::kServiceCrashed))));

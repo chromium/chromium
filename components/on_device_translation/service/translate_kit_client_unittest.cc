@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "base/files/file.h"
 #include "base/files/scoped_temp_file.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/gtest_util.h"
@@ -98,6 +99,7 @@ TEST_F(TranslateKitClientTest, CanTranslateNoConfig) {
 // Tests that the GetTranslator method returns a valid translator for a language
 // pair that is supported, and the translator can be used to translate text.
 TEST_F(TranslateKitClientTest, GetTranslatorMatchingLanguagePack) {
+  base::HistogramTester histogram_tester;
   auto client = CreateClient(GetMockLibraryPath(), {{"en", "ja"}},
                              {
                                  {"0/dict.dat", "En to Ja - "},
@@ -108,6 +110,10 @@ TEST_F(TranslateKitClientTest, GetTranslatorMatchingLanguagePack) {
   // Note: the mock library returns the concatenation of the content of
   // "dict.dat" and the input text.
   EXPECT_EQ(translator->Translate("test"), "En to Ja - test");
+  histogram_tester.ExpectUniqueSample(
+      "Translate.OnDeviceTranslation.ModelFileMmapSuccess", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "Translate.OnDeviceTranslation.ModelFileOpenError", 0);
 }
 
 // Tests that the GetTranslator method returns `kErrorFailedToCreateTranslator`
@@ -124,9 +130,15 @@ TEST_F(TranslateKitClientTest, GetTranslatorNoMatchingLanguagePack) {
 // Tests that the GetTranslator method returns `kErrorFailedToCreateTranslator`
 // for a language pair that language data is not available.
 TEST_F(TranslateKitClientTest, GetTranslatorBrokenLanguagePack) {
+  base::HistogramTester histogram_tester;
   auto client = CreateClient(GetMockLibraryPath(), {{"en", "ja"}}, {});
   EXPECT_THAT(client->GetTranslator("en", "ja"),
               ErrorIs(CreateTranslatorResult::kErrorFailedToCreateTranslator));
+  histogram_tester.ExpectUniqueSample(
+      "Translate.OnDeviceTranslation.ModelFileOpenError",
+      -base::File::FILE_ERROR_FAILED, 1);
+  histogram_tester.ExpectTotalCount(
+      "Translate.OnDeviceTranslation.ModelFileMmapSuccess", 0);
 }
 
 // Tests that the GetTranslator method crashes if no config is set.
