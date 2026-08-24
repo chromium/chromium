@@ -323,6 +323,7 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
       "alternate_nav_infobar_delegate_browsertest.cc",
+      "omnibox_edit_model_browsertest.cc",
       "omnibox_metrics_browsertest.cc",
       "omnibox_search_aggregator_browsertest.cc",
     ]
@@ -340,9 +341,11 @@ if (!is_android) {
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/omnibox:test_support",
       "//chrome/browser/ui/search",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/test:browser_tests",
       "//chrome/browser/ui/test:test_support",
       "//chrome/browser/ui/views/drive_picker_host:mojo_bindings",
+      "//chrome/browser/ui/views/location_bar",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/cr_components/composebox",
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
@@ -359,6 +362,9 @@ if (!is_android) {
       "//components/policy/core/common:test_support",
       "//components/search_engines",
       "//components/search_engines:search_engine_type",
+      "//components/sessions",
+      "//components/tabs:public",
+      "//content/public/browser",
       "//content/test:test_support",
       "//net:test_support",
       "//third_party/metrics_proto",
