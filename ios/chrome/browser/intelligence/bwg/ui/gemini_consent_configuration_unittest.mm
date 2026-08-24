@@ -351,3 +351,46 @@ TEST_F(GeminiConsentConfigurationTest, UpdatedConsentStrictLayout) {
               IDS_IOS_GEMINI_CONSENT_STRICT_DATA_GOVERNANCE_BODY_3)]);
   EXPECT_TRUE(HasLinkWithAction(row3.body, kGeminiActivityLinkAction));
 }
+
+TEST_F(GeminiConsentConfigurationTest,
+       LightweightFirstRunOmitsIconsAndExpandsFirstRow) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{kGeminiFREExperiment,
+        {{kGeminiFREExperimentParam,
+          kGeminiFREExperimentParamLightweightConvenience}}}},
+      /*disabled_features=*/{});
+
+  GeminiConsentConfiguration* config =
+      BuildStandardConfiguration(/*is_managed=*/NO,
+                                 /*use_strict=*/NO, kUSCountryCode);
+
+  EXPECT_TRUE(config.collapsible);
+  ASSERT_EQ(2u, config.rows.count);
+  EXPECT_EQ(nil, config.rows[0].icon);
+  EXPECT_FALSE(config.rows[0].collapsed);
+  EXPECT_EQ(nil, config.rows[1].icon);
+  EXPECT_TRUE(config.rows[1].collapsed);
+}
+
+TEST_F(GeminiConsentConfigurationTest,
+       VisualRichFirstRunOmitsIconsAndExpandsFirstRow) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{kGeminiFREExperiment,
+        {{kGeminiFREExperimentParam, kGeminiFREExperimentParamVisualRich}}}},
+      /*disabled_features=*/{});
+
+  GeminiConsentConfiguration* config =
+      BuildStandardConfiguration(/*is_managed=*/NO,
+                                 /*use_strict=*/NO, kUSCountryCode);
+
+  EXPECT_TRUE(config.collapsible);
+  ASSERT_EQ(2u, config.rows.count);
+  EXPECT_EQ(nil, config.rows[0].icon);
+  EXPECT_FALSE(config.rows[0].collapsed);
+  EXPECT_EQ(nil, config.rows[1].icon);
+  EXPECT_TRUE(config.rows[1].collapsed);
+}

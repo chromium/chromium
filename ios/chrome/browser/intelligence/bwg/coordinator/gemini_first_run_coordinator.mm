@@ -317,6 +317,9 @@
       visualRichVC.mutator = _mediator;
       return visualRichVC;
     }
+    case GeminiFirstRunStepIdentifier::kLightweight: {
+      return nil;
+    }
   }
 }
 

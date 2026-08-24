@@ -19,6 +19,9 @@
 // Promo was shown.
 - (void)didShowGeminiPromo;
 
+// Returns the title string to display for the Lightweight first run promo step.
+- (NSString*)lightweightPromoTitle;
+
 @end
 
 // Mutator protocol for the Gemini Consent step to communicate with the

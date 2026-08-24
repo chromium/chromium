@@ -322,16 +322,49 @@ TEST_F(ActorFeaturesTest, GeminiFREExperimentVariants) {
     EXPECT_FALSE(IsGeminiLightweightFREEnabled());
   }
 
-  // Enabled with "lightweight" parameter (mutually exclusive with Visual Rich).
+  // Enabled with "lightweight-convenience" parameter.
   {
     base::test::ScopedFeatureList scoped_feature_list;
     base::FieldTrialParams params;
-    params[kGeminiFREExperimentParam] = kGeminiFREExperimentParamLightweight;
+    params[kGeminiFREExperimentParam] =
+        kGeminiFREExperimentParamLightweightConvenience;
     scoped_feature_list.InitAndEnableFeatureWithParameters(kGeminiFREExperiment,
                                                            params);
     EXPECT_TRUE(IsGeminiFREExperimentEnabled());
     EXPECT_FALSE(IsGeminiVisualRichFREEnabled());
     EXPECT_TRUE(IsGeminiLightweightFREEnabled());
+    EXPECT_EQ(GetGeminiLightweightFREVariant(),
+              GeminiLightweightFREVariant::kConvenience);
+  }
+
+  // Enabled with "lightweight-page-sharing" parameter.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    base::FieldTrialParams params;
+    params[kGeminiFREExperimentParam] =
+        kGeminiFREExperimentParamLightweightPageSharing;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(kGeminiFREExperiment,
+                                                           params);
+    EXPECT_TRUE(IsGeminiFREExperimentEnabled());
+    EXPECT_FALSE(IsGeminiVisualRichFREEnabled());
+    EXPECT_TRUE(IsGeminiLightweightFREEnabled());
+    EXPECT_EQ(GetGeminiLightweightFREVariant(),
+              GeminiLightweightFREVariant::kPageSharing);
+  }
+
+  // Enabled with "lightweight-diverse" parameter.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    base::FieldTrialParams params;
+    params[kGeminiFREExperimentParam] =
+        kGeminiFREExperimentParamLightweightDiverse;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(kGeminiFREExperiment,
+                                                           params);
+    EXPECT_TRUE(IsGeminiFREExperimentEnabled());
+    EXPECT_FALSE(IsGeminiVisualRichFREEnabled());
+    EXPECT_TRUE(IsGeminiLightweightFREEnabled());
+    EXPECT_EQ(GetGeminiLightweightFREVariant(),
+              GeminiLightweightFREVariant::kDiverse);
   }
 }
 

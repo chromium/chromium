@@ -1498,6 +1498,15 @@
       <message name="IDS_IOS_BWG_IPH_TEXT" desc="Text for the BWG In-Product Help bubble.">
           You can open Gemini here
       </message>
+      <message name="IDS_IOS_BWG_LIGHTWEIGHT_PROMO_CONVENIENCE_TITLE" desc="Convenience variant main title text for the Lightweight Gemini First Run Experience.">
+          Ask anything, right where you are, with Gemini in Chrome
+      </message>
+      <message name="IDS_IOS_BWG_LIGHTWEIGHT_PROMO_DIVERSE_TITLE" desc="Diverse variant main title text for the Lightweight Gemini First Run Experience.">
+          Shop, plan and do more with Gemini in Chrome
+      </message>
+      <message name="IDS_IOS_BWG_LIGHTWEIGHT_PROMO_PAGE_SHARING_TITLE" desc="Page sharing variant main title text for the Lightweight Gemini First Run Experience.">
+          Ask about anything on your page with Gemini in Chrome
+      </message>
       <message name="IDS_IOS_BWG_LOCATION_BACK_BUTTON_TITLE" desc="The back button text of BWG location settings page.">
         Gemini
       </message>
@@ -1576,7 +1585,7 @@
       <message name="IDS_IOS_BWG_SETTINGS_PAGE_CONTENT_SHARING_TITLE" desc="The title text of page content sharing row in BWG settings page.">
         Share current tab
       </message>
-      <message name="IDS_IOS_BWG_VISUAL_RICH_PRIMARY_BUTTON" desc="Primary button text for the Visual Rich Gemini FRE page.">
+      <message name="IDS_IOS_BWG_VISUAL_RICH_PRIMARY_BUTTON" desc="Primary button text for the Gemini first run experience.">
           Start using Gemini
       </message>
       <message name="IDS_IOS_CALL_OMNIBOX_ACTION" desc="Call suggestion action button [iOS only]">
