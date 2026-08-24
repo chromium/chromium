@@ -6,6 +6,7 @@
 
 #import <Carbon/Carbon.h>
 
+#include <memory>
 #include <string>
 #include <string_view>
 
@@ -23,6 +24,7 @@
 #include "content/common/features.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -432,6 +434,37 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
   // Calling -accessibilityRole on the RenderWidgetHostViewCocoa should have
   // activated basic accessibility support.
   EXPECT_EQ(accessibility_state->GetAccessibilityMode(), ui::kAXModeBasic);
+}
+
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
+                       WebAccessibilityRootUsesScrollArea) {
+  GURL url("data:text/html,<!doctype html><p>Web content</p>");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::unique_ptr<ScopedAccessibilityMode> accessibility_mode =
+      BrowserAccessibilityState::GetInstance()->CreateScopedModeForProcess(
+          ui::kAXModeComplete);
+
+  RenderWidgetHostView* rwhv =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetView();
+  RenderWidgetHostViewMac* rwhv_mac =
+      static_cast<RenderWidgetHostViewMac*>(rwhv);
+  RenderWidgetHostViewCocoa* rwhv_cocoa = rwhv_mac->GetInProcessNSView();
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return rwhv_mac->GetRootBrowserAccessibilityElement() != nil; }));
+
+  id web_area = rwhv_mac->GetRootBrowserAccessibilityElement();
+  EXPECT_TRUE(rwhv_cocoa.isAccessibilityElement);
+  EXPECT_TRUE(
+      [rwhv_cocoa.accessibilityRole isEqual:NSAccessibilityScrollAreaRole]);
+  ASSERT_EQ(1u, rwhv_cocoa.accessibilityChildren.count);
+  EXPECT_EQ(web_area, rwhv_cocoa.accessibilityChildren[0]);
+  EXPECT_EQ(rwhv_cocoa, [web_area accessibilityParent]);
+
+  NSArray* children = NSAccessibilityUnignoredChildren(@[ rwhv_cocoa ]);
+  ASSERT_EQ(1u, children.count);
+  EXPECT_EQ(rwhv_cocoa, children[0]);
 }
 
 // Tests that text replacement is not accepted during intermediate selection
