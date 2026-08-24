@@ -98,6 +98,10 @@ void BindOptionalByteSize(sql::Statement& statement,
   }
 }
 
+void OnSqlError(int error, sql::Statement*) {
+  base::UmaHistogramSparse("Storage.LocalStorage.Database.Error", error);
+}
+
 }  // namespace
 
 LocalStorageSqlite::LocalStorageSqlite(PassKey) {}
@@ -129,9 +133,7 @@ DbStatus LocalStorageSqlite::Open(
           database_path,
           database_path.empty() ? kLocalStorageTag : kLocalStorageTagInMemory,
           kCurrentSchemaVersion, kCompatibleSchemaVersion,
-          base::BindOnce(&CreateSchema),
-          base::BindRepeating(&LocalStorageSqlite::OnSqlError,
-                              base::Unretained(this))));
+          base::BindOnce(&CreateSchema), base::BindRepeating(&OnSqlError)));
 
   map_entries_table_ = std::make_unique<MapEntriesTable>(*database_);
 
@@ -448,10 +450,6 @@ bool LocalStorageSqlite::OnMemoryDump(
       base::StringPrintf("site_storage/localstorage/sqlite/db_0x%" PRIXPTR,
                          reinterpret_cast<uintptr_t>(this)));
   return true;
-}
-
-void LocalStorageSqlite::OnSqlError(int error, sql::Statement* statement) {
-  base::UmaHistogramSparse("Storage.LocalStorage.Database.Error", error);
 }
 
 }  // namespace storage

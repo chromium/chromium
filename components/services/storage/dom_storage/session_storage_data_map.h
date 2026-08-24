@@ -94,8 +94,6 @@ class SessionStorageDataMap final
 
   void OnMapLoaded() override;
 
-  static StorageAreaImpl::Options GetOptions();
-
   raw_ptr<Listener> listener_;
   int binding_count_ = 0;
 

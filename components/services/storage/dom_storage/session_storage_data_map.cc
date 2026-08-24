@@ -10,6 +10,25 @@
 #include "components/services/storage/dom_storage/dom_storage_constants.h"
 
 namespace storage {
+namespace {
+
+StorageAreaImpl::Options GetOptions() {
+  // Delay for a moment after a value is set in anticipation
+  // of other values being set, so changes are batched.
+  constexpr base::TimeDelta kCommitDefaultDelaySecs = base::Seconds(5);
+
+  // To avoid excessive IO we apply limits to the amount of data being
+  // written and the frequency of writes.
+  StorageAreaImpl::Options options;
+  options.max_size = kPerStorageAreaQuota + kPerStorageAreaOverQuotaAllowance;
+  options.default_commit_delay = kCommitDefaultDelaySecs;
+  options.max_bytes_per_hour = kPerStorageAreaQuota;
+  options.max_commits_per_hour = 60;
+  options.cache_mode = StorageAreaImpl::CacheMode::KEYS_ONLY_WHEN_POSSIBLE;
+  return options;
+}
+
+}  // namespace
 
 // static
 scoped_refptr<SessionStorageDataMap> SessionStorageDataMap::CreateFromDisk(
@@ -92,23 +111,6 @@ void SessionStorageDataMap::RemoveBindingReference() {
 
 void SessionStorageDataMap::OnMapLoaded() {
   clone_from_data_map_.reset();
-}
-
-// static
-StorageAreaImpl::Options SessionStorageDataMap::GetOptions() {
-  // Delay for a moment after a value is set in anticipation
-  // of other values being set, so changes are batched.
-  constexpr const base::TimeDelta kCommitDefaultDelaySecs = base::Seconds(5);
-
-  // To avoid excessive IO we apply limits to the amount of data being
-  // written and the frequency of writes.
-  StorageAreaImpl::Options options;
-  options.max_size = kPerStorageAreaQuota + kPerStorageAreaOverQuotaAllowance;
-  options.default_commit_delay = kCommitDefaultDelaySecs;
-  options.max_bytes_per_hour = kPerStorageAreaQuota;
-  options.max_commits_per_hour = 60;
-  options.cache_mode = StorageAreaImpl::CacheMode::KEYS_ONLY_WHEN_POSSIBLE;
-  return options;
 }
 
 }  // namespace storage
