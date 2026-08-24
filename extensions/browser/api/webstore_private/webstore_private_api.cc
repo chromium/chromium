@@ -72,7 +72,13 @@
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/strings/grit/extensions_strings.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_flags.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -385,6 +391,42 @@ ExtensionInstallStatus AddExtensionToPendingList(
   return new_status;
 }
 
+// Creates the URLLoaderFactory for fetching the install-confirmation icon whose
+// `iconUrl` is supplied by the (web store) renderer.
+//
+// The icon is fetched from the browser process, where a plain factory is exempt
+// from Local Network Access (LNA) checks. That would let a web store page point
+// `iconUrl` at a loopback/private address and use the browser as a blind-SSRF
+// probe of the user's internal network. Giving the factory a public, secure
+// client security state with a blocking LNA policy makes the network service
+// reject icons that resolve to a more-private address space, while public web
+// store CDN icons still load.
+scoped_refptr<network::SharedURLLoaderFactory>
+CreateIconLoaderFactoryWithNetworkAccessChecks(
+    content::BrowserContext* browser_context) {
+  auto client_security_state = network::mojom::ClientSecurityState::New();
+  client_security_state->ip_address_space =
+      network::mojom::IPAddressSpace::kPublic;
+  client_security_state->is_web_secure_context = true;
+  client_security_state->local_network_access_request_policy =
+      network::mojom::LocalNetworkAccessRequestPolicy::kBlock;
+
+  auto params = network::mojom::URLLoaderFactoryParams::New();
+  // Browser-process factory: bypasses the request_initiator lock.
+  params->process_id = network::OriginatingProcessId::browser();
+  params->is_orb_enabled = false;
+  params->automatically_assign_isolation_info = true;
+  params->client_security_state = std::move(client_security_state);
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
+  browser_context->GetDefaultStoragePartition()
+      ->GetNetworkContext()
+      ->CreateURLLoaderFactory(factory_remote.InitWithNewPipeAndPassReceiver(),
+                               std::move(params));
+  return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
+      std::move(factory_remote));
+}
+
 // Returns the extension's icon if it exists, otherwise the default icon of the
 // extension type.
 gfx::ImageSkia GetIconImage(const SkBitmap& icon, bool is_app) {
@@ -539,9 +581,8 @@ WebstorePrivateBeginInstallWithManifest3Function::Run() {
 
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory = nullptr;
   if (!icon_url.is_empty()) {
-    loader_factory = browser_context()
-                         ->GetDefaultStoragePartition()
-                         ->GetURLLoaderFactoryForBrowserProcess();
+    loader_factory =
+        CreateIconLoaderFactoryWithNetworkAccessChecks(browser_context());
   }
 
   ParseWebstoreData(
