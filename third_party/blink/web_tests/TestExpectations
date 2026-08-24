@@ -969,9 +969,6 @@ crbug.com/1168277 external/wpt/css/css-counter-styles/counter-style-at-rule/disc
 # Maybe WontFix according to the bug
 crbug.com/750992 external/wpt/css/css-overflow/margin-block-end-scroll-area-001.html [ Failure ]
 
-# Windows 10 bot upgrade now causes these failures on Windows-10-18363
-crbug.com/1143005 [ Win10.20h2 ] media/track/track-cue-rendering-vertical.html [ Failure ]
-
 
 # CSS Grid Lanes failing tests
 # One of the 10 inner tests pass. Break inside avoid support is needed. The tests
@@ -8315,7 +8312,6 @@ crbug.com/365127791 [ Win11 ] fast/forms/file/file-appearance-bidi-filenames.htm
 crbug.com/365127791 [ Win11 ] fast/loader/json-document-appearance.html [ Failure Pass ]
 crbug.com/365127791 [ Win11 ] fast/ruby/nested-ruby.html [ Failure Pass ]
 crbug.com/365127791 [ Win11 ] inspector-protocol/layout-fonts/languages-emoji-rare-glyphs.js [ Failure Pass ]
-crbug.com/365127791 [ Win11 ] media/track/track-cue-rendering-ruby.html [ Failure Pass ]
 crbug.com/365127791 [ Win11 ] svg/text/bidi-textlength.html [ Failure Pass ]
 crbug.com/365127791 [ Win11 ] svg/text/surrogate-pair-queries.html [ Failure Pass ]
 crbug.com/365127791 [ Win11 ] virtual/text-antialias/color-emoji.html [ Failure Pass ]
@@ -9106,8 +9102,6 @@ crbug.com/524577269 [ Mac26 ] fast/forms/datetimelocal/datetimelocal-appearance-
 crbug.com/524577269 [ Mac26 ] fast/forms/placeholder-position.html [ Failure Pass ]
 crbug.com/524577269 [ Mac26 ] fast/ruby/ruby-position-modern-japanese-fonts.html [ Failure Pass ]
 crbug.com/524577269 [ Mac26 ] inspector-protocol/layout-fonts/lang-fallback.js [ Failure Pass ]
-crbug.com/524577269 [ Mac26 ] media/track/track-cue-rendering-ruby.html [ Failure Pass ]
-crbug.com/524577269 [ Mac26 ] media/track/track-cue-rendering-vertical.html [ Failure Pass ]
 crbug.com/524577269 [ Mac26 ] svg/text/text-selection-fonts-01-t.svg [ Failure Pass ]
 crbug.com/524577269 [ Mac26 ] svg/W3C-SVG-1.1/text-fonts-01-t.svg [ Failure Pass ]
 crbug.com/524577269 [ Mac26 ] virtual/text-antialias/international/lang-glyph-cache-separation.html [ Failure Pass ]
@@ -9323,3 +9317,11 @@ crbug.com/547617167 [ Linux ] external/wpt/webdriver/tests/classic/print/printcm
 # Gardener 2026-08-21
 crbug.com/550002440 http/tests/devtools/extensions/extensions-sidebar.js [ Failure Pass ]
 crbug.com/549621645 [ Win11-arm64 ] fast/css3-text/css3-text-decoration/text-underline-position/text-underline-position-cjk.html [ Failure Pass ]
+
+# Gardener 2026-08-24
+crbug.com/536220563 [ Mac ] media/track/track-cue-rendering-horizontal.html [ Failure Pass ]
+crbug.com/536220563 [ Win ] media/track/track-cue-rendering-horizontal.html [ Failure Pass ]
+crbug.com/536217727 [ Mac ] media/track/track-cue-rendering-ruby.html [ Failure Pass ]
+crbug.com/536217727 [ Win ] media/track/track-cue-rendering-ruby.html [ Failure Pass ]
+crbug.com/551586168 [ Mac ] media/track/track-cue-rendering-vertical.html [ Failure Pass ]
+crbug.com/551586168 [ Win ] media/track/track-cue-rendering-vertical.html [ Failure Pass ]
