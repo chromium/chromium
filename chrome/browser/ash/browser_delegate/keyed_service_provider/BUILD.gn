@@ -7,6 +7,7 @@ assert(is_chromeos)
 group("keyed_service_provider") {
   public_deps = [
     ":identity_manager_provider_impl",
+    ":sync_service_provider_impl",
     ":template_url_service_provider_impl",
   ]
 }
@@ -23,6 +24,25 @@ source_set("identity_manager_provider_impl") {
     "//chrome/browser/signin",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/signin:identity_manager_provider",
+  ]
+
+  visibility = [ ":keyed_service_provider" ]
+}
+
+source_set("sync_service_provider_impl") {
+  sources = [
+    "sync_service_provider_impl.cc",
+    "sync_service_provider_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles",
+    "//chrome/browser/sync",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/sync:sync_service_provider",
+    "//components/account_id",
+    "//content/public/browser",
   ]
 
   visibility = [ ":keyed_service_provider" ]

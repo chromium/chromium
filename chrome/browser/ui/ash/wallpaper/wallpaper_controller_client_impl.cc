@@ -45,12 +45,12 @@
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/sync/sync_service_provider.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/account_id/account_id.h"
@@ -351,7 +351,7 @@ bool WallpaperControllerClientImpl::IsWallpaperSyncEnabled(
   }
 
   syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile);
+      ash::SyncServiceProvider::Get().Find(account_id);
   if (!sync_service) {
     return false;
   }
