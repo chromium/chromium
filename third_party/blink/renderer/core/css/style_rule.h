@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/mixin_parameter_bindings.h"
 #include "third_party/blink/renderer/core/css/parser/css_at_rule_id.h"
-#include "third_party/blink/renderer/core/css/parser/css_lazy_property_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_lazy_parsing_state.h"
 #include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
 #include "third_party/blink/renderer/core/css/style_scope.h"
 #include "third_party/blink/renderer/core/route_matching/navigation_preposition.h"
@@ -213,11 +213,15 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
         base::PassKey<StyleRule>(), selectors, properties,
         mixin_parameter_bindings);
   }
+  // Creates a StyleRule whose declaration block (starting at byte offset
+  // `lazy_offset` of the sheet text held by `lazy_state`) is parsed on
+  // demand, the first time Properties() is called.
   static StyleRule* Create(base::span<CSSSelector> selectors,
-                           CSSLazyPropertyParser* lazy_property_parser) {
+                           CSSLazyParsingState* lazy_state,
+                           wtf_size_t lazy_offset) {
     return MakeGarbageCollected<StyleRule>(
         AdditionalBytesForSelectors(selectors.size()),
-        base::PassKey<StyleRule>(), selectors, lazy_property_parser);
+        base::PassKey<StyleRule>(), selectors, lazy_state, lazy_offset);
   }
 
   // See comment on the corresponding constructor.
@@ -247,7 +251,8 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
             const MixinParameterBindings*);
   StyleRule(base::PassKey<StyleRule>,
             base::span<CSSSelector> selector_vector,
-            CSSLazyPropertyParser*);
+            CSSLazyParsingState*,
+            wtf_size_t lazy_offset);
   // If you use this constructor, the object will not be fully constructed until
   // you call SetProperties().
   StyleRule(base::PassKey<StyleRule>, base::span<CSSSelector> selector_vector);
@@ -341,9 +346,17 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
   }
 
   mutable Member<CSSPropertyValueSet> properties_;
-  mutable Member<CSSLazyPropertyParser> lazy_property_parser_;
+  // If properties_ is null (and the rule is fully constructed), the
+  // declaration block has not been parsed yet; lazy_state_ holds the sheet
+  // text and lazy_offset_ (below) the offset of the block's opening brace in
+  // it. Storing these inline rather than in a separate object avoids an
+  // allocation per rule.
+  mutable Member<CSSLazyParsingState> lazy_state_;
   Member<GCedHeapVector<Member<StyleRuleBase>>> child_rules_;
   Member<const MixinParameterBindings> mixin_parameter_bindings_;
+  // See lazy_state_. (This occupies what would otherwise be padding before
+  // the trailing, 8-aligned CSSSelector array.)
+  wtf_size_t lazy_offset_ = 0;
 };
 
 class CORE_EXPORT StyleRuleFontFace : public StyleRuleBase {
