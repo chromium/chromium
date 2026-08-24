@@ -122,7 +122,6 @@
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
-#include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/browser/ui/ash/login/input_events_blocker.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"

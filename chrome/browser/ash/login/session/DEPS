@@ -66,7 +66,6 @@ include_rules = [
   "+chrome/browser/screen_ai",
   "+chrome/browser/signin",
   "+chrome/browser/supervised_user/child_accounts",
-  "+chrome/browser/sync",
   "+chrome/browser/trusted_vault",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/startup",
