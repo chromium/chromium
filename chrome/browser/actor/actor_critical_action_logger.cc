@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/critical_actions/critical_action_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "components/actor/core/task_id.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/critical_actions/core/browser/critical_action_service.h"
@@ -87,6 +89,16 @@ critical_actions::ActionType EvaluateToolRequest(
     return critical_actions::ActionType::kCredentialsOtp;
   }
   if (name == AttemptFormFillingToolRequest::kName) {
+    const auto& request =
+        static_cast<const AttemptFormFillingToolRequest&>(action);
+    if (base::FeatureList::IsEnabled(features::kGlicActorAutofillPreClick) &&
+        !request.enqueued_click()) {
+      // TimeOfUseValidation (always run by the framework before Invoke())
+      // rejects empty trigger fields. Thus, under PreClick, we always enqueue
+      // a click and re-run with enqueued_click = true. We only log this final
+      // run.
+      return critical_actions::ActionType::kUnknown;
+    }
     return critical_actions::ActionType::kFormFill;
   }
 
@@ -101,6 +113,11 @@ void ActorCriticalActionLogger::MaybeLogAction(
     const ToolRequest& action,
     const mojom::ActionResult& result,
     int64_t navigation_id) {
+  // Do not log the action if the tool execution failed.
+  if (result.code != mojom::ActionResultCode::kOk) {
+    return;
+  }
+
   critical_actions::ActionType action_type =
       EvaluateToolRequest(action, result);
   if (action_type == critical_actions::ActionType::kUnknown) {

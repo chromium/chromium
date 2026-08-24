@@ -277,6 +277,62 @@ TEST_F(ActorCriticalActionLoggerTest, HandlesNullProfile) {
   EXPECT_TRUE(logged_actions.empty());
 }
 
+TEST_F(ActorCriticalActionLoggerTest, SkipsFailedToolExecution) {
+  TaskId task_id = actor_service().CreateTaskForTesting();
+  ActorTask* task = actor_service().GetTask(task_id);
+
+  PageTarget otp_input;
+  AttemptOtpFillingToolRequest request(CreateTabHandle(), {otp_input},
+                                       /*for_signin=*/true);
+  mojom::ActionResultPtr result = mojom::ActionResult::New();
+  result->code = mojom::ActionResultCode::kFrameWentAway;
+
+  ActorCriticalActionLogger::MaybeLogAction(*task, profile(), request, *result,
+                                            /*navigation_id=*/1011);
+  FlushPendingActions(1011);
+
+  auto logged_actions = GetLoggedActions();
+  EXPECT_TRUE(logged_actions.empty());
+
+  actor_service().StopTaskForTesting(
+      task_id, actor::ActorTask::StoppedReason::kTaskComplete);
+}
+
+TEST_F(ActorCriticalActionLoggerTest, FormFillingLoggingPreClickGating) {
+  base::test::ScopedFeatureList local_features(
+      features::kGlicActorAutofillPreClick);
+
+  TaskId task_id = actor_service().CreateTaskForTesting();
+  ActorTask* task = actor_service().GetTask(task_id);
+
+  AttemptFormFillingToolRequest::FormFillingRequest sub_req;
+  sub_req.requested_data = autofill::ActorFormFillingRequestedData::kAddress;
+
+  // 1. If enqueued_click = false (pre-click), it should NOT log.
+  AttemptFormFillingToolRequest pre_click_request(CreateTabHandle(), {sub_req},
+                                                  /*enqueued_click=*/false);
+  mojom::ActionResultPtr result = MakeOkResult();
+  ActorCriticalActionLogger::MaybeLogAction(*task, profile(), pre_click_request,
+                                            *result, /*navigation_id=*/1012);
+  FlushPendingActions(1012);
+  EXPECT_TRUE(GetLoggedActions().empty());
+
+  // 2. If enqueued_click = true, it SHOULD log.
+  AttemptFormFillingToolRequest click_request(CreateTabHandle(), {sub_req},
+                                              /*enqueued_click=*/true);
+  ActorCriticalActionLogger::MaybeLogAction(*task, profile(), click_request,
+                                            *result, /*navigation_id=*/1013);
+  FlushPendingActions(1013);
+
+  auto logged_actions = GetLoggedActions();
+  ASSERT_EQ(logged_actions.size(), 1u);
+  EXPECT_EQ(logged_actions[0].action_type,
+            critical_actions::ActionType::kFormFill);
+
+  actor_service().StopTaskForTesting(
+      task_id, actor::ActorTask::StoppedReason::kTaskComplete);
+}
+
 }  // namespace
 
 }  // namespace actor
