@@ -83,7 +83,6 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
-#include "chrome/browser/ash/browser_delegate/keyed_service_provider/sync_service_provider_impl.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/eche_app/app_id.h"
@@ -1420,7 +1419,6 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   ash::SessionTerminationManager session_termination_manager_;
   std::unique_ptr<ash::MultiUserWindowManagerBrowserAdaptor>
       multi_user_window_manager_browser_adaptor_;
-  ash::SyncServiceProviderImpl sync_service_provider_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   apps::AppServiceTest app_service_test_;
   std::optional<ash::BrowserControllerImpl> browser_controller_;

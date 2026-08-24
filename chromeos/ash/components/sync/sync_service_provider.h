@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_SYNC_SYNC_SERVICE_PROVIDER_H_
 #define CHROMEOS_ASH_COMPONENTS_SYNC_SYNC_SERVICE_PROVIDER_H_
 
+#include "base/component_export.h"
+
 class AccountId;
 
 namespace syncer {
@@ -18,7 +20,7 @@ namespace ash {
 // factory. The concrete implementation lives in //chrome (see
 // //chrome/browser/ash/browser_delegate/keyed_service_provider/
 // sync_service_provider_impl.h).
-class SyncServiceProvider {
+class COMPONENT_EXPORT(SYNC_SERVICE_PROVIDER) SyncServiceProvider {
  public:
   SyncServiceProvider();
   SyncServiceProvider(const SyncServiceProvider&) = delete;

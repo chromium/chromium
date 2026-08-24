@@ -91,7 +91,6 @@ class WallpaperControllerClientImpl
   void GetFilesId(const AccountId& account_id,
                   base::OnceCallback<void(const std::string&)>
                       files_id_callback) const override;
-  bool IsWallpaperSyncEnabled(const AccountId& account_id) const override;
 
   void CancelPreviewWallpaper(Profile* profile);
   void ConfirmPreviewWallpaper(Profile* profile);

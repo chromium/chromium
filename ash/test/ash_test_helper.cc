@@ -58,6 +58,7 @@
 #include "chromeos/ash/components/geolocation/live_location_provider.h"
 #include "chromeos/ash/components/geolocation/location_fetcher.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/ash/components/sync/fake_sync_service_provider.h"
 #include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
 #include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_helper.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -225,6 +226,10 @@ void AshTestHelper::TearDown() {
   // CompositorFrameSinkClient::ReclaimResources()
   base::RunLoop().RunUntilIdle();
 
+  // Uninstall the SyncServiceProvider now that no //ash consumer remains, and
+  // while any SyncService a test registered with it is still alive.
+  sync_service_provider_.reset();
+
   LoginState::Shutdown();
 
   TypecdClient::Shutdown();
@@ -312,6 +317,12 @@ void AshTestHelper::SetUp(InitParams init_params) {
       init_params.create_global_cras_audio_handler;
   create_quick_pair_mediator_ = init_params.create_quick_pair_mediator;
   destroy_screen_ = init_params.destroy_screen;
+
+  // Install a SyncServiceProvider so //ash code that resolves a user's
+  // SyncService (e.g. wallpaper sync) does not crash on the missing
+  // process-wide provider. Tests can register a service per account via
+  // sync_service_provider().
+  sync_service_provider_ = std::make_unique<FakeSyncServiceProvider>();
 
   if (create_global_cras_audio_handler_) {
     // Create `CrasAudioHandler` for testing since `g_browser_process` is not

@@ -4,10 +4,27 @@
 
 assert(is_chromeos)
 
-static_library("sync_service_provider") {
+component("sync_service_provider") {
   public = [ "sync_service_provider.h" ]
 
   sources = [ "sync_service_provider.cc" ]
 
+  defines = [ "IS_SYNC_SERVICE_PROVIDER_IMPL" ]
+
   deps = [ "//base" ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  public = [ "fake_sync_service_provider.h" ]
+
+  sources = [ "fake_sync_service_provider.cc" ]
+
+  public_deps = [ ":sync_service_provider" ]
+
+  deps = [
+    "//base",
+    "//components/account_id",
+  ]
 }

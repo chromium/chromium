@@ -94,6 +94,9 @@ class ASH_EXPORT WallpaperPrefManager : public SessionObserver {
 
   virtual void SetClient(WallpaperControllerClient* client) = 0;
 
+  // Returns whether wallpaper sync is enabled for the user `id`.
+  virtual bool IsWallpaperSyncEnabled(const AccountId& id) const = 0;
+
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 

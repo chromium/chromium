@@ -1621,7 +1621,7 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
             weak_factory_.GetWeakPtr()));
   }
 
-  if (wallpaper_controller_client_->IsWallpaperSyncEnabled(account_id)) {
+  if (pref_manager_->IsWallpaperSyncEnabled(account_id)) {
     WallpaperInfo synced_info;
     bool has_synced_info =
         pref_manager_->GetSyncedWallpaperInfo(account_id, &synced_info);
@@ -2960,8 +2960,9 @@ void WallpaperControllerImpl::SaveWallpaperToDriveFsAndSyncInfo(
     const base::FilePath& origin_path) {
   if (!wallpaper_controller_client_)
     return;
-  if (!wallpaper_controller_client_->IsWallpaperSyncEnabled(account_id))
+  if (!pref_manager_->IsWallpaperSyncEnabled(account_id)) {
     return;
+  }
   drivefs_delegate_->SaveWallpaper(
       account_id, origin_path,
       base::BindOnce(&WallpaperControllerImpl::WallpaperSavedToDriveFS,

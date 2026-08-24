@@ -80,7 +80,6 @@ class DemoModeIdleHandlerTestBase : public ChromeAshTestBase {
     wallpaper_controller_ = Shell::Get()->wallpaper_controller();
     wallpaper_controller_->SetClient(&client_);
     client_.set_fake_files_id_for_account_id(kAccountId, "wallpaper_files_id");
-    client_.set_wallpaper_sync_enabled(false);
     wallpaper_controller_->set_bypass_decode_for_testing();
 
     fake_user_manager_->LoginUser(kAccountId);

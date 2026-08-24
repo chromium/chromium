@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/audio_config_service.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
@@ -160,7 +161,7 @@ namespace ash::settings {
 // static
 void OSSettingsUI::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(prefs::kSyncOsWallpaper, false);
+  registry->RegisterBooleanPref(ash::prefs::kSyncOsWallpaper, false);
 }
 
 OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)

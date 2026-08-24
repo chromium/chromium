@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "base/functional/bind.h"
@@ -172,11 +173,11 @@ class OsSyncHandlerTest : public ChromeRenderViewHostTestHarness {
   }
 
   bool GetWallperEnabledPref() {
-    return profile()->GetPrefs()->GetBoolean(settings::prefs::kSyncOsWallpaper);
+    return profile()->GetPrefs()->GetBoolean(ash::prefs::kSyncOsWallpaper);
   }
 
   void SetWallperEnabledPref(bool enabled) {
-    return profile()->GetPrefs()->SetBoolean(settings::prefs::kSyncOsWallpaper,
+    return profile()->GetPrefs()->SetBoolean(ash::prefs::kSyncOsWallpaper,
                                              enabled);
   }
 

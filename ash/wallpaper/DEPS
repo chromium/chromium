@@ -1,9 +1,15 @@
 include_rules = [
+  "+chromeos/ash/components/sync",
   "+components/manta/proto",
   "+services/data_decoder/public",
 ]
 
 specific_include_rules = {
+  "wallpaper_pref_manager\\.cc": [
+    # Reads a user's profile pref via user_manager::User::GetProfilePrefs();
+    # UserManager::FindUser() resolves the User for an AccountId.
+    "+components/user_manager/user_manager.h",
+  ],
   "wallpaper_controller_unittest\\.cc": [
     "+chromeos/ash/components/geolocation",
     "+components/user_manager",

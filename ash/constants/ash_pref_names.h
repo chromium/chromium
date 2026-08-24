@@ -374,6 +374,10 @@ inline constexpr char kShortcutCustomizationOverrides[] =
 // possible to check sync state to see if the user enabled it.
 inline constexpr char kSyncOobeCompleted[] = "sync.oobe_completed";
 
+// Boolean pref controlling whether the OS wallpaper is synced across the
+// user's ChromeOS devices.
+inline constexpr char kSyncOsWallpaper[] = "sync.os_wallpaper";
+
 // A string representing the last version of Chrome that System Web Apps were
 // updated for.
 inline constexpr char kSystemWebAppLastUpdateVersion[] =

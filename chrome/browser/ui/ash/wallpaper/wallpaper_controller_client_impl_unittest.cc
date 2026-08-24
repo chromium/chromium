@@ -80,13 +80,6 @@ TEST_F(WallpaperControllerClientImplTest, Construction) {
   EXPECT_TRUE(controller()->was_client_set());
 }
 
-TEST_F(WallpaperControllerClientImplTest, IsWallpaperSyncEnabledNoProfile) {
-  AccountId account_id =
-      AccountId::FromUserEmailGaiaId("idontexist@test.com", GaiaId("444444"));
-  EXPECT_FALSE(client()->WallpaperControllerClientImpl::IsWallpaperSyncEnabled(
-      account_id));
-}
-
 TEST_F(WallpaperControllerClientImplTest, GetFilesId) {
   const AccountId account_id = AccountId::FromUserEmail("test@test.com");
   user_manager::KnownUser known_user(

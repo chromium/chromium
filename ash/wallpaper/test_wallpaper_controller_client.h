@@ -62,10 +62,6 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
     fake_files_ids_[account_id] = fake_files_id;
   }
 
-  void set_wallpaper_sync_enabled(bool sync_enabled) {
-    wallpaper_sync_enabled_ = sync_enabled;
-  }
-
   void set_wallpaper_google_photos_integration_enabled_for_account_id(
       const AccountId& account_id,
       bool value) {
@@ -95,7 +91,6 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   void GetFilesId(const AccountId& account_id,
                   base::OnceCallback<void(const std::string&)>
                       files_id_callback) const override;
-  bool IsWallpaperSyncEnabled(const AccountId& account_id) const override;
 
  private:
   size_t open_count_ = 0;
@@ -104,7 +99,6 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   std::string fetch_daily_refresh_wallpaper_param_;
   bool fetch_daily_refresh_info_fails_ = false;
   std::unordered_map<AccountId, std::string> fake_files_ids_;
-  bool wallpaper_sync_enabled_ = true;
   bool fetch_images_for_collection_fails_ = false;
   bool fetch_google_photos_photo_fails_ = false;
   bool google_photo_has_been_deleted_ = false;

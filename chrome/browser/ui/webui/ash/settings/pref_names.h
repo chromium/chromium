@@ -7,8 +7,6 @@
 
 namespace ash::settings::prefs {
 
-extern const char kSyncOsWallpaper[];
-
 extern const char kSanitizeCompleted[];
 
 }  // namespace ash::settings::prefs

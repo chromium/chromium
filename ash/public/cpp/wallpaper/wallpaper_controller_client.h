@@ -39,8 +39,6 @@ class ASH_PUBLIC_EXPORT WallpaperControllerClient {
       const AccountId& account_id,
       base::OnceCallback<void(const std::string&)> files_id_callback) const = 0;
 
-  virtual bool IsWallpaperSyncEnabled(const AccountId& account_id) const = 0;
-
   using FetchImagesForCollectionCallback =
       base::OnceCallback<void(bool success,
                               const std::vector<backdrop::Image>& images)>;

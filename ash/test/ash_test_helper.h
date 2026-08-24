@@ -57,6 +57,7 @@ class FakeFwupdDownloadClient;
 class SavedDeskTestHelper;
 class TestKeyboardControllerObserver;
 class TestNewWindowDelegate;
+class FakeSyncServiceProvider;
 class TestWallpaperControllerClient;
 class AshTestBase;
 
@@ -183,6 +184,10 @@ class AshTestHelper : public aura::test::AuraTestHelper {
     return saved_desk_test_helper_.get();
   }
 
+  FakeSyncServiceProvider* sync_service_provider() {
+    return sync_service_provider_.get();
+  }
+
   input_method::MockInputMethodManagerImpl* input_method_manager() {
     return input_method_manager_;
   }
@@ -239,6 +244,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
       test_keyboard_controller_observer_;
   std::unique_ptr<AmbientAshTestHelper> ambient_ash_test_helper_;
   std::unique_ptr<TestWallpaperControllerClient> wallpaper_controller_client_;
+  std::unique_ptr<FakeSyncServiceProvider> sync_service_provider_;
   std::unique_ptr<SavedDeskTestHelper> saved_desk_test_helper_;
   std::unique_ptr<FakeFwupdDownloadClient> fwupd_download_client_;
   std::unique_ptr<quick_pair::Mediator::Factory> quick_pair_mediator_factory_;

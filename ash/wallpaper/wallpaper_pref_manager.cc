@@ -30,11 +30,17 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chromeos/ash/components/sync/sync_service_provider.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash {
 
@@ -119,8 +125,23 @@ class WallpaperProfileHelperImpl : public WallpaperProfileHelper {
   }
 
   bool IsWallpaperSyncEnabled(const AccountId& id) const override {
-    DCHECK(wallpaper_controller_client_);
-    return wallpaper_controller_client_->IsWallpaperSyncEnabled(id);
+    syncer::SyncService* sync_service = SyncServiceProvider::Get().Find(id);
+    if (!sync_service) {
+      return false;
+    }
+    if (sync_service->GetUserSettings()->IsSyncAllOsTypesEnabled()) {
+      return true;
+    }
+    const user_manager::User* user =
+        user_manager::UserManager::Get()->FindUser(id);
+    if (!user) {
+      return false;
+    }
+    const PrefService* pref_service = user->GetProfilePrefs();
+    if (!pref_service) {
+      return false;
+    }
+    return pref_service->GetBoolean(prefs::kSyncOsWallpaper);
   }
 
   bool IsActiveUserSessionStarted() const override {
@@ -160,6 +181,10 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
 
   void SetClient(WallpaperControllerClient* client) override {
     profile_helper_->SetClient(client);
+  }
+
+  bool IsWallpaperSyncEnabled(const AccountId& id) const override {
+    return profile_helper_->IsWallpaperSyncEnabled(id);
   }
 
   void AddObserver(Observer* observer) override {
