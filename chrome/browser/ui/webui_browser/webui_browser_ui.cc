@@ -247,8 +247,7 @@ void WebUIBrowserUI::BindInterface(
 
 void WebUIBrowserUI::BindInterface(
     mojo::PendingReceiver<tabs_api::mojom::TabDragService> receiver) {
-  auto* tab_drag_service_feature =
-      browser_->GetFeatures().tab_drag_service_feature();
+  auto* tab_drag_service_feature = TabDragServiceFeature::From(browser_);
   CHECK(tab_drag_service_feature) << "Browser missing TabDragService";
   tab_drag_service_feature->AcceptDragService(
       std::move(receiver), web_ui()->GetWebContents()->GetNativeView());

@@ -5,7 +5,10 @@
 source_set("tab_drag_api") {
   sources = [ "tab_drag_service_feature.h" ]
 
-  public_deps = [ "//components/browser_apis/tab_drag" ]
+  public_deps = [
+    "//components/browser_apis/tab_drag",
+    "//ui/base/unowned_user_data",
+  ]
 }
 
 source_set("impl") {
@@ -16,6 +19,7 @@ source_set("impl") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
+    "//chrome/browser/ui/browser_window",
     "//components/browser_apis/tab_drag",
     "//components/browser_apis/tab_drag/sessions",
     "//mojo/public/cpp/bindings",

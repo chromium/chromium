@@ -490,10 +490,6 @@ class BrowserWindowFeatures {
     return synced_window_delegate_.get();
   }
 
-  TabDragServiceFeature* tab_drag_service_feature() {
-    return tab_drag_service_feature_.get();
-  }
-
   tab_groups::DeletionDialogController* tab_group_deletion_dialog_controller() {
     return tab_group_deletion_dialog_controller_.get();
   }

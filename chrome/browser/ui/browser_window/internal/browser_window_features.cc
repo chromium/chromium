@@ -521,7 +521,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   {
     auto adapter = std::make_unique<TabDragWindowAdapterImpl>(browser);
     tab_drag_service_feature_ =
-        std::make_unique<TabDragServiceFeature>(std::move(adapter));
+        GetUserDataFactory().CreateInstance<TabDragServiceFeature>(
+            *browser, std::move(adapter), browser->GetUnownedUserDataHost());
   }
 
   tab_group_deletion_dialog_controller_ =
