@@ -25,7 +25,7 @@ export function getHtml(this: PolicyAppElement) {
       <div style="position: relative;">
         <cr-button id="more-actions-button" @click="${this.onMoreActionsClick_}">
           $i18n{moreActions}
-          <cr-icon icon="cr:expand-more" slot="suffix-icon"></cr-icon>
+          <cr-icon icon="cr:keyboard-arrow-down" slot="suffix-icon"></cr-icon>
         </cr-button>
         <cr-action-menu id="actionMenu" role-description="menu">
           ${!this.hideExportButton_ ? html`
