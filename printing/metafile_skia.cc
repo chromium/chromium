@@ -51,11 +51,15 @@ namespace {
 // which would then operate upon that.
 constexpr bool kInitFromDataCopyData = true;
 
-bool WriteAssetToBuffer(const SkStreamAsset* asset, void* buffer, size_t size) {
+bool WriteAssetToBuffer(const SkStreamAsset* asset,
+                        base::span<uint8_t> buffer) {
   // Calling duplicate() keeps original asset state unchanged.
   std::unique_ptr<SkStreamAsset> assetCopy(asset->duplicate());
   size_t length = assetCopy->getLength();
-  return length <= size && length == assetCopy->read(buffer, length);
+  if (length > buffer.size()) {
+    return false;
+  }
+  return length == assetCopy->read(buffer.data(), length);
 }
 
 }  // namespace
@@ -262,10 +266,15 @@ uint32_t MetafileSkia::GetDataSize() const {
 }
 
 bool MetafileSkia::GetData(void* dst_buffer, uint32_t dst_buffer_size) const {
-  if (!data_->data_stream)
+  if (!data_->data_stream) {
     return false;
-  return WriteAssetToBuffer(data_->data_stream.get(), dst_buffer,
-                            base::checked_cast<size_t>(dst_buffer_size));
+  }
+  // SAFETY: Caller guarantees `dst_buffer` points to at least `dst_buffer_size`
+  // bytes.
+  auto buffer =
+      UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(dst_buffer),
+                                base::checked_cast<size_t>(dst_buffer_size)));
+  return WriteAssetToBuffer(data_->data_stream.get(), buffer);
 }
 
 bool MetafileSkia::ShouldCopySharedMemoryRegionData() const {
@@ -321,10 +330,8 @@ bool MetafileSkia::RenderPage(unsigned int page_number,
   if (data_->pdf_cg.GetDataSize() == 0) {
     if (GetDataSize() == 0)
       return false;
-    size_t length = data_->data_stream->getLength();
-    std::vector<uint8_t> buffer(length);
-    std::ignore =
-        WriteAssetToBuffer(data_->data_stream.get(), &buffer[0], length);
+    std::vector<uint8_t> buffer(data_->data_stream->getLength());
+    std::ignore = WriteAssetToBuffer(data_->data_stream.get(), buffer);
     data_->pdf_cg.InitFromData(buffer);
   }
   return data_->pdf_cg.RenderPage(page_number, context, rect, autorotate,
@@ -342,7 +349,7 @@ bool MetafileSkia::SaveToFileDescriptor(int fd) const {
   static constexpr size_t kMaximumBufferSize = 1024 * 1024;
   std::vector<uint8_t> buffer(std::min(kMaximumBufferSize, asset->getLength()));
   do {
-    size_t read_size = asset->read(&buffer[0], buffer.size());
+    size_t read_size = asset->read(buffer.data(), buffer.size());
     bool is_at_end = read_size < buffer.size();
     if (read_size == 0u) {
       break;
@@ -368,18 +375,17 @@ bool MetafileSkia::SaveTo(base::File* file) const {
 
   static constexpr size_t kMaximumBufferSize = 1024 * 1024;
   std::vector<uint8_t> buffer(std::min(kMaximumBufferSize, asset->getLength()));
+  base::span<uint8_t> buffer_span(buffer);
   do {
-    size_t read_size = asset->read(&buffer[0], buffer.size());
-    bool is_at_end = read_size < buffer.size();
+    size_t read_size = asset->read(buffer_span.data(), buffer_span.size());
+    bool is_at_end = read_size < buffer_span.size();
     if (read_size == 0) {
       break;
     }
-    DCHECK_GE(buffer.size(), read_size);
-    UNSAFE_TODO({
-      if (!file->WriteAtCurrentPosAndCheck(base::span(&buffer[0], read_size))) {
-        return false;
-      }
-    });
+    DCHECK_GE(buffer_span.size(), read_size);
+    if (!file->WriteAtCurrentPosAndCheck(buffer_span.first(read_size))) {
+      return false;
+    }
     if (is_at_end) {
       break;
     }
