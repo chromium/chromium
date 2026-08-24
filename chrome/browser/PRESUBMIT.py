@@ -591,6 +591,83 @@ def _CheckNoNewBrowserWindowMemberCall(input_api, output_api):
 
 
 ###############################################################################
+# Discourage including chrome/browser/ui/browser.h and using the Browser class
+# in favor of BrowserWindowInterface.
+###############################################################################
+
+# Files that legitimately declare, implement, or construct Browser.
+_BROWSER_USAGE_EXCLUDED_PATHS = (
+    'chrome/browser/ui/browser.h',
+    'chrome/browser/ui/browser.cc',
+    'chrome/browser/ui/browser_window/public/browser_window_interface.h',
+    'chrome/browser/ui/browser_window/public/create_browser_window.h',
+    ('chrome/browser/ui/browser_window/internal/'
+     'create_browser_window_non_android.cc'),
+    'chrome/browser/ui/views/frame/browser_window_factory.cc',
+)
+
+
+def _CheckNoNewBrowserUsage(input_api, output_api):
+    """Warns against including chrome/browser/ui/browser.h and using the
+    Browser class in chrome/browser code.
+
+    All functionality is now available via BrowserWindowInterface
+    (chrome/browser/ui/browser_window/public/browser_window_interface.h).
+    """
+    bad_include_pattern = input_api.re.compile(
+        r'#include\s*["<]chrome/browser/ui/browser\.h[">]')
+    browser_class_pattern = input_api.re.compile(r'\bBrowser\b')
+    comment_pattern = input_api.re.compile(r'^\s*(//|/\*|\*)')
+    string_literal_pattern = input_api.re.compile(r'"(\\.|[^"\\])*"')
+
+    def is_excluded(local_path):
+        unix_path = local_path.replace('\\', '/')
+        return unix_path in _BROWSER_USAGE_EXCLUDED_PATHS
+
+    problems = []
+    for f in input_api.AffectedFiles(include_deletes=False):
+        local_path = f.LocalPath()
+        if not local_path.endswith(('.cc', '.h', '.mm')):
+            continue
+        if is_excluded(local_path):
+            continue
+
+        for line_num, line in f.ChangedContents():
+            if comment_pattern.match(line):
+                continue
+            if line.rstrip().endswith(' nocheck'):
+                continue
+
+            if bad_include_pattern.search(line):
+                problems.append('    %s:%d' %
+                                (local_path.replace('\\', '/'), line_num))
+                continue
+
+            code_line = line.split('//')[0]
+            code_without_strings = string_literal_pattern.sub('""', code_line)
+
+            if browser_class_pattern.search(code_without_strings):
+                problems.append('    %s:%d' %
+                                (local_path.replace('\\', '/'), line_num))
+
+    if not problems:
+        return []
+
+    return [
+        output_api.PresubmitPromptWarning(
+            'Direct usage of the Browser class and including '
+            'chrome/browser/ui/browser.h is discouraged. All functionality is '
+            'now available via the BrowserWindowInterface class and the '
+            'chrome/browser/ui/browser_window/public/'
+            'browser_window_interface.h include.\n'
+            'If an exception is required, append "// nocheck" to the line or '
+            'add the file to _BROWSER_USAGE_EXCLUDED_PATHS in '
+            'chrome/browser/PRESUBMIT.py.\n' +
+            '\n'.join(problems))
+    ]
+
+
+###############################################################################
 # Check if all flag_descriptions are used from about_flags (cleanup)
 ###############################################################################
 
@@ -776,6 +853,7 @@ def _CommonChecks(input_api, output_api):
     results.extend(_CheckAshSourcesForBadIncludes(input_api, output_api))
     results.extend(_CheckNoNewBrowserWindowGetter(input_api, output_api))
     results.extend(_CheckNoNewBrowserWindowMemberCall(input_api, output_api))
+    results.extend(_CheckNoNewBrowserUsage(input_api, output_api))
 
     if _FlagFilesHaveChanged(input_api):
         results.extend(
