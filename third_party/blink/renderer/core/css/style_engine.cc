@@ -1160,12 +1160,77 @@ CSSStyleSheet* StyleEngine::CreateSheet(
     PendingSheetType type,
     RenderBlockingBehavior render_blocking_behavior) {
   DCHECK(element.GetDocument() == GetDocument());
-  CSSStyleSheet* style_sheet = nullptr;
-
   if (type != PendingSheetType::kNonBlocking) {
     AddPendingBlockingSheet(element, type);
   }
 
+  CSSStyleSheet* style_sheet = nullptr;
+  CSSParserContext* inline_context = CSSStyleSheet::InlineParserContext(
+      GetDocument(), NullUrl(), GetDocument().Encoding());
+  if (StyleSheetContents* cached =
+          FindStyleSheetContents(text, inline_context)) {
+    cached->SetRenderBlocking(render_blocking_behavior);
+    style_sheet = CSSStyleSheet::CreateInline(cached, element, start_position);
+  } else {
+    auto* contents = MakeGarbageCollected<StyleSheetContents>(inline_context);
+    style_sheet =
+        CSSStyleSheet::CreateInline(contents, element, start_position);
+    contents->SetRenderBlocking(render_blocking_behavior);
+    contents->ParseString(text);
+    if (contents->IsCacheableForStyleElement()) {
+      AddStyleSheetContents(text, contents);
+    }
+  }
+
+  DCHECK(style_sheet);
+  if (!element.IsInShadowTree()) {
+    String title = element.title();
+    if (!title.empty()) {
+      style_sheet->SetTitle(title);
+      SetPreferredStylesheetSetNameIfNotSet(title);
+    }
+  }
+  return style_sheet;
+}
+
+StyleSheetContents* StyleEngine::FindStyleSheetContents(
+    const String& text,
+    const CSSParserContext* parser_context) {
+  if (!parser_context) {
+    return nullptr;
+  }
+  AtomicString key;
+  if (text.length() >= 1024) {
+    size_t digest = FastHash(text.RawByteSpan());
+    key = AtomicString(base::byte_span_from_ref(digest));
+  } else {
+    key = AtomicString(text);
+  }
+
+  auto it = text_to_sheet_cache_.find(key);
+  if (it == text_to_sheet_cache_.end()) {
+    return nullptr;
+  }
+  StyleSheetContents* contents = it->value;
+  if (!contents || !contents->IsCacheableForStyleElement() ||
+      !contents->ParserContext()) {
+    text_to_sheet_cache_.erase(it);
+    return nullptr;
+  }
+  if (*contents->ParserContext() != *parser_context) {
+    return nullptr;
+  }
+  DCHECK(contents->HasSingleOwnerDocument());
+  contents->SetIsUsedFromTextCache();
+  return contents;
+}
+
+void StyleEngine::AddStyleSheetContents(const String& text,
+                                        StyleSheetContents* contents) {
+  if (!contents || !contents->IsCacheableForStyleElement() ||
+      !contents->ParserContext()) {
+    return;
+  }
   // The style sheet text can be long; hundreds of kilobytes. In order not to
   // insert such a huge string into the AtomicString table, we take its hash
   // instead and use that. (This is not a cryptographic hash, so a page could
@@ -1183,49 +1248,7 @@ CSSStyleSheet* StyleEngine::CreateSheet(
   } else {
     key = AtomicString(text);
   }
-
-  auto result = text_to_sheet_cache_.insert(key, nullptr);
-  StyleSheetContents* contents = result.stored_value->value;
-  if (result.is_new_entry || !contents ||
-      !contents->IsCacheableForStyleElement() ||
-      contents->BaseURL() != GetDocument().BaseURL()) {
-    result.stored_value->value = nullptr;
-    style_sheet =
-        ParseSheet(element, text, start_position, render_blocking_behavior);
-    if (style_sheet->Contents()->IsCacheableForStyleElement()) {
-      result.stored_value->value = style_sheet->Contents();
-    }
-  } else {
-    DCHECK(contents);
-    DCHECK(contents->IsCacheableForStyleElement());
-    DCHECK(contents->HasSingleOwnerDocument());
-    contents->SetIsUsedFromTextCache();
-    style_sheet =
-        CSSStyleSheet::CreateInline(contents, element, start_position);
-  }
-
-  DCHECK(style_sheet);
-  if (!element.IsInShadowTree()) {
-    String title = element.title();
-    if (!title.empty()) {
-      style_sheet->SetTitle(title);
-      SetPreferredStylesheetSetNameIfNotSet(title);
-    }
-  }
-  return style_sheet;
-}
-
-CSSStyleSheet* StyleEngine::ParseSheet(
-    Element& element,
-    const String& text,
-    TextPosition start_position,
-    RenderBlockingBehavior render_blocking_behavior) {
-  CSSStyleSheet* style_sheet = nullptr;
-  style_sheet = CSSStyleSheet::CreateInline(element, NullUrl(), start_position,
-                                            GetDocument().Encoding());
-  style_sheet->Contents()->SetRenderBlocking(render_blocking_behavior);
-  style_sheet->Contents()->ParseString(text);
-  return style_sheet;
+  text_to_sheet_cache_.Set(key, contents);
 }
 
 void StyleEngine::CollectUserStyleFeaturesTo(RuleFeatureSet& features) const {

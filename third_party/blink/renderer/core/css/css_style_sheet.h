@@ -86,6 +86,10 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet,
       StyleSheetContents*,
       Node& owner_node,
       const TextPosition& start_position = TextPosition::MinimumPosition());
+  static CSSParserContext* InlineParserContext(
+      Document&,
+      const KURL& base_url,
+      const TextEncoding& encoding = TextEncoding());
 
   explicit CSSStyleSheet(StyleSheetContents*,
                          CSSImportRule* owner_rule = nullptr);

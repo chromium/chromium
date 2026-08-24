@@ -276,6 +276,11 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void AdoptedStyleSheetAdded(TreeScope& tree_scope, CSSStyleSheet* sheet);
   void AdoptedStyleSheetRemoved(TreeScope& tree_scope, CSSStyleSheet* sheet);
 
+  StyleSheetContents* FindStyleSheetContents(
+      const String& text,
+      const CSSParserContext* parser_context);
+  void AddStyleSheetContents(const String& text, StyleSheetContents* contents);
+
   void WatchedSelectorsChanged();
   void DocumentRulesSelectorsChanged();
   void InitialStyleChanged();
@@ -864,11 +869,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   void CollectUserStyleFeaturesTo(RuleFeatureSet&) const;
   void CollectScopedStyleFeaturesTo(RuleFeatureSet&) const;
-
-  CSSStyleSheet* ParseSheet(Element&,
-                            const String& text,
-                            TextPosition start_position,
-                            RenderBlockingBehavior render_blocking_behavior);
 
   const StyleSheetCollection& GetDocumentStyleSheetCollection() const {
     DCHECK(document_style_sheet_collection_);

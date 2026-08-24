@@ -7804,4 +7804,105 @@ TEST_F(StyleEngineTest, DisplayContentsSetActiveWithActiveRules) {
   EXPECT_GT(element_count, 0U);
 }
 
+TEST_F(StyleEngineTest, StyleSheetCacheShortAndLongText) {
+  StyleEngine& engine = GetStyleEngine();
+  const CSSParserContext* context =
+      MakeGarbageCollected<CSSParserContext>(GetDocument());
+
+  // 1. Short text (< 1024 chars).
+  String short_text = "div { color: red; }";
+  EXPECT_EQ(nullptr, engine.FindStyleSheetContents(short_text, context));
+
+  auto* short_contents =
+      MakeGarbageCollected<StyleSheetContents>(context, NullUrl());
+  short_contents->ParseString(short_text, /*allow_import_rules=*/false);
+  engine.AddStyleSheetContents(short_text, short_contents);
+
+  StyleSheetContents* found_short =
+      engine.FindStyleSheetContents(short_text, context);
+  EXPECT_EQ(short_contents, found_short);
+  EXPECT_TRUE(found_short->IsUsedFromTextCache());
+
+  // 2. Long text (>= 1024 chars, exercising FastHash).
+  StringBuilder sb;
+  for (int i = 0; i < 60; ++i) {
+    sb.Append(".class_");
+    sb.AppendNumber(i);
+    sb.Append(" { margin: 10px; padding: 5px; color: blue; }\n");
+  }
+  String long_text = sb.ToString();
+  ASSERT_GE(long_text.length(), 1024u);
+
+  EXPECT_EQ(nullptr, engine.FindStyleSheetContents(long_text, context));
+
+  auto* long_contents =
+      MakeGarbageCollected<StyleSheetContents>(context, NullUrl());
+  long_contents->ParseString(long_text, /*allow_import_rules=*/false);
+  engine.AddStyleSheetContents(long_text, long_contents);
+
+  StyleSheetContents* found_long =
+      engine.FindStyleSheetContents(long_text, context);
+  EXPECT_EQ(long_contents, found_long);
+  EXPECT_TRUE(found_long->IsUsedFromTextCache());
+}
+
+TEST_F(StyleEngineTest, StyleSheetCacheRejectsInvalidAndMismatchedBaseURL) {
+  StyleEngine& engine = GetStyleEngine();
+  const CSSParserContext* context =
+      MakeGarbageCollected<CSSParserContext>(GetDocument());
+
+  // 1. Add null contents or uncacheable contents (e.g. with import rule).
+  String text_with_import = "@import url('test.css'); div { color: green; }";
+  auto* import_contents =
+      MakeGarbageCollected<StyleSheetContents>(context, NullUrl());
+  import_contents->ParseString(text_with_import, /*allow_import_rules=*/true);
+  engine.AddStyleSheetContents(text_with_import, import_contents);
+  EXPECT_EQ(nullptr, engine.FindStyleSheetContents(text_with_import, context));
+
+  // 2. Mismatched BaseURL / parser context.
+  KURL other_base("https://other-domain.example.com/");
+  auto* other_context =
+      MakeGarbageCollected<CSSParserContext>(GetDocument(), other_base);
+  auto* other_contents =
+      MakeGarbageCollected<StyleSheetContents>(other_context, other_base);
+  String text = "p { color: yellow; }";
+  other_contents->ParseString(text, /*allow_import_rules=*/false);
+
+  // Storing with other_context.
+  engine.AddStyleSheetContents(text, other_contents);
+
+  // Querying with document context should not find it.
+  EXPECT_EQ(nullptr, engine.FindStyleSheetContents(text, context));
+  // Querying with other_context should find it.
+  EXPECT_EQ(other_contents, engine.FindStyleSheetContents(text, other_context));
+}
+
+TEST_F(StyleEngineTest, StyleSheetCacheNullAndInvalidContexts) {
+  StyleEngine& engine = GetStyleEngine();
+  const CSSParserContext* context =
+      MakeGarbageCollected<CSSParserContext>(GetDocument());
+  String text = "span { color: green; }";
+
+  // 1. Find with null parser_context returns nullptr.
+  EXPECT_EQ(nullptr, engine.FindStyleSheetContents(text, nullptr));
+
+  // 2. Add with null contents or null parser_context does nothing.
+  engine.AddStyleSheetContents(text, nullptr);
+  EXPECT_EQ(nullptr, engine.FindStyleSheetContents(text, context));
+
+  // 3. Add valid contents.
+  auto* contents = MakeGarbageCollected<StyleSheetContents>(context, NullUrl());
+  contents->ParseString(text, /*allow_import_rules=*/false);
+  engine.AddStyleSheetContents(text, contents);
+  EXPECT_EQ(contents, engine.FindStyleSheetContents(text, context));
+
+  // 4. Invalidate cacheability (e.g. SetHasSyntacticallyValidCSSHeader(false)),
+  // verify FindStyleSheetContents erases the entry and returns nullptr.
+  contents->SetHasSyntacticallyValidCSSHeader(false);
+  EXPECT_FALSE(contents->IsCacheableForStyleElement());
+  EXPECT_EQ(nullptr, engine.FindStyleSheetContents(text, context));
+  // Subsequent find confirms entry was erased from the cache.
+  EXPECT_EQ(nullptr, engine.FindStyleSheetContents(text, context));
+}
+
 }  // namespace blink

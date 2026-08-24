@@ -1329,6 +1329,10 @@
       status: "experimental",
     },
     {
+      name: "ConstructableStylesheetCache",
+      status: "stable",
+    },
+    {
       name: "ContactsManager",
       status:  {"Android": "stable", "default": "test"},
     },
