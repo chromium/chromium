@@ -13,6 +13,7 @@
 #include "net/base/net_export.h"
 #include "net/dns/public/resolution_details.h"
 #include "net/http/alternate_protocol_usage.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 
 namespace net {
 
@@ -46,6 +47,33 @@ enum class QuicSessionEstablishmentReason {
   kMaxValue = kSessionExistedBoth,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:QuicSessionEstablishmentReason)
+
+// LINT.IfChange(QuicSessionNonReuseReason)
+enum class QuicSessionNonReuseReason {
+  kNoSessionExisted_TrueColdStart = 0,
+  kNoSessionExisted_KeyMismatch_SocketTag = 1,
+  kNoSessionExisted_KeyMismatch_NetworkAnonymizationKey = 2,
+  kNoSessionExisted_KeyMismatch_PrivacyMode = 3,
+  kNoSessionExisted_KeyMismatch_SecureDnsPolicy = 4,
+  kNoSessionExisted_KeyMismatch_Other = 5,
+  kSessionExisted_ServerGoaway = 6,
+  kSessionExisted_Disconnected = 7,
+  kSessionExisted_OtherGoingAway = 8,
+  kNoSessionExisted_KeyMismatch_MultipleFields = 9,
+  kSessionExisted_MultipleReasons = 10,
+  kMaxValue = kSessionExisted_MultipleReasons,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:QuicSessionNonReuseReason)
+
+struct NET_EXPORT QuicConnectionReuseDetails {
+  QuicConnectionReuseDetails();
+  QuicConnectionReuseDetails(const QuicConnectionReuseDetails& other);
+  bool operator==(const QuicConnectionReuseDetails& other) const;
+  ~QuicConnectionReuseDetails();
+
+  std::optional<QuicSessionEstablishmentReason> establishment_reason;
+  std::optional<QuicSessionNonReuseReason> non_reuse_reason;
+};
 
 // Structure containing internal load timing information. This is similar to
 // LoadTimingInfo, but contains extra information which shouldn't be exposed to
@@ -92,10 +120,10 @@ struct NET_EXPORT LoadTimingInternalInfo {
   // resolution failed.
   std::optional<ResolutionDetails> resolution_details;
 
-  // The reason why the QUIC session used by this request was originally
-  // established. Populated for all requests that use a QUIC session.
-  std::optional<QuicSessionEstablishmentReason>
-      quic_session_establishment_reason;
+  // Details about why a QUIC connection was established or not reused.
+  // Populated for responses that used QUIC.
+  std::optional<QuicConnectionReuseDetails> quic_connection_reuse_details;
+  std::optional<MultiplexedSessionCreationInitiator> session_creation_initiator;
 };
 
 }  // namespace net

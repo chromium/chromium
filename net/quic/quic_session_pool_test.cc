@@ -16492,6 +16492,150 @@ TEST_P(QuicSessionPoolTest,
       MultiplexedSessionCreationInitiator::kUnknown, 1);
 }
 
+TEST_P(QuicSessionPoolTest,
+       DetermineQuicConnectionReuseDetails_NonReuseReasons) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
+
+  const url::SchemeHostPort kGoogleDestination(
+      url::kHttpsScheme, "www.google.com", kDefaultServerPort);
+
+  Initialize();
+
+  ProofVerifyDetailsChromium verify_details = GoogleProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  QuicSessionKey base_key(kGoogleDestination.host(), kGoogleDestination.port(),
+                          PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                          SessionUsage::kDestination, SocketTag(),
+                          NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                          /*require_dns_https_alpn=*/false,
+                          /*disable_cert_verification_network_fetches=*/false,
+                          handles::kInvalidNetworkHandle);
+
+  // Before any session exists, it should be TrueColdStart.
+  EXPECT_EQ(QuicSessionNonReuseReason::kNoSessionExisted_TrueColdStart,
+            QuicSessionPoolPeer::DetermineQuicConnectionReuseDetailsForTesting(
+                pool_.get(), base_key)
+                .non_reuse_reason);
+
+  // Create an active session for base_key.
+  RequestBuilder builder(this);
+  builder.destination = kGoogleDestination;
+  builder.url = GURL("https://www.google.com");
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+
+  // Single mismatch: NetworkAnonymizationKey.
+  SchemefulSite site(GURL("https://foo.test"));
+  NetworkAnonymizationKey nak = NetworkAnonymizationKey::CreateSameSite(site);
+  QuicSessionKey nak_key(kGoogleDestination.host(), kGoogleDestination.port(),
+                         PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                         SessionUsage::kDestination, SocketTag(), nak,
+                         SecureDnsPolicy::kAllow,
+                         /*require_dns_https_alpn=*/false,
+                         /*disable_cert_verification_network_fetches=*/false,
+                         handles::kInvalidNetworkHandle);
+  EXPECT_EQ(QuicSessionNonReuseReason::
+                kNoSessionExisted_KeyMismatch_NetworkAnonymizationKey,
+            QuicSessionPoolPeer::DetermineQuicConnectionReuseDetailsForTesting(
+                pool_.get(), nak_key)
+                .non_reuse_reason);
+
+  // Single mismatch: PrivacyMode.
+  QuicSessionKey privacy_key(
+      kGoogleDestination.host(), kGoogleDestination.port(),
+      PRIVACY_MODE_ENABLED, ProxyChain::Direct(), SessionUsage::kDestination,
+      SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*require_dns_https_alpn=*/false,
+      /*disable_cert_verification_network_fetches=*/false,
+      handles::kInvalidNetworkHandle);
+  EXPECT_EQ(
+      QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_PrivacyMode,
+      QuicSessionPoolPeer::DetermineQuicConnectionReuseDetailsForTesting(
+          pool_.get(), privacy_key)
+          .non_reuse_reason);
+
+  // Single mismatch: SecureDnsPolicy.
+  QuicSessionKey secure_dns_key(
+      kGoogleDestination.host(), kGoogleDestination.port(),
+      PRIVACY_MODE_DISABLED, ProxyChain::Direct(), SessionUsage::kDestination,
+      SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
+      /*require_dns_https_alpn=*/false,
+      /*disable_cert_verification_network_fetches=*/false,
+      handles::kInvalidNetworkHandle);
+  EXPECT_EQ(
+      QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_SecureDnsPolicy,
+      QuicSessionPoolPeer::DetermineQuicConnectionReuseDetailsForTesting(
+          pool_.get(), secure_dns_key)
+          .non_reuse_reason);
+
+  // Single mismatch: Other (e.g. require_dns_https_alpn).
+  QuicSessionKey other_key(kGoogleDestination.host(), kGoogleDestination.port(),
+                           PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                           SessionUsage::kDestination, SocketTag(),
+                           NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                           /*require_dns_https_alpn=*/true,
+                           /*disable_cert_verification_network_fetches=*/false,
+                           handles::kInvalidNetworkHandle);
+  EXPECT_EQ(QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_Other,
+            QuicSessionPoolPeer::DetermineQuicConnectionReuseDetailsForTesting(
+                pool_.get(), other_key)
+                .non_reuse_reason);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Single mismatch: SocketTag (Android only).
+  QuicSessionKey socket_tag_key(
+      kGoogleDestination.host(), kGoogleDestination.port(),
+      PRIVACY_MODE_DISABLED, ProxyChain::Direct(), SessionUsage::kDestination,
+      SocketTag(0x1234, 0x5678), NetworkAnonymizationKey(),
+      SecureDnsPolicy::kAllow,
+      /*require_dns_https_alpn=*/false,
+      /*disable_cert_verification_network_fetches=*/false,
+      handles::kInvalidNetworkHandle);
+  EXPECT_EQ(QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_SocketTag,
+            QuicSessionPoolPeer::DetermineQuicConnectionReuseDetailsForTesting(
+                pool_.get(), socket_tag_key)
+                .non_reuse_reason);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // Multiple mismatches: PrivacyMode + NetworkAnonymizationKey.
+  QuicSessionKey multi_key1(kGoogleDestination.host(),
+                            kGoogleDestination.port(), PRIVACY_MODE_ENABLED,
+                            ProxyChain::Direct(), SessionUsage::kDestination,
+                            SocketTag(), nak, SecureDnsPolicy::kAllow,
+                            /*require_dns_https_alpn=*/false,
+                            /*disable_cert_verification_network_fetches=*/false,
+                            handles::kInvalidNetworkHandle);
+  EXPECT_EQ(
+      QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_MultipleFields,
+      QuicSessionPoolPeer::DetermineQuicConnectionReuseDetailsForTesting(
+          pool_.get(), multi_key1)
+          .non_reuse_reason);
+
+  // Multiple mismatches: PrivacyMode + NetworkAnonymizationKey +
+  // SecureDnsPolicy.
+  QuicSessionKey multi_key2(kGoogleDestination.host(),
+                            kGoogleDestination.port(), PRIVACY_MODE_ENABLED,
+                            ProxyChain::Direct(), SessionUsage::kDestination,
+                            SocketTag(), nak, SecureDnsPolicy::kDisable,
+                            /*require_dns_https_alpn=*/false,
+                            /*disable_cert_verification_network_fetches=*/false,
+                            handles::kInvalidNetworkHandle);
+  EXPECT_EQ(
+      QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_MultipleFields,
+      QuicSessionPoolPeer::DetermineQuicConnectionReuseDetailsForTesting(
+          pool_.get(), multi_key2)
+          .non_reuse_reason);
+}
+
 TEST_P(QuicSessionPoolTest, ConfigureSupportedGroupsAndKeyShares) {
   SSLContextConfig ssl_config;
   ssl_config.supported_named_groups = {

@@ -114,8 +114,7 @@ class QuicSessionPool::AsyncDnsJob
     std::set<std::string> dns_aliases;
     MultiplexedSessionCreationInitiator session_creation_initiator =
         MultiplexedSessionCreationInitiator::kUnknown;
-    QuicSessionEstablishmentReason quic_session_establishment_reason =
-        QuicSessionEstablishmentReason::kUnknown;
+    QuicConnectionReuseDetails quic_connection_reuse_details;
     std::optional<ConnectionManagementConfig> connection_management_config;
   };
 
@@ -154,7 +153,7 @@ class QuicSessionPool::AsyncDnsJob
       bool require_dns_https_alpn,
       int cert_verify_flags,
       MultiplexedSessionCreationInitiator session_creation_initiator,
-      QuicSessionEstablishmentReason quic_session_establishment_reason,
+      QuicConnectionReuseDetails quic_connection_reuse_details,
       std::optional<ConnectionManagementConfig> connection_management_config,
       const NetLogWithSource& net_log);
 

@@ -29,7 +29,7 @@ QuicSessionPool::ProxyJob::ProxyJob(
     QuicSessionAliasKey key,
     NetworkTrafficAnnotationTag proxy_annotation_tag,
     MultiplexedSessionCreationInitiator session_creation_initiator,
-    QuicSessionEstablishmentReason quic_session_establishment_reason,
+    QuicConnectionReuseDetails quic_connection_reuse_details,
     std::optional<ConnectionManagementConfig> connection_management_config,
     const HttpUserAgentSettings* http_user_agent_settings,
     std::unique_ptr<CryptoClientConfigHandle> client_config_handle,
@@ -41,7 +41,7 @@ QuicSessionPool::ProxyJob::ProxyJob(
           std::move(key),
           std::move(client_config_handle),
           priority,
-          quic_session_establishment_reason,
+          quic_connection_reuse_details,
           NetLogWithSource::Make(
               net_log.net_log(),
               NetLogSourceType::QUIC_SESSION_POOL_PROXY_JOB)),
@@ -253,7 +253,7 @@ int QuicSessionPool::ProxyJob::DoAttemptSession() {
       this, std::move(local_address), std::move(peer_address),
       target_quic_version_, cert_verify_flags_, std::move(proxy_stream_),
       http_user_agent_settings_, session_creation_initiator_,
-      quic_session_establishment_reason_, connection_management_config_);
+      quic_connection_reuse_details_, connection_management_config_);
 
   return session_attempt_->Start(
       base::BindOnce(&ProxyJob::OnSessionAttemptComplete, GetWeakPtr()));

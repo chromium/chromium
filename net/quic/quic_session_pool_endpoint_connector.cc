@@ -61,8 +61,7 @@ std::optional<int> QuicSessionPool::EndpointConnector::TryAdvance() {
         params.retry_on_alternate_network_before_handshake,
         params.use_dns_aliases, std::move(params.dns_aliases),
         /*crypto_client_config_handle=*/nullptr,
-        params.session_creation_initiator,
-        params.quic_session_establishment_reason,
+        params.session_creation_initiator, params.quic_connection_reuse_details,
         params.connection_management_config);
 
     int rv = attempt_->Start(base::BindOnce(

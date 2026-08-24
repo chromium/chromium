@@ -1263,7 +1263,7 @@ class JobControllerReconsiderProxyAfterErrorTest
         /*allow_server_preferred_address=*/true,
         MultiplexedSessionCreationInitiator::kUnknown,
         NetLogWithSource::Make(NetLogSourceType::NONE),
-        QuicSessionEstablishmentReason::kUnknown);
+        QuicConnectionReuseDetails());
     mock_proxy_sessions_.emplace_back(new_session.get());
 
     quic::test::NoopQpackStreamSenderDelegate
@@ -7850,7 +7850,7 @@ class HttpStreamFactoryJobControllerWsOverH3Test
         /*allow_server_preferred_address=*/true,
         MultiplexedSessionCreationInitiator::kUnknown,
         NetLogWithSource::Make(NetLogSourceType::NONE),
-        QuicSessionEstablishmentReason::kUnknown);
+        QuicConnectionReuseDetails());
 
     QuicChromiumClientSession* raw_session = new_session.get();
 

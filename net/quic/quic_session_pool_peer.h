@@ -128,6 +128,11 @@ class QuicSessionPoolPeer {
       const QuicSessionAliasKey& key,
       QuicChromiumClientSession* session);
 
+  static QuicConnectionReuseDetails
+  DetermineQuicConnectionReuseDetailsForTesting(
+      QuicSessionPool* pool,
+      const QuicSessionKey& session_key);
+
   static void SetAlarmFactory(
       QuicSessionPool* pool,
       std::unique_ptr<quic::QuicAlarmFactory> alarm_factory);

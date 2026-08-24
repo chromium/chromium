@@ -753,11 +753,14 @@ void QuicHttpStream::PopulateLoadTimingInternalInfo(
     load_timing_internal_info->max_stream_limit_pending_delay =
         stream_->max_stream_limit_pending_delay();
   }
-  load_timing_internal_info->resolution_details =
-      quic_session()->GetResolutionDetails();
-
-  load_timing_internal_info->quic_session_establishment_reason =
-      quic_session()->quic_session_establishment_reason();
+  if (quic_session()) {
+    load_timing_internal_info->resolution_details =
+        quic_session()->GetResolutionDetails();
+    load_timing_internal_info->quic_connection_reuse_details =
+        quic_session()->quic_connection_reuse_details();
+    load_timing_internal_info->session_creation_initiator =
+        quic_session()->session_creation_initiator();
+  }
 }
 
 }  // namespace net

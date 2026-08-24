@@ -204,7 +204,7 @@ void QuicProxyClientSocketTestBase::InitializeSession() {
       /*enable_origin_frame=*/true, /*allow_server_preferred_address=*/true,
       MultiplexedSessionCreationInitiator::kUnknown,
       NetLogWithSource::Make(NetLogSourceType::NONE),
-      QuicSessionEstablishmentReason::kUnknown);
+      QuicConnectionReuseDetails());
 
   writer->set_delegate(session_.get());
 

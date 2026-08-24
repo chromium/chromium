@@ -13,4 +13,11 @@ LoadTimingInternalInfo::~LoadTimingInternalInfo() = default;
 bool LoadTimingInternalInfo::operator==(
     const LoadTimingInternalInfo& other) const = default;
 
+QuicConnectionReuseDetails::QuicConnectionReuseDetails() = default;
+QuicConnectionReuseDetails::QuicConnectionReuseDetails(
+    const QuicConnectionReuseDetails& other) = default;
+QuicConnectionReuseDetails::~QuicConnectionReuseDetails() = default;
+bool QuicConnectionReuseDetails::operator==(
+    const QuicConnectionReuseDetails& other) const = default;
+
 }  // namespace net

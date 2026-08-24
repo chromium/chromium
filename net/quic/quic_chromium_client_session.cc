@@ -459,7 +459,7 @@ void LogProbeResultToHistogram(MigrationCause cause, bool success) {
 
 void LogSessionMetricsToHistogram(
     MultiplexedSessionCreationInitiator session_creation,
-    QuicSessionEstablishmentReason establishment_reason,
+    const QuicConnectionReuseDetails& details,
     bool is_used) {
   const std::string_view suffix = is_used ? ".Used" : ".Unused";
   const std::string_view initiator_suffix =
@@ -471,15 +471,31 @@ void LogSessionMetricsToHistogram(
       {"Net.QuicSession.GoogleSearch.SessionCreationInitiator", suffix});
   base::UmaHistogramEnumeration(initiator_histogram_name, session_creation);
 
-  std::string reason_histogram_name = base::StrCat(
-      {"Net.QuicSession.GoogleSearch.EstablishmentReason", suffix});
-  base::UmaHistogramEnumeration(reason_histogram_name, establishment_reason);
+  if (details.establishment_reason) {
+    std::string reason_histogram_name = base::StrCat(
+        {"Net.QuicSession.GoogleSearch.EstablishmentReason", suffix});
+    base::UmaHistogramEnumeration(reason_histogram_name,
+                                  *details.establishment_reason);
 
-  std::string reason_initiator_histogram_name =
-      base::StrCat({"Net.QuicSession.GoogleSearch.EstablishmentReason",
-                    initiator_suffix, suffix});
-  base::UmaHistogramEnumeration(reason_initiator_histogram_name,
-                                establishment_reason);
+    std::string reason_initiator_histogram_name =
+        base::StrCat({"Net.QuicSession.GoogleSearch.EstablishmentReason",
+                      initiator_suffix, suffix});
+    base::UmaHistogramEnumeration(reason_initiator_histogram_name,
+                                  *details.establishment_reason);
+  }
+
+  if (details.non_reuse_reason) {
+    std::string non_reuse_histogram_name =
+        base::StrCat({"Net.QuicSession.GoogleSearch.NonReuseReason", suffix});
+    base::UmaHistogramEnumeration(non_reuse_histogram_name,
+                                  *details.non_reuse_reason);
+
+    std::string non_reuse_initiator_histogram_name =
+        base::StrCat({"Net.QuicSession.GoogleSearch.NonReuseReason",
+                      initiator_suffix, suffix});
+    base::UmaHistogramEnumeration(non_reuse_initiator_histogram_name,
+                                  *details.non_reuse_reason);
+  }
 }
 
 EchMode GetEchModeForHost(SSLConfigService* ssl_config_service,
@@ -1050,7 +1066,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     bool allow_server_preferred_address,
     MultiplexedSessionCreationInitiator session_creation_initiator,
     const NetLogWithSource& net_log,
-    QuicSessionEstablishmentReason quic_session_establishment_reason)
+    QuicConnectionReuseDetails quic_connection_reuse_details)
     : quic::QuicSpdyClientSessionBase(connection,
                                       /*visitor=*/nullptr,
                                       config,
@@ -1110,7 +1126,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       trust_anchor_ids_(metadata.trust_anchor_ids),
       allow_server_preferred_address_(allow_server_preferred_address),
       session_creation_initiator_(session_creation_initiator),
-      quic_session_establishment_reason_(quic_session_establishment_reason) {
+      quic_connection_reuse_details_(quic_connection_reuse_details) {
   default_network_ = default_network;
   auto* socket_raw = socket.get();
   packet_readers_.push_back(std::make_unique<QuicChromiumPacketReader>(
@@ -1192,7 +1208,7 @@ QuicChromiumClientSession::~QuicChromiumClientSession() {
 
   if (IsGoogleHostWithAlpnH3(session_key_.host())) {
     LogSessionMetricsToHistogram(session_creation_initiator_,
-                                 quic_session_establishment_reason_,
+                                 quic_connection_reuse_details_,
                                  num_total_streams_ > 0);
   }
 

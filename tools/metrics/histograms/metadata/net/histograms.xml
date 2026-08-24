@@ -6540,6 +6540,28 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.QuicSession.GoogleSearch.NonReuseReason{Initiator}{Used}"
+    enum="QuicSessionNonReuseReason" expires_after="2027-07-01">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The session non-reuse reason for a QUIC session to GoogleSearch. This is
+    recorded when closing the session to GoogleSearch, and when {Used} with
+    {Initiator}.
+  </summary>
+  <token key="Initiator">
+    <variant name="" summary="any connection initiator"/>
+    <variant name=".NonPreconnect"
+        summary="the connection was not established via preconnect"/>
+    <variant name=".Preconnect"
+        summary="the connection was established via preconnect"/>
+  </token>
+  <token key="Used">
+    <variant name=".Unused" summary="session was unused"/>
+    <variant name=".Used" summary="session was used"/>
+  </token>
+</histogram>
+
 <histogram name="Net.QuicSession.HandshakeConfirmedTime" units="Milliseconds"
     expires_after="2027-02-02">
   <owner>dschinazi@chromium.org</owner>

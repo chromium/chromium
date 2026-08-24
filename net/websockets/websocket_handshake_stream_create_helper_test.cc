@@ -650,7 +650,7 @@ class Http3HandshakeStreamTestSetup : public HandshakeStreamTestSetup {
         /*allow_server_preferred_address=*/true,
         MultiplexedSessionCreationInitiator::kUnknown,
         NetLogWithSource::Make(NetLogSourceType::NONE),
-        QuicSessionEstablishmentReason::kUnknown);
+        QuicConnectionReuseDetails());
 
     session_->Initialize();
 

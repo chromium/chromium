@@ -35,7 +35,7 @@ class QuicSessionPool::Job : public QuicSessionAttempt::Delegate {
       QuicSessionAliasKey key,
       std::unique_ptr<CryptoClientConfigHandle> client_config_handle,
       RequestPriority priority,
-      QuicSessionEstablishmentReason quic_session_establishment_reason,
+      QuicConnectionReuseDetails quic_connection_reuse_details,
       const NetLogWithSource& net_log);
 
   Job(const Job&) = delete;
@@ -99,7 +99,7 @@ class QuicSessionPool::Job : public QuicSessionAttempt::Delegate {
   RequestPriority priority_;
   const NetLogWithSource net_log_;
   std::set<raw_ptr<QuicSessionRequest, SetExperimental>> requests_;
-  const QuicSessionEstablishmentReason quic_session_establishment_reason_;
+  const QuicConnectionReuseDetails quic_connection_reuse_details_;
 
  private:
   bool is_deleting_ = false;

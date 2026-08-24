@@ -308,7 +308,15 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
                       : QuicSessionEstablishmentReason::kUnknown;
     }
 
-    // Returns true if the session's connection has sent or received any bytes.
+    QuicConnectionReuseDetails quic_connection_reuse_details() const {
+      return session_ ? session_->quic_connection_reuse_details()
+                      : QuicConnectionReuseDetails();
+    }
+
+    MultiplexedSessionCreationInitiator session_creation_initiator() const {
+      return session_ ? session_->session_creation_initiator()
+                      : MultiplexedSessionCreationInitiator::kUnknown;
+    }
     bool WasEverUsed() const;
 
     // Retrieves any DNS aliases for the given session key from the map stored
@@ -674,7 +682,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       bool allow_server_preferred_address,
       MultiplexedSessionCreationInitiator session_creation_initiator,
       const NetLogWithSource& net_log,
-      QuicSessionEstablishmentReason quic_session_establishment_reason);
+      QuicConnectionReuseDetails quic_connection_reuse_details);
 
   QuicChromiumClientSession(const QuicChromiumClientSession&) = delete;
   QuicChromiumClientSession& operator=(const QuicChromiumClientSession&) =
@@ -697,8 +705,13 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // including cases where the stream creation failed.
   bool was_ever_used_to_create_streams() const;
 
+  const QuicConnectionReuseDetails& quic_connection_reuse_details() const {
+    return quic_connection_reuse_details_;
+  }
+
   QuicSessionEstablishmentReason quic_session_establishment_reason() const {
-    return quic_session_establishment_reason_;
+    return quic_connection_reuse_details_.establishment_reason.value_or(
+        QuicSessionEstablishmentReason::kUnknown);
   }
 
   MultiplexedSessionCreationInitiator session_creation_initiator() const {
@@ -1300,7 +1313,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   const MultiplexedSessionCreationInitiator session_creation_initiator_;
 
-  const QuicSessionEstablishmentReason quic_session_establishment_reason_;
+  const QuicConnectionReuseDetails quic_connection_reuse_details_;
 
   quic::QuicTagVector received_connection_options_;
 
