@@ -610,6 +610,9 @@ class CONTENT_EXPORT RenderFrameImpl
       const blink::UseCounterFeature& feature) override;
   void DidObserveSoftNavigation(
       blink::SoftNavigationMetricsForReporting metrics) override;
+  void DidObserveSoftNavigationFirstContentfulPaint(
+      uint64_t performance_timeline_navigation_id,
+      base::TimeDelta first_contentful_paint) override;
   void DidObserveSoftLargestContentfulPaint(
       const blink::LargestContentfulPaintDetailsForReporting& lcp) override;
   void DidObserveLayoutShift(

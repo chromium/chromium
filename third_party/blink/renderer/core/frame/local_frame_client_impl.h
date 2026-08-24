@@ -177,6 +177,9 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void DidObserveNewFeatureUsage(const UseCounterFeature&) override;
   void DidObserveSoftNavigation(
       SoftNavigationMetricsForReporting metrics) override;
+  void DidObserveSoftNavigationFirstContentfulPaint(
+      uint64_t performance_timeline_navigation_id,
+      base::TimeDelta first_contentful_paint) override;
   void DidObserveSoftLargestContentfulPaint(
       const LargestContentfulPaintDetailsForReporting& lcp) override;
   void DidObserveLayoutShift(

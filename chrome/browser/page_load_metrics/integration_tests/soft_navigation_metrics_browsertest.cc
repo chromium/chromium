@@ -200,6 +200,7 @@ std::string JsSnippetGetPerformanceEntries() {
             softNavigation: {
               navigationId: record.navigationId,
               startTime: record.startTime,
+              duration: record.duration,
               interactionId: record.interactionId,
             },
           };
@@ -331,16 +332,25 @@ class SoftNavigationTest : public MetricIntegrationTest,
         ukm_recorder(), SoftNavigation::kStartTimeName);
     EXPECT_EQ(source_id_to_start_time.size(), expected_soft_nav_count);
 
+    std::vector<double> soft_nav_start_times;
+    for (const auto& [source_id, start_time] : source_id_to_start_time) {
+      soft_nav_start_times.push_back(start_time);
+    }
+
+    // Soft navigation FCP.
+    auto source_id_to_fcp = GetSoftNavigationMetrics(
+        ukm_recorder(), SoftNavigation::kPaintTiming_FirstContentfulPaintName);
+    EXPECT_EQ(source_id_to_fcp.size(), expected_soft_nav_count);
+    std::vector<double> soft_nav_fcp;
+    for (const auto& [source_id, fcp] : source_id_to_fcp) {
+      soft_nav_fcp.push_back(fcp);
+    }
+
     // Soft navigation LCP.
     auto source_id_to_lcp = GetSoftNavigationMetrics(
         ukm_recorder(),
         SoftNavigation::kPaintTiming_LargestContentfulPaintName);
     EXPECT_EQ(source_id_to_lcp.size(), expected_soft_nav_count);
-
-    std::vector<double> soft_nav_start_times;
-    for (const auto& [source_id, start_time] : source_id_to_start_time) {
-      soft_nav_start_times.push_back(start_time);
-    }
 
     // Verify that the soft navigation start times are sorted and unique.
     EXPECT_EQ(soft_nav_start_times.size(), expected_soft_nav_count);
@@ -369,6 +379,7 @@ class SoftNavigationTest : public MetricIntegrationTest,
       EXPECT_EQ(performance_entries.size(), expected_soft_nav_count);
       ASSERT_EQ(performance_entries.size(), soft_nav_lcp.size());
       ASSERT_EQ(performance_entries.size(), soft_nav_start_times.size());
+      ASSERT_EQ(performance_entries.size(), soft_nav_fcp.size());
       for (uint32_t i = 0; i < performance_entries.size(); ++i) {
         SCOPED_TRACE(base::StringPrintf("performance_entries[%d]", i));
         const base::DictValue& timing = performance_entries[i].GetDict();
@@ -378,6 +389,8 @@ class SoftNavigationTest : public MetricIntegrationTest,
                     expected_lcp, 6);
         EXPECT_NEAR(*timing.FindDoubleByDottedPath("softNavigation.startTime"),
                     soft_nav_start_times[i], 6);
+        EXPECT_NEAR(*timing.FindDoubleByDottedPath("softNavigation.duration"),
+                    soft_nav_fcp[i], 6);
       }
     }
 

@@ -23964,10 +23964,16 @@ be describing additional metrics about the same event.
       event (value 3). See page_load_metrics::PageLoadType.
     </summary>
   </metric>
+  <metric name="PaintTiming.FirstContentfulPaint">
+    <summary>
+      Measures the FirstContentfulPaint in milliseconds from the start time of
+      the soft navigation to the presentation time.
+    </summary>
+  </metric>
   <metric name="PaintTiming.LargestContentfulPaint">
     <summary>
       Measures the LargestContentfulPaint in milliseconds from the start time of
-      the soft navigation to the LCP time.
+      the soft navigation to the presentation time.
     </summary>
     <aggregation>
       <history>

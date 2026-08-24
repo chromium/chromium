@@ -446,9 +446,6 @@ void SoftNavigationHeuristics::MaybeCommitNavigationOrEmitSoftNavigation(
   context->OnSoftNavigationCommit(
       /*navigation_id=*/performance->NavigationId(),
       /*soft_navigation_slicing_time=*/base::TimeTicks::Now());
-  // For metrics reporting, FCP presentation feedback will is in a separate
-  // record, when the ICP is reported. Therefore, we can send this immediately,
-  // which helps with slicing CLS and INP based on soft_navigation_slicing_time.
   ReportSoftNavigationToMetrics(context);
 
   // Postpone emitting the entry if we're still waiting for FCP presentation
@@ -464,8 +461,9 @@ void SoftNavigationHeuristics::EmitSoftNavigation(
     SoftNavigationContext* context) {
   context->EmitSoftNavigation();
 
-  // Emitting the entry unblocks reporting the current ICP to metrics, so update
-  // metrics now.
+  // Emitting the entry unblocks reporting the current FCP and ICP to metrics,
+  // so update metrics now.
+  UpdateSoftFcpMetricsForContext(context);
   UpdateSoftLcpMetricsForContext(context);
 }
 
@@ -623,6 +621,27 @@ void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
   // Count "successful soft nav" in histogram
   base::UmaHistogramEnumeration(kPageLoadInternalSoftNavigationOutcome,
                                 SoftNavigationOutcome::kSoftNavigationDetected);
+}
+
+void SoftNavigationHeuristics::UpdateSoftFcpMetricsForContext(
+    SoftNavigationContext* context) const {
+  CHECK(context->HasFirstContentfulPaint());
+  // Unlike LCP, which can receive continuous paint updates while subsequent
+  // navigations occur, FCP is a one-time metric for this committed context
+  // that must always be reported upon emission even if another interaction has
+  // started.
+  LocalFrame* frame = window_->GetFrame();
+  // We should not be running paint timing callbacks for detached frames.
+  CHECK(frame);
+  LocalFrameClient* frame_client = frame->Client();
+  CHECK(frame_client);
+  auto* loader = frame->Loader().GetDocumentLoader();
+  CHECK(loader);
+  base::TimeDelta first_contentful_paint =
+      loader->GetTiming().MonotonicTimeToPseudoWallTime(
+          context->FirstContentfulPaint());
+  frame_client->DidObserveSoftNavigationFirstContentfulPaint(
+      context->NavigationId().non_web_exposed_id, first_contentful_paint);
 }
 
 void SoftNavigationHeuristics::Trace(Visitor* visitor) const {

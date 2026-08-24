@@ -112,6 +112,7 @@ class CORE_EXPORT SoftNavigationHeuristics
       base::FunctionRef<void(InteractionEffectsMonitor&)>);
 
   void OnContextDisposed(SoftNavigationContext*);
+  void UpdateSoftFcpMetricsForContext(SoftNavigationContext*) const;
   void UpdateSoftLcpMetricsForContext(SoftNavigationContext*);
 
   // Called by PaintTiming on the initial paint for an image. Sets the relevant

@@ -1860,10 +1860,12 @@ TEST_F(UkmPageLoadMetricsObserverTest, SoftNavigationCount) {
   NavigateAndCommit(url);
 
   base::UnguessableToken same_doc_token = base::UnguessableToken::Create();
-  auto soft_navigation_metrics =
-      page_load_metrics::mojom::SoftNavigationMetrics(
-          2, base::Milliseconds(12), base::TimeTicks() + base::Milliseconds(12),
-          blink::mojom::NavigationTypeForNavigationApi::kPush, same_doc_token);
+  page_load_metrics::mojom::SoftNavigationMetrics soft_navigation_metrics(
+      2,
+      page_load_metrics::mojom::SoftNavigationCommit::New(
+          base::Milliseconds(12), base::TimeTicks::Now(),
+          blink::mojom::NavigationTypeForNavigationApi::kPush, same_doc_token),
+      base::Milliseconds(20));
 
   content::MockNavigationHandle navigation_handle;
   navigation_handle.set_has_committed(true);

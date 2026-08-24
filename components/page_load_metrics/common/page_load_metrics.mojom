@@ -634,8 +634,7 @@ struct EventTiming {
   uint64 interaction_id;
   // The time the interaction occurred.
   mojo_base.mojom.TimeTicks start_time;
-  // The time the processing on the main thread started; used for
-  // determining to which soft navigation this measurement should be attributed.
+  // The time the event processing on the main thread started.
   mojo_base.mojom.TimeTicks processing_start;
   // The performance timeline navigation ID to which this interaction is
   // attributed. 1 for the initial/hard navigation, 2, 3, ... for subsequent
@@ -697,28 +696,19 @@ struct BackForwardCacheTiming {
 
 // Metrics about soft navigation. See soft navigation at
 // https://github.com/WICG/soft-navigations.
-// The metrics are to be added in a SoftNavigation Event which is parallel to
-// a PageLoad event.
-struct SoftNavigationMetrics {
-  // A unique monotonic ordinal number assigned to this soft navigation from
-  // the start of the page load, 2, 3, ... n.
-  uint64 performance_timeline_navigation_id;
-
+//
+// Immutable initial commit metadata for a soft navigation, sent once upon
+// commit.
+struct SoftNavigationCommit {
   // The start time of a soft navigation. It is the time the user initializes
   // the soft navigation. It is relative to navigation start, and is the time
   // origin for calculating the loading performance of the soft navigation,
   // e.g. LCP.
   mojo_base.mojom.TimeDelta start_time;
 
-  // The TimeTicks value that we use for slicing the performance timeline;
-  // specifically, for layout shifts (LayoutShift) and interactions
-  // (EventTiming) in a PageLoadMetrics.UpdateTiming call, we distinguish
-  // measurements belonging before or after this soft navigation by comparing
-  // with this value. Only its ordering relative to other event TimeTicks is
-  // meaningful; the absolute value is not a wall-clock timestamp. This is only
-  // a Chrome-internal mechanism and never recorded to UKM. Note: For our web
-  // exposed (experimental) API, PerformanceEntry.navigationId serves the same
-  // purpose.
+  // Monotonically increasing TimeTicks timestamp recorded at the time of
+  // the soft navigation commit in the renderer. Used to validate monotonic
+  // ordering of incoming soft navigation commits.
   mojo_base.mojom.TimeTicks soft_navigation_slicing_time;
 
   // The type of the soft navigation.
@@ -729,4 +719,23 @@ struct SoftNavigationMetrics {
   // and therefore attribute the metrics to the correct URL
   // when any corresponding soft navigation completes.
   mojo_base.mojom.UnguessableToken same_document_metrics_token;
+};
+
+// Sent in `PageLoadMetrics.UpdateTiming` to report soft navigation lifecycle
+// updates. This represents either the initial soft navigation commit
+// (with `commit` set, and optional `first_contentful_paint` if already
+// presented), or a subsequent update (such as late `first_contentful_paint`).
+struct SoftNavigationMetrics {
+  // A unique monotonic ordinal number assigned to this soft navigation from
+  // the start of the page load (2, 3, ... n). 1 is reserved for the initial
+  // page load.
+  uint64 performance_timeline_navigation_id;
+
+  // Initial commit metadata. Present when this message conveys the soft
+  // navigation commit.
+  SoftNavigationCommit? commit;
+
+  // Presentation time of the soft navigation's First Contentful Paint relative
+  // to navigation start, if available.
+  mojo_base.mojom.TimeDelta? first_contentful_paint;
 };

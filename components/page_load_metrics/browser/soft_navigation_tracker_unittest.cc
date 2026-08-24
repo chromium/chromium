@@ -55,6 +55,31 @@ class TestObserver : public SoftNavigationTracker::Client {
   std::vector<CompletedSoftNavigationRecord> completed_navs;
 };
 
+mojom::SoftNavigationMetricsPtr CreateSoftNavigationCommit(
+    uint64_t nav_id,
+    base::TimeDelta start_time,
+    base::TimeTicks slicing_time,
+    base::UnguessableToken token = base::UnguessableToken::Create(),
+    blink::mojom::NavigationTypeForNavigationApi nav_type =
+        blink::mojom::NavigationTypeForNavigationApi::kPush,
+    std::optional<base::TimeDelta> fcp = std::nullopt) {
+  auto entry = mojom::SoftNavigationMetrics::New();
+  entry->performance_timeline_navigation_id = nav_id;
+  entry->commit = mojom::SoftNavigationCommit::New(start_time, slicing_time,
+                                                   nav_type, token);
+  entry->first_contentful_paint = fcp;
+  return entry;
+}
+
+mojom::SoftNavigationMetricsPtr CreateSoftNavigationFcpUpdate(
+    uint64_t nav_id,
+    base::TimeDelta first_contentful_paint) {
+  auto entry = mojom::SoftNavigationMetrics::New();
+  entry->performance_timeline_navigation_id = nav_id;
+  entry->first_contentful_paint = first_contentful_paint;
+  return entry;
+}
+
 }  // namespace
 
 TEST(SoftNavigationTrackerTest, CountSoftNavigations) {
@@ -62,20 +87,10 @@ TEST(SoftNavigationTrackerTest, CountSoftNavigations) {
   TestObserver observer;
   SoftNavigationTracker tracker(&observer);
   std::vector<mojom::SoftNavigationMetricsPtr> soft_navigations;
-  soft_navigations.emplace_back(mojom::SoftNavigationMetrics::New());
-  soft_navigations.back()->performance_timeline_navigation_id = 2;
-  soft_navigations.back()->same_document_metrics_token =
-      base::UnguessableToken::Create();
-  soft_navigations.back()->start_time = base::Milliseconds(100);
-  soft_navigations.back()->soft_navigation_slicing_time =
-      base_time + base::Milliseconds(150);
-  soft_navigations.emplace_back(mojom::SoftNavigationMetrics::New());
-  soft_navigations.back()->performance_timeline_navigation_id = 3;
-  soft_navigations.back()->same_document_metrics_token =
-      base::UnguessableToken::Create();
-  soft_navigations.back()->start_time = base::Milliseconds(200);
-  soft_navigations.back()->soft_navigation_slicing_time =
-      base_time + base::Milliseconds(250);
+  soft_navigations.push_back(CreateSoftNavigationCommit(
+      2, base::Milliseconds(100), base_time + base::Milliseconds(150)));
+  soft_navigations.push_back(CreateSoftNavigationCommit(
+      3, base::Milliseconds(200), base_time + base::Milliseconds(250)));
   ASSERT_TRUE(tracker.UpdateMainFrameMetrics(kMainFrameToken,
                                              std::move(soft_navigations)));
   EXPECT_EQ(tracker.soft_navigation_count(), 2u);
@@ -99,11 +114,13 @@ TEST(SoftNavigationTrackerTest,
     // Slicing time missing.
     SoftNavigationTracker tracker(&observer);
     std::vector<mojom::SoftNavigationMetricsPtr> soft_navigations;
-    soft_navigations.push_back(mojom::SoftNavigationMetrics::New());
-    soft_navigations.back()->performance_timeline_navigation_id = 2;
-    soft_navigations.back()->start_time = base::Milliseconds(100);
-    soft_navigations.back()->same_document_metrics_token =
+    auto entry = mojom::SoftNavigationMetrics::New();
+    entry->performance_timeline_navigation_id = 2;
+    entry->commit = mojom::SoftNavigationCommit::New();
+    entry->commit->start_time = base::Milliseconds(100);
+    entry->commit->same_document_metrics_token =
         base::UnguessableToken::Create();
+    soft_navigations.push_back(std::move(entry));
     EXPECT_FALSE(tracker.UpdateMainFrameMetrics(kMainFrameToken,
                                                 std::move(soft_navigations)));
   }
@@ -112,11 +129,13 @@ TEST(SoftNavigationTrackerTest,
     // same_document_metrics_token missing.
     SoftNavigationTracker tracker(&observer);
     std::vector<mojom::SoftNavigationMetricsPtr> soft_navigations;
-    soft_navigations.push_back(mojom::SoftNavigationMetrics::New());
-    soft_navigations.back()->performance_timeline_navigation_id = 2;
-    soft_navigations.back()->start_time = base::Milliseconds(100);
-    soft_navigations.back()->soft_navigation_slicing_time =
+    auto entry = mojom::SoftNavigationMetrics::New();
+    entry->performance_timeline_navigation_id = 2;
+    entry->commit = mojom::SoftNavigationCommit::New();
+    entry->commit->start_time = base::Milliseconds(100);
+    entry->commit->soft_navigation_slicing_time =
         base_time + base::Milliseconds(150);
+    soft_navigations.push_back(std::move(entry));
     EXPECT_FALSE(tracker.UpdateMainFrameMetrics(kMainFrameToken,
                                                 std::move(soft_navigations)));
   }
@@ -125,13 +144,8 @@ TEST(SoftNavigationTrackerTest,
     // Metric with navigation_id < 2 is rejected.
     SoftNavigationTracker tracker(&observer);
     std::vector<mojom::SoftNavigationMetricsPtr> soft_navigations;
-    soft_navigations.push_back(mojom::SoftNavigationMetrics::New());
-    soft_navigations.back()->performance_timeline_navigation_id = 1;
-    soft_navigations.back()->start_time = base::Milliseconds(100);
-    soft_navigations.back()->soft_navigation_slicing_time =
-        base_time + base::Milliseconds(150);
-    soft_navigations.back()->same_document_metrics_token =
-        base::UnguessableToken::Create();
+    soft_navigations.push_back(CreateSoftNavigationCommit(
+        1, base::Milliseconds(100), base_time + base::Milliseconds(150)));
     EXPECT_FALSE(tracker.UpdateMainFrameMetrics(kMainFrameToken,
                                                 std::move(soft_navigations)));
   }
@@ -140,13 +154,8 @@ TEST(SoftNavigationTrackerTest,
     // Metric starting with navigation_id > 2 is accepted.
     SoftNavigationTracker tracker(&observer);
     std::vector<mojom::SoftNavigationMetricsPtr> soft_navigations;
-    soft_navigations.push_back(mojom::SoftNavigationMetrics::New());
-    soft_navigations.back()->performance_timeline_navigation_id = 3;
-    soft_navigations.back()->start_time = base::Milliseconds(100);
-    soft_navigations.back()->soft_navigation_slicing_time =
-        base_time + base::Milliseconds(150);
-    soft_navigations.back()->same_document_metrics_token =
-        base::UnguessableToken::Create();
+    soft_navigations.push_back(CreateSoftNavigationCommit(
+        3, base::Milliseconds(100), base_time + base::Milliseconds(150)));
     EXPECT_TRUE(tracker.UpdateMainFrameMetrics(kMainFrameToken,
                                                std::move(soft_navigations)));
   }
@@ -155,20 +164,10 @@ TEST(SoftNavigationTrackerTest,
     // Slicing time is not monotonically increasing.
     SoftNavigationTracker tracker(&observer);
     std::vector<mojom::SoftNavigationMetricsPtr> soft_navigations;
-    soft_navigations.push_back(mojom::SoftNavigationMetrics::New());
-    soft_navigations.back()->performance_timeline_navigation_id = 2;
-    soft_navigations.back()->start_time = base::Milliseconds(100);
-    soft_navigations.back()->soft_navigation_slicing_time =
-        base_time + base::Milliseconds(150);
-    soft_navigations.back()->same_document_metrics_token =
-        base::UnguessableToken::Create();
-    soft_navigations.push_back(mojom::SoftNavigationMetrics::New());
-    soft_navigations.back()->performance_timeline_navigation_id = 3;
-    soft_navigations.back()->start_time = base::Milliseconds(200);
-    soft_navigations.back()->soft_navigation_slicing_time =
-        base_time + base::Milliseconds(140);
-    soft_navigations.back()->same_document_metrics_token =
-        base::UnguessableToken::Create();
+    soft_navigations.push_back(CreateSoftNavigationCommit(
+        2, base::Milliseconds(100), base_time + base::Milliseconds(150)));
+    soft_navigations.push_back(CreateSoftNavigationCommit(
+        3, base::Milliseconds(200), base_time + base::Milliseconds(140)));
     EXPECT_FALSE(tracker.UpdateMainFrameMetrics(kMainFrameToken,
                                                 std::move(soft_navigations)));
   }
@@ -179,24 +178,42 @@ TEST(SoftNavigationTrackerTest,
     SoftNavigationTracker tracker(&observer);
     std::vector<mojom::SoftNavigationMetricsPtr> soft_navigations;
     base::UnguessableToken token = base::UnguessableToken::Create();
-    soft_navigations.push_back(mojom::SoftNavigationMetrics::New());
-    soft_navigations.back()->performance_timeline_navigation_id = 2;
-    soft_navigations.back()->start_time = base::Milliseconds(100);
-    soft_navigations.back()->soft_navigation_slicing_time =
-        base_time + base::Milliseconds(150);
-    soft_navigations.back()->same_document_metrics_token = token;
+    soft_navigations.push_back(
+        CreateSoftNavigationCommit(2, base::Milliseconds(100),
+                                   base_time + base::Milliseconds(150), token));
     EXPECT_TRUE(tracker.UpdateMainFrameMetrics(kMainFrameToken,
                                                std::move(soft_navigations)));
 
     std::vector<mojom::SoftNavigationMetricsPtr> soft_navigations2;
-    soft_navigations2.push_back(mojom::SoftNavigationMetrics::New());
-    soft_navigations2.back()->performance_timeline_navigation_id = 3;
-    soft_navigations2.back()->start_time = base::Milliseconds(200);
-    soft_navigations2.back()->soft_navigation_slicing_time =
-        base_time + base::Milliseconds(250);
-    soft_navigations2.back()->same_document_metrics_token = token;
+    soft_navigations2.push_back(
+        CreateSoftNavigationCommit(3, base::Milliseconds(200),
+                                   base_time + base::Milliseconds(250), token));
     EXPECT_FALSE(tracker.UpdateMainFrameMetrics(kMainFrameToken,
                                                 std::move(soft_navigations2)));
+  }
+
+  {
+    // Standalone metric update without metric data (e.g. missing FCP) is
+    // rejected.
+    SoftNavigationTracker tracker(&observer);
+    std::vector<mojom::SoftNavigationMetricsPtr> soft_navigations;
+    auto entry = mojom::SoftNavigationMetrics::New();
+    entry->performance_timeline_navigation_id = 2;
+    soft_navigations.push_back(std::move(entry));
+    EXPECT_FALSE(tracker.UpdateMainFrameMetrics(kMainFrameToken,
+                                                std::move(soft_navigations)));
+  }
+
+  {
+    // Standalone FCP updates can arrive out of order for different navigations.
+    SoftNavigationTracker tracker(&observer);
+    std::vector<mojom::SoftNavigationMetricsPtr> soft_navigations;
+    soft_navigations.push_back(
+        CreateSoftNavigationFcpUpdate(3, base::Milliseconds(200)));
+    soft_navigations.push_back(
+        CreateSoftNavigationFcpUpdate(2, base::Milliseconds(100)));
+    EXPECT_TRUE(tracker.UpdateMainFrameMetrics(kMainFrameToken,
+                                               std::move(soft_navigations)));
   }
 }
 
@@ -204,13 +221,8 @@ TEST(SoftNavigationTrackerTest, TrackerRecoversAfterInvalidMetrics) {
   base::TimeTicks base_time = base::TimeTicks::Now();
   TestObserver observer;
   mojom::SoftNavigationMetricsPtr valid_soft_navigation =
-      mojom::SoftNavigationMetrics::New();
-  valid_soft_navigation->performance_timeline_navigation_id = 2;
-  valid_soft_navigation->start_time = base::Milliseconds(100);
-  valid_soft_navigation->soft_navigation_slicing_time =
-      base_time + base::Milliseconds(150);
-  valid_soft_navigation->same_document_metrics_token =
-      base::UnguessableToken::Create();
+      CreateSoftNavigationCommit(2, base::Milliseconds(100),
+                                 base_time + base::Milliseconds(150));
   {
     // Verify that this is a valid soft navigation.
     SoftNavigationTracker tracker(&observer);
@@ -233,13 +245,8 @@ TEST(SoftNavigationTrackerTest, TrackerRecoversAfterInvalidMetrics) {
   // that it accepts metrics in the next call.
   soft_navigations.clear();
   soft_navigations.push_back(valid_soft_navigation->Clone());
-  soft_navigations.push_back(mojom::SoftNavigationMetrics::New());
-  soft_navigations.back()->performance_timeline_navigation_id = 3;
-  soft_navigations.back()->start_time = base::Milliseconds(200);
-  soft_navigations.back()->soft_navigation_slicing_time =
-      base_time + base::Milliseconds(250);
-  soft_navigations.back()->same_document_metrics_token =
-      base::UnguessableToken::Create();
+  soft_navigations.push_back(CreateSoftNavigationCommit(
+      3, base::Milliseconds(200), base_time + base::Milliseconds(250)));
   EXPECT_TRUE(tracker.UpdateMainFrameMetrics(kMainFrameToken,
                                              std::move(soft_navigations)));
   EXPECT_EQ(tracker.soft_navigation_count(), 2u);
@@ -249,20 +256,16 @@ TEST(SoftNavigationTrackerTest,
      SimpleSoftNavsTrackingAndAggregationForInteractions) {
   base::TimeTicks base_time = base::TimeTicks::Now();
   std::vector<mojom::SoftNavigationMetricsPtr> soft_navigations;
-  soft_navigations.push_back(mojom::SoftNavigationMetrics::New());
-  soft_navigations.back()->performance_timeline_navigation_id = 2;
-  soft_navigations.back()->same_document_metrics_token =
-      base::UnguessableToken::Create();
-  soft_navigations.back()->start_time = base::Milliseconds(80);
-  soft_navigations.back()->soft_navigation_slicing_time =
-      base_time + base::Milliseconds(100);
-  soft_navigations.push_back(mojom::SoftNavigationMetrics::New());
-  soft_navigations.back()->performance_timeline_navigation_id = 3;
-  soft_navigations.back()->same_document_metrics_token =
-      base::UnguessableToken::Create();
-  soft_navigations.back()->start_time = base::Milliseconds(180);
-  soft_navigations.back()->soft_navigation_slicing_time =
-      base_time + base::Milliseconds(200);
+  soft_navigations.push_back(CreateSoftNavigationCommit(
+      2, base::Milliseconds(80), base_time + base::Milliseconds(100),
+      /*token=*/base::UnguessableToken::Create(),
+      /*nav_type=*/blink::mojom::NavigationTypeForNavigationApi::kPush,
+      /*fcp=*/base::Milliseconds(90)));
+  soft_navigations.push_back(CreateSoftNavigationCommit(
+      3, base::Milliseconds(180), base_time + base::Milliseconds(200),
+      /*token=*/base::UnguessableToken::Create(),
+      /*nav_type=*/blink::mojom::NavigationTypeForNavigationApi::kPush,
+      /*fcp=*/base::Milliseconds(190)));
   std::vector<mojom::EventTimingPtr> latencies;
   // Before the first soft navigation (hard nav, nav_id = 1), there are two
   // user interactions.
@@ -327,20 +330,16 @@ TEST(SoftNavigationTrackerTest,
      SimpleSoftNavsTrackingAndAggregationForLayoutShifts) {
   base::TimeTicks base_time = base::TimeTicks::Now();
   std::vector<mojom::SoftNavigationMetricsPtr> soft_navigations;
-  soft_navigations.push_back(mojom::SoftNavigationMetrics::New());
-  soft_navigations.back()->performance_timeline_navigation_id = 2;
-  soft_navigations.back()->same_document_metrics_token =
-      base::UnguessableToken::Create();
-  soft_navigations.back()->start_time = base::Milliseconds(80);
-  soft_navigations.back()->soft_navigation_slicing_time =
-      base_time + base::Milliseconds(100);
-  soft_navigations.push_back(mojom::SoftNavigationMetrics::New());
-  soft_navigations.back()->performance_timeline_navigation_id = 3;
-  soft_navigations.back()->same_document_metrics_token =
-      base::UnguessableToken::Create();
-  soft_navigations.back()->start_time = base::Milliseconds(180);
-  soft_navigations.back()->soft_navigation_slicing_time =
-      base_time + base::Milliseconds(200);
+  soft_navigations.push_back(CreateSoftNavigationCommit(
+      2, base::Milliseconds(80), base_time + base::Milliseconds(100),
+      /*token=*/base::UnguessableToken::Create(),
+      /*nav_type=*/blink::mojom::NavigationTypeForNavigationApi::kPush,
+      /*fcp=*/base::Milliseconds(90)));
+  soft_navigations.push_back(CreateSoftNavigationCommit(
+      3, base::Milliseconds(180), base_time + base::Milliseconds(200),
+      /*token=*/base::UnguessableToken::Create(),
+      /*nav_type=*/blink::mojom::NavigationTypeForNavigationApi::kPush,
+      /*fcp=*/base::Milliseconds(190)));
 
   std::vector<mojom::LayoutShiftPtr> layout_shifts;
   // Before the first soft navigation (hard nav, nav_id = 1), there are two
@@ -392,20 +391,16 @@ TEST(SoftNavigationTrackerTest,
   base::TimeTicks base_time = base::TimeTicks::Now();
 
   std::vector<mojom::SoftNavigationMetricsPtr> soft_navigations;
-  soft_navigations.push_back(mojom::SoftNavigationMetrics::New());
-  soft_navigations.back()->performance_timeline_navigation_id = 2;
-  soft_navigations.back()->same_document_metrics_token =
-      base::UnguessableToken::Create();
-  soft_navigations.back()->start_time = base::Milliseconds(80);
-  soft_navigations.back()->soft_navigation_slicing_time =
-      base_time + base::Milliseconds(100);
-  soft_navigations.push_back(mojom::SoftNavigationMetrics::New());
-  soft_navigations.back()->performance_timeline_navigation_id = 3;
-  soft_navigations.back()->same_document_metrics_token =
-      base::UnguessableToken::Create();
-  soft_navigations.back()->start_time = base::Milliseconds(180);
-  soft_navigations.back()->soft_navigation_slicing_time =
-      base_time + base::Milliseconds(200);
+  soft_navigations.push_back(CreateSoftNavigationCommit(
+      2, base::Milliseconds(80), base_time + base::Milliseconds(100),
+      /*token=*/base::UnguessableToken::Create(),
+      /*nav_type=*/blink::mojom::NavigationTypeForNavigationApi::kPush,
+      /*fcp=*/base::Milliseconds(90)));
+  soft_navigations.push_back(CreateSoftNavigationCommit(
+      3, base::Milliseconds(180), base_time + base::Milliseconds(200),
+      /*token=*/base::UnguessableToken::Create(),
+      /*nav_type=*/blink::mojom::NavigationTypeForNavigationApi::kPush,
+      /*fcp=*/base::Milliseconds(190)));
 
   std::vector<mojom::LargestContentfulPaintTimingPtr> lcps;
 
@@ -470,13 +465,8 @@ TEST(SoftNavigationTrackerTest, IncrementalSoftNavigationUpdates) {
 
   // Step 1: Soft Nav 1 arrives (nav_id = 2).
   std::vector<mojom::SoftNavigationMetricsPtr> soft_navs_1;
-  soft_navs_1.push_back(mojom::SoftNavigationMetrics::New());
-  soft_navs_1.back()->performance_timeline_navigation_id = 2;
-  soft_navs_1.back()->same_document_metrics_token =
-      base::UnguessableToken::Create();
-  soft_navs_1.back()->start_time = base::Milliseconds(80);
-  soft_navs_1.back()->soft_navigation_slicing_time =
-      base_time + base::Milliseconds(100);
+  soft_navs_1.push_back(CreateSoftNavigationCommit(
+      2, base::Milliseconds(80), base_time + base::Milliseconds(100)));
   EXPECT_TRUE(
       tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(soft_navs_1)));
   EXPECT_EQ(observer.commits.size(), 1u);
@@ -501,27 +491,20 @@ TEST(SoftNavigationTrackerTest, IncrementalSoftNavigationUpdates) {
 
   // Step 3: Soft Nav 2 arrives (nav_id = 3).
   std::vector<mojom::SoftNavigationMetricsPtr> soft_navs_2;
-  soft_navs_2.push_back(mojom::SoftNavigationMetrics::New());
-  soft_navs_2.back()->performance_timeline_navigation_id = 3;
-  soft_navs_2.back()->same_document_metrics_token =
-      base::UnguessableToken::Create();
-  soft_navs_2.back()->start_time = base::Milliseconds(180);
-  soft_navs_2.back()->soft_navigation_slicing_time =
-      base_time + base::Milliseconds(200);
+  soft_navs_2.push_back(CreateSoftNavigationCommit(
+      3, base::Milliseconds(180), base_time + base::Milliseconds(200)));
   EXPECT_TRUE(
       tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(soft_navs_2)));
 
-  // With Soft Nav 2 committed, Soft Nav 1 is now completed.
-  ASSERT_EQ(observer.completed_nav_ids.size(), 1u);
-  EXPECT_EQ(observer.completed_nav_ids[0], 2u);
+  // Soft Nav 1 is in `completed_navigations_awaiting_reporting_criteria_`.
+  // It has not been dispatched yet because it is awaiting its own FCP and the
+  // next navigation's FCP.
+  EXPECT_TRUE(observer.completed_nav_ids.empty());
   ASSERT_EQ(observer.commits.size(), 2u);
   EXPECT_EQ(observer.commits[1]->performance_timeline_navigation_id, 3u);
 
-  // Soft Nav 1 has been completed and pruned from `navigations_`.
-  EXPECT_EQ(tracker.GetSoftNavigationDataForTest(2), nullptr);
-
-  // Late-arriving events for the already completed Soft Nav 1 are safely
-  // ignored.
+  // Soft Nav 1 is still accessible while in the queue, so in-flight events for
+  // Soft Nav 1 continue to be aggregated.
   std::vector<mojom::EventTimingPtr> late_events;
   late_events.push_back(mojom::EventTiming::New());
   late_events.back()->processing_start = base_time + base::Milliseconds(180);
@@ -530,9 +513,20 @@ TEST(SoftNavigationTrackerTest, IncrementalSoftNavigationUpdates) {
   late_events.back()->performance_timeline_navigation_id = 2;
   EXPECT_TRUE(tracker.UpdateMainFrameMetrics(
       kMainFrameToken, /*soft_navigation_metrics=*/{}, late_events));
-  EXPECT_EQ(tracker.GetSoftNavigationDataForTest(2), nullptr);
 
-  // Events for active Soft Nav 2 (nav_id = 3) are recorded.
+  const auto* nav2_in_queue = tracker.GetSoftNavigationDataForTest(2);
+  ASSERT_TRUE(nav2_in_queue);
+  EXPECT_EQ(nav2_in_queue->inp_calculator.num_user_interactions(), 2u);
+
+  // Step 4: FCP arrives for Soft Nav 1.
+  std::vector<mojom::SoftNavigationMetricsPtr> fcp_nav1;
+  fcp_nav1.push_back(CreateSoftNavigationFcpUpdate(2, base::Milliseconds(90)));
+  EXPECT_TRUE(
+      tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(fcp_nav1)));
+  // Still awaiting Soft Nav 2's FCP proxy before dispatching.
+  EXPECT_TRUE(observer.completed_nav_ids.empty());
+
+  // Step 5: Events for active Soft Nav 2 (nav_id = 3) are recorded.
   std::vector<mojom::EventTimingPtr> events_2;
   events_2.push_back(mojom::EventTiming::New());
   events_2.back()->processing_start = base_time + base::Milliseconds(250);
@@ -548,11 +542,81 @@ TEST(SoftNavigationTrackerTest, IncrementalSoftNavigationUpdates) {
   EXPECT_EQ(nav3->inp_calculator.worst_latency()->max_event.duration,
             base::Milliseconds(40));
 
+  // Step 6: FCP arrives for Soft Nav 2. Soft Nav 1 now satisfies all reporting
+  // criteria and is dispatched!
+  std::vector<mojom::SoftNavigationMetricsPtr> fcp_nav2;
+  fcp_nav2.push_back(CreateSoftNavigationFcpUpdate(3, base::Milliseconds(190)));
+  EXPECT_TRUE(
+      tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(fcp_nav2)));
+
+  ASSERT_EQ(observer.completed_nav_ids.size(), 1u);
+  EXPECT_EQ(observer.completed_nav_ids[0], 2u);
+  EXPECT_EQ(tracker.GetSoftNavigationDataForTest(2), nullptr);
+
+  // Late-arriving events for the already dispatched Soft Nav 1 are ignored.
+  std::vector<mojom::EventTimingPtr> ignored_events;
+  ignored_events.push_back(mojom::EventTiming::New());
+  ignored_events.back()->processing_start = base_time + base::Milliseconds(260);
+  ignored_events.back()->duration = base::Milliseconds(50);
+  ignored_events.back()->interaction_id = 5;
+  ignored_events.back()->performance_timeline_navigation_id = 2;
+  EXPECT_TRUE(tracker.UpdateMainFrameMetrics(
+      kMainFrameToken, /*soft_navigation_metrics=*/{}, ignored_events));
+  EXPECT_EQ(tracker.GetSoftNavigationDataForTest(2), nullptr);
+
   // Finalize all active navigations and take completed navigations on flush.
   tracker.CompleteActiveNavigationAndFlush();
   ASSERT_EQ(observer.completed_nav_ids.size(), 2u);
   EXPECT_EQ(observer.completed_nav_ids[1], 3u);
   EXPECT_EQ(tracker.GetSoftNavigationDataForTest(3), nullptr);
+}
+
+TEST(SoftNavigationTrackerTest, CompletedNavigationsAwaitingReportingCriteria) {
+  base::TimeTicks base_time = base::TimeTicks::Now();
+  TestObserver observer;
+  SoftNavigationTracker tracker(&observer);
+
+  // Nav 1 (id=2), Nav 2 (id=3), Nav 3 (id=4) commit in succession without FCPs.
+  std::vector<mojom::SoftNavigationMetricsPtr> navs;
+  navs.push_back(CreateSoftNavigationCommit(
+      2, base::Milliseconds(100), base_time + base::Milliseconds(100)));
+  navs.push_back(CreateSoftNavigationCommit(
+      3, base::Milliseconds(200), base_time + base::Milliseconds(200)));
+  navs.push_back(CreateSoftNavigationCommit(
+      4, base::Milliseconds(300), base_time + base::Milliseconds(300)));
+  EXPECT_TRUE(tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(navs)));
+
+  EXPECT_EQ(observer.commits.size(), 3u);
+  EXPECT_TRUE(observer.completed_nav_ids.empty());
+
+  // Nav 1 gets FCP -> still in queue because Nav 2 has no FCP.
+  std::vector<mojom::SoftNavigationMetricsPtr> fcp_1;
+  fcp_1.push_back(CreateSoftNavigationFcpUpdate(2, base::Milliseconds(110)));
+  EXPECT_TRUE(
+      tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(fcp_1)));
+  EXPECT_TRUE(observer.completed_nav_ids.empty());
+
+  // Nav 2 gets FCP -> Nav 1 has all criteria (own FCP + next nav FCP) and
+  // completes! Nav 2 remains in queue awaiting Nav 3's FCP.
+  std::vector<mojom::SoftNavigationMetricsPtr> fcp_2;
+  fcp_2.push_back(CreateSoftNavigationFcpUpdate(3, base::Milliseconds(210)));
+  EXPECT_TRUE(
+      tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(fcp_2)));
+  ASSERT_EQ(observer.completed_nav_ids.size(), 1u);
+  EXPECT_EQ(observer.completed_nav_ids[0], 2u);
+
+  // Nav 3 gets FCP -> Nav 2 completes!
+  std::vector<mojom::SoftNavigationMetricsPtr> fcp_3;
+  fcp_3.push_back(CreateSoftNavigationFcpUpdate(4, base::Milliseconds(310)));
+  EXPECT_TRUE(
+      tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(fcp_3)));
+  ASSERT_EQ(observer.completed_nav_ids.size(), 2u);
+  EXPECT_EQ(observer.completed_nav_ids[1], 3u);
+
+  // Flush completes active Nav 3.
+  tracker.CompleteActiveNavigationAndFlush();
+  ASSERT_EQ(observer.completed_nav_ids.size(), 3u);
+  EXPECT_EQ(observer.completed_nav_ids[2], 4u);
 }
 
 TEST(SoftNavigationTrackerTest, MaxSoftNavigationsCap) {
@@ -606,13 +670,8 @@ TEST(SoftNavigationTrackerTest, UncommittedNavigationsPrunedOnHigherCommit) {
 
   // Now, soft navigation 4 commits directly (2 and 3 were skipped/aborted).
   std::vector<mojom::SoftNavigationMetricsPtr> soft_navs;
-  soft_navs.push_back(mojom::SoftNavigationMetrics::New());
-  soft_navs.back()->performance_timeline_navigation_id = 4;
-  soft_navs.back()->same_document_metrics_token =
-      base::UnguessableToken::Create();
-  soft_navs.back()->start_time = base::Milliseconds(100);
-  soft_navs.back()->soft_navigation_slicing_time =
-      base_time + base::Milliseconds(150);
+  soft_navs.push_back(CreateSoftNavigationCommit(
+      4, base::Milliseconds(100), base_time + base::Milliseconds(150)));
   EXPECT_TRUE(
       tracker.UpdateMainFrameMetrics(kMainFrameToken, std::move(soft_navs)));
 

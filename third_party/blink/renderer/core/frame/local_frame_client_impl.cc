@@ -912,6 +912,15 @@ void LocalFrameClientImpl::DidObserveSoftNavigation(
   }
 }
 
+void LocalFrameClientImpl::DidObserveSoftNavigationFirstContentfulPaint(
+    uint64_t performance_timeline_navigation_id,
+    base::TimeDelta first_contentful_paint) {
+  if (WebLocalFrameClient* client = web_frame_->Client()) {
+    client->DidObserveSoftNavigationFirstContentfulPaint(
+        performance_timeline_navigation_id, first_contentful_paint);
+  }
+}
+
 void LocalFrameClientImpl::DidObserveSoftLargestContentfulPaint(
     const LargestContentfulPaintDetailsForReporting& lcp) {
   web_frame_->Client()->DidObserveSoftLargestContentfulPaint(lcp);

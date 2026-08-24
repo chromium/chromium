@@ -130,20 +130,47 @@ void PageTimingMetricsSender::DidObserveSoftNavigation(
     CHECK_EQ(
         soft_navigation_metrics_.back()->performance_timeline_navigation_id + 1,
         new_metrics.performance_timeline_navigation_id);
-    CHECK_NE(new_metrics.same_document_metrics_token,
-             soft_navigation_metrics_.back()->same_document_metrics_token);
+    if (soft_navigation_metrics_.back()->commit) {
+      CHECK_NE(
+          new_metrics.same_document_metrics_token,
+          soft_navigation_metrics_.back()->commit->same_document_metrics_token);
+    }
   }
   // Now that we've checked the invariants, enter the soft nav into the queue.
   auto entry = mojom::SoftNavigationMetrics::New();
   entry->performance_timeline_navigation_id =
       new_metrics.performance_timeline_navigation_id;
-  entry->start_time = new_metrics.start_time;
-  entry->soft_navigation_slicing_time =
-      new_metrics.soft_navigation_slicing_time;
-  entry->navigation_type = new_metrics.navigation_type;
-  entry->same_document_metrics_token = new_metrics.same_document_metrics_token;
+  entry->commit = mojom::SoftNavigationCommit::New(
+      new_metrics.start_time, new_metrics.soft_navigation_slicing_time,
+      new_metrics.navigation_type, new_metrics.same_document_metrics_token);
   soft_navigation_metrics_.emplace_back(std::move(entry));
 
+  EnsureSendTimer();
+}
+
+void PageTimingMetricsSender::DidObserveSoftNavigationFirstContentfulPaint(
+    uint64_t performance_timeline_navigation_id,
+    base::TimeDelta first_contentful_paint) {
+  CHECK_GT(performance_timeline_navigation_id, 1u);
+  CHECK(!first_contentful_paint.is_zero());
+  // In Blink, FCP always arrives after the soft navigation commit has occurred.
+  // If the commit is still buffered in `soft_navigation_metrics_`, attach the
+  // FCP timestamp directly to the commit entry.
+  for (const auto& metrics : soft_navigation_metrics_) {
+    if (metrics->performance_timeline_navigation_id ==
+        performance_timeline_navigation_id) {
+      metrics->first_contentful_paint = first_contentful_paint;
+      EnsureSendTimer();
+      return;
+    }
+  }
+  // Otherwise, the commit entry was already sent in a previous IPC batch;
+  // create a standalone entry to transmit this FCP update.
+  auto entry = mojom::SoftNavigationMetrics::New();
+  entry->performance_timeline_navigation_id =
+      performance_timeline_navigation_id;
+  entry->first_contentful_paint = first_contentful_paint;
+  soft_navigation_metrics_.emplace_back(std::move(entry));
   EnsureSendTimer();
 }
 

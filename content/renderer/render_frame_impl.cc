@@ -4904,6 +4904,15 @@ void RenderFrameImpl::DidObserveSoftNavigation(
   }
 }
 
+void RenderFrameImpl::DidObserveSoftNavigationFirstContentfulPaint(
+    uint64_t performance_timeline_navigation_id,
+    base::TimeDelta first_contentful_paint) {
+  for (auto& observer : observers_) {
+    observer.DidObserveSoftNavigationFirstContentfulPaint(
+        performance_timeline_navigation_id, first_contentful_paint);
+  }
+}
+
 void RenderFrameImpl::DidObserveSoftLargestContentfulPaint(
     const blink::LargestContentfulPaintDetailsForReporting& lcp) {
   for (auto& observer : observers_) {

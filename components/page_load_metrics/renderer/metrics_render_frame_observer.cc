@@ -248,6 +248,18 @@ void MetricsRenderFrameObserver::DidObserveSoftNavigation(
   }
 }
 
+void MetricsRenderFrameObserver::DidObserveSoftNavigationFirstContentfulPaint(
+    uint64_t performance_timeline_navigation_id,
+    base::TimeDelta first_contentful_paint) {
+  if (page_timing_metrics_sender_) {
+    // Make soft navigation FCP relative to navigation start.
+    first_contentful_paint = CreateTimeDeltaFromTimestampsInSeconds(
+        first_contentful_paint.InSecondsF(), GetNavigationStart());
+    page_timing_metrics_sender_->DidObserveSoftNavigationFirstContentfulPaint(
+        performance_timeline_navigation_id, first_contentful_paint);
+  }
+}
+
 void MetricsRenderFrameObserver::DidObserveSoftLargestContentfulPaint(
     const blink::LargestContentfulPaintDetailsForReporting& lcp) {
   if (page_timing_metrics_sender_) {

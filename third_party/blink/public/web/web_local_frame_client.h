@@ -656,6 +656,11 @@ class BLINK_EXPORT WebLocalFrameClient {
   virtual void DidObserveSoftNavigation(
       SoftNavigationMetricsForReporting metrics) {}
 
+  // A new First Contentful Paint was observed for a soft navigation.
+  virtual void DidObserveSoftNavigationFirstContentfulPaint(
+      uint64_t performance_timeline_navigation_id,
+      base::TimeDelta first_contentful_paint) {}
+
   // A new largest contentful paint candidate relating to the most recent
   // soft navigation was observed. Also see DidObserveSoftNavigation().
   virtual void DidObserveSoftLargestContentfulPaint(

@@ -85,6 +85,12 @@ class SoftNavigationPageLoadMetricsObserver
  private:
   bool FromForegroundOptionalEventInForeground(
       const std::optional<base::TimeDelta>& event);
+  void RecordSoftCommit(
+      ukm::builders::SoftNavigation& builder,
+      const page_load_metrics::mojom::SoftNavigationCommit& commit);
+  void RecordSoftFcp(
+      ukm::builders::SoftNavigation& builder,
+      const page_load_metrics::SoftNavigationData& soft_navigation_data);
   void RecordSoftLcp(
       ukm::builders::SoftNavigation& builder,
       const page_load_metrics::SoftNavigationData& soft_navigation_data);

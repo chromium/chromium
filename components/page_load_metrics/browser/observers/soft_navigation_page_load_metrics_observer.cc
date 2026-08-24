@@ -170,25 +170,45 @@ void SoftNavigationPageLoadMetricsObserver::OnSoftNavigationCompleted(
   // navigations, so `metrics` is guaranteed to be non-null.
   CHECK(soft_navigation_data.metrics);
   const auto& soft_navigation_metrics = *soft_navigation_data.metrics;
+  CHECK(soft_navigation_metrics.commit);
+  const auto& commit = *soft_navigation_metrics.commit;
   ukm::SourceId ukm_source_id =
       GetDelegate().GetUkmSourceIdForSameDocumentNavigation(
-          soft_navigation_metrics.same_document_metrics_token);
+          commit.same_document_metrics_token);
   if (ukm_source_id == ukm::kInvalidSourceId) {
     return;
   }
   ukm::builders::SoftNavigation builder(ukm_source_id);
 
-  builder.SetStartTime(soft_navigation_metrics.start_time.InMillisecondsF());
-  PAGE_LOAD_HISTOGRAM("PageLoad.SoftNavigation.StartTime",
-                      soft_navigation_metrics.start_time);
-  builder.SetNavigationType(
-      static_cast<int>(soft_navigation_metrics.navigation_type));
-  builder.SetPageLoadType(static_cast<int>(StateToPageLoadType(state_)));
-
+  RecordSoftCommit(builder, commit);
+  RecordSoftFcp(builder, soft_navigation_data);
   RecordSoftLcp(builder, soft_navigation_data);
   RecordSoftInp(builder, soft_navigation_data);
   RecordSoftCls(builder, soft_navigation_data);
   builder.Record(ukm::UkmRecorder::Get());
+}
+
+void SoftNavigationPageLoadMetricsObserver::RecordSoftCommit(
+    ukm::builders::SoftNavigation& builder,
+    const page_load_metrics::mojom::SoftNavigationCommit& commit) {
+  builder.SetStartTime(commit.start_time.InMillisecondsF());
+  PAGE_LOAD_HISTOGRAM("PageLoad.SoftNavigation.StartTime", commit.start_time);
+  builder.SetNavigationType(static_cast<int>(commit.navigation_type));
+  builder.SetPageLoadType(static_cast<int>(StateToPageLoadType(state_)));
+}
+
+void SoftNavigationPageLoadMetricsObserver::RecordSoftFcp(
+    ukm::builders::SoftNavigation& builder,
+    const page_load_metrics::SoftNavigationData& soft_navigation_data) {
+  const auto& soft_navigation_metrics = *soft_navigation_data.metrics;
+  CHECK(soft_navigation_metrics.commit);
+  if (soft_navigation_metrics.first_contentful_paint.has_value() &&
+      !soft_navigation_metrics.first_contentful_paint->is_zero()) {
+    base::TimeDelta fcp = *soft_navigation_metrics.first_contentful_paint -
+                          soft_navigation_metrics.commit->start_time;
+    builder.SetPaintTiming_FirstContentfulPaint(fcp.InMilliseconds());
+    PAGE_LOAD_HISTOGRAM("PageLoad.SoftNavigation.FirstContentfulPaint", fcp);
+  }
 }
 
 bool SoftNavigationPageLoadMetricsObserver::
@@ -226,11 +246,12 @@ void SoftNavigationPageLoadMetricsObserver::RecordSoftLcp(
   const auto& largest_contentful_paint =
       soft_navigation_data.lcp_handler.MergeMainFrameAndSubframes();
   const auto& soft_navigation_metrics = *soft_navigation_data.metrics;
+  CHECK(soft_navigation_metrics.commit);
   if (largest_contentful_paint.ContainsValidTime() &&
       FromForegroundOptionalEventInForeground(
           largest_contentful_paint.Time())) {
     base::TimeDelta soft_lcp = (largest_contentful_paint.Time().value() -
-                                soft_navigation_metrics.start_time);
+                                soft_navigation_metrics.commit->start_time);
     builder.SetPaintTiming_LargestContentfulPaint(soft_lcp.InMilliseconds());
     PAGE_LOAD_HISTOGRAM("PageLoad.SoftNavigation.LargestContentfulPaint",
                         soft_lcp);
@@ -252,21 +273,21 @@ void SoftNavigationPageLoadMetricsObserver::RecordSoftLcp(
       if (largest_contentful_paint.ImageDiscoveryTime().has_value()) {
         builder.SetPaintTiming_LargestContentfulPaintImageDiscoveryTime(
             (largest_contentful_paint.ImageDiscoveryTime().value() -
-             soft_navigation_metrics.start_time)
+             soft_navigation_metrics.commit->start_time)
                 .InMilliseconds());
       }
 
       if (largest_contentful_paint.ImageLoadStart().has_value()) {
         builder.SetPaintTiming_LargestContentfulPaintImageLoadStart(
             (largest_contentful_paint.ImageLoadStart().value() -
-             soft_navigation_metrics.start_time)
+             soft_navigation_metrics.commit->start_time)
                 .InMilliseconds());
       }
 
       if (largest_contentful_paint.ImageLoadEnd().has_value()) {
         builder.SetPaintTiming_LargestContentfulPaintImageLoadEnd(
             (largest_contentful_paint.ImageLoadEnd().value() -
-             soft_navigation_metrics.start_time)
+             soft_navigation_metrics.commit->start_time)
                 .InMilliseconds());
       }
     }
@@ -302,9 +323,10 @@ void SoftNavigationPageLoadMetricsObserver::RecordSoftInp(
     // a TimeDelta from navigation_start, we need to add the navigation start
     // TimeTicks to the soft_navigation start_time TimeDelta and then subtract
     // that from the interaction_time TimeTicks.
+    CHECK(soft_navigation_data.metrics->commit);
     base::TimeDelta interaction_time =
         inp.start_time - (GetDelegate().GetNavigationStart() +
-                          soft_navigation_data.metrics->start_time);
+                          soft_navigation_data.metrics->commit->start_time);
     builder.SetInteractiveTiming_INPTime(interaction_time.InMilliseconds());
     builder.SetInteractiveTiming_NumInteractions(
         ukm::GetExponentialBucketMinForCounts1000(

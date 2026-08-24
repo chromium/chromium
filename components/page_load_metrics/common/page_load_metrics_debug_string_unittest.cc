@@ -12,16 +12,19 @@ namespace page_load_metrics {
 TEST(PageLoadMetricsDebugStringTest, SoftNavigationMetrics) {
   mojom::SoftNavigationMetrics soft_navigation_metrics;
   soft_navigation_metrics.performance_timeline_navigation_id = 2;
-  soft_navigation_metrics.start_time = base::Milliseconds(123);
-  soft_navigation_metrics.soft_navigation_slicing_time =
+  soft_navigation_metrics.commit = mojom::SoftNavigationCommit::New();
+  soft_navigation_metrics.commit->start_time = base::Milliseconds(123);
+  soft_navigation_metrics.commit->soft_navigation_slicing_time =
       base::TimeTicks() + base::Milliseconds(42);
-  soft_navigation_metrics.navigation_type =
+  soft_navigation_metrics.commit->navigation_type =
       blink::mojom::NavigationTypeForNavigationApi::kReplace;
+  soft_navigation_metrics.first_contentful_paint = base::Milliseconds(456);
 
   EXPECT_EQ(DebugString(soft_navigation_metrics),
             "{performance_timeline_navigation_id: 2, start_time: 123, "
             "soft_navigation_slicing_time: 42, "
-            "navigation_type: kReplace}");
+            "navigation_type: kReplace, "
+            "first_contentful_paint: 456}");
 }
 
 TEST(PageLoadMetricsDebugStringTest, PageLoadTiming) {

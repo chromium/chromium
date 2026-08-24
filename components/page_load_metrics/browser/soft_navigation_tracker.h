@@ -59,7 +59,10 @@ class SoftNavigationTracker {
   void CompleteActiveNavigationAndFlush();
 
   // Gets the SoftNavigationData for a specific navigation ID, or nullptr if not
-  // found.
+  // tracked. Note: Returned pointer is only valid until the next mutating
+  // operation on this tracker.
+  SoftNavigationData* GetSoftNavigationDataForTest(
+      uint64_t performance_timeline_navigation_id);
   const SoftNavigationData* GetSoftNavigationDataForTest(
       uint64_t performance_timeline_navigation_id) const;
 
@@ -67,7 +70,11 @@ class SoftNavigationTracker {
   size_t soft_navigation_count() const { return soft_navigation_count_; }
 
  private:
-  void CompleteActiveNavigation();
+  SoftNavigationData* GetSoftNavigationData(
+      uint64_t performance_timeline_navigation_id);
+  const SoftNavigationData* GetSoftNavigationData(
+      uint64_t performance_timeline_navigation_id) const;
+
   // Adds main frame event timings to their corresponding soft navigation based
   // on event->performance_timeline_navigation_id.
   void AddMainFrameEventTimings(
@@ -84,18 +91,53 @@ class SoftNavigationTracker {
   void AddMainFrameLargestContentfulPaints(
       base::span<const mojom::LargestContentfulPaintTimingPtr> soft_lcps);
 
-  SoftNavigationData* GetOrCreateNavigation(uint64_t navigation_id);
+  // Adds or updates the main frame first contentful paint for an existing
+  // soft navigation.
+  void AddMainFrameFirstContentfulPaint(uint64_t navigation_id,
+                                        base::TimeDelta first_contentful_paint);
+
+  // Prunes uncommitted navigation buckets with IDs strictly less than
+  // `navigation_id`. In a well-behaved renderer, commits arrive in strictly
+  // increasing order and no uncommitted buckets should remain with a lower ID;
+  // however, this protects against orphaned entries from canceled commits,
+  // aborted navigations, or bfcache restores.
+  void PruneUncommittedNavigationsUpTo(uint64_t navigation_id);
+
+  // Returns true if `data` is non-null, has received a commit, and has an FCP
+  // measurement.
+  bool HasCommitAndFirstContentfulPaint(const SoftNavigationData* data) const;
+
+  SoftNavigationData* GetOrCreateNavigationData(uint64_t navigation_id);
   bool ValidateMetrics(const std::vector<mojom::SoftNavigationMetricsPtr>&
                            soft_navigation_metrics) const;
+  void ProcessCompletedNavigationsAwaitingReportingCriteria();
 
   uint64_t soft_navigation_count_ = 0;
+  uint64_t active_navigation_id_ = 0;
   raw_ptr<Client> client_ = nullptr;
-  // The single active committed soft navigation currently accumulating metrics.
-  std::unique_ptr<SoftNavigationData> active_navigation_;
-  // Pre-allocated data buckets for performance entries that arrived before
-  // their soft navigation commit IPC. A std::map is used so that pending
-  // entries remain sorted by navigation_id for chronological pruning.
-  std::map<uint64_t, std::unique_ptr<SoftNavigationData>> pending_navigations_;
+
+  // Map of all soft navigations currently tracked by this tracker, keyed by
+  // performance_timeline_navigation_id (sorted in ascending/chronological
+  // order).
+  //
+  // A navigation's state in this map is implicit:
+  // - Pending (Uncommitted): `!metrics || !metrics->commit`
+  // - Active: `id == active_navigation_id_`
+  // - Completed (Awaiting Reporting Criteria): `id < active_navigation_id_`
+  // with
+  //   `metrics->commit != nullptr`
+  // - Dispatched: Erased from `navigations_` upon being reported to
+  //   `OnSoftNavigationCompleted`.
+  //
+  // A completed navigation is only dispatched once:
+  // 1. It has all of its own requisite data (commit metadata and FCP time).
+  // 2. The subsequent navigation's FCP has arrived, which serves as a proxy
+  //    to ensure sufficient time has elapsed to capture late INP, CLS, and LCP
+  //    data for this navigation.
+  //
+  // Any remaining committed navigations in this map are flushed in order upon
+  // page unload / backgrounding in `CompleteActiveNavigationAndFlush()`.
+  std::map<uint64_t, std::unique_ptr<SoftNavigationData>> navigations_;
 };
 
 }  // namespace page_load_metrics
