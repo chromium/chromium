@@ -13,14 +13,16 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
+#include "base/files/file_path.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/url_formatter/spoof_checks/idn_spoof_checker.h"
 #include "components/url_formatter/url_formatter.h"
 #include "url/gurl.h"
@@ -29,7 +31,7 @@ using url_formatter::IDNConversionResult;
 using url_formatter::IDNSpoofChecker;
 using url_formatter::IDNSpoofCheckerResult;
 
-void PrintUsage(const char* process_name) {
+void PrintUsage(std::string_view process_name) {
   std::cout << "Usage:" << std::endl;
   std::cout << process_name << " <file>" << std::endl;
   std::cout << std::endl;
@@ -122,15 +124,20 @@ int main(int argc, char* argv[]) {
   base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
 
   if (cmd->HasSwitch("help")) {
-    PrintUsage(argv[0]);
+    PrintUsage(cmd->GetProgram().AsUTF8Unsafe());
     return 0;
   }
 
-  if (argc > 1) {
-    const std::string filename = UNSAFE_TODO(argv[1]);
-    std::ifstream input(filename);
+  const base::CommandLine::StringVector& args = cmd->GetArgs();
+  if (!args.empty()) {
+    const base::FilePath path(args[0]);
+#if BUILDFLAG(IS_WIN)
+    std::ifstream input(path.value().c_str());
+#else
+    std::ifstream input(path.value());
+#endif
     if (!input.good()) {
-      LOG(ERROR) << "Could not open file " << filename;
+      LOG(ERROR) << "Could not open file " << path;
       return -1;
     }
     Convert(input);
