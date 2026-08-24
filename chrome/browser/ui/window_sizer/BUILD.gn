@@ -69,7 +69,6 @@ source_set("unit_tests") {
 
   public_deps = [
     "//chrome/browser/ui/window_sizer",
-    "//chrome/test:test_support",
     "//ui/gfx/geometry",
   ]
   deps = [

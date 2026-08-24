@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WINDOW_SIZER_WINDOW_SIZER_COMMON_UNITTEST_H_
 
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/gfx/geometry/rect.h"
 

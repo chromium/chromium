@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/testing_profile.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/display.h"

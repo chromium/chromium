@@ -18,7 +18,6 @@
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
