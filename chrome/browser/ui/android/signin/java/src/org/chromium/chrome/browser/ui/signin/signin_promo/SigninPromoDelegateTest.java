@@ -142,13 +142,19 @@ public class SigninPromoDelegateTest {
     }
 
     @Test
+    @EnableFeatures({
+        "EnableSeamlessSignin"
+                + ":seamless-signin-promo-type/compact"
+                + "/seamless-signin-string-type/continueButton"
+    })
     public void testBookmarkSigninPromoShown() {
         doReturn(true).when(mSigninManager).isSigninAllowed();
         setupDelegate(SigninAccessPoint.BOOKMARK_MANAGER, /* visibleAccount= */ null);
 
         assertTrue(mDelegate.canShowPromo());
         assertEquals(
-                mDelegate.getTitle(), mContext.getString(R.string.signin_promo_title_bookmarks));
+                mDelegate.getTitle(),
+                mContext.getString(R.string.signin_account_picker_bottom_sheet_title));
         assertEquals(
                 mDelegate.getDescription(null),
                 mContext.getString(R.string.signin_promo_description_bookmarks));
