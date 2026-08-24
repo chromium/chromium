@@ -914,21 +914,6 @@
             ]
         }
     ],
-    "AndroidDesktopStyleScrollbars": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidDesktopStyleScrollbars"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidDesktopUAPlatform": [
         {
             "platforms": [
