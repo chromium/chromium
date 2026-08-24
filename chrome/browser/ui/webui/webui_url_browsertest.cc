@@ -87,6 +87,10 @@ static const char* const kConsoleErrorUrls[] = {
     // signin-internals.
     "chrome://signin-internals",
 #endif
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+    // TODO(crbug.com/551624158): Fix console errors on Linux and Windows.
+    "chrome://organizer-panel.top-chrome",
+#endif
 #endif
 };
 
