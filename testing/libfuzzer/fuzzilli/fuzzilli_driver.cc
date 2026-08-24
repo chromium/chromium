@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/strings/string_view_util.h"
 #include "base/threading/thread_restrictions.h"
-#include "v8/src/fuzzilli/cov.h"
 
 #define WEAK_SANCOV_DEF(return_type, name, ...)                           \
   extern "C" __attribute__((visibility("default"))) __attribute__((weak)) \
@@ -50,6 +49,9 @@ WEAK_SANCOV_DEF(void, __sanitizer_cov_load16, void) {}
 constexpr base::PlatformFile kControlReadFd = 100;
 constexpr base::PlatformFile kControlWriteFd = 101;
 constexpr base::PlatformFile kDataReadFd = 102;
+
+// Forward-declare from //v8:fuzzilli_cov.
+void fuzzilli_cov_enable();
 
 int LLVMFuzzerRunDriverImpl(int* argc,
                             char*** argv,
