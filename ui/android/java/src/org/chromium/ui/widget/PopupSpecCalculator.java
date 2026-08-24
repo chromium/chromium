@@ -165,7 +165,9 @@ public class PopupSpecCalculator implements SpecCalculator {
         final int popupY =
                 AnchoredPopupWindowUtils.getPopupY(
                         anchorRect,
+                        freeSpaceRect,
                         size.getHeight(),
+                        marginPx,
                         positionParams.allowVerticalOverlap,
                         positionParams.isPositionBelow);
         return new Point(popupX, popupY);
@@ -198,16 +200,19 @@ public class PopupSpecCalculator implements SpecCalculator {
             int spaceRightOfAnchor =
                     AnchoredPopupWindowUtils.getSpaceRightOfAnchor(
                             anchorRect, freeSpaceRect, allowHorizontalOverlap);
+            int idealPopupWidth = idealContentSize.getWidth() + paddingX + marginPx;
             isPositionToLeft =
                     AnchoredPopupWindowUtils.shouldPositionLeftOfAnchor(
                             spaceLeftOfAnchor,
                             spaceRightOfAnchor,
-                            idealContentSize.getWidth() + paddingX + marginPx,
+                            idealPopupWidth,
                             currentPositionToLeft,
                             preferCurrentOrientation);
 
             int idealWidthAroundAnchor = isPositionToLeft ? spaceLeftOfAnchor : spaceRightOfAnchor;
-            if (idealWidthAroundAnchor < maxContentWidth && smartAnchorWithMaxWidth) {
+            // Only disable vertical overlap if the available horizontal space
+            // around the anchor is insufficient for the ideal popup width.
+            if (idealWidthAroundAnchor < idealPopupWidth && smartAnchorWithMaxWidth) {
                 allowHorizontalOverlap = true;
                 allowVerticalOverlap = false;
             }
@@ -256,8 +261,13 @@ public class PopupSpecCalculator implements SpecCalculator {
             isPositionBelow = false;
         }
 
-        final int maxContentHeight = isPositionBelow ? spaceBelowAnchor : spaceAboveAnchor;
-
+        // With vertical overlap, height is bounded by the window rather than anchor distance.
+        int maxContentHeight;
+        if (allowVerticalOverlap) {
+            maxContentHeight = freeSpaceRect.bottom - freeSpaceRect.top - paddingY - 2 * marginPx;
+        } else {
+            maxContentHeight = isPositionBelow ? spaceBelowAnchor : spaceAboveAnchor;
+        }
         return new PopupPositionParams(
                 maxContentWidth,
                 maxContentHeight,

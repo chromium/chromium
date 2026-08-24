@@ -82,15 +82,28 @@ public class AnchoredPopupWindowUtils {
         return clamp(x, marginPx, windowRect.right - popupWidth - marginPx);
     }
 
-    // TODO(crbug.com/40831293): Account margin when position above the anchor.
     @VisibleForTesting
     static int getPopupY(
-            Rect anchorRect, int popupHeight, boolean overlapAnchor, boolean positionBelow) {
+            Rect anchorRect,
+            Rect windowRect,
+            int popupHeight,
+            int marginPx,
+            boolean overlapAnchor,
+            boolean positionBelow) {
+        int y;
         if (positionBelow) {
-            return overlapAnchor ? anchorRect.top : anchorRect.bottom;
+            y = overlapAnchor ? anchorRect.top : anchorRect.bottom;
         } else {
-            return (overlapAnchor ? anchorRect.bottom : anchorRect.top) - popupHeight;
+            y = (overlapAnchor ? anchorRect.bottom : anchorRect.top) - popupHeight;
         }
+
+        // Clamp within window bounds when vertical overlap is allowed. When
+        // overlap is not allowed, avoid clamping to prevent shifting the popup
+        // over the anchor point.
+        if (overlapAnchor) {
+            return clamp(y, windowRect.top + marginPx, windowRect.bottom - popupHeight - marginPx);
+        }
+        return y;
     }
 
     private static int clamp(int value, int a, int b) {
