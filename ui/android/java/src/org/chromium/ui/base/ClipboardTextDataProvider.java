@@ -21,6 +21,7 @@ import android.os.ParcelFileDescriptor;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.base.Clipboard.ClipboardUriMetadata;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -48,6 +49,10 @@ public class ClipboardTextDataProvider extends ContentProvider {
     private static @Nullable String sCurrentUuid;
     private static byte @Nullable [] sTextBytes;
     private static byte @Nullable [] sHtmlBytes;
+
+    // Stores the URI and system clipboard timestamp of the last text/HTML payload copied by this
+    // provider. Used to verify authenticity on paste and protect against Confused Deputy attacks.
+    private static @Nullable ClipboardUriMetadata sLastCopiedMetadata;
 
     /** Stages |text| and/or |html| in memory and returns a content:// URI, or null on failure. */
     /* package */ static @Nullable Uri store(@Nullable String text, @Nullable String html) {
@@ -178,12 +183,34 @@ public class ClipboardTextDataProvider extends ContentProvider {
         throw new UnsupportedOperationException();
     }
 
+    /** Stores the metadata for the last copied text/HTML payload. */
+    public static void storeLastCopiedMetadata(ClipboardUriMetadata metadata) {
+        synchronized (sLock) {
+            sLastCopiedMetadata = metadata;
+        }
+    }
+
+    /** Returns the metadata for the last copied text/HTML payload. */
+    public static @Nullable ClipboardUriMetadata getLastCopiedMetadata() {
+        synchronized (sLock) {
+            return sLastCopiedMetadata;
+        }
+    }
+
+    /** Clears the metadata for the last copied text/HTML payload. */
+    public static void clearLastCopiedMetadata() {
+        synchronized (sLock) {
+            sLastCopiedMetadata = null;
+        }
+    }
+
     /** Helper for tests to clear the stored data. */
     static void clearForTesting() {
         synchronized (sLock) {
             sCurrentUuid = null;
             sTextBytes = null;
             sHtmlBytes = null;
+            sLastCopiedMetadata = null;
         }
     }
 }

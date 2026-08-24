@@ -43,6 +43,7 @@ import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.R;
+import org.chromium.ui.base.Clipboard.ClipboardUriMetadata;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
@@ -91,7 +92,7 @@ public class ClipboardImpl extends Clipboard
 
     private @Nullable ImageFileProvider mImageFileProvider;
 
-    private ImageFileProvider.@Nullable ClipboardFileMetadata mPendingCopiedImageMetadata;
+    private @Nullable ClipboardUriMetadata mPendingCopiedImageMetadata;
 
     public ClipboardImpl(ClipboardManager clipboardManager) {
         mContext = ContextUtils.getApplicationContext();
@@ -111,11 +112,8 @@ public class ClipboardImpl extends Clipboard
             if (UiAndroidFeatureMap.isEnabled(
                     UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_TEXT)) {
                 Uri uri = item.getUri();
-                if (item.getText() == null && uri != null) {
-                    if (!ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())
-                            || ContentUriUtils.isUriFromThisApp(uri)) {
-                        return null;
-                    }
+                if (item.getText() == null && uri != null && !isTextUriSafeForRead(uri)) {
+                    return null;
                 }
             }
 
@@ -157,6 +155,10 @@ public class ClipboardImpl extends Clipboard
             }
             Uri uri = clipData.getItemAt(0).getUri();
             if (uri != null && !ContentUriUtils.isOpenableFile(uri)) {
+                if (UiAndroidFeatureMap.isEnabled(
+                        UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_TEXT)) {
+                    if (!isTextUriSafeForRead(uri)) return null;
+                }
                 return ContentUriUtils.readTextFromUri(uri, ClipDescription.MIMETYPE_TEXT_HTML);
             }
         }
@@ -282,24 +284,73 @@ public class ClipboardImpl extends Clipboard
     @Override
     public @Nullable Uri getImageUriIfSharedByThisApp() {
         if (mImageFileProvider == null) return null;
+        return getUriIfSharedByThisApp(
+                mImageFileProvider.getLastCopiedImageMetadata(),
+                getImageTimestamp(),
+                mImageFileProvider::clearLastCopiedImageMetadata);
+    }
 
-        ImageFileProvider.ClipboardFileMetadata imageMetadata =
-                mImageFileProvider.getLastCopiedImageMetadata();
-        if (imageMetadata == null || imageMetadata.uri == null) return null;
+    private @Nullable Uri getTextUriIfSharedByThisApp() {
+        return getUriIfSharedByThisApp(
+                ClipboardTextDataProvider.getLastCopiedMetadata(),
+                getTextTimestamp(),
+                ClipboardTextDataProvider::clearLastCopiedMetadata);
+    }
 
-        long clipboardTimeStamp = getImageTimestamp();
-        if (clipboardTimeStamp == ImageFileProvider.ClipboardFileMetadata.INVALID_TIMESTAMP
-                || mImageFileProvider == null) {
+    private @Nullable Uri getUriIfSharedByThisApp(
+            @Nullable ClipboardUriMetadata metadata,
+            long clipboardTimestamp,
+            Runnable onTimestampMismatch) {
+        if (metadata == null || metadata.uri == null) return null;
+        if (clipboardTimestamp == ClipboardUriMetadata.INVALID_TIMESTAMP) {
             return null;
         }
 
-        if (clipboardTimeStamp != imageMetadata.timestamp) {
-            // The system clipboard does not contain uri from us, we can clean up the data.
-            mImageFileProvider.clearLastCopiedImageMetadata();
+        if (clipboardTimestamp != metadata.timestamp) {
+            // The system clipboard does not contain URI from us.
+            onTimestampMismatch.run();
             return null;
         }
 
-        return imageMetadata.uri;
+        return metadata.uri;
+    }
+
+    private long getTextTimestamp() {
+        ClipDescription description = mClipboardManager.getPrimaryClipDescription();
+        if (description == null || !description.hasMimeType("text/*")) {
+            return ClipboardUriMetadata.INVALID_TIMESTAMP;
+        }
+
+        return description.getTimestamp();
+    }
+
+    /**
+     * Checks if a content URI is safe to access under the confused deputy defense.
+     *
+     * @param uri The URI to validate.
+     * @param expectedOwnAppUri The URI previously shared by this app for the current clip, or null.
+     * @return true if the URI is a content URI and does not represent an untrusted own-app URI.
+     */
+    private static boolean isUriSafeForRead(Uri uri, @Nullable Uri expectedOwnAppUri) {
+        if (!ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
+            return false;
+        }
+        if (ContentUriUtils.isUriFromThisApp(uri) && !uri.equals(expectedOwnAppUri)) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isTextUriSafeForRead(Uri uri) {
+        return isUriSafeForRead(uri, getTextUriIfSharedByThisApp());
+    }
+
+    private boolean isImageUriSafeForRead(Uri uri) {
+        return isUriSafeForRead(uri, getImageUriIfSharedByThisApp());
+    }
+
+    private static boolean isFileUriSafeForRead(Uri uri) {
+        return isUriSafeForRead(uri, /* expectedOwnAppUri= */ null);
     }
 
     @Override
@@ -319,13 +370,7 @@ public class ClipboardImpl extends Clipboard
         // copy operation. Other apps' URIs are bounded by the OS grant model.
         if (UiAndroidFeatureMap.isEnabled(
                 UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_IMAGES)) {
-            if (!ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
-                return null;
-            }
-            if (ContentUriUtils.isUriFromThisApp(uri)
-                    && !uri.equals(getImageUriIfSharedByThisApp())) {
-                return null;
-            }
+            if (!isImageUriSafeForRead(uri)) return null;
         }
 
         ContentResolver cr = ContextUtils.getApplicationContext().getContentResolver();
@@ -386,7 +431,7 @@ public class ClipboardImpl extends Clipboard
     private long getImageTimestamp() {
         ClipDescription description = mClipboardManager.getPrimaryClipDescription();
         if (description == null || !description.hasMimeType("image/*")) {
-            return ImageFileProvider.ClipboardFileMetadata.INVALID_TIMESTAMP;
+            return ClipboardUriMetadata.INVALID_TIMESTAMP;
         }
 
         return description.getTimestamp();
@@ -406,11 +451,9 @@ public class ClipboardImpl extends Clipboard
                     // browser from opening private files on behalf of an untrusted paste request.
                     if (UiAndroidFeatureMap.isEnabled(
                             UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)) {
-                        if (!ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())
-                                || ContentUriUtils.isUriFromThisApp(uri)) {
-                            continue;
-                        }
+                        if (!isFileUriSafeForRead(uri)) continue;
                     }
+
                     String uriString = uri.toString();
                     String displayName = ContentUriUtils.maybeGetDisplayName(uriString);
                     if (displayName == null) {
@@ -435,13 +478,10 @@ public class ClipboardImpl extends Clipboard
                 Uri uri = clipData.getItemAt(i).getUri();
                 if (ContentUriUtils.isOpenableFile(uri)) {
                     // Reject non-URIs or URIs originating from this app to prevent the browser from
-                    // opening private iles on behalf of an untrusted paste request.
+                    // opening private files on behalf of an untrusted paste request.
                     if (UiAndroidFeatureMap.isEnabled(
                             UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)) {
-                        if (!ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())
-                                || ContentUriUtils.isUriFromThisApp(uri)) {
-                            continue;
-                        }
+                        if (!isFileUriSafeForRead(uri)) continue;
                     }
                     return true;
                 }
@@ -607,11 +647,10 @@ public class ClipboardImpl extends Clipboard
         long imageTimestamp = getImageTimestamp();
 
         if (mImageFileProvider == null) {
-            mPendingCopiedImageMetadata =
-                    new ImageFileProvider.ClipboardFileMetadata(uri, imageTimestamp);
+            mPendingCopiedImageMetadata = new ClipboardUriMetadata(uri, imageTimestamp);
         } else {
             mImageFileProvider.storeLastCopiedImageMetadata(
-                    new ImageFileProvider.ClipboardFileMetadata(uri, imageTimestamp));
+                    new ClipboardUriMetadata(uri, imageTimestamp));
         }
     }
 
@@ -702,6 +741,8 @@ public class ClipboardImpl extends Clipboard
                             new ClipData(
                                     clip.getDescription(),
                                     new ClipData.Item(text, null, null, uri)));
+                    ClipboardTextDataProvider.storeLastCopiedMetadata(
+                            new ClipboardUriMetadata(uri, getTextTimestamp()));
                     return true;
                 } catch (Exception ignored) {
                 }
@@ -715,6 +756,8 @@ public class ClipboardImpl extends Clipboard
                 setPrimaryClip(
                         new ClipData(
                                 clip.getDescription(), new ClipData.Item(null, null, null, uri)));
+                ClipboardTextDataProvider.storeLastCopiedMetadata(
+                        new ClipboardUriMetadata(uri, getTextTimestamp()));
                 return true;
             } catch (Exception ignored) {
             }
