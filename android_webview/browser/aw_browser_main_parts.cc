@@ -49,6 +49,7 @@
 #include "components/embedder_support/origin_trials/component_updater_utils.h"
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/heap_profiling/in_process/browser_process_snapshot_controller.h"
+#include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/heap_profiling/in_process/mojom/snapshot_controller.mojom.h"
 #include "components/heap_profiling/multi_process/supervisor.h"
 #include "components/metrics/android_metrics_helper.h"
@@ -410,6 +411,16 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
       metrics, "WebViewFasterFinchSeed", group,
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 
+  std::string trial_name, group_name;
+  if (const auto* heap_profiler_controller =
+          heap_profiling::HeapProfilerController::GetInstance();
+      heap_profiler_controller &&
+      heap_profiler_controller->GetSyntheticFieldTrial(trial_name,
+                                                       group_name)) {
+    AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        metrics, trial_name, group_name,
+        variations::SyntheticTrialAnnotationMode::kCurrentLog);
+  }
 }
 
 int AwBrowserMainParts::PreMainMessageLoopRun() {
