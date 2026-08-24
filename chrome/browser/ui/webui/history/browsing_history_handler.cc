@@ -45,7 +45,6 @@
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/url_identity.h"
-#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
@@ -60,7 +59,6 @@
 #include "components/favicon/core/fallback_url_util.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_url_parser.h"
-#include "components/feature_engagement/public/feature_constants.h"
 #include "components/history/core/browser/features.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
@@ -448,19 +446,6 @@ void BrowsingHistoryHandler::SetPage(
 void BrowsingHistoryHandler::ShowSidePanelUI() {
   if (side_panel_embedder_) {
     side_panel_embedder_->ShowUI();
-  }
-}
-
-void BrowsingHistoryHandler::MaybeShowCriticalActionFeaturePromo() {
-  if (!base::FeatureList::IsEnabled(
-          critical_actions::features::kCriticalActionHistory)) {
-    return;
-  }
-  if (auto* user_education =
-          BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
-              web_contents_)) {
-    user_education->MaybeShowFeaturePromo(
-        feature_engagement::kIPHCriticalActionFilterChipFeature);
   }
 }
 

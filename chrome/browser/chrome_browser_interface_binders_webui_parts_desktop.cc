@@ -434,7 +434,7 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
       >(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      user_education::mojom::UserEducationMixedTrustHandlerFactory,
+      user_education::mojom::UserEducationMixedTrustHandlerFactory, HistoryUI,
       UserEducationInternalsUI>(map);
 
 #if !defined(OFFICIAL_BUILD)

@@ -31,7 +31,6 @@ import {browserProxyFactory as foreignSessionBrowserProxyFactory} from 'chrome:/
 import type {PageCallbackRouter, QueryResult, QueryState} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import type {Suggestion} from 'chrome://resources/cr_components/history_embeddings/filter_chips.js';
 import type {HistoryEmbeddingsMoreActionsClickEvent} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
-import {browserProxyFactory as historyEmbeddingsBrowserProxyFactory} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
@@ -56,6 +55,7 @@ import {convertDateToQueryValue} from './query_manager.js';
 import {Page, TABBED_PAGES} from './router.js';
 import type {HistoryRouterElement} from './router.js';
 import type {FooterInfo, HistorySideBarElement} from './side_bar.js';
+import {browserProxyFactory as userEducationProxyFactory} from './user_education.mojom-webui.js';
 
 // Click/auxclick listeners to intercept any link clicks. If the link points
 // to a chrome: or file: url, then calls into the browser to do the
@@ -405,8 +405,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
       //    to show the help bubble comes immediately after registering the
       //    anchor.
       setTimeout(() => {
-        historyEmbeddingsBrowserProxyFactory.getInstance()
-            .handler.maybeShowFeaturePromo();
+        userEducationProxyFactory.getInstance().handler.maybeShowFeaturePromo(
+            {featureName: 'IPH_HistorySearch', key: null});
       }, 1000);
     }
   }
@@ -484,8 +484,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
             this.registerHelpBubble(
                 'HistoryUI::kHistoryGeminiFilterChipElementId', chipEl);
             setTimeout(() => {
-              BrowserProxyImpl.getInstance()
-                  .handler.maybeShowCriticalActionFeaturePromo();
+              userEducationProxyFactory.getInstance()
+                  .handler.maybeShowFeaturePromo(
+                      {featureName: 'IPH_CriticalActionFilterChip', key: null});
             }, 1000);
           }
         });

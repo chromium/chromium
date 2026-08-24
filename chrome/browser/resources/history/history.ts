@@ -40,3 +40,5 @@ export {HistorySearchedLabelElement} from './searched_label.js';
 export {HistorySideBarElement} from './side_bar.js';
 export {HistorySyncedDeviceCardElement} from './synced_device_card.js';
 export {HistorySyncedDeviceManagerElement} from './synced_device_manager.js';
+export {browserProxyFactory as userEducationProxyFactory, FeaturePromoFeatureUsedAction} from './user_education.mojom-webui.js';
+export type {BrowserProxy as UserEducationBrowserProxy, FeaturePromoParams, UserEducationMixedTrustHandlerInterface} from './user_education.mojom-webui.js';

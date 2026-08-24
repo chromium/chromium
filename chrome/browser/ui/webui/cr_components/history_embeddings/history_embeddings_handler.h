@@ -57,7 +57,6 @@ class HistoryEmbeddingsHandler : public history_embeddings::mojom::PageHandler {
                                   uint32_t query_word_count) override;
   void SetUserFeedback(
       history_embeddings::mojom::UserFeedback user_feedback) override;
-  void MaybeShowFeaturePromo() override;
   void SendQualityLog(const std::vector<uint32_t>& selected_indices,
                       uint32_t num_chars_for_query) override;
   void OpenSettingsPage() override;

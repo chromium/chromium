@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "chrome/browser/ui/webui/user_education/user_education.mojom.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -40,6 +41,7 @@ class HistoryClustersHandler;
 }
 
 class HistoryEmbeddingsHandler;
+class UserEducationMixedTrustHandler;
 
 namespace page_image_service {
 class ImageServiceHandler;
@@ -56,11 +58,13 @@ class HistoryUIConfig : public content::WebUIConfig {
       const GURL& url) override;
 };
 
-class HistoryUI : public ui::MojoWebUIController,
-                  public help_bubble::mojom::HelpBubbleHandlerFactory,
-                  public history_embeddings::mojom::PageHandlerFactory,
-                  public history::mojom::ForeignSessionPageHandlerFactory,
-                  public history_clusters::mojom::PageHandlerFactory {
+class HistoryUI
+    : public ui::MojoWebUIController,
+      public help_bubble::mojom::HelpBubbleHandlerFactory,
+      public history_embeddings::mojom::PageHandlerFactory,
+      public history::mojom::ForeignSessionPageHandlerFactory,
+      public history_clusters::mojom::PageHandlerFactory,
+      public user_education::mojom::UserEducationMixedTrustHandlerFactory {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHistoryGeminiFilterChipElementId);
 
@@ -102,6 +106,10 @@ class HistoryUI : public ui::MojoWebUIController,
   void BindInterface(
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
           pending_receiver);
+  void BindInterface(
+      mojo::PendingReceiver<
+          user_education::mojom::UserEducationMixedTrustHandlerFactory>
+          pending_receiver);
 
   // For testing only.
   history_clusters::HistoryClustersHandler*
@@ -129,6 +137,11 @@ class HistoryUI : public ui::MojoWebUIController,
       mojo::PendingRemote<history_clusters::mojom::Page> page,
       mojo::PendingReceiver<history_clusters::mojom::PageHandler> receiver)
       override;
+  // user_education::mojom::UserEducationMixedTrustHandlerFactory:
+  void CreateUserEducationMixedTrustHandler(
+      mojo::PendingReceiver<
+          user_education::mojom::UserEducationMixedTrustHandler> receiver)
+      override;
 
   std::unique_ptr<HistoryEmbeddingsHandler> history_embeddings_handler_;
   std::unique_ptr<history_clusters::HistoryClustersHandler>
@@ -141,6 +154,7 @@ class HistoryUI : public ui::MojoWebUIController,
   std::unique_ptr<browser_sync::ForeignSessionHandler> foreign_session_handler_;
   std::unique_ptr<page_image_service::ImageServiceHandler>
       image_service_handler_;
+  std::unique_ptr<UserEducationMixedTrustHandler> user_education_handler_;
   PrefChangeRegistrar pref_change_registrar_;
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
@@ -151,6 +165,8 @@ class HistoryUI : public ui::MojoWebUIController,
       foreign_session_page_handler_factory_receiver_{this};
   mojo::Receiver<history_clusters::mojom::PageHandlerFactory>
       history_clusters_handler_factory_receiver_{this};
+  mojo::Receiver<user_education::mojom::UserEducationMixedTrustHandlerFactory>
+      user_education_handler_factory_receiver_{this};
 
   void UpdateDataSource();
 

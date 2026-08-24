@@ -19,6 +19,9 @@ import {HistorySignInState, SyncState} from 'chrome://history/history.js';
 // </if>
 
 import {TestHistoryBrowserProxy} from './test_browser_proxy.js';
+import {TestUserEducationBrowserProxy} from './test_user_education_browser_proxy.js';
+
+import {userEducationProxyFactory} from 'chrome://history/history.js';
 // clang-format on
 
 suite('HistoryAppTest', function() {
@@ -26,6 +29,7 @@ suite('HistoryAppTest', function() {
   let browserProxy: TestHistoryBrowserProxy;
   let embeddingsHandler: TestMock<HistoryEmbeddingsPageHandlerRemote>&
       HistoryEmbeddingsPageHandlerRemote;
+  let userEducationBrowserProxy: TestUserEducationBrowserProxy;
 
   // Force cr-history-embeddings to be in the DOM for testing.
   function forceHistoryEmbeddingsElement() {
@@ -47,6 +51,9 @@ suite('HistoryAppTest', function() {
 
     browserProxy = new TestHistoryBrowserProxy();
     BrowserProxyImpl.setInstance(browserProxy);
+    userEducationBrowserProxy = new TestUserEducationBrowserProxy();
+    userEducationProxyFactory.setInstance(userEducationBrowserProxy);
+
     embeddingsHandler = TestMock.fromClass(HistoryEmbeddingsPageHandlerRemote);
     const {instance} =
         historyEmbeddingsBrowserProxyFactory.createForTest(embeddingsHandler);
@@ -323,7 +330,7 @@ suite('HistoryAppTest', function() {
 
   test('RegistersAndMaybeShowsPromo', async () => {
     assertEquals(
-        0, embeddingsHandler.getCallCount('maybeShowFeaturePromo'),
+        0, userEducationBrowserProxy.getCallCount('maybeShowFeaturePromo'),
         'promo is disabled in setup');
 
     // Recreate the app with the promo enabled.
@@ -338,9 +345,9 @@ suite('HistoryAppTest', function() {
           ['kHistorySearchInputElementId', true],
         ],
     );
-    await embeddingsHandler.whenCalled('maybeShowFeaturePromo');
+    await userEducationBrowserProxy.whenCalled('maybeShowFeaturePromo');
     assertEquals(
-        1, embeddingsHandler.getCallCount('maybeShowFeaturePromo'),
+        1, userEducationBrowserProxy.getCallCount('maybeShowFeaturePromo'),
         'promo is disabled in setup');
   });
 

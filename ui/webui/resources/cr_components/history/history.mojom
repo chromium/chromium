@@ -231,11 +231,6 @@ interface PageHandler {
   // Increments the history page history sync promo shown count.
   [EnableIfNot=is_chromeos]
   IncrementHistoryPageHistorySyncPromoShownCount();
-
-  // TODO(crbug.com/549600842): Migrate to general User Education Mojo API.
-  // Triggers the feature promo for critical action history
-  // if conditions are met.
-  MaybeShowCriticalActionFeaturePromo();
 };
 
 // WebUI-side handler for requests from browser.

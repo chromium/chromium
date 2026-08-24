@@ -22,21 +22,17 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/survey_config.h"
-#include "chrome/browser/user_education/user_education_service.h"
-#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/history_embeddings/content/history_embeddings_service.h"
 #include "components/history_embeddings/core/answerer.h"
 #include "components/history_embeddings/core/history_embeddings_features.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_test_util.h"
 #include "components/tabs/public/mock_tab_interface.h"
-#include "components/user_education/test/mock_feature_promo_controller.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -155,11 +151,6 @@ class HistoryEmbeddingsHandlerTest : public ChromeRenderViewHostTestHarness {
     ON_CALL(mock_browser_window_, GetUnownedUserDataHost())
         .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
 
-    // Instantiating registers mock_user_education_ on unowned_user_data_host_.
-    mock_user_education_ =
-        std::make_unique<testing::NiceMock<MockBrowserUserEducationInterface>>(
-            &mock_browser_window_);
-
     handler_ = std::make_unique<HistoryEmbeddingsHandler>(
         mojo::PendingReceiver<history_embeddings::mojom::PageHandler>(),
         page_.BindAndGetRemote(), profile()->GetWeakPtr(), web_ui(), false);
@@ -176,10 +167,6 @@ class HistoryEmbeddingsHandlerTest : public ChromeRenderViewHostTestHarness {
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
-  MockBrowserUserEducationInterface* user_education() {
-    return mock_user_education_.get();
-  }
-
  protected:
   base::test::ScopedFeatureList feature_list_;
   content::TestWebUI web_ui_;
@@ -191,7 +178,6 @@ class HistoryEmbeddingsHandlerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<tabs::MockTabInterface> mock_tab_interface_;
   testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_;
   ui::UnownedUserDataHost unowned_user_data_host_;
-  std::unique_ptr<MockBrowserUserEducationInterface> mock_user_education_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 };
 
@@ -322,15 +308,6 @@ TEST_F(HistoryEmbeddingsHandlerTest, RecordsMetrics) {
   histogram_tester().ExpectBucketCount(
       "History.Embeddings.UserActions.HistoryPage",
       HistoryEmbeddingsUserActions::kOtherHistoryResultClicked, 1);
-}
-
-TEST_F(HistoryEmbeddingsHandlerTest, ShowsPromo) {
-  EXPECT_CALL(
-      *user_education(),
-      MaybeShowFeaturePromo(user_education::test::MatchFeaturePromoParams(
-          feature_engagement::kIPHHistorySearchFeature)))
-      .WillOnce(testing::Return(true));
-  handler_->MaybeShowFeaturePromo();
 }
 
 TEST_F(HistoryEmbeddingsHandlerTest, LaunchesDelayedHaTSSurvey) {

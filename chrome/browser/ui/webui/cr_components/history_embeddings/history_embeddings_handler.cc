@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
-#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "components/history_clusters/core/history_clusters_util.h"
@@ -282,13 +281,4 @@ void HistoryEmbeddingsHandler::OpenSettingsPage() {
   navigate_params.window_action = NavigateParams::WindowAction::kShowWindow;
   navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&navigate_params);
-}
-
-void HistoryEmbeddingsHandler::MaybeShowFeaturePromo() {
-  if (auto* user_education =
-          BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
-              web_ui_->GetWebContents())) {
-    user_education->MaybeShowFeaturePromo(
-        feature_engagement::kIPHHistorySearchFeature);
-  }
 }
