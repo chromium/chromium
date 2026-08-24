@@ -16,7 +16,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -70,7 +69,6 @@
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/composebox_features.h"
-#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -361,12 +359,8 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
         content::URLLoaderInterceptor>(base::BindLambdaForTesting(
         [&](content::URLLoaderInterceptor::RequestParams* params) {
           const GURL& url = params->url_request.url;
-          const bool use_short_suggest_path = base::FeatureList::IsEnabled(
-              omnibox_feature_configs::SuggestPathClientConfig::
-                  kUseShortSuggestPathV1);
-          std::string_view expected_path =
-              use_short_suggest_path ? "/complete/s" : "/complete/search";
-          if (url.host() == kMockAimPageHost && url.path() == expected_path) {
+          if (url.host() == kMockAimPageHost &&
+              url.path() == "/complete/search") {
             std::string q_param;
             net::GetValueForKeyInQuery(url, "q", &q_param);
             std::string query = base::UnescapeURLComponent(
