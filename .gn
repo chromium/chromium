@@ -74,6 +74,7 @@ default_args = {
 
   clang_unsafe_buffers_paths = "//build/config/unsafe_buffers_paths.txt"
   clang_warning_suppression_file = "//build/config/warning_suppression.txt"
+  clang_raw_ptr_plugin_config_file = "//build/config/raw_ptr_plugin_config.yaml"
   rust_clippy_conf_file = "//build/config/clippy.toml"
 }
 
