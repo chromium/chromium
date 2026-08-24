@@ -50,6 +50,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
@@ -347,6 +348,19 @@ TEST_F(BrowserCoordinatorTest,
   [browser_coordinator start];
 
   [browser_coordinator overscrollActionRefresh:overscroll_actions_controller];
+
+  [browser_coordinator stop];
+}
+
+// Tests that the BrowserCoordinator early returns from `hideFindUI` if it
+// doesn't have an active web state.
+TEST_F(BrowserCoordinatorTest, NoCrashOnHideFindUIWithNoActiveWebState) {
+  BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
+  [browser_coordinator start];
+
+  id<FindInPageCommands> handler =
+      HandlerForProtocol(browser_->GetCommandDispatcher(), FindInPageCommands);
+  [handler hideFindUI];
 
   [browser_coordinator stop];
 }
