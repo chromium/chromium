@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.Objects;
 
@@ -31,6 +32,7 @@ import java.util.Objects;
 public class EnterpriseSignalsDisclaimerController {
     private final AppCompatActivity mActivity;
     private final BottomSheetController mBottomSheetController;
+    private final ModalDialogManager mModalDialogManager;
     private final CoordinatorFactory mCoordinatorFactory;
     private final EnterpriseSignalsDisclaimerCoordinator.Delegate mDelegate;
     private final Profile mProfile;
@@ -44,6 +46,7 @@ public class EnterpriseSignalsDisclaimerController {
         EnterpriseSignalsDisclaimerCoordinator create(
                 AppCompatActivity activity,
                 BottomSheetController bottomSheetController,
+                ModalDialogManager modalDialogManager,
                 SigninManager signinManager,
                 EnterpriseSignalsDisclaimerCoordinator.Delegate mDelegate);
     }
@@ -53,6 +56,7 @@ public class EnterpriseSignalsDisclaimerController {
      *
      * @param profile The {@link Profile} associated with the controller.
      * @param bottomSheetController The {@link BottomSheetController} for showing the disclaimer.
+     * @param modalDialogManager The {@link ModalDialogManager} for showing the modal dialog.
      * @param activity The {@link AppCompatActivity} context.
      * @return The {@link EnterpriseSignalsDisclaimerController} instance, or null if the profile is
      *     off-the-record.
@@ -60,11 +64,13 @@ public class EnterpriseSignalsDisclaimerController {
     public static @Nullable EnterpriseSignalsDisclaimerController maybeCreateForProfile(
             Profile profile,
             BottomSheetController bottomSheetController,
+            ModalDialogManager modalDialogManager,
             AppCompatActivity activity,
             EnterpriseSignalsDisclaimerCoordinator.Delegate delegate) {
         return maybeCreateForProfile(
                 profile,
                 bottomSheetController,
+                modalDialogManager,
                 activity,
                 delegate,
                 EnterpriseSignalsDisclaimerCoordinator::new);
@@ -74,6 +80,7 @@ public class EnterpriseSignalsDisclaimerController {
     static @Nullable EnterpriseSignalsDisclaimerController maybeCreateForProfile(
             Profile profile,
             BottomSheetController bottomSheetController,
+            ModalDialogManager modalDialogManager,
             AppCompatActivity activity,
             EnterpriseSignalsDisclaimerCoordinator.Delegate delegate,
             CoordinatorFactory coordinatorFactory) {
@@ -93,6 +100,7 @@ public class EnterpriseSignalsDisclaimerController {
         return new EnterpriseSignalsDisclaimerController(
                 signinManager,
                 bottomSheetController,
+                modalDialogManager,
                 activity,
                 profile,
                 delegate,
@@ -102,12 +110,14 @@ public class EnterpriseSignalsDisclaimerController {
     private EnterpriseSignalsDisclaimerController(
             SigninManager signinManager,
             BottomSheetController bottomSheetController,
+            ModalDialogManager modalDialogManager,
             AppCompatActivity activity,
             Profile profile,
             EnterpriseSignalsDisclaimerCoordinator.Delegate delegate,
             CoordinatorFactory coordinatorFactory) {
         mSigninManager = signinManager;
         mBottomSheetController = bottomSheetController;
+        mModalDialogManager = modalDialogManager;
         mActivity = activity;
         mProfile = profile;
         mDelegate = delegate;
@@ -147,7 +157,11 @@ public class EnterpriseSignalsDisclaimerController {
         }
         mCoordinator =
                 mCoordinatorFactory.create(
-                        mActivity, mBottomSheetController, mSigninManager, mDelegate);
+                        mActivity,
+                        mBottomSheetController,
+                        mModalDialogManager,
+                        mSigninManager,
+                        mDelegate);
         // If the dialog is not shown immediately it will be queued by the controller and shown
         // whenever possible.
         mCoordinator.show();

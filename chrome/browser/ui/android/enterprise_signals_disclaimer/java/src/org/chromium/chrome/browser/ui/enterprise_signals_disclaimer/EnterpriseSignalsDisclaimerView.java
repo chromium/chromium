@@ -10,6 +10,7 @@ import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ScrollView;
@@ -46,11 +47,17 @@ class EnterpriseSignalsDisclaimerView extends FrameLayout {
      * Constructs an {@link EnterpriseSignalsDisclaimerView}.
      *
      * @param context The Android {@link Context}.
+     * @param isDialog Whether this view is shown inside a dialog.
      */
-    public EnterpriseSignalsDisclaimerView(Context context) {
+    protected EnterpriseSignalsDisclaimerView(Context context, boolean isDialog) {
         super(context);
         LayoutInflater.from(context)
                 .inflate(R.layout.enterprise_signals_disclaimer_layout, this, true);
+
+        // The handlebar should only be displayed for the bottom sheet version.
+        View handlebar = findViewById(R.id.bottom_sheet_handlebar);
+        handlebar.setVisibility(isDialog ? View.GONE : View.VISIBLE);
+
         mScrollView = findViewById(R.id.disclaimer_scroll_view);
         mDisclaimerLogo = findViewById(R.id.disclaimer_logo);
         mTitleView = findViewById(R.id.disclaimer_title);
@@ -59,6 +66,16 @@ class EnterpriseSignalsDisclaimerView extends FrameLayout {
         mProfileInformationDetails = findViewById(R.id.profile_information_details);
         mDeviceInformationTitle = findViewById(R.id.device_information_title);
         mDeviceInformationDetails = findViewById(R.id.device_information_details);
+
+        ViewGroup buttonsContainer = findViewById(R.id.disclaimer_buttons_container);
+        LayoutInflater.from(context)
+                .inflate(
+                        isDialog
+                                ? R.layout.enterprise_signals_disclaimer_buttons_horizontal
+                                : R.layout.enterprise_signals_disclaimer_buttons_vertical,
+                        buttonsContainer,
+                        true);
+
         mAcceptButton = findViewById(R.id.disclaimer_accept_button);
         mCancelButton = findViewById(R.id.disclaimer_cancel_button);
 
@@ -69,6 +86,15 @@ class EnterpriseSignalsDisclaimerView extends FrameLayout {
                 controller, R.id.device_info_card, /* isTop= */ false, /* isBottom= */ true);
 
         mDescriptionView.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    /**
+     * Creates an {@link EnterpriseSignalsDisclaimerView} configured for a modal dialog.
+     *
+     * @param context The Android {@link Context}.
+     */
+    public static EnterpriseSignalsDisclaimerView createForModalDialog(Context context) {
+        return new EnterpriseSignalsDisclaimerView(context, /* isDialog= */ true);
     }
 
     /** Returns the scroll Y offset. */

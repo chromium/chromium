@@ -10,6 +10,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
@@ -40,6 +42,7 @@ public class EnterpriseSignalsDisclaimerCoordinator {
      *
      * @param context The Android {@link Context}.
      * @param bottomSheetController The {@link BottomSheetController} for showing the bottom sheet.
+     * @param modalDialogManager The {@link ModalDialogManager} for showing the modal dialog.
      * @param signinManager The {@link SigninManager} for checking management status and fetching
      *     the profile picture.
      * @param delegate The {@link Delegate} for embedder interactions.
@@ -47,14 +50,25 @@ public class EnterpriseSignalsDisclaimerCoordinator {
     public EnterpriseSignalsDisclaimerCoordinator(
             Context context,
             BottomSheetController bottomSheetController,
+            ModalDialogManager modalDialogManager,
             SigninManager signinManager,
             Delegate delegate) {
         final IdentityManager identityManager = signinManager.getIdentityManager();
         assert identityManager.hasPrimaryAccount();
         mMediator = new EnterpriseSignalsDisclaimerMediator(context, identityManager, delegate);
 
-        var view = new EnterpriseSignalsDisclaimerBottomSheetView(context);
-        mDisclaimerHost = new BottomSheetDisclaimerHost(bottomSheetController, view);
+        EnterpriseSignalsDisclaimerView view;
+        // For the large form factors a modal dialog will be displayed, while smaller screens will
+        // get a bottom sheet.
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+            view = EnterpriseSignalsDisclaimerView.createForModalDialog(context);
+            mDisclaimerHost = new ModalDialogDisclaimerHost(modalDialogManager, view);
+        } else {
+            var sheetContent = new EnterpriseSignalsDisclaimerBottomSheetView(context);
+            view = sheetContent;
+            mDisclaimerHost = new BottomSheetDisclaimerHost(bottomSheetController, sheetContent);
+        }
+
         mModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mMediator.getModel(), view, EnterpriseSignalsDisclaimerViewBinder::bind);

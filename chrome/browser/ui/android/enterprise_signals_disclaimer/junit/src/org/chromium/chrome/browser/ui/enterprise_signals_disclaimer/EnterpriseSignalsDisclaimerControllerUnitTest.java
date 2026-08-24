@@ -38,6 +38,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Unit tests for {@link EnterpriseSignalsDisclaimerController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -48,6 +49,7 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
     @Mock private Profile mProfile;
     @Mock private SigninManager mSigninManager;
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private ModalDialogManager mModalDialogManager;
     @Mock private AppCompatActivity mActivity;
     @Mock private EnterpriseSignalsDisclaimerCoordinator mCoordinator;
     @Mock private CoordinatorFactory mCoordinatorFactory;
@@ -62,7 +64,8 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
         IdentityServicesProvider.setSigninManagerForTesting(mSigninManager);
 
         when(mSigninManager.getIdentityManager()).thenReturn(mIdentityManager);
-        when(mCoordinatorFactory.create(any(), any(), any(), any())).thenReturn(mCoordinator);
+        when(mCoordinatorFactory.create(any(), any(), any(), any(), any()))
+                .thenReturn(mCoordinator);
 
         mIdentityManager.setPrimaryAccount(TestAccounts.ACCOUNT1);
     }
@@ -74,7 +77,12 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
 
     private EnterpriseSignalsDisclaimerController createController() {
         return EnterpriseSignalsDisclaimerController.maybeCreateForProfile(
-                mProfile, mBottomSheetController, mActivity, mDelegate, mCoordinatorFactory);
+                mProfile,
+                mBottomSheetController,
+                mModalDialogManager,
+                mActivity,
+                mDelegate,
+                mCoordinatorFactory);
     }
 
     @Test
@@ -125,7 +133,7 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
         controller.destroy();
 
         Assert.assertFalse(controller.maybeShow());
-        verify(mCoordinatorFactory, never()).create(any(), any(), any(), any());
+        verify(mCoordinatorFactory, never()).create(any(), any(), any(), any(), any());
     }
 
     @Test
@@ -138,7 +146,7 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
         mIdentityManager.setPrimaryAccount(null);
 
         Assert.assertFalse(controller.maybeShow());
-        verify(mCoordinatorFactory, never()).create(any(), any(), any(), any());
+        verify(mCoordinatorFactory, never()).create(any(), any(), any(), any(), any());
         verify(mCoordinator, never()).show();
     }
 
@@ -151,7 +159,7 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
         Assert.assertNotNull(controller);
 
         Assert.assertFalse(controller.maybeShow());
-        verify(mCoordinatorFactory, never()).create(any(), any(), any(), any());
+        verify(mCoordinatorFactory, never()).create(any(), any(), any(), any(), any());
         verify(mCoordinator, never()).show();
     }
 
@@ -168,6 +176,7 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
                 .create(
                         eq(mActivity),
                         eq(mBottomSheetController),
+                        eq(mModalDialogManager),
                         eq(mSigninManager),
                         eq(mDelegate));
         verify(mCoordinator).show();
@@ -211,7 +220,7 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
                 mock(EnterpriseSignalsDisclaimerCoordinator.class);
         EnterpriseSignalsDisclaimerCoordinator coordinator2 =
                 mock(EnterpriseSignalsDisclaimerCoordinator.class);
-        when(mCoordinatorFactory.create(any(), any(), any(), any()))
+        when(mCoordinatorFactory.create(any(), any(), any(), any(), any()))
                 .thenReturn(coordinator1)
                 .thenReturn(coordinator2);
         when(coordinator1.isActive()).thenReturn(false);
@@ -225,6 +234,7 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
                 .create(
                         eq(mActivity),
                         eq(mBottomSheetController),
+                        eq(mModalDialogManager),
                         eq(mSigninManager),
                         eq(mDelegate));
 
@@ -235,6 +245,7 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
                 .create(
                         eq(mActivity),
                         eq(mBottomSheetController),
+                        eq(mModalDialogManager),
                         eq(mSigninManager),
                         eq(mDelegate));
         verify(coordinator2).show();

@@ -1385,6 +1385,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     EnterpriseSignalsDisclaimerController.maybeCreateForProfile(
                             mProfileSupplier.asNonNull().get().getOriginalProfile(),
                             assertNonNull(getBottomSheetController()),
+                            mModalDialogManagerSupplier.get(),
                             mActivity,
                             url -> CustomTabActivity.showInfoPage(mActivity, url));
         }

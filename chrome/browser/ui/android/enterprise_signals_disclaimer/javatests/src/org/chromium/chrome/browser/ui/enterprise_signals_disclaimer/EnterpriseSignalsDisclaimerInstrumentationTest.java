@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -31,6 +32,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -49,6 +51,11 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** Instrumentation tests for {@link EnterpriseSignalsDisclaimerController}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -95,6 +102,10 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         return mActivityTestRule.getActivity();
     }
 
+    private ModalDialogManager modalDialogManager() {
+        return mActivityTestRule.getActivity().getModalDialogManager();
+    }
+
     private BottomSheetController bottomSheetController() {
         BottomSheetController instance =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -115,6 +126,25 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         onView(withId(R.id.disclaimer_cancel_button))
                 .perform(scrollTo())
                 .check(matches(isDisplayed()));
+    }
+
+    private @Nullable EnterpriseSignalsDisclaimerController createController() {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    return EnterpriseSignalsDisclaimerController.maybeCreateForProfile(
+                            ProfileManager.getLastUsedRegularProfile(),
+                            bottomSheetController(),
+                            modalDialogManager(),
+                            activity(),
+                            url -> {});
+                });
+    }
+
+    /** Abstraction combining fake bottom sheet and modal dialogs. */
+    private interface FakeDialog {
+        boolean isShowing();
+
+        void close();
     }
 
     private BottomSheetContent showTestBottomSheetDisclaimer() {
@@ -141,37 +171,101 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         return fakeContent;
     }
 
+    private PropertyModel showTestModalDialog() {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    View view = new View(activity());
+                    view.setMinimumHeight(200);
+                    PropertyModel model =
+                            new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                                    .with(ModalDialogProperties.CUSTOM_VIEW, view)
+                                    .with(
+                                            ModalDialogProperties.CONTROLLER,
+                                            new ModalDialogProperties.Controller() {
+                                                @Override
+                                                public void onClick(
+                                                        PropertyModel model, int buttonType) {}
+
+                                                @Override
+                                                public void onDismiss(
+                                                        PropertyModel model, int dismissalCause) {}
+                                            })
+                                    .build();
+                    modalDialogManager()
+                            .showDialog(
+                                    model,
+                                    ModalDialogManager.ModalDialogType.APP,
+                                    ModalDialogManager.ModalDialogPriority.HIGH);
+                    return model;
+                });
+    }
+
+    private FakeDialog showFakeDialog() {
+        final boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity());
+        if (isTablet) {
+            final PropertyModel model = showTestModalDialog();
+            return new FakeDialog() {
+                @Override
+                public boolean isShowing() {
+                    return modalDialogManager().isShowing()
+                            && modalDialogManager().getCurrentPresenterForTest() != null
+                            && modalDialogManager().getCurrentPresenterForTest().getDialogModel()
+                                    == model;
+                }
+
+                @Override
+                public void close() {
+                    modalDialogManager()
+                            .dismissDialog(model, DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED);
+                }
+            };
+        } else {
+            final BottomSheetContent content = showTestBottomSheetDisclaimer();
+            return new FakeDialog() {
+                @Override
+                public boolean isShowing() {
+                    return content == bottomSheetController().getCurrentSheetContent();
+                }
+
+                @Override
+                public void close() {
+                    bottomSheetController().hideContent(content, /* animate= */ false);
+                }
+            };
+        }
+    }
+
     @Test
     @LargeTest
     public void disclaimerShowsOnStartup() {
         verifyActivityShowingSignalsDisclaimer();
+        final boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity());
+        // Verify that on phones the bottom sheet is used, while on large form factor the modal
+        // dialog is used.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(!isTablet, bottomSheetController().isSheetOpen());
+                    Assert.assertEquals(isTablet, modalDialogManager().isShowing());
+                });
     }
 
     @Test
     @LargeTest
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
     public void disclaimerIsQueuedIfOtherDialogIsShown() {
-        final BottomSheetContent fakeContent = showTestBottomSheetDisclaimer();
-        final BottomSheetController bottomSheetController = bottomSheetController();
+        final FakeDialog fakeDialog = showFakeDialog();
 
-        Assert.assertEquals(fakeContent, bottomSheetController.getCurrentSheetContent());
+        Assert.assertTrue(ThreadUtils.runOnUiThreadBlocking(fakeDialog::isShowing));
 
-        final Profile profile =
-                ThreadUtils.runOnUiThreadBlocking(ProfileManager::getLastUsedRegularProfile);
-        final EnterpriseSignalsDisclaimerController controller =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                EnterpriseSignalsDisclaimerController.maybeCreateForProfile(
-                                        profile, bottomSheetController, activity(), url -> {}));
+        final EnterpriseSignalsDisclaimerController controller = createController();
         Assert.assertNotNull(controller);
         Assert.assertTrue(ThreadUtils.runOnUiThreadBlocking(controller::maybeShow));
 
         // The existing dialog should still be showing.
-        Assert.assertEquals(fakeContent, bottomSheetController.getCurrentSheetContent());
+        Assert.assertTrue(ThreadUtils.runOnUiThreadBlocking(fakeDialog::isShowing));
 
-        // Close the currently open dialog, this should cause our dialog to be shown.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> bottomSheetController.hideContent(fakeContent, /* animate= */ false));
+        // Close the currently open dialog, this should cause our disclaimer dialog to be shown.
+        ThreadUtils.runOnUiThreadBlocking(fakeDialog::close);
 
         verifyActivityShowingSignalsDisclaimer();
 
@@ -183,25 +277,20 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
     public void disclaimerCannotBeSuppressed() {
         verifyActivityShowingSignalsDisclaimer();
 
-        final BottomSheetContent fakeContent = showTestBottomSheetDisclaimer();
-        Assert.assertNotEquals(fakeContent, bottomSheetController().getCurrentSheetContent());
+        final FakeDialog fakeDialog = showFakeDialog();
+        Assert.assertFalse(ThreadUtils.runOnUiThreadBlocking(fakeDialog::isShowing));
+
+        verifyActivityShowingSignalsDisclaimer();
     }
 
     @Test
     @LargeTest
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
     public void disclaimerCannotBeQueuedTwice() {
-        final BottomSheetContent fakeContent = showTestBottomSheetDisclaimer();
-        final BottomSheetController bottomSheetController = bottomSheetController();
-        Assert.assertEquals(fakeContent, bottomSheetController.getCurrentSheetContent());
+        final FakeDialog fakeDialog = showFakeDialog();
+        Assert.assertTrue(ThreadUtils.runOnUiThreadBlocking(fakeDialog::isShowing));
 
-        final Profile profile =
-                ThreadUtils.runOnUiThreadBlocking(ProfileManager::getLastUsedRegularProfile);
-        final EnterpriseSignalsDisclaimerController controller =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                EnterpriseSignalsDisclaimerController.maybeCreateForProfile(
-                                        profile, bottomSheetController, activity(), url -> {}));
+        final EnterpriseSignalsDisclaimerController controller = createController();
         Assert.assertNotNull(controller);
 
         Assert.assertTrue(ThreadUtils.runOnUiThreadBlocking(controller::maybeShow));
@@ -210,5 +299,19 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         Assert.assertFalse(ThreadUtils.runOnUiThreadBlocking(controller::maybeShow));
 
         ThreadUtils.runOnUiThreadBlocking(controller::destroy);
+    }
+
+    @Test
+    @LargeTest
+    @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+    public void destroyingControllerHidesDialog() {
+        final EnterpriseSignalsDisclaimerController controller = createController();
+        Assert.assertNotNull(controller);
+        Assert.assertTrue(ThreadUtils.runOnUiThreadBlocking(controller::maybeShow));
+        verifyActivityShowingSignalsDisclaimer();
+
+        // Destroy the controller and verify that the dialog is not being shown anymore.
+        ThreadUtils.runOnUiThreadBlocking(controller::destroy);
+        onView(withId(R.id.disclaimer_title)).check(doesNotExist());
     }
 }

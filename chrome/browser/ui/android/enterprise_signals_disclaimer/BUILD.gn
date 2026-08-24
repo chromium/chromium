@@ -15,6 +15,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerProperties.java",
     "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerView.java",
     "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/ModalDialogDisclaimerHost.java",
   ]
 
   deps = [
@@ -43,6 +44,8 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/enterprise_badge_icon.xml",
     "java/res/drawable/mobile_icon.xml",
+    "java/res/layout/enterprise_signals_disclaimer_buttons_horizontal.xml",
+    "java/res/layout/enterprise_signals_disclaimer_buttons_vertical.xml",
     "java/res/layout/enterprise_signals_disclaimer_layout.xml",
     "java/res/values/dimens.xml",
   ]
@@ -64,6 +67,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/BottomSheetDisclaimerHostUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerControllerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerMediatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/ModalDialogDisclaimerHostUnitTest.java",
   ]
   deps = [
     ":java",
@@ -120,6 +124,7 @@ android_library("javatests") {
     "//components/signin/public/android:java",
     "//components/signin/public/android:signin_java_test_support",
     "//google_apis/gaia/android:java",
+    "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

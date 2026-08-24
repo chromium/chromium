@@ -19,9 +19,11 @@ found in the LICENSE file.
         android:paddingStart="24dp"
         android:paddingEnd="24dp"
         android:paddingTop="0dp"
-        android:paddingBottom="24dp">
+        android:paddingBottom="16dp">
 
-    <include layout="@layout/bottom_sheet_handlebar"/>
+    <include
+        android:id="@+id/bottom_sheet_handlebar"
+        layout="@layout/bottom_sheet_handlebar"/>
 
     <ImageView
         android:id="@+id/disclaimer_logo"
@@ -139,22 +141,10 @@ found in the LICENSE file.
         </LinearLayout>
     </org.chromium.components.browser_ui.widget.containment.ContainedLinearLayout>
 
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/disclaimer_accept_button"
-        style="@style/FilledButton"
+    <FrameLayout
+        android:id="@+id/disclaimer_buttons_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"
-        android:layout_marginBottom="4dp" />
-
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/disclaimer_cancel_button"
-        style="@style/TextButton"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"/>
 
     </LinearLayout>
 </ScrollView>

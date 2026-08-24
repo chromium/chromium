@@ -28,7 +28,7 @@ class EnterpriseSignalsDisclaimerBottomSheetView extends EnterpriseSignalsDiscla
      * @param context The Android {@link Context}.
      */
     public EnterpriseSignalsDisclaimerBottomSheetView(Context context) {
-        super(context);
+        super(context, /* isDialog= */ false);
     }
 
     public void setOnDestroyedCallback(Runnable callback) {

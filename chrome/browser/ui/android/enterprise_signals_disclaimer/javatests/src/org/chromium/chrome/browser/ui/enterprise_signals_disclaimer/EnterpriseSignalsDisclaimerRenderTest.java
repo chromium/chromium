@@ -30,8 +30,10 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -40,10 +42,12 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
+import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
@@ -52,7 +56,7 @@ import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RunWith(ParameterizedRunner.class)
@@ -74,6 +78,7 @@ public class EnterpriseSignalsDisclaimerRenderTest {
             new ChromeRenderTestRule.Builder()
                     .setCorpus(ChromeRenderTestRule.Corpus.ANDROID_RENDER_TESTS_PUBLIC)
                     .setBugComponent(RenderTestRule.Component.ENTERPRISE)
+                    .setRevision(1)
                     .build();
 
     @Mock private SigninManager mSigninManager;
@@ -89,32 +94,24 @@ public class EnterpriseSignalsDisclaimerRenderTest {
     }
 
     @ParameterAnnotations.ClassParameter
-    private static final List<ParameterSet> sClassParams = getTestParams();
-
-    // All combinations of night mode x RTL x with/out profile picture.
-    private static List<ParameterSet> getTestParams() {
-        List<ParameterSet> params = new ArrayList<>();
-        for (boolean nightMode : new boolean[] {false, true}) {
-            for (boolean rtl : new boolean[] {false, true}) {
-                for (boolean withPicture : new boolean[] {true, false}) {
-                    params.add(new ParameterSet().value(nightMode, rtl, withPicture));
-                }
-            }
-        }
-        return params;
-    }
+    private static final List<ParameterSet> sClassParams =
+            Arrays.asList(
+                    new ParameterSet().value(false, false, false).name("Default"),
+                    new ParameterSet().value(true, false, false).name("NightMode"),
+                    new ParameterSet().value(false, true, false).name("RTL"),
+                    new ParameterSet().value(false, false, true).name("DefaultProfilePicture"));
 
     public EnterpriseSignalsDisclaimerRenderTest(
-            boolean nightModeEnabled, boolean useRtlLayout, boolean withProfilePicture) {
+            boolean nightModeEnabled, boolean useRtlLayout, boolean defaultProfilePicture) {
         mUseRtlLayout = useRtlLayout;
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
         mRenderTestRule.setVariantPrefix(
-                (useRtlLayout ? "RTL_" : "LTR_") + (withProfilePicture ? "WithPic" : "NoPic"));
+                (useRtlLayout ? "rtl-" : "") + (defaultProfilePicture ? "PicturePlaceholder" : ""));
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
         mAccountInfo =
-                withProfilePicture
-                        ? TestAccounts.MANAGED_ACCOUNT
-                        : getAccountWithoutImage(TestAccounts.MANAGED_ACCOUNT);
+                defaultProfilePicture
+                        ? getAccountWithoutImage(TestAccounts.MANAGED_ACCOUNT)
+                        : TestAccounts.MANAGED_ACCOUNT;
     }
 
     @Before
@@ -173,10 +170,11 @@ public class EnterpriseSignalsDisclaimerRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testEnterpriseSignalsDisclaimer() throws IOException {
+    @Restriction({DeviceFormFactor.PHONE})
+    public void testBottomSheetOnPhone() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Activity activity = mActivityTestRule.getActivity();
+                    BlankUiTestActivity activity = mActivityTestRule.getActivity();
                     mContainer = activity.findViewById(android.R.id.content);
                     mContainer.setLayoutDirection(
                             mUseRtlLayout ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
@@ -185,10 +183,45 @@ public class EnterpriseSignalsDisclaimerRenderTest {
                             new EnterpriseSignalsDisclaimerCoordinator(
                                     activity,
                                     createBottomSheetController(activity, mContainer),
+                                    activity.getModalDialogManager(),
                                     mSigninManager,
                                     (url) -> {});
                     mCoordinator.show();
                 });
-        mRenderTestRule.render(mContainer, "enterprise_signals_disclaimer");
+        mRenderTestRule.render(mContainer, "bottom_sheet");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    public void testModalDialogOnLargeFormFactor() throws IOException {
+        BlankUiTestActivity activity = mActivityTestRule.getActivity();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mContainer = activity.findViewById(android.R.id.content);
+                    mContainer.setLayoutDirection(
+                            mUseRtlLayout ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
+                    mContainer.removeAllViews();
+                    mCoordinator =
+                            new EnterpriseSignalsDisclaimerCoordinator(
+                                    activity,
+                                    createBottomSheetController(activity, mContainer),
+                                    activity.getModalDialogManager(),
+                                    mSigninManager,
+                                    (url) -> {});
+                    mCoordinator.show();
+                });
+        CriteriaHelper.pollUiThread(() -> activity.getModalDialogManager().isShowing());
+        View dialogDecorView =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            AppModalPresenter presenter =
+                                    (AppModalPresenter)
+                                            activity.getModalDialogManager()
+                                                    .getCurrentPresenterForTest();
+                            return presenter.getDialogForTesting().getWindow().getDecorView();
+                        });
+        mRenderTestRule.render(dialogDecorView, "modal_dialog");
     }
 }
