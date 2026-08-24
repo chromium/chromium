@@ -117,6 +117,8 @@ source_set("page_action_test_support") {
   testonly = true
 
   sources = [
+    "test_support/page_action_test_accessor.cc",
+    "test_support/page_action_test_accessor.h",
     "test_support/page_action_test_support.cc",
     "test_support/page_action_test_support.h",
   ]
@@ -128,8 +130,18 @@ source_set("page_action_test_support") {
 
   deps = [
     "//base",
+    "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/interaction",
     "//chrome/browser/ui/page_action",
+    "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/browser/ui/webui/webui_toolbar/utils",
+    "//content/test:test_support",
+    "//ui/base",
+    "//ui/views",
+    "//ui/webui/tracked_element",
   ]
 }
 
