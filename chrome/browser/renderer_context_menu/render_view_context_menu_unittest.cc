@@ -1439,7 +1439,7 @@ TEST_F(RenderViewContextMenuPrefsTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(features::kGlicShareImage);
 
-  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;
 
   content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
   params.has_image_contents = true;
@@ -1449,8 +1449,6 @@ TEST_F(RenderViewContextMenuPrefsTest,
   menu.Init();
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_GLICSHAREIMAGE));
-
-  glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
 }
 
 class MockPageContextEligibilityHelper
@@ -1469,7 +1467,7 @@ class MockPageContextEligibilityHelper
 TEST_F(RenderViewContextMenuPrefsTest, GlicShareImageEligibility) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(features::kGlicShareImage);
-  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;
 
   // Create a MockTabInterface and link it to our web contents
   tabs::MockTabInterface mock_tab;
@@ -1525,8 +1523,6 @@ TEST_F(RenderViewContextMenuPrefsTest, GlicShareImageEligibility) {
     menu.Init();
     EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_GLICSHAREIMAGE));
   }
-
-  glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
 }
 
 // Verify that the Lens Image Search menu item is enabled for third-party
@@ -2318,7 +2314,7 @@ TEST_P(RenderViewContextMenuReadAnythingTest, GlicNotPresentInReadingMode) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(features::kGlicContextMenu);
 
-  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;
 
   // Simulate a context menu request with page level options.
   content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
@@ -2330,8 +2326,6 @@ TEST_P(RenderViewContextMenuReadAnythingTest, GlicNotPresentInReadingMode) {
   menu.Init();
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
-
-  glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -2504,7 +2498,7 @@ TEST_F(RenderViewContextMenuMenuSimplificationTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(features::kGlicContextMenu);
 
-  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;
 
   content::ContextMenuParams params =
       CreateParams(MenuItem::SELECTION | MenuItem::EDITABLE);
@@ -2518,8 +2512,6 @@ TEST_F(RenderViewContextMenuMenuSimplificationTest,
   menu.Init();
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
-
-  glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
 }
 
 TEST_F(RenderViewContextMenuMenuSimplificationTest, EmailFieldSearchHidden) {

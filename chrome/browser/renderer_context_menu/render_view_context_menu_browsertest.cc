@@ -787,7 +787,7 @@ class GlicContextMenuMetricsBrowserTest : public ContextMenuBrowserTestBase {
 
 IN_PROC_BROWSER_TEST_F(GlicContextMenuMetricsBrowserTest,
                        GlicContextMenuMetrics) {
-  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;
 
   base::HistogramTester histogram_tester;
 
