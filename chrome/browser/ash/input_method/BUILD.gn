@@ -334,6 +334,7 @@ source_set("unit_tests") {
     "suggestions_collector_unittest.cc",
     "suggestions_service_client_unittest.cc",
     "text_utils_unittest.cc",
+    "url_utils_unittest.cc",
   ]
 
   deps = [
