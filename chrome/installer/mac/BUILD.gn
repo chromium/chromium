@@ -30,12 +30,11 @@ template("generate_dmg_dsstore") {
     script = "generate_dsstore.py"
     outputs = [ "$_packaging_dir/${invoker.output_name}" ]
     args = [
-      "--output",
-      rebase_path(outputs[0], root_build_dir),
       "--volume-name",
       invoker.volume_name,
       "--app-name",
       invoker.app_name,
+      rebase_path(outputs[0], root_build_dir),
     ]
   }
 }

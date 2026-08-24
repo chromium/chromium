@@ -25,37 +25,28 @@ _SRC_ROOT = os.path.abspath(os.path.join(_SCRIPT_DIR, "../../.."))
 _DS_STORE_PATH = os.path.join(_SRC_ROOT, "third_party/ds_store/src/src")
 _MAC_ALIAS_PATH = os.path.join(_SRC_ROOT, "third_party/mac_alias/src/src")
 
-# Add them to sys.path.
-sys.path.insert(0, _DS_STORE_PATH)
-sys.path.insert(0, _MAC_ALIAS_PATH)
+sys.path.extend((_DS_STORE_PATH, _MAC_ALIAS_PATH))
 
-try:
-    from ds_store import DSStore
-    from mac_alias import (
-        Alias,
-        TargetInfo,
-        VolumeInfo,
-        ALIAS_KIND_FILE,
-        ALIAS_EJECTABLE_DISK,
-        ALIAS_HFS_VOLUME_SIGNATURE,
-        ALIAS_NO_CNID,
-    )
-except ImportError as e:
-    print(f"Error importing libraries from //third_party: {e}",
-          file=sys.stderr)
-    sys.exit(1)
+from ds_store import DSStore
+from mac_alias import (
+    Alias,
+    TargetInfo,
+    VolumeInfo,
+    ALIAS_KIND_FILE,
+    ALIAS_EJECTABLE_DISK,
+    ALIAS_HFS_VOLUME_SIGNATURE,
+    ALIAS_NO_CNID,
+)
 
 # Finder background type constants.
 FINDER_BACKGROUND_TYPE_COLOR = 1
 FINDER_BACKGROUND_TYPE_PICTURE = 2
 
 
-def main():
+def main(args):
     parser = argparse.ArgumentParser(
         description="Generate .DS_Store file for macOS DMG installers")
-    parser.add_argument("--output",
-                        required=True,
-                        help="Path to output .DS_Store file")
+    parser.add_argument("output", help="Path to output .DS_Store file")
     parser.add_argument("--volume-name",
                         required=True,
                         help="Volume name of the DMG")
@@ -85,9 +76,9 @@ def main():
     parser.add_argument("--link-x", type=int, default=240)
     parser.add_argument("--link-y", type=int, default=387)
 
-    args = parser.parse_args()
+    args = parser.parse_args(args)
 
-    # 1. Construct the Alias record for the background image.
+    # Construct the Alias record for the background image.
     # Use a fixed creation date to ensure that the output is deterministic.
     reproducible_date = datetime.datetime(2000,
                                           5,
@@ -120,15 +111,17 @@ def main():
         type_code=b"\x00\x00\x00\x00",
         folder_name=None,
         posix_path=args.background_image,
-        carbon_path=
-        f"{args.volume_name}:{bg_parent.lstrip('/').replace('/', ':')}:{bg_filename}",
+        carbon_path=(
+            f"{args.volume_name}:{bg_parent.lstrip('/').replace('/', ':')}:"
+            f"{bg_filename}"),
     )
 
     alias = Alias(volume=volume, target=target)
     alias_bytes = alias.to_bytes()
 
-    # 2. Construct the DSStore file.
-    bounds_string = f"{{{{{args.window_x}, {args.window_y}}}, {{{args.window_width}, {args.window_height}}}}}"
+    # Construct the DSStore file.
+    bounds_string = (f"{{{{{args.window_x}, {args.window_y}}},"
+                     f"{{{args.window_width}, {args.window_height}}}}}")
 
     bwsp = {
         "ShowStatusBar": False,
@@ -166,7 +159,7 @@ def main():
     # 2. The value is 'icnv' (the four-character code for Icon View)
     icvl = (b"type", b"icnv")
 
-    # Write the DS_Store file.
+    # Write the .DS_Store file.
     with DSStore.open(args.output, "w+") as d:
         # 'vSrn' is version, not in codecs, requires explicit type 'long'.
         d["."]["vSrn"] = ("long", 1)
@@ -180,8 +173,6 @@ def main():
         # Position the Applications symlink (named with a single space ' ').
         d[" "]["Iloc"] = (args.link_x, args.link_y)
 
-    print(f"Successfully generated DS_Store at {args.output}")
-
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])
