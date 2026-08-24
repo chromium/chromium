@@ -2249,12 +2249,103 @@ TEST_F(ContextualTasksUiServiceTest,
       ContextualTasksUiService::GetAiUrlFromWebUIUrl(base_url, webui_url));
 }
 
+TEST_F(ContextualTasksUiServiceTest,
+       GetAiUrlFromWebUIUrl_BypassAttemptWithSlash) {
+  GURL base_url("https://google.com/search");
+  GURL webui_url(
+      "chrome://"
+      "contextual-tasks?param1=1&chrome_host=attacker.com%2F.corp.google.com");
+
+  EXPECT_EQ(
+      GURL("https://google.com/search?param1=1"),
+      ContextualTasksUiService::GetAiUrlFromWebUIUrl(base_url, webui_url));
+}
+
+TEST_F(ContextualTasksUiServiceTest, IsTrustedHost) {
+  // Valid trusted hosts
+  EXPECT_TRUE(
+      ContextualTasksUiService::IsTrustedHost("gws-prod.corp.google.com"));
+  EXPECT_TRUE(
+      ContextualTasksUiService::IsTrustedHost("GWS-PROD.CORP.GOOGLE.COM"));
+  EXPECT_TRUE(ContextualTasksUiService::IsTrustedHost("corp.google.com"));
+  EXPECT_TRUE(ContextualTasksUiService::IsTrustedHost("test.c.googlers.com"));
+  EXPECT_TRUE(ContextualTasksUiService::IsTrustedHost("c.googlers.com"));
+  EXPECT_TRUE(
+      ContextualTasksUiService::IsTrustedHost("myproxy.proxy.googlers.com"));
+  EXPECT_TRUE(ContextualTasksUiService::IsTrustedHost("proxy.googlers.com"));
+  EXPECT_TRUE(ContextualTasksUiService::IsTrustedHost("localhost"));
+  EXPECT_TRUE(ContextualTasksUiService::IsTrustedHost("127.0.0.1"));
+  EXPECT_TRUE(ContextualTasksUiService::IsTrustedHost("[::1]"));
+  EXPECT_TRUE(ContextualTasksUiService::IsTrustedHost("::1"));
+
+  // Delimiter and bypass attempts
+  EXPECT_FALSE(
+      ContextualTasksUiService::IsTrustedHost("attacker.com/.corp.google.com"));
+  EXPECT_FALSE(ContextualTasksUiService::IsTrustedHost(
+      "attacker.com\\.corp.google.com"));
+  EXPECT_FALSE(ContextualTasksUiService::IsTrustedHost(
+      "attacker.com@gws-prod.corp.google.com"));
+  EXPECT_FALSE(
+      ContextualTasksUiService::IsTrustedHost("attacker.com?.corp.google.com"));
+  EXPECT_FALSE(
+      ContextualTasksUiService::IsTrustedHost("attacker.com#.corp.google.com"));
+  EXPECT_FALSE(
+      ContextualTasksUiService::IsTrustedHost("attacker.com:.corp.google.com"));
+  EXPECT_FALSE(
+      ContextualTasksUiService::IsTrustedHost("gws-prod.corp.google.com:8080"));
+  EXPECT_FALSE(
+      ContextualTasksUiService::IsTrustedHost("attacker.com .corp.google.com"));
+
+  // Domain boundary and near-domain bypass attempts
+  EXPECT_FALSE(ContextualTasksUiService::IsTrustedHost("evilcorp.google.com"));
+  EXPECT_FALSE(ContextualTasksUiService::IsTrustedHost("notcorp.google.com"));
+  EXPECT_FALSE(ContextualTasksUiService::IsTrustedHost("corp0google.com"));
+  EXPECT_FALSE(ContextualTasksUiService::IsTrustedHost("corp-google.com"));
+  EXPECT_FALSE(ContextualTasksUiService::IsTrustedHost(
+      "gws-prod.corp.google.com.evil.com"));
+  EXPECT_FALSE(ContextualTasksUiService::IsTrustedHost(".corp.google.com"));
+  EXPECT_FALSE(
+      ContextualTasksUiService::IsTrustedHost("malicious.example.com"));
+  EXPECT_FALSE(ContextualTasksUiService::IsTrustedHost(""));
+}
+
 TEST_F(ContextualTasksUiServiceTest, GetHostFromUrl) {
   EXPECT_EQ("gws-prod.corp.google.com",
             ContextualTasksUiService::GetHostFromUrl(GURL(
                 "https://google.com?chrome_host=gws-prod.corp.google.com")));
+  EXPECT_EQ("gws-prod.corp.google.com",
+            ContextualTasksUiService::GetHostFromUrl(GURL(
+                "https://google.com?chrome_host=GWS-PROD.CORP.GOOGLE.COM")));
+  EXPECT_EQ("test.c.googlers.com",
+            ContextualTasksUiService::GetHostFromUrl(
+                GURL("https://google.com?chrome_host=test.c.googlers.com")));
+  EXPECT_EQ("myproxy.proxy.googlers.com",
+            ContextualTasksUiService::GetHostFromUrl(GURL(
+                "https://google.com?chrome_host=myproxy.proxy.googlers.com")));
+  EXPECT_EQ("localhost", ContextualTasksUiService::GetHostFromUrl(
+                             GURL("https://google.com?chrome_host=localhost")));
   EXPECT_EQ("127.0.0.1", ContextualTasksUiService::GetHostFromUrl(
                              GURL("https://google.com?chrome_host=127.0.0.1")));
+  EXPECT_EQ("[::1]", ContextualTasksUiService::GetHostFromUrl(
+                         GURL("https://google.com?chrome_host=%5B%3A%3A1%5D")));
+
+  // Bypasses using URL encoding / delimiters
+  EXPECT_EQ(std::nullopt, ContextualTasksUiService::GetHostFromUrl(GURL(
+                              "https://google.com?"
+                              "chrome_host=attacker.com%2F.corp.google.com")));
+  EXPECT_EQ(std::nullopt, ContextualTasksUiService::GetHostFromUrl(GURL(
+                              "https://google.com?"
+                              "chrome_host=attacker.com%5C.corp.google.com")));
+  EXPECT_EQ(std::nullopt,
+            ContextualTasksUiService::GetHostFromUrl(
+                GURL("https://google.com?"
+                     "chrome_host=attacker.com@gws-prod.corp.google.com")));
+  EXPECT_EQ(std::nullopt,
+            ContextualTasksUiService::GetHostFromUrl(
+                GURL("https://google.com?chrome_host=evilcorp.google.com")));
+  EXPECT_EQ(std::nullopt,
+            ContextualTasksUiService::GetHostFromUrl(GURL(
+                "https://google.com?chrome_host=corp.google.com.evil.com")));
   EXPECT_EQ(std::nullopt,
             ContextualTasksUiService::GetHostFromUrl(
                 GURL("https://google.com?chrome_host=malicious.example.com")));
