@@ -5,9 +5,11 @@
 #ifndef ASH_WEBUI_SYSTEM_APPS_PUBLIC_SYSTEM_WEB_APP_UI_CONFIG_H_
 #define ASH_WEBUI_SYSTEM_APPS_PUBLIC_SYSTEM_WEB_APP_UI_CONFIG_H_
 
+#include <concepts>
 #include <memory>
 #include <string>
 #include <string_view>
+#include <type_traits>
 
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
@@ -88,27 +90,47 @@ class SystemWebAppUIConfig : public internal::BaseSystemWebAppUIConfig {
   CreateWebUIControllerFunc create_controller_func_;
 };
 
-// Default WebUIConfig for the chrome-untrusted:// component of System Web Apps.
-// It has an implementation of `CreateWebUIController()`, which returns a new
-// `T` and an implementation of `IsWebUIEnabled()` which returns true if
-// System Web Apps are enabled and `swa_type` is enabled.
+// Base WebUIConfig for the chrome-untrusted:// component of System Web Apps.
+// See SystemWebAppUIConfig above for chrome:// WebUIs.
+//
+// It has an implementation of `IsWebUIEnabled()` which returns true if System
+// Web Apps are enabled and `swa_type` is enabled.
 template <typename T>
 class SystemWebAppUntrustedUIConfig
     : public internal::BaseSystemWebAppUIConfig {
  public:
-  // Constructs a WebUIConfig for chrome://`host` and enables it if
+  // Constructs a WebUIConfig for chrome-untrusted://`host` and enables it if
   // System Web Apps are enabled and `swa_type` is enabled.
   SystemWebAppUntrustedUIConfig(std::string_view host,
                                 SystemWebAppType swa_type)
-      : BaseSystemWebAppUIConfig(swa_type,
-                                 content::kChromeUIUntrustedScheme,
-                                 host) {
-    static_assert(std::is_base_of<ui::UntrustedWebUIController, T>::value,
+      : internal::BaseSystemWebAppUIConfig(swa_type,
+                                           content::kChromeUIUntrustedScheme,
+                                           host) {
+    static_assert(std::derived_from<T, ui::UntrustedWebUIController>,
                   "Should only be used for chrome-untrusted:// WebUIs. See "
-                  "SystemWebAppUIConfig above for chrome:// WebUIs.");
+                  "SystemWebAppUIConfig above for chrome:// WebUIs");
   }
+};
 
-  ~SystemWebAppUntrustedUIConfig() override = default;
+// Default WebUIConfig for the chrome-untrusted:// component of System Web Apps.
+// See SystemWebAppUIConfig above for chrome:// WebUIs.
+//
+// It has an implementation of `IsWebUIEnabled()` which returns true if
+// System Web Apps are enabled and `swa_type` is enabled.
+// Unlike `SystemWebAppUntrustedUIConfig`, this provides an
+// implementation of `CreateWebUIController()`, which returns a new `T`.
+template <typename T>
+class SystemWebAppUntrustedUIConfigWithDefaultCreator
+    : public SystemWebAppUntrustedUIConfig<T> {
+ public:
+  SystemWebAppUntrustedUIConfigWithDefaultCreator(std::string_view host,
+                                                  SystemWebAppType swa_type)
+      : SystemWebAppUntrustedUIConfig<T>(host, swa_type) {
+    static_assert(
+        requires(content::WebUI* web_ui) { std::make_unique<T>(web_ui); },
+        "Use SystemWebAppUntrustedUIConfig for "
+        "WebUIController with custom constructor parameters.");
+  }
 
   std::unique_ptr<content::WebUIController> CreateWebUIController(
       content::WebUI* web_ui,

@@ -10,12 +10,10 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "content/public/common/url_constants.h"
 #include "third_party/blink/public/common/features.h"
 
 ChromeUntrustedProjectorUIDelegate::ChromeUntrustedProjectorUIDelegate() =
@@ -46,16 +44,10 @@ void ChromeUntrustedProjectorUIDelegate::PopulateLoadTimeData(
 }
 
 UntrustedProjectorUIConfig::UntrustedProjectorUIConfig()
-    : WebUIConfig(content::kChromeUIUntrustedScheme,
-                  ash::kChromeUIProjectorAppHost) {}
+    : SystemWebAppUntrustedUIConfig(ash::kChromeUIProjectorAppHost,
+                                    ash::SystemWebAppType::PROJECTOR) {}
 
 UntrustedProjectorUIConfig::~UntrustedProjectorUIConfig() = default;
-
-bool UntrustedProjectorUIConfig::IsWebUIEnabled(
-    content::BrowserContext* browser_context) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  return IsProjectorAppEnabled(profile);
-}
 
 std::unique_ptr<content::WebUIController>
 UntrustedProjectorUIConfig::CreateWebUIController(content::WebUI* web_ui,

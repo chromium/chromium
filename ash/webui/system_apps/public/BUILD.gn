@@ -7,6 +7,7 @@ assert(is_chromeos)
 source_set("system_web_app_config") {
   sources = [ "system_web_app_ui_config.h" ]
   deps = [
+    "//base",
     "//chromeos/ash/components/system_web_apps:system_web_app_type",
     "//content/public/browser",
     "//ui/webui",

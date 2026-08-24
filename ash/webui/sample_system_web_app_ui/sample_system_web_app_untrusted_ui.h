@@ -25,11 +25,13 @@ namespace ash {
 class SampleSystemWebAppUntrustedUI;
 
 class SampleSystemWebAppUntrustedUIConfig
-    : public SystemWebAppUntrustedUIConfig<SampleSystemWebAppUntrustedUI> {
+    : public SystemWebAppUntrustedUIConfigWithDefaultCreator<
+          SampleSystemWebAppUntrustedUI> {
  public:
   SampleSystemWebAppUntrustedUIConfig()
-      : SystemWebAppUntrustedUIConfig(kChromeUISampleSystemWebAppUntrustedHost,
-                                      SystemWebAppType::SAMPLE) {}
+      : SystemWebAppUntrustedUIConfigWithDefaultCreator(
+            kChromeUISampleSystemWebAppUntrustedHost,
+            SystemWebAppType::SAMPLE) {}
 };
 
 class SampleSystemWebAppUntrustedUI
