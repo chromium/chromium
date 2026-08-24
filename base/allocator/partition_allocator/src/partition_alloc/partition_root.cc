@@ -373,8 +373,8 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
   size_t discardable_bytes = 0;
 
   if (slot_span->CanStoreRawSize()) {
-    uint32_t utilized_slot_size = static_cast<uint32_t>(
-        RoundUpToSystemPage(slot_span->GetUtilizedSlotSize()));
+    uint32_t utilized_slot_size =
+        static_cast<uint32_t>(RoundUpToSystemPage(slot_span->GetRawSize()));
     discardable_bytes = bucket->slot_size - utilized_slot_size;
     if (discardable_bytes && !accounting_only) {
       SlotSpanStart slot_span_start =
