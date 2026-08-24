@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxSta
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.SetActiveModelSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.BackgroundStyle;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonType;
@@ -71,6 +72,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.omnibox.AimModelsProto.ModelMode;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
@@ -492,7 +494,26 @@ import java.util.function.Supplier;
                 InputState inputState =
                         mComposeboxQueryControllerBridge.getInputStateSupplier().get();
                 if (inputState != null) {
-                    mComposeboxQueryControllerBridge.setActiveModel(inputState.defaultModel);
+                    boolean inputHasNonDefaultModel =
+                            mInput != null
+                                    && mInput.getModelMode()
+                                            != ModelMode.MODEL_MODE_UNSPECIFIED_VALUE
+                                    && mInput.getModelMode() != inputState.defaultModel;
+                    boolean modelNeedsReset =
+                            !OmniboxFeatures.sModelPickerOptimizations.getValue()
+                                    || inputState.activeModel != inputState.defaultModel
+                                    || inputHasNonDefaultModel;
+                    if (modelNeedsReset) {
+                        FuseboxMetrics.notifySetActiveModelSource(
+                                SetActiveModelSource.RESET_FROM_ACTIVATE_SEARCH);
+                        mComposeboxQueryControllerBridge.setActiveModel(inputState.defaultModel);
+                        if (mInput != null) {
+                            mInput.setModelMode(inputState.defaultModel);
+                        }
+                    } else {
+                        FuseboxMetrics.notifySetActiveModelSource(
+                                SetActiveModelSource.SKIPPED_FROM_ACTIVATE_SEARCH);
+                    }
                 }
             }
         }
@@ -1530,6 +1551,7 @@ import java.util.function.Supplier;
 
         mInput.setModelMode(modelMode);
         // TODO(https://crbug.com/476434460): Consider replacing with wiring in session state.
+        FuseboxMetrics.notifySetActiveModelSource(SetActiveModelSource.SET_FROM_MODEL_SELECTION);
         mComposeboxQueryControllerBridge.setActiveModel(modelMode);
     }
 

@@ -80,6 +80,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLay
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.SetActiveModelSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.BackgroundStyle;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -3023,5 +3024,121 @@ public class FuseboxMediatorUnitTest {
         List<PopupButtonData> models = mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
         assertEquals(unknownIconId, tools.get(1).iconId);
         assertEquals(unknownIconId, models.get(0).iconId);
+    }
+
+    @Test
+    public void testActivateSearchMode_deduplicatesSetActiveModel_whenOptimizationsEnabled() {
+        OmniboxFeatures.sModelPickerOptimizations.setForTesting(true);
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        recreateMediator();
+
+        ModelConfig proConfig =
+                ModelConfig.newBuilder()
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setMenuLabel("Pro")
+                        .build();
+        InputState state =
+                new InputState.Builder()
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withDefaultModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withAllowedModels(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withModelConfigs(new byte[][] {proConfig.toByteArray()})
+                        .build();
+        mInputStateSupplier.set(state);
+
+        // Switch to AI mode via request type button.
+        mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED).run();
+        assertEquals(AutocompleteRequestType.AI_MODE, mModel.get(FuseboxProperties.REQUEST_TYPE));
+        clearInvocations(mComposeboxQueryControllerBridge);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FuseboxMetrics.SET_ACTIVE_MODEL_SOURCE_HISTOGRAM,
+                        SetActiveModelSource.SKIPPED_FROM_ACTIVATE_SEARCH);
+
+        // Switch back to search mode. Since active model is already default, setActiveModel is
+        // skipped.
+        mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED).run();
+        assertEquals(AutocompleteRequestType.SEARCH, mModel.get(FuseboxProperties.REQUEST_TYPE));
+        verify(mComposeboxQueryControllerBridge, never()).setActiveModel(anyInt());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void
+            testActivateSearchMode_doesNotDeduplicateSetActiveModel_whenOptimizationsDisabled() {
+        OmniboxFeatures.sModelPickerOptimizations.setForTesting(false);
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        recreateMediator();
+
+        ModelConfig proConfig =
+                ModelConfig.newBuilder()
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setMenuLabel("Pro")
+                        .build();
+        InputState state =
+                new InputState.Builder()
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withDefaultModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withAllowedModels(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withModelConfigs(new byte[][] {proConfig.toByteArray()})
+                        .build();
+        mInputStateSupplier.set(state);
+
+        // Switch to AI mode via request type button.
+        mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED).run();
+        assertEquals(AutocompleteRequestType.AI_MODE, mModel.get(FuseboxProperties.REQUEST_TYPE));
+        clearInvocations(mComposeboxQueryControllerBridge);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FuseboxMetrics.SET_ACTIVE_MODEL_SOURCE_HISTOGRAM,
+                        SetActiveModelSource.RESET_FROM_ACTIVATE_SEARCH);
+
+        // Switch back to search mode. Optimizations disabled, so setActiveModel is called.
+        mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED).run();
+        assertEquals(AutocompleteRequestType.SEARCH, mModel.get(FuseboxProperties.REQUEST_TYPE));
+        verify(mComposeboxQueryControllerBridge)
+                .setActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testSetModelMode_recordsHistogram() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        recreateMediator();
+
+        ModelConfig proConfig =
+                ModelConfig.newBuilder()
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setMenuLabel("Pro")
+                        .build();
+        ModelConfig autoConfig =
+                ModelConfig.newBuilder()
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setMenuLabel("Auto")
+                        .build();
+        InputState state =
+                new InputState.Builder()
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withDefaultModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withAllowedModels(
+                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .withModelConfigs(
+                                new byte[][] {proConfig.toByteArray(), autoConfig.toByteArray()})
+                        .build();
+        mInputStateSupplier.set(state);
+        mMediator.onPlusButtonClicked();
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FuseboxMetrics.SET_ACTIVE_MODEL_SOURCE_HISTOGRAM,
+                        SetActiveModelSource.SET_FROM_MODEL_SELECTION);
+
+        List<PopupButtonData> models = mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
+        models.get(1).onClicked.run();
+
+        histogramWatcher.assertExpected();
     }
 }

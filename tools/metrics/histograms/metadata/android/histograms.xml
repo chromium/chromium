@@ -4123,6 +4123,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Omnibox.MobileFusebox.SetActiveModelSource"
+    enum="SetActiveModelSource" expires_after="2027-03-20">
+  <owner>skym@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the trigger source when setting the active model (or skipping
+    setting when redundant) on the Composebox query controller in Fusebox.
+  </summary>
+</histogram>
+
 <histogram name="Android.Omnibox.OmniboxAction.Used" enum="BooleanUsage"
     expires_after="2027-10-01">
   <owner>ender@google.com</owner>

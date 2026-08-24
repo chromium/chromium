@@ -2066,6 +2066,16 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Unable to determine type uploaded by external source"/>
 </enum>
 
+<!-- LINT.IfChange(SetActiveModelSource) -->
+
+<enum name="SetActiveModelSource">
+  <int value="0" label="Reset during activate search"/>
+  <int value="1" label="Skipped during activate search"/>
+  <int value="2" label="Set from model selection"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:SetActiveModelSource) -->
+
 <enum name="SiteLayout">
   <summary>See Android.RequestDesktopSite.Changed</summary>
   <int value="0" label="Mobile"/>
