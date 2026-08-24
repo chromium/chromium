@@ -5740,7 +5740,7 @@
     {
       name: "SingleAxisScrollContainersForScrollSnap",
       depends_on: ["SingleAxisScrollContainers"],
-      status: "test",
+      status: "experimental",
     },
     {
       name: "SkipAd",
