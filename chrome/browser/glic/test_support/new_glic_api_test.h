@@ -496,8 +496,7 @@ class GlicApiBrowserTestMixin : public T {
           }
 
           content::RenderFrameHost* glic_guest_frame =
-              options.instance ? options.instance->host().GetGuestMainFrame()
-                               : FindGlicGuestMainFrame(options.instance);
+              content::RenderFrameHost::FromID(frame_id);
           ASSERT_TRUE(glic_guest_frame);
           std::string result_json =
               base::WriteJson(*command_result).value_or("null");

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/base64.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/attempt_otp_filling_tool_request.h"
@@ -641,20 +640,11 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
   EXPECT_FALSE(actuating_false_future.Get());
 }
 
-// TODO(https://crbug.com/544820815): Fix and re-enable this test.
 IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
-                       DISABLED_testActivateTabWithConversationUsesActorState) {
+                       testActivateTabWithConversationUsesActorState) {
   GlicInstanceImpl* instance = GetInstanceImpl();
   ASSERT_TRUE(instance);
-
-  // Register a conversation ID for the instance if not present.
-  std::optional<std::string> conv_id_opt = instance->conversation_id();
-  std::string conv_id = conv_id_opt.value_or("test_conversation_id");
-  if (!conv_id_opt.has_value()) {
-    auto info = mojom::ConversationInfo::New();
-    info->conversation_id = conv_id;
-    instance->RegisterConversation(std::move(info), base::DoNothing());
-  }
+  PreventDeletionOnClose(instance, "test_conversation_id");
 
   // Execute JS test to create the task.
   ExecuteJsTest();
@@ -674,7 +664,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
   // Now the first tab should be in LastActedTabs.
 
   // Call ActivateTabWithConversation.
-  auto activate_result = coordinator().ActivateTabWithConversation(conv_id);
+  auto activate_result =
+      coordinator().ActivateTabWithConversation("test_conversation_id");
 
   EXPECT_EQ(GlicInstanceCoordinator::ActivateTabResult::kSuccess,
             activate_result);
@@ -1237,9 +1228,8 @@ bool IsProtectRecentlyVisibleTabEnabled() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// TODO(https://crbug.com/544820815): Fix and re-enable this test.
 IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
-                       DISABLED_testActuatingPriorityChange) {
+                       testActuatingPriorityChange) {
   GlicInstanceImpl* instance = GetInstanceImpl();
   ASSERT_TRUE(instance);
   ASSERT_OK(WaitForGlicClient(instance));
