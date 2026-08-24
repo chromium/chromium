@@ -66,6 +66,11 @@ struct WebDialogSpec {
   // loading or rendering its initial state.
   bool wait_for_explicit_show = true;
 
+  // Whether showing the dialog also activates it. Showing a browser-modal
+  // dialog raises its parent window to the foreground, so a caller that shows
+  // one dialog per browser window should activate at most one of them.
+  bool activate_on_show = true;
+
   // The modality of the dialog.
   // - kNone (Default): A modeless, unanchored dialog.
   // - kWindow: A browser-modal dialog.

@@ -109,6 +109,38 @@ TEST_F(ChromeWebUIDialogTest, WaitForExplicitShow) {
   EXPECT_TRUE(widget->IsVisible());
 }
 
+TEST_F(ChromeWebUIDialogTest, ShowWithoutActivationOnImmediateShow) {
+  WebDialogSpec spec;
+  spec.min_size = gfx::Size(kMinSize, kMinSize);
+  spec.max_size = gfx::Size(kMaxSize, kMaxSize);
+  spec.wait_for_explicit_show = false;
+  spec.activate_on_show = false;
+
+  std::unique_ptr<views::Widget> widget = CreateDialogWidget(spec);
+  ASSERT_TRUE(widget);
+  // Visible without having been activated: a caller showing one dialog per
+  // browser window must not raise every window in turn.
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_FALSE(widget->IsActive());
+}
+
+TEST_F(ChromeWebUIDialogTest, ShowWithoutActivationOnExplicitShow) {
+  WebDialogSpec spec;
+  spec.min_size = gfx::Size(kMinSize, kMinSize);
+  spec.max_size = gfx::Size(kMaxSize, kMaxSize);
+  spec.wait_for_explicit_show = true;
+  spec.activate_on_show = false;
+
+  std::unique_ptr<views::Widget> widget = CreateDialogWidget(spec);
+  ASSERT_TRUE(widget);
+  EXPECT_FALSE(widget->IsVisible());
+
+  auto* delegate = static_cast<ChromeWebUIDialog*>(widget->widget_delegate());
+  delegate->ShowUI();
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_FALSE(widget->IsActive());
+}
+
 TEST_F(ChromeWebUIDialogTest, ShowUIRedundantCallsAreSafe) {
   WebDialogSpec spec;
   spec.min_size = gfx::Size(kMinSize, kMinSize);

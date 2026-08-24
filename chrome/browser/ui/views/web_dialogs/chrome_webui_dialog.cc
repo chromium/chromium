@@ -50,6 +50,15 @@ gfx::Size EffectiveMaxSize(const WebDialogSpec& spec) {
       spec.max_size.height() > 0 ? spec.max_size.height() : kUnboundedExtent);
 }
 
+void MaybeShowWidget(views::Widget* widget, bool activate) {
+  CHECK(widget);
+  if (activate) {
+    widget->Show();
+  } else {
+    widget->ShowInactive();
+  }
+}
+
 }  // namespace
 
 WebDialogSpec::WebDialogSpec() = default;
@@ -197,7 +206,7 @@ void ChromeWebUIDialog::ShowWidget() {
   // Note: On some platforms (such as Mac or Wayland), the widget's visibility
   // state is updated asynchronously.
   if (!widget->IsVisible()) {
-    widget->Show();
+    MaybeShowWidget(widget, spec_.activate_on_show);
   }
 }
 
