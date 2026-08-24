@@ -231,7 +231,7 @@ RemoteSuggestionsServiceSimpleImpl::GetActionChipSuggestions(
   search_terms_args.additional_query_params = CreateAdditionalQueryParams(
       title, allowed_tools, allowed_inputs, page_vertical);
   search_terms_args.page_classification =
-      metrics::OmniboxEventProto::NTP_ZPS_PREFETCH;
+      metrics::OmniboxEventProto::NTP_ACTION_CHIPS;
   search_terms_args.request_source =
       SearchTermsData::RequestSource::NTP_ACTION_CHIPS;
 

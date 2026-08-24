@@ -552,6 +552,7 @@ public class OmniboxMetrics {
             case PageClassification.NTP_REALBOX:
             case PageClassification.NTP:
             case PageClassification.NTP_ZPS_PREFETCH:
+            case PageClassification.NTP_ACTION_CHIPS:
             case PageClassification.SEARCH_BUTTON_AS_STARTING_FOCUS:
             case PageClassification.START_SURFACE_HOMEPAGE:
             case PageClassification.START_SURFACE_NEW_TAB:

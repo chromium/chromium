@@ -17,7 +17,8 @@ bool IsNTPPage(OEP::PageClassification classification) {
   return (classification == OEP::NTP) ||
          (classification == OEP::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS) ||
          (classification == OEP::NTP_REALBOX) ||
-         (classification == OEP::NTP_ZPS_PREFETCH);
+         (classification == OEP::NTP_ZPS_PREFETCH) ||
+         (classification == OEP::NTP_ACTION_CHIPS);
 }
 
 void CheckObsoletePageClass(OEP::PageClassification classification) {
