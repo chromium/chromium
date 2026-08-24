@@ -5030,18 +5030,6 @@
     "expires": "never"
   },
   {
-    "prefix": "disable-tcp-port-randomization-mac",
-    "owners": ["arichiv@chromium.org", "awillia@chromium.org"],
-    "platforms": ["Mac"],
-    "bases": ["external/wpt/resource-timing/response-status-code.html"],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=NetworkServiceInProcess2",
-      "--disable-features=TcpPortRandomizationMac"
-    ],
-    "expires": "Oct 31, 2026"
-  },
-  {
     "prefix": "disable-css-line-clamp-longhands",
     "platforms": [
       "Linux"
