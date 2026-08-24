@@ -5,8 +5,13 @@
 #ifndef COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_INTEGRITY_BLOCK_PARSER_H_
 #define COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_INTEGRITY_BLOCK_PARSER_H_
 
+#include <optional>
+#include <string>
+
+#include "base/compiler_specific.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
-#include "components/web_package/signed_web_bundles/integrity_block_attributes.h"
 #include "components/web_package/signed_web_bundles/types.h"
 #include "components/web_package/web_bundle_parser.h"
 
@@ -15,7 +20,7 @@ namespace web_package {
 class IntegrityBlockParser : public WebBundleParser::WebBundleSectionParser {
  public:
   explicit IntegrityBlockParser(
-      mojom::BundleDataSource& data_source,
+      mojom::BundleDataSource& data_source LIFETIME_BOUND,
       WebBundleParser::ParseIntegrityBlockCallback callback);
 
   IntegrityBlockParser(const IntegrityBlockParser&) = delete;
@@ -30,10 +35,7 @@ class IntegrityBlockParser : public WebBundleParser::WebBundleSectionParser {
  private:
   void OnIntegrityBlockRead(const std::optional<BinaryData>& data);
 
-  base::expected<mojom::BundleIntegrityBlockSignatureStackEntryPtr, std::string>
-  ParseSignatureInfo(const cbor::Value& attributes_map);
-
-  void RunErrorCallback(const std::string& message,
+  void RunErrorCallback(std::string message,
                         mojom::BundleParseErrorType error_type =
                             mojom::BundleParseErrorType::kFormatError);
 

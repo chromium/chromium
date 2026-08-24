@@ -1,0 +1,42 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_static_library.gni")
+
+rust_static_library("signed_web_bundles_rust") {
+  crate_name = "signed_web_bundles_rust"
+  crate_root = "lib.rs"
+  sources = [
+    "constants.rs",
+    "integrity_block.rs",
+    "types.rs",
+    crate_root,
+  ]
+
+  cpp_api_from_rust = {
+    target_name = "signed_web_bundles_rust_bindings"
+    cpp_namespace = "web_package::signed_web_bundles::rust"
+    h_out = "${target_gen_dir}/signed_web_bundles_rust.h"
+  }
+
+  deps = [
+    "//components/cbor/rust:cbor",
+    "//third_party/boringssl:bssl_crypto",
+  ]
+}
+
+rust_static_library("signed_web_bundles_rust_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "signed_web_bundles_rust_unittests.rs"
+  sources = [
+    "integrity_block_unittest.rs",
+    crate_root,
+  ]
+  deps = [
+    ":signed_web_bundles_rust",
+    "//components/cbor/rust:cbor",
+    "//testing/rust_gtest_interop",
+  ]
+}
