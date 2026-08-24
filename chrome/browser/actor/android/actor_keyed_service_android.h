@@ -50,12 +50,14 @@ class ActorKeyedServiceAndroid : public base::SupportsUserData::Data {
                                  const std::string& step_progress);
   void EnsureForegroundServiceStarted(
       const std::string& glic_trigger_message_id);
+  void OnMessageTriggerTaskStopped(const std::string& glic_trigger_message_id);
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
   raw_ptr<ActorKeyedService> service_;
   base::CallbackListSubscription task_state_subscription_;
   base::CallbackListSubscription task_step_progress_subscription_;
   base::CallbackListSubscription ensure_fgs_started_subscription_;
+  base::CallbackListSubscription message_trigger_task_stopped_subscription_;
 };
 
 void CreateBackgroundTabForTask(

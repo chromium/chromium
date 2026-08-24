@@ -337,4 +337,26 @@ public class ActorBackgroundActuationManagerTest {
         verify(mTab).destroy();
         verify(callback).onResult(null);
     }
+
+    @Test
+    public void testCleanupContext_StopsRendering_SavesState() {
+        TabState testTabState = new TabState();
+        TabStateExtractor.setTabStateForTesting(999, testTabState);
+        when(mTab.getId()).thenReturn(999);
+        when(mTab.isIncognito()).thenReturn(false);
+
+        // Setup a background session with a triggering message ID
+        mManager.startBackgroundActuation(mProfile, "test_msg_id");
+
+        // Verify offscreen rendering started
+        verify(mOffscreenRenderingManager).startOffscreenRendering(eq(mTab), anyInt(), anyInt());
+
+        // Call cleanupContext which should trigger save tab state if TabState != null
+        mManager.cleanupContext("test_msg_id");
+
+        // Verify offscreen rendering stopped
+        verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
+
+        TabStateExtractor.resetTabStatesForTesting();
+    }
 }

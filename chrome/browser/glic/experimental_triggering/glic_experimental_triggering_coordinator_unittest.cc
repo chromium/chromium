@@ -239,6 +239,15 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest, GetScreenshotRequest) {
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorTest, UnrecognizedStopActuation) {
+  auto* actor_service =
+      actor::ActorKeyedServiceFactory::GetActorKeyedService(profile_);
+  base::test::TestFuture<std::string> cancel_future;
+  auto subscription =
+      actor_service->AddMessageTriggerTaskStoppedCallback(base::BindRepeating(
+          [](base::test::TestFuture<std::string>* future,
+             const std::string& context_id) { future->SetValue(context_id); },
+          base::Unretained(&cancel_future)));
+
   ExperimentalTriggeringRequest request;
   request.version = 1;
   request.context_id = kTestContextId;
@@ -249,6 +258,11 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest, UnrecognizedStopActuation) {
   ASSERT_TRUE(response.has_value());
   ASSERT_TRUE(response->task_update.has_value());
   EXPECT_EQ(response->task_update->state, TaskUpdate::State::kFailed);
+  EXPECT_EQ(response->task_update->data,
+            "Failed to stop task due to missing glic instance.");
+
+  EXPECT_TRUE(cancel_future.Wait());
+  EXPECT_EQ(cancel_future.Take(), kTestContextId);
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorTest, NoBrowserWindow) {

@@ -88,6 +88,11 @@ ActorKeyedServiceAndroid::ActorKeyedServiceAndroid(ActorKeyedService* service)
       service_->AddForegroundServiceStartedCallback(base::BindRepeating(
           &ActorKeyedServiceAndroid::EnsureForegroundServiceStarted,
           base::Unretained(this)));
+
+  message_trigger_task_stopped_subscription_ =
+      service_->AddMessageTriggerTaskStoppedCallback(base::BindRepeating(
+          &ActorKeyedServiceAndroid::OnMessageTriggerTaskStopped,
+          base::Unretained(this)));
 }
 
 ActorKeyedServiceAndroid::~ActorKeyedServiceAndroid() {
@@ -193,6 +198,13 @@ void CreateBackgroundTabForTask(
                std::move(callback)));
   Java_ActorKeyedService_createBackgroundTabForTask(
       env, bridge->GetJavaObject(), profile, task_id.value(), j_callback);
+}
+
+void ActorKeyedServiceAndroid::OnMessageTriggerTaskStopped(
+    const std::string& glic_trigger_message_id) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ActorKeyedService_onMessageTriggerTaskStopped(env, java_obj_,
+                                                     glic_trigger_message_id);
 }
 
 }  // namespace actor

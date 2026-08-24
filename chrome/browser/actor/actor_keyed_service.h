@@ -235,6 +235,12 @@ class ActorKeyedService : public KeyedService,
                                 const std::string& glic_trigger_message_id);
   void NotifyBackgroundSetupFailed(const std::string& glic_trigger_message_id);
 
+  using MessageTriggerTaskStoppedCallback =
+      base::RepeatingCallback<void(const std::string&)>;
+  base::CallbackListSubscription AddMessageTriggerTaskStoppedCallback(
+      MessageTriggerTaskStoppedCallback callback);
+  void OnMessageTriggerTaskStopped(const std::string& message_id);
+
 #if BUILDFLAG(IS_ANDROID)
   using EnsureForegroundServiceStartedCallback =
       base::RepeatingCallback<void(const std::string&)>;
@@ -294,6 +300,9 @@ class ActorKeyedService : public KeyedService,
       task_state_change_callback_list_;
 
   base::ObserverList<BackgroundActuationObserver> observers_;
+
+  base::RepeatingCallbackList<void(const std::string&)>
+      message_trigger_task_stopped_callbacks_;
 
 #if BUILDFLAG(IS_ANDROID)
   base::RepeatingCallbackList<void(const std::string&)>

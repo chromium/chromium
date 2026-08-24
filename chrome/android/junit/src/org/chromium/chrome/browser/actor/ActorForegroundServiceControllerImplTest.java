@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -151,8 +152,7 @@ public class ActorForegroundServiceControllerImplTest {
     public void testTransitionActiveTasksToBackground_NotConnected_DoesNothing() {
         mController.setBackgroundManagerForTesting(mMockBackgroundManager);
         mController.transitionActiveTasksToBackground(mTabModelSelector);
-        verify(mMockBackgroundManager, never())
-                .transitionActiveTasksToBackground(org.mockito.ArgumentMatchers.any());
+        verify(mMockBackgroundManager, never()).transitionActiveTasksToBackground(any());
     }
 
     @Test
@@ -163,6 +163,20 @@ public class ActorForegroundServiceControllerImplTest {
 
         mController.transitionActiveTasksToBackground(mTabModelSelector);
         verify(mMockBackgroundManager).transitionActiveTasksToBackground(mTabModelSelector);
+    }
+
+    @Test
+    public void testOnMessageTriggerTaskStopped_DelegatesToBackgroundManager() {
+        mController.setBackgroundManagerForTesting(mMockBackgroundManager);
+        mController.onMessageTriggerTaskStopped("test_context_id");
+        verify(mMockBackgroundManager).cleanupContext("test_context_id");
+    }
+
+    @Test
+    public void testOnMessageTriggerTaskStopped_NullBackgroundManager_DoesNotCrash() {
+        mController.setBackgroundManagerForTesting(null);
+        mController.onMessageTriggerTaskStopped("test_context_id");
+        verify(mMockBackgroundManager, never()).cleanupContext("test_context_id");
     }
 
     @Test

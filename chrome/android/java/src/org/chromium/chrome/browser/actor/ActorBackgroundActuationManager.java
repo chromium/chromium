@@ -191,6 +191,8 @@ public class ActorBackgroundActuationManager {
 
     private Tab createOffscreenTab(Profile profile) {
         WindowAndroid window = OffscreenRenderingManager.getInstance().getOffscreenWindow();
+        // TODO(crbug.com/548875143): Persist TabState to disk whenever the background tab's
+        // URL/navigation updates so that on-disk state remains continuously accurate.
         Tab tab =
                 TabBuilder.createLiveTab(profile, true)
                         .setWindow(window)

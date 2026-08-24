@@ -81,6 +81,9 @@ public interface ActorForegroundServiceController {
             WindowAndroid window,
             TabDelegateFactory tabDelegateFactory) {}
 
+    /** Handles cleanup when a message-triggered task is stopped for a context ID. */
+    default void onMessageTriggerTaskStopped(String contextId) {}
+
     /** Destroys the background actuation manager and cleans up its resources. */
     default void destroyBackgroundActuationManager() {}
 

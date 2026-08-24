@@ -851,6 +851,17 @@ void ActorKeyedService::NotifyBackgroundSetupFailed(
   }
 }
 
+base::CallbackListSubscription
+ActorKeyedService::AddMessageTriggerTaskStoppedCallback(
+    MessageTriggerTaskStoppedCallback callback) {
+  return message_trigger_task_stopped_callbacks_.Add(std::move(callback));
+}
+
+void ActorKeyedService::OnMessageTriggerTaskStopped(
+    const std::string& message_id) {
+  message_trigger_task_stopped_callbacks_.Notify(message_id);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 base::CallbackListSubscription
 ActorKeyedService::AddForegroundServiceStartedCallback(

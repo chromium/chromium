@@ -378,6 +378,7 @@ class ExperimentalTriggeringUpdatesHandler
     return true;
   }
 
+ private:
   void SubscribeForTriggeringUpdates(base::WeakPtr<GlicInstance> instance) {
     instance_ = std::move(instance);
     if (instance_ && !receiver_.is_bound()) {
@@ -670,6 +671,16 @@ class ExperimentalTriggeringUpdatesHandler
                                        std::nullopt, "", request_metadata,
                                        sequence_generator_.GetNext());
     }
+
+    // If task is not yet started by glic session or is in a pending state,
+    // clean up any pending state in actor related to the context.
+    if (coordinator_) {
+      if (auto* actor_service =
+              actor::ActorKeyedService::Get(coordinator_->profile_)) {
+        actor_service->OnMessageTriggerTaskStopped(context_id_);
+      }
+    }
+
     return response;
   }
 

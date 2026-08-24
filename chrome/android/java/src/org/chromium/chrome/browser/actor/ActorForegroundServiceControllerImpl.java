@@ -243,6 +243,15 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
         return state == ActivityState.STARTED || state == ActivityState.RESUMED;
     }
 
+    @Override
+    public void onMessageTriggerTaskStopped(String contextId) {
+        // If a background session is active for the task and no associated actor task yet,
+        // it needs to be cleaned up here.
+        if (mBackgroundActuationManager != null) {
+            mBackgroundActuationManager.cleanupContext(contextId);
+        }
+    }
+
     public @Nullable ActorBackgroundActuationManager getBackgroundActuationManager() {
         return mBackgroundActuationManager;
     }

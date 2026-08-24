@@ -119,6 +119,11 @@ public class ActorKeyedService {
     }
 
     @CalledByNative
+    private void onMessageTriggerTaskStopped(@JniType("std::string") String glicTriggerMessageId) {
+        ActorForegroundServiceController.get().onMessageTriggerTaskStopped(glicTriggerMessageId);
+    }
+
+    @CalledByNative
     private void ensureForegroundServiceStarted(
             @JniType("std::string") String glicTriggerMessageId) {
         ActorForegroundServiceController.get().startService(glicTriggerMessageId);
