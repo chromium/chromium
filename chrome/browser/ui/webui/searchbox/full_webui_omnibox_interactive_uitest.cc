@@ -552,6 +552,8 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, ClickMatch) {
       // Wait for the first suggestion to appear.
       WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
                    "suggestion-1"),
+      InAnyContext(
+          WaitForElementToRender(kPopupWebView, kFirstSuggestionMatch)),
       // Click the first suggestion.
       InSameContext(ClickElement(kPopupWebView, kFirstSuggestionMatch)),
       // Verify navigation occurs.
