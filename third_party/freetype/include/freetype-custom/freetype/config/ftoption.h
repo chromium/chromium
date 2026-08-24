@@ -780,6 +780,21 @@ FT_BEGIN_HEADER
 
   /**************************************************************************
    *
+   * Define `TT_CONFIG_OPTION_VARC` if you want to include support for
+   * variable composite glyphs (the 'VARC' table).  This is part of the
+   * 'boring' OpenType specification expansions.
+   *
+   *   https://github.com/harfbuzz/boring-expansion-spec/blob/main/VARC.md
+   *
+   * Variable composites enable more efficient encoding of variable glyphs
+   * by allowing glyphs to be composed from other glyphs with variable
+   * transformations and axis value overrides.
+   */
+#define TT_CONFIG_OPTION_VARC
+
+
+  /**************************************************************************
+   *
    * Define `TT_CONFIG_OPTION_BDF` if you want to include support for an
    * embedded 'BDF~' table within an SFNT-based `.otb` font file.  This table
    * is an extension used by X11 to preserve BDF properties after conversion
