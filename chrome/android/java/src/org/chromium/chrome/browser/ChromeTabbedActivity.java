@@ -3748,8 +3748,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         DeviceLockActivityLauncherImpl.get(),
                         profileSupplier,
                         mRootUiCoordinator.getBottomSheetControllerSupplier(),
-                        getModalDialogManagerSupplier().get(),
-                        getSnackbarManager(),
+                        getModalDialogManagerSupplier(),
+                        SupplierUtils.of(getSnackbarManager()),
                         accessPoint);
     }
 

@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -142,8 +143,8 @@ public class SigninPromoCoordinator
                         deviceLockActivityLauncher,
                         profileSupplier,
                         bottomSheetController,
-                        modalDialogManager,
-                        snackbarManager,
+                        SupplierUtils.of(modalDialogManager),
+                        SupplierUtils.of(snackbarManager),
                         mDelegate.getAccessPoint());
     }
 

@@ -12,6 +12,7 @@ import android.content.Intent;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
@@ -109,8 +110,8 @@ public class FeedActionDelegateImpl
                                 deviceLockActivityLauncher,
                                 profileSupplier,
                                 () -> bottomSheetController,
-                                modalDialogManager,
-                                snackbarManager,
+                                SupplierUtils.of(modalDialogManager),
+                                SupplierUtils.of(snackbarManager),
                                 accessPoint));
             }
         }

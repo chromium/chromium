@@ -18,6 +18,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -457,8 +458,8 @@ final class SigninButtonMediator
                                     mDeviceLockActivityLauncher,
                                     profileSupplier,
                                     () -> mBottomSheetController,
-                                    mModalDialogManager,
-                                    mSnackbarManager,
+                                    SupplierUtils.of(mModalDialogManager),
+                                    SupplierUtils.of(mSnackbarManager),
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON);
         }
     }

@@ -88,9 +88,9 @@ public final class SigninAndHistorySyncActivityLauncherImpl
                     BottomSheetSigninAndHistorySyncCoordinator.Delegate delegate,
                     DeviceLockActivityLauncher deviceLockActivityLauncher,
                     OneshotSupplier<Profile> profileSupplier,
-                    Supplier<BottomSheetController> bottomSheetController,
-                    ModalDialogManager modalDialogManager,
-                    @Nullable SnackbarManager snackbarManager,
+                    Supplier<BottomSheetController> bottomSheetControllerSupplier,
+                    Supplier<ModalDialogManager> modalDialogManagerSupplier,
+                    Supplier<@Nullable SnackbarManager> snackbarManagerSupplier,
                     @SigninAccessPoint int signinAccessPoint) {
         return BottomSheetSigninAndHistorySyncCoordinator.createAndObserveAddAccountResult(
                 windowAndroid,
@@ -99,9 +99,9 @@ public final class SigninAndHistorySyncActivityLauncherImpl
                 delegate,
                 deviceLockActivityLauncher,
                 profileSupplier,
-                bottomSheetController,
-                modalDialogManager,
-                snackbarManager,
+                bottomSheetControllerSupplier,
+                modalDialogManagerSupplier,
+                snackbarManagerSupplier,
                 signinAccessPoint);
     }
 

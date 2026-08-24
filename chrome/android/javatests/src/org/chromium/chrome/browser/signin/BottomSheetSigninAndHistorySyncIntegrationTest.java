@@ -59,6 +59,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.transit.RootSpec;
 import org.chromium.base.test.transit.ViewElement;
@@ -1308,8 +1309,8 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                                             DeviceLockActivityLauncherImpl.get(),
                                             incognitoProfileSupplier,
                                             this::getBottomSheetController,
-                                            baseActivity.getModalDialogManagerSupplier().get(),
-                                            baseActivity.getSnackbarManager(),
+                                            baseActivity.getModalDialogManagerSupplier(),
+                                            SupplierUtils.of(baseActivity.getSnackbarManager()),
                                             mSigninAccessPoint);
                     Assert.assertThrows(
                             IllegalStateException.class,
@@ -1552,8 +1553,8 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                                             DeviceLockActivityLauncherImpl.get(),
                                             profileSupplier,
                                             this::getBottomSheetController,
-                                            baseActivity.getModalDialogManagerSupplier().get(),
-                                            baseActivity.getSnackbarManager(),
+                                            baseActivity.getModalDialogManagerSupplier(),
+                                            SupplierUtils.of(baseActivity.getSnackbarManager()),
                                             mSigninAccessPoint);
                 });
     }

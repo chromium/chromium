@@ -1787,8 +1787,8 @@ public class RootUiCoordinator
                                     assertNonNull(mDeviceLockActivityLauncherSupplier.get()),
                                     profileSupplier,
                                     getBottomSheetControllerSupplier().asNonNull(),
-                                    mModalDialogManagerSupplier.get(),
-                                    mSnackbarManagerSupplier.get(),
+                                    mModalDialogManagerSupplier,
+                                    mSnackbarManagerSupplier,
                                     SigninAccessPoint.WEB_SIGNIN));
         }
         if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
@@ -1802,8 +1802,8 @@ public class RootUiCoordinator
                                     assertNonNull(mDeviceLockActivityLauncherSupplier.get()),
                                     profileSupplier,
                                     getBottomSheetControllerSupplier().asNonNull(),
-                                    mModalDialogManagerSupplier.get(),
-                                    mSnackbarManagerSupplier.get(),
+                                    mModalDialogManagerSupplier,
+                                    mSnackbarManagerSupplier,
                                     SigninAccessPoint.EXTENSIONS));
         }
     }

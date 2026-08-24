@@ -18,6 +18,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -558,8 +559,8 @@ public class IdentityDiscController
                                     mDeviceLockActivityLauncher,
                                     profileSupplier,
                                     () -> mBottomSheetController,
-                                    mModalDialogManager,
-                                    mSnackbarManager,
+                                    SupplierUtils.of(mModalDialogManager),
+                                    SupplierUtils.of(mSnackbarManager),
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON);
         }
     }

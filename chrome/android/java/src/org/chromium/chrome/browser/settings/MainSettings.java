@@ -403,18 +403,13 @@ public class MainSettings extends ChromeBaseSettingsFragment
                                                         profileSupplier,
                                                         SupplierUtils.asNonNull(
                                                                 mBottomSheetControllerSupplier),
-                                                        mModalDialogManagerSupplier
-                                                                .asNonNull()
-                                                                .get(),
                                                         SupplierUtils.asNonNull(
-                                                                        mSnackbarManagerSupplier)
-                                                                .get(),
+                                                                mModalDialogManagerSupplier),
+                                                        mSnackbarManagerSupplier,
                                                         SigninAccessPoint.SETTINGS);
                                 signinCoordinatorSupplier.set(mSigninCoordinator);
                             }),
-                    mWindowAndroidSupplier,
-                    mModalDialogManagerSupplier,
-                    mSnackbarManagerSupplier);
+                    mWindowAndroidSupplier);
         }
         signInPreference.initialize(
                 getProfile(), profileDataCache, accountManagerFacade, signinCoordinatorSupplier);

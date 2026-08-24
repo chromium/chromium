@@ -230,9 +230,8 @@ public class SendTabToSelfCoordinator
                                                             profileSupplier,
                                                             () -> mBottomSheetController,
                                                             SupplierUtils.asNonNull(
-                                                                            mModalDialogManagerSupplier)
-                                                                    .get(),
-                                                            mSnackbarManager,
+                                                                    mModalDialogManagerSupplier),
+                                                            SupplierUtils.of(mSnackbarManager),
                                                             SigninAccessPoint
                                                                     .SEND_TAB_TO_SELF_PROMO);
                                     BottomSheetSigninAndHistorySyncConfig config =

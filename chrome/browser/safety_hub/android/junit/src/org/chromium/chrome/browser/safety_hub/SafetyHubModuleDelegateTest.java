@@ -107,11 +107,11 @@ public class SafetyHubModuleDelegateTest {
                         eq(mActivity),
                         eq(mActivityResultTracker),
                         any(),
-                        eq(mDeviceLockActivityLauncher),
                         any(),
                         any(),
-                        eq(mModalDialogManager),
-                        eq(mSnackbarManager),
+                        any(),
+                        any(),
+                        any(),
                         eq(SigninAccessPoint.SAFETY_CHECK)))
                 .thenReturn(mSigninCoordinator);
         SigninAndHistorySyncActivityLauncherImpl.setLauncherForTest(mSigninLauncher);
