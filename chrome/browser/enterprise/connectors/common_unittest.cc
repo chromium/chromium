@@ -123,7 +123,8 @@ TEST_F(CollectFrameUrlsTest, NestedFramesWithUninterestingUrl) {
   content::FocusWebContentsOnFrame(web_contents(), child_frame3);
 
   google::protobuf::RepeatedPtrField<std::string> frame_urls =
-      CollectFrameUrls(web_contents(), DeepScanAccessPoint::DOWNLOAD);
+      CollectFrameUrls(web_contents(), DeepScanAccessPoint::DOWNLOAD,
+                       std::nullopt);
 
   // Verify that the URL chain is listed in the right order and chain size
   // histogram is recorded properly. The uninteresting URL and the tab URL
@@ -143,7 +144,8 @@ TEST_F(CollectFrameUrlsTest, TabUrlOnly) {
   base::HistogramTester histogram_tester;
 
   google::protobuf::RepeatedPtrField<std::string> frame_urls =
-      CollectFrameUrls(web_contents(), DeepScanAccessPoint::DOWNLOAD);
+      CollectFrameUrls(web_contents(), DeepScanAccessPoint::DOWNLOAD,
+                       std::nullopt);
 
   // The URL chain should be empty since there are no iframes.
   EXPECT_EQ(0, frame_urls.size());
@@ -159,7 +161,7 @@ TEST_F(CollectFrameUrlsTest, NoWebContents) {
   base::HistogramTester histogram_tester;
 
   google::protobuf::RepeatedPtrField<std::string> frame_urls =
-      CollectFrameUrls(nullptr, DeepScanAccessPoint::DOWNLOAD);
+      CollectFrameUrls(nullptr, DeepScanAccessPoint::DOWNLOAD, std::nullopt);
 
   // Since there are no tabs, there should not be any URLs recorded.
   EXPECT_EQ(0, frame_urls.size());
