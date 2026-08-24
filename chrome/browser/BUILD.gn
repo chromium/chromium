@@ -2424,6 +2424,7 @@ source_set("browser") {
     "//components/history_clusters/history_clusters_internals/webui",
     "//components/infobars/content",
     "//components/infobars/core",
+    "//components/invalidation",
     "//components/javascript_dialogs",
     "//components/keyed_service/content",
     "//components/language/core/browser",

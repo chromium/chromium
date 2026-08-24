@@ -17,23 +17,16 @@
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
-#include "components/invalidation/impl/profile_identity_provider.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/profile_invalidation_provider.h"
 #include "content/public/browser/browser_context.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_ash.h"
-#include "chrome/browser/device_identity/device_identity_provider.h"
-#include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/user_manager/user_manager.h"
 #endif
@@ -50,22 +43,6 @@ std::unique_ptr<InvalidationListener> CreateInvalidationListener(
       instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
           ->driver(),
       project_number, std::move(log_prefix));
-}
-
-std::unique_ptr<IdentityProvider> CreateIdentityProvider(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS)
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  if (user_manager::UserManager::IsInitialized() &&
-      user_manager::UserManager::Get()->IsLoggedInAsKioskChromeApp() &&
-      connector->IsDeviceEnterpriseManaged()) {
-    return std::make_unique<DeviceIdentityProvider>(
-        DeviceOAuth2TokenServiceFactory::Get());
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  return std::make_unique<ProfileIdentityProvider>(
-      IdentityManagerFactory::GetForProfile(profile));
 }
 
 }  // namespace
@@ -105,9 +82,6 @@ ProfileInvalidationProviderFactory::ProfileInvalidationProviderFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
-  // TODO(crbug.com/341377023): `IdentityProvider` is needed for legacy topics
-  // cleanup. Remove it once cleanup is done.
-  DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
   DependsOn(instance_id::InstanceIDProfileServiceFactory::GetInstance());
 }
@@ -130,8 +104,6 @@ ProfileInvalidationProviderFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
 
   return std::make_unique<ProfileInvalidationProvider>(
-      profile->GetURLLoaderFactory(),
-      CreateIdentityProvider(profile), profile->GetPrefs(),
       base::BindRepeating(&CreateInvalidationListener, profile));
 }
 

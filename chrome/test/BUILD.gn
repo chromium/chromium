@@ -1059,7 +1059,6 @@ source_set("platform_browser_tests") {
     "//components/content_settings/core/common",
     "//components/content_settings/core/common:features",
     "//components/enterprise:test_support",
-    "//components/invalidation:legacy_topics_cleanup",
     "//components/invalidation:test_support",
     "//components/language_detection/core",
     "//components/metrics",

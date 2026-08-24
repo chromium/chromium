@@ -21,7 +21,6 @@ static_library("invalidation") {
     "//base",
     "//base:i18n",
     "//components/gcm_driver",
-    "//components/invalidation:legacy_topics_cleanup",
     "//components/keyed_service/core",
     "//components/pref_registry",
     "//components/prefs",

@@ -22,7 +22,6 @@ source_set("impl") {
     "//chrome/browser/signin",
     "//components/gcm_driver/instance_id",
     "//components/invalidation",
-    "//components/invalidation:legacy_topics_cleanup",
     "//services/network/public/cpp",
   ]
 
