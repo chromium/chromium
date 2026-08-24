@@ -6434,6 +6434,11 @@
     "expiry_milestone": 156
   },
   {
+    "name": "ios-signal-sharing",
+    "owners": [ "mickaczmarczyk@google.com", "szymonkurek@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "ios-skip-fre-default-browser-promo-in-eea",
     "owners": ["gujen@google.com", "bmcclure@google.com", "bling-mony-pod@google.com"],
     "expiry_milestone": 155

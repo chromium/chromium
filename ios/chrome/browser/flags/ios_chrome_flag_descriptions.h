@@ -1155,6 +1155,10 @@ inline constexpr char kIOSSettingsDefaultBrowserPromoV2Name[] =
 inline constexpr char kIOSSettingsDefaultBrowserPromoV2Description[] =
     "When enabled, shows the Default Browser Promo V2 in Settings.";
 
+inline constexpr char kIOSSignalSharingName[] = "iOS Signal Sharing";
+inline constexpr char kIOSSignalSharingDescription[] =
+    "Enables enterprise signal sharing on iOS.";
+
 inline constexpr char kIOSSoftLockName[] = "Soft Lock on iOS";
 inline constexpr char kIOSSoftLockDescription[] =
     "Enables experimental Soft Lock on iOS.";

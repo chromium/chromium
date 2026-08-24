@@ -2992,6 +2992,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kPreventCobrowseOnAimSrpTapName,
      flag_descriptions::kPreventCobrowseOnAimSrpTapDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kPreventCobrowseOnAimSrpTap)},
+    {"ios-signal-sharing", flag_descriptions::kIOSSignalSharingName,
+     flag_descriptions::kIOSSignalSharingDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(enterprise_reporting::kIOSSignalSharingEnabled)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
