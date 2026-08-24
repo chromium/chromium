@@ -503,6 +503,32 @@ suite(`NewTabPageComposeboxTest`, () => {
       await testProxy.element.updateComplete;
     });
 
+    test(
+        'background is opaque when energy effect is enabled during voice search',
+        async () => {
+          // Enter voice search mode with static energy effect enabled.
+          testProxy.element.energyEffectEnabled = true;
+          testProxy.element.energyEffectAnimationEnabled = false;
+          testProxy.element.isListening = true;
+          testProxy.element.inVoiceSearchMode = true;
+          await testProxy.element.updateComplete;
+
+          const animatedGlow = testProxy.element.shadowRoot
+                                   .querySelector<SearchAnimatedGlowElement>(
+                                       'search-animated-glow');
+          assertTrue(!!animatedGlow);
+          await animatedGlow.updateComplete;
+
+          // Verify that search-animated-glow preserves 'display: contents' and
+          // isn't forced to 'display: block' / 'position: absolute'
+          const computedStyle = window.getComputedStyle(animatedGlow);
+          assertEquals(
+              'contents', computedStyle.display,
+              'search-animated-glow should be display: contents during voice search to preserve layout');
+          assertNotEquals(
+              'absolute', computedStyle.position,
+              'search-animated-glow should not be absolute during voice search');
+        });
 
     test(
         'voice search button tab order precedes cancel button' +
