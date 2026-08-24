@@ -4,9 +4,9 @@
 
 import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {OrganizerListItemElement} from './organizer_list_item.js';
+import type {OrganizerListSectionItemElement} from './organizer_list_section_item.js';
 
-export function getHtml(this: OrganizerListItemElement) {
+export function getHtml(this: OrganizerListSectionItemElement) {
   return html`<!--_html_template_start_-->
 <!-- TODO(b/549796273): Use custom title and description element. -->
 <cr-url-list-item id="crUrlListItem" .title="${this.item.title}"

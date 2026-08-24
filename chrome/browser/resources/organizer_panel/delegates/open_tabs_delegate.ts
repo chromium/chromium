@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {OrganizerListItem} from '../organizer_list_item.js';
 import type {OrganizerListSectionDelegate} from '../organizer_list_section_delegate.js';
+import type {OrganizerListSectionItem} from '../organizer_list_section_item.js';
 
 export class OpenTabsDelegate implements OrganizerListSectionDelegate {
   getHeader(): string {
@@ -11,7 +11,7 @@ export class OpenTabsDelegate implements OrganizerListSectionDelegate {
     return 'Open Tabs';
   }
 
-  getItems(): OrganizerListItem[] {
+  getItems(): OrganizerListSectionItem[] {
     // TODO(b/549784710): Implement fetching open tabs.
     return [
       {

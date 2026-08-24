@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './organizer_list_item.js';
+import './organizer_list_section_item.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 

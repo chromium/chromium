@@ -8,11 +8,12 @@ import type {TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 
-import {getCss} from './organizer_list_item.css.js';
-import {getHtml} from './organizer_list_item.html.js';
+import {getCss} from './organizer_list_section_item.css.js';
+import {getHtml} from './organizer_list_section_item.html.js';
 
-// Icon for an organizer list item. Only one of these fields should be defined.
-export interface OrganizerListItemIcon {
+// Icon for an organizer list section item. Only one of these fields should be
+// defined.
+export interface OrganizerListSectionItemIcon {
   // URLs to display favicons for.
   urls?: string[];
 
@@ -20,8 +21,8 @@ export interface OrganizerListItemIcon {
   element?: TemplateResult;
 }
 
-// Model for a single item in the organizer list.
-export interface OrganizerListItem {
+// Model for a single item in an organizer list section.
+export interface OrganizerListSectionItem {
   // Title (main line) of the item.
   title: string;
 
@@ -29,18 +30,18 @@ export interface OrganizerListItem {
   description?: string;
 
   // Icon displayed at the beginning of the item.
-  prefixIcon?: OrganizerListItemIcon;
+  prefixIcon?: OrganizerListSectionItemIcon;
 }
 
-export interface OrganizerListItemElement {
+export interface OrganizerListSectionItemElement {
   $: {
     crUrlListItem: CrUrlListItemElement,
   };
 }
 
-export class OrganizerListItemElement extends CrLitElement {
+export class OrganizerListSectionItemElement extends CrLitElement {
   static get is() {
-    return 'organizer-list-item';
+    return 'organizer-list-section-item';
   }
 
   static override get styles() {
@@ -57,7 +58,7 @@ export class OrganizerListItemElement extends CrLitElement {
     };
   }
 
-  accessor item: OrganizerListItem = {
+  accessor item: OrganizerListSectionItem = {
     title: '',
   };
 
@@ -69,8 +70,9 @@ export class OrganizerListItemElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'organizer-list-item': OrganizerListItemElement;
+    'organizer-list-section-item': OrganizerListSectionItemElement;
   }
 }
 
-customElements.define(OrganizerListItemElement.is, OrganizerListItemElement);
+customElements.define(
+    OrganizerListSectionItemElement.is, OrganizerListSectionItemElement);

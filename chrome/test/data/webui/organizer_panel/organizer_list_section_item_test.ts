@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://organizer-panel.top-chrome/organizer_list_item.js';
+import 'chrome://organizer-panel.top-chrome/organizer_list_section_item.js';
 
-import type {OrganizerListItemElement} from 'chrome://organizer-panel.top-chrome/organizer_list_item.js';
+import type {OrganizerListSectionItemElement} from 'chrome://organizer-panel.top-chrome/organizer_list_section_item.js';
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-suite('OrganizerListItemTest', () => {
-  let listItem: OrganizerListItemElement;
+suite('OrganizerListSectionItemTest', () => {
+  let listItem: OrganizerListSectionItemElement;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    listItem = document.createElement('organizer-list-item');
+    listItem = document.createElement('organizer-list-section-item');
     document.body.appendChild(listItem);
     await microtasksFinished();
   });

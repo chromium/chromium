@@ -18,17 +18,17 @@ build_webui("build") {
     "delegates/open_tabs_delegate.ts",
     "organizer_list.html.ts",
     "organizer_list.ts",
-    "organizer_list_item.html.ts",
-    "organizer_list_item.ts",
     "organizer_list_section.html.ts",
     "organizer_list_section.ts",
     "organizer_list_section_delegate.ts",
+    "organizer_list_section_item.html.ts",
+    "organizer_list_section_item.ts",
   ]
   css_files = [
     "app.css",
     "organizer_list.css",
-    "organizer_list_item.css",
     "organizer_list_section.css",
+    "organizer_list_section_item.css",
   ]
 
   webui_context_type = "trusted"

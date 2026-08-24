@@ -13,9 +13,9 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelTest, App) {
   RunTest("organizer_panel/app_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(OrganizerPanelTest, ListItem) {
+IN_PROC_BROWSER_TEST_F(OrganizerPanelTest, ListSectionItem) {
   set_test_loader_host(chrome::kChromeUIOrganizerPanelHost);
-  RunTest("organizer_panel/organizer_list_item_test.js", "mocha.run()");
+  RunTest("organizer_panel/organizer_list_section_item_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(OrganizerPanelTest, ListSection) {
