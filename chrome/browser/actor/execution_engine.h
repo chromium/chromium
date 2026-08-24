@@ -126,7 +126,9 @@ class ExecutionEngine : public ToolDelegate,
     kAllowByContainerConfig = 4,
     // AgentContainerConfig was provided and blocked this site.
     kBlockByContainerConfig = 5,
-    kMaxValue = kBlockByContainerConfig,
+    // The navigation was blocked due to a dangerous MIME type in the response.
+    kBlockByDangerousMimeType = 6,
+    kMaxValue = kBlockByDangerousMimeType,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:GatingDecision)
 

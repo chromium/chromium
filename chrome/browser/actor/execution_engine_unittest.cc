@@ -4,7 +4,11 @@
 
 #include "chrome/browser/actor/execution_engine.h"
 
+#include <algorithm>
+#include <initializer_list>
 #include <optional>
+#include <string>
+#include <string_view>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
@@ -49,6 +53,7 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "net/http/http_response_headers.h"
 #include "pdf/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1568,6 +1573,103 @@ TEST_F(ExecutionEngineUrlGatingTest,
             content::NavigationThrottle::DEFER);
 
   EXPECT_FALSE(future.Get());
+}
+
+struct MimeTestCase {
+  std::optional<std::string_view> content_type_header;
+  bool expected_allowed;
+};
+
+class ExecutionEngineMimeGatingTest
+    : public ExecutionEngineUrlGatingTest,
+      public testing::WithParamInterface<MimeTestCase> {
+ public:
+  std::optional<std::string_view> content_type_header() const {
+    return GetParam().content_type_header;
+  }
+
+  bool expected_allowed() const { return GetParam().expected_allowed; }
+};
+
+TEST_P(ExecutionEngineMimeGatingTest, HandlesMimeTypes) {
+  const GURL source_url("https://example.com/");
+  const GURL destination_url("https://example.com/api");
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{kGlicCrossOriginNavigationGating,
+                            kGlicBlockNavigationToDangerousContentTypes},
+      /*disabled_features=*/{});
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             source_url);
+
+  content::MockNavigationHandle navigation_handle(destination_url, main_rfh());
+  navigation_handle.set_initiator_origin(url::Origin::Create(source_url));
+
+  net::HttpResponseHeaders::Builder builder(net::HttpVersion(1, 1), "200 OK");
+  if (content_type_header().has_value()) {
+    builder.AddHeader("Content-Type", *content_type_header());
+  }
+  navigation_handle.set_response_headers(builder.Build());
+
+  base::test::TestFuture<bool> future;
+  EXPECT_EQ(GetExecutionEngine().ShouldDeferNavigation(navigation_handle,
+                                                       future.GetCallback()),
+            content::NavigationThrottle::DEFER);
+
+  EXPECT_EQ(future.Get(), expected_allowed());
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ExecutionEngineMimeGatingTest,
+                         testing::ValuesIn(std::initializer_list<MimeTestCase>{
+                             {"application/json", false},
+                             {"application/ld+json", false},
+                             {"application/x-javascript", false},
+                             {"application/hal+json", false},
+                             {"application/xml", false},
+                             {"text/csv", false},
+                             {"text/comma-separated-values", false},
+                             {"text/tsv", false},
+                             {"text/tab-separated-values", false},
+                             {"text/plain", true},
+                             {std::nullopt, true},
+                             {"text/html", true},
+                         }),
+                         [](const testing::TestParamInfo<MimeTestCase>& info) {
+                           std::string mime_type(
+                               info.param.content_type_header.value_or("null"));
+                           std::ranges::replace(mime_type, '/', '_');
+                           std::ranges::replace(mime_type, '+', '_');
+                           std::ranges::replace(mime_type, '-', '_');
+                           return mime_type;
+                         });
+
+TEST_F(ExecutionEngineUrlGatingTest,
+       ShouldDeferNavigation_DangerousMimeTypeFeatureDisabled) {
+  const GURL source_url("https://a.test/");
+  const GURL destination_url("https://a.test/data.json");
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{kGlicCrossOriginNavigationGating},
+      /*disabled_features=*/{kGlicBlockNavigationToDangerousContentTypes});
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             source_url);
+
+  content::MockNavigationHandle navigation_handle(destination_url, main_rfh());
+  net::HttpResponseHeaders::Builder builder(net::HttpVersion(1, 1), "200 OK");
+  builder.AddHeader("Content-Type", "application/json");
+  navigation_handle.set_response_headers(builder.Build());
+
+  base::test::TestFuture<bool> future;
+  EXPECT_EQ(GetExecutionEngine().ShouldDeferNavigation(navigation_handle,
+                                                       future.GetCallback()),
+            content::NavigationThrottle::DEFER);
+
+  EXPECT_TRUE(future.Get());
 }
 
 }  // namespace

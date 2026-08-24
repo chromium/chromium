@@ -5,7 +5,6 @@
 #include "chrome/browser/actor/actor_navigation_throttle.h"
 
 #include <algorithm>
-#include <initializer_list>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -22,7 +21,6 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/mock_navigation_throttle_registry.h"
-#include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -323,86 +321,6 @@ TEST_F(ActorNavigationThrottleTest, PlainAutoToplevel_Proceed) {
             throttle.WillStartRequest().action());
   EXPECT_FALSE(test_delegate.confirm_navigation_called());
 }
-
-struct MimeTestCase {
-  std::optional<std::string_view> content_type_header;
-  content::NavigationThrottle::ThrottleAction expected_action;
-};
-
-class ActorNavigationThrottleMimeBypassTest
-    : public ActorNavigationThrottleTest,
-      public testing::WithParamInterface<MimeTestCase> {
- public:
-  std::optional<std::string_view> content_type_header() const {
-    return GetParam().content_type_header;
-  }
-
-  content::NavigationThrottle::ThrottleAction expected_action() const {
-    return GetParam().expected_action;
-  }
-};
-
-TEST_P(ActorNavigationThrottleMimeBypassTest, HandlesMimeTypes) {
-  ActorKeyedService* service = ActorKeyedService::Get(profile());
-  TaskId task_id =
-      service->CreateTask(TestTaskSourceInfo(), NoEnterprisePolicyChecker());
-  ActorTask* task = service->GetTask(task_id);
-  ASSERT_TRUE(task);
-
-  NavigateAndCommit(GURL("https://example.com"));
-
-  testing::NiceMock<content::MockNavigationHandle> handle(
-      GURL("https://example.com/api"), main_rfh());
-  handle.set_initiator_origin(url::Origin::Create(GURL("https://example.com")));
-
-  net::HttpResponseHeaders::Builder builder(net::HttpVersion(1, 1), "200 OK");
-  if (content_type_header().has_value()) {
-    builder.AddHeader("Content-Type", *content_type_header());
-  }
-  handle.set_response_headers(builder.Build());
-
-  content::MockNavigationThrottleRegistry registry(&handle);
-  ActorNavigationThrottle throttle =
-      ActorNavigationThrottle::CreateForTesting(registry, *task);
-
-  if (expected_action() == ThrottleAction::PROCEED) {
-    // Same-origin navigations are asynchronous, so they will return DEFER
-    // synchronously, but should eventually resume (proceed).
-    EXPECT_EQ(ThrottleAction::DEFER, throttle.WillProcessResponse().action());
-
-    base::test::TestFuture<void> future;
-    throttle.set_resume_callback_for_testing(future.GetRepeatingCallback());
-
-    EXPECT_TRUE(future.Wait());
-  } else {
-    EXPECT_EQ(expected_action(), throttle.WillProcessResponse().action());
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ActorNavigationThrottleMimeBypassTest,
-    testing::ValuesIn(std::initializer_list<MimeTestCase>{
-        {"application/json", ThrottleAction::CANCEL_AND_IGNORE},
-        {"application/ld+json", ThrottleAction::CANCEL_AND_IGNORE},
-        {"application/x-javascript", ThrottleAction::CANCEL_AND_IGNORE},
-        {"application/hal+json", ThrottleAction::CANCEL_AND_IGNORE},
-        {"application/xml", ThrottleAction::CANCEL_AND_IGNORE},
-        {"text/csv", ThrottleAction::CANCEL_AND_IGNORE},
-        {"text/comma-separated-values", ThrottleAction::CANCEL_AND_IGNORE},
-        {"text/tsv", ThrottleAction::CANCEL_AND_IGNORE},
-        {"text/tab-separated-values", ThrottleAction::CANCEL_AND_IGNORE},
-        {"text/plain", ThrottleAction::PROCEED},
-        {std::nullopt, ThrottleAction::PROCEED},
-        {"text/html", ThrottleAction::PROCEED},
-    }),
-    [](const testing::TestParamInfo<MimeTestCase>& info) {
-      std::string mime_type(info.param.content_type_header.value_or("null"));
-      std::ranges::replace(mime_type, '/', '_');
-      std::ranges::replace(mime_type, '+', '_');
-      std::ranges::replace(mime_type, '-', '_');
-      return mime_type;
-    });
 
 }  // namespace
 }  // namespace actor

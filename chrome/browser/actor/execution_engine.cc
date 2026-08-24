@@ -15,6 +15,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -84,10 +85,12 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
+#include "net/http/http_response_headers.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
+#include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "ui/event_dispatcher.h"
 #include "url/origin.h"
 
@@ -126,6 +129,8 @@ constexpr char kTabErrorDocumentPredicateName[] =
     "actor_tab_error_document_check";
 constexpr char kTabSafeBrowsingObserverPredicateName[] =
     "actor_tab_safe_browsing_observer_check";
+constexpr char kDangerousMimeTypePredicateName[] =
+    "actor_dangerous_mime_type_check";
 
 constexpr GateableEventSet kRequestsAndPageActions = {
     GateableEvent::kNavigationRequest, GateableEvent::kPageAction};
@@ -178,15 +183,18 @@ struct OriginGatingDecisionContext
 struct NavigationResponseContext : public OriginGatingDecisionContext {
   NavigationResponseContext(ukm::SourceId ukm_id,
                             bool skip,
-                            base::ScopedUmaHistogramTimer gating_timer)
+                            base::ScopedUmaHistogramTimer gating_timer,
+                            std::optional<std::string> response_mime_type)
       : ukm_source_id(ukm_id),
         skip_prompt(skip),
-        timer(std::move(gating_timer)) {}
+        timer(std::move(gating_timer)),
+        response_mime_type(std::move(response_mime_type)) {}
   ~NavigationResponseContext() override = default;
 
   ukm::SourceId ukm_source_id;
   bool skip_prompt;
   base::ScopedUmaHistogramTimer timer;
+  std::optional<std::string> response_mime_type;
 };
 
 // Context for page-action gating. Carries the tab's WebContents so that the
@@ -232,6 +240,52 @@ origin_gating::Decision BlockSafeBrowsingWarningIfSafetyChecksEnabled(
   }
 #endif
   return origin_gating::Decision::kNoDecision;
+}
+
+bool IsDangerousMimeType(std::string_view mime_type) {
+  static constexpr auto kBlockedTabularTypes =
+      base::MakeFixedFlatSet<std::string_view>({
+          "text/csv",
+          "text/comma-separated-values",
+          "text/tsv",
+          "text/tab-separated-values",
+      });
+  return kBlockedTabularTypes.contains(mime_type) ||
+         blink::IsJSONMimeType(mime_type) || blink::IsXMLMimeType(mime_type) ||
+         blink::IsSupportedJavascriptMimeType(mime_type);
+}
+
+// Blocks navigation responses that have dangerous MIME types (e.g. JSON, XML,
+// JavaScript, CSV).
+origin_gating::Decision BlockDangerousMimeType(
+    origin_gating::GatingDecisionContext* context,
+    const GURL& source,
+    const GURL& destination) {
+  if (!base::FeatureList::IsEnabled(
+          kGlicBlockNavigationToDangerousContentTypes) ||
+      !context) {
+    return origin_gating::Decision::kNoDecision;
+  }
+  const auto* response_context =
+      static_cast<const NavigationResponseContext*>(context);
+  return response_context->response_mime_type.transform(&IsDangerousMimeType)
+                 .value_or(false)
+             ? origin_gating::Decision::kBlocked
+             : origin_gating::Decision::kNoDecision;
+}
+
+// Extracts the MIME type from a navigation response payload.
+std::optional<std::string> ExtractMimeType(
+    content::NavigationHandle& navigation_handle) {
+  const net::HttpResponseHeaders* response_headers =
+      navigation_handle.GetResponseHeaders();
+  if (!response_headers) {
+    return std::nullopt;
+  }
+  std::string mime_type;
+  return response_headers->GetMimeType(&mime_type)
+             ? std::make_optional(mime_type)
+             : std::nullopt;
 }
 
 CustomPredicate CreateSafetyListPredicate() {
@@ -449,6 +503,9 @@ ExecutionEngine::GatingDecision MapGatingDecisionToEngineDecision(
       if (decision.attribution == kSensitiveUrlPromptsDisabledPredicateName) {
         return ExecutionEngine::GatingDecision::kNeedsAsyncCheck;
       }
+      if (decision.attribution == kDangerousMimeTypePredicateName) {
+        return ExecutionEngine::GatingDecision::kBlockByDangerousMimeType;
+      }
       NOTREACHED() << "Unrecognized custom predicate attribution: "
                    << decision.attribution.CustomPredicateName();
   }
@@ -486,6 +543,9 @@ MayActOnUrlBlockReason MapGatingDecisionToBlockReason(
     case origin_gating::DecisionAttribution::Type::kCustomPredicate:
       if (decision.attribution == kSafetyListPredicateName) {
         return MayActOnUrlBlockReason::kBlockedByStaticList;
+      }
+      if (decision.attribution == kDangerousMimeTypePredicateName) {
+        return MayActOnUrlBlockReason::kDangerousMimeType;
       }
       if (decision.attribution == kSensitiveUrlPredicateName) {
         return MayActOnUrlBlockReason::kOptimizationGuideBlock;
@@ -642,6 +702,9 @@ ExecutionEngine::ExecutionEngine(
                                            task_->GetProfile()),
                        kSafeBrowsingPredicateName),
                    kRequestsAndPageActions},
+                  {CustomPredicate(base::BindRepeating(&BlockDangerousMimeType),
+                                   kDangerousMimeTypePredicateName),
+                   {GateableEvent::kNavigationResponse}},
                   {DecisionSource::kEnterprisePolicy, GateableEventSet::All()},
                   {CustomPredicate(base::BindRepeating(&BlockLookalikeUrl,
                                                        task_->GetProfile()),
@@ -780,7 +843,8 @@ ExecutionEngine::ShouldDeferNavigation(
   origin_gating_checker_.ComputeGatingDecision(
       std::make_unique<NavigationResponseContext>(
           GetPrimaryMainFrame(navigation_handle)->GetPageUkmSourceId(),
-          navigation_handle.IsInPrerenderedMainFrame(), std::move(timer)),
+          navigation_handle.IsInPrerenderedMainFrame(), std::move(timer),
+          ExtractMimeType(navigation_handle)),
       event, source_origin.GetURL(), navigation_handle.GetURL(),
       base::BindOnce(
           &ExecutionEngine::OnComputedGatingDecision, GetWeakPtr(),
@@ -815,10 +879,12 @@ void ExecutionEngine::OnComputedGatingDecision(
 
   RecordNavigationGatingDecision(MapGatingDecisionToEngineDecision(decision));
 
+  const auto* response_context =
+      static_cast<NavigationResponseContext*>(context.get());
+  CHECK(response_context);
   if (decision.attribution == DecisionSource::kCacheWithoutUserConfirmation ||
       decision.attribution == DecisionSource::kCacheWithUserConfirmation) {
-    ukm::builders::Actor_OriginGating(
-        static_cast<NavigationResponseContext*>(context.get())->ukm_source_id)
+    ukm::builders::Actor_OriginGating(response_context->ukm_source_id)
         .SetServerConfirmationResult(static_cast<int64_t>(
             ExecutionEngine::ActorServerConfirmationResult::kNotRequired))
         .SetEngineState(static_cast<int64_t>(initial_state))
@@ -834,6 +900,8 @@ void ExecutionEngine::OnComputedGatingDecision(
           .Add("event", origin_gating::GateableEventToString(event))
           .Add("decision", decision.is_allowed ? "allowed" : "blocked")
           .Add("attribution", decision.attribution.ToString())
+          .Add("mime_type",
+               response_context->response_mime_type.value_or("null"))
           .Build());
 
   std::move(callback).Run(decision.is_allowed);
