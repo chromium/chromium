@@ -17,9 +17,12 @@ class EntityDataManager;
 // Mediator for the Autofill and Passwords settings page.
 @interface AutofillAndPasswordsMediator : NSObject
 
+// Designated initializer. `shouldShowSuggestionsFromGemini` indicates if the
+// Suggestions from Gemini settings item should be visible.
 - (instancetype)initWithUserPrefService:(PrefService*)userPrefService
                       entityDataManager:
                           (autofill::EntityDataManager*)entityDataManager
+        shouldShowSuggestionsFromGemini:(BOOL)shouldShowSuggestionsFromGemini
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

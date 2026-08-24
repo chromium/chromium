@@ -38,6 +38,13 @@
   return self;
 }
 
+- (void)didMoveToParentViewController:(UIViewController*)parent {
+  [super didMoveToParentViewController:parent];
+  if (!parent) {
+    [self.delegate suggestionsFromGeminiTableViewControllerDidRemove:self];
+  }
+}
+
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.title =

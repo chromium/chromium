@@ -38,6 +38,7 @@ typedef NS_ENUM(NSInteger, SettingsItemType) {
   SettingsItemTypeIdentityDocs,
   SettingsItemTypeTravelInfo,
   SettingsItemTypeShoppingInfo,
+  SettingsItemTypeSuggestionsFromGemini,
   SettingsItemTypeAutofillAndPasswords,
   SettingsItemTypeAutofillSettings,
   SettingsItemTypeVoiceSearch,
@@ -123,6 +124,9 @@ extern NSString* const kSettingsTravelInfoCellId;
 
 // The accessibility identifier of the Shopping Info cell.
 extern NSString* const kSettingsShoppingInfoCellId;
+
+// The accessibility identifier of the Suggestions From Gemini cell.
+extern NSString* const kSettingsSuggestionsFromGeminiCellId;
 
 // The accessibility identifier of the Autofill and Passwords cell.
 extern NSString* const kSettingsAutofillAndPasswordsCellId;

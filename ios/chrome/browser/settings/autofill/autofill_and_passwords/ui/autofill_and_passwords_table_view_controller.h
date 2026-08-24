@@ -46,6 +46,10 @@
 - (void)autofillAndPasswordsTableViewControllerDidSelectShopping:
     (AutofillAndPasswordsTableViewController*)controller;
 
+// Called when the user taps on the suggestions from gemini item.
+- (void)autofillAndPasswordsTableViewControllerDidSelectSuggestionsFromGemini:
+    (AutofillAndPasswordsTableViewController*)controller;
+
 // Called when the user taps on the autofill settings item.
 - (void)autofillAndPasswordsTableViewControllerDidSelectAutofillSettings:
     (AutofillAndPasswordsTableViewController*)controller;

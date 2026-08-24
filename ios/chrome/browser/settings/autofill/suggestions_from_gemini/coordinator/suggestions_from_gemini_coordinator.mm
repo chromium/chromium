@@ -20,7 +20,8 @@
 #import "url/gurl.h"
 
 @interface SuggestionsFromGeminiCoordinator () <
-    SuggestionsFromGeminiMediatorDelegate>
+    SuggestionsFromGeminiMediatorDelegate,
+    SuggestionsFromGeminiTableViewControllerDelegate>
 
 @end
 
@@ -45,6 +46,7 @@
 
 - (void)start {
   _viewController = [[SuggestionsFromGeminiTableViewController alloc] init];
+  _viewController.delegate = self;
 
   PrefService* prefService = self.browser->GetProfile()->GetPrefs();
 
@@ -56,6 +58,14 @@
   _mediator.delegate = self;
 
   [_baseNavigationController pushViewController:_viewController animated:YES];
+}
+
+#pragma mark - SuggestionsFromGeminiTableViewControllerDelegate
+
+- (void)suggestionsFromGeminiTableViewControllerDidRemove:
+    (SuggestionsFromGeminiTableViewController*)controller {
+  CHECK_EQ(_viewController, controller);
+  [self.delegate suggestionsFromGeminiCoordinatorDidRemove:self];
 }
 
 - (void)stop {

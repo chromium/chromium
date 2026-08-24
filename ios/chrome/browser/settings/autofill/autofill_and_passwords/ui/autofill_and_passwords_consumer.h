@@ -28,6 +28,12 @@
 // Sets the shopping item with detail text.
 - (void)setShoppingEnabled:(BOOL)enabled;
 
+// Sets the suggestions from gemini item with detail text.
+- (void)setSuggestionsFromGeminiEnabled:(BOOL)enabled;
+
+// Sets whether to show the Suggestions From Gemini entry point.
+- (void)setShouldShowSuggestionsFromGemini:(BOOL)shouldShow;
+
 // Sets whether to show the Autofill AI features items.
 - (void)setShouldShowAutofillAIFeatures:(BOOL)shouldShow;
 

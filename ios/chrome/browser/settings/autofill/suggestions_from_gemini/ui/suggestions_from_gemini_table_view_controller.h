@@ -9,12 +9,27 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
+@class SuggestionsFromGeminiTableViewController;
 @protocol SuggestionsFromGeminiMutator;
+
+// Delegate for presentation events related to
+// SuggestionsFromGeminiTableViewController.
+@protocol SuggestionsFromGeminiTableViewControllerDelegate <NSObject>
+
+// Called when the view controller is removed from its parent.
+- (void)suggestionsFromGeminiTableViewControllerDidRemove:
+    (SuggestionsFromGeminiTableViewController*)controller;
+
+@end
 
 // The TableView for the Suggestions from Gemini settings.
 @interface SuggestionsFromGeminiTableViewController
     : SettingsRootTableViewController <SettingsControllerProtocol,
                                        SuggestionsFromGeminiConsumer>
+
+// Presentation delegate.
+@property(nonatomic, weak) id<SuggestionsFromGeminiTableViewControllerDelegate>
+    delegate;
 
 // The mutator for this view controller.
 @property(nonatomic, weak) id<SuggestionsFromGeminiMutator> mutator;

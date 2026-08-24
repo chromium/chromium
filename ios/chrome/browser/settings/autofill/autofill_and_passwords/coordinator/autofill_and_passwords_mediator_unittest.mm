@@ -9,14 +9,22 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#import "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #import "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/personal_context/core/personal_context_prefs.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/signin/public/base/gaia_id_hash.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/identity_test_utils.h"
+#import "components/sync/base/account_pref_utils.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_and_passwords_consumer.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
@@ -36,6 +44,10 @@ class AutofillAndPasswordsMediatorTest : public PlatformTest {
                               ios::WebDataServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
+    builder.AddTestingFactory(
+        IdentityManagerFactory::GetInstance(),
+        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
+                                BuildIdentityManagerForTests));
 
     profile_ = std::move(builder).Build();
     pref_service_ = profile_->GetPrefs();
@@ -44,9 +56,16 @@ class AutofillAndPasswordsMediatorTest : public PlatformTest {
         IOSAutofillEntityDataManagerFactory::GetForProfile(profile_.get());
 
     mediator_ = [[AutofillAndPasswordsMediator alloc]
-        initWithUserPrefService:pref_service_
-              entityDataManager:entity_data_manager_];
+                initWithUserPrefService:pref_service_
+                      entityDataManager:entity_data_manager_
+        shouldShowSuggestionsFromGemini:NO];
     consumer_ = OCMProtocolMock(@protocol(AutofillAndPasswordsConsumer));
+
+    // Stub Suggestions from Gemini calls by default.
+    [[consumer_ stub] setShouldShowSuggestionsFromGemini:YES];
+    [[consumer_ stub] setShouldShowSuggestionsFromGemini:NO];
+    [[consumer_ stub] setSuggestionsFromGeminiEnabled:YES];
+    [[consumer_ stub] setSuggestionsFromGeminiEnabled:NO];
   }
 
   void TearDown() override {
@@ -256,4 +275,45 @@ TEST_F(AutofillAndPasswordsMediatorTest,
   [mediator_ disconnect];
 
   mediator_.consumer = consumer_;
+}
+
+// Tests that the mediator updates the consumer when the opt-in preference
+// changes.
+TEST_F(AutofillAndPasswordsMediatorTest,
+       UpdatesSuggestionsFromGeminiOnPrefChange) {
+  pref_service_->SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      false);
+
+  id mockConsumer = OCMProtocolMock(@protocol(AutofillAndPasswordsConsumer));
+
+  // Initial calls when setting consumer.
+  OCMExpect([mockConsumer setShouldShowSuggestionsFromGemini:NO]);
+  OCMExpect([mockConsumer setSuggestionsFromGeminiEnabled:NO]);
+  // Stub other initial calls.
+  [[mockConsumer stub] setPasswordsEnabled:OCMOCK_ANY];
+  [[mockConsumer stub] setAutofillCreditCardEnabled:OCMOCK_ANY];
+  [[mockConsumer stub] setAutofillProfileEnabled:OCMOCK_ANY];
+  [[mockConsumer stub] setIdentityDocsEnabled:OCMOCK_ANY];
+  [[mockConsumer stub] setTravelInfoEnabled:OCMOCK_ANY];
+  [[mockConsumer stub] setShouldShowAutofillAIFeatures:OCMOCK_ANY];
+  [[mockConsumer stub] setShoppingEnabled:OCMOCK_ANY];
+
+  mediator_.consumer = mockConsumer;
+
+  // Verify initial calls.
+  EXPECT_OCMOCK_VERIFY(mockConsumer);
+
+  // Now expect updates.
+  OCMExpect([mockConsumer setSuggestionsFromGeminiEnabled:YES]);
+  pref_service_->SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      true);
+  EXPECT_OCMOCK_VERIFY(mockConsumer);
+
+  OCMExpect([mockConsumer setSuggestionsFromGeminiEnabled:NO]);
+  pref_service_->SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      false);
+  EXPECT_OCMOCK_VERIFY(mockConsumer);
 }

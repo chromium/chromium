@@ -10,13 +10,13 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/personal_context/core/personal_context_prefs.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_observer_bridge.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_and_passwords_consumer.h"
-
 @interface AutofillAndPasswordsMediator () <
     IOSAutofillEntityDataManagerObserver,
     PrefObserverDelegate>
@@ -25,6 +25,7 @@
 @implementation AutofillAndPasswordsMediator {
   raw_ptr<PrefService> _userPrefService;
   raw_ptr<autofill::EntityDataManager> _entityDataManager;
+  BOOL _shouldShowSuggestionsFromGemini;
   std::unique_ptr<autofill::IOSAutofillEntityDataManagerObserverBridge>
       _entityDataManagerObserver;
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
@@ -33,11 +34,13 @@
 
 - (instancetype)initWithUserPrefService:(PrefService*)userPrefService
                       entityDataManager:
-                          (autofill::EntityDataManager*)entityDataManager {
+                          (autofill::EntityDataManager*)entityDataManager
+        shouldShowSuggestionsFromGemini:(BOOL)shouldShowSuggestionsFromGemini {
   self = [super init];
   if (self) {
     _userPrefService = userPrefService;
     _entityDataManager = entityDataManager;
+    _shouldShowSuggestionsFromGemini = shouldShowSuggestionsFromGemini;
     _prefChangeRegistrar.Init(_userPrefService);
     _prefObserverBridge.reset(new PrefObserverBridge(self));
 
@@ -53,6 +56,9 @@
         &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(
         autofill::prefs::kAutofillAiTravelEntitiesEnabled,
+        &_prefChangeRegistrar);
+    _prefObserverBridge->ObserveChangesForPreference(
+        personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
         &_prefChangeRegistrar);
 
     if (_entityDataManager) {
@@ -94,6 +100,7 @@
     if (autofill::IsAutofillShoppingEnabled()) {
       [_consumer setShoppingEnabled:YES];
     }
+    [self updateSuggestionsFromGemini];
     [self updateShouldShowAutofillAIFeatures];
   }
 }
@@ -131,6 +138,10 @@
     [_consumer setTravelInfoEnabled:
                    _userPrefService->GetBoolean(
                        autofill::prefs::kAutofillAiTravelEntitiesEnabled)];
+  } else if (preferenceName ==
+             personal_context::prefs::
+                 kPersonalContextInAutofillSettingsToggleStatus) {
+    [self updateSuggestionsFromGemini];
   }
 }
 
@@ -141,6 +152,19 @@
 }
 
 #pragma mark - Private
+
+// Updates the consumer with the Suggestions From Gemini settings state.
+- (void)updateSuggestionsFromGemini {
+  if (!_consumer) {
+    return;
+  }
+  [_consumer
+      setShouldShowSuggestionsFromGemini:_shouldShowSuggestionsFromGemini];
+  [_consumer setSuggestionsFromGeminiEnabled:
+                 _userPrefService->GetBoolean(
+                     personal_context::prefs::
+                         kPersonalContextInAutofillSettingsToggleStatus)];
+}
 
 // Updates the consumer on whether to show Autofill AI features based on their
 // availability and the presence of local data.

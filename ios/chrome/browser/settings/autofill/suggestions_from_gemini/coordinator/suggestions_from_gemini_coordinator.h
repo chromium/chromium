@@ -9,8 +9,21 @@
 
 @class SuggestionsFromGeminiCoordinator;
 
+// Delegate for SuggestionsFromGeminiCoordinator.
+@protocol SuggestionsFromGeminiCoordinatorDelegate <NSObject>
+
+// Called when the coordinator is finished and should be removed.
+- (void)suggestionsFromGeminiCoordinatorDidRemove:
+    (SuggestionsFromGeminiCoordinator*)coordinator;
+
+@end
+
 // Coordinator for the Suggestions from Gemini settings.
 @interface SuggestionsFromGeminiCoordinator : ChromeCoordinator
+
+// Delegate.
+@property(nonatomic, weak) id<SuggestionsFromGeminiCoordinatorDelegate>
+    delegate;
 
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController

@@ -3010,22 +3010,21 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   if (!IsYourSavedInfoSettingsPageIosEnabled()) {
     if (preferenceName == password_manager::prefs::kCredentialsEnableService) {
       _passwordsDetailItem.detailText =
-          PasswordsItemDetailText(_profile->GetPrefs()->GetBoolean(
+          DetailTextForEnabledState(_profile->GetPrefs()->GetBoolean(
               password_manager::prefs::kCredentialsEnableService));
       [self reconfigureCellsForItems:@[ _passwordsDetailItem ]];
     }
 
     if (preferenceName == autofill::prefs::kAutofillProfileEnabled) {
-      _autoFillProfileDetailItem.detailText = AutofillProfileItemDetailText(
+      _autoFillProfileDetailItem.detailText = DetailTextForEnabledState(
           autofill::prefs::IsAutofillProfileEnabled(_profile->GetPrefs()));
       [self reconfigureCellsForItems:@[ _autoFillProfileDetailItem ]];
     }
 
     if (preferenceName == autofill::prefs::kAutofillCreditCardEnabled) {
-      _autoFillCreditCardDetailItem.detailText =
-          AutofillCreditCardItemDetailText(
-              autofill::prefs::IsAutofillPaymentMethodsEnabled(
-                  _profile->GetPrefs()));
+      _autoFillCreditCardDetailItem.detailText = DetailTextForEnabledState(
+          autofill::prefs::IsAutofillPaymentMethodsEnabled(
+              _profile->GetPrefs()));
       [self reconfigureCellsForItems:@[ _autoFillCreditCardDetailItem ]];
     }
   }

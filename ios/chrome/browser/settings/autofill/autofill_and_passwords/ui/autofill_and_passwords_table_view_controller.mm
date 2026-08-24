@@ -32,6 +32,8 @@
   BOOL _identityDocsEnabled;
   BOOL _travelInfoEnabled;
   BOOL _shoppingEnabled;
+  BOOL _suggestionsFromGeminiEnabled;
+  BOOL _shouldShowSuggestionsFromGemini;
   BOOL _shouldShowAutofillAIFeatures;
 
   // Updatable Items.
@@ -41,6 +43,7 @@
   TableViewDetailIconItem* _identityDocsDetailItem;
   TableViewDetailIconItem* _travelInfoDetailItem;
   TableViewDetailIconItem* _shoppingDetailItem;
+  TableViewDetailIconItem* _suggestionsFromGeminiDetailItem;
   BOOL _settingsAreDismissed;
 }
 
@@ -107,6 +110,13 @@
     }
   }
 
+  if (_shouldShowSuggestionsFromGemini) {
+    _suggestionsFromGeminiDetailItem =
+        SuggestionsFromGeminiItem(_suggestionsFromGeminiEnabled);
+    [model addItem:_suggestionsFromGeminiDetailItem
+        toSectionWithIdentifier:SettingsSectionIdentifierBasics];
+  }
+
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillAiWithDataSchema)) {
     [model addItem:AutofillSettingsItem()
@@ -150,6 +160,11 @@
       [self.delegate
           autofillAndPasswordsTableViewControllerDidSelectShopping:self];
       break;
+    case SettingsItemTypeSuggestionsFromGemini:
+      [self.delegate
+          autofillAndPasswordsTableViewControllerDidSelectSuggestionsFromGemini:
+              self];
+      break;
     case SettingsItemTypeAutofillSettings:
       [self.delegate
           autofillAndPasswordsTableViewControllerDidSelectAutofillSettings:
@@ -171,9 +186,9 @@
   if (_passwordsDetailItem) {
     if (IsYourSavedInfoSettingsPageIosEnabled()) {
       _passwordsDetailItem.trailingDetailText =
-          PasswordsItemDetailText(enabled);
+          DetailTextForEnabledState(enabled);
     } else {
-      _passwordsDetailItem.detailText = PasswordsItemDetailText(enabled);
+      _passwordsDetailItem.detailText = DetailTextForEnabledState(enabled);
     }
     [self reconfigureCellsForItems:@[ _passwordsDetailItem ]];
   }
@@ -188,10 +203,10 @@
   if (_autofillCreditCardDetailItem) {
     if (IsYourSavedInfoSettingsPageIosEnabled()) {
       _autofillCreditCardDetailItem.trailingDetailText =
-          AutofillCreditCardItemDetailText(enabled);
+          DetailTextForEnabledState(enabled);
     } else {
       _autofillCreditCardDetailItem.detailText =
-          AutofillCreditCardItemDetailText(enabled);
+          DetailTextForEnabledState(enabled);
     }
     [self reconfigureCellsForItems:@[ _autofillCreditCardDetailItem ]];
   }
@@ -206,10 +221,10 @@
   if (_autofillProfileDetailItem) {
     if (IsYourSavedInfoSettingsPageIosEnabled()) {
       _autofillProfileDetailItem.trailingDetailText =
-          AutofillProfileItemDetailText(enabled);
+          DetailTextForEnabledState(enabled);
     } else {
       _autofillProfileDetailItem.detailText =
-          AutofillProfileItemDetailText(enabled);
+          DetailTextForEnabledState(enabled);
     }
     [self reconfigureCellsForItems:@[ _autofillProfileDetailItem ]];
   }
@@ -224,9 +239,9 @@
   if (_identityDocsDetailItem) {
     if (IsYourSavedInfoSettingsPageIosEnabled()) {
       _identityDocsDetailItem.trailingDetailText =
-          IdentityDocsItemDetailText(enabled);
+          DetailTextForEnabledState(enabled);
     } else {
-      _identityDocsDetailItem.detailText = IdentityDocsItemDetailText(enabled);
+      _identityDocsDetailItem.detailText = DetailTextForEnabledState(enabled);
     }
     [self reconfigureCellsForItems:@[ _identityDocsDetailItem ]];
   }
@@ -241,9 +256,9 @@
   if (_travelInfoDetailItem) {
     if (IsYourSavedInfoSettingsPageIosEnabled()) {
       _travelInfoDetailItem.trailingDetailText =
-          TravelInfoItemDetailText(enabled);
+          DetailTextForEnabledState(enabled);
     } else {
-      _travelInfoDetailItem.detailText = TravelInfoItemDetailText(enabled);
+      _travelInfoDetailItem.detailText = DetailTextForEnabledState(enabled);
     }
     [self reconfigureCellsForItems:@[ _travelInfoDetailItem ]];
   }
@@ -258,11 +273,39 @@
   if (_shoppingDetailItem) {
     if (IsYourSavedInfoSettingsPageIosEnabled()) {
       _shoppingDetailItem.trailingDetailText =
-          ShoppingInfoItemDetailText(enabled);
+          DetailTextForEnabledState(enabled);
     } else {
-      _shoppingDetailItem.detailText = ShoppingInfoItemDetailText(enabled);
+      _shoppingDetailItem.detailText = DetailTextForEnabledState(enabled);
     }
     [self reconfigureCellsForItems:@[ _shoppingDetailItem ]];
+  }
+}
+
+- (void)setSuggestionsFromGeminiEnabled:(BOOL)enabled {
+  if (_suggestionsFromGeminiEnabled == enabled) {
+    return;
+  }
+  _suggestionsFromGeminiEnabled = enabled;
+
+  if (_suggestionsFromGeminiDetailItem) {
+    if (IsYourSavedInfoSettingsPageIosEnabled()) {
+      _suggestionsFromGeminiDetailItem.trailingDetailText =
+          DetailTextForEnabledState(enabled);
+    } else {
+      _suggestionsFromGeminiDetailItem.detailText =
+          DetailTextForEnabledState(enabled);
+    }
+    [self reconfigureCellsForItems:@[ _suggestionsFromGeminiDetailItem ]];
+  }
+}
+
+- (void)setShouldShowSuggestionsFromGemini:(BOOL)shouldShow {
+  if (_shouldShowSuggestionsFromGemini == shouldShow) {
+    return;
+  }
+  _shouldShowSuggestionsFromGemini = shouldShow;
+  if (self.isViewLoaded) {
+    [self reloadData];
   }
 }
 

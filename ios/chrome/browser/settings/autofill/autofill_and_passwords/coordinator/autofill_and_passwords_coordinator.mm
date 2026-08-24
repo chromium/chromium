@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_promo_view_mediator.h"
+#import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_and_passwords_mediator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_and_passwords_signin_promo_mediator.h"
@@ -27,6 +28,7 @@
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_and_passwords_table_view_controller.h"
 #import "ios/chrome/browser/settings/autofill/payments/coordinator/autofill_credit_card_coordinator.h"
 #import "ios/chrome/browser/settings/autofill/payments/coordinator/autofill_credit_card_coordinator_delegate.h"
+#import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/coordinator/suggestions_from_gemini_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -68,7 +70,8 @@ enum class YourSavedInfoDataCategory {
     PasswordsCoordinatorDelegate,
     SigninPromoViewMediatorDelegate,
     TravelInfoCoordinatorDelegate,
-    ShoppingCoordinatorDelegate>
+    ShoppingCoordinatorDelegate,
+    SuggestionsFromGeminiCoordinatorDelegate>
 
 @end
 
@@ -81,6 +84,7 @@ enum class YourSavedInfoDataCategory {
   ShoppingCoordinator* _shoppingCoordinator;
   AutofillSettingsCoordinator* _autofillSettingsCoordinator;
   AutofillCreditCardCoordinator* _autofillCreditCardCoordinator;
+  SuggestionsFromGeminiCoordinator* _suggestionsFromGeminiCoordinator;
 
   AutofillAndPasswordsSigninPromoMediator* _signinPromoMediator;
   SigninCoordinator* _signinCoordinator;
@@ -116,9 +120,12 @@ enum class YourSavedInfoDataCategory {
   autofill::EntityDataManager* entityDataManager =
       IOSAutofillEntityDataManagerFactory::GetForProfile(profile);
 
+  BOOL shouldShowSuggestionsFromGemini =
+      autofill::ShouldShowPersonalContextAutofillSetting(profile);
   _mediator = [[AutofillAndPasswordsMediator alloc]
-      initWithUserPrefService:profile->GetPrefs()
-            entityDataManager:entityDataManager];
+              initWithUserPrefService:profile->GetPrefs()
+                    entityDataManager:entityDataManager
+      shouldShowSuggestionsFromGemini:shouldShowSuggestionsFromGemini];
   _mediator.consumer = _viewController;
 
   ProfileIOS* originalProfile = profile->GetOriginalProfile();
@@ -173,6 +180,10 @@ enum class YourSavedInfoDataCategory {
   _autofillCreditCardCoordinator.delegate = nil;
   [_autofillCreditCardCoordinator stop];
   _autofillCreditCardCoordinator = nil;
+
+  _suggestionsFromGeminiCoordinator.delegate = nil;
+  [_suggestionsFromGeminiCoordinator stop];
+  _suggestionsFromGeminiCoordinator = nil;
 
   [_mediator disconnect];
   _mediator = nil;
@@ -321,6 +332,23 @@ enum class YourSavedInfoDataCategory {
   [_shoppingCoordinator start];
 }
 
+- (void)autofillAndPasswordsTableViewControllerDidSelectSuggestionsFromGemini:
+    (AutofillAndPasswordsTableViewController*)controller {
+  CHECK_EQ(_viewController, controller);
+  if (_suggestionsFromGeminiCoordinator) {
+    return;
+  }
+
+  base::RecordAction(base::UserMetricsAction(
+      "PersonalContext.Settings.EntryPoint.AutofillAndPasswordsSettings"));
+
+  _suggestionsFromGeminiCoordinator = [[SuggestionsFromGeminiCoordinator alloc]
+      initWithBaseNavigationController:self.baseNavigationController
+                               browser:self.browser];
+  _suggestionsFromGeminiCoordinator.delegate = self;
+  [_suggestionsFromGeminiCoordinator start];
+}
+
 - (void)autofillAndPasswordsTableViewControllerDidSelectAutofillSettings:
     (AutofillAndPasswordsTableViewController*)controller {
   if (_autofillSettingsCoordinator) {
@@ -395,6 +423,16 @@ enum class YourSavedInfoDataCategory {
   _shoppingCoordinator.delegate = nil;
   [_shoppingCoordinator stop];
   _shoppingCoordinator = nil;
+}
+
+#pragma mark - SuggestionsFromGeminiCoordinatorDelegate
+
+- (void)suggestionsFromGeminiCoordinatorDidRemove:
+    (SuggestionsFromGeminiCoordinator*)coordinator {
+  CHECK_EQ(_suggestionsFromGeminiCoordinator, coordinator);
+  _suggestionsFromGeminiCoordinator.delegate = nil;
+  [_suggestionsFromGeminiCoordinator stop];
+  _suggestionsFromGeminiCoordinator = nil;
 }
 
 #pragma mark - SigninPromoViewMediatorDelegate
