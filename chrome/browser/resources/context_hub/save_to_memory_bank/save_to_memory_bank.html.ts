@@ -31,7 +31,8 @@ export function getHtml(this: SaveToMemoryBankElement) {
               <div class="favicon-group">
                 <div class="favicon"
                     style="background-image: ${
-      getFaviconForPageURL(this.getDisplayUrl() || 'about:blank', false)}">
+      getFaviconForPageURL(
+          this.url || this.getDisplayUrl() || 'about:blank', false)}">
                 </div>
               </div>
               <div class="header-text">
@@ -71,10 +72,7 @@ export function getHtml(this: SaveToMemoryBankElement) {
                 <select class="md-select" .value="${this.collection}"
                     @change="${this.onCollectionChange}">
                   ${this.collections.map(col => html`
-                    <option value="${col}"
-                        ?selected="${col === this.collection}">
-                      ${col}
-                    </option>
+                    <option value="${col}">${col}</option>
                   `)}
                 </select>
               `}

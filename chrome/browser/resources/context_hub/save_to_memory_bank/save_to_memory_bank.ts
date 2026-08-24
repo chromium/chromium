@@ -11,6 +11,8 @@ import '//resources/cr_elements/icons.html.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {browserProxyFactory} from '../context_hub.mojom-webui.js';
+
 import {getCss} from './save_to_memory_bank.css.js';
 import {getHtml} from './save_to_memory_bank.html.js';
 
@@ -48,11 +50,16 @@ export class SaveToMemoryBankElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    if (this.collections.length === 0) {
-      this.collections = [...DEFAULT_COLLECTIONS];
-    }
-    if (!this.collection && this.collections.length > 0) {
-      this.collection = this.collections[0] || '';
+    this.initializeContext_();
+  }
+
+  private async initializeContext_() {
+    const {context} = await browserProxyFactory.getInstance()
+                          .handler.getSaveToMemoryBankContext();
+    if (context) {
+      this.url = context.url || '';
+      this.title = context.tabTitle || '';
+      this.snippet = context.selectedText || '';
     }
   }
 
@@ -60,8 +67,8 @@ export class SaveToMemoryBankElement extends CrLitElement {
   accessor url: string = '';
   accessor snippet: string = '';
   accessor note: string = '';
-  accessor collection: string = '';
-  accessor collections: string[] = [];
+  accessor collection: string = DEFAULT_COLLECTIONS[0] ?? '';
+  accessor collections: string[] = [...DEFAULT_COLLECTIONS];
   accessor tags: string[] = [];
   accessor isAddingCollection: boolean = false;
   accessor newCollectionInput: string = '';
@@ -153,8 +160,16 @@ export class SaveToMemoryBankElement extends CrLitElement {
     window.close();
   }
 
-  protected onSaveClick() {
-    window.close();
+  protected async onSaveClick() {
+    const {success} =
+        await browserProxyFactory.getInstance().handler.saveMemoryBankEntry({
+          note: this.note || null,
+          collection: this.collection || null,
+          tags: this.tags.length > 0 ? this.tags : null,
+        });
+    if (success) {
+      window.close();
+    }
   }
 }
 

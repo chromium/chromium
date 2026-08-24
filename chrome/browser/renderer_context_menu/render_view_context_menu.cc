@@ -51,6 +51,7 @@
 #include "chrome/browser/context_hub/context_hub_service_factory.h"
 #include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
+#include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/features.h"
@@ -373,6 +374,7 @@
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
+#include "chrome/browser/ui/views/context_hub/save_to_memory_bank_bubble_controller.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "components/tabs/public/split_tab_data.h"
@@ -4912,8 +4914,14 @@ void RenderViewContextMenu::ExecListenToThisPage() {
 }
 
 void RenderViewContextMenu::ExecSaveToMemoryBanks() {
+#if !BUILDFLAG(IS_ANDROID)
+  BrowserWindowInterface* browser = GetBrowser();
+  if (!browser || !source_web_contents_) {
+    return;
+  }
+
   context_hub::ContextHubService* context_hub_service =
-      ContextHubServiceFactory::GetForProfile(GetProfile());
+      ContextHubServiceFactory::GetForProfile(browser->GetProfile());
   if (!context_hub_service) {
     return;
   }
@@ -4922,11 +4930,12 @@ void RenderViewContextMenu::ExecSaveToMemoryBanks() {
   std::string selected_text = base::UTF16ToUTF8(params_.selection_text);
 
   if (!selected_text.empty()) {
-    context_hub_service->SaveMemoryBankEntry(
-        context_hub::MemoryBankEntry(
-            context_hub::MemoryBankType::kTextSelection, params_.page_url,
-            std::move(tab_title), std::move(selected_text)),
-        base::DoNothing());
+    context_hub_service->SetPendingMemoryBankEntry(context_hub::MemoryBankEntry(
+        context_hub::MemoryBankType::kTextSelection, params_.page_url,
+        tab_title, selected_text));
+    SaveToMemoryBankBubbleController::GetOrCreateForWebContents(
+        source_web_contents_)
+        ->ShowBubble();
     return;
   }
 
@@ -4938,18 +4947,27 @@ void RenderViewContextMenu::ExecSaveToMemoryBanks() {
   content_extraction::GetInnerText(
       *render_frame_host, std::nullopt,
       base::BindOnce(
-          [](base::WeakPtr<context_hub::ContextHubService> service, GURL url,
+          [](base::WeakPtr<content::WebContents> web_contents,
+             base::WeakPtr<context_hub::ContextHubService> service, GURL url,
              std::string title,
              std::unique_ptr<content_extraction::InnerTextResult> result) {
-            if (service && result && !result->inner_text.empty()) {
-              service->SaveMemoryBankEntry(
-                  context_hub::MemoryBankEntry(
-                      context_hub::MemoryBankType::kTab, std::move(url),
-                      std::move(title), std::move(result->inner_text)),
-                  base::DoNothing());
+            if (!web_contents || web_contents->IsBeingDestroyed() || !service ||
+                !result || result->inner_text.empty()) {
+              return;
             }
+            if (web_contents->GetLastCommittedURL() != url) {
+              return;
+            }
+            service->SetPendingMemoryBankEntry(
+                context_hub::MemoryBankEntry(context_hub::MemoryBankType::kTab,
+                                             url, title, result->inner_text));
+            SaveToMemoryBankBubbleController::GetOrCreateForWebContents(
+                web_contents.get())
+                ->ShowBubble();
           },
-          context_hub_service->GetWeakPtr(), params_.page_url, tab_title));
+          source_web_contents_->GetWeakPtr(), context_hub_service->GetWeakPtr(),
+          params_.page_url, tab_title));
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void RenderViewContextMenu::ExecInspectElement() {

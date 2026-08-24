@@ -30,6 +30,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
@@ -191,6 +192,10 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/views/context_hub/save_to_memory_bank_bubble_controller.h"
+#endif
+
 #if BUILDFLAG(ENABLE_COMPOSE)
 #include "chrome/browser/compose/mock_chrome_compose_client.h"
 #endif
@@ -206,7 +211,6 @@
 #endif
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-#include "base/test/run_until.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "ui/events/test/event_generator.h"
@@ -4499,6 +4503,17 @@ IN_PROC_BROWSER_TEST_P(MemoryBanksContextMenuBrowserTest,
 
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS, 0);
 
+  // Verify pending entry is set.
+  std::optional<context_hub::MemoryBankEntry> pending =
+      service->GetPendingMemoryBankEntry();
+  ASSERT_TRUE(pending.has_value());
+  EXPECT_EQ(context_hub::MemoryBankType::kTextSelection, pending->type);
+  EXPECT_EQ("Save me to memory banks!", pending->selected_text.value_or(""));
+
+  // Save the pending entry with tags.
+  EXPECT_TRUE(service->SavePendingMemoryBankEntry(
+      /*tags=*/{"test_tag", "selection"}));
+
   // Verify it was saved asynchronously.
   base::RunLoop run_loop;
   service->GetAllEntries(base::BindLambdaForTesting(
@@ -4507,9 +4522,18 @@ IN_PROC_BROWSER_TEST_P(MemoryBanksContextMenuBrowserTest,
         EXPECT_EQ(context_hub::MemoryBankType::kTextSelection, entries[0].type);
         EXPECT_EQ("Save me to memory banks!",
                   entries[0].selected_text.value_or(""));
+        EXPECT_THAT(entries[0].tags,
+                    testing::ElementsAre("test_tag", "selection"));
         run_loop.Quit();
       }));
   run_loop.Run();
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* controller = SaveToMemoryBankBubbleController::FromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents())) {
+    controller->CloseBubble();
+  }
+#endif
 }
 
 IN_PROC_BROWSER_TEST_P(MemoryBanksContextMenuBrowserTest,
@@ -4525,26 +4549,37 @@ IN_PROC_BROWSER_TEST_P(MemoryBanksContextMenuBrowserTest,
 
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SAVE_TO_MEMORY_BANKS, 0);
 
-  base::RunLoop run_loop;
-  base::RepeatingClosure check_entries;
-  check_entries = base::BindLambdaForTesting([&]() {
-    service->GetAllEntries(base::BindLambdaForTesting(
-        [&](std::vector<context_hub::MemoryBankEntry> entries) {
-          if (entries.empty()) {
-            base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-                FROM_HERE, check_entries, base::Milliseconds(50));
-            return;
-          }
-          ASSERT_EQ(1u, entries.size());
-          EXPECT_EQ(context_hub::MemoryBankType::kTab, entries[0].type);
-          EXPECT_EQ(url, entries[0].url);
-          EXPECT_EQ("Hello World", entries[0].selected_text.value_or(""));
-          run_loop.Quit();
-        }));
-  });
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return service->GetPendingMemoryBankEntry().has_value(); }));
 
-  check_entries.Run();
-  run_loop.Run();
+  std::optional<context_hub::MemoryBankEntry> pending =
+      service->GetPendingMemoryBankEntry();
+  ASSERT_TRUE(pending.has_value());
+  EXPECT_EQ(context_hub::MemoryBankType::kTab, pending->type);
+  EXPECT_EQ(url, pending->url);
+  EXPECT_EQ("Hello World", pending->selected_text.value_or(""));
+  EXPECT_TRUE(
+      service->SavePendingMemoryBankEntry(/*tags=*/{"page_tag", "research"}));
+
+  base::RunLoop get_entries_run_loop;
+  service->GetAllEntries(base::BindLambdaForTesting(
+      [&](std::vector<context_hub::MemoryBankEntry> entries) {
+        ASSERT_EQ(1u, entries.size());
+        EXPECT_EQ(context_hub::MemoryBankType::kTab, entries[0].type);
+        EXPECT_EQ(url, entries[0].url);
+        EXPECT_EQ("Hello World", entries[0].selected_text.value_or(""));
+        EXPECT_THAT(entries[0].tags,
+                    testing::ElementsAre("page_tag", "research"));
+        get_entries_run_loop.Quit();
+      }));
+  get_entries_run_loop.Run();
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* controller = SaveToMemoryBankBubbleController::FromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents())) {
+    controller->CloseBubble();
+  }
+#endif
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
