@@ -367,6 +367,25 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="WebAuthentication.DeviceAuthorization.FetchResult"
+    enum="DeviceAuthorizationFetchResult" expires_after="2027-05-31">
+  <owner>rgod@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the high-level outcome of a device authorization keys fetch request.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.DeviceAuthorization.HttpStatusOrNetError"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2027-05-31">
+  <owner>rgod@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the HTTP response code or net error code when fetching device
+    authorization keys.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.Enclave.ActionOutcome.{Action}"
     enum="EnclaveManagerActionOutcome" expires_after="2027-08-01">
   <owner>martinkr@google.com</owner>

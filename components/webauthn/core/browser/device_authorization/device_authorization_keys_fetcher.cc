@@ -14,7 +14,9 @@
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/sync_util.h"
+#include "components/webauthn/core/browser/device_authorization/device_authorization_metrics.h"
 #include "components/webauthn/core/browser/device_authorization/proto/device_authorization_key.pb.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -37,6 +39,8 @@ void DeviceAuthorizationKeysFetcher::FetchDeviceAuthorizationKeys(
   CHECK(identity_manager);
   CHECK(callback);
   if (endpoint_fetcher_) {
+    RecordDeviceAuthorizationFetchResult(
+        DeviceAuthorizationFetchResultForUMA::kAlreadyInProgress);
     std::move(callback).Run(base::unexpected(Error::kAlreadyInProgress));
     return;
   }
@@ -103,27 +107,47 @@ void DeviceAuthorizationKeysFetcher::OnFetchCompleted(
     FetchKeysCallback callback,
     std::unique_ptr<endpoint_fetcher::EndpointResponse> response) {
   endpoint_fetcher_.reset();
-  // TODO(crbug.com/405036154): Record metrics.
+
+  RecordDeviceAuthorizationHttpStatusOrNetError(
+      response && response->http_status_code > 0 ? response->http_status_code
+                                                 : net::ERR_FAILED);
+
   if (!response) {
+    RecordDeviceAuthorizationFetchResult(
+        DeviceAuthorizationFetchResultForUMA::kNetworkError);
     std::move(callback).Run(base::unexpected(Error::kNetworkError));
     return;
   }
 
   if (response->http_status_code > 0 &&
       response->http_status_code != net::HTTP_OK) {
+    RecordDeviceAuthorizationFetchResult(
+        DeviceAuthorizationFetchResultForUMA::kHttpError);
     std::move(callback).Run(base::unexpected(Error::kHttpError));
     return;
   }
 
   if (response->error_type.has_value()) {
+    RecordDeviceAuthorizationFetchResult(
+        DeviceAuthorizationFetchResultForUMA::kNetworkError);
     std::move(callback).Run(base::unexpected(Error::kNetworkError));
     return;
   }
 
   sync_pb::GetDeviceAuthorizationKeyResponse response_proto;
   if (!response_proto.ParseFromString(response->response)) {
+    RecordDeviceAuthorizationFetchResult(
+        DeviceAuthorizationFetchResultForUMA::kProtoParseError);
     std::move(callback).Run(base::unexpected(Error::kProtoParseError));
     return;
+  }
+
+  if (response_proto.has_re_auth_params()) {
+    RecordDeviceAuthorizationFetchResult(
+        DeviceAuthorizationFetchResultForUMA::kReAuthChallenge);
+  } else {
+    RecordDeviceAuthorizationFetchResult(
+        DeviceAuthorizationFetchResultForUMA::kKeysFetched);
   }
 
   std::move(callback).Run(std::move(response_proto));

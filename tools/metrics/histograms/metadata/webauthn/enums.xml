@@ -99,6 +99,19 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="prepareGetCredential request failed."/>
 </enum>
 
+<!-- LINT.IfChange(DeviceAuthorizationFetchResult) -->
+
+<enum name="DeviceAuthorizationFetchResult">
+  <int value="0" label="Success: Keys Fetched"/>
+  <int value="1" label="Success: ReAuth Challenge"/>
+  <int value="2" label="Error: Network / Transport / OAuth Failure"/>
+  <int value="3" label="Error: HTTP Non-200 Status"/>
+  <int value="4" label="Error: Proto Parse Failure"/>
+  <int value="5" label="Error: Fetch Already In Progress"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/webauthn/core/browser/device_authorization/device_authorization_metrics.h:DeviceAuthorizationFetchResultForUMA) -->
+
 <!-- LINT.IfChange(EnclaveManagerActionOutcome) -->
 
 <enum name="EnclaveManagerActionOutcome">

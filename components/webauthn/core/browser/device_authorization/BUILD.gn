@@ -9,6 +9,7 @@ source_set("device_authorization") {
   ]
 
   deps = [
+    ":metrics",
     "//base",
     "//components/endpoint_fetcher",
     "//components/signin/public/base",
@@ -32,12 +33,22 @@ source_set("features") {
   deps = [ "//base" ]
 }
 
+source_set("metrics") {
+  sources = [
+    "device_authorization_metrics.cc",
+    "device_authorization_metrics.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "device_authorization_keys_fetcher_unittest.cc" ]
 
   deps = [
     ":device_authorization",
+    ":metrics",
     "//base",
     "//base/test:test_support",
     "//components/endpoint_fetcher",

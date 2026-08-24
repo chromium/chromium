@@ -3,6 +3,7 @@ include_rules = [
   "+components/signin/public",
   "+components/sync/base",
   "+components/version_info",
+  "+net/base",
   "+net/http",
 ]
 

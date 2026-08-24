@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -16,6 +17,7 @@
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/webauthn/core/browser/device_authorization/device_authorization_metrics.h"
 #include "components/webauthn/core/browser/device_authorization/proto/device_authorization_key.pb.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/net_errors.h"
@@ -77,6 +79,7 @@ class DeviceAuthorizationKeysFetcherTest : public testing::Test {
 // Tests that device authorization keys request completes successfully when
 // the backend returns device authorization keys.
 TEST_F(DeviceAuthorizationKeysFetcherTest, ReturnsDeviceAuthorizationKeys) {
+  base::HistogramTester histogram_tester;
   sync_pb::GetDeviceAuthorizationKeyRequest request;
   request.set_reauth_proof_token("sample_rapt");
 
@@ -106,11 +109,19 @@ TEST_F(DeviceAuthorizationKeysFetcherTest, ReturnsDeviceAuthorizationKeys) {
 
   // Verify the request body sent matches serialized proto.
   EXPECT_EQ(intercepted_body, request.SerializeAsString());
+
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.DeviceAuthorization.FetchResult",
+      DeviceAuthorizationFetchResultForUMA::kKeysFetched, 1);
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.DeviceAuthorization.HttpStatusOrNetError",
+      net::HTTP_OK, 1);
 }
 
 // Tests that device authorization keys request completes successfully when
 // the backend returns re-auth parameters.
 TEST_F(DeviceAuthorizationKeysFetcherTest, ReturnsReAuthParams) {
+  base::HistogramTester histogram_tester;
   sync_pb::GetDeviceAuthorizationKeyRequest request;
 
   sync_pb::GetDeviceAuthorizationKeyResponse response_proto;
@@ -127,12 +138,20 @@ TEST_F(DeviceAuthorizationKeysFetcherTest, ReturnsReAuthParams) {
   EXPECT_TRUE(result->has_re_auth_params());
   EXPECT_EQ(result->re_auth_params().plt(), kTestPlt);
   EXPECT_EQ(result->re_auth_params().web_fallback_url(), kTestWebFallbackUrl);
+
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.DeviceAuthorization.FetchResult",
+      DeviceAuthorizationFetchResultForUMA::kReAuthChallenge, 1);
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.DeviceAuthorization.HttpStatusOrNetError",
+      net::HTTP_OK, 1);
 }
 
 // Tests that device authorization keys request handles failure to fetch an
 // access token.
 TEST_F(DeviceAuthorizationKeysFetcherTest,
        ReturnsErrorWhenAccessTokenFetchFails) {
+  base::HistogramTester histogram_tester;
   identity_test_environment_.SetAutomaticIssueOfAccessTokens(false);
   sync_pb::GetDeviceAuthorizationKeyRequest request;
 
@@ -150,12 +169,20 @@ TEST_F(DeviceAuthorizationKeysFetcherTest,
       future.Take();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), Error::kNetworkError);
+
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.DeviceAuthorization.FetchResult",
+      DeviceAuthorizationFetchResultForUMA::kNetworkError, 1);
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.DeviceAuthorization.HttpStatusOrNetError",
+      net::ERR_FAILED, 1);
 }
 
 // Tests that device authorization keys request handles transport/network
 // errors.
 TEST_F(DeviceAuthorizationKeysFetcherTest,
        ReturnsNetworkErrorWhenTransportFails) {
+  base::HistogramTester histogram_tester;
   sync_pb::GetDeviceAuthorizationKeyRequest request;
   test_url_loader_factory_.AddResponse(
       GURL(kDeviceAuthorizationKeyEndpointUrl),
@@ -173,6 +200,13 @@ TEST_F(DeviceAuthorizationKeysFetcherTest,
       future.Take();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), Error::kNetworkError);
+
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.DeviceAuthorization.FetchResult",
+      DeviceAuthorizationFetchResultForUMA::kNetworkError, 1);
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.DeviceAuthorization.HttpStatusOrNetError",
+      net::ERR_FAILED, 1);
 }
 
 // Tests that device authorization keys request handles HTTP server errors.
@@ -182,10 +216,19 @@ TEST_F(DeviceAuthorizationKeysFetcherTest,
 
   for (net::HttpStatusCode status : {net::HTTP_BAD_REQUEST, net::HTTP_FORBIDDEN,
                                      net::HTTP_INTERNAL_SERVER_ERROR}) {
+    base::HistogramTester histogram_tester;
     base::expected<sync_pb::GetDeviceAuthorizationKeyResponse, Error> result =
         FetchDeviceAuthorizationKeys(request, status, "");
     ASSERT_FALSE(result.has_value());
     EXPECT_EQ(result.error(), Error::kHttpError);
+
+    histogram_tester.ExpectUniqueSample(
+        "WebAuthentication.DeviceAuthorization.FetchResult",
+        DeviceAuthorizationFetchResultForUMA::kHttpError, 1);
+    histogram_tester.ExpectUniqueSample(
+        "WebAuthentication.DeviceAuthorization.HttpStatusOrNetError", status,
+        1);
+
     test_url_loader_factory_.ClearResponses();
   }
 }
@@ -194,6 +237,7 @@ TEST_F(DeviceAuthorizationKeysFetcherTest,
 // response protobuf body.
 TEST_F(DeviceAuthorizationKeysFetcherTest,
        ReturnsProtoParseErrorWhenResponseCorrupt) {
+  base::HistogramTester histogram_tester;
   sync_pb::GetDeviceAuthorizationKeyRequest request;
   // An invalid protobuf payload that cannot be deserialized as
   // GetDeviceAuthorizationKeyResponse.
@@ -203,12 +247,20 @@ TEST_F(DeviceAuthorizationKeysFetcherTest,
       FetchDeviceAuthorizationKeys(request, net::HTTP_OK, kCorruptProto);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), Error::kProtoParseError);
+
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.DeviceAuthorization.FetchResult",
+      DeviceAuthorizationFetchResultForUMA::kProtoParseError, 1);
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.DeviceAuthorization.HttpStatusOrNetError",
+      net::HTTP_OK, 1);
 }
 
 // Tests that calling fetch while another fetch is in progress immediately
 // completes the second request with kAlreadyInProgress.
 TEST_F(DeviceAuthorizationKeysFetcherTest,
-       ReturnsAlreadyInProgressForConcurrentFetch) {
+       ReturnsAlreadyInProgressWhenFetchConcurrent) {
+  base::HistogramTester histogram_tester;
   sync_pb::GetDeviceAuthorizationKeyRequest request;
 
   base::test::TestFuture<
@@ -233,6 +285,10 @@ TEST_F(DeviceAuthorizationKeysFetcherTest,
   ASSERT_FALSE(result_second.has_value());
   EXPECT_EQ(result_second.error(), Error::kAlreadyInProgress);
 
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.DeviceAuthorization.FetchResult",
+      DeviceAuthorizationFetchResultForUMA::kAlreadyInProgress, 1);
+
   // Complete the first request.
   sync_pb::GetDeviceAuthorizationKeyResponse response_proto;
   sync_pb::GetDeviceAuthorizationKeyResponse::DeviceAuthorizationKeys* keys =
@@ -246,6 +302,10 @@ TEST_F(DeviceAuthorizationKeysFetcherTest,
       result_first = future_first.Take();
   ASSERT_TRUE(result_first.has_value());
   EXPECT_TRUE(result_first->has_device_authorization_keys());
+
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.DeviceAuthorization.FetchResult",
+      DeviceAuthorizationFetchResultForUMA::kKeysFetched, 1);
 }
 
 }  // namespace
