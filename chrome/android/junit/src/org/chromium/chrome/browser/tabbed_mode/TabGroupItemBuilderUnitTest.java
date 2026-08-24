@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.app.appmenu.AppMenuItemTheme;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
@@ -54,6 +55,10 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuTabItemProperties;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -80,6 +85,7 @@ public class TabGroupItemBuilderUnitTest {
     @Mock private FaviconHelper.Natives mFaviconHelperJniMock;
     @Mock private AppMenuItemTheme mAppMenuItemTheme;
     @Mock private Tab mTab;
+    @Mock private TabGroupSyncService mTabGroupSyncService;
 
     private TabGroupItemBuilder mTabGroupItemBuilder;
     private TabModel mTabModel;
@@ -432,5 +438,62 @@ public class TabGroupItemBuilderUnitTest {
         assertEquals(
                 mContext.getString(R.string.menu_add_tab_to_new_group),
                 item.model.get(AppMenuItemProperties.TITLE));
+    }
+
+    @Test
+    public void testBuildSubmenuForAddToGroup_withGroupWindowChecker() {
+        Token token1 = Token.createRandom();
+        Token token2 = Token.createRandom();
+
+        SavedTabGroup group1 = new SavedTabGroup();
+        group1.localId = new LocalTabGroupId(token1);
+        group1.title = "Group 1";
+        group1.updateTimeMs = 100L;
+        group1.color = TabGroupColorId.BLUE;
+        group1.savedTabs.add(new SavedTabGroupTab());
+
+        SavedTabGroup group2 = new SavedTabGroup();
+        group2.localId = new LocalTabGroupId(token2);
+        group2.title = "Group 2";
+        group2.updateTimeMs = 200L;
+        group2.color = TabGroupColorId.RED;
+        group2.savedTabs.add(new SavedTabGroupTab());
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"id1", "id2"});
+        when(mTabGroupSyncService.getGroup("id1")).thenReturn(group1);
+        when(mTabGroupSyncService.getGroup("id2")).thenReturn(group2);
+
+        Tab tab1 = Mockito.mock(Tab.class);
+        when(tab1.getTabGroupId()).thenReturn(token1);
+        Tab tab2 = Mockito.mock(Tab.class);
+        when(tab2.getTabGroupId()).thenReturn(token2);
+
+        TabList tabList = Mockito.mock(TabList.class);
+        List<Tab> tabs = List.of(tab1, tab2);
+        when(tabList.iterator()).thenAnswer(invocation -> tabs.iterator());
+        when(mTabModel.getComprehensiveModel()).thenReturn(tabList);
+
+        TabGroupItemBuilder builder =
+                new TabGroupItemBuilder(
+                        mContext,
+                        mAppMenuItemTheme,
+                        mTabModelSelector,
+                        /* isMenuIconAtStart= */ false,
+                        /* shouldShowIconBeforeItem= */ true,
+                        mRoundedIconGenerator,
+                        mDefaultFaviconHelper,
+                        () -> mFaviconHelper,
+                        () -> mTabGroupSyncService);
+
+        ListItem addToGroupItem = builder.buildAddToGroupItem(null, /* showIcon= */ true);
+        List<ListItem> submenuItems =
+                addToGroupItem.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
+        assertEquals(2, submenuItems.size());
+        assertEquals(
+                token2, submenuItems.get(0).model.get(AppMenuTabGroupItemProperties.TAB_GROUP_ID));
+        assertEquals("Group 2", submenuItems.get(0).model.get(AppMenuItemProperties.TITLE));
+        assertEquals(
+                token1, submenuItems.get(1).model.get(AppMenuTabGroupItemProperties.TAB_GROUP_ID));
+        assertEquals("Group 1", submenuItems.get(1).model.get(AppMenuItemProperties.TITLE));
     }
 }
