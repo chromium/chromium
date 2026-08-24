@@ -15,6 +15,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/sync_util.h"
 #include "components/webauthn/core/browser/device_authorization/device_authorization_metrics.h"
+#include "components/webauthn/core/browser/device_authorization/device_authorization_switches.h"
 #include "components/webauthn/core/browser/device_authorization/proto/device_authorization_key.pb.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
@@ -91,7 +92,7 @@ void DeviceAuthorizationKeysFetcher::FetchDeviceAuthorizationKeys(
           .SetConsentLevel(signin::ConsentLevel::kSignin)
           .SetOAuthConsumerId(
               signin::OAuthConsumerId::kDeviceAuthorizationRequest)
-          .SetUrl(GURL(kDeviceAuthorizationKeyEndpointUrl))
+          .SetUrl(GetDeviceAuthorizationKeyEndpointUrl())
           .SetHeaders(std::vector<
                       endpoint_fetcher::EndpointFetcher::RequestParams::Header>{
               {"User-Agent", syncer::MakeUserAgentForSync(channel_)}})

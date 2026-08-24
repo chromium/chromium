@@ -32,10 +32,6 @@ class GetDeviceAuthorizationKeyResponse;
 
 namespace webauthn {
 
-inline constexpr char kDeviceAuthorizationKeyEndpointUrl[] =
-    "https://chromesyncpasswords-pa.googleapis.com/v1/users/me/"
-    "deviceAuthorizationKey";
-
 // Handles requests to fetch device authorization keys for password manager
 // passkeys.
 class DeviceAuthorizationKeysFetcher {

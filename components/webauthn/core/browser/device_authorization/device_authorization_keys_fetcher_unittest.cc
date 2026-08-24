@@ -18,6 +18,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/webauthn/core/browser/device_authorization/device_authorization_metrics.h"
+#include "components/webauthn/core/browser/device_authorization/device_authorization_switches.h"
 #include "components/webauthn/core/browser/device_authorization/proto/device_authorization_key.pb.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/net_errors.h"
