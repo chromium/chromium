@@ -12617,6 +12617,21 @@
             ]
         }
     ],
+    "HandleMdmErrorsForDasherAccounts": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HandleMdmErrorsForDasherAccounts"
+                    ]
+                }
+            ]
+        }
+    ],
     "HangoutsExtensionV3": [
         {
             "platforms": [
