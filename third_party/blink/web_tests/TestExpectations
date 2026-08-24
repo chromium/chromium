@@ -9331,3 +9331,4 @@ crbug.com/536217727 [ Mac ] media/track/track-cue-rendering-ruby.html [ Failure 
 crbug.com/536217727 [ Win ] media/track/track-cue-rendering-ruby.html [ Failure Pass ]
 crbug.com/551586168 [ Mac ] media/track/track-cue-rendering-vertical.html [ Failure Pass ]
 crbug.com/551586168 [ Win ] media/track/track-cue-rendering-vertical.html [ Failure Pass ]
+crbug.com/549230312 [ Mac26-arm64 ] virtual/text-antialias/* [ Failure Pass ]
