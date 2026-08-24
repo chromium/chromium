@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_LOCAL_SEARCH_SERVICE_PUBLIC_MOJOM_TYPES_MOJOM_TRAITS_H_
 
 #include <string>
+#include <vector>
 
 #include "chromeos/ash/components/local_search_service/public/mojom/local_search_service.mojom-shared.h"
 #include "chromeos/ash/components/local_search_service/public/mojom/types.mojom-shared.h"
@@ -36,10 +37,11 @@ template <>
 struct StructTraits<ash::local_search_service::mojom::ContentDataView,
                     ash::local_search_service::Content> {
  public:
-  static std::string id(const ash::local_search_service::Content& c) {
+  static const std::string& id(const ash::local_search_service::Content& c) {
     return c.id;
   }
-  static std::u16string content(const ash::local_search_service::Content& c) {
+  static const std::u16string& content(
+      const ash::local_search_service::Content& c) {
     return c.content;
   }
   static double weight(const ash::local_search_service::Content& c) {
@@ -54,15 +56,15 @@ template <>
 struct StructTraits<ash::local_search_service::mojom::DataDataView,
                     ash::local_search_service::Data> {
  public:
-  static std::string id(const ash::local_search_service::Data& d) {
+  static const std::string& id(const ash::local_search_service::Data& d) {
     return d.id;
   }
-  static std::vector<ash::local_search_service::Content> contents(
+  static const std::vector<ash::local_search_service::Content>& contents(
       const ash::local_search_service::Data& d) {
     return d.contents;
   }
 
-  static std::string locale(const ash::local_search_service::Data& d) {
+  static const std::string& locale(const ash::local_search_service::Data& d) {
     return d.locale;
   }
 
@@ -95,7 +97,8 @@ template <>
 struct StructTraits<ash::local_search_service::mojom::PositionDataView,
                     ash::local_search_service::Position> {
  public:
-  static std::string content_id(const ash::local_search_service::Position& p) {
+  static const std::string& content_id(
+      const ash::local_search_service::Position& p) {
     return p.content_id;
   }
   static uint32_t start(const ash::local_search_service::Position& p) {
@@ -113,13 +116,13 @@ template <>
 struct StructTraits<ash::local_search_service::mojom::ResultDataView,
                     ash::local_search_service::Result> {
  public:
-  static std::string id(const ash::local_search_service::Result& r) {
+  static const std::string& id(const ash::local_search_service::Result& r) {
     return r.id;
   }
   static double score(const ash::local_search_service::Result& r) {
     return r.score;
   }
-  static std::vector<ash::local_search_service::Position> positions(
+  static const std::vector<ash::local_search_service::Position>& positions(
       const ash::local_search_service::Result& r) {
     return r.positions;
   }
