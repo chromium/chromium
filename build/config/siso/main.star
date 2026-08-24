@@ -104,6 +104,7 @@ def init(ctx):
             "./obj/chrome/browser/ui/read_anything/read_anything/read_anything_side_panel_controller.o": "crbug.com/551512262",
             "./obj/chrome/browser/ui/read_anything/read_anything/read_anything_side_panel_web_view.o": "crbug.com/551512262",
             "./obj/chrome/browser/ui/read_anything/read_anything/read_anything_soft_navigation_observer.o": "crbug.com/551512262",
+            "./obj/chrome/browser/ui/tabs/impl/tab_features.o": "crbug.com/551670232",
             "./obj/components/exo/wayland/client_version_test/client_version_test.o": "crbug.com/548936502",
         },
         # Executables sent from Windows host to Linux workers need to set executable bit explicitly.
