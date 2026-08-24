@@ -324,7 +324,6 @@ public class SettingsPageTest {
     }
 
     /** Regression test for https://crbug.com/546419920. */
-    // TODO(crbug.com/547889541): Disabled on android-12l-landscape bots due to viewport height.
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
@@ -344,10 +343,16 @@ public class SettingsPageTest {
         // Verify the settings page loads by checking for a top-level preference item.
         onView(withText(searchEngineTitle)).check(matches(isDisplayed()));
 
+        // Multi-column settings has multiple RecyclerViews. Disambiguate the header
+        // RecyclerView by its parent layout rather than using hasDescendant(...), because
+        // target preferences may be scrolled off-screen and not yet attached to the hierarchy
+        // on shorter viewports (e.g., landscape foldable/tablet screens).
+        var headerRecyclerViewMatcher =
+                allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_header)));
+
         // Click on Search engine in the left column.
-        var searchEngineMatcher =
-                allOf(withId(R.id.recycler_view), hasDescendant(withText(searchEngineTitle)));
-        onView(searchEngineMatcher).perform(scrollTo(hasDescendant(withText(searchEngineTitle))));
+        onView(headerRecyclerViewMatcher)
+                .perform(scrollTo(hasDescendant(withText(searchEngineTitle))));
         var searchEngineInHeader =
                 allOf(
                         isDescendantOfA(withId(R.id.preferences_header)),
@@ -358,9 +363,7 @@ public class SettingsPageTest {
         onView(searchEngineInHeader).check(matches(isHighlighted()));
 
         // Click on Autofill and passwords in the left column.
-        var autofillMatcher =
-                allOf(withId(R.id.recycler_view), hasDescendant(withText(autofillTitle)));
-        onView(autofillMatcher).perform(scrollTo(hasDescendant(withText(autofillTitle))));
+        onView(headerRecyclerViewMatcher).perform(scrollTo(hasDescendant(withText(autofillTitle))));
         var autofillInHeader =
                 allOf(isDescendantOfA(withId(R.id.preferences_header)), withText(autofillTitle));
         onView(autofillInHeader).perform(click());
