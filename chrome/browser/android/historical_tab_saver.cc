@@ -4,7 +4,6 @@
 
 #include "chrome/browser/android/historical_tab_saver.h"
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -141,18 +140,18 @@ void CreateHistoricalGroup(
   // TODO(crbug/41496693): If we update AndroidLiveTabContext to return group
   // data for tabs it should be possible to eliminate the need for this wrapper
   // when closing an entire tab group.
+  base::flat_map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData>
+      tab_group_visual_data = {
+          {tab_group_id,
+           tab_groups::TabGroupVisualData(
+               group_title,
+               static_cast<tab_groups::TabGroupColorId>(group_color))}};
+  base::flat_map<tab_groups::TabGroupId, std::optional<base::Uuid>>
+      saved_tab_group_ids = {{tab_group_id, saved_tab_group_id}};
+
   AndroidLiveTabContextCloseWrapper context(
-      model, std::move(tabs),
-      std::map<int, tab_groups::TabGroupId>(
-          std::make_move_iterator(tab_id_to_group_id.begin()),
-          std::make_move_iterator(tab_id_to_group_id.end())),
-      std::map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData>(
-          {{tab_group_id,
-            tab_groups::TabGroupVisualData(
-                group_title,
-                static_cast<tab_groups::TabGroupColorId>(group_color))}}),
-      std::map<tab_groups::TabGroupId, std::optional<base::Uuid>>(
-          {{tab_group_id, saved_tab_group_id}}),
+      model, std::move(tabs), std::move(tab_id_to_group_id),
+      std::move(tab_group_visual_data), std::move(saved_tab_group_ids),
       std::move(web_contents_state));
 
   service->CreateHistoricalGroup(&context, tab_group_id);
@@ -217,16 +216,8 @@ void CreateHistoricalBulkClosure(
   // This wrapper is necessary for bulk closures that don't close all tabs via
   // the bulk tab editor.
   AndroidLiveTabContextCloseWrapper context(
-      model, std::move(tabs),
-      std::map<int, tab_groups::TabGroupId>(
-          std::make_move_iterator(tab_id_to_group_id.begin()),
-          std::make_move_iterator(tab_id_to_group_id.end())),
-      std::map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData>(
-          std::make_move_iterator(tab_group_visual_data.begin()),
-          std::make_move_iterator(tab_group_visual_data.end())),
-      std::map<tab_groups::TabGroupId, std::optional<base::Uuid>>(
-          std::make_move_iterator(saved_tab_group_ids_map.begin()),
-          std::make_move_iterator(saved_tab_group_ids_map.end())),
+      model, std::move(tabs), std::move(tab_id_to_group_id),
+      std::move(tab_group_visual_data), std::move(saved_tab_group_ids_map),
       std::move(web_contents_state));
   service->BrowserClosing(&context);
   service->BrowserClosed(&context);
@@ -317,7 +308,7 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalGroup(
   std::vector<WebContentsStateByteBuffer> web_contents_states =
       AllTabsWebContentsStateByteBuffer(byte_buffers, saved_state_versions);
   CreateHistoricalGroup(model, tab_group_id, saved_tab_group_id, title,
-                        static_cast<int>(jcolor), std::move(tabs_android),
+                        static_cast<int>(jcolor), tabs_android,
                         std::move(web_contents_states));
 }
 
@@ -349,8 +340,8 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalBulkClosure(
   CreateHistoricalBulkClosure(model, std::move(tab_group_ids),
                               std::move(saved_tab_group_ids),
                               std::move(group_titles), std::move(group_colors),
-                              std::move(per_tab_optional_tab_group_ids),
-                              std::move(tabs), std::move(web_contents_states));
+                              std::move(per_tab_optional_tab_group_ids), tabs,
+                              std::move(web_contents_states));
 }
 
 }  // namespace historical_tab_saver

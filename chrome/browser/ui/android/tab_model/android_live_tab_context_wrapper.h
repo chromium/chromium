@@ -7,8 +7,10 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
 #include "chrome/browser/android/historical_tab_saver.h"
@@ -40,13 +42,13 @@ class AndroidLiveTabContextCloseWrapper : public AndroidLiveTabContext {
   //   tab group. If an entry does not exist a null value will be used.
   AndroidLiveTabContextCloseWrapper(
       TabModel* tab_model,
-      std::vector<TabAndroid*>&& closed_tabs,
-      std::map<int, tab_groups::TabGroupId>&& tab_id_to_tab_group,
-      std::map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData>&&
+      std::vector<TabAndroid*> closed_tabs,
+      base::flat_map<int, tab_groups::TabGroupId> tab_id_to_tab_group,
+      base::flat_map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData>
           tab_group_visual_data,
-      std::map<tab_groups::TabGroupId, std::optional<base::Uuid>>&&
+      base::flat_map<tab_groups::TabGroupId, std::optional<base::Uuid>>
           saved_tab_group_ids,
-      std::vector<WebContentsStateByteBuffer>&& web_contents_state);
+      std::vector<WebContentsStateByteBuffer> web_contents_state);
   ~AndroidLiveTabContextCloseWrapper() override;
 
   AndroidLiveTabContextCloseWrapper(const AndroidLiveTabContextCloseWrapper&) =
@@ -93,14 +95,14 @@ class AndroidLiveTabContextCloseWrapper : public AndroidLiveTabContext {
   std::vector<TabAndroid*> closed_tabs_;
 
   // Maps tab IDs to tab groups.
-  std::map<int, tab_groups::TabGroupId> tab_id_to_tab_group_;
+  base::flat_map<int, tab_groups::TabGroupId> tab_id_to_tab_group_;
 
   // Maps a group ID to its visual data (only a title on Android).
-  std::map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData>
+  base::flat_map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData>
       tab_group_visual_data_;
 
   // Maps a group ID to its saved tab group ID.
-  std::map<tab_groups::TabGroupId, std::optional<base::Uuid>>
+  base::flat_map<tab_groups::TabGroupId, std::optional<base::Uuid>>
       saved_tab_group_ids_;
 
   // List of webContentStates to close linked by tab index for bulk closure.

@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context_wrapper.h"
 
+#include <utility>
+
+#include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/android/tab_android.h"
@@ -13,19 +16,21 @@
 
 AndroidLiveTabContextCloseWrapper::AndroidLiveTabContextCloseWrapper(
     TabModel* tab_model,
-    std::vector<TabAndroid*>&& closed_tabs,
-    std::map<int, tab_groups::TabGroupId>&& tab_id_to_tab_group,
-    std::map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData>&&
+    std::vector<TabAndroid*> closed_tabs,
+    base::flat_map<int, tab_groups::TabGroupId> tab_id_to_tab_group,
+    base::flat_map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData>
         tab_group_visual_data,
-    std::map<tab_groups::TabGroupId, std::optional<base::Uuid>>&&
+    base::flat_map<tab_groups::TabGroupId, std::optional<base::Uuid>>
         saved_tab_group_ids,
-    std::vector<WebContentsStateByteBuffer>&& web_contents_state)
+    std::vector<WebContentsStateByteBuffer> web_contents_state)
     : AndroidLiveTabContext(tab_model),
-      closed_tabs_(closed_tabs),
-      tab_id_to_tab_group_(tab_id_to_tab_group),
-      tab_group_visual_data_(tab_group_visual_data),
-      saved_tab_group_ids_(saved_tab_group_ids),
-      web_contents_state_(std::move(web_contents_state)) {}
+      closed_tabs_(std::move(closed_tabs)),
+      tab_id_to_tab_group_(std::move(tab_id_to_tab_group)),
+      tab_group_visual_data_(std::move(tab_group_visual_data)),
+      saved_tab_group_ids_(std::move(saved_tab_group_ids)),
+      web_contents_state_(std::move(web_contents_state)) {
+  CHECK_EQ(closed_tabs_.size(), web_contents_state_.size());
+}
 
 AndroidLiveTabContextCloseWrapper::~AndroidLiveTabContextCloseWrapper() =
     default;
@@ -52,9 +57,10 @@ sessions::LiveTab* AndroidLiveTabContextCloseWrapper::GetLiveTabAt(
 std::optional<tab_groups::TabGroupId>
 AndroidLiveTabContextCloseWrapper::GetTabGroupForTab(int relative_index) const {
   auto it = tab_id_to_tab_group_.find(GetTabAt(relative_index)->GetAndroidId());
-  return it != tab_id_to_tab_group_.end()
-             ? it->second
-             : std::optional<tab_groups::TabGroupId>();
+  if (it != tab_id_to_tab_group_.end()) {
+    return it->second;
+  }
+  return std::nullopt;
 }
 
 const tab_groups::TabGroupVisualData*
