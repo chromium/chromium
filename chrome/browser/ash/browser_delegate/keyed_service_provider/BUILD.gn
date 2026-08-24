@@ -6,10 +6,30 @@ assert(is_chromeos)
 
 group("keyed_service_provider") {
   public_deps = [
+    ":desk_sync_service_provider_impl",
     ":identity_manager_provider_impl",
     ":sync_service_provider_impl",
     ":template_url_service_provider_impl",
   ]
+}
+
+source_set("desk_sync_service_provider_impl") {
+  sources = [
+    "desk_sync_service_provider_impl.cc",
+    "desk_sync_service_provider_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles",
+    "//chrome/browser/sync",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/desks_storage:desk_sync_service_provider",
+    "//components/account_id",
+    "//content/public/browser",
+  ]
+
+  visibility = [ ":keyed_service_provider" ]
 }
 
 source_set("identity_manager_provider_impl") {

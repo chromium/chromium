@@ -18,6 +18,7 @@
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "components/account_id/account_id.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "components/sessions/core/session_id.h"
 
@@ -264,6 +265,9 @@ class DesksClient : public ash::SessionObserver {
   const raw_ptr<ash::DesksController> desks_controller_;
 
   raw_ptr<Profile> active_profile_ = nullptr;
+
+  // AccountId of the active user, kept in sync with `active_profile_`.
+  AccountId active_account_id_;
 
   // Maps launch id to a launch handler.
   std::map<int32_t, std::unique_ptr<DesksTemplatesAppLaunchHandler>>

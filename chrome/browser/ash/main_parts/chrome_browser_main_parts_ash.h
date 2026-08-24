@@ -76,6 +76,7 @@ class FastTransitionObserver;
 class FwupdDownloadClientImpl;
 class GnubbyNotification;
 class HatsBluetoothRevampTriggerImpl;
+class DeskSyncServiceProvider;
 class IdentityManagerProvider;
 class SyncServiceProvider;
 class TemplateURLServiceProvider;
@@ -220,6 +221,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       doze_mode_power_status_scheduler_;
 
   std::unique_ptr<apps::AppServiceRegistry> app_service_registry_;
+  std::unique_ptr<DeskSyncServiceProvider> desk_sync_service_provider_;
   std::unique_ptr<IdentityManagerProvider> identity_manager_provider_;
   std::unique_ptr<SyncServiceProvider> sync_service_provider_;
   std::unique_ptr<TemplateURLServiceProvider> template_url_service_provider_;

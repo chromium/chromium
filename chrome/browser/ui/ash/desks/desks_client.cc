@@ -43,9 +43,9 @@
 #include "chrome/browser/chromeos/extensions/wm/wm_desks_private_events.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/ui/ash/desks/admin_template_service_factory.h"
 #include "chrome/browser/ui/ash/desks/desks_templates_app_launch_handler.h"
+#include "chromeos/ash/components/desks_storage/desk_sync_service_provider.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/window_properties.h"
@@ -268,6 +268,7 @@ void DesksClient::OnActiveUserSessionChanged(const AccountId& account_id) {
   }
 
   active_profile_ = profile;
+  active_account_id_ = account_id;
   DCHECK(active_profile_);
 
   save_and_recall_desks_storage_manager_ =
@@ -509,7 +510,7 @@ desks_storage::DeskModel* DesksClient::GetDeskModel() {
   // are unable to get the desk sync service or its bridge, then we default to
   // using the local storage.
   desks_storage::DeskSyncService* desk_sync_service =
-      DeskSyncServiceFactory::GetForProfile(active_profile_);
+      ash::DeskSyncServiceProvider::Get().Find(active_account_id_);
   if ((!desk_sync_service || !desk_sync_service->GetDeskModel()) ||
       !ash::features::IsDeskTemplateSyncEnabled() ||
       (!ash::saved_desk_util::AreDesksTemplatesEnabled() &&
