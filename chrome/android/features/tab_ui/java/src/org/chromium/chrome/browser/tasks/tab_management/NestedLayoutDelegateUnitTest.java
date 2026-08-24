@@ -338,6 +338,16 @@ public class NestedLayoutDelegateUnitTest {
     }
 
     @Test
+    public void testSupportsTabGroups() {
+        assertTrue(mDelegate.supportsTabGroups());
+    }
+
+    @Test
+    public void testIsChildTabRepresentedByGroupCard() {
+        assertFalse(mDelegate.isChildTabRepresentedByGroupCard(mTab1));
+    }
+
+    @Test
     public void testPrepareTabCloseAnimation_LastTab() {
         addTabToModelList(TAB1_ID, null);
         addTabToModelList(TAB2_ID, null);

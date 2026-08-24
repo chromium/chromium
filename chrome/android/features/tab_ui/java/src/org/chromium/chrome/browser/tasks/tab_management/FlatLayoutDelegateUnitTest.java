@@ -251,6 +251,16 @@ public class FlatLayoutDelegateUnitTest {
     }
 
     @Test
+    public void testSupportsTabGroups() {
+        assertFalse(mDelegate.supportsTabGroups());
+    }
+
+    @Test
+    public void testIsChildTabRepresentedByGroupCard() {
+        assertFalse(mDelegate.isChildTabRepresentedByGroupCard(mTab1));
+    }
+
+    @Test
     public void testDidMoveTab_NoOp() {
         addTabsToModelList(TAB1_ID, TAB2_ID);
 

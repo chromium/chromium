@@ -51,6 +51,16 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
     }
 
     @Override
+    boolean supportsTabGroups() {
+        return true;
+    }
+
+    @Override
+    boolean isChildTabRepresentedByGroupCard(Tab tab) {
+        return false;
+    }
+
+    @Override
     @MediaState
     int getMediaIndicatorState(Tab representativeTab, PropertyModel model) {
         if (TabProperties.isTabGroupHeader(model)) return MediaState.NONE;

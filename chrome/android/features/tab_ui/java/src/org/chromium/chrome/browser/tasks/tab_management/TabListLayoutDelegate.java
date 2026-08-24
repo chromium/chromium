@@ -14,6 +14,7 @@ import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -51,6 +52,20 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
      * be false for layouts that do not support thumbnails (like Vertical Tabs).
      */
     abstract boolean requiresThumbnailUpdateOnSelect();
+
+    /**
+     * Whether this layout supports displaying tab groups (e.g. as group cards in GTS or group
+     * headers in Vertical Tabs). False for layouts that ignore tab groups (like Flat layout).
+     */
+    abstract boolean supportsTabGroups();
+
+    /**
+     * Whether a child tab in a tab group is represented by a group card in the UI.
+     *
+     * @param tab The {@link Tab} to check.
+     * @return Whether the tab is represented by a group card.
+     */
+    abstract boolean isChildTabRepresentedByGroupCard(Tab tab);
 
     /**
      * Resolves the visual media state indicator (e.g. playing audio) for a tab card or group
@@ -209,6 +224,14 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
                 TabProperties.MEDIA_INDICATOR,
                 mMediator.getTabListMediaIndicator(updatedTab, model));
     }
+
+    /**
+     * Handles layout-specific UI model updates when a tab's Actor UI state changes.
+     *
+     * @param updatedTab The {@link Tab} whose Actor UI state changed.
+     * @param state The new {@link UiTabState}.
+     */
+    void onUiTabStateChanged(Tab updatedTab, UiTabState state) {}
 
     /**
      * Handles UI model updates when a tab is removed for closure.

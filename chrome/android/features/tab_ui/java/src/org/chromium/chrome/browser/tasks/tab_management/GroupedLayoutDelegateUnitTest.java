@@ -32,6 +32,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
+import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -439,6 +441,27 @@ public class GroupedLayoutDelegateUnitTest {
     }
 
     @Test
+    public void testOnUiTabStateChanged_InTabGroup() {
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mMediator.getIndexForTabIdWithRelatedTabs(TAB1_ID)).thenReturn(0);
+        PropertyModel groupModel = createAndAddPropertyModel(TAB1_ID);
+        UiTabState state = new UiTabState(TAB1_ID, null, null, TabIndicatorStatus.DYNAMIC, false);
+
+        mDelegate.onUiTabStateChanged(mTab1, state);
+        verify(mMediator).updateThumbnailFetcher(groupModel, TAB1_ID);
+    }
+
+    @Test
+    public void testOnUiTabStateChanged_NotInTabGroup() {
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(false);
+        createAndAddPropertyModel(TAB1_ID);
+        UiTabState state = new UiTabState(TAB1_ID, null, null, TabIndicatorStatus.DYNAMIC, false);
+
+        mDelegate.onUiTabStateChanged(mTab1, state);
+        verify(mMediator, never()).updateThumbnailFetcher(any(), anyInt());
+    }
+
+    @Test
     public void testOnTabClose_InGroup_NotClosing() {
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
@@ -486,6 +509,20 @@ public class GroupedLayoutDelegateUnitTest {
         mDelegate.onTabClose(mTab1);
 
         assertEquals(1, mModelList.size());
+    }
+
+    @Test
+    public void testSupportsTabGroups() {
+        assertTrue(mDelegate.supportsTabGroups());
+    }
+
+    @Test
+    public void testIsChildTabRepresentedByGroupCard() {
+        when(mTabModel.isTabInTabGroup(mTab1)).thenReturn(true);
+        assertTrue(mDelegate.isChildTabRepresentedByGroupCard(mTab1));
+
+        when(mTabModel.isTabInTabGroup(mTab1)).thenReturn(false);
+        assertFalse(mDelegate.isChildTabRepresentedByGroupCard(mTab1));
     }
 
     @Test
