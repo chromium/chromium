@@ -239,13 +239,13 @@ def PatchRustStage0():
   with open(RUST_UPDATE_PY_PATH) as f:
     content = f.read()
 
-  STAGE0_HASH = '\'([0-9a-z]+)\''
-  content = re.sub(
-    f'STAGE0_JSON_SHA256 = {STAGE0_HASH}',
-    f'STAGE0_JSON_SHA256 = \'{new_stage0_hash}\'',
+  content, count = re.subn(
+    r"STAGE0_JSON_SHA256 = \(?[ \n]*'([0-9a-z]+)'[ \n]*\)?",
+    f"STAGE0_JSON_SHA256 = (\n    '{new_stage0_hash}'\n)",
     content,
     count=1,
   )
+  assert count == 1, 'Failed to update STAGE0_JSON_SHA256 in update_rust.py'
   with open(RUST_UPDATE_PY_PATH, 'w') as f:
     f.write(content)
 
