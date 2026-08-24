@@ -201,7 +201,9 @@ class ModelError {
     kDataTypeControllerInFailedState = 191,
     kBookmarksLocalCountExceededLimitAfterInitialMerge = 192,
     kTabContextContainerFailedToDeserializeSpecifics = 193,
-    kMaxValue = kTabContextContainerFailedToDeserializeSpecifics,
+    kJourneysFailedToLoadMetadata = 194,
+    kJourneysDatabaseError = 195,
+    kMaxValue = kJourneysDatabaseError,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/sync/enums.xml:SyncModelError)
 

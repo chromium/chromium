@@ -1706,6 +1706,8 @@ chromium-metrics-reviews@google.com.
   <int value="191" label="kDataTypeControllerInFailedState"/>
   <int value="192" label="kBookmarksLocalCountExceededLimitAfterInitialMerge"/>
   <int value="193" label="kTabContextContainerFailedToDeserializeSpecifics"/>
+  <int value="194" label="kJourneysFailedToLoadMetadata"/>
+  <int value="195" label="kJourneysDatabaseError"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/model/model_error.h:Type) -->
