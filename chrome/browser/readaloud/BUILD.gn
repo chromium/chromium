@@ -40,6 +40,7 @@ if (is_android) {
       "//chrome/browser/dom_distiller",
       "//chrome/common:readaloud_constants",
       "//components/dom_distiller/content/browser",
+      "//components/url_formatter",
       "//content/public/browser",
       "//media",
       "//ui/accessibility:ax_base",

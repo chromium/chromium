@@ -249,6 +249,9 @@ class ReadAloudService
       read_aloud::mojom::ReadAloudPlaybackControllerClient::
           RequestSpeechSynthesisCallback callback) override;
 
+ private:
+  // Sends page title and publisher metadata to the UI delegate.
+  void ProvideInitialMetadata();
   void EnsurePlaybackControllerConnected();
   void OnUtilityDisconnect();
   void ResetUtilityConnection();

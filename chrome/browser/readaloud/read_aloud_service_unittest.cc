@@ -20,6 +20,7 @@
 #include "components/dom_distiller/core/proto/distilled_article.pb.h"
 #include "components/dom_distiller/core/proto/distilled_page.pb.h"
 #include "components/media_router/browser/test/mock_media_router.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "media/base/audio_parameters.h"
 #include "mojo/public/mojom/base/work_in_progress.mojom.h"
@@ -361,6 +362,29 @@ TEST_F(ReadAloudServiceTest, DistillPageAndArticleReady_EmptyPageHtml) {
   EXPECT_EQ(u"", segments[1]->text);
 }
 
+TEST_F(ReadAloudServiceTest,
+       InitializePopulatesTitleAndPublisherFromWebContents) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  web_contents()->UpdateTitleForEntry(
+      web_contents()->GetController().GetLastCommittedEntry(),
+      u"Example Article - Example News");
+
+  auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+
+  SetFakeController(std::make_unique<FakePlaybackController>());
+
+  EXPECT_CALL(
+      *delegate_ptr,
+      OnMetadataAvailable("Example Article - Example News", "example.com"))
+      .Times(1);
+
+  service()->Initialize(web_contents());
+
+  EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
+}
+
 TEST_F(ReadAloudServiceTest, UtilityDisconnectTriggersErrorAndStop) {
   NavigateAndCommit(GURL("https://www.example.com/article"));
 
@@ -370,6 +394,8 @@ TEST_F(ReadAloudServiceTest, UtilityDisconnectTriggersErrorAndStop) {
 
   SetFakeController(std::make_unique<FakePlaybackController>());
 
+  EXPECT_CALL(*delegate_ptr_mock, OnMetadataAvailable(testing::_, testing::_))
+      .Times(1);
   EXPECT_CALL(*delegate_ptr_mock, OnPlaybackError("Utility process disconnected")).Times(1);
   EXPECT_CALL(*delegate_ptr_mock, OnNativeDestroyed()).Times(1);
 

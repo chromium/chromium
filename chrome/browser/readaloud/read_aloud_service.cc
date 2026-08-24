@@ -15,6 +15,7 @@
 #include "chrome/browser/readaloud/read_aloud_playback_session.h"
 #include "components/dom_distiller/content/browser/distiller_page_web_contents.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
+#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -274,8 +275,20 @@ void ReadAloudService::Initialize(content::WebContents* new_web_contents) {
   Observe(new_web_contents);
   active_session_ =
       std::make_unique<ReadAloudPlaybackSession>(new_web_contents, this);
+  ProvideInitialMetadata();
   DistillPage(new_web_contents);
   EnsurePlaybackControllerConnected();
+}
+
+void ReadAloudService::ProvideInitialMetadata() {
+  if (!delegate_ || !web_contents()) {
+    return;
+  }
+  const std::string title = base::UTF16ToUTF8(web_contents()->GetTitle());
+  const std::string publisher = base::UTF16ToUTF8(
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          web_contents()->GetLastCommittedURL()));
+  delegate_->OnMetadataAvailable(title, publisher);
 }
 
 // Ensures the sandboxed ReadAloudPlaybackController utility process is running and
