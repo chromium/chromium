@@ -4,12 +4,17 @@
 
 #include "chrome/browser/ui/webui/organizer_panel/organizer_panel_ui.h"
 
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/favicon_source.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/organizer_panel_resources.h"
 #include "chrome/grit/organizer_panel_resources_map.h"
+#include "components/favicon_base/favicon_url_parser.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -22,9 +27,9 @@ OrganizerPanelUIConfig::OrganizerPanelUIConfig()
 
 OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
+  Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      web_ui->GetWebContents()->GetBrowserContext(),
-      chrome::kChromeUIOrganizerPanelHost);
+      profile, chrome::kChromeUIOrganizerPanelHost);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"clearSearch", IDS_CLEAR_SEARCH},
@@ -38,6 +43,11 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
 
   webui::SetupWebUIDataSource(source, kOrganizerPanelResources,
                               IDR_ORGANIZER_PANEL_ORGANIZER_PANEL_HTML);
+
+  content::URLDataSource::Add(
+      profile, std::make_unique<FaviconSource>(
+                   profile, chrome::FaviconUrlFormat::kFavicon2));
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 }
 
 OrganizerPanelUI::~OrganizerPanelUI() = default;

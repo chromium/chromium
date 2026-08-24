@@ -12,8 +12,12 @@ source_set("organizer_panel") {
 
   deps = [
     "//chrome/app:generated_resources",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/organizer_panel:resources",
+    "//chrome/browser/ui/webui:favicon_source",
+    "//chrome/browser/ui/webui:theme_source",
     "//chrome/common",
+    "//components/favicon_base",
     "//components/strings:components_strings",
     "//ui/base",
     "//ui/webui",
