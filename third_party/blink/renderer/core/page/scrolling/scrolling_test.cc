@@ -3517,7 +3517,13 @@ class ScrollingSimTest : public SimTest {
   bool was_threaded_animation_enabled_;
 };
 
-TEST_F(ScrollingSimTest, BasicScroll) {
+// TODO(crbug.com/538623863): Test is flaky on Windows and Mac.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define MAYBE_BasicScroll DISABLED_BasicScroll
+#else
+#define MAYBE_BasicScroll BasicScroll
+#endif
+TEST_F(ScrollingSimTest, MAYBE_BasicScroll) {
   String kUrl = "https://example.com/test.html";
   SimRequest request(kUrl, "text/html");
   LoadURL(kUrl);
@@ -3555,12 +3561,13 @@ TEST_F(ScrollingSimTest, BasicScroll) {
 // test but it appears the existing BasicScroll test above can fail as well with
 // the same error. So the failure is not related to the new test, and rather an
 // existing issue with the BasicScroll test with smooth scrolling.
-#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/538623863): Test is also flaky on Windows and Mac.
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_BasicScrollClampedToScrollerSize \
   DISABLED_BasicScrollClampedToScrollerSize
 #else
 #define MAYBE_BasicScrollClampedToScrollerSize BasicScrollClampedToScrollerSize
-#endif  // BUILDFLAG(IS_FUCHSIA)
+#endif
 TEST_F(ScrollingSimTest, MAYBE_BasicScrollClampedToScrollerSize) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({::features::kLimitScrollDeltaToScrollerSize},
