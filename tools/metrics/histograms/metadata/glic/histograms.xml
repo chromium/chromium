@@ -1720,7 +1720,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Instance.UninterruptedActiveDuration" units="ms"
-    expires_after="2026-10-04">
+    expires_after="2027-10-04">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
