@@ -295,6 +295,8 @@ class BrowserViewTest : public InProcessBrowserTest {
   BrowserViewTest& operator=(const BrowserViewTest&) = delete;
 
  protected:
+  Profile* profile() { return browser()->GetProfile(); }
+
   BrowserView* browser_view() {
     return BrowserView::GetBrowserViewForBrowser(browser());
   }
@@ -895,6 +897,40 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, FromBrowser) {
                          static_cast<BrowserWindowInterface*>(nullptr)));
 }
 
+// Test that calling `BrowserView::Activate()` or `BrowserView::Show()` sets
+// the last active browser synchronously.
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, UpdateActiveBrowser) {
+#if BUILDFLAG(IS_OZONE)
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP();
+  }
+#endif
+  // Create browser2 without showing it first, so browser() remains the active
+  // window.
+  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+      BrowserWindowCreateParams(profile(), /*from_user_gesture=*/true));
+  EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
+  EXPECT_EQ(browser(), GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+
+  browser2->GetWindow()->Show();
+  ui_test_utils::WaitForBrowserSetLastActive(browser2);
+  EXPECT_EQ(browser2, GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+
+  browser()->GetWindow()->Activate();
+  ui_test_utils::WaitForBrowserSetLastActive(browser());
+  EXPECT_EQ(browser(), GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+
+  browser2->GetWindow()->Activate();
+  ui_test_utils::WaitForBrowserSetLastActive(browser2);
+  EXPECT_EQ(browser2, GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+
+  browser()->GetWindow()->Activate();
+  ui_test_utils::WaitForBrowserSetLastActive(browser());
+  EXPECT_EQ(browser(), GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+
+  CloseBrowserSynchronously(browser2);
+}
+
 #if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, RecordShortcutMetrics) {
   base::HistogramTester histogram_tester;
@@ -910,6 +946,25 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, RecordShortcutMetrics) {
   browser_view()->AcceleratorPressed(kLocationRepeatAccel);
   histogram_tester.ExpectUniqueSample("Browser.Shortcuts.TriggeredCommandId",
                                       IDC_FOCUS_LOCATION, 1);
+}
+
+// Test that repeated accelerators are processed or ignored depending on the
+// commands that they refer to. The behavior for different commands is dictated
+// by IsCommandRepeatable() in chrome/browser/ui/accelerator_table.h.
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, RepeatedAccelerators) {
+  // A non-repeated Ctrl-L accelerator should be processed.
+  const ui::Accelerator kLocationAccel(ui::VKEY_L, ui::EF_PLATFORM_ACCELERATOR);
+  EXPECT_TRUE(browser_view()->AcceleratorPressed(kLocationAccel));
+
+  // If the accelerator is repeated, it should be ignored.
+  const ui::Accelerator kLocationRepeatAccel(
+      ui::VKEY_L, ui::EF_PLATFORM_ACCELERATOR | ui::EF_IS_REPEAT);
+  EXPECT_FALSE(browser_view()->AcceleratorPressed(kLocationRepeatAccel));
+
+  // A repeated Ctrl-Tab accelerator should be processed.
+  const ui::Accelerator kNextTabRepeatAccel(
+      ui::VKEY_TAB, ui::EF_CONTROL_DOWN | ui::EF_IS_REPEAT);
+  EXPECT_TRUE(browser_view()->AcceleratorPressed(kNextTabRepeatAccel));
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
