@@ -50,6 +50,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -402,7 +403,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                 // created here. So, we do this initial assignment to ensure that these UI
                 // components don't show any bad intermediate states in the meantime.
                 mFuseboxStateSupplier.set(
-                        session.getAutocompleteInput().isStandby()
+                        session.getAutocompleteInput().getAutocompleteState()
+                                        == AutocompleteState.STANDBY_NO_FOCUS
                                 ? FuseboxState.DISABLED
                                 : FuseboxState.COMPACT);
                 ensureDeferredInitialized();

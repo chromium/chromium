@@ -526,7 +526,7 @@ import java.util.function.Supplier;
         boolean showRequestTypeButton = shouldShowRequestTypeButton();
         if (!isInInputSession()) {
             targetState = FuseboxState.DISABLED;
-        } else if (mInput.isStandby()) {
+        } else if (mInput.getAutocompleteState() == AutocompleteState.STANDBY_NO_FOCUS) {
             targetState = FuseboxState.DISABLED;
         } else {
             boolean isPopover =
