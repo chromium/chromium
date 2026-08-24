@@ -28,9 +28,9 @@ namespace {
 
 const char* g_non_managed_domain_for_testing = nullptr;
 
-std::string GetDomainFromEmail(const std::string& email) {
+std::string GetDomainFromEmail(std::string_view email) {
   size_t email_separator_pos = email.find('@');
-  if (email.empty() || email_separator_pos == std::string::npos ||
+  if (email.empty() || email_separator_pos == std::string_view::npos ||
       email_separator_pos == email.size() - 1) {
     // An empty email means no logged-in user, or incognito user in case of
     // ChromiumOS. Also, some tests use nonsense email addresses (e.g. "test").
@@ -39,14 +39,14 @@ std::string GetDomainFromEmail(const std::string& email) {
   return gaia::ExtractDomainName(email);
 }
 
-bool IsGmailDomain(const std::string& email_domain) {
+bool IsGmailDomain(std::string_view email_domain) {
   static constexpr auto kGmailDomains =
       base::MakeFixedFlatSet<std::string_view>({"gmail.com", "googlemail.com"});
 
   return kGmailDomains.contains(email_domain);
 }
 
-bool IsGmailUserBasedOnEmail(const std::string& email) {
+bool IsGmailUserBasedOnEmail(std::string_view email) {
   return IsGmailDomain(GetDomainFromEmail(email));
 }
 
@@ -54,7 +54,7 @@ bool IsGmailUserBasedOnEmail(const std::string& email) {
 
 // static
 bool AccountManagedStatusFinder::MayBeEnterpriseDomain(
-    const std::string& email_domain) {
+    std::string_view email_domain) {
   // List of consumer-only domains from the server side logic. See
   // `KNOWN_INVALID_DOMAINS` from GetAgencySignupStateProducerModule.java.
   // Sharing this in open source Chromium code was green-lighted according to
@@ -490,7 +490,7 @@ bool AccountManagedStatusFinder::MayBeEnterpriseDomain(
 
 // static
 bool AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
-    const std::string& email) {
+    std::string_view email) {
   return MayBeEnterpriseDomain(GetDomainFromEmail(email));
 }
 

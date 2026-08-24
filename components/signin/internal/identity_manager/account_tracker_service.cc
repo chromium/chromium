@@ -181,10 +181,10 @@ AccountInfo AccountTrackerService::FindAccountInfoByGaiaId(
 }
 
 AccountInfo AccountTrackerService::FindAccountInfoByEmail(
-    const std::string& email) const {
+    std::string_view email) const {
   if (!email.empty()) {
     const auto iterator =
-        std::ranges::find_if(accounts_, [&email](const auto& pair) {
+        std::ranges::find_if(accounts_, [email](const auto& pair) {
           return gaia::AreEmailsSame(pair.second.email, email);
         });
     if (iterator != accounts_.end()) {

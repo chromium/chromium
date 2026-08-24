@@ -62,7 +62,7 @@ class PeopleHandler : public SettingsPageUIHandler,
   ~PeopleHandler() override;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  void HandleSetChromeSigninUserChoiceForTesting(const std::string& email,
+  void HandleSetChromeSigninUserChoiceForTesting(std::string_view email,
                                                  ChromeSigninUserChoice choice);
 #endif
 

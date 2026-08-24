@@ -256,17 +256,19 @@ void ProcessDiceHeaderDelegateImpl::AttemptChromeSignin(
   if (access_point_ == signin_metrics::AccessPoint::kWebSignin) {
     // When automation is enabled, automatically promote web sign in to Chrome
     // sign in.
-    const bool auto_accept_signin =
+    const bool auto_accept_from_command_line =
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kBrowserSigninAutoAccept);
+
+    const bool auto_accept_from_user_choice =
+        SigninPrefs(*profile_.get().GetPrefs())
+            .GetChromeSigninInterceptionUserChoice(account_info.GetGaiaId()) ==
+        ChromeSigninUserChoice::kSignin;
 
     // If the user did not choose the signin choice, do not proceed with a
     // sign in from a Web Signin.
     should_auto_sign_in =
-        auto_accept_signin ||
-        SigninPrefs(*profile_.get().GetPrefs())
-                .GetChromeSigninInterceptionUserChoice(account_info.gaia) ==
-            ChromeSigninUserChoice::kSignin;
+        auto_accept_from_command_line || auto_accept_from_user_choice;
     if (!should_auto_sign_in) {
       return;
     }

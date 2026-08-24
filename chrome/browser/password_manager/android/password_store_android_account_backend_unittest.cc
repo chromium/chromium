@@ -37,6 +37,7 @@
 #include "components/password_manager/core/browser/password_store/android_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/protocol/deletion_origin.pb.h"
 #include "components/sync/test/test_sync_service.h"
@@ -68,6 +69,7 @@ MATCHER_P(EqualsStoredCredential, expected_form, "") {
 }
 
 constexpr char kTestAccount[] = "test@gmail.com";
+constexpr char kTestGaiaId[] = "test_gaia_id";
 const std::u16string kTestUsername(u"Todd Tester");
 const std::u16string kTestPassword(u"S3cr3t");
 constexpr char kTestUrl[] = "https://example.com";
@@ -217,8 +219,8 @@ class PasswordStoreAndroidAccountBackendTest : public testing::Test {
   void EnableSyncForTestAccount() {
     sync_service_.GetUserSettings()->SetSelectedTypes(
         /*sync_everything=*/false, {syncer::UserSelectableType::kPasswords});
-    AccountInfo account_info;
-    account_info.email = kTestAccount;
+    AccountInfo account_info =
+        AccountInfo::Builder(GaiaId(kTestGaiaId), kTestAccount).Build();
     sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
   }
 

@@ -152,7 +152,7 @@ bool IsProfileDeletionAllowed(Profile* profile);
 // `intercepted_account_email` is not available, it should always be passed.
 bool IsProfileSeparationEnforcedByProfile(
     Profile* profile,
-    const std::string& intercepted_account_email);
+    std::string_view intercepted_account_email);
 
 // Returns true if profile separation is enforced by
 // `intercepted_account_separation_policies`.
@@ -166,7 +166,7 @@ bool ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
         intercepted_profile_separation_policies);
 
 bool IsAccountExemptedFromEnterpriseProfileSeparation(Profile* profile,
-                                                      const std::string& email);
+                                                      std::string_view email);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 // Records a UMA metric if the user accepts or not to create an enterprise
 // profile.

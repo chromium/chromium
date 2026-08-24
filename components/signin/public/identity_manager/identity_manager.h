@@ -373,7 +373,7 @@ class IdentityManager : public KeyedService,
       const CoreAccountId& account_id) const;
   // The same as `FindExtendedAccountInfo()` but finds an account by email.
   AccountInfo FindExtendedAccountInfoByEmailAddress(
-      const std::string& email_address) const;
+      std::string_view email_address) const;
   // The same as `FindExtendedAccountInfo()` but finds an account by gaia ID.
   AccountInfo FindExtendedAccountInfoByGaiaId(const GaiaId& gaia_id) const;
 
@@ -645,7 +645,7 @@ class IdentityManager : public KeyedService,
   friend void SimulateSuccessfulFetchOfAccountInfo(
       IdentityManager* identity_manager,
       const CoreAccountId& account_id,
-      const std::string& email,
+      std::string_view email,
       const GaiaId& gaia,
       const std::string& hosted_domain,
       const std::string& full_name,

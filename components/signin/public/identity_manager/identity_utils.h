@@ -30,7 +30,7 @@ bool IsUsernameAllowedByPattern(std::string_view username,
 // |prefs::kGoogleServicesUsernamePattern| with the preferences service
 // referenced by |prefs|.
 bool IsUsernameAllowedByPatternFromPrefs(const PrefService* prefs,
-                                         const std::string& username);
+                                         std::string_view username);
 
 // Returns all accounts for which Chrome should keep account-keyed preferences.
 // These are the accounts in the cookie (signed in or signed out) plus the

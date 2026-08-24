@@ -195,8 +195,9 @@ void GAIAInfoUpdateService::OnExtendedAccountInfoUpdated(
   CoreAccountInfo account_info =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 
-  if (info.account_id != account_info.account_id)
+  if (info.GetAccountId() != account_info.account_id) {
     return;
+  }
 
   UpdatePrimaryAccount(info);
 }

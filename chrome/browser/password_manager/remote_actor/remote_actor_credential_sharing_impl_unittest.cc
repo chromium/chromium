@@ -346,7 +346,7 @@ class RemoteActorCredentialSharingImplTest
     base::test::TestFuture<bool> result;
     base::test::TestFuture<void> dialog_shown_future;
     dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
-    remote->RequestAgentAuthentication(account_info_.gaia.ToString(),
+    remote->RequestAgentAuthentication(account_info_.GetGaiaId().ToString(),
                                        "google.com", "actor_id",
                                        result.GetCallback());
     dialog_shown_future.Get();
@@ -652,7 +652,7 @@ TEST_F(RemoteActorCredentialSharingImplTest, SuccessFlow_SelectCredential) {
   base::test::TestFuture<void> dialog_shown_future;
   dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
   remote->RequestAgentAuthentication(
-      /*gaia_id=*/account_info_.gaia.ToString(),
+      /*gaia_id=*/account_info_.GetGaiaId().ToString(),
       /*domain=*/"google.com", /*remote_actor_id=*/"actor_id",
       result.GetCallback());
 
@@ -733,7 +733,7 @@ TEST_F(RemoteActorCredentialSharingImplTest, FailureFlow_SharingFailed) {
   base::test::TestFuture<void> dialog_shown_future;
   dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
   remote->RequestAgentAuthentication(
-      /*gaia_id=*/account_info_.gaia.ToString(),
+      /*gaia_id=*/account_info_.GetGaiaId().ToString(),
       /*domain=*/"google.com", /*remote_actor_id=*/"actor_id",
       result.GetCallback());
 
@@ -781,7 +781,7 @@ TEST_F(RemoteActorCredentialSharingImplTest, SuccessFlow_CancelDialog) {
   base::test::TestFuture<void> dialog_shown_future;
   dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
   remote->RequestAgentAuthentication(
-      /*gaia_id=*/account_info_.gaia.ToString(),
+      /*gaia_id=*/account_info_.GetGaiaId().ToString(),
       /*domain=*/"google.com", /*remote_actor_id=*/"actor_id",
       result.GetCallback());
 
@@ -837,7 +837,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   base::test::TestFuture<void> dialog_shown_future;
   dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
   remote->RequestAgentAuthentication(
-      /*gaia_id=*/account_info_.gaia.ToString(),
+      /*gaia_id=*/account_info_.GetGaiaId().ToString(),
       /*domain=*/"google.com", /*remote_actor_id=*/"actor_id",
       result.GetCallback());
 
@@ -889,7 +889,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   base::test::TestFuture<void> dialog_shown_future;
   dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
   remote->RequestAgentAuthentication(
-      /*gaia_id=*/account_info_.gaia.ToString(),
+      /*gaia_id=*/account_info_.GetGaiaId().ToString(),
       /*domain=*/"google.com", /*remote_actor_id=*/"actor_id",
       result.GetCallback());
 
@@ -938,7 +938,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
 
   content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
   base::test::TestFuture<bool> result;
-  remote->RequestAgentAuthentication(account_info_.gaia.ToString(),
+  remote->RequestAgentAuthentication(account_info_.GetGaiaId().ToString(),
                                      "google.com", "actor_id",
                                      result.GetCallback());
   EXPECT_FALSE(result.Get());
@@ -992,7 +992,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   base::test::TestFuture<void> dialog_shown_future;
   dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
   remote->RequestAgentAuthentication(
-      /*gaia_id=*/account_info_.gaia.ToString(),
+      /*gaia_id=*/account_info_.GetGaiaId().ToString(),
       /*domain=*/"example.com", /*remote_actor_id=*/"actor_id",
       result.GetCallback());
 
@@ -1039,7 +1039,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   base::test::TestFuture<void> dialog_shown_future;
   dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
   remote->RequestAgentAuthentication(
-      /*gaia_id=*/account_info_.gaia.ToString(),
+      /*gaia_id=*/account_info_.GetGaiaId().ToString(),
       /*domain=*/"google.com", /*remote_actor_id=*/"actor_id",
       first_result.GetCallback());
 
@@ -1050,7 +1050,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
   base::test::TestFuture<bool> second_result;
   remote->RequestAgentAuthentication(
-      /*gaia_id=*/account_info_.gaia.ToString(),
+      /*gaia_id=*/account_info_.GetGaiaId().ToString(),
       /*domain=*/"google.com", /*remote_actor_id=*/"actor_id_2",
       second_result.GetCallback());
 

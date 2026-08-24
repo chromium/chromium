@@ -65,11 +65,11 @@ using ::testing::Return;
 
 namespace {
 
-AccountInfo GetValidAccountInfo(std::string email,
-                                GaiaId gaia_id,
-                                std::string given_name,
-                                std::string full_name,
-                                std::string hosted_domain) {
+AccountInfo GetValidAccountInfo(std::string_view email,
+                                const GaiaId& gaia_id,
+                                std::string_view given_name,
+                                std::string_view full_name,
+                                std::string_view hosted_domain) {
   AccountInfo account_info =
       AccountInfo::Builder(gaia_id, email)
           .SetAccountId(CoreAccountId::FromGaiaId(gaia_id))
@@ -195,10 +195,10 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
   AccountInfo info =
       signin::MakeAccountAvailable(identity_manager(), "pat@example.com");
   base::RunLoop().RunUntilIdle();
-  signin::SetPrimaryAccount(identity_manager(), info.email,
+  signin::SetPrimaryAccount(identity_manager(), info.GetEmail(),
                             signin::ConsentLevel::kSync);
-  info = GetValidAccountInfo(info.email, info.gaia, "Pat", "Pat Foo",
-                             std::string());
+  info = GetValidAccountInfo(info.GetEmail(), info.GetGaiaId(), "Pat",
+                             "Pat Foo", "");
   signin::UpdateAccountInfoForAccount(identity_manager(), info);
   base::RunLoop().RunUntilIdle();
 
@@ -210,7 +210,7 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
   EXPECT_EQ(entry->GetIsManaged(), signin::Tribool::kFalse);
 
   gfx::Image gaia_picture = gfx::test::CreateImage(256, 256);
-  signin::SimulateAccountImageFetch(identity_manager(), info.account_id,
+  signin::SimulateAccountImageFetch(identity_manager(), info.GetAccountId(),
                                     "GAIA_IMAGE_URL_WITH_SIZE", gaia_picture);
   // Set a fake picture URL.
   EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_picture, entry->GetAvatarIcon()));
@@ -233,17 +233,17 @@ TEST_F(GAIAInfoUpdateServiceTest, RevokeSyncConsent) {
   AccountInfo info =
       signin::MakeAccountAvailable(identity_manager(), "pat@example.com");
   base::RunLoop().RunUntilIdle();
-  signin::SetPrimaryAccount(identity_manager(), info.email,
+  signin::SetPrimaryAccount(identity_manager(), info.GetEmail(),
                             signin::ConsentLevel::kSync);
-  info = GetValidAccountInfo(info.email, info.gaia, "Pat", "Pat Foo",
-                             std::string());
+  info = GetValidAccountInfo(info.GetEmail(), info.GetGaiaId(), "Pat",
+                             "Pat Foo", "");
   signin::UpdateAccountInfoForAccount(identity_manager(), info);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(1u, storage()->GetNumberOfProfiles());
   ProfileAttributesEntry* entry = storage()->GetAllProfilesAttributes().front();
   gfx::Image gaia_picture = gfx::test::CreateImage(256, 256);
-  signin::SimulateAccountImageFetch(identity_manager(), info.account_id,
+  signin::SimulateAccountImageFetch(identity_manager(), info.GetAccountId(),
                                     "GAIA_IMAGE_URL_WITH_SIZE", gaia_picture);
   // Revoke sync consent (stay signed in with the primary account).
   signin::RevokeSyncConsent(identity_manager());
@@ -300,7 +300,7 @@ TEST_F(GAIAInfoUpdateServiceTest,
           .WithGaiaId(primary_gaia_id)
           .WithCookie()
           .Build("primary@example.com"));
-  ASSERT_EQ(primary_gaia_id, primary_info.gaia);
+  ASSERT_EQ(primary_gaia_id, primary_info.GetGaiaId());
   InitializeAccountPref(primary_gaia_id);
   EXPECT_TRUE(HasAccountPrefs(primary_gaia_id));
 
@@ -313,15 +313,17 @@ TEST_F(GAIAInfoUpdateServiceTest,
           .WithGaiaId(secondary_gaia_id)
           .WithCookie()
           .Build("secondary@gmail.com"));
-  ASSERT_EQ(secondary_gaia_id, secondary_info.gaia);
+  ASSERT_EQ(secondary_gaia_id, secondary_info.GetGaiaId());
   InitializeAccountPref(secondary_gaia_id);
   EXPECT_TRUE(HasAccountPrefs(secondary_gaia_id));
 
   // Set the accounts as signed out.
   signin::SetCookieAccounts(
       identity_manager(), test_url_loader_factory(),
-      {{primary_info.email, primary_info.gaia, /*signed_out=*/true},
-       {secondary_info.email, secondary_info.gaia, /*signed_out=*/true}});
+      {{std::string(primary_info.GetEmail()), primary_info.GetGaiaId(),
+        /*signed_out=*/true},
+       {std::string(secondary_info.GetEmail()), secondary_info.GetGaiaId(),
+        /*signed_out=*/true}});
   // Prefs should remain as the cookies are not cleared yet.
   EXPECT_TRUE(HasAccountPrefs(primary_gaia_id));
   EXPECT_TRUE(HasAccountPrefs(secondary_gaia_id));
@@ -372,15 +374,16 @@ TEST_F(GAIAInfoUpdateServiceTest, SigninPrefsWithSignedInWebOnly) {
           .WithGaiaId(gaia_id)
           .WithCookie()
           .Build("test@gmail.com"));
-  ASSERT_EQ(gaia_id, info.gaia);
+  ASSERT_EQ(gaia_id, info.GetGaiaId());
   ASSERT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   InitializeAccountPref(gaia_id);
   EXPECT_TRUE(HasAccountPrefs(gaia_id));
 
   // Web sign out keeps the prefs.
-  signin::SetCookieAccounts(identity_manager(), test_url_loader_factory(),
-                            {{info.email, info.gaia, /*signed_out=*/true}});
+  signin::SetCookieAccounts(
+      identity_manager(), test_url_loader_factory(),
+      {{std::string(info.GetEmail()), info.GetGaiaId(), /*signed_out=*/true}});
   EXPECT_TRUE(HasAccountPrefs(gaia_id));
 
   // Clearing the cookie removes the prefs.
@@ -398,7 +401,7 @@ TEST_F(GAIAInfoUpdateServiceTest, SigninPrefsWithGaiaIdNotInChrome) {
           .WithGaiaId(gaia_id)
           .WithCookie()
           .Build("test@gmail.com"));
-  ASSERT_EQ(gaia_id, info.gaia);
+  ASSERT_EQ(gaia_id, info.GetGaiaId());
   ASSERT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   InitializeAccountPref(gaia_id);
@@ -475,8 +478,8 @@ TEST_F(GAIAInfoUpdateServiceWithGlicEnablingTest, LogInLogOut) {
         identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   }
 
-  info = GetValidAccountInfo(info.email, info.gaia, "Pat", "Pat Foo",
-                             std::string());
+  info = GetValidAccountInfo(info.GetEmail(), info.GetGaiaId(), "Pat",
+                             "Pat Foo", "");
   MakeProfileGlicEligible();
   signin::UpdateAccountInfoForAccount(identity_manager(), info);
   base::RunLoop().RunUntilIdle();
@@ -490,7 +493,7 @@ TEST_F(GAIAInfoUpdateServiceWithGlicEnablingTest, LogInLogOut) {
   EXPECT_TRUE(entry->IsGlicEligible());
 
   gfx::Image gaia_picture = gfx::test::CreateImage(256, 256);
-  signin::SimulateAccountImageFetch(identity_manager(), info.account_id,
+  signin::SimulateAccountImageFetch(identity_manager(), info.GetAccountId(),
                                     "GAIA_IMAGE_URL_WITH_SIZE", gaia_picture);
   // Set a fake picture URL.
   EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_picture, entry->GetAvatarIcon()));

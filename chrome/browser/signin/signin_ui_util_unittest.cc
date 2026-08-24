@@ -110,15 +110,16 @@ TEST_F(SigninUiUtilTest,
       identity_test_env()->MakeAccountAvailable("acc2@gmail.com");
   signin::SetCookieAccounts(
       identity_manager(), &test_url_loader_factory_,
-      {{account1.email, account1.gaia}, {account2.email, account2.gaia}});
+      {{std::string(account1.GetEmail()), account1.GetGaiaId()},
+       {std::string(account2.GetEmail()), account2.GetGaiaId()}});
 
   // With no preview data / preference set, returns the default account (first).
   EXPECT_EQ(GetSingleAccountForPromos(identity_manager(),
                                       account_preview_data_service())
-                .gaia,
-            account1.gaia);
-  EXPECT_EQ(GetSingleAccountForPromos(identity_manager(), nullptr).gaia,
-            account1.gaia);
+                .GetGaiaId(),
+            account1.GetGaiaId());
+  EXPECT_EQ(GetSingleAccountForPromos(identity_manager(), nullptr).GetGaiaId(),
+            account1.GetGaiaId());
 }
 
 TEST_F(SigninUiUtilTest,
@@ -129,30 +130,32 @@ TEST_F(SigninUiUtilTest,
       identity_test_env()->MakeAccountAvailable("acc2@gmail.com");
   signin::SetCookieAccounts(
       identity_manager(), &test_url_loader_factory_,
-      {{account1.email, account1.gaia}, {account2.email, account2.gaia}});
+      {{std::string(account1.GetEmail()), account1.GetGaiaId()},
+       {std::string(account2.GetEmail()), account2.GetGaiaId()}});
 
   // Set preferred account to account2.
   signin::AccountPreviewDataService::AccountPreviewPreference pref;
-  pref.gaia_id = account2.gaia;
+  pref.gaia_id = account2.GetGaiaId();
   account_preview_data_service()->SetPreferredAccountForPromo(pref);
 
   // When preview service has preferred account, it is returned.
   EXPECT_EQ(GetSingleAccountForPromos(identity_manager(),
                                       account_preview_data_service())
-                .gaia,
-            account2.gaia);
+                .GetGaiaId(),
+            account2.GetGaiaId());
 
   // Without preview service, default account (account1) is returned.
-  EXPECT_EQ(GetSingleAccountForPromos(identity_manager(), nullptr).gaia,
-            account1.gaia);
+  EXPECT_EQ(GetSingleAccountForPromos(identity_manager(), nullptr).GetGaiaId(),
+            account1.GetGaiaId());
 }
 
 TEST_F(SigninUiUtilTest,
        GetSingleAccountForPromosPreferredAccountInvalidFallsBackToDefault) {
   AccountInfo account1 =
       identity_test_env()->MakeAccountAvailable("acc1@gmail.com");
-  signin::SetCookieAccounts(identity_manager(), &test_url_loader_factory_,
-                            {{account1.email, account1.gaia}});
+  signin::SetCookieAccounts(
+      identity_manager(), &test_url_loader_factory_,
+      {{std::string(account1.GetEmail()), account1.GetGaiaId()}});
 
   // Set preferred account to an account not in identity manager.
   signin::AccountPreviewDataService::AccountPreviewPreference pref;
@@ -162,8 +165,8 @@ TEST_F(SigninUiUtilTest,
   // Falls back to default account.
   EXPECT_EQ(GetSingleAccountForPromos(identity_manager(),
                                       account_preview_data_service())
-                .gaia,
-            account1.gaia);
+                .GetGaiaId(),
+            account1.GetGaiaId());
 }
 
 TEST_F(SigninUiUtilTest,
@@ -174,23 +177,24 @@ TEST_F(SigninUiUtilTest,
       identity_test_env()->MakeAccountAvailable("acc2@gmail.com");
   AccountInfo account3 =
       identity_test_env()->MakeAccountAvailable("acc3@gmail.com");
-  signin::SetCookieAccounts(identity_manager(), &test_url_loader_factory_,
-                            {{account1.email, account1.gaia},
-                             {account2.email, account2.gaia},
-                             {account3.email, account3.gaia}});
+  signin::SetCookieAccounts(
+      identity_manager(), &test_url_loader_factory_,
+      {{std::string(account1.GetEmail()), account1.GetGaiaId()},
+       {std::string(account2.GetEmail()), account2.GetGaiaId()},
+       {std::string(account3.GetEmail()), account3.GetGaiaId()}});
 
   // Set preferred account to account3.
   signin::AccountPreviewDataService::AccountPreviewPreference pref;
-  pref.gaia_id = account3.gaia;
+  pref.gaia_id = account3.GetGaiaId();
   account_preview_data_service()->SetPreferredAccountForPromo(pref);
 
   std::vector<AccountInfo> ordered = GetOrderedAccountsForDisplay(
       identity_manager(), account_preview_data_service(),
       /*restrict_to_accounts_eligible_for_signin=*/true);
   ASSERT_EQ(ordered.size(), 3u);
-  EXPECT_EQ(ordered[0].gaia, account3.gaia);
-  EXPECT_EQ(ordered[1].gaia, account1.gaia);
-  EXPECT_EQ(ordered[2].gaia, account2.gaia);
+  EXPECT_EQ(ordered[0].GetGaiaId(), account3.GetGaiaId());
+  EXPECT_EQ(ordered[1].GetGaiaId(), account1.GetGaiaId());
+  EXPECT_EQ(ordered[2].GetGaiaId(), account2.GetGaiaId());
 }
 
 }  // namespace

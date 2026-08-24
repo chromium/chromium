@@ -26,7 +26,7 @@
 
 SigninUIError CanOfferSignin(Profile* profile,
                              const GaiaId& gaia_id,
-                             const std::string& email,
+                             std::string_view email,
                              bool allow_account_from_other_profile,
                              bool ignore_reauth_error) {
   if (!profile) {

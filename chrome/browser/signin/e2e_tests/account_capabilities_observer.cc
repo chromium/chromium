@@ -16,8 +16,9 @@ AccountCapabilitiesObserver::~AccountCapabilitiesObserver() = default;
 
 void AccountCapabilitiesObserver::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
-  if (info.account_id != account_id_)
+  if (info.GetAccountId() != account_id_) {
     return;
+  }
 
   if (info.GetAccountCapabilities().AreAllCapabilitiesKnown()) {
     run_loop_.Quit();

@@ -70,7 +70,7 @@ std::optional<signin::ConsentLevel> GetPrimaryAccountConsentLevel(
 // `MakeAccountAvailable(IdentityManager*, AccountAvailabilityOptions)`.
 //
 CoreAccountInfo SetPrimaryAccount(IdentityManager* identity_manager,
-                                  const std::string& email,
+                                  std::string_view email,
                                   ConsentLevel consent_level);
 
 // When this is set for the given `identity_manager`, access token requests
@@ -107,7 +107,7 @@ void RemoveRefreshTokenForPrimaryAccount(IdentityManager* identity_manager);
 // `MakeAccountAvailable(IdentityManager*, AccountAvailabilityOptions)`.
 //
 AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
-                                        const std::string& email,
+                                        std::string_view email,
                                         ConsentLevel consent_level);
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -368,7 +368,7 @@ void CancelAllOngoingGaiaCookieOperations(IdentityManager* identity_manager);
 // network requests.
 void SimulateSuccessfulFetchOfAccountInfo(IdentityManager* identity_manager,
                                           const CoreAccountId& account_id,
-                                          const std::string& email,
+                                          std::string_view email,
                                           const GaiaId& gaia,
                                           const std::string& hosted_domain,
                                           const std::string& full_name,

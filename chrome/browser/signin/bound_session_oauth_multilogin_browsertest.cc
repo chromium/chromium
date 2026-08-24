@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginPrototypeTest,
   const std::string email_1 = "user1@gmail.com";
   const GaiaId::Literal fake_gaia_id_1("fake-gaia-id-1");
   const std::string refresh_token_1 = "refresh-token-1";
-  const CoreAccountInfo account_info_1 = signin::MakeAccountAvailable(
+  const AccountInfo account_info_1 = signin::MakeAccountAvailable(
       &identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
           .AsPrimary(signin::ConsentLevel::kSignin)
@@ -326,12 +326,12 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginPrototypeTest,
       identity_manager().GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
       account_info_1);
   ASSERT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
-      account_info_1.account_id));
+      account_info_1.GetAccountId()));
 
   const std::string email_2 = "user2@gmail.com";
   const GaiaId::Literal fake_gaia_id_2("fake-gaia-id-2");
   const std::string refresh_token_2 = "refresh-token-2";
-  const CoreAccountInfo account_info_2 = signin::MakeAccountAvailable(
+  const AccountInfo account_info_2 = signin::MakeAccountAvailable(
       &identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
           .WithGaiaId(fake_gaia_id_2)
@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginPrototypeTest,
               wrapped_key, /*mtls_token_binding=*/false))
           .Build(email_2));
   ASSERT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
-      account_info_2.account_id));
+      account_info_2.GetAccountId()));
 
   bound_session_cookie_refresh_service().RegisterNewBoundSession(
       CreateSIDTSBoundSessionParams(
@@ -585,7 +585,7 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPrototypeNewSessionTest,
   const std::string email = "user1@gmail.com";
   const GaiaId::Literal fake_gaia_id("fake-gaia-id-1");
   const std::string refresh_token = "refresh-token-1";
-  const CoreAccountInfo account_info = signin::MakeAccountAvailable(
+  const AccountInfo account_info = signin::MakeAccountAvailable(
       &identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
           .AsPrimary(signin::ConsentLevel::kSignin)
@@ -598,7 +598,7 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPrototypeNewSessionTest,
       identity_manager().GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
       account_info);
   ASSERT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
-      account_info.account_id));
+      account_info.GetAccountId()));
 
   bound_session_cookie_refresh_service().RegisterNewBoundSession(
       CreateSIDTSBoundSessionParams(
@@ -831,7 +831,7 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
   const std::string email_1 = "user1@gmail.com";
   const GaiaId::Literal fake_gaia_id_1("fake-gaia-id-1");
   const std::string refresh_token_1 = "refresh-token-1";
-  const CoreAccountInfo account_info_1 = signin::MakeAccountAvailable(
+  const AccountInfo account_info_1 = signin::MakeAccountAvailable(
       &identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
           .AsPrimary(signin::ConsentLevel::kSignin)
@@ -844,12 +844,12 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
       identity_manager().GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
       account_info_1);
   ASSERT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
-      account_info_1.account_id));
+      account_info_1.GetAccountId()));
 
   const std::string email_2 = "user2@gmail.com";
   const GaiaId::Literal fake_gaia_id_2("fake-gaia-id-2");
   const std::string refresh_token_2 = "refresh-token-2";
-  const CoreAccountInfo account_info_2 = signin::MakeAccountAvailable(
+  const AccountInfo account_info_2 = signin::MakeAccountAvailable(
       &identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
           .WithGaiaId(fake_gaia_id_2)
@@ -858,7 +858,7 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
               GetWrappedKey(), /*mtls_token_binding=*/false))
           .Build(email_2));
   ASSERT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
-      account_info_2.account_id));
+      account_info_2.GetAccountId()));
 
   ASSERT_FALSE(identity_manager().AllBoundTokensShareSameBindingKey());
 
@@ -893,12 +893,12 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
   account_reconcilor_observer.WaitForStateChange();
 
   // Secondary account(s) are removed.
-  EXPECT_FALSE(
-      identity_manager().HasAccountWithRefreshToken(account_info_2.account_id));
+  EXPECT_FALSE(identity_manager().HasAccountWithRefreshToken(
+      account_info_2.GetAccountId()));
   // The primary account is put in the error state.
   EXPECT_TRUE(
       identity_manager().HasAccountWithRefreshTokenInPersistentErrorState(
-          account_info_1.account_id));
+          account_info_1.GetAccountId()));
   EXPECT_EQ(
       identity_manager_observer
           .TokenOperationSourceFromErrorStateOfRefreshTokenUpdatedCallback(),
@@ -916,7 +916,7 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
   const std::string email_1 = "user1@gmail.com";
   const GaiaId::Literal fake_gaia_id_1("fake-gaia-id-1");
   const std::string refresh_token_1 = "refresh-token-1";
-  const CoreAccountInfo account_info_1 = signin::MakeAccountAvailable(
+  const AccountInfo account_info_1 = signin::MakeAccountAvailable(
       &identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
           .AsPrimary(signin::ConsentLevel::kSignin)
@@ -929,12 +929,12 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
       identity_manager().GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
       account_info_1);
   ASSERT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
-      account_info_1.account_id));
+      account_info_1.GetAccountId()));
 
   const std::string email_2 = "user2@gmail.com";
   const GaiaId::Literal fake_gaia_id_2("fake-gaia-id-2");
   const std::string refresh_token_2 = "refresh-token-2";
-  const CoreAccountInfo account_info_2 = signin::MakeAccountAvailable(
+  const AccountInfo account_info_2 = signin::MakeAccountAvailable(
       &identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
           .WithGaiaId(fake_gaia_id_2)
@@ -943,7 +943,7 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
               wrapped_key, /*mtls_token_binding=*/false))
           .Build(email_2));
   ASSERT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
-      account_info_2.account_id));
+      account_info_2.GetAccountId()));
 
   ASSERT_TRUE(identity_manager().AllBoundTokensShareSameBindingKey());
 
@@ -977,13 +977,13 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
 
   // Secondary account(s) are NOT removed.
   EXPECT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
-      account_info_2.account_id));
+      account_info_2.GetAccountId()));
   // The primary account is NOT put in the error state.
   EXPECT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
-      account_info_1.account_id));
+      account_info_1.GetAccountId()));
   EXPECT_FALSE(
       identity_manager().HasAccountWithRefreshTokenInPersistentErrorState(
-          account_info_1.account_id));
+          account_info_1.GetAccountId()));
   // None of the refresh tokens is revoked.
   EXPECT_TRUE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_1));
   EXPECT_TRUE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_2));
@@ -1241,7 +1241,7 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
   const std::string email_1 = "user1@gmail.com";
   const GaiaId::Literal fake_gaia_id_1("fake-gaia-id-1");
   const std::string refresh_token_1 = "refresh-token-1";
-  const CoreAccountInfo account_info_1 = signin::MakeAccountAvailable(
+  const AccountInfo account_info_1 = signin::MakeAccountAvailable(
       &identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
           .AsPrimary(signin::ConsentLevel::kSignin)
@@ -1254,12 +1254,12 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
       identity_manager().GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
       account_info_1);
   ASSERT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
-      account_info_1.account_id));
+      account_info_1.GetAccountId()));
 
   const std::string email_2 = "user2@gmail.com";
   const GaiaId::Literal fake_gaia_id_2("fake-gaia-id-2");
   const std::string refresh_token_2 = "refresh-token-2";
-  const CoreAccountInfo account_info_2 = signin::MakeAccountAvailable(
+  const AccountInfo account_info_2 = signin::MakeAccountAvailable(
       &identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
           .WithGaiaId(fake_gaia_id_2)
@@ -1268,7 +1268,7 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
               wrapped_key, /*mtls_token_binding=*/false))
           .Build(email_2));
   ASSERT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
-      account_info_2.account_id));
+      account_info_2.GetAccountId()));
 
   // Configure `FakeGaia`:
   // - make `ListAccounts` return only the primary account making Chrome to

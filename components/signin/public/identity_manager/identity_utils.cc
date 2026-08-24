@@ -73,7 +73,7 @@ bool IsUsernameAllowedByPattern(std::string_view username,
 }
 
 bool IsUsernameAllowedByPatternFromPrefs(const PrefService* prefs,
-                                         const std::string& username) {
+                                         std::string_view username) {
   if (!prefs) {
     return true;
   }

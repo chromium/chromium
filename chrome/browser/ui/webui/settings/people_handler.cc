@@ -1516,7 +1516,7 @@ void PeopleHandler::UpdateChromeSigninUserChoiceInfo() {
 }
 
 void PeopleHandler::HandleSetChromeSigninUserChoiceForTesting(
-    const std::string& email,
+    std::string_view email,
     ChromeSigninUserChoice choice) {
   base::ListValue args;
   args.Append(static_cast<int>(choice));

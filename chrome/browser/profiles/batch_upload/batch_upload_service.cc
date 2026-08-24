@@ -342,7 +342,7 @@ bool BatchUploadService::IsUserEligibleToOpenDialog() const {
 
   // If is in Sign in pending, the user should not have access to the dialog.
   if (identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
-          primary_account.account_id)) {
+          primary_account.GetAccountId())) {
     return false;
   }
 

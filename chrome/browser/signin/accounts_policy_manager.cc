@@ -387,10 +387,10 @@ void AccountsPolicyManager::RemoveUnallowedAccounts() {
   auto* accounts_mutator = identity_manager->GetAccountsMutator();
   for (const auto& account : accounts) {
     if (!signin_util::IsAccountExemptedFromEnterpriseProfileSeparation(
-            profile_, account.email) &&
-        account.account_id != primary_account_id) {
+            profile_, account.GetEmail()) &&
+        account.GetAccountId() != primary_account_id) {
       accounts_mutator->RemoveAccount(
-          account.account_id,
+          account.GetAccountId(),
           signin_metrics::SourceForRefreshTokenOperation::
               kEnterprisePolicy_AccountNotAllowedInContentArea);
     }

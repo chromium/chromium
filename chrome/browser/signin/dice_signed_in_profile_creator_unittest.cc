@@ -285,7 +285,7 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithTokensLoaded) {
   base::RunLoop loop;
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
-          profile(), account_info.account_id, std::vector<CoreAccountId>{},
+          profile(), account_info.GetAccountId(), std::vector<CoreAccountId>{},
           kProfileTestName, kTestIcon,
           base::BindOnce(&DiceSignedInProfileCreatorTest::OnProfileCreated,
                          base::Unretained(this), loop.QuitClosure()));
@@ -297,12 +297,12 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithTokensLoaded) {
   EXPECT_NE(profile(), signed_in_profile());
   EXPECT_EQ(signed_in_profile(), added_profile());
   EXPECT_FALSE(IdentityManagerFactory::GetForProfile(profile())
-                   ->HasAccountWithRefreshToken(account_info.account_id));
+                   ->HasAccountWithRefreshToken(account_info.GetAccountId()));
   signin::IdentityManager* new_identity_manager =
       IdentityManagerFactory::GetForProfile(signed_in_profile());
   EXPECT_EQ(1u, new_identity_manager->GetAccountsWithRefreshTokens().size());
   EXPECT_TRUE(IdentityManagerFactory::GetForProfile(signed_in_profile())
-                  ->HasAccountWithRefreshToken(account_info.account_id));
+                  ->HasAccountWithRefreshToken(account_info.GetAccountId()));
   EXPECT_TRUE(
       new_identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
@@ -331,7 +331,7 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithTokensNotLoaded) {
   SetupCookiesToMove();
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
-          profile(), account_info.account_id, std::vector<CoreAccountId>{},
+          profile(), account_info.GetAccountId(), std::vector<CoreAccountId>{},
           std::u16string(), std::nullopt,
           base::BindOnce(&DiceSignedInProfileCreatorTest::OnProfileCreated,
                          base::Unretained(this), creator_loop.QuitClosure()));
@@ -353,12 +353,12 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithTokensNotLoaded) {
   EXPECT_EQ(signed_in_profile(), added_profile());
   EXPECT_TRUE(creator_callback_called());
   EXPECT_FALSE(IdentityManagerFactory::GetForProfile(profile())
-                   ->HasAccountWithRefreshToken(account_info.account_id));
+                   ->HasAccountWithRefreshToken(account_info.GetAccountId()));
   EXPECT_EQ(1u, IdentityManagerFactory::GetForProfile(signed_in_profile())
                     ->GetAccountsWithRefreshTokens()
                     .size());
   EXPECT_TRUE(IdentityManagerFactory::GetForProfile(signed_in_profile())
-                  ->HasAccountWithRefreshToken(account_info.account_id));
+                  ->HasAccountWithRefreshToken(account_info.GetAccountId()));
   VerifyCookiesMoved();
 }
 
@@ -369,7 +369,7 @@ TEST_P(DiceSignedInProfileCreatorTest, DeleteWhileCreating) {
   SetupCookiesToMove();
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
-          profile(), account_info.account_id, std::vector<CoreAccountId>{},
+          profile(), account_info.GetAccountId(), std::vector<CoreAccountId>{},
           std::u16string(), std::nullopt,
           base::BindOnce(&DiceSignedInProfileCreatorTest::OnProfileCreated,
                          base::Unretained(this), base::OnceClosure()));
@@ -390,7 +390,7 @@ TEST_P(DiceSignedInProfileCreatorTest, DeleteProfile) {
   SetupCookiesToMove();
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
-          profile(), account_info.account_id, std::vector<CoreAccountId>{},
+          profile(), account_info.GetAccountId(), std::vector<CoreAccountId>{},
           std::u16string(), std::nullopt,
           base::BindOnce(&DiceSignedInProfileCreatorTest::OnProfileCreated,
                          base::Unretained(this), creator_loop.QuitClosure()));
@@ -420,12 +420,12 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithMultipleTokensLoaded) {
   AccountInfo secondary_info2 =
       identity_test_env()->MakeAccountAvailable("secondary2@example.com");
 
-  std::vector<CoreAccountId> secondary_ids = {secondary_info1.account_id,
-                                              secondary_info2.account_id};
+  std::vector<CoreAccountId> secondary_ids = {secondary_info1.GetAccountId(),
+                                              secondary_info2.GetAccountId()};
 
-  std::vector<CoreAccountId> all_account_ids = {initiator_info.account_id,
-                                                secondary_info1.account_id,
-                                                secondary_info2.account_id};
+  std::vector<CoreAccountId> all_account_ids = {initiator_info.GetAccountId(),
+                                                secondary_info1.GetAccountId(),
+                                                secondary_info2.GetAccountId()};
 
   size_t kTestIcon = profiles::GetModernAvatarIconStartIndex();
 
@@ -433,8 +433,8 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithMultipleTokensLoaded) {
   base::RunLoop loop;
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
-          profile(), initiator_info.account_id, secondary_ids, kProfileTestName,
-          kTestIcon,
+          profile(), initiator_info.GetAccountId(), secondary_ids,
+          kProfileTestName, kTestIcon,
           base::BindOnce(&DiceSignedInProfileCreatorTest::OnProfileCreated,
                          base::Unretained(this), loop.QuitClosure()));
   loop.Run();
@@ -463,7 +463,7 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithMultipleTokensLoaded) {
   // Verify initiator is set as primary.
   EXPECT_EQ(
       new_identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      initiator_info.account_id);
+      initiator_info.GetAccountId());
 
   // Check profile type
   ASSERT_FALSE(signed_in_profile()->IsGuestSession());
@@ -491,10 +491,11 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithMissingTokens) {
 
   // Secondary 2 doesn't have a refresh token in the source profile.
   identity_test_env()->RemoveRefreshTokenForAccount(
-      secondary_info_no_token.account_id);
+      secondary_info_no_token.GetAccountId());
 
   std::vector<CoreAccountId> secondary_ids = {
-      secondary_info_with_token.account_id, secondary_info_no_token.account_id};
+      secondary_info_with_token.GetAccountId(),
+      secondary_info_no_token.GetAccountId()};
 
   size_t kTestIcon = profiles::GetModernAvatarIconStartIndex();
 
@@ -502,8 +503,8 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithMissingTokens) {
   base::RunLoop loop;
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
-          profile(), initiator_info.account_id, secondary_ids, kProfileTestName,
-          kTestIcon,
+          profile(), initiator_info.GetAccountId(), secondary_ids,
+          kProfileTestName, kTestIcon,
           base::BindOnce(&DiceSignedInProfileCreatorTest::OnProfileCreated,
                          base::Unretained(this), loop.QuitClosure()));
   loop.Run();
@@ -518,11 +519,11 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithMissingTokens) {
   // Only initiator and secondary with token should have been moved.
   EXPECT_EQ(2u, new_identity_manager->GetAccountsWithRefreshTokens().size());
   EXPECT_TRUE(new_identity_manager->HasAccountWithRefreshToken(
-      initiator_info.account_id));
+      initiator_info.GetAccountId()));
   EXPECT_TRUE(new_identity_manager->HasAccountWithRefreshToken(
-      secondary_info_with_token.account_id));
+      secondary_info_with_token.GetAccountId()));
   EXPECT_FALSE(new_identity_manager->HasAccountWithRefreshToken(
-      secondary_info_no_token.account_id));
+      secondary_info_no_token.GetAccountId()));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

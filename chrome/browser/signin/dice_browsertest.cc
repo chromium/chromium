@@ -548,10 +548,10 @@ class DiceBrowserTest : public InProcessBrowserTest,
     AccountInfo secondary_account_info =
         signin::MakeAccountAvailable(GetIdentityManager(), kSecondaryEmail);
     ASSERT_TRUE(GetIdentityManager()->HasAccountWithRefreshToken(
-        secondary_account_info.account_id));
+        secondary_account_info.GetAccountId()));
     ASSERT_FALSE(
         GetIdentityManager()->HasAccountWithRefreshTokenInPersistentErrorState(
-            secondary_account_info.account_id));
+            secondary_account_info.GetAccountId()));
   }
 
   // Navigate to a Gaia URL setting the Google-Accounts-SignOut header.

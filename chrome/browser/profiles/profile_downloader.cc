@@ -294,7 +294,7 @@ void ProfileDownloader::OnAccessTokenFetchComplete(
 }
 
 void ProfileDownloader::OnExtendedAccountInfoUpdated(const AccountInfo& info) {
-  if (info.account_id == account_id_ && info.IsValid()) {
+  if (info.GetAccountId() == account_id_ && info.IsValid()) {
     account_info_ = info;
 
     // If the StartFetchingImage was called before we had valid info, the

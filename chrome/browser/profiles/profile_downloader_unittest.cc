@@ -63,9 +63,9 @@ class ProfileDownloaderTest
   void SimulateUserInfoSuccess(const std::string& picture_url,
                                const AccountInfo& account_info) {
     identity_test_env_.SimulateSuccessfulFetchOfAccountInfo(
-        account_info.account_id, account_info.email, account_info.gaia,
-        kTestHostedDomain, kTestFullName, kTestGivenName, kTestLocale,
-        picture_url);
+        account_info.GetAccountId(), account_info.GetEmail(),
+        account_info.GetGaiaId(), kTestHostedDomain, kTestFullName,
+        kTestGivenName, kTestLocale, picture_url);
   }
 
   // IdentityManager::DiagnosticsObserver:
@@ -97,14 +97,14 @@ class ProfileDownloaderTest
 TEST_F(ProfileDownloaderTest, FetchAccessToken) {
   AccountInfo account_info =
       identity_test_env_.MakeAccountAvailable(kTestEmail);
-  identity_test_env_.SetRefreshTokenForAccount(account_info.account_id);
+  identity_test_env_.SetRefreshTokenForAccount(account_info.GetAccountId());
 
   base::RunLoop run_loop;
   set_on_access_token_requested_callback(run_loop.QuitClosure());
-  profile_downloader_.StartForAccount(account_info.account_id);
+  profile_downloader_.StartForAccount(account_info.GetAccountId());
   run_loop.Run();
 
-  EXPECT_EQ(account_info.account_id, account_id_for_access_token_request_);
+  EXPECT_EQ(account_info.GetAccountId(), account_id_for_access_token_request_);
 }
 
 TEST_F(ProfileDownloaderTest, AccountInfoReady) {
@@ -116,7 +116,7 @@ TEST_F(ProfileDownloaderTest, AccountInfoReady) {
             profile_downloader_.GetProfilePictureStatus());
   base::RunLoop run_loop;
   set_on_access_token_requested_callback(run_loop.QuitClosure());
-  profile_downloader_.StartForAccount(account_info.account_id);
+  profile_downloader_.StartForAccount(account_info.GetAccountId());
   run_loop.Run();
   profile_downloader_.StartFetchingImage();
   ASSERT_EQ(kTestValidPictureURL, profile_downloader_.GetProfilePictureURL());
@@ -129,7 +129,7 @@ TEST_F(ProfileDownloaderTest, AccountInfoNotReady) {
             profile_downloader_.GetProfilePictureStatus());
   base::RunLoop run_loop;
   set_on_access_token_requested_callback(run_loop.QuitClosure());
-  profile_downloader_.StartForAccount(account_info.account_id);
+  profile_downloader_.StartForAccount(account_info.GetAccountId());
   run_loop.Run();
   profile_downloader_.StartFetchingImage();
   SimulateUserInfoSuccess(kTestValidPictureURL, account_info);
@@ -144,7 +144,7 @@ TEST_F(ProfileDownloaderTest, AccountInfoNoPictureDoesNotCrash) {
 
   base::RunLoop run_loop;
   set_on_access_token_requested_callback(run_loop.QuitClosure());
-  profile_downloader_.StartForAccount(account_info.account_id);
+  profile_downloader_.StartForAccount(account_info.GetAccountId());
   run_loop.Run();
   profile_downloader_.StartFetchingImage();
 
@@ -161,7 +161,7 @@ TEST_F(ProfileDownloaderTest, AccountInfoInvalidPictureURLDoesNotCrash) {
 
   base::RunLoop run_loop;
   set_on_access_token_requested_callback(run_loop.QuitClosure());
-  profile_downloader_.StartForAccount(account_info.account_id);
+  profile_downloader_.StartForAccount(account_info.GetAccountId());
   run_loop.Run();
   profile_downloader_.StartFetchingImage();
 

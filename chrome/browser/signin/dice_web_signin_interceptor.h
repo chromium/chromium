@@ -155,7 +155,7 @@ class DiceWebSigninInterceptor : public KeyedService,
   std::optional<SigninInterceptionHeuristicOutcome> GetHeuristicOutcome(
       bool is_new_account,
       bool is_sync_signin,
-      const std::string& email,
+      std::string_view email,
       const GaiaId& gaia_id = GaiaId(),
       const ProfileAttributesEntry** entry = nullptr,
       signin::Tribool primary_is_connected = signin::Tribool::kUnknown) const;
@@ -272,7 +272,7 @@ class DiceWebSigninInterceptor : public KeyedService,
   // Helper functions to determine which interception UI should be shown.
   const ProfileAttributesEntry* ShouldShowProfileSwitchBubble(
       const GaiaId& intercepted_gaia_id,
-      const std::string& intercepted_email_fallback,
+      std::string_view intercepted_email_fallback,
       ProfileAttributesStorage* profile_attribute_storage) const;
   bool ShouldEnforceEnterpriseProfileSeparation(
       const AccountInfo& intercepted_account_info) const;
@@ -283,7 +283,7 @@ class DiceWebSigninInterceptor : public KeyedService,
   bool ShouldShowMultiUserBubble(
       const AccountInfo& intercepted_account_info) const;
   bool ShouldShowChromeSigninBubble(const GaiaId& gaia_id,
-                                    const std::string& email) const;
+                                    std::string_view email) const;
 
   // Helper function to call `delegate_->ShowSigninInterceptionBubble()`.
   void ShowSigninInterceptionBubble(
@@ -312,8 +312,7 @@ class DiceWebSigninInterceptor : public KeyedService,
                                SigninInterceptionResult create);
   // Called after the user chose whether the session should continue in a new
   // profile.
-  void OnProfileSwitchChoice(const std::string& email,
-                             const base::FilePath& profile_path,
+  void OnProfileSwitchChoice(const base::FilePath& profile_path,
                              SigninInterceptionResult switch_profile);
   // Called after the user chose whether they want to sign in to chrome or not
   // via the Chrome Signin Bubble.
@@ -351,7 +350,7 @@ class DiceWebSigninInterceptor : public KeyedService,
   void OnNewBrowserCreated(bool is_new_profile);
 
   // Returns a 8-bit hash of the email that can be persisted.
-  static std::string GetPersistentEmailHash(const std::string& email);
+  static std::string GetPersistentEmailHash(std::string_view email);
 
   // Increments the current entry count corresponding to the `email` of the
   // given pref. The given `pref_name` is expected to be a DictionaryPref with a
@@ -363,7 +362,7 @@ class DiceWebSigninInterceptor : public KeyedService,
   // ensure it cannot be reversed.
   // Returns the incremented value of the pref.
   size_t IncrementEmailToCountDictionaryPref(const char* pref_name,
-                                             const std::string& email);
+                                             std::string_view email);
 
   // Records the number of times the user previously dismissed the Chrome Signin
   // bubble when accepting/declining it. Result is expected to be either
@@ -375,7 +374,7 @@ class DiceWebSigninInterceptor : public KeyedService,
 
   // Checks if the user previously declined 2 times creating a new profile for
   // this account.
-  bool HasUserDeclinedProfileCreation(const std::string& email) const;
+  bool HasUserDeclinedProfileCreation(std::string_view email) const;
 
   // Fetches the value of the cloud user level value of the
   // ManagedAccountsSigninRestriction policy for 'account_info' and runs

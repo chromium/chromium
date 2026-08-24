@@ -677,16 +677,16 @@ IN_PROC_BROWSER_TEST_P(LiveSignInTest,
     sign_in_functions.SignInFromWeb(*test_account,
                                     /*previously_signed_in_accounts=*/1);
 
-    CoreAccountInfo core_account_info =
+    AccountInfo secondary_account_info =
         identity_manager()->FindExtendedAccountInfoByEmailAddress(
             test_account->user);
-    ASSERT_FALSE(core_account_info.IsEmpty());
+    ASSERT_FALSE(secondary_account_info.IsEmpty());
 
     capabilities_observer.WaitForAllCapabilitiesToBeKnown(
-        core_account_info.account_id);
+        secondary_account_info.GetAccountId());
     AccountInfo account_info =
         identity_manager()->FindExtendedAccountInfoByAccountId(
-            core_account_info.account_id);
+            secondary_account_info.GetAccountId());
     EXPECT_EQ(
         account_info.GetAccountCapabilities()
             .can_show_history_sync_opt_ins_without_minor_mode_restrictions(),

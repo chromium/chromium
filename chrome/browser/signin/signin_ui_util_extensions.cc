@@ -80,7 +80,7 @@ bool ShouldShowReauthFlowForEmail(Profile* profile, const std::string& email) {
     return false;
   }
   return identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-      account_info.account_id);
+      account_info.GetAccountId());
 }
 
 }  // namespace

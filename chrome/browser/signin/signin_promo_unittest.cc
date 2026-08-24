@@ -737,11 +737,11 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
   EXPECT_EQ(1, profile()->GetPrefs()->GetInteger(
                    prefs::kBookmarkSignInPromoShownCountPerProfile));
   EXPECT_EQ(0, SigninPrefs(*profile()->GetPrefs())
-                   .GetPasswordSigninPromoImpressionCount(account.gaia));
+                   .GetPasswordSigninPromoImpressionCount(account.GetGaiaId()));
   EXPECT_EQ(0, SigninPrefs(*profile()->GetPrefs())
-                   .GetAddressSigninPromoImpressionCount(account.gaia));
+                   .GetAddressSigninPromoImpressionCount(account.GetGaiaId()));
   EXPECT_EQ(0, SigninPrefs(*profile()->GetPrefs())
-                   .GetBookmarkSigninPromoImpressionCount(account.gaia));
+                   .GetBookmarkSigninPromoImpressionCount(account.GetGaiaId()));
 
   EXPECT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
   EXPECT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
@@ -781,7 +781,7 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
   EXPECT_EQ(5, profile()->GetPrefs()->GetInteger(
                    prefs::kPasswordSignInPromoShownCountPerProfile));
   EXPECT_EQ(0, SigninPrefs(*profile()->GetPrefs())
-                   .GetPasswordSigninPromoImpressionCount(account.gaia));
+                   .GetPasswordSigninPromoImpressionCount(account.GetGaiaId()));
 
   EXPECT_FALSE(ShouldShowPasswordSignInPromo(*profile()));
   EXPECT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
@@ -828,11 +828,11 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags, RecordSignInPromoShownWithAccount) {
   EXPECT_EQ(0, profile.get()->GetPrefs()->GetInteger(
                    prefs::kBookmarkSignInPromoShownCountPerProfile));
   EXPECT_EQ(1, SigninPrefs(*profile.get()->GetPrefs())
-                   .GetPasswordSigninPromoImpressionCount(account.gaia));
+                   .GetPasswordSigninPromoImpressionCount(account.GetGaiaId()));
   EXPECT_EQ(1, SigninPrefs(*profile.get()->GetPrefs())
-                   .GetAddressSigninPromoImpressionCount(account.gaia));
+                   .GetAddressSigninPromoImpressionCount(account.GetGaiaId()));
   EXPECT_EQ(1, SigninPrefs(*profile.get()->GetPrefs())
-                   .GetBookmarkSigninPromoImpressionCount(account.gaia));
+                   .GetBookmarkSigninPromoImpressionCount(account.GetGaiaId()));
 }
 
 TEST_F(ShowSigninPromoTestWithFeatureFlags,
@@ -883,7 +883,7 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
   EXPECT_EQ(0, profile->GetPrefs()->GetInteger(
                    prefs::kAddressSignInPromoShownCountPerProfile));
   EXPECT_EQ(5, SigninPrefs(*profile.get()->GetPrefs())
-                   .GetAddressSigninPromoImpressionCount(account.gaia));
+                   .GetAddressSigninPromoImpressionCount(account.GetGaiaId()));
 
   EXPECT_FALSE(ShouldShowAddressSignInPromo(*profile.get(), CreateAddress()));
   EXPECT_TRUE(ShouldShowPasswordSignInPromo(*profile.get()));
@@ -1090,11 +1090,11 @@ TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
       profile()->GetPrefs()->GetInteger(
           prefs::kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment));
   EXPECT_EQ(0, SigninPrefs(*profile()->GetPrefs())
-                   .GetPasswordSigninPromoImpressionCount(account.gaia));
+                   .GetPasswordSigninPromoImpressionCount(account.GetGaiaId()));
   EXPECT_EQ(0, SigninPrefs(*profile()->GetPrefs())
-                   .GetAddressSigninPromoImpressionCount(account.gaia));
+                   .GetAddressSigninPromoImpressionCount(account.GetGaiaId()));
   EXPECT_EQ(0, SigninPrefs(*profile()->GetPrefs())
-                   .GetBookmarkSigninPromoImpressionCount(account.gaia));
+                   .GetBookmarkSigninPromoImpressionCount(account.GetGaiaId()));
 
   EXPECT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
   EXPECT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
@@ -1148,11 +1148,11 @@ TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
       profile.get()->GetPrefs()->GetInteger(
           prefs::kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment));
   EXPECT_EQ(1, SigninPrefs(*profile.get()->GetPrefs())
-                   .GetPasswordSigninPromoImpressionCount(account.gaia));
+                   .GetPasswordSigninPromoImpressionCount(account.GetGaiaId()));
   EXPECT_EQ(1, SigninPrefs(*profile.get()->GetPrefs())
-                   .GetAddressSigninPromoImpressionCount(account.gaia));
+                   .GetAddressSigninPromoImpressionCount(account.GetGaiaId()));
   EXPECT_EQ(1, SigninPrefs(*profile.get()->GetPrefs())
-                   .GetBookmarkSigninPromoImpressionCount(account.gaia));
+                   .GetBookmarkSigninPromoImpressionCount(account.GetGaiaId()));
 }
 
 TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
@@ -1877,7 +1877,7 @@ class ComputeProfileMenuAvatarButtonPromoInfoParamTest
         AccountInfo primary_account = Signin();
         profile()->GetPrefs()->SetString(
             prefs::kGoogleServicesLastSyncingGaiaId,
-            primary_account.gaia.ToString());
+            primary_account.GetGaiaId().ToString());
         batch_upload_test_helper_.SetReturnDescriptions(
             syncer::BOOKMARKS, GetLocalDataCount(promo_type));
         break;

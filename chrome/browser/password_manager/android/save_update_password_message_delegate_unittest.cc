@@ -393,8 +393,8 @@ void SaveUpdatePasswordMessageDelegateTest::EnqueueMessage(
     bool update_password,
     std::optional<AccountInfo> account_info) {
   if (user_signed_in && !account_info) {
-    account_info = AccountInfo();
-    account_info.value().email = kAccountEmail;
+    account_info =
+        AccountInfo::Builder(GaiaId("test_gaia"), kAccountEmail).Build();
   }
   EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage)
       .WillOnce(Return(true));

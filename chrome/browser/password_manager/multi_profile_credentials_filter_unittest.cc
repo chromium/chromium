@@ -142,7 +142,7 @@ class MultiProfileCredentialsFilterTest : public testing::Test {
     ProfileAttributesEntry* entry =
         profile_manager_.profile_attributes_storage()
             ->GetProfileAttributesWithPath(profile_2->GetPath());
-    entry->SetAuthInfo(account_info.gaia, base::UTF8ToUTF16(email),
+    entry->SetAuthInfo(account_info.GetGaiaId(), base::UTF8ToUTF16(email),
                        /*is_consented_primary_account=*/false);
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
@@ -300,7 +300,7 @@ TEST_F(MultiProfileCredentialsFilterTest, InterceptInProgress) {
   // Start an interception for the sign-in.
   AccountInfo account_info = SetupInterception();
   dice_web_signin_interceptor()->MaybeInterceptWebSignin(
-      web_contents_.get(), account_info.account_id,
+      web_contents_.get(), account_info.GetAccountId(),
       signin_metrics::AccessPoint::kStartPage,
       /*is_new_account=*/true,
       /*is_sync_signin=*/false,
@@ -324,7 +324,7 @@ TEST_F(MultiProfileCredentialsFilterTest, SigninIntercepted) {
   ASSERT_FALSE(dice_web_signin_interceptor()->is_interception_in_progress());
   ASSERT_EQ(dice_web_signin_interceptor()->GetHeuristicOutcome(
                 /*is_new_account=*/true, /*is_sync_signin=*/false,
-                account_info.email),
+                account_info.GetEmail()),
             SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
 
   MultiProfileCredentialsFilter multi_profile_filter(

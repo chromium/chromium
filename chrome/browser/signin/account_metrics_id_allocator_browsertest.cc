@@ -23,9 +23,9 @@ class AccountMetricsIdAllocatorBrowserTest : public SigninBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(AccountMetricsIdAllocatorBrowserTest, PersistenceTest) {
   base::HistogramTester histogram_tester;
   // Seed a test account.
-  CoreAccountInfo account_info =
+  AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("user@gmail.com");
-  GaiaId gaia_id = account_info.gaia;
+  GaiaId gaia_id = account_info.GetGaiaId();
 
   PrefService* pref_service = GetProfile()->GetPrefs();
 
@@ -51,22 +51,23 @@ IN_PROC_BROWSER_TEST_F(AccountMetricsIdAllocatorBrowserTest, CapReached) {
 
   // Allocate 100 IDs (0 to 99).
   for (int i = 0; i <= 99; ++i) {
-    CoreAccountInfo account_info = identity_test_env()->MakeAccountAvailable(
+    AccountInfo account_info = identity_test_env()->MakeAccountAvailable(
         "user" + base::NumberToString(i) + "@gmail.com");
-    GetOrAllocateAccountMetricsId(signin_prefs, account_info.gaia);
+    GetOrAllocateAccountMetricsId(signin_prefs, account_info.GetGaiaId());
   }
 
   EXPECT_EQ(signin_prefs.GetNextAccountMetricsUnassignedId(), 100);
 
   // 101st account should return nullopt.
-  CoreAccountInfo account_info_100 =
+  AccountInfo account_info_100 =
       identity_test_env()->MakeAccountAvailable("user100@gmail.com");
   std::optional<int> id =
-      GetOrAllocateAccountMetricsId(signin_prefs, account_info_100.gaia);
+      GetOrAllocateAccountMetricsId(signin_prefs, account_info_100.GetGaiaId());
   EXPECT_FALSE(id.has_value());
 
   EXPECT_EQ(signin_prefs.GetNextAccountMetricsUnassignedId(), 100);
-  EXPECT_TRUE(signin_prefs.IsAccountMetricsIdCapped(account_info_100.gaia));
+  EXPECT_TRUE(
+      signin_prefs.IsAccountMetricsIdCapped(account_info_100.GetGaiaId()));
 }
 
 IN_PROC_BROWSER_TEST_F(AccountMetricsIdAllocatorBrowserTest,
@@ -75,10 +76,10 @@ IN_PROC_BROWSER_TEST_F(AccountMetricsIdAllocatorBrowserTest,
   PrefService* pref_service1 = GetProfile()->GetPrefs();
   SigninPrefs signin_prefs1(*pref_service1);
 
-  CoreAccountInfo account_info1 =
+  AccountInfo account_info1 =
       identity_test_env()->MakeAccountAvailable("user1@gmail.com");
   std::optional<int> id1 =
-      GetOrAllocateAccountMetricsId(signin_prefs1, account_info1.gaia);
+      GetOrAllocateAccountMetricsId(signin_prefs1, account_info1.GetGaiaId());
   EXPECT_EQ(id1.value_or(-1), 0);
 
   // Create a second profile.
@@ -93,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(AccountMetricsIdAllocatorBrowserTest,
 
   // Second profile should start from 0 again.
   std::optional<int> id2 =
-      GetOrAllocateAccountMetricsId(signin_prefs2, account_info1.gaia);
+      GetOrAllocateAccountMetricsId(signin_prefs2, account_info1.GetGaiaId());
   EXPECT_EQ(id2.value_or(-1), 0);
 
   // Verify independence of global counter.

@@ -193,7 +193,7 @@ TEST(ForceSigninVerifierTest, OnGetTokenSuccess) {
   ASSERT_FALSE(verifier.GetTokenIsValid().has_value());
 
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      account_info.account_id, /*token=*/"", base::Time());
+      account_info.GetAccountId(), /*token=*/"", base::Time());
 
   ASSERT_EQ(nullptr, verifier.access_token_fetcher());
   std::optional<bool> token = verifier.GetTokenIsValid().has_value();
@@ -227,7 +227,7 @@ TEST(ForceSigninVerifierTest, OnGetTokenWaitForRefreshTokenThenSuccess) {
   EXPECT_NE(nullptr, verifier.access_token_fetcher());
 
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      account_info.account_id, /*token=*/"", base::Time());
+      account_info.GetAccountId(), /*token=*/"", base::Time());
 
   ASSERT_EQ(nullptr, verifier.access_token_fetcher());
   std::optional<bool> token = verifier.GetTokenIsValid().has_value();
@@ -419,7 +419,7 @@ TEST(ForceSigninVerifierTest, ChangeNetworkFromWIFITo4GWithOnGoingRequest) {
   // There is still one on-going request.
   EXPECT_EQ(first_request, verifier.access_token_fetcher());
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      account_info.account_id, /*token=*/"", base::Time());
+      account_info.GetAccountId(), /*token=*/"", base::Time());
 }
 
 TEST(ForceSigninVerifierTest, ChangeNetworkFromWIFITo4GWithFinishedRequest) {
@@ -445,7 +445,7 @@ TEST(ForceSigninVerifierTest, ChangeNetworkFromWIFITo4GWithFinishedRequest) {
 
   // Finishes the request.
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      account_info.account_id, /*token=*/"", base::Time());
+      account_info.GetAccountId(), /*token=*/"", base::Time());
   EXPECT_EQ(nullptr, verifier.access_token_fetcher());
 
   // Network is changed to 4G.

@@ -142,7 +142,7 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   // See `MakePrimaryAccountAvailable()` for a method that also adds a refresh
   // token for the account, or `MakeAccountAvailable()` for the more openly
   // configurable equivalent.
-  CoreAccountInfo SetPrimaryAccount(const std::string& email,
+  CoreAccountInfo SetPrimaryAccount(std::string_view email,
                                     ConsentLevel consent_level);
 
   // Sets a refresh token for the primary account (which must already be set).
@@ -171,7 +171,7 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   // Returns the AccountInfo of the newly-available account.
   //
   // See `MakeAccountAvailable()` for a more configurable equivalent.
-  AccountInfo MakePrimaryAccountAvailable(const std::string& email,
+  AccountInfo MakePrimaryAccountAvailable(std::string_view email,
                                           ConsentLevel consent_level);
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -365,7 +365,7 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   // Simulate account fetching using AccountTrackerService without sending
   // network requests.
   void SimulateSuccessfulFetchOfAccountInfo(const CoreAccountId& account_id,
-                                            const std::string& email,
+                                            std::string_view email,
                                             const GaiaId& gaia,
                                             const std::string& hosted_domain,
                                             const std::string& full_name,

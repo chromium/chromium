@@ -186,7 +186,7 @@ bool IsProfileDeletionAllowed(Profile* profile) {
 // by policies set in `profile`.
 bool IsProfileSeparationEnforcedByProfile(
     Profile* profile,
-    const std::string& intercepted_account_email) {
+    std::string_view intercepted_account_email) {
   if (!intercepted_account_email.empty() &&
       !IsAccountExemptedFromEnterpriseProfileSeparation(
           profile, intercepted_account_email)) {
@@ -254,9 +254,8 @@ bool ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
   return allowed_by_existing_profile && allowed_by_intercepted_account;
 }
 
-bool IsAccountExemptedFromEnterpriseProfileSeparation(
-    Profile* profile,
-    const std::string& email) {
+bool IsAccountExemptedFromEnterpriseProfileSeparation(Profile* profile,
+                                                      std::string_view email) {
   if (profile->GetPrefs()
           ->FindPreference(prefs::kProfileSeparationDomainExceptionList)
           ->IsDefaultValue()) {
@@ -610,7 +609,7 @@ bool ShouldShowAvatarSyncPromo(Profile* profile) {
   PrefService* pref_service = profile->GetPrefs();
   GaiaId previously_syncing_gaia_id =
       GaiaId(pref_service->GetString(prefs::kGoogleServicesLastSyncingGaiaId));
-  if (IsCrossAccountError(profile, account_info.gaia)) {
+  if (IsCrossAccountError(profile, account_info.GetGaiaId())) {
     return false;
   }
 

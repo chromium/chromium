@@ -41,7 +41,7 @@ namespace signin {
 class IdentityManager;
 void SimulateSuccessfulFetchOfAccountInfo(IdentityManager*,
                                           const CoreAccountId&,
-                                          const std::string&,
+                                          std::string_view,
                                           const GaiaId&,
                                           const std::string&,
                                           const std::string&,
@@ -99,7 +99,7 @@ class AccountTrackerService {
   std::vector<AccountInfo> GetAccounts() const;
   AccountInfo GetAccountInfo(const CoreAccountId& account_id) const;
   AccountInfo FindAccountInfoByGaiaId(const GaiaId& gaia_id) const;
-  AccountInfo FindAccountInfoByEmail(const std::string& email) const;
+  AccountInfo FindAccountInfoByEmail(std::string_view email) const;
 
   // Picks the correct account_id for the specified account depending on the
   // migration state.
@@ -181,7 +181,7 @@ class AccountTrackerService {
   friend void signin::SimulateSuccessfulFetchOfAccountInfo(
       signin::IdentityManager*,
       const CoreAccountId&,
-      const std::string&,
+      std::string_view,
       const GaiaId&,
       const std::string&,
       const std::string&,

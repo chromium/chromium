@@ -162,7 +162,7 @@ TEST_F(SigninProfileAttributesUpdaterTest,
   SetProfilePrefs(pref_service);
   // Set primary account to be the same as the UPA.
   // Given it is the same account, profile prefs should keep the same state.
-  identity_test_env_.SetPrimaryAccount(account_info.email,
+  identity_test_env_.SetPrimaryAccount(account_info.GetEmail(),
                                        signin::ConsentLevel::kSync);
   EXPECT_TRUE(entry->IsAuthenticated());
   CheckProfilePrefsSet(pref_service, false);
