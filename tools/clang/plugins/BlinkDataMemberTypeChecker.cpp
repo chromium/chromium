@@ -7,6 +7,7 @@
 #include "Util.h"
 #include "clang/AST/Attr.h"
 #include "clang/AST/Decl.h"
+#include "clang/AST/DeclTemplate.h"
 #include "clang/AST/Type.h"
 #include "clang/Basic/Diagnostic.h"
 
