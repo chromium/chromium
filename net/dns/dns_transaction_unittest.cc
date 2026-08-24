@@ -4584,8 +4584,7 @@ TEST_F(DnsTransactionTest, PlatformAttemptUsesSuffixSearchList) {
 
 TEST_F(DnsTransactionTestWithMockTime, PlatformAttemptRetryAndFallback) {
   if (__builtin_available(android 29, *)) {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(
+    AddScopedFeatureList().InitAndEnableFeature(
         features::kDnsPlatformFailFastAndRetry);
 
     // Allow 2 attempts.
@@ -4649,8 +4648,7 @@ TEST_F(DnsTransactionTestWithMockTime, PlatformAttemptRetryAndFallback) {
 TEST_F(DnsTransactionTestWithMockTime,
        PlatformAttemptRetryCancelsPreviousAttemptWhenParamSet) {
   if (__builtin_available(android 29, *)) {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
+    AddScopedFeatureList().InitAndEnableFeatureWithParameters(
         features::kDnsPlatformFailFastAndRetry,
         {{"cancel_previous_attempt_on_retry", "true"}});
 
@@ -4715,8 +4713,7 @@ TEST_F(DnsTransactionTestWithMockTime,
 TEST_F(DnsTransactionTestWithMockTime,
        PlatformAttemptRecordsStatsAndUpdatesTimeout) {
   if (__builtin_available(android 29, *)) {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(
+    AddScopedFeatureList().InitAndEnableFeature(
         features::kDnsPlatformFailFastAndRetry);
 
     config_ = DnsConfig();
