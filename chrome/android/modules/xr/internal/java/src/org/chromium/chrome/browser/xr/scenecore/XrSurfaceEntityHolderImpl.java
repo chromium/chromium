@@ -18,6 +18,7 @@ import androidx.xr.scenecore.SurfaceEntity.StereoMode;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.xr.scenecore.custom_mesh.XrCustomMeshHolder;
 import org.chromium.ui.xr.scenecore.XrCurvedSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrFloatSize3d;
 import org.chromium.ui.xr.scenecore.XrMeshData;
@@ -47,6 +48,9 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
 
     private final CopyOnWriteArrayList<Callback> mCallbacks = new CopyOnWriteArrayList<>();
     private IntSize2d mCurrentSurfaceDimensions = new IntSize2d(1, 1);
+
+    /** Helper for managing custom meshes. */
+    private @Nullable XrCustomMeshHolder<?> mCustomMeshHolder;
 
     public static XrSurfaceEntityHolderImpl create(Session xrSession, SurfaceEntity surfaceEntity) {
         return new XrSurfaceEntityHolderImpl(xrSession, surfaceEntity);
@@ -111,6 +115,9 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
         if (width <= 0 || height <= 0) return;
         mCurrentSurfaceDimensions = new IntSize2d(width, height);
         mEntity.setSurfacePixelDimensions(mCurrentSurfaceDimensions);
+        if (mCustomMeshHolder != null) {
+            mCustomMeshHolder.setSurfacePixelDimensions(width, height);
+        }
         notifySurfaceChanged();
     }
 
@@ -121,7 +128,7 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
         for (Map.Entry<Integer, StereoMode> entry : STEREO_MODE_MAP.entrySet()) {
             if (entry.getValue().equals(surfaceStereoMode)) return entry.getKey();
         }
-        throw new IllegalStateException("Unknown stereo mode: " + surfaceStereoMode);
+        return XrSurfaceEntityStereoMode.MONO;
     }
 
     @Override
@@ -129,10 +136,12 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
         assertDisposed();
         if (getSurfaceStereoMode() == stereoMode) return;
         StereoMode surfaceStereoMode = STEREO_MODE_MAP.get(stereoMode);
-        if (surfaceStereoMode != null) {
-            mEntity.setStereoMode(surfaceStereoMode);
-        } else {
+        if (surfaceStereoMode == null) {
             throw new IllegalArgumentException("Invalid stereo mode: " + stereoMode);
+        }
+        mEntity.setStereoMode(surfaceStereoMode);
+        if (mCustomMeshHolder != null) {
+            mCustomMeshHolder.setStereoMode(stereoMode);
         }
     }
 
@@ -145,6 +154,8 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
             return XrSurfaceEntityShape.SPHERE;
         } else if (mEntity.getShape() instanceof Shape.Hemisphere) {
             return XrSurfaceEntityShape.HEMISPHERE;
+        } else if (mCustomMeshHolder != null) {
+            return mCustomMeshHolder.getShape();
         } else if (mEntity.getShape() instanceof Shape.CustomMesh) {
             return XrSurfaceEntityShape.CUSTOM;
         } else {
@@ -178,6 +189,7 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
         assertDisposed();
         if (getSurfaceShape() == shape) return;
         Surface oldSurface = getSurface();
+        clearCustomState();
         switch (shape) {
             case XrSurfaceEntityShape.QUAD:
                 mEntity.setShape(new Shape.Quad(new FloatSize2d(1f, 1f)));
@@ -199,10 +211,20 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
     public void setSurfaceShape(XrMeshData[] meshDatas) {
         Shape.CustomMesh customMesh = XrSurfaceEntityUtils.createCustomMesh(meshDatas);
         if (customMesh != null) {
+            clearCustomState();
             Surface oldSurface = getSurface();
+            // Reset SceneCore internal entity node scale by temporarily setting a uniform shape.
+            mEntity.setShape(new Shape.Sphere(1f));
             mEntity.setShape(customMesh);
             Surface newSurface = getSurface();
             updateSurfaceCallbacks(oldSurface, newSurface);
+        }
+    }
+
+    private void clearCustomState() {
+        if (mCustomMeshHolder != null) {
+            mCustomMeshHolder.dispose();
+            mCustomMeshHolder = null;
         }
     }
 
@@ -277,6 +299,7 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
     @Override
     public void dispose() {
         if (!mIsDisposed) {
+            clearCustomState();
             notifySurfaceDestroyed();
             mCallbacks.clear();
             super.dispose();

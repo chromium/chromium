@@ -72,6 +72,8 @@ android_library("java") {
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrSurfaceEntityUtils.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrTransformableEntityHolderImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrVector3Impl.java",
+    "internal/java/src/org/chromium/chrome/browser/xr/scenecore/custom_mesh/XrCustomMeshGenerator.java",
+    "internal/java/src/org/chromium/chrome/browser/xr/scenecore/custom_mesh/XrCustomMeshHolder.java",
   ]
   deps = [
     ":xr_resources",

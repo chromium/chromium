@@ -20,6 +20,7 @@ import androidx.xr.runtime.Session;
 import androidx.xr.runtime.SessionCreateResult;
 import androidx.xr.runtime.SessionCreateSuccess;
 import androidx.xr.runtime.math.FloatSize2d;
+import androidx.xr.runtime.math.Matrix4;
 import androidx.xr.runtime.math.Vector3;
 import androidx.xr.scenecore.Component;
 import androidx.xr.scenecore.InputEvent;
@@ -112,6 +113,49 @@ public class XrInteractableComponentImplTest {
 
         mInteractableComponent.setInteractable(false);
         assertEquals(0, mEntity.getComponents().size());
+    }
+
+    @Test
+    public void testSetChildColliderEntity() {
+        mInteractableComponent.setInteractable(true);
+        mInteractableComponent.addOnClickListener(mListener1);
+
+        PanelEntity childCollider =
+                PanelEntity.create(mSession, mView, new FloatSize2d(1f, 1f), "collider-panel");
+        mInteractableComponent.setChildColliderEntity(childCollider);
+
+        // Event hitting childCollider is accepted
+        List<InputEvent.HitInfo> hitInfoList = new ArrayList<>();
+        hitInfoList.add(
+                new InputEvent.HitInfo(childCollider, new Vector3(0f, 0f, 0f), Matrix4.Identity));
+        InputEvent downEvent =
+                new InputEvent(
+                        InputEvent.Source.HANDS,
+                        InputEvent.Pointer.RIGHT,
+                        0L,
+                        new Vector3(0f, 0f, 0f),
+                        new Vector3(0f, 0f, -1f),
+                        InputEvent.Action.DOWN,
+                        hitInfoList);
+        InputEvent upEvent =
+                new InputEvent(
+                        InputEvent.Source.HANDS,
+                        InputEvent.Pointer.RIGHT,
+                        0L,
+                        new Vector3(0f, 0f, 0f),
+                        new Vector3(0f, 0f, -1f),
+                        InputEvent.Action.UP,
+                        hitInfoList);
+
+        mInteractableComponent.onInputEvent(downEvent);
+        mInteractableComponent.onInputEvent(upEvent);
+        verify(mListener1, times(1)).onClick();
+
+        // Clearing child collider ignores events hitting childCollider
+        mInteractableComponent.setChildColliderEntity(null);
+        mInteractableComponent.onInputEvent(downEvent);
+        mInteractableComponent.onInputEvent(upEvent);
+        verify(mListener1, times(1)).onClick();
     }
 
     @Test

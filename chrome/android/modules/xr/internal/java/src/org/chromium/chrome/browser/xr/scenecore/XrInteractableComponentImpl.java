@@ -7,10 +7,10 @@ package org.chromium.chrome.browser.xr.scenecore;
 import android.os.Handler;
 import android.os.Looper;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.xr.runtime.Session;
 import androidx.xr.runtime.math.Vector3;
 import androidx.xr.scenecore.BaseEntity;
+import androidx.xr.scenecore.Entity;
 import androidx.xr.scenecore.InputEvent;
 import androidx.xr.scenecore.InputEvent.Action;
 import androidx.xr.scenecore.InteractableComponent;
@@ -44,6 +44,7 @@ public class XrInteractableComponentImpl<EntityType extends BaseEntity>
     private final List<OnDragListener> mDragListeners = new ArrayList<>();
     private final Session mXrSession;
     private final EntityType mEntity;
+    private @Nullable Entity mChildColliderEntity;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final Runnable mClickTimeoutRunnable = () -> mWaitActionUp = false;
     private @Nullable InteractableComponent mInteractableComponent;
@@ -55,6 +56,10 @@ public class XrInteractableComponentImpl<EntityType extends BaseEntity>
     public XrInteractableComponentImpl(Session xrSession, EntityType entity) {
         mXrSession = xrSession;
         mEntity = entity;
+    }
+
+    public void setChildColliderEntity(@Nullable Entity childColliderEntity) {
+        mChildColliderEntity = childColliderEntity;
     }
 
     @Override
@@ -91,14 +96,20 @@ public class XrInteractableComponentImpl<EntityType extends BaseEntity>
         mDragListeners.remove(listener);
     }
 
-    @VisibleForTesting
-    void onInputEvent(InputEvent event) {
-        // Ignore events that hit child entities first.
-        if (!event.getHitInfoList().isEmpty()
-                && event.getHitInfoList().get(0).getInputEntity() != mEntity) {
-            resetClickState();
-            mWaitDragEnd = false;
+    public void onInputEvent(InputEvent event) {
+        if (mInteractableComponent == null) {
             return;
+        }
+
+        // Ignore events that hit other child entities first except for the designated child
+        // collider entity.
+        if (!event.getHitInfoList().isEmpty()) {
+            Entity hitEntity = event.getHitInfoList().get(0).getInputEntity();
+            if (hitEntity != mEntity && hitEntity != mChildColliderEntity) {
+                resetClickState();
+                mWaitDragEnd = false;
+                return;
+            }
         }
 
         Action action = event.getAction();
