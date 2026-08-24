@@ -79,7 +79,6 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
-#import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
@@ -145,7 +144,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 @interface RecentTabsTableViewController () <SigninPromoViewConsumer,
                                              SigninPromoViewMediatorDelegate,
-                                             SyncObserverModelBridge,
                                              TableViewURLDragDataSource,
                                              UIContextMenuInteractionDelegate,
                                              UIGestureRecognizerDelegate> {
@@ -158,8 +156,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   // `_syncedSessions`, but `_displayedTabs` allows for filtering to display
   // only particular tabs.
   std::vector<synced_sessions::DistantTabsSet> _displayedTabs;
-
-  std::unique_ptr<SyncObserverBridge> _syncObserver;
 }
 // The service that manages the recently closed tabs
 @property(nonatomic, assign) sessions::TabRestoreService* tabRestoreService;
@@ -237,9 +233,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     // accordingly.
     _profile = profile->GetOriginalProfile();
     _incognito = profile->IsOffTheRecord();
-    _syncObserver.reset(new SyncObserverBridge(self, self.syncService));
-  } else {
-    _syncObserver.reset();
   }
 }
 
@@ -291,22 +284,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   // Return NO is sign-in is disabled by the BrowserSignin policy.
   return authService->GetServiceStatus() ==
          AuthenticationService::ServiceStatus::SigninDisabledByPolicy;
-}
-
-#pragma mark - SyncObserverModelBridge
-
-- (void)onSyncStateChanged {
-  if (self.preventUpdates ||
-      ![self.tableViewModel
-          hasSectionForSectionIdentifier:SectionIdentifierOtherDevices]) {
-    return;
-  }
-
-  [self.tableView
-      performBatchUpdates:^{
-        [self updateOtherDevicesSectionForState:self.sessionState];
-      }
-               completion:nil];
 }
 
 #pragma mark - TableViewModel

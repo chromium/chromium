@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "url/gurl.h"
 
@@ -90,12 +91,14 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 
 @interface RecentTabsMediator () <AuthenticationServiceObserving,
                                   IdentityManagerObserving,
-                                  SyncedSessionsObserver> {
+                                  SyncedSessionsObserver,
+                                  SyncObserverModelBridge> {
   std::unique_ptr<synced_sessions::SyncedSessionsObserverBridge>
       _syncedSessionsObserver;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
   std::unique_ptr<recent_tabs::ClosedTabsObserverBridge> _closedTabsObserver;
+  std::unique_ptr<SyncObserverBridge> _syncObserver;
   // Time to ensure that the updates to the consumer are only happening once all
   // the updates are complete.
   std::unique_ptr<base::RetainingOneShotTimer> _timer;
@@ -163,6 +166,10 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
         std::make_unique<signin::IdentityManagerObserverBridge>(
             self.identityManager, self);
   }
+  if (!_syncObserver && self.syncService) {
+    _syncObserver =
+        std::make_unique<SyncObserverBridge>(self, self.syncService);
+  }
   if (!_closedTabsObserver) {
     _closedTabsObserver =
         std::make_unique<recent_tabs::ClosedTabsObserverBridge>(self);
@@ -176,6 +183,7 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 - (void)disconnect {
   _syncedSessionsObserver.reset();
   _identityManagerObserver.reset();
+  _syncObserver.reset();
 
   if (_closedTabsObserver) {
     if (self.restoreService) {
@@ -208,6 +216,12 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 #pragma mark - SyncedSessionsObserver
 
 - (void)onForeignSessionsChanged {
+  [self refreshSessionsView];
+}
+
+#pragma mark - SyncObserverModelBridge
+
+- (void)onSyncStateChanged {
   [self refreshSessionsView];
 }
 
