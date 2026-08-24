@@ -572,6 +572,13 @@ void TabGroupEditorBubbleView::RebuildMenuContents() {
     }
     simple_menu_items_.push_back(
         AddChildView(BuildMoveGroupToNewWindowButton()));
+    if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
+      if (browser_->GetTabStripModel()->GetFocusedGroup() == group_) {
+        simple_menu_items_.push_back(AddChildView(BuildUnfocusGroupButton()));
+      } else {
+        simple_menu_items_.push_back(AddChildView(BuildFocusGroupButton()));
+      }
+    }
     if (base::FeatureList::IsEnabled(features::kGlicTabGroups)) {
       AddChildView(BuildSeparator());
       simple_menu_items_.push_back(AddChildView(BuildAskGeminiButton()));

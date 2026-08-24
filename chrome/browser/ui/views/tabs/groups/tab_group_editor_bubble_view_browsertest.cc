@@ -574,6 +574,30 @@ IN_PROC_BROWSER_TEST_F(
       "TabGroups.Focus.ExitReason", TabGroupFocusExitReason::kEditorBubble, 1);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(
+    TabGroupEditorBubbleViewDialogBrowserTestWithFocusingEnabled,
+    FocusGroupIsAvailableInGuestProfile) {
+  Browser* const guest_browser = CreateGuestBrowser();
+  const std::optional<tab_groups::TabGroupId> group_id =
+      guest_browser->tab_strip_model()->AddToNewGroup({0});
+  ASSERT_TRUE(group_id.has_value());
+
+  guest_browser->tab_strip_model()->OpenTabGroupEditor(group_id.value());
+
+  views::Widget* const editor_bubble = WaitForAndGetEditorBubbleWidget();
+  ASSERT_NE(nullptr, editor_bubble);
+  ASSERT_NE(nullptr, editor_bubble->GetContentsView());
+
+  views::View* const focus_button_view =
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kTabGroupEditorBubbleFocusGroupButtonId,
+          views::ElementTrackerViews::GetContextForView(
+              editor_bubble->GetRootView()));
+  EXPECT_NE(nullptr, focus_button_view);
+}
+#endif
+
 class TabGroupEditorBubbleViewDialogBrowserTestWithTabGroupHome
     : public TabGroupEditorBubbleViewDialogBrowserTest {
  public:
