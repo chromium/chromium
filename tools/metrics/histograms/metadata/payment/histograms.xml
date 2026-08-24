@@ -511,6 +511,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PaymentRequest.SecurePaymentConfirmation.LocaleOutcome"
+    enum="SecurePaymentConfirmationLocaleOutcome" expires_after="2027-08-01">
+  <owner>nikifork@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records whether a website is passed a locale array when invoking Secure
+    Payment Confirmation, and whether it matched the application locale.
+    Recorded once per call to the IsValidSecurePaymentConfirmationRequest
+    function when the feature flag is enabled. This function is invoked
+    asychronously on construction of a PaymentRequest object whose payment
+    method is SPC.
+  </summary>
+</histogram>
+
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.UserVerifyingPlatformAuthenticatorAvailable"
     enum="Boolean" expires_after="2027-07-01">

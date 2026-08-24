@@ -13,11 +13,13 @@
 #include "base/i18n/language_tag.h"
 #include "base/i18n/language_tag_matcher.h"
 #include "base/i18n/tag_converters.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/payments/core/error_strings.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/native_error_strings.h"
+#include "components/payments/core/secure_payment_confirmation_metrics.h"
 #include "components/webauthn/core/browser/webauthn_security_utils.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "url/gurl.h"
@@ -181,9 +183,22 @@ IsValidSecurePaymentConfirmationRequest(
     }
   }
 
-  if (base::FeatureList::IsEnabled(features::kSPCLocaleValidation) &&
-      !MatchLanguageTags(request->locales, application_locale)) {
-    return SecurePaymentConfirmationRequestValidationError::kLocaleDoesNotMatch;
+  if (base::FeatureList::IsEnabled(features::kSPCLocaleValidation)) {
+    if (request->locales.empty()) {
+      base::UmaHistogramEnumeration(
+          "PaymentRequest.SecurePaymentConfirmation.LocaleOutcome",
+          SecurePaymentConfirmationLocaleOutcome::kLocaleNotProvided);
+    } else if (MatchLanguageTags(request->locales, application_locale)) {
+      base::UmaHistogramEnumeration(
+          "PaymentRequest.SecurePaymentConfirmation.LocaleOutcome",
+          SecurePaymentConfirmationLocaleOutcome::kMatch);
+    } else {
+      base::UmaHistogramEnumeration(
+          "PaymentRequest.SecurePaymentConfirmation.LocaleOutcome",
+          SecurePaymentConfirmationLocaleOutcome::kNoMatch);
+      return SecurePaymentConfirmationRequestValidationError::
+          kLocaleDoesNotMatch;
+    }
   }
 
   if (request->timeout.has_value() &&

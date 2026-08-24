@@ -132,6 +132,16 @@ uploading your change for review.  These are checked by presubmit scripts.
 
 <!-- LINT.ThenChange(//components/payments/core/secure_payment_confirmation_metrics.h:BrowserBoundKeys) -->
 
+<!-- LINT.IfChange(SecurePaymentConfirmationLocaleOutcome) -->
+
+<enum name="SecurePaymentConfirmationLocaleOutcome">
+  <int value="0" label="LocaleNotProvided"/>
+  <int value="1" label="Match"/>
+  <int value="2" label="NoMatch"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/payments/core/secure_payment_confirmation_metrics.h:SecurePaymentConfirmationLocaleOutcome) -->
+
 <!-- LINT.IfChange(SecurePaymentRequestOutcome) -->
 
 <enum name="SecurePaymentRequestOutcome">

@@ -36,6 +36,17 @@ enum class SecurePaymentConfirmationBrowserBoundKeyInclusionResult {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/payment/enums.xml:BrowserBoundKeys)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SecurePaymentConfirmationLocaleOutcome)
+enum class SecurePaymentConfirmationLocaleOutcome {
+  kLocaleNotProvided = 0,
+  kMatch = 1,
+  kNoMatch = 2,
+  kMaxValue = kNoMatch,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/payment/enums.xml:SecurePaymentConfirmationLocaleOutcome)
+
 void RecordEnrollSystemPromptResult(
     SecurePaymentConfirmationEnrollSystemPromptResult result);
 
