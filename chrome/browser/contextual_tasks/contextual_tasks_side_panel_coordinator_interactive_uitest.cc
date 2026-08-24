@@ -1181,6 +1181,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
                 "  return app.isComposeboxHidden_();"
                 "})()"));
       }),
+      FocusWebContents(kSidePanelWebContentsId),
       Do([&]() {
         content::WebContents* side_panel_contents =
             coordinator->GetActiveWebContents();
