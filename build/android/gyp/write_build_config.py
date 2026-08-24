@@ -27,8 +27,10 @@ class OrderedSet(dict):
     """A simple implementation of an ordered set."""
 
     def __init__(self, iterable=()):
-        super().__init__()
-        self.update(iterable)
+        if iterable:
+            super().__init__(dict.fromkeys(iterable, True))
+        else:
+            super().__init__()
 
     def __add__(self, other):
         ret = OrderedSet(self)
@@ -42,10 +44,12 @@ class OrderedSet(dict):
         self.pop(key, None)
 
     def update(self, iterable):
-        for k in iterable:
-            self[k] = True
+        if iterable:
+            super().update(dict.fromkeys(iterable, True))
 
     def difference_update(self, iterable):
+        if not self or not iterable:
+            return
         for k in iterable:
             self.pop(k, None)
 
@@ -156,7 +160,8 @@ class _TransitiveValues:
                 or (retain_extra_package_names and key == 'extra_package_names')
                 or (retain_android_manifests and key == 'android_manifests')
             ):
-                value.difference_update(getattr(other, key))
+                other_val = getattr(other, key, None)
+                value.difference_update(other_val)
 
 
 def _SortClasspath(dep_list):

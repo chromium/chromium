@@ -17,6 +17,7 @@ methods for dependency traversal.
 """
 
 import functools
+import itertools
 import json
 import os
 
@@ -94,7 +95,7 @@ def _get_json(path):
     path = os.path.join(_output_dir_path, path)
     _input_paths.append(path)
     with open(path, encoding='utf-8') as f:
-        config = json.load(f)
+        config = json.loads(f.read())
     return config
 
 
@@ -156,11 +157,8 @@ def _filter_deps(deps, restrict_to_resource_types=False):
 
 def _collect_public_deps(deps):
     """Recursively collects all public_deps from a list of dependencies."""
-    ret = []
     # public_deps() contains public_deps of public_deps, so no need to recurse.
-    for x in deps:
-        ret += x.public_deps()
-    return ret
+    return list(itertools.chain.from_iterable(x.public_deps() for x in deps))
 
 
 def _deps_for_traversal(dep):

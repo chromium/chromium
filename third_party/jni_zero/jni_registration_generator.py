@@ -67,7 +67,7 @@ def _LoadJniObjs(paths,
                              package_prefix_filter)
     with multiprocessing.Pool() as pool:
       errors = []
-      for res in pool.imap_unordered(func, paths):
+      for res in pool.imap_unordered(func, paths, chunksize=64):
         if isinstance(res, Exception):
           errors.append(res)
         else:

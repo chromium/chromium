@@ -109,9 +109,12 @@ def CheckOptions(options, parser, required=None):
 
 def WriteJson(obj, path, only_if_changed=False):
     old_dump = None
-    if os.path.exists(path):
-        with open(path, 'r', encoding='utf-8') as oldfile:
-            old_dump = oldfile.read()
+    if only_if_changed:
+        try:
+            with open(path, 'r', encoding='utf-8') as oldfile:
+                old_dump = oldfile.read()
+        except FileNotFoundError:
+            pass
 
     new_dump = json.dumps(obj, sort_keys=True, indent=2, separators=(',', ': '))
 
