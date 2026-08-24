@@ -180,6 +180,9 @@ public class OmniboxFeatures {
     public static final BooleanCachedFeatureParam sShowNtpPlusButton =
             newBooleanParam(sOmniboxMultimodalInput, "show_ntp_plus_button", false);
 
+    public static final BooleanCachedFeatureParam sFocusFuseboxFromNtpPlusButton =
+            newBooleanParam(sOmniboxMultimodalInput, "focus_fusebox_from_ntp_plus_button", false);
+
     public static final CachedFlag sAndroidDesktopAimGate =
             newFlag(OmniboxFeatureList.ANDROID_DESKTOP_AIM_GATE, FeatureState.ENABLED_IN_PROD);
 
