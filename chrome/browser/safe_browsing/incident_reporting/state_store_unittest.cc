@@ -10,6 +10,8 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/values.h"
@@ -283,6 +285,58 @@ TEST_F(StateStoreTest, PersistenceWithStoreDelete) {
     ASSERT_FALSE(state_store.HasBeenReported(data.type, data.key, data.digest));
 #endif
   }
+}
+
+TEST_F(StateStoreTest, ClearAfterTransaction) {
+  StateStore state_store(profile_);
+
+  // Perform a mutation in a first transaction.
+  {
+    StateStore::Transaction transaction(&state_store);
+    transaction.MarkAsReported(kTestData_[0].type, kTestData_[0].key,
+                               kTestData_[0].digest);
+  }
+
+  // Clear the preference in PrefService. This deallocates the previous
+  // dictionary from the user pref store.
+  profile_->GetPrefs()->ClearPref(prefs::kSafeBrowsingIncidentsSent);
+
+  // A subsequent transaction clearing the incident must safely read and update
+  // the preference rather than dereferencing a dangling incidents_sent_
+  // pointer to the deallocated dictionary.
+  {
+    StateStore::Transaction transaction(&state_store);
+    transaction.Clear(kTestData_[0].type, kTestData_[0].key);
+  }
+
+  EXPECT_FALSE(state_store.HasBeenReported(
+      kTestData_[0].type, kTestData_[0].key, kTestData_[0].digest));
+}
+
+TEST_F(StateStoreTest, ClearAfterConstructorMutation) {
+  // Populate the platform state store so that StateStore's constructor performs
+  // a mutation (calling ReplacePrefDict).
+  base::DictValue initial_state;
+  initial_state.SetByDottedPath(
+      base::StrCat({base::NumberToString(static_cast<int>(kTestData_[0].type)),
+                    ".", kTestData_[0].key}),
+      base::NumberToString(kTestData_[0].digest));
+  platform_state_store::Store(profile_, initial_state);
+
+  StateStore state_store(profile_);
+
+  // Clear the preference in PrefService to deallocate the old dictionary from
+  // the user pref store.
+  profile_->GetPrefs()->ClearPref(prefs::kSafeBrowsingIncidentsSent);
+
+  // Clear the incident in a subsequent transaction.
+  {
+    StateStore::Transaction transaction(&state_store);
+    transaction.Clear(kTestData_[0].type, kTestData_[0].key);
+  }
+
+  EXPECT_FALSE(state_store.HasBeenReported(
+      kTestData_[0].type, kTestData_[0].key, kTestData_[0].digest));
 }
 
 }  // namespace safe_browsing
