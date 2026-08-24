@@ -227,8 +227,6 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 
   if ([self isRunningTest:@selector
             (testUserData_AccountSave_AutofillAcrossIframe_XHR)]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillAcrossIframesIos);
     config.features_enabled.push_back(kAutofillFixXhrForXframe);
   }
 

@@ -699,10 +699,7 @@ PasswordFormClassification ChromeAutofillClientIOS::ClassifyAsPasswordForm(
     return *renderer_forms_it;
   };
 
-  const std::optional<FormData> renderer_form =
-      base::FeatureList::IsEnabled(features::kAutofillAcrossIframesIos)
-          ? GetRendererForm()
-          : std::move(form_data);
+  const std::optional<FormData> renderer_form = GetRendererForm();
 
   if (!renderer_form) {
     return {};

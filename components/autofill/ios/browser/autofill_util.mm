@@ -255,12 +255,6 @@ base::expected<FormData, ExtractFormDataFailure> ExtractFormData(
     return base::unexpected(ExtractFormDataFailure::kOriginMismatch);
   }
 
-  bool include_frame_metadata =
-      base::FeatureList::IsEnabled(features::kAutofillAcrossIframesIos);
-
-  const url::Origin frame_origin_object =
-      include_frame_metadata ? form_frame_origin : url::Origin();
-
   // Frame ID of the frame containing this form is mandatory.
   const std::string* host_frame_param = form.FindString("host_frame");
   if (!host_frame_param) {
@@ -279,8 +273,7 @@ base::expected<FormData, ExtractFormDataFailure> ExtractFormData(
     return base::unexpected(ExtractFormDataFailure::kInvalidHostFrame);
   }
 
-  if (base::FeatureList::IsEnabled(features::kAutofillAcrossIframesIos) &&
-      *host_frame_param != frame_id) {
+  if (*host_frame_param != frame_id) {
     // Invalidate parsing when the frame for which extraction was done
     // doesn't correspond to the frame where extraction actually happened.
     // This is to prevent associating the form data with the wrong frame.
@@ -312,9 +305,7 @@ base::expected<FormData, ExtractFormDataFailure> ExtractFormData(
     form_data.set_id_attribute(base::UTF8ToUTF16(*id_attribute));
   }
 
-  if (include_frame_metadata) {
-    form_data.set_child_frames(ExtractChildFrames(form));
-  }
+  form_data.set_child_frames(ExtractChildFrames(form));
 
   // Field list (mandatory) is extracted.
   const base::ListValue* fields_list = form.FindList("fields");
@@ -332,9 +323,7 @@ base::expected<FormData, ExtractFormDataFailure> ExtractFormData(
       // field level. Reuse the extracted values.
       field_data.set_host_form_id(form_data.renderer_id());
       field_data.set_host_frame(form_data.host_frame());
-      if (include_frame_metadata) {
-        field_data.set_origin(frame_origin_object);
-      }
+      field_data.set_origin(form_frame_origin);
 
       fields.push_back(std::move(field_data));
     } else {
@@ -343,14 +332,12 @@ base::expected<FormData, ExtractFormDataFailure> ExtractFormData(
   }
   form_data.set_fields(std::move(fields));
 
-  if (include_frame_metadata) {
-    FormSignature form_signature = CalculateFormSignature(form_data);
-    std::vector<FormFieldData> form_fields = form_data.ExtractFields();
-    for (FormFieldData& field : form_fields) {
-      field.set_host_form_signature(form_signature);
-    }
-    form_data.set_fields(std::move(form_fields));
+  FormSignature form_signature = CalculateFormSignature(form_data);
+  std::vector<FormFieldData> form_fields = form_data.ExtractFields();
+  for (FormFieldData& field : form_fields) {
+    field.set_host_form_signature(form_signature);
   }
+  form_data.set_fields(std::move(form_fields));
   return form_data;
 }
 

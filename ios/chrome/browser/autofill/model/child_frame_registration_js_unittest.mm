@@ -112,12 +112,6 @@ void ServeDocument(const std::string& path,
 
 class ChildFrameRegistrationJavascriptTest : public web::JavascriptTest {
  protected:
-  ChildFrameRegistrationJavascriptTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        autofill::features::kAutofillAcrossIframesIos);
-  }
-  ~ChildFrameRegistrationJavascriptTest() override {}
-
   void SetUp() override {
     web::JavascriptTest::SetUp();
 
@@ -148,8 +142,6 @@ class ChildFrameRegistrationJavascriptTest : public web::JavascriptTest {
         web::test::ExecuteJavaScript(web_view(), @"registrationAttemptsCount");
     return static_cast<int>([result doubleValue]);
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that child frames register themselves correctly with their host frame.
@@ -273,7 +265,7 @@ TEST_F(ChildFrameRegistrationJavascriptTest,
     // Set up the frame in a retry loop until the utils functions are injected.
     const timeoutFn = () => {
         if (typeof __gCrWeb != 'undefined' &&
-            typeof __gCrWeb.getRegisteredApi('autofill_form_features').getFunction('isAutofillAcrossIframesEnabled') == 'function') {
+            typeof __gCrWeb.getRegisteredApi('autofill_form_features').getFunction('isAutofillAcrossIframesThrottlingEnabled') == 'function') {
           window.parent?.postMessage({type: 'frame-ready'}, '*');
           // Done.
           return;

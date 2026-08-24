@@ -510,44 +510,26 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
   }
   FormData form_data = form_structure->ToFormData();
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAcrossIframesIos)) {
-    // Process the predictions for each renderer form that composes the browser
-    // form when Autofill across frames is enabled.
+  // Split the browser form into renderer forms.
+  // The cast is safe: every AutofillClient on iOS is an AutofillClientIOS.
+  const autofill::AutofillDriverRouter& router =
+      static_cast<autofill::AutofillClientIOS&>(manager.client())
+          .GetAutofillDriverFactory()
+          .router();
+  std::vector<FormData> renderer_forms = router.GetRendererForms(form_data);
 
-    // Split the browser form into renderer forms.
-    // The cast is safe: every AutofillClient on iOS is an AutofillClientIOS.
-    const autofill::AutofillDriverRouter& router =
-        static_cast<autofill::AutofillClientIOS&>(manager.client())
-            .GetAutofillDriverFactory()
-            .router();
-    std::vector<FormData> renderer_forms = router.GetRendererForms(form_data);
-
-    // Process predictions for each renderer form.
-    web::WebFramesManager* webFramesManager = [self webFramesManager];
-    for (const FormData& renderer_form : renderer_forms) {
-      web::WebFrame* child_frame = webFramesManager->GetFrameWithId(
-          renderer_form.host_frame().ToString());
-      if (!child_frame) {
-        continue;
-      }
-      [self propagatePredictionsToPasswordManagerFrom:manager
-                                          forFormData:renderer_form
-                                         globalFormId:formId
-                                              inFrame:*child_frame
-                                           fromSource:source];
-    }
-  } else {
-    auto& autofill_driver =
-        static_cast<autofill::AutofillDriverIOS&>(manager.driver());
-    web::WebFrame* frame = autofill_driver.web_frame();
-    if (!frame) {
-      return;
+  // Process predictions for each renderer form.
+  web::WebFramesManager* webFramesManager = [self webFramesManager];
+  for (const FormData& renderer_form : renderer_forms) {
+    web::WebFrame* child_frame =
+        webFramesManager->GetFrameWithId(renderer_form.host_frame().ToString());
+    if (!child_frame) {
+      continue;
     }
     [self propagatePredictionsToPasswordManagerFrom:manager
-                                        forFormData:form_data
+                                        forFormData:renderer_form
                                        globalFormId:formId
-                                            inFrame:*frame
+                                            inFrame:*child_frame
                                          fromSource:source];
   }
 }

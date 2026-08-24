@@ -133,12 +133,6 @@ inline constexpr char kAtMemoryContextMenuEntryPointName[] =
 inline constexpr char kAtMemoryContextMenuEntryPointDescription[] =
     "Enables an entry point in the edit context menu for the AtMemory feature.";
 
-inline constexpr char kAutofillAcrossIframesName[] =
-    "Enables Autofill across iframes";
-inline constexpr char kAutofillAcrossIframesDescription[] =
-    "When enabled, Autofill will fill and save information on forms that "
-    "spread across multiple iframes.";
-
 inline constexpr char kAutofillAiAlwaysShowPrivateAiNoticeName[] =
     "Autofill AI always show Private AI notice";
 inline constexpr char kAutofillAiAlwaysShowPrivateAiNoticeDescription[] =

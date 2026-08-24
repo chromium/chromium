@@ -17,11 +17,6 @@ const char kFeaturesScriptName[] = "autofill_form_features";
 web::JavaScriptFeature::FeatureScript::PlaceholderReplacements
 GetReplacements() {
   return @{
-    @"gCrWebPlaceholderAutofillAcrossIframesEnabled" :
-            base::FeatureList::IsEnabled(
-                autofill::features::kAutofillAcrossIframesIos)
-        ? @"true"
-        : @"false",
     @"gCrWebPlaceholderAutofillAcrossIframesThrottling" :
             base::FeatureList::IsEnabled(
                 autofill::features::kAutofillAcrossIframesIosThrottling)

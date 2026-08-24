@@ -261,13 +261,6 @@ void FillAndSubmitXframeCreditCardForm() {
   if ([self isRunningTest:@selector(DISABLED_testStickySavePromptJourney)]) {
     config.features_enabled.push_back(kAutofillStickyInfobarIos);
   }
-  if ([self isRunningTest:@selector
-            (DISABLED_testOfferUpstream_FullData_PaymentsAccepts_Xframe)] ||
-      [self isRunningTest:@selector
-            (DISABLED_testUserData_LocalSave_UserAccepts_Xframe)]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillAcrossIframesIos);
-  }
   if ([self isRunningTest:@selector(
                               testLocalSaveBottomSheetStrikeLimitExperiment)]) {
     config.features_enabled.push_back(

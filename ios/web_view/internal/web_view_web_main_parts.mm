@@ -131,11 +131,6 @@ void WebViewWebMainParts::PreCreateThreads() {
       &autofill::features::kAutofillUpstream,
   };
   std::vector<const base::Feature*> disabled_features;
-  if ([CWVGlobalState sharedInstance].autofillAcrossIframesEnabled) {
-    enabled_features.push_back(&autofill::features::kAutofillAcrossIframesIos);
-  } else {
-    disabled_features.push_back(&autofill::features::kAutofillAcrossIframesIos);
-  }
   if ([CWVGlobalState sharedInstance].isAutofillStrikeSystemEnabled) {
     disabled_features.push_back(
         &strike_database::features::kDisableStrikeSystem);

@@ -345,13 +345,10 @@ function sendFormMutationMessagesAfterDelay(
 }
 
 /**
- * Checks if cross-frame filling is enabled and, if so, forwards messages to
- * the Child Frame Registration lib.
+ * Forwards messages to the Child Frame Registration lib.
  */
 function processInboundMessage(event: MessageEvent<any>): void {
-  if (autofillFormFeaturesApi.getFunction('isAutofillAcrossIframesEnabled')()) {
-    processChildFrameMessage(event);
-  }
+  processChildFrameMessage(event);
 }
 
 function attachListeners(): void {

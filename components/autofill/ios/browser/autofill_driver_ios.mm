@@ -104,10 +104,6 @@ AutofillDriverIOS* cast(AutofillDriver* driver) {
   return static_cast<AutofillDriverIOS*>(driver);
 }
 
-bool IsAcrossIframesEnabled() {
-  return base::FeatureList::IsEnabled(features::kAutofillAcrossIframesIos);
-}
-
 base::TimeDelta GetDocumentFormScanPeriod() {
   return base::Milliseconds(kAutofillDocumentFormScanPeriodMs.Get());
 }
@@ -164,12 +160,10 @@ AutofillDriverIOS::AutofillDriverIOS(
           GetFilteredDocumentFormScanPeriod()) {
   manager_observation_.Observe(manager_.get());
 
-  if (IsAcrossIframesEnabled()) {
-    std::optional<base::UnguessableToken> token_temp =
-        DeserializeJavaScriptFrameId(web_frame_id_);
-    if (token_temp) {
-      local_frame_token_ = LocalFrameToken(*token_temp);
-    }
+  std::optional<base::UnguessableToken> token_temp =
+      DeserializeJavaScriptFrameId(web_frame_id_);
+  if (token_temp) {
+    local_frame_token_ = LocalFrameToken(*token_temp);
   }
 }
 
@@ -183,10 +177,6 @@ LocalFrameToken AutofillDriverIOS::GetFrameToken() const {
 }
 
 std::optional<LocalFrameToken> AutofillDriverIOS::Resolve(FrameToken query) {
-  if (!IsAcrossIframesEnabled()) {
-    return std::nullopt;
-  }
-
   // TODO(crbug.com/503264715): Resolve() should returns std::nullopt if `query`
   // does not refer to a child frame of `web_frame()`.
   if (std::holds_alternative<LocalFrameToken>(query)) {
@@ -275,19 +265,9 @@ base::flat_set<FieldGlobalId> AutofillDriverIOS::ApplyFormAction(
 
       const url::Origin main_origin =
           client_->GetLastCommittedPrimaryMainFrameOrigin();
-      if (IsAcrossIframesEnabled()) {
-        return router_->ApplyFormAction(
-            callback, action_type, action_persistence, fields, fill_id,
-            supports_refill, main_origin, triggered_origin, field_type_map);
-      } else {
-        callback(*this, action_type, action_persistence,
-                 base::ToVector(fields,
-                                [](const FormFieldData& field) {
-                                  return FormFieldData::FillData(field);
-                                }),
-                 fill_id, supports_refill);
-        return base::ToVector(fields, &FormFieldData::global_id);
-      }
+      return router_->ApplyFormAction(
+          callback, action_type, action_persistence, fields, fill_id,
+          supports_refill, main_origin, triggered_origin, field_type_map);
     }
   }
 }
@@ -314,13 +294,8 @@ void AutofillDriverIOS::ApplyFieldAction(
         return;
     }
   };
-  if (IsAcrossIframesEnabled()) {
-    router_->ApplyFieldAction(callback, action_type, action_persistence,
-                              field_id, value);
-  } else {
-    callback(*this, action_type, action_persistence, field_id.renderer_id,
-             value);
-  }
+  router_->ApplyFieldAction(callback, action_type, action_persistence, field_id,
+                            value);
 }
 
 void AutofillDriverIOS::ExtractFormWithField(
@@ -332,43 +307,36 @@ void AutofillDriverIOS::ExtractFormWithField(
     return;
   }
 
-  if (IsAcrossIframesEnabled()) {
-    // TODO(crbug.com/455870070): Introduce a `fetchForm` method in the agent
-    // that would extract a single form only given the renderer id and replace
-    // the call to `fetchFormsFiltered()` with it.
-    router_->ExtractFormWithField(
-        [](AutofillDriver& request_target, FieldRendererId field_renderer_id,
-           AutofillDriverRouter::RendererFormHandler renderer_form_handler) {
-          auto completion_handler = base::BindOnce(
-              [&](FieldRendererId field_renderer_id,
-                  AutofillDriverRouter::RendererFormHandler
-                      renderer_form_handler,
-                  std::optional<std::vector<FormData>> forms) {
-                if (!forms) {
-                  std::move(renderer_form_handler).Run(std::nullopt);
-                  return;
-                }
-                auto it =
-                    std::ranges::find_if(*forms, [&](const FormData& form) {
-                      return std::ranges::contains(form.fields(),
-                                                   field_renderer_id,
-                                                   &FormFieldData::renderer_id);
-                    });
-                std::move(renderer_form_handler)
-                    .Run(it == forms->end() ? std::nullopt
-                                            : std::optional(std::move(*it)));
-              },
-              field_renderer_id, std::move(renderer_form_handler));
+  // TODO(crbug.com/455870070): Introduce a `fetchForm` method in the agent
+  // that would extract a single form only given the renderer id and replace
+  // the call to `fetchFormsFiltered()` with it.
+  router_->ExtractFormWithField(
+      [](AutofillDriver& request_target, FieldRendererId field_renderer_id,
+         AutofillDriverRouter::RendererFormHandler renderer_form_handler) {
+        auto completion_handler = base::BindOnce(
+            [](FieldRendererId field_renderer_id,
+               AutofillDriverRouter::RendererFormHandler renderer_form_handler,
+               std::optional<std::vector<FormData>> forms) {
+              if (!forms) {
+                std::move(renderer_form_handler).Run(std::nullopt);
+                return;
+              }
+              auto it = std::ranges::find_if(*forms, [&](const FormData& form) {
+                return std::ranges::contains(form.fields(), field_renderer_id,
+                                             &FormFieldData::renderer_id);
+              });
+              std::move(renderer_form_handler)
+                  .Run(it == forms->end() ? std::nullopt
+                                          : std::optional(std::move(*it)));
+            },
+            field_renderer_id, std::move(renderer_form_handler));
 
-          auto& source = static_cast<AutofillDriverIOS&>(request_target);
-          [source.bridge_ fetchFormsFiltered:std::nullopt
-                                     inFrame:source.web_frame()
-                           completionHandler:std::move(completion_handler)];
-        },
-        field_id, WithNewVersion(std::move(final_handler)));
-  } else {
-    std::move(final_handler).Run(nullptr, std::nullopt);
-  }
+        auto& source = static_cast<AutofillDriverIOS&>(request_target);
+        [source.bridge_ fetchFormsFiltered:std::nullopt
+                                   inFrame:source.web_frame()
+                         completionHandler:std::move(completion_handler)];
+      },
+      field_id, WithNewVersion(std::move(final_handler)));
 }
 
 void AutofillDriverIOS::ExposeDomNodeIdsInAllFrames() {}
@@ -386,12 +354,8 @@ void AutofillDriverIOS::SendTypePredictionsToRenderer(
     [cast(&driver)->bridge_ fillFormDataPredictions:preds inFrame:frame];
   };
 
-  if (IsAcrossIframesEnabled()) {
-    router_->SendTypePredictionsToRenderer(callback,
-                                           form.GetFieldTypePredictions());
-  } else {
-    callback(*this, {form.GetFieldTypePredictions()});
-  }
+  router_->SendTypePredictionsToRenderer(callback,
+                                         form.GetFieldTypePredictions());
 }
 
 void AutofillDriverIOS::RendererShouldAcceptDataListSuggestion(
@@ -528,15 +492,10 @@ void AutofillDriverIOS::AskForValuesToFill(const FormData& form,
       };
   // The caret position is currently not extracted on iOS.
   gfx::Rect caret_bounds;
-  if (IsAcrossIframesEnabled()) {
-    // TODO(crbug.com/40269303): Distinguish between different trigger sources.
-    router_->AskForValuesToFill(callback, *this, form, field_id, caret_bounds,
-                                AutofillSuggestionTriggerSource::kiOS,
-                                std::nullopt);
-  } else {
-    callback(*this, form, field_id, caret_bounds,
-             AutofillSuggestionTriggerSource::kiOS, std::nullopt);
-  }
+  // TODO(crbug.com/40269303): Distinguish between different trigger sources.
+  router_->AskForValuesToFill(callback, *this, form, field_id, caret_bounds,
+                              AutofillSuggestionTriggerSource::kiOS,
+                              std::nullopt);
 }
 
 void AutofillDriverIOS::DidAutofillForm(const FormData& form) {
@@ -551,11 +510,7 @@ void AutofillDriverIOS::DidAutofillForm(const FormData& form) {
     }
     driver.GetAutofillManager().OnDidAutofillForm(form, /*pass_key=*/{});
   };
-  if (IsAcrossIframesEnabled()) {
-    router_->DidAutofillForm(callback, *this, form);
-  } else {
-    callback(*this, form);
-  }
+  router_->DidAutofillForm(callback, *this, form);
 }
 
 void AutofillDriverIOS::FormsSeen(
@@ -569,30 +524,24 @@ void AutofillDriverIOS::FormsSeen(
                                             /*pass_key=*/{});
   };
 
-  if (IsAcrossIframesEnabled()) {
-    // Any RemoteFrameTokens encountered for the first time should be posted to
-    // the registrar, which allows this driver to be established as the parent
-    // of the child frame.
-    for (const FormData& form : updated_forms) {
-      for (const FrameTokenWithPredecessor& child_frame : form.child_frames()) {
-        // This std::get is safe because on iOS, FormData::child_frames is
-        // only ever populated with RemoteFrameTokens. std::get will fail a
-        // CHECK if this assumption is ever wrong.
-        auto token = std::get<RemoteFrameToken>(child_frame.token);
-        auto* registrar =
-            ChildFrameRegistrar::GetOrCreateForWebState(web_state_);
-        if (registrar && known_child_frames_.insert(token).second) {
-          registrar->DeclareNewRemoteToken(
-              token, base::BindOnce(&AutofillDriverIOS::SetSelfAsParent,
-                                    weak_ptr_factory_.GetWeakPtr(), form));
-        }
+  // Any RemoteFrameTokens encountered for the first time should be posted to
+  // the registrar, which allows this driver to be established as the parent
+  // of the child frame.
+  for (const FormData& form : updated_forms) {
+    for (const FrameTokenWithPredecessor& child_frame : form.child_frames()) {
+      // This std::get is safe because on iOS, FormData::child_frames is
+      // only ever populated with RemoteFrameTokens. std::get will fail a
+      // CHECK if this assumption is ever wrong.
+      auto token = std::get<RemoteFrameToken>(child_frame.token);
+      auto* registrar = ChildFrameRegistrar::GetOrCreateForWebState(web_state_);
+      if (registrar && known_child_frames_.insert(token).second) {
+        registrar->DeclareNewRemoteToken(
+            token, base::BindOnce(&AutofillDriverIOS::SetSelfAsParent,
+                                  weak_ptr_factory_.GetWeakPtr(), form));
       }
     }
-    router_->FormsSeen(callback, *this, std::move(updated_forms),
-                       removed_forms);
-  } else {
-    callback(*this, std::move(updated_forms), std::move(removed_forms));
   }
+  router_->FormsSeen(callback, *this, std::move(updated_forms), removed_forms);
 }
 
 void AutofillDriverIOS::FormSubmitted(
@@ -622,11 +571,7 @@ void AutofillDriverIOS::FormSubmitted(
     }
     cast(&driver)->ClearLastInteractedForm();
   };
-  if (IsAcrossIframesEnabled()) {
-    router_->FormSubmitted(callback, *this, form, submission_source);
-  } else {
-    callback(*this, form, submission_source);
-  }
+  router_->FormSubmitted(callback, *this, form, submission_source);
   if (UseXhrFix()) {
     ClearLastInteractedForm();
   }
@@ -663,11 +608,7 @@ void AutofillDriverIOS::TextFieldValueChanged(const FormData& form,
         form, field_id, timestamp, /*pass_key=*/{});
   };
 
-  if (IsAcrossIframesEnabled()) {
-    router_->TextFieldValueChanged(callback, *this, form, field_id, timestamp);
-  } else {
-    callback(*this, form, field_id, timestamp);
-  }
+  router_->TextFieldValueChanged(callback, *this, form, field_id, timestamp);
 }
 
 void AutofillDriverIOS::SetParent(base::WeakPtr<AutofillDriverIOS> parent) {
@@ -935,11 +876,7 @@ void AutofillDriverIOS::ScrollFieldIntoView(FieldGlobalId field_id) {
       [cast(&driver)->bridge_ scrollFieldIntoView:field inFrame:frame];
     }
   };
-  if (IsAcrossIframesEnabled()) {
-    router_->ScrollFieldIntoView(callback, field_id);
-  } else {
-    callback(*this, field_id.renderer_id);
-  }
+  router_->ScrollFieldIntoView(callback, field_id);
 }
 
 }  // namespace autofill

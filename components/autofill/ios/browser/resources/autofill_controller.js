@@ -126,10 +126,7 @@ function extractUnownedFields(restrictUnownedFieldsToFormlessCheckout) {
   const unownedControlElements =
       fillUtil.getUnownedAutofillableFormFieldElements(fieldsets);
   const numEditableUnownedElements = unownedControlElements.length;
-  const iframeElements =
-      autofillFormFeaturesApi.getFunction('isAutofillAcrossIframesEnabled')() ?
-      getUnownedIframes() :
-      [];
+  const iframeElements = getUnownedIframes();
   if (numEditableUnownedElements > 0 || iframeElements.length > 0) {
     const unownedForm = new fillUtil.AutofillFormData();
     const hasUnownedForm = unownedFormElementsAndFieldSetsToFormData(
@@ -408,10 +405,8 @@ function extractNewForms(restrictUnownedFieldsToFormlessCheckout) {
     const formElement = webForms[formIndex];
     const controlElements = extractAutofillableElementsInForm(formElement);
     const numEditableElements = controlElements.length;
-    const hasChildFrames = autofillFormFeaturesApi.getFunction(
-                               'isAutofillAcrossIframesEnabled')() ?
-        formElement.getElementsByTagName('iframe').length > 0 :
-        false;
+    const hasChildFrames =
+        formElement.getElementsByTagName('iframe').length > 0;
 
     if (numEditableElements === 0 && !hasChildFrames) {
       continue;

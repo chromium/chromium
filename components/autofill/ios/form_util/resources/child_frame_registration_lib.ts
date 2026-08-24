@@ -88,15 +88,6 @@ function getRegistrationLogbook(): Map<string, number> {
 }
 
 /**
- * Retrieves the registered 'autofill_form_features' CrWebApi
- * instance for use in this file.
- */
-// TODO: crbug.com/464542835 - Remove gCrWeb injections and utilizations
-// from shared library and utility files.
-const autofillFormFeaturesApi =
-  gCrWeb.getRegisteredApi('autofill_form_features');
-
-/**
  * Updates `count` of the corresponding `remoteToken` in the registration
  * logbook iff the maximal capacity wasn't reached.
  * @param remoteToken The remote token to update.
@@ -148,10 +139,6 @@ function isAncestorWindow(source: MessageEventSource|null):
  * @param {MessageEvent} payload The data sent via postMessage.
  */
 export function processChildFrameMessage(payload: MessageEvent): void {
-  if (!autofillFormFeaturesApi.getFunction(
-          'isAutofillAcrossIframesEnabled')()) {
-    return;
-  }
   const command: unknown = payload.data?.command;
   if (command === REGISTER_AS_CHILD_FRAME_COMMAND) {
     if (!isAncestorWindow(payload.source)) {

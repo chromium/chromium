@@ -189,10 +189,6 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
   FieldRendererId _lastFormActivityFieldRendererID;
   BOOL _lastFormActivityHasUserGesture;
 
-  // YES to support xframe submission to correctly handle form submission when
-  // autofill across iframes is enabled.
-  BOOL _supportXframeSubmission;
-
   // YES if CWVAutofillController is hardened against WebState destruction.
   BOOL _safeLifecycleEnabled;
 }
@@ -263,8 +259,6 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
   if (self) {
     DCHECK(webState);
     _webState = webState;
-    _supportXframeSubmission = base::FeatureList::IsEnabled(
-        autofill::features::kAutofillAcrossIframesIos);
     _safeLifecycleEnabled =
         ios_web_view::IsAutofillSafeLifecycleEnabled(prefService);
 
@@ -277,23 +271,21 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
     _autofillManagerObserverBridge =
         std::make_unique<autofill::AutofillManagerObserverBridge>(self);
 
-    if (_supportXframeSubmission) {
-      _autofillManagerObservations =
-          std::make_unique<base::ScopedMultiSourceObservation<
-              autofill::AutofillManager, autofill::AutofillManager::Observer>>(
-              _autofillManagerObserverBridge.get());
+    _autofillManagerObservations =
+        std::make_unique<base::ScopedMultiSourceObservation<
+            autofill::AutofillManager, autofill::AutofillManager::Observer>>(
+            _autofillManagerObserverBridge.get());
 
-      _webFramesManagerObserverBridge =
-          std::make_unique<web::WebFramesManagerObserverBridge>(self);
-      web::WebFramesManager* framesManager =
-          autofill::AutofillJavaScriptFeature::GetInstance()
-              ->GetWebFramesManager(_webState);
-      framesManager->AddObserver(_webFramesManagerObserverBridge.get());
+    _webFramesManagerObserverBridge =
+        std::make_unique<web::WebFramesManagerObserverBridge>(self);
+    web::WebFramesManager* framesManager =
+        autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
+            _webState);
+    framesManager->AddObserver(_webFramesManagerObserverBridge.get());
 
-      // Observe existing frames.
-      for (web::WebFrame* frame : framesManager->GetAllWebFrames()) {
-        [self webFramesManager:framesManager frameBecameAvailable:frame];
-      }
+    // Observe existing frames.
+    for (web::WebFrame* frame : framesManager->GetAllWebFrames()) {
+      [self webFramesManager:framesManager frameBecameAvailable:frame];
     }
 
     _formActivityObserverBridge =
@@ -315,12 +307,10 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
 
 - (void)dealloc {
   if (_webState) {
-    if (_supportXframeSubmission) {
-      autofill::AutofillJavaScriptFeature::GetInstance()
-          ->GetWebFramesManager(_webState)
-          ->RemoveObserver(_webFramesManagerObserverBridge.get());
-      _autofillManagerObservations->RemoveAllObservations();
-    }
+    autofill::AutofillJavaScriptFeature::GetInstance()
+        ->GetWebFramesManager(_webState)
+        ->RemoveObserver(_webFramesManagerObserverBridge.get());
+    _autofillManagerObservations->RemoveAllObservations();
     _formActivityObserverBridge.reset();
     _webState->RemoveObserver(_webStateObserverBridge.get());
     _webStateObserverBridge.reset();
@@ -1033,35 +1023,6 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
   }
 }
 
-- (void)webState:(web::WebState*)webState
-    didSubmitDocumentWithFormData:(const autofill::FormData&)formData
-                   hasUserGesture:(BOOL)userInitiated
-                          inFrame:(web::WebFrame*)frame
-                   perfectFilling:(BOOL)perfectFilling {
-  if (_supportXframeSubmission) {
-    return;
-  }
-  if ([_delegate respondsToSelector:@selector
-                 (autofillController:
-                     didSubmitFormWithName:frameID:perfectFilling:)]) {
-    [_delegate autofillController:self
-            didSubmitFormWithName:base::SysUTF16ToNSString(formData.name())
-                          frameID:base::SysUTF8ToNSString(frame->GetFrameId())
-                   perfectFilling:perfectFilling];
-  }
-
-  if ([_delegate
-          respondsToSelector:@selector
-          (autofillController:
-              didSubmitFormWithName:frameID:userInitiated:perfectFilling:)]) {
-    [_delegate autofillController:self
-            didSubmitFormWithName:base::SysUTF16ToNSString(formData.name())
-                          frameID:base::SysUTF8ToNSString(frame->GetFrameId())
-                    userInitiated:userInitiated
-                   perfectFilling:perfectFilling];
-  }
-}
-
 #pragma mark - CRWWebFramesManagerObserver
 
 - (void)webFramesManager:(web::WebFramesManager*)webFramesManager
@@ -1146,12 +1107,10 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
 
 - (void)webStateDestroyed:(web::WebState*)webState {
   DCHECK_EQ(_webState, webState);
-  if (_supportXframeSubmission) {
-    autofill::AutofillJavaScriptFeature::GetInstance()
-        ->GetWebFramesManager(_webState)
-        ->RemoveObserver(_webFramesManagerObserverBridge.get());
-    _autofillManagerObservations->RemoveAllObservations();
-  }
+  autofill::AutofillJavaScriptFeature::GetInstance()
+      ->GetWebFramesManager(_webState)
+      ->RemoveObserver(_webFramesManagerObserverBridge.get());
+  _autofillManagerObservations->RemoveAllObservations();
   _formActivityObserverBridge.reset();
   _autofillClient.reset();
   _webState->RemoveObserver(_webStateObserverBridge.get());

@@ -17,6 +17,7 @@ CWV_EXPORT
 @interface CWVEarlyInitFlags : NSObject
 
 // Set to `YES` to enable the autofill across iframes feature.
+// Deprecated: autofill across iframes is now permanently enabled.
 @property(nonatomic, readwrite) BOOL autofillAcrossIframesEnabled;
 
 // Set to `YES` to delay loading resources from early init to CWV start.
@@ -64,6 +65,7 @@ CWV_EXPORT
 @property(nonatomic, readonly, getter=isStarted) BOOL started;
 
 // Returns `YES` if the autofill across iframes feature is enabled.
+// Deprecated: autofill across iframes is now permanently enabled.
 @property(nonatomic, readonly) BOOL autofillAcrossIframesEnabled;
 
 // Returns `YES` if the delay loading resources feature is enabled.

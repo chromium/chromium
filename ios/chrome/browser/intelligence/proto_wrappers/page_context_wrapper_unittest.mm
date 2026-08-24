@@ -268,7 +268,6 @@ class PageContextWrapperTest : public PlatformTest,
     std::vector<base::test::FeatureRef> disabled_features;
     std::vector<base::test::FeatureRef> enabled_features;
     enabled_features.push_back(kPageActionMenu);
-    enabled_features.push_back(autofill::features::kAutofillAcrossIframesIos);
     if (IsRefactored()) {
       enabled_features.push_back(kPageContextExtractorRefactored);
     } else {

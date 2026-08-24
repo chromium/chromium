@@ -24,6 +24,7 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
+    _autofillAcrossIframesEnabled = YES;
     _autofillStrikeSystemEnabled = YES;
   }
   return self;

@@ -148,15 +148,6 @@ class CWVAutofillControllerTest : public web::WebTest {
         &web_state_, password_controller_, password_manager.get());
     password_manager_client_ = password_manager_client.get();
 
-    const testing::TestInfo* const test_info =
-        testing::UnitTest::GetInstance()->current_test_info();
-    if (test_info &&
-        (std::string(test_info->name()) == "SubmitCallback" ||
-         std::string(test_info->name()) == "FetchFullCardDetailsNoDriver")) {
-      scoped_feature_list_.InitAndDisableFeature(
-          autofill::features::kAutofillAcrossIframesIos);
-    }
-
     auto autofill_client = std::make_unique<
         autofill::WithFakedFromWebState<autofill::WebViewAutofillClientIOS>>(
         &pref_service_, &personal_data_manager_, &autocomplete_history_manager_,
@@ -661,51 +652,8 @@ TEST_F(CWVAutofillControllerTest, BlurCallback) {
 
   [delegate verify];
 }
-
-// Tests CWVAutofillController delegate submit callback is invoked.
+// Tests submission handling.
 TEST_F(CWVAutofillControllerTest, SubmitCallback) {
-  id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
-  autofill_controller_.delegate = delegate;
-
-  [[delegate expect] autofillController:autofill_controller_
-                  didSubmitFormWithName:kTestFormName
-                                frameID:frame_id_
-                         perfectFilling:YES];
-  [[delegate expect] autofillController:autofill_controller_
-                  didSubmitFormWithName:kTestFormName
-                                frameID:frame_id_
-                          userInitiated:YES
-                         perfectFilling:YES];
-  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
-  autofill::FormData test_form_data;
-  test_form_data.set_name(base::SysNSStringToUTF16(kTestFormName));
-
-  form_activity_tab_helper_->DocumentSubmitted(
-      /*sender_frame*/ frame.get(), /*form_data=*/test_form_data,
-      /*user_initiated=*/true,
-      /*perfect_filling=*/true);
-
-  [[delegate expect] autofillController:autofill_controller_
-                  didSubmitFormWithName:kTestFormName
-                                frameID:frame_id_
-                         perfectFilling:NO];
-  [[delegate expect] autofillController:autofill_controller_
-                  didSubmitFormWithName:kTestFormName
-                                frameID:frame_id_
-                          userInitiated:NO
-                         perfectFilling:NO];
-
-  form_activity_tab_helper_->DocumentSubmitted(
-      /*sender_frame*/ frame.get(),
-      /*form_data=*/test_form_data,
-      /*user_initiated=*/false,
-      /*perfect_filling=*/false);
-
-  [delegate verify];
-}
-
-// Tests submission handling when autofill across iframes is enabled.
-TEST_F(CWVAutofillControllerTest, SubmitCallbackAcrossIframes) {
   id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
   autofill_controller_.delegate = delegate;
 
@@ -721,7 +669,6 @@ TEST_F(CWVAutofillControllerTest, SubmitCallbackAcrossIframes) {
               userInitiated:YES
              perfectFilling:YES]);
 
-  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
   autofill::FormData test_form_data;
   test_form_data.set_name(base::SysNSStringToUTF16(kTestFormName));
 

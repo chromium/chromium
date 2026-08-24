@@ -369,13 +369,6 @@ void SlowlyTypeText(NSString* text) {
     config.features_enabled.push_back(
         autofill::features::kAutofillAiReauthRequired);
   }
-  if ([self isRunningTest:@selector(testFillXframeCreditCardForm)] ||
-      [self isRunningTest:@selector(testFillXframeCreditCardFormThrottled)] ||
-      [self isRunningTest:@selector
-            (testFillXframeCreditCardForm_WithPaymentSheetFix)]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillAcrossIframesIos);
-  }
   if ([self isRunningTest:@selector(testFillXframeCreditCardFormThrottled)]) {
     config.features_enabled.push_back(
         autofill::features::kAutofillAcrossIframesIosThrottling);
@@ -395,11 +388,6 @@ void SlowlyTypeText(NSString* text) {
   if ([self isRunningTest:@selector(testAccountNameEmailIPH)]) {
     config.iph_feature_enabled =
         feature_engagement::kIPHAutofillAccountNameEmailSuggestionFeature.name;
-  }
-
-  if ([self isRunningTest:@selector(testReFillAddressFieldsOnForm)]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillAcrossIframesIos);
   }
 
   if ([self isRunningTest:@selector

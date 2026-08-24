@@ -112,11 +112,7 @@ export function webFormElementToFormData(
   const controlElements =
       getFormControlElements(formElement) as FormControlElement[];
 
-  let iframeElements = extractChildFrames &&
-          autofillFormFeaturesApi.getFunction(
-              'isAutofillAcrossIframesEnabled')() ?
-      getIframeElements(formElement) :
-      [];
+  let iframeElements = extractChildFrames ? getIframeElements(formElement) : [];
 
   // To avoid performance bottlenecks, do not keep child frames if their
   // quantity exceeds the allowed threshold.

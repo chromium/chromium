@@ -697,93 +697,49 @@ void AutofillBottomSheetTabHelper::UpdateListenersForPaymentsForm(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAcrossIframesIos)) {
-    // Partition the fields by their frames to attach the listeners.
-    std::map<autofill::LocalFrameToken, std::vector<autofill::FieldRendererId>>
-        fields_to_attach_by_frame;
-    std::map<autofill::LocalFrameToken, std::vector<autofill::FieldRendererId>>
-        fields_to_detach_by_frame;
+  // Partition the fields by their frames to attach the listeners.
+  std::map<autofill::LocalFrameToken, std::vector<autofill::FieldRendererId>>
+      fields_to_attach_by_frame;
+  std::map<autofill::LocalFrameToken, std::vector<autofill::FieldRendererId>>
+      fields_to_detach_by_frame;
 
-    for (const auto& field : form_structure->fields()) {
-      autofill::FieldGlobalId field_id = field->global_id();
-      if (should_attach_listeners && IsPaymentsBottomSheetTriggeringField(
-                                         field->Type().GetCreditCardType())) {
-        fields_to_attach_by_frame[field_id.frame_token].push_back(
-            field_id.renderer_id);
-      } else if (UseListenersInvalidation()) {
-        fields_to_detach_by_frame[field_id.frame_token].push_back(
-            field_id.renderer_id);
-      }
+  for (const auto& field : form_structure->fields()) {
+    autofill::FieldGlobalId field_id = field->global_id();
+    if (should_attach_listeners && IsPaymentsBottomSheetTriggeringField(
+                                       field->Type().GetCreditCardType())) {
+      fields_to_attach_by_frame[field_id.frame_token].push_back(
+          field_id.renderer_id);
+    } else if (UseListenersInvalidation()) {
+      fields_to_detach_by_frame[field_id.frame_token].push_back(
+          field_id.renderer_id);
     }
+  }
 
-    if (UseListenersInvalidation()) {
-      for (const auto& [frame, renderer_ids] : fields_to_detach_by_frame) {
-        std::string renderer_form_frame_id =
-            base::ToLowerASCII(frame.ToString());
-        auto& registered_ids =
-            registered_payments_renderer_ids_[renderer_form_frame_id];
-        std::set<autofill::FieldRendererId> ids_to_detach;
-        for (auto id : renderer_ids) {
-          if (registered_ids.contains(id)) {
-            ids_to_detach.insert(id);
-            registered_ids.erase(id);
-          }
-        }
-        if (!ids_to_detach.empty()) {
-          DetachListenersForFrame(renderer_form_frame_id, ids_to_detach,
-                                  /*refocus=*/false);
-        }
-      }
-    }
-
-    for (const auto& [frame, renderer_ids] : fields_to_attach_by_frame) {
+  if (UseListenersInvalidation()) {
+    for (const auto& [frame, renderer_ids] : fields_to_detach_by_frame) {
       std::string renderer_form_frame_id = base::ToLowerASCII(frame.ToString());
-      AttachListeners(renderer_ids,
-                      registered_payments_renderer_ids_[renderer_form_frame_id],
-                      renderer_form_frame_id,
-                      /*allow_autofocus=*/false, only_new);
-    }
-  } else {
-    std::vector<autofill::FieldRendererId> fields_to_attach;
-    std::vector<autofill::FieldRendererId> fields_to_detach;
-    for (const auto& field : form_structure->fields()) {
-      if (should_attach_listeners && IsPaymentsBottomSheetTriggeringField(
-                                         field->Type().GetCreditCardType())) {
-        fields_to_attach.push_back(field->renderer_id());
-      } else if (UseListenersInvalidation()) {
-        fields_to_detach.push_back(field->renderer_id());
-      }
-    }
-
-    // TODO(crbug.com/40266699): Remove `frame` once `renderer_ids` are
-    // FieldGlobalIds.
-    web::WebFrame* frame =
-        static_cast<autofill::AutofillDriverIOS&>(manager.driver()).web_frame();
-    if (!frame) {
-      return;
-    }
-    std::string frame_id = frame->GetFrameId();
-
-    if (UseListenersInvalidation()) {
-      auto& registered_ids = registered_payments_renderer_ids_[frame_id];
+      auto& registered_ids =
+          registered_payments_renderer_ids_[renderer_form_frame_id];
       std::set<autofill::FieldRendererId> ids_to_detach;
-      for (auto id : fields_to_detach) {
+      for (auto id : renderer_ids) {
         if (registered_ids.contains(id)) {
           ids_to_detach.insert(id);
           registered_ids.erase(id);
         }
       }
       if (!ids_to_detach.empty()) {
-        DetachListenersForFrame(frame_id, ids_to_detach, /*refocus=*/false);
+        DetachListenersForFrame(renderer_form_frame_id, ids_to_detach,
+                                /*refocus=*/false);
       }
     }
+  }
 
-    if (!fields_to_attach.empty()) {
-      AttachListeners(fields_to_attach,
-                      registered_payments_renderer_ids_[frame_id], frame_id,
-                      /*allow_autofocus=*/false, only_new);
-    }
+  for (const auto& [frame, renderer_ids] : fields_to_attach_by_frame) {
+    std::string renderer_form_frame_id = base::ToLowerASCII(frame.ToString());
+    AttachListeners(renderer_ids,
+                    registered_payments_renderer_ids_[renderer_form_frame_id],
+                    renderer_form_frame_id,
+                    /*allow_autofocus=*/false, only_new);
   }
 }
 

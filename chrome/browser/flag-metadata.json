@@ -847,15 +847,6 @@
     "expiry_milestone": 147
   },
   {
-    "name": "autofill-across-iframes",
-    "owners": [
-      "vincb@google.com",
-      "tmartino@chromium.org",
-      "bling-transactions@google.com"
-    ],
-    "expiry_milestone": 165
-  },
-  {
     "name": "autofill-ai-always-show-private-ai-notice",
     "owners": [ "brunobraga@google.com", "tchudakov@google.com" ],
     "expiry_milestone": 160

@@ -1106,13 +1106,10 @@ bool HasGuid(const Suggestion::Payload& payload) {
                    fieldToFormLookupMap:fieldToFormLookupMap];
   }
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAcrossIframesIos)) {
-    auto* driver =
-        autofill::AutofillDriverIOS::FromWebStateAndWebFrame(_webState, frame);
-    if (driver && driver->is_processed()) {
-      driver->ScanForms();
-    }
+  auto* driver =
+      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(_webState, frame);
+  if (driver && driver->is_processed()) {
+    driver->ScanForms();
   }
 
   if (actionType == autofill::mojom::FormActionType::kFill) {

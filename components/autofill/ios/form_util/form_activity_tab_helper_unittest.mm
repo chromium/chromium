@@ -1109,10 +1109,6 @@ TEST_F(FormSubmittedHookTest, TestFormSubmittedHook) {
 // Validate that programmatic form submissions are detected and sent to
 // observers of the tab helper.
 TEST_F(FormSubmittedHookTest, TestFormSubmittedHookAcrossIframes) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      autofill::features::kAutofillAcrossIframesIos);
-
   LoadHtml(kTestHTMLFormWithIframes);
 
   WebFrame* main_frame = WaitForMainFrame();
