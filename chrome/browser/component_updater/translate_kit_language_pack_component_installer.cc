@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -208,7 +209,7 @@ void RegisterTranslateKitLanguagePackComponentsForAutoDownload(
   }
 
   base::flat_set<LanguagePackKey> keys_to_register;
-  for (const std::string_view& pair :
+  for (std::string_view pair :
        base::SplitStringPiece(language_pairs_str, ",", base::TRIM_WHITESPACE,
                               base::SPLIT_WANT_NONEMPTY)) {
     std::vector<std::string_view> languages = base::SplitStringPiece(
