@@ -165,9 +165,7 @@ chrome_internal_verifier(
         equivalent_builder = "{}:try/chromeos-betty-chrome-noop".format(settings.chrome_project),
         equivalent_builder_percentage = 100,
         equivalent_builder_whitelist = "googlers",
-        # TODO(https://crbug.com/551566543): Re-enable when VMs are available.
-        # on_default_cq = True,
-        includable_only = True,
+        on_default_cq = True,
     ),
 )
 
