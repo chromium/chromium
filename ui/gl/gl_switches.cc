@@ -322,6 +322,20 @@ bool IsDefaultANGLEVulkan() {
     return true;
   }
 
+  // The platform checks below gather Vulkan system info before consulting the
+  // feature so that ineligible devices never join a DefaultANGLEVulkan field
+  // trial. Gathering it loads the Vulkan loader and every installed ICD and
+  // creates an instance, which costs tens of milliseconds of GPU process
+  // startup. When nothing overrides the feature (no field trial, command line
+  // or flag), its state is the compile-time default and there is no trial
+  // population to protect, so answer directly.
+  if (feature_list &&
+      !feature_list->IsFeatureOverridden(features::kDefaultANGLEVulkan.name) &&
+      features::kDefaultANGLEVulkan.default_state ==
+          base::FEATURE_DISABLED_BY_DEFAULT) {
+    return false;
+  }
+
 #if defined(MEMORY_SANITIZER)
   return false;
 #else  // !defined(MEMORY_SANITIZER)
