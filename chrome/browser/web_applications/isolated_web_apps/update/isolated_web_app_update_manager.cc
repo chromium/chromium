@@ -1124,7 +1124,7 @@ IsolatedWebAppUpdateError IsolatedWebAppUpdateManager::FromDiscoveryTaskError(
       return IsolatedWebAppUpdateError::kIwaNotInstalled;
     case IwaUpdateCheckAndPrepareError::kPinnedVersionNotFoundInUpdateManifest:
       return IsolatedWebAppUpdateError::kPinnedVersionNotFoundInUpdateManifest;
-    case IwaUpdateCheckAndPrepareError::kDowngradetNotAllowed:
+    case IwaUpdateCheckAndPrepareError::kDowngradeNotAllowed:
       return IsolatedWebAppUpdateError::kDowngradeNotAllowed;
     case IwaUpdateCheckAndPrepareError::kDownloadPathCreationFailed:
       return IsolatedWebAppUpdateError::kDownloadPathCreationFailed;

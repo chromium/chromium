@@ -194,7 +194,7 @@ void ExpectAppPinnedVersionDiscovered() {
 void ExpectDowngradeNotAllowed() {
   ASSERT_THAT(
       WaitForTestAppUpdateDiscovery(),
-      ErrorIs(web_app::IwaUpdateCheckAndPrepareError::kDowngradetNotAllowed));
+      ErrorIs(web_app::IwaUpdateCheckAndPrepareError::kDowngradeNotAllowed));
 }
 
 void ExpectNoApplicableVersion() {

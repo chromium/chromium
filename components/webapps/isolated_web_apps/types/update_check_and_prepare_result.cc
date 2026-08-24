@@ -44,8 +44,8 @@ std::string IwaUpdateCheckAndPrepareErrorToString(
       return "Error::kIwaNotInstalled";
     case IwaUpdateCheckAndPrepareError::kPinnedVersionNotFoundInUpdateManifest:
       return "Error::kPinnedVersionNotFoundInUpdateManifest";
-    case IwaUpdateCheckAndPrepareError::kDowngradetNotAllowed:
-      return "Error::kDowngradetNotAllowed";
+    case IwaUpdateCheckAndPrepareError::kDowngradeNotAllowed:
+      return "Error::kDowngradeNotAllowed";
     case IwaUpdateCheckAndPrepareError::kBundleDownloadError:
       return "Error::kBundleDownloadError";
     case IwaUpdateCheckAndPrepareError::kDownloadPathCreationFailed:

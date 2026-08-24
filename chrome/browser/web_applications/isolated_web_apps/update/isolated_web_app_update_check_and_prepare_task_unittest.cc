@@ -276,7 +276,7 @@ TEST_F(IsolatedWebAppUpdateCheckAndPrepareTaskUpdateManifestTest,
 
   base::test::TestFuture<Task::CompletionStatus> future;
   task.Start(future.GetCallback());
-  EXPECT_THAT(future.Take(), ErrorIs(Task::Error::kDowngradetNotAllowed));
+  EXPECT_THAT(future.Take(), ErrorIs(Task::Error::kDowngradeNotAllowed));
 }
 
 TEST_F(IsolatedWebAppUpdateCheckAndPrepareTaskUpdateManifestTest,

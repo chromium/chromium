@@ -904,7 +904,7 @@ IN_PROC_BROWSER_TEST_F(
   auto result = CallUpdateManifestInstalledApp(app.app_id(), "1.0.0",
                                                /*allow_downgrades=*/false);
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error()->message, "Error::kDowngradetNotAllowed");
+  EXPECT_EQ(result.error()->message, "Error::kDowngradeNotAllowed");
 
   auto apps = GetInstalledAppsInfo();
   ASSERT_EQ(apps.size(), 1u);

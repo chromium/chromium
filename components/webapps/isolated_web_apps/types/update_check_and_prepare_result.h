@@ -39,7 +39,7 @@ enum class IwaUpdateCheckAndPrepareError {
   kPinnedVersionNotFoundInUpdateManifest,
 
   // Version downgrade errors
-  kDowngradetNotAllowed,
+  kDowngradeNotAllowed,
 
   // Signed Web Bundle download errors
   kDownloadPathCreationFailed,

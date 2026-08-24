@@ -316,7 +316,7 @@ void IsolatedWebAppUpdateCheckAndPrepareTask::OnUpdateManifestFetched(
 
   switch (validation_result) {
     case VersionChangeValidationResult::kDowngradeDisallowed:
-      FailWith(Error::kDowngradetNotAllowed);
+      FailWith(Error::kDowngradeNotAllowed);
       return;
     case VersionChangeValidationResult::kSameVersionUpdateDisallowed:
       discovered_version_ = version_entry->version();
