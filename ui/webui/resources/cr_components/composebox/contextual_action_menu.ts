@@ -40,9 +40,8 @@ export const VIEWPORT_BUFFER_PX = 16;
 export const MIN_MENU_HEIGHT_PX = 100;
 export const SHARE_TABS_FLYOUT_MAX_HEIGHT_PX = 344;
 export const SHARE_TABS_FLYOUT_INDENT_PX = 114;
-// From the CSS file (default max-height and min-height):
+// From the CSS file (default max-height):
 export const DEFAULT_MAX_MENU_HEIGHT_PX = 540;
-export const DEFAULT_MIN_MENU_HEIGHT_PX = 144;
 
 // Gap between tab shared menu and context menu in px.
 const MENU_GAP = 0;
@@ -414,13 +413,6 @@ export class ContextualActionMenuElement extends
     // creates larger height, which will cause the menu to overlap with the plus button.
     this.$.menu.style.setProperty(
         '--contextual-menu-max-height', `${constrainedHeight}px`);
-    // Only if constrainedHeight < CSS default, override the CSS default to allow shrinkage.
-    if (constrainedHeight < DEFAULT_MIN_MENU_HEIGHT_PX) {
-      this.$.menu.style.setProperty(
-          '--contextual-menu-min-height', `${constrainedHeight}px`);
-    } else {
-      this.$.menu.style.removeProperty('--contextual-menu-min-height');
-    }
   }
 
   private computeHorizontalLimit_(iconRect: DOMRect): number {
@@ -1261,7 +1253,6 @@ export class ContextualActionMenuElement extends
     this.lastConfig_ = undefined;
     this.resetShareTabsFlyout_();
     this.$.menu.style.removeProperty('--contextual-menu-max-height');
-    this.$.menu.style.removeProperty('--contextual-menu-min-height');
     this.wasShareTabsTriggerShown_ = false;
     this.wasShareTabsFlyoutOpen_ = false;
     this.fire('close');

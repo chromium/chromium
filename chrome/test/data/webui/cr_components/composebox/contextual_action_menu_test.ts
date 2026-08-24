@@ -2549,6 +2549,11 @@ suite('ContextualActionMenu', () => {
     });
 
     test('Anchors above the button if space below < 160px', async () => {
+      Object.defineProperty(actionMenu.$.menu.getDialog(), 'scrollHeight', {
+        value: 144,
+        configurable: true,
+      });
+
       // Mock window innerHeight
       Object.defineProperty(window, 'innerHeight', {
         value: 600,
