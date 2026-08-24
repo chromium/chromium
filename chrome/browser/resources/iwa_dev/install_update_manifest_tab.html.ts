@@ -46,7 +46,7 @@ ${this.isManifestFetched_ && !this.urlError_ ? html`
       <div class="dropdown-container">
         <label for="versionSelect">Version</label>
         <select id="versionSelect"
-            class="md-select"
+            class="dropdown-select"
             .value="${this.selectedVersion_}"
             @change="${this.onVersionChange_}"
             @keydown="${this.onSelectKeydown_}"
@@ -62,7 +62,7 @@ ${this.isManifestFetched_ && !this.urlError_ ? html`
         <div class="dropdown-container">
           <label for="channelSelect">Update Channel</label>
           <select id="channelSelect"
-              class="md-select"
+              class="dropdown-select"
               .value="${this.selectedChannel_}"
               @change="${this.onChannelChange_}"
               @keydown="${this.onSelectKeydown_}"

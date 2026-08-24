@@ -4,7 +4,7 @@
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getCss} from './install_tab.css.js';
+import {getCss as getSharedCss} from './shared_style.css.js';
 
 /**
  * Abstract base class for all tab sub-components in the IWA installation
@@ -12,7 +12,7 @@ import {getCss} from './install_tab.css.js';
  */
 export abstract class IwaDevInstallTabElement extends CrLitElement {
   static override get styles() {
-    return getCss();
+    return getSharedCss();
   }
 
   /**

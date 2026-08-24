@@ -14,7 +14,7 @@ build_webui("build") {
   css_files = [
     "app.css",
     "install_dialog.css",
-    "install_tab.css",
+    "shared_style.css",
     "install_update_manifest_tab.css",
     "installed_app_list_item.css",
   ]

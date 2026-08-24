@@ -15,6 +15,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './install_dialog.css.js';
 import {getHtml} from './install_dialog.html.js';
 import type {IwaDevInstallTabElement} from './install_tab.js';
+import {getCss as getSharedCss} from './shared_style.css.js';
 
 export enum TabIndex {
   DEV_PROXY = 0,
@@ -34,7 +35,10 @@ export class IwaDevInstallDialogElement extends CrLitElement {
   }
 
   static override get styles() {
-    return getCss();
+    return [
+      getSharedCss(),
+      getCss(),
+    ];
   }
 
   override render() {
