@@ -24,6 +24,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -37,7 +38,8 @@ public class CustomTabToolbarButtonsProperties {
             new WritableObjectPropertyKey<>();
 
     /** The type of the individual button. Can have {@link ButtonType}. */
-    public static final WritableIntPropertyKey TYPE = new WritableIntPropertyKey();
+    public static final WritableIntDefPropertyKey<ButtonType> TYPE =
+            new WritableIntDefPropertyKey<>(ButtonType.OTHER);
 
     /** OnClickListener for the individual button. */
     public static final WritableObjectPropertyKey<OnClickListener> CLICK_LISTENER =

@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView.Adapter;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
@@ -40,7 +40,8 @@ public class SiteSearchProperties {
 
     public static final WritableObjectPropertyKey<Adapter> ADAPTER =
             new WritableObjectPropertyKey<>();
-    public static final WritableIntPropertyKey POSITION = new WritableIntPropertyKey();
+    public static final WritableIntDefPropertyKey<ItemPosition> POSITION =
+            new WritableIntDefPropertyKey<>(ItemPosition.TOP);
     public static final WritableObjectPropertyKey<String> SITE_NAME =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> SITE_SHORTCUT =

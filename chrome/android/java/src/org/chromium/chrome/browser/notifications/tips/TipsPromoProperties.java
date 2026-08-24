@@ -11,7 +11,7 @@ import androidx.annotation.IntDef;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
@@ -73,7 +73,8 @@ public class TipsPromoProperties {
             new WritableObjectPropertyKey<>();
 
     /** Indicates which {@link ScreenType} is currently displayed on the bottom sheet. */
-    public static final WritableIntPropertyKey CURRENT_SCREEN = new WritableIntPropertyKey();
+    public static final WritableIntDefPropertyKey<ScreenType> CURRENT_SCREEN =
+            new WritableIntDefPropertyKey<>(ScreenType.MAIN_SCREEN);
 
     /** Click listener for the back button. */
     public static final WritableObjectPropertyKey<OnClickListener> BACK_BUTTON_CLICK_LISTENER =

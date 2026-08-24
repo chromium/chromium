@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.readaloud.player.mini;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -14,7 +16,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 @NullMarked
 class Properties {
     // VisibilityState for signaling the progress of transitions for the player as a whole.
-    public static final WritableIntPropertyKey VISIBILITY = new WritableIntPropertyKey();
+    public static final WritableIntDefPropertyKey<VisibilityState> VISIBILITY =
+            new WritableIntDefPropertyKey<>(VisibilityState.GONE);
     public static final WritableBooleanPropertyKey ANIMATE_VISIBILITY_CHANGES =
             new WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<MiniPlayerMediator> MEDIATOR =
