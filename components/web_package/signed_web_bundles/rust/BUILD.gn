@@ -10,6 +10,7 @@ rust_static_library("signed_web_bundles_rust") {
   sources = [
     "constants.rs",
     "integrity_block.rs",
+    "signature_verifier.rs",
     "types.rs",
     crate_root,
   ]

@@ -70,6 +70,7 @@ source_set("mojom_mapped_types") {
 
   deps = [
     "//base",
+    "//components/web_package/signed_web_bundles/rust:signed_web_bundles_rust_bindings",
     "//crypto",
     "//mojo/public/cpp/bindings",
   ]

@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/strings/stringprintf.h"
+#include "components/web_package/signed_web_bundles/rust/signed_web_bundles_rust.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 
 namespace web_package {
@@ -42,11 +43,8 @@ Ed25519Signature::Ed25519Signature(std::array<uint8_t, kLength>& bytes)
 [[nodiscard]] bool Ed25519Signature::Verify(
     base::span<const uint8_t> message,
     const Ed25519PublicKey& public_key) const {
-  const std::array<uint8_t, ED25519_PUBLIC_KEY_LEN>& public_key_bytes =
-      public_key.bytes();
-  const std::array<uint8_t, ED25519_SIGNATURE_LEN>& signature_bytes = bytes();
-  return ED25519_verify(message.data(), message.size(), signature_bytes.data(),
-                        public_key_bytes.data());
+  return signed_web_bundles::rust::verify_ed25519_signature(public_key.bytes(),
+                                                            bytes(), message);
 }
 
 }  // namespace web_package

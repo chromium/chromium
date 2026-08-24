@@ -9,6 +9,7 @@ extern crate alloc;
 
 mod constants;
 mod integrity_block;
+mod signature_verifier;
 mod types;
 
 pub use constants::{
@@ -17,4 +18,8 @@ pub use constants::{
     TOP_LEVEL_ARRAY_LENGTH, V2_VERSION_BYTES, WEB_BUNDLE_ID_ATTRIBUTE_NAME,
 };
 pub use integrity_block::parse_integrity_block;
+pub use signature_verifier::{
+    create_empty_integrity_block_cbor, create_signature_payload, verify_ecdsa_p256_signature,
+    verify_ed25519_signature, verify_signature, Sha512Hasher,
+};
 pub use types::{IntegrityBlock, ParseError, SignatureStackEntry, SignatureType};
