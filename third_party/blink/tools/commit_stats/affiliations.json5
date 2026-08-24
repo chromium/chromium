@@ -41,6 +41,11 @@
       { start: "2014-10-08", domain: "adenilson.org" },
     ]
   },
+  "cbiesinger@chromium.org": {
+    affiliations: [
+      { start: "2026-08-17", domain: "igalia.com" },
+    ]
+  },
   "daniec@chromium.org": {
     affiliations: [
       { start: "2025-04-11", domain: "microsoft.com" },
