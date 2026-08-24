@@ -118,7 +118,8 @@ class BookmarkDesktopNavigationMediator extends BookmarkModelObserver
 
         updateSelectionHighlight();
 
-        if (Objects.equals(mCurrentFolderId, mBookmarkModel.getRootFolderId())) {
+        if (Objects.equals(mCurrentFolderId, mBookmarkModel.getRootFolderId())
+                && !isSmallScreen()) {
             openFirstFolder();
         }
     }
@@ -226,7 +227,7 @@ class BookmarkDesktopNavigationMediator extends BookmarkModelObserver
         mCurrentFolderId = folder;
         updateSelectionHighlight();
 
-        if (Objects.equals(folder, mBookmarkModel.getRootFolderId())) {
+        if (Objects.equals(folder, mBookmarkModel.getRootFolderId()) && !isSmallScreen()) {
             openFirstFolder();
         }
     }
@@ -253,5 +254,10 @@ class BookmarkDesktopNavigationMediator extends BookmarkModelObserver
                 break;
             }
         }
+    }
+
+    private boolean isSmallScreen() {
+        return mContext.getResources().getConfiguration().screenWidthDp
+                < BookmarkUtils.WIDE_DISPLAY_THRESHOLD_DP;
     }
 }

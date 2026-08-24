@@ -38,7 +38,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 /** Unit tests for {@link BookmarkDesktopNavigationMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, qualifiers = "w1000dp")
 public class BookmarkDesktopNavigationMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -297,6 +297,13 @@ public class BookmarkDesktopNavigationMediatorUnitTest {
         // Verify that setting folder state to root now triggers redirection.
         mMediator.onFolderStateSet(mBookmarkModel.getRootFolderId());
         verify(mBookmarkDelegate).replaceFolder(mBookmarkModel.getDesktopFolderId());
+    }
+
+    @Test
+    @Config(qualifiers = "w600dp")
+    public void testOnFolderStateSet_noRedirectOnSmallScreen() {
+        mMediator.onFolderStateSet(mBookmarkModel.getRootFolderId());
+        verify(mBookmarkDelegate, never()).replaceFolder(any());
     }
 
     private void assertFolderItem(

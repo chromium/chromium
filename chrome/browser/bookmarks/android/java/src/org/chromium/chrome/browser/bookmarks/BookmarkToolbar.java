@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.IdRes;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.core.view.MenuCompat;
 
@@ -48,6 +49,8 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     private boolean mSelectionShowCopyLink;
     private boolean mSelectionShowMarkRead;
     private boolean mSelectionShowMarkUnread;
+    private boolean mChromeIconVisible;
+    private @NavigationButton int mNavigationButtonState = NavigationButton.NONE;
 
     private @Nullable List<Integer> mSortMenuIds;
     private boolean mSortMenuIdsEnabled;
@@ -111,6 +114,18 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         getMenu().findItem(R.id.create_new_folder_menu_id).setEnabled(enabled);
     }
 
+    void setChromeIconVisible(boolean visible) {
+        mChromeIconVisible = visible;
+        if (visible) {
+            setNavigationIcon(
+                    AppCompatResources.getDrawable(getContext(), R.drawable.chrome_logo_24dp));
+            setNavigationContentDescription(null);
+            setNavigationOnClickListener(null);
+        } else if (mNavigationButtonState == NavigationButton.NONE) {
+            setNavigationIcon(null);
+        }
+    }
+
     void setSelectionShowEdit(boolean show) {
         mSelectionShowEdit = show;
         if (show) assert mIsSelectionEnabled;
@@ -154,7 +169,11 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     }
 
     void setNavigationButtonState(@NavigationButton int navigationButtonState) {
+        mNavigationButtonState = navigationButtonState;
         setNavigationButton(navigationButtonState);
+        if (mChromeIconVisible && navigationButtonState == NavigationButton.NONE) {
+            setChromeIconVisible(true);
+        }
     }
 
     void setCheckedSortMenuId(@IdRes int id) {
@@ -223,6 +242,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         setNewFolderButtonVisible(mNewFolderButtonVisible);
         setNewFolderButtonEnabled(mNewFolderButtonEnabled);
         setSortMenuIdsEnabled(mSortMenuIdsEnabled);
+        setChromeIconVisible(mChromeIconVisible);
     }
 
     @Override

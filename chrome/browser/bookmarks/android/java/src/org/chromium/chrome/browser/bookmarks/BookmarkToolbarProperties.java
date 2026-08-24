@@ -46,6 +46,7 @@ class BookmarkToolbarProperties {
             new WritableBooleanPropertyKey();
     static final WritableBooleanPropertyKey NEW_FOLDER_BUTTON_ENABLED =
             new WritableBooleanPropertyKey();
+    static final WritableBooleanPropertyKey CHROME_ICON_VISIBLE = new WritableBooleanPropertyKey();
     // Can change within SelectableListToolbar which makes the model value to become stale.
     static final WritableObjectPropertyKey<Integer> NAVIGATION_BUTTON_STATE =
             new WritableObjectPropertyKey<>(/* skipEquality= */ true);
@@ -94,6 +95,7 @@ class BookmarkToolbarProperties {
         EDIT_BUTTON_VISIBLE,
         NEW_FOLDER_BUTTON_VISIBLE,
         NEW_FOLDER_BUTTON_ENABLED,
+        CHROME_ICON_VISIBLE,
         NAVIGATION_BUTTON_STATE,
         SORT_MENU_IDS,
         SORT_MENU_IDS_ENABLED,

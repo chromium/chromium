@@ -73,4 +73,32 @@ public class BookmarkToolbarViewBinderTest {
         mModel.set(BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK, false);
         verify(mBookmarkToolbar, times(2)).setSelectionShowCopyLink(false);
     }
+
+    @Test
+    public void testBindChromeIconVisible_true() {
+        mModel.set(BookmarkToolbarProperties.CHROME_ICON_VISIBLE, true);
+        PropertyModelChangeProcessor.create(
+                mModel, mBookmarkToolbar, BookmarkToolbarViewBinder::bind);
+        verify(mBookmarkToolbar).setChromeIconVisible(true);
+    }
+
+    @Test
+    public void testBindChromeIconVisible_false() {
+        mModel.set(BookmarkToolbarProperties.CHROME_ICON_VISIBLE, false);
+        PropertyModelChangeProcessor.create(
+                mModel, mBookmarkToolbar, BookmarkToolbarViewBinder::bind);
+        verify(mBookmarkToolbar).setChromeIconVisible(false);
+    }
+
+    @Test
+    public void testBindChromeIconVisible_change() {
+        PropertyModelChangeProcessor.create(
+                mModel, mBookmarkToolbar, BookmarkToolbarViewBinder::bind);
+
+        mModel.set(BookmarkToolbarProperties.CHROME_ICON_VISIBLE, true);
+        verify(mBookmarkToolbar).setChromeIconVisible(true);
+
+        mModel.set(BookmarkToolbarProperties.CHROME_ICON_VISIBLE, false);
+        verify(mBookmarkToolbar).setChromeIconVisible(false);
+    }
 }
