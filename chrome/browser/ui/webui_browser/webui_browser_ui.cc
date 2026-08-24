@@ -256,7 +256,7 @@ void WebUIBrowserUI::BindInterface(
 
 void WebUIBrowserUI::BindInterface(
     mojo::PendingReceiver<tabs_api::mojom::TabStripUIController> receiver) {
-  auto* ui_controller = browser_->GetFeatures().tab_strip_ui_controller();
+  auto* ui_controller = tabs_api::TabStripUIControllerImpl::From(browser_);
   CHECK(ui_controller) << "Browser missing TabStripUIController";
   ui_controller->Bind(std::move(receiver));
 }

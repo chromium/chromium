@@ -8,15 +8,25 @@
 #include <utility>
 
 #include "base/types/expected.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/browser_apis/tab_strip/adapters/context_menu_adapter.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace tabs_api {
 
+DEFINE_USER_DATA(TabStripUIControllerImpl);
+
+// static
+TabStripUIControllerImpl* TabStripUIControllerImpl::From(
+    BrowserWindowInterface* browser_window) {
+  return Get(browser_window->GetUnownedUserDataHost());
+}
+
 TabStripUIControllerImpl::TabStripUIControllerImpl(
-    std::unique_ptr<TabStripUIControllerInjector> injector)
-    : injector_(std::move(injector)) {}
+    std::unique_ptr<TabStripUIControllerInjector> injector,
+    ui::UnownedUserDataHost& host)
+    : injector_(std::move(injector)), scoped_unowned_user_data_(host, *this) {}
 
 TabStripUIControllerImpl::~TabStripUIControllerImpl() = default;
 

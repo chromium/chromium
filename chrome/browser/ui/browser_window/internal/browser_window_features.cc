@@ -538,9 +538,11 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
           browser, tab_strip_model_));
 
   tab_strip_ui_controller_ =
-      std::make_unique<tabs_api::TabStripUIControllerImpl>(
+      GetUserDataFactory().CreateInstance<tabs_api::TabStripUIControllerImpl>(
+          *browser,
           std::make_unique<tabs_api::TabStripUIControllerInjectorImpl>(
-              browser, tab_strip_model_));
+              browser, tab_strip_model_),
+          browser->GetUnownedUserDataHost());
 
   if (TabsFromOtherDevicesSidePanelCoordinator::IsSupported(profile)) {
     tabs_from_other_devices_side_panel_coordinator_ =

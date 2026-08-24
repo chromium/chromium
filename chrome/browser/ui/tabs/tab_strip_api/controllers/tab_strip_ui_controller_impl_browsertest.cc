@@ -79,7 +79,8 @@ class TabStripUIControllerImplBrowserTest : public InProcessBrowserTest {
         std::make_unique<TestTabStripUIControllerInjector>(
             std::make_unique<TabStripUIControllerInjectorImpl>(
                 browser(), browser()->tab_strip_model()),
-            toy_context_menu_adapter_.get()));
+            toy_context_menu_adapter_.get()),
+        unowned_user_data_host_);
   }
 
   void TearDownOnMainThread() override {
@@ -89,6 +90,9 @@ class TabStripUIControllerImplBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
+  // A dedicated host: the browser window's host already has the
+  // BrowserWindowFeatures-owned controller registered on it.
+  ui::UnownedUserDataHost unowned_user_data_host_;
   std::unique_ptr<TabStripUIControllerImpl> ui_controller_;
   std::unique_ptr<ToyContextMenuAdapter> toy_context_menu_adapter_;
 };

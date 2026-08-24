@@ -509,10 +509,6 @@ class BrowserWindowFeatures {
     return tab_strip_service_feature_.get();
   }
 
-  tabs_api::TabStripUIControllerImpl* tab_strip_ui_controller() {
-    return tab_strip_ui_controller_.get();
-  }
-
   TabsFromOtherDevicesSidePanelCoordinator*
   tabs_from_other_devices_side_panel_coordinator() {
     return tabs_from_other_devices_side_panel_coordinator_.get();

@@ -14,6 +14,7 @@ source_set("controllers") {
   public_deps = [
     "//components/browser_apis/tab_strip:mojom",
     "//components/browser_apis/tab_strip:mojom_ui_controller",
+    "//ui/base/unowned_user_data",
   ]
 
   deps = [

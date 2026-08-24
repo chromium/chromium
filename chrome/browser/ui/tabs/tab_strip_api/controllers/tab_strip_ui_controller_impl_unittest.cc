@@ -51,10 +51,12 @@ class TabStripUIControllerImplTest : public ::testing::Test {
   void SetUp() override {
     tab_strip_ = std::make_unique<testing::ToyTabStrip>();
     controller_ = std::make_unique<TabStripUIControllerImpl>(
-        std::make_unique<TestTabStripUIControllerInjector>(*tab_strip_));
+        std::make_unique<TestTabStripUIControllerInjector>(*tab_strip_),
+        unowned_user_data_host_);
   }
 
   std::unique_ptr<testing::ToyTabStrip> tab_strip_;
+  ui::UnownedUserDataHost unowned_user_data_host_;
   std::unique_ptr<TabStripUIControllerImpl> controller_;
 };
 
