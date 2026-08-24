@@ -97,7 +97,7 @@ public class BidirectionalStreamTest {
             }
             ctx.fireChannelRead(msg);
         }
-    };
+    }
 
     @Before
     public void setUp() throws Exception {

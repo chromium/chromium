@@ -28,7 +28,7 @@ public interface SafetyNetApiHandler {
         int INITIALIZED = 1;
         // The API handler is initialized for all method calls.
         int INITIALIZED_FIRST_PARTY = 2;
-    };
+    }
 
     /**
      * Observer to be notified when the SafetyNetApiHandler determines the result of asynchronous

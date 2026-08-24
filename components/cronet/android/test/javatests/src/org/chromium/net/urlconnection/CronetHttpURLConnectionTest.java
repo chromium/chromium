@@ -917,12 +917,12 @@ public class CronetHttpURLConnectionTest {
     private static enum CacheSetting {
         USE_CACHE,
         DONT_USE_CACHE
-    };
+    }
 
     private static enum ExpectedOutcome {
         SUCCESS,
         FAILURE
-    };
+    }
 
     /**
      * Helper method to make a request with cache enabled or disabled, and check whether the request

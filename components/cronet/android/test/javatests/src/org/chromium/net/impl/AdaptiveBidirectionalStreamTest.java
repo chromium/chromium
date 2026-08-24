@@ -93,7 +93,6 @@ public class AdaptiveBidirectionalStreamTest {
             ctx.fireChannelRead(msg);
         }
     }
-    ;
 
     @Before
     public void setUp() throws Exception {
