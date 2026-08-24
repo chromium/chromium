@@ -47,10 +47,11 @@ class UserCloudManagementStatusFetcherTestBase : public testing::Test {
  public:
   UserCloudManagementStatusFetcherTestBase()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        account_id_(identity_test_env_
-                        .MakePrimaryAccountAvailable(
-                            kTestEmail, signin::ConsentLevel::kSignin)
-                        .account_id) {
+        account_id_(
+            identity_test_env_
+                .MakePrimaryAccountAvailable(kTestEmail,
+                                             signin::ConsentLevel::kSignin)
+                .GetAccountId()) {
     scoped_feature_list_.InitAndEnableFeature(
         policy::features::kMigrateSecureConnectApiToDmServer);
     service_.ScheduleInitialization(0);

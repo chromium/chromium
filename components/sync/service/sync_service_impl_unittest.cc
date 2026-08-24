@@ -1124,7 +1124,7 @@ TEST_F(SyncServiceImplTest, RevokeAccessTokenFromTokenService) {
   AccountInfo secondary_account_info =
       identity_test_env()->MakeAccountAvailable("test_user2@gmail.com");
   identity_test_env()->RemoveRefreshTokenForAccount(
-      secondary_account_info.account_id);
+      secondary_account_info.GetAccountId());
   EXPECT_FALSE(service()->GetAccessTokenForTest().empty());
 
   identity_test_env()->RemoveRefreshTokenForPrimaryAccount();
@@ -1966,7 +1966,7 @@ TEST_F(SyncServiceImplTest,
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
       kTestUser, signin::ConsentLevel::kSignin);
   SyncPrefs(prefs()).SetSelectedTypeForAccount(UserSelectableType::kTabs, true,
-                                               account_info.gaia);
+                                               account_info.GetGaiaId());
 
   std::vector<FakeControllerInitParams> params;
   params.emplace_back(DEVICE_INFO, /*enable_transport_mode=*/true);

@@ -206,7 +206,7 @@ void ChildAccountService::OnExtendedAccountInfoUpdated(
   // This class doesn't care about browser sync consent.
   CoreAccountId auth_account_id =
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-  if (info.account_id != auth_account_id) {
+  if (info.GetAccountId() != auth_account_id) {
     return;
   }
 

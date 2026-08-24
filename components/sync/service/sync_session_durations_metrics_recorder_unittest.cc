@@ -297,7 +297,7 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest,
   AccountInfo account =
       identity_test_env_.MakeAccountAvailable("foo@gmail.com");
   identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
-      account.account_id,
+      account.GetAccountId(),
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 

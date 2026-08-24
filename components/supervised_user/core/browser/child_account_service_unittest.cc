@@ -143,7 +143,7 @@ TEST_F(ChildAccountServiceTest, GetGoogleAuthStateAuthenticated) {
 
   // A valid, signed-in account means authenticated.
   signin::SetListAccountsResponseOneAccountWithParams(
-      {kEmail, account_info.gaia,
+      {kEmail, account_info.GetGaiaId(),
        /*valid= */ true,
        /*signed_out=*/false,
        /*verified=*/true},
@@ -208,7 +208,7 @@ TEST_F(ChildAccountServiceTest, UpdateForceGoogleSafeSearch) {
       policy::policy_prefs::kForceGoogleSafeSearch));
 
   // SafeSearch should not be forced for a fully signed in supervised user.
-  SetListAccountsResponseAndTriggerCookieJarUpdate({kEmail, account.gaia,
+  SetListAccountsResponseAndTriggerCookieJarUpdate({kEmail, account.GetGaiaId(),
                                                     /*valid= */ true,
                                                     /*signed_out=*/false,
                                                     /*verified=*/true});

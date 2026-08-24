@@ -57,7 +57,7 @@ void FamilyLinkUserCapabilitiesObserver::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
   DCHECK(identity_manager_);
   // Only observe updates to capabilities of the primary account.
-  if (info.account_id !=
+  if (info.GetAccountId() !=
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin)) {
     return;
   }
