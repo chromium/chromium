@@ -23,6 +23,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -50,6 +51,7 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
+#include "components/download/public/common/download_item_rename_handler.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/download/public/common/download_target_info.h"
 #include "components/download/public/common/mock_download_item.h"
@@ -252,6 +254,13 @@ class TestChromeDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
                           const base::FilePath& virtual_path,
                           download::LocalPathCallback callback) override {
     std::move(callback).Run(virtual_path, virtual_path.BaseName());
+  }
+
+  void CallBaseDetermineLocalPath(download::DownloadItem* download,
+                                  const base::FilePath& virtual_path,
+                                  download::LocalPathCallback callback) {
+    ChromeDownloadManagerDelegate::DetermineLocalPath(download, virtual_path,
+                                                      std::move(callback));
   }
 
  private:
@@ -2832,6 +2841,125 @@ TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
   EXPECT_FALSE(delegate()->ShouldObfuscateDownload(download_item.get()));
 }
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
+       GetRenameHandlerForDownload_Obfuscation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_obfuscation::kEnterpriseFileObfuscation);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath staging_path = temp_dir.GetPath().AppendASCII("staging.txt");
+  base::FilePath local_path = temp_dir.GetPath().AppendASCII("local.txt");
+  base::FilePath virtual_path("/media/fuse/odfs/final.txt");
+
+  std::unique_ptr<download::MockDownloadItem> download_item =
+      CreateActiveDownloadItem(0);
+  EXPECT_CALL(*download_item, RequireSafetyChecks())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*download_item, GetTargetFilePath())
+      .WillRepeatedly(ReturnRef(staging_path));
+
+  auto mock_protection_service =
+      std::make_unique<::testing::StrictMock<TestDownloadProtectionService>>();
+  EXPECT_CALL(*delegate(), GetDownloadProtectionService())
+      .WillRepeatedly(Return(mock_protection_service.get()));
+
+  policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
+  enterprise_connectors::test::SetAnalysisConnector(
+      pref_service(), enterprise_connectors::FILE_DOWNLOADED,
+      R"({
+        "service_provider": "google",
+        "enable": [
+          {
+            "url_list": ["*"],
+            "tags": ["malware", "dlp"]
+          }
+        ],
+        "block_until_verdict": 1
+      })");
+
+  // Local downloads (staging_path is non-virtual and original_target_path is
+  // not set yet) do not get a rename handler.
+  EXPECT_FALSE(delegate()->GetRenameHandlerForDownload(download_item.get()));
+
+  // Set up original_target_path on the user data that ShouldObfuscateDownload
+  // created (simulating DetermineLocalPath staging a non-local OneDrive
+  // download in temp dir).
+  auto* obfuscation_data =
+      static_cast<enterprise_obfuscation::DownloadObfuscationData*>(
+          download_item->GetUserData(
+              enterprise_obfuscation::DownloadObfuscationData::kUserDataKey));
+  ASSERT_TRUE(obfuscation_data);
+
+  // When original_target_path is a local path (non-virtual), no rename handler.
+  obfuscation_data->original_target_path = local_path;
+  EXPECT_FALSE(delegate()->GetRenameHandlerForDownload(download_item.get()));
+
+  // When original_target_path matches IsVirtualFilesystem, rename handler is
+  // returned.
+  obfuscation_data->original_target_path = virtual_path;
+  EXPECT_TRUE(delegate()->GetRenameHandlerForDownload(download_item.get()));
+}
+
+TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
+       DetermineLocalPath_Obfuscation_NonLocalPath) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_obfuscation::kEnterpriseFileObfuscation);
+
+  std::unique_ptr<download::MockDownloadItem> download_item =
+      CreateActiveDownloadItem(0);
+  EXPECT_CALL(*download_item, RequireSafetyChecks())
+      .WillRepeatedly(Return(true));
+
+  auto mock_protection_service =
+      std::make_unique<::testing::StrictMock<TestDownloadProtectionService>>();
+  EXPECT_CALL(*delegate(), GetDownloadProtectionService())
+      .WillRepeatedly(Return(mock_protection_service.get()));
+
+  policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
+  enterprise_connectors::test::SetAnalysisConnector(
+      pref_service(), enterprise_connectors::FILE_DOWNLOADED,
+      R"({
+        "service_provider": "google",
+        "enable": [
+          {
+            "url_list": ["*"],
+            "tags": ["malware", "dlp"]
+          }
+        ],
+        "block_until_verdict": 1
+      })");
+
+  base::FilePath virtual_path("/media/fuse/odfs/test.doc");
+  base::RunLoop run_loop;
+  base::FilePath res_local_path;
+  delegate()->CallBaseDetermineLocalPath(
+      download_item.get(), virtual_path,
+      base::BindLambdaForTesting([&](const base::FilePath& local_path,
+                                     const base::FilePath& default_name) {
+        res_local_path = local_path;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  // Local path should have been staged in a temp directory because virtual_path
+  // is non-local and obfuscation is enabled.
+  EXPECT_NE(virtual_path, res_local_path);
+
+  auto* obfuscation_data =
+      static_cast<enterprise_obfuscation::DownloadObfuscationData*>(
+          download_item->GetUserData(
+              enterprise_obfuscation::DownloadObfuscationData::kUserDataKey));
+  ASSERT_TRUE(obfuscation_data);
+  EXPECT_EQ(virtual_path, obfuscation_data->original_target_path);
+
+  base::DeleteFile(res_local_path);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // SAFE_BROWSING_DOWNLOAD_PROTECTION
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)

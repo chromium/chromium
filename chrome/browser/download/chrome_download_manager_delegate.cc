@@ -154,11 +154,15 @@
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"  // nogncheck crbug.com/40147906
-#include "components/enterprise/obfuscation/core/download_obfuscator.h"  // nogncheck crbug.com/40147906
+#include "components/enterprise/obfuscation/core/download_obfuscator.h"
+#include "components/enterprise/obfuscation/core/utils.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/skyvault/skyvault_rename_handler.h"
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/analysis/obfuscation_rename_handler.h"
+#endif
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -212,6 +216,19 @@ bool IsEphemeralWarningCancellationEnabled() {
 #endif
 }
 
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+base::FilePath CreateLocalTempFile() {
+  base::FilePath temp_dir;
+  if (base::GetTempDir(&temp_dir)) {
+    base::FilePath temp_file;
+    if (base::CreateTemporaryFileInDir(temp_dir, &temp_file)) {
+      return temp_file;
+    }
+  }
+  return base::FilePath();
+}
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 const char kPdfDirName[] = "pdfs";
 #endif
@@ -234,6 +251,17 @@ enum PlatformDownloadPathType {
 // How the platform path is determined is based on PlatformDownloadPathType.
 base::FilePath GetPlatformDownloadPath(const DownloadItem* download,
                                        PlatformDownloadPathType path_type) {
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  auto* obfuscation_data =
+      static_cast<enterprise_obfuscation::DownloadObfuscationData*>(
+          download->GetUserData(
+              enterprise_obfuscation::DownloadObfuscationData::kUserDataKey));
+  if (obfuscation_data && !obfuscation_data->original_target_path.empty() &&
+      path_type == PLATFORM_TARGET_PATH) {
+    return obfuscation_data->original_target_path;
+  }
+#endif
+
   if (path_type == PLATFORM_TARGET_PATH) {
     return download->GetTargetFilePath();
   }
@@ -1144,10 +1172,13 @@ bool ChromeDownloadManagerDelegate::ShouldObfuscateDownload(
     if (settings.has_value() &&
         settings.value().block_until_verdict ==
             enterprise_connectors::BlockUntilVerdict::kBlock) {
-      item->SetUserData(
-          enterprise_obfuscation::DownloadObfuscationData::kUserDataKey,
-          std::make_unique<enterprise_obfuscation::DownloadObfuscationData>(
-              true));
+      if (!item->GetUserData(
+              enterprise_obfuscation::DownloadObfuscationData::kUserDataKey)) {
+        item->SetUserData(
+            enterprise_obfuscation::DownloadObfuscationData::kUserDataKey,
+            std::make_unique<enterprise_obfuscation::DownloadObfuscationData>(
+                true));
+      }
       return true;
     }
   }
@@ -1769,8 +1800,63 @@ void ChromeDownloadManagerDelegate::DetermineLocalPath(
     const base::FilePath& virtual_path,
     download::LocalPathCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  if (enterprise_obfuscation::IsVirtualFilesystem(virtual_path) &&
+      ShouldObfuscateDownload(download)) {
+    auto* obfuscation_data =
+        static_cast<enterprise_obfuscation::DownloadObfuscationData*>(
+            download->GetUserData(
+                enterprise_obfuscation::DownloadObfuscationData::kUserDataKey));
+    if (obfuscation_data) {
+      obfuscation_data->original_target_path = virtual_path;
+    }
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&CreateLocalTempFile),
+        base::BindOnce(
+            &ChromeDownloadManagerDelegate::OnCreateDeobfuscationTempFile,
+            weak_ptr_factory_.GetWeakPtr(), download->GetId(), virtual_path,
+            std::move(callback)));
+    return;
+  }
+#endif
   download::DetermineLocalPath(download, virtual_path, std::move(callback));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void ChromeDownloadManagerDelegate::OnCreateDeobfuscationTempFile(
+    uint32_t download_id,
+    const base::FilePath& virtual_path,
+    download::LocalPathCallback callback,
+    base::FilePath temp_file_path) {
+  if (!temp_file_path.empty()) {
+    std::move(callback).Run(std::move(temp_file_path),
+                            /*file_name=*/base::FilePath());
+    return;
+  }
+
+  // When failing to obtain a temporary directory for deobfuscation, clear the
+  // original target path to let the download proceed normally with
+  // deobfuscation.
+  if (!download_manager_) {
+    return;
+  }
+
+  DownloadItem* item = download_manager_->GetDownload(download_id);
+  if (!item) {
+    return;
+  }
+
+  auto* obfuscation_data =
+      static_cast<enterprise_obfuscation::DownloadObfuscationData*>(
+          item->GetUserData(
+              enterprise_obfuscation::DownloadObfuscationData::kUserDataKey));
+  if (obfuscation_data) {
+    obfuscation_data->original_target_path.clear();
+  }
+  download::DetermineLocalPath(item, virtual_path, std::move(callback));
+}
+#endif
 
 void ChromeDownloadManagerDelegate::CheckDownloadUrl(
     DownloadItem* download,
@@ -2359,11 +2445,33 @@ std::unique_ptr<download::DownloadItemRenameHandler>
 ChromeDownloadManagerDelegate::GetRenameHandlerForDownload(
     download::DownloadItem* download_item) {
 #if BUILDFLAG(IS_CHROMEOS)
-  return policy::SkyvaultRenameHandler::CreateIfNeeded(
+  auto skyvault_handler = policy::SkyvaultRenameHandler::CreateIfNeeded(
       CHECK_DEREF(g_browser_process->local_state()), download_item);
-#else
-  return nullptr;
+  if (skyvault_handler) {
+    return skyvault_handler;
+  }
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  // Check if this download requires obfuscation and is destined for a non-local
+  // virtual path (e.g. OneDrive).
+  if (ShouldObfuscateDownload(download_item)) {
+    auto* obfuscation_data =
+        static_cast<enterprise_obfuscation::DownloadObfuscationData*>(
+            download_item->GetUserData(
+                enterprise_obfuscation::DownloadObfuscationData::kUserDataKey));
+    const base::FilePath& target_path =
+        (obfuscation_data && !obfuscation_data->original_target_path.empty())
+            ? obfuscation_data->original_target_path
+            : download_item->GetTargetFilePath();
+    if (enterprise_obfuscation::IsVirtualFilesystem(target_path)) {
+      return enterprise_obfuscation::ObfuscationRenameHandler::CreateIfNeeded(
+          download_item);
+    }
+  }
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  return nullptr;
 }
 
 void ChromeDownloadManagerDelegate::CheckSavePackageAllowed(
