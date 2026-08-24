@@ -2700,7 +2700,6 @@ source_set("browser_tests") {
       "//chrome/browser/ui/views/autofill/popup/custom_cursor_suppressor_browsertest.cc",
       "//chrome/browser/ui/views/user_education/recent_session_observer_impl_browsertest.cc",
       "//chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_close_window_browsertest.cc",
-      "//chrome/renderer/controlled_frame/web_url_pattern_natives_browsertest.cc",
       "ai_language_model_browsertest.cc",
       "alert_apitest.cc",
       "api/activity_log_private/activity_log_private_apitest.cc",
