@@ -937,7 +937,7 @@ void CloudPolicyClient::FetchPolicyInternal(
     if (type_to_fetch.policy_type() ==
         dm_protocol::kChromeMachineLevelUserCloudPolicyType) {
 #if BUILDFLAG(IS_WIN)
-        cbcm_policy_fetch_request = fetch_request;
+      cbcm_policy_fetch_request = fetch_request;
 #else
       fetch_request->set_allocated_browser_device_identifier(
           GetBrowserDeviceIdentifier().release());
@@ -1361,8 +1361,6 @@ DeviceManagementService::Job* CloudPolicyClient::CreateNewRealtimeReportingJob(
   request_jobs_.push_back(service_->CreateJob(std::move(config)));
   return request_jobs_.back().get();
 }
-
-
 
 void CloudPolicyClient::GetDeviceAttributeUpdatePermission(
     DMAuth auth,
@@ -1836,7 +1834,6 @@ void CloudPolicyClient::OnPolicyFetchCompleted(base::Time start_time,
   if (result.dm_status == DM_STATUS_SUCCESS) {
     const em::DevicePolicyResponse& policy_response =
         result.response.policy_response();
-    bool is_first_response = last_policy_fetch_responses_.empty();
     last_policy_fetch_responses_.clear();
     for (int i = 0; i < policy_response.responses_size(); ++i) {
       const em::PolicyFetchResponse& fetch_response =
@@ -1849,13 +1846,6 @@ void CloudPolicyClient::OnPolicyFetchCompleted(base::Time start_time,
         continue;
       }
       const std::string& type = policy_data.policy_type();
-      if (is_first_response && type == dm_protocol::kChromeDevicePolicyType) {
-        // Log histogram on first device policy fetch response to check the
-        // state keys. No need to worry about possibility of multiple responses
-        // of this type. There's only one device policy possible.
-        base::UmaHistogramBoolean("Ash.StateKeysPresent2",
-                                  !state_keys_to_upload_.empty());
-      }
       std::string entity_id;
       if (policy_data.has_settings_entity_id()) {
         entity_id = policy_data.settings_entity_id();

@@ -8404,18 +8404,6 @@ chromium-metrics-reviews@google.com.
   <token key="SplitViewResizeModes" variants="SplitViewResizeModes"/>
 </histogram>
 
-<histogram name="Ash.StateKeysPresent2" enum="BooleanPresent"
-    expires_after="2025-06-22">
-  <owner>igorcov@chromium.org</owner>
-  <owner>vsavu@google.com</owner>
-  <summary>
-    The presense of state keys on first device policy fetch response. It is
-    expected for state keys to be present. The histogram is logged only in case
-    of successful device policy fetch response. This is replacing the old
-    Ash.StateKeysPresent histogram because a bug made that data useless.
-  </summary>
-</histogram>
-
 <histogram name="Ash.StatusArea.TrayBackgroundView.BounceIn" units="%"
     expires_after="2026-08-30">
   <owner>newcomer@chromium.org</owner>
