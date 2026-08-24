@@ -480,6 +480,8 @@ export class ToolbarAppElement extends AppElementBase {
   private dropListener_ = (e: DragEvent) => this.onDrop_(e);
   private keyDownListener_ = (e: KeyboardEvent) => this.onKeyDown_(e);
   private windowResizeListener_: () => void = () => this.onResize();
+  private requestLayoutListener_:
+      () => void = () => this.scheduleLayoutResponsiveControls_();
 
   private isRtl_: boolean = loadTimeData.getString('textdirection') === 'rtl';
 
@@ -541,6 +543,7 @@ export class ToolbarAppElement extends AppElementBase {
     this.addEventListener('dragover', this.dragOverListener_);
     this.addEventListener('drop', this.dropListener_);
     this.addEventListener('keydown', this.keyDownListener_);
+    this.addEventListener('request-layout', this.requestLayoutListener_);
 
     this.resizeObserver_ = new ResizeObserver(() => this.onResize());
     this.resizeObserver_.observe(this);
@@ -648,6 +651,7 @@ export class ToolbarAppElement extends AppElementBase {
     this.removeEventListener('dragover', this.dragOverListener_);
     this.removeEventListener('drop', this.dropListener_);
     this.removeEventListener('keydown', this.keyDownListener_);
+    this.removeEventListener('request-layout', this.requestLayoutListener_);
 
     this.resizeObserver_?.disconnect();
     window.removeEventListener('resize', this.windowResizeListener_);
@@ -790,31 +794,13 @@ export class ToolbarAppElement extends AppElementBase {
     }
   }
 
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-
-    // Check if a new layout is needed and if so, do it now. Checking only after
-    // all controls have been updated ensures that there's only one update if
-    // multiple controls are updated at once. ResizeObserver could theoretically
-    // trigger another notification, but since the entire toolbar should end up
-    // the same size after laying out all controls, there should hopefully only
-    // be a single call to layoutResponsiveControls().
-    let needsLayout = false;
-    for (const control of this.getResponsiveControls()) {
-      if (control.consumeNeedsLayout()) {
-        needsLayout = true;
-      }
-    }
-    if (needsLayout) {
-      this.layoutResponsiveControls();
-    }
-  }
-
   /**
    * Called on window resize or on toolbar-app resize. This makes sure there's a
-   * layout when the window is resized or when the size of controls other than
-   * ResponsiveControls change in size. When ResponsiveControls change in size,
-   * updated() calls layoutResponsiveControls() directly.
+   * layout when the window is resized or when the toolbar as a whole changes in
+   * size. When a ResponsiveControl changes in size, it will generally trigger a
+   * call of scheduleLayoutResponsiveControls_() through an event as well, as a
+   * re-layout may be needed, even if the toolbar ends up effectively the same
+   * size.
    */
   private onResize() {
     // Check if a layout is needed. The width check prevents toolbar-app resizes
@@ -828,6 +814,21 @@ export class ToolbarAppElement extends AppElementBase {
     }
   }
 
+  /**
+   * Schedules a layout of responsive controls before the next animation frame.
+   *
+   * This should be called whenever:
+   * 1. The browser window/container size changes. This is monitored via
+   * `windowResizeListener_`.
+   * 2. Any control's visibility state or size changes. ResponsiveControls
+   * themselves are responsible for bubbling up `request-layout` events to the
+   * app to trigger layouts when their preferred and/or minimize sizes may have
+   * changed, while non-responsive controls are monitored by watching the size
+   * of the toolbar-app element itself. If two or more non-ResponsiveControl
+   * change in size in such a way so that the toolbar's size remains the same,
+   * no resize is triggered, which is fine, since that should have no effect on
+   * which ResponsiveControls should be displayed.
+   */
   private scheduleLayoutResponsiveControls_() {
     if (this.layoutPending_) {
       return;
@@ -931,12 +932,9 @@ export class ToolbarAppElement extends AppElementBase {
    * Resizes / shows / hides responsive controls based on available space in the
    * toolbar.
    *
-   * This should be called whenever:
-   * 1. The browser window/container size changes. This is monitored via
-   * `windowResizeListener_`.
-   * 2. Any control's visibility state or size changes. This is monitored via
-   * `resizeObserver_`, and by ResponsiveControl.consumeNeedsLayout(), which is
-   * both set and read during state updates.
+   * This should generally only be called through
+   * `scheduleLayoutResponsiveControls_`, to avoid redundant calls, which can
+   * be fairly heavy weight.
    *
    * TODO(crbug.com/491791965): Investigate performance of this method. It does
    * force a lot of layouts, which may well be a performance issue. There are

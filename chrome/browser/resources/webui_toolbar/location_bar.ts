@@ -241,11 +241,6 @@ export class LocationBarElement extends CrLitElement implements
     return [];
   }
 
-  consumeNeedsLayout(): boolean {
-    // The minimum and preferred sizes of this control do not change.
-    return false;
-  }
-
   // Sets the width to include all remaining unclaimed space on the toolbar.
   // Will not set to less than minimum width.
   //

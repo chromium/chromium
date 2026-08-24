@@ -20,7 +20,6 @@ export interface OverflowableButton {
   expandUpToPreferredWidth(): void;
   setToPreferredWidth(): void;
   controlsToAddToOverflowMenu(): string[];
-  consumeNeedsLayout(): boolean;
 }
 
 /**
@@ -51,9 +50,6 @@ export const OverflowableButtonMixin =
           // it. See class docs for more details.
           shouldBeShown: false,
         };
-
-        // True if the next call of `consumeNeedsLayout()` should return true.
-        private needsLayout_: boolean = false;
 
         shouldBeShown(): boolean {
           return this.state.shouldBeShown;
@@ -95,19 +91,19 @@ export const OverflowableButtonMixin =
               [];
         }
 
-        consumeNeedsLayout(): boolean {
-          const needsLayout = this.needsLayout_;
-          this.needsLayout_ = false;
-          return needsLayout;
-        }
-
         override updated(changedProperties: PropertyValues<this>) {
           super.updated(changedProperties);
           if (changedProperties.has('state')) {
             const oldState = changedProperties.get('state');
+            // If there's potentially been a change in our visibility, request
+            // that there be a new layout once all updated() calls have
+            // completed.
             if (!oldState ||
                 oldState.shouldBeShown !== this.state.shouldBeShown) {
-              this.needsLayout_ = true;
+              this.dispatchEvent(new CustomEvent('request-layout', {
+                bubbles: true,
+                composed: true,
+              }));
             }
           }
         }
