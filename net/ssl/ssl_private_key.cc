@@ -42,6 +42,12 @@ std::vector<uint16_t> SSLPrivateKey::DefaultAlgorithmPreferences(
       };
     case EVP_PKEY_ED25519:
       return {SSL_SIGN_ED25519};
+    case EVP_PKEY_ML_DSA_44:
+      return {SSL_SIGN_ML_DSA_44};
+    case EVP_PKEY_ML_DSA_65:
+      return {SSL_SIGN_ML_DSA_65};
+    case EVP_PKEY_ML_DSA_87:
+      return {SSL_SIGN_ML_DSA_87};
     default:
       // Callers should not pass `type` values they cannot support, so this
       // should never happen.

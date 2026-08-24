@@ -47,6 +47,12 @@ std::optional<crypto::sign::SignatureKind> MapAlgorithm(uint16_t algorithm) {
       return crypto::sign::ECDSA_SHA512;
     case SSL_SIGN_ED25519:
       return crypto::sign::ED25519;
+    case SSL_SIGN_ML_DSA_44:
+      return crypto::sign::MLDSA_44;
+    case SSL_SIGN_ML_DSA_65:
+      return crypto::sign::MLDSA_65;
+    case SSL_SIGN_ML_DSA_87:
+      return crypto::sign::MLDSA_87;
   }
   return std::nullopt;
 }
@@ -92,7 +98,8 @@ scoped_refptr<SSLPrivateKey> WrapCryptoPrivateKey(
     crypto::keypair::PrivateKey key) {
   int key_type = EVP_PKEY_id(key.key());
   if (key_type != EVP_PKEY_RSA && key_type != EVP_PKEY_EC &&
-      key_type != EVP_PKEY_ED25519) {
+      key_type != EVP_PKEY_ED25519 && key_type != EVP_PKEY_ML_DSA_44 &&
+      key_type != EVP_PKEY_ML_DSA_65 && key_type != EVP_PKEY_ML_DSA_87) {
     return nullptr;
   }
   return base::MakeRefCounted<ThreadedSSLPrivateKey>(

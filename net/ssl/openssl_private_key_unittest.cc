@@ -30,7 +30,8 @@ struct TestKey {
 const TestKey kTestKeys[] = {
     {"RSA", "client_1.pk8"},           {"ECDSA_P256", "client_p256.pk8"},
     {"ECDSA_P384", "client_p384.pk8"}, {"ECDSA_P521", "client_p521.pk8"},
-    {"ED25519", "client_ed25519.pk8"},
+    {"ED25519", "client_ed25519.pk8"}, {"MLDSA44", "client_mldsa44.pk8"},
+    {"MLDSA65", "client_mldsa65.pk8"}, {"MLDSA87", "client_mldsa87.pk8"},
 };
 
 std::string TestKeyToString(const testing::TestParamInfo<TestKey>& params) {
