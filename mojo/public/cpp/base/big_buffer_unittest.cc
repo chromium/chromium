@@ -68,6 +68,23 @@ TEST(BigBufferTest, LargeDataSize) {
   EXPECT_TRUE(BufferEquals(base::span<const uint8_t>(data), out));
 }
 
+TEST(BigBufferTest, LargeInlineDataRemainsInlineAfterDeserialization) {
+  constexpr size_t kLargeDataSize = BigBuffer::kMaxInlineBytes + 1;
+  std::array<uint8_t, kLargeDataSize> data;
+  base::RandBytes(data);
+
+  BigBufferView view;
+  view.SetBytes(data);
+  BigBuffer in = BigBufferView::ToBigBuffer(std::move(view));
+  EXPECT_EQ(BigBuffer::StorageType::kBytes, in.storage_type());
+
+  BigBuffer out;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::BigBuffer>(in, out));
+
+  EXPECT_EQ(BigBuffer::StorageType::kBytes, out.storage_type());
+  EXPECT_TRUE(BufferEquals(base::span<const uint8_t>(data), out));
+}
+
 TEST(BigBufferTest, InvalidBuffer) {
   // Verifies that deserializing invalid BigBuffers and BigBufferViews always
   // fails.
