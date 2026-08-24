@@ -6,6 +6,7 @@ import 'chrome://new-tab-page/new_tab_page.js';
 
 import type {NtpSearchboxElement, SearchboxIconElement, SearchboxMatchElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {BrowserProxyImpl, MetricsReporterImpl, SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
@@ -1312,4 +1313,22 @@ suite('SearchboxTest', () => {
 
         assertTrue(closeMenuCalled);
       });
+
+  test('closeContextMenu closes context menu', async () => {
+    const realbox = await createAndAppendRealbox({
+      ntpRealboxNextEnabled: true,
+    });
+    const context =
+        realbox.shadowRoot.querySelector<ContextualEntrypointAndMenuElement>(
+            '#context');
+    assertTrue(!!context);
+
+    let closeMenuCalled = false;
+    context.closeMenu = () => {
+      closeMenuCalled = true;
+    };
+
+    realbox.closeContextMenu();
+    assertTrue(closeMenuCalled);
+  });
 });

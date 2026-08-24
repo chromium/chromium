@@ -78,6 +78,7 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
               .showVoiceSearch="${true}"
               .smartTabSharingVisible="${this.smartTabSharingVisible_}"
               .contextManagementInComposeboxEnabled="${this.contextManagementInComposeboxEnabled_}"
+              @context-menu-opened="${this.onComposeboxContextMenuOpened_}"
               @close-composebox="${this.onCloseComposebox_}"
               @voice-search-action="${this.onComposeVoiceSearchAction_}"
               .submitButtonIconType="${SubmitButtonIconType.FORWARD}"

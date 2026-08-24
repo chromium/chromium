@@ -1082,10 +1082,15 @@ export class AppElement extends AppElementBase {
     this.onCloseComposebox_(closeComposebox);
   }
 
+  protected onComposeboxContextMenuOpened_() {
+    this.$.searchbox.closeContextMenu();
+  }
+
   protected onCloseComposebox_(e: CustomEvent<{composeboxText?: string}>) {
     if (!this.showComposebox_) {
       return;
     }
+    this.$.searchbox.closeContextMenu();
     const composeboxText = e.detail.composeboxText;
 
     if (composeboxText && composeboxText.trim()) {
