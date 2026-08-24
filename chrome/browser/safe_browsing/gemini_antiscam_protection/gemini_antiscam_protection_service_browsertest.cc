@@ -21,6 +21,7 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/gemini_antiscam_protection.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
