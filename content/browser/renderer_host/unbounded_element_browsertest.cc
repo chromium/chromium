@@ -31,6 +31,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
 #if defined(USE_AURA)
@@ -830,6 +832,95 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
   EXPECT_EQ(370, EvalJs(primary_main_frame_host(), "window.__mouse_y"));
 }
 
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       HoverOutsideBrowserWindowRendering) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // The browser window size is typically 800x600.
+  // Place an unbounded menu with two items outside the window:
+  // btn1 at y: 700..750 and btn2 at y: 800..850.
+  std::string script = R"(
+    document.body.style.margin = '0';
+    document.body.innerHTML = `
+      <style>
+        #menu {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100px;
+          height: 1000px;
+        }
+        .item {
+          display: block;
+          width: 100px;
+          height: 50px;
+          border: none;
+          padding: 0;
+          margin: 0;
+          background-color: rgb(0, 0, 255);
+        }
+        .item:hover {
+          background-color: rgb(0, 255, 0);
+        }
+      </style>
+      <div id="menu" unbounded>
+        <div id="btn1" class="item" style="position:absolute; top:700px;"></div>
+        <div id="btn2" class="item" style="position:absolute; top:800px;"></div>
+      </div>
+    `;
+    document.getElementById('menu').showUnboundedElement();
+  )";
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
+
+  UnboundedSurfaceWindow* window = GetActiveWindow();
+  ASSERT_TRUE(window);
+
+  // 1. Move mouse to btn1 (y: 725, outside viewport) to establish baseline
+  // outside viewport.
+  gfx::Rect popup_bounds = window->GetBounds();
+  {
+    blink::WebMouseEvent event(blink::WebInputEvent::Type::kMouseMove,
+                               blink::WebInputEvent::kNoModifiers,
+                               base::TimeTicks::Now());
+    event.button = blink::WebMouseEvent::Button::kNoButton;
+    event.SetPositionInWidget(50, 725);
+    event.SetPositionInScreen(popup_bounds.x() + 50, popup_bounds.y() + 725);
+    window->RouteMouseEvent(event);
+    RunUntilInputProcessed(primary_main_frame_host()->GetRenderWidgetHost());
+  }
+
+  // Force an animation frame so any lingering root damage from the initial
+  // transition settles.
+  std::ignore = EvalJs(primary_main_frame_host(),
+                       "new Promise(r => requestAnimationFrame(() => "
+                       "requestAnimationFrame(r)))");
+
+  // 2. Now move mouse from btn1 (y: 725) to btn2 (y: 825).
+  // Both btn1 and btn2 are outside the 800x600 window.
+  {
+    blink::WebMouseEvent event(blink::WebInputEvent::Type::kMouseMove,
+                               blink::WebInputEvent::kNoModifiers,
+                               base::TimeTicks::Now());
+    event.button = blink::WebMouseEvent::Button::kNoButton;
+    event.SetPositionInWidget(50, 825);
+    event.SetPositionInScreen(popup_bounds.x() + 50, popup_bounds.y() + 825);
+    window->RouteMouseEvent(event);
+    RunUntilInputProcessed(primary_main_frame_host()->GetRenderWidgetHost());
+  }
+
+  // Verify that Blink JS computes the hover state as green on btn2.
+  EXPECT_EQ("rgb(0, 255, 0)",
+            EvalJs(primary_main_frame_host(),
+                   "getComputedStyle(document.getElementById('btn2'))."
+                   "backgroundColor"));
+  EXPECT_EQ("rgb(0, 0, 255)",
+            EvalJs(primary_main_frame_host(),
+                   "getComputedStyle(document.getElementById('btn1'))."
+                   "backgroundColor"));
+}
+
 // Mouse events are not routed through UnboundedSurfaceWindow on Android, as
 // native touch/pointer events are handled by the regular Android View
 // hierarchy.
@@ -885,11 +976,7 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
   EXPECT_TRUE(EvalJs(iframe, "window.__clicked").ExtractBool());
 }
 
-// TODO(crbug.com/508672616): Mouse move / hover event routing for unbounded
-// elements within frames is not yet working properly, unlike click routing
-// (tested in IframeClickEventRouting above).
-IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
-                       DISABLED_IframeInputEventRouting) {
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, IframeInputEventRouting) {
   GURL url(embedded_test_server()->GetURL("/page_with_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 

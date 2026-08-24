@@ -1075,6 +1075,17 @@ bool LayerTreeHostImpl::HasDamage() const {
     return true;
   }
 
+  // Unbounded elements can be positioned outside the root viewport, so check if
+  // any unbounded render surface has damage even if the root surface has none.
+  if (settings_.enable_unbounded_element) {
+    for (const auto* surface : active_tree->GetRenderSurfaceList()) {
+      if (surface->IsUnbounded() &&
+          surface->GetDamageRect().Intersects(surface->content_rect())) {
+        return true;
+      }
+    }
+  }
+
   // If the root render surface has no visible damage, then don't generate a
   // frame at all.
   const RenderSurfaceImpl* root_surface = active_tree->RootRenderSurface();

@@ -73,6 +73,7 @@
 #include "cc/trees/client_layer_tree_host_impl.h"
 #include "cc/trees/clip_node.h"
 #include "cc/trees/compositor_commit_data.h"
+#include "cc/trees/damage_tracker.h"
 #include "cc/trees/draw_property_utils.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/frame_data.h"
@@ -15855,7 +15856,14 @@ TEST_P(OverscrollEffectTest, RespectsOverscrollBehaviorOnRoot) {
 
 // TODO(crbug.com/508672616): Unbounded element is not implemented for
 // TreesInViz yet.
-class UnboundedElementTest : public LayerTreeHostImplTest {};
+class UnboundedElementTest : public LayerTreeHostImplTest {
+ public:
+  LayerTreeSettings DefaultSettings() override {
+    LayerTreeSettings settings = LayerTreeHostImplTest::DefaultSettings();
+    settings.enable_unbounded_element = true;
+    return settings;
+  }
+};
 INSTANTIATE_COMMIT_TO_TREE_BASE_TEST_P(UnboundedElementTest,
                                        CommitToActiveTree,
                                        CommitToPendingTree);
@@ -15873,6 +15881,62 @@ TEST_P(UnboundedElementTest, UnboundedCompositorFrameExtraction) {
   EXPECT_TRUE(effect_tree.Node(effect_node_id).HasRenderSurface());
   EXPECT_EQ(RenderSurfaceReason::kUnboundedElement,
             effect_tree.Node(effect_node_id).render_surface_reason);
+}
+
+TEST_P(UnboundedElementTest, HasDamageWithUnboundedElementOutsideViewport) {
+  // Viewport is 100x100.
+  auto* root = SetupDefaultRootLayer(gfx::Size(100, 100));
+
+  LayerTreeImpl* active_tree = host_impl_->active_tree();
+
+  // Add a layer inside the unbounded element positioned at (0, 200, 50, 50),
+  // which is strictly outside the 100x100 viewport.
+  auto* unbounded_layer = AddLayerInActiveTree();
+  unbounded_layer->SetBounds(gfx::Size(50, 50));
+  unbounded_layer->SetOffsetToTransformParent(gfx::Vector2dF(0, 200));
+  unbounded_layer->SetDrawsContent(true);
+  unbounded_layer->SetHitTestOpaqueness(HitTestOpaqueness::kOpaque);
+  CopyProperties(root, unbounded_layer);
+
+  // Create an unbounded element effect node with a render surface.
+  EffectNode& effect_node = CreateEffectNode(unbounded_layer);
+  effect_node.render_surface_reason = RenderSurfaceReason::kUnboundedElement;
+
+  host_impl_->SetUnboundedFrameSink(nullptr, viz::LocalSurfaceId());
+
+  UpdateDrawProperties(active_tree);
+
+  // Initial draw clears local surface ID change and initial damage.
+  auto args1 = viz::CreateBeginFrameArgsForTesting(
+      BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
+      base::TimeTicks() + base::Milliseconds(1));
+  host_impl_->WillBeginImplFrame(args1);
+  TestFrameData initial_frame;
+  EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&initial_frame));
+  host_impl_->DrawLayers(&initial_frame);
+  host_impl_->DidDrawAllLayers(initial_frame);
+  host_impl_->DidFinishImplFrame(args1);
+
+  // Invalidate only the unbounded layer outside the viewport.
+  unbounded_layer->UnionUpdateRect(gfx::Rect(0, 0, 50, 50));
+  DamageTracker::UpdateDamageTracking(active_tree);
+
+  // The root surface damage rect does not intersect root surface content rect.
+  const RenderSurfaceImpl* root_surface = active_tree->RootRenderSurface();
+  EXPECT_FALSE(
+      root_surface->GetDamageRect().Intersects(root_surface->content_rect()));
+
+  auto args2 = viz::CreateBeginFrameArgsForTesting(
+      BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 2,
+      base::TimeTicks() + base::Milliseconds(2));
+  host_impl_->WillBeginImplFrame(args2);
+  TestFrameData damaged_frame;
+  damaged_frame.begin_frame_ack = viz::BeginFrameAck(args2, true);
+  EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&damaged_frame));
+  EXPECT_FALSE(damaged_frame.has_no_damage);
+  host_impl_->DrawLayers(&damaged_frame);
+  host_impl_->DidDrawAllLayers(damaged_frame);
+  host_impl_->DidFinishImplFrame(args2);
 }
 
 TEST_P(LayerTreeHostImplTest, CollectTrackedElementRects) {

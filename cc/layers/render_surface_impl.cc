@@ -179,7 +179,6 @@ bool RenderSurfaceImpl::IsViewTransitionElement() const {
 // Returns true if this render surface is for an unbounded element.
 bool RenderSurfaceImpl::IsUnbounded() const {
   return layer_tree_impl_->settings().enable_unbounded_element &&
-         !layer_tree_impl_->settings().TreesInVizInClientProcess() &&
          OwningEffectNode() &&
          OwningEffectNode()->render_surface_reason ==
              RenderSurfaceReason::kUnboundedElement;
