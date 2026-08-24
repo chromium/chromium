@@ -16,7 +16,6 @@ import androidx.test.filters.MediumTest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -26,16 +25,12 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.components.feature_engagement.Tracker;
 
 import java.lang.ref.WeakReference;
 
@@ -100,14 +95,6 @@ public class HubGarbageCollectionTest {
         startPage = null;
         tabSwitcher = null;
         page = null;
-
-        // Reset the Mockito tracker to release captured lambdas holding onto the Hub.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Profile profile = ProfileManager.getLastUsedRegularProfile();
-                    Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
-                    Mockito.reset(tracker);
-                });
 
         // 4. Assert GC.
         boolean coordinatorGCed = canBeGarbageCollected(coordinatorRef);

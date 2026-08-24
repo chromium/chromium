@@ -115,6 +115,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/feature_engagement/CppWrappedTestTracker.java",
       "android/java/src/org/chromium/components/feature_engagement/EventConstants.java",
       "android/java/src/org/chromium/components/feature_engagement/FeatureConstants.java",
+      "android/java/src/org/chromium/components/feature_engagement/TestTracker.java",
       "android/java/src/org/chromium/components/feature_engagement/Tracker.java",
       "android/java/src/org/chromium/components/feature_engagement/TriggerDetails.java",
     ]
