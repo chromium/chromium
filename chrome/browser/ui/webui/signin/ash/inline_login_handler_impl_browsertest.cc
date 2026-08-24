@@ -132,8 +132,8 @@ base::Value GetCompleteLoginArgs(const std::string& email) {
 }
 
 account_manager::Account CreateGaiaAccount(const AccountInfo& account_info) {
-  return {account_manager::AccountKey::FromGaiaId(account_info.gaia),
-          account_info.email};
+  return {account_manager::AccountKey::FromGaiaId(account_info.GetGaiaId()),
+          std::string(account_info.GetEmail())};
 }
 
 bool IsAccountAvailableInArc(AccountAppsAvailability* account_apps_availability,
@@ -349,7 +349,8 @@ class InlineLoginHandlerTest
       const std::string& email) {
     AccountInfo account = identity_test_env()->MakeAccountAvailable(email);
     account_manager()->UpsertAccount(
-        account_manager::AccountKey::FromGaiaId(account.gaia), account.email,
+        account_manager::AccountKey::FromGaiaId(account.GetGaiaId()),
+        std::string(account.GetEmail()),
         account_manager::AccountManager::kInvalidToken);
     CHECK(AccountManagerHasAccount(email));
     return account;

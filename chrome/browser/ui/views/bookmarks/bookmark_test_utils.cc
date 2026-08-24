@@ -16,9 +16,9 @@ void SignInAndEnableAccountBookmarkNodes(Profile* profile) {
       IdentityManagerFactory::GetForProfile(profile);
   AccountInfo account_info = signin::MakePrimaryAccountAvailable(
       identity_manager, "foo@gmail.com", signin::ConsentLevel::kSignin);
-  signin::SimulateAccountImageFetch(identity_manager, account_info.account_id,
-                                    "https://avatar.com/avatar.png",
-                                    gfx::test::CreateImage(/*size=*/32));
+  signin::SimulateAccountImageFetch(
+      identity_manager, account_info.GetAccountId(),
+      "https://avatar.com/avatar.png", gfx::test::CreateImage(/*size=*/32));
   // Normally done by sync, but sync is not fully up in this test.
   BookmarkModelFactory::GetForBrowserContext(profile)
       ->CreateAccountPermanentFolders();

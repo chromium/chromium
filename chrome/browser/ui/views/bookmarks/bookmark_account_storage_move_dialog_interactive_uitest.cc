@@ -59,9 +59,9 @@ class BookmarkAccountStorageMoveDialogInteractiveTest
         IdentityManagerFactory::GetForProfile(browser()->GetProfile());
     AccountInfo account_info = signin::MakePrimaryAccountAvailable(
         identity_manager, "foo@gmail.com", signin::ConsentLevel::kSignin);
-    signin::SimulateAccountImageFetch(identity_manager, account_info.account_id,
-                                      "https://avatar.com/avatar.png",
-                                      gfx::test::CreateImage(/*size=*/32));
+    signin::SimulateAccountImageFetch(
+        identity_manager, account_info.GetAccountId(),
+        "https://avatar.com/avatar.png", gfx::test::CreateImage(/*size=*/32));
     BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile())
         ->CreateAccountPermanentFolders();
   }

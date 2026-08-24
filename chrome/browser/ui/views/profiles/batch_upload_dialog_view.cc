@@ -44,9 +44,9 @@ AccountInfo GetBatchUploadPrimaryAccountInfo(
     signin::IdentityManager& identity_manager) {
   AccountInfo primary_account = identity_manager.FindExtendedAccountInfo(
       identity_manager.GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
-  CHECK(!primary_account.email.empty());
+  CHECK(!primary_account.GetEmail().empty());
   CHECK(!identity_manager.HasAccountWithRefreshTokenInPersistentErrorState(
-      primary_account.account_id));
+      primary_account.GetAccountId()));
   return primary_account;
 }
 

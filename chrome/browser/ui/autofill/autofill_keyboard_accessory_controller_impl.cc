@@ -134,7 +134,7 @@ std::u16string GetAccountEmail(content::WebContents* web_contents) {
   const std::optional<AccountInfo> account =
       GetPrimaryAccountInfoFromBrowserContext(
           web_contents->GetBrowserContext());
-  return account ? base::UTF8ToUTF16(account->email) : std::u16string();
+  return account ? base::UTF8ToUTF16(account->GetEmail()) : std::u16string();
 }
 
 // Gets the text for a dialog to confirm removing an autocomplete suggestion.

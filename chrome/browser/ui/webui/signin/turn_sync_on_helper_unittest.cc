@@ -363,7 +363,8 @@ class TurnSyncOnHelperTest : public testing::Test {
                                               /*add_to_storage=*/true);
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
-    account_id_ = identity_test_env()->MakeAccountAvailable(kEmail).account_id;
+    account_id_ =
+        identity_test_env()->MakeAccountAvailable(kEmail).GetAccountId();
 
     user_policy_signin_service_ = static_cast<FakeUserPolicySigninService*>(
         policy::UserPolicySigninServiceFactory::GetForProfile(profile()));
@@ -493,14 +494,14 @@ class TurnSyncOnHelperTest : public testing::Test {
   void WaitUntilFlowCompletion() { flow_completion_loop_.Run(); }
 
   void UseEnterpriseAccount() {
-    CoreAccountInfo core_account_info =
+    AccountInfo created_account_info =
         identity_test_env()->MakeAccountAvailable(kEnterpriseEmail);
-    account_id_ = core_account_info.account_id;
+    account_id_ = created_account_info.GetAccountId();
     user_policy_signin_service_->set_account(account_id_, kEnterpriseEmail);
 
     // Update the account info to have a consistent hosted domain field.
     AccountInfo account_info =
-        identity_manager()->FindExtendedAccountInfo(core_account_info);
+        identity_manager()->FindExtendedAccountInfo(created_account_info);
     EXPECT_FALSE(account_info.IsEmpty());
     account_info = AccountInfo::Builder(account_info)
                        .SetHostedDomain(kEnterpriseHostedDomain)
@@ -649,10 +650,10 @@ class TurnSyncOnHelperTest : public testing::Test {
       const AccountInfo& account_info,
       signin::SigninChoiceCallback callback) {
     EXPECT_FALSE(sync_confirmation_shown_);
-    EXPECT_FALSE(account_info.email.empty());
+    EXPECT_FALSE(account_info.GetEmail().empty());
     EXPECT_TRUE(enterprise_confirmation_email_.empty())
         << "Enterprise confirmation should be shown only once.";
-    enterprise_confirmation_email_ = account_info.email;
+    enterprise_confirmation_email_ = account_info.GetEmail();
     if (run_delegate_callbacks_) {
       std::move(callback).Run(enterprise_choice_);
     }

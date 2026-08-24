@@ -336,7 +336,7 @@ std::unique_ptr<views::View> SaveIbanBubbleView::CreateLegalMessageView() {
       message_lines,
       v2_branding_enabled
           ? /*user_email=*/std::u16string()
-          : base::UTF8ToUTF16(controller()->GetAccountInfo().email),
+          : base::UTF8ToUTF16(controller()->GetAccountInfo().GetEmail()),
       v2_branding_enabled ? /*user_avatar=*/ui::ImageModel()
                           : GetProfileAvatar(controller()->GetAccountInfo()),
       base::BindRepeating(&SaveIbanBubbleView::LinkClicked,

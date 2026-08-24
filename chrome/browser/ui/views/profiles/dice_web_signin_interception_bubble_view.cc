@@ -275,7 +275,8 @@ void DiceWebSigninInterceptionBubbleView::OnPrimaryAccountChanged(
 void DiceWebSigninInterceptionBubbleView::OnExtendedAccountInfoRemoved(
     const AccountInfo& info) {
   // The account has been removed from Chrome, the bubble is not needed anymore.
-  if (info.account_id == bubble_parameters_.intercepted_account.account_id) {
+  if (info.GetAccountId() ==
+      bubble_parameters_.intercepted_account.GetAccountId()) {
     Dismiss(SigninInterceptionDismissReason::kUserNotEligible);
   }
 }

@@ -1446,7 +1446,7 @@ base::DictValue PeopleHandler::GetChromeSigninUserChoiceInfo() {
   ChromeSigninUserChoice choice =
       should_show_settings
           ? SigninPrefs(*profile_->GetPrefs())
-                .GetChromeSigninInterceptionUserChoice(account.gaia)
+                .GetChromeSigninInterceptionUserChoice(account.GetGaiaId())
           : ChromeSigninUserChoice::kNoChoice;
 
   // Set for metrics purposes.
@@ -1456,7 +1456,7 @@ base::DictValue PeopleHandler::GetChromeSigninUserChoiceInfo() {
   chrome_signin_user_choice_info.Set("shouldShowSettings",
                                      should_show_settings);
   chrome_signin_user_choice_info.Set("choice", static_cast<int>(choice));
-  chrome_signin_user_choice_info.Set("signedInEmail", account.email);
+  chrome_signin_user_choice_info.Set("signedInEmail", account.GetEmail());
 
   return chrome_signin_user_choice_info;
 }
@@ -1490,17 +1490,18 @@ void PeopleHandler::HandleSetChromeSigninUserChoice(
   // guarantees that the `user_choice` is from a user modification through the
   // UI since the `SigninPrefs` is not aware of it yet.
   if (user_choice ==
-      signin_prefs.GetChromeSigninInterceptionUserChoice(account.gaia)) {
+      signin_prefs.GetChromeSigninInterceptionUserChoice(account.GetGaiaId())) {
     return;
   }
 
-  signin_prefs.SetChromeSigninInterceptionUserChoice(account.gaia, user_choice);
+  signin_prefs.SetChromeSigninInterceptionUserChoice(account.GetGaiaId(),
+                                                     user_choice);
   // If the user explicitly set the `kDoNotSignin` choice from the settings,
   // suppress any bubble interaction time that could lead to re-prompts.
   if (user_choice == ChromeSigninUserChoice::kDoNotSignin) {
     signin_prefs.ClearChromeSigninInterceptionLastBubbleDeclineTime(
-        account.gaia);
-    signin_prefs.ClearChromeSigninBubbleRepromptCount(account.gaia);
+        account.GetGaiaId());
+    signin_prefs.ClearChromeSigninBubbleRepromptCount(account.GetGaiaId());
   }
 
   // Set for metrics purposes.

@@ -719,7 +719,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   EXPECT_FALSE(bubble->GetAccepted());
   // Remove account from Chrome.
   identity_manager()->GetAccountsMutator()->RemoveAccount(
-      account_info.account_id,
+      account_info.GetAccountId(),
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 
   // Widget will close now.
@@ -805,7 +805,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   EXPECT_FALSE(bubble->GetAccepted());
   // Remove account from Chrome.
   identity_manager()->GetAccountsMutator()->RemoveAccount(
-      account_info.account_id,
+      account_info.GetAccountId(),
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 
   // Widget will close now.
@@ -855,7 +855,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   EXPECT_FALSE(bubble->GetAccepted());
   // Make account primary.
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      account_info.account_id, signin::ConsentLevel::kSignin,
+      account_info.GetAccountId(), signin::ConsentLevel::kSignin,
       signin_metrics::AccessPoint::kStartPage);
 
   // Widget will close now.

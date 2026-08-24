@@ -50,7 +50,7 @@ std::u16string GetMessageDescription(content::WebContents* web_contents,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
   return l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_MESSAGE_SUBTITLE,
-      google_wallet_text, base::UTF8ToUTF16(account->email));
+      google_wallet_text, base::UTF8ToUTF16(account->GetEmail()));
 }
 
 int GetMessageIconResourceId(const EntityInstance& entity) {

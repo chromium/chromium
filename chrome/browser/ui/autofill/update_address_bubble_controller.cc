@@ -57,15 +57,15 @@ std::u16string UpdateAddressBubbleController::GetFooterMessage() const {
       case AutofillProfile::RecordType::kAccountHome:
         return l10n_util::GetStringFUTF16(
             IDS_AUTOFILL_ADDRESS_HOME_RECORD_TYPE_NOTICE,
-            base::UTF8ToUTF16(account->email));
+            base::UTF8ToUTF16(account->GetEmail()));
       case AutofillProfile::RecordType::kAccountWork:
         return l10n_util::GetStringFUTF16(
             IDS_AUTOFILL_ADDRESS_WORK_RECORD_TYPE_NOTICE,
-            base::UTF8ToUTF16(account->email));
+            base::UTF8ToUTF16(account->GetEmail()));
       case AutofillProfile::RecordType::kAccount:
         return l10n_util::GetStringFUTF16(
             IDS_AUTOFILL_UPDATE_PROMPT_ACCOUNT_ADDRESS_SOURCE_NOTICE,
-            base::UTF8ToUTF16(account->email));
+            base::UTF8ToUTF16(account->GetEmail()));
       case AutofillProfile::RecordType::kAccountNameEmail:
         NOTIMPLEMENTED();
         break;

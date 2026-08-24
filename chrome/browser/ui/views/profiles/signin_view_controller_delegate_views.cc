@@ -719,7 +719,8 @@ SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
   bool allow_closing_by_pressing_escape =
       !create_param->is_device_signals_disclaimer;
 
-  std::u16string email = base::UTF8ToUTF16(create_param->account_info.email);
+  std::u16string email =
+      base::UTF8ToUTF16(create_param->account_info.GetEmail());
   auto web_view = SigninViewControllerDelegateViews::
       CreateManagedUserNoticeConfirmationWebView(browser,
                                                  std::move(create_param));

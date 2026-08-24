@@ -226,8 +226,8 @@ void TurnSyncOnHelperDelegateImpl::OnProfileSigninRestrictionsFetched(
     return;
   }
   profile_creation_required_by_policy_ =
-      signin_util::IsProfileSeparationEnforcedByProfile(browser_->GetProfile(),
-                                                        account_info.email) ||
+      signin_util::IsProfileSeparationEnforcedByProfile(
+          browser_->GetProfile(), account_info.GetEmail()) ||
       signin_util::IsProfileSeparationEnforcedByPolicies(
           profile_separation_policies);
   bool show_link_data_option = signin_util::
@@ -260,7 +260,7 @@ void TurnSyncOnHelperDelegateImpl::OnProfileCheckComplete(
     account_level_signin_restriction_policy_fetcher_
         ->GetManagedAccountsSigninRestriction(
             IdentityManagerFactory::GetForProfile(browser_->GetProfile()),
-            account_info.account_id,
+            account_info.GetAccountId(),
             base::BindOnce(&TurnSyncOnHelperDelegateImpl::
                                OnProfileSigninRestrictionsFetched,
                            weak_ptr_factory_.GetWeakPtr(), account_info,

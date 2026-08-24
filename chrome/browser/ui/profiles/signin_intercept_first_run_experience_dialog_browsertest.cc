@@ -149,7 +149,7 @@ class SigninInterceptFirstRunExperienceDialogBrowserTestBase : public TestBase {
     account_id_ = identity_test_env()
                       ->MakePrimaryAccountAvailable(
                           GetEmail(), signin::ConsentLevel::kSignin)
-                      .account_id;
+                      .GetAccountId();
     EXPECT_EQ(
         identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
         account_id());

@@ -126,7 +126,7 @@ void ProfilePickerPostSignInAdapter::Init(
       identity_manager->FindExtendedAccountInfo(account_info_);
   DCHECK(!account_info.IsEmpty())
       << "A profile with a valid account must be passed in.";
-  email_ = account_info.email;
+  email_ = account_info.GetEmail();
 
   on_post_signin_in_finished_callback_ =
       HistorySyncOptinHelper::FlowCompletedCallback(
@@ -148,7 +148,7 @@ void ProfilePickerPostSignInAdapter::Init(
   new TurnSyncOnHelper(
       profile_, signin_access_point_,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-      account_info.account_id,
+      account_info.GetAccountId(),
       TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
       std::make_unique<ProfilePickerTurnSyncOnDelegate>(
           weak_ptr_factory_.GetWeakPtr(), profile_),

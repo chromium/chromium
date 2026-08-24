@@ -904,7 +904,7 @@ void BrowsingHistoryHandler::OnExtendedAccountInfoUpdated(
       AccountPreviewDataServiceFactory::GetForProfile(profile_));
 
   if (info.IsEmpty() || !info.IsValid() ||
-      info.account_id != account_to_display.account_id) {
+      info.GetAccountId() != account_to_display.GetAccountId()) {
     return;
   }
   page_->SendAccountInfo(CreateAccountInfoDataMojo(info));

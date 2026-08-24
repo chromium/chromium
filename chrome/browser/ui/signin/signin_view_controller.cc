@@ -938,7 +938,7 @@ void SigninViewController::ShowChromeSigninDialogForExtensions(
               signin_metrics::AccessPoint::kExtensions);
         }
       },
-      profile_->GetWeakPtr(), account_info_for_promos.account_id);
+      profile_->GetWeakPtr(), account_info_for_promos.GetAccountId());
 
   std::u16string title =
       extension_name_for_display.empty()

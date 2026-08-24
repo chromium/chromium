@@ -443,12 +443,12 @@ std::u16string GetSyncSectionTitle(Profile* profile,
   }
 
   if (signin_util::IsSigninPending(identity_manager)) {
-    return base::UTF8ToUTF16(account.email);
+    return base::UTF8ToUTF16(account.GetEmail());
   }
 
   return l10n_util::GetStringFUTF16(
       IDS_PROFILE_ROW_SIGNED_IN_MESSAGE_WITH_EMAIL,
-      {base::UTF8ToUTF16(account.email)});
+      {base::UTF8ToUTF16(account.GetEmail())});
 }
 
 class ProfileSubMenuModel : public ui::SimpleMenuModel,

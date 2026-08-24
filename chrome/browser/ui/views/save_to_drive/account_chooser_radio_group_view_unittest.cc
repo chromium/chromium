@@ -20,7 +20,7 @@ const char kTestDomain[] = "test.com";
 
 using ::save_to_drive::testing::GetTestAccount;
 using ::save_to_drive::testing::VerifyAccountChooserRow;
-using ::testing::Field;
+using ::testing::Property;
 
 void VerifyAccountChooserRadioButtonRow(views::View* row_view,
                                         const AccountInfo& account,
@@ -72,8 +72,8 @@ TEST_F(AccountChooserRadioGroupViewTest, MultiAccountWithoutPrimary) {
 
   // We expect the lexicographically first account to be selected.
   EXPECT_CALL(mock_account_chooser_view_delegate_,
-              OnAccountSelected(
-                  Field(&AccountInfo::account_id, account_fern.account_id)));
+              OnAccountSelected(Property(&AccountInfo::GetAccountId,
+                                         account_fern.GetAccountId())));
   AccountChooserRadioGroupView* account_chooser_view =
       anchor_view_->AddChildView(std::make_unique<AccountChooserRadioGroupView>(
           mock_account_chooser_view_delegate_, accounts, std::nullopt));
@@ -101,12 +101,12 @@ TEST_F(AccountChooserRadioGroupViewTest, MultiAccountWithPrimary) {
                                        account_alder};
   // We expect the primary account to be selected.
   EXPECT_CALL(mock_account_chooser_view_delegate_,
-              OnAccountSelected(
-                  Field(&AccountInfo::account_id, account_pothos.account_id)));
+              OnAccountSelected(Property(&AccountInfo::GetAccountId,
+                                         account_pothos.GetAccountId())));
   AccountChooserRadioGroupView* account_chooser_view =
       anchor_view_->AddChildView(std::make_unique<AccountChooserRadioGroupView>(
           mock_account_chooser_view_delegate_, accounts,
-          account_pothos.account_id));
+          account_pothos.GetAccountId()));
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
       account_chooser_view->children();
   ASSERT_EQ(children.size(), 7u);  // 4 separators + 3 accounts
@@ -132,8 +132,8 @@ TEST_F(AccountChooserRadioGroupViewTest,
       anchor_view_->AddChildView(std::make_unique<AccountChooserRadioButtonRow>(
           &delegate, account, /*pos_in_set=*/1, /*set_size=*/1));
 
-  EXPECT_CALL(delegate, SelectAccount(Field(&AccountInfo::account_id,
-                                            account.account_id)));
+  EXPECT_CALL(delegate, SelectAccount(Property(&AccountInfo::GetAccountId,
+                                               account.GetAccountId())));
 
   ui::MouseEvent event(ui::EventType::kMousePressed, /*location=*/gfx::PointF{},
                        /*root_location=*/gfx::PointF{},
@@ -151,8 +151,8 @@ TEST_F(AccountChooserRadioGroupViewTest, MultiAccountWithSameName) {
 
   // We expect the lexicographically first account to be selected.
   EXPECT_CALL(mock_account_chooser_view_delegate_,
-              OnAccountSelected(
-                  Field(&AccountInfo::account_id, account_pothos.account_id)));
+              OnAccountSelected(Property(&AccountInfo::GetAccountId,
+                                         account_pothos.GetAccountId())));
   AccountChooserRadioGroupView* account_chooser_view =
       anchor_view_->AddChildView(std::make_unique<AccountChooserRadioGroupView>(
           mock_account_chooser_view_delegate_, accounts, std::nullopt));
@@ -178,8 +178,8 @@ TEST_F(AccountChooserRadioGroupViewTest,
       anchor_view_->AddChildView(std::make_unique<AccountChooserRadioButtonRow>(
           &delegate, account, /*pos_in_set=*/1, /*set_size=*/1));
 
-  EXPECT_CALL(delegate, SelectAccount(Field(&AccountInfo::account_id,
-                                            account.account_id)));
+  EXPECT_CALL(delegate, SelectAccount(Property(&AccountInfo::GetAccountId,
+                                               account.GetAccountId())));
 
   views::RadioButton* radio_button =
       static_cast<views::RadioButton*>(row_view->children().back());

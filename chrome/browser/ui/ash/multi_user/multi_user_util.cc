@@ -22,7 +22,7 @@ AccountId GetAccountIdFromProfile(const Profile* profile) {
   return user ? user->GetAccountId() : EmptyAccountId();
 }
 
-AccountId GetAccountIdFromEmail(const std::string& email) {
+AccountId GetAccountIdFromEmail(std::string_view email) {
   // |email| and profile name could be empty if not yet logged in or guest mode.
   return email.empty() ? EmptyAccountId()
                        : AccountId::FromUserEmail(gaia::CanonicalizeEmail(

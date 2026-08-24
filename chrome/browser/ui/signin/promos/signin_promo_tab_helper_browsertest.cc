@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(SigninPromoTabHelperTest,
   // Set a new refresh token for the primary account, which verifies the
   // user's identity and signs them back in. The callback will be executed.
   identity_manager()->GetAccountsMutator()->AddOrUpdateAccount(
-      info.gaia, info.email, "dummy_refresh_token",
+      info.GetGaiaId(), std::string(info.GetEmail()), "dummy_refresh_token",
       /*is_under_advanced_protection=*/false,
       signin_metrics::AccessPoint::kAddressBubble,
       signin_metrics::SourceForRefreshTokenOperation::

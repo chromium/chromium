@@ -250,7 +250,8 @@ TEST_F(SyncHandlerTest, AccountInfo) {
       GetAllFiredValuesForEventName("stored-accounts-changed");
   ASSERT_EQ(num_account_change_updates + 1, update_args.size());
   ASSERT_TRUE(update_args[1]->is_dict());
-  EXPECT_EQ(account_info.email, *update_args[1]->GetDict().FindString("email"));
+  EXPECT_EQ(account_info.GetEmail(),
+            *update_args[1]->GetDict().FindString("email"));
 }
 
 TEST_F(SyncHandlerTest, NotEligibleForAccountStorageWhenSetupNotComplete) {

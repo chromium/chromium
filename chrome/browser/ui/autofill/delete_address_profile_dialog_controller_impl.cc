@@ -75,7 +75,7 @@ DeleteAddressProfileDialogControllerImpl::GetDeleteConfirmationText() const {
     CHECK(account);
     return l10n_util::GetStringFUTF16(
         IDS_AUTOFILL_DELETE_ACCOUNT_ADDRESS_RECORD_TYPE_NOTICE,
-        base::UTF8ToUTF16(account->email));
+        base::UTF8ToUTF16(account->GetEmail()));
   }
 
   PersonalDataManager* pdm = PersonalDataManagerFactory::GetForBrowserContext(

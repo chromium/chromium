@@ -65,12 +65,12 @@ class MultiUserUtilTest : public ChromeAshTestBase {
     AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
         email, signin::ConsentLevel::kSync);
     auto* user = fake_user_manager_->AddUser(
-        multi_user_util::GetAccountIdFromEmail(account_info.email));
+        multi_user_util::GetAccountIdFromEmail(account_info.GetEmail()));
     fake_user_manager_->UserLoggedIn(
         user->GetAccountId(),
         user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
 
-    return account_info.account_id;
+    return account_info.GetAccountId();
   }
 
   void SimulateTokenRevoked(const CoreAccountId& account_id) {

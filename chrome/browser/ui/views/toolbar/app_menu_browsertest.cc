@@ -638,9 +638,9 @@ IN_PROC_BROWSER_TEST_F(AppMenuProfileGradientRingBrowserTest,
 
   // Simulate account image fetch.
   gfx::Image fake_image = gfx::test::CreateImage(20, 20, SK_ColorBLUE);
-  signin::SimulateAccountImageFetch(identity_manager, account_info.account_id,
-                                    "http://example.com/avatar.jpg",
-                                    fake_image);
+  signin::SimulateAccountImageFetch(
+      identity_manager, account_info.GetAccountId(),
+      "http://example.com/avatar.jpg", fake_image);
 
   // 1. Get initial size (no subscription).
   menu_button()->ShowMenu(views::MenuRunner::SHOULD_SHOW_MNEMONICS);

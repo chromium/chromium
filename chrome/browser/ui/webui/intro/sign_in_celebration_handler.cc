@@ -40,8 +40,8 @@ void SignInCelebrationHandler::SignInCelebrationFinished() {
 
 void SignInCelebrationHandler::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
-  if (info.account_id == identity_manager_->GetPrimaryAccountId(
-                             signin::ConsentLevel::kSignin) &&
+  if (info.GetAccountId() == identity_manager_->GetPrimaryAccountId(
+                                 signin::ConsentLevel::kSignin) &&
       (info.GetGivenName().has_value() || info.GetAvatarImage().has_value())) {
     UpdateUserInfo();
   }

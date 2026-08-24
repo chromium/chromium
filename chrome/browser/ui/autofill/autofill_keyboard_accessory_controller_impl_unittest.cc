@@ -308,7 +308,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   std::u16string email =
       base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
                             web_contents()->GetBrowserContext())
-                            ->email);
+                            ->GetEmail());
   RemovalConfirmationText confirmation_text;
   EXPECT_TRUE(
       client().suggestion_controller(manager()).GetRemovalConfirmationText(
@@ -334,7 +334,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   std::u16string email =
       base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
                             web_contents()->GetBrowserContext())
-                            ->email);
+                            ->GetEmail());
   RemovalConfirmationText confirmation_text;
   EXPECT_TRUE(
       client().suggestion_controller(manager()).GetRemovalConfirmationText(
@@ -360,7 +360,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   std::u16string email =
       base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
                             web_contents()->GetBrowserContext())
-                            ->email);
+                            ->GetEmail());
   RemovalConfirmationText confirmation_text;
   EXPECT_TRUE(
       client().suggestion_controller(manager()).GetRemovalConfirmationText(

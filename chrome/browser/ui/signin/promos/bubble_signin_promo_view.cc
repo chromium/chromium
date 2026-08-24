@@ -297,27 +297,27 @@ void IncrementContextualPromoDismissCountPerAccount(
       signin::GetSignInPromoTypeFromAccessPoint(access_point);
   if (signin::ShouldUseAutofillSignInPromoLimits(promo_type)) {
     SigninPrefs(*profile->GetPrefs())
-        .IncrementAutofillSigninPromoDismissCount(account.gaia);
+        .IncrementAutofillSigninPromoDismissCount(account.GetGaiaId());
     return;
   }
 
   switch (promo_type) {
     case signin::SignInPromoType::kPassword:
       SigninPrefs(*profile->GetPrefs())
-          .IncrementPasswordSigninPromoDismissCount(account.gaia);
+          .IncrementPasswordSigninPromoDismissCount(account.GetGaiaId());
       break;
     case signin::SignInPromoType::kAddress:
       SigninPrefs(*profile->GetPrefs())
-          .IncrementAddressSigninPromoDismissCount(account.gaia);
+          .IncrementAddressSigninPromoDismissCount(account.GetGaiaId());
       break;
     case signin::SignInPromoType::kBookmark:
       CHECK(base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp));
       SigninPrefs(*profile->GetPrefs())
-          .IncrementBookmarkSigninPromoDismissCount(account.gaia);
+          .IncrementBookmarkSigninPromoDismissCount(account.GetGaiaId());
       break;
     case signin::SignInPromoType::kSearchAIMode:
       SigninPrefs(*profile->GetPrefs())
-          .IncrementSearchAIModeSigninPromoDismissCount(account.gaia);
+          .IncrementSearchAIModeSigninPromoDismissCount(account.GetGaiaId());
       break;
     case signin::SignInPromoType::kComposeboxDriveContextMenuOption:
       // Composebox Drive signin promo does not track dismiss counts as it is

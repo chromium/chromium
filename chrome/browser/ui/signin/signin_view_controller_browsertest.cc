@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(
   // Setup a primary account in error state.
   AccountInfo primary_account_info = SetPrimaryAccount();
   identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
-      primary_account_info.account_id,
+      primary_account_info.GetAccountId(),
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_SERVER));
@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(
   // Setup a primary account in error state.
   AccountInfo primary_account_info = SetPrimaryAccount();
   identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
-      primary_account_info.account_id,
+      primary_account_info.GetAccountId(),
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_SERVER));
@@ -402,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
 
   // User is still signed in.
   EXPECT_EQ(
-      primary_account_info.account_id,
+      primary_account_info.GetAccountId(),
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
   // The tab was not navigated to the signin page or signout page.
   content::WebContents* tab =
@@ -484,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   AccountInfo primary_account_info = SetPrimaryAccount();
 
   identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
-      primary_account_info.account_id,
+      primary_account_info.GetAccountId(),
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_SERVER));
@@ -617,7 +617,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   // Setup a primary account in error state.
   AccountInfo primary_account_info = SetPrimaryAccount();
   identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
-      primary_account_info.account_id,
+      primary_account_info.GetAccountId(),
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_SERVER));
@@ -1209,7 +1209,8 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
   EXPECT_TRUE(bubble_widget->IsVisible());
 
   views::test::WidgetDestroyedWaiter waiter(bubble_widget);
-  identity_test_env()->RemoveRefreshTokenForAccount(account_info.account_id);
+  identity_test_env()->RemoveRefreshTokenForAccount(
+      account_info.GetAccountId());
   waiter.Wait();
 }
 IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
@@ -1232,7 +1233,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
 
   views::test::WidgetDestroyedWaiter waiter(bubble_widget);
   identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
-      account_info.account_id,
+      account_info.GetAccountId(),
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   waiter.Wait();
@@ -1242,8 +1243,8 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
                        ShowModalManagedUserNoticeDialog) {
-  AccountInfo account_info;
-  account_info.email = "email@example.com";
+  AccountInfo account_info =
+      AccountInfo::Builder(GaiaId("gaia_id"), "email@example.com").Build();
   base::MockCallback<signin::SigninChoiceCallback>
       mock_process_user_choice_callback;
   base::MockCallback<base::OnceClosure> mock_done_callback;

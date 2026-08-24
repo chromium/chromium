@@ -284,7 +284,7 @@ BatchUploadHandler::ConstructMojoBatchUploadData(
 
   batch_upload::mojom::BatchUploadAccountInfoPtr account_info_mojo =
       batch_upload::mojom::BatchUploadAccountInfo::New();
-  account_info_mojo->email = account_info.email;
+  account_info_mojo->email = account_info.GetEmail();
   account_info_mojo->data_picture_url =
       signin::GetAccountPictureUrl(account_info);
 

@@ -130,7 +130,7 @@ class HistorySyncOptinHelperBrowserTest : public SigninBrowserTestBase {
                        .Build();
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
-    identity_test_env()->SetPrimaryAccount(account_info.email,
+    identity_test_env()->SetPrimaryAccount(std::string(account_info.GetEmail()),
                                            signin::ConsentLevel::kSignin);
     return account_info;
   }

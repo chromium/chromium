@@ -185,8 +185,9 @@ void PaymentsChurnedUsersBubbleView::Init() {
   main_content_view->AddChildView(std::move(description));
 
   AccountInfo account_info = controller_->GetAccountInfo();
-  main_content_view->AddChildView(CreateUserAvatarAndEmailView(
-      base::UTF8ToUTF16(account_info.email), GetProfileAvatar(account_info)));
+  main_content_view->AddChildView(
+      CreateUserAvatarAndEmailView(base::UTF8ToUTF16(account_info.GetEmail()),
+                                   GetProfileAvatar(account_info)));
 
   loading_progress_row_ =
       main_content_view->AddChildView(CreateLoadingProgressRow());

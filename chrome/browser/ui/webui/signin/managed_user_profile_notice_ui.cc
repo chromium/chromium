@@ -301,7 +301,7 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
   source->AddInteger("screenType", static_cast<int>(type));
 
   const std::string domain =
-      enterprise_util::GetDomainFromEmail(account_info.email);
+      enterprise_util::GetDomainFromEmail(account_info.GetEmail());
   if (type == ScreenType::kDeviceSignalsDisclaimer) {
     source->AddBoolean("isModalDialog",
                        create_param->is_device_signals_disclaimer_modal);
@@ -316,8 +316,8 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
                        : IDS_ENTERPRISE_WELCOME_PROFILE_WILL_BE_MANAGED_TITLE;
     if (create_param->profile_creation_required_by_policy) {
       std::string manager =
-          signin_util::IsProfileSeparationEnforcedByProfile(profile,
-                                                            account_info.email)
+          signin_util::IsProfileSeparationEnforcedByProfile(
+              profile, account_info.GetEmail())
               ? GetEnterpriseAccountDomain(*profile).value_or(std::string())
               : domain;
       source->AddString(
@@ -360,8 +360,8 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
 
     source->AddBoolean("showLinkDataCheckbox", false);
   } else if (type == ScreenType::kFirstRun) {
-    const std::string given_name =
-        std::string(account_info.GetGivenName().value_or(account_info.email));
+    const std::string_view given_name =
+        account_info.GetGivenName().value_or(account_info.GetEmail());
 
     if (!given_name.empty()) {
       source->AddString(

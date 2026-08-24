@@ -113,7 +113,7 @@ TEST_F(UpdateAddressBubbleControllerTest, UpdatingAccountAddress) {
   std::u16string email =
       base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
                             web_contents()->GetBrowserContext())
-                            ->email);
+                            ->GetEmail());
   auto controller = CreateController(profile, original_profile);
 
   EXPECT_EQ(controller->GetWindowTitle(/*has_empty_original_values=*/true),
@@ -135,7 +135,7 @@ TEST_F(UpdateAddressBubbleControllerTest, UpdatingAccountHomeAddress) {
   std::u16string email =
       base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
                             web_contents()->GetBrowserContext())
-                            ->email);
+                            ->GetEmail());
   auto controller = CreateController(profile, original_profile);
 
   EXPECT_EQ(controller->GetFooterMessage(),
@@ -164,7 +164,7 @@ TEST_F(UpdateAddressBubbleControllerTest, UpdatingAccountWorkAddress) {
   std::u16string email =
       base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
                             web_contents()->GetBrowserContext())
-                            ->email);
+                            ->GetEmail());
   auto controller = CreateController(profile, original_profile);
 
   EXPECT_EQ(controller->GetFooterMessage(),
@@ -193,7 +193,7 @@ TEST_F(UpdateAddressBubbleControllerTest, AddNewInfoToAccount) {
   std::u16string email =
       base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
                             web_contents()->GetBrowserContext())
-                            ->email);
+                            ->GetEmail());
   auto controller = CreateController(profile, original_profile);
 
   EXPECT_EQ(

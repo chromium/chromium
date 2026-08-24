@@ -229,7 +229,7 @@ void HistorySyncOptinHandler::DispatchAccountInfoUpdate(
     return;
   }
 
-  if (info.account_id !=
+  if (info.GetAccountId() !=
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin)) {
     return;
   }

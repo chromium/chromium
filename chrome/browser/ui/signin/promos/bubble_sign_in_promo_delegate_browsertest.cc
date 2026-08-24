@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest,
   AccountInfo info = signin::MakePrimaryAccountAvailable(
       identity_manager(), "test@email.com", signin::ConsentLevel::kSignin);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
-      identity_manager(), info.account_id,
+      identity_manager(), info.GetAccountId(),
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   ASSERT_TRUE(signin_util::IsSigninPending(identity_manager()));
@@ -238,12 +238,15 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest,
 
   // 3. Now successfully reauthenticate.
   // We need to simulate the reauth event with the correct access point.
-  AccountInfo extended_info = identity_manager()->FindExtendedAccountInfo(info);
-  extended_info.access_point = signin_metrics::AccessPoint::kSendTabToSelfPromo;
+  AccountInfo extended_info =
+      AccountInfo::Builder(identity_manager()->FindExtendedAccountInfo(info))
+          .SetLastAuthenticationAccessPoint(
+              signin_metrics::AccessPoint::kSendTabToSelfPromo)
+          .Build();
   signin::UpdateAccountInfoForAccount(identity_manager(), extended_info);
 
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
-      identity_manager(), info.account_id,
+      identity_manager(), info.GetAccountId(),
       GoogleServiceAuthError::AuthErrorNone());
 
   EXPECT_TRUE(future.Wait());

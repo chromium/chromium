@@ -36,12 +36,13 @@ void SignIn(Profile* profile) {
           .AsPrimary(signin::ConsentLevel::kSignin)
           .WithAccessPoint(signin_metrics::AccessPoint::kExtensionInstallBubble)
           .Build("testy@mctestface.com"));
-  ASSERT_TRUE(SigninPrefs(*profile->GetPrefs())
-                  .GetExtensionsExplicitBrowserSignin(account_info.gaia));
+  ASSERT_TRUE(
+      SigninPrefs(*profile->GetPrefs())
+          .GetExtensionsExplicitBrowserSignin(account_info.GetGaiaId()));
 
-  signin::SimulateAccountImageFetch(identity_manager, account_info.account_id,
-                                    "https://avatar.com/avatar.png",
-                                    gfx::test::CreateImage(/*size=*/32));
+  signin::SimulateAccountImageFetch(
+      identity_manager, account_info.GetAccountId(),
+      "https://avatar.com/avatar.png", gfx::test::CreateImage(/*size=*/32));
 }
 
 }  // namespace

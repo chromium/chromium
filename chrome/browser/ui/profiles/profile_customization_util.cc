@@ -136,7 +136,7 @@ void ProfileNameResolver::RunWithProfileName(NameResolvedCallback callback) {
 void ProfileNameResolver::OnExtendedAccountInfoUpdated(
     const AccountInfo& account_info) {
   if (!account_info.IsValid() ||
-      core_account_info_.account_id != account_info.account_id) {
+      core_account_info_.account_id != account_info.GetAccountId()) {
     return;
   }
 

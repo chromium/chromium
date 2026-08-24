@@ -68,7 +68,7 @@ class AccountSettingsPagePixelBrowserTest : public InteractiveBrowserTest {
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 
     signin::SimulateAccountImageFetch(
-        identity_manager, account_info.account_id, "SIGNED_IN_IMAGE_URL",
+        identity_manager, account_info.GetAccountId(), "SIGNED_IN_IMAGE_URL",
         gfx::test::CreateImage(20, 20, SK_ColorBLUE));
   }
 

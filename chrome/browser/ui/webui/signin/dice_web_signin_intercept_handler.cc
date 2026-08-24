@@ -140,10 +140,10 @@ void DiceWebSigninInterceptHandler::OnExtendedAccountInfoUpdated(
   }
 
   bool should_fire_event = false;
-  if (info.account_id == intercepted_account().account_id) {
+  if (info.GetAccountId() == intercepted_account().GetAccountId()) {
     should_fire_event = true;
     bubble_parameters_.intercepted_account = info;
-  } else if (info.account_id == primary_account().account_id) {
+  } else if (info.GetAccountId() == primary_account().GetAccountId()) {
     should_fire_event = true;
     bubble_parameters_.primary_account = info;
   }

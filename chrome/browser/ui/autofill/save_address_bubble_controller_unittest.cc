@@ -134,7 +134,7 @@ TEST_F(SaveAddressBubbleControllerTest, SavingAccountAddress) {
   std::u16string email =
       base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
                             web_contents()->GetBrowserContext())
-                            ->email);
+                            ->GetEmail());
 
   EXPECT_EQ(controller->GetWindowTitle(),
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE));
@@ -166,7 +166,7 @@ TEST_F(SaveAddressBubbleControllerTest, MigrateIntoAccountAddress) {
   std::u16string email =
       base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
                             web_contents()->GetBrowserContext())
-                            ->email);
+                            ->GetEmail());
 
   EXPECT_EQ(controller->GetWindowTitle(),
             l10n_util::GetStringUTF16(
@@ -212,7 +212,7 @@ TEST_F(SaveAddressBubbleControllerTest, CombiningAccountsTypes) {
                 IDS_AUTOFILL_SAVE_IN_ACCOUNT_PROMPT_ADDRESS_SOURCE_NOTICE,
                 base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
                                       web_contents()->GetBrowserContext())
-                                      ->email)));
+                                      ->GetEmail())));
   EXPECT_NE(controller->GetHeaderImages(), std::nullopt);
   EXPECT_TRUE(controller->GetBodyText().empty());
 

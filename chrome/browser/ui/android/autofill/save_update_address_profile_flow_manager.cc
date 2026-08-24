@@ -175,7 +175,7 @@ std::u16string SaveUpdateAddressProfileFlowManager::GetMessageRecordTypeNotice()
                    IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_MIGRATION_RECORD_TYPE_NOTICE)
              : l10n_util::GetStringFUTF16(
                    IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_RECORD_TYPE_NOTICE,
-                   base::UTF8ToUTF16(account->email));
+                   base::UTF8ToUTF16(account->GetEmail()));
 }
 
 std::u16string

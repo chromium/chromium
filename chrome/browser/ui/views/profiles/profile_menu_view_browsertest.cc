@@ -724,9 +724,9 @@ class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
             ->CreateAccountAvailabilityOptionsBuilder()
             .AsPrimary(signin::ConsentLevel::kSignin)
             .WithCookie();
-    CoreAccountInfo account_info =
+    AccountInfo account_info =
         identity_test_env()->MakeAccountAvailable(builder.Build(kTestEmail));
-    account_id_ = account_info.account_id;
+    account_id_ = account_info.GetAccountId();
     ASSERT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id_));
     identity_test_env()->SetFreshnessOfAccountsInGaiaCookie(true);
   }
@@ -1157,7 +1157,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebOnlyTest,
   signin::SetCookieAccounts(
       identity_manager, SigninBrowserTestBase::test_url_loader_factory(),
       {{disallowed_account.email, disallowed_account.gaia},
-       {allowed_account.email, allowed_account.gaia}});
+       {std::string(allowed_account.GetEmail()), allowed_account.GetGaiaId()}});
   ASSERT_FALSE(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   ASSERT_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 2u);
@@ -1171,7 +1171,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebOnlyTest,
 
   EXPECT_EQ(
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      allowed_account.account_id);
+      allowed_account.GetAccountId());
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebOnlyTest,
@@ -1689,8 +1689,9 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
       identity_manager,
       builder.WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
           .Build(kTestEmail));
-  signin::SetCookieAccounts(identity_manager, test_url_loader_factory(),
-                            {{account_info.email, account_info.gaia}});
+  signin::SetCookieAccounts(
+      identity_manager, test_url_loader_factory(),
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
   ASSERT_FALSE(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   ASSERT_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 1u);
@@ -1727,8 +1728,9 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
       identity_manager,
       builder.WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
           .Build(kTestEmail));
-  signin::SetCookieAccounts(identity_manager, test_url_loader_factory(),
-                            {{account_info.email, account_info.gaia}});
+  signin::SetCookieAccounts(
+      identity_manager, test_url_loader_factory(),
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
   ASSERT_FALSE(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   ASSERT_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 1u);
@@ -1923,8 +1925,9 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
       identity_manager,
       builder.WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
           .Build(kAccountNotAllowed));
-  signin::SetCookieAccounts(identity_manager, test_url_loader_factory(),
-                            {{account_info.email, account_info.gaia}});
+  signin::SetCookieAccounts(
+      identity_manager, test_url_loader_factory(),
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
   ASSERT_FALSE(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   ASSERT_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 1u);
@@ -1985,8 +1988,9 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
       identity_manager,
       builder.WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
           .Build(kAccountNotAllowed));
-  signin::SetCookieAccounts(identity_manager, test_url_loader_factory(),
-                            {{account_info.email, account_info.gaia}});
+  signin::SetCookieAccounts(
+      identity_manager, test_url_loader_factory(),
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
   ASSERT_FALSE(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   ASSERT_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 1u);
@@ -2051,8 +2055,9 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
           .Build(kAccountAllowed));
   signin::SetCookieAccounts(
       identity_manager, test_url_loader_factory(),
-      {{disallowed_account.email, disallowed_account.gaia},
-       {allowed_account.email, allowed_account.gaia}});
+      {{std::string(disallowed_account.GetEmail()),
+        disallowed_account.GetGaiaId()},
+       {std::string(allowed_account.GetEmail()), allowed_account.GetGaiaId()}});
   ASSERT_FALSE(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   ASSERT_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 2u);
@@ -2126,8 +2131,9 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
           .Build(kAccountAllowed));
   signin::SetCookieAccounts(
       identity_manager, test_url_loader_factory(),
-      {{disallowed_account.email, disallowed_account.gaia},
-       {allowed_account.email, allowed_account.gaia}});
+      {{std::string(disallowed_account.GetEmail()),
+        disallowed_account.GetGaiaId()},
+       {std::string(allowed_account.GetEmail()), allowed_account.GetGaiaId()}});
   ASSERT_FALSE(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   ASSERT_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 2u);
@@ -2336,7 +2342,8 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
   // Bookmarks with previously syncing account creates a different type of promo
   // to be shown.
   browser()->GetProfile()->GetPrefs()->SetString(
-      prefs::kGoogleServicesLastSyncingGaiaId, account_info.gaia.ToString());
+      prefs::kGoogleServicesLastSyncingGaiaId,
+      account_info.GetGaiaId().ToString());
   batch_upload_test_helper().SetReturnDescriptions(syncer::BOOKMARKS,
                                                    /*item_count=*/5);
 
@@ -2367,7 +2374,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     {}) {
   AccountInfo account_info = Signin();
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
-      identity_manager(), account_info.account_id,
+      identity_manager(), account_info.GetAccountId(),
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_SERVER));
@@ -2398,7 +2405,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
         syncer::kReplaceSyncPromosWithSigninPromosNewSignin})) {
   AccountInfo account_info = Signin();
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
-      identity_manager(), account_info.account_id,
+      identity_manager(), account_info.GetAccountId(),
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_SERVER));

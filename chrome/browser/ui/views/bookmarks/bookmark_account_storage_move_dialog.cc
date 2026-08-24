@@ -176,8 +176,8 @@ void ShowDialogOnRegularProfile(
         ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
             account_info.GetAvatarImage().value_or(gfx::Image()), kAvatarSize,
             kAvatarSize, profiles::SHAPE_CIRCLE))));
-    avatar_and_email_view->AddChildView(
-        std::make_unique<views::Label>(base::UTF8ToUTF16(account_info.email)));
+    avatar_and_email_view->AddChildView(std::make_unique<views::Label>(
+        base::UTF8ToUTF16(account_info.GetEmail())));
     avatar_and_email_view
         ->SetLayoutManager(std::make_unique<views::BoxLayout>())
         ->set_between_child_spacing(horizontal_spacing);

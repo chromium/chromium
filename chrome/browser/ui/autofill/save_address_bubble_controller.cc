@@ -103,7 +103,7 @@ std::u16string SaveAddressBubbleController::GetBodyText() const {
                         : IDS_AUTOFILL_LOCAL_PROFILE_MIGRATION_PROMPT_NOTICE;
 
     return l10n_util::GetStringFUTF16(string_id,
-                                      base::UTF8ToUTF16(account->email));
+                                      base::UTF8ToUTF16(account->GetEmail()));
   }
 
   return {};
@@ -204,7 +204,7 @@ std::u16string SaveAddressBubbleController::GetFooterMessage() const {
 
     return l10n_util::GetStringFUTF16(
         IDS_AUTOFILL_SAVE_IN_ACCOUNT_PROMPT_ADDRESS_SOURCE_NOTICE,
-        base::UTF8ToUTF16(account->email));
+        base::UTF8ToUTF16(account->GetEmail()));
   }
 
   return {};
@@ -217,7 +217,7 @@ std::u16string SaveAddressBubbleController::GetEditorFooterMessage() const {
             web_contents()->GetBrowserContext());
     return l10n_util::GetStringFUTF16(
         IDS_AUTOFILL_SAVE_IN_ACCOUNT_PROMPT_ADDRESS_SOURCE_NOTICE,
-        base::UTF8ToUTF16(account->email));
+        base::UTF8ToUTF16(account->GetEmail()));
   }
 
   return GetFooterMessage();

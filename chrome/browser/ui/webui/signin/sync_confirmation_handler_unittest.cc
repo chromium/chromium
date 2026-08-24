@@ -254,8 +254,8 @@ const char SyncConfirmationHandlerTest::kConsentText5[] = "consentText5";
 
 TEST_F(SyncConfirmationHandlerTest, TestAvatarChangeWhenPrimaryAccountReady) {
   identity_test_env()->SimulateSuccessfulFetchOfAccountInfo(
-      account_info_.account_id, account_info_.email, account_info_.gaia, "",
-      "full_name", "given_name", "locale",
+      account_info_.GetAccountId(), std::string(account_info_.GetEmail()),
+      account_info_.GetGaiaId(), "", "full_name", "given_name", "locale",
       "http://picture.example.com/picture.jpg");
 
   base::ListValue args;
@@ -351,8 +351,8 @@ TEST_F(SyncConfirmationHandlerTest,
   }
 
   identity_test_env()->SimulateSuccessfulFetchOfAccountInfo(
-      account_info_.account_id, account_info_.email, account_info_.gaia, "",
-      "full_name", "given_name", "locale",
+      account_info_.GetAccountId(), std::string(account_info_.GetEmail()),
+      account_info_.GetGaiaId(), "", "full_name", "given_name", "locale",
       "http://picture.example.com/picture.jpg");
 
   // AccountInfo proper is being changed
@@ -380,16 +380,16 @@ TEST_F(SyncConfirmationHandlerTest,
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("bar@example.com");
   identity_test_env()->SimulateSuccessfulFetchOfAccountInfo(
-      account_info.account_id, account_info.email, account_info.gaia, "",
-      "bar_full_name", "bar_given_name", "bar_locale",
-      "http://picture.example.com/bar_picture.jpg");
+      account_info.GetAccountId(), std::string(account_info.GetEmail()),
+      account_info.GetGaiaId(), "", "bar_full_name", "bar_given_name",
+      "bar_locale", "http://picture.example.com/bar_picture.jpg");
 
   // Account update was ignored so number of calls is unchanged.
   ASSERT_EQ(call_count, web_ui()->call_data().size());
 
   identity_test_env()->SimulateSuccessfulFetchOfAccountInfo(
-      account_info_.account_id, account_info_.email, account_info_.gaia, "",
-      "full_name", "given_name", "locale",
+      account_info_.GetAccountId(), std::string(account_info_.GetEmail()),
+      account_info_.GetGaiaId(), "", "full_name", "given_name", "locale",
       "http://picture.example.com/picture.jpg");
 
   // Updating the account info of the primary account should update the
@@ -401,9 +401,9 @@ TEST_F(SyncConfirmationHandlerTest,
 TEST_F(SyncConfirmationHandlerTest,
        TestAvatarChangeManagedWhenPrimaryAccountReady) {
   identity_test_env()->SimulateSuccessfulFetchOfAccountInfo(
-      account_info_.account_id, account_info_.email, account_info_.gaia,
-      "google.com", "full_name", "given_name", "locale",
-      "http://picture.example.com/picture.jpg");
+      account_info_.GetAccountId(), std::string(account_info_.GetEmail()),
+      account_info_.GetGaiaId(), "google.com", "full_name", "given_name",
+      "locale", "http://picture.example.com/picture.jpg");
 
   base::ListValue args;
   args.Append(kDefaultDialogHeight);
@@ -475,7 +475,7 @@ TEST_F(SyncConfirmationHandlerTest, TestHandleConfirm) {
   EXPECT_EQ(expected_confirmation_ids,
             consent_auditor()->recorded_confirmation_ids());
 
-  EXPECT_EQ(account_info_.gaia, consent_auditor()->gaia_id());
+  EXPECT_EQ(account_info_.GetGaiaId(), consent_auditor()->gaia_id());
 }
 
 TEST_F(SyncConfirmationHandlerTest, TestHandleConfirmWithAdvancedSyncSettings) {
@@ -513,7 +513,7 @@ TEST_F(SyncConfirmationHandlerTest, TestHandleConfirmWithAdvancedSyncSettings) {
   EXPECT_EQ(expected_confirmation_ids,
             consent_auditor()->recorded_confirmation_ids());
 
-  EXPECT_EQ(account_info_.gaia, consent_auditor()->gaia_id());
+  EXPECT_EQ(account_info_.GetGaiaId(), consent_auditor()->gaia_id());
 }
 
 TEST_F(SyncConfirmationHandlerTest, UserVisibleLatencyIsRecordedImmediately) {
@@ -607,8 +607,8 @@ TEST_F(SyncConfirmationHandlerTest, UserVisibleLatencyIsNotRecordedTwice) {
   // This triggers OnExtendedAccountInfoUpdated again but this time should not
   // record any latency.
   identity_test_env()->SimulateSuccessfulFetchOfAccountInfo(
-      account_info_.account_id, account_info_.email, account_info_.gaia, "",
-      "full_name", "given_name", "locale",
+      account_info_.GetAccountId(), std::string(account_info_.GetEmail()),
+      account_info_.GetGaiaId(), "", "full_name", "given_name", "locale",
       "http://picture.example.com/picture.jpg");
 
   // So assert that sample count is unchanged.

@@ -57,7 +57,8 @@ void ShowUploadExtensionToAccountDialog(Profile* profile,
           .AddMenuItem(ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
                            account_info.GetAvatarImage().value_or(gfx::Image()),
                            16, 16, profiles::SHAPE_CIRCLE)),
-                       base::UTF8ToUTF16(account_info.email), base::DoNothing(),
+                       base::UTF8ToUTF16(account_info.GetEmail()),
+                       base::DoNothing(),
                        ui::DialogModelMenuItem::Params().SetIsEnabled(false))
           .AddOkButton(
               std::move(accept_callback),

@@ -108,13 +108,13 @@ ManagedUserProfileNoticeHandler::ManagedUserProfileNoticeHandler(
       email_((create_param->is_oidc_account ||
               create_param->is_device_signals_disclaimer)
                  ? std::u16string()
-                 : base::UTF8ToUTF16(create_param->account_info.email)),
+                 : base::UTF8ToUTF16(create_param->account_info.GetEmail())),
       domain_name_(
           (create_param->is_oidc_account ||
            create_param->is_device_signals_disclaimer)
               ? std::string()
-              : gaia::ExtractDomainName(create_param->account_info.email)),
-      account_id_(create_param->account_info.account_id),
+              : gaia::ExtractDomainName(create_param->account_info.GetEmail())),
+      account_id_(create_param->account_info.GetAccountId()),
       done_callback_(std::move(create_param->done_callback)),
       retry_callback_(std::move(create_param->retry_callback)) {
   if (std::holds_alternative<signin::SigninChoiceWithConfirmAndRetryCallback>(
@@ -219,14 +219,14 @@ void ManagedUserProfileNoticeHandler::OnBrowserDidClose(
 
 void ManagedUserProfileNoticeHandler::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
-  if (info.account_id == account_id_ && info.GetAvatarImage().has_value()) {
+  if (info.GetAccountId() == account_id_ && info.GetAvatarImage().has_value()) {
     UpdateProfileInfo(profile_path_);
   }
 }
 void ManagedUserProfileNoticeHandler::OnExtendedAccountInfoRemoved(
     const AccountInfo& info) {
   // If the account has been removed, we should cancel the process.
-  if (info.account_id == account_id_ && !canceling_) {
+  if (info.GetAccountId() == account_id_ && !canceling_) {
     HandleCancel(base::ListValue());
   }
 }

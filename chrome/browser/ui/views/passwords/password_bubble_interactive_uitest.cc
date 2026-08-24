@@ -721,7 +721,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   EXPECT_EQ(0, browser()->GetProfile()->GetPrefs()->GetInteger(
                    prefs::kAutofillSignInPromoDismissCountPerProfile));
   EXPECT_EQ(0, SigninPrefs(*browser()->GetProfile()->GetPrefs())
-                   .GetAutofillSigninPromoDismissCount(info.gaia));
+                   .GetAutofillSigninPromoDismissCount(info.GetGaiaId()));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

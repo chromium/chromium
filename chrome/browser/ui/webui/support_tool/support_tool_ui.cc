@@ -240,7 +240,7 @@ base::ListValue SupportToolMessageHandler::GetAccountsList() {
            AccountPreviewDataServiceFactory::GetForProfile(profile),
            /*restrict_to_accounts_eligible_for_signin=*/false)) {
     if (!account.IsEmpty()) {
-      account_list.Append(account.email);
+      account_list.Append(account.GetEmail());
     }
   }
   return account_list;

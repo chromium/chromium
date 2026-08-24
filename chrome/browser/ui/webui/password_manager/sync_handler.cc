@@ -164,7 +164,7 @@ base::DictValue SyncHandler::GetAccountInfo() const {
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
 
   base::DictValue dict;
-  dict.Set("email", stored_account.email);
+  dict.Set("email", stored_account.GetEmail());
   const std::optional<gfx::Image> avatar_image =
       stored_account.GetAvatarImage();
   if (avatar_image.has_value()) {

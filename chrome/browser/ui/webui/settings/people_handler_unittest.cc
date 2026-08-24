@@ -1236,7 +1236,7 @@ TEST(PeopleHandlerDiceTest, StoredAccountsList) {
       "a@gmail.com", {.set_cookie = true});
   auto account_2 = identity_test_env->MakeAccountAvailable(
       "b@gmail.com", {.set_cookie = true});
-  identity_test_env->SetPrimaryAccount(account_1.email,
+  identity_test_env->SetPrimaryAccount(std::string(account_1.GetEmail()),
                                        signin::ConsentLevel::kSignin);
 
   PeopleHandler handler(profile.get());
@@ -1362,10 +1362,10 @@ TEST_F(PeopleHandlerTest, ChromeSigninUserInfoUpdateOnPrefValueChange) {
 
   SigninPrefs signin_prefs(*profile()->GetPrefs());
   auto new_choice_value = ChromeSigninUserChoice::kSignin;
-  ASSERT_NE(
-      signin_prefs.GetChromeSigninInterceptionUserChoice(account_info.gaia),
-      new_choice_value);
-  signin_prefs.SetChromeSigninInterceptionUserChoice(account_info.gaia,
+  ASSERT_NE(signin_prefs.GetChromeSigninInterceptionUserChoice(
+                account_info.GetGaiaId()),
+            new_choice_value);
+  signin_prefs.SetChromeSigninInterceptionUserChoice(account_info.GetGaiaId(),
                                                      new_choice_value);
   ExpectChromeSigninUserChoiceInfoFromLastChangeEvent(true, new_choice_value,
                                                       email);
@@ -1696,33 +1696,34 @@ TEST_F(PeopleHandlerTest,
 
   SigninPrefs signin_prefs(*profile()->GetPrefs());
   ChromeSigninUserChoice current_choice =
-      signin_prefs.GetChromeSigninInterceptionUserChoice(account.gaia);
+      signin_prefs.GetChromeSigninInterceptionUserChoice(account.GetGaiaId());
 
   // Simulates setting a new value through the UI.
   ChromeSigninUserChoice user_choice = ChromeSigninUserChoice::kSignin;
   ASSERT_NE(current_choice, user_choice);
-  SimulateHandleSetChromeSigninUserChoiceInfo(account.email, user_choice);
+  SimulateHandleSetChromeSigninUserChoiceInfo(account.GetEmail(), user_choice);
 
   // Simulate a last bubble decline time as well.
   signin_prefs.SetChromeSigninInterceptionLastBubbleDeclineTime(
-      account.gaia, base::Time::Now());
-  signin_prefs.IncrementChromeSigninBubbleRepromptCount(account.gaia);
+      account.GetGaiaId(), base::Time::Now());
+  signin_prefs.IncrementChromeSigninBubbleRepromptCount(account.GetGaiaId());
 
   // Simulates a second selection within the same settings session.
   ChromeSigninUserChoice user_choice2 = ChromeSigninUserChoice::kDoNotSignin;
   ASSERT_NE(current_choice, user_choice2);
-  SimulateHandleSetChromeSigninUserChoiceInfo(account.email, user_choice2);
+  SimulateHandleSetChromeSigninUserChoiceInfo(account.GetEmail(), user_choice2);
   // Explicitly setting the do not sign in option should clear bubble declined
   // time.
   EXPECT_FALSE(
       signin_prefs
-          .GetChromeSigninInterceptionLastBubbleDeclineTime(account.gaia)
+          .GetChromeSigninInterceptionLastBubbleDeclineTime(account.GetGaiaId())
           .has_value());
-  EXPECT_EQ(signin_prefs.GetChromeSigninBubbleRepromptCount(account.gaia), 0);
+  EXPECT_EQ(
+      signin_prefs.GetChromeSigninBubbleRepromptCount(account.GetGaiaId()), 0);
 
   // Enforcing changing the value to the same previous one should not record a
   // new modification.
-  SimulateHandleSetChromeSigninUserChoiceInfo(account.email, user_choice2);
+  SimulateHandleSetChromeSigninUserChoiceInfo(account.GetEmail(), user_choice2);
 
   // Simulates closing the settings page.
   DestroyPeopleHandler();
@@ -1753,12 +1754,12 @@ TEST_F(
 
   SigninPrefs signin_prefs(*profile()->GetPrefs());
   ChromeSigninUserChoice current_choice =
-      signin_prefs.GetChromeSigninInterceptionUserChoice(account.gaia);
+      signin_prefs.GetChromeSigninInterceptionUserChoice(account.GetGaiaId());
 
   // Simulates setting a new value through the settings UI.
   ChromeSigninUserChoice new_value = ChromeSigninUserChoice::kSignin;
   ASSERT_NE(current_choice, new_value);
-  SimulateHandleSetChromeSigninUserChoiceInfo(account.email, new_value);
+  SimulateHandleSetChromeSigninUserChoiceInfo(account.GetEmail(), new_value);
 
   SimulateSignout();
 

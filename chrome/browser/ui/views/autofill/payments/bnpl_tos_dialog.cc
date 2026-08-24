@@ -100,7 +100,7 @@ BnplTosDialog::BnplTosDialog(
 
   content_view_->AddChildView(CreateLegalMessageView(
       controller_->GetLegalMessageLines(),
-      base::UTF8ToUTF16(controller_->GetAccountInfo().email),
+      base::UTF8ToUTF16(controller_->GetAccountInfo().GetEmail()),
       GetProfileAvatar(controller_->GetAccountInfo()), link_opener_));
 
   throbber_view_ =

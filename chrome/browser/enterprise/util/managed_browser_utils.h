@@ -59,7 +59,7 @@ bool IsBrowserManaged(Profile* profile);
 
 // Extracts the domain from provided |email| if it's an email address and
 // returns an empty string, otherwise.
-std::string GetDomainFromEmail(const std::string& email);
+std::string GetDomainFromEmail(std::string_view email);
 
 // Returns an HTTPS URL for the host and port identified by `host_port_pair`.
 // This is intended to be used to build a `requesting_url` for

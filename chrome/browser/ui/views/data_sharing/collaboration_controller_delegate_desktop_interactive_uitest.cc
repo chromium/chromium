@@ -507,7 +507,7 @@ class
         signin_ui_util::GetSingleAccountForPromos(
             identity_manager(), AccountPreviewDataServiceFactory::GetForProfile(
                                     browser()->GetProfile()))
-            .account_id,
+            .GetAccountId(),
         "https://avatar.com/avatar.png", gfx::test::CreateImage(/*size=*/32));
 
     // Show prompt dialog and accept it.
