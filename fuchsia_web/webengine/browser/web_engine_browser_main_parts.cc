@@ -24,7 +24,10 @@
 #include "base/fuchsia/process_lifecycle.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/tag_converters.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -414,9 +417,13 @@ void WebEngineBrowserMainParts::HandleFrameHostRequest(
 void WebEngineBrowserMainParts::OnIntlProfileChanged(
     const fuchsia::intl::Profile& profile) {
   // Configure the ICU library in this process with the new primary locale.
-  std::string primary_locale =
-      base::FuchsiaIntlProfileWatcher::GetPrimaryLocaleIdFromProfile(profile);
-  base::i18n::SetICUDefaultLocale(primary_locale);
+  base::i18n::LanguageTag primary_locale =
+      base::i18n::GetLanguageTagFromString(
+          base::FuchsiaIntlProfileWatcher::GetPrimaryLocaleIdFromProfile(
+              profile))
+          .value_or(base::i18n::GetKnownLanguageTag("en-US"));
+  base::i18n::SetDefaultIcuLocale(base::i18n::DefaultIcuLocaleSetterKey(),
+                                  primary_locale);
 
   {
     // Reloading locale-specific resources requires synchronous blocking.

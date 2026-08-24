@@ -11,7 +11,10 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/fuchsia/intl_profile_watcher.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/tag_converters.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "content/public/common/content_switches.h"
@@ -95,9 +98,13 @@ void WebEngineMainDelegate::PreSandboxStartup() {
   // explicitly reloaded after each change to the primary locale.
   // In the browser process the locale determines the accept-language header
   // contents, and is supplied to renderers for Blink to report to web content.
-  std::string initial_locale =
-      base::FuchsiaIntlProfileWatcher::GetPrimaryLocaleIdForInitialization();
-  base::i18n::SetICUDefaultLocale(initial_locale);
+  base::i18n::LanguageTag initial_locale =
+      base::i18n::GetLanguageTagFromString(
+          base::FuchsiaIntlProfileWatcher::
+              GetPrimaryLocaleIdForInitialization())
+          .value_or(base::i18n::GetKnownLanguageTag("en-US"));
+  base::i18n::SetDefaultIcuLocale(base::i18n::DefaultIcuLocaleSetterKey(),
+                                  initial_locale);
 
   InitializeResources();
 }
