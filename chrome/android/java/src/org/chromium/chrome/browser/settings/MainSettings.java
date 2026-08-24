@@ -26,6 +26,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.preference.Preference;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
+import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -116,6 +117,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                 SyncService.SyncStateChangedListener,
                 SigninManager.SignInStateObserver,
                 SettingsCustomTabLauncher.SettingsCustomTabLauncherClient {
+    private final CallbackController mCallbackController = new CallbackController();
     public static final String PREF_SETTINGS_PROMO_CARD = "settings_promo_card";
     public static final String PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION =
             "account_and_google_services_section";
@@ -267,6 +269,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public void onDestroy() {
         super.onDestroy();
         setMultiColumnSettings(null, null);
+        mCallbackController.destroy();
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(getProfile());
         assumeNonNull(signinManager);
         if (signinManager.isSigninSupported(/* requireUpdatedPlayServices= */ false)) {
@@ -381,24 +384,34 @@ public class MainSettings extends ChromeBaseSettingsFragment
             // TODO(crbug.com/495349057): update this to use the new sign-in coordinator API with
             // suppliers.
             SupplierUtils.waitForAll(
-                    () -> {
-                        OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
-                        profileSupplier.set(getProfile());
-                        var l = SigninAndHistorySyncActivityLauncherImpl.get();
-                        mSigninCoordinator =
-                                l.createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
-                                        SupplierUtils.asNonNull(mWindowAndroidSupplier).get(),
-                                        getActivity(),
-                                        mActivityResultTracker,
-                                        signInPreference,
-                                        DeviceLockActivityLauncherImpl.get(),
-                                        profileSupplier,
-                                        SupplierUtils.asNonNull(mBottomSheetControllerSupplier),
-                                        mModalDialogManagerSupplier.asNonNull().get(),
-                                        SupplierUtils.asNonNull(mSnackbarManagerSupplier).get(),
-                                        SigninAccessPoint.SETTINGS);
-                        signinCoordinatorSupplier.set(mSigninCoordinator);
-                    },
+                    mCallbackController.makeCancelable(
+                            () -> {
+                                OneshotSupplierImpl<Profile> profileSupplier =
+                                        new OneshotSupplierImpl<>();
+                                profileSupplier.set(getProfile());
+                                var l = SigninAndHistorySyncActivityLauncherImpl.get();
+                                mSigninCoordinator =
+                                        l
+                                                .createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
+                                                        SupplierUtils.asNonNull(
+                                                                        mWindowAndroidSupplier)
+                                                                .get(),
+                                                        getActivity(),
+                                                        mActivityResultTracker,
+                                                        signInPreference,
+                                                        DeviceLockActivityLauncherImpl.get(),
+                                                        profileSupplier,
+                                                        SupplierUtils.asNonNull(
+                                                                mBottomSheetControllerSupplier),
+                                                        mModalDialogManagerSupplier
+                                                                .asNonNull()
+                                                                .get(),
+                                                        SupplierUtils.asNonNull(
+                                                                        mSnackbarManagerSupplier)
+                                                                .get(),
+                                                        SigninAccessPoint.SETTINGS);
+                                signinCoordinatorSupplier.set(mSigninCoordinator);
+                            }),
                     mWindowAndroidSupplier,
                     mModalDialogManagerSupplier,
                     mSnackbarManagerSupplier);
