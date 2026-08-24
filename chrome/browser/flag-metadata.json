@@ -4420,6 +4420,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "enable-spc-locale-validation",
+    "owners": [ "nikifork@google.com", "chrome-payments-eng@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "enable-standard-device-bound-session-credentials",
     "owners": [ "alexilin@chromium.org", "drubery@chromium.org",  "thefrog@chromium.org"],
     "expiry_milestone": 160

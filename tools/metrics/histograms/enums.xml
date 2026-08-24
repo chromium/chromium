@@ -12299,6 +12299,7 @@ from previous Chrome versions.
   <int value="-745906477"
       label="PrivateNetworkAccessForNavigationsWarningOnly:disabled"/>
   <int value="-745616196" label="ClickToCall:disabled"/>
+  <int value="-745402430" label="SPCLocaleValidation:enabled"/>
   <int value="-745267150" label="OptimizationGuideOnDeviceModel:enabled"/>
   <int value="-745082968" label="SyncDeviceInfoInTransportMode:disabled"/>
   <int value="-745005043"
@@ -13369,6 +13370,7 @@ from previous Chrome versions.
       label="DisruptiveNotificationPermissionRevocation:disabled"/>
   <int value="-412736561" label="EnableZeroStateMixedTypesRanker:enabled"/>
   <int value="-411616193" label="TabStripGroupReorderAndroid:enabled"/>
+  <int value="-410906702" label="SPCLocaleValidation:disabled"/>
   <int value="-410852857" label="ImprovedA2HS:disabled"/>
   <int value="-410456165" label="AiSettingsPageRefresh:enabled"/>
   <int value="-408800711"

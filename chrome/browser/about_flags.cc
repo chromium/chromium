@@ -6388,6 +6388,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAppStoreBillingDebugName,
      flag_descriptions::kAppStoreBillingDebugDescription, kOsAll,
      FEATURE_VALUE_TYPE(payments::features::kAppStoreBillingDebug)},
+    {"enable-spc-locale-validation",
+     flag_descriptions::kSPCLocaleValidationName,
+     flag_descriptions::kSPCLocaleValidationDescription,
+     kOsMac | kOsWin | kOsAndroid,
+     FEATURE_VALUE_TYPE(payments::features::kSPCLocaleValidation)},
 #if BUILDFLAG(IS_ANDROID)
     {"show-ready-to-pay-debug-info",
      flag_descriptions::kShowReadyToPayDebugInfoName,

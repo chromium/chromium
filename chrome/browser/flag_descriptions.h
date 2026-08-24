@@ -4135,6 +4135,13 @@ inline constexpr char kDeduplicateNativePaymentAppsDescription[] =
     "multiple factories (internal and external) processing the same underlying "
     "app.";
 
+inline constexpr char kSPCLocaleValidationName[] =
+    "Secure Payment Confirmation Locale Validation";
+inline constexpr char kSPCLocaleValidationDescription[] =
+    "When enabled, Payment Request methods throw a NotSupportedError "
+    "DOMException when the SPC request contains at least one locale and none "
+    "of the supplied locales match against the locale used by the SPC dialog.";
+
 inline constexpr char kPdfXfaFormsName[] = "PDF XFA support";
 inline constexpr char kPdfXfaFormsDescription[] =
     "Enables support for XFA forms in PDFs. "
