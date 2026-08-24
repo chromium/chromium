@@ -97,13 +97,6 @@ static OPUS_INLINE opus_int16 silk_sat16(opus_int32 num)
     return num;
 }
 
-static OPUS_INLINE opus_int32 silk_sar_round_32(opus_int32 a, int bits)
-{
-    silk_assert(bits > 0 && bits < 31);
-    a += 1 << (bits-1);
-    return a >> bits;
-}
-
 static OPUS_INLINE opus_int64 silk_sar_round_smulww(opus_int32 a, opus_int32 b, int bits)
 {
     opus_int64 t;
@@ -133,7 +126,7 @@ static OPUS_INLINE opus_int32 silk_add_sat32(opus_int32 a, opus_int32 b)
 static OPUS_INLINE __m128i silk_mm_srai_round_epi32(__m128i a, int bits)
 {
     silk_assert(bits > 0 && bits < 31);
-    return _mm_srai_epi32(_mm_add_epi32(a, _mm_set1_epi32(1 << (bits - 1))), bits);
+    return _mm_srai_epi32(_mm_add_epi32(_mm_srai_epi32(a, bits - 1), _mm_set1_epi32(1)), 1);
 }
 
 /* add/subtract with output saturated */
@@ -513,7 +506,7 @@ void silk_NSQ_del_dec_avx2(
                         last_smple_idx = (last_smple_idx + DECISION_DELAY - 1) % DECISION_DELAY;
                         psSample = &psDelDec.Samples[last_smple_idx];
                         pulses[i - decisionDelay] =
-                            (opus_int8)silk_sar_round_32(silk_select_winner(psSample->Q_Q10, Winner_selector), 10);
+                            (opus_int8)silk_RSHIFT_ROUND(silk_select_winner(psSample->Q_Q10, Winner_selector), 10);
                         pxq[i - decisionDelay] =
                             silk_sat16((opus_int32)silk_sar_round_smulww(silk_select_winner(psSample->Xq_Q14, Winner_selector), Gains_Q16[1], 14));
                         NSQ->sLTP_shp_Q14[NSQ->sLTP_shp_buf_idx - decisionDelay + i] =
@@ -562,7 +555,7 @@ void silk_NSQ_del_dec_avx2(
         psSample = &psDelDec.Samples[last_smple_idx];
 
         pulses[i - decisionDelay] =
-            (opus_int8)silk_sar_round_32(silk_select_winner(psSample->Q_Q10, Winner_selector), 10);
+            (opus_int8)silk_RSHIFT_ROUND(silk_select_winner(psSample->Q_Q10, Winner_selector), 10);
         pxq[i - decisionDelay] =
             silk_sat16((opus_int32)silk_sar_round_smulww(silk_select_winner(psSample->Xq_Q14, Winner_selector), Gain_Q10, 8));
         NSQ->sLTP_shp_Q14[NSQ->sLTP_shp_buf_idx - decisionDelay + i] =
@@ -896,7 +889,7 @@ static OPUS_INLINE void silk_noise_shape_quantizer_del_dec_avx2(
         if (subfr > 0 || i >= decisionDelay)
         {
             pulses[i - decisionDelay] =
-                (opus_int8)silk_sar_round_32(silk_select_winner(psLastSample->Q_Q10, Winner_selector), 10);
+                (opus_int8)silk_RSHIFT_ROUND(silk_select_winner(psLastSample->Q_Q10, Winner_selector), 10);
             xq[i - decisionDelay] =
                 silk_sat16((opus_int32)silk_sar_round_smulww(silk_select_winner(psLastSample->Xq_Q14, Winner_selector), delayedGain_Q10[last_smple_idx], 8));
             NSQ->sLTP_shp_Q14[NSQ->sLTP_shp_buf_idx - decisionDelay] =
@@ -954,7 +947,7 @@ static OPUS_INLINE void silk_nsq_del_dec_scale_states_avx2(
     silk_assert(inv_gain_Q31 != 0);
 
     /* Scale input */
-    inv_gain_Q26 = silk_sar_round_32(inv_gain_Q31, 5);
+    inv_gain_Q26 = silk_RSHIFT_ROUND(inv_gain_Q31, 5);
     for (i = 0; i < psEncC->subfr_length; i+=4)
     {
         __m256i x = _mm256_cvtepi16_epi64(_mm_loadu_si64(&x16[i]));
@@ -1064,7 +1057,7 @@ static OPUS_INLINE void silk_LPC_analysis_filter_avx2(
         out32_Q12 = silk_SUB32_ovflw( silk_LSHIFT( (opus_int32)*in_ptr, 12 ), out32_Q12 );
 
         /* Scale to Q0 */
-        out32 = silk_sar_round_32(out32_Q12, 12);
+        out32 = silk_RSHIFT_ROUND(out32_Q12, 12);
 
         /* Saturate output */
         out[ i ] = silk_sat16(out32);

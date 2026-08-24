@@ -33,6 +33,7 @@ Local changes:
     * dnn/training_tf2/train_rdovae.py
 * remove assertion messages in release builds (see crbug/1053572)
 * add workaround to ignore some int-overflows when fuzzing (see crbug/1146174, crbug/1491812)
+* AVX2 fix, see crbug/541783453. To be upstreamed.
 
 Opus' own unit tests are located in ./src/tests
 Additional chromium tests are located in ./tests, and require chromium
