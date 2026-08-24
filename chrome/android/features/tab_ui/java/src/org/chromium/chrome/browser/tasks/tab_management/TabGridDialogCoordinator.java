@@ -424,7 +424,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         TabGroupColorPickerContainer container = root.findViewById(R.id.color_picker_container);
         mTabGroupColorPickerCoordinator =
                 new TabGroupColorPickerCoordinator(
-                        mActivity,
                         colors,
                         container,
                         TabGroupColorPickerType.TAB_GROUP,

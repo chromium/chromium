@@ -808,7 +808,6 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                 inflatedRoot.findViewById(R.id.color_picker_container);
         mTabGroupColorPickerCoordinator =
                 new TabGroupColorPickerCoordinator(
-                        context,
                         TabGroupColorPickerUtils.getTabGroupColorIdList(),
                         container,
                         TabGroupColorPickerType.TAB_GROUP,

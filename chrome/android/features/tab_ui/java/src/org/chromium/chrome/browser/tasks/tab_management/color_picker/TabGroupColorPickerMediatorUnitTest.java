@@ -8,15 +8,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import android.app.Activity;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -35,14 +32,12 @@ import java.util.List;
 public class TabGroupColorPickerMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private Activity mActivity;
     private TabGroupColorPickerMediator mMediator;
     private List<Integer> mColorIds;
     private final List<PropertyModel> mColorItems = new ArrayList<>();
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mColorIds = TabGroupColorPickerUtils.getTabGroupColorIdList();
 
         for (int i = 0; i < mColorIds.size(); i++) {
