@@ -30,12 +30,14 @@ import java.util.Arrays;
 @Batch(Batch.UNIT_TESTS)
 public class AvatarGeneratorTest {
     private static final int IMAGE_SIZE_PX = 80;
+    private static final int RENDER_SIZE_PX = IMAGE_SIZE_PX * AvatarGenerator.SUPERSAMPLING_FACTOR;
     private final Resources mResources = ContextUtils.getApplicationContext().getResources();
-    private final float mMargin = 1 * mResources.getDisplayMetrics().density;
-    private final int mLeftHalfEnd = (int) (IMAGE_SIZE_PX / 2 - mMargin);
-    private final int mTopHalfEnd = (int) (IMAGE_SIZE_PX / 2 - mMargin);
-    private final int mRightHalfStart = (int) (IMAGE_SIZE_PX / 2 + mMargin);
-    private final int mBottomHalfStart = (int) (IMAGE_SIZE_PX / 2 + mMargin);
+    private final float mMargin =
+            1 * mResources.getDisplayMetrics().density * AvatarGenerator.SUPERSAMPLING_FACTOR;
+    private final int mLeftHalfEnd = (int) (RENDER_SIZE_PX / 2 - mMargin);
+    private final int mTopHalfEnd = (int) (RENDER_SIZE_PX / 2 - mMargin);
+    private final int mRightHalfStart = (int) (RENDER_SIZE_PX / 2 + mMargin);
+    private final int mBottomHalfStart = (int) (RENDER_SIZE_PX / 2 + mMargin);
 
     /**
      * Creates a Bitmap that have the center as shown below
@@ -56,15 +58,15 @@ public class AvatarGeneratorTest {
      * @return The generated image.
      */
     private Bitmap makeThreeColoredImage(int leftColor, int middleColor, int rightColor) {
-        Bitmap image = Bitmap.createBitmap(IMAGE_SIZE_PX, IMAGE_SIZE_PX, Bitmap.Config.ARGB_8888);
-        for (int y = 0; y < IMAGE_SIZE_PX; y++) {
-            for (int x = 0; x < IMAGE_SIZE_PX / 4; x++) {
+        Bitmap image = Bitmap.createBitmap(RENDER_SIZE_PX, RENDER_SIZE_PX, Bitmap.Config.ARGB_8888);
+        for (int y = 0; y < RENDER_SIZE_PX; y++) {
+            for (int x = 0; x < RENDER_SIZE_PX / 4; x++) {
                 image.setPixel(x, y, leftColor);
             }
-            for (int x = IMAGE_SIZE_PX / 4; x < IMAGE_SIZE_PX * 3 / 4; x++) {
+            for (int x = RENDER_SIZE_PX / 4; x < RENDER_SIZE_PX * 3 / 4; x++) {
                 image.setPixel(x, y, middleColor);
             }
-            for (int x = IMAGE_SIZE_PX * 3 / 4; x < IMAGE_SIZE_PX; x++) {
+            for (int x = RENDER_SIZE_PX * 3 / 4; x < RENDER_SIZE_PX; x++) {
                 image.setPixel(x, y, rightColor);
             }
         }
@@ -72,10 +74,10 @@ public class AvatarGeneratorTest {
     }
 
     private Bitmap makeColoredImage(int color) {
-        int[] colorArray = new int[IMAGE_SIZE_PX * IMAGE_SIZE_PX];
+        int[] colorArray = new int[RENDER_SIZE_PX * RENDER_SIZE_PX];
         Arrays.fill(colorArray, color);
         return Bitmap.createBitmap(
-                colorArray, IMAGE_SIZE_PX, IMAGE_SIZE_PX, Bitmap.Config.ARGB_8888);
+                colorArray, RENDER_SIZE_PX, RENDER_SIZE_PX, Bitmap.Config.ARGB_8888);
     }
 
     @Test
@@ -96,12 +98,12 @@ public class AvatarGeneratorTest {
 
         // Merged Avatar should have the middle slices of both avatars, i.e. Green-Yellow.
         Bitmap mergedAvatar =
-                Bitmap.createBitmap(IMAGE_SIZE_PX, IMAGE_SIZE_PX, Bitmap.Config.ARGB_8888);
-        for (int y = 0; y < IMAGE_SIZE_PX; y++) {
+                Bitmap.createBitmap(RENDER_SIZE_PX, RENDER_SIZE_PX, Bitmap.Config.ARGB_8888);
+        for (int y = 0; y < RENDER_SIZE_PX; y++) {
             for (int x = 0; x < mLeftHalfEnd; x++) {
                 mergedAvatar.setPixel(x, y, Color.GREEN);
             }
-            for (int x = mRightHalfStart; x < IMAGE_SIZE_PX; x++) {
+            for (int x = mRightHalfStart; x < RENDER_SIZE_PX; x++) {
                 mergedAvatar.setPixel(x, y, Color.YELLOW);
             }
         }
@@ -141,21 +143,21 @@ public class AvatarGeneratorTest {
         // Merged Avatar should have the middle slices of avatar 1 (i.e. Green) and avatar 2 and 3
         // fully.
         Bitmap mergedAvatar =
-                Bitmap.createBitmap(IMAGE_SIZE_PX, IMAGE_SIZE_PX, Bitmap.Config.ARGB_8888);
-        for (int y = 0; y < IMAGE_SIZE_PX; y++) {
+                Bitmap.createBitmap(RENDER_SIZE_PX, RENDER_SIZE_PX, Bitmap.Config.ARGB_8888);
+        for (int y = 0; y < RENDER_SIZE_PX; y++) {
             for (int x = 0; x < mLeftHalfEnd; x++) {
                 mergedAvatar.setPixel(x, y, Color.GREEN);
             }
         }
 
         for (int y = 0; y < mTopHalfEnd; y++) {
-            for (int x = mRightHalfStart; x < IMAGE_SIZE_PX; x++) {
+            for (int x = mRightHalfStart; x < RENDER_SIZE_PX; x++) {
                 mergedAvatar.setPixel(x, y, Color.CYAN);
             }
         }
 
-        for (int y = mBottomHalfStart; y < IMAGE_SIZE_PX; y++) {
-            for (int x = mRightHalfStart; x < IMAGE_SIZE_PX; x++) {
+        for (int y = mBottomHalfStart; y < RENDER_SIZE_PX; y++) {
+            for (int x = mRightHalfStart; x < RENDER_SIZE_PX; x++) {
                 mergedAvatar.setPixel(x, y, Color.MAGENTA);
             }
         }
@@ -188,27 +190,27 @@ public class AvatarGeneratorTest {
 
         // Merged Avatar should have the 4 avatar in differetn corners.
         Bitmap mergedAvatar =
-                Bitmap.createBitmap(IMAGE_SIZE_PX, IMAGE_SIZE_PX, Bitmap.Config.ARGB_8888);
+                Bitmap.createBitmap(RENDER_SIZE_PX, RENDER_SIZE_PX, Bitmap.Config.ARGB_8888);
         for (int y = 0; y < mTopHalfEnd; y++) {
             for (int x = 0; x < mLeftHalfEnd; x++) {
                 mergedAvatar.setPixel(x, y, Color.RED);
             }
         }
 
-        for (int y = mBottomHalfStart; y < IMAGE_SIZE_PX; y++) {
+        for (int y = mBottomHalfStart; y < RENDER_SIZE_PX; y++) {
             for (int x = 0; x < mLeftHalfEnd; x++) {
                 mergedAvatar.setPixel(x, y, Color.CYAN);
             }
         }
 
         for (int y = 0; y < mTopHalfEnd; y++) {
-            for (int x = mRightHalfStart; x < IMAGE_SIZE_PX; x++) {
+            for (int x = mRightHalfStart; x < RENDER_SIZE_PX; x++) {
                 mergedAvatar.setPixel(x, y, Color.MAGENTA);
             }
         }
 
-        for (int y = mBottomHalfStart; y < IMAGE_SIZE_PX; y++) {
-            for (int x = mRightHalfStart; x < IMAGE_SIZE_PX; x++) {
+        for (int y = mBottomHalfStart; y < RENDER_SIZE_PX; y++) {
+            for (int x = mRightHalfStart; x < RENDER_SIZE_PX; x++) {
                 mergedAvatar.setPixel(x, y, Color.YELLOW);
             }
         }

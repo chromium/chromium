@@ -85,7 +85,7 @@ public class AccountManagementFragmentTest {
                     new ParameterSet().value(true).name("withIdentityManagerSource"));
 
     private final SyncTestRule mSyncTestRule = new SyncTestRule();
-    private static final int RENDER_TEST_REVISION = 3;
+    private static final int RENDER_TEST_REVISION = 4;
 
     private final boolean mIsIdentityManagerSourceOfAccounts;
 

@@ -77,6 +77,7 @@ public class EnterpriseSignalsDisclaimerRenderTest {
     public final ChromeRenderTestRule mRenderTestRule =
             new ChromeRenderTestRule.Builder()
                     .setCorpus(ChromeRenderTestRule.Corpus.ANDROID_RENDER_TESTS_PUBLIC)
+                    .setRevision(1)
                     .setBugComponent(RenderTestRule.Component.ENTERPRISE)
                     .setRevision(1)
                     .build();

@@ -141,7 +141,7 @@ public class HistorySyncRenderTest {
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.SERVICES_SIGN_IN)
-                    .setRevision(3)
+                    .setRevision(4)
                     .setDescription("Update button stacking")
                     .build();
 
