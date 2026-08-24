@@ -12,26 +12,31 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/url_util.h"
 
-namespace ash {
-namespace input_method {
+namespace ash::input_method {
 
 // Checks if domain is a sub-domain of url
 bool IsSubDomain(const GURL& url, std::string_view domain) {
-  const size_t registryLength =
+  const std::optional<std::string_view> registry =
       net::registry_controlled_domains::GetRegistry(
           url, net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
-          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES)
-          .transform(&std::string_view::size)
-          .value_or(std::string_view::npos);
-  // Localhost is valid and we want to deny features on it but has not registry.
-  if (registryLength == 0 && domain != "localhost") {
+          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+  if (!registry) {
     return false;
   }
-  const std::string_view urlContent = url.host();
-  const std::string_view urlDomain = urlContent.substr(
-      0, urlContent.length() - registryLength - (registryLength == 0 ? 0 : 1));
+  // Localhost is valid and we want to deny features on it but has not registry.
+  if (registry->empty() && domain != "localhost") {
+    return false;
+  }
+  if (!registry->empty()) {
+    // Host should consist of more than just the registry and a dot.
+    CHECK_GT(url.host().size(), registry->size() + 1);
+  }
+  const std::string_view url_domain =
+      registry->empty()
+          ? url.host()
+          : url.host().substr(0, url.host().size() - registry->size() - 1);
 
-  return url::DomainIs(urlDomain, domain);
+  return url::DomainIs(url_domain, domain);
 }
 
 // Checks if url belongs to domain and has the path_prefix
@@ -48,5 +53,4 @@ bool HasFileExtension(const GURL& url, std::string_view extension) {
                         base::CompareCase::INSENSITIVE_ASCII);
 }
 
-}  // namespace input_method
-}  // namespace ash
+}  // namespace ash::input_method
