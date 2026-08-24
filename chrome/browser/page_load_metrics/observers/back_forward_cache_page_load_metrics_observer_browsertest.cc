@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/google/core/common/google_switches.h"
 #include "components/page_load_metrics/browser/features.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
@@ -23,6 +24,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace {
@@ -42,7 +44,9 @@ class BackForwardCachePageLoadMetricsObserverBrowserTest
                   kBackForwardCacheEmitZeroSamplesForKeyMetrics,
               {{}}}}),
         content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
-
+    // Allows the embedded test server's non-standard ports to be recognized as
+    // valid Google search URLs (SRP).
+    command_line->AppendSwitch(switches::kIgnoreGooglePortNumbers);
     MetricIntegrationTest::SetUpCommandLine(command_line);
   }
 
@@ -780,7 +784,7 @@ IN_PROC_BROWSER_TEST_F(
 // 3. Go back to Page A (restore from BFCache).
 // 4. Navigate to about:blank to flush Page A's BFCache restore session.
 IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
-                       PreloadServingMetricsBFCacheRestore) {
+                       PreloadServingMetricsBFCacheRestoreBackward) {
   Start();
   GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.test", "/title1.html"));
@@ -794,9 +798,48 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
   EXPECT_EQ(rfh_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
-  // Initial navigation to Page A flushes as kNoPreload (0).
+  // 3. Go back to Page A (restore from BFCache).
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  // 4. Navigate to about:blank to flush Page A's BFCache restore session.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  // The initial navigation to Page A and Page B flush as kNoPreload (0).
   histogram_tester().ExpectBucketCount("PreloadServingMetrics.Other.All",
-                                       0 /* kNoPreload */, 1);
+                                       0 /* kNoPreload */, 2);
+
+  // The BFCache restore session for Page A flushes as kBFCache (3).
+  histogram_tester().ExpectBucketCount("PreloadServingMetrics.Backward.All",
+                                       3 /* kBFCache */, 1);
+  histogram_tester().ExpectTotalCount("PreloadServingMetrics.Backward.SRP", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
+                       PreloadServingMetricsBFCacheRestoreBackwardSRP) {
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, "/search",
+      base::BindRepeating([](const net::test_server::HttpRequest& request) {
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        response->set_code(net::HTTP_OK);
+        response->set_content_type("text/html");
+        response->set_content("<html><body></body></html>");
+        return static_cast<std::unique_ptr<net::test_server::HttpResponse>>(
+            std::move(response));
+      })));
+  Start();
+  GURL url_a(
+      embedded_test_server()->GetURL("www.google.com", "/search?q=test"));
+  GURL url_b(embedded_test_server()->GetURL("b.test", "/title1.html"));
+
+  // 1. Navigate to Page A.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+  content::RenderFrameHostWrapper rfh_a(top_frame_host());
+
+  // 2. Navigate to Page B (Page A enters BFCache).
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   // 3. Go back to Page A (restore from BFCache).
   web_contents()->GetController().GoBack();
@@ -805,7 +848,108 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
   // 4. Navigate to about:blank to flush Page A's BFCache restore session.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
-  // The BFCache restore session for Page A flushes as kBFCache (3).
+  // Initial navigations flush as kNoPreload (0).
   histogram_tester().ExpectBucketCount("PreloadServingMetrics.Other.All",
+                                       0 /* kNoPreload */, 2);
+  histogram_tester().ExpectBucketCount("PreloadServingMetrics.Other.SRP",
+                                       0 /* kNoPreload */, 1);
+
+  // The BFCache restore session for Page A flushes as kBFCache (3).
+  histogram_tester().ExpectBucketCount("PreloadServingMetrics.Backward.All",
+                                       3 /* kBFCache */, 1);
+  histogram_tester().ExpectBucketCount("PreloadServingMetrics.Backward.SRP",
+                                       3 /* kBFCache */, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
+                       PreloadServingMetricsBFCacheRestoreForward) {
+  Start();
+  GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.test", "/title1.html"));
+
+  // 1. Navigate to Page A.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+
+  // 2. Navigate to Page B.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+  content::RenderFrameHostWrapper rfh_b(top_frame_host());
+
+  // 3. Go back to Page A.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  EXPECT_EQ(rfh_b->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // 4. Go forward to Page B (restore from BFCache).
+  web_contents()->GetController().GoForward();
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  // 5. Navigate to about:blank to flush Page B's BFCache restore session.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  histogram_tester().ExpectBucketCount("PreloadServingMetrics.Other.All",
+                                       0 /* kNoPreload */, 2);
+
+  // Back navigation to Page A flushes as Backward.All with kBFCache (3).
+  histogram_tester().ExpectBucketCount("PreloadServingMetrics.Backward.All",
+                                       3 /* kBFCache */, 1);
+
+  // The BFCache restore session for Page B flushes as kBFCache (3).
+  histogram_tester().ExpectBucketCount("PreloadServingMetrics.Forward.All",
+                                       3 /* kBFCache */, 1);
+  histogram_tester().ExpectTotalCount("PreloadServingMetrics.Forward.SRP", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
+                       PreloadServingMetricsBFCacheRestoreForwardSRP) {
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, "/search",
+      base::BindRepeating([](const net::test_server::HttpRequest& request) {
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        response->set_code(net::HTTP_OK);
+        response->set_content_type("text/html");
+        response->set_content("<html><body></body></html>");
+        return static_cast<std::unique_ptr<net::test_server::HttpResponse>>(
+            std::move(response));
+      })));
+  Start();
+  GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
+  GURL url_b(
+      embedded_test_server()->GetURL("www.google.com", "/search?q=test"));
+
+  // 1. Navigate to Page A.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+
+  // 2. Navigate to Page B.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+  content::RenderFrameHostWrapper rfh_b(top_frame_host());
+
+  // 3. Go back to Page A.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  EXPECT_EQ(rfh_b->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // 4. Go forward to Page B (restore from BFCache).
+  web_contents()->GetController().GoForward();
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  // 5. Navigate to about:blank to flush Page B's BFCache restore session.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  histogram_tester().ExpectBucketCount("PreloadServingMetrics.Other.All",
+                                       0 /* kNoPreload */, 2);
+  histogram_tester().ExpectBucketCount("PreloadServingMetrics.Other.SRP",
+                                       0 /* kNoPreload */, 1);
+
+  // Back navigation to Page A flushes as Backward.All with kBFCache (3).
+  histogram_tester().ExpectBucketCount("PreloadServingMetrics.Backward.All",
+                                       3 /* kBFCache */, 1);
+  histogram_tester().ExpectTotalCount("PreloadServingMetrics.Backward.SRP", 0);
+
+  // The BFCache restore session for Page B flushes as kBFCache (3).
+  histogram_tester().ExpectBucketCount("PreloadServingMetrics.Forward.All",
+                                       3 /* kBFCache */, 1);
+  histogram_tester().ExpectBucketCount("PreloadServingMetrics.Forward.SRP",
                                        3 /* kBFCache */, 1);
 }
