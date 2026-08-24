@@ -83,4 +83,23 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(kTestKeys),
                          TestKeyToString);
 
+TEST(SSLPlatformKeyNSSInvalidTest, UnsupportedKeyType) {
+  if (!NSS_VersionCheck("3.103")) {
+    GTEST_SKIP() << "Prior to NSS 3.103, NSS could not import X25519 keys";
+  }
+
+  crypto::ScopedTestNSSDB test_db;
+  ScopedCERTCertificate nss_cert;
+  scoped_refptr<X509Certificate> cert = ImportClientCertAndKeyFromFile(
+      GetTestCertsDirectory(), "client_x25519.pem", "client_x25519.pk8",
+      test_db.slot(), &nss_cert);
+  ASSERT_TRUE(cert);
+  ASSERT_TRUE(nss_cert);
+
+  // Look up the key.
+  scoped_refptr<SSLPrivateKey> key =
+      FetchClientCertPrivateKey(cert.get(), nss_cert.get(), nullptr);
+  EXPECT_FALSE(key);
+}
+
 }  // namespace net

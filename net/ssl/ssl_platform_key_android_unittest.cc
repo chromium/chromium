@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -132,6 +133,31 @@ TEST_P(SSLPlatformKeyAndroidTest, MatchesPublicKey) {
             key->GetAlgorithmPreferences());
 
   TestSSLPrivateKeyMatches(key.get(), key_bytes);
+}
+
+TEST(SSLPlatformKeyAndroidInvalidTest, UnsupportedKeyType) {
+  scoped_refptr<X509Certificate> cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "client_x25519.pem");
+  ASSERT_TRUE(cert);
+
+  ScopedJavaLocalRef<jobject> java_key;
+  std::string key_bytes;
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SDK_VERSION_S) {
+    ASSERT_TRUE(ReadTestFile("client_x25519.pk8", &key_bytes));
+    java_key = GetPKCS8PrivateKeyJava("XDH", key_bytes);
+  } else {
+    // Prior to Android S, Android did not support importing X25519 keys.
+    // However, `WrapJavaPrivateKey` only inspects the certificate's public key
+    // when checking the key type, so we can still test rejection by pairing the
+    // certificate with an arbitrary RSA key.
+    ASSERT_TRUE(ReadTestFile("client_1.pk8", &key_bytes));
+    java_key = GetPKCS8PrivateKeyJava("RSA", key_bytes);
+  }
+  ASSERT_FALSE(java_key.is_null());
+
+  scoped_refptr<SSLPrivateKey> key = WrapJavaPrivateKey(cert.get(), java_key);
+  EXPECT_FALSE(key);
 }
 
 TEST(SSLPlatformKeyAndroidSigAlgTest, SignatureAlgorithmsToJavaKeyTypes) {

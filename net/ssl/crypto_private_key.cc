@@ -66,13 +66,6 @@ class CryptoPrivateKey : public ThreadedSSLPrivateKey::Delegate {
   }
 
   std::vector<uint16_t> GetAlgorithmPreferences() override {
-    int id = EVP_PKEY_id(key_.key());
-    // SSLPrivateKey doesn't support ED25519 signatures by default, but this
-    // class does because crypto::sign::Sign() can handle them.
-    if (id == EVP_PKEY_ED25519) {
-      return {SSL_SIGN_ED25519};
-    }
-
     return SSLPrivateKey::DefaultAlgorithmPreferences(EVP_PKEY_id(key_.key()),
                                                       true /* supports PSS */);
   }
@@ -97,6 +90,11 @@ class CryptoPrivateKey : public ThreadedSSLPrivateKey::Delegate {
 
 scoped_refptr<SSLPrivateKey> WrapCryptoPrivateKey(
     crypto::keypair::PrivateKey key) {
+  int key_type = EVP_PKEY_id(key.key());
+  if (key_type != EVP_PKEY_RSA && key_type != EVP_PKEY_EC &&
+      key_type != EVP_PKEY_ED25519) {
+    return nullptr;
+  }
   return base::MakeRefCounted<ThreadedSSLPrivateKey>(
       std::make_unique<CryptoPrivateKey>(std::move(key)),
       GetSSLPlatformKeyTaskRunner());

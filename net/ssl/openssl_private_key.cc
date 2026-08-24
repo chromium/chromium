@@ -73,6 +73,11 @@ class OpenSSLPrivateKey : public ThreadedSSLPrivateKey::Delegate {
 scoped_refptr<SSLPrivateKey> WrapOpenSSLPrivateKey(
     bssl::UniquePtr<EVP_PKEY> key) {
   CHECK(key);
+  int key_type = EVP_PKEY_id(key.get());
+  if (key_type != EVP_PKEY_RSA && key_type != EVP_PKEY_EC &&
+      key_type != EVP_PKEY_ED25519) {
+    return nullptr;
+  }
   return base::MakeRefCounted<ThreadedSSLPrivateKey>(
       std::make_unique<OpenSSLPrivateKey>(std::move(key)),
       GetSSLPlatformKeyTaskRunner());

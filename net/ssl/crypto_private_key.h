@@ -13,7 +13,8 @@ namespace net {
 
 class SSLPrivateKey;
 
-// Returns a new SSLPrivateKey which uses `key` for signing operations.
+// Returns a new SSLPrivateKey which uses `key` for signing operations, or
+// nullptr if `key` is not a supported type for use with TLS.
 NET_EXPORT scoped_refptr<SSLPrivateKey> WrapCryptoPrivateKey(
     crypto::keypair::PrivateKey key);
 

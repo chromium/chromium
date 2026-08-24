@@ -88,6 +88,30 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(kTestKeys),
                          TestKeyToString);
 
+TEST(SSLPlatformKeyMacInvalidTest, UnsupportedKeyType) {
+  base::test::TaskEnvironment task_environment;
+
+  scoped_refptr<X509Certificate> cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "client_x25519.pem");
+  ASSERT_TRUE(cert);
+
+  // macOS does not support X25519 SecKeyRefs. However,
+  // `CreateSSLPrivateKeyForSecKey` only inspects the certificate's public key
+  // when checking the key type, so test rejection by pairing the certificate
+  // with an arbitrary other key.
+  base::FilePath pkcs8_path =
+      GetTestCertsDirectory().AppendASCII("client_1.pk8");
+  std::optional<std::vector<uint8_t>> pkcs8 = base::ReadFileToBytes(pkcs8_path);
+  ASSERT_TRUE(pkcs8);
+  base::apple::ScopedCFTypeRef<SecKeyRef> sec_key =
+      crypto::apple::SecKeyFromPKCS8(*pkcs8);
+  ASSERT_TRUE(sec_key);
+
+  scoped_refptr<SSLPrivateKey> key =
+      CreateSSLPrivateKeyForSecKey(cert.get(), sec_key.get());
+  EXPECT_FALSE(key);
+}
+
 namespace {
 
 constexpr char kTestKeychainAccessGroup[] = "test-keychain-access-group";

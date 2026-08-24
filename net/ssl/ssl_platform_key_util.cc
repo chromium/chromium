@@ -15,7 +15,6 @@
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
-#include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
 
@@ -64,32 +63,6 @@ bssl::UniquePtr<EVP_PKEY> GetClientCertPublicKey(
   }
 
   return crypto::evp::PublicKeyFromBytes(base::as_byte_span(spki));
-}
-
-bool GetClientCertInfo(const X509Certificate* certificate,
-                       int* out_type,
-                       size_t* out_max_length) {
-  bssl::UniquePtr<EVP_PKEY> key = GetClientCertPublicKey(certificate);
-  if (!key) {
-    return false;
-  }
-
-  *out_type = EVP_PKEY_id(key.get());
-  *out_max_length = EVP_PKEY_size(key.get());
-  return true;
-}
-
-bool GetPublicKeyInfo(base::span<const uint8_t> spki,
-                      int* out_type,
-                      size_t* out_max_length) {
-  auto key = crypto::evp::PublicKeyFromBytes(spki);
-  if (!key) {
-    return false;
-  }
-
-  *out_type = EVP_PKEY_id(key.get());
-  *out_max_length = EVP_PKEY_size(key.get());
-  return true;
 }
 
 std::optional<std::vector<uint8_t>> AddPSSPadding(

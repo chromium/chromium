@@ -4,7 +4,6 @@
 
 #include "net/ssl/ssl_private_key.h"
 
-#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
@@ -41,10 +40,13 @@ std::vector<uint16_t> SSLPrivateKey::DefaultAlgorithmPreferences(
           SSL_SIGN_ECDSA_SECP256R1_SHA256, SSL_SIGN_ECDSA_SECP384R1_SHA384,
           SSL_SIGN_ECDSA_SECP521R1_SHA512, SSL_SIGN_ECDSA_SHA1,
       };
+    case EVP_PKEY_ED25519:
+      return {SSL_SIGN_ED25519};
     default:
-      NOTIMPLEMENTED();
-      return {};
-  };
+      // Callers should not pass `type` values they cannot support, so this
+      // should never happen.
+      NOTREACHED();
+  }
 }
 
 }  // namespace net

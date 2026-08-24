@@ -214,13 +214,19 @@ scoped_refptr<SSLPrivateKey> FetchClientCertPrivateKey(
   void* wincx = password_delegate ? password_delegate->wincx() : nullptr;
   crypto::ScopedSECKEYPrivateKey key(
       PK11_FindKeyByAnyCert(cert_certificate, wincx));
-  if (!key)
+  if (!key) {
     return nullptr;
+  }
 
-  int type;
-  size_t max_length;
-  if (!GetClientCertInfo(certificate, &type, &max_length))
+  bssl::UniquePtr<EVP_PKEY> pubkey = GetClientCertPublicKey(certificate);
+  if (!pubkey) {
     return nullptr;
+  }
+
+  int type = EVP_PKEY_id(pubkey.get());
+  if (type != EVP_PKEY_RSA && type != EVP_PKEY_EC) {
+    return nullptr;
+  }
 
   // Note that key contains a reference to password_delegate->wincx() and may
   // use it in PK11_Sign. Thus password_delegate must outlive key. We pass it

@@ -59,14 +59,19 @@ class NET_EXPORT SSLPrivateKey
                     SignCallback callback) = 0;
 
   // Returns the default signature algorithm preferences for the specified key
-  // type, which should be a BoringSSL `EVP_PKEY_*` constant. RSA keys which use
-  // this must support PKCS #1 v1.5 signatures with SHA-1, SHA-256, SHA-384, and
-  // SHA-512. If `supports_pss` is true, they must additionally support PSS
-  // signatures with SHA-256, SHA-384, and SHA-512. ECDSA keys must support
-  // SHA-256, SHA-384, SHA-512.
+  // type, which should be a BoringSSL `EVP_PKEY_*` constant. It is assumed
+  // that, if the caller passes in some value of `type`, that it supports keys
+  // of that type. In cases where `type` might be used with multiple algorithms:
   //
-  // Keys with more specific capabilities or preferences should return a custom
-  // list.
+  // - `EVP_PKEY_RSA` keys which use this must support PKCS #1 v1.5 signatures
+  //   with SHA-1, SHA-256, SHA-384, and SHA-512. If `supports_pss` is true,
+  //   they must additionally support PSS signatures with SHA-256, SHA-384, and
+  //   SHA-512.
+  //
+  // - `EVP_PKEY_EC` keys must support ECDSA with SHA-256, SHA-384, and SHA-512.
+  //
+  // Keys with more specific capabilities or preferences should implement
+  // `GetAlgorithmPreferences` with a custom list.
   static std::vector<uint16_t> DefaultAlgorithmPreferences(int type,
                                                            bool supports_pss);
 

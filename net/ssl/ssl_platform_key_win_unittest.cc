@@ -339,6 +339,77 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(kTestKeys),
                          TestParamsToString);
 
+TEST(SSLPlatformKeyWinInvalidTest, UnsupportedKeyTypeCNG) {
+  scoped_refptr<X509Certificate> cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "client_x25519.pem");
+  ASSERT_TRUE(cert);
+
+  // CNG does not support importing X25519 keys via Microsoft Software KSP.
+  // However, `WrapCNGPrivateKey` only inspects the certificate's public key
+  // when checking the key type, so test rejection by pairing the certificate
+  // with an arbitrary other key.
+  base::FilePath pkcs8_path =
+      GetTestCertsDirectory().AppendASCII("client_1.pk8");
+  std::optional<std::vector<uint8_t>> pkcs8 = base::ReadFileToBytes(pkcs8_path);
+  ASSERT_TRUE(pkcs8);
+
+  crypto::ScopedNCryptProvider prov;
+  SECURITY_STATUS status = NCryptOpenStorageProvider(
+      crypto::ScopedNCryptProvider::Receiver(prov).get(),
+      MS_KEY_STORAGE_PROVIDER, 0);
+  ASSERT_FALSE(FAILED(status)) << status;
+
+  LPCWSTR blob_type;
+  std::vector<uint8_t> blob;
+  ASSERT_TRUE(PKCS8ToBLOBForCNG(*pkcs8, &blob_type, &blob));
+  crypto::ScopedNCryptKey ncrypt_key;
+  status = NCryptImportKey(prov.get(), /*hImportKey=*/0, blob_type,
+                           /*pParameterList=*/nullptr,
+                           crypto::ScopedNCryptKey::Receiver(ncrypt_key).get(),
+                           blob.data(), blob.size(), NCRYPT_SILENT_FLAG);
+  ASSERT_FALSE(FAILED(status)) << status;
+
+  scoped_refptr<SSLPrivateKey> key =
+      WrapCNGPrivateKey(cert.get(), std::move(ncrypt_key));
+  EXPECT_FALSE(key);
+}
+
+TEST(SSLPlatformKeyWinInvalidTest, UnsupportedKeyTypeCAPI) {
+  scoped_refptr<X509Certificate> cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "client_x25519.pem");
+  ASSERT_TRUE(cert);
+
+  // CAPI only supports RSA keys. However, `WrapCAPIPrivateKey` only inspects
+  // the certificate's public key when checking the key type, so test rejection
+  // by pairing the certificate with an arbitrary RSA key.
+  base::FilePath pkcs8_path =
+      GetTestCertsDirectory().AppendASCII("client_1.pk8");
+  std::optional<std::vector<uint8_t>> pkcs8 = base::ReadFileToBytes(pkcs8_path);
+  ASSERT_TRUE(pkcs8);
+
+  crypto::ScopedHCRYPTPROV prov;
+  ASSERT_NE(FALSE,
+            CryptAcquireContext(crypto::ScopedHCRYPTPROV::Receiver(prov).get(),
+                                nullptr, nullptr, PROV_RSA_AES,
+                                CRYPT_VERIFYCONTEXT | CRYPT_SILENT))
+      << GetLastError();
+
+  std::vector<uint8_t> blob;
+  ASSERT_TRUE(PKCS8ToBLOBForCAPI(*pkcs8, &blob));
+
+  crypto::ScopedHCRYPTKEY hcryptkey;
+  ASSERT_NE(FALSE,
+            CryptImportKey(prov.get(), blob.data(), blob.size(),
+                           /*hPubKey=*/0, /*dwFlags=*/0,
+                           crypto::ScopedHCRYPTKEY::Receiver(hcryptkey).get()))
+      << GetLastError();
+  hcryptkey.reset();
+
+  scoped_refptr<SSLPrivateKey> key =
+      WrapCAPIPrivateKey(cert.get(), std::move(prov), AT_SIGNATURE);
+  EXPECT_FALSE(key);
+}
+
 class UnexportableSSLPlatformKeyWinTest : public testing::TestWithParam<bool> {
  protected:
   bool UseHardwareBackedKeys() { return GetParam(); }

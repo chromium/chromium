@@ -163,13 +163,17 @@ scoped_refptr<SSLPrivateKey> WrapJavaPrivateKey(
     const X509Certificate* certificate,
     const JavaRef<jobject>& key) {
   bssl::UniquePtr<EVP_PKEY> pubkey = GetClientCertPublicKey(certificate);
+  if (!pubkey) {
+    return nullptr;
+  }
   return WrapJavaPrivateKey(std::move(pubkey), key);
 }
 
 scoped_refptr<SSLPrivateKey> WrapJavaPrivateKey(
     bssl::UniquePtr<EVP_PKEY> pubkey,
     const JavaRef<jobject>& key) {
-   if (!pubkey) {
+  int key_type = EVP_PKEY_id(pubkey.get());
+  if (key_type != EVP_PKEY_RSA && key_type != EVP_PKEY_EC) {
     return nullptr;
   }
   return base::MakeRefCounted<ThreadedSSLPrivateKey>(

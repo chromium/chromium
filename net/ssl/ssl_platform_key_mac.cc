@@ -185,18 +185,28 @@ class SSLPlatformKeySecKey : public ThreadedSSLPrivateKey::Delegate {
   base::apple::ScopedCFTypeRef<SecKeyRef> key_;
 };
 
+scoped_refptr<SSLPrivateKey> WrapSecKey(bssl::UniquePtr<EVP_PKEY> pubkey,
+                                        SecKeyRef key) {
+  int key_type = EVP_PKEY_id(pubkey.get());
+  if (key_type != EVP_PKEY_RSA && key_type != EVP_PKEY_EC) {
+    return nullptr;
+  }
+
+  return base::MakeRefCounted<ThreadedSSLPrivateKey>(
+      std::make_unique<SSLPlatformKeySecKey>(std::move(pubkey), key),
+      GetSSLPlatformKeyTaskRunner());
+}
+
 }  // namespace
 
 scoped_refptr<SSLPrivateKey> CreateSSLPrivateKeyForSecKey(
     const X509Certificate* certificate,
     SecKeyRef key) {
   bssl::UniquePtr<EVP_PKEY> pubkey = GetClientCertPublicKey(certificate);
-  if (!pubkey)
+  if (!pubkey) {
     return nullptr;
-
-  return base::MakeRefCounted<ThreadedSSLPrivateKey>(
-      std::make_unique<SSLPlatformKeySecKey>(std::move(pubkey), key),
-      GetSSLPlatformKeyTaskRunner());
+  }
+  return WrapSecKey(std::move(pubkey), key);
 }
 
 scoped_refptr<SSLPrivateKey> WrapUnexportableKey(
@@ -206,11 +216,7 @@ scoped_refptr<SSLPrivateKey> WrapUnexportableKey(
   if (!pubkey) {
     return nullptr;
   }
-
-  return base::MakeRefCounted<ThreadedSSLPrivateKey>(
-      std::make_unique<SSLPlatformKeySecKey>(std::move(pubkey),
-                                             unexportable_key.GetSecKeyRef()),
-      GetSSLPlatformKeyTaskRunner());
+  return WrapSecKey(std::move(pubkey), unexportable_key.GetSecKeyRef());
 }
 
 }  // namespace net
