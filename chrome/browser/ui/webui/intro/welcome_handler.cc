@@ -10,26 +10,23 @@
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "chrome/browser/shell_integration.h"
 
 WelcomeHandler::WelcomeHandler(
     base::OnceClosure callback,
     mojo::PendingReceiver<intro::mojom::WelcomePageHandler> receiver)
-    : WelcomeHandler(std::move(callback),
-                     std::move(receiver),
-                     base::NullCallback()) {}
+    : callback_(std::move(callback)), receiver_(this, std::move(receiver)) {
+  CHECK(callback_);
+}
 
 WelcomeHandler::WelcomeHandler(
     base::OnceClosure callback,
     mojo::PendingReceiver<intro::mojom::WelcomePageHandler> receiver,
     base::OnceClosure on_set_as_default_completed_callback)
-    : callback_(std::move(callback)),
-      receiver_(this, std::move(receiver)),
-      on_set_as_default_completed_callback_for_testing_(
-          std::move(on_set_as_default_completed_callback)) {
+    : WelcomeHandler(std::move(callback), std::move(receiver)) {
   CHECK_IS_TEST();
-  CHECK(callback_);
+  on_set_as_default_completed_callback_for_testing_ =
+      std::move(on_set_as_default_completed_callback);
 }
 
 WelcomeHandler::~WelcomeHandler() = default;
