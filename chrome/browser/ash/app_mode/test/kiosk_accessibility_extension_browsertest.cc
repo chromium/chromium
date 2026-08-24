@@ -150,8 +150,14 @@ class KioskAccessibilityExtensionTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/550911616): Test is flaky on debug and ASAN/LSAN builds.
+#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER)
+#define MAYBE_KeepsStateOnExtensionRestart DISABLED_KeepsStateOnExtensionRestart
+#else
+#define MAYBE_KeepsStateOnExtensionRestart KeepsStateOnExtensionRestart
+#endif
 IN_PROC_BROWSER_TEST_P(KioskAccessibilityExtensionTest,
-                       KeepsStateOnExtensionRestart) {
+                       MAYBE_KeepsStateOnExtensionRestart) {
   auto& profile = CurrentProfile();
 
   EnableChromeVoxExtension();
