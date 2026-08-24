@@ -312,7 +312,7 @@ bool AutofillClient::IsTabInActorMode() const {
   return false;
 }
 
-ActorKeyMetricsRecorder* AutofillClient::GetActorKeyMetricsRecorder() {
+ActorAutofillManager* AutofillClient::GetActorAutofillManager() {
   return nullptr;
 }
 

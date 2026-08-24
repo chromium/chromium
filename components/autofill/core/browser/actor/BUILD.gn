@@ -6,6 +6,8 @@ import("//build/config/features.gni")
 
 source_set("actor") {
   sources = [
+    "actor_autofill_manager.cc",
+    "actor_autofill_manager.h",
     "actor_filling_observer.cc",
     "actor_filling_observer.h",
     "actor_form_filling_service.h",

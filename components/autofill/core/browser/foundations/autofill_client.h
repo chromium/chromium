@@ -115,7 +115,7 @@ class ProfileMetricsService;
 
 namespace autofill {
 
-class ActorKeyMetricsRecorder;
+class ActorAutofillManager;
 class AutofillManager;
 class AddressNormalizer;
 class AtMemoryManager;
@@ -710,8 +710,8 @@ class AutofillClient {
   // one exists).
   virtual bool IsTabInActorMode() const;
 
-  // Returns the `ActorKeyMetricsRecorder` for the current tab (if one exists).
-  virtual ActorKeyMetricsRecorder* GetActorKeyMetricsRecorder();
+  // Returns the `ActorAutofillManager` for the current tab (if one exists).
+  virtual ActorAutofillManager* GetActorAutofillManager();
 
   // Returns true if either Profile or CreditCard Autofill is enabled.
   virtual bool IsAutofillEnabled() const = 0;

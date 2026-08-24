@@ -80,7 +80,7 @@ class AutofillDialogController;
 class TouchToFillAutofillController;
 #endif
 
-class ActorKeyMetricsRecorder;
+class ActorAutofillManager;
 class AutofillAiPersonalContextAccessManager;
 class AutofillOptimizationGuideDecider;
 class EmailVerificationPopupController;
@@ -231,7 +231,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
       const base::flat_set<EntityTypeName>& saved_entities,
       const FieldTypeSet& triggering_field_types) final;
   bool IsTabInActorMode() const final;
-  ActorKeyMetricsRecorder* GetActorKeyMetricsRecorder() final;
+  ActorAutofillManager* GetActorAutofillManager() final;
   bool IsAutofillEnabled() const final;
   bool IsAutofillProfileEnabled() const final;
   bool IsAutofillTypeBlockedByPolicy(
@@ -457,14 +457,8 @@ class ChromeAutofillClient : public ContentAutofillClient {
   // Removes the subscription when the `ChromeAutofillClient` is destroyed.
   base::CallbackListSubscription actor_task_state_changed_subscription_;
 
-  // Responsible for keeping track if (and which) actor is interacting with
-  // the current tab. When present, some parts of Autofill may behave
-  // differently. There can be at most one actor on a given tab. If there is no
-  // actor interacting with the current tab it is `std::nullopt`.
-  std::optional<actor::TaskId> active_actor_task_;
-
   std::unique_ptr<FormPredictionsTracker> form_predictions_tracker_;
-  std::unique_ptr<ActorKeyMetricsRecorder> actor_key_metrics_recorder_;
+  std::unique_ptr<ActorAutofillManager> actor_autofill_manager_;
 
   AtMemoryCopyPasteObserver at_memory_copy_paste_observer_{this};
 

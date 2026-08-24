@@ -82,7 +82,7 @@ void TestBrowserAutofillManagerWithTestCCAM::FillOrPreviewForm(
 }
 
 TestActorAutofillClient::TestActorAutofillClient() {
-  recorder_ = std::make_unique<ActorKeyMetricsRecorder>(this);
+  actor_autofill_manager_ = std::make_unique<ActorAutofillManager>(this);
 }
 
 TestActorAutofillClient::~TestActorAutofillClient() = default;
@@ -95,8 +95,8 @@ TestActorAutofillClient::GetAutofillManagerForPrimaryMainFrame() {
   return &GetAutofillDriverFactory().driver(0)->GetAutofillManager();
 }
 
-ActorKeyMetricsRecorder* TestActorAutofillClient::GetActorKeyMetricsRecorder() {
-  return recorder_.get();
+ActorAutofillManager* TestActorAutofillClient::GetActorAutofillManager() {
+  return actor_autofill_manager_.get();
 }
 
 ActorTestBase::ActorTestBase()

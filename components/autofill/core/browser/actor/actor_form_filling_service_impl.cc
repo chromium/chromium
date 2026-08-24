@@ -32,6 +32,7 @@
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/core/shared_types.h"
+#include "components/autofill/core/browser/actor/actor_autofill_manager.h"
 #include "components/autofill/core/browser/actor/actor_filling_observer.h"
 #include "components/autofill/core/browser/actor/actor_key_metrics_recorder.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -656,10 +657,11 @@ void ActorFormFillingServiceImpl::GetSuggestions(
     }
   }
 
-  if (ActorKeyMetricsRecorder* recorder =
-          autofill_manager.client().GetActorKeyMetricsRecorder()) {
+  if (ActorAutofillManager* manager =
+          autofill_manager.client().GetActorAutofillManager()) {
+    ActorKeyMetricsRecorder& recorder = manager->key_metrics_recorder();
     for (const auto& [form_id, products] : products_by_form) {
-      recorder->OnSuggestionsGenerated(form_id, products);
+      recorder.OnSuggestionsGenerated(form_id, products);
     }
   }
 
@@ -859,10 +861,11 @@ ActorFormFillingServiceImpl::FillOrPreviewFormImpl(
   for (FieldGlobalId trigger_field_id : fill_data->field_ids) {
     if (const FormStructure* const form_structure =
             autofill_manager.FindCachedFormById(trigger_field_id)) {
-      if (ActorKeyMetricsRecorder* recorder =
-              autofill_manager.client().GetActorKeyMetricsRecorder()) {
+      if (ActorAutofillManager* manager =
+              autofill_manager.client().GetActorAutofillManager()) {
+        ActorKeyMetricsRecorder& recorder = manager->key_metrics_recorder();
         if (action_persistence == mojom::ActionPersistence::kFill) {
-          recorder->RecordFormToFill(form_structure->global_id());
+          recorder.RecordFormToFill(form_structure->global_id());
         }
       }
       std::visit(absl::Overload{

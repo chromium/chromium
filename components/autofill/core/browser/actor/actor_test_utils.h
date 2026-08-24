@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
 #include "components/actor/core/aggregated_journal.h"
+#include "components/autofill/core/browser/actor/actor_autofill_manager.h"
 #include "components/autofill/core/browser/actor/actor_form_filling_service_impl.h"
 #include "components/autofill/core/browser/actor/actor_key_metrics_recorder.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -113,10 +114,10 @@ class TestActorAutofillClient : public TestAutofillClient {
 
   AutofillManager* GetAutofillManagerForPrimaryMainFrame() override;
 
-  ActorKeyMetricsRecorder* GetActorKeyMetricsRecorder() override;
+  ActorAutofillManager* GetActorAutofillManager() override;
 
  private:
-  std::unique_ptr<ActorKeyMetricsRecorder> recorder_;
+  std::unique_ptr<ActorAutofillManager> actor_autofill_manager_;
 };
 
 // Base test fixture for core Autofill Actor component unit tests. Manages the
