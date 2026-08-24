@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_gateway_manager.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_link_opening_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
@@ -131,6 +132,7 @@
       [[GeminiStartupConfiguration alloc] init];
   config.authService = authService;
   config.gateway = self.gateway;
+  config.linkOpeningHandler = _gatewayManager.linkOpeningHandler;
   config.imageRemixEnabled =
       gemini::IsFeatureAvailable(gemini::Feature::kImageRemix, _profile);
   config.geminiLiveEnabled =

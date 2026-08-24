@@ -10,6 +10,7 @@
 class AuthenticationService;
 
 @protocol BWGGatewayProtocol;
+@protocol BWGLinkOpeningDelegate;
 
 // `GeminiStartupConfiguration` is a configuration class that holds all the data
 // necessary to configure Gemini at startup.
@@ -18,8 +19,13 @@ class AuthenticationService;
 // The authentication service to be used.
 @property(nonatomic, assign) AuthenticationService* authService;
 
+// TODO(crbug.com/549393970): Remove the gateway from GeminiStartupConfiguration
+// when `linkOpeningHandler` is fully used instead of the gateway.
 // The BWG gateway for bridging internal protocols.
 @property(nonatomic, weak) id<BWGGatewayProtocol> gateway;
+
+// The link opening handler for handling link opening requests.
+@property(nonatomic, weak) id<BWGLinkOpeningDelegate> linkOpeningHandler;
 
 // Whether image remix is enabled. This is not equivalent to a feature flag
 // because it has additional eligibility checks.
