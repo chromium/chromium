@@ -5,6 +5,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/public/provider/chrome/browser/mini_map/mini_map_api.h"
+#import "url/gurl.h"
 
 namespace ios {
 namespace provider {
@@ -15,6 +16,14 @@ id<MiniMapController> CreateMiniMapController() {
 }
 
 BOOL MiniMapCanHandleURL(NSURL* url) {
+  return NO;
+}
+
+GURL URLByAppendingCampaignTokenIfNeeded(const GURL& url) {
+  return url;
+}
+
+BOOL URLHasCampaignToken(const GURL& url) {
   return NO;
 }
 

@@ -7,5 +7,6 @@ source_set("chromium_mini_map") {
   deps = [
     "//base",
     "//ios/public/provider/chrome/browser/mini_map:mini_map_api",
+    "//url",
   ]
 }

@@ -63,15 +63,21 @@ void MiniMapTabHelper::ShouldAllowRequest(NSURLRequest* request,
     return;
   }
 
+  const GURL request_url = net::GURLWithNSURL(request.URL);
+
+  // User Disabled in Settings (Opt-out) OR Counterfactual Arm:
   if (base::FeatureList::IsEnabled(kIOSMiniMapUniversalLinkCounterfactual) ||
       !mini_map_service_->IsMiniMapEnabled()) {
-    GURL target_url = net::GURLWithNSURL(request.URL);
-    std::string utm_campaign =
-        base::FeatureList::IsEnabled(kIOSMiniMapUniversalLinkCounterfactual)
-            ? "as-npc-bling"
-            : "as-npt-bling";
     GURL modified_url =
-        net::AppendQueryParameter(target_url, "utm_campaign", utm_campaign);
+        ios::provider::URLByAppendingCampaignTokenIfNeeded(request_url);
+    if (modified_url == request_url) {
+      std::string utm_campaign =
+          base::FeatureList::IsEnabled(kIOSMiniMapUniversalLinkCounterfactual)
+              ? "as-npc-bling"
+              : "as-npt-bling";
+      modified_url =
+          net::AppendQueryParameter(request_url, "utm_campaign", utm_campaign);
+    }
 
     std::move(callback).Run(PolicyDecision::Cancel());
 
@@ -83,12 +89,18 @@ void MiniMapTabHelper::ShouldAllowRequest(NSURLRequest* request,
     return;
   }
 
+  // Save fallback URL, defer navigation, and present Native Preview sheet.
   if (policy_callback_) {
     std::move(policy_callback_).Run(PolicyDecision::Allow());
   }
 
-  pending_treatment_url_ = net::AppendQueryParameter(
-      net::GURLWithNSURL(request.URL), "utm_campaign", "as-npt-bling");
+  GURL pending_url =
+      ios::provider::URLByAppendingCampaignTokenIfNeeded(request_url);
+  if (pending_url == request_url) {
+    pending_url =
+        net::AppendQueryParameter(request_url, "utm_campaign", "as-npt-bling");
+  }
+  pending_treatment_url_ = pending_url;
   pending_transition_type_ = request_info.transition_type;
   policy_callback_ = std::move(callback);
 }
@@ -172,6 +184,9 @@ bool MiniMapTabHelper::ShouldInterceptRequest(
       (value == "as-npc-bling" || value == "as-npt-bling")) {
     return false;
   }
+  if (ios::provider::URLHasCampaignToken(target_url)) {
+    return false;
+  }
 
   if (base::FeatureList::IsEnabled(kIOSMiniMapUniversalLinkCounterfactual) ||
       !mini_map_service_->IsMiniMapEnabled()) {
@@ -181,7 +196,11 @@ bool MiniMapTabHelper::ShouldInterceptRequest(
   }
 
   GURL modified_url =
-      net::AppendQueryParameter(target_url, "utm_campaign", "as-npt-bling");
+      ios::provider::URLByAppendingCampaignTokenIfNeeded(target_url);
+  if (modified_url == target_url) {
+    modified_url =
+        net::AppendQueryParameter(target_url, "utm_campaign", "as-npt-bling");
+  }
   [mini_map_handler_
       presentMiniMapNativePreviewForURL:net::NSURLWithGURL(modified_url)];
   return true;
