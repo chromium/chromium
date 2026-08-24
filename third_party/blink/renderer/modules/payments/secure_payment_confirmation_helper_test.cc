@@ -117,6 +117,7 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_OptionalFields) {
   request->instrument()->setDetails("instrument details");
   request->setPayeeOrigin("https://merchant.example");
   request->setTimeout(5 * 60 * 1000);  // 5 minutes
+  request->setLocale({"en-US", "fr-FR"});
 
   PaymentEntityLogo* logo1 = PaymentEntityLogo::Create(scope.GetIsolate());
   logo1->setUrl("https://entity1.example/icon.png");
@@ -145,6 +146,7 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_OptionalFields) {
   // into the request as above it will still be present and we can test that the
   // mojo parsing works correctly.
   EXPECT_EQ(parsed_request->payment_entities_logos.size(), 2u);
+  EXPECT_THAT(parsed_request->locales, testing::ElementsAre("en-US", "fr-FR"));
 }
 
 // Test that parsing a SecurePaymentConfirmationRequest with an empty
@@ -654,6 +656,25 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_BrowserBroundPubKeyCredParams) {
   EXPECT_THAT(parsed_request->browser_bound_pub_key_cred_params,
               testing::ElementsAre(EqPublicKeyCredentialParameters(
                   blink::mojom::PublicKeyCredentialType::PUBLIC_KEY, -9)));
+}
+
+// Test that parsing a SecurePaymentConfirmationRequest without a locale
+// list sets the locales in the mojo output to an empty list.
+TEST(SecurePaymentConfirmationHelperTest, Parse_EmptyLocales) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  SecurePaymentConfirmationRequest* request =
+      CreateSecurePaymentConfirmationRequest(scope);
+
+  ScriptValue script_value(scope.GetIsolate(),
+                           ToV8Traits<SecurePaymentConfirmationRequest>::ToV8(
+                               scope.GetScriptState(), request));
+  ::payments::mojom::blink::SecurePaymentConfirmationRequestPtr parsed_request =
+      SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
+          script_value, *scope.GetExecutionContext(), ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(parsed_request);
+
+  EXPECT_TRUE(parsed_request->locales.empty());
 }
 
 }  // namespace blink

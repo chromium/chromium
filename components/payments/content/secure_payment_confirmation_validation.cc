@@ -10,8 +10,13 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/language_tag_matcher.h"
+#include "base/i18n/tag_converters.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "components/payments/core/error_strings.h"
+#include "components/payments/core/features.h"
 #include "components/payments/core/native_error_strings.h"
 #include "components/webauthn/core/browser/webauthn_security_utils.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -42,6 +47,50 @@ bool IsValidDomain(const std::string& rp_id) {
   // more of the URL!) that is not an IP address.
   GURL url("https://" + rp_id);
   return url.is_valid() && url.GetHost() == rp_id && !url.HostIsIPAddress();
+}
+
+// Returns true if a single request tag matches against the app tag. A match
+// occurs in the following cases:
+// - The request tag and app tag both include a region, and the tags are an
+// exact match.
+// - At least one of the request tag or app tag does not include a region and
+// base::i18n:LanguageTagMatcher::Match returns true.
+bool MatchLanguageTags(const std::vector<std::string>& request_tags,
+                       const std::string& app_tag) {
+  if (request_tags.empty()) {
+    return true;
+  }
+
+  std::optional<base::i18n::LanguageTag> parsed_app_tag =
+      base::i18n::LanguageTagConverter::GetInstance().FromString(app_tag);
+  if (!parsed_app_tag) {
+    return false;
+  }
+
+  base::i18n::LanguageTagMatcher matcher =
+      base::i18n::LanguageTagMatcher::Create({*parsed_app_tag});
+
+  for (const std::string& tag_str : request_tags) {
+    std::optional<base::i18n::LanguageTag> parsed_request_tag =
+        base::i18n::LanguageTagConverter::GetInstance().FromString(tag_str);
+    if (!parsed_request_tag) {
+      continue;
+    }
+
+    // If both the request and app tags have region sub tags they must be an
+    // exact match.
+    if (!parsed_app_tag->region_subtag().empty() &&
+        !parsed_request_tag->region_subtag().empty() &&
+        !matcher.HasExactMatch(*parsed_request_tag)) {
+      continue;
+    }
+
+    if (matcher.Match(*parsed_request_tag).has_value()) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 }  // namespace
@@ -108,13 +157,16 @@ std::string SecurePaymentConfirmationRequestValidationErrorToString(
     case SecurePaymentConfirmationRequestValidationError::
         kWebAuthnExtensionsNotSupported:
       return errors::kWebAuthnExtensionsNotSupported;
+    case SecurePaymentConfirmationRequestValidationError::kLocaleDoesNotMatch:
+      return errors::kSpcLocaleDoesNotMatch;
   }
 }
 
 SecurePaymentConfirmationRequestValidationError
 IsValidSecurePaymentConfirmationRequest(
     const mojom::SecurePaymentConfirmationRequestPtr& request,
-    const url::Origin& initiator_origin) {
+    const url::Origin& initiator_origin,
+    const std::string& application_locale) {
   CHECK(request);
 
   if (request->credential_ids.empty()) {
@@ -127,6 +179,11 @@ IsValidSecurePaymentConfirmationRequest(
       return SecurePaymentConfirmationRequestValidationError::
           kCredentialIdsRequired;
     }
+  }
+
+  if (base::FeatureList::IsEnabled(features::kSPCLocaleValidation) &&
+      !MatchLanguageTags(request->locales, application_locale)) {
+    return SecurePaymentConfirmationRequestValidationError::kLocaleDoesNotMatch;
   }
 
   if (request->timeout.has_value() &&

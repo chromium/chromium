@@ -63,8 +63,12 @@ JNI_PaymentValidator_ValidateSecurePaymentConfirmationRequestAndroid(
     return static_cast<jint>(
         SecurePaymentConfirmationRequestValidationError::kInternalError);
   }
-  return static_cast<jint>(
-      IsValidSecurePaymentConfirmationRequest(request, initiator_origin));
+  return static_cast<jint>(IsValidSecurePaymentConfirmationRequest(
+      request, initiator_origin,
+      /*application_locale=*/""));  // TODO(crbug.com/545148854):
+                                    // Need to wire up the
+                                    // application locale, it is
+                                    // behind a flag.
 }
 
 }  // namespace payments

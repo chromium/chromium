@@ -245,7 +245,7 @@ void SecurePaymentConfirmationAppFactory::Create(
       // PaymentRequest::Init should have already validated the request.
       CHECK_EQ(IsValidSecurePaymentConfirmationRequest(
                    method_data->secure_payment_confirmation,
-                   delegate->GetFrameSecurityOrigin()),
+                   delegate->GetFrameSecurityOrigin(), spec->app_locale()),
                SecurePaymentConfirmationRequestValidationError::kOk);
 
       mojom::SecurePaymentConfirmationRequestPtr spc_request =

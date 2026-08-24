@@ -180,6 +180,13 @@ struct SecurePaymentConfirmationRequest {
   // A list of logos representing entities that are facilitating the payment
   // that this SPC call is for.
   array<PaymentEntityLogo> payment_entities_logos;
+
+  // An optional field for a list of language tags that can be used to identify the
+  // locale preferences of the website. If the field is set and none of the language
+  // tags match the language that the SPC dialog uses, then all active promises will
+  // reject for the PaymentRequest object. If the field is not set or set with an
+  // empty list, then the language check will be skipped.
+  array<string> locales;
 };
 
 struct NetworkOrIssuerInformation {

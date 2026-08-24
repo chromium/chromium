@@ -69,6 +69,10 @@ TypeConverter<payments::mojom::blink::SecurePaymentConfirmationRequestPtr,
         input->browserBoundPubKeyCredParams());
   }
 
+  if (input->hasLocale()) {
+    output->locales = input->locale();
+  }
+
   output->show_opt_out = input->getShowOptOutOr(false);
 
   return output;

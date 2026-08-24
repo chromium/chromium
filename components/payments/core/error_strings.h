@@ -105,6 +105,10 @@ extern const char kUserCancelled[];
 // credentials
 extern const char kWebAuthnOperationTimedOutOrNotAllowed[];
 
+// Used when SPC is passed a list of locales and none match against the browser
+// locale.
+extern const char kSpcLocaleDoesNotMatch[];
+
 // Used when the user opts out of SPC for a given RP.
 extern const char kSpcUserOptedOut[];
 

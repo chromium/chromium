@@ -39,6 +39,7 @@ const char kShippingAddressInvalid[] = "Payment app returned invalid shipping ad
 const char kShippingOptionEmpty[] = "Payment app returned invalid response. Missing field \"shipping option\".";
 const char kShippingOptionIdRequired[] = "Shipping option identifier required.";
 const char kSkipAppForPartialDelegation[] = "Skipping $ for not providing all of the requested PaymentOptions.";
+const char kSpcLocaleDoesNotMatch[] = "None of the supplied locales match the \"secure-payment-confirmation\" locale.";
 const char kSpcUserOptedOut[] = "User opted out of the process.";
 const char kTotalRequired[] = "Total required.";
 const char kUserCancelled[] = "User closed the Payment Request UI.";

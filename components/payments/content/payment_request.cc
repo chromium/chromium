@@ -120,7 +120,10 @@ ValidateSecurePaymentConfirmationRequest(
   }
 
   return IsValidSecurePaymentConfirmationRequest(
-      method_data_entry->secure_payment_confirmation, initiator_origin);
+      method_data_entry->secure_payment_confirmation, initiator_origin,
+      /*application_locale=*/"");  // TODO(crbug.com/545148854):
+                                   // Need to wire up the application
+                                   // locale, it is behind a flag.
 }
 
 // Helper to map JourneyLogger::AbortReason to aborted PaymentRequestOutcomes.
