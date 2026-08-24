@@ -4,32 +4,48 @@
 
 #import "ios/chrome/app/deferred_initialization_queue.h"
 
+#import <utility>
+
 #import "base/check.h"
 #import "base/sequence_checker.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/timer/timer.h"
+#import "base/trace_event/trace_event.h"
+#import "base/trace_event/trace_id_helper.h"
 
 @interface DeferredInitializationBlock : NSObject
 
-- (instancetype)initWithBlock:(ProceduralBlock)block NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBlock:(ProceduralBlock)block
+                         name:(NSString*)name NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 - (void)run;
 
+@property(nonatomic, readonly) uint64_t flowId;
+@property(nonatomic, readonly, copy) NSString* name;
+
 @end
 
 @implementation DeferredInitializationBlock {
   ProceduralBlock _block;
+  NSString* _name;
+  uint64_t _flowId;
 }
 
-- (instancetype)initWithBlock:(ProceduralBlock)block {
+- (instancetype)initWithBlock:(ProceduralBlock)block name:(NSString*)name {
   if ((self = [super init])) {
     _block = block;
+    _name = [name copy];
+    _flowId = base::trace_event::GetNextGlobalTraceId();
   }
   return self;
 }
 
 - (void)run {
+  TRACE_EVENT("startup", "- [DeferredInitializationBlock run]",
+              perfetto::TerminatingFlow::ProcessScoped(_flowId), "name",
+              base::SysNSStringToUTF8(_name));
   std::exchange(_block, nil)();
 }
 
@@ -73,13 +89,18 @@
                     delayBeforeFirstBlock:base::Seconds(3)];
 }
 
-- (DeferredInitializationBlock*)enqueueBlock:(ProceduralBlock)block {
+- (DeferredInitializationBlock*)enqueueBlockNamed:(NSString*)name
+                                            block:(ProceduralBlock)block {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   DCHECK(block);
 
   DeferredInitializationBlock* deferredBlock =
-      [[DeferredInitializationBlock alloc] initWithBlock:block];
+      [[DeferredInitializationBlock alloc] initWithBlock:block name:name];
   [_queue addObject:deferredBlock];
+
+  TRACE_EVENT_INSTANT(
+      "startup", "- [DeferredInitializationQueue enqueueBlockNamed:block:]",
+      perfetto::Flow::ProcessScoped(deferredBlock.flowId));
 
   if (!_timer.IsRunning()) {
     [self scheduleExecution:_delayBeforeFirstBlock];
