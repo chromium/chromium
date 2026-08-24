@@ -16,9 +16,19 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
+#include "services/network/test/test_network_connection_tracker.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
+#include "chrome/browser/policy/schema_registry_service.h"
+#include "components/account_id/account_id.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#else
 #include "components/policy/core/common/cloud/mock_user_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
-#include "services/network/test/test_network_connection_tracker.h"
+#endif
 
 namespace enterprise_reporting {
 
@@ -37,26 +47,32 @@ void RealtimeEventUploaderTestBase::SetUp() {
       TestingBrowserProcess::GetGlobal());
   ASSERT_TRUE(profile_manager_->SetUp());
 
+#if !BUILDFLAG(IS_CHROMEOS)
   fake_browser_dm_token_storage_ =
       std::make_unique<policy::FakeBrowserDMTokenStorage>();
   policy::BrowserDMTokenStorage::SetForTesting(
       fake_browser_dm_token_storage_.get());
+#endif
 }
 
 void RealtimeEventUploaderTestBase::TearDown() {
   TestingBrowserProcess::GetGlobal()
       ->browser_policy_connector()
       ->SetDeviceAffiliatedIdsForTesting({});
+#if !BUILDFLAG(IS_CHROMEOS)
   policy::BrowserDMTokenStorage::SetForTesting(nullptr);
+#endif
 }
 
 void RealtimeEventUploaderTestBase::SetBrowserManaged(
     bool is_managed,
     const std::string& dm_token) {
+#if !BUILDFLAG(IS_CHROMEOS)
   if (is_managed) {
     fake_browser_dm_token_storage_->SetDMToken(dm_token);
     fake_browser_dm_token_storage_->SetClientId("browser_client_id");
   }
+#endif
 }
 
 TestingProfile* RealtimeEventUploaderTestBase::CreateProfile(
@@ -66,6 +82,7 @@ TestingProfile* RealtimeEventUploaderTestBase::CreateProfile(
     bool create_reporting_client) {
   TestingProfile::Builder builder;
 
+#if !BUILDFLAG(IS_CHROMEOS)
   if (is_managed) {
     auto store = std::make_unique<policy::MockUserCloudPolicyStore>(
         policy::dm_protocol::GetChromeUserPolicyType());
@@ -84,6 +101,7 @@ TestingProfile* RealtimeEventUploaderTestBase::CreateProfile(
         }));
     builder.SetUserCloudPolicyManager(std::move(manager));
   }
+#endif
 
   builder.SetProfileName(name);
 
@@ -102,6 +120,38 @@ TestingProfile* RealtimeEventUploaderTestBase::CreateProfile(
   TestingProfile* profile = profile_ptr.get();
   profile_manager_->profile_manager()->RegisterTestingProfile(
       std::move(profile_ptr), /*add_to_storage=*/true);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (is_managed) {
+    auto store = std::make_unique<policy::MockCloudPolicyStore>(
+        policy::dm_protocol::GetChromeUserPolicyType());
+    auto policy_data = std::make_unique<enterprise_management::PolicyData>();
+    policy_data->set_request_token("user_dm_token_" + name);
+    store->set_policy_data_for_testing(std::move(policy_data));
+
+    auto cloud_external_data_manager =
+        std::make_unique<policy::MockCloudExternalDataManager>();
+    cloud_external_data_manager->SetPolicyStore(store.get());
+
+    auto manager = std::make_unique<policy::UserCloudPolicyManagerAsh>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->browser_policy_connector_ash(),
+        profile, std::move(store),
+        /*extension_install_store=*/nullptr,
+        std::move(cloud_external_data_manager), base::FilePath(),
+        policy::UserCloudPolicyManagerAsh::PolicyEnforcement::kPolicyOptional,
+        /*policy_refresh_timeout=*/base::TimeDelta(),
+        /*fatal_error_callback=*/base::OnceClosure(),
+        AccountId::FromUserEmail(name + "@example.com"),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+    manager->Init(profile->GetPolicySchemaRegistryService()->registry());
+    profile->SetUserCloudPolicyManagerAsh(std::move(manager));
+  }
+#endif
 
   if (is_affiliated) {
     profile->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(

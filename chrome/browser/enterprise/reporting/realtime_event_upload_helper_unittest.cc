@@ -45,14 +45,13 @@ class TestRealtimeBrowserUploader {
 
 }  // namespace
 
-class RealtimeEventUploadHelperDesktopTest
-    : public RealtimeEventUploaderTestBase {};
+class RealtimeEventUploadHelperTest : public RealtimeEventUploaderTestBase {};
 
-class RealtimeEventUploadHelperDesktopParamTest
+class RealtimeEventUploadHelperParamTest
     : public RealtimeEventUploaderTestBase,
       public testing::WithParamInterface<bool> {};
 
-TEST_P(RealtimeEventUploadHelperDesktopParamTest, ProfileUploaderSuccess) {
+TEST_P(RealtimeEventUploadHelperParamTest, ProfileUploaderSuccess) {
   SetBrowserManaged(true);
   bool is_affiliated = GetParam();
   std::string name = is_affiliated ? "affiliated" : "unaffiliated";
@@ -73,10 +72,11 @@ TEST_P(RealtimeEventUploadHelperDesktopParamTest, ProfileUploaderSuccess) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         RealtimeEventUploadHelperDesktopParamTest,
+                         RealtimeEventUploadHelperParamTest,
                          testing::Bool());
 
-TEST_F(RealtimeEventUploadHelperDesktopTest, BrowserUploaderSuccess) {
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(RealtimeEventUploadHelperTest, BrowserUploaderSuccess) {
   SetBrowserManaged(true);
 
   // Create a profile without a reporting client.
@@ -100,8 +100,9 @@ TEST_F(RealtimeEventUploadHelperDesktopTest, BrowserUploaderSuccess) {
       enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
           profile_with_client));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
-TEST_F(RealtimeEventUploadHelperDesktopTest, NoClientFailure) {
+TEST_F(RealtimeEventUploadHelperTest, NoClientFailure) {
   SetBrowserManaged(true);
   auto* profile = CreateProfile("user", /*is_managed=*/true,
                                 /*is_affiliated=*/false,
@@ -115,7 +116,7 @@ TEST_F(RealtimeEventUploadHelperDesktopTest, NoClientFailure) {
   EXPECT_FALSE(browser_uploader.Prepare().has_value());
 }
 
-TEST_F(RealtimeEventUploadHelperDesktopTest, NoTokenFailure) {
+TEST_F(RealtimeEventUploadHelperTest, NoTokenFailure) {
   // Unmanaged browser/profile will result in no DM tokens.
   SetBrowserManaged(false);
   auto* profile = CreateProfile("user", /*is_managed=*/false,

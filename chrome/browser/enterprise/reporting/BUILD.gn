@@ -14,9 +14,14 @@ source_set("unit_tests") {
     "policy_info_unittest.cc",
     "profile_report_generator_unittest.cc",
     "real_time_report_controller_unittest.cc",
+    "realtime_event_upload_helper_unittest.cc",
     "report_generator_unittest.cc",
     "report_request_queue_generator_unittest.cc",
     "report_scheduler_unittest.cc",
+    "saas_usage/navigation_handle_data_delegate_unittest.cc",
+    "saas_usage/saas_usage_navigation_observer_unittest.cc",
+    "saas_usage/saas_usage_report_scheduler_delegate_impl_unittest.cc",
+    "saas_usage/saas_usage_report_uploader_impl_unittest.cc",
   ]
 
   deps = [
@@ -50,16 +55,6 @@ source_set("unit_tests") {
       "//chrome/browser/ash/app_list/arc:test_support",
       "//chromeos/ash/components/system",
       "//chromeos/ash/experiences/arc:arc_test_support",
-    ]
-  }
-
-  if (is_win || is_mac || is_linux || is_android) {
-    sources += [
-      "realtime_event_upload_helper_unittest.cc",
-      "saas_usage/navigation_handle_data_delegate_unittest.cc",
-      "saas_usage/saas_usage_navigation_observer_unittest.cc",
-      "saas_usage/saas_usage_report_scheduler_delegate_impl_unittest.cc",
-      "saas_usage/saas_usage_report_uploader_impl_unittest.cc",
     ]
   }
 
