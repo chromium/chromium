@@ -1,5 +1,10 @@
-alexnj@chromium.org
+# primary reviewer
 sadym@chromium.org
-alexrudenko@chromium.org
-mathias@chromium.org
 
+# secondary reviewers
+alexnj@chromium.org
+alexrudenko@chromium.org
+nvitkov@chromium.org
+
+# backup reviewer
+mathias@chromium.org
