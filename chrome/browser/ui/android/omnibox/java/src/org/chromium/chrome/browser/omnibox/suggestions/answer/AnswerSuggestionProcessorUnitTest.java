@@ -12,13 +12,9 @@ import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.Spannable;
 
-import androidx.annotation.DrawableRes;
-
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,97 +23,61 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
-import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxPedal;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
-import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.omnibox.AnswerDataProto.AnswerData;
-import org.chromium.components.omnibox.AnswerDataProto.Image;
-import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
-import org.chromium.components.omnibox.FormattedStringProto.FormattedString;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
-import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
-import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
-import org.chromium.components.omnibox.action.OmniboxPedalId;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 import java.util.function.Supplier;
 
 /** Tests for {@link AnswerSuggestionProcessor}. */
-@RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE)
+@RunWith(org.chromium.base.test.BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class AnswerSuggestionProcessorUnitTest {
-    private static final AnswerType[] ANSWER_TYPES = {
-        AnswerType.ANSWER_TYPE_DICTIONARY,
-        AnswerType.ANSWER_TYPE_FINANCE,
-        AnswerType.ANSWER_TYPE_GENERIC_ANSWER,
-        AnswerType.ANSWER_TYPE_SPORTS,
-        AnswerType.ANSWER_TYPE_SUNRISE_SUNSET,
-        AnswerType.ANSWER_TYPE_TRANSLATION,
-        AnswerType.ANSWER_TYPE_WEATHER,
-        AnswerType.ANSWER_TYPE_CURRENCY
-    };
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock SuggestionHost mSuggestionHost;
+    @Mock UrlBarEditingTextStateProvider mUrlStateProvider;
+    @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
+    @Mock OmniboxActionDelegate mActionDelegate;
 
-    @Mock private SuggestionHost mSuggestionHost;
-    @Mock private UrlBarEditingTextStateProvider mUrlStateProvider;
-    @Mock private OmniboxImageSupplier mImageSupplier;
-    @Mock private AutocompleteInput mInput;
-    @Mock private Supplier<Tab> mTabSupplier;
-    @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
-    @Mock private BookmarkState mBookmarkState;
-    @Mock private OmniboxActionDelegate mActionDelegate;
-
+    private Activity mContext;
     private AnswerSuggestionProcessor mProcessor;
-    private Locale mDefaultLocale;
-    private Context mContext;
+    private AutocompleteInput mInput;
 
     /**
      * Base Suggestion class that can be used for testing. Holds all mechanisms that are required to
      * processSuggestion and validate suggestions.
      */
     class SuggestionTestHelper {
-        // Stores created AutocompleteMatch
-        protected final AutocompleteMatch mSuggestion;
-
-        // Stores PropertyModel for the suggestion.
-        protected final PropertyModel mModel;
+        final AutocompleteMatch mSuggestion;
+        final PropertyModel mModel;
 
         private SuggestionTestHelper(
                 AutocompleteMatch suggestion, PropertyModel model, String userQuery) {
             mSuggestion = suggestion;
             mModel = model;
+
             when(mUrlStateProvider.getTextWithoutAutocomplete()).thenReturn(userQuery);
             mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
         }
 
-        /** Check the content of first suggestion line. */
         private void verifyLine(
                 String expectedTitle,
                 int expectedMaxLineCount,
@@ -147,7 +107,6 @@ public class AnswerSuggestionProcessorUnitTest {
                     AnswerSuggestionViewProperties.TEXT_LINE_1_ACCESSIBILITY_DESCRIPTION);
         }
 
-        /** Check the content of second suggestion line. */
         void verifyLine2(
                 String expectedTitle, int expectedMaxLineCount, String expectedDescription) {
             verifyLine(
@@ -159,20 +118,17 @@ public class AnswerSuggestionProcessorUnitTest {
                     AnswerSuggestionViewProperties.TEXT_LINE_2_ACCESSIBILITY_DESCRIPTION);
         }
 
-        /** Get Drawable associated with the suggestion. */
         Drawable getIcon() {
             final OmniboxDrawableState state = mModel.get(BaseSuggestionViewProperties.ICON);
             assertTrue(state.isLarge);
             return state == null ? null : state.drawable;
         }
 
-        @DrawableRes
         int getIconRes() {
             return shadowOf(getIcon()).getCreatedFromResId();
         }
     }
 
-    /** Create Calculation Suggestion. */
     SuggestionTestHelper createCalculationSuggestion(String displayText, String userQuery) {
         AutocompleteMatch suggestion =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.CALCULATOR)
@@ -183,38 +139,8 @@ public class AnswerSuggestionProcessorUnitTest {
         return new SuggestionTestHelper(suggestion, model, userQuery);
     }
 
-    SuggestionTestHelper createRichAnswerSuggestion(
-            AnswerType type, int numberOfActions, boolean includeImage) {
-        AnswerData.Builder answerDataBuilder =
-                AnswerData.newBuilder()
-                        .setHeadline(FormattedString.newBuilder().setText("").build())
-                        .setSubhead(FormattedString.newBuilder().setText(""));
-        if (includeImage) {
-            answerDataBuilder.setImage(
-                    Image.newBuilder().setUrl("https://imageserver.com/icon.png"));
-        }
-
-        RichAnswerTemplate answer =
-                RichAnswerTemplate.newBuilder().addAnswers(answerDataBuilder).build();
-        List<OmniboxAction> actions = new ArrayList<>();
-        for (int i = 0; i < numberOfActions; i++) {
-            actions.add(
-                    new OmniboxPedal(123L, "hint", "hint", OmniboxPedalId.CHANGE_GOOGLE_PASSWORD));
-        }
-
-        AutocompleteMatch suggestion =
-                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
-                        .setSerializedAnswerTemplate(answer.toByteArray())
-                        .setAnswerType(type)
-                        .setActions(actions)
-                        .build();
-        PropertyModel model = mProcessor.createModel();
-        return new SuggestionTestHelper(suggestion, model, null);
-    }
-
     @Before
     public void setUp() {
-        mDefaultLocale = Locale.getDefault();
         mContext = Robolectric.buildActivity(Activity.class).setup().get();
         mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
         AutocompleteUIContext uiContext =
@@ -222,20 +148,14 @@ public class AnswerSuggestionProcessorUnitTest {
                         mContext,
                         mSuggestionHost,
                         mUrlStateProvider,
-                        mImageSupplier,
-                        mBookmarkState,
-                        mTabSupplier,
+                        /* imageSupplier= */ null,
+                        /* bookmarkState= */ null,
+                        /* activityTabSupplier= */ null,
                         mShareDelegateSupplier,
                         ObservableSuppliers.createNonNull(ControlsPosition.TOP),
                         mActionDelegate);
         mProcessor = new AnswerSuggestionProcessor(uiContext);
-        OmniboxResourceProvider.disableCachesForTesting();
-    }
-
-    @After
-    public void tearDown() {
-        Locale.setDefault(mDefaultLocale);
-        OmniboxResourceProvider.reenableCachesForTesting();
+        mInput = new AutocompleteInput();
     }
 
     @Test
@@ -247,58 +167,9 @@ public class AnswerSuggestionProcessorUnitTest {
     }
 
     @Test
-    public void answerImage_fallbackIcons_richAnswerTemplate() {
-        for (AnswerType type : ANSWER_TYPES) {
-            SuggestionTestHelper suggHelper = createRichAnswerSuggestion(type, 0, false);
-            // Note: model is re-created on every iteration.
-            assertNotNull("No icon associated with type: " + type.name(), suggHelper.getIcon());
-        }
-    }
-
-    @Test
     public void answerImage_calculatorIcon() {
         var suggHelper = createCalculationSuggestion("", "");
         assertEquals(R.drawable.ic_equals_sign_round, suggHelper.getIconRes());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE)
-    public void checkColorReversalRequired_ReturnsFalseIfOmniBoxAnswerColorReversalDisabled() {
-        mProcessor.onNativeInitialized();
-        for (AnswerType type : ANSWER_TYPES) {
-            assertFalse(mProcessor.checkColorReversalRequired(type));
-        }
-    }
-
-    @Test
-    public void
-            checkColorReversalRequired_ReturnsTrueIfOmniBoxAnswerColorReversalEnabledAndIncludedInCountryList() {
-        mProcessor.onNativeInitialized();
-        Locale.setDefault(new Locale("ja", "JP"));
-        for (AnswerType type : ANSWER_TYPES) {
-            if (type == AnswerType.ANSWER_TYPE_FINANCE) {
-                assertTrue(mProcessor.checkColorReversalRequired(type));
-            } else {
-                assertFalse(mProcessor.checkColorReversalRequired(type));
-            }
-        }
-    }
-
-    @Test
-    public void
-            checkColorReversalRequired_ReturnsFalseIfOmniBoxAnswerColorReversalEnabledAndNotIncludedInCountryList() {
-        mProcessor.onNativeInitialized();
-        Locale.setDefault(new Locale("en", "US"));
-        for (AnswerType type : ANSWER_TYPES) {
-            assertFalse(mProcessor.checkColorReversalRequired(type));
-        }
-    }
-
-    @Test
-    public void doesProcessSuggestion_suggestionWithRichAnswer() {
-        SuggestionTestHelper suggHelper =
-                createRichAnswerSuggestion(AnswerType.ANSWER_TYPE_DICTIONARY, 1, false);
-        assertTrue(mProcessor.doesProcessSuggestion(suggHelper.mSuggestion, 0));
     }
 
     @Test

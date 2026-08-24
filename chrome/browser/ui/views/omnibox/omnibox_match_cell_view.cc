@@ -320,17 +320,7 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
           : std::u16string());
 
   // Set content & description texts.
-  if (match.answer_template.has_value()) {
-    content_view_->SetTextWithStyling(match.contents, match.contents_class);
-    omnibox::AnswerData answer_data = match.answer_template->answers(0);
-    content_view_->AppendAndStyleAnswerText(
-        /*formatted_string=*/answer_data.headline(), /*fragment_index=*/1u,
-        /*answer_type=*/match.answer_type, /*is_headline=*/true);
-    // The subhead text may be multiline.
-    description_view_->SetMultilineAnswerText(
-        /*formatted_string=*/answer_data.subhead(),
-        /*answer_type=*/match.answer_type);
-  } else if (layout_style_ == LayoutStyle::HISTORY_EMBEDDING_ANSWER) {
+  if (layout_style_ == LayoutStyle::HISTORY_EMBEDDING_ANSWER) {
     content_view_->SetMultilineText(match.contents);
     description_view_->SetTextWithStyling(match.description,
                                           match.description_class);

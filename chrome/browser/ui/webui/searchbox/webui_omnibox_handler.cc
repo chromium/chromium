@@ -59,7 +59,6 @@
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/omnibox/browser/searchbox.mojom-shared.h"
 #include "components/omnibox/browser/searchbox_utils.h"
-#include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"

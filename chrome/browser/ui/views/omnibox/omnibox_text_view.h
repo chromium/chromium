@@ -13,8 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/suggestion_answer.h"
-#include "third_party/omnibox_proto/answer_data.pb.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "ui/base/metadata/metadata_header_macros.h"

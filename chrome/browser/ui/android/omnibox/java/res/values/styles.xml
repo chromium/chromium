@@ -6,18 +6,6 @@ found in the LICENSE file.
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Omnibox suggestions -->
-    <style name="TextAppearance.OmniboxAnswerDescriptionNegative">
-        <item name="android:textColor">
-            @color/answers_description_text_negative
-        </item>
-    </style>
-
-    <style name="TextAppearance.OmniboxAnswerDescriptionPositive">
-        <item name="android:textColor">
-            @color/answers_description_text_positive
-        </item>
-    </style>
-
     <!-- Fusebox bar styles -->
     <style name="Fusebox"/>
     <style name="Fusebox.PopupMenu"/>

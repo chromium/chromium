@@ -25,33 +25,6 @@
 
 namespace {
 
-std::string AnswerTypeToString(int answer_type) {
-  switch (answer_type) {
-    case omnibox::ANSWER_TYPE_UNSPECIFIED:
-      return "invalid";
-    case omnibox::ANSWER_TYPE_DICTIONARY:
-      return "dictionary";
-    case omnibox::ANSWER_TYPE_FINANCE:
-      return "finance";
-    case omnibox::ANSWER_TYPE_GENERIC_ANSWER:
-      return "knowledge graph";
-    case omnibox::ANSWER_TYPE_SPORTS:
-      return "sports";
-    case omnibox::ANSWER_TYPE_SUNRISE_SUNSET:
-      return "sunrise";
-    case omnibox::ANSWER_TYPE_TRANSLATION:
-      return "translation";
-    case omnibox::ANSWER_TYPE_WEATHER:
-      return "weather";
-    case omnibox::ANSWER_TYPE_CURRENCY:
-      return "currency";
-    case omnibox::ANSWER_TYPE_LOCAL_TIME:
-      return "local time";
-    default:
-      return base::NumberToString(answer_type);
-  }
-}
-
 }  // namespace
 
 AutocompleteMatchWrapper::AutocompleteMatchWrapper() : wrapped_match_(nullptr) {
@@ -122,13 +95,6 @@ StructTraits<mojom::AutocompleteMatchDataView,
 std::string
 StructTraits<mojom::AutocompleteMatchDataView,
              ::AutocompleteMatchWrapper>::answer(const CppType& in) {
-  if (in.wrapped_match().answer_template.has_value()) {
-    const omnibox::AnswerData& answer_data =
-        in.wrapped_match().answer_template->answers(0);
-    return base::StrCat({answer_data.headline().text(), " / ",
-                         answer_data.subhead().text(), " / ",
-                         AnswerTypeToString(in.wrapped_match().answer_type)});
-  }
   return std::string();
 }
 

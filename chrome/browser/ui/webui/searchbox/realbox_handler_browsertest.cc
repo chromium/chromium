@@ -45,7 +45,6 @@
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_metrics_provider.h"
 #include "components/omnibox/browser/search_provider.h"
-#include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"

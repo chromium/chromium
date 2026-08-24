@@ -18,7 +18,6 @@
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_provider.h"
 #import "components/omnibox/browser/omnibox_field_trial.h"
-#import "components/omnibox/browser/suggestion_answer.h"
 #import "components/omnibox/common/omnibox_feature_configs.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/omnibox_icon_formatter.h"
@@ -158,62 +157,7 @@ UIColor* DimColorIncognito() {
 }
 
 - (NSAttributedString*)answerDetailText {
-  DCHECK(self.hasAnswer);
-  NSMutableAttributedString* result =
-      [[NSMutableAttributedString alloc] initWithString:@""];
-  NSAttributedString* spacer = [[self class] spacerAttributedString];
-
-  if (_match.answer_type == omnibox::ANSWER_TYPE_DICTIONARY) {
-    auto subheadFragments =
-        _match.answer_template->answers(0).subhead().fragments();
-
-    for (auto fragment : subheadFragments) {
-      NSAttributedString* fragmentText =
-          [self attributedStringForFragment:fragment
-                                      color:SuggestionDetailTextColor()
-                     useDeemphasizedStyling:YES];
-      [result appendAttributedString:fragmentText];
-      [result appendAttributedString:spacer];
-    }
-  } else {
-    auto headLineFragments =
-        _match.answer_template->answers(0).headline().fragments();
-
-    for (NSInteger i = 0; i < headLineFragments.size(); i++) {
-      NSAttributedString* fragmentText;
-      // The first fragment has a html bold tag so we skip it and use the
-      // match contents instead. The match contents has the first fragment
-      // text without the bold tag (eg. match contents : abc , first fragment
-      // : ab<b>c</b>).
-      // TODO(crbug.com/343706167): Follow up on removing the bold tag from
-      // the first fragment.
-      if (i == 0) {
-        fragmentText = [self
-            attributedStringWithString:base::SysUTF16ToNSString(_match.contents)
-                       classifications:&_match.contents_class
-                             smallFont:NO
-                                 color:SuggestionDetailTextColor()
-                              dimColor:DimColor()];
-      } else {
-        fragmentText =
-            [self attributedStringForFragment:headLineFragments[i]
-                                        color:SuggestionDetailTextColor()
-                       useDeemphasizedStyling:YES];
-      }
-
-      [result appendAttributedString:fragmentText];
-      [result appendAttributedString:spacer];
-    }
-  }
-
-  // Remove the extra spacer.
-  if (result.length > 0) {
-    NSRange lastCharacterRange =
-        NSMakeRange(result.length - spacer.length, spacer.length);
-    [result deleteCharactersInRange:lastCharacterRange];
-  }
-
-  return result;
+  return [[NSAttributedString alloc] initWithString:@""];
 }
 
 - (id<OmniboxIcon>)icon {
@@ -290,65 +234,7 @@ UIColor* DimColorIncognito() {
 }
 
 - (NSAttributedString*)answerText {
-  DCHECK(self.hasAnswer);
-  UIColor* suggestionTextColor = SuggestionTextColor();
-  UIColor* dimColor = self.incognito ? DimColorIncognito() : DimColor();
-
-  NSMutableAttributedString* result =
-      [[NSMutableAttributedString alloc] initWithString:@""];
-  NSAttributedString* spacer = [[self class] spacerAttributedString];
-
-  if (_match.answer_type == omnibox::ANSWER_TYPE_DICTIONARY) {
-    auto headlineFragments =
-        _match.answer_template->answers(0).headline().fragments();
-
-    for (NSInteger i = 0; i < headlineFragments.size(); i++) {
-      NSAttributedString* fragmentText;
-      // The first fragment has a html bold tag so we skip it and use the
-      // match contents instead. The match contents has the first fragment
-      // text without the bold tag (eg. match contents : abc , first fragment
-      // : ab<b>c</b>).
-      // TODO(crbug.com/343706167): Follow up on removing the bold tag from
-      // the first fragment.
-      if (i == 0) {
-        fragmentText = [self
-            attributedStringWithString:base::SysUTF16ToNSString(_match.contents)
-                       classifications:&_match.contents_class
-                             smallFont:NO
-                                 color:suggestionTextColor
-                              dimColor:dimColor];
-      } else {
-        fragmentText =
-            [self attributedStringForFragment:headlineFragments[i]
-                                        color:SuggestionDetailTextColor()
-                       useDeemphasizedStyling:NO];
-      }
-
-      [result appendAttributedString:fragmentText];
-      [result appendAttributedString:spacer];
-    }
-  } else {
-    auto subheadFragments =
-        _match.answer_template->answers(0).subhead().fragments();
-
-    for (auto fragment : subheadFragments) {
-      NSAttributedString* fragmentText =
-          [self attributedStringForFragment:fragment
-                                      color:SuggestionDetailTextColor()
-                     useDeemphasizedStyling:NO];
-      [result appendAttributedString:fragmentText];
-      [result appendAttributedString:spacer];
-    }
-  }
-
-  // Remove the extra spacer.
-  if (result.length > 0) {
-    NSRange lastCharacterRange =
-        NSMakeRange(result.length - spacer.length, spacer.length);
-    [result deleteCharactersInRange:lastCharacterRange];
-  }
-
-  return result;
+  return [[NSAttributedString alloc] initWithString:@""];
 }
 
 - (NSAttributedString*)omniboxPreviewText {

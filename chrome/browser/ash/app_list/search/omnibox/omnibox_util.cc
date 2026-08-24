@@ -28,25 +28,6 @@ namespace {
 
 using RequestSource = SearchTermsData::RequestSource;
 
-OmniboxResultAnswerType MatchTypeToAnswerType(const int type) {
-  switch (static_cast<omnibox::AnswerType>(type)) {
-    case omnibox::ANSWER_TYPE_WEATHER:
-      return OmniboxResultAnswerType::kWeather;
-    case omnibox::ANSWER_TYPE_CURRENCY:
-      return OmniboxResultAnswerType::kCurrency;
-    case omnibox::ANSWER_TYPE_DICTIONARY:
-      return OmniboxResultAnswerType::kDictionary;
-    case omnibox::ANSWER_TYPE_FINANCE:
-      return OmniboxResultAnswerType::kFinance;
-    case omnibox::ANSWER_TYPE_SUNRISE_SUNSET:
-      return OmniboxResultAnswerType::kSunrise;
-    case omnibox::ANSWER_TYPE_TRANSLATION:
-      return OmniboxResultAnswerType::kTranslation;
-    default:
-      return OmniboxResultAnswerType::kDefaultAnswer;
-  }
-}
-
 OmniboxResultType MatchTypeToOmniboxType(
     const AutocompleteMatchType::Type type) {
   switch (type) {
@@ -145,17 +126,6 @@ ash::SearchResultType MatchTypeToSearchResultType(
       return ash::OMNIBOX_CALCULATOR;
     default:
       return ash::SEARCH_RESULT_TYPE_BOUNDARY;
-  }
-}
-
-OmniboxTextType ColorTypeToType(omnibox::FormattedString::ColorType type) {
-  switch (type) {
-    case omnibox::FormattedString::COLOR_ON_SURFACE_POSITIVE:
-      return OmniboxTextType::kPositive;
-    case omnibox::FormattedString::COLOR_ON_SURFACE_NEGATIVE:
-      return OmniboxTextType::kNegative;
-    default:
-      return OmniboxTextType::kUnset;
   }
 }
 
@@ -293,34 +263,6 @@ std::unique_ptr<OmniboxResultData> CreateAnswerResult(
     }
 
     return result;
-  }
-
-  result->answer_type = MatchTypeToAnswerType(match.answer_type);
-  result->contents = match.contents;
-
-  const auto& headline = match.answer_template->answers(0).headline();
-  if (headline.fragments_size() > 1) {
-    // Only use the second fragment as the first is equivalent to
-    // |match.contents|.
-    result->additional_contents =
-        base::UTF8ToUTF16(headline.fragments(1).text());
-    result->additional_contents_type =
-        ColorTypeToType(headline.fragments(1).color());
-  }
-  const auto& subhead = match.answer_template->answers(0).subhead();
-  if (subhead.fragments_size() > 0) {
-    result->description = base::UTF8ToUTF16(subhead.fragments(0).text());
-    result->description_type = ColorTypeToType(subhead.fragments(0).color());
-  }
-  if (subhead.fragments_size() > 1) {
-    result->additional_description =
-        base::UTF8ToUTF16(subhead.fragments(1).text());
-    result->additional_description_type =
-        ColorTypeToType(subhead.fragments(1).color());
-  }
-  if (result->answer_type == OmniboxResultAnswerType::kWeather) {
-    result->image_url = GURL(match.answer_template->answers(0).image().url());
-    result->description_a11y_label = base::UTF8ToUTF16(subhead.a11y_text());
   }
 
   return result;

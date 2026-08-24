@@ -86,7 +86,6 @@
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/searchbox_utils.h"
-#include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #include "components/omnibox/browser/verbatim_match.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"

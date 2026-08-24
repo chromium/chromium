@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.answer;
 
-import androidx.annotation.VisibleForTesting;
-
-import org.chromium.base.LocaleUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -20,12 +17,10 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.url.GURL;
 
 /** A class that handles model and view creation for the most commonly used omnibox suggestion. */
 @NullMarked
 public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
-    private static final String COLOR_REVERSAL_COUNTRY_LIST = "ja-JP,ko-KR,zh-CN,zh-TW";
 
     private final UrlBarEditingTextStateProvider mUrlBarEditingTextProvider;
 
@@ -43,8 +38,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     public boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position) {
         // Calculation answers are specific in a way that these are basic suggestions, but processed
         // as answers, when new answer layout is enabled.
-        return suggestion.getAnswerTemplate() != null
-                || suggestion.getType() == OmniboxSuggestionType.CALCULATOR;
+        return suggestion.getType() == OmniboxSuggestionType.CALCULATOR;
     }
 
     @Override
@@ -72,39 +66,14 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
             AutocompleteInput input,
             AutocompleteMatch suggestion,
             int position) {
-        AnswerType answerType = suggestion.getAnswerType();
-        boolean suggestionTextColorReversal = checkColorReversalRequired(answerType);
         AnswerText[] details;
-        boolean shouldShowCardUi = false; // Set to `true` for large answer card.
         model.set(BaseSuggestionViewProperties.TOP_PADDING, 0);
         model.set(AnswerSuggestionViewProperties.RIGHT_PADDING, 0);
-        if (suggestion.getAnswerTemplate() != null) {
-            details =
-                    RichAnswerText.from(
-                            mContext,
-                            suggestion.getAnswerTemplate(),
-                            answerType,
-                            suggestionTextColorReversal,
-                            shouldShowCardUi);
-
-            model.set(BaseSuggestionViewProperties.USE_LARGE_DECORATION, shouldShowCardUi);
-            if (shouldShowCardUi) {
-                int leadInSpacing =
-                        mUiContext.resourceProvider.getDimen(R.dimen.omnibox_simple_card_lead_in);
-                model.set(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING, leadInSpacing);
-                model.set(
-                        BaseSuggestionViewProperties.TOP_PADDING,
-                        mUiContext.resourceProvider.getDimen(
-                                R.dimen.omnibox_simple_card_top_padding));
-                model.set(AnswerSuggestionViewProperties.RIGHT_PADDING, leadInSpacing);
-            }
-        } else {
-            details =
-                    CalculatorAnswerTextLayout.from(
-                            mContext,
-                            suggestion,
-                            mUrlBarEditingTextProvider.getTextWithoutAutocomplete());
-        }
+        details =
+                CalculatorAnswerTextLayout.from(
+                        mContext,
+                        suggestion,
+                        mUrlBarEditingTextProvider.getTextWithoutAutocomplete());
 
         model.set(AnswerSuggestionViewProperties.TEXT_LINE_1_TEXT, details[0].getText());
         model.set(AnswerSuggestionViewProperties.TEXT_LINE_2_TEXT, details[1].getText());
@@ -119,55 +88,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
         model.set(AnswerSuggestionViewProperties.TEXT_LINE_1_MAX_LINES, details[0].getMaxLines());
         model.set(AnswerSuggestionViewProperties.TEXT_LINE_2_MAX_LINES, details[1].getMaxLines());
 
-        if (shouldShowCardUi) {
-            setActionButtons(model, null);
-        } else {
-            setRemoveOrRefineAction(model, input, suggestion, position);
-        }
-        if (suggestion.getAnswerTemplate() != null) {
-            GURL imageUrl =
-                    suggestion.getAnswerTemplate().getAnswers(0).hasImage()
-                            ? new GURL(
-                                    suggestion
-                                            .getAnswerTemplate()
-                                            .getAnswers(0)
-                                            .getImage()
-                                            .getUrl())
-                            : new GURL("");
-            if (imageUrl.isValid()) {
-                fetchImage(
-                        model,
-                        new GURL(suggestion.getAnswerTemplate().getAnswers(0).getImage().getUrl()));
-            } else if (shouldShowCardUi) {
-                // The card ui should not show fallback images; if there is not an answer-specific
-                // image, there should be no decoration at all.
-                model.set(BaseSuggestionViewProperties.SHOW_DECORATION, false);
-                setOmniboxDrawableState(model, null);
-            }
-        }
-    }
-
-    /**
-     * Checks if we need to apply color reversion on the answer suggestion.
-     *
-     * @param answerType The type of a suggested answer.
-     * @return true, if red/green colors should be swapped.
-     */
-    @VisibleForTesting
-    public boolean checkColorReversalRequired(AnswerType answerType) {
-        boolean isFinanceAnswer = answerType == AnswerType.ANSWER_TYPE_FINANCE;
-        // Country not eligible.
-        if (!isCountryEligibleForColorReversal()) return false;
-        // Not a finance answer.
-        if (!isFinanceAnswer) return false;
-        // All other cases.
-        return true;
-    }
-
-    /** Returns whether current Locale country is eligible for Answer color reversal. */
-    @VisibleForTesting
-    /* package */ boolean isCountryEligibleForColorReversal() {
-        return COLOR_REVERSAL_COUNTRY_LIST.contains(LocaleUtils.getDefaultLocaleString());
+        setRemoveOrRefineAction(model, input, suggestion, position);
     }
 
     @Override

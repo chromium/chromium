@@ -14,7 +14,6 @@
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
-#include "components/omnibox/browser/suggestion_answer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
@@ -24,48 +23,6 @@ namespace app_list {
 namespace {
 
 // Tests result conversion for a default answer result.
-TEST(OmniboxUtilTest, CreateAnswerResult) {
-  AutocompleteMatch match;
-  match.relevance = 1248;
-  match.destination_url = GURL("http://www.example.com/");
-  match.type = AutocompleteMatchType::Type::SEARCH_SUGGEST;
-  match.contents = u"contents";
-  match.description = u"description";
-  match.answer_type = omnibox::ANSWER_TYPE_DICTIONARY;
-
-  std::string json =
-      R"({ "l": [)"
-      R"(  { "il": { "t": [{ "t": "text one", "tt": 8 }],)"
-      R"(            "at": { "t": "additional one", "tt": 42 } } },)"
-      R"(  { "il": { "t": [{ "t": "text two", "tt": 5 }],)"
-      R"(            "at": { "t": "additional two", "tt": 6 },)"
-      R"(            "al": "a11y label" } })"
-      R"(] })";
-  std::optional<base::Value> value =
-      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  ASSERT_TRUE(value && value->is_dict());
-  omnibox::RichAnswerTemplate answer_template;
-  ASSERT_TRUE(omnibox::answer_data_parser::ParseJsonToAnswerData(
-      value->GetDict(), &answer_template));
-  match.answer_template = answer_template;
-
-  const auto result =
-      CreateAnswerResult(match, nullptr, u"query", AutocompleteInput());
-  EXPECT_EQ(result->relevance, 1248);
-  EXPECT_EQ(result->destination_url, GURL("http://www.example.com/"));
-  EXPECT_TRUE(result->is_omnibox_search);
-  EXPECT_TRUE(result->is_answer);
-
-  ASSERT_TRUE(result->contents.has_value());
-  EXPECT_EQ(result->contents.value(), u"contents");
-  ASSERT_TRUE(result->additional_contents.has_value());
-  EXPECT_EQ(result->additional_contents.value(), u"additional one");
-  ASSERT_TRUE(result->description.has_value());
-  EXPECT_EQ(result->description.value(), u"text two");
-  ASSERT_TRUE(result->additional_description.has_value());
-  EXPECT_EQ(result->additional_description.value(), u"additional two");
-}
-
 // Tests result conversion for a rich entity Omnibox result.
 TEST(OmniboxUtilTest, CreateResult) {
   AutocompleteMatch match;
@@ -103,60 +60,6 @@ TEST(OmniboxUtilTest, CreateResult) {
 }
 
 // Tests result conversion for a weather Omnibox result.
-TEST(OmniboxUtilTest, CreateWeatherResult) {
-  AutocompleteMatch match;
-  match.relevance = 1200;
-  match.destination_url = GURL("https://www.example.com.au/weather");
-  match.type = AutocompleteMatchType::Type::SEARCH_SUGGEST;
-  match.contents = u"Weather in Perth";
-  match.contents_class = {
-      ACMatchClassification(0, ACMatchClassification::Style::MATCH)};
-  match.answer_type = omnibox::ANSWER_TYPE_WEATHER;
-
-  const std::string json =
-      R"({ "l": [)"
-      R"(  { "il": { "t": [ { "t": "weather in perth", "tt": 8 } ] } },)"
-      R"(  {)"
-      R"(    "il": {)"
-      R"(      "al": "Sunny",)"
-      R"(      "at": { "t": "Perth WA, Australia", "tt": 19 },)"
-      R"(      "i": { "d": "//www.weather.com.au/sunny.png", "t": 3 },)"
-      R"(      "t": [ { "t": "16°C", "tt": 18 } ])"
-      R"(    })"
-      R"(  })"
-      R"(] })";
-  const std::optional<base::Value> value =
-      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  ASSERT_TRUE(value && value->is_dict());
-
-  // Create weather result using omnibox::RichAnswerTemplate.
-  omnibox::RichAnswerTemplate answer_template;
-  ASSERT_TRUE(omnibox::answer_data_parser::ParseJsonToAnswerData(
-      value->GetDict(), &answer_template));
-  match.answer_template = answer_template;
-  const auto result =
-      CreateAnswerResult(match, nullptr, u"query", AutocompleteInput());
-
-  EXPECT_EQ(result->relevance, 1200);
-  EXPECT_EQ(result->destination_url,
-            GURL("https://www.example.com.au/weather"));
-  EXPECT_TRUE(result->is_omnibox_search);
-  EXPECT_TRUE(result->is_answer);
-
-  ASSERT_TRUE(result->contents.has_value());
-  EXPECT_EQ(result->contents.value(), u"Weather in Perth");
-  EXPECT_FALSE(result->additional_contents.has_value());
-  ASSERT_TRUE(result->description.has_value());
-  EXPECT_EQ(result->description.value(), u"16°C");
-  ASSERT_TRUE(result->additional_description.has_value());
-  EXPECT_EQ(result->additional_description.value(), u"Perth WA, Australia");
-  ASSERT_TRUE(result->description_a11y_label.has_value());
-  EXPECT_EQ(result->description_a11y_label.value(), u"Sunny");
-  ASSERT_TRUE(result->image_url.has_value());
-  EXPECT_EQ(result->image_url.value(),
-            GURL("https://www.weather.com.au/sunny.png"));
-}
-
 // Tests result conversion for a calculator result. A calculator result can
 // either have a description or no description; both possibilities are tested.
 TEST(OmniboxUtilTest, CreateCalculatorResult) {

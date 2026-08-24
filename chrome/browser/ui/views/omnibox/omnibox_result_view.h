@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_mouse_enter_exit_handler.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
-#include "components/omnibox/browser/suggestion_answer.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/window_open_disposition.h"

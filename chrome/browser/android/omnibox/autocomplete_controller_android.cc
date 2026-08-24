@@ -68,7 +68,6 @@
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/page_classification_functions.h"
-#include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/voice_suggest_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"

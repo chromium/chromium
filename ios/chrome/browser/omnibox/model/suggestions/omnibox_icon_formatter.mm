@@ -57,17 +57,11 @@ OmniboxSuggestionIconType IconTypeFromMatch(const AutocompleteMatch& match) {
 @implementation OmniboxIconFormatter
 
 - (instancetype)initWithMatch:(const AutocompleteMatch&)match {
-  BOOL isAnswer = match.answer_template.has_value();
   OmniboxIconType iconType = OmniboxIconTypeSuggestionIcon;
   GURL imageURL = GURL();
-  if (isAnswer &&
-      GURL(match.answer_template->answers(0).image().url()).is_valid()) {
-    imageURL = GURL(match.answer_template->answers(0).image().url());
-    iconType = OmniboxIconTypeImage;
-  } else if (match.suggest_template &&
-             match.suggest_template->has_type_icon() &&
-             match.suggest_template->type_icon() !=
-                 omnibox::SuggestTemplateInfo_IconType_ICON_TYPE_UNSPECIFIED) {
+  if (match.suggest_template && match.suggest_template->has_type_icon() &&
+      match.suggest_template->type_icon() !=
+          omnibox::SuggestTemplateInfo_IconType_ICON_TYPE_UNSPECIFIED) {
     iconType = OmniboxIconTypeSuggestionIcon;
     imageURL = GURL();
   } else if (!match.image_url.is_empty()) {
@@ -86,7 +80,7 @@ OmniboxSuggestionIconType IconTypeFromMatch(const AutocompleteMatch& match) {
 
   return [self initWithIconType:iconType
              suggestionIconType:suggestionIconType
-                       isAnswer:isAnswer
+                       isAnswer:NO
                        imageURL:[[CrURL alloc] initWithGURL:imageURL]];
 }
 

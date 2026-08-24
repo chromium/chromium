@@ -23,7 +23,6 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
-#include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/variations/scoped_variations_ids_provider.h"
@@ -60,9 +59,6 @@ AutocompleteMatch NewAnswerResult(const std::string& url,
   result.stripped_destination_url = GURL(url);
   result.contents = u"contents";
   result.description = u"description";
-  omnibox::RichAnswerTemplate answer_template;
-  answer_template.add_answers();
-  result.answer_template = answer_template;
   result.answer_type = answer_type;
 
   return result;
