@@ -98,8 +98,8 @@ class CORE_EXPORT ImageElementTiming final
     Member<Element> element;
   };
 
-  // Only valid at paint time: in prepaint mode the answer comes from the
-  // tracker, which the pre-paint walk populates.
+  // Only valid at paint time: the answer comes from the tracker, which the
+  // pre-paint walk populates.
   bool ContributesToContainerTiming(Element*);
   bool NeededForTiming(const LayoutObject&);
 

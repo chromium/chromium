@@ -69,10 +69,12 @@ GetSoftNavigationPaintAttrubutionTrackerIfEnabled(LocalFrameView& frame_view) {
 }
 
 ContainerTimingPaintAttributionTracker*
-GetContainerTimingPaintAttributionTracker(LocalFrameView& frame_view) {
+GetContainerTimingPaintAttributionTrackerIfEnabled(LocalFrameView& frame_view) {
   LocalDOMWindow* window = frame_view.GetFrame().DomWindow();
-  return window ? ContainerTiming::From(*window).PaintAttributionTracker()
-                : nullptr;
+  if (!window || !RuntimeEnabledFeatures::ContainerTimingEnabled(window)) {
+    return nullptr;
+  }
+  return ContainerTiming::From(*window).PaintAttributionTracker();
 }
 
 }  // anonymous namespace
@@ -166,7 +168,7 @@ void PrePaintTreeWalk::Walk(LocalFrameView& frame_view,
   context.soft_navigation_paint_attribution_tracker =
       GetSoftNavigationPaintAttrubutionTrackerIfEnabled(frame_view);
   context.container_timing_paint_attribution_tracker =
-      GetContainerTimingPaintAttributionTracker(frame_view);
+      GetContainerTimingPaintAttributionTrackerIfEnabled(frame_view);
 
   if (context.tree_builder_context) {
     PaintPropertyTreeBuilder::SetupContextForFrame(

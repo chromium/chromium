@@ -27,15 +27,6 @@ constexpr int kLaps = 1000;
 constexpr int kWarmupLaps = 5;
 constexpr char kMetricRunsPerSecond[] = "runs_per_second";
 
-// Selects which paint path the benchmark exercises. The variant toggles the
-// ContainerTimingPrepaintTraversal feature and whether the full lifecycle is
-// run to populate the tracker; everything else is identical.
-enum class Variant { kLegacy, kPrePaint };
-
-const char* VariantSuffix(Variant v) {
-  return v == Variant::kPrePaint ? "prepaint" : "legacy";
-}
-
 perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
   perf_test::PerfResultReporter reporter("ContainerTimingPerfTest.", story);
   reporter.RegisterImportantMetric(kMetricRunsPerSecond, "runs/s");
@@ -107,21 +98,15 @@ String GenerateImagesHTML(size_t image_count) {
 // Per-image attribution: each lap paints a different image, where the depth
 // benchmarks repeat one element. No resources are loaded; the load
 // notification is a single attribute check.
-void RunImageAttributionBenchmark(Variant variant,
-                                  const std::string& story_base,
+void RunImageAttributionBenchmark(const std::string& story,
                                   size_t image_count) {
-  const bool use_prepaint = variant == Variant::kPrePaint;
-  ScopedContainerTimingPrepaintTraversalForTest scoped_feature(use_prepaint);
+  ScopedContainerTimingForTest scoped_feature(true);
   auto page = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = page->GetDocument();
   document.body()->SetInnerHTMLWithoutTrustedTypes(
       GenerateImagesHTML(image_count));
-  if (use_prepaint) {
-    // Populate the tracker, else both variants measure the legacy path.
-    page->GetFrameView().UpdateAllLifecyclePhasesForTest();
-  } else {
-    document.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  }
+  // Populate the tracker.
+  page->GetFrameView().UpdateAllLifecyclePhasesForTest();
 
   ContainerTiming& container_timing =
       ContainerTiming::From(*document.domWindow());
@@ -152,41 +137,30 @@ void RunImageAttributionBenchmark(Variant variant,
     timer.NextLap();
   }
 
-  auto reporter = SetUpReporter(story_base + "_" + VariantSuffix(variant));
+  auto reporter = SetUpReporter(story);
   reporter.AddResult(kMetricRunsPerSecond, timer.LapsPerSecond());
 }
 
-// Unified paint benchmark. The variant selects whether the legacy DOM-walk
-// fallback or the pre-paint tracker fast path is exercised. The story name
-// preserves the legacy/prepaint suffix so the perf history under the old
-// names remains comparable.
+// Paint benchmark exercising the pre-paint tracker fast path.
 //
 // `same_rect`: when true, every lap paints the same rect; after the first
 // paint, MaybeUpdateLastNewPaintedArea early-returns (Contains == true), so
 // the loop measures traversal/lookup cost without cc::Region accumulation.
 // When false, each lap paints a unique rect — the region grows and Region
 // operations dominate the lap cost.
-void RunPaintBenchmark(Variant variant,
-                       const std::string& story_base,
+void RunPaintBenchmark(const std::string& story_base,
                        size_t container_timing_depth,
                        size_t non_container_depth,
                        bool same_rect = false) {
-  const bool use_prepaint = variant == Variant::kPrePaint;
-  ScopedContainerTimingPrepaintTraversalForTest scoped_feature(use_prepaint);
+  ScopedContainerTimingForTest scoped_feature(true);
   auto page = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = page->GetDocument();
   document.body()->SetInnerHTMLWithoutTrustedTypes(
       GenerateNestedHTML(container_timing_depth, non_container_depth));
-  if (use_prepaint) {
-    // Run the full lifecycle so the real pre-paint walk populates the tracker
-    // and clears the ContainerTimingChanged staleness bits set during HTML
-    // parsing. Without this, OnElementPainted() falls back to the legacy
-    // ParentContainerRootFallback() walk every iteration and the benchmark
-    // measures the legacy path under both flag states.
-    page->GetFrameView().UpdateAllLifecyclePhasesForTest();
-  } else {
-    document.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  }
+  // Run the full lifecycle so the real pre-paint walk populates the tracker
+  // and clears the ContainerTimingChanged staleness bits set during HTML
+  // parsing.
+  page->GetFrameView().UpdateAllLifecyclePhasesForTest();
 
   ContainerTiming& container_timing =
       ContainerTiming::From(*document.domWindow());
@@ -206,7 +180,7 @@ void RunPaintBenchmark(Variant variant,
     timer.NextLap();
   }
 
-  std::string story = story_base + "_" + VariantSuffix(variant);
+  std::string story = story_base;
   if (same_rect) {
     story += "_same_rect";
   }
@@ -216,22 +190,16 @@ void RunPaintBenchmark(Variant variant,
 
 // Cache-invalidation benchmark: every lap changes one root's identifier, which
 // drops that root's Record so the next paint has to recreate it.
-void RunInvalidationCycleBenchmark(Variant variant,
-                                   const std::string& story_base,
+void RunInvalidationCycleBenchmark(const std::string& story_base,
                                    size_t container_timing_depth,
                                    size_t non_container_timing_depth,
                                    size_t changing_ct_root) {
-  const bool use_prepaint = variant == Variant::kPrePaint;
-  ScopedContainerTimingPrepaintTraversalForTest scoped_feature(use_prepaint);
+  ScopedContainerTimingForTest scoped_feature(true);
   auto page = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = page->GetDocument();
   document.body()->SetInnerHTMLWithoutTrustedTypes(
       GenerateNestedHTML(container_timing_depth, non_container_timing_depth));
-  if (use_prepaint) {
-    page->GetFrameView().UpdateAllLifecyclePhasesForTest();
-  } else {
-    document.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  }
+  page->GetFrameView().UpdateAllLifecyclePhasesForTest();
 
   ContainerTiming& container_timing =
       ContainerTiming::From(*document.domWindow());
@@ -252,11 +220,10 @@ void RunInvalidationCycleBenchmark(Variant variant,
   base::LapTimer timer(kWarmupLaps, base::TimeDelta(), kLaps);
 
   for (int i = 0; i < kLaps + kWarmupLaps; ++i) {
-    // Change the attribute value. Under prepaint the tracker entry still
-    // points to the same element (which retains the containertiming
-    // attribute with a new value); the FastHasAttribute guard in
-    // OnElementPainted passes and the paint proceeds normally via the
-    // tracker path.
+    // Change the attribute value. The tracker entry still points to the same
+    // element (which retains the containertiming attribute with a new value);
+    // the FastHasAttribute guard in OnElementPainted passes and the paint
+    // proceeds normally via the tracker path.
     ct_root->setAttribute(html_names::kContainertimingAttr,
                           (i % 2) ? value_odd : value_even);
 
@@ -265,78 +232,69 @@ void RunInvalidationCycleBenchmark(Variant variant,
     timer.NextLap();
   }
 
-  std::string story =
-      "invalidation_cycle_" + story_base + "_" + VariantSuffix(variant);
+  std::string story = "invalidation_cycle_" + story_base;
   auto reporter = SetUpReporter(story);
   reporter.AddResult(kMetricRunsPerSecond, timer.LapsPerSecond());
 }
 
 }  // namespace
 
-class ContainerTimingPerfTest : public ::testing::TestWithParam<Variant> {};
+class ContainerTimingPerfTest : public ::testing::Test {};
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ContainerTimingPerfTest,
-                         ::testing::Values(Variant::kLegacy,
-                                           Variant::kPrePaint),
-                         [](const ::testing::TestParamInfo<Variant>& info) {
-                           return std::string(VariantSuffix(info.param));
-                         });
-
-TEST_P(ContainerTimingPerfTest, PaintPropagation_Depth10_1) {
-  RunPaintBenchmark(GetParam(), "depth_10_1", 10, 1);
+TEST_F(ContainerTimingPerfTest, PaintPropagation_Depth10_1) {
+  RunPaintBenchmark("depth_10_1", 10, 1);
 }
 
-TEST_P(ContainerTimingPerfTest, PaintPropagation_Depth10_1_SameRect) {
-  RunPaintBenchmark(GetParam(), "depth_10_1", 10, 1, /*same_rect=*/true);
+TEST_F(ContainerTimingPerfTest, PaintPropagation_Depth10_1_SameRect) {
+  RunPaintBenchmark("depth_10_1", 10, 1, /*same_rect=*/true);
 }
 
-TEST_P(ContainerTimingPerfTest, PaintPropagation_Depth10_100) {
-  RunPaintBenchmark(GetParam(), "depth_10_100", 10, 100);
+TEST_F(ContainerTimingPerfTest, PaintPropagation_Depth10_100) {
+  RunPaintBenchmark("depth_10_100", 10, 100);
 }
 
-TEST_P(ContainerTimingPerfTest, PaintPropagation_Depth10_100_SameRect) {
-  RunPaintBenchmark(GetParam(), "depth_10_100", 10, 100, /*same_rect=*/true);
+TEST_F(ContainerTimingPerfTest, PaintPropagation_Depth10_100_SameRect) {
+  RunPaintBenchmark("depth_10_100", 10, 100, /*same_rect=*/true);
 }
 
-TEST_P(ContainerTimingPerfTest, PaintPropagation_Depth50_1) {
-  RunPaintBenchmark(GetParam(), "depth_50_1", 50, 1);
+TEST_F(ContainerTimingPerfTest, PaintPropagation_Depth50_1) {
+  RunPaintBenchmark("depth_50_1", 50, 1);
 }
 
-TEST_P(ContainerTimingPerfTest, PaintPropagation_Depth50_1_SameRect) {
-  RunPaintBenchmark(GetParam(), "depth_50_1", 50, 1, /*same_rect=*/true);
+TEST_F(ContainerTimingPerfTest, PaintPropagation_Depth50_1_SameRect) {
+  RunPaintBenchmark("depth_50_1", 50, 1, /*same_rect=*/true);
 }
 
-TEST_P(ContainerTimingPerfTest, PaintPropagation_Depth50_100) {
-  RunPaintBenchmark(GetParam(), "depth_50_100", 50, 100);
+TEST_F(ContainerTimingPerfTest, PaintPropagation_Depth50_100) {
+  RunPaintBenchmark("depth_50_100", 50, 100);
 }
 
-TEST_P(ContainerTimingPerfTest, PaintPropagation_Depth50_100_SameRect) {
-  RunPaintBenchmark(GetParam(), "depth_50_100", 50, 100, /*same_rect=*/true);
+TEST_F(ContainerTimingPerfTest, PaintPropagation_Depth50_100_SameRect) {
+  RunPaintBenchmark("depth_50_100", 50, 100, /*same_rect=*/true);
 }
 
-TEST_P(ContainerTimingPerfTest, CacheInvalidationCycle_Depth10_1_5) {
-  RunInvalidationCycleBenchmark(GetParam(), "depth10_1_5", 10, 1, 5);
+TEST_F(ContainerTimingPerfTest, CacheInvalidationCycle_Depth10_1_5) {
+  RunInvalidationCycleBenchmark("depth10_1_5", 10, 1, 5);
 }
 
-TEST_P(ContainerTimingPerfTest, CacheInvalidationCycle_Depth10_1_1) {
-  RunInvalidationCycleBenchmark(GetParam(), "depth10_1_1", 10, 1, 1);
+TEST_F(ContainerTimingPerfTest, CacheInvalidationCycle_Depth10_1_1) {
+  RunInvalidationCycleBenchmark("depth10_1_1", 10, 1, 1);
 }
 
-TEST_P(ContainerTimingPerfTest, CacheInvalidationCycle_Depth10_100_5) {
-  RunInvalidationCycleBenchmark(GetParam(), "depth10_100_5", 10, 100, 5);
+TEST_F(ContainerTimingPerfTest, CacheInvalidationCycle_Depth10_100_5) {
+  RunInvalidationCycleBenchmark("depth10_100_5", 10, 100, 5);
 }
 
-TEST_P(ContainerTimingPerfTest, CacheInvalidationCycle_Depth10_100_1) {
-  RunInvalidationCycleBenchmark(GetParam(), "depth10_100_1", 10, 100, 1);
+TEST_F(ContainerTimingPerfTest, CacheInvalidationCycle_Depth10_100_1) {
+  RunInvalidationCycleBenchmark("depth10_100_1", 10, 100, 1);
 }
 
-TEST_P(ContainerTimingPerfTest, ImageAttribution_100) {
-  RunImageAttributionBenchmark(GetParam(), "images_100", 100);
+TEST_F(ContainerTimingPerfTest, ImageAttribution_100) {
+  RunImageAttributionBenchmark("images_100", 100);
 }
 
-TEST_P(ContainerTimingPerfTest, ImageAttribution_1000) {
-  RunImageAttributionBenchmark(GetParam(), "images_1000", 1000);
+TEST_F(ContainerTimingPerfTest, ImageAttribution_1000) {
+  RunImageAttributionBenchmark("images_1000", 1000);
 }
 
 }  // namespace blink

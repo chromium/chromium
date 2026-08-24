@@ -3962,7 +3962,7 @@ class ContainerTimingDisplayLockContextTest : public DisplayLockContextTest {
   }
 
  private:
-  ScopedContainerTimingPrepaintTraversalForTest scoped_feature_{true};
+  ScopedContainerTimingForTest scoped_feature_{true};
 };
 
 TEST_F(ContainerTimingDisplayLockContextTest, AncestorContainerTimingRoot) {

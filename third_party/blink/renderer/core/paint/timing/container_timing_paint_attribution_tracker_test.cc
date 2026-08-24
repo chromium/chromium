@@ -32,7 +32,7 @@ class ContainerTimingPaintAttributionTrackerTest : public PageTestBase {
   }
 
   Persistent<ContainerTimingPaintAttributionTracker> tracker_;
-  ScopedContainerTimingPrepaintTraversalForTest scoped_feature_{true};
+  ScopedContainerTimingForTest scoped_feature_{true};
 };
 
 TEST_F(ContainerTimingPaintAttributionTrackerTest, SingleRoot) {

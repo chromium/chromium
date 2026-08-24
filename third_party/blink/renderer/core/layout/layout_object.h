@@ -3057,9 +3057,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
 
   // Container Timing pre-paint attribution tracking bits (parallel to SoftNav).
-  // Setters DCHECK ContainerTimingPrepaintTraversal is on; ClearPaintFlags()
-  // resets them after every pre-paint walk, so reads stay 0 when the feature
-  // is off (no runtime check needed on the paint hot path).
+  // Setters DCHECK ContainerTiming is on; ClearPaintFlags() resets them after
+  // every pre-paint walk, so reads stay 0 when the feature is off (no runtime
+  // check needed on the paint hot path).
   void MarkContainerTimingChanged();
   bool ShouldInheritContainerTimingRoot() const {
     NOT_DESTROYED();
@@ -3067,7 +3067,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   void SetShouldInheritContainerTimingRoot(bool should_inherit) {
     NOT_DESTROYED();
-    DCHECK(RuntimeEnabledFeatures::ContainerTimingPrepaintTraversalEnabled(
+    DCHECK(RuntimeEnabledFeatures::ContainerTimingEnabled(
         GetDocument().GetExecutionContext()));
     should_inherit_container_timing_root_ = should_inherit;
   }

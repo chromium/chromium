@@ -21,8 +21,7 @@
 
 namespace blink {
 
-// Shared helpers for the container-timing fixtures below.
-class ContainerTimingTestBase : public PageTestBase {
+class ContainerTimingTest : public PageTestBase {
  protected:
   ContainerTiming& GetContainerTiming() {
     return ContainerTiming::From(*GetDocument().domWindow());
@@ -44,50 +43,15 @@ class ContainerTimingTestBase : public PageTestBase {
     return performance->getBufferedEntriesByType(AtomicString("container"))
         .size();
   }
-};
-
-// Tests covering the new pre-paint attribution tracker semantics. They are
-// only meaningful when ContainerTimingPrepaintTraversal is enabled, so the
-// fixture pins the feature on regardless of the default.
-class ContainerTimingPrepaintTraversalTest : public ContainerTimingTestBase {
- private:
-  ScopedContainerTimingPrepaintTraversalForTest scoped_feature_{true};
-};
-
-// Tests covering the legacy ContainerRootFallback attribution path, which is
-// only exercised when ContainerTimingPrepaintTraversal is disabled, so the
-// fixture pins the feature off regardless of the default.
-class ContainerTimingTest : public ContainerTimingTestBase {
- private:
-  ScopedContainerTimingPrepaintTraversalForTest scoped_feature_{false};
-};
-
-// Tests covering general container-timing propagation semantics that must hold
-// identically whether attribution goes through the pre-paint tracker (feature
-// enabled) or the ContainerRootFallback ancestor walk (feature disabled). The
-// fixture runs each test under both feature states.
-class ContainerTimingPropagationTest
-    : public ContainerTimingTestBase,
-      public testing::WithParamInterface<bool> {
- protected:
-  ContainerTimingPropagationTest() : scoped_feature_(GetParam()) {}
 
  private:
-  ScopedContainerTimingPrepaintTraversalForTest scoped_feature_;
+  ScopedContainerTimingForTest scoped_feature_{true};
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ContainerTimingPropagationTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "PrepaintTraversal" : "Fallback";
-                         });
-
-TEST_P(ContainerTimingPropagationTest, Propagation_BasicHierarchy) {
-  // The content div contains text, so it is attributed to its container roots:
-  // via the pre-paint tracker as a text aggregation node when the feature is
-  // enabled (populated by SetBodyContent's UpdateAllLifecyclePhasesForTest), or
-  // via the ContainerRootFallback ancestor walk when it is disabled.
+TEST_F(ContainerTimingTest, Propagation_BasicHierarchy) {
+  // The content div contains text so it is tracked as a text aggregation node
+  // by the pre-paint attribution tracker (populated by SetBodyContent via
+  // UpdateAllLifecyclePhasesForTest).
   SetBodyContent(R"HTML(
     <div id="outer" containertiming="outer">
       <div id="middle">
@@ -109,8 +73,7 @@ TEST_P(ContainerTimingPropagationTest, Propagation_BasicHierarchy) {
   EXPECT_EQ(2u, GetContainerEntryCount());
 }
 
-TEST_P(ContainerTimingPropagationTest,
-       Propagation_InsertContainerRootInMiddle) {
+TEST_F(ContainerTimingTest, Propagation_InsertContainerRootInMiddle) {
   SetBodyContent(R"HTML(
     <div id="outer" containertiming="outer">
       <div id="middle">
@@ -137,8 +100,7 @@ TEST_P(ContainerTimingPropagationTest,
   // should not break traversal.
   middle->setAttribute(html_names::kContainertimingAttr,
                        AtomicString("middle"));
-  // Run the lifecycle so attribution picks up the new root (updates the
-  // pre-paint tracker when the feature is enabled).
+  // Run the lifecycle to update the pre-paint tracker with the new root.
   UpdateAllLifecyclePhasesForTest();
 
   // Second paint in a different area - should now propagate through middle
@@ -152,7 +114,7 @@ TEST_P(ContainerTimingPropagationTest,
   EXPECT_EQ(count_after_first_paint + 3u, count_after_second_paint);
 }
 
-TEST_P(ContainerTimingPropagationTest, Propagation_AddIgnoreStopsPropagation) {
+TEST_F(ContainerTimingTest, Propagation_AddIgnoreStopsPropagation) {
   SetBodyContent(R"HTML(
     <div id="outer" containertiming="outer">
       <div id="inner" containertiming="inner">
@@ -175,8 +137,7 @@ TEST_P(ContainerTimingPropagationTest, Propagation_AddIgnoreStopsPropagation) {
 
   // An element with containertimingignore blocks propagation upwards.
   inner->setAttribute(html_names::kContainertimingignoreAttr, g_empty_atom);
-  // Run the lifecycle so attribution picks up the ignore flag (updates the
-  // pre-paint tracker when the feature is enabled).
+  // Run the lifecycle so the pre-paint tracker picks up the ignore flag.
   UpdateAllLifecyclePhasesForTest();
 
   // With the second paint, the inner container timing root gets its new
@@ -188,8 +149,7 @@ TEST_P(ContainerTimingPropagationTest, Propagation_AddIgnoreStopsPropagation) {
   EXPECT_EQ(count_after_first_paint + 1u, count_after_second_paint);
 }
 
-TEST_P(ContainerTimingPropagationTest,
-       Propagation_RemoveIgnoreRestoresPropagation) {
+TEST_F(ContainerTimingTest, Propagation_RemoveIgnoreRestoresPropagation) {
   SetBodyContent(R"HTML(
     <div id="outer" containertiming="outer">
       <div id="inner" containertiming="inner" containertimingignore>
@@ -211,8 +171,7 @@ TEST_P(ContainerTimingPropagationTest,
   EXPECT_EQ(1u, count_after_first_paint);
 
   inner->removeAttribute(html_names::kContainertimingignoreAttr);
-  // Run the lifecycle so attribution restores propagation (updates the
-  // pre-paint tracker when the feature is enabled).
+  // Run the lifecycle so the pre-paint tracker restores propagation.
   UpdateAllLifecyclePhasesForTest();
 
   // On the second paint, without ignore in the middle, we get new performance
@@ -223,7 +182,7 @@ TEST_P(ContainerTimingPropagationTest,
   EXPECT_EQ(count_after_first_paint + 2u, count_after_second_paint);
 }
 
-TEST_P(ContainerTimingPropagationTest, Propagation_DeeplyNestedHierarchy) {
+TEST_F(ContainerTimingTest, Propagation_DeeplyNestedHierarchy) {
   SetBodyContent(R"HTML(
     <div id="a" containertiming="a">
       <div id="b">
@@ -249,9 +208,8 @@ TEST_P(ContainerTimingPropagationTest, Propagation_DeeplyNestedHierarchy) {
 }
 
 // Regression test: after an attribute change on a middle root, re-painting
-// under the innermost container must reach all ancestor roots (on both the
-// fallback and pre-paint tracker paths).
-TEST_P(ContainerTimingPropagationTest, Propagation_ParentCacheReEstablishment) {
+// under the innermost container must reach all ancestor roots.
+TEST_F(ContainerTimingTest, Propagation_ParentCacheReEstablishment) {
   SetBodyContent(R"HTML(
     <div id="a" containertiming="a">
       <div id="b" containertiming="b">
@@ -274,8 +232,7 @@ TEST_P(ContainerTimingPropagationTest, Propagation_ParentCacheReEstablishment) {
   EXPECT_EQ(3u, count_after_first_paint);
 
   // Attribute change on B; the next lifecycle update re-attributes the changed
-  // subtree (rebuilding the pre-paint tracker's parent links when the feature
-  // is enabled).
+  // subtree, rebuilding the pre-paint tracker's parent links.
   b->setAttribute(html_names::kContainertimingAttr, AtomicString("b2"));
   // Run the lifecycle to re-attribute the changed subtree.
   UpdateAllLifecyclePhasesForTest();
@@ -289,8 +246,7 @@ TEST_P(ContainerTimingPropagationTest, Propagation_ParentCacheReEstablishment) {
   EXPECT_EQ(count_after_first_paint + 3u, count_after_second_paint);
 }
 
-TEST_P(ContainerTimingPropagationTest,
-       Propagation_IgnoreBlocksOnMultiplePaints) {
+TEST_F(ContainerTimingTest, Propagation_IgnoreBlocksOnMultiplePaints) {
   SetBodyContent(R"HTML(
     <div id="outer" containertiming="outer">
       <div id="inner" containertiming="inner" containertimingignore>
@@ -323,8 +279,7 @@ TEST_P(ContainerTimingPropagationTest,
 // Regression test for the FastHasAttribute guard on the initial tracker entry.
 // Removing containertiming from the innermost root (without running pre-paint)
 // must not produce a record for the now-non-root element.
-TEST_F(ContainerTimingPrepaintTraversalTest,
-       StaleTrackerGuard_InitialRootRemoved) {
+TEST_F(ContainerTimingTest, StaleTrackerGuard_InitialRootRemoved) {
   SetBodyContent(R"HTML(
     <div id="outer" containertiming="outer">
       <div id="inner" containertiming="inner">
@@ -359,8 +314,7 @@ TEST_F(ContainerTimingPrepaintTraversalTest,
 // Regression test for the FastHasAttribute guard on the parent-root chain.
 // Removing containertiming from an ancestor root (without running pre-paint)
 // must not produce a record for that ancestor.
-TEST_F(ContainerTimingPrepaintTraversalTest,
-       StaleTrackerGuard_ParentRootRemoved) {
+TEST_F(ContainerTimingTest, StaleTrackerGuard_ParentRootRemoved) {
   SetBodyContent(R"HTML(
     <div id="outer" containertiming="outer">
       <div id="inner" containertiming="inner">
@@ -397,8 +351,7 @@ TEST_F(ContainerTimingPrepaintTraversalTest,
 // walk never marks it in the tracker and GetContainerRootFor() returns null.
 // This must not crash and must not produce an entry. It mirrors the
 // presentation-time case where a painted element has been detached since paint.
-TEST_F(ContainerTimingPrepaintTraversalTest,
-       NullContainerRoot_UntrackedElementReturns) {
+TEST_F(ContainerTimingTest, NullContainerRoot_UntrackedElementReturns) {
   SetBodyContent(R"HTML(
     <div id="root" containertiming="root">
       <div id="plain"></div>
@@ -422,8 +375,7 @@ TEST_F(ContainerTimingPrepaintTraversalTest,
 // self-root keeps its containertiming attribute (so it stays a valid root)
 // while MarkContainerTimingChanged() dirties its layout object. Painting must
 // proceed without crashing and still record.
-TEST_F(ContainerTimingPrepaintTraversalTest,
-       PaintWithDirtyContainerTimingBit_DoesNotCrash) {
+TEST_F(ContainerTimingTest, PaintWithDirtyContainerTimingBit_DoesNotCrash) {
   SetBodyContent(R"HTML(
     <div id="root" containertiming="root">x</div>
   )HTML");
@@ -454,7 +406,7 @@ TEST_F(ContainerTimingPrepaintTraversalTest,
 // ShouldInheritContainerTimingRoot=false on the CT root, a subsequent walk
 // triggered by a non-CT change must reuse the cached root rather than
 // re-running UpdateOnPrePaint.
-TEST_F(ContainerTimingPrepaintTraversalTest, Propagation_CachedRootPath) {
+TEST_F(ContainerTimingTest, Propagation_CachedRootPath) {
   SetBodyContent(R"HTML(
     <div id="root" containertiming="root">
       <div id="content" style="width: 100px;">x</div>
@@ -471,8 +423,8 @@ TEST_F(ContainerTimingPrepaintTraversalTest, Propagation_CachedRootPath) {
   EXPECT_EQ(1u, count_initial);
 
   // Non-CT-affecting layout change. The pre-paint walk re-visits the subtree
-  // but the CT root's container_timing_changed_ bit is cleared, so the cached
-  // root path runs in UpdateContainerTimingContext.
+  // but without the kContainerTimingContext walk reason, so the cached root
+  // path runs in UpdateContainerTimingContext.
   content->setAttribute(html_names::kStyleAttr, AtomicString("width: 200px;"));
   UpdateAllLifecyclePhasesForTest();
 
@@ -487,7 +439,7 @@ TEST_F(ContainerTimingPrepaintTraversalTest, Propagation_CachedRootPath) {
 // containertimingignore element as a stop node, a subsequent walk triggered
 // by a non-CT change must reuse the cached state and continue to block
 // propagation.
-TEST_F(ContainerTimingPrepaintTraversalTest, Propagation_CachedStopNodePath) {
+TEST_F(ContainerTimingTest, Propagation_CachedStopNodePath) {
   SetBodyContent(R"HTML(
     <div id="outer" containertiming="outer">
       <div id="stop" containertimingignore>
@@ -518,7 +470,7 @@ TEST_F(ContainerTimingPrepaintTraversalTest, Propagation_CachedStopNodePath) {
 // A container root with containertimingignore that contains text must
 // receive its own paints (via the text-aggregation descent in pre-paint), but
 // must not propagate to an ancestor container root.
-TEST_F(ContainerTimingPrepaintTraversalTest, TextRootWithIgnore_SelfReported) {
+TEST_F(ContainerTimingTest, TextRootWithIgnore_SelfReported) {
   SetBodyContent(R"HTML(
     <div id="outer" containertiming="outer">
       <div id="text-root" containertiming="text-root" containertimingignore>
@@ -540,11 +492,27 @@ TEST_F(ContainerTimingPrepaintTraversalTest, TextRootWithIgnore_SelfReported) {
   EXPECT_EQ(1u, GetContainerEntryCount());
 }
 
-// On the legacy fixture (feature OFF → ContainerRootFallback path), an
-// ancestor with only `containertimingignore` (no `containertiming`) must stop
-// the upward walk and produce no entries. Covers the ignore-stops-walk branch
-// in ContainerRootFallback().
-TEST_F(ContainerTimingTest, Propagation_FallbackIgnoreOnlyStopsWalk) {
+// An ancestor with only `containertimingignore` (no `containertiming`) must
+// stop the upward walk and produce no entries.
+// The deprecated dashed spelling must keep working until it is removed.
+TEST_F(ContainerTimingTest, Propagation_DeprecatedDashedIgnoreStopsWalk) {
+  SetBodyContent(R"HTML(
+    <div id="root" containertiming="root">
+      <div id="ignored" containertiming-ignore>
+        <div id="content">x</div>
+      </div>
+    </div>
+  )HTML");
+
+  auto* content = GetDocument().getElementById(AtomicString("content"));
+  ASSERT_TRUE(content);
+
+  SimulatePaint(content, gfx::RectF(0, 0, 100, 100));
+  TriggerPopulateEntries();
+  EXPECT_EQ(0u, GetContainerEntryCount());
+}
+
+TEST_F(ContainerTimingTest, Propagation_IgnoreOnlyStopsWalk) {
   SetBodyContent(R"HTML(
     <div containertiming="outer">
       <div containertimingignore>
@@ -561,10 +529,9 @@ TEST_F(ContainerTimingTest, Propagation_FallbackIgnoreOnlyStopsWalk) {
   EXPECT_EQ(0u, GetContainerEntryCount());
 }
 
-// On the legacy fixture, painting an element with no `containertiming`
-// ancestor at all must produce no entries — the fallback walks to the top
-// and returns null. Covers the walked-to-top branch in ContainerRootFallback().
-TEST_F(ContainerTimingTest, Propagation_FallbackNoRootInAncestors) {
+// Painting an element with no `containertiming` ancestor at all must produce
+// no entries — it is not attributed to any container root.
+TEST_F(ContainerTimingTest, Propagation_NoRootInAncestors) {
   SetBodyContent(R"HTML(
     <div><div id="content">x</div></div>
   )HTML");
@@ -577,13 +544,10 @@ TEST_F(ContainerTimingTest, Propagation_FallbackNoRootInAncestors) {
   EXPECT_EQ(0u, GetContainerEntryCount());
 }
 
-// On the prepaint fixture, toggling `containertimingignore` via setAttribute
-// after the initial layout exercises the prepaint-enabled branch in
-// OnContainerTimingIgnoreAttrChanged that marks the layout object so the
-// pre-paint walk reattributes the subtree. Mirrors the legacy fixture's
-// Propagation_AddIgnoreStopsPropagation test.
-TEST_F(ContainerTimingPrepaintTraversalTest,
-       Propagation_PrepaintAddIgnoreMarksLayout) {
+// Toggling `containertimingignore` via setAttribute after the initial layout
+// exercises the branch in OnContainerTimingIgnoreAttrChanged that marks the
+// layout object so the pre-paint walk reattributes the subtree.
+TEST_F(ContainerTimingTest, Propagation_AddIgnoreMarksLayout) {
   SetBodyContent(R"HTML(
     <div containertiming="outer">
       <div id="inner" containertiming="inner">
@@ -604,7 +568,7 @@ TEST_F(ContainerTimingPrepaintTraversalTest,
   EXPECT_EQ(2u, count_after_first_paint);
 
   // setAttribute on the live element triggers
-  // OnContainerTimingIgnoreAttrChanged. With prepaint enabled, this also calls
+  // OnContainerTimingIgnoreAttrChanged, which calls
   // MarkContainerTimingChanged() on inner's LayoutObject so the next pre-paint
   // walk re-attributes the subtree.
   inner->setAttribute(html_names::kContainertimingignoreAttr, g_empty_atom);
@@ -620,8 +584,7 @@ TEST_F(ContainerTimingPrepaintTraversalTest,
 // the break in LayoutObject::MarkContainerTimingChanged(): walking from the
 // second sibling reaches a shared ancestor that already has the descendant
 // bit set from the first sibling's walk, and stops.
-TEST_F(ContainerTimingPrepaintTraversalTest,
-       Propagation_PrepaintTwoSiblingsBreakOnSharedAncestor) {
+TEST_F(ContainerTimingTest, Propagation_TwoSiblingsBreakOnSharedAncestor) {
   SetBodyContent(R"HTML(
     <div id="parent">
       <div id="a"><div id="ca">x</div></div>
@@ -652,10 +615,9 @@ TEST_F(ContainerTimingPrepaintTraversalTest,
   EXPECT_EQ(2u, GetContainerEntryCount());
 }
 
-// In prepaint mode the legacy SelfOrAncestorHasContainerTiming() node flag must
-// not be maintained: the pre-paint attribution tracker is the sole source of
-// truth. This is the regression guard for the flag/tracker decoupling.
-TEST_F(ContainerTimingPrepaintTraversalTest, DoesNotMaintainNodeFlag) {
+// The tracker attributes content to the innermost container root. The tracker
+// keys the innermost box that directly contains text, i.e. `grandchild`.
+TEST_F(ContainerTimingTest, AttributesContentToRoot) {
   SetBodyContent(R"HTML(
     <div id="root" containertiming="root">
       <div id="child">
@@ -665,19 +627,10 @@ TEST_F(ContainerTimingPrepaintTraversalTest, DoesNotMaintainNodeFlag) {
   )HTML");
 
   auto* root = GetDocument().getElementById(AtomicString("root"));
-  auto* child = GetDocument().getElementById(AtomicString("child"));
   auto* grandchild = GetDocument().getElementById(AtomicString("grandchild"));
   ASSERT_TRUE(root);
-  ASSERT_TRUE(child);
   ASSERT_TRUE(grandchild);
 
-  // Neither the root nor its descendants carry the node flag.
-  EXPECT_FALSE(root->SelfOrAncestorHasContainerTiming());
-  EXPECT_FALSE(child->SelfOrAncestorHasContainerTiming());
-  EXPECT_FALSE(grandchild->SelfOrAncestorHasContainerTiming());
-
-  // But the tracker still attributes the content to the root. The tracker keys
-  // the innermost box that directly contains text, i.e. `grandchild`.
   EXPECT_EQ(root,
             GetContainerTiming().PaintAttributionTracker()->GetContainerRootFor(
                 grandchild));
@@ -687,7 +640,7 @@ TEST_F(ContainerTimingPrepaintTraversalTest, DoesNotMaintainNodeFlag) {
 // though OnElementPainted() is invoked for it (text records also exist for
 // LCP-only reasons). This is the load-bearing filter that replaces the node
 // flag gate inside OnElementPainted().
-TEST_F(ContainerTimingPrepaintTraversalTest, UnrelatedElementNotAttributed) {
+TEST_F(ContainerTimingTest, UnrelatedElementNotAttributed) {
   SetBodyContent(R"HTML(
     <div id="root" containertiming="root">
       <div id="inside">x</div>
@@ -715,7 +668,7 @@ TEST_F(ContainerTimingPrepaintTraversalTest, UnrelatedElementNotAttributed) {
 
 // A subtree inserted under an existing root after initial layout must be
 // attributed by the next pre-paint walk, with no node-flag maintenance running.
-TEST_F(ContainerTimingPrepaintTraversalTest, InsertionUnderRootAttributed) {
+TEST_F(ContainerTimingTest, InsertionUnderRootAttributed) {
   SetBodyContent(R"HTML(
     <div id="root" containertiming="root">
       <div id="existing">x</div>
@@ -730,8 +683,7 @@ TEST_F(ContainerTimingPrepaintTraversalTest, InsertionUnderRootAttributed) {
   root->AppendChild(inserted);
   UpdateAllLifecyclePhasesForTest();
 
-  // No node-flag maintenance ran, yet the tracker attributes the new subtree.
-  EXPECT_FALSE(inserted->SelfOrAncestorHasContainerTiming());
+  // The tracker attributes the newly inserted subtree to the root.
   EXPECT_EQ(root,
             GetContainerTiming().PaintAttributionTracker()->GetContainerRootFor(
                 inserted));
@@ -744,7 +696,7 @@ TEST_F(ContainerTimingPrepaintTraversalTest, InsertionUnderRootAttributed) {
 // Removing the containertiming attribute must clear the tracker attribution on
 // the next pre-paint walk (driven by MarkContainerTimingChanged(), not the node
 // flag).
-TEST_F(ContainerTimingPrepaintTraversalTest, RemovingRootClearsAttribution) {
+TEST_F(ContainerTimingTest, RemovingRootClearsAttribution) {
   SetBodyContent(R"HTML(
     <div id="root" containertiming="root">
       <div id="inside">x</div>
@@ -765,10 +717,10 @@ TEST_F(ContainerTimingPrepaintTraversalTest, RemovingRootClearsAttribution) {
   EXPECT_EQ(nullptr, tracker->GetContainerRootFor(inside));
 }
 
-// The text paint-timing gate must, in prepaint mode, consult the tracker rather
-// than the node flag: true under a root, false when unrelated, and always true
-// for elements explicitly registered for element timing.
-TEST_F(ContainerTimingPrepaintTraversalTest, TextGateUsesTracker) {
+// The text paint-timing gate consults the tracker: true under a root, false
+// when unrelated, and always true for elements explicitly registered for
+// element timing.
+TEST_F(ContainerTimingTest, TextGateUsesTracker) {
   SetBodyContent(R"HTML(
     <div id="root" containertiming="root">
       <div id="inside">x</div>
@@ -790,32 +742,18 @@ TEST_F(ContainerTimingPrepaintTraversalTest, TextGateUsesTracker) {
   EXPECT_TRUE(TextElementTiming::NeededForTiming(*et));
 }
 
-// Cross-frame isolation must hold identically under both attribution paths, so
-// the fixture runs each test with ContainerTimingPrepaintTraversal enabled and
-// disabled.
-class ContainerTimingIframeIsolationTest
-    : public PageTestBase,
-      public testing::WithParamInterface<bool> {
+class ContainerTimingIframeIsolationTest : public PageTestBase {
  protected:
-  ContainerTimingIframeIsolationTest() : scoped_feature_(GetParam()) {}
-
   void SetUp() override {
     SetupPageWithClients(nullptr,
                          MakeGarbageCollected<SingleChildLocalFrameClient>());
   }
 
  private:
-  ScopedContainerTimingPrepaintTraversalForTest scoped_feature_;
+  ScopedContainerTimingForTest scoped_feature_{true};
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ContainerTimingIframeIsolationTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "PrepaintTraversal" : "Fallback";
-                         });
-
-TEST_P(ContainerTimingIframeIsolationTest, IframeIsolation) {
+TEST_F(ContainerTimingIframeIsolationTest, IframeIsolation) {
   SetBodyContent(R"HTML(<iframe id="child" srcdoc=""></iframe>)HTML");
   UpdateAllLifecyclePhasesForTest();
 
@@ -839,13 +777,9 @@ TEST_P(ContainerTimingIframeIsolationTest, IframeIsolation) {
   ContainerTiming& child_ct = ContainerTiming::From(*child_window);
 
   EXPECT_NE(&parent_ct, &child_ct);
-  // Each frame owns an independent pre-paint attribution tracker. The tracker
-  // only exists when ContainerTimingPrepaintTraversal is enabled; in the
-  // fallback path both are null, so the pointer comparison is not meaningful.
-  if (GetParam()) {
-    EXPECT_NE(parent_ct.PaintAttributionTracker(),
-              child_ct.PaintAttributionTracker());
-  }
+  // Each frame owns an independent pre-paint attribution tracker.
+  EXPECT_NE(parent_ct.PaintAttributionTracker(),
+            child_ct.PaintAttributionTracker());
 
   Element* child_content =
       child_document->getElementById(AtomicString("child_content"));

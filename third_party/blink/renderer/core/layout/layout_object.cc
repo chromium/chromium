@@ -5341,7 +5341,7 @@ void LayoutObject::MarkSoftNavigationContextChanged() {
 
 void LayoutObject::MarkContainerTimingChanged() {
   NOT_DESTROYED();
-  DCHECK(RuntimeEnabledFeatures::ContainerTimingPrepaintTraversalEnabled(
+  DCHECK(RuntimeEnabledFeatures::ContainerTimingEnabled(
       GetDocument().GetExecutionContext()));
   SetNeedsPrePaintSubtreeWalk(
       {PrePaintSubtreeWalkReason::kContainerTimingContext});

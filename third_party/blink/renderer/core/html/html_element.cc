@@ -4469,26 +4469,10 @@ void HTMLElement::OnContainerTimingAttrChanged(
     return;
   }
 
-  if (RuntimeEnabledFeatures::ContainerTimingPrepaintTraversalEnabled(
-          GetExecutionContext())) {
-    // Prepaint mode: the pre-paint attribution tracker is the sole source of
-    // truth; the legacy SelfOrAncestorHasContainerTiming() node flag is not
-    // maintained. Marking the layout object dirty re-attributes the subtree on
-    // the next pre-paint walk.
-    if (auto* layout_object = GetLayoutObject()) {
-      layout_object->MarkContainerTimingChanged();
-    }
-    return;
-  }
-
-  if (had_container_timing && !has_container_timing) {
-    if (!RecalcSelfOrAncestorHasContainerTiming()) {
-      ClearSelfOrAncestorHasContainerTiming();
-      UpdateDescendantHasContainerTiming(false /* has_container_timing */);
-    }
-  } else if (!had_container_timing && has_container_timing) {
-    SetSelfOrAncestorHasContainerTiming();
-    UpdateDescendantHasContainerTiming(true /* has_container_timing */);
+  // Mark the layout object dirty so the next pre-paint walk re-attributes the
+  // subtree through the ContainerTimingPaintAttributionTracker.
+  if (auto* layout_object = GetLayoutObject()) {
+    layout_object->MarkContainerTimingChanged();
   }
 }
 
@@ -4516,39 +4500,19 @@ void HTMLElement::OnContainerTimingIgnoreAttrChanged(
     return;
   }
   // Only this spelling's presence is tracked here. That is still correct when
-  // the element carries both spellings: the branches below either consult
-  // RecalcSelfOrAncestorHasContainerTiming(), which sees the other spelling
-  // through HasContainerTimingIgnoreAttribute(), or re-clear an already cleared
-  // subtree.
+  // the element carries both spellings: all this does is mark the subtree for
+  // re-attribution, and the pre-paint walk resolves the effective ignore state
+  // through HasContainerTimingIgnoreAttribute(), which sees both spellings.
   bool had_container_timing_ignore = !params.old_value.IsNull();
   bool has_container_timing_ignore = !params.new_value.IsNull();
   if (had_container_timing_ignore == has_container_timing_ignore) {
     return;
   }
 
-  if (RuntimeEnabledFeatures::ContainerTimingPrepaintTraversalEnabled(
-          GetExecutionContext())) {
-    // Prepaint mode: the pre-paint attribution tracker is the sole source of
-    // truth; the legacy SelfOrAncestorHasContainerTiming() node flag is not
-    // maintained. Marking the layout object dirty re-attributes the subtree on
-    // the next pre-paint walk.
-    if (auto* layout_object = GetLayoutObject()) {
-      layout_object->MarkContainerTimingChanged();
-    }
-    return;
-  }
-
-  if (had_container_timing_ignore && !has_container_timing_ignore) {
-    if (RecalcSelfOrAncestorHasContainerTiming()) {
-      SetSelfOrAncestorHasContainerTiming();
-      UpdateDescendantHasContainerTiming(true /* has_container_timing */);
-    }
-  } else if (!had_container_timing_ignore && has_container_timing_ignore &&
-             !FastHasAttribute(html_names::kContainertimingAttr)) {
-    // containertiming has precedence over containertimingignore, only unset
-    // the tree if the node has ignore only
-    ClearSelfOrAncestorHasContainerTiming();
-    UpdateDescendantHasContainerTiming(false /* has_container_timing */);
+  // Mark the layout object dirty so the next pre-paint walk re-attributes the
+  // subtree through the ContainerTimingPaintAttributionTracker.
+  if (auto* layout_object = GetLayoutObject()) {
+    layout_object->MarkContainerTimingChanged();
   }
 }
 

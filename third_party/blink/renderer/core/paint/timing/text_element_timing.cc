@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
@@ -54,8 +55,8 @@ bool TextElementTiming::CanReportToContainerTiming() {
   if (!performance_->IsContainerTimingEnabled()) {
     return false;
   }
-  EnsureContainerTiming();
-  return container_timing_->CanReportToContainerTiming();
+  return EnsureContainerTiming() &&
+         container_timing_->CanReportToContainerTiming();
 }
 
 bool TextElementTiming::CanReportElements() {
@@ -119,13 +120,20 @@ void TextElementTiming::Trace(Visitor* visitor) const {
   visitor->Trace(container_timing_);
 }
 
-void TextElementTiming::EnsureContainerTiming() {
+bool TextElementTiming::EnsureContainerTiming() {
   if (container_timing_) {
-    return;
+    return true;
   }
   auto* window = To<LocalDOMWindow>(performance_->GetExecutionContext());
   DCHECK(window);
+  // WindowPerformance memoizes its answer, so it can outlive the live feature
+  // state, while ContainerTiming::From() CHECKs the live one. Check it here so
+  // a stale cache cannot become a crash.
+  if (!RuntimeEnabledFeatures::ContainerTimingEnabled(window)) {
+    return false;
+  }
   container_timing_ = ContainerTiming::From(*window);
+  return true;
 }
 
 }  // namespace blink

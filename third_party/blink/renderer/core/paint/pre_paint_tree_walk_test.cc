@@ -646,7 +646,7 @@ class ContainerTimingPrePaintTreeWalkTest : public RenderingTest {
     RenderingTest::SetUp();
   }
 
-  ScopedContainerTimingPrepaintTraversalForTest scoped_feature_{true};
+  ScopedContainerTimingForTest scoped_feature_{true};
 };
 
 // Mirrors ShouldInheritSoftNavigationContextUpdate: verifies the pre-paint walk

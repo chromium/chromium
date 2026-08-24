@@ -1351,10 +1351,6 @@
       status: "experimental",
     },
     {
-      name: "ContainerTimingPrepaintTraversal",
-      depends_on: ["ContainerTiming"],
-    },
-    {
       name: "ContentIndex",
       status:  {"Android": "stable", "default": "experimental"},
     },

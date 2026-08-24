@@ -2087,15 +2087,6 @@ bool Node::IsActiveSlot() const {
   return ToHTMLSlotElementIfSupportsAssignmentOrNull(*this);
 }
 
-bool Node::HasContainerTiming() const {
-  if (IsElementNode()) {
-    return To<Element>(*this).FastHasAttribute(
-        html_names::kContainertimingAttr);
-  } else {
-    return false;
-  }
-}
-
 AtomicString Node::SlotName() const {
   DCHECK(IsSlotable());
   if (IsElementNode()) {

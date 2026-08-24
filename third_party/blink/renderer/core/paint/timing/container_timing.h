@@ -33,9 +33,8 @@ class CORE_EXPORT ContainerTiming final
 
   static ContainerTiming& From(LocalDOMWindow&);
 
-  // In prepaint mode the container-timing decision is made via the paint
-  // attribution tracker; otherwise via the SelfOrAncestorHasContainerTiming()
-  // node flag.
+  // The container-timing decision is made via the paint attribution tracker,
+  // populated during the pre-paint walk.
   static bool ContributesToContainerTiming(Element* element);
 
   bool CanReportToContainerTiming() const;
@@ -86,7 +85,10 @@ class CORE_EXPORT ContainerTiming final
 
   Member<WindowPerformance> performance_;
   HeapHashMap<WeakMember<Element>, Member<Record>> container_root_records_;
-  Member<ContainerTimingPaintAttributionTracker> paint_attribution_tracker_;
+  // Never null: created in the constructor, which CHECKs that container timing
+  // is enabled, and never reassigned.
+  const Member<ContainerTimingPaintAttributionTracker>
+      paint_attribution_tracker_;
 };
 
 }  // namespace blink

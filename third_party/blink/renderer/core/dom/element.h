@@ -2075,14 +2075,6 @@ class CORE_EXPORT Element : public ContainerNode {
   void AdjustDirectionalityIfNeededAfterChildrenChanged(
       const ChildrenChange& change);
 
-  void UpdateDescendantHasContainerTiming(bool has_container_timing);
-  void AdjustContainerTimingIfNeededAfterChildrenChanged(
-      const ChildrenChange& change);
-  bool ShouldAdjustContainerTimingForInsert(const ChildrenChange& change) const;
-  bool DoesChildContainerTimingNeedChange(const Node& node) const;
-
-  bool RecalcSelfOrAncestorHasContainerTiming() const;
-
   // True if this element carries the container timing ignore marker, either
   // spelled `containertimingignore` or with the deprecated dashed
   // `containertiming-ignore` spelling. Both are functional; the dashed one

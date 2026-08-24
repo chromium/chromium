@@ -8077,8 +8077,6 @@ void Element::ChildrenChanged(const ChildrenChange& change) {
   if (GetDocument().HasDirAttribute()) {
     AdjustDirectionalityIfNeededAfterChildrenChanged(change);
   }
-
-  AdjustContainerTimingIfNeededAfterChildrenChanged(change);
 }
 
 void Element::FinishParsingChildren() {
@@ -14010,105 +14008,9 @@ Element* Element::ImplicitAnchorElement() const {
   return nullptr;
 }
 
-bool Element::RecalcSelfOrAncestorHasContainerTiming() const {
-  DCHECK(RuntimeEnabledFeatures::ContainerTimingEnabled(GetExecutionContext()));
-  if (IsHTMLElement()) {
-    if (FastHasAttribute(html_names::kContainertimingAttr)) {
-      return true;
-    } else if (HasContainerTimingIgnoreAttribute()) {
-      return false;
-    }
-  }
-  Node* parent = parentNode();
-  if (parent && parent->SelfOrAncestorHasContainerTiming()) {
-    return true;
-  }
-  return false;
-}
-
-void Element::UpdateDescendantHasContainerTiming(bool has_container_timing) {
-  DCHECK(RuntimeEnabledFeatures::ContainerTimingEnabled(GetExecutionContext()));
-  Element* element = ElementTraversal::FirstChild(*this);
-  while (element) {
-    if (element->IsHTMLElement()) {
-      if (element->FastHasAttribute(html_names::kContainertimingAttr) ||
-          element->HasContainerTimingIgnoreAttribute()) {
-        element = ElementTraversal::NextSkippingChildren(*element, this);
-        continue;
-      }
-    }
-    if (!has_container_timing) {
-      if (!element->SelfOrAncestorHasContainerTiming() ||
-          element->RecalcSelfOrAncestorHasContainerTiming()) {
-        element = ElementTraversal::NextSkippingChildren(*element, this);
-        continue;
-      }
-      element->ClearSelfOrAncestorHasContainerTiming();
-    } else {
-      if (element->SelfOrAncestorHasContainerTiming() ||
-          !element->RecalcSelfOrAncestorHasContainerTiming()) {
-        element = ElementTraversal::NextSkippingChildren(*element, this);
-        continue;
-      }
-      element->SetSelfOrAncestorHasContainerTiming();
-    }
-    element = ElementTraversal::Next(*element, this);
-  }
-}
-
 bool Element::HasContainerTimingIgnoreAttribute() const {
   return FastHasAttribute(html_names::kContainertimingignoreAttr) ||
          FastHasAttribute(html_names::kContainertimingIgnoreAttr);
-}
-
-bool Element::DoesChildContainerTimingNeedChange(const Node& node) const {
-  auto* element = DynamicTo<Element>(node);
-  if (element && element->IsHTMLElement() &&
-      (element->FastHasAttribute(html_names::kContainertimingAttr) ||
-       element->HasContainerTimingIgnoreAttribute())) {
-    return false;
-  }
-  return SelfOrAncestorHasContainerTiming() !=
-         node.SelfOrAncestorHasContainerTiming();
-}
-
-bool Element::ShouldAdjustContainerTimingForInsert(
-    const ChildrenChange& change) const {
-  if (change.type ==
-      ChildrenChangeType::kFinishedBuildingDocumentFragmentTree) {
-    for (Node& child : NodeTraversal::ChildrenOf(*this)) {
-      if (DoesChildContainerTimingNeedChange(child)) {
-        return true;
-      }
-    }
-    return false;
-  }
-  return DoesChildContainerTimingNeedChange(*change.sibling_changed);
-}
-
-void Element::AdjustContainerTimingIfNeededAfterChildrenChanged(
-    const ChildrenChange& change) {
-  if (!RuntimeEnabledFeatures::ContainerTimingEnabled(GetExecutionContext())) {
-    return;
-  }
-
-  // Prepaint mode does not maintain the SelfOrAncestorHasContainerTiming() node
-  // flag: newly inserted subtrees are attributed by the pre-paint attribution
-  // tracker on the next walk (new LayoutObjects default their
-  // ContainerTimingChanged bit to true, and the paint-invalidation walk reaches
-  // them), so this O(subtree) DOM traversal is unnecessary.
-  if (RuntimeEnabledFeatures::ContainerTimingPrepaintTraversalEnabled(
-          GetExecutionContext())) {
-    return;
-  }
-
-  if (!change.IsChildInsertion() ||
-      !ShouldAdjustContainerTimingForInsert(change)) {
-    return;
-  }
-
-  UpdateDescendantHasContainerTiming(
-      SelfOrAncestorHasContainerTiming() /* has_container_timing */);
 }
 
 void Element::SetHTMLUnsafeWithoutTrustedTypes(

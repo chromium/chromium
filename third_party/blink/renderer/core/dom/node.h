@@ -1202,17 +1202,6 @@ class CORE_EXPORT Node : public EventTarget {
   }
   void SetCachedDirectionality(TextDirection direction);
 
-  bool SelfOrAncestorHasContainerTiming() const {
-    return GetFlag(kSelfOrAncestorHasContainerTiming);
-  }
-  void SetSelfOrAncestorHasContainerTiming() {
-    SetFlag(kSelfOrAncestorHasContainerTiming);
-  }
-  void ClearSelfOrAncestorHasContainerTiming() {
-    ClearFlag(kSelfOrAncestorHasContainerTiming);
-  }
-  bool HasContainerTiming() const;
-
   void Trace(Visitor*) const override;
 
   bool HasNodePart() const { return GetFlag(kHasNodePart); }
@@ -1283,18 +1272,14 @@ class CORE_EXPORT Node : public EventTarget {
     // Bits indicating this Node is a NodePart or a ChildNodePart endpoint.
     kHasNodePart = 1u << 29,
 
-    // Indicate the node is in a hierarchy that needs to be considered for
-    // ContainerTiming events.
-    kSelfOrAncestorHasContainerTiming = 1u << 30,
-
     // Whether this node is an Element that is a shadow host.
     // Used to speed up GetShadowRoot(). This bit can be freed up if
     // GetShadowRoot() can be inlined by the compiler; see crbug.com/465839474.
-    kHasShadowRootFlag = 1u << 31,
+    kHasShadowRootFlag = 1u << 30,
 
     kDefaultNodeFlags = kIsFinishedParsingChildrenFlag,
 
-    // 0 bit(s) remaining.
+    // 1 bit(s) remaining.
   };
 
   ALWAYS_INLINE bool GetFlag(NodeFlags mask) const {

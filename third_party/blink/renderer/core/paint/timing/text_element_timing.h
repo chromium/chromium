@@ -56,7 +56,9 @@ class CORE_EXPORT TextElementTiming final
  private:
   void OnTextNodePresented(const TextRecord&);
 
-  void EnsureContainerTiming();
+  // Returns false if container timing is not enabled, in which case
+  // `container_timing_` is left null.
+  bool EnsureContainerTiming();
 
   Member<WindowPerformance> performance_;
   Member<ContainerTiming> container_timing_;
