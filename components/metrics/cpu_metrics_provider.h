@@ -5,14 +5,14 @@
 #ifndef COMPONENTS_METRICS_CPU_METRICS_PROVIDER_H_
 #define COMPONENTS_METRICS_CPU_METRICS_PROVIDER_H_
 
-#include "components/metrics/metrics_provider.h"
+#include "components/metrics/early_safe_metrics_provider.h"
 
 namespace metrics {
 
 // CPUMetricsProvider adds CPU Info in the system profile. These include
 // CPU vendor information, cpu cores, etc. This doesn't provide CPU usage
 // information.
-class CPUMetricsProvider : public MetricsProvider {
+class CPUMetricsProvider : public EarlySafeMetricsProvider {
  public:
   CPUMetricsProvider();
 

@@ -11,7 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "components/metrics/metrics_provider.h"
+#include "components/metrics/early_safe_metrics_provider.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 // TODO(crbug.com/41187035): Once MetricsProvider/SystemProfileProto are moved
@@ -23,7 +23,7 @@ namespace variations {
 class SyntheticTrialRegistry;
 struct ActiveGroupId;
 
-class FieldTrialsProvider : public metrics::MetricsProvider {
+class FieldTrialsProvider : public metrics::EarlySafeMetricsProvider {
  public:
   // |registry| must outlive this metrics provider.
   FieldTrialsProvider(SyntheticTrialRegistry* registry,

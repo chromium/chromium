@@ -6,7 +6,7 @@
 #define COMPONENTS_METRICS_INSTALL_DATE_PROVIDER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/metrics/metrics_provider.h"
+#include "components/metrics/early_safe_metrics_provider.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 class PrefService;
@@ -23,7 +23,7 @@ class PrefService;
 namespace metrics {
 
 // Provides the install date.
-class InstallDateProvider : public MetricsProvider {
+class InstallDateProvider : public EarlySafeMetricsProvider {
  public:
   explicit InstallDateProvider(PrefService* local_state)
       : local_state_(local_state) {}

@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_METRICS_ENTROPY_STATE_PROVIDER_H_
 #define COMPONENTS_METRICS_ENTROPY_STATE_PROVIDER_H_
 
+#include "components/metrics/early_safe_metrics_provider.h"
 #include "components/metrics/entropy_state.h"
-#include "components/metrics/metrics_provider.h"
 
 class PrefService;
 
@@ -15,7 +15,7 @@ namespace metrics {
 // EntropyStateProvider adds information about low entropy sources in the system
 // profile. This includes |low_entropy_source|, |old_low_entropy_source| and
 // |pseudo_low_entropy_source|.
-class EntropyStateProvider : public MetricsProvider {
+class EntropyStateProvider : public EarlySafeMetricsProvider {
  public:
   explicit EntropyStateProvider(PrefService* local_state);
   ~EntropyStateProvider() override;
