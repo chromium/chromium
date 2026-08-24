@@ -8,6 +8,7 @@ load("@builtin//encoding.star", "json")
 load("@builtin//lib/gn.star", "gn")
 load("@builtin//runtime.star", "runtime")
 load("@builtin//struct.star", "module")
+load("@builtin//time.star", "time")
 load("./backend_config/backend.star", "backend")
 load("./blink_all.star", "blink_all")
 load("./config.star", "config")
@@ -45,6 +46,12 @@ def __unset_timeout(ctx, step_config):
     if not config.get(ctx, "no-remote-timeout"):
         return step_config
     for rule in step_config["rules"]:
+        # if no timeout, default is 60m timeout.
+        # better to keep longer timeout instead of using shorter timeout.
+        timeout = rule.get("timeout")
+        if timeout and \
+           time.parse_duration(timeout) > time.parse_duration("60m"):
+            continue
         rule.pop("timeout", None)
     return step_config
 
