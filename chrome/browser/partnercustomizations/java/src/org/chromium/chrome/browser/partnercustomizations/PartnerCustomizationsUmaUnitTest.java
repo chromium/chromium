@@ -70,9 +70,7 @@ public class PartnerCustomizationsUmaUnitTest {
 
     private static final int START_TIME = 700;
     private static final int CREATE_DURING_CUSTOMIZATION_TIME = 1500;
-    private static final int CREATE_DURING_CUSTOMIZATION_A_BIT_LATER_TIME = 1550;
     private static final int END_TIME = 2700;
-    private static final int CREATE_AFTER_CUSTOMIZATION_TIME = 4500;
     private static final int UNUSED_TIME = 0;
 
     private static final boolean NOT_CACHED = false;

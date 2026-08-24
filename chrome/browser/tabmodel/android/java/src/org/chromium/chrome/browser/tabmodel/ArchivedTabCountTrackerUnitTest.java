@@ -29,7 +29,6 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService.Observer;
 public class ArchivedTabCountTrackerUnitTest {
     private static final int INITIAL_TAB_COUNT = 1;
     private static final int TAB_MODEL_TAB_COUNT = 2;
-    private static final String SYNC_GROUP_ID = "test_sync_group_id1";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
