@@ -18256,6 +18256,7 @@ from previous Chrome versions.
   <int value="1118109174" label="enable-launcher-search-provider-api"/>
   <int value="1118339487" label="MemoriesDebug:disabled"/>
   <int value="1119365129" label="ActorScriptToolSkipPageContent:disabled"/>
+  <int value="1119466580" label="geic-guest-url"/>
   <int value="1120074279" label="VCTrayTitleHeader:disabled"/>
   <int value="1120211655" label="(Obsolete) enable-simplified-fullscreen-ui"/>
   <int value="1120301491"
@@ -18688,6 +18689,7 @@ from previous Chrome versions.
   <int value="1253698118" label="ash-disable-stable-overview-order"/>
   <int value="1253720084" label="CrOSEnforceSystemAecAgc:disabled"/>
   <int value="1254018350" label="InsecureDownloadWarnings:enabled"/>
+  <int value="1254139237" label="geic-enabled"/>
   <int value="1254419002" label="TestRootStore:disabled"/>
   <int value="1254472299" label="PrivacySettingsRedesign:disabled"/>
   <int value="1254742560" label="CastStreamingOfferHardwareFirst:disabled"/>

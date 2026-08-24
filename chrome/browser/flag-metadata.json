@@ -5359,6 +5359,22 @@
     "expiry_milestone": 152
   },
   {
+    "name": "geic-enabled",
+    "owners": [
+      "sugandhagoyal@google.com",
+      "//chrome/browser/geic/OWNERS"
+    ],
+    "expiry_milestone": 158
+  },
+  {
+    "name": "geic-guest-url",
+    "owners": [
+      "sugandhagoyal@google.com",
+      "//chrome/browser/geic/OWNERS"
+    ],
+    "expiry_milestone": 158
+  },
+  {
     "name": "gemini-actor",
     "owners": [
       "nicolasmacbeth@google.com",
