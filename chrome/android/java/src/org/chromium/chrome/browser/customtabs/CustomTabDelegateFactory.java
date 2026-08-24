@@ -682,8 +682,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 createTabContextMenuItemDelegate(tab),
                 mShareDelegateSupplier,
                 contextMenuMode,
-                mIntentDataProvider.getCustomContentActions(),
-                /* leftSideUiWidthSupplier= */ () -> 0);
+                mIntentDataProvider.getCustomContentActions());
     }
 
     @Override

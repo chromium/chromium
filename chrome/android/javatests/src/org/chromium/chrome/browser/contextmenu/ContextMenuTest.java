@@ -1055,8 +1055,7 @@ public class ContextMenuTest {
                         mItemDelegate,
                         SupplierUtils.of(mShareDelegate),
                         ChromeContextMenuPopulator.ContextMenuMode.NORMAL,
-                        /* customContentActions= */ List.of(),
-                        /* leftSideUiWidthSupplier= */ () -> 0);
+                        /* customContentActions= */ List.of());
         Integer[] commonItems = {
             R.id.contextmenu_share_highlight,
             R.id.contextmenu_remove_highlight,

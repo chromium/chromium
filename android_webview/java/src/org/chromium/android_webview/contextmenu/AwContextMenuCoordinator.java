@@ -216,7 +216,6 @@ public class AwContextMenuCoordinator {
                         mWindowAndroid.getWindow(),
                         mWebContents,
                         mParams,
-                        /* leftContentOffsetPx= */ 0,
                         /* topContentOffsetPx= */ 0,
                         /* usePopupWindow= */ true,
                         dragDispatchingTargetView);

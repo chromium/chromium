@@ -2039,8 +2039,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             /* itemDelegate= */ null,
                             mShareDelegateSupplier,
                             ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW,
-                            /* customContentActions= */ Collections.emptyList(),
-                            getLeftSideUiWidthSupplier());
+                            /* customContentActions= */ Collections.emptyList());
             mCoBrowseViewFactory =
                     new CoBrowseViewFactory(
                             mActivity,
@@ -3210,19 +3209,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     @Override
     public OneshotSupplier<SideUiStateProvider> getSideUiStateProviderSupplier() {
         return mSideUiStateProviderSupplier;
-    }
-
-    @Override
-    public Supplier<Integer> getLeftSideUiWidthSupplier() {
-        return () -> {
-            var sideUiStateProvider = mSideUiStateProviderSupplier.get();
-            if (sideUiStateProvider != null) {
-                return sideUiStateProvider
-                        .getCurrentSideUiSpecs()
-                        .getWidth(SideUiCoordinator.AnchorSide.LEFT);
-            }
-            return 0;
-        };
     }
 
     /**

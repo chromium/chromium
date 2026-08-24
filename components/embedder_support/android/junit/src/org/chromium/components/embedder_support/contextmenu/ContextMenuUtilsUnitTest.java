@@ -603,7 +603,6 @@ public class ContextMenuUtilsUnitTest {
                         context,
                         mockWindow,
                         params,
-                        /* leftContentOffsetPx= */ 0,
                         topContentOffsetPx,
                         isPopup,
                         mockContainerView);
@@ -717,7 +716,6 @@ public class ContextMenuUtilsUnitTest {
                         context,
                         window,
                         params,
-                        /* leftContentOffsetPx= */ 0,
                         topContentOffsetPx,
                         isDragDropEnabled /*usePopupWindow but should not matter for this case*/,
                         containerView);
