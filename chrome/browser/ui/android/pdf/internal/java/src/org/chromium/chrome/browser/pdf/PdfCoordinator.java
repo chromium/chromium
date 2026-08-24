@@ -850,6 +850,8 @@ public class PdfCoordinator
             super.onLoadDocumentSuccess(pdfDocument);
             if (!PdfUtils.isInlinePdfV2Enabled()) {
                 maybeHideToolBoxForUnsupportedEdit();
+            } else if (!PdfUtils.isInlinePdfV2EditEnabled()) {
+                hideToolBox();
             }
             if (PdfUtils.isInlinePdfV2Enabled() && mPdfView != null) {
                 mPdfView.setFormFillingEnabled(
