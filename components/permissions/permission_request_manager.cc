@@ -991,11 +991,14 @@ GeolocationAccuracy
 PermissionRequestManager::GetInitialGeolocationAccuracySelection() const {
   static constexpr GeolocationAccuracy kDefaultAccuracy =
       GeolocationAccuracy::kPrecise;
+  // `current_request_ui_to_use_` is not yet populated when the WebContents is
+  // destroyed while the asynchronous `PermissionUiSelector` evaluations were
+  // still in flight.
   if (!base::FeatureList::IsEnabled(
-          features::kPermissionPredictionsGeolocationAccuracy)) {
+          features::kPermissionPredictionsGeolocationAccuracy) ||
+      !current_request_ui_to_use_.has_value()) {
     return kDefaultAccuracy;
   }
-  CHECK(current_request_ui_to_use_.has_value());
   switch (current_request_ui_to_use_->geolocation_accuracy) {
     case PermissionUiSelector::GeolocationAccuracy::kUnspecified:
       return kDefaultAccuracy;
@@ -1908,7 +1911,6 @@ bool PermissionRequestManager::IsCurrentRequestExclusiveAccess() const {
   return false;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
-
 
 PermissionEmbargoStatus
 PermissionRequestManager::RecordActionAndGetEmbargoStatus(
