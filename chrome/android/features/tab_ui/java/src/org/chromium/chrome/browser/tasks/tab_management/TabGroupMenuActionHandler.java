@@ -135,13 +135,12 @@ public class TabGroupMenuActionHandler {
      */
     public boolean handleAddToExistingGroupAction(Tab tab, Token groupId) {
         RecordUserAction.record("MobileMenuAddToExistingGroup");
-        List<Tab> groupTabs = mTabModel.getTabsInGroup(groupId);
-        if (!groupTabs.isEmpty()) {
-            Tab destTab = groupTabs.get(0);
-            TabGroupUtils.mergeTabsToDest(
-                    List.of(tab), destTab.getId(), mTabModel, /* tabMovedCallback= */ null);
-            return true;
-        }
-        return false;
+        TabGroupUiUtils.addTabsToGroup(
+                mTabModel,
+                List.of(tab),
+                groupId,
+                /* tabMovedCallback= */ null,
+                /* bringToFront= */ true);
+        return true;
     }
 }

@@ -4,15 +4,12 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.mergeTabsToDest;
-
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
@@ -21,7 +18,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Contains the logic to set the state of the model and react to actions. Uses the {@link TabModel}
@@ -85,26 +81,7 @@ class LocalTabGroupListBottomSheetRowMediator {
         RecordUserAction.record("TabGroupParity.BottomSheetRowSelection.ExistingGroup");
 
         assert !tabs.isEmpty();
-
-        // Ensure that the group still exists.
-        if (!mTabModel.tabGroupExists(mGroupId)) {
-            return;
-        }
-
-        // No-op if the tabs to be moved are already in the group.
-        if (areTabsAlreadyInGroup(tabs)) {
-            return;
-        }
-
-        @TabId int destTabId = mTabModel.getGroupLastShownTabId(mGroupId);
-        mergeTabsToDest(tabs, destTabId, mTabModel, mTabMovedCallback);
-    }
-
-    private boolean areTabsAlreadyInGroup(List<Tab> tabsToBeMoved) {
-        boolean areTabsAlreadyInGroup = true;
-        for (Tab tabToBeMoved : tabsToBeMoved) {
-            areTabsAlreadyInGroup &= Objects.equals(mGroupId, tabToBeMoved.getTabGroupId());
-        }
-        return areTabsAlreadyInGroup;
+        TabGroupUiUtils.addTabsToGroup(
+                mTabModel, tabs, mGroupId, mTabMovedCallback, /* bringToFront= */ false);
     }
 }
