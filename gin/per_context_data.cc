@@ -30,6 +30,7 @@ PerContextData::PerContextData(ContextHolder* context_holder,
 PerContextData::~PerContextData() = default;
 
 void PerContextData::Detach() {
+  object_templates_.clear();
   ClearAllUserData();
   CHECK(context_holder_ != nullptr);
   context_holder_->context()->SetAlignedPointerInEmbedderData(
@@ -53,11 +54,17 @@ PerContextData* PerContextData::From(v8::Local<v8::Context> context) {
 void PerContextData::SetObjectTemplate(
     const WrapperInfo* info,
     v8::Local<v8::ObjectTemplate> object_template) {
+  if (!context_holder_) {
+    return;
+  }
   object_templates_[info].Reset(context_holder_->isolate(), object_template);
 }
 
 v8::Local<v8::ObjectTemplate> PerContextData::GetObjectTemplate(
     const WrapperInfo* info) {
+  if (!context_holder_) {
+    return v8::Local<v8::ObjectTemplate>();
+  }
   auto iter = object_templates_.find(info);
   if (iter == object_templates_.end()) {
     return v8::Local<v8::ObjectTemplate>();
