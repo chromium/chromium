@@ -862,6 +862,13 @@ std::vector<CreditCard> GetTouchToFillCardsToSuggest(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
     FieldType trigger_field_type) {
+  // Do not suggest credit cards if the payments data category is blocked by
+  // enterprise policy for the current website.
+  if (client.IsAutofillTypeBlockedByPolicy(
+          client.GetLastCommittedPrimaryMainFrameURL(),
+          AutofillClient::AutofillPolicyDataCategory::kPayments)) {
+    return {};
+  }
   // TouchToFill actually has a trigger field which must be classified in some
   // way, but we intentionally fetch suggestions irrelevant of them.
   std::vector<CreditCard> cards_to_suggest = GetOrderedCardsToSuggest(

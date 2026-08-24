@@ -390,6 +390,16 @@ TEST_F(TouchToFillPaymentMethodDelegateAndroidImplUnitTest,
 }
 
 TEST_F(TouchToFillPaymentMethodDelegateAndroidImplUnitTest,
+       TryToShowTouchToFillFailsIfPaymentsBlockedByPolicy) {
+  ConfigureForCreditCards(test::GetCreditCard());
+  autofill_client().SetAutofillTypeBlockedByPolicy(
+      AutofillClient::AutofillPolicyDataCategory::kPayments, true);
+
+  IntendsToShowTouchToFill(/*expected_success=*/false);
+  TryToShowTouchToFill(/*expected_success=*/false);
+}
+
+TEST_F(TouchToFillPaymentMethodDelegateAndroidImplUnitTest,
        BnplSuggestionSelected_CallbackFillsForm) {
   CreditCard test_card = test::GetCreditCard();
 
