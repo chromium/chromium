@@ -11,6 +11,10 @@ class GaiaId;
 
 // Protocol representing a single identity as known to the system.
 // A user may have multiple identities associated with a single device.
+// If identities are equal, they have the same `gaiaId`. No other guarantee
+// exists as far as equality is concerned.
+// TODO(crbug.com/517249368): Change equality definition so that it only depends
+// on `gaiaId`.
 @protocol SystemIdentity <NSObject>
 
 // The unique GAIA user identifier for this identity. Can be used as a

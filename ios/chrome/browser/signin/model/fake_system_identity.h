@@ -9,7 +9,10 @@
 
 #include "ios/chrome/browser/signin/model/system_identity.h"
 
-// A fake SystemIdentity used for testing.
+// Two fake identities are equal if and only if their `gaiaId` and
+// `refreshToken` are equal.
+// TODO(crbug.com/517249368): Change the implementation of system identities and
+// fake system identities so that the equality only considers `gaiaId`.
 @interface FakeSystemIdentity : NSObject <NSSecureCoding, SystemIdentity>
 
 // Encodes `identities` into a string, using NSKeyedArchiver.
@@ -59,6 +62,13 @@
 @property(nonatomic, readwrite) NSString* userFullName;
 @property(nonatomic, readwrite) NSString* userGivenName;
 @property(nonatomic, readwrite) BOOL hasValidAuth;
+// This value is not used by Chrome. However, it’s used for the sake of
+// `isEqual:` in GCRSSOIdentity internal code. Setting a value to this token
+// allows to simulate having two identities that are not equal, while still
+// having all relevant values equal.
+// TODO(crbug.com/517249368): Remove this property when the internal
+// implementation doesn’t use it either.
+@property(nonatomic, readwrite, copy) NSString* refreshToken;
 
 @end
 

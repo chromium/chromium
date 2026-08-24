@@ -10,6 +10,7 @@
 
 namespace {
 NSString* const kCoderUserEmailKey = @"UserEmail";
+NSString* const kCoderRefreshTokenKey = @"RefreshToken";
 NSString* const kCoderGaiaIDKey = @"GaiaID";
 NSString* const kCoderUserFullNameKey = @"UserFullName";
 NSString* const kCoderUserGivenNameKey = @"UserGivenName";
@@ -140,11 +141,12 @@ NSString* const kCoderHasValidAuthKey = @"HasValidAuth";
     return NO;
   }
 
-  return [_userEmail isEqualToString:other.userEmail] &&
-         _gaiaID == other.gaiaId &&
-         [_userFullName isEqualToString:other.userFullName] &&
-         [_userGivenName isEqualToString:other.userGivenName] &&
-         _hasValidAuth == other.hasValidAuth;
+  // This is similar to Google implementation of identity’s equality.
+  // TODO(crbug.com/517249368): Change the implementation of system identities
+  // and fake system identities so that the equality only considers gaiaId.
+  return _gaiaID == other.gaiaId &&
+         ((!_refreshToken && !other.refreshToken) ||
+          [_refreshToken isEqualToString:other.refreshToken]);
 }
 
 - (NSUInteger)hash {
@@ -169,6 +171,7 @@ NSString* const kCoderHasValidAuthKey = @"HasValidAuth";
   [coder encodeObject:_userFullName forKey:kCoderUserFullNameKey];
   [coder encodeObject:_userGivenName forKey:kCoderUserGivenNameKey];
   [coder encodeBool:_hasValidAuth forKey:kCoderHasValidAuthKey];
+  [coder encodeObject:_refreshToken forKey:kCoderRefreshTokenKey];
 }
 
 - (id)initWithCoder:(NSCoder*)coder {
@@ -182,6 +185,8 @@ NSString* const kCoderHasValidAuthKey = @"HasValidAuth";
     _userGivenName = [coder decodeObjectOfClass:[NSString class]
                                          forKey:kCoderUserGivenNameKey];
     _hasValidAuth = [coder decodeBoolForKey:kCoderHasValidAuthKey];
+    _refreshToken = [coder decodeObjectOfClass:[NSString class]
+                                        forKey:kCoderRefreshTokenKey];
   }
   return self;
 }
