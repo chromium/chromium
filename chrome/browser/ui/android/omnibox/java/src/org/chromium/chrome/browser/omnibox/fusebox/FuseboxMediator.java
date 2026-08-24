@@ -392,6 +392,7 @@ import java.util.function.Supplier;
         setAutocompleteInput(session.getAutocompleteInput());
         onAttachmentsChanged();
         updateFuseboxState();
+        updateActivationChip();
         updateSnackbarStyling();
     }
 
@@ -440,7 +441,8 @@ import java.util.function.Supplier;
                     .addSyncObserverAndCallIfNonNull(mOnSiteSearchDataChanged);
             mInput.getAutocompleteStateSupplier()
                     .addSyncObserverAndCallIfNonNull(mOnAutocompleteStateChanged);
-            mInput.getPreviewMatchUrlSupplier().addSyncObserver(mOnPreviewMatchUrlChanged);
+            mInput.getPreviewMatchUrlSupplier()
+                    .addSyncObserverAndCallIfNonNull(mOnPreviewMatchUrlChanged);
         }
     }
 

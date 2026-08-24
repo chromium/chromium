@@ -2639,6 +2639,20 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void activationChip_restoredSessionWithPreviewMatchUrl() {
+        mModel.set(FuseboxProperties.FUSEBOX_LAYOUT_MODE, FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
+        mInput.setInitialUserText("page.com");
+        mInput.setUserText("page.com");
+        mInput.setPreviewMatchUrl(new GURL("https://page.com"));
+
+        // When beginning input with an existing session (e.g. tab restoration),
+        // activation chip should immediately become visible.
+        mMediator.beginInput(createSession());
+        assertTrue(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
+    }
+
+    @Test
     public void onConfigurationChanged_updatesActivationChipCompact() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         recreateMediator();
