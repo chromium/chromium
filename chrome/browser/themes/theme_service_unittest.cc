@@ -39,6 +39,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/color/color_mixers.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/themes/pref_names.h"
@@ -246,6 +247,21 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
 
   bool IsExtensionDisabled(const extensions::ExtensionId& id) const {
     return registry_->disabled_extensions().GetByID(id);
+  }
+
+  Profile* CreateIsolatedProfile() {
+    Profile* isolated_profile = profile()->GetOffTheRecordProfile(
+        Profile::OTRProfileID::CreateUniqueForTesting(),
+        /*create_if_needed=*/true);
+    profile_metrics::SetBrowserProfileType(
+        isolated_profile,
+        profile_metrics::BrowserProfileType::kEnterpriseIsolated);
+    return isolated_profile;
+  }
+
+  ui::ColorProviderKey GetColorProviderKey(const ui::ColorProviderKey& base_key,
+                                           const Profile* profile) const {
+    return theme_service_->GetColorProviderKey(base_key, profile);
   }
 
  private:
@@ -1198,6 +1214,26 @@ TEST_F(ThemeServiceTest, RecordColorSchemeOnLoad) {
         "ChromeColors.ColorSchemeOnLoad",
         ThemeService::BrowserColorScheme::kSystem, 1);
   }
+}
+
+TEST_F(ThemeServiceTest, IsolatedProfile_GetThemeProvider) {
+  Profile* isolated_profile = CreateIsolatedProfile();
+
+  EXPECT_EQ(&ThemeService::GetThemeProviderForProfile(isolated_profile),
+            &theme_service()->GetDefaultThemeProvider());
+}
+
+TEST_F(ThemeServiceTest, IsolatedProfile_GetColorProviderKey) {
+  Profile* isolated_profile = CreateIsolatedProfile();
+
+  ui::ColorProviderKey key =
+      GetColorProviderKey(ui::ColorProviderKey(), isolated_profile);
+  EXPECT_EQ(key.color_mode, ui::ColorProviderKey::ColorMode::kLight);
+  EXPECT_FALSE(key.user_color.has_value());
+  EXPECT_EQ(key.user_color_source,
+            ui::ColorProviderKey::UserColorSource::kBaseline);
+  EXPECT_FALSE(key.scheme_variant.has_value());
+  EXPECT_EQ(key.custom_theme, nullptr);
 }
 
 #if BUILDFLAG(IS_LINUX)

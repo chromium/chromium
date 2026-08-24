@@ -351,9 +351,11 @@ const ui::ThemeProvider* BrowserWidget::GetBaseThemeProvider() const {
 
 ui::ColorProviderKey::ThemeInitializerSupplier* BrowserWidget::GetCustomTheme()
     const {
-  // Do not return any custom theme if this is an incognito browser or if there
-  // is a user color override (e.g. Focus Mode).
-  if (IsIncognitoBrowser() || user_color_override().has_value()) {
+  // Do not return any custom theme if this is an incognito browser, an
+  // enterprise isolated mode browser, or if there is a user color override
+  // (e.g. Focus Mode).
+  if (IsIncognitoBrowser() || IsEnterpriseIsolatedModeBrowser() ||
+      user_color_override().has_value()) {
     return nullptr;
   }
 
@@ -524,10 +526,10 @@ void BrowserWidget::OnMenuClosed() {
 
 void BrowserWidget::SelectNativeTheme() {
 #if BUILDFLAG(IS_LINUX)
-  // Use the regular NativeTheme instance if running incognito mode, regardless
-  // of system theme (gtk, qt etc).
+  // Use the regular NativeTheme instance if running incognito mode or
+  // enterprise isolated mode, regardless of system theme (gtk, qt etc).
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  if (IsIncognitoBrowser()) {
+  if (IsIncognitoBrowser() || IsEnterpriseIsolatedModeBrowser()) {
     SetNativeTheme(native_theme);
     return;
   }
@@ -590,4 +592,10 @@ bool BrowserWidget::RegenerateFrameOnThemeChange(
 
 bool BrowserWidget::IsIncognitoBrowser() const {
   return browser_view_->browser()->GetProfile()->IsIncognitoProfile();
+}
+
+bool BrowserWidget::IsEnterpriseIsolatedModeBrowser() const {
+  return browser_view_->browser()
+      ->GetProfile()
+      ->IsEnterpriseIsolatedModeProfile();
 }

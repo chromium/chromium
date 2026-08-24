@@ -190,8 +190,8 @@ class ThemeService : public KeyedService,
   virtual ThemeSyncableService* GetThemeSyncableService() const;
 
   // Gets the ThemeProvider for |profile|. This will be different for an
-  // incognito profile and its original profile, even though both profiles use
-  // the same ThemeService.
+  // incognito or isolated profile and its original profile, even though all
+  // profiles use the same ThemeService.
   //
   // Before using this function, consider if the caller is in a rooted UI tree.
   // If it is, strongly favor referring to the conceptual roots for a
