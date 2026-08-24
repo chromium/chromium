@@ -23,7 +23,6 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
@@ -257,9 +256,6 @@ bool CanShowFeedback(const Profile* profile) {
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (!base::FeatureList::IsEnabled(switches::kDisableU18FeedbackDesktop)) {
-    return true;
-  }
 
   // Incognito profiles should apply the same restrictions as their original
   // profile.

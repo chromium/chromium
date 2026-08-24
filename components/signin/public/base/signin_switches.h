@@ -285,13 +285,6 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kDisableFirstRunAnimationsForTesting);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// If enabled, disables feedback for U18 users on desktop platforms.
-// The iOS version is kDisableFeedbackForIneligibleUsers flag.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kDisableU18FeedbackDesktop);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
 #if BUILDFLAG(IS_IOS)
 // Feature flag controlling whether Chrome should avoid adding SID/LSID cookies
 // in gaia auth fetcher requests.
