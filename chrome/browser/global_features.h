@@ -86,6 +86,12 @@ namespace on_device_translation {
 class OnDeviceTranslationInstaller;
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+namespace scheduled_restart {
+class ScheduledRestartManager;
+}  // namespace scheduled_restart
+#endif
+
 namespace smart_restart {
 class SmartRestartManager;
 class SmartRestartMetricsObserver;
@@ -219,6 +225,12 @@ class GlobalFeatures {
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  scheduled_restart::ScheduledRestartManager* scheduled_restart_manager() {
+    return scheduled_restart_manager_.get();
+  }
+#endif
+
   tabs_api::TabDragSessionManager* tab_drag_session_manager() {
     return tab_drag_session_manager_.get();
   }
@@ -237,6 +249,10 @@ class GlobalFeatures {
 #endif
   virtual std::unique_ptr<GlobalBrowserCollection>
   CreateGlobalBrowserCollection();
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  virtual std::unique_ptr<scheduled_restart::ScheduledRestartManager>
+  CreateScheduledRestartManager();
+#endif
 
  private:
   static ui::UserDataFactoryWithOwner<BrowserProcess>& GetUserDataFactory();
@@ -310,6 +326,11 @@ class GlobalFeatures {
 
   std::unique_ptr<smart_restart::SmartRestartManager> smart_restart_manager_;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  std::unique_ptr<scheduled_restart::ScheduledRestartManager>
+      scheduled_restart_manager_;
+#endif
 
   std::unique_ptr<tabs_api::TabDragSessionManager> tab_drag_session_manager_;
 

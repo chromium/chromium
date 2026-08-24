@@ -50,6 +50,10 @@ source_set("lifetime") {
 
   if (is_win || is_mac || is_linux) {
     public += [ "scheduled_restart_manager.h" ]
+    public_deps += [
+      "//chrome/browser/upgrade_detector",
+      "//ui/base/idle",
+    ]
   }
 
   if (!is_android && !is_chromeos) {
@@ -252,6 +256,7 @@ if (!is_android) {
       "//chrome/browser/ui",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/user_education",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//components/javascript_dialogs",
@@ -270,6 +275,10 @@ if (!is_android) {
 
     if (!is_chromeos) {
       sources += [ "application_lifetime_browsertest.cc" ]
+    }
+
+    if (is_win || is_mac || is_linux) {
+      sources += [ "scheduled_restart_manager_browsertest.cc" ]
     }
 
     if (is_chromeos) {

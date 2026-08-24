@@ -59,6 +59,10 @@
 #include "chrome/browser/win/installer_downloader/installer_downloader_infobar_delegate.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/lifetime/scheduled_restart_manager.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/lifetime/smart_restart_manager.h"
 #include "chrome/browser/lifetime/smart_restart_metrics_observer.h"
@@ -179,6 +183,12 @@ void GlobalFeatures::PostBrowserProcessInit() {
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (base::FeatureList::IsEnabled(features::kScheduledRestart)) {
+    scheduled_restart_manager_ = CreateScheduledRestartManager();
+  }
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
   tab_drag_session_manager_ = std::make_unique<tabs_api::TabDragSessionManager>(
       std::make_unique<tabs_api::TabDragSessionDesktopInjector>());
@@ -257,6 +267,10 @@ void GlobalFeatures::PostMainMessageLoopRun() {
   profile_launch_observer_.reset();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  scheduled_restart_manager_.reset();
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
   if (glic_background_mode_manager_) {
     glic_background_mode_manager_->Shutdown();
@@ -307,6 +321,14 @@ std::unique_ptr<GlobalBrowserCollection>
 GlobalFeatures::CreateGlobalBrowserCollection() {
   return std::make_unique<GlobalBrowserCollection>();
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+std::unique_ptr<scheduled_restart::ScheduledRestartManager>
+GlobalFeatures::CreateScheduledRestartManager() {
+  return std::make_unique<scheduled_restart::ScheduledRestartManager>(
+      *UpgradeDetector::GetInstance());
+}
+#endif
 
 // static
 ui::UserDataFactoryWithOwner<BrowserProcess>&
