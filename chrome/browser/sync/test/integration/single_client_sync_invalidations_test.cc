@@ -29,7 +29,6 @@
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
-#include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync/test/bookmark_entity_builder.h"
 #include "components/sync/test/entity_builder_factory.h"
 #include "components/sync_device_info/device_info_sync_service.h"
@@ -281,6 +280,42 @@ class SingleClientSyncInvalidationsTest
     }
   }
 
+  ~SingleClientSyncInvalidationsTest() override = default;
+
+  [[nodiscard]] bool SetupSync() {
+    if (!SyncTest::SetupSync()) {
+      return false;
+    }
+
+    // Wait for committing DeviceInfo with sharing_fields, it may happen
+    // asynchronously due to FCM token registration.
+    if (!device_info_helper::WaitForFullDeviceInfoCommitted(
+            GetLocalCacheGuid())) {
+      return false;
+    }
+
+    // Wait for the client to download the committed DeviceInfo reflection and
+    // settle into a quiescent state.
+    //
+    // This is required because invalidation optimization flags (e.g.
+    // `devices_fcm_registration_tokens` in commit messages) are dropped
+    // whenever `DEVICE_INFO` is updated during a sync cycle (see
+    // `Syncer::GetInvalidationInfo()`).
+    //
+    // For example:
+    // 1. Local DeviceInfo with sharing fields is committed to FakeServer.
+    // 2. FakeServer generates a DEVICE_INFO invalidation.
+    // 3. If a test immediately modifies a data type (e.g. adding a bookmark),
+    //    the resulting sync cycle will download the pending DEVICE_INFO update
+    //    during GetUpdates before committing the bookmark.
+    // 4. Because DEVICE_INFO was updated in that cycle, the optimization flags
+    //    and FCM registration tokens will be omitted from the bookmark commit.
+    //
+    // AwaitQuiescence() ensures this download cycle completes before the test
+    // executes any subsequent commits.
+    return AwaitQuiescence();
+  }
+
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return GetParam();
   }
@@ -304,11 +339,8 @@ class SingleClientSyncInvalidationsTest
             specifics.device_info().last_updated_timestamp()));
   }
 
-  std::string GetLocalCacheGuid() {
-    syncer::SyncTransportDataPrefs prefs(
-        GetProfile(0)->GetPrefs(),
-        GetClient(0)->GetGaiaIdHashForPrimaryAccount());
-    return prefs.GetCacheGuid();
+  std::string GetLocalCacheGuid() const {
+    return GetCacheGuid(/*profile_index=*/0);
   }
 
   StoreType GetStoreType() const {
