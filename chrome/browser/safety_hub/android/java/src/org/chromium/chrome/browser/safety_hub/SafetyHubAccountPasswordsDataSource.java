@@ -60,7 +60,7 @@ public class SafetyHubAccountPasswordsDataSource
         int HAS_WEAK_PASSWORDS = 5;
         int HAS_REUSED_PASSWORDS = 6;
         int UNAVAILABLE_COMPROMISED_NO_WEAK_REUSED_PASSWORDS = 7;
-    };
+    }
 
     private final Profile mProfile;
     private final PrefService mPrefService;

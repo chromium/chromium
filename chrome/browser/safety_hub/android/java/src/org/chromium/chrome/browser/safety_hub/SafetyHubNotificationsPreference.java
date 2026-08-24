@@ -105,7 +105,6 @@ public class SafetyHubNotificationsPreference extends ChromeBasePreference
                 assert false : "Not a valid menu item Id.";
         }
     }
-    ;
 
     NotificationPermissions getNotificationsPermissions() {
         return mNotificationPermissions;

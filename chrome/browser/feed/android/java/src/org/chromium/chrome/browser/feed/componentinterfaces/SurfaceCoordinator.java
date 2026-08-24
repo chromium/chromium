@@ -42,7 +42,7 @@ public interface SurfaceCoordinator {
 
         /** Selects the For you feed tab. */
         int FOR_YOU = 0;
-    };
+    }
 
     void restoreInstanceState(@Nullable String state);
 

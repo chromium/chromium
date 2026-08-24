@@ -52,7 +52,7 @@ public class SafetyHubLocalPasswordsDataSource
         int NO_COMPROMISED_PASSWORDS = 3;
         int HAS_WEAK_PASSWORDS = 4;
         int HAS_REUSED_PASSWORDS = 5;
-    };
+    }
 
     private final SafetyHubModuleDelegate mModuleDelegate;
     private final PrefService mPrefService;
