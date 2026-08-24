@@ -45,6 +45,8 @@ if (!is_win && !is_mac && !is_ios) {
     use_mold =
         # Requires a DEPS entry.
         build_with_chromium &&
+        # mold is linux-only
+        host_os == "linux" &&
         # --ld-path is a clang-only flag.
         is_clang &&
         # https://github.com/rui314/mold/issues/1592
