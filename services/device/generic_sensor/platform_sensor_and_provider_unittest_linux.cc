@@ -274,6 +274,22 @@ class PlatformSensorAndProviderLinuxTest : public ::testing::Test {
     }
   }
 
+  // Writes |frequency| to the sampling frequency attribute of |type|.
+  // InitializeSupportedSensor() cannot be used to write a non-positive
+  // frequency, as it takes zero to mean "do not create the file at all".
+  void WriteSensorFrequency(SensorType type, double frequency) {
+    SensorPathsLinux data;
+    ASSERT_TRUE(InitSensorData(type, &data));
+    ASSERT_FALSE(data.sensor_frequency_file_name.empty());
+
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    const base::FilePath& sensor_dir =
+        mock_sensor_device_manager()->GetSensorsBasePath();
+    WriteValueToFile(
+        base::FilePath(sensor_dir).Append(data.sensor_frequency_file_name),
+        frequency);
+  }
+
   // Emulates device enumerations and initial udev events. Once all
   // devices are added, tells manager its ready.
   void SetServiceStart() {
@@ -366,6 +382,34 @@ TEST_F(PlatformSensorAndProviderLinuxTest, SensorIsSupported) {
   auto sensor = CreateSensor(SensorType::AMBIENT_LIGHT);
   ASSERT_TRUE(sensor);
   EXPECT_EQ(SensorType::AMBIENT_LIGHT, sensor->GetType());
+}
+
+// Tests that a sensor reporting a non-positive sampling frequency is ignored.
+// PlatformSensorConfiguration requires a positive frequency, so such a device
+// must not reach PlatformSensorLinux.
+TEST_F(PlatformSensorAndProviderLinuxTest, SensorWithNonPositiveFrequency) {
+  double sensor_value[kSensorValuesSize] = {1, 2, 3};
+  InitializeSupportedSensor(SensorType::ACCELEROMETER, kZero,
+                            kAccelerometerOffsetValue,
+                            kAccelerometerScalingValue, sensor_value);
+  ASSERT_NO_FATAL_FAILURE(
+      WriteSensorFrequency(SensorType::ACCELEROMETER, kZero));
+  SetServiceStart();
+
+  EXPECT_FALSE(CreateSensor(SensorType::ACCELEROMETER));
+
+  ASSERT_NO_FATAL_FAILURE(WriteSensorFrequency(SensorType::ACCELEROMETER, -1));
+  GenerateDeviceAddedEvent();
+  EXPECT_FALSE(CreateSensor(SensorType::ACCELEROMETER));
+
+  // The sensor becomes available once the device reports a usable rate.
+  ASSERT_NO_FATAL_FAILURE(WriteSensorFrequency(SensorType::ACCELEROMETER,
+                                               kAccelerometerFrequencyValue));
+  GenerateDeviceAddedEvent();
+  auto sensor = CreateSensor(SensorType::ACCELEROMETER);
+  ASSERT_TRUE(sensor);
+  EXPECT_THAT(sensor->GetDefaultConfiguration().frequency(),
+              kAccelerometerFrequencyValue);
 }
 
 // Tests that PlatformSensor::StartListening fails when provided reporting
