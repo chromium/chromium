@@ -1,5 +1,6 @@
 {
   "TraceDerivedMetric": {
+    "cb_story": "test_startup_story",
     "values": [
       72.699335,
       86.230236,

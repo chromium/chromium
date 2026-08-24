@@ -137,7 +137,10 @@ def convert(
         unit = 'unitless_biggerIsBetter'
 
     if metric:
+      story_name = value.get('cb_story', 'Default')
       data_point = histogram.Histogram.Create(metric, unit, value['values'])
+      data_point.diagnostics[reserved_infos.STORIES.name] = (
+          generic_set.GenericSet([story_name]))
       results.AddHistogram(data_point)
 
   if benchmark:

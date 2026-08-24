@@ -15,6 +15,8 @@ tracing_dir = (
   pathlib.Path(__file__).absolute().parents[2] / 'third_party/catapult/tracing'
 )
 sys.path.append(str(tracing_dir))
+from tracing.value import histogram
+from tracing.value.diagnostics import reserved_infos
 
 
 class CrossbenchResultConverterTest(unittest.TestCase):
@@ -40,11 +42,11 @@ class CrossbenchResultConverterTest(unittest.TestCase):
       with histogram_path.open() as f:
         return json.load(f)
 
-  def list_to_dict(self, histogram):
+  def list_to_dict(self, histograms):
     """Convert histogram data from list to dict for easier checking."""
 
     result = {}
-    for item in histogram:
+    for item in histograms:
       if 'name' in item:
         result[item['name']] = item
     return result
@@ -148,6 +150,16 @@ class CrossbenchResultConverterTest(unittest.TestCase):
       1024,
       'sizeInBytes_smallerIsBetter',
       sample_size=50,
+    )
+    hist = histogram.Histogram.FromDict(result['TraceDerivedMetric'])
+    self.assertEqual(
+      hist.diagnostics[reserved_infos.STORIES.name].GetOnlyElement(),
+      'test_startup_story',
+    )
+    hist_default = histogram.Histogram.FromDict(result['MetricFoo'])
+    self.assertEqual(
+      hist_default.diagnostics[reserved_infos.STORIES.name].GetOnlyElement(),
+      'Default',
     )
 
   def test_loadline1_results(self):
