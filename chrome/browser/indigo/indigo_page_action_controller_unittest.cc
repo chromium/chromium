@@ -20,6 +20,7 @@
 #include "chrome/browser/component_updater/indigo_component_installer.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
@@ -210,7 +211,6 @@ class IndigoPageActionControllerTest : public testing::Test {
         {});
     scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
         "indigo-script", "/dummy/path");
-    glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
     // SetUpGlobalFeaturesForTesting is required to initialize
     // GlicGlobalEnabling which is checked by GlicEnabling.
     testing_profile_manager_ =
@@ -229,7 +229,6 @@ class IndigoPageActionControllerTest : public testing::Test {
     profile_.reset();
     testing_profile_manager_ = nullptr;
     TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
-    glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
   }
 
   void CreateController(CreateControllerOptions options = {}) {
@@ -442,6 +441,8 @@ class IndigoPageActionControllerTest : public testing::Test {
   std::unique_ptr<FakeGlicSidePanelCoordinator>
       fake_glic_side_panel_coordinator_;
   base::test::ScopedCommandLine scoped_command_line_;
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting
+      scoped_glic_bypass_;
 };
 
 TEST_F(IndigoPageActionControllerTest, ShowsWhenOptimizationGuideReturnsTrue) {
