@@ -182,7 +182,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Scheduling.MessagePump.WakeupCount.{ThreadName}"
+<histogram name="Scheduling.MessagePump.WakeupCount2.{ThreadName}"
     enum="BooleanHit" expires_after="2027-02-07">
   <owner>pasko@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>

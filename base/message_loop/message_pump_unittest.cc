@@ -685,7 +685,7 @@ TEST_F(MessagePumpWakeupCounterTest, IoPumpRecordsWakeup) {
   run_loop.Run();
 
   histogram_tester.ExpectBucketCount(
-      "Scheduling.MessagePump.WakeupCount.TestIO", 1, 1);
+      "Scheduling.MessagePump.WakeupCount2.TestIO", 1, 1);
 }
 
 TEST_F(MessagePumpWakeupCounterTest, BusyLoopSkipsRecordingSample) {
@@ -711,7 +711,7 @@ TEST_F(MessagePumpWakeupCounterTest, BusyLoopSkipsRecordingSample) {
   pump.Run(&delegate);
 
   histogram_tester.ExpectBucketCount(
-      "Scheduling.MessagePump.WakeupCount.BusyLoopThread", 1, 0);
+      "Scheduling.MessagePump.WakeupCount2.BusyLoopThread", 1, 0);
 }
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_APPLE)
 

@@ -20,7 +20,7 @@ void MessagePumpWakeupCounter::InitializeForCurrentThread(
   MessagePumpWakeupCounter& counter = GetForCurrentThread();
   CHECK_EQ(counter.histogram_, nullptr);
   std::string metric_name =
-      base::StrCat({"Scheduling.MessagePump.WakeupCount.", thread_name});
+      base::StrCat({"Scheduling.MessagePump.WakeupCount2.", thread_name});
   counter.histogram_ = BooleanHistogram::FactoryGet(
       metric_name, HistogramBase::kUmaTargetedHistogramFlag);
 }

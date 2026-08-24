@@ -437,10 +437,13 @@ bool MessagePumpKqueue::DoInternalWork(Delegate* delegate,
     // No events to dispatch so no need to call ProcessEvents().
     return false;
   }
-  MessagePumpWakeupCounter::GetForCurrentThread().RecordWakeup();
 
   PCHECK(rv > 0) << "kevent64";
-  return ProcessEvents(delegate, static_cast<size_t>(rv));
+  bool did_work = ProcessEvents(delegate, static_cast<size_t>(rv));
+  if (did_work) {
+    MessagePumpWakeupCounter::GetForCurrentThread().RecordWakeup();
+  }
+  return did_work;
 }
 
 bool MessagePumpKqueue::ProcessEvents(Delegate* delegate, size_t count) {
