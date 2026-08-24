@@ -4,7 +4,7 @@
 
 import {ApiTestFixtureBase, runUntil, testMain} from './browser_test_base.js';
 
-class GlicFocusInteractiveTest extends ApiTestFixtureBase {
+class GlicFocusBrowserTest extends ApiTestFixtureBase {
   override async setUpTest() {
     await this.client.waitForFirstOpen();
   }
@@ -29,7 +29,7 @@ class GlicFocusInteractiveTest extends ApiTestFixtureBase {
 }
 
 const TEST_FIXTURES = [
-  GlicFocusInteractiveTest,
+  GlicFocusBrowserTest,
 ];
 
 testMain(TEST_FIXTURES);
