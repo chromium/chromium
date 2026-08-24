@@ -40,6 +40,7 @@ class DiscoverFeedVisibilityBrowserAgent;
 @protocol DiscoverFeedVisibilityObserver;
 @protocol FeedControlDelegate;
 @class FeedMetricsRecorder;
+class FullscreenBrowserAgent;
 class HomeBackgroundCustomizationService;
 @protocol NewTabPageConsumer;
 @protocol NewTabPageContentDelegate;
@@ -91,6 +92,8 @@ class UserUploadedImageManager;
               featureEngagementTracker:(feature_engagement::Tracker*)tracker
                  aimEligibilityService:
                      (AimEligibilityService*)aimEligibilityService
+                fullscreenBrowserAgent:
+                    (FullscreenBrowserAgent*)fullscreenBrowserAgent
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

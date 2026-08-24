@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager_factory.h"
 #import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
@@ -39,6 +40,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -144,7 +146,11 @@
                browserViewVisibilityNotifierBrowserAgent
       discoverFeedVisibilityBrowserAgent:discoverFeedVisibilityBrowserAgent
                 featureEngagementTracker:tracker
-                   aimEligibilityService:aimEligibilityService];
+                   aimEligibilityService:aimEligibilityService
+                  fullscreenBrowserAgent:IsFullscreenRefactoringEnabled()
+                                             ? FullscreenBrowserAgent::
+                                                   FromBrowser(browser)
+                                             : nullptr];
 }
 
 - (NewTabPageViewController*)NTPViewController {

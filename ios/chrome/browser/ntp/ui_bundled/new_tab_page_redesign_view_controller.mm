@@ -948,6 +948,10 @@ const CGFloat kMinDragHandleHeight = 24.0;
   }
 }
 
+- (void)setFeedBottomInset:(CGFloat)bottomInset {
+  // No-op for redesign.
+}
+
 - (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError
                                 name:(NSString*)name
                                email:(NSString*)email {

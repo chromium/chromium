@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_observer.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
 #import "ios/chrome/browser/home_customization/model/home_background_image_service_factory.h"
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager_factory.h"
@@ -178,8 +179,11 @@ class NewTabPageMediatorTest : public PlatformTest {
             nullptr, identity_manager_);
   }
 
-  /// Creates mediator with optional `aim_eligibility_service`.
-  void CreateMediator(bool with_aim_eligibility_service = false) {
+  /// Creates mediator with optional `aim_eligibility_service` and
+  /// `fullscreen_browser_agent`.
+  void CreateMediator(
+      bool with_aim_eligibility_service = false,
+      FullscreenBrowserAgent* fullscreen_browser_agent = nullptr) {
     ChromeAccountManagerService* account_manager_service =
         ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
     HomeBackgroundCustomizationService* background_customization_service =
@@ -219,7 +223,8 @@ class NewTabPageMediatorTest : public PlatformTest {
                   featureEngagementTracker:&mock_tracker_
                      aimEligibilityService:with_aim_eligibility_service
                                                ? aim_eligibility_service_.get()
-                                               : nullptr];
+                                               : nullptr
+                    fullscreenBrowserAgent:fullscreen_browser_agent];
     header_consumer_ = OCMProtocolMock(@protocol(NewTabPageHeaderConsumer));
     mediator_.headerConsumer = header_consumer_;
     visibility_observer_ =
@@ -605,4 +610,26 @@ TEST_F(NewTabPageMediatorTest, TestFetchCustomBackground_NewURL) {
 
   [mediator_ fetchCustomBackground:background1];
   [mediator_ fetchCustomBackground:background2];
+}
+
+// Tests that the consumer receives feed bottom inset updates from
+// FullscreenBrowserAgent when ChromeNextIa and FullscreenRefactoring are
+// enabled.
+TEST_F(NewTabPageMediatorTest, TestFeedBottomInsetWithChromeNextIa) {
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kChromeNextIa, kFullscreenRefactoring},
+      /*disabled_features=*/{});
+  FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+  FullscreenBrowserAgent* fullscreen_browser_agent =
+      FullscreenBrowserAgent::FromBrowser(browser_.get());
+  CreateMediator(/*with_aim_eligibility_service=*/false,
+                 fullscreen_browser_agent);
+
+  id ntp_consumer = OCMProtocolMock(@protocol(NewTabPageConsumer));
+  OCMExpect([ntp_consumer
+      setFeedBottomInset:fullscreen_browser_agent->max_insets().bottom]);
+
+  mediator_.consumer = ntp_consumer;
+
+  EXPECT_OCMOCK_VERIFY(ntp_consumer);
 }

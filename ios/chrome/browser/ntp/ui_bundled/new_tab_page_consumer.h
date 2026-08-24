@@ -71,6 +71,9 @@
 // Sets whether the omnibox is in the bottom position.
 - (void)setOmniboxInBottomPosition:(BOOL)isBottomOmnibox;
 
+// Sets the bottom inset for the feed to avoid overlap with bottom toolbars.
+- (void)setFeedBottomInset:(CGFloat)bottomInset;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_CONSUMER_H_

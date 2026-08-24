@@ -188,6 +188,8 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   BOOL _isAIMAllowed;
   // Whether the omnibox is in bottom position.
   BOOL _isBottomOmnibox;
+  // The bottom inset for the feed.
+  CGFloat _feedBottomInset;
 }
 
 // Properties synthesized from NewTabPageConsumer.
@@ -673,15 +675,16 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
                          ntp_header::kScrolledToTopOmniboxBottomMargin);
   }
 
-  if (self.collectionView.contentSize.height > minimumNTPHeight) {
-    self.collectionView.contentInset =
-        UIEdgeInsetsMake(self.collectionView.contentInset.top, 0, 0, 0);
-  } else {
-    CGFloat bottomInset =
-        minimumNTPHeight - self.collectionView.contentSize.height;
-    self.collectionView.contentInset = UIEdgeInsetsMake(
-        self.collectionView.contentInset.top, 0, bottomInset, 0);
+  CGFloat bottomInset = _feedBottomInset;
+  if (self.collectionView.contentSize.height <= minimumNTPHeight) {
+    bottomInset = MAX(
+        bottomInset, minimumNTPHeight - self.collectionView.contentSize.height);
   }
+  self.collectionView.contentInset =
+      UIEdgeInsetsMake(self.collectionView.contentInset.top, 0, bottomInset, 0);
+  self.collectionView.verticalScrollIndicatorInsets =
+      UIEdgeInsetsMake(self.collectionView.verticalScrollIndicatorInsets.top, 0,
+                       _feedBottomInset, 0);
 }
 
 - (void)updateScrollPositionForFeedTopSectionClosed {
@@ -817,6 +820,16 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
       [self setMinimumHeight];
     }
     [self updateFakeOmniboxForScrollPosition];
+  }
+}
+
+- (void)setFeedBottomInset:(CGFloat)feedBottomInset {
+  if (_feedBottomInset == feedBottomInset) {
+    return;
+  }
+  _feedBottomInset = feedBottomInset;
+  if (self.feedVisible) {
+    [self updateFeedInsetsForMinimumHeight];
   }
 }
 
