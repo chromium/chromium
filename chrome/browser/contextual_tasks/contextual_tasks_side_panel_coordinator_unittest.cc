@@ -382,6 +382,12 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, ShowSidePanelSetsEntryPoint) {
       omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
 }
 
+TEST_F(ContextualTasksSidePanelCoordinatorTest, CloseClearsLocalTabUnderlines) {
+  EXPECT_CALL(mock_active_task_context_provider_, ClearAllLocalTabUnderlines())
+      .Times(1);
+  coordinator_->Close();
+}
+
 TEST_F(ContextualTasksSidePanelCoordinatorTest, CloseSidePanelWhenNotEligible) {
   ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
       .WillByDefault(Return(true));
