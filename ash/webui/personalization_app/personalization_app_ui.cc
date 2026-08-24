@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 
 #include <memory>
@@ -27,7 +26,6 @@
 #include "ash/webui/personalization_app/personalization_app_user_provider.h"
 #include "ash/webui/personalization_app/personalization_app_wallpaper_provider.h"
 #include "base/check.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -444,7 +442,6 @@ PersonalizationAppUI::PersonalizationAppUI(
       theme_provider_(std::move(theme_provider)),
       user_provider_(std::move(user_provider)),
       wallpaper_provider_(std::move(wallpaper_provider)) {
-  start_time_ = base::Time::Now();
   DCHECK(wallpaper_provider_);
 
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
@@ -473,13 +470,7 @@ PersonalizationAppUI::PersonalizationAppUI(
   AddIntegers(source);
 }
 
-PersonalizationAppUI::~PersonalizationAppUI() {
-  base::TimeDelta duration = base::Time::Now() - start_time_;
-  base::UmaHistogramCustomTimes("Ash.Personalization.App.Duration", duration,
-                                /*min=*/base::Minutes(1),
-                                /*max=*/base::Minutes(30),
-                                /*buckets=*/31);
-}
+PersonalizationAppUI::~PersonalizationAppUI() = default;
 
 void PersonalizationAppUI::BindInterface(
     mojo::PendingReceiver<personalization_app::mojom::AmbientProvider>
@@ -539,9 +530,8 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
 
   const bool common_sea_pen_requirements =
       sea_pen_provider_->IsEligibleForSeaPen();
-  source->AddBoolean("isSeaPenEnabled",
-                     ::ash::features::IsSeaPenEnabled() &&
-                         common_sea_pen_requirements);
+  source->AddBoolean("isSeaPenEnabled", ::ash::features::IsSeaPenEnabled() &&
+                                            common_sea_pen_requirements);
   source->AddBoolean("isSeaPenTextInputEnabled",
                      common_sea_pen_requirements &&
                          ::ash::features::IsSeaPenTextInputEnabled() &&

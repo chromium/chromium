@@ -6399,16 +6399,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Personalization.App.Duration" units="ms"
-    expires_after="2025-06-30">
-  <owner>cowmoo@google.com</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Records the amount of time a user spends in the Personalization App on each
-    visit.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Personalization.DynamicColor.ColorScheme.Settled"
     enum="PersonalizationDynamicColorColorScheme" expires_after="2025-12-28">
   <owner>cowmoo@google.com</owner>
