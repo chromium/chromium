@@ -114,7 +114,7 @@ class WebAppFrameToolbarTestHelper {
       content::WebContents* web_contents);
   void GrantWindowManagementPermission();
 
-  Browser* app_browser();
+  BrowserWindowInterface* app_browser();
   BrowserView* browser_view() { return browser_view_; }
   BrowserFrameView* frame_view() { return frame_view_; }
   views::View* root_view() { return root_view_; }

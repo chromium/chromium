@@ -57,7 +57,7 @@ class ProtocolHandlerPickerUITest
   auto LaunchProtocolLink(bool in_new_tab) {
     return Do([&, in_new_tab] {
       ASSERT_TRUE(
-          content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+          content::ExecJs(browser()->GetTabStripModel()->GetActiveWebContents(),
                           base::StringPrintf("window.open('meow://link', '%s')",
                                              in_new_tab ? "_blank" : "_self")));
     });
@@ -156,7 +156,7 @@ class ProtocolHandlerPickerUITest
                                         kTabCountState);
     return Steps(
         PollState(kTabCountState,
-                  [&]() { return browser()->tab_strip_model()->count(); }),
+                  [&]() { return browser()->GetTabStripModel()->count(); }),
         WaitForState(kTabCountState, count),
         StopObservingState(kTabCountState));
   }

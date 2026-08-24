@@ -12,7 +12,7 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_dialog_container.h"
@@ -76,7 +76,7 @@ class AppInfoDialogBrowserTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
     ShowAppInfoInNativeDialog(web_contents, browser()->GetProfile(),
                               extension_.get(), base::DoNothing());
   }
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(AppInfoDialogBrowserTest, ViewInStore) {
   ASSERT_TRUE(widget);
   EXPECT_FALSE(widget->IsClosed());
 
-  TabStripModel* tabs = browser()->tab_strip_model();
+  TabStripModel* tabs = browser()->GetTabStripModel();
   int initial_tab_count = tabs->count();
 
   test::AppInfoDialogTestApi(dialog.get()).ShowAppInWebStore();

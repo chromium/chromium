@@ -13,7 +13,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
@@ -358,8 +357,8 @@ void WebAppFrameToolbarTestHelper::SetOriginTextLabelForTesting(
   origin_text_view()->label_->SetText(label_text);
 }
 
-Browser* WebAppFrameToolbarTestHelper::app_browser() {
-  return app_browser_ ? app_browser_->GetBrowserForMigrationOnly() : nullptr;
+BrowserWindowInterface* WebAppFrameToolbarTestHelper::app_browser() {
+  return app_browser_;
 }
 
 void WebAppFrameToolbarTestHelper::SetViewFromAppBrowser(

@@ -174,7 +174,7 @@ struct TabState {
 };
 
 struct BrowserState {
-  BrowserState(Browser* browser_ptr,
+  BrowserState(BrowserWindowInterface* browser_ptr,
                base::flat_map<content::WebContents*, TabState> tab_state,
                content::WebContents* active_web_contents,
                const webapps::AppId& app_id,
@@ -183,7 +183,7 @@ struct BrowserState {
   BrowserState(const BrowserState&);
   bool operator==(const BrowserState& other) const;
 
-  raw_ptr<Browser, DanglingUntriaged> browser;
+  raw_ptr<BrowserWindowInterface, DanglingUntriaged> browser;
   base::flat_map<content::WebContents*, TabState> tabs;
   raw_ptr<content::WebContents, DanglingUntriaged> active_tab;
   // If this isn't an app browser, `app_id` is empty.
@@ -217,13 +217,14 @@ struct AppState {
 };
 
 struct ProfileState {
-  ProfileState(base::flat_map<Browser*, BrowserState> browser_state,
-               base::flat_map<webapps::AppId, AppState> app_state);
+  ProfileState(
+      base::flat_map<BrowserWindowInterface*, BrowserState> browser_state,
+      base::flat_map<webapps::AppId, AppState> app_state);
   ~ProfileState();
   ProfileState(const ProfileState&);
   bool operator==(const ProfileState& other) const;
 
-  base::flat_map<Browser*, BrowserState> browsers;
+  base::flat_map<BrowserWindowInterface*, BrowserState> browsers;
   base::flat_map<webapps::AppId, AppState> apps;
 };
 
@@ -463,7 +464,7 @@ class WebAppIntegrationTestDriver {
 
   Profile* GetOrCreateProfile(ProfileName profile_name);
 
-  content::WebContents* GetCurrentTab(Browser* browser);
+  content::WebContents* GetCurrentTab(BrowserWindowInterface* browser);
   GURL GetInScopeURL(Site site);
   base::FilePath GetShortcutPath(base::FilePath shortcut_dir,
                                  const std::string& app_name,
@@ -485,7 +486,8 @@ class WebAppIntegrationTestDriver {
 
   // Returns an existing app browser if one exists, or launches a new one if
   // not.
-  Browser* GetAppBrowserForSite(Site site, bool launch_if_not_open = true);
+  BrowserWindowInterface* GetAppBrowserForSite(Site site,
+                                               bool launch_if_not_open = true);
 
   bool IsShortcutAndIconCreated(Profile* profile,
                                 const std::string& name,
@@ -517,11 +519,11 @@ class WebAppIntegrationTestDriver {
   void SyncAndInstallPreinstalledAppConfig(const GURL& install_url,
                                            std::string_view app_config_string);
 
-  Browser* browser();
+  BrowserWindowInterface* browser();
   Profile* profile();
   std::vector<Profile*> GetAllProfiles();
 
-  Browser* app_browser() { return app_browser_; }
+  BrowserWindowInterface* app_browser() { return app_browser_; }
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
   IconLabelBubbleView* pwa_install_view();
   bool IsPwaInstallIconVisible();
@@ -550,7 +552,8 @@ class WebAppIntegrationTestDriver {
 
   raw_ptr<Profile, AcrossTasksDanglingUntriaged> active_profile_ = nullptr;
   webapps::AppId active_app_id_;
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged> app_browser_ =
+      nullptr;
 
   // Normally BeforeState*Action returns false if a fatal error has been
   // reported in a previous action, to avoid actions operating on potentially

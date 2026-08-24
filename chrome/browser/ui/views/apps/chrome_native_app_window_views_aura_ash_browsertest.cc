@@ -16,7 +16,7 @@
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/apps/platform_apps/app_window_interactive_uitest_base.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chromeos/ash/components/login/login_state/scoped_test_public_session_login_state.h"
 #include "chromeos/constants/chromeos_features.h"

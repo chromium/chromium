@@ -214,7 +214,7 @@ class WebAppTabStripBrowserTest : public WebAppBrowserTestBase,
 
   webapps::AppId InstallTestWebApp(GURL start_url, bool await_metric = true) {
     page_load_metrics::PageLoadMetricsTestWaiter metrics_waiter(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
     if (await_metric) {
       metrics_waiter.AddWebFeatureExpectation(
           blink::mojom::WebFeature::kWebAppTabbed);
@@ -257,7 +257,7 @@ class WebAppTabStripBrowserTest : public WebAppBrowserTestBase,
       auto* controller = base_region->GetTabStripCollectionController();
       ASSERT_NE(controller, nullptr);
       controller->CloseTab(
-          browser_view->browser()->tab_strip_model()->GetTabAtIndex(index),
+          browser_view->browser()->GetTabStripModel()->GetTabAtIndex(index),
           source);
     } else {
       auto* tab_strip = browser_view->horizontal_tab_strip_for_testing();
@@ -269,7 +269,7 @@ class WebAppTabStripBrowserTest : public WebAppBrowserTestBase,
   TabIcon* GetTabIconFor(BrowserView* browser_view, int index) {
     views::View* tab_view = browser_view->tab_strip_view()->GetTabAnchorView(
         browser_view->browser()
-            ->tab_strip_model()
+            ->GetTabStripModel()
             ->GetTabAtIndex(index)
             ->GetHandle());
     if (auto* unified_tab = views::AsViewClass<TabView>(tab_view)) {
@@ -295,31 +295,31 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,
 
   // Add second tab.
   chrome::NewTab(app.browser, NewTabTypes::kNoUserAction);
-  ASSERT_EQ(app.browser->tab_strip_model()->count(), 2);
+  ASSERT_EQ(app.browser->GetTabStripModel()->count(), 2);
 
   // Navigate tab out of scope, custom tab bar should appear.
   GURL in_scope_url = embedded_test_server()->GetURL(kAppPath);
   GURL out_of_scope_url =
       embedded_test_server()->GetURL("/banners/theme-color.html");
   ASSERT_TRUE(content::NavigateToURL(
-      app.browser->tab_strip_model()->GetActiveWebContents(),
+      app.browser->GetTabStripModel()->GetActiveWebContents(),
       out_of_scope_url));
   EXPECT_EQ(
-      app.browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      app.browser->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       out_of_scope_url);
   EXPECT_TRUE(custom_tab_bar->GetVisible());
 
   // Custom tab bar should go away for in scope tab.
   chrome::SelectNextTab(app.browser);
   EXPECT_EQ(
-      app.browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      app.browser->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       in_scope_url);
   EXPECT_FALSE(custom_tab_bar->GetVisible());
 
   // Custom tab bar should return for out of scope tab.
   chrome::SelectNextTab(app.browser);
   EXPECT_EQ(
-      app.browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      app.browser->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       out_of_scope_url);
   EXPECT_TRUE(custom_tab_bar->GetVisible());
 }
@@ -334,7 +334,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,
 
   // Add second tab.
   chrome::NewTab(app.browser, NewTabTypes::kNoUserAction);
-  ASSERT_EQ(app.browser->tab_strip_model()->count(), 2);
+  ASSERT_EQ(app.browser->GetTabStripModel()->count(), 2);
 
   GURL out_of_scope_url1 =
       embedded_test_server()->GetURL("a.com", "/banners/theme-color.html");
@@ -343,7 +343,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,
 
   // Navigate Tab 1 (active) to out_of_scope_url2.
   content::WebContents* tab2 =
-      app.browser->tab_strip_model()->GetActiveWebContents();
+      app.browser->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(content::NavigateToURL(tab2, out_of_scope_url2));
   EXPECT_TRUE(custom_tab_bar->GetVisible());
   std::u16string expected_loc2 = web_app::AppBrowserController::FormatUrlOrigin(
@@ -351,9 +351,9 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,
   EXPECT_EQ(custom_tab_bar->location_for_testing(), expected_loc2);
 
   // Switch to Tab 0.
-  app.browser->tab_strip_model()->ActivateTabAt(0);
+  app.browser->GetTabStripModel()->ActivateTabAt(0);
   content::WebContents* tab1 =
-      app.browser->tab_strip_model()->GetActiveWebContents();
+      app.browser->GetTabStripModel()->GetActiveWebContents();
   // Navigate Tab 0 to out_of_scope_url1.
   ASSERT_TRUE(content::NavigateToURL(tab1, out_of_scope_url1));
   EXPECT_TRUE(custom_tab_bar->GetVisible());
@@ -362,12 +362,12 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,
   EXPECT_EQ(custom_tab_bar->location_for_testing(), expected_loc1);
 
   // Now switch back to Tab 1.
-  app.browser->tab_strip_model()->ActivateTabAt(1);
+  app.browser->GetTabStripModel()->ActivateTabAt(1);
   // Custom tab bar should update to show expected_loc2.
   EXPECT_EQ(custom_tab_bar->location_for_testing(), expected_loc2);
 
   // Switch back to Tab 0.
-  app.browser->tab_strip_model()->ActivateTabAt(0);
+  app.browser->GetTabStripModel()->ActivateTabAt(0);
   // Custom tab bar should update to show expected_loc1.
   EXPECT_EQ(custom_tab_bar->location_for_testing(), expected_loc1);
 }
@@ -388,7 +388,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, PopOutTabOnInstall) {
     test::WaitUntilReady(provider);
     provider->scheduler().FetchManifestAndInstall(
         webapps::WebappInstallSource::MENU_BROWSER_TAB,
-        browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+        browser()->GetTabStripModel()->GetActiveWebContents()->GetWeakPtr(),
         base::BindLambdaForTesting(
             [](base::WeakPtr<WebAppScreenshotFetcher>, content::WebContents*,
                std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
@@ -422,7 +422,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, PopOutTabOnInstall) {
   // to a standalone app window.
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id));
   EXPECT_EQ(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       GURL("chrome://newtab/"));
 }
 
@@ -701,7 +701,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, ReparentingPinsHomeTab) {
       browser(),
       embedded_test_server()->GetURL("/web_apps/favicon_only.html")));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Reparent web contents into app browser.
   app_browser =
@@ -719,7 +719,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, ReparentingPinsHomeTab) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
                      "/web_apps/tab_strip_customizations.html")));
-  web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Reparent web contents into app browser.
   EXPECT_EQ(app_browser,
@@ -898,12 +898,12 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, MoveTabsToNewWindow) {
   EXPECT_EQ(app_browser->GetTabStripModel()->count(), 1);
 
   // Check the new browser contains the moved tab and a pinned home tab.
-  EXPECT_EQ(new_browser->tab_strip_model()->count(), 2);
-  EXPECT_TRUE(new_browser->tab_strip_model()->IsTabPinned(0));
+  EXPECT_EQ(new_browser->GetTabStripModel()->count(), 2);
+  EXPECT_TRUE(new_browser->GetTabStripModel()->IsTabPinned(0));
   EXPECT_EQ(
-      new_browser->tab_strip_model()->GetWebContentsAt(0)->GetVisibleURL(),
+      new_browser->GetTabStripModel()->GetWebContentsAt(0)->GetVisibleURL(),
       start_url);
-  EXPECT_EQ(new_browser->tab_strip_model()->active_index(), 1);
+  EXPECT_EQ(new_browser->GetTabStripModel()->active_index(), 1);
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, MoveTabsToExistingWindow) {
@@ -920,12 +920,12 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, MoveTabsToExistingWindow) {
   ASSERT_TRUE(app_browser2);
 
   EXPECT_EQ(app_browser->GetTabStripModel()->count(), 1);
-  EXPECT_EQ(app_browser2->tab_strip_model()->count(), 2);
+  EXPECT_EQ(app_browser2->GetTabStripModel()->count(), 2);
 
   // Test the "open in existing window" menu option.
   TabMenuModel menu(nullptr,
                     app_browser2->GetFeatures().tab_menu_model_delegate(),
-                    app_browser2->tab_strip_model(), 1);
+                    app_browser2->GetTabStripModel(), 1);
   size_t submenu_index =
       menu.GetIndexOfCommandId(TabStripModel::CommandMoveToExistingWindow)
           .value();
@@ -942,7 +942,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, MoveTabsToExistingWindow) {
 
   submenu->ExecuteCommand(submenu->GetCommandIdAt(2), 0);
 
-  EXPECT_EQ(app_browser2->tab_strip_model()->count(), 1);
+  EXPECT_EQ(app_browser2->GetTabStripModel()->count(), 1);
   EXPECT_EQ(app_browser->GetTabStripModel()->count(), 2);
 }
 
@@ -1123,7 +1123,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,
   EXPECT_EQ(tab_strip->active_index(), 0);
   EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
   EXPECT_EQ(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       GURL("https://www.example.com"));
 }
 

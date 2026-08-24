@@ -14,7 +14,7 @@ include_rules = [
   "+chrome/browser/ui/ash/editor_menu/utils",
   "+chrome/browser/ui/ash/magic_boost/magic_boost_constants.h",
   "+chrome/browser/ui/ash/read_write_cards",
-  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/test",
 
 ]

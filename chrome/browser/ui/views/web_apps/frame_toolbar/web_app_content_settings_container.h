@@ -14,14 +14,14 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 class WebAppContentSettingsContainer : public views::View {
   METADATA_HEADER(WebAppContentSettingsContainer, views::View)
 
  public:
   WebAppContentSettingsContainer(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
       ContentSettingImageViewDelegate* content_setting_image_delegate);
   WebAppContentSettingsContainer(const WebAppContentSettingsContainer&) =

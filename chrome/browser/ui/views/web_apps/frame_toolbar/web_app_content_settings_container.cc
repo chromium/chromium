@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_content_settings_container.h"
 
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -22,7 +22,7 @@ constexpr base::TimeDelta kContentSettingsFadeInDuration =
 }  // namespace
 
 WebAppContentSettingsContainer::WebAppContentSettingsContainer(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
     ContentSettingImageViewDelegate* content_setting_image_delegate) {
   views::BoxLayout& layout =

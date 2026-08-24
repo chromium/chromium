@@ -14,8 +14,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -289,9 +289,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest,
 
   dialog_delegate->CancelDialog();
   ASSERT_TRUE(web_app::WaitForIntentPickerToShow(browser()));
-  EXPECT_TRUE(
-      web_app::GetIntentPickerButton(browser()->GetBrowserForMigrationOnly())
-          ->GetVisible());
+  EXPECT_TRUE(web_app::GetIntentPickerButton(browser())->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest,

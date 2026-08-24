@@ -7,7 +7,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/mahi/mahi_condensed_menu_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/common/content_switches.h"

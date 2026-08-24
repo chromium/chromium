@@ -11,8 +11,8 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -68,7 +68,7 @@ class SubAppsInstallDialogControllerBrowserTest : public InProcessBrowserTest {
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "SubAppsInstallDialog");
     ShowSubAppsInstallDialog(
-        browser()->tab_strip_model()->GetActiveWebContents(), /*sub_apps=*/{},
+        browser()->GetTabStripModel()->GetActiveWebContents(), /*sub_apps=*/{},
         kParentAppName, parent_app_id, std::move(callback));
     return waiter.WaitIfNeededAndGet();
   }
@@ -100,9 +100,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
       webapps::ManifestId(GURL(kParentAppScope)));
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "SubAppsInstallDialog");
-  ShowSubAppsInstallDialog(browser()->tab_strip_model()->GetActiveWebContents(),
-                           sub_apps, kParentAppName, parent_app_id,
-                           base::DoNothing());
+  ShowSubAppsInstallDialog(
+      browser()->GetTabStripModel()->GetActiveWebContents(), sub_apps,
+      kParentAppName, parent_app_id, base::DoNothing());
   views::Widget* widget = waiter.WaitIfNeededAndGet();
   views::DialogDelegate* dialog = widget->widget_delegate()->AsDialogDelegate();
 
@@ -152,9 +152,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
       webapps::ManifestId(GURL(kParentAppScope)));
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "SubAppsInstallDialog");
-  ShowSubAppsInstallDialog(browser()->tab_strip_model()->GetActiveWebContents(),
-                           sub_apps, kParentAppName, parent_app_id,
-                           base::DoNothing());
+  ShowSubAppsInstallDialog(
+      browser()->GetTabStripModel()->GetActiveWebContents(), sub_apps,
+      kParentAppName, parent_app_id, base::DoNothing());
   views::Widget* widget = waiter.WaitIfNeededAndGet();
 
   std::vector<raw_ptr<views::View, VectorExperimental>> sub_app_labels;
@@ -259,9 +259,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
       webapps::ManifestId(GURL(kParentAppScope)));
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "SubAppsInstallDialog");
-  ShowSubAppsInstallDialog(browser()->tab_strip_model()->GetActiveWebContents(),
-                           sub_apps, kParentAppName, parent_app_id,
-                           base::DoNothing());
+  ShowSubAppsInstallDialog(
+      browser()->GetTabStripModel()->GetActiveWebContents(), sub_apps,
+      kParentAppName, parent_app_id, base::DoNothing());
   views::Widget* widget = waiter.WaitIfNeededAndGet();
 
   // Wait for the dialog to have completed masking and all children views

@@ -6,7 +6,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/chrome_app_deprecation.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/web_apps/force_installed_preinstalled_deprecated_app_dialog_view.h"
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/ui/webui/app_home/app_home_page_handler.h"
@@ -60,7 +60,7 @@ class ForceInstalledDeprecatedAppsDialogViewBrowserTest
   webapps::AppHomePageHandler CreateLauncherHandler(
       content::TestWebUI* web_ui) {
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetWebContentsAt(0);
+        browser()->GetTabStripModel()->GetWebContentsAt(0);
     DCHECK(web_contents);
     test_web_ui_.set_web_contents(web_contents);
     mojo::PendingReceiver<app_home::mojom::Page> page;
@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(ForceInstalledDeprecatedAppsDialogViewBrowserTest,
                        DialogLaunchedForForceInstalledApp) {
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   CHECK(web_contents);
   test_web_ui.set_web_contents(web_contents);
   auto handler = CreateLauncherHandler(&test_web_ui);
@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(ForceInstalledDeprecatedAppsDialogViewBrowserTest,
 
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   CHECK(web_contents);
   test_web_ui.set_web_contents(web_contents);
   auto handler = CreateLauncherHandler(&test_web_ui);

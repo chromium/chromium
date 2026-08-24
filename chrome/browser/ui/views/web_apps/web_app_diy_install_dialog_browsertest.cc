@@ -13,7 +13,7 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -78,7 +78,7 @@ class WebAppDiyInstallDialogBrowserTest : public DialogBrowserTest {
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
         GetInstallTracker(browser());
 
-    ShowDiyAppInstallDialog(browser()->tab_strip_model()->GetWebContentsAt(0),
+    ShowDiyAppInstallDialog(browser()->GetTabStripModel()->GetWebContentsAt(0),
                             std::move(install_info), std::move(install_tracker),
                             std::move(install_callback_),
                             PwaInProductHelpState::kNotShown);
@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDiyInstallDialogBrowserTest,
   views::test::WidgetDestroyedWaiter destroy_waiter(widget);
   // Navigate to a new tab.
   content::WebContents::CreateParams params(browser()->GetProfile());
-  browser()->tab_strip_model()->AppendWebContents(
+  browser()->GetTabStripModel()->AppendWebContents(
       content::WebContents::Create(params), /*foreground=*/true);
 
   destroy_waiter.Wait();
@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDiyInstallDialogBrowserTest,
   views::test::WidgetDestroyedWaiter destroy_waiter(widget);
   content::WebContents::CreateParams params(browser()->GetProfile());
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   web_contents->Close();
 
   destroy_waiter.Wait();
@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDiyInstallDialogBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppDiyInstallDialogBrowserTest,
                        WindowSizeLoweringClosesDialog) {
   auto popup_value =
-      OpenPopupOfSize(browser()->tab_strip_model()->GetActiveWebContents(),
+      OpenPopupOfSize(browser()->GetTabStripModel()->GetActiveWebContents(),
                       GURL("https://www.example.com"),
                       /*width=*/500, /*height=*/500);
   content::WebContents* popup_contents = popup_value.value();
@@ -308,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDiyInstallDialogBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppDiyInstallDialogBrowserTest,
                        SmallWindowClosesDialogAutomatically) {
   auto popup_value =
-      OpenPopupOfSize(browser()->tab_strip_model()->GetActiveWebContents(),
+      OpenPopupOfSize(browser()->GetTabStripModel()->GetActiveWebContents(),
                       GURL("https://example.com"));
   EXPECT_TRUE(popup_value.has_value());
 
@@ -356,13 +356,13 @@ class PictureInPictureDiyDialogOcclusionTest
     install_info->is_diy_app = true;
 
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
         webapps::MLInstallabilityPromoter::FromWebContents(web_contents)
             ->RegisterCurrentInstallForWebContents(
                 webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
 
-    ShowDiyAppInstallDialog(browser()->tab_strip_model()->GetWebContentsAt(0),
+    ShowDiyAppInstallDialog(browser()->GetTabStripModel()->GetWebContentsAt(0),
                             std::move(install_info), std::move(install_tracker),
                             base::DoNothing(),
                             PwaInProductHelpState::kNotShown);

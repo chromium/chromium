@@ -17,7 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/shortcuts/shortcut_icon_generator.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/web_apps/progress_delay.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
@@ -136,7 +136,7 @@ class WebAppInstallDialogBrowserTest
                                          "WebAppInstallFlowDialog");
 
     auto* promoter = webapps::MLInstallabilityPromoter::FromWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
     auto install_tracker = promoter->RegisterCurrentInstallForWebContents(
         webapps::WebappInstallSource::MENU_BROWSER_TAB);
 
@@ -154,7 +154,7 @@ class WebAppInstallDialogBrowserTest
     }
 
     delegate_ = WebAppInstallFlowDialogDelegate::Show(
-        browser()->tab_strip_model()->GetActiveWebContents(),
+        browser()->GetTabStripModel()->GetActiveWebContents(),
         std::move(install_info), std::move(install_tracker),
         base::BindOnce(&WebAppInstallDialogBrowserTest::OnDialogCompleted,
                        weak_ptr_factory_.GetWeakPtr()),

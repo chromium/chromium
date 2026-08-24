@@ -53,7 +53,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -598,18 +597,18 @@ class BrowserAddedWaiter final : public BrowserCollectionObserver {
 
   // BrowserCollectionObserver
   void OnBrowserCreated(BrowserWindowInterface* browser) override {
-    browser_added_ = browser->GetBrowserForMigrationOnly();
+    browser_added_ = browser;
     browser_collection_observation_.Reset();
     // Post a task to ensure the Remove event has been dispatched to all
     // observers.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, run_loop_.QuitClosure());
   }
-  Browser* browser_added() const { return browser_added_; }
+  BrowserWindowInterface* browser_added() const { return browser_added_; }
 
  private:
   base::RunLoop run_loop_;
-  raw_ptr<Browser> browser_added_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser_added_ = nullptr;
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
 };
@@ -744,9 +743,10 @@ std::optional<ProfileState> GetStateForProfile(StateSnapshot* state_snapshot,
              : std::make_optional<ProfileState>(it->second);
 }
 
-std::optional<BrowserState> GetStateForBrowser(StateSnapshot* state_snapshot,
-                                               Profile* profile,
-                                               Browser* browser) {
+std::optional<BrowserState> GetStateForBrowser(
+    StateSnapshot* state_snapshot,
+    Profile* profile,
+    BrowserWindowInterface* browser) {
   std::optional<ProfileState> profile_state =
       GetStateForProfile(state_snapshot, profile);
   if (!profile_state) {
@@ -834,7 +834,8 @@ void LoadResponseFromDisk(const base::FilePath& root,
 // or not in the web app window, passed in via `should_expect_expanded`.
 class MenuButtonUpdateListener {
  public:
-  MenuButtonUpdateListener(Browser& app_browser, bool should_expect_expanded) {
+  MenuButtonUpdateListener(BrowserWindowInterface& app_browser,
+                           bool should_expect_expanded) {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(&app_browser);
     WebAppMenuButton* menu_button = views::AsViewClass<WebAppMenuButton>(
@@ -888,7 +889,7 @@ bool IsOffTheRecordBrowserInUse(Profile* profile) {
 }  // anonymous namespace
 
 BrowserState::BrowserState(
-    Browser* browser_ptr,
+    BrowserWindowInterface* browser_ptr,
     base::flat_map<content::WebContents*, TabState> tab_state,
     content::WebContents* active_web_contents,
     const webapps::AppId& app_id,
@@ -938,8 +939,9 @@ bool AppState::operator==(const AppState& other) const {
          is_shortcut_created == other.is_shortcut_created;
 }
 
-ProfileState::ProfileState(base::flat_map<Browser*, BrowserState> browser_state,
-                           base::flat_map<webapps::AppId, AppState> app_state)
+ProfileState::ProfileState(
+    base::flat_map<BrowserWindowInterface*, BrowserState> browser_state,
+    base::flat_map<webapps::AppId, AppState> app_state)
     : browsers(std::move(browser_state)), apps(std::move(app_state)) {}
 ProfileState::~ProfileState() = default;
 ProfileState::ProfileState(const ProfileState&) = default;
@@ -1335,7 +1337,7 @@ void WebAppIntegrationTestDriver::DisableRunOnOsLoginFromAppHome(Site site) {
 #if !BUILDFLAG(IS_CHROMEOS)
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   CHECK(web_contents);
   test_web_ui.set_web_contents(web_contents);
   auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
@@ -1370,7 +1372,7 @@ void WebAppIntegrationTestDriver::EnableRunOnOsLoginFromAppHome(Site site) {
 #if !BUILDFLAG(IS_CHROMEOS)
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   CHECK(web_contents);
   test_web_ui.set_web_contents(web_contents);
   auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
@@ -1495,7 +1497,7 @@ void WebAppIntegrationTestDriver::InstallLocally(Site site) {
       << "No app installed for site: " << static_cast<int>(site);
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   CHECK(web_contents);
   test_web_ui.set_web_contents(web_contents);
   auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
@@ -1858,7 +1860,8 @@ void WebAppIntegrationTestDriver::LaunchFileExpectDialog(
     if (is_open_in_app_browser) {
       browser_added_waiter.Wait();
       app_browser_ = browser_added_waiter.browser_added();
-      target_contents = app_browser_->tab_strip_model()->GetActiveWebContents();
+      target_contents =
+          app_browser_->GetTabStripModel()->GetActiveWebContents();
     } else {
       target_contents = tab_added_waiter.Wait();
     }
@@ -1912,7 +1915,7 @@ void WebAppIntegrationTestDriver::LaunchFileExpectNoDialog(
   if (is_open_in_app_browser) {
     browser_added_waiter.Wait();
     app_browser_ = browser_added_waiter.browser_added();
-    target_contents = app_browser_->tab_strip_model()->GetActiveWebContents();
+    target_contents = app_browser_->GetTabStripModel()->GetActiveWebContents();
   } else {
     target_contents = tab_added_waiter.Wait();
   }
@@ -1953,10 +1956,7 @@ void WebAppIntegrationTestDriver::LaunchFromChromeApps(Site site) {
       app_registrar.AppMatches(app_id, WebAppFilter::OpensInDedicatedWindow());
 #if BUILDFLAG(IS_CHROMEOS)
   if (is_open_in_app_browser) {
-    BrowserWindowInterface* app_browser =
-        LaunchWebAppBrowserAndWait(profile(), app_id);
-    app_browser_ =
-        app_browser ? app_browser->GetBrowserForMigrationOnly() : nullptr;
+    app_browser_ = LaunchWebAppBrowserAndWait(profile(), app_id);
     active_app_id_ = app_id;
   } else {
     ui_test_utils::UrlLoadObserver url_observer(
@@ -1967,7 +1967,7 @@ void WebAppIntegrationTestDriver::LaunchFromChromeApps(Site site) {
 #else
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   CHECK(web_contents);
   test_web_ui.set_web_contents(web_contents);
   webapps::AppHomePageHandler app_home_page_handler =
@@ -2026,7 +2026,7 @@ void WebAppIntegrationTestDriver::LaunchFromLaunchIcon(Site site) {
   // using the integration testing framework do not interact with that UI, close
   // it to prevent WCO related tests from flaking.
   apps::EnableLinkCapturingInfoBarDelegate::RemoveInfoBar(
-      app_browser_->tab_strip_model()->GetActiveWebContents());
+      app_browser_->GetTabStripModel()->GetActiveWebContents());
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   AfterStateChangeAction();
@@ -2079,8 +2079,7 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
     // If there already is an open app browser for this app the launch is not
     // expected to open a new one, so only wait for a new browser to be added
     // if there wasn't an open one already.
-    BrowserWindowInterface* bwi = GetAppBrowserForAppId(profile(), app_id);
-    app_browser_ = bwi ? bwi->GetBrowserForMigrationOnly() : nullptr;
+    app_browser_ = GetAppBrowserForAppId(profile(), app_id);
     bool had_open_browsers = false;
     for (auto* profile : GetAllProfiles()) {
       auto* provider = GetProviderForProfile(profile);
@@ -2134,7 +2133,7 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
     app_browser_ = browser_added_waiter.browser_added();
     active_app_id_ = app_id;
     EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser(), app_id));
-    web_contents = app_browser_->tab_strip_model()->GetActiveWebContents();
+    web_contents = app_browser_->GetTabStripModel()->GetActiveWebContents();
   } else {
     ui_test_utils::AllBrowserTabAddedWaiter tab_added_waiter;
     LaunchAppStartupBrowserCreator(app_id);
@@ -2183,7 +2182,7 @@ void WebAppIntegrationTestDriver::LaunchFromAppShimFallback(Site site) {
     app_browser_ = browser_added_waiter.browser_added();
     active_app_id_ = app_id;
     EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser(), app_id));
-    target_contents = app_browser_->tab_strip_model()->GetActiveWebContents();
+    target_contents = app_browser_->GetTabStripModel()->GetActiveWebContents();
   } else {
     ASSERT_TRUE(ChromeBrowserMainParts::ProcessSingletonNotificationForTesting(
         command_line));
@@ -2205,7 +2204,7 @@ void WebAppIntegrationTestDriver::OpenAppSettingsFromAppMenu(Site site) {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
-  Browser* app_browser = GetAppBrowserForSite(site);
+  BrowserWindowInterface* app_browser = GetAppBrowserForSite(site);
   ASSERT_TRUE(app_browser);
 
   // Click App info from app browser.
@@ -2245,7 +2244,7 @@ void WebAppIntegrationTestDriver::OpenAppSettingsFromChromeApps(Site site) {
 
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   ASSERT_TRUE(web_contents);
   test_web_ui.set_web_contents(web_contents);
   webapps::AppHomePageHandler app_home_page_handler =
@@ -2265,7 +2264,7 @@ void WebAppIntegrationTestDriver::OpenAppSettingsFromCommand(Site site) {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
-  Browser* app_browser = GetAppBrowserForSite(site);
+  BrowserWindowInterface* app_browser = GetAppBrowserForSite(site);
   ASSERT_TRUE(app_browser);
 
   content::WebContentsAddedObserver nav_observer;
@@ -2290,7 +2289,7 @@ void WebAppIntegrationTestDriver::CreateShortcutsFromList(Site site) {
       << "No app installed for site: " << static_cast<int>(site);
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   ASSERT_TRUE(web_contents);
   test_web_ui.set_web_contents(web_contents);
   webapps::AppHomePageHandler app_home_page_handler =
@@ -2649,7 +2648,7 @@ void WebAppIntegrationTestDriver::SetOpenInTabFromAppHome(Site site) {
 #else
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   CHECK(web_contents);
   test_web_ui.set_web_contents(web_contents);
   auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
@@ -2697,7 +2696,7 @@ void WebAppIntegrationTestDriver::SetOpenInWindowFromAppHome(Site site) {
 #else
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   CHECK(web_contents);
   test_web_ui.set_web_contents(web_contents);
   auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
@@ -2739,10 +2738,11 @@ void WebAppIntegrationTestDriver::SwitchIncognitoProfile() {
   ASSERT_EQ(1U,
             GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount());
   browser_added_waiter.Wait();
-  Browser* incognito_browser = browser_added_waiter.browser_added();
+  BrowserWindowInterface* incognito_browser =
+      browser_added_waiter.browser_added();
   ASSERT_TRUE(incognito_browser);
   content::WebContents* active_contents =
-      incognito_browser->tab_strip_model()->GetActiveWebContents();
+      incognito_browser->GetTabStripModel()->GetActiveWebContents();
   if (active_contents) {
     content::WaitForLoadStop(active_contents);
   }
@@ -2837,7 +2837,7 @@ void WebAppIntegrationTestDriver::UninstallFromList(Site site) {
 #else
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   CHECK(web_contents);
   test_web_ui.set_web_contents(web_contents);
   auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
@@ -2863,14 +2863,14 @@ void WebAppIntegrationTestDriver::UninstallFromAppSettings(Site site) {
 
   UninstallCompleteWaiter uninstall_waiter(profile(), app_id);
 
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   if (web_contents->GetURL() !=
       GURL(chrome::kChromeUIWebAppSettingsURL + app_id)) {
     OpenAppSettingsFromChromeApps(site);
     CheckBrowserNavigationIsAppSettings(site);
   }
 
-  web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   content::WebContentsDestroyedWatcher destroyed_watcher(web_contents);
 
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
@@ -2900,7 +2900,7 @@ void WebAppIntegrationTestDriver::UninstallFromMenu(Site site) {
   UninstallCompleteWaiter uninstall_waiter(profile(), app_id);
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
-  Browser* app_browser = GetAppBrowserForSite(site);
+  BrowserWindowInterface* app_browser = GetAppBrowserForSite(site);
   ASSERT_TRUE(app_browser);
   auto app_menu_model =
       std::make_unique<WebAppMenuModel>(/*provider=*/nullptr, app_browser);
@@ -3116,7 +3116,7 @@ void WebAppIntegrationTestDriver::CheckAppListEmpty() {
 #if !BUILDFLAG(IS_CHROMEOS)
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   CHECK(web_contents);
   test_web_ui.set_web_contents(web_contents);
   auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
@@ -3138,7 +3138,7 @@ void WebAppIntegrationTestDriver::CheckAppInListIconCorrect(Site site) {
 #if !BUILDFLAG(IS_CHROMEOS)
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   CHECK(web_contents);
   test_web_ui.set_web_contents(web_contents);
   auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
@@ -3156,7 +3156,7 @@ void WebAppIntegrationTestDriver::CheckAppInListIconCorrect(Site site) {
 
   NavigateTabbedBrowserToSite(icon_url, NavigationMode::kNewTab);
   content::WebContents* web_contents_active =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   web_contents_active->DownloadImage(
       icon_url, false, gfx::Size(), 0, false,
@@ -3193,7 +3193,7 @@ void WebAppIntegrationTestDriver::CheckAppInListNotLocallyInstalled(Site site) {
 #if !BUILDFLAG(IS_CHROMEOS)
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   CHECK(web_contents);
   test_web_ui.set_web_contents(web_contents);
   auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
@@ -3219,7 +3219,7 @@ void WebAppIntegrationTestDriver::CheckAppInListWindowed(Site site) {
 #if !BUILDFLAG(IS_CHROMEOS)
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   CHECK(web_contents);
   test_web_ui.set_web_contents(web_contents);
   auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
@@ -3245,7 +3245,7 @@ void WebAppIntegrationTestDriver::CheckAppInListTabbed(Site site) {
 #if !BUILDFLAG(IS_CHROMEOS)
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   CHECK(web_contents);
   test_web_ui.set_web_contents(web_contents);
   auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
@@ -3264,8 +3264,10 @@ void WebAppIntegrationTestDriver::CheckAppNavigation(Site site) {
     return;
   }
   ASSERT_TRUE(app_browser());
-  GURL url =
-      app_browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL();
+  GURL url = app_browser()
+                 ->GetTabStripModel()
+                 ->GetActiveWebContents()
+                 ->GetVisibleURL();
   EXPECT_EQ(GetUrlForSite(site), url);
   AfterStateCheckAction();
 }
@@ -3276,8 +3278,10 @@ void WebAppIntegrationTestDriver::CheckAppNavigationIsStartUrl() {
   }
   ASSERT_FALSE(active_app_id_.empty());
   ASSERT_TRUE(app_browser());
-  GURL url =
-      app_browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL();
+  GURL url = app_browser()
+                 ->GetTabStripModel()
+                 ->GetActiveWebContents()
+                 ->GetVisibleURL();
   EXPECT_EQ(url, provider()->registrar_unsafe().GetAppStartUrl(active_app_id_));
   AfterStateCheckAction();
 }
@@ -3288,9 +3292,9 @@ void WebAppIntegrationTestDriver::CheckAppTabIsSite(Site site, Number number) {
   }
   ASSERT_TRUE(app_browser());
   ASSERT_TRUE(
-      app_browser()->tab_strip_model()->ContainsIndex(NumberToInt(number)));
+      app_browser()->GetTabStripModel()->ContainsIndex(NumberToInt(number)));
   GURL url = app_browser()
-                 ->tab_strip_model()
+                 ->GetTabStripModel()
                  ->GetWebContentsAt(NumberToInt(number))
                  ->GetURL();
   EXPECT_EQ(url, GetUrlForSite(site));
@@ -3320,7 +3324,7 @@ void WebAppIntegrationTestDriver::CheckBrowserNavigation(Site site) {
     return;
   }
   ASSERT_TRUE(browser());
-  GURL url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
+  GURL url = browser()->GetTabStripModel()->GetActiveWebContents()->GetURL();
   EXPECT_EQ(url, GetUrlForSite(site));
   AfterStateCheckAction();
 }
@@ -3339,7 +3343,7 @@ void WebAppIntegrationTestDriver::CheckBrowserNavigationIsAppSettings(
   ;
 
   ASSERT_TRUE(browser());
-  GURL url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
+  GURL url = browser()->GetTabStripModel()->GetActiveWebContents()->GetURL();
   EXPECT_EQ(url, GURL(chrome::kChromeUIWebAppSettingsURL + app_id));
   AfterStateCheckAction();
 #endif
@@ -3350,7 +3354,7 @@ void WebAppIntegrationTestDriver::CheckBrowserNotAtAppHome() {
     return;
   }
   GURL current_url =
-      browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL();
+      browser()->GetTabStripModel()->GetWebContentsAt(0)->GetURL();
   EXPECT_NE(current_url, GURL(chrome::kChromeUIAppsURL));
   AfterStateCheckAction();
 }
@@ -3367,7 +3371,7 @@ void WebAppIntegrationTestDriver::CheckAppNotInList(Site site) {
 #if !BUILDFLAG(IS_CHROMEOS)
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   CHECK(web_contents);
   test_web_ui.set_web_contents(web_contents);
   auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
@@ -3862,7 +3866,7 @@ void WebAppIntegrationTestDriver::CheckUserCannotSetRunOnOsLoginAppHome(
   ASSERT_TRUE(app_state);
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   CHECK(web_contents);
   test_web_ui.set_web_contents(web_contents);
   auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
@@ -4078,7 +4082,7 @@ void WebAppIntegrationTestDriver::CheckWindowDisplayMinimal() {
   ASSERT_TRUE(app_state.has_value());
 
   content::WebContents* web_contents =
-      app_browser()->tab_strip_model()->GetActiveWebContents();
+      app_browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   DisplayMode window_display_mode =
       web_contents->GetDelegate()->GetDisplayMode(web_contents);
@@ -4106,7 +4110,7 @@ void WebAppIntegrationTestDriver::CheckWindowDisplayTabbed() {
   ASSERT_TRUE(app_state.has_value());
 
   content::WebContents* web_contents =
-      app_browser()->tab_strip_model()->GetActiveWebContents();
+      app_browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   DisplayMode window_display_mode =
       web_contents->GetDelegate()->GetDisplayMode(web_contents);
@@ -4134,7 +4138,7 @@ void WebAppIntegrationTestDriver::CheckWindowDisplayStandalone() {
   ASSERT_TRUE(app_state.has_value());
 
   content::WebContents* web_contents =
-      app_browser()->tab_strip_model()->GetActiveWebContents();
+      app_browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   DisplayMode window_display_mode =
       web_contents->GetDelegate()->GetDisplayMode(web_contents);
@@ -4493,7 +4497,7 @@ std::unique_ptr<StateSnapshot>
 WebAppIntegrationTestDriver::ConstructStateSnapshot() {
   base::flat_map<Profile*, ProfileState> profile_state_map;
   for (Profile* profile : GetAllProfiles()) {
-    base::flat_map<Browser*, BrowserState> browser_state;
+    base::flat_map<BrowserWindowInterface*, BrowserState> browser_state;
     ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
         [profile, &browser_state](BrowserWindowInterface* browser) {
           Profile* browser_profile = browser->GetProfile();
@@ -4516,9 +4520,7 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
           if (!is_app_browser && active_tab_contents != nullptr) {
             EXPECT_TRUE(AwaitIntentPickerTabHelperIconUpdateComplete(
                 active_tab_contents));
-            launch_icon_shown =
-                GetIntentPickerButton(browser->GetBrowserForMigrationOnly())
-                    ->GetVisible();
+            launch_icon_shown = GetIntentPickerButton(browser)->GetVisible();
           }
 
           webapps::AppId app_id;
@@ -4526,11 +4528,9 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
             app_id = web_app::AppBrowserController::From(browser)->app_id();
           }
 
-          Browser* const raw_browser = browser->GetBrowserForMigrationOnly();
           browser_state.emplace(
-              raw_browser,
-              BrowserState(raw_browser, tab_state_map, active_tab_contents,
-                           app_id, launch_icon_shown));
+              browser, BrowserState(browser, tab_state_map, active_tab_contents,
+                                    app_id, launch_icon_shown));
           return true;
         });
 
@@ -4597,8 +4597,8 @@ Profile* WebAppIntegrationTestDriver::GetOrCreateProfile(
 }
 
 content::WebContents* WebAppIntegrationTestDriver::GetCurrentTab(
-    Browser* browser) {
-  return browser->tab_strip_model()->GetActiveWebContents();
+    BrowserWindowInterface* browser) {
+  return browser->GetTabStripModel()->GetActiveWebContents();
 }
 
 GURL WebAppIntegrationTestDriver::GetInScopeURL(Site site) {
@@ -4737,7 +4737,7 @@ void WebAppIntegrationTestDriver::ForceUpdateManifestContents(
     EXPECT_TRUE(ui_test_utils::NavigateToURL(app_browser(),
                                              app_url_with_manifest_param));
     AwaitManifestUpdateStartedPostNavigation(
-        app_browser()->tab_strip_model()->GetActiveWebContents());
+        app_browser()->GetTabStripModel()->GetActiveWebContents());
     MenuButtonUpdateListener(*app_browser(), wait_for_pending_updates_to_arrive)
         .Await();
   } else {
@@ -4746,7 +4746,7 @@ void WebAppIntegrationTestDriver::ForceUpdateManifestContents(
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), app_url_with_manifest_param));
     AwaitManifestUpdateStartedPostNavigation(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
   }
   post_update_start_urls_[site] = app_url_with_manifest_param;
 }
@@ -4777,7 +4777,7 @@ void WebAppIntegrationTestDriver::NavigateTabbedBrowserToSite(
   url_observer.Wait();
 }
 
-Browser* WebAppIntegrationTestDriver::GetAppBrowserForSite(
+BrowserWindowInterface* WebAppIntegrationTestDriver::GetAppBrowserForSite(
     Site site,
     bool launch_if_not_open) {
   StateSnapshot* state = after_state_change_action_state_
@@ -4804,9 +4804,7 @@ Browser* WebAppIntegrationTestDriver::GetAppBrowserForSite(
   if (!launch_if_not_open) {
     return nullptr;
   }
-  BrowserWindowInterface* browser =
-      LaunchWebAppBrowserAndWait(profile(), app_state->id);
-  return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
+  return LaunchWebAppBrowserAndWait(profile(), app_state->id);
 }
 
 bool WebAppIntegrationTestDriver::IsShortcutAndIconCreated(
@@ -5038,12 +5036,12 @@ bool WebAppIntegrationTestDriver::LaunchFromAppShim(
 }
 #endif
 
-Browser* WebAppIntegrationTestDriver::browser() {
+BrowserWindowInterface* WebAppIntegrationTestDriver::browser() {
   BrowserWindowInterface* browser_window_interface =
       ProfileBrowserCollection::GetForProfile(profile())->FindTabbedBrowser();
   CHECK(browser_window_interface);
   CHECK(browser_window_interface->GetTabStripModel()->count());
-  return browser_window_interface->GetBrowserForMigrationOnly();
+  return browser_window_interface;
 }
 
 Profile* WebAppIntegrationTestDriver::profile() {

@@ -36,8 +36,8 @@ WebAppOriginText::WebAppOriginText(BrowserWindowInterface* browser)
     : browser_(browser) {
   CHECK(web_app::AppBrowserController::IsWebApp(browser_));
 
-  browser_->tab_strip_model()->AddObserver(this);
-  Observe(browser_->tab_strip_model()->GetActiveWebContents());
+  browser_->GetTabStripModel()->AddObserver(this);
+  Observe(browser_->GetTabStripModel()->GetActiveWebContents());
 
   SetID(VIEW_ID_WEB_APP_ORIGIN_TEXT);
   SetLayoutManager(std::make_unique<views::FillLayout>());

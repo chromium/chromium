@@ -16,8 +16,8 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -137,8 +137,9 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
       views::test::AnyWidgetTestPasskey{}, kInstallDialogName);
   base::test::TestFuture<bool, std::unique_ptr<WebAppInstallInfo>> test_future;
   ShowSimpleInstallDialogForWebApps(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(app_info),
-      std::move(install_tracker), test_future.GetCallback());
+      browser()->GetTabStripModel()->GetActiveWebContents(),
+      std::move(app_info), std::move(install_tracker),
+      test_future.GetCallback());
 
   // Wait for the dialog to show up.
   views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
@@ -168,8 +169,9 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
       views::test::AnyWidgetTestPasskey{}, kInstallDialogName);
   base::test::TestFuture<bool, std::unique_ptr<WebAppInstallInfo>> test_future;
   ShowSimpleInstallDialogForWebApps(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(app_info),
-      std::move(install_tracker), test_future.GetCallback());
+      browser()->GetTabStripModel()->GetActiveWebContents(),
+      std::move(app_info), std::move(install_tracker),
+      test_future.GetCallback());
 
   views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
   ASSERT_NE(widget, nullptr);
@@ -195,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
       GetInstallTracker(browser());
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{}, kInstallDialogName);
@@ -215,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
 
   PrefService* pref_service =
       Profile::FromBrowserContext(browser()
-                                      ->tab_strip_model()
+                                      ->GetTabStripModel()
                                       ->GetActiveWebContents()
                                       ->GetBrowserContext())
           ->GetPrefs();
@@ -246,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
       GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);
   PrefService* pref_service =
       Profile::FromBrowserContext(browser()
-                                      ->tab_strip_model()
+                                      ->GetTabStripModel()
                                       ->GetActiveWebContents()
                                       ->GetBrowserContext())
           ->GetPrefs();
@@ -259,9 +261,9 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
       GetInstallTracker(browser());
   ShowSimpleInstallDialogForWebApps(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(app_info),
-      std::move(install_tracker), test_future.GetCallback(),
-      PwaInProductHelpState::kShown);
+      browser()->GetTabStripModel()->GetActiveWebContents(),
+      std::move(app_info), std::move(install_tracker),
+      test_future.GetCallback(), PwaInProductHelpState::kShown);
 
   views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
   ASSERT_NE(widget, nullptr);
@@ -293,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
       views::test::AnyWidgetTestPasskey{}, kInstallDialogName);
   base::test::TestFuture<bool, std::unique_ptr<WebAppInstallInfo>> test_future;
   ShowSimpleInstallDialogForWebApps(
-      browser()->tab_strip_model()->GetActiveWebContents(), GetAppInfo(),
+      browser()->GetTabStripModel()->GetActiveWebContents(), GetAppInfo(),
       std::move(install_tracker), test_future.GetCallback());
 
   views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
@@ -317,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
                        WindowSizeLoweringClosesDialog) {
   auto popup_value =
-      OpenPopupOfSize(browser()->tab_strip_model()->GetActiveWebContents(),
+      OpenPopupOfSize(browser()->GetTabStripModel()->GetActiveWebContents(),
                       GURL("https://www.example.com"),
                       /*width=*/500, /*height=*/500);
   EXPECT_TRUE(popup_value.has_value());
@@ -357,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
                        SmallPopupClosesWindowAutomatically) {
   auto popup_value =
-      OpenPopupOfSize(browser()->tab_strip_model()->GetActiveWebContents(),
+      OpenPopupOfSize(browser()->GetTabStripModel()->GetActiveWebContents(),
                       GURL("https://www.example.com"));
   EXPECT_TRUE(popup_value.has_value());
   content::WebContents* popup_contents = popup_value.value();
@@ -443,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureSimpleInstallDialogOcclusionTest,
       views::test::AnyWidgetTestPasskey{}, kInstallDialogName);
   base::test::TestFuture<bool, std::unique_ptr<WebAppInstallInfo>> test_future;
   ShowSimpleInstallDialogForWebApps(
-      browser()->tab_strip_model()->GetActiveWebContents(), GetAppInfo(),
+      browser()->GetTabStripModel()->GetActiveWebContents(), GetAppInfo(),
       GetInstallTracker(browser()), test_future.GetCallback());
   views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
   EXPECT_NE(nullptr, widget);

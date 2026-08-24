@@ -14,7 +14,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/logging_chrome.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -148,7 +148,7 @@ class DeprecatedAppsDialogViewBrowserTest
 
 IN_PROC_BROWSER_TEST_F(DeprecatedAppsDialogViewBrowserTest,
                        VerifyTableModelForSingleApp) {
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
 
   InstallExtensionForTesting(kMockName1, kMockUrl1, kMockHost1);
   test_dialog_view_ =
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(DeprecatedAppsDialogViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DeprecatedAppsDialogViewBrowserTest,
                        VerifyTableModelForMultipleApps) {
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
 
   InstallExtensionForTesting(kMockName1, kMockUrl1, kMockHost1);
   InstallExtensionForTesting(kMockName2, kMockUrl2, kMockHost2);
@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(DeprecatedAppsDialogViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DeprecatedAppsDialogViewBrowserTest,
                        AcceptDialogAndVerify) {
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
 
   extensions::ExtensionId test_id(
       InstallExtensionForTesting(kMockName1, kMockUrl1, kMockHost1));
@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(DeprecatedAppsDialogViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DeprecatedAppsDialogViewBrowserTest,
                        DeprecatedAppsDialogShownFromLinkClick) {
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   InstallExtensionForTesting(kMockName1, kMockUrl1, kMockHost1);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAppsURL)));

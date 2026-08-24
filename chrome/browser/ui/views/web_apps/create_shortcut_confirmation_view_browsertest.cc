@@ -8,7 +8,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -71,7 +71,7 @@ class CreateShortcutConfirmationViewBrowserTest
                        std::unique_ptr<web_app::WebAppInstallInfo>) {};
 
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
         webapps::MLInstallabilityPromoter::FromWebContents(web_contents)
             ->RegisterCurrentInstallForWebContents(
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
   };
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
       webapps::MLInstallabilityPromoter::FromWebContents(web_contents)
           ->RegisterCurrentInstallForWebContents(
@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
       install_result;
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
       webapps::MLInstallabilityPromoter::FromWebContents(web_contents)
           ->RegisterCurrentInstallForWebContents(
@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
       install_result;
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
       webapps::MLInstallabilityPromoter::FromWebContents(web_contents)
           ->RegisterCurrentInstallForWebContents(
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
     };
 
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
         webapps::MLInstallabilityPromoter::FromWebContents(web_contents)
             ->RegisterCurrentInstallForWebContents(

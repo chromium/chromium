@@ -180,7 +180,7 @@
 
 namespace {
 
-gfx::NativeWindow GetWindowForEventGenerator(Browser* browser) {
+gfx::NativeWindow GetWindowForEventGenerator(BrowserWindowInterface* browser) {
 #if defined(USE_AURA)
   return browser->GetWindow()->GetNativeWindow()->GetRootWindow();
 #else
@@ -215,7 +215,7 @@ void LoadTestPopUpExtension(Profile* profile) {
       test_extension_dir.UnpackedPath());
 }
 
-SkColor GetFrameColor(Browser* browser) {
+SkColor GetFrameColor(BrowserWindowInterface* browser) {
   CustomThemeSupplier* theme =
       web_app::AppBrowserController::From(browser)->GetThemeSupplier();
   SkColor result;
@@ -473,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, ThemeChange) {
   helper()->InstallAndLaunchWebApp(browser(), app_url);
 
   content::WebContents* web_contents =
-      helper()->app_browser()->tab_strip_model()->GetActiveWebContents();
+      helper()->app_browser()->GetTabStripModel()->GetActiveWebContents();
   content::AwaitDocumentOnLoadCompleted(web_contents);
 
 #if !BUILDFLAG(IS_LINUX)
@@ -676,7 +676,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
       browser(), embedded_https_test_server().GetURL(
                      "/web_apps/migration/migrate_to/suggest.html")));
   web_app::test::WaitForLoadCompleteAndMaybeManifestSeen(
-      *browser()->tab_strip_model()->GetActiveWebContents());
+      *browser()->GetTabStripModel()->GetActiveWebContents());
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
   menu_button->UpdateStateForTesting();
@@ -1380,7 +1380,7 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
         infobars::ContentInfoBarManager::FromWebContents(
             helper()
                 ->app_browser()
-                ->tab_strip_model()
+                ->GetTabStripModel()
                 ->GetActiveWebContents()));
     std::ignore = title_watcher.WaitAndGetTitle();
   }
@@ -1958,7 +1958,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                          IDC_OPEN_IN_CHROME);
 
   // Validate bounds are cleared.
-  EXPECT_EQ(false, EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+  EXPECT_EQ(false, EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(),
                           "window.navigator.windowControlsOverlay.visible"));
 }
 
@@ -2518,7 +2518,7 @@ IN_PROC_BROWSER_TEST_F(
                          IDC_OPEN_IN_CHROME);
 
   // The page now lives in a regular Chrome tab; WCO must not be visible.
-  EXPECT_EQ(false, EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+  EXPECT_EQ(false, EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(),
                           "window.navigator.windowControlsOverlay.visible"));
 }
 
@@ -2835,7 +2835,7 @@ IN_PROC_BROWSER_TEST_F(
   chrome::ExecuteCommand(app_browser, IDC_OPEN_IN_CHROME);
   observer.Wait();
 
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
 
   EXPECT_THAT(EvalDisplayStateChange(web_contents, "maximize", "maximized"),
               content::EvalJsResult::ErrorIs(testing::AllOf(
@@ -2980,7 +2980,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Add second tab.
   chrome::NewTab(helper()->app_browser(), NewTabTypes::kNoUserAction);
-  ASSERT_EQ(helper()->app_browser()->tab_strip_model()->count(), 2);
+  ASSERT_EQ(helper()->app_browser()->GetTabStripModel()->count(), 2);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(helper()->app_browser(), second_page_url()));
 
@@ -3619,7 +3619,7 @@ class WebAppFrameToolbarBrowserTest_OriginText
   void ExpectLastCommittedUrl(const GURL& url) {
     EXPECT_EQ(url, helper()
                        ->app_browser()
-                       ->tab_strip_model()
+                       ->GetTabStripModel()
                        ->GetActiveWebContents()
                        ->GetLastCommittedURL());
   }
@@ -3678,7 +3678,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
   ASSERT_TRUE(embedded_https_test_server().Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
-      helper()->app_browser()->tab_strip_model()->GetActiveWebContents();
+      helper()->app_browser()->GetTabStripModel()->GetActiveWebContents();
   content::AwaitDocumentOnLoadCompleted(web_contents);
 
   // Origin text should appear if theme color changes. This could happen when
@@ -3701,7 +3701,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
   ASSERT_TRUE(embedded_https_test_server().Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
-      helper()->app_browser()->tab_strip_model()->GetActiveWebContents();
+      helper()->app_browser()->GetTabStripModel()->GetActiveWebContents();
   content::AwaitDocumentOnLoadCompleted(web_contents);
 
   // Origin text should show if theme color changes even though out-of-scope bar
@@ -3809,7 +3809,7 @@ class WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText
   void ExpectLastCommittedUrl(const GURL& url) {
     EXPECT_EQ(url, helper()
                        ->app_browser()
-                       ->tab_strip_model()
+                       ->GetTabStripModel()
                        ->GetActiveWebContents()
                        ->GetLastCommittedURL());
   }
@@ -3870,7 +3870,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
   ASSERT_TRUE(embedded_https_test_server().Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
-      helper()->app_browser()->tab_strip_model()->GetActiveWebContents();
+      helper()->app_browser()->GetTabStripModel()->GetActiveWebContents();
   content::AwaitDocumentOnLoadCompleted(web_contents);
   {
     // Navigate to another origin that is within extended scope. Origin text
@@ -3906,7 +3906,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
   ASSERT_TRUE(embedded_https_test_server().Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
-      helper()->app_browser()->tab_strip_model()->GetActiveWebContents();
+      helper()->app_browser()->GetTabStripModel()->GetActiveWebContents();
   content::AwaitDocumentOnLoadCompleted(web_contents);
   {
     // Navigate to another origin that is within extended scope.
@@ -3939,7 +3939,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
   ASSERT_TRUE(embedded_https_test_server().Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
-      helper()->app_browser()->tab_strip_model()->GetActiveWebContents();
+      helper()->app_browser()->GetTabStripModel()->GetActiveWebContents();
   content::AwaitDocumentOnLoadCompleted(web_contents);
   {
     // Navigate to another origin that is within extended scope.
@@ -4016,7 +4016,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarUninstallButtonTest,
   EXPECT_TRUE(toolbar_right_container->uninstall_button()->GetVisible());
 
   // Close the app and launch it again.
-  Browser* app_browser = helper()->app_browser();
+  BrowserWindowInterface* app_browser = helper()->app_browser();
   ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer(
       app_browser);
   app_browser->GetWindow()->Close();
@@ -4046,7 +4046,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarUninstallButtonTest, AppRemoved) {
       std::make_unique<views::NamedWidgetShownWaiter>(
           views::test::AnyWidgetTestPasskey{},
           "WebAppUninstallDialogDelegateView");
-  Browser* app_browser = helper()->app_browser();
+  BrowserWindowInterface* app_browser = helper()->app_browser();
   ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer(
       app_browser);
 
@@ -4099,7 +4099,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarUninstallButtonTest,
 
   // Install the app without launching it.
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   auto web_app_info =
       web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
   web_app_info->scope = app_url;
