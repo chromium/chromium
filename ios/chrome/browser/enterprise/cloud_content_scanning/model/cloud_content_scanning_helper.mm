@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_util.h"
+#import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
 #import "ios/chrome/browser/enterprise/enterprise_dialog/model/warning_dialog.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -334,7 +335,8 @@ FileDownloadScanningResources PrepareCloudContentScanning(
   if (!should_scan_asynchronously) {
     auto files_request_handler_delegate =
         std::make_unique<FilesRequestHandlerIOS>(
-            profile, file_path,
+            ConnectorsServiceFactory::GetForProfile(profile),
+            IOSReportingEventRouterFactory::GetForProfile(profile), file_path,
             base::BindOnce(&HandleScanDecision, web_state->GetWeakPtr(),
                            trigger_type, std::move(download_proceed)));
 
@@ -368,7 +370,8 @@ FileDownloadScanningResources PrepareCloudContentScanning(
       url, AnalysisSettings(), ContentAnalysisRequest::NORMAL_DOWNLOAD,
       *web_state);
   auto dummy_delegate = std::make_unique<FilesRequestHandlerIOS>(
-      profile, base::FilePath(),
+      ConnectorsServiceFactory::GetForProfile(profile),
+      IOSReportingEventRouterFactory::GetForProfile(profile), base::FilePath(),
       base::BindOnce([](RequestHandlerResult result) {}));
   auto dummy_handler = std::make_unique<FilesRequestHandlerBase>(
       dummy_info.get(),

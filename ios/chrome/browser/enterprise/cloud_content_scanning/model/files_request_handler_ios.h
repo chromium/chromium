@@ -10,9 +10,10 @@
 #import "components/enterprise/connectors/core/cloud_content_scanning/files_request_handler_base.h"
 #import "components/enterprise/connectors/core/common.h"
 
-class ProfileIOS;
-
 namespace enterprise_connectors {
+
+class ConnectorsService;
+class ReportingEventRouter;
 
 // iOS-specific implementation of the FilesRequestHandlerBase::Delegate. This
 // class handles the details of a single file analysis request on iOS, including
@@ -23,7 +24,8 @@ class FilesRequestHandlerIOS : public FilesRequestHandlerBase::Delegate {
   // request.
   using CompletionCallback = base::OnceCallback<void(RequestHandlerResult)>;
 
-  FilesRequestHandlerIOS(ProfileIOS* profile,
+  FilesRequestHandlerIOS(ConnectorsService* connectors_service,
+                         ReportingEventRouter* reporting_event_router,
                          const base::FilePath& path,
                          CompletionCallback callback);
 
@@ -63,7 +65,8 @@ class FilesRequestHandlerIOS : public FilesRequestHandlerBase::Delegate {
 
  private:
   raw_ptr<FilesRequestHandlerBase> handler_;
-  raw_ptr<ProfileIOS> profile_;
+  raw_ptr<ConnectorsService> connectors_service_;
+  raw_ptr<ReportingEventRouter> reporting_event_router_;
   base::FilePath path_;
   FilesRequestHandlerBase::FileInfo file_info_;
   CompletionCallback callback_;

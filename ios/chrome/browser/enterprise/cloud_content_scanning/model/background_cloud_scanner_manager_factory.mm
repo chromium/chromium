@@ -6,6 +6,8 @@
 
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/background_cloud_scanner_manager.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_cloud_binary_upload_service_factory.h"
+#import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
+#import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace enterprise_connectors {
@@ -28,6 +30,8 @@ BackgroundCloudScannerManagerFactory::BackgroundCloudScannerManagerFactory()
     : ProfileKeyedServiceFactoryIOS("BackgroundCloudScannerManager",
                                     ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(IOSCloudBinaryUploadServiceFactory::GetInstance());
+  DependsOn(ConnectorsServiceFactory::GetInstance());
+  DependsOn(IOSReportingEventRouterFactory::GetInstance());
 }
 
 BackgroundCloudScannerManagerFactory::~BackgroundCloudScannerManagerFactory() =

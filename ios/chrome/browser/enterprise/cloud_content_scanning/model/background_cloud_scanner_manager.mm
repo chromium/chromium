@@ -14,6 +14,8 @@
 #import "components/enterprise/connectors/core/cloud_content_scanning/files_request_handler_base.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/files_request_handler_ios.h"
 #import "ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
+#import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
+#import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "url/gurl.h"
 
@@ -29,7 +31,8 @@ BackgroundCloudScannerManager::BackgroundCloudScanner::BackgroundCloudScanner(
     : info_(std::move(info)),
       on_complete_callback_(std::move(on_complete_callback)) {
   auto delegate = std::make_unique<FilesRequestHandlerIOS>(
-      profile, file_path,
+      ConnectorsServiceFactory::GetForProfile(profile),
+      IOSReportingEventRouterFactory::GetForProfile(profile), file_path,
       base::BindOnce(&BackgroundCloudScannerManager::BackgroundCloudScanner::
                          OnScanComplete,
                      weak_ptr_factory_.GetWeakPtr()));

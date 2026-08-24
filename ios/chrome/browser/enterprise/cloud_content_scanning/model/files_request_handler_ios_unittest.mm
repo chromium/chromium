@@ -19,6 +19,7 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/download_protection_metrics.h"
 #import "ios/chrome/browser/enterprise/common/test/mock_reporting_event_router.h"
+#import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -118,6 +119,8 @@ class FilesRequestHandlerIOSTest : public PlatformTest {
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     reporting_router_ = static_cast<MockReportingEventRouter*>(
         IOSReportingEventRouterFactory::GetForProfile(profile_.get()));
+    connectors_service_ =
+        ConnectorsServiceFactory::GetForProfile(profile_.get());
 
     scoped_feature_list_.InitAndEnableFeature(kEnableFileDownloadConnectorIOS);
   }
@@ -134,6 +137,7 @@ class FilesRequestHandlerIOSTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_;
+  raw_ptr<ConnectorsService> connectors_service_;
   raw_ptr<MockReportingEventRouter> reporting_router_;
   MockContentAnalysisInfoBase content_analysis_info_;
   MockBinaryUploadService upload_service_;
@@ -147,7 +151,8 @@ class FilesRequestHandlerIOSTest : public PlatformTest {
 TEST_F(FilesRequestHandlerIOSTest, UploadDataImpl_NoPath) {
   base::test::TestFuture<RequestHandlerResult> future;
   auto delegate = std::make_unique<FilesRequestHandlerIOS>(
-      profile_.get(), base::FilePath(), future.GetCallback());
+      connectors_service_, reporting_router_, base::FilePath(),
+      future.GetCallback());
 
   EXPECT_FALSE(delegate->UploadDataImpl());
 
@@ -165,7 +170,7 @@ TEST_F(FilesRequestHandlerIOSTest, UploadDataImpl_ConnectorDisabled) {
 
   base::test::TestFuture<RequestHandlerResult> future;
   auto delegate = std::make_unique<FilesRequestHandlerIOS>(
-      profile_.get(), path, future.GetCallback());
+      connectors_service_, reporting_router_, path, future.GetCallback());
 
   EXPECT_FALSE(delegate->UploadDataImpl());
 
@@ -185,7 +190,7 @@ TEST_F(FilesRequestHandlerIOSTest, UploadDataImpl_Success) {
 
   base::test::TestFuture<RequestHandlerResult> future;
   auto delegate_ptr = std::make_unique<FilesRequestHandlerIOS>(
-      profile_.get(), path, future.GetCallback());
+      connectors_service_, reporting_router_, path, future.GetCallback());
   auto* delegate = delegate_ptr.get();
 
   FilesRequestHandlerBase handler(
@@ -202,8 +207,8 @@ TEST_F(FilesRequestHandlerIOSTest, UploadDataImpl_Success) {
 // and that file information (hash, size, mime type) can be updated.
 TEST_F(FilesRequestHandlerIOSTest, GettersAndSetters) {
   base::FilePath path(FILE_PATH_LITERAL("/path/to/test.txt"));
-  auto delegate = std::make_unique<FilesRequestHandlerIOS>(profile_.get(), path,
-                                                           base::DoNothing());
+  auto delegate = std::make_unique<FilesRequestHandlerIOS>(
+      connectors_service_, reporting_router_, path, base::DoNothing());
 
   EXPECT_EQ(delegate->GetPath(0), path);
   EXPECT_EQ(delegate->GetSource(), "");
@@ -227,7 +232,8 @@ TEST_F(FilesRequestHandlerIOSTest, GettersAndSetters) {
 TEST_F(FilesRequestHandlerIOSTest, UpdateRequestHandlerResult) {
   base::test::TestFuture<RequestHandlerResult> future;
   auto delegate = std::make_unique<FilesRequestHandlerIOS>(
-      profile_.get(), base::FilePath(), future.GetCallback());
+      connectors_service_, reporting_router_, base::FilePath(),
+      future.GetCallback());
 
   RequestHandlerResult result;
   result.complies = true;
@@ -252,7 +258,8 @@ TEST_F(FilesRequestHandlerIOSTest, UpdateRequestHandlerResult) {
 TEST_F(FilesRequestHandlerIOSTest, ReportWarningBypass) {
   base::test::TestFuture<RequestHandlerResult> future;
   auto delegate_ptr = std::make_unique<FilesRequestHandlerIOS>(
-      profile_.get(), base::FilePath(), future.GetCallback());
+      connectors_service_, reporting_router_, base::FilePath(),
+      future.GetCallback());
   auto* delegate = delegate_ptr.get();
 
   FilesRequestHandlerBase handler(
