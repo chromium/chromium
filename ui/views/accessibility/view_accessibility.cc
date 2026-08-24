@@ -167,6 +167,7 @@ void ViewAccessibility::AddVirtualChildViewAt(
   added_view->OnOwnerViewChanged();
 
   AXUpdateNotifier::Get()->NotifyChildAdded(added_view, this);
+  added_view->OnVirtualViewAddedToWidget();
   FireLiveRegionChangedIfNeeded(LiveRegionEventTrigger::kAdditions);
 }
 
@@ -177,6 +178,9 @@ std::unique_ptr<AXVirtualView> ViewAccessibility::RemoveVirtualChildView(
   if (!cur_index.has_value()) {
     return {};
   }
+
+  AXVirtualView* child_to_remove = virtual_children_[cur_index.value()].get();
+  child_to_remove->OnVirtualViewRemovedFromWidget();
 
   std::unique_ptr<AXVirtualView> child =
       std::move(virtual_children_[cur_index.value()]);

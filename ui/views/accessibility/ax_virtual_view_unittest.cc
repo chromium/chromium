@@ -459,6 +459,93 @@ TEST_P(AXVirtualViewTest, NotifiesUpdateObserverForVirtualChildChanges) {
   observer.Reset();
 }
 
+TEST_P(AXVirtualViewTest, NotifiesUpdateObserverForSubtreeAddedToView) {
+  TestAXUpdateObserver observer;
+  auto parent = std::make_unique<AXVirtualView>();
+  auto child = std::make_unique<AXVirtualView>();
+  auto grandchild = std::make_unique<AXVirtualView>();
+  AXVirtualView* parent_ptr = parent.get();
+  AXVirtualView* child_ptr = child.get();
+  AXVirtualView* grandchild_ptr = grandchild.get();
+  child->AddChildView(std::move(grandchild));
+  parent->AddChildView(std::move(child));
+  observer.Reset();
+
+  auto owner = std::make_unique<View>();
+  owner->GetViewAccessibility().AddVirtualChildView(std::move(parent));
+
+  ASSERT_EQ(3u, observer.child_events().size());
+  EXPECT_EQ(std::make_tuple(TestAXUpdateObserver::ChildEventType::kAdded,
+                            parent_ptr, &owner->GetViewAccessibility()),
+            observer.child_events()[0]);
+  EXPECT_EQ(std::make_tuple(TestAXUpdateObserver::ChildEventType::kAdded,
+                            child_ptr, parent_ptr),
+            observer.child_events()[1]);
+  EXPECT_EQ(std::make_tuple(TestAXUpdateObserver::ChildEventType::kAdded,
+                            grandchild_ptr, child_ptr),
+            observer.child_events()[2]);
+
+  observer.Reset();
+  std::unique_ptr<AXVirtualView> removed =
+      owner->GetViewAccessibility().RemoveVirtualChildView(parent_ptr);
+
+  ASSERT_EQ(3u, observer.child_events().size());
+  EXPECT_EQ(std::make_tuple(TestAXUpdateObserver::ChildEventType::kRemoved,
+                            grandchild_ptr, child_ptr),
+            observer.child_events()[0]);
+  EXPECT_EQ(std::make_tuple(TestAXUpdateObserver::ChildEventType::kRemoved,
+                            child_ptr, parent_ptr),
+            observer.child_events()[1]);
+  EXPECT_EQ(std::make_tuple(TestAXUpdateObserver::ChildEventType::kRemoved,
+                            parent_ptr, &owner->GetViewAccessibility()),
+            observer.child_events()[2]);
+  observer.Reset();
+}
+
+TEST_P(AXVirtualViewTest, NotifiesUpdateObserverForSubtreeAddedToVirtualView) {
+  TestAXUpdateObserver observer;
+  auto parent = std::make_unique<AXVirtualView>();
+  auto child = std::make_unique<AXVirtualView>();
+  auto grandchild = std::make_unique<AXVirtualView>();
+  AXVirtualView* parent_ptr = parent.get();
+  AXVirtualView* child_ptr = child.get();
+  AXVirtualView* grandchild_ptr = grandchild.get();
+  child->AddChildView(std::move(grandchild));
+  parent->AddChildView(std::move(child));
+  observer.Reset();
+
+  auto host = std::make_unique<AXVirtualView>();
+  AXVirtualView* host_ptr = host.get();
+  host_ptr->AddChildView(std::move(parent));
+
+  ASSERT_EQ(3u, observer.child_events().size());
+  EXPECT_EQ(std::make_tuple(TestAXUpdateObserver::ChildEventType::kAdded,
+                            parent_ptr, host_ptr),
+            observer.child_events()[0]);
+  EXPECT_EQ(std::make_tuple(TestAXUpdateObserver::ChildEventType::kAdded,
+                            child_ptr, parent_ptr),
+            observer.child_events()[1]);
+  EXPECT_EQ(std::make_tuple(TestAXUpdateObserver::ChildEventType::kAdded,
+                            grandchild_ptr, child_ptr),
+            observer.child_events()[2]);
+
+  observer.Reset();
+  std::unique_ptr<AXVirtualView> removed =
+      host_ptr->RemoveChildView(parent_ptr);
+
+  ASSERT_EQ(3u, observer.child_events().size());
+  EXPECT_EQ(std::make_tuple(TestAXUpdateObserver::ChildEventType::kRemoved,
+                            grandchild_ptr, child_ptr),
+            observer.child_events()[0]);
+  EXPECT_EQ(std::make_tuple(TestAXUpdateObserver::ChildEventType::kRemoved,
+                            child_ptr, parent_ptr),
+            observer.child_events()[1]);
+  EXPECT_EQ(std::make_tuple(TestAXUpdateObserver::ChildEventType::kRemoved,
+                            parent_ptr, host_ptr),
+            observer.child_events()[2]);
+  observer.Reset();
+}
+
 TEST_P(AXVirtualViewTest, ReorderingVirtualChildren) {
   ASSERT_EQ(0u, virtual_label_->GetChildCount());
 

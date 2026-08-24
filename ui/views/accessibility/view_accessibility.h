@@ -788,6 +788,12 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   void UpdateOffsetContainerId();
 
+  // Recursively notifies that all virtual children were added.
+  void OnVirtualViewAddedToWidget();
+
+  // Recursively notifies that all virtual children were removed.
+  void OnVirtualViewRemovedFromWidget();
+
   // Contains data that is populated by the accessibility attributes setters.
   ui::AXNodeData data_;
 
@@ -864,14 +870,6 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void SetBlockNotifyEvents(bool block);
 
   ui::AXAttributeChangedCallbacks* GetOrCreateAXAttributeChangedCallbacks();
-
-  // Called from OnViewAddedToWidget. Recursively calls
-  // OnVirtualViewAddedToWidget for all virtual children.
-  void OnVirtualViewAddedToWidget();
-
-  // Inverse of OnVirtualViewAddedToWidget. Called from OnViewRemovedFromWidget.
-  // Recursively calls OnVirtualViewRemovedFromWidget for all virtual children.
-  void OnVirtualViewRemovedFromWidget();
 
   void NotifyChildrenAdded();
   void NotifyChildrenRemoved();

@@ -1810,6 +1810,99 @@ TEST_F(WidgetAXManagerTest, VirtualChildrenRemovedFromCacheWhenViewDetached) {
   EXPECT_EQ(api.cache()->Get(nested_virtual_id), nullptr);
 }
 
+TEST_F(WidgetAXManagerTest, VirtualSubtreeAddedToAttachedViewIsCached) {
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  View* container =
+      widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  api.WaitForNextSerialization();
+
+  auto virtual_child = std::make_unique<AXVirtualView>();
+  auto nested_virtual = std::make_unique<AXVirtualView>();
+  const ui::AXNodeID virtual_child_id = static_cast<ui::AXNodeID>(
+      virtual_child->ViewAccessibility::GetUniqueId());
+  const ui::AXNodeID nested_virtual_id = static_cast<ui::AXNodeID>(
+      nested_virtual->ViewAccessibility::GetUniqueId());
+
+  virtual_child->AddChildView(std::move(nested_virtual));
+  container->GetViewAccessibility().AddVirtualChildView(
+      std::move(virtual_child));
+
+  ASSERT_NE(api.cache()->Get(virtual_child_id), nullptr);
+  ASSERT_NE(api.cache()->Get(nested_virtual_id), nullptr);
+
+  api.WaitForNextSerialization();
+
+  EXPECT_NE(api.ax_tree_manager()->ax_tree()->GetFromId(nested_virtual_id),
+            nullptr);
+}
+
+TEST_F(WidgetAXManagerTest, NestedVirtualSubtreeAddedToVirtualViewIsCached) {
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  View* container =
+      widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  auto host = std::make_unique<AXVirtualView>();
+  AXVirtualView* host_ptr = host.get();
+  container->GetViewAccessibility().AddVirtualChildView(std::move(host));
+  api.WaitForNextSerialization();
+
+  auto virtual_child = std::make_unique<AXVirtualView>();
+  auto nested_virtual = std::make_unique<AXVirtualView>();
+  const ui::AXNodeID virtual_child_id = static_cast<ui::AXNodeID>(
+      virtual_child->ViewAccessibility::GetUniqueId());
+  const ui::AXNodeID nested_virtual_id = static_cast<ui::AXNodeID>(
+      nested_virtual->ViewAccessibility::GetUniqueId());
+
+  virtual_child->AddChildView(std::move(nested_virtual));
+  host_ptr->AddChildView(std::move(virtual_child));
+
+  ASSERT_NE(api.cache()->Get(virtual_child_id), nullptr);
+  ASSERT_NE(api.cache()->Get(nested_virtual_id), nullptr);
+
+  api.WaitForNextSerialization();
+
+  EXPECT_NE(api.ax_tree_manager()->ax_tree()->GetFromId(nested_virtual_id),
+            nullptr);
+}
+
+TEST_F(WidgetAXManagerTest, VirtualSubtreeRemovedFromAttachedViewIsUncached) {
+  auto container = std::make_unique<View>();
+  auto virtual_child = std::make_unique<AXVirtualView>();
+  auto nested_virtual = std::make_unique<AXVirtualView>();
+  AXVirtualView* virtual_child_ptr = virtual_child.get();
+  const ui::AXNodeID virtual_child_id = static_cast<ui::AXNodeID>(
+      virtual_child->ViewAccessibility::GetUniqueId());
+  const ui::AXNodeID nested_virtual_id = static_cast<ui::AXNodeID>(
+      nested_virtual->ViewAccessibility::GetUniqueId());
+
+  virtual_child->AddChildView(std::move(nested_virtual));
+  container->GetViewAccessibility().AddVirtualChildView(
+      std::move(virtual_child));
+  View* container_ptr =
+      widget()->GetRootView()->AddChildView(std::move(container));
+
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  ASSERT_NE(api.cache()->Get(nested_virtual_id), nullptr);
+
+  container_ptr->GetViewAccessibility().RemoveVirtualChildView(
+      virtual_child_ptr);
+
+  EXPECT_EQ(api.cache()->Get(virtual_child_id), nullptr);
+  EXPECT_EQ(api.cache()->Get(nested_virtual_id), nullptr);
+
+  api.WaitForNextSerialization();
+
+  EXPECT_EQ(api.ax_tree_manager()->ax_tree()->GetFromId(virtual_child_id),
+            nullptr);
+  EXPECT_EQ(api.ax_tree_manager()->ax_tree()->GetFromId(nested_virtual_id),
+            nullptr);
+}
+
 TEST_F(WidgetAXManagerTest, FocusTracking_InitiallyNoFocus) {
   WidgetAXManagerTestApi api(manager());
   api.Enable();

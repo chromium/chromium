@@ -112,6 +112,7 @@ void AXVirtualView::AddChildViewAt(std::unique_ptr<AXVirtualView> view,
   added_view->OnOwnerViewChanged();
 
   AXUpdateNotifier::Get()->NotifyChildAdded(added_view, this);
+  added_view->OnVirtualViewAddedToWidget();
   FireLiveRegionChangedIfNeeded(LiveRegionEventTrigger::kAdditions);
 
   if (owner_view) {
@@ -165,10 +166,10 @@ std::unique_ptr<AXVirtualView> AXVirtualView::RemoveChildView(
     return {};
   }
 
+  View* owner_view = GetOwnerView();
   bool active_descendant_removed = false;
-  if (GetOwnerView()) {
-    ViewAccessibility& view_accessibility =
-        GetOwnerView()->GetViewAccessibility();
+  if (owner_view) {
+    ViewAccessibility& view_accessibility = owner_view->GetViewAccessibility();
     if (ViewAccessibility* active_view =
             view_accessibility.GetActiveDescendantView()) {
       if (Contains(static_cast<AXVirtualView*>(active_view))) {
@@ -179,6 +180,7 @@ std::unique_ptr<AXVirtualView> AXVirtualView::RemoveChildView(
 
   std::unique_ptr<AXVirtualView> child =
       std::move(virtual_children_[cur_index.value()]);
+  child->OnVirtualViewRemovedFromWidget();
   virtual_children_.erase(virtual_children_.begin() +
                           static_cast<ptrdiff_t>(cur_index.value()));
 
@@ -187,11 +189,11 @@ std::unique_ptr<AXVirtualView> AXVirtualView::RemoveChildView(
   child->virtual_parent_view_ = nullptr;
   child->OnOwnerViewChanged();
 
-  if (GetOwnerView()) {
+  if (owner_view) {
     if (active_descendant_removed) {
-      GetOwnerView()->GetViewAccessibility().ClearActiveDescendant();
+      owner_view->GetViewAccessibility().ClearActiveDescendant();
     }
-    GetOwnerView()->NotifyAccessibilityEventDeprecated(
+    owner_view->NotifyAccessibilityEventDeprecated(
         ax::mojom::Event::kChildrenChanged, true);
   }
 
