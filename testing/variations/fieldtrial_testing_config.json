@@ -3815,6 +3815,7 @@
                     "params": {
                         "MigratedChromeForTesting": "true",
                         "MigratedCollectedCookies": "true",
+                        "MigratedDevToolsSharedProcess": "true",
                         "MigratedGoogleApiKeys": "true",
                         "MigratedInstallerDownloader": "true",
                         "MigratedKnownInterceptionDisclosure": "true",
