@@ -69,6 +69,7 @@ class BrowserNativeWidgetMac : public views::NativeWidgetMac,
   bool ShouldRestorePreviousBrowserWidgetState() const override;
   bool ShouldUseInitialVisibleOnAllWorkspaces() const override;
   void AnnounceTextInInProcessWindow(const std::u16string& text) override;
+  gfx::Rect GetGlassFrameBounds() const override;
 
  protected:
   ~BrowserNativeWidgetMac() override;

@@ -896,6 +896,41 @@ void BrowserNativeWidgetMac::AnnounceTextInInProcessWindow(
   }
 }
 
+gfx::Rect BrowserNativeWidgetMac::GetGlassFrameBounds() const {
+  if (!background_view_ || !GetNSWindowHost()) {
+    return gfx::Rect();
+  }
+
+  NSWindow* const ns_window = GetNSWindowHost()->GetInProcessNSWindow();
+  if (!ns_window) {
+    return gfx::Rect();
+  }
+
+  NSView* const content_view = [ns_window contentView];
+
+  const int content_width = static_cast<int>(content_view.bounds.size.width);
+  const int content_height = static_cast<int>(content_view.bounds.size.height);
+
+  const std::optional<int> target_width = GetGlassFrameWidth();
+  const std::optional<int> target_height = GetGlassFrameHeight();
+
+  int glass_x = 0;
+  int glass_y = 0;
+  int glass_width = content_width;
+  int glass_height = content_height;
+
+  if (target_width.has_value()) {
+    glass_width = *target_width;
+    glass_x = base::i18n::IsRTL() ? (content_width - glass_width) : 0;
+  }
+
+  if (target_height.has_value()) {
+    glass_height = *target_height;
+  }
+
+  return gfx::Rect(glass_x, glass_y, glass_width, glass_height);
+}
+
 void BrowserNativeWidgetMac::OnVerticalTabStripModeChanged(
     tabs::VerticalTabStripStateController* controller) {
   last_theme_color_.reset();
@@ -1042,6 +1077,11 @@ void BrowserNativeWidgetMac::UpdateBackgroundGeometry() {
   background_view_.autoresizingMask = mask;
   if (tint_view_) {
     tint_view_.frame = background_view_.bounds;
+  }
+
+  if (browser_view_ && browser_view_->browser_widget() &&
+      browser_view_->browser_widget()->GetFrameView()) {
+    browser_view_->browser_widget()->GetFrameView()->SchedulePaint();
   }
 }
 

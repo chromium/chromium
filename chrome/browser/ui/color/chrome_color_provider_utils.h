@@ -14,8 +14,6 @@
 #include "ui/gfx/color_utils.h"
 
 inline constexpr SkAlpha kToolbarInkDropHighlightVisibleAlpha = 0x14;
-inline constexpr SkAlpha kBrowserFrameAlphaLight = 0;
-inline constexpr SkAlpha kBrowserFrameAlphaDark = 0;
 
 // Converts ColorId if |color_id| is in CHROME_COLOR_IDS.
 std::string ChromeColorIdName(ui::ColorId color_id);

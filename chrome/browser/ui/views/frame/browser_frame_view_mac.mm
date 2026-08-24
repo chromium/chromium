@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
+#include "chrome/browser/ui/views/frame/browser_native_widget.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/caption_button_placeholder_container.h"
@@ -499,12 +500,16 @@ void BrowserFrameViewMac::OnPaint(gfx::Canvas* canvas) {
     return;
   }
 
-  SkColor frame_color = GetFrameColor(BrowserFrameActiveState::kUseCurrent);
+  const SkColor frame_color =
+      GetFrameColor(BrowserFrameActiveState::kUseCurrent);
+
   if (is_glass_frame_eligible_) {
-    const SkAlpha frame_alpha = color_utils::IsDark(frame_color)
-                                    ? kBrowserFrameAlphaDark
-                                    : kBrowserFrameAlphaLight;
-    canvas->DrawColor(SkColorSetA(frame_color, frame_alpha));
+    // In glass mode, paint only the region outside the glass frame
+    // bounds with the frame color.
+    const gfx::Rect opaque_frame_bounds = GetOpaqueFrameBounds();
+    if (!opaque_frame_bounds.IsEmpty()) {
+      canvas->FillRect(opaque_frame_bounds, frame_color);
+    }
   } else {
     canvas->DrawColor(frame_color);
 
@@ -609,4 +614,20 @@ void BrowserFrameViewMac::OnGlassFrameEligibilityChanged(bool is_eligible) {
   is_glass_frame_eligible_ = is_eligible;
   layer()->SetFillsBoundsOpaquely(!is_glass_frame_eligible_);
   SchedulePaint();
+}
+
+gfx::Rect BrowserFrameViewMac::GetOpaqueFrameBounds() const {
+  if (!browser_widget() || !browser_widget()->browser_native_widget()) {
+    return gfx::Rect();
+  }
+
+  const gfx::Rect glass_bounds =
+      browser_widget()->browser_native_widget()->GetGlassFrameBounds();
+  if (glass_bounds.IsEmpty()) {
+    return GetLocalBounds();
+  }
+
+  gfx::Rect opaque_bounds = GetLocalBounds();
+  opaque_bounds.Subtract(glass_bounds);
+  return opaque_bounds;
 }

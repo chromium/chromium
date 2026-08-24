@@ -6,6 +6,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -15,7 +16,9 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -81,6 +84,18 @@ GlassViews GetGlassViews(NSView* content_view) {
 
 int GetGlassCornerPadding() {
   return GetLayoutConstant(LayoutConstant::kToolbarCornerRadius) * 2;
+}
+
+int GetExpectedTopChromeGlassHeight(BrowserView* browser_view) {
+  int height = 0;
+  if (browser_view->browser_widget() &&
+      browser_view->browser_widget()->GetFrameView()) {
+    height = browser_view->browser_widget()->GetFrameView()->GetTopInset(true);
+  }
+  const auto top_element_info = browser_view->GetFrameElementInfo();
+  height += top_element_info.top_area_height();
+  height += top_element_info.toolbar_preferred_height;
+  return height;
 }
 
 }  // namespace
@@ -275,14 +290,39 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest,
   auto [glass_view, tint_view] = GetGlassViews(content_view);
   ASSERT_NE(glass_view, nil);
 
-  const auto top_element_info = browser_view->GetFrameElementInfo();
-  int expected_height = top_element_info.top_area_height() +
-                        top_element_info.toolbar_preferred_height;
+  const int expected_height = GetExpectedTopChromeGlassHeight(browser_view);
 
   EXPECT_EQ(NSHeight(glass_view.frame), expected_height);
   EXPECT_LT(NSHeight(glass_view.frame), NSHeight(content_view.bounds));
   EXPECT_EQ(NSMaxY(glass_view.frame), NSMaxY(content_view.bounds));
   EXPECT_EQ(NSWidth(glass_view.frame), NSWidth(content_view.bounds));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest,
+                       GetGlassFrameBoundsHorizontalTabs) {
+  if (!features::IsGlassFrameEnabled()) {
+    GTEST_SKIP() << "Glass frame feature is disabled.";
+  }
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::Widget* widget = browser_view->GetWidget();
+  NSWindow* ns_window = widget->GetNativeWindow().GetNativeNSWindow();
+  NSView* content_view = [ns_window contentView];
+
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  auto* native_widget = static_cast<BrowserNativeWidgetMac*>(
+      browser_view->browser_widget()->browser_native_widget());
+  ASSERT_TRUE(native_widget);
+
+  const int expected_height = GetExpectedTopChromeGlassHeight(browser_view);
+  const int content_width = static_cast<int>(content_view.bounds.size.width);
+
+  for (bool is_rtl : {false, true}) {
+    base::i18n::ScopedRTLForTesting scoped_rtl(is_rtl);
+    EXPECT_EQ(native_widget->GetGlassFrameBounds(),
+              gfx::Rect(0, 0, content_width, expected_height));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest,
@@ -480,4 +520,70 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacVerticalTabsGlassTest,
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return !controller->IsCollapsed(); }));
   EXPECT_EQ(NSWidth(glass_view.frame), expected_uncollapsed_width);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacVerticalTabsGlassTest,
+                       GetGlassFrameBoundsVerticalTabs) {
+  if (!features::IsGlassFrameEnabled()) {
+    GTEST_SKIP() << "Glass frame feature is disabled.";
+  }
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::Widget* widget = browser_view->GetWidget();
+  NSWindow* ns_window = widget->GetNativeWindow().GetNativeNSWindow();
+  NSView* content_view = [ns_window contentView];
+
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  auto* native_widget = static_cast<BrowserNativeWidgetMac*>(
+      browser_view->browser_widget()->browser_native_widget());
+  ASSERT_TRUE(native_widget);
+
+  auto* const controller =
+      tabs::VerticalTabStripStateController::From(browser());
+  ASSERT_NE(controller, nullptr);
+
+  const int corner_padding = GetGlassCornerPadding();
+  const int expected_uncollapsed_width =
+      controller->GetUncollapsedWidth() + corner_padding;
+  const int expected_collapsed_width =
+      VerticalTabStripRegionView::kCollapsedWidth + corner_padding;
+  const int content_width = static_cast<int>(content_view.bounds.size.width);
+  const int content_height = static_cast<int>(content_view.bounds.size.height);
+
+  // Uncollapsed state in LTR layout (positioned at the leading left edge).
+  {
+    base::i18n::ScopedRTLForTesting scoped_rtl(false);
+    EXPECT_EQ(native_widget->GetGlassFrameBounds(),
+              gfx::Rect(0, 0, expected_uncollapsed_width, content_height));
+  }
+
+  // Uncollapsed state in RTL layout (positioned at the leading right edge).
+  {
+    base::i18n::ScopedRTLForTesting scoped_rtl(true);
+    const int expected_x = content_width - expected_uncollapsed_width;
+    EXPECT_EQ(
+        native_widget->GetGlassFrameBounds(),
+        gfx::Rect(expected_x, 0, expected_uncollapsed_width, content_height));
+  }
+
+  // Collapsed state in LTR layout.
+  controller->RequestCollapse(true);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return controller->IsCollapsed(); }));
+
+  {
+    base::i18n::ScopedRTLForTesting scoped_rtl(false);
+    EXPECT_EQ(native_widget->GetGlassFrameBounds(),
+              gfx::Rect(0, 0, expected_collapsed_width, content_height));
+  }
+
+  // Collapsed state in RTL layout.
+  {
+    base::i18n::ScopedRTLForTesting scoped_rtl(true);
+    const int expected_x = content_width - expected_collapsed_width;
+    EXPECT_EQ(
+        native_widget->GetGlassFrameBounds(),
+        gfx::Rect(expected_x, 0, expected_collapsed_width, content_height));
+  }
 }
