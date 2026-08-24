@@ -42,3 +42,24 @@ stealing focus on the desktop.
   Xvfb :4 -screen 0 1024x768x24 &
   DISPLAY=:4 run_web_tests.py
   ```
+
+## Running Pixel Tests on Windows
+
+Agents on Windows run commands in a non-interactive shell, which causes
+pixel tests to fail with unexpected errors or timeouts. You cannot run
+pixel tests yourself. Instead, point the user to the command they should
+run themselves in their own terminal. The command MUST include:
+`--browser-ui-tests-verify-pixels --enable-pixel-output-in-tests`
+`--test-launcher-timeout=120000`
+
+Example:
+```powershell
+.\out\Default\browser_tests.exe --gtest_filter=TestName.* `
+  --browser-ui-tests-verify-pixels `
+  --enable-pixel-output-in-tests `
+  --test-launcher-timeout=120000 `
+  --force-device-scale-factor=1
+```
+
+
+
