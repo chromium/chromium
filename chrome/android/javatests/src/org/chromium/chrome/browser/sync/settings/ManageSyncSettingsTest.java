@@ -1672,7 +1672,8 @@ public class ManageSyncSettingsTest {
 
     @Test
     @SmallTest
-    public void testSearchPersonalizationAndLinking_signedIn() {
+    public void testSearchPersonalizationAndLinking_signedIn_nonEea() {
+        when(mRegionalCapabilities.isInEeaCountry()).thenReturn(false);
         mSettingsSearchTestRule.startSettingsActivity();
         mSyncTestRule.setUpAccountAndSignInForTesting();
 
@@ -1689,6 +1690,29 @@ public class ManageSyncSettingsTest {
                 .check(matches(isDisplayed()));
 
         onView(highlighted(withText(R.string.sign_in_personalize_google_services_title)))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void testSearchPersonalizationAndLinking_signedIn_eea() {
+        when(mRegionalCapabilities.isInEeaCountry()).thenReturn(true);
+        mSettingsSearchTestRule.startSettingsActivity();
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+
+        onView(withId(R.id.search_box)).perform(click());
+        onView(withId(R.id.search_query)).perform(replaceText("linking"));
+
+        onViewWaiting(withText(R.string.sign_in_personalize_google_services_title_eea))
+                .perform(click());
+
+        onView(
+                        allOf(
+                                withText(R.string.account_settings_title),
+                                withParent(withId(R.id.action_bar))))
+                .check(matches(isDisplayed()));
+
+        onView(highlighted(withText(R.string.sign_in_personalize_google_services_title_eea)))
                 .check(matches(isDisplayed()));
     }
 
