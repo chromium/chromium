@@ -160,13 +160,13 @@ class MockAutofillAiAccessManager : public AutofillAiAccessManager {
               (override));
 };
 
-class AtMemoryManagerTest : public Test,
-                            public WithTestAutofillClientDriverManager<
-                                NiceMock<MockAutofillClient>,
-                                TestAutofillDriver,
-                                NiceMock<MockBrowserAutofillManager>> {
+class AtMemoryManagerTestBase : public Test,
+                                public WithTestAutofillClientDriverManager<
+                                    NiceMock<MockAutofillClient>,
+                                    TestAutofillDriver,
+                                    NiceMock<MockBrowserAutofillManager>> {
  public:
-  AtMemoryManagerTest() {
+  AtMemoryManagerTestBase() {
     // AutofillAiWalletPrivatePasses is default enabled on most platforms and
     // affects how sensitive attributes are masked.
     feature_list_.InitWithFeatures(
@@ -282,6 +282,7 @@ class AtMemoryManagerTest : public Test,
           parent_suggestion_metadata = std::nullopt,
       ukm::SourceId ukm_source_id = ukm::kInvalidSourceId) {
     auto [form_id, field_id] = SeeForm();
+    manager().GetInitialStateForField(field_id);
     manager().OnPopupShown(form_id, field_id, trigger_source,
                            parent_suggestion_metadata, update_callback_.Get(),
                            ukm_source_id);
@@ -303,6 +304,18 @@ class AtMemoryManagerTest : public Test,
   std::unique_ptr<
       NiceMock<personal_context::MockPersonalContextEligibilityService>>
       mock_personal_context_service_;
+};
+
+class AtMemoryManagerTest : public AtMemoryManagerTestBase,
+                            public WithParamInterface<bool> {
+ public:
+  AtMemoryManagerTest() {
+    search_statefulness_feature_.InitWithFeatureState(
+        features::kAutofillAtMemorySearchStatefulness, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList search_statefulness_feature_;
 };
 
 // Matches a Suggestion of type `kAtMemorySearchResult` with the given
@@ -363,7 +376,7 @@ Matcher<Suggestion> EqualsSuggestionWithManageAddressFooter(
 
 // Tests that OnFilterChanged with a non-empty filter generates the search
 // affordance suggestion and does NOT trigger QueryService::Query.
-TEST_F(AtMemoryManagerTest, OnFilterChanged_GeneratesSearchAffordance) {
+TEST_P(AtMemoryManagerTest, OnFilterChanged_GeneratesSearchAffordance) {
   SeeFormAndShowPopup();
 
   EXPECT_CALL(mock_query_service(), Query).Times(0);
@@ -391,7 +404,7 @@ TEST_F(AtMemoryManagerTest, OnFilterChanged_GeneratesSearchAffordance) {
 
 // Tests that `OnFilterChanged` when offline generates the no connection
 // suggestion.
-TEST_F(AtMemoryManagerTest,
+TEST_P(AtMemoryManagerTest,
        OnFilterChanged_Offline_GeneratesNoConnectionSuggestion) {
   net::test::ScopedMockNetworkChangeNotifier notifier;
   notifier.mock_network_change_notifier()->SetConnectionType(
@@ -425,7 +438,7 @@ TEST_F(AtMemoryManagerTest,
 
 // Tests that OnFilterChanged with a non-empty filter generates an AI disclosure
 // on Desktop when personal context has already been shown/acknowledged.
-TEST_F(AtMemoryManagerTest, OnFilterChanged_GeneratesDisclosureWhenEnabled) {
+TEST_P(AtMemoryManagerTest, OnFilterChanged_GeneratesDisclosureWhenEnabled) {
   SeeFormAndShowPopup();
 
   autofill_client()
@@ -445,7 +458,7 @@ TEST_F(AtMemoryManagerTest, OnFilterChanged_GeneratesDisclosureWhenEnabled) {
 
 // Tests that OnFilterChanged with a non-empty filter does not generate an AI
 // disclosure on Desktop when the personal context notice is pending.
-TEST_F(AtMemoryManagerTest, OnFilterChanged_NoDisclosureWhenNoticePending) {
+TEST_P(AtMemoryManagerTest, OnFilterChanged_NoDisclosureWhenNoticePending) {
   SeeFormAndShowPopup();
 
   autofill_client()
@@ -461,7 +474,7 @@ TEST_F(AtMemoryManagerTest, OnFilterChanged_NoDisclosureWhenNoticePending) {
 }
 
 // Tests that OnFilterChanged with an empty filter clears all suggestions.
-TEST_F(AtMemoryManagerTest, OnFilterChanged_EmptyFilterClearsSuggestions) {
+TEST_P(AtMemoryManagerTest, OnFilterChanged_EmptyFilterClearsSuggestions) {
   SeeFormAndShowPopup();
 
   EXPECT_CALL(
@@ -474,7 +487,7 @@ TEST_F(AtMemoryManagerTest, OnFilterChanged_EmptyFilterClearsSuggestions) {
 // Tests that OnSearchSubmitted triggers full search, shows the fetching
 // suggestion, and successfully updates suggestions with the results once they
 // arrive.
-TEST_F(AtMemoryManagerTest,
+TEST_P(AtMemoryManagerTest,
        OnSearchSubmitted_TriggersQueryServiceAndClearsSuggestions) {
   SeeFormAndShowPopup();
 
@@ -513,7 +526,7 @@ TEST_F(AtMemoryManagerTest,
 
 // Tests that when a search result has an empty type name and no metadata, the
 // generated suggestion has no labels.
-TEST_F(AtMemoryManagerTest, OnSearchSubmitted_SchemalessResultHasEmptyLabels) {
+TEST_P(AtMemoryManagerTest, OnSearchSubmitted_SchemalessResultHasEmptyLabels) {
   SeeFormAndShowPopup();
 
   std::vector<Suggestion> final_suggestions;
@@ -535,7 +548,7 @@ TEST_F(AtMemoryManagerTest, OnSearchSubmitted_SchemalessResultHasEmptyLabels) {
 // Tests that when a search result has
 // `MemoryDataType::kUnknown`, the generated suggestion
 // uses the entry's type name for the label.
-TEST_F(AtMemoryManagerTest,
+TEST_P(AtMemoryManagerTest,
        OnSearchSubmitted_UnknownTypeWithTypeName_UsesTypeNameInLabel) {
   SeeFormAndShowPopup();
 
@@ -561,7 +574,7 @@ TEST_F(AtMemoryManagerTest,
 // the main suggestion text and payload value retain the full date fill value
 // ("2024-06-07 3:30 PM"), while metadata labels use the short "MMM d" format
 // ("Jun 7"). Also verifies the filled value passed to the Autofill driver.
-TEST_F(AtMemoryManagerTest, FlightReservation_ValueAndLabelFormatting) {
+TEST_P(AtMemoryManagerTest, FlightReservation_ValueAndLabelFormatting) {
   auto [form_id, field_id] = SeeFormAndShowPopup();
 
   personal_context::proto::TypedValue datetime_typed;
@@ -621,7 +634,7 @@ TEST_F(AtMemoryManagerTest, FlightReservation_ValueAndLabelFormatting) {
 
 // Tests that Autofill-sourced data displays ONLY the local settings manage link
 // (e.g. kManageAddress) and NOT the "Manage enhanced autofill" footer.
-TEST_F(AtMemoryManagerTest,
+TEST_P(AtMemoryManagerTest,
        OnSearchSubmitted_AutofillSource_ShowsLocalManageFooter) {
   SeeFormAndShowPopup();
 
@@ -643,8 +656,7 @@ TEST_F(AtMemoryManagerTest,
                   MemoryDataType::kAddressFull)));
 }
 
-TEST_F(AtMemoryManagerTest, OnSearchSubmitted_AutofillSource_Flight_Footer) {
-
+TEST_P(AtMemoryManagerTest, OnSearchSubmitted_AutofillSource_Flight_Footer) {
   SeeFormAndShowPopup();
 
   std::vector<Suggestion> final_suggestions;
@@ -672,7 +684,7 @@ TEST_F(AtMemoryManagerTest, OnSearchSubmitted_AutofillSource_Flight_Footer) {
 
 // Tests that Autofill-sourced data of unknown type does not display any manage
 // information footer suggestion.
-TEST_F(AtMemoryManagerTest, OnSearchSubmitted_AutofillSource_Unknown_NoFooter) {
+TEST_P(AtMemoryManagerTest, OnSearchSubmitted_AutofillSource_Unknown_NoFooter) {
   SeeFormAndShowPopup();
 
   std::vector<Suggestion> final_suggestions;
@@ -694,7 +706,7 @@ TEST_F(AtMemoryManagerTest, OnSearchSubmitted_AutofillSource_Unknown_NoFooter) {
 // Tests that Personal Context-sourced data (e.g. from Gmail) displays the
 // attribution info, separator, and the "Manage enhanced autofill" footer (but
 // not local settings).
-TEST_F(AtMemoryManagerTest,
+TEST_P(AtMemoryManagerTest,
        OnSearchSubmitted_AISource_ShowsManageEnhancedAutofillFooter) {
   SeeFormAndShowPopup();
 
@@ -718,7 +730,7 @@ TEST_F(AtMemoryManagerTest,
 
 // Tests that data with no source defaults to displaying the Gemini attribution
 // and "Manage enhanced autofill" footer.
-TEST_F(
+TEST_P(
     AtMemoryManagerTest,
     OnSearchSubmitted_NoSource_ShowsGeminiAttributionAndManageEnhancedAutofillFooter) {
   SeeFormAndShowPopup();
@@ -741,7 +753,7 @@ TEST_F(
 
 // Tests that when the user is offline, the manager displays the no connection
 // suggestion.
-TEST_F(AtMemoryManagerTest,
+TEST_P(AtMemoryManagerTest,
        OnSearchSubmitted_QueryServiceReturnsNoConnectionFailure) {
   SeeFormAndShowPopup();
 
@@ -764,7 +776,7 @@ TEST_F(AtMemoryManagerTest,
 // Tests that when filling an attribute (e.g. Passport Number), the manager
 // fetches the unmasked entity instance from AutofillAiAccessManager and fills
 // the unmasked attribute value correctly.
-TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
+TEST_P(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
   base::HistogramTester histogram_tester;
   EntityInstance passport = test::GetPassportEntityInstanceWithRandomGuid();
   AddOrUpdateEntityInstance(passport);
@@ -850,7 +862,7 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
 // Tests that when filling a sensitive Personal Context entry, the
 // `AtMemoryQueryService` authenticates, fetches the unmasked value from
 // `AtMemoryQueryService`, and fills it.
-TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_Success) {
+TEST_P(AtMemoryManagerTest, FillSensitivePersonalContextData_Success) {
   base::HistogramTester histogram_tester;
   auto [form_id, field_id] = SeeFormAndShowPopup();
 
@@ -918,7 +930,7 @@ TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_Success) {
 // Tests that when fetching sensitive Personal Context data is pending
 // asynchronously and the user clicks away (hides popup), the field is still
 // filled when the fetch completes and metrics are recorded correctly.
-TEST_F(AtMemoryManagerTest,
+TEST_P(AtMemoryManagerTest,
        FillSensitivePersonalContextData_PendingFetch_UserClicksAway) {
   base::HistogramTester histogram_tester;
   auto [form_id, field_id] = SeeFormAndShowPopup();
@@ -983,7 +995,7 @@ TEST_F(AtMemoryManagerTest,
 
 // Tests that when fetching the unmasked Personal Context value fails, the
 // manager triggers the fetch error notification and does not fill any value.
-TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_FetchFailed) {
+TEST_P(AtMemoryManagerTest, FillSensitivePersonalContextData_FetchFailed) {
   base::HistogramTester histogram_tester;
   auto [form_id, field_id] = SeeFormAndShowPopup();
 
@@ -1026,7 +1038,7 @@ TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_FetchFailed) {
 // Tests that when fetching the unmasked Personal Context value fails due to
 // reauth in progress, the manager triggers the fetch error notification with
 // a specific error message override.
-TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_ReauthInProgress) {
+TEST_P(AtMemoryManagerTest, FillSensitivePersonalContextData_ReauthInProgress) {
   base::HistogramTester histogram_tester;
   auto [form_id, field_id] = SeeFormAndShowPopup();
 
@@ -1064,7 +1076,7 @@ TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_ReauthInProgress) {
 
 // Tests that when fetching the unmasked entity instance fails, the manager
 // triggers the fetch failure notification and does not fill any value.
-TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
+TEST_P(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
   base::HistogramTester histogram_tester;
   EntityInstance passport = test::GetPassportEntityInstanceWithRandomGuid();
   AddOrUpdateEntityInstance(passport);
@@ -1128,7 +1140,7 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
 
 // Tests that when filling a sensitive Credit Card, the manager fetches the
 // unmasked card from CreditCardAccessManager, fills it, and records card use.
-TEST_F(AtMemoryManagerTest, FillCreditCard_Success) {
+TEST_P(AtMemoryManagerTest, FillCreditCard_Success) {
   base::HistogramTester histogram_tester;
   CreditCard card = test::GetCreditCard();
   card.set_guid(test::MakeGuid(1));
@@ -1195,7 +1207,7 @@ TEST_F(AtMemoryManagerTest, FillCreditCard_Success) {
   EXPECT_EQ(updated_card->usage_history().use_count(), initial_use_count + 1);
 }
 // Tests that fetching an unmasked IBAN fills the field, and records metrics.
-TEST_F(AtMemoryManagerTest, FillIban_Success) {
+TEST_P(AtMemoryManagerTest, FillIban_Success) {
   base::HistogramTester histogram_tester;
   Iban iban = test::GetLocalIban();
   autofill_client()
@@ -1254,7 +1266,7 @@ TEST_F(AtMemoryManagerTest, FillIban_Success) {
 
 // Tests that SPII entries and metadata are filtered out from the search
 // results when the context is insecure.
-TEST_F(AtMemoryManagerTest, FiltersSpiiInInsecureContext) {
+TEST_P(AtMemoryManagerTest, FiltersSpiiInInsecureContext) {
   // Setting an HTTP URL causes `TestAutofillClient::IsContextSecure()` to
   // return false, simulating an insecure page context.
   autofill_client().set_last_committed_primary_main_frame_url(
@@ -1305,7 +1317,7 @@ TEST_F(AtMemoryManagerTest, FiltersSpiiInInsecureContext) {
 
 // Tests that SPII entries and metadata are filtered out from the search
 // results when the device does not support OS reauth, even in a secure context.
-TEST_F(AtMemoryManagerTest, FiltersSpiiWhenDeviceReauthNotSupported) {
+TEST_P(AtMemoryManagerTest, FiltersSpiiWhenDeviceReauthNotSupported) {
   autofill_client().set_supports_device_reauth(false);
 
   // The search results delivered by the server.
@@ -1355,7 +1367,7 @@ TEST_F(AtMemoryManagerTest, FiltersSpiiWhenDeviceReauthNotSupported) {
 
 // Tests that SPII entries are retained in the search results when the device
 // does not support OS reauth, but the debug feature is enabled.
-TEST_F(AtMemoryManagerTest,
+TEST_P(AtMemoryManagerTest,
        KeepsSpiiWhenDeviceReauthNotSupportedWithDebugFlag) {
   base::test::ScopedFeatureList debug_features(
       features::debug::kAtMemoryNoDeviceReauthCheck);
@@ -1388,7 +1400,7 @@ TEST_F(AtMemoryManagerTest,
 
 // Tests that SPII entries and metadata are retained in the search results
 // when the context is secure.
-TEST_F(AtMemoryManagerTest, KeepsSpiiInSecureContext) {
+TEST_P(AtMemoryManagerTest, KeepsSpiiInSecureContext) {
   SeeFormAndShowPopup();
 
   base::RepeatingCallback<void(MemorySearchResults)> search_callback;
@@ -1447,11 +1459,11 @@ struct AtMemoryManagerFilterTestCase {
 };
 
 class AtMemoryManagerPolicyTest
-    : public AtMemoryManagerTest,
+    : public AtMemoryManagerTestBase,
       public WithParamInterface<AtMemoryManagerFilterTestCase> {};
 
 class AtMemoryManagerPrefTest
-    : public AtMemoryManagerTest,
+    : public AtMemoryManagerTestBase,
       public WithParamInterface<AtMemoryManagerFilterTestCase> {};
 
 // Tests that suggestions are filtered out when blocked by policy.
@@ -1588,7 +1600,7 @@ INSTANTIATE_TEST_SUITE_P(
                MemoryEntrySourceType::kGmail, true}));
 
 // Tests that non-SPII data fills correctly and records the funnel metrics.
-TEST_F(AtMemoryManagerTest, FillNonSensitiveData_Success) {
+TEST_P(AtMemoryManagerTest, FillNonSensitiveData_Success) {
   base::HistogramTester histogram_tester;
   auto [form_id, field_id] = SeeFormAndShowPopup();
 
@@ -1644,7 +1656,7 @@ TEST_F(AtMemoryManagerTest, FillNonSensitiveData_Success) {
 }
 
 // Tests that funnel metrics are recorded correctly even if multiple are shown.
-TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
+TEST_P(AtMemoryManagerTest, FillOverlappingPopups) {
   base::HistogramTester histogram_tester;
 
   // 1. Show Popup 1.
@@ -1696,6 +1708,7 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
   // 4. Show Popup 2 (overlapping with the pending async fill of Popup 1).
   base::MockCallback<AtMemoryManager::UpdateSuggestionsCallback>
       update_callback_2;
+  manager().GetInitialStateForField(field_id);
   manager().OnPopupShown(
       form_id, field_id, AutofillSuggestionTriggerSource::kAtMemoryContextMenu,
       std::nullopt, update_callback_2.Get(), ukm::kInvalidSourceId);
@@ -1740,7 +1753,7 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
 
 // Tests that the personal context notice is appended when the user needs to see
 // the notice.
-TEST_F(AtMemoryManagerTest, PersonalContext_AppendsNoticeSuggestion) {
+TEST_P(AtMemoryManagerTest, PersonalContext_AppendsNoticeSuggestion) {
   autofill_client()
       .GetPersonalContextFirstRunService()
       ->set_should_show_at_memory_notice(true);
@@ -1763,7 +1776,7 @@ TEST_F(AtMemoryManagerTest, PersonalContext_AppendsNoticeSuggestion) {
 // Tests that before search results are returned (when only the search
 // affordance suggestion to start a query is shown), the personal context notice
 // is appended at the end (after the search affordance suggestion).
-TEST_F(AtMemoryManagerTest,
+TEST_P(AtMemoryManagerTest,
        PersonalContext_NoticePositioning_SearchAffordance) {
   autofill_client()
       .GetPersonalContextFirstRunService()
@@ -1787,7 +1800,7 @@ TEST_F(AtMemoryManagerTest,
 
 // Tests that after search results are returned, the personal context notice
 // is prepended at the top (before the search result suggestions).
-TEST_F(AtMemoryManagerTest, PersonalContext_NoticePositioning_SearchResults) {
+TEST_P(AtMemoryManagerTest, PersonalContext_NoticePositioning_SearchResults) {
   autofill_client()
       .GetPersonalContextFirstRunService()
       ->set_should_show_at_memory_notice(true);
@@ -1821,15 +1834,11 @@ TEST_F(AtMemoryManagerTest, PersonalContext_NoticePositioning_SearchResults) {
 // Tests that during the fetching state (while search is in progress), the UI
 // receives the `kAtMemoryFetching` meta-suggestion followed by a separator and
 // the notice card if active.
-TEST_F(AtMemoryManagerTest, FetchingState_Suggestions_NoticeActive) {
+TEST_P(AtMemoryManagerTest, FetchingState_Suggestions_NoticeActive) {
   autofill_client()
       .GetPersonalContextFirstRunService()
       ->set_should_show_at_memory_notice(true);
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      update_callback_.Get(), ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   EXPECT_CALL(
       update_callback_,
@@ -1848,16 +1857,12 @@ TEST_F(AtMemoryManagerTest, FetchingState_Suggestions_NoticeActive) {
 
 // Tests that during the fetching state when the notice has been accepted,
 // the UI receives only `kAtMemoryFetching` meta-suggestion.
-TEST_F(AtMemoryManagerTest, FetchingState_Suggestions_NoticeAccepted) {
+TEST_P(AtMemoryManagerTest, FetchingState_Suggestions_NoticeAccepted) {
   autofill_client()
       .GetPersonalContextFirstRunService()
       ->set_should_show_at_memory_notice(false);
 
-  auto [form_id, field_id] = SeeForm();
-  manager().OnPopupShown(
-      form_id, field_id,
-      AutofillSuggestionTriggerSource::kAtMemoryTriggerString, std::nullopt,
-      update_callback_.Get(), ukm::kInvalidSourceId);
+  SeeFormAndShowPopup();
 
   std::vector<Suggestion> suggestions;
   EXPECT_CALL(update_callback_,
@@ -1871,7 +1876,7 @@ TEST_F(AtMemoryManagerTest, FetchingState_Suggestions_NoticeAccepted) {
 
 // Tests that during search execution, the fetching suggestion message iterates
 // over all configured strings in a loop at each interval.
-TEST_F(AtMemoryManagerTest,
+TEST_P(AtMemoryManagerTest,
        FetchingState_CyclesThroughFetchingStringsAndLoops) {
   SeeFormAndShowPopup();
 
@@ -1922,7 +1927,7 @@ TEST_F(AtMemoryManagerTest,
 }
 
 // Tests that when search results arrive, the fetching timer is cancelled.
-TEST_F(AtMemoryManagerTest, FetchingState_TimerStopsWhenResultsReceived) {
+TEST_P(AtMemoryManagerTest, FetchingState_TimerStopsWhenResultsReceived) {
   SeeFormAndShowPopup();
 
   base::RepeatingCallback<void(MemorySearchResults)> search_callback;
@@ -1965,7 +1970,7 @@ TEST_F(AtMemoryManagerTest, FetchingState_TimerStopsWhenResultsReceived) {
 }
 
 // Tests that when popup is hidden, the fetching timer is stopped.
-TEST_F(AtMemoryManagerTest, FetchingState_TimerStopsOnPopupHidden) {
+TEST_P(AtMemoryManagerTest, FetchingState_TimerStopsOnPopupHidden) {
   SeeFormAndShowPopup();
 
   EXPECT_CALL(mock_query_service(),
@@ -1989,7 +1994,7 @@ TEST_F(AtMemoryManagerTest, FetchingState_TimerStopsOnPopupHidden) {
 
 // Tests that when Glic is enabled and search returns `kUnsupportedQuery`,
 // the unsupported query suggestion is returned.
-TEST_F(AtMemoryManagerTest,
+TEST_P(AtMemoryManagerTest,
        OnSearchSubmitted_UnsupportedQuery_GlicEnabled_FallbackSuggestion) {
   base::HistogramTester histogram_tester;
 
@@ -2013,7 +2018,7 @@ TEST_F(AtMemoryManagerTest,
 
 // Tests that when Glic is disabled and search returns `kUnsupportedQuery`,
 // it falls back to the no data suggestion.
-TEST_F(AtMemoryManagerTest,
+TEST_P(AtMemoryManagerTest,
        OnSearchSubmitted_UnsupportedQuery_GlicDisabled_NoDataSuggestion) {
   autofill_client().set_is_glic_enabled(false);
   SeeFormAndShowPopup();
@@ -2033,7 +2038,7 @@ TEST_F(AtMemoryManagerTest,
 
 // Tests that search query completion does not log the QueryCompleted UMA
 // metric on partial responses.
-TEST_F(AtMemoryManagerTest,
+TEST_P(AtMemoryManagerTest,
        OnSearchSubmitted_DoesNotLogQueryCompletedMetricsOnPartialResponse) {
   base::HistogramTester histogram_tester;
   std::vector<Suggestion> final_suggestions;
@@ -2052,7 +2057,7 @@ TEST_F(AtMemoryManagerTest,
 
 // Tests that search query completion logs the QueryCompleted UMA metric
 // correctly on final responses.
-TEST_F(AtMemoryManagerTest,
+TEST_P(AtMemoryManagerTest,
        OnSearchSubmitted_LogsQueryCompletedMetricsOnFinalResponse) {
   base::HistogramTester histogram_tester;
   std::vector<Suggestion> final_suggestions;
@@ -2075,7 +2080,7 @@ TEST_F(AtMemoryManagerTest,
 // suggestions list UI, while keeping the raw value in its payload.
 // Also verifies that previewing the suggestion uses the obfuscated value,
 // while filling uses the raw value directly.
-TEST_F(AtMemoryManagerTest, RemoteSensitiveMainValue_Obfuscated) {
+TEST_P(AtMemoryManagerTest, RemoteSensitiveMainValue_Obfuscated) {
   auto [form_id, field_id] = SeeFormAndShowPopup();
   // Create an entry where the primary value is sensitive and metadata is
   // non-sensitive.
@@ -2135,7 +2140,7 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMainValue_Obfuscated) {
 
 // Tests that CVC (`kCreditCardSecurityCode`) in metadata is excluded from the
 // main suggestion labels.
-TEST_F(AtMemoryManagerTest, CvcMetadata_ExcludedFromLabels) {
+TEST_P(AtMemoryManagerTest, CvcMetadata_ExcludedFromLabels) {
   SeeFormAndShowPopup();
 
   // Create a credit card entry with CVC and Name in metadata.
@@ -2171,7 +2176,7 @@ TEST_F(AtMemoryManagerTest, CvcMetadata_ExcludedFromLabels) {
 // (e.g. `kFlightReservationFlightNumber`), the main suggestion label uses the
 // general Entity name, while child suggestions (metadata entries) still use
 // attribute names.
-TEST_F(AtMemoryManagerTest,
+TEST_P(AtMemoryManagerTest,
        AutofillAiAttribute_UsesEntityNameForMainSuggestionLabel) {
   SeeFormAndShowPopup();
 
@@ -2207,7 +2212,7 @@ TEST_F(AtMemoryManagerTest,
 // and in the child flyout menu, while keeping the raw value in its payload.
 // Also verifies that previewing the child suggestion uses the obfuscated value,
 // while filling uses the raw value directly.
-TEST_F(AtMemoryManagerTest, RemoteSensitiveMetadata_Obfuscated) {
+TEST_P(AtMemoryManagerTest, RemoteSensitiveMetadata_Obfuscated) {
   auto [form_id, field_id] = SeeFormAndShowPopup();
   // Create an entry where the primary value is non-sensitive and metadata is
   // sensitive.
@@ -2279,7 +2284,7 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMetadata_Obfuscated) {
                                       final_suggestions[0].children[0]);
 }
 
-TEST_F(AtMemoryManagerTest, OnPopupShown_SubPopup_DoesNotResetRecorder) {
+TEST_P(AtMemoryManagerTest, OnPopupShown_SubPopup_DoesNotResetRecorder) {
   base::HistogramTester histogram_tester;
 
   // 1. Show root popup. This should initialize the metrics recorder.
@@ -2303,7 +2308,7 @@ TEST_F(AtMemoryManagerTest, OnPopupShown_SubPopup_DoesNotResetRecorder) {
                                       1);
 }
 
-TEST_F(AtMemoryManagerTest, OnPopupShown_PassesSignaturesToMetricsRecorder) {
+TEST_P(AtMemoryManagerTest, OnPopupShown_PassesSignaturesToMetricsRecorder) {
   auto [form_id, field_id] = SeeFormAndShowPopup();
   auto [form_structure, autofill_field] =
       autofill_manager().FindFormAndField(form_id, field_id);
@@ -2320,7 +2325,7 @@ TEST_F(AtMemoryManagerTest, OnPopupShown_PassesSignaturesToMetricsRecorder) {
             autofill_field->GetFieldSignature());
 }
 
-TEST_F(AtMemoryManagerTest, FillNonSensitiveCreditCard) {
+TEST_P(AtMemoryManagerTest, FillNonSensitiveCreditCard) {
   base::HistogramTester histogram_tester;
   CreditCard card = test::GetCreditCard();
   card.set_guid(test::MakeGuid(1));
@@ -2376,7 +2381,7 @@ TEST_F(AtMemoryManagerTest, FillNonSensitiveCreditCard) {
   EXPECT_EQ(updated_card->usage_history().use_count(), initial_use_count + 1);
 }
 
-TEST_F(AtMemoryManagerTest, FillNonSensitiveAutofillAi) {
+TEST_P(AtMemoryManagerTest, FillNonSensitiveAutofillAi) {
   base::HistogramTester histogram_tester;
   EntityInstance passport = test::GetPassportEntityInstanceWithRandomGuid();
   AddOrUpdateEntityInstance(passport);
@@ -2428,7 +2433,7 @@ TEST_F(AtMemoryManagerTest, FillNonSensitiveAutofillAi) {
 
 enum class SourceScenario { kNoSources, kAutofillOnly, kGmailOnly, kMixed };
 
-class AtMemoryManagerIconTest : public AtMemoryManagerTest,
+class AtMemoryManagerIconTest : public AtMemoryManagerTestBase,
                                 public WithParamInterface<SourceScenario> {
  public:
   SourceScenario scenario() const { return GetParam(); }
@@ -2523,7 +2528,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                                 SourceScenario::kGmailOnly,
                                 SourceScenario::kMixed));
 
-TEST_F(AtMemoryManagerTest, OnSearchSubmitted_PassesUrlAndTitleToQueryService) {
+TEST_P(AtMemoryManagerTest, OnSearchSubmitted_PassesUrlAndTitleToQueryService) {
   SeeFormAndShowPopup();
 
   EXPECT_CALL(mock_query_service(),
@@ -2536,7 +2541,7 @@ TEST_F(AtMemoryManagerTest, OnSearchSubmitted_PassesUrlAndTitleToQueryService) {
 
 // Tests that receiving additional `OnPopupShown` events is safe even after
 // starting a fill.
-TEST_F(AtMemoryManagerTest, OnPopupShown_SubPopup_NoCrashWhenRecorderMovedOut) {
+TEST_P(AtMemoryManagerTest, OnPopupShown_SubPopup_NoCrashWhenRecorderMovedOut) {
   // 1. Show root popup to initialize the recorder.
   auto [form_id, field_id] = SeeFormAndShowPopup();
   ASSERT_NE(test_api(manager()).at_memory_metrics_recorder(), nullptr);
@@ -2564,13 +2569,14 @@ TEST_F(AtMemoryManagerTest, OnPopupShown_SubPopup_NoCrashWhenRecorderMovedOut) {
 
 // Tests that when a field is not in the cache, the target field origin
 // is used when filling sensitive data.
-TEST_F(AtMemoryManagerTest,
+TEST_P(AtMemoryManagerTest,
        FillSensitiveData_UncachedField_UsesTargetFieldOrigin) {
   // Form and field not added to autofill_manager() cache.
   FormGlobalId uncached_form_id = test::MakeFormGlobalId();
   FieldGlobalId uncached_field_id = test::MakeFieldGlobalId();
 
   manager().set_target_field_origin(form_origin());
+  manager().GetInitialStateForField(uncached_field_id);
   manager().OnPopupShown(
       uncached_form_id, uncached_field_id,
       AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
@@ -2608,11 +2614,12 @@ TEST_F(AtMemoryManagerTest,
 
 // Tests that when target field origin is opaque, filling sensitive data falls
 // back to the primary main frame origin.
-TEST_F(AtMemoryManagerTest,
+TEST_P(AtMemoryManagerTest,
        FillSensitiveData_OpaqueFieldOrigin_FallsBackToMainFrameOrigin) {
   FormGlobalId uncached_form_id = test::MakeFormGlobalId();
   FieldGlobalId uncached_field_id = test::MakeFieldGlobalId();
 
+  manager().GetInitialStateForField(uncached_field_id);
   manager().OnPopupShown(
       uncached_form_id, uncached_field_id,
       AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
@@ -2653,7 +2660,7 @@ TEST_F(AtMemoryManagerTest,
 // Tests that when search statefulness is enabled, search results are persisted
 // across popup hide and show on the same field, but reset when navigating to a
 // different field.
-TEST_F(AtMemoryManagerTest, SearchStatefulness_PersistsAndResetsState) {
+TEST_F(AtMemoryManagerTestBase, SearchStatefulness_PersistsAndResetsState) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillAtMemorySearchStatefulness};
 
@@ -2708,7 +2715,8 @@ TEST_F(AtMemoryManagerTest, SearchStatefulness_PersistsAndResetsState) {
 
 // Tests that when search statefulness is enabled and a suggestion is accepted,
 // the persisted state for the field is cleared.
-TEST_F(AtMemoryManagerTest, SearchStatefulness_SuggestionAcceptedResetsState) {
+TEST_F(AtMemoryManagerTestBase,
+       SearchStatefulness_SuggestionAcceptedResetsState) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillAtMemorySearchStatefulness};
 
@@ -2739,6 +2747,8 @@ TEST_F(AtMemoryManagerTest, SearchStatefulness_SuggestionAcceptedResetsState) {
   // After suggestion acceptance, state for field_id is reset.
   EXPECT_TRUE(manager().GetInitialStateForField(field_id).filter.empty());
 }
+
+INSTANTIATE_TEST_SUITE_P(All, AtMemoryManagerTest, testing::Bool());
 
 }  // namespace
 
