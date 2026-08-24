@@ -3232,6 +3232,11 @@ inline constexpr char kLensEnableSendUrlsInComposeboxesName[] =
 inline constexpr char kLensEnableSendUrlsInComposeboxesDescription[] =
     "Enables sending urls in AIM composeboxes.";
 
+inline constexpr char kLensComposeboxIdentityDelegationName[] =
+    "Lens Composebox Identity Delegation";
+inline constexpr char kLensComposeboxIdentityDelegationDescription[] =
+    "Enables identity delegation in the Lens composebox.";
+
 inline constexpr char kLensOverlayName[] = "Lens overlay";
 inline constexpr char kLensOverlayDescription[] =
     "Enables Lens search via an overlay on any page.";

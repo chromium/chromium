@@ -6632,6 +6632,11 @@
     "expiry_milestone": 165
   },
   {
+    "name": "lens-composebox-identity-delegation",
+    "owners": ["hujasonx@google.com"],
+    "expiry_milestone": 165
+  },
+  {
     "name": "lens-continuous-zoom-enabled",
     "owners": ["cmyang@google.com", "aruslan@google.com"],
     "expiry_milestone": 165

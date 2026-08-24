@@ -1244,6 +1244,11 @@ inline constexpr char kLensCameraUnbinnedCaptureFormatsPreferredName[] =
 inline constexpr char kLensCameraUnbinnedCaptureFormatsPreferredDescription[] =
     "When enabled, Lens camera prefers unbinned pixel formats.";
 
+inline constexpr char kLensComposeboxIdentityDelegationName[] =
+    "Lens Composebox Identity Delegation";
+inline constexpr char kLensComposeboxIdentityDelegationDescription[] =
+    "Enables identity delegation in the Lens composebox.";
+
 inline constexpr char kLensContinuousZoomEnabledName[] =
     "Enable Lens camera continuous zoom";
 inline constexpr char kLensContinuousZoomEnabledDescription[] =
