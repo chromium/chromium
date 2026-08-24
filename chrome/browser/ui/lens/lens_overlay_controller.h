@@ -248,6 +248,14 @@ class LensOverlayController : public OverlayBaseController,
       bool is_zero_prefix_suggestion,
       std::map<std::string, std::string> additional_query_params);
 
+  // Gets the invocation source enum.
+  lens::LensOverlayInvocationSource invocation_source() const {
+    return invocation_source_;
+  }
+
+  // Returns true if the CoBrowse panel with Lens overlay is enabled.
+  bool CoBrowsePanelWithLensOverlayEnabled() const;
+
   // Gets string for invocation source enum, used for logging metrics.
   std::string GetInvocationSourceString();
 
@@ -599,9 +607,6 @@ class LensOverlayController : public OverlayBaseController,
 
   // Returns true if the current query flow is in region-only mode.
   bool IsSelectedRegionOnlyMode();
-
-  // Returns true if the CoBrowse panel with Lens overlay is enabled.
-  bool CoBrowsePanelWithLensOverlayEnabled() const;
 
   // OverlayBaseController overrides:
   void RequestSyncClose(DismissalSource source) override;

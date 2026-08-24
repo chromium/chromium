@@ -24,6 +24,7 @@
 #include "chrome/grit/lens_untrusted_resources.h"
 #include "chrome/grit/lens_untrusted_resources_map.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -344,10 +345,25 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       "canShowTooltipFromPrefs",
       lens_overlay_start_count <= kNumTimesToShowCursorTooltips);
 
-  html_source->AddBoolean(
-      "enablePrivacyNotice",
-      lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
-          !MaybeIncrementPrivacyNoticeShownCountAndGrantPermissions(profile));
+  if (controller.invocation_source() ==
+          lens::LensOverlayInvocationSource::kOmniboxPopupButton ||
+      controller.CoBrowsePanelWithLensOverlayEnabled()) {
+    // Set both `enablePrivacyNotice` and `hasPermissionsForSession` to false so
+    // that the privacy notice will not appear but the overlay will still
+    // treat permissions as not granted (even if the user has granted
+    // permissions via other entrypoints). This is special behavior for these
+    // types of invocations only.
+    html_source->AddBoolean("enablePrivacyNotice", false);
+    html_source->AddBoolean("hasPermissionsForSession", false);
+  } else {
+    // Otherwise, calculate `enablePrivacyNotice` and set
+    // `hasPermissionsForSession` to its inverse.
+    bool enable_privacy_notice =
+        lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
+        !MaybeIncrementPrivacyNoticeShownCountAndGrantPermissions(profile);
+    html_source->AddBoolean("enablePrivacyNotice", enable_privacy_notice);
+    html_source->AddBoolean("hasPermissionsForSession", !enable_privacy_notice);
+  }
 
   ui::TrackedElementHandlerDocumentSingleton::Register(
       this,

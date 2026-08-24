@@ -247,7 +247,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
       hasPermissionsForSession: {
         type: Boolean,
         reflectToAttribute: true,
-        value: () => !loadTimeData.getBoolean('enablePrivacyNotice'),
+        value: () => loadTimeData.getBoolean('hasPermissionsForSession'),
       },
     };
   }
