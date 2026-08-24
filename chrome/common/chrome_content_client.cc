@@ -280,10 +280,11 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
 #endif
 
   schemes->standard_schemes.push_back(
-      chrome::kChromeExperimentalSiteTokenScheme);
-  schemes->secure_schemes.push_back(chrome::kChromeExperimentalSiteTokenScheme);
+      chrome::kChromeExperimentalSiteTokenProviderScheme);
+  schemes->secure_schemes.push_back(
+      chrome::kChromeExperimentalSiteTokenProviderScheme);
   schemes->cors_enabled_schemes.push_back(
-      chrome::kChromeExperimentalSiteTokenScheme);
+      chrome::kChromeExperimentalSiteTokenProviderScheme);
 }
 
 std::u16string ChromeContentClient::GetLocalizedString(int message_id) {

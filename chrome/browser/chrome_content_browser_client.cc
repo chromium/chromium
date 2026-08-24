@@ -6592,7 +6592,7 @@ void ChromeContentBrowserClient::
 
   if (base::FeatureList::IsEnabled(
           site_token_provider::features::kSiteTokenProviderEnabled)) {
-    factories->emplace(chrome::kChromeExperimentalSiteTokenScheme,
+    factories->emplace(chrome::kChromeExperimentalSiteTokenProviderScheme,
                        site_token_provider::SiteTokenURLLoaderFactory::Create(
                            render_process_id));
   }

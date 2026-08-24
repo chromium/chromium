@@ -83,7 +83,8 @@ base::expected<url::Origin, net::Error> ValidateAndGetInitiator(
   }
 
   // Verify URL scheme, host, and path/query.
-  if (!request.url.SchemeIs(chrome::kChromeExperimentalSiteTokenScheme) ||
+  if (!request.url.SchemeIs(
+          chrome::kChromeExperimentalSiteTokenProviderScheme) ||
       request.url.host() != chrome::kChromeExperimentalSiteTokenHost ||
       (!request.url.path().empty() && request.url.path() != "/") ||
       request.url.has_query() || request.url.has_ref()) {

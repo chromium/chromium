@@ -21,7 +21,7 @@ struct ResourceRequest;
 
 namespace site_token_provider {
 
-// URLLoaderFactory for the `chrome-experimental-site-token` scheme.
+// URLLoaderFactory for the `chrome-experimental-site-token-provider` scheme.
 // Intercepts subresource requests from renderers and returns domain-bound
 // site tokens with appropriate headers.
 class SiteTokenURLLoaderFactory : public network::mojom::URLLoaderFactory {

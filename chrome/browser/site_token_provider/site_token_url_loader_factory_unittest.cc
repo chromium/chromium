@@ -50,8 +50,8 @@ using ::testing::_;
 using ::testing::Return;
 
 GURL ValidTokenUrl() {
-  return GURL(base::StrCat({chrome::kChromeExperimentalSiteTokenScheme, "://",
-                            chrome::kChromeExperimentalSiteTokenHost}));
+  return GURL(base::StrCat({chrome::kChromeExperimentalSiteTokenProviderScheme,
+                            "://", chrome::kChromeExperimentalSiteTokenHost}));
 }
 
 class MockSiteTokenProvider : public SiteTokenProvider {
@@ -249,7 +249,7 @@ INSTANTIATE_TEST_SUITE_P(
         InvalidRequestTestCase{
             .test_name = "WrongHost",
             .method = net::HttpRequestHeaders::kGetMethod,
-            .request_url = "chrome-experimental-site-token://invalid",
+            .request_url = "chrome-experimental-site-token-provider://invalid",
             .initiator = url::Origin::Create(GURL("https://example.com")),
             .expected_error = net::ERR_INVALID_URL,
         },
@@ -263,56 +263,59 @@ INSTANTIATE_TEST_SUITE_P(
         InvalidRequestTestCase{
             .test_name = "UrlWithPath",
             .method = net::HttpRequestHeaders::kGetMethod,
-            .request_url = "chrome-experimental-site-token://token/extra_path",
+            .request_url =
+                "chrome-experimental-site-token-provider://token/extra_path",
             .initiator = url::Origin::Create(GURL("https://example.com")),
             .expected_error = net::ERR_INVALID_URL,
         },
         InvalidRequestTestCase{
             .test_name = "UrlWithQuery",
             .method = net::HttpRequestHeaders::kGetMethod,
-            .request_url = "chrome-experimental-site-token://token?query=1",
+            .request_url =
+                "chrome-experimental-site-token-provider://token?query=1",
             .initiator = url::Origin::Create(GURL("https://example.com")),
             .expected_error = net::ERR_INVALID_URL,
         },
         InvalidRequestTestCase{
             .test_name = "UrlWithRef",
             .method = net::HttpRequestHeaders::kGetMethod,
-            .request_url = "chrome-experimental-site-token://token#ref",
+            .request_url =
+                "chrome-experimental-site-token-provider://token#ref",
             .initiator = url::Origin::Create(GURL("https://example.com")),
             .expected_error = net::ERR_INVALID_URL,
         },
         InvalidRequestTestCase{
             .test_name = "PostMethodRejected",
             .method = "POST",
-            .request_url = "chrome-experimental-site-token://token",
+            .request_url = "chrome-experimental-site-token-provider://token",
             .initiator = url::Origin::Create(GURL("https://example.com")),
             .expected_error = net::ERR_METHOD_NOT_SUPPORTED,
         },
         InvalidRequestTestCase{
             .test_name = "PutMethodRejected",
             .method = "PUT",
-            .request_url = "chrome-experimental-site-token://token",
+            .request_url = "chrome-experimental-site-token-provider://token",
             .initiator = url::Origin::Create(GURL("https://example.com")),
             .expected_error = net::ERR_METHOD_NOT_SUPPORTED,
         },
         InvalidRequestTestCase{
             .test_name = "DeleteMethodRejected",
             .method = "DELETE",
-            .request_url = "chrome-experimental-site-token://token",
+            .request_url = "chrome-experimental-site-token-provider://token",
             .initiator = url::Origin::Create(GURL("https://example.com")),
             .expected_error = net::ERR_METHOD_NOT_SUPPORTED,
         },
         InvalidRequestTestCase{
             .test_name = "MissingInitiator",
             .method = net::HttpRequestHeaders::kGetMethod,
-            .request_url = "chrome-experimental-site-token://token",
+            .request_url = "chrome-experimental-site-token-provider://token",
             .initiator = std::nullopt,
             .expected_error = net::ERR_ACCESS_DENIED,
         },
         InvalidRequestTestCase{
             .test_name = "OpaqueInitiator",
             .method = net::HttpRequestHeaders::kGetMethod,
-            .request_url = "chrome-experimental-site-token://token",
+            .request_url = "chrome-experimental-site-token-provider://token",
             .initiator = url::Origin(),
             .expected_error = net::ERR_ACCESS_DENIED,
         }),
