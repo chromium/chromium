@@ -769,8 +769,9 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
           browser->GetUnownedUserDataHost());
 
   if (browser_view) {
-    devtools_ui_controller_ = std::make_unique<DevtoolsUIController>(
-        browser_, browser_view->GetContentsContainerViews());
+    devtools_ui_controller_ =
+        GetUserDataFactory().CreateInstance<DevtoolsUIController>(
+            *browser, browser_, browser_view->GetContentsContainerViews());
   }
 
   // Must be before exclusive_access_manager_ (whose construction calls

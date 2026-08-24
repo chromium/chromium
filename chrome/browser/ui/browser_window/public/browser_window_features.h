@@ -345,10 +345,6 @@ class BrowserWindowFeatures {
     return cookie_controls_controller_.get();
   }
 
-  DevtoolsUIController* devtools_ui_controller() {
-    return devtools_ui_controller_.get();
-  }
-
   ExclusiveAccessManager* exclusive_access_manager() {
     return exclusive_access_manager_.get();
   }
