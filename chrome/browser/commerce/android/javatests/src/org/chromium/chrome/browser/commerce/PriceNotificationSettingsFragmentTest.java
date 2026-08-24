@@ -27,7 +27,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -51,8 +51,8 @@ public class PriceNotificationSettingsFragmentTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public final SettingsActivityTestRule<PriceNotificationSettingsFragment> mTestRule =
-            new SettingsActivityTestRule<>(PriceNotificationSettingsFragment.class);
+    public final SettingsTestRule<PriceNotificationSettingsFragment> mTestRule =
+            new SettingsTestRule<>(PriceNotificationSettingsFragment.class);
 
     @Rule
     public final FreshCtaTransitTestRule mActivityTestRule =
