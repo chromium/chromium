@@ -662,9 +662,7 @@ class CORE_EXPORT LocalFrame final
     return ad_evidence_;
   }
 
-  bool IsFrameCreatedByAdScript() const {
-    return is_frame_created_by_ad_script_;
-  }
+  bool IsFrameCreatedByAdScript() const;
 
   // Returns the identifier of the ad script that created this frame, if
   // applicable.
@@ -1089,6 +1087,8 @@ class CORE_EXPORT LocalFrame final
                                mojom::blink::StorageTypeAccessed storage_type,
                                bool isAllowed);
 
+  void NotifyFrameAttachedToParent();
+
   std::unique_ptr<FrameScheduler> frame_scheduler_;
 
   // Holds all PauseSubresourceLoadingHandles allowing either |this| to delete
@@ -1241,24 +1241,6 @@ class CORE_EXPORT LocalFrame final
   std::optional<blink::FrameAdEvidence> ad_evidence_;
 
   Member<LCPCriticalPathPredictor> lcpp_;
-
-  // True if this frame is a frame that had a script tagged as an ad on the v8
-  // stack at the time of creation. This is updated in `SetAdEvidence()`,
-  // allowing the bit to be propagated when a frame navigates cross-origin.
-  // Fenced frames do not set this bit for the initial empty document, see
-  // SubresourceFilterAgent::Initialize.
-  bool is_frame_created_by_ad_script_ = false;
-
-  // The ancestry chain of ad script identifiers leading to this frame's
-  // creation, along with the root script's filterlist rule. The ancestry chain
-  // is ordered from the most immediate script (in the frame creation stack) to
-  // more distant ancestors (that created the immediately preceding
-  // script). Kept to defer instrumentation probe call until the frame is
-  // committed.
-  //
-  // This is currently *not* populated when a frame navigates cross-origin
-  // (crbug.com/421202278).
-  AdTracker::AdScriptAncestry ad_script_ancestry_;
 
   bool evict_cached_session_storage_on_freeze_or_unload_ = false;
 

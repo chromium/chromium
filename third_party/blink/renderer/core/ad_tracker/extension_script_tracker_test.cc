@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/scheme_registry.h"
+#include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/core/ad_tracker/ad_tracker.h"
 #include "third_party/blink/renderer/core/ad_tracker/script_initiation_monitor.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -269,4 +270,74 @@ TEST_F(ExtensionScriptTrackerTest, AsyncExtensionTrackerSideEffect) {
   EXPECT_FALSE(tracker_->IsMarkedScript(inline_id));
 }
 
+TEST_F(ExtensionScriptTrackerTest, FrameCreatedByExtensionScriptTagged) {
+  const char kExtensionUrl[] = "chrome-extension://abcdefghijklmnop/script.js";
+  SimSubresourceRequest extension_resource(kExtensionUrl, "text/javascript");
+
+  main_resource_->Complete(
+      "<body></body><script "
+      "src='chrome-extension://abcdefghijklmnop/script.js'></script>");
+
+  extension_resource.Complete(R"SCRIPT(
+    const iframe = document.createElement("iframe");
+    iframe.srcdoc = "<script>console.log('srcdoc');</script>";
+    document.body.appendChild(iframe);
+    )SCRIPT");
+
+  test::RunPendingTasks();
+
+  V8ScriptId srcdoc_script_id = tracker_->FindScriptIdByUrl("{ id ");
+  EXPECT_GT(srcdoc_script_id.value(), 0);
+  EXPECT_TRUE(tracker_->IsMarkedScript(srcdoc_script_id));
+}
+
+TEST_F(ExtensionScriptTrackerTest,
+       FrameCreatedByExtensionScriptPreservedAcrossSameProcessNavigation) {
+  const char kExtensionUrl[] = "chrome-extension://abcdefghijklmnop/script.js";
+  SimSubresourceRequest extension_resource(kExtensionUrl, "text/javascript");
+  SimRequest child_frame_doc1("https://example.com/frame1.html", "text/html");
+
+  main_resource_->Complete(
+      "<body><script "
+      "src='chrome-extension://abcdefghijklmnop/script.js'></script></body>");
+
+  extension_resource.Complete(R"SCRIPT(
+    var iframe = document.createElement("iframe");
+    iframe.id = "target_frame";
+    iframe.src = "frame1.html";
+    document.body.appendChild(iframe);
+    )SCRIPT");
+
+  test::RunPendingTasks();
+  child_frame_doc1.Complete("<body>frame 1</body>");
+
+  auto* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  ASSERT_TRUE(child_frame);
+  EXPECT_TRUE(tracker_->IsMarkedFrame(child_frame));
+
+  // Navigate the child iframe same-process to frame2.html (LocalFrame <->
+  // LocalFrame swap).
+  SimRequest child_frame_doc2("https://example.com/frame2.html", "text/html");
+  SimSubresourceRequest child_script("https://example.com/child_script.js",
+                                     "text/javascript");
+  MainFrame().ExecuteScript(WebScriptSource(
+      "document.getElementById('target_frame').src = 'frame2.html';"));
+
+  base::RunLoop().RunUntilIdle();
+  child_frame_doc2.Complete("<script src='child_script.js'></script>");
+  child_script.Complete("console.log('in frame 2');");
+  base::RunLoop().RunUntilIdle();
+
+  auto* new_child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  ASSERT_TRUE(new_child_frame);
+  EXPECT_TRUE(tracker_->IsMarkedFrame(new_child_frame));
+
+  // Verify that script running in the navigated frame is tracked as an
+  // extension script.
+  V8ScriptId frame2_script_id = tracker_->FindScriptIdByUrl("child_script.js");
+  EXPECT_GT(frame2_script_id.value(), 0);
+  EXPECT_TRUE(tracker_->IsMarkedScript(frame2_script_id));
+}
 }  // namespace blink

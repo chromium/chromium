@@ -190,6 +190,20 @@ class TestAdTracker : public AdTracker {
     return result;
   }
 
+  void DidCreateFrame(LocalFrame* frame, LazyStackTrace& stack_trace) override {
+    AdTracker::DidCreateFrame(frame, stack_trace);
+    if (sim_test_) {
+      V8ScriptId initiating_script_id = GetInitiatingScriptId(frame);
+      if (initiating_script_id.value() > 0) {
+        last_ad_script_ancestry_ = GetAncestry(initiating_script_id);
+        last_is_ad_script_in_stack_result_ = true;
+        return;
+      }
+      last_ad_script_ancestry_ = AdScriptAncestry();
+      last_is_ad_script_in_stack_result_ = false;
+    }
+  }
+
   const AdScriptAncestry& last_ad_script_ancestry() const {
     return last_ad_script_ancestry_;
   }
@@ -4836,6 +4850,57 @@ TEST_F(AdTrackerSimTest, NoScriptExecutionDuringAdTrackerMonkeyPatchCheck) {
   // stack (via the monkey-patched appendChild), the frame should be correctly
   // flagged as an ad frame.
   EXPECT_TRUE(child_frame->IsFrameCreatedByAdScript());
+}
+
+TEST_F(AdTrackerSimTest, NonScriptCreatedAdFrameDoesNotReportCreatedByScript) {
+  main_resource_->Complete(R"HTML(
+    <iframe id="child" src="about:blank"></iframe>
+  )HTML");
+
+  auto* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  ASSERT_TRUE(child_frame);
+
+  EXPECT_FALSE(child_frame->IsAdFrame());
+  EXPECT_FALSE(child_frame->IsFrameCreatedByAdScript());
+
+  // Tag frame as an ad via URL filter list match (not created by ad script).
+  SetIsAdFrame(child_frame, /*created_by_ad_script=*/false);
+
+  EXPECT_TRUE(child_frame->IsAdFrame());
+  EXPECT_FALSE(child_frame->IsFrameCreatedByAdScript());
+}
+
+TEST_F(AdTrackerSimTest,
+       HtmlParsedChildOfAdFrame_DoesNotReportCreatedByScript) {
+  SimRequest child_resource("https://example.com/child.html", "text/html");
+  main_resource_->Complete(R"HTML(
+    <iframe id="child" src="https://example.com/child.html"></iframe>
+  )HTML");
+
+  auto* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  ASSERT_TRUE(child_frame);
+
+  // Tag child frame as an ad via URL filter list match (not created by ad
+  // script).
+  SetIsAdFrame(child_frame, /*created_by_ad_script=*/false);
+  EXPECT_TRUE(child_frame->IsAdFrame());
+  EXPECT_FALSE(child_frame->IsFrameCreatedByAdScript());
+
+  // Now the child frame parses its own HTML, which has a sub-iframe.
+  // This sub-iframe is parsed from HTML, NOT created by script.
+  child_resource.Complete(R"HTML(
+    <iframe id="subchild" src="about:blank"></iframe>
+  )HTML");
+
+  auto* subchild_frame = To<LocalFrame>(child_frame->Tree().FirstChild());
+  ASSERT_TRUE(subchild_frame);
+
+  // Because the subchild frame is parsed from HTML and not created by script,
+  // and the parent ad frame was also not created by ad script, it should not
+  // report being created by ad script.
+  EXPECT_FALSE(subchild_frame->IsFrameCreatedByAdScript());
 }
 
 }  // namespace blink

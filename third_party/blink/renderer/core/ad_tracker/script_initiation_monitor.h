@@ -77,6 +77,12 @@ class CORE_EXPORT ScriptInitiationMonitor
                                     LazyStackTrace& stack_trace) = 0;
     virtual void DidStartAsyncTask(probe::AsyncTaskContext* task_context) = 0;
     virtual void DidFinishAsyncTask(probe::AsyncTaskContext* task_context) = 0;
+
+    // Frame lifecycle hooks to track provenance of child frames created by
+    // marked scripts.
+    virtual void DidCreateFrame(LocalFrame* frame,
+                                LazyStackTrace& stack_trace) {}
+    virtual void DidSwapFrame(LocalFrame* old_frame, LocalFrame* new_frame) {}
   };
 
   // Helper to retrieve the monitor from the current ExecutionContext.
@@ -93,6 +99,13 @@ class CORE_EXPORT ScriptInitiationMonitor
   void AddObserver(Observer*);
   void RemoveObserver(Observer*);
 
+  // Notifies observers when a LocalFrame has been created in the frame tree.
+  void DidCreateLocalFrame(LocalFrame* frame);
+
+  // Notifies observers when a LocalFrame has been swapped in place of an
+  // existing frame.
+  void DidSwapLocalFrame(LocalFrame* old_frame, LocalFrame* new_frame);
+
   // Probe hooks called by core_probes. Do not call directly.
   void Will(const probe::ExecuteScript&);
   void Did(const probe::ExecuteScript&);
@@ -104,6 +117,10 @@ class CORE_EXPORT ScriptInitiationMonitor
 
   void DidRegisterDynamicScript(v8::Local<v8::Context> v8_context,
                                 V8ScriptId script_id);
+
+  // Returns the V8 isolate for this monitor's local root, falling back to the
+  // current thread isolate if the window is unavailable.
+  v8::Isolate* GetIsolate() const;
 
   class ScopedInjectedExtensionScriptExecution {
     STACK_ALLOCATED();

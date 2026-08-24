@@ -901,4 +901,50 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   EXPECT_TRUE(IsScriptUrlMarked(web_contents, web_script_url.spec()));
 }
 
+IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
+                       SameOriginSrcdocIframeTracked) {
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+    "name": "Extension Same-Origin Srcdoc Iframe Test",
+    "version": "0.1",
+    "manifest_version": 3,
+    "content_scripts": [{
+      "matches": ["http://example.com/*"],
+      "js": ["content_script.js"],
+      "world": "MAIN",
+      "run_at": "document_end"
+    }]
+  })");
+
+  test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), R"(
+    const iframe = document.createElement('iframe');
+    iframe.srcdoc =
+        '<script>' +
+        'window.srcdocScriptTracked = ' +
+        'window.internals.isExtensionScriptInStack();' +
+        '</script>';
+    document.body.appendChild(iframe);
+  )");
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  GURL url = embedded_test_server()->GetURL("example.com", "/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  content::RenderFrameHost* iframe_rfh = content::FrameMatchingPredicate(
+      web_contents->GetPrimaryPage(),
+      base::BindRepeating([](content::RenderFrameHost* rfh) {
+        return rfh->GetParent() != nullptr;
+      }));
+  ASSERT_TRUE(iframe_rfh);
+
+  WaitForJsCondition(iframe_rfh, "window.srcdocScriptTracked !== undefined");
+  EXPECT_TRUE(
+      content::EvalJs(iframe_rfh, "window.srcdocScriptTracked").ExtractBool());
+}
+
 }  // namespace extensions

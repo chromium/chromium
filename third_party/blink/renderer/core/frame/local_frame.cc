@@ -2112,26 +2112,27 @@ LocalFrame::LocalFrame(
         mojom::blink::FrameOcclusionState::kGuaranteedNotOccluded;
   }
 
-  DCHECK(ad_tracker_ ? RuntimeEnabledFeatures::AdTaggingEnabled()
-                     : !RuntimeEnabledFeatures::AdTaggingEnabled());
-
-  // See SubresourceFilterAgent::Initialize for why we don't set this here for
-  // fenced frames.
-  is_frame_created_by_ad_script_ =
-      !IsMainFrame() && ad_tracker_ &&
-      ad_tracker_->IsAdScriptInStack(
-          AdTracker::StackType::kTopOnly,
-          /*ignore_monkey_patch=*/
-          AdTracker::MonkeyPatchableApi::kNodeAppendChild,
-          &ad_script_ancestry_);
-
   Initialize();
   // Now that we know whether the frame is provisional, inherit the probe
   // sink from parent if appropriate. See comment above for more details.
   if (!IsLocalRoot() && !IsProvisional()) {
     probe_sink_ = LocalFrameRoot().probe_sink_;
-    probe::FrameAttachedToParent(this, ad_script_ancestry_);
+    NotifyFrameAttachedToParent();
   }
+}
+
+void LocalFrame::NotifyFrameAttachedToParent() {
+  if (auto* monitor = GetScriptInitiationMonitor()) {
+    monitor->DidCreateLocalFrame(this);
+  }
+  AdTracker::AdScriptAncestry ad_script_ancestry;
+  if (ad_tracker_) {
+    V8ScriptId initiating_script_id = ad_tracker_->GetInitiatingScriptId(this);
+    if (initiating_script_id.value() > 0) {
+      ad_script_ancestry = ad_tracker_->GetAncestry(initiating_script_id);
+    }
+  }
+  probe::FrameAttachedToParent(this, ad_script_ancestry);
 }
 
 FrameScheduler* LocalFrame::GetFrameScheduler() {
@@ -2815,14 +2816,6 @@ void LocalFrame::SetAdEvidence(const FrameAdEvidence& ad_evidence) {
   DCHECK(!IsMainFrame() || IsInFencedFrameTree());
   DCHECK(ad_evidence.is_complete());
 
-  // Once set, `is_frame_created_by_ad_script_` should not be unset.
-  DCHECK(!is_frame_created_by_ad_script_ ||
-         ad_evidence.created_by_ad_script() ==
-             blink::mojom::FrameCreationStackEvidence::kCreatedByAdScript);
-  is_frame_created_by_ad_script_ =
-      ad_evidence.created_by_ad_script() ==
-      blink::mojom::FrameCreationStackEvidence::kCreatedByAdScript;
-
   if (ad_evidence_.has_value()) {
     // Check that replacing with the new ad evidence doesn't violate invariants.
     // The parent frame's ad status should not change as it can only change due
@@ -2885,12 +2878,23 @@ bool LocalFrame::IsAdScriptInStack() const {
          ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kTopOnly);
 }
 
-std::optional<AdScriptIdentifier> LocalFrame::CreationAdScript() const {
-  if (ad_script_ancestry_.ancestry_chain.empty()) {
-    return std::nullopt;
+bool LocalFrame::IsFrameCreatedByAdScript() const {
+  if (ad_evidence_ &&
+      ad_evidence_->created_by_ad_script() ==
+          mojom::FrameCreationStackEvidence::kCreatedByAdScript) {
+    return true;
   }
+  if (ad_tracker_) {
+    return ad_tracker_->ScriptAncestryTracker::IsMarkedFrame(this);
+  }
+  return false;
+}
 
-  return ad_script_ancestry_.ancestry_chain[0];
+std::optional<AdScriptIdentifier> LocalFrame::CreationAdScript() const {
+  if (ad_tracker_) {
+    return ad_tracker_->GetCreationAdScript(this);
+  }
+  return std::nullopt;
 }
 
 void LocalFrame::UpdateAdHighlight() {
@@ -3289,14 +3293,17 @@ bool LocalFrame::SwapIn() {
       bool swap_result =
           client->SwapIn(WebFrame::FromCoreFrame(provisional_owner_frame));
       std::swap(probe_sink_, local_provisional_owner->probe_sink_);
+      if (auto* monitor = GetScriptInitiationMonitor()) {
+        monitor->DidSwapLocalFrame(local_provisional_owner, this);
+      }
       return swap_result;
     }
 
     // This is a remote -> local swap, so just use the local root's probe sink.
     probe_sink_ = LocalFrameRoot().probe_sink_;
-    // For remote -> local swap, Send a frameAttached event to keep the legacy
+    // For remote -> local swap, send a frameAttached event to keep the legacy
     // behavior where we fire the frameAttached event on cross-site navigations.
-    probe::FrameAttachedToParent(this, ad_script_ancestry_);
+    NotifyFrameAttachedToParent();
   }
 
   return client->SwapIn(WebFrame::FromCoreFrame(provisional_owner_frame));

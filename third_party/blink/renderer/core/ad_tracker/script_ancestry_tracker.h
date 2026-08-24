@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/ad_tracker/monkey_patchable_api.h"
 #include "third_party/blink/renderer/core/ad_tracker/script_initiation_monitor.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/ad_tagging_utils.h"
@@ -103,6 +104,20 @@ class CORE_EXPORT ScriptAncestryTracker
                           LazyStackTrace& stack_trace) override;
   void DidStartAsyncTask(probe::AsyncTaskContext* task_context) override;
   void DidFinishAsyncTask(probe::AsyncTaskContext* task_context) override;
+  void DidCreateFrame(LocalFrame* frame, LazyStackTrace& stack_trace) override;
+  void DidSwapFrame(LocalFrame* old_frame, LocalFrame* new_frame) override;
+
+  // Returns true if `frame` was created by a marked script, descended from a
+  // marked frame, or otherwise marked by the subclass tracker.
+  virtual bool IsMarkedFrame(const LocalFrame* frame) const;
+
+  // Returns the script ID of the marked script that initiated the creation of
+  // `frame`, or an empty `V8ScriptId` if not created by a marked script or if
+  // provenance is unavailable.
+  V8ScriptId GetInitiatingScriptId(const LocalFrame* frame) const;
+
+  // Returns true if `execution_context` is hosted within a marked frame.
+  bool IsMarkedExecutionContext(ExecutionContext* execution_context) const;
 
   // Returns the script ID if the script at the top of isolate's
   // stack is a marked script (or bottom, depending on `StackType`), or
@@ -133,6 +148,8 @@ class CORE_EXPORT ScriptAncestryTracker
   void Trace(Visitor*) const override;
 
  protected:
+  virtual bool HasMarkedFrames() const { return !marked_frames_.empty(); }
+
   // Called by the base class to check if a specific script ID is a marked
   // script belonging to the subclass's tracking domain (e.g., ad scripts,
   // extension scripts).
@@ -230,6 +247,9 @@ class CORE_EXPORT ScriptAncestryTracker
   // Tracks active monkey-patched API calls in the current task scope to ensure
   // the ignore-monkey-patch heuristic only applies once per task.
   HashSet<MonkeyPatchableApi> monkey_patch_calls_in_scope_;
+
+  // Tracks frames created by marked scripts (or descendant frames).
+  HeapHashMap<WeakMember<LocalFrame>, V8ScriptId> marked_frames_;
 
   friend class AdTrackerTest;
   friend class ScriptAncestryTrackerTest;

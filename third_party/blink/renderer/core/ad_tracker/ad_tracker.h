@@ -53,6 +53,7 @@ class CORE_EXPORT AdTracker : public ScriptAncestryTracker {
   // Finds an AdTracker for a given ExecutionContext.
   static AdTracker* FromExecutionContext(ExecutionContext*);
 
+  // Returns true if an ad script is currently executing in `document`.
   static bool IsAdScriptExecutingInDocument(
       Document* document,
       StackType stack_type = StackType::kTopOnly);
@@ -71,6 +72,8 @@ class CORE_EXPORT AdTracker : public ScriptAncestryTracker {
       std::optional<AdProvenance> known_ad_provenance,
       bool scan_javascript_stack);
 
+  // Returns true if the script represented by `url` or the current execution
+  // context is known to be an ad script.
   bool IsKnownAdScript(ExecutionContext*, const String& url);
 
   const HashMap<V8ScriptId, AdProvenance>& GetAdScripts() const {
@@ -115,17 +118,25 @@ class CORE_EXPORT AdTracker : public ScriptAncestryTracker {
       MonkeyPatchableApi ignore_monkey_patch = MonkeyPatchableApi::kNone,
       AdScriptAncestry* out_ad_script_ancestry = nullptr);
 
+  // Returns the identifier of the ad script that created `frame`, if available.
+  std::optional<AdScriptIdentifier> GetCreationAdScript(
+      const LocalFrame* frame) const;
+
   // ScriptAncestryTracker overrides:
   ScriptAncestryTrackerType GetTrackerType() const override {
     return ScriptAncestryTrackerType::kAd;
   }
   void Shutdown() override;
   bool IsMarkedScript(V8ScriptId) const override;
+  bool IsMarkedFrame(const LocalFrame*) const override;
   void OnScriptRegistered(ExecutionContext& execution_context,
                           V8ScriptId script_id,
                           const String& url,
                           std::optional<V8ScriptId> marked_script_id) override;
   void Trace(Visitor*) const override;
+
+ protected:
+  bool HasMarkedFrames() const override;
 
  private:
   friend class FrameFetchContextSubresourceFilterTest;

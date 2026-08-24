@@ -52,10 +52,7 @@ ScriptAncestryTracker::ScriptAncestryTracker(LocalFrame* local_root,
 ScriptAncestryTracker::~ScriptAncestryTracker() = default;
 
 v8::Isolate* ScriptAncestryTracker::GetIsolate() const {
-  if (local_root_ && local_root_->DomWindow()) {
-    return local_root_->DomWindow()->GetIsolate();
-  }
-  return nullptr;
+  return monitor_ ? monitor_->GetIsolate() : v8::Isolate::TryGetCurrent();
 }
 
 void ScriptAncestryTracker::WillExecuteScript(
@@ -177,7 +174,7 @@ void ScriptAncestryTracker::DidCreateAsyncTask(
     probe::AsyncTaskContext* task_context,
     LazyStackTrace& stack_trace) {
   DCHECK(task_context);
-  v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
+  v8::Isolate* isolate = GetIsolate();
   if (isolate && !isolate->GetCurrentContext().IsEmpty()) {
     v8::HandleScope handle_scope(isolate);
     // TODO(jkarlin): Restrict the kNodeAppendChild monkeypatch exception
@@ -211,10 +208,108 @@ void ScriptAncestryTracker::DidFinishAsyncTask(
   async_script_stack_.pop_back();
 }
 
+void ScriptAncestryTracker::DidCreateFrame(LocalFrame* frame,
+                                           LazyStackTrace& stack_trace) {
+  if (!frame || frame->IsMainFrame()) {
+    return;
+  }
+
+  // If the parent frame was created by a marked script, inherit that status.
+  if (const Frame* parent = frame->Tree().Parent()) {
+    if (const auto* local_parent = DynamicTo<LocalFrame>(parent)) {
+      if (ScriptAncestryTracker::IsMarkedFrame(local_parent)) {
+        marked_frames_.insert(frame, GetInitiatingScriptId(local_parent));
+        return;
+      }
+    }
+  }
+
+  // Note: For initial documents and same-origin frames created synchronously
+  // by script (e.g. appendChild or srcdoc), the creating script is on the
+  // stack. Cross-origin OOPIFs and remote swaps do not carry initiating V8
+  // script state across process boundaries without explicit browser-side IPC
+  // propagation.
+  std::optional<V8ScriptId> marked_script_id = GetMarkedScriptInStack(
+      StackType::kTopOnly, stack_trace,
+      /*ignore_monkey_patch=*/MonkeyPatchableApi::kNodeAppendChild);
+  if (!marked_script_id.has_value()) {
+    return;
+  }
+
+  marked_frames_.insert(frame, *marked_script_id);
+}
+
+void ScriptAncestryTracker::DidSwapFrame(LocalFrame* old_frame,
+                                         LocalFrame* new_frame) {
+  if (!old_frame || !new_frame) {
+    return;
+  }
+  auto it = marked_frames_.find(old_frame);
+  if (it != marked_frames_.end()) {
+    V8ScriptId initiating_id = it->value;
+    marked_frames_.erase(it);
+    marked_frames_.insert(new_frame, initiating_id);
+  }
+}
+
+bool ScriptAncestryTracker::IsMarkedFrame(const LocalFrame* frame) const {
+  if (!frame) {
+    return false;
+  }
+  return marked_frames_.Contains(const_cast<LocalFrame*>(frame));
+}
+
+V8ScriptId ScriptAncestryTracker::GetInitiatingScriptId(
+    const LocalFrame* frame) const {
+  if (!frame) {
+    return V8ScriptId();
+  }
+  auto it = marked_frames_.find(const_cast<LocalFrame*>(frame));
+  return it != marked_frames_.end() ? it->value : V8ScriptId();
+}
+
+bool ScriptAncestryTracker::IsMarkedExecutionContext(
+    ExecutionContext* execution_context) const {
+  if (!execution_context) {
+    return false;
+  }
+  // TODO(jkarlin): Do the same check for worker contexts.
+  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
+    return IsMarkedFrame(window->GetFrame());
+  }
+  return false;
+}
+
 std::optional<V8ScriptId> ScriptAncestryTracker::GetMarkedScriptInStack(
     StackType stack_type,
     LazyStackTrace& stack_trace,
     MonkeyPatchableApi ignore_monkey_patch) {
+  // If the currently executing context is within a frame created by a marked
+  // script (or marked frame), classify the stack as marked and return the
+  // creating script's id. Note: Execution context inside a marked frame
+  // intentionally takes precedence over `kBottomOnly` bottom-of-stack checks,
+  // matching existing ad frame semantics.
+  if (HasMarkedFrames()) {
+    if (v8::Isolate* isolate = GetIsolate()) {
+      v8::HandleScope handle_scope(isolate);
+      v8::Local<v8::Context> v8_context = isolate->GetCurrentContext();
+      if (!v8_context.IsEmpty()) {
+        if (auto* window =
+                DynamicTo<LocalDOMWindow>(ToExecutionContext(v8_context))) {
+          if (const LocalFrame* frame = window->GetFrame();
+              IsMarkedFrame(frame)) {
+            V8ScriptId initiating_id = GetInitiatingScriptId(frame);
+            // Return the initiating script ID if present, or an empty
+            // V8ScriptId (engaged in std::optional) to classify execution
+            // inside a marked frame as marked even without a specific creating
+            // script ID.
+            return initiating_id.value() > 0 ? initiating_id : V8ScriptId();
+          }
+        }
+      }
+    }
+  }
+
   if (stack_type == StackType::kBottomOnly) {
     if (bottom_most_script_.has_value() &&
         IsMarkedScript(*bottom_most_script_)) {
@@ -232,7 +327,7 @@ std::optional<V8ScriptId> ScriptAncestryTracker::GetMarkedScriptInStack(
     return std::nullopt;
   }
 
-  v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
+  v8::Isolate* isolate = GetIsolate();
 
   // When the `ignore_monkey_patch` heuristic is specified, we inspect the top
   // five stack frames instead of just the top frame. It allows us to capture
@@ -314,6 +409,11 @@ std::optional<V8ScriptId> ScriptAncestryTracker::GetMarkedScriptInStack(
 }
 
 void ScriptAncestryTracker::Shutdown() {
+  marked_frames_.clear();
+  script_metadata_.clear();
+  async_script_stack_.clear();
+  bottom_most_script_.reset();
+  monkey_patch_calls_in_scope_.clear();
   if (monitor_) {
     monitor_->RemoveObserver(this);
     monitor_ = nullptr;
@@ -325,6 +425,7 @@ void ScriptAncestryTracker::Trace(Visitor* visitor) const {
   ScriptInitiationMonitor::Observer::Trace(visitor);
   visitor->Trace(local_root_);
   visitor->Trace(monitor_);
+  visitor->Trace(marked_frames_);
 }
 
 void ScriptAncestryTracker::RegisterScript(
