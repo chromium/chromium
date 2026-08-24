@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
+#import "base/functional/bind.h"
 #import "base/metrics/histogram_base.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/numerics/safe_conversions.h"
@@ -13,6 +14,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
+#import "base/time/time.h"
 #import "base/version.h"
 #import "components/crash/core/app/crashpad.h"
 #import "components/crash/core/common/reporter_running_ios.h"

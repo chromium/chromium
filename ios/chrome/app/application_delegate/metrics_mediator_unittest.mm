@@ -7,6 +7,8 @@
 #import <Foundation/Foundation.h>
 
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
+#import "base/test/task_environment.h"
 #import "components/metrics/metrics_service.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/previous_session_info/previous_session_info_private.h"
@@ -14,6 +16,8 @@
 #import "ios/chrome/app/application_delegate/metric_kit_subscriber.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator_testing.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
+#import "ios/chrome/browser/crash_report/model/features.h"
+#import "ios/chrome/browser/safe_mode/ui_bundled/safe_mode_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
@@ -32,6 +36,12 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
+@interface MetricsMediator ()
+- (void)setMetricsEnabled:(BOOL)enabled;
+- (void)setAppGroupMetricsEnabled:(BOOL)enabled;
+- (void)updateMetricsPrefsOnPermissionChange:(BOOL)enabled;
+@end
+
 // Mock class for testing MetricsMediator.
 @interface MetricsMediatorMock : MetricsMediator
 @property(nonatomic) NSInteger reportingValue;
@@ -49,6 +59,12 @@
 }
 - (BOOL)areMetricsEnabled {
   return YES;
+}
+- (void)setMetricsEnabled:(BOOL)enabled {
+}
+- (void)setAppGroupMetricsEnabled:(BOOL)enabled {
+}
+- (void)updateMetricsPrefsOnPermissionChange:(BOOL)enabled {
 }
 
 @end
@@ -287,4 +303,98 @@ TEST_F(MetricsMediatorNoFixtureTest, endExtendedLaunchTaskOnWarmStart) {
 
   [MetricsMediator logStartupDuration:startupInformation];
   EXPECT_OCMOCK_VERIFY(metricKitSubscriber);
+}
+
+class MetricsMediatorDeferralTest : public PlatformTest {
+ private:
+  base::test::TaskEnvironment task_environment_;
+};
+
+// Test that MetricKit registration is deferred on startup when feature flag is
+// enabled.
+TEST_F(MetricsMediatorDeferralTest, DeferMetricKitRegistrationOnStartup) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kMetrickitDeferRegistration);
+
+  id subscriber_mock = OCMStrictClassMock([MetricKitSubscriber class]);
+  OCMStub([subscriber_mock sharedInstance]).andReturn(subscriber_mock);
+
+  MetricsMediatorMock* mediator = [[MetricsMediatorMock alloc] init];
+  [mediator updateMetricsStateBasedOnPrefsUserTriggered:NO];
+  EXPECT_OCMOCK_VERIFY(subscriber_mock);
+
+  OCMExpect([subscriber_mock setEnabled:YES]);
+  [mediator registerMetricKitSubscriberIfNeeded];
+  EXPECT_OCMOCK_VERIFY(subscriber_mock);
+
+  [subscriber_mock stopMocking];
+}
+
+// Test that MetricKit registration is deferred on startup even for
+// user-triggered preference updates, but propagates immediately once
+// initialized.
+TEST_F(MetricsMediatorDeferralTest,
+       MetricKitRegistrationDeferralAndPostInitUserTrigger) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kMetrickitDeferRegistration);
+
+  id subscriber_mock = OCMStrictClassMock([MetricKitSubscriber class]);
+  OCMStub([subscriber_mock sharedInstance]).andReturn(subscriber_mock);
+
+  MetricsMediatorMock* mediator = [[MetricsMediatorMock alloc] init];
+  // On startup prior to registration, user-triggered update does not
+  // immediately setEnabled.
+  [mediator updateMetricsStateBasedOnPrefsUserTriggered:YES];
+  EXPECT_OCMOCK_VERIFY(subscriber_mock);
+
+  // When deferred task runs, registration happens.
+  OCMExpect([subscriber_mock setEnabled:YES]);
+  [mediator registerMetricKitSubscriberIfNeeded];
+  EXPECT_OCMOCK_VERIFY(subscriber_mock);
+
+  // Subsequent user-triggered preference updates after initialization update
+  // immediately.
+  OCMExpect([subscriber_mock setEnabled:YES]);
+  [mediator updateMetricsStateBasedOnPrefsUserTriggered:YES];
+  EXPECT_OCMOCK_VERIFY(subscriber_mock);
+
+  [subscriber_mock stopMocking];
+}
+
+// Test that MetricKit registration happens immediately when in safe mode.
+TEST_F(MetricsMediatorDeferralTest, ImmediateMetricKitRegistrationInSafeMode) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kMetrickitDeferRegistration);
+
+  id safe_mode_mock = OCMClassMock([SafeModeCoordinator class]);
+  OCMStub([safe_mode_mock shouldStart]).andReturn(YES);
+
+  id subscriber_mock = OCMStrictClassMock([MetricKitSubscriber class]);
+  OCMStub([subscriber_mock sharedInstance]).andReturn(subscriber_mock);
+  OCMExpect([subscriber_mock setEnabled:YES]);
+
+  MetricsMediatorMock* mediator = [[MetricsMediatorMock alloc] init];
+  [mediator updateMetricsStateBasedOnPrefsUserTriggered:NO];
+  EXPECT_OCMOCK_VERIFY(subscriber_mock);
+
+  [subscriber_mock stopMocking];
+  [safe_mode_mock stopMocking];
+}
+
+// Test that MetricKit registration happens immediately when the deferred
+// registration feature flag is disabled.
+TEST_F(MetricsMediatorDeferralTest,
+       ImmediateMetricKitRegistrationWhenFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kMetrickitDeferRegistration);
+
+  id subscriber_mock = OCMStrictClassMock([MetricKitSubscriber class]);
+  OCMStub([subscriber_mock sharedInstance]).andReturn(subscriber_mock);
+  OCMExpect([subscriber_mock setEnabled:YES]);
+
+  MetricsMediatorMock* mediator = [[MetricsMediatorMock alloc] init];
+  [mediator updateMetricsStateBasedOnPrefsUserTriggered:NO];
+  EXPECT_OCMOCK_VERIFY(subscriber_mock);
+
+  [subscriber_mock stopMocking];
 }

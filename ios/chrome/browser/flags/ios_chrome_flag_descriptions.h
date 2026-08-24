@@ -1362,6 +1362,12 @@ inline constexpr char kMeasurementsDescription[] =
     "When enabled, one tapping or long pressing on a measurement will trigger "
     "the measurement conversion experience.";
 
+inline constexpr char kMetrickitDeferRegistrationName[] =
+    "MetrickitDeferRegistration";
+inline constexpr char kMetrickitDeferRegistrationDescription[] =
+    "When enabled, the registration of MetricKit subscriber is deferred to "
+    "prevent initial payloads from being delivered during app startup.";
+
 inline constexpr char kMetrickitNonCrashReportName[] =
     "Metrickit non-crash reports";
 inline constexpr char kMetrickitNonCrashReportDescription[] =

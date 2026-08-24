@@ -9,4 +9,10 @@
 
 BASE_DECLARE_FEATURE(kMetrickitNonCrashReport);
 
+// Enables the MetrickitDeferRegistration feature.
+BASE_DECLARE_FEATURE(kMetrickitDeferRegistration);
+
+// Returns true if the MetrickitDeferRegistration feature is enabled.
+bool IsMetrickitDeferRegistrationEnabled();
+
 #endif  // IOS_CHROME_BROWSER_CRASH_REPORT_MODEL_FEATURES_H_

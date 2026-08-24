@@ -21,7 +21,8 @@
 // Ends the extended launch task created in `createExtendedLaunchTask`.
 + (void)endExtendedLaunchTask;
 
-// Whether the MetricKit collection is enabled.
+// Whether the MetricKit collection is enabled. Defaults to NO so that MetricKit
+// registration remains inactive when startup registration is deferred.
 @property(nonatomic, assign, getter=isEnabled) BOOL enabled;
 @end
 

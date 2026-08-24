@@ -259,3 +259,37 @@ TEST_F(MetricKitSubscriberTest, SaveDiagnosticReportWithParameters) {
 
   [previous_session removeReportParameterForKey:@"test_param"];
 }
+
+// Test that enabling and disabling the subscriber registers and unregisters
+// with MXMetricManager, and that redundant setEnabled calls are no-ops.
+TEST_F(MetricKitSubscriberTest, EnableDisable) {
+  id mock_manager = OCMStrictClassMock([MXMetricManager class]);
+  OCMStub([mock_manager sharedManager]).andReturn(mock_manager);
+
+  MetricKitSubscriber* subscriber = [[MetricKitSubscriber alloc] init];
+
+  // Initial state is disabled (NO).
+  EXPECT_FALSE(subscriber.enabled);
+
+  // Calling setEnabled:NO when already NO is a no-op.
+  [subscriber setEnabled:NO];
+  EXPECT_FALSE(subscriber.enabled);
+
+  // Enabling sets enabled to YES and adds subscriber.
+  OCMExpect([mock_manager addSubscriber:subscriber]);
+  [subscriber setEnabled:YES];
+  EXPECT_TRUE(subscriber.enabled);
+  EXPECT_OCMOCK_VERIFY(mock_manager);
+
+  // Calling setEnabled:YES when already YES is a no-op.
+  [subscriber setEnabled:YES];
+  EXPECT_TRUE(subscriber.enabled);
+
+  // Disabling sets enabled to NO and removes subscriber.
+  OCMExpect([mock_manager removeSubscriber:subscriber]);
+  [subscriber setEnabled:NO];
+  EXPECT_FALSE(subscriber.enabled);
+  EXPECT_OCMOCK_VERIFY(mock_manager);
+
+  [mock_manager stopMocking];
+}

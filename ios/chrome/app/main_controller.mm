@@ -224,6 +224,9 @@ NSString* const kDefaultBrowserStatusCheck = @"DefaultBrowserStatusCheck";
 // defaults.
 NSString* const kLogInstallAttribution = @"LogInstallAttribution";
 
+// Constant for deferred MetricKit registration.
+NSString* const kRegisterMetricKit = @"RegisterMetricKit";
+
 // Constant for enabling  multi-profile.
 NSString* const kMultiprofileKey = @"MultiprofileKey";
 
@@ -1439,6 +1442,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
 
   [self scheduleProcessingShareExtensionFiles];
+  [self scheduleMetricKitRegistration];
 }
 
 - (void)scheduleDeleteTempDownloadsDirectory {
@@ -1523,6 +1527,15 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 - (void)scheduleProcessingShareExtensionFiles {
   _shareExtensionController = [[ShareExtensionController alloc] init];
   [_shareExtensionController startFilesProcessing];
+}
+
+- (void)scheduleMetricKitRegistration {
+  __weak MetricsMediator* weakMetricsMediator = _metricsMediator;
+  [_appState.deferredRunner
+      enqueueBlockNamed:kRegisterMetricKit
+                  block:^{
+                    [weakMetricsMediator registerMetricKitSubscriberIfNeeded];
+                  }];
 }
 
 - (void)expireFirstUserActionRecorder {

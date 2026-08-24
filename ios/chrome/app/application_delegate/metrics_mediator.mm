@@ -35,8 +35,10 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/startup/ios_enable_sandbox_dump_buildflags.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
+#import "ios/chrome/browser/crash_report/model/features.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/metrics/model/first_user_action_recorder.h"
+#import "ios/chrome/browser/safe_mode/ui_bundled/safe_mode_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -337,7 +339,10 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 + (void)recordConnectedAndDisconnectedSceneCount:(int)connectedScenes;
 @end
 
-@implementation MetricsMediator
+@implementation MetricsMediator {
+  // Whether MetricKit subscriber has been initialized for the current session.
+  BOOL _metricKitSubscriberInitialized;
+}
 
 // Indicates whether credential extension was used while chrome was inactive.
 BOOL _credentialExtensionWasUsed = NO;
@@ -600,7 +605,21 @@ BOOL _credentialExtensionWasUsed = NO;
   [self setMetricsEnabled:optIn];
   crash_helper::SetEnabled(optIn);
   [self setAppGroupMetricsEnabled:optIn];
-  [[MetricKitSubscriber sharedInstance] setEnabled:optIn];
+  // Initialize MetricKit immediately unless deferral is active during cold
+  // startup outside Safe Mode. When deferred, registration will happen via low
+  // priority startup tasks in MainController.
+  if (!IsMetrickitDeferRegistrationEnabled() ||
+      _metricKitSubscriberInitialized || [SafeModeCoordinator shouldStart]) {
+    _metricKitSubscriberInitialized = YES;
+    [[MetricKitSubscriber sharedInstance] setEnabled:optIn];
+  }
+}
+
+- (void)registerMetricKitSubscriberIfNeeded {
+  if (!_metricKitSubscriberInitialized) {
+    _metricKitSubscriberInitialized = YES;
+    [[MetricKitSubscriber sharedInstance] setEnabled:[self areMetricsEnabled]];
+  }
 }
 
 - (void)notifyCredentialProviderWasUsed:(feature_engagement::Tracker*)tracker {

@@ -2963,6 +2963,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"ios-signal-sharing", flag_descriptions::kIOSSignalSharingName,
      flag_descriptions::kIOSSignalSharingDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(enterprise_reporting::kIOSSignalSharingEnabled)},
+    {"metrickit-defer-registration",
+     flag_descriptions::kMetrickitDeferRegistrationName,
+     flag_descriptions::kMetrickitDeferRegistrationDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kMetrickitDeferRegistration)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
