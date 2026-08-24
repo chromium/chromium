@@ -15,6 +15,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.robolectric.Robolectric.buildActivity;
 
 import android.app.Activity;
@@ -30,6 +31,7 @@ import android.widget.TextView;
 
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.junit.After;
@@ -135,6 +137,25 @@ public class BottomSheetUnitTest {
     @After
     public void tearDown() {
         mActivity.finish();
+    }
+
+    private void setupBottomSheetForKeyboardTest() {
+        BottomSheet.setSmallScreenForTesting(false);
+        when(mSheetContent.getFullHeightRatio()).thenReturn((float) HeightMode.RESIZE_CONTENT);
+        when(mSheetContent.getHalfHeightRatio()).thenReturn(0.5f);
+        when(mSheetContent.getPeekHeight()).thenReturn(HeightMode.DEFAULT);
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
+
+        mBottomSheet.showContent(mSheetContent);
+        mBottomSheet.setSheetState(SheetState.HALF, false);
+
+        View decorView = mActivity.getWindow().getDecorView();
+        decorView.layout(0, 0, 1080, 1920);
+        mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT - 1);
+        mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT);
+
+        verify(mInsetObserver)
+                .addWindowInsetsAnimationListener(mInsetsAnimationListenerCaptor.capture());
     }
 
     private void setupBottomSheetStrings(int openStringId, int closeStringId) {
@@ -593,30 +614,23 @@ public class BottomSheetUnitTest {
 
     @Test
     public void testRevertStateOnKeyboardHiding() {
-        BottomSheet.setSmallScreenForTesting(false);
-        doReturn((float) HeightMode.RESIZE_CONTENT).when(mSheetContent).getFullHeightRatio();
-        doReturn(0.5f).when(mSheetContent).getHalfHeightRatio();
-        doReturn(HeightMode.DEFAULT).when(mSheetContent).getPeekHeight();
-        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
-
-        mBottomSheet.showContent(mSheetContent);
-        mBottomSheet.setSheetState(SheetState.HALF, false);
-
-        // Simulate keyboard showing
-        verify(mInsetObserver)
-                .addWindowInsetsAnimationListener(mInsetsAnimationListenerCaptor.capture());
+        setupBottomSheetForKeyboardTest();
         InsetObserver.WindowInsetsAnimationListener listener =
                 mInsetsAnimationListenerCaptor.getValue();
 
+        WindowInsetsAnimationCompat imeAnimation =
+                new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 50);
+        listener.onPrepare(imeAnimation);
+
         mKeyboardInsetSupplier.set(100);
-        listener.onStart(null, null);
+        listener.onStart(imeAnimation, null);
 
         // Simulate layout change while keyboard is showing (Pass 1)
         mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT - 10);
 
         // Simulate keyboard hiding.
         mKeyboardInsetSupplier.set(0);
-        listener.onEnd(null);
+        listener.onEnd(imeAnimation);
         mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT);
 
         // Verify that state is restored to HALF.
@@ -624,29 +638,103 @@ public class BottomSheetUnitTest {
     }
 
     @Test
-    public void testCancelRevertStateDueToHeightChange() {
-        BottomSheet.setSmallScreenForTesting(false);
-        doReturn((float) HeightMode.RESIZE_CONTENT).when(mSheetContent).getFullHeightRatio();
-        doReturn(0.5f).when(mSheetContent).getHalfHeightRatio();
-        doReturn(HeightMode.DEFAULT).when(mSheetContent).getPeekHeight();
-        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
-
-        mBottomSheet.showContent(mSheetContent);
-        mBottomSheet.setSheetState(SheetState.HALF, false);
-
-        // Set initial decor view size and trigger layout to set mPreviousScreenHeight
-        View decorView = mActivity.getWindow().getDecorView();
-        decorView.layout(0, 0, 1080, 1920);
-        mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT);
-
-        // Simulate keyboard showing
-        verify(mInsetObserver)
-                .addWindowInsetsAnimationListener(mInsetsAnimationListenerCaptor.capture());
+    public void testRevertStateOnKeyboardHiding_ContainerShrinksBeforeOnStart() {
+        setupBottomSheetForKeyboardTest();
         InsetObserver.WindowInsetsAnimationListener listener =
                 mInsetsAnimationListenerCaptor.getValue();
 
+        // Simulate IME window insets animation preparing before layout pass.
+        WindowInsetsAnimationCompat imeAnimation =
+                new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 50);
+        listener.onPrepare(imeAnimation);
+
+        // Keyboard inset changes and container shrinks before onStart, causing
+        // isHalfStateEnabled() to be false (forcing FULL).
+        mKeyboardInsetSupplier.set(150);
+        BottomSheet.setSmallScreenForTesting(true);
+        mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, 50);
+        assertEquals(SheetState.FULL, mBottomSheet.getSheetState());
+        assertEquals(SheetState.HALF, mBottomSheet.getStateBeforeKeyboardShownForTesting());
+
+        listener.onStart(imeAnimation, null);
+
+        // Restore screen to not small.
+        BottomSheet.setSmallScreenForTesting(false);
+
+        // Simulate keyboard hiding and container expanding back.
+        mKeyboardInsetSupplier.set(0);
+        listener.onEnd(imeAnimation);
+        mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT);
+
+        // Verify state is restored back to HALF.
+        assertEquals(SheetState.HALF, mBottomSheet.getSheetState());
+        assertEquals(SheetState.NONE, mBottomSheet.getStateBeforeKeyboardShownForTesting());
+    }
+
+    @Test
+    public void testPreKeyboardStateCachedOnPrepare() {
+        setupBottomSheetForKeyboardTest();
+        InsetObserver.WindowInsetsAnimationListener listener =
+                mInsetsAnimationListenerCaptor.getValue();
+
+        // Simulate IME window insets animation preparing.
+        WindowInsetsAnimationCompat imeAnimation =
+                new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 50);
+        listener.onPrepare(imeAnimation);
+
+        assertEquals(SheetState.HALF, mBottomSheet.getStateBeforeKeyboardShownForTesting());
+        assertTrue(mBottomSheet.hasKeyboardTokenForTesting());
+
+        // Keyboard inset appears and container shrinks before onStart, forcing sheet to FULL.
+        mKeyboardInsetSupplier.set(150);
+        BottomSheet.setSmallScreenForTesting(true);
+        mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, 50);
+        assertEquals(SheetState.FULL, mBottomSheet.getSheetState());
+
+        // Restore screen to not small.
+        BottomSheet.setSmallScreenForTesting(false);
+
+        // Keyboard hides.
+        listener.onStart(imeAnimation, null);
+        mKeyboardInsetSupplier.set(0);
+        listener.onEnd(imeAnimation);
+
+        // Container expands back to normal height.
+        mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT);
+
+        assertEquals(SheetState.HALF, mBottomSheet.getSheetState());
+        assertEquals(SheetState.NONE, mBottomSheet.getStateBeforeKeyboardShownForTesting());
+    }
+
+    @Test
+    public void testNonImeAnimationOnPrepare_DoesNotCacheState() {
+        setupBottomSheetForKeyboardTest();
+        InsetObserver.WindowInsetsAnimationListener listener =
+                mInsetsAnimationListenerCaptor.getValue();
+
+        // Simulate non-IME animation (e.g. status bars).
+        WindowInsetsAnimationCompat statusBarAnimation =
+                new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.statusBars(), null, 50);
+        listener.onPrepare(statusBarAnimation);
+
+        // Pre-keyboard state should NOT be cached for non-IME animations.
+        assertEquals(SheetState.NONE, mBottomSheet.getStateBeforeKeyboardShownForTesting());
+        assertFalse(mBottomSheet.hasKeyboardTokenForTesting());
+    }
+
+    @Test
+    public void testCancelRevertStateDueToHeightChange() {
+        setupBottomSheetForKeyboardTest();
+        InsetObserver.WindowInsetsAnimationListener listener =
+                mInsetsAnimationListenerCaptor.getValue();
+
+        // Simulate keyboard showing
+        WindowInsetsAnimationCompat imeAnimation =
+                new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 50);
+        listener.onPrepare(imeAnimation);
+
         mKeyboardInsetSupplier.set(100);
-        listener.onStart(null, null);
+        listener.onStart(imeAnimation, null);
 
         // Simulate layout change while keyboard is showing
         mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT - 10);
@@ -655,11 +743,12 @@ public class BottomSheetUnitTest {
         mBottomSheet.setSheetState(SheetState.FULL, false);
 
         // Simulate screen height change
+        View decorView = mActivity.getWindow().getDecorView();
         decorView.layout(0, 0, 1080, 1820);
 
         // Simulate keyboard hiding.
         mKeyboardInsetSupplier.set(0);
-        listener.onEnd(null);
+        listener.onEnd(imeAnimation);
 
         // Trigger layout change on container
         mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT);
@@ -670,35 +759,28 @@ public class BottomSheetUnitTest {
 
     @Test
     public void testRecreateStateOnKeyboardShowingWithHeightChange() {
-        BottomSheet.setSmallScreenForTesting(false);
-        doReturn((float) HeightMode.RESIZE_CONTENT).when(mSheetContent).getFullHeightRatio();
-        doReturn(0.5f).when(mSheetContent).getHalfHeightRatio();
-        doReturn(HeightMode.DEFAULT).when(mSheetContent).getPeekHeight();
-        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
-
-        mBottomSheet.showContent(mSheetContent);
-        mBottomSheet.setSheetState(SheetState.HALF, false);
-
-        View decorView = mActivity.getWindow().getDecorView();
-        decorView.layout(0, 0, 1080, 1920);
-        mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT);
-
-        verify(mInsetObserver)
-                .addWindowInsetsAnimationListener(mInsetsAnimationListenerCaptor.capture());
+        setupBottomSheetForKeyboardTest();
         InsetObserver.WindowInsetsAnimationListener listener =
                 mInsetsAnimationListenerCaptor.getValue();
+
+        WindowInsetsAnimationCompat imeAnimation =
+                new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 50);
+        listener.onPrepare(imeAnimation);
+
         mKeyboardInsetSupplier.set(100);
-        listener.onStart(null, null);
+        listener.onStart(imeAnimation, null);
 
         // Simulate layout change while keyboard is showing.
         mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT - 10);
 
         // Simulate screen height change.
+        View decorView = mActivity.getWindow().getDecorView();
         decorView.layout(0, 0, 1080, 1820);
         mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT);
 
+        listener.onPrepare(imeAnimation);
         mKeyboardInsetSupplier.set(150);
-        listener.onStart(null, null);
+        listener.onStart(imeAnimation, null);
     }
 
     @Test
@@ -709,10 +791,11 @@ public class BottomSheetUnitTest {
         InsetObserver.WindowInsetsAnimationListener listener =
                 mInsetsAnimationListenerCaptor.getValue();
 
-        listener.onPrepare(null);
+        WindowInsetsAnimationCompat animation = new WindowInsetsAnimationCompat(0, null, 50);
+        listener.onPrepare(animation);
         verify(mBottomSheetObserver).beforeInsetAnimationStart();
 
-        listener.onEnd(null);
+        listener.onEnd(animation);
         verify(mBottomSheetObserver).onInsetAnimationEnd();
     }
 
@@ -787,11 +870,11 @@ public class BottomSheetUnitTest {
     @Test
     public void testKeyboardStateResetOnContentChange() {
         BottomSheet.setSmallScreenForTesting(false);
-        doReturn(new View(mActivity)).when(mSheetContent).getContentView();
+        when(mSheetContent.getContentView()).thenReturn(new View(mActivity));
 
         // Configure content to be resizable.
-        doReturn(0.5f).when(mSheetContent).getHalfHeightRatio();
-        doReturn((float) HeightMode.RESIZE_CONTENT).when(mSheetContent).getFullHeightRatio();
+        when(mSheetContent.getHalfHeightRatio()).thenReturn(0.5f);
+        when(mSheetContent.getFullHeightRatio()).thenReturn((float) HeightMode.RESIZE_CONTENT);
         setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
 
         mBottomSheet.showContent(mSheetContent);
@@ -803,8 +886,11 @@ public class BottomSheetUnitTest {
                 mInsetsAnimationListenerCaptor.getValue();
 
         // Simulate keyboard showing -> token acquired.
+        WindowInsetsAnimationCompat imeAnimation =
+                new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 50);
+        listener.onPrepare(imeAnimation);
         mKeyboardInsetSupplier.set(100);
-        listener.onStart(null, null);
+        listener.onStart(imeAnimation, null);
 
         assertTrue("Keyboard token should be acquired.", mBottomSheet.hasKeyboardTokenForTesting());
         assertEquals(
@@ -814,19 +900,18 @@ public class BottomSheetUnitTest {
 
         // Show different content (mock another content).
         BottomSheetContent newContent = mock();
-        doReturn(new View(mActivity)).when(newContent).getContentView();
-        doReturn(0.5f).when(newContent).getHalfHeightRatio();
-        doReturn((float) HeightMode.DEFAULT).when(newContent).getFullHeightRatio();
+        when(newContent.getContentView()).thenReturn(new View(mActivity));
+        when(newContent.getHalfHeightRatio()).thenReturn(0.5f);
+        when(newContent.getFullHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
         setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
 
         mBottomSheet.showContent(newContent);
 
-        // Verify token was erased and state reset.
         assertFalse(
-                "Keyboard token should be released on content change.",
+                "Keyboard token should be reset when content changes.",
                 mBottomSheet.hasKeyboardTokenForTesting());
         assertEquals(
-                "State before keyboard shown should be reset to NONE.",
+                "State before keyboard shown should be reset.",
                 SheetState.NONE,
                 mBottomSheet.getStateBeforeKeyboardShownForTesting());
     }

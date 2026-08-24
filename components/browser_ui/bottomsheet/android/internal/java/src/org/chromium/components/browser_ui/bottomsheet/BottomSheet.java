@@ -576,6 +576,7 @@ class BottomSheet extends BottomSheetView
                 new WindowInsetsAnimationListener() {
                     @Override
                     public void onPrepare(WindowInsetsAnimationCompat animation) {
+                        maybeCacheStateForImeAnimation(animation);
                         for (BottomSheetObserver obs : mObservers) {
                             obs.beforeInsetAnimationStart();
                         }
@@ -620,7 +621,6 @@ class BottomSheet extends BottomSheetView
     }
 
     private void onInsetChanged() {
-        maybeCacheStateOnKeyboardShown();
         updateContentContainerHeight();
     }
 
@@ -675,16 +675,20 @@ class BottomSheet extends BottomSheetView
         return mInsetObserver.getSupplierForKeyboardInset().get() > 0;
     }
 
-    private void maybeCacheStateOnKeyboardShown() {
-        if (isKeyboardShowing() && mStateBeforeKeyboardShown == SheetState.NONE) {
-            assert mKeyboardToken == TokenHolder.INVALID_TOKEN;
-            assert !mKeyboardTokenHolder.hasTokens();
+    private void maybeCacheStateForImeAnimation(WindowInsetsAnimationCompat animation) {
+        if ((animation.getTypeMask() & WindowInsetsCompat.Type.ime()) == 0) return;
+        if (mStateBeforeKeyboardShown != SheetState.NONE) return;
+        // This captures the BottomSheet state prior to a layout pass, so isKeyboardShowing will
+        // still return false.
+        if (isKeyboardShowing()) return;
 
-            // The bottom sheet state will not have been updated yet at this point, so
-            // store for later use.
-            mStateBeforeKeyboardShown = mCurrentState;
-            mKeyboardToken = mKeyboardTokenHolder.acquireToken();
-        }
+        assert mKeyboardToken == TokenHolder.INVALID_TOKEN;
+        assert !mKeyboardTokenHolder.hasTokens();
+
+        // The bottom sheet state will not have been updated yet at this point, so
+        // store for later use.
+        mStateBeforeKeyboardShown = mCurrentState;
+        mKeyboardToken = mKeyboardTokenHolder.acquireToken();
     }
 
     /**
