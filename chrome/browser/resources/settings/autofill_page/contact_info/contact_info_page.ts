@@ -23,7 +23,7 @@ import '../../simple_confirmation_dialog.js';
 import '../../site_favicon.js';
 import './address_edit_dialog.js';
 import './address_remove_confirmation_dialog.js';
-import '../passwords_shared.css.js';
+import '../passwords/passwords_shared.css.js';
 import '../autofill_shared.css.js';
 
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
@@ -41,10 +41,11 @@ import type {SettingsToggleButtonElement} from '../../controls/settings_toggle_b
 import {loadTimeData} from '../../i18n_setup.js';
 import {SettingsViewMixin} from '../../settings_page/settings_view_mixin.js';
 import type {SettingsSimpleConfirmationDialogElement} from '../../simple_confirmation_dialog.js';
-
 import type {AutofillManagerProxy, PersonalDataChangedListener} from '../autofill_manager_proxy.js';
 import {AutofillManagerImpl} from '../autofill_manager_proxy.js';
+
 import {getTemplate} from './contact_info_page.html.js';
+
 
 
 /**

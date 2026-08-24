@@ -13,7 +13,7 @@ import './appearance_page/appearance_fonts_page.js';
 import './autofill_page/contact_info/contact_info_page.js';
 import './autofill_page/identity_docs_page.js';
 // <if expr="is_win or is_macosx">
-import './autofill_page/passkeys_subpage.js';
+import './autofill_page/passwords/passkeys_page.js';
 // </if>
 import './autofill_page/payments/payments_page.js';
 import './autofill_page/shopping_page.js';
@@ -188,9 +188,9 @@ export {EntityDataManagerProxyImpl} from './autofill_page/entity_data_manager_pr
 export type {EntityDataManagerProxy, EntityInstancesChangedListener} from './autofill_page/entity_data_manager_proxy.js';
 export {SettingsIdentityDocsPageElement} from './autofill_page/identity_docs_page.js';
 // <if expr="is_win or is_macosx">
-export {PasskeysBrowserProxyImpl} from './autofill_page/passkeys_browser_proxy.js';
-export type {Passkey, PasskeysBrowserProxy} from './autofill_page/passkeys_browser_proxy.js';
-export {SettingsPasskeysSubpageElement} from './autofill_page/passkeys_subpage.js';
+export {PasskeysBrowserProxyImpl} from './autofill_page/passwords/passkeys_browser_proxy.js';
+export type {Passkey, PasskeysBrowserProxy} from './autofill_page/passwords/passkeys_browser_proxy.js';
+export {SettingsPasskeysPageElement} from './autofill_page/passwords/passkeys_page.js';
 // </if>
 export {SettingsCreditCardEditDialogElement} from './autofill_page/payments/credit_card_edit_dialog.js';
 export {SettingsCreditCardListEntryElement} from './autofill_page/payments/credit_card_list_entry.js';

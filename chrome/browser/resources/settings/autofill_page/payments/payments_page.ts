@@ -20,7 +20,7 @@ import '../../settings_page/settings_subpage.js';
 import '../../settings_shared.css.js';
 import '../../simple_confirmation_dialog.js';
 import '../autofill_shared.css.js';
-import '../passwords_shared.css.js';
+import '../passwords/passwords_shared.css.js';
 import './credit_card_edit_dialog.js';
 import './iban_edit_dialog.js';
 import './payments_list.js';

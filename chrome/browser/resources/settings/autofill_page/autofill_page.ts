@@ -41,7 +41,7 @@ import {getTemplate} from './autofill_page.html.js';
 import type {DataCategoryClickEvent, DataChipClickEvent} from './category_reference_card.js';
 import type {EntityDataManagerProxy, EntityInstancesChangedListener} from './entity_data_manager_proxy.js';
 import {EntityDataManagerProxyImpl} from './entity_data_manager_proxy.js';
-import {PasswordManagerImpl, PasswordManagerPage} from './password_manager_proxy.js';
+import {PasswordManagerImpl, PasswordManagerPage} from './passwords/password_manager_proxy.js';
 import {PaymentsManagerImpl} from './payments/payments_manager_proxy.js';
 import type {PaymentsManagerProxy} from './payments/payments_manager_proxy.js';
 import {DataManagementSurvey, SavedInfoHandlerImpl} from './saved_info_handler_proxy.js';

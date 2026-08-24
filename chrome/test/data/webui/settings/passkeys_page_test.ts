@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Tests for the passkeys subpage.
+ * @fileoverview Tests for the passkeys page.
  */
 
-import type {Passkey, PasskeysBrowserProxy, SettingsPasskeysSubpageElement, SettingsSimpleConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
+import type {Passkey, PasskeysBrowserProxy, SettingsPasskeysPageElement, SettingsSimpleConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
 import {PasskeysBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -93,9 +93,9 @@ function clickButton(page: HTMLElement, name: string) {
   button.click();
 }
 
-suite('PasskeysSubpage', function() {
+suite('PasskeysPage', function() {
   let browserProxy: TestPasskeysBrowserProxy;
-  let page: SettingsPasskeysSubpageElement;
+  let page: SettingsPasskeysPageElement;
   const testPasskeys: [Passkey] = [
     {
       credentialId: '1',
@@ -109,7 +109,7 @@ suite('PasskeysSubpage', function() {
     browserProxy = new TestPasskeysBrowserProxy();
     PasskeysBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('settings-passkeys-subpage');
+    page = document.createElement('settings-passkeys-page');
   });
 
   test('NoSupport', async function() {

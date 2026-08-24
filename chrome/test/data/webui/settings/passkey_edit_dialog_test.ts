@@ -6,7 +6,7 @@
  * @fileoverview Tests for the passkeys subpage.
  */
 
-import type {CrInputElement, Passkey, PasskeysBrowserProxy, SettingsPasskeysSubpageElement} from 'chrome://settings/lazy_load.js';
+import type {CrInputElement, Passkey, PasskeysBrowserProxy, SettingsPasskeysPageElement} from 'chrome://settings/lazy_load.js';
 import {PasskeysBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -125,13 +125,13 @@ function isShowingError(page: HTMLElement): boolean {
 
 suite('PasskeysEditDialog', function() {
   let browserProxy: TestPasskeysBrowserProxy;
-  let page: SettingsPasskeysSubpageElement;
+  let page: SettingsPasskeysPageElement;
 
   setup(function() {
     browserProxy = new TestPasskeysBrowserProxy();
     PasskeysBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('settings-passkeys-subpage');
+    page = document.createElement('settings-passkeys-page');
   });
 
   test('cancelClickedEditDialog', async function() {

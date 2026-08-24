@@ -337,8 +337,8 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, MetricsConsentRestructureDisabled) {
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(SettingsTest, PasskeysSubpage) {
-  RunTest("settings/passkeys_subpage_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(SettingsTest, PasskeysPage) {
+  RunTest("settings/passkeys_page_test.js", "mocha.run()");
 }
 #endif
 

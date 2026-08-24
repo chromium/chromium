@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview A settings subpage that allows the user to see and manage the
+ * @fileoverview A settings page that allows the user to see and manage the
     passkeys on their computer.
  */
-import '../settings_shared.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -14,9 +13,10 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import '../settings_page/settings_subpage.js';
-import '../site_favicon.js';
-import '../simple_confirmation_dialog.js';
+import '../../settings_page/settings_subpage.js';
+import '../../settings_shared.css.js';
+import '../../site_favicon.js';
+import '../../simple_confirmation_dialog.js';
 // <if expr="is_macosx">
 import './passkey_edit_dialog.js';
 
@@ -28,8 +28,8 @@ import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_r
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../i18n_setup.js';
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import {loadTimeData} from '../../i18n_setup.js';
+import {SettingsViewMixin} from '../../settings_page/settings_view_mixin.js';
 
 // <if expr="is_macosx">
 import type {PasskeyEditDialogElement, SavedPasskeyEditedEvent} from './passkey_edit_dialog.js';
@@ -37,9 +37,9 @@ import type {PasskeyEditDialogElement, SavedPasskeyEditedEvent} from './passkey_
 
 import type {Passkey, PasskeysBrowserProxy} from './passkeys_browser_proxy.js';
 import {PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
-import {getTemplate} from './passkeys_subpage.html.js';
+import {getTemplate} from './passkeys_page.html.js';
 
-export interface SettingsPasskeysSubpageElement {
+export interface SettingsPasskeysPageElement {
   $: {
     deleteErrorDialog: CrLazyRenderElement<CrDialogElement>,
     menu: CrActionMenuElement,
@@ -49,12 +49,12 @@ export interface SettingsPasskeysSubpageElement {
   };
 }
 
-const SettingsPasskeysSubpageElementBase = SettingsViewMixin(PolymerElement);
+const SettingsPasskeysPageElementBase = SettingsViewMixin(PolymerElement);
 
-export class SettingsPasskeysSubpageElement extends
-    SettingsPasskeysSubpageElementBase {
+export class SettingsPasskeysPageElement extends
+    SettingsPasskeysPageElementBase {
   static get is() {
-    return 'settings-passkeys-subpage';
+    return 'settings-passkeys-page';
   }
 
   static get template() {
@@ -253,9 +253,9 @@ export class SettingsPasskeysSubpageElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-passkeys-subpage': SettingsPasskeysSubpageElement;
+    'settings-passkeys-page': SettingsPasskeysPageElement;
   }
 }
 
 customElements.define(
-    SettingsPasskeysSubpageElement.is, SettingsPasskeysSubpageElement);
+    SettingsPasskeysPageElement.is, SettingsPasskeysPageElement);

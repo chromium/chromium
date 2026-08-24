@@ -13,9 +13,9 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '../icons.html.js';
-import '../settings_shared.css.js';
-import '../settings_vars.css.js';
+import '../../icons.html.js';
+import '../../settings_shared.css.js';
+import '../../settings_vars.css.js';
 import './passwords_shared.css.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';

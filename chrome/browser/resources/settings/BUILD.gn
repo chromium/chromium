@@ -244,11 +244,11 @@ build_webui("build") {
   }
 
   if (is_mac) {
-    web_component_files += [ "autofill_page/passkey_edit_dialog.ts" ]
+    web_component_files += [ "autofill_page/passwords/passkey_edit_dialog.ts" ]
   }
 
   if (is_win || is_mac) {
-    web_component_files += [ "autofill_page/passkeys_subpage.ts" ]
+    web_component_files += [ "autofill_page/passwords/passkeys_page.ts" ]
   }
 
   # -----------------web_component_files end ----------------------------------
@@ -282,7 +282,7 @@ build_webui("build") {
     "autofill_page/contact_info/address_edit_dialog_components.ts",
     "autofill_page/country_detail_manager_proxy.ts",
     "autofill_page/entity_data_manager_proxy.ts",
-    "autofill_page/password_manager_proxy.ts",
+    "autofill_page/passwords/password_manager_proxy.ts",
     "autofill_page/payments/payments_manager_proxy.ts",
     "autofill_page/policy_utils.ts",
     "autofill_page/saved_info_handler_proxy.ts",
@@ -462,7 +462,7 @@ build_webui("build") {
   }
 
   if (is_win || is_mac) {
-    ts_files += [ "autofill_page/passkeys_browser_proxy.ts" ]
+    ts_files += [ "autofill_page/passwords/passkeys_browser_proxy.ts" ]
   }
 
   # -----------------ts_files end -------------------------------
@@ -491,7 +491,7 @@ build_webui("build") {
     "appearance_page/appearance_page_index.css",
     "appearance_page/home_url_input.css",
     "autofill_page/autofill_shared.css",
-    "autofill_page/passwords_shared.css",
+    "autofill_page/passwords/passwords_shared.css",
     "autofill_page/screen_reader_only.css",
     "controls/settings_dropdown_menu.css",
     "controls/settings_slider.css",
