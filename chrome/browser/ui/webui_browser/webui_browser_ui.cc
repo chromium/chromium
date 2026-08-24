@@ -214,7 +214,7 @@ void WebUIBrowserUI::BindInterface(
   if (window) {
     BrowserWindowInterface* browser_window = window->browser();
     if (browser_window) {
-      auto* feature = browser_window->GetFeatures().bookmarks_service_feature();
+      auto* feature = BookmarksServiceFeature::From(browser_window);
       if (feature) {
         feature->Accept(std::move(receiver));
       }

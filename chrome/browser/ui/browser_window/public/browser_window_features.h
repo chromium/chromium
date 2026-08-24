@@ -324,10 +324,6 @@ class BrowserWindowFeatures {
     return browser_select_file_dialog_controller_.get();
   }
 
-  BookmarksServiceFeature* bookmarks_service_feature() {
-    return bookmarks_service_feature_.get();
-  }
-
   media_router::CastBrowserController* cast_browser_controller() {
     return cast_browser_controller_.get();
   }

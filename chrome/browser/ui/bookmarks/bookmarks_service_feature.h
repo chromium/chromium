@@ -13,8 +13,10 @@
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_observer.h"
 #include "components/browser_apis/bookmarks/bookmarks_api.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BookmarkMergedSurfaceService;
+class BrowserWindowInterface;
 
 namespace bookmarks_api {
 class BookmarksService;
@@ -28,9 +30,15 @@ class BookmarksService;
 // disconnects all active and pending connections and rejects new ones.
 class BookmarksServiceFeature : public BookmarkMergedSurfaceServiceObserver {
  public:
-  explicit BookmarksServiceFeature(
-      BookmarkMergedSurfaceService* merged_service);
+  DECLARE_USER_DATA(BookmarksServiceFeature);
+
+  BookmarksServiceFeature(BookmarkMergedSurfaceService* merged_service,
+                          ui::UnownedUserDataHost& host);
   ~BookmarksServiceFeature() override;
+
+  // Returns the feature for `browser_window`, or null if it does not have
+  // one (e.g. no BookmarkMergedSurfaceService for the profile).
+  static BookmarksServiceFeature* From(BrowserWindowInterface* browser_window);
 
   // Accepts an incoming connection. Note that if the underlying bookmarks
   // model is not ready yet, the acceptance will be deferred.
@@ -66,6 +74,8 @@ class BookmarksServiceFeature : public BookmarkMergedSurfaceServiceObserver {
   void ShutdownService();
 
   raw_ptr<BookmarkMergedSurfaceService> merged_service_;
+
+  ui::ScopedUnownedUserData<BookmarksServiceFeature> scoped_unowned_user_data_;
   base::ScopedObservation<BookmarkMergedSurfaceService,
                           BookmarkMergedSurfaceServiceObserver>
       observation_{this};

@@ -6,12 +6,22 @@
 
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/ui/bookmarks/combined_bookmarks_view.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/browser_apis/bookmarks/bookmarks_service_impl.h"
 
+DEFINE_USER_DATA(BookmarksServiceFeature);
+
+// static
+BookmarksServiceFeature* BookmarksServiceFeature::From(
+    BrowserWindowInterface* browser_window) {
+  return Get(browser_window->GetUnownedUserDataHost());
+}
+
 BookmarksServiceFeature::BookmarksServiceFeature(
-    BookmarkMergedSurfaceService* merged_service)
-    : merged_service_(merged_service) {
+    BookmarkMergedSurfaceService* merged_service,
+    ui::UnownedUserDataHost& host)
+    : merged_service_(merged_service), scoped_unowned_user_data_(host, *this) {
   CHECK(merged_service_);
   observation_.Observe(merged_service_);
   if (merged_service_->loaded()) {

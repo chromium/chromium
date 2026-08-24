@@ -287,7 +287,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
         BookmarkMergedSurfaceServiceFactory::GetForProfile(profile);
     if (merged_bookmarks_service != nullptr) {
       bookmarks_service_feature_ =
-          std::make_unique<BookmarksServiceFeature>(merged_bookmarks_service);
+          GetUserDataFactory().CreateInstance<BookmarksServiceFeature>(
+              *browser, merged_bookmarks_service,
+              browser->GetUnownedUserDataHost());
     }
   }
 
