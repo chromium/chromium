@@ -80,7 +80,7 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
 
   onLocationBarFocusWithinChanged(_focusInside: boolean) {}
 
-  onLhsChipMousePressed(id: LhsChipIdentifier) {
+  onLhsChipMousePressed(id: LhsChipIdentifier, _isMiddleClick: boolean) {
     this.methodCalled('onLhsChipMousePressed', id);
   }
 
@@ -185,7 +185,7 @@ class TestToolbarBrowserProxy extends TestBrowserProxy implements BrowserProxy {
     this.toolbarUIHandler.onLhsChipPointerExited(chip);
   }
   onChipMousePressed(chip: LhsChipIdentifier) {
-    this.toolbarUIHandler.onLhsChipMousePressed(chip);
+    this.toolbarUIHandler.onLhsChipMousePressed(chip, false);
   }
   onChipExpandAnimationEnded(chip: LhsChipIdentifier) {
     this.toolbarUIHandler.onLhsChipExpandAnimationEnded(chip);

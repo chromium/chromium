@@ -1479,9 +1479,10 @@ void WebUIToolbarWebView::OnLocationBarFocusWithinChanged(bool focused) {
 }
 
 void WebUIToolbarWebView::OnLhsChipMousePressed(
-    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier,
+    bool is_middle_click) {
   if (location_bar_) {
-    location_bar_->OnLhsChipMousePressed(identifier);
+    location_bar_->OnLhsChipMousePressed(identifier, is_middle_click);
   }
 }
 

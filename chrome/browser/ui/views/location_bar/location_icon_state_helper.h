@@ -8,6 +8,8 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "components/security_state/core/security_state.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 namespace ui {
@@ -15,6 +17,8 @@ class ImageModel;
 }
 
 class LocationBarModel;
+class AutocompleteClassifier;
+class OmniboxController;
 
 namespace content {
 class WebContents;
@@ -62,6 +66,20 @@ bool ShouldAnimateSecurityChipTextChange(
     bool is_editing_or_empty,
     security_state::SecurityLevel previous_level,
     security_state::SecurityLevel new_level);
+
+// Execute a Paste-and-Go action on the omnibox from a middle click.
+void ExecutePasteAndGo(OmniboxController& omnibox_controller,
+                       AutocompleteClassifier* autocomplete_classifier,
+                       const std::u16string& text,
+                       base::TimeTicks event_timestamp);
+
+// Evaluates if the OS supports pasting from the selection clipboard on
+// middle-click, and if so, asynchronously reads the clipboard and routes the
+// text to `paste_callback`. Returns true if the event was intercepted and the
+// clipboard read was dispatched.
+bool InitiateMiddleClickPasteIfSupported(
+    bool is_middle_click,
+    base::OnceCallback<void(std::u16string)> paste_callback);
 
 }  // namespace location_bar
 

@@ -198,12 +198,19 @@ export class LocationIconElement extends LocationIconElementBase {
       return;
     }
 
-    if (!this.clickable || (e.button !== 0 && e.button !== 2)) {
+    // Only handle primary (left), auxiliary (middle), and secondary (right)
+    // clicks.
+    if (!this.clickable || ![0, 1, 2].includes(e.button)) {
       return;
     }
 
+    // e.button === 1 evaluates whether the primary trigger was the auxiliary
+    // (middle) button. e.buttons === 4 ensures that ONLY the auxiliary button
+    // is physically depressed to prevent false positives from chorded
+    // multi-finger clicks.
+    const isMiddleClick = e.button === 1 && e.buttons === 4;
     BrowserProxyImpl.getInstance().toolbarUIHandler.onLhsChipMousePressed(
-        LhsChipIdentifier.kLocationIcon);
+        LhsChipIdentifier.kLocationIcon, isMiddleClick);
 
     if (e.button === 0) {
       this.dragStartX_ = e.clientX;

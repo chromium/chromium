@@ -227,7 +227,8 @@ class WebUIToolbarWebView
   void MoveExtensionActionBy(const std::string& extension_id,
                              int32_t delta) override;
   void OnLhsChipMousePressed(
-      toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
+      toolbar_ui_api::mojom::LhsChipIdentifier identifier,
+      bool is_middle_click) override;
   void OnLhsChipClicked(toolbar_ui_api::mojom::LhsChipIdentifier identifier,
                         bool is_mouse_interaction) override;
   void OnLhsChipPointerEntered(

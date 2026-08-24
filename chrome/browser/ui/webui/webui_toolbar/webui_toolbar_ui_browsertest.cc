@@ -179,7 +179,7 @@ class MockToolbarUIDelegate
 
   MOCK_METHOD(void,
               OnLhsChipMousePressed,
-              (toolbar_ui_api::mojom::LhsChipIdentifier),
+              (toolbar_ui_api::mojom::LhsChipIdentifier, bool),
               (override));
   MOCK_METHOD(void,
               OnLhsChipClicked,

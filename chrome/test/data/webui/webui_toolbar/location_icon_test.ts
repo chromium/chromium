@@ -15,8 +15,8 @@ class TestToolbarUiHandler extends TestBrowserProxy {
     super(['onLhsChipMousePressed', 'onLhsChipClicked']);
   }
 
-  onLhsChipMousePressed(id: LhsChipIdentifier) {
-    this.methodCalled('onLhsChipMousePressed', id);
+  onLhsChipMousePressed(id: LhsChipIdentifier, isMiddleClick: boolean) {
+    this.methodCalled('onLhsChipMousePressed', [id, isMiddleClick]);
   }
 
   onLhsChipClicked(id: LhsChipIdentifier, isMouseInteraction: boolean) {
@@ -229,16 +229,30 @@ suite('LocationIconTest', function() {
     await microtasksFinished();
 
     const container = locationIcon.$.container;
-    container.dispatchEvent(new PointerEvent('pointerdown'));
+
+    // Simulate normal click pointerdown
+    container.dispatchEvent(new PointerEvent('pointerdown', {button: 0}));
     assertEquals(1, toolbarUiHandler.getCallCount('onLhsChipMousePressed'));
     assertEquals(
         LhsChipIdentifier.kLocationIcon,
-        toolbarUiHandler.getArgs('onLhsChipMousePressed')[0]);
+        toolbarUiHandler.getArgs('onLhsChipMousePressed')[0][0]);
+    assertFalse(toolbarUiHandler.getArgs('onLhsChipMousePressed')[0][1]);
     container.dispatchEvent(new PointerEvent('pointerup'));
 
     // Simulate right click pointerdown
     container.dispatchEvent(new PointerEvent('pointerdown', {button: 2}));
     assertEquals(2, toolbarUiHandler.getCallCount('onLhsChipMousePressed'));
+    assertFalse(toolbarUiHandler.getArgs('onLhsChipMousePressed')[1][1]);
+    container.dispatchEvent(new PointerEvent('pointerup'));
+
+    // Simulate middle click pointerdown with e.buttons = 4
+    container.dispatchEvent(
+        new PointerEvent('pointerdown', {button: 1, buttons: 4}));
+    assertEquals(3, toolbarUiHandler.getCallCount('onLhsChipMousePressed'));
+    assertEquals(
+        LhsChipIdentifier.kLocationIcon,
+        toolbarUiHandler.getArgs('onLhsChipMousePressed')[2][0]);
+    assertTrue(toolbarUiHandler.getArgs('onLhsChipMousePressed')[2][1]);
     container.dispatchEvent(new PointerEvent('pointerup'));
 
     container.click();

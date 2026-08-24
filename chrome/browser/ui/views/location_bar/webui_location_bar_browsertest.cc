@@ -1,3 +1,7 @@
+#include "content/public/test/test_navigation_observer.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/clipboard/test/test_clipboard.h"
 // Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -786,6 +790,67 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
   EXPECT_FALSE(
       content::EvalJs(GetWebUIToolbarWebContents(), kCheckAnimatingScript)
           .ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, MiddleClickPasteAndGo) {
+  if (!ui::Clipboard::IsMiddleClickPasteEnabled() ||
+      !ui::Clipboard::IsSupportedClipboardBuffer(
+          ui::ClipboardBuffer::kSelection)) {
+    return;
+  }
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL paste_url = embedded_test_server()->GetURL("/title1.html");
+
+  // Set some text in the selection clipboard.
+  const std::u16string kPasteText = base::UTF8ToUTF16(paste_url.spec());
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kSelection);
+    writer.WriteText(kPasteText);
+  }
+
+  // Set up an observer to wait for the navigation.
+  content::TestNavigationObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  // Wait until the WebUI is loaded.
+  WaitForInitialWebUIToolbar(browser());
+
+  // Simulate a middle-click on the location icon in WebUI.
+  constexpr char kSimulateMiddleClickScript[] = R"(
+      (() => {
+        const locationIcon = document.querySelector('toolbar-app')?.
+            shadowRoot?.querySelector('location-bar')?.
+            shadowRoot?.querySelector('location-icon');
+        const container = locationIcon?.shadowRoot?.querySelector('#container');
+        if (!container) {
+          return false;
+        }
+
+        // Native middle-click uses pointer events.
+        const eventInit = {
+          button: 1,
+          buttons: 4,
+          bubbles: true,
+          composed: true,
+          cancelable: true
+        };
+        container.dispatchEvent(new PointerEvent('pointerdown', eventInit));
+        return true;
+      })()
+  )";
+
+  EXPECT_TRUE(
+      content::EvalJs(GetWebUIToolbarWebContents(), kSimulateMiddleClickScript)
+          .ExtractBool());
+
+  // Wait for the navigation to finish.
+  observer.Wait();
+
+  EXPECT_EQ(paste_url, browser()
+                           ->tab_strip_model()
+                           ->GetActiveWebContents()
+                           ->GetLastCommittedURL());
 }
 
 }  // namespace

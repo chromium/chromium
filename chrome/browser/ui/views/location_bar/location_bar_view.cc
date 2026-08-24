@@ -64,6 +64,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_actions.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_layout.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
+#include "chrome/browser/ui/views/location_bar/location_icon_state_helper.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
@@ -100,12 +101,10 @@
 #include "components/contextual_search/input_state_model.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/lens/lens_features.h"
-#include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
-#include "components/omnibox/browser/omnibox_text_util.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/input_state.h"
@@ -115,7 +114,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/security_state/core/security_state.h"
-#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -125,7 +123,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/actions/actions.h"
-#include "ui/base/clipboard/clipboard.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/virtual_keyboard_controller.h"
@@ -2052,14 +2049,10 @@ void LocationBarView::OnLocationIconGestureEvent(ui::GestureEvent* event) {
 
 void LocationBarView::OnLocationIconPressed(const ui::MouseEvent& event) {
   // "Paste-and-Go" behavior should take priority over all other interactions.
-  if (event.IsOnlyMiddleMouseButton() &&
-      ui::Clipboard::IsMiddleClickPasteEnabled() &&
-      ui::Clipboard::IsSupportedClipboardBuffer(
-          ui::ClipboardBuffer::kSelection)) {
-    ui::Clipboard::GetForCurrentThread()->ReadText(
-        ui::ClipboardBuffer::kSelection, /* data_dst = */ std::nullopt,
-        base::BindOnce(&LocationBarView::OnMiddleClickPaste,
-                       weak_factory_.GetWeakPtr(), event.time_stamp()));
+  if (location_bar::InitiateMiddleClickPasteIfSupported(
+          event.IsOnlyMiddleMouseButton(),
+          base::BindOnce(&LocationBarView::OnMiddleClickPaste,
+                         weak_factory_.GetWeakPtr(), event.time_stamp()))) {
     return;
   }
 
@@ -2068,22 +2061,10 @@ void LocationBarView::OnLocationIconPressed(const ui::MouseEvent& event) {
 
 void LocationBarView::OnMiddleClickPaste(base::TimeTicks event_timestamp,
                                          std::u16string text) {
-  text = omnibox::SanitizeTextForPaste(text);
-
-  if (!GetOmniboxController()->edit_model()->CanPasteAndGo(text)) {
-    return;
-  }
-
-  AutocompleteMatch match;
-  AutocompleteClassifierFactory::GetForProfile(GetProfile())
-      ->Classify(text, false, false, metrics::OmniboxEventProto::BLANK, &match,
-                 nullptr);
-  if (!content::ChildProcessSecurityPolicy::GetInstance()->IsWebSafeScheme(
-          std::string(match.destination_url.scheme()))) {
-    return;
-  }
-
-  GetOmniboxController()->edit_model()->PasteAndGo(text, event_timestamp);
+  location_bar::ExecutePasteAndGo(
+      *GetOmniboxController(),
+      AutocompleteClassifierFactory::GetForProfile(GetProfile()), text,
+      event_timestamp);
 }
 
 void LocationBarView::OnLocationIconDragged(const ui::MouseEvent& event) {

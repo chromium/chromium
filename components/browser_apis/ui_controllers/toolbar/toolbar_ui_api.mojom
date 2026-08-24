@@ -118,7 +118,10 @@ interface ToolbarUIService {
   MoveExtensionActionBy(string extension_id, int32 delta);
 
   // Called when an LHS chip is pressed (e.g., pointerdown).
-  OnLhsChipMousePressed(LhsChipIdentifier identifier);
+  // `identifier` specifies which chip triggered the event (e.g., LocationIcon).
+  // `is_middle_click` evaluates whether the event specifically generated from
+  // an auxiliary/middle click.
+  OnLhsChipMousePressed(LhsChipIdentifier identifier, bool is_middle_click);
 
   // Called when an LHS chip is clicked.
   // `is_mouse_interaction` is true if the click was triggered by a mouse event.

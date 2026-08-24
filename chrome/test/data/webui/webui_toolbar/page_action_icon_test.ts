@@ -52,7 +52,7 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
   }
   onAppMenuFocusChanged(_focused: boolean) {}
   onLocationBarFocusWithinChanged(_focusInside: boolean) {}
-  onLhsChipMousePressed() {}
+  onLhsChipMousePressed(_id: LhsChipIdentifier, _isMiddleClick: boolean) {}
   onLhsChipClicked() {}
   onLhsChipCollapseAnimationEnded() {}
   onLhsChipExpandAnimationEnded() {}

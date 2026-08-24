@@ -232,9 +232,10 @@ void ToolbarUIService::MoveExtensionActionBy(const std::string& extension_id,
 }
 
 void ToolbarUIService::OnLhsChipMousePressed(
-    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier,
+    bool is_middle_click) {
   if (delegate_) {
-    delegate_->OnLhsChipMousePressed(identifier);
+    delegate_->OnLhsChipMousePressed(identifier, is_middle_click);
   }
 }
 

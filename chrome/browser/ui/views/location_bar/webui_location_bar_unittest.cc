@@ -216,7 +216,8 @@ TEST_F(WebUILocationBarTest, MouseClickSuppression) {
   // A mouse press on the chip should NOT suppress if the bubble wasn't just
   // closed.
   location_bar_->OnLhsChipMousePressed(
-      toolbar_ui_api::mojom::LhsChipIdentifier::kLocationIcon);
+      toolbar_ui_api::mojom::LhsChipIdentifier::kLocationIcon,
+      /*is_middle_click=*/false);
   EXPECT_FALSE(WillNextBubbleShowBeSuppressed());
 
   // Simulate the bubble being closed right now.
@@ -224,7 +225,8 @@ TEST_F(WebUILocationBarTest, MouseClickSuppression) {
 
   // A mouse press immediately after closing should trigger suppression.
   location_bar_->OnLhsChipMousePressed(
-      toolbar_ui_api::mojom::LhsChipIdentifier::kLocationIcon);
+      toolbar_ui_api::mojom::LhsChipIdentifier::kLocationIcon,
+      /*is_middle_click=*/false);
   EXPECT_TRUE(WillNextBubbleShowBeSuppressed());
 
   // A non-mouse click (e.g., keyboard Enter) will bypass suppression and
@@ -236,7 +238,8 @@ TEST_F(WebUILocationBarTest, MouseClickSuppression) {
 
   // Re-arm suppression immediately.
   location_bar_->OnLhsChipMousePressed(
-      toolbar_ui_api::mojom::LhsChipIdentifier::kLocationIcon);
+      toolbar_ui_api::mojom::LhsChipIdentifier::kLocationIcon,
+      /*is_middle_click=*/false);
   EXPECT_TRUE(WillNextBubbleShowBeSuppressed());
 
   // A true mouse click SHOULD consume the suppression flag and return early.
@@ -285,12 +288,14 @@ TEST_F(WebUILocationBarTest, PermissionChipMouseEvents) {
   // Test Mouse Pressed events are forwarded.
   EXPECT_CALL(request_observer, OnMousePressed());
   location_bar_->OnLhsChipMousePressed(
-      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest);
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest,
+      /*is_middle_click=*/false);
   testing::Mock::VerifyAndClearExpectations(&request_observer);
 
   EXPECT_CALL(indicator_observer, OnMousePressed());
   location_bar_->OnLhsChipMousePressed(
-      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator);
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator,
+      /*is_middle_click=*/false);
   testing::Mock::VerifyAndClearExpectations(&indicator_observer);
 
   // Test Click events are forwarded.

@@ -67,7 +67,8 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
     virtual void MoveExtensionActionBy(const std::string& extension_id,
                                        int32_t delta) = 0;
     virtual void OnLhsChipMousePressed(
-        toolbar_ui_api::mojom::LhsChipIdentifier identifier) = 0;
+        toolbar_ui_api::mojom::LhsChipIdentifier identifier,
+        bool is_middle_click) = 0;
     virtual void OnLhsChipClicked(
         toolbar_ui_api::mojom::LhsChipIdentifier identifier,
         bool is_mouse_interaction) = 0;
@@ -159,7 +160,8 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
   void MoveExtensionActionBy(const std::string& extension_id,
                              int32_t delta) override;
   void OnLhsChipMousePressed(
-      toolbar_ui_api::mojom::LhsChipIdentifier identifier) override;
+      toolbar_ui_api::mojom::LhsChipIdentifier identifier,
+      bool is_middle_click) override;
   void OnLhsChipClicked(toolbar_ui_api::mojom::LhsChipIdentifier identifier,
                         bool is_mouse_interaction) override;
   void OnLhsChipPointerEntered(
