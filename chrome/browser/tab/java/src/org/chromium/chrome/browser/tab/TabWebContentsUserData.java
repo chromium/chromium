@@ -15,37 +15,43 @@ import org.chromium.ui.base.WindowAndroid;
  * active for the Tab.
  */
 @NullMarked
-public abstract class TabWebContentsUserData implements UserData {
+public abstract class TabWebContentsUserData implements TabObserver, UserData {
     private @Nullable WebContents mWebContents;
 
     public TabWebContentsUserData(Tab tab) {
-        tab.addObserver(
-                new TabObserver() {
-                    @Override
-                    public void onContentChanged(Tab tab) {
-                        if (mWebContents == tab.getWebContents()) return;
-                        if (mWebContents != null) cleanupWebContents(mWebContents);
-                        mWebContents = tab.getWebContents();
-                        if (mWebContents != null) initWebContents(mWebContents);
-                    }
+        tab.addObserver(this);
+    }
 
-                    @Override
-                    public void onDestroyed(Tab tab) {
-                        tab.removeObserver(this);
-                    }
+    @Override
+    public void onContentChanged(Tab tab) {
+        if (mWebContents == tab.getWebContents()) {
+            return;
+        }
+        if (mWebContents != null) {
+            cleanupWebContents(mWebContents);
+        }
+        mWebContents = tab.getWebContents();
+        if (mWebContents != null) {
+            initWebContents(mWebContents);
+        }
+    }
 
-                    @Override
-                    public void onActivityAttachmentChanged(
-                            Tab tab, @Nullable WindowAndroid window) {
-                        // Intentionally do nothing to prevent automatic observer removal on
-                        // detachment.
-                    }
-                });
+    @Override
+    public void onDestroyed(Tab tab) {
+        tab.removeObserver(this);
+    }
+
+    @Override
+    public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
+        // Intentionally do nothing to prevent automatic observer removal on
+        // detachment.
     }
 
     @Override
     public final void destroy() {
-        if (mWebContents != null) cleanupWebContents(mWebContents);
+        if (mWebContents != null) {
+            cleanupWebContents(mWebContents);
+        }
         destroyInternal();
     }
 
