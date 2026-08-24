@@ -50,9 +50,6 @@ class BaseTabStripRegionView : public TabStripRegionView,
     return tab_strip_controller_.get();
   }
 
-  RootTabCollectionNode* root_node() { return root_node_.get(); }
-  const RootTabCollectionNode* root_node() const { return root_node_.get(); }
-
   TabDragTarget* GetTabDragTarget(const gfx::Point& point_in_screen) override;
   virtual gfx::Rect GetTabStripDraggableBounds() const = 0;
 
@@ -160,8 +157,8 @@ class BaseTabStripRegionView : public TabStripRegionView,
   raw_ptr<TabDragHandler> drag_handler_ = nullptr;
   std::unique_ptr<DropArrow> drop_arrow_;
 
-  std::unique_ptr<TabStripCollectionController> tab_strip_controller_;
   std::unique_ptr<RootTabCollectionNode> root_node_;
+  std::unique_ptr<TabStripCollectionController> tab_strip_controller_;
 
   std::unique_ptr<TabHoverCardController> hover_card_controller_;
   std::unique_ptr<HoverTabSelector> hover_tab_selector_;

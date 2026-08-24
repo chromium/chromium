@@ -54,11 +54,13 @@
 TabStripCollectionController::TabStripCollectionController(
     TabStripModel* model,
     BrowserView* browser_view,
+    RootTabCollectionNode& root_node,
     TabDragHandler& drag_handler,
     TabHoverCardController* hover_card_controller,
     std::unique_ptr<TabMenuModelFactory> menu_model_factory_override)
     : model_(model),
       browser_view_(browser_view),
+      root_node_(root_node),
       drag_handler_(drag_handler),
       hover_card_controller_(hover_card_controller) {
   CHECK(browser_view_);
@@ -111,16 +113,10 @@ const TabCollectionNode* TabStripCollectionController::GetAdjacentTab(
 
   const tabs::TabInterface* adjacent_tab =
       model_->GetTabAtIndex(adjacent_index);
-  BaseTabStripRegionView* region_view =
-      views::AsViewClass<BaseTabStripRegionView>(
-          browser_view_->tab_strip_view());
-  RootTabCollectionNode* root_node =
-      region_view ? region_view->root_node() : nullptr;
 
   TabCollectionNode* adjacent_node =
-      (root_node && adjacent_tab)
-          ? root_node->GetNodeForHandle(adjacent_tab->GetHandle())
-          : nullptr;
+      adjacent_tab ? root_node_->GetNodeForHandle(adjacent_tab->GetHandle())
+                   : nullptr;
   return adjacent_node;
 }
 
@@ -396,12 +392,8 @@ void TabStripCollectionController::ToggleTabGroupCollapsedState(
   }
 
   if (should_toggle_group) {
-    auto* const base_region_view = views::AsViewClass<BaseTabStripRegionView>(
-        browser_view_->tab_strip_view());
-    CHECK(base_region_view);
     const TabCollectionNode* group_node =
-        base_region_view->root_node()->GetNodeForHandle(
-            group->GetCollectionHandle());
+        root_node_->GetNodeForHandle(group->GetCollectionHandle());
     if (group_node) {
       for (const auto& child_node : group_node->children()) {
         if (auto* tab_view = views::AsViewClass<TabView>(child_node->view())) {
@@ -725,8 +717,7 @@ void TabStripCollectionController::ShiftTabRelative(
       } else {
         tabs::TabInterface* tab = model_->GetTabAtIndex(start_index);
         views::View* tab_view =
-            tab ? browser_view_->tab_strip_view()->GetTabAnchorView(
-                      tab->GetHandle())
+            tab ? root_node_->GetNodeForHandle(tab->GetHandle())->view()
                 : nullptr;
         // Read before adding the tab to the group so that the group description
         // isn't the tab we just added.

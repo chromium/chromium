@@ -20,6 +20,7 @@
 class BrowserFrameView;
 class BrowserView;
 class ExpandOnHoverLock;
+class RootTabCollectionNode;
 class TabCollectionNode;
 class TabGroup;
 class TabHoverCardController;
@@ -43,6 +44,7 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
  public:
   TabStripCollectionController(TabStripModel* model,
                                BrowserView* browser_view,
+                               RootTabCollectionNode& root_node,
                                TabDragHandler& drag_handler,
                                TabHoverCardController* hover_card_controller,
                                std::unique_ptr<TabMenuModelFactory>
@@ -161,6 +163,7 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
 
   raw_ptr<TabStripModel> model_;
   raw_ptr<BrowserView> browser_view_;
+  const raw_ref<RootTabCollectionNode> root_node_;
   const raw_ref<TabDragHandler> drag_handler_;
   raw_ptr<TabHoverCardController> hover_card_controller_;
 
