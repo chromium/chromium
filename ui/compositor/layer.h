@@ -105,6 +105,8 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   const LayerNinePatch* AsNinePatch() const;
   LayerSurface* AsSurface();
   const LayerSurface* AsSurface() const;
+  LayerWithExternalTexture* AsWithExternalTexture();
+  const LayerWithExternalTexture* AsWithExternalTexture() const;
 
   Layer(const Layer&) = delete;
   Layer& operator=(const Layer&) = delete;
@@ -554,7 +556,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   virtual void CommitDamage(const cc::Region& damage);
 
   void Destroy();
-  virtual void Reset() {}
+  virtual void Reset() = 0;
 
  private:
   friend class LayerOwner;

@@ -27,8 +27,8 @@
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_owner.h"
-#include "ui/compositor/layer_solid_color.h"
 #include "ui/compositor/layer_tree_owner.h"
+#include "ui/compositor/layer_with_external_texture.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
@@ -365,9 +365,9 @@ std::unique_ptr<ui::LayerTreeOwner> ScreenRotationAnimator::CopyLayerTree(
     std::unique_ptr<viz::CopyOutputResult> result) {
   gfx::Size layer_size =
       GetScreenRotationContainer(root_window_)->layer()->size();
-  std::unique_ptr<ui::Layer> copy_layer =
+  std::unique_ptr<ui::LayerWithExternalTexture> copy_layer =
       CreateLayerFromCopyOutputResult(std::move(result), layer_size);
-  CHECK_EQ(copy_layer->type(), ui::LAYER_SOLID_COLOR);
+  copy_layer->SetFillsBoundsOpaquely(false);
   DCHECK_EQ(copy_layer->size(),
             GetScreenRotationContainer(root_window_)->layer()->size());
 

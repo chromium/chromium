@@ -26,12 +26,13 @@ class CopyOutputResult;
 namespace ash {
 
 // Creates the new layer with |layer_size| using the image in |copy_result|.
-ASH_EXPORT std::unique_ptr<ui::Layer> CreateLayerFromCopyOutputResult(
+ASH_EXPORT std::unique_ptr<ui::LayerWithExternalTexture>
+CreateLayerFromCopyOutputResult(
     std::unique_ptr<viz::CopyOutputResult> copy_result,
     const gfx::Size& layer_size);
 
-using LayerCopyCallback =
-    base::OnceCallback<void(std::unique_ptr<ui::Layer> new_layer)>;
+using LayerCopyCallback = base::OnceCallback<void(
+    std::unique_ptr<ui::LayerWithExternalTexture> new_layer)>;
 
 // Creates a new layer that has a copy of the |layer|'s content. This is an
 // async API and a new layer will be passed to the |callback| when copy is done.

@@ -45,6 +45,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/compositor/layer_with_external_texture.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
@@ -1305,7 +1306,7 @@ void TabletModeController::TakeScreenshot(aura::Window* top_window) {
 void TabletModeController::OnLayerCopyed(
     base::OnceClosure on_screenshot_taken,
     aura::Window* root_window,
-    std::unique_ptr<ui::Layer> copy_layer) {
+    std::unique_ptr<ui::LayerWithExternalTexture> copy_layer) {
   aura::Window* top_window =
       destroy_observer_ ? destroy_observer_->window() : nullptr;
   ResetDestroyObserver();

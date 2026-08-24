@@ -72,6 +72,9 @@ void PrintLayerHierarchyImp(const Layer* layer,
     case ui::LAYER_SURFACE:
       *out << " surface";
       break;
+    case ui::LAYER_WITH_EXTERNAL_TEXTURE:
+      *out << " with_external_texture";
+      break;
   }
 
   if (layer->fills_bounds_opaquely()) {

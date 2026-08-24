@@ -15,7 +15,16 @@
 
 namespace ui {
 
-LayerWithExternalTexture::~LayerWithExternalTexture() = default;
+LayerWithExternalTexture::LayerWithExternalTexture()
+    : Layer(LAYER_WITH_EXTERNAL_TEXTURE) {
+  texture_layer_ = cc::TextureLayer::Create(this);
+  cc_layer_ = texture_layer_.get();
+  InitializeCcLayer();
+}
+
+LayerWithExternalTexture::~LayerWithExternalTexture() {
+  Destroy();
+}
 
 void LayerWithExternalTexture::SetTransferableResource(
     const viz::TransferableResource& resource,
@@ -24,23 +33,6 @@ void LayerWithExternalTexture::SetTransferableResource(
   DCHECK(!resource.is_empty());
   DCHECK(release_callback);
   DCHECK(!resource.GetIsSoftware());
-  if (!texture_layer_.get()) {
-    // If `FinishAnimationsBeforeSwitchToLayer` returns false, `this` Layer was
-    // destroyed.
-    if (!FinishAnimationsBeforeSwitchToLayer()) {
-      return;
-    }
-    // Incoming resource is assumed to have top-left origin which corresponds to
-    // TextureLayer flipped being false.
-    scoped_refptr<cc::TextureLayer> new_layer = cc::TextureLayer::Create(this);
-    SwitchToLayer(new_layer);
-
-    texture_layer_ = new_layer;
-    // Reset the texture_size_in_dip_ so that SetTextureSize() will not early
-    // out, the texture_size_in_dip_ was for a previous (different)
-    // |texture_layer_|.
-    texture_size_in_dip_ = gfx::Size();
-  }
 
   if (transfer_release_callback_) {
     std::move(transfer_release_callback_).Run(gpu::SyncToken(), false);
@@ -72,6 +64,24 @@ void LayerWithExternalTexture::SetTextureSize(gfx::Size texture_size_in_dip) {
   texture_layer_->SetNeedsDisplay();
 }
 
+void LayerWithExternalTexture::ClearTexture() {
+  if (!HasTransferableResource()) {
+    return;
+  }
+
+  texture_layer_->ClearTexture();
+  texture_layer_->SetNeedsSetTransferableResource();
+
+  transfer_resource_ = viz::TransferableResource();
+  if (transfer_release_callback_) {
+    std::move(transfer_release_callback_).Run(gpu::SyncToken(), false);
+  }
+
+  for (const auto& mirror : mirrors_) {
+    mirror->dest()->AsWithExternalTexture()->ClearTexture();
+  }
+}
+
 bool LayerWithExternalTexture::HasTransferableResource() const {
   return !transfer_resource_.is_empty();
 }
@@ -95,7 +105,7 @@ std::unique_ptr<Layer> LayerWithExternalTexture::CreateMirror(
 }
 
 bool LayerWithExternalTexture::HasExternalContent() const {
-  return texture_layer_.get();
+  return true;
 }
 
 void LayerWithExternalTexture::RecomputeDrawsContentAndUVRect() {
@@ -141,9 +151,6 @@ bool LayerWithExternalTexture::PrepareTransferableResource(
   *release_callback = std::move(transfer_release_callback_);
   return true;
 }
-
-LayerWithExternalTexture::LayerWithExternalTexture(LayerType type)
-    : Layer(type) {}
 
 void LayerWithExternalTexture::Reset() {
   if (texture_layer_.get()) {

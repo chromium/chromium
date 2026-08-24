@@ -173,6 +173,8 @@ std::unique_ptr<Layer> Layer::Create(LayerType type) {
       return std::make_unique<LayerNinePatch>();
     case LAYER_SURFACE:
       return std::make_unique<LayerSurface>();
+    case LAYER_WITH_EXTERNAL_TEXTURE:
+      return std::make_unique<LayerWithExternalTexture>();
   }
 }
 
@@ -206,6 +208,14 @@ LayerSurface* Layer::AsSurface() {
 
 const LayerSurface* Layer::AsSurface() const {
   return As<LayerSurface>();
+}
+
+LayerWithExternalTexture* Layer::AsWithExternalTexture() {
+  return As<LayerWithExternalTexture>();
+}
+
+const LayerWithExternalTexture* Layer::AsWithExternalTexture() const {
+  return As<LayerWithExternalTexture>();
 }
 
 Layer::Layer(LayerType type)
@@ -965,6 +975,7 @@ void Layer::SwitchToLayer(scoped_refptr<cc::Layer> new_layer) {
   }
   cc_layer_->ClearDebugInfo();
 
+  new_layer->SetBounds(cc_layer_->bounds());
   new_layer->SetOpacity(cc_layer_->opacity());
   new_layer->SetTransform(cc_layer_->transform());
   new_layer->SetPosition(cc_layer_->position());
@@ -998,6 +1009,7 @@ void Layer::SwitchToLayer(scoped_refptr<cc::Layer> new_layer) {
 
   SetLayerFilters();
   SetLayerBackgroundFilters();
+  RecomputeDrawsContentAndUVRect();
 }
 
 void Layer::SetBackdropFilterQuality(const float quality) {

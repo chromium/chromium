@@ -1145,6 +1145,9 @@ void Window::GetDebugInfo(const aura::Window* active_window,
     case ui::LAYER_SURFACE:
       *out << " layer(surface ";
       break;
+    case ui::LAYER_WITH_EXTERNAL_TEXTURE:
+      *out << " layer(with_external_texture ";
+      break;
   }
 
   *out << (layer()->GetTargetVisibility() ? " visible)" : " hidden)");

@@ -22,6 +22,8 @@ std::string_view LayerTypeToString(LayerType type) {
       return "nine_patch";
     case LayerType::LAYER_SURFACE:
       return "surface";
+    case LayerType::LAYER_WITH_EXTERNAL_TEXTURE:
+      return "with_external_texture";
   }
   NOTREACHED();
 }

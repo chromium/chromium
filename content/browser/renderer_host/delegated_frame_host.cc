@@ -67,9 +67,9 @@ DelegatedFrameHost::DelegatedFrameHost(const viz::FrameSinkId& frame_sink_id,
   CHECK(host_frame_sink_manager_);
   frame_evictor_->SetVisible(client_->DelegatedFrameHostIsVisible());
 
-  stale_content_layer_ = std::make_unique<ui::LayerSolidColor>();
+  stale_content_layer_ = std::make_unique<ui::LayerWithExternalTexture>();
   stale_content_layer_->SetVisible(false);
-  stale_content_layer_->SetColor(SkColors::kTransparent);
+  stale_content_layer_->SetFillsBoundsOpaquely(false);
 }
 
 DelegatedFrameHost::~DelegatedFrameHost() {
@@ -110,8 +110,8 @@ void DelegatedFrameHost::WasShown(
                cc::DeadlinePolicy::UseDefaultDeadline());
 
   // Remove stale content that might be displayed.
-  if (stale_content_layer_->HasExternalContent()) {
-    stale_content_layer_->SetShowSolidColorContent();
+  if (stale_content_layer_->HasTransferableResource()) {
+    stale_content_layer_->ClearTexture();
     stale_content_layer_->SetVisible(false);
   }
 }
@@ -462,7 +462,7 @@ void DelegatedFrameHost::EvictDelegatedFrame(
   // white screens from being displayed during various animations such as the
   // CrOS overview mode.
   if (client_->ShouldShowStaleContentOnEviction() &&
-      !stale_content_layer_->HasExternalContent()) {
+      !stale_content_layer_->HasTransferableResource()) {
     SetFrameEvictionStateAndNotifyObservers(
         FrameEvictionState::kPendingEvictionRequests);
     auto callback =
@@ -530,7 +530,7 @@ void DelegatedFrameHost::DidCopyStaleContent(
 
 // TODO(crbug.com/40812011): This DCHECK occasionally gets hit on Chrome OS.
 #if !BUILDFLAG(IS_CHROMEOS)
-  CHECK(!stale_content_layer_->HasExternalContent());
+  CHECK(!stale_content_layer_->HasTransferableResource());
 #endif
   stale_content_layer_->SetVisible(true);
   stale_content_layer_->SetBounds(gfx::Rect(surface_dip_size_));

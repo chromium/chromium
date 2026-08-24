@@ -17,6 +17,10 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_solid_color.h"
 
+namespace ui {
+class LayerWithExternalTexture;
+}  // namespace ui
+
 namespace ash {
 
 // A utility class that first creates a copy of the layer tree, then runs
@@ -48,7 +52,8 @@ class ASH_EXPORT LayerCopyAnimator : public aura::WindowObserver,
 
   // Called when a layer is copied. This is public to deal with the shutdown
   // scenario. This is virtual for testing purpose.
-  virtual void OnLayerCopied(std::unique_ptr<ui::Layer> new_layer);
+  virtual void OnLayerCopied(
+      std::unique_ptr<ui::LayerWithExternalTexture> new_layer);
 
   // ui::LayerAnimationObserver:
   void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override;
@@ -63,7 +68,9 @@ class ASH_EXPORT LayerCopyAnimator : public aura::WindowObserver,
 
   bool animation_requested() const { return animation_requested_; }
 
-  ui::Layer* copied_layer_for_test() { return copied_layer_.get(); }
+  ui::LayerWithExternalTexture* copied_layer_for_test() {
+    return copied_layer_.get();
+  }
 
  private:
   void RunAnimation();
@@ -75,7 +82,7 @@ class ASH_EXPORT LayerCopyAnimator : public aura::WindowObserver,
   raw_ptr<ui::LayerAnimationObserver, DanglingUntriaged> observer_ = nullptr;
   AnimationCallback animation_callback_;
 
-  std::unique_ptr<ui::Layer> copied_layer_;
+  std::unique_ptr<ui::LayerWithExternalTexture> copied_layer_;
   // A dummy sequence to keep AnimationSequence alive during copy.
   std::unique_ptr<ui::LayerAnimationSequence> fake_sequence_;
   ui::LayerSolidColor full_layer_;

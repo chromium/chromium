@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/notreached.h"
 #include "cc/layers/mirror_layer.h"
 #include "cc/layers/solid_color_layer.h"
 #include "ui/compositor/layer_animation_element.h"
@@ -17,8 +18,7 @@
 
 namespace ui {
 
-LayerSolidColor::LayerSolidColor()
-    : LayerWithExternalTexture(LAYER_SOLID_COLOR) {
+LayerSolidColor::LayerSolidColor() : Layer(LAYER_SOLID_COLOR) {
   solid_color_layer_ = cc::SolidColorLayer::Create();
   cc_layer_ = solid_color_layer_.get();
   InitializeCcLayer();
@@ -42,19 +42,16 @@ std::unique_ptr<Layer> LayerSolidColor::Clone() const {
 }
 
 bool LayerSolidColor::ShouldSchedulePaint() const {
-  // Only Schedule paint if LayerSolidColor has external content.
-  return texture_layer() && LayerWithExternalTexture::ShouldSchedulePaint();
+  return false;
 }
 
 void LayerSolidColor::OnPaintScheduled() {
-  // Only Schedule draw if LayerSolidColor has external content.
-  CHECK(ShouldSchedulePaint());
-  ScheduleDraw();
+  NOTREACHED();
 }
 
 bool LayerSolidColor::ShouldCommitDamage() const {
-  // Only commit damage if LayerSolidColor has external content.
-  return texture_layer() && LayerWithExternalTexture::ShouldCommitDamage();
+  CHECK(damaged_region_.IsEmpty());
+  return false;
 }
 
 void LayerSolidColor::SetShowReflectedLayerSubtree(
@@ -126,7 +123,6 @@ SkColor4f LayerSolidColor::background_color() const {
 }
 
 void LayerSolidColor::Reset() {
-  LayerWithExternalTexture::Reset();
   ResetSubtreeReflectedLayer();
   solid_color_layer_ = nullptr;
   mirror_layer_ = nullptr;
@@ -144,8 +140,7 @@ void LayerSolidColor::SetColorFromAnimation(SkColor4f color,
 
 SkColor4f LayerSolidColor::GetColorForAnimation() const {
   // The NULL check is here since the underlying solid_color_layer can be
-  // swapped with mirror_layer or textured_layer. See calls to
-  // `SwitchToLayer()`
+  // swapped with mirror_layer. See calls to `SwitchToLayer()`
   return solid_color_layer_.get() ? solid_color_layer_->background_color()
                                   : SkColors::kBlack;
 }

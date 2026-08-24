@@ -22,12 +22,16 @@ class TextureLayer;
 
 namespace ui {
 
-// Base class for layers that can display an externally supplied GPU-backed
-// transferable resource (backed by a cc::TextureLayer).
+// A layer that displays an externally supplied GPU-backed transferable resource
+// (backed by a cc::TextureLayer).
 class COMPOSITOR_EXPORT LayerWithExternalTexture
     : public Layer,
       public cc::TextureLayerClient {
  public:
+  static constexpr LayerType kType = LAYER_WITH_EXTERNAL_TEXTURE;
+
+  LayerWithExternalTexture();
+
   LayerWithExternalTexture(const LayerWithExternalTexture&) = delete;
   LayerWithExternalTexture& operator=(const LayerWithExternalTexture&) = delete;
 
@@ -39,6 +43,9 @@ class COMPOSITOR_EXPORT LayerWithExternalTexture
                                viz::ReleaseCallback release_callback,
                                gfx::Size texture_size_in_dip);
   void SetTextureSize(gfx::Size texture_size_in_dip);
+
+  // Clears the transferable resource and releases the texture mailbox.
+  void ClearTexture();
 
   bool HasTransferableResource() const;
 
@@ -57,8 +64,6 @@ class COMPOSITOR_EXPORT LayerWithExternalTexture
   }
 
  protected:
-  explicit LayerWithExternalTexture(LayerType type);
-
   // Layer:
   std::unique_ptr<Layer> CreateMirror(
       const LayerMirrorSettings& settings) override;
@@ -66,11 +71,11 @@ class COMPOSITOR_EXPORT LayerWithExternalTexture
   void OnPaintScheduled() override;
   bool ShouldCommitDamage() const override;
 
-  cc::TextureLayer* texture_layer() { return texture_layer_.get(); }
-  const cc::TextureLayer* texture_layer() const { return texture_layer_.get(); }
-
  private:
+  friend class LayerTestApi;
+
   gfx::Size texture_size_in_dip_;
+
   scoped_refptr<cc::TextureLayer> texture_layer_;
   viz::TransferableResource transfer_resource_;
   viz::ReleaseCallback transfer_release_callback_;

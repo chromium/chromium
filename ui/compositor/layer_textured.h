@@ -11,8 +11,8 @@
 #include "cc/base/region.h"
 #include "cc/layers/content_layer_client.h"
 #include "ui/compositor/compositor_export.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
-#include "ui/compositor/layer_with_external_texture.h"
 
 namespace cc {
 class DisplayItemList;
@@ -24,9 +24,8 @@ namespace ui {
 class LayerTestApi;
 
 // A layer whose contents are painted into a display item list via a
-// LayerDelegate (backed by a cc::PictureLayer), or displays an external
-// transferable texture.
-class COMPOSITOR_EXPORT LayerTextured : public LayerWithExternalTexture,
+// LayerDelegate (backed by a cc::PictureLayer).
+class COMPOSITOR_EXPORT LayerTextured : public Layer,
                                         public cc::ContentLayerClient {
  public:
   static constexpr LayerType kType = LAYER_TEXTURED;

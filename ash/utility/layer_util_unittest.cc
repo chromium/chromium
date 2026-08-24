@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer_textured.h"
+#include "ui/compositor/layer_with_external_texture.h"
 #include "ui/compositor/test/test_compositor_host.h"
 #include "ui/compositor/test/test_context_factories.h"
 #include "ui/gfx/geometry/rect.h"
@@ -74,7 +75,7 @@ TEST_F(LayerUtilTest, CopyContentToExistingLayer) {
   layer1.SetBounds(gfx::Rect(100, 100));
   root_layer()->Add(&layer1);
 
-  ui::LayerTextured layer2;
+  ui::LayerWithExternalTexture layer2;
   layer2.SetBounds(gfx::Rect(100, 100));
   root_layer()->Add(&layer2);
 

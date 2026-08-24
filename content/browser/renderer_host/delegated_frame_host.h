@@ -31,8 +31,8 @@
 #include "third_party/blink/public/common/page/content_to_visible_time_request.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
-#include "ui/compositor/layer_solid_color.h"
 #include "ui/compositor/layer_surface.h"
+#include "ui/compositor/layer_with_external_texture.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -309,7 +309,7 @@ class CONTENT_EXPORT DelegatedFrameHost
   // Layer responsible for displaying the stale content for the DFHC when the
   // actual web content frame has been evicted. This will be reset when a new
   // compositor frame is submitted.
-  std::unique_ptr<ui::LayerSolidColor> stale_content_layer_;
+  std::unique_ptr<ui::LayerWithExternalTexture> stale_content_layer_;
 
   blink::ContentToVisibleTimeReporter tab_switch_time_recorder_;
 

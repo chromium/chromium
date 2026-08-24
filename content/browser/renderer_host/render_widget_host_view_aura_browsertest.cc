@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
 
   // Initially there should be no stale content set.
   EXPECT_FALSE(
-      GetDelegatedFrameHost()->stale_content_layer_->HasExternalContent());
+      GetDelegatedFrameHost()->stale_content_layer_->HasTransferableResource());
   EXPECT_EQ(GetDelegatedFrameHost()->frame_eviction_state_,
             DelegatedFrameHost::FrameEvictionState::kNotStarted);
 
@@ -176,7 +176,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
             DelegatedFrameHost::FrameEvictionState::kPendingEvictionRequests);
 
   // Wait until the stale frame content is copied and set onto the layer.
-  while (!GetDelegatedFrameHost()->stale_content_layer_->HasExternalContent()) {
+  while (!GetDelegatedFrameHost()
+              ->stale_content_layer_->HasTransferableResource()) {
     GiveItSomeTime();
   }
 
@@ -187,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
   // frame content.
   shell()->web_contents()->WasShown();
   EXPECT_FALSE(
-      GetDelegatedFrameHost()->stale_content_layer_->HasExternalContent());
+      GetDelegatedFrameHost()->stale_content_layer_->HasTransferableResource());
 }
 
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
@@ -204,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
 
   // Initially there should be no stale content set.
   EXPECT_FALSE(
-      GetDelegatedFrameHost()->stale_content_layer_->HasExternalContent());
+      GetDelegatedFrameHost()->stale_content_layer_->HasTransferableResource());
   EXPECT_EQ(GetDelegatedFrameHost()->frame_eviction_state_,
             DelegatedFrameHost::FrameEvictionState::kNotStarted);
 
@@ -228,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
   // This should however not set the stale content as the view is visible and
   // new frames are being submitted.
   EXPECT_FALSE(
-      GetDelegatedFrameHost()->stale_content_layer_->HasExternalContent());
+      GetDelegatedFrameHost()->stale_content_layer_->HasTransferableResource());
 }
 
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
@@ -245,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
 
   // Initially there should be no stale content set.
   EXPECT_FALSE(
-      GetDelegatedFrameHost()->stale_content_layer_->HasExternalContent());
+      GetDelegatedFrameHost()->stale_content_layer_->HasTransferableResource());
   EXPECT_EQ(GetDelegatedFrameHost()->frame_eviction_state_,
             DelegatedFrameHost::FrameEvictionState::kNotStarted);
 
@@ -263,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
   // completed. There shouldnt be any requests sent however.
   GiveItSomeTime();
   EXPECT_FALSE(
-      GetDelegatedFrameHost()->stale_content_layer_->HasExternalContent());
+      GetDelegatedFrameHost()->stale_content_layer_->HasTransferableResource());
 }
 #endif  // #if BUILDFLAG(IS_CHROMEOS)
 

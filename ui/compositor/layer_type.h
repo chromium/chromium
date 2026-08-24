@@ -26,7 +26,10 @@ enum LayerType {
   LAYER_NINE_PATCH = 3,
 
   // A layer based on the SurfaceLayer class.
-  LAYER_SURFACE = 4
+  LAYER_SURFACE = 4,
+
+  // A layer that has an external texture.
+  LAYER_WITH_EXTERNAL_TEXTURE = 5
 };
 
 COMPOSITOR_EXPORT std::string_view LayerTypeToString(LayerType type);

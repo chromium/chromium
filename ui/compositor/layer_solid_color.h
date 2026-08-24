@@ -11,8 +11,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/compositor_export.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
-#include "ui/compositor/layer_with_external_texture.h"
 
 namespace cc {
 class MirrorLayer;
@@ -24,9 +24,8 @@ namespace ui {
 class LayerTestApi;
 
 // A layer that renders a uniform solid color (backed by cc::SolidColorLayer),
-// or mirrors a reflected subtree (via cc::MirrorLayer), or displays an
-// external transferable texture.
-class COMPOSITOR_EXPORT LayerSolidColor : public LayerWithExternalTexture {
+// or mirrors a reflected subtree (via cc::MirrorLayer).
+class COMPOSITOR_EXPORT LayerSolidColor : public Layer {
  public:
   static constexpr LayerType kType = LAYER_SOLID_COLOR;
 
@@ -45,7 +44,7 @@ class COMPOSITOR_EXPORT LayerSolidColor : public LayerWithExternalTexture {
   // read/writes which can impact performance negatively.
   void SetShowReflectedLayerSubtree(Layer* subtree_reflected_layer);
 
-  // Show a solid color instead of delegated or surface contents.
+  // Show a solid color instead of a reflected layer subtree.
   void SetShowSolidColorContent();
 
   // Sets the layer's fill color.

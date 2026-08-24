@@ -19,7 +19,7 @@
 
 namespace ui {
 
-LayerTextured::LayerTextured() : LayerWithExternalTexture(LAYER_TEXTURED) {
+LayerTextured::LayerTextured() : Layer(LAYER_TEXTURED) {
   content_layer_ = cc::PictureLayer::Create(this);
   cc_layer_ = content_layer_.get();
   InitializeCcLayer();
@@ -58,8 +58,8 @@ std::unique_ptr<Layer> LayerTextured::Clone() const {
 
 bool LayerTextured::ShouldSchedulePaint() const {
   // LayerTextured only needs to schedule paint if it has a delegate to paint
-  // its contents, or if it has an external transferable resource to display.
-  return delegate_ || LayerWithExternalTexture::ShouldSchedulePaint();
+  // its contents.
+  return delegate_ != nullptr;
 }
 
 scoped_refptr<cc::DisplayItemList> LayerTextured::PaintContentsToDisplayList() {
@@ -106,9 +106,8 @@ bool LayerTextured::ShouldCommitDamage() const {
     return false;
   }
 
-  // Otherwise, we commit damage if we have a delegate to paint our contents,
-  // or if we have an external transferable resource.
-  return delegate_ || LayerWithExternalTexture::ShouldCommitDamage();
+  // Otherwise, we commit damage if we have a delegate to paint our contents.
+  return delegate_ != nullptr;
 }
 
 void LayerTextured::CommitDamage(const cc::Region& damage) {
@@ -117,8 +116,6 @@ void LayerTextured::CommitDamage(const cc::Region& damage) {
 }
 
 void LayerTextured::Reset() {
-  LayerWithExternalTexture::Reset();
-
   if (content_layer_) {
     content_layer_->ClearClient();
   }

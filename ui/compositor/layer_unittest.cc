@@ -642,7 +642,7 @@ void ReturnMailbox(bool* run, const gpu::SyncToken& sync_token, bool is_lost) {
 }
 
 TEST(LayerStandaloneTest, ReleaseMailboxOnDestruction) {
-  auto layer = std::make_unique<LayerTextured>();
+  auto layer = std::make_unique<LayerWithExternalTexture>();
   bool callback_run = false;
 
   auto resource = viz::TransferableResource::Make(
@@ -1309,13 +1309,7 @@ TEST_P(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
 
   cc::Layer* before_layer = l1_test_api.cc_layer();
 
-  bool callback1_run = false;
-  auto resource = viz::TransferableResource::Make(
-      gpu::ClientSharedImage::CreateForTesting(),
-      viz::TransferableResource::ResourceSource::kUI, gpu::SyncToken());
-  l1->SetTransferableResource(resource,
-                              base::BindOnce(ReturnMailbox, &callback1_run),
-                              gfx::Size(10, 10));
+  EXPECT_TRUE(l1_test_api.SwitchToSolidColorLayer());
 
   EXPECT_NE(before_layer, l1_test_api.cc_layer());
 
@@ -1332,57 +1326,6 @@ TEST_P(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   EXPECT_EQ(kSubtreeCaptureId, l1->GetSubtreeCaptureId());
   EXPECT_TRUE(l1_test_api.cc_layer()->HasGradientMask());
   EXPECT_EQ(gradient_mask, l1_test_api.cc_layer()->gradient_mask());
-  EXPECT_FALSE(callback1_run);
-
-  bool callback2_run = false;
-  resource = viz::TransferableResource::Make(
-      gpu::ClientSharedImage::CreateForTesting(),
-      viz::TransferableResource::ResourceSource::kUI, gpu::SyncToken());
-  l1->SetTransferableResource(resource,
-                              base::BindOnce(ReturnMailbox, &callback2_run),
-                              gfx::Size(10, 10));
-  EXPECT_TRUE(callback1_run);
-  EXPECT_FALSE(callback2_run);
-
-  // Show solid color instead.
-  l1->SetShowSolidColorContent();
-  EXPECT_EQ(gfx::Point3F(), l1_test_api.cc_layer()->transform_origin());
-  EXPECT_TRUE(l1_test_api.cc_layer()->draws_content());
-  EXPECT_TRUE(l1_test_api.cc_layer()->contents_opaque());
-  EXPECT_TRUE(l1_test_api.cc_layer()->hide_layer_and_subtree());
-  EXPECT_EQ(gfx::Size(4, 5), l1_test_api.cc_layer()->bounds());
-  EXPECT_TRUE(l1_test_api.cc_layer()->HasRoundedCorner());
-  EXPECT_EQ(l1_test_api.cc_layer()->corner_radii(), kCornerRadii);
-  EXPECT_TRUE(l1_test_api.cc_layer()->is_fast_rounded_corner());
-  EXPECT_EQ(l1_test_api.cc_layer()->gradient_mask(), gradient_mask);
-  EXPECT_TRUE(callback2_run);
-
-  before_layer = l1_test_api.cc_layer();
-
-  // Back to a texture, without changing the bounds of the layer or the texture.
-  bool callback3_run = false;
-  resource = viz::TransferableResource::Make(
-      gpu::ClientSharedImage::CreateForTesting(),
-      viz::TransferableResource::ResourceSource::kUI, gpu::SyncToken());
-  l1->SetTransferableResource(resource,
-                              base::BindOnce(ReturnMailbox, &callback3_run),
-                              gfx::Size(10, 10));
-
-  EXPECT_NE(before_layer, l1_test_api.cc_layer());
-
-  EXPECT_EQ(gfx::Point3F(), l1_test_api.cc_layer()->transform_origin());
-  EXPECT_TRUE(l1_test_api.cc_layer()->draws_content());
-  EXPECT_TRUE(l1_test_api.cc_layer()->contents_opaque());
-  EXPECT_TRUE(l1_test_api.cc_layer()->hide_layer_and_subtree());
-  EXPECT_EQ(gfx::Size(4, 5), l1_test_api.cc_layer()->bounds());
-  EXPECT_TRUE(l1_test_api.cc_layer()->HasRoundedCorner());
-  EXPECT_EQ(l1_test_api.cc_layer()->corner_radii(), kCornerRadii);
-  EXPECT_TRUE(l1_test_api.cc_layer()->is_fast_rounded_corner());
-  EXPECT_EQ(l1_test_api.cc_layer()->gradient_mask(), gradient_mask);
-  EXPECT_FALSE(callback3_run);
-
-  // Release the on |l1| mailbox to clean up the test.
-  l1->SetShowSolidColorContent();
 }
 
 // Various visible/drawn assertions.
@@ -1708,7 +1651,8 @@ TEST_P(LayerWithNullDelegateTest, SetBoundsSchedulesPaint) {
   WaitForDraw();
 }
 
-// Checks that the damage rect for a TextureLayer is empty after a commit.
+// Checks that the damage rect for a LayerWithExternalTexture is empty after a
+// commit.
 TEST_P(LayerWithNullDelegateTest, EmptyDamagedRect) {
   base::RunLoop run_loop;
   viz::ReleaseCallback callback = base::BindOnce(
@@ -1716,7 +1660,7 @@ TEST_P(LayerWithNullDelegateTest, EmptyDamagedRect) {
          bool is_lost) { run_loop->Quit(); },
       base::Unretained(&run_loop));
 
-  auto root = CreateLayer<LayerSolidColor>();
+  auto root = CreateLayer<LayerWithExternalTexture>();
   auto resource = viz::TransferableResource::Make(
       gpu::ClientSharedImage::CreateForTesting(),
       viz::TransferableResource::ResourceSource::kUI, gpu::SyncToken());
@@ -1738,7 +1682,11 @@ TEST_P(LayerWithNullDelegateTest, EmptyDamagedRect) {
   // The texture mailbox has a reference from an in-flight texture layer.
   // We clear the texture mailbox from the root layer and draw a new frame
   // to ensure that the texture mailbox is released.
-  root->SetShowSolidColorContent();
+  root->ClearTexture();
+  // Set a blank solid color root layer to draw a new frame without the texture
+  // layer so the display compositor releases the in-flight texture resource.
+  auto blank = CreateLayer<LayerSolidColor>();
+  compositor()->SetRootLayer(blank.get());
   Draw();
 
   // Wait for texture mailbox release to avoid DCHECKs.
@@ -2879,7 +2827,7 @@ TEST_P(LayerWithDelegateTest, SurfaceLayerBackgroundColor) {
 }
 
 TEST_P(LayerWithDelegateTest, TransferableResourceMirroring) {
-  auto layer = CreateLayer<LayerSolidColor>();
+  auto layer = CreateLayer<LayerWithExternalTexture>();
 
   auto resource = viz::TransferableResource::Make(
       gpu::ClientSharedImage::CreateForTesting(),
@@ -2891,9 +2839,11 @@ TEST_P(LayerWithDelegateTest, TransferableResourceMirroring) {
       gfx::Size(10, 10));
   EXPECT_FALSE(release_callback_run);
   EXPECT_TRUE(layer->HasExternalContent());
+  EXPECT_TRUE(layer->HasTransferableResource());
 
   auto mirror = layer->Mirror();
   EXPECT_TRUE(mirror->HasExternalContent());
+  EXPECT_TRUE(mirror->AsWithExternalTexture()->HasTransferableResource());
 
   // Clearing the resource on a mirror layer should not release the source layer
   // resource.
@@ -2905,10 +2855,10 @@ TEST_P(LayerWithDelegateTest, TransferableResourceMirroring) {
 
   // Clearing the transferable resource on the source layer should clear it from
   // the mirror layer as well.
-  layer->SetShowSolidColorContent();
+  layer->ClearTexture();
   EXPECT_TRUE(release_callback_run);
-  EXPECT_FALSE(layer->HasExternalContent());
-  EXPECT_FALSE(mirror->HasExternalContent());
+  EXPECT_FALSE(layer->HasTransferableResource());
+  EXPECT_FALSE(mirror->AsWithExternalTexture()->HasTransferableResource());
 
   resource = viz::TransferableResource::Make(
       gpu::ClientSharedImage::CreateForTesting(),
@@ -2923,6 +2873,7 @@ TEST_P(LayerWithDelegateTest, TransferableResourceMirroring) {
   EXPECT_FALSE(release_callback_run);
   EXPECT_TRUE(layer->HasExternalContent());
   EXPECT_TRUE(mirror->HasExternalContent());
+  EXPECT_TRUE(mirror->AsWithExternalTexture()->HasTransferableResource());
 
   layer.reset();
 }
@@ -2940,14 +2891,9 @@ TEST_P(LayerWithDelegateTest, LayerFiltersSurvival) {
   EXPECT_EQ(layer->layer_grayscale(), 0.5f);
   EXPECT_EQ(1u, layer_test_api.cc_layer()->filters().size());
 
-  // Showing transferable resource changes the underlying cc layer.
-  scoped_refptr<cc::Layer> before = ui::LayerTestApi(layer.get()).cc_layer();
-  auto resource = viz::TransferableResource::Make(
-      gpu::ClientSharedImage::CreateForTesting(),
-      viz::TransferableResource::ResourceSource::kUI, gpu::SyncToken());
-  layer->AsTextured()->SetTransferableResource(
-      resource, base::BindOnce([](const gpu::SyncToken&, bool) {}),
-      gfx::Size(10, 10));
+  // Switching the underlying cc layer should preserve the filters.
+  scoped_refptr<cc::Layer> before = layer_test_api.cc_layer();
+  EXPECT_TRUE(layer_test_api.SwitchToTexturedLayer());
   EXPECT_EQ(layer->layer_grayscale(), 0.5f);
   EXPECT_TRUE(layer_test_api.cc_layer());
   EXPECT_NE(before.get(), layer_test_api.cc_layer());
