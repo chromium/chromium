@@ -31,6 +31,7 @@
 #include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 
 // This file contains back-/forward-cache tests for the
@@ -1161,6 +1162,94 @@ IN_PROC_BROWSER_TEST_P(
   // Go back and check that it was restored.
   ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
   ExpectRestored(FROM_HERE);
+}
+
+class BackForwardCacheWithJsNetworkRequestCCNSAllowlistBrowserTest
+    : public BackForwardCacheWithJsNetworkRequestReceivingCCNSResourceBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(
+        blink::features::kBackForwardCacheCCNSAllowlist,
+        blink::features::kBackForwardCacheCCNSAllowedDomains.name,
+        "allowed.com");
+    BackForwardCacheWithJsNetworkRequestReceivingCCNSResourceBrowserTest::
+        SetUpCommandLine(command_line);
+  }
+};
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BackForwardCacheWithJsNetworkRequestCCNSAllowlistBrowserTest,
+    ::testing::Values(RequestType::kFetch, RequestType::kXhr),
+    &BackForwardCacheWithJsNetworkRequestCCNSAllowlistBrowserTest::
+        DescribeParams);
+
+// Test that a page with CCNS that makes a request which receives CCNS response
+// from an allowlisted domain is not evicted and gets restored from BFCache.
+IN_PROC_BROWSER_TEST_P(
+    BackForwardCacheWithJsNetworkRequestCCNSAllowlistBrowserTest,
+    AllowlistedDomainNotBlocked) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a_no_store(embedded_test_server()->GetURL(
+      "a.com", "/set-header?Cache-Control: no-store"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_allowed_no_store(embedded_test_server()->GetURL(
+      "allowed.com",
+      "/set-header?Cache-Control: no-store&Access-Control-Allow-Origin: *"));
+
+  // Load the document and specify no-store for the main resource.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a_no_store));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // Make a request to an allowlisted domain that receives CCNS response.
+  SendJsNetworkRequest(shell(), url_allowed_no_store);
+
+  // Navigate away.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+
+  // Check that the document is cached.
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Go back and check that it was restored.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
+}
+
+// Test that a page with CCNS that makes a request which receives CCNS response
+// from a non-allowlisted domain is evicted and logs the
+// `kJsNetworkRequestReceivedCacheControlNoStoreResource` reason.
+IN_PROC_BROWSER_TEST_P(
+    BackForwardCacheWithJsNetworkRequestCCNSAllowlistBrowserTest,
+    NonAllowlistedDomainBlocked) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a_no_store(embedded_test_server()->GetURL(
+      "a.com", "/set-header?Cache-Control: no-store"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_disallowed_no_store(embedded_test_server()->GetURL(
+      "disallowed.com",
+      "/set-header?Cache-Control: no-store&Access-Control-Allow-Origin: *"));
+
+  // Load the document and specify no-store for the main resource.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a_no_store));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // Make a request to a non-allowlisted domain that receives CCNS response.
+  SendJsNetworkRequest(shell(), url_disallowed_no_store);
+
+  // Navigate away.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+
+  // Wait until the first document has been destroyed.
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+
+  // Go back and check that it was not restored.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
+                    {BlocklistedFeature::kMainResourceHasCacheControlNoStore,
+                     BlocklistedFeature::
+                         kJsNetworkRequestReceivedCacheControlNoStoreResource},
+                    {}, {}, {}, FROM_HERE);
 }
 
 // A subclass of `ContentBrowserTestContentBrowserClient` for testing the logic

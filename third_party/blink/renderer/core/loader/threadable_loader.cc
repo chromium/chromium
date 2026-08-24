@@ -40,6 +40,7 @@
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/mojom/cors.mojom-blink.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
@@ -60,8 +61,36 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+
+namespace {
+
+bool IsDomainAllowedForCCNS(const KURL& url) {
+  if (!base::FeatureList::IsEnabled(features::kBackForwardCacheCCNSAllowlist)) {
+    return false;
+  }
+
+  DEFINE_STATIC_LOCAL(
+      HashSet<String>, allowed_domains, ([]() {
+        HashSet<String> set;
+        String param(
+            features::kBackForwardCacheCCNSAllowedDomains.Get().c_str());
+        Vector<String> list = param.Split(',');
+        for (const auto& item : list) {
+          set.insert(item.StripWhiteSpace());
+        }
+        return set;
+      }()));
+
+  return allowed_domains.Contains(url.Host().ToString());
+}
+
+}  // namespace
 
 // DetachedClient is a ThreadableLoaderClient for a "detached"
 // ThreadableLoader. It's for fetch requests with keepalive set, so
@@ -311,10 +340,12 @@ void ThreadableLoader::ResponseReceived(Resource* resource,
     base::UmaHistogramBoolean(
         "BackForwardCache.CCNS.JSNetworkRequestIncludesCredentials",
         response.RequestIncludeCredentials());
-    execution_context_->GetScheduler()->RegisterStickyFeature(
-        SchedulingPolicy::Feature::
-            kJsNetworkRequestReceivedCacheControlNoStoreResource,
-        {SchedulingPolicy::DisableBackForwardCache()});
+    if (!IsDomainAllowedForCCNS(resource->Url())) {
+      execution_context_->GetScheduler()->RegisterStickyFeature(
+          SchedulingPolicy::Feature::
+              kJsNetworkRequestReceivedCacheControlNoStoreResource,
+          {SchedulingPolicy::DisableBackForwardCache()});
+    }
   }
 
   client_->DidReceiveResponse(resource->InspectorId(), response);
