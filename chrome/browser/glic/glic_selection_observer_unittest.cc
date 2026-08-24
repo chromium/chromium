@@ -949,7 +949,8 @@ TEST_F(GlicSelectionObserverTest, SelectionShowOnShiftClick) {
 
 TEST_F(GlicSelectionObserverTest, UpdateSelectionStatePanelShowing) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGlicSelectionPrompt);
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kGlicSelectionPrompt, {{"updates_only", "false"}});
 
   auto* observer = GetObserver();
   ASSERT_TRUE(observer);
