@@ -98,6 +98,7 @@ BASE_DECLARE_FEATURE(kWebViewSetDownloadFaviconsEnabled);
 BASE_DECLARE_FEATURE(kWebViewSingleSharedContextState);
 BASE_DECLARE_FEATURE(kWebViewSkipInterceptsForPrefetch);
 BASE_DECLARE_FEATURE(kWebViewStaticMethodsNotTriggerStartup);
+BASE_DECLARE_FEATURE(kWebViewSubFrameCreatedDoNotUpdateClientMap);
 BASE_DECLARE_FEATURE(kWebViewTestFeature);
 BASE_DECLARE_FEATURE(kWebViewTestNonembeddedLowEntropySource);
 BASE_DECLARE_FEATURE(kWebViewUnreducedProductVersion);

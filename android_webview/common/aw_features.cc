@@ -392,6 +392,13 @@ BASE_FEATURE(kWebViewSkipInterceptsForPrefetch,
 BASE_FEATURE(kWebViewStaticMethodsNotTriggerStartup,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch for updating RfhToIoThreadClientMap on SubFrameCreated IPC.
+// When enabled, the map is not updated from the SubFrameCreated IPC.
+// TODO(crbug.com/497094708): Remove this flag and apply
+// https://crrev.com/c/8159020 in ~5 months (~January 2027).
+BASE_FEATURE(kWebViewSubFrameCreatedDoNotUpdateClientMap,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // A Feature used for WebView variations tests. Not used in production. Please
 // do not clean up this stale feature: we intentionally keep this feature flag
 // around for testing purposes.

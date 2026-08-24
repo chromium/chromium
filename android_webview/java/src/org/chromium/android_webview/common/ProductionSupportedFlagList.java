@@ -1460,6 +1460,10 @@ public final class ProductionSupportedFlagList {
                 "Allows Webview to allocate and share a single shared context for all the"
                         + " webview instances."),
         Flag.baseFeature("ComponentsBase32InRust", "Enables the Rust-based Base32 implementation."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_SUB_FRAME_CREATED_DO_NOT_UPDATE_CLIENT_MAP,
+                "When enabled, the browser ignores SubFrameCreated IPC and does not update"
+                        + " RfhToIoThreadClientMap."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
