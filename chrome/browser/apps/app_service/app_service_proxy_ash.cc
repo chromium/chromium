@@ -123,7 +123,9 @@ AppServiceProxyAsh::AppServiceProxyAsh(
     // TODO(crbug.com/477191550): After migrating ChromeOS system into
     // AppServiceRegistry use, revisit here to decide whether or not to keep
     // this condition.
-    CHECK_IS_TEST();
+    // TODO(crbug.com/547000240): For some unknown cases, AppServiceProxyAsh
+    // is created for non-user profiles. Investigate the cases, and revive
+    // the CHECK_IS_TEST().
   }
 }
 
