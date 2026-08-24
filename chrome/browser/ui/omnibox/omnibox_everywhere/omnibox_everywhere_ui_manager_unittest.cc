@@ -42,6 +42,22 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_WIN)
+// clang-format off
+#include <shlobj.h>  // Must be before propkey.
+// clang-format on
+
+#include <propkey.h>
+#include <propsys.h>
+#include <shellapi.h>
+#include <wrl/client.h>
+
+#include "base/win/scoped_propvariant.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/views/win/hwnd_util.h"
+#endif
+
 namespace {
 
 class ScopedScreenOverride {
@@ -1511,3 +1527,68 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::OMNIBOX_EVERYWHERE_UI));
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(OmniboxEverywhereUIManagerTest, WindowPropertiesEphemeralMode) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+  }
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+
+  HWND hwnd = views::HWNDForWidget(widget);
+  ASSERT_NE(hwnd, nullptr);
+
+  Microsoft::WRL::ComPtr<IPropertyStore> pps;
+  ASSERT_HRESULT_SUCCEEDED(
+      SHGetPropertyStoreForWindow(hwnd, IID_PPV_ARGS(&pps)));
+
+  base::win::ScopedPropVariant pv;
+  ASSERT_HRESULT_SUCCEEDED(
+      pps->GetValue(PKEY_AppUserModel_PreventPinning, pv.Receive()));
+  EXPECT_EQ(pv.get().vt, VT_BOOL);
+  EXPECT_EQ(pv.get().boolVal, VARIANT_TRUE);
+
+  ui_manager->Shutdown();
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, WindowPropertiesPersistentMode) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+
+  HWND hwnd = views::HWNDForWidget(widget);
+  ASSERT_NE(hwnd, nullptr);
+
+  Microsoft::WRL::ComPtr<IPropertyStore> pps;
+  ASSERT_HRESULT_SUCCEEDED(
+      SHGetPropertyStoreForWindow(hwnd, IID_PPV_ARGS(&pps)));
+
+  // Verify AppUserModelID.
+  base::win::ScopedPropVariant pv_appid;
+  ASSERT_HRESULT_SUCCEEDED(
+      pps->GetValue(PKEY_AppUserModel_ID, pv_appid.Receive()));
+  EXPECT_EQ(pv_appid.get().vt, VT_LPWSTR);
+  EXPECT_NE(std::wstring(pv_appid.get().pwszVal).find(L"app_search_in_chrome"),
+            std::wstring::npos);
+
+  // Verify RelaunchCommand.
+  base::win::ScopedPropVariant pv_relaunch;
+  ASSERT_HRESULT_SUCCEEDED(
+      pps->GetValue(PKEY_AppUserModel_RelaunchCommand, pv_relaunch.Receive()));
+  EXPECT_EQ(pv_relaunch.get().vt, VT_LPWSTR);
+  std::wstring relaunch_command = pv_relaunch.get().pwszVal;
+  EXPECT_NE(relaunch_command.find(L"chrome_proxy.exe"), std::wstring::npos);
+  EXPECT_NE(relaunch_command.find(L"--omnibox-everywhere"), std::wstring::npos);
+
+  ui_manager->Shutdown();
+}
+#endif  // BUILDFLAG(IS_WIN)

@@ -11,6 +11,15 @@
 
 namespace omnibox_everywhere {
 
+// static
+const gfx::VectorIcon& OmniboxEverywhereWidgetDelegate::GetVectorIcon() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return vector_icons::kGoogleGLogoIcon;
+#else
+  return vector_icons::kSearchIcon;
+#endif
+}
+
 OmniboxEverywhereWidgetDelegate::OmniboxEverywhereWidgetDelegate() {
   SetCanActivate(true);
   SetHasWindowSizeControls(false);
@@ -44,11 +53,7 @@ bool OmniboxEverywhereWidgetDelegate::ShouldDescendIntoChildForEventHandling(
 }
 
 ui::ImageModel OmniboxEverywhereWidgetDelegate::GetWindowIcon() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return ui::ImageModel::FromVectorIcon(vector_icons::kGoogleGLogoIcon);
-#else
-  return ui::ImageModel::FromVectorIcon(vector_icons::kSearchIcon);
-#endif
+  return ui::ImageModel::FromVectorIcon(GetVectorIcon());
 }
 
 ui::ImageModel OmniboxEverywhereWidgetDelegate::GetWindowAppIcon() {

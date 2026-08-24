@@ -12,6 +12,10 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/widget/widget_delegate.h"
 
+namespace gfx {
+struct VectorIcon;
+}
+
 namespace omnibox_everywhere {
 
 // Defines the custom window behavior and layout for the desktop Omnibox
@@ -24,6 +28,10 @@ class OmniboxEverywhereWidgetDelegate : public views::WidgetDelegate {
   OmniboxEverywhereWidgetDelegate& operator=(
       const OmniboxEverywhereWidgetDelegate&) = delete;
   ~OmniboxEverywhereWidgetDelegate() override;
+
+  // Returns the vector icon for Omnibox Everywhere based on branding
+  // buildflags.
+  static const gfx::VectorIcon& GetVectorIcon();
 
   void SetDraggableRegion(std::optional<SkRegion> region);
   bool IsPointInDraggableRegion(const gfx::Point& point) const;

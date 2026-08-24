@@ -10,7 +10,9 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
@@ -19,6 +21,11 @@
 #include "components/prefs/pref_member.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 #include "ui/gfx/native_ui_types.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/threading/sequence_bound.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_shortcut_win.h"
+#endif
 
 class Profile;
 class ScopedKeepAlive;
@@ -164,6 +171,11 @@ class OmniboxEverywhereController
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
   raw_ptr<ui::GlobalAcceleratorListener> listener_ = nullptr;
+
+#if BUILDFLAG(IS_WIN)
+  base::SequenceBound<OmniboxEverywhereShortcutHelperWin> shortcut_helper_;
+#endif
+
   base::WeakPtrFactory<OmniboxEverywhereController> weak_factory_{this};
 };
 

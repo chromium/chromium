@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
 #include "chrome/browser/background/omnibox_everywhere/omnibox_everywhere_background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -30,6 +31,13 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_shortcut_win.h"
+#endif
+
 namespace omnibox_everywhere {
 
 OmniboxEverywhereController::OmniboxEverywhereController(
@@ -43,7 +51,14 @@ OmniboxEverywhereController::OmniboxEverywhereController(
                   &OmniboxEverywhereController::OnStatusIconClicked,
                   base::Unretained(this)))),
       listener_(listener ? listener
-                         : ui::GlobalAcceleratorListener::GetInstance()) {
+                         : ui::GlobalAcceleratorListener::GetInstance())
+#if BUILDFLAG(IS_WIN)
+      ,
+      shortcut_helper_(base::ThreadPool::CreateCOMSTATaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}))
+#endif
+{
   CHECK(base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhere));
   if (g_browser_process && g_browser_process->local_state()) {
     enabled_pref_member_.Init(
@@ -63,6 +78,13 @@ OmniboxEverywhereController::OmniboxEverywhereController(
             base::Unretained(this)));
   }
   UpdateHotkeyRegistration();
+
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/532193825): Move icon creation to First Run Experience
+  // (FRE).
+  shortcut_helper_.AsyncCall(base::IgnoreResult(
+      &OmniboxEverywhereShortcutHelperWin::EnsureIconPersisted));
+#endif
 
   if (g_browser_process && g_browser_process->profile_manager()) {
     profile_manager_observation_.Observe(g_browser_process->profile_manager());

@@ -79,7 +79,12 @@
 #if defined(USE_AURA)
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_event_handler_aura.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/wm/core/window_animations.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_shortcut_win.h"
 #endif
 
 namespace omnibox_everywhere {
@@ -402,6 +407,9 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
   widget_->SetVisibleOnAllWorkspaces(true);
   widget_->SetCanAppearInExistingFullscreenSpaces(true);
 #endif
+#if BUILDFLAG(IS_WIN)
+  SetWindowProperties(views::HWNDForWidget(widget_.get()), is_ephemeral);
+#endif  // BUILDFLAG(IS_WIN)
   widget_->MakeCloseSynchronous(base::BindOnce(
       &OmniboxEverywhereUIManager::OnWidgetClosed, base::Unretained(this)));
   widget_observation_.Observe(widget_.get());

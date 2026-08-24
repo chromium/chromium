@@ -37,6 +37,9 @@ source_set("omnibox_everywhere") {
     "//ui/gfx",
     "//ui/views",
   ]
+  if (is_win) {
+    public += [ "omnibox_everywhere_shortcut_win.h" ]
+  }
 }
 
 # Omnibox Everywhere desktop implementation.
@@ -51,6 +54,7 @@ source_set("impl") {
   public_deps = [ ":omnibox_everywhere" ]
   deps = [
     ":prefs",
+    "//build:branding_buildflags",
     "//chrome/browser:file_select_helper",
     "//chrome/browser/autocomplete",
     "//chrome/browser/background/omnibox_everywhere",
@@ -95,6 +99,15 @@ source_set("impl") {
       "//ui/wm",
     ]
   }
+  if (is_win) {
+    sources += [ "omnibox_everywhere_shortcut_win.cc" ]
+    deps += [
+      "//chrome/app:branded_strings",
+      "//chrome/browser:shell_integration",
+      "//chrome/browser/win",
+      "//chrome/common:constants",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -107,12 +120,16 @@ source_set("unit_tests") {
   if (use_aura) {
     sources += [ "omnibox_everywhere_event_handler_aura_unittest.cc" ]
   }
+  if (is_win) {
+    sources += [ "omnibox_everywhere_shortcut_win_unittest.cc" ]
+  }
   deps = [
     ":impl",
     ":omnibox_everywhere",
     ":prefs",
     "//base",
     "//base/test:test_support",
+    "//chrome/app:branded_strings",
     "//chrome/browser",
     "//chrome/browser/background/omnibox_everywhere",
     "//chrome/browser/new_tab_page/prefs",
