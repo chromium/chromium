@@ -232,8 +232,6 @@ void FpopServiceImpl::SendRequest(
 
   resource_request->headers.SetHeader("Authorization",
                                       "Bearer " + access_token);
-  resource_request->headers.SetHeader("X-Goog-Api-Key",
-                                      google_apis::GetAPIKey());
   resource_request->headers.SetHeader("Accept", "application/x-protobuf");
 
   auto url_loader = network::SimpleURLLoader::Create(
