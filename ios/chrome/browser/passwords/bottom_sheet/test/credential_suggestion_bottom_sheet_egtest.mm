@@ -5,14 +5,18 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#import "base/i18n/message_formatter.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/features.h"
+#import "components/strings/grit/components_strings.h"
 #import "components/url_formatter/elide_url.h"
 #import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_constants.h"
+#import "ios/chrome/browser/autofill/manual_fill/test/manual_fill_matchers.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
@@ -28,6 +32,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/webauthn/test/ios_chrome_passkey_client_app_interface.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
+#import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -124,6 +129,35 @@ id<GREYMatcher> BackupPasswordSuggestion(NSString* suggestion_username) {
                     nullptr);
 }
 
+// Matcher for the autofill passkey suggestion chip in the keyboard accessory.
+id<GREYMatcher> KeyboardAccessoryPasskeySuggestion(NSString* username,
+                                                   NSString* index_value) {
+  NSString* passkey_subtext =
+      l10n_util::GetNSString(IDS_IOS_PASSKEY_SUGGESTION_LABEL);
+  NSString* expected_accessibility_label =
+      [NSString stringWithFormat:@"%@, %@", username, passkey_subtext];
+  return grey_allOf(grey_accessibilityLabel(expected_accessibility_label),
+                    grey_accessibilityValue(index_value),
+                    grey_ancestor(grey_accessibilityID(
+                        kFormInputAccessoryViewAccessibilityID)),
+                    grey_interactable(), nil);
+}
+
+// Matcher for the autofill password suggestion chip in the keyboard accessory
+// on conditional login.
+id<GREYMatcher> KeyboardAccessoryPasswordSuggestionOnConditionalLogin(
+    NSString* username,
+    NSString* index_value) {
+  NSString* password_subtext = l10n_util::GetNSString(IDS_IOS_PASSWORD_SUBTEXT);
+  NSString* expected_accessibility_label =
+      [NSString stringWithFormat:@"%@, %@", username, password_subtext];
+  return grey_allOf(grey_accessibilityLabel(expected_accessibility_label),
+                    grey_accessibilityValue(index_value),
+                    grey_ancestor(grey_accessibilityID(
+                        kFormInputAccessoryViewAccessibilityID)),
+                    grey_interactable(), nil);
+}
+
 // Get the top presented view controller, in this case the bottom sheet view
 // controller.
 UIViewController* TopPresentedViewController() {
@@ -200,6 +234,89 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_longPress()];
 }
 
+// Verifies that the keyboard accessory displays chips for both the passkey and
+// the password, with the passkey listed first.
+void VerifyKeyboardAccessoryChips(NSString* username,
+                                  NSString* passkey_user_display_name) {
+  NSString* indexFirstOfTwo = l10n_util::GetNSStringF(
+      IDS_IOS_AUTOFILL_SUGGESTION_INDEX_VALUE, u"1", u"2");
+  NSString* indexSecondOfTwo = l10n_util::GetNSStringF(
+      IDS_IOS_AUTOFILL_SUGGESTION_INDEX_VALUE, u"2", u"2");
+
+  id<GREYMatcher> passkeyChip = KeyboardAccessoryPasskeySuggestion(
+      passkey_user_display_name, indexFirstOfTwo);
+  id<GREYMatcher> passwordChip =
+      KeyboardAccessoryPasswordSuggestionOnConditionalLogin(username,
+                                                            indexSecondOfTwo);
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:passkeyChip];
+
+  // Scroll to the right of the keyboard accessory so that the password
+  // suggestion is visible on smaller devices.
+  [[EarlGrey selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:passwordChip];
+}
+
+// Opens the manual fill view and verifies that the action buttons say "Sign in"
+// instead of "Autofill form".
+void VerifyManualFillShowsSignInActionButton(
+    NSString* passkey_user_display_name) {
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      manual_fill::KeyboardAccessoryManualFillButton()];
+  [[EarlGrey
+      selectElementWithMatcher:manual_fill::KeyboardAccessoryManualFillButton()]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      manual_fill::ExpandedManualFillView()];
+
+  NSString* cell1Index = base::SysUTF16ToNSString(
+      base::i18n::MessageFormatter::FormatWithNamedArgs(
+          l10n_util::GetStringUTF16(
+              IDS_IOS_MANUAL_FALLBACK_PASSWORD_CELL_INDEX),
+          "count", 2, "position", 1));
+  NSString* cell2Index = base::SysUTF16ToNSString(
+      base::i18n::MessageFormatter::FormatWithNamedArgs(
+          l10n_util::GetStringUTF16(
+              IDS_IOS_MANUAL_FALLBACK_PASSWORD_CELL_INDEX),
+          "count", 2, "position", 2));
+
+  NSString* passkeySignInButtonLabel = l10n_util::GetNSStringF(
+      IDS_IOS_MANUAL_FALLBACK_SIGN_IN_BUTTON_ACCESSIBILITY_LABEL,
+      base::SysNSStringToUTF16(
+          [NSString stringWithFormat:@"%@, localhost\nPasskey • %@", cell1Index,
+                                     passkey_user_display_name]));
+  NSString* passwordSignInButtonLabel = l10n_util::GetNSStringF(
+      IDS_IOS_MANUAL_FALLBACK_SIGN_IN_BUTTON_ACCESSIBILITY_LABEL,
+      base::SysNSStringToUTF16(
+          [NSString stringWithFormat:@"%@, localhost\nPassword", cell2Index]));
+  NSString* passkeyAutofillFormButtonLabel = l10n_util::GetNSStringF(
+      IDS_IOS_MANUAL_FALLBACK_AUTOFILL_FORM_BUTTON_ACCESSIBILITY_LABEL,
+      base::SysNSStringToUTF16(
+          [NSString stringWithFormat:@"%@, localhost\nPasskey • %@", cell1Index,
+                                     passkey_user_display_name]));
+
+  id<GREYMatcher> passkeySignInButton =
+      grey_allOf(grey_accessibilityID(
+                     manual_fill::kExpandedManualFillAutofillFormButtonID),
+                 grey_accessibilityLabel(passkeySignInButtonLabel), nil);
+  id<GREYMatcher> passwordSignInButton =
+      grey_allOf(grey_accessibilityID(
+                     manual_fill::kExpandedManualFillAutofillFormButtonID),
+                 grey_accessibilityLabel(passwordSignInButtonLabel), nil);
+  id<GREYMatcher> autofillFormButton =
+      grey_allOf(grey_accessibilityID(
+                     manual_fill::kExpandedManualFillAutofillFormButtonID),
+                 grey_accessibilityLabel(passkeyAutofillFormButtonLabel), nil);
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:passkeySignInButton];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:passwordSignInButton];
+  [[EarlGrey selectElementWithMatcher:autofillFormButton]
+      assertWithMatcher:grey_nil()];
+}
+
 }  // namespace
 
 @interface CredentialSuggestionBottomSheetEGTest : ChromeTestCase
@@ -258,8 +375,18 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   AppLaunchConfiguration config;
   config.relaunch_policy = NoForceRelaunchAndResetState;
 
-  if ([self isRunningTest:@selector
-            (testOpenCredentialBottomSheetUsePasswordOnConditionalLogin)]) {
+  if ([self
+          isRunningTest:
+              @selector(
+                  testOpenCredentialBottomSheetUsePasswordOnConditionalLogin)] ||
+      [self
+          isRunningTest:
+              @selector(
+                  testKeyboardAccessoryDisplaysPasskeyAndPasswordOnConditionalLogin)] ||
+      [self
+          isRunningTest:
+              @selector(
+                  testKeyboardAccessoryDisplaysPasskeyAndPasswordNoBottomSheetOnConditionalLogin)]) {
     config.features_enabled.push_back(kIOSPasskeyConditionalLoginWithShim);
   }
 
@@ -301,7 +428,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 // page that accepts both passkeys and passwords.
 - (GURL)conditionalPasskeyLoginPageURL {
   return self.testServer->GetURL(
-      "/simple_login_form_empty_passkey_conditional.html");
+      kLocalhost, "/simple_login_form_empty_passkey_conditional.html");
 }
 
 // Returns the GURL for the simple modal passkey login page.
@@ -349,6 +476,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
     _hasSignedInForTest = YES;
   }
   [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:WebViewMatcher()];
 }
 
 - (void)loadModalPasskeyLoginPage {
@@ -573,6 +701,61 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
       performAction:grey_tap()];
 
   [self verifyPasswordFieldsHaveBeenFilled:@"user"];
+}
+
+// Tests that the autofill keyboard accessory bar displays chips for both the
+// passkey and the password, with the passkey listed first, when both passwords
+// and passkeys can be presented and the bottom sheet is dismissed.
+- (void)testKeyboardAccessoryDisplaysPasskeyAndPasswordOnConditionalLogin {
+  SaveExamplePasskeyToStore(/*rpId=*/base::SysUTF8ToNSString(kLocalhost));
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:@"user"
+                         password:@"password"
+                              URL:net::NSURLWithGURL(
+                                      [self conditionalPasskeyLoginPageURL])];
+
+  [self loadConditionalPasskeyLoginPage];
+
+  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                              kDefaultUserDisplayName)];
+
+  [[EarlGrey selectElementWithMatcher:OpenKeyboardButton()]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForKeyboardToAppear];
+
+  VerifyKeyboardAccessoryChips(@"user", kDefaultUserDisplayName);
+  VerifyManualFillShowsSignInActionButton(kDefaultUserDisplayName);
+}
+
+// Tests that when the credential bottom sheet is disabled, focusing an input
+// field on a conditional passkey login page directly displays chips on the
+// keyboard accessory bar for both the passkey and the password, with the
+// passkey listed first.
+- (void)
+    testKeyboardAccessoryDisplaysPasskeyAndPasswordNoBottomSheetOnConditionalLogin {
+  [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
+
+  SaveExamplePasskeyToStore(/*rpId=*/base::SysUTF8ToNSString(kLocalhost));
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:@"user"
+                         password:@"password"
+                              URL:net::NSURLWithGURL(
+                                      [self conditionalPasskeyLoginPageURL])];
+
+  [self loadConditionalPasskeyLoginPage];
+
+  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
+
+  [ChromeEarlGrey waitForKeyboardToAppear];
+
+  VerifyKeyboardAccessoryChips(@"user", kDefaultUserDisplayName);
+  VerifyManualFillShowsSignInActionButton(kDefaultUserDisplayName);
 }
 
 // Tests using a passkey from the bottom sheet in a modal login context.

@@ -6,5 +6,18 @@ Login form.
   <input autocomplete='webauthn' type='text' name='username' id='un'><br/>
   <input autocomplete='current-password webauthn' type='password' name='password' id='pw'><br/>
   <button id='submit_button' value='Submit'>SubForm</button>
+  <script>
+    const publicKey = {
+      challenge: Uint8Array.from('randomlygeneratedcryptographicchallengestring', (c) => c.charCodeAt(0)).slice(0, 32),
+      timeout: 60000,
+      rpId: 'localhost',
+      userVerification: 'preferred',
+      allowCredentials: []
+    };
+    navigator.credentials.get({
+      publicKey: publicKey,
+      mediation: 'conditional'
+    });
+  </script>
 </form>
 </body></html>
