@@ -5,8 +5,8 @@
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -112,7 +112,7 @@ class SearchAIModeSignInPromoViewPixelTest
   void ShowUi(const std::string& name) override {
     ShowPromoView(std::make_unique<SearchAIModeSignInPromoView>(
         GetAvatarBubbleAnchor(),
-        browser()->tab_strip_model()->GetActiveWebContents(),
+        browser()->GetTabStripModel()->GetActiveWebContents(),
         /*controller=*/nullptr));
   }
 
@@ -143,7 +143,7 @@ class ComposeboxDriveSignInPromoViewPixelTest
   void ShowUi(const std::string& name) override {
     ShowPromoView(std::make_unique<ComposeboxDriveSignInPromoView>(
         GetAvatarBubbleAnchor(),
-        browser()->tab_strip_model()->GetActiveWebContents(),
+        browser()->GetTabStripModel()->GetActiveWebContents(),
         /*controller=*/nullptr));
   }
 

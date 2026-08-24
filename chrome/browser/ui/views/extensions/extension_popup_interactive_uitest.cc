@@ -480,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   views::Widget* web_dialog_widget =
       constrained_window::ShowWebModalDialogViews(
           web_dialog.release(),
-          browser()->tab_strip_model()->GetActiveWebContents());
+          browser()->GetTabStripModel()->GetActiveWebContents());
   views::test::WidgetVisibleWaiter(web_dialog_widget).Wait();
   EXPECT_TRUE(web_dialog_widget->IsVisible());
 

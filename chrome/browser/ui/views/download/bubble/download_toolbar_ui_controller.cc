@@ -28,7 +28,6 @@ DEFINE_USER_DATA(DownloadToolbarUIController);
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -840,7 +839,7 @@ void DownloadToolbarUIController::ShowPendingDownloadStartedAnimation() {
     return;
   }
   content::WebContents* const web_contents =
-      browser_view_->browser()->tab_strip_model()->GetActiveWebContents();
+      browser_view_->browser()->GetTabStripModel()->GetActiveWebContents();
   if (!web_contents ||
       !platform_util::IsVisible(web_contents->GetNativeView())) {
     return;
@@ -1149,8 +1148,9 @@ bool DownloadToolbarUIController::ShouldShowBubbleAsInactive() const {
 
   // Don't show as active if there is a running context menu, otherwise the
   // context menu will be closed.
-  if (content::WebContents* web_contents =
-          browser_view_->browser()->tab_strip_model()->GetActiveWebContents()) {
+  if (content::WebContents* web_contents = browser_view_->browser()
+                                               ->GetTabStripModel()
+                                               ->GetActiveWebContents()) {
     if (web_contents->IsShowingContextMenu()) {
       return true;
     }
@@ -1163,7 +1163,7 @@ bool DownloadToolbarUIController::ShouldShowBubbleAsInactive() const {
 
 void DownloadToolbarUIController::CloseAutofillPopup() {
   content::WebContents* web_contents =
-      browser_view_->browser()->tab_strip_model()->GetActiveWebContents();
+      browser_view_->browser()->GetTabStripModel()->GetActiveWebContents();
   if (!web_contents) {
     return;
   }
@@ -1196,8 +1196,7 @@ void DownloadToolbarUIController::UpdateIconDormant() {
       ProfileBrowserCollection::GetForProfile(browser_view_->GetProfile())
           ->GetLastActiveBrowser();
   bool should_update_button_progress =
-      last_active &&
-      browser_view_->browser() == last_active->GetBrowserForMigrationOnly();
+      last_active && browser_view_->browser() == last_active;
   if (is_dormant_ == !should_update_button_progress) {
     return;
   }

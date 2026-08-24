@@ -573,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(
   //   - site access toggle is off
   //   - site permissions button has "on click" text.
   UpdateUserSiteAccess(*extension,
-                       browser()->tab_strip_model()->GetActiveWebContents(),
+                       browser()->GetTabStripModel()->GetActiveWebContents(),
                        PermissionsManager::UserSiteAccess::kOnClick);
   LayoutMenuIfNecessary();
   EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
@@ -783,7 +783,7 @@ IN_PROC_BROWSER_TEST_F(
   const GURL url("http://www.example.com");
   NavigateAndCommit(url);
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   ShowMenu();
   ExtensionsMenuEntryView* menu_entry = GetOnlyMenuEntry();
@@ -890,7 +890,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
   //     access.
   extensions::ActiveTabPermissionGranter* active_tab_permission_granter =
       extensions::ActiveTabPermissionGranter::FromWebContents(
-          browser()->tab_strip_model()->GetActiveWebContents());
+          browser()->GetTabStripModel()->GetActiveWebContents());
   ASSERT_TRUE(active_tab_permission_granter);
   active_tab_permission_granter->GrantIfRequested(extension.get());
   EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetVisible());
@@ -1027,7 +1027,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
 
   // Add a site access request for extension A.
   AddHostAccessRequest(*extension_A,
-                       browser()->tab_strip_model()->GetActiveWebContents());
+                       browser()->GetTabStripModel()->GetActiveWebContents());
 
   ShowMenu();
 
@@ -1547,7 +1547,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest, RequestsSection) {
   const GURL url("http://www.example.com");
   NavigateAndCommit(url);
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // By default, user can customize the site access of each extension and site
   // access will be granted
@@ -1616,7 +1616,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
   const GURL url("http://www.example.com");
   NavigateAndCommit(url);
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // By default, user can customize the site access of each extension and site
   // access will be granted
@@ -1689,8 +1689,9 @@ IN_PROC_BROWSER_TEST_F(
   // extension with a filter that doesn't match the current web contents.
   URLPattern filter(extensions::Extension::kValidHostPermissionSchemes,
                     "*://*/title2.html*");
-  AddHostAccessRequest(
-      *extension, browser()->tab_strip_model()->GetActiveWebContents(), filter);
+  AddHostAccessRequest(*extension,
+                       browser()->GetTabStripModel()->GetActiveWebContents(),
+                       filter);
   LayoutMenuIfNecessary();
   EXPECT_FALSE(reload_section->GetVisible());
   EXPECT_FALSE(requests_section->GetVisible());
@@ -1731,7 +1732,7 @@ IN_PROC_BROWSER_TEST_F(
   const GURL url("http://www.example.com");
   NavigateAndCommit(url);
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   ShowMenu();
   const views::View* requests_section = main_page()->requests_section();
@@ -1767,7 +1768,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
       embedded_test_server()->GetURL("example.com", "/title1.html");
   NavigateAndCommit(url);
   AddHostAccessRequest(*extension,
-                       browser()->tab_strip_model()->GetActiveWebContents());
+                       browser()->GetTabStripModel()->GetActiveWebContents());
 
   ShowMenu();
   const views::View* requests_section = main_page()->requests_section();
@@ -1831,7 +1832,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
   const GURL url("http://www.example.com");
   NavigateAndCommit(url);
   AddHostAccessRequest(*extension,
-                       browser()->tab_strip_model()->GetActiveWebContents());
+                       browser()->GetTabStripModel()->GetActiveWebContents());
 
   ShowMenu();
   const views::View* requests_section = main_page()->requests_section();
@@ -1893,7 +1894,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
   const GURL url("http://www.example.com");
   NavigateAndCommit(url);
   AddHostAccessRequest(*extension,
-                       browser()->tab_strip_model()->GetActiveWebContents());
+                       browser()->GetTabStripModel()->GetActiveWebContents());
 
   // By default, user can customize the site access of each extension and site
   // access will be granted

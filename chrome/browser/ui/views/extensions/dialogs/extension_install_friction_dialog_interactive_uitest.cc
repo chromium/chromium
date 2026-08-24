@@ -24,7 +24,7 @@ class ExtensionInstallFrictionDialogUITest : public InteractiveBrowserTest {
   auto ShowExtensionInstallFrictionDialog() {
     return Do([&]() {
       extensions::ShowExtensionInstallFrictionDialog(
-          browser()->tab_strip_model()->GetActiveWebContents(),
+          browser()->GetTabStripModel()->GetActiveWebContents(),
           base::DoNothing());
     });
   }
@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallFrictionDialogUITest,
 
       // Close the tab where the dialog is opened.
       Do([&]() {
-        browser()->tab_strip_model()->CloseWebContentsAt(
+        browser()->GetTabStripModel()->CloseWebContentsAt(
             first_tab_index, TabCloseTypes::CLOSE_NONE);
       }),
 

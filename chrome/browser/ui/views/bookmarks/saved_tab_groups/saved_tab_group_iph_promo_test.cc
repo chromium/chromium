@@ -35,7 +35,7 @@ class SavedTabGroupV2PromoTest : public InteractiveFeaturePromoTest {
           chrome::AddTabAt(browser(), GURL(), 0, true);
           chrome::AddTabAt(browser(), GURL(), 1, true);
           tab_groups::TabGroupId group_id =
-              browser()->tab_strip_model()->AddToNewGroup({0});
+              browser()->GetTabStripModel()->AddToNewGroup({0});
 
           tab_groups::SavedTabGroupUtils::RemoveGroupFromTabstrip(browser(),
                                                                   group_id);

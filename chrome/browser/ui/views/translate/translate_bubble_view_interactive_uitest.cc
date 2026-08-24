@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/translate/translate_bubble_view.h"
+
 #include <string>
 
 #include "base/command_line.h"
@@ -16,11 +18,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_test_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
-#include "chrome/browser/ui/views/translate/translate_bubble_view.h"
 #include "chrome/browser/ui/views/translate/translate_language_search_view.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
@@ -216,11 +217,11 @@ class TranslateBubbleViewUITest
 
     while (expected_lang !=
            ChromeTranslateClient::FromWebContents(
-               browser()->tab_strip_model()->GetActiveWebContents())
+               browser()->GetTabStripModel()->GetActiveWebContents())
                ->GetLanguageState()
                .source_language()) {
       CreateTranslateWaiter(
-          browser()->tab_strip_model()->GetActiveWebContents(),
+          browser()->GetTabStripModel()->GetActiveWebContents(),
           TranslateWaiter::WaitEvent::kLanguageDetermined)
           ->Wait();
     }
@@ -235,11 +236,11 @@ class TranslateBubbleViewUITest
  private:
   void WaitForTranslatedImpl(bool translated = true) {
     if (ChromeTranslateClient::FromWebContents(
-            browser()->tab_strip_model()->GetActiveWebContents())
+            browser()->GetTabStripModel()->GetActiveWebContents())
             ->GetLanguageState()
             .IsPageTranslated() != translated) {
       CreateTranslateWaiter(
-          browser()->tab_strip_model()->GetActiveWebContents(),
+          browser()->GetTabStripModel()->GetActiveWebContents(),
           translated ? TranslateWaiter::WaitEvent::kPageTranslated
                      : TranslateWaiter::WaitEvent::kIsPageTranslatedChanged)
           ->Wait();

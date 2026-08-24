@@ -17,7 +17,7 @@
 #include "base/version.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
@@ -368,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, NewWebContents) {
   // been opened in the regular browser and is active.
   EXPECT_EQ(
       GURL("http://foo.com"),
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL());
 }
 
 // The devtools browser for undocked devtools has no tab strip and can't open
@@ -393,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
   // been opened in the regular browser and is active.
   EXPECT_EQ(
       GURL("http://foo.com"),
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL());
 }
 
 IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, DialogResize) {

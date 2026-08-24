@@ -9,9 +9,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
@@ -70,8 +70,8 @@ class DataSharingChromeNativeUiTest
     // open the browser and the added one).
     EXPECT_TRUE(
         AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
-    EXPECT_EQ(2, browser()->tab_strip_model()->count());
-    return browser()->tab_strip_model()->AddToNewGroup({0, 1});
+    EXPECT_EQ(2, browser()->GetTabStripModel()->count());
+    return browser()->GetTabStripModel()->AddToNewGroup({0, 1});
   }
 
  private:

@@ -193,12 +193,12 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   EXPECT_TRUE(toolbar_button(browser())->GetVisible());
   {
     content::LoadStopObserver observer(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
     ClickButton(toolbar_button(browser()));
     observer.Wait();
   }
   EXPECT_EQ(GURL(chrome::kChromeUIDownloadsURL),
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+            browser()->GetTabStripModel()->GetActiveWebContents()->GetURL());
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,

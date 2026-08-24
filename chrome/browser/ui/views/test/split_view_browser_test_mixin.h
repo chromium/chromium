@@ -44,7 +44,7 @@ class SplitViewBrowserTestMixin : public T {
                                                        GetDisabledFeatures());
   }
 
-  TabStripModel* tab_strip_model() { return T::browser()->tab_strip_model(); }
+  TabStripModel* tab_strip_model() { return T::browser()->GetTabStripModel(); }
 
   MultiContentsView* multi_contents_view() {
     return BrowserView::GetBrowserViewForBrowser(T::browser())

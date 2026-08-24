@@ -87,8 +87,8 @@ class CollaborationControllerDelegateDesktopInteractiveUITest
     // open the browser and the added one).
     EXPECT_TRUE(
         AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
-    EXPECT_EQ(2, browser()->tab_strip_model()->count());
-    return browser()->tab_strip_model()->AddToNewGroup({0, 1});
+    EXPECT_EQ(2, browser()->GetTabStripModel()->count());
+    return browser()->GetTabStripModel()->AddToNewGroup({0, 1});
   }
 
  private:
@@ -403,10 +403,10 @@ IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
   nav_observer.StartWatchingNewWebContents();
   views::test::AcceptDialog(delegate.error_dialog_widget_for_testing());
   nav_observer.Wait();
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
   EXPECT_EQ(
       GURL("chrome://settings/help"),
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL());
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -550,7 +550,7 @@ IN_PROC_BROWSER_TEST_F(
   ShowAndAcceptDialog(collaboration::SigninStatus::kNotSignedIn);
 
   EXPECT_TRUE(SigninPromoTabHelper::GetForWebContents(
-                  *browser()->tab_strip_model()->GetActiveWebContents())
+                  *browser()->GetTabStripModel()->GetActiveWebContents())
                   ->IsInitializedForTesting());
 
   EXPECT_FALSE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
@@ -610,7 +610,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(IsSignedIn());
   EXPECT_FALSE(SigninPromoTabHelper::GetForWebContents(
-                   *browser()->tab_strip_model()->GetActiveWebContents())
+                   *browser()->GetTabStripModel()->GetActiveWebContents())
                    ->IsInitializedForTesting());
 
   EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
@@ -671,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // A reauth tab is expected to be shown.
   content::WebContents* reauth_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(reauth_tab);
   DiceTabHelper* dice_tab_helper = DiceTabHelper::FromWebContents(reauth_tab);
   ASSERT_TRUE(dice_tab_helper);
@@ -727,7 +727,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(IsSignedIn());
   EXPECT_FALSE(SigninPromoTabHelper::GetForWebContents(
-                   *browser()->tab_strip_model()->GetActiveWebContents())
+                   *browser()->GetTabStripModel()->GetActiveWebContents())
                    ->IsInitializedForTesting());
 
   EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
@@ -763,12 +763,12 @@ IN_PROC_BROWSER_TEST_F(
   // Verify the settings page was opened.
   EXPECT_EQ(
       GURL("chrome://settings/googleServices"),
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL());
 
   // History sync was not enabled.
   EXPECT_FALSE(IsSignedIn());
   EXPECT_FALSE(SigninPromoTabHelper::GetForWebContents(
-                   *browser()->tab_strip_model()->GetActiveWebContents())
+                   *browser()->GetTabStripModel()->GetActiveWebContents())
                    ->IsInitializedForTesting());
 
   EXPECT_FALSE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(

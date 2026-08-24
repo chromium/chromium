@@ -350,7 +350,7 @@ class ContextualTasksEphemeralButtonInteractiveTestMixin
       contextual_tasks::ContextualTask task =
           this->GetContextualTasksService()->CreateTask();
       content::WebContents* const web_contents =
-          this->browser()->tab_strip_model()->GetWebContentsAt(tab_index);
+          this->browser()->GetTabStripModel()->GetWebContentsAt(tab_index);
       SessionID session_id = sessions::SessionTabHelper::IdForTab(web_contents);
       this->GetContextualTasksService()->AssociateTabWithTask(task.GetTaskId(),
                                                               session_id);
@@ -363,7 +363,7 @@ class ContextualTasksEphemeralButtonInteractiveTestMixin
   auto RemoveTaskFromTab(int tab_index) {
     return this->Do([&, tab_index] {
       content::WebContents* const web_contents =
-          this->browser()->tab_strip_model()->GetWebContentsAt(tab_index);
+          this->browser()->GetTabStripModel()->GetWebContentsAt(tab_index);
       SessionID session_id = sessions::SessionTabHelper::IdForTab(web_contents);
       std::optional<contextual_tasks::ContextualTask> task =
           this->GetContextualTasksService()->GetContextualTaskForTab(
@@ -765,7 +765,7 @@ class ContextualTasksEphemeralButtonCobrowseDisabledInteractiveTest
   auto CreateTaskForTab(int tab_index) {
     return Do([this, tab_index] {
       tabs::TabInterface* tab =
-          browser()->tab_strip_model()->GetTabAtIndex(tab_index);
+          browser()->GetTabStripModel()->GetTabAtIndex(tab_index);
       contextual_tasks::ContextualTask task =
           GetContextualTasksService()->CreateTask();
       GetContextualTasksService()->AssociateTabWithTask(
@@ -829,10 +829,9 @@ IN_PROC_BROWSER_TEST_F(
       AddInstrumentedTab(kSecondTab, GetTestURL()),
       SelectTab(kTabStripElementId, 0),
       // Create initial task and open side panel.
-      CreateTaskForTab(0),
-      Do([&]() {
+      CreateTaskForTab(0), Do([&]() {
         tabs::TabInterface* tab =
-            browser()->tab_strip_model()->GetTabAtIndex(0);
+            browser()->GetTabStripModel()->GetTabAtIndex(0);
         initial_task_id =
             GetContextualTasksService()
                 ->GetContextualTaskForTab(
@@ -843,10 +842,9 @@ IN_PROC_BROWSER_TEST_F(
       SimulateClosingContextualTaskSidePanel(),
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
       // Pressing the ephemeral button resumes the original task.
-      PressButton(kContextualTasksEphemeralToolbarButtonElementId),
-      Do([&]() {
+      PressButton(kContextualTasksEphemeralToolbarButtonElementId), Do([&]() {
         tabs::TabInterface* tab =
-            browser()->tab_strip_model()->GetTabAtIndex(0);
+            browser()->GetTabStripModel()->GetTabAtIndex(0);
         resumed_task_id =
             GetContextualTasksService()
                 ->GetContextualTaskForTab(
@@ -863,7 +861,7 @@ IN_PROC_BROWSER_TEST_F(
       PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
       Do([&]() {
         tabs::TabInterface* tab =
-            browser()->tab_strip_model()->GetTabAtIndex(0);
+            browser()->GetTabStripModel()->GetTabAtIndex(0);
         new_task_id =
             GetContextualTasksService()
                 ->GetContextualTaskForTab(

@@ -32,7 +32,7 @@
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
 #include "ui/views/window/frame_view.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace translate {
 class TranslateBubbleVisualTest;
@@ -133,10 +133,11 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   friend class TranslateBubbleViewTest;
   friend class translate::TranslateBubbleVisualTest;
   friend class translate::TranslateBubbleViewBrowserTest;
-  friend void ::translate::test_utils::PressTranslate(::Browser*);
-  friend void ::translate::test_utils::PressRevert(::Browser*);
+  friend void ::translate::test_utils::PressTranslate(
+      ::BrowserWindowInterface*);
+  friend void ::translate::test_utils::PressRevert(::BrowserWindowInterface*);
   friend void ::translate::test_utils::SelectTargetLanguageByDisplayName(
-      ::Browser*,
+      ::BrowserWindowInterface*,
       const ::std::u16string&);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
                            TargetLanguageTabTriggersTranslate);

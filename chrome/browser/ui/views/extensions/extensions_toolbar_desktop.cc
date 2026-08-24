@@ -683,7 +683,7 @@ void ExtensionsToolbarDesktop::CreateActionViewForId(
 }
 
 content::WebContents* ExtensionsToolbarDesktop::GetCurrentWebContents() {
-  return browser_->tab_strip_model()->GetActiveWebContents();
+  return browser_->GetTabStripModel()->GetActiveWebContents();
 }
 
 views::LabelButton* ExtensionsToolbarDesktop::GetOverflowReferenceView() const {

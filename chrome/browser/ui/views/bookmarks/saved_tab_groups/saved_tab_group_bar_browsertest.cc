@@ -436,7 +436,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
           ->bookmark_bar()
           ->saved_tab_group_bar());
 
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
   model->AddToNewGroup({0});
   Wait();
 

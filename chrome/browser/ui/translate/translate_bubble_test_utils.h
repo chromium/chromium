@@ -8,7 +8,7 @@
 #include <string>
 
 class TranslateBubbleModel;
-class Browser;
+class BrowserWindowInterface;
 
 namespace translate {
 
@@ -17,19 +17,19 @@ namespace translate {
 namespace test_utils {
 
 // Obtain the TranslateBubbleModel associated with the current bubble.
-const TranslateBubbleModel* GetCurrentModel(Browser* browser);
+const TranslateBubbleModel* GetCurrentModel(BrowserWindowInterface* browser);
 
-void CloseCurrentBubble(Browser* browser);
+void CloseCurrentBubble(BrowserWindowInterface* browser);
 
 // Presses 'Translate' on the currently open Full Page Translate bubble.
-void PressTranslate(Browser* browser);
+void PressTranslate(BrowserWindowInterface* browser);
 
 // Presses 'Revert' on the currently opened Full Page Translate bubble.
-void PressRevert(Browser* browser);
+void PressRevert(BrowserWindowInterface* browser);
 
 // Selects the target language with the given display name on the opened
 // Full Page Translate bubble.
-void SelectTargetLanguageByDisplayName(Browser* browser,
+void SelectTargetLanguageByDisplayName(BrowserWindowInterface* browser,
                                        const std::u16string& display_name);
 
 }  // namespace test_utils

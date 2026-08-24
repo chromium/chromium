@@ -162,7 +162,7 @@ class DataSharingLiveTest : public signin::test::LiveTest {
     }
     DCHECK(open);
     TabGroupModel* tab_group_model =
-        browser()->tab_strip_model()->group_model();
+        browser()->GetTabStripModel()->group_model();
     for (const tab_groups::TabGroupId& id : tab_group_model->ListTabGroups()) {
       const tab_groups::TabGroupVisualData* visual_data =
           tab_group_model->GetTabGroup(id)->visual_data();

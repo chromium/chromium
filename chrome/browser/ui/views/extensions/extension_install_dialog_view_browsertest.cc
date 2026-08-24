@@ -32,9 +32,9 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -185,7 +185,7 @@ void ExtensionInstallDialogViewTestBase::SetUpOnMainThread() {
   extension_ = LoadExtension(test_data_dir_.AppendASCII(
       "install_prompt/permissions_scrollbar_regression"));
 
-  web_contents_ = browser()->tab_strip_model()->GetWebContentsAt(0);
+  web_contents_ = browser()->GetTabStripModel()->GetWebContentsAt(0);
 }
 
 std::unique_ptr<InstallPromptData>
@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTest, NotifyDelegate) {
 // user switches the tab after starting the installation.
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTest,
                        ActivateWebContentsOnTabChange) {
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   content::WebContents* originating_web_contents =
       tab_strip_model->GetActiveWebContents();
 
@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTest,
                        TabClosureClearsWebContentsFromDialogView) {
   ExtensionInstallPromptTestHelper helper;
   ExtensionInstallDialogView* delegate_view = CreateAndShowPrompt(&helper);
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   content::WebContents* originator_contents =
       tab_strip_model->GetActiveWebContents();
   ASSERT_TRUE(delegate_view->GetShowParamsForTesting());
@@ -528,7 +528,7 @@ class ExtensionInstallDialogViewInteractiveBrowserTest
     }
 
     ExtensionInstallDialogView::SetInstallButtonDelayForTesting(0);
-    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
     auto install_prompt = std::make_unique<ExtensionInstallPrompt>(
         web_contents, std::move(prompt));
     install_prompt->ShowDialog(base::DoNothing(), extension.get(), &icon,

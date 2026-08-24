@@ -11,8 +11,8 @@
 #include "chrome/browser/extensions/extension_install_prompt_test_helper.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/extensions/extension_install_dialog_view.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
@@ -73,7 +73,7 @@ void ExtensionInstallDialogViewTestSupervised::SetUpOnMainThread() {
   extension_ = LoadExtension(test_data_dir_.AppendASCII(
       "install_prompt/permissions_scrollbar_regression"));
 
-  web_contents_ = browser()->tab_strip_model()->GetWebContentsAt(0);
+  web_contents_ = browser()->GetTabStripModel()->GetWebContentsAt(0);
 
   supervised_user_extensions_metrics_recorder_ =
       std::make_unique<SupervisedUserExtensionsMetricsRecorder>();

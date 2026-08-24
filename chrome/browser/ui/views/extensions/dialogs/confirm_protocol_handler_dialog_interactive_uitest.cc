@@ -27,7 +27,7 @@ class ConfirmProtocolHandlerDialogUITest : public InteractiveBrowserTest {
       const std::optional<url::Origin>& initiating_origin) {
     return Do([&]() {
       extensions::ShowConfirmProtocolHandlerDialog(
-          browser()->tab_strip_model()->GetActiveWebContents(), handler,
+          browser()->GetTabStripModel()->GetActiveWebContents(), handler,
           initiating_origin,
           base::BindOnce(
               &ConfirmProtocolHandlerDialogUITest::OnPermissionGranted,

@@ -87,7 +87,7 @@ class AccountChooserControllerInteractiveUiTest
   auto CreateAccountChooserController() {
     return Do([this]() {
       account_chooser_controller_ = std::make_unique<AccountChooserController>(
-          browser()->tab_strip_model()->GetActiveWebContents(),
+          browser()->GetTabStripModel()->GetActiveWebContents(),
           identity_test_environment_adaptor_->identity_test_env()
               ->identity_manager(),
           kTestUploadTitle);

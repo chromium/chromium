@@ -8,7 +8,6 @@
 #include <concepts>
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -53,7 +52,7 @@ class VerticalTabsBrowserTestMixin : public T {
     T::SetUpOnMainThread();
   }
 
-  TabStripModel* tab_strip_model() { return T::browser()->tab_strip_model(); }
+  TabStripModel* tab_strip_model() { return T::browser()->GetTabStripModel(); }
 
   tabs::VerticalTabStripStateController* vertical_tab_strip_state_controller() {
     return tabs::VerticalTabStripStateController::From(T::browser());

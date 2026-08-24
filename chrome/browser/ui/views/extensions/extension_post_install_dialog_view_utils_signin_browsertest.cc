@@ -67,7 +67,7 @@ class ExtensionPostInstallDialogViewUtilsSignInBrowserTest
         profile(), extension, SkBitmap(),
         base::BindOnce(
             [](Browser* b) {
-              return b->tab_strip_model()->GetActiveWebContents();
+              return b->GetTabStripModel()->GetActiveWebContents();
             },
             browser()));
 
@@ -116,7 +116,7 @@ class ExtensionPostInstallDialogViewUtilsSignInBrowserTest
 
     // Initiate a sign in from the promo.
     BubbleSignInPromoForSyncableDataTypeDelegate delegate(
-        *browser()->tab_strip_model()->GetActiveWebContents(),
+        *browser()->GetTabStripModel()->GetActiveWebContents(),
         signin_metrics::AccessPoint::kExtensionInstallBubble,
         syncer::LocalDataItemModel::DataId(extension->id()));
     delegate.OnSignIn(account_info);

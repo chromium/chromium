@@ -84,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(TranslatePageActionInteractiveUiTest,
                        ClosePartialTranslateBubble) {
   // Show the Translate icon.
   ChromeTranslateClient::FromWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents())
+      browser()->GetTabStripModel()->GetActiveWebContents())
       ->GetTranslateManager()
       ->GetLanguageState()
       ->SetTranslateEnabled(true);
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(TranslatePageActionInteractiveUiTest,
                        IconViewAccessibleName) {
   // Show the Translate icon.
   ChromeTranslateClient::FromWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents())
+      browser()->GetTabStripModel()->GetActiveWebContents())
       ->GetTranslateManager()
       ->GetLanguageState()
       ->SetTranslateEnabled(true);

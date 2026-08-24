@@ -137,7 +137,7 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
     extension->OnMouseEvent(&click_up_event);
   }
 
-  void ClickExtensionsMenuButton(Browser* browser) {
+  void ClickExtensionsMenuButton(BrowserWindowInterface* browser) {
     ClickButton(BrowserView::GetBrowserViewForBrowser(browser)
                     ->toolbar()
                     ->GetExtensionsButton());
@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 
   // Navigate to a page the extension wants to run on.
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   {
     content::TestNavigationObserver observer(tab);
     GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
@@ -526,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   // Clicking the Manage Extensions button should open chrome://extensions.
   EXPECT_EQ(
       chrome::kChromeUIExtensionsURL,
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL());
 }
 
 #if BUILDFLAG(IS_LINUX)
@@ -696,7 +696,7 @@ IN_PROC_BROWSER_TEST_P(ActivateWithReloadExtensionsMenuInteractiveUITest,
   VerifyUi();
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   extensions::ExtensionActionRunner* action_runner =
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);

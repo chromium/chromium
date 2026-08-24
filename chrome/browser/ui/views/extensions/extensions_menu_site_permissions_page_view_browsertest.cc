@@ -285,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsSitePermissionsPageViewBrowserTest,
   EXPECT_THAT(GetExtensionsShowingRequests(), testing::IsEmpty());
 
   // Add site access requests for both extensions.
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   AddHostAccessRequest(*extensionA, web_contents);
   AddHostAccessRequest(*extensionB, web_contents);
 
@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsSitePermissionsPageViewBrowserTest,
 
   // Add site access request for extension.
   AddHostAccessRequest(*extension,
-                       browser()->tab_strip_model()->GetActiveWebContents());
+                       browser()->GetTabStripModel()->GetActiveWebContents());
 
   // By default, extensions are allowed to show request access in the toolbar.
   EXPECT_TRUE(
@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsSitePermissionsPageViewBrowserTest,
 
   NavigateAndCommit(GURL("http://www.url.com"));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   ShowSitePermissionsPage(extension->id());
   EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
@@ -420,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsSitePermissionsPageViewBrowserTest,
 
   NavigateAndCommit(GURL("http://www.url.com"));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   ShowSitePermissionsPage(extension->id());
   EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
@@ -454,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsSitePermissionsPageViewBrowserTest,
 
   NavigateAndCommit(GURL("http://www.url.com"));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   ShowSitePermissionsPage(extension->id());
   EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));

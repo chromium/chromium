@@ -54,7 +54,7 @@ void ExtensionPostInstallDialogViewUtilsBrowserTest::ShowUi(
       profile(), extension, SkBitmap(),
       base::BindOnce(
           [](Browser* b) {
-            return b->tab_strip_model()->GetActiveWebContents();
+            return b->GetTabStripModel()->GetActiveWebContents();
           },
           browser()));
 

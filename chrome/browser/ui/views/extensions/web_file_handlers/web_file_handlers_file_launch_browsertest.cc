@@ -21,7 +21,7 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/file_handlers/web_file_handlers_permission_handler.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/launch_result.h"
 #include "content/public/test/browser_test.h"

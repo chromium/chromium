@@ -384,7 +384,7 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
     }
     actions::ActionIdMap::ResetMapsForTesting();
 
-    browser_->tab_strip_model()->CloseAllTabs();
+    browser_->GetTabStripModel()->CloseAllTabs();
     browser_.reset();
     profile_.reset();
 

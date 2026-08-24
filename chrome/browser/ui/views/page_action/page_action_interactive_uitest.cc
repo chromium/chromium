@@ -575,7 +575,7 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   //         old page context that already had ephemeral actions shown/logged.
   //         Therefore, re-showing the ephemeral action now should NOT increment
   //         the histogram again.
-  PerformBackNavigation(browser()->tab_strip_model()->GetActiveWebContents());
+  PerformBackNavigation(browser()->GetTabStripModel()->GetActiveWebContents());
 
   ShowPageAction(kActionShowTranslate);
 
@@ -628,7 +628,7 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   // respective actions.
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL("chrome://version"), ui::PAGE_TRANSITION_LINK));
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
 
   // Show ephemeral Translate action in tab[1].
   ShowPageAction(kActionShowTranslate);
@@ -645,7 +645,7 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   // 5) Switch back to tab[0] (where the Translate action was already shown
   // after navigation). Re-showing the ephemeral icon should NOT increment the
   // metric, since it's the same context in tab[0].
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
   ShowPageAction(kActionShowTranslate);
   histogram_tester.ExpectBucketCount("PageActionController.ActionTypeShown2",
                                      PageActionIconType::kTranslate, 3);
@@ -680,7 +680,7 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   // 4. Open a new tab → brand-new context.
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL("chrome://version"), ui::PAGE_TRANSITION_LINK));
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
 
   // 4-a) First show of Translate in tab[1] logs again.
   ShowPageAction(kActionShowTranslate);
@@ -688,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
                                      PageActionCTREvent::kShown, 3);
 
   // 5. Switch back to tab[0] and show again → no additional logging.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
   ShowPageAction(kActionShowTranslate);
   histogram_tester.ExpectBucketCount(kTranslateHistogram,
                                      PageActionCTREvent::kShown, 3);

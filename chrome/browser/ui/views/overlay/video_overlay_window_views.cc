@@ -22,7 +22,6 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -375,14 +374,13 @@ std::unique_ptr<VideoOverlayWindowViews> VideoOverlayWindowViews::Create(
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           controller->GetWebContents());
   if (browser) {
-    Browser* raw_browser = browser->GetBrowserForMigrationOnly();
     const base::FilePath& profile_path = browser->GetProfile()->GetPath();
     // Set the window app id to GetAppUserModelIdForApp if the original window
     // is an app window, GetAppUserModelIdForBrowser if it's a browser window.
     app_user_model_id =
         browser->GetType() == BrowserWindowInterface::Type::TYPE_APP
             ? shell_integration::win::GetAppUserModelIdForApp(
-                  base::UTF8ToWide(BrowserInitState::From(raw_browser)
+                  base::UTF8ToWide(BrowserInitState::From(browser)
                                        ->create_params()
                                        .app_name),
                   profile_path)

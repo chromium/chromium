@@ -50,7 +50,7 @@ class SplitViewInteractiveTestMixin : public SplitViewBrowserTestMixin<T> {
         SplitViewBrowserTestMixin<T>::Do([&, other_tab, layout, ratio]() {
           if (other_tab.has_value()) {
             SplitViewBrowserTestMixin<T>::browser()
-                ->tab_strip_model()
+                ->GetTabStripModel()
                 ->AddToNewSplit(
                     {other_tab.value()},
                     split_tabs::SplitTabVisualData(layout, ratio),
@@ -78,16 +78,16 @@ class SplitViewInteractiveTestMixin : public SplitViewBrowserTestMixin<T> {
     auto result = SplitViewBrowserTestMixin<T>::Steps(
         SplitViewBrowserTestMixin<T>::Check([index, this]() {
           return SplitViewBrowserTestMixin<T>::browser()
-              ->tab_strip_model()
+              ->GetTabStripModel()
               ->GetSplitForTab(index)
               .has_value();
         }),
         SplitViewBrowserTestMixin<T>::Do([index, this]() {
           auto split_id = SplitViewBrowserTestMixin<T>::browser()
-                              ->tab_strip_model()
+                              ->GetTabStripModel()
                               ->GetSplitForTab(index);
           SplitViewBrowserTestMixin<T>::browser()
-              ->tab_strip_model()
+              ->GetTabStripModel()
               ->RemoveSplit(split_id.value());
         }),
         SplitViewBrowserTestMixin<T>::WaitForHide(

@@ -97,9 +97,9 @@ class CollaborationMessagingPageActionIconViewInteractiveTest
 
 IN_PROC_BROWSER_TEST_F(CollaborationMessagingPageActionIconViewInteractiveTest,
                        ShowPageActionWithAvatarFallback) {
-  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+  ASSERT_TRUE(browser()->GetTabStripModel()->SupportsTabGroups());
 
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
   tab_groups::TabGroupId group = model->AddToNewGroup({0});
 
   EXPECT_EQ(1, model->count());
@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingPageActionIconViewInteractiveTest,
       tab_groups::CollaborationMessagingObserverFactory::GetForProfile(
           browser()->GetProfile());
 
-  auto* tab = browser()->tab_strip_model()->GetActiveTab();
+  auto* tab = browser()->GetTabStripModel()->GetActiveTab();
   auto message = CreateChipMessage("User", CollaborationEvent::TAB_ADDED, tab);
 
   RunTestSequence(
@@ -133,14 +133,14 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingPageActionIconViewInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(CollaborationMessagingPageActionIconViewInteractiveTest,
                        ReactsToChangesInTabData) {
-  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+  ASSERT_TRUE(browser()->GetTabStripModel()->SupportsTabGroups());
 
   const std::u16string expected_added_string =
       base::UTF8ToUTF16(std::string("Added this tab"));
   const std::u16string expected_updated_string =
       base::UTF8ToUTF16(std::string("Changed this tab"));
 
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
   tab_groups::TabGroupId group = model->AddToNewGroup({0});
 
   EXPECT_EQ(1, model->count());
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingPageActionIconViewInteractiveTest,
       tab_groups::CollaborationMessagingObserverFactory::GetForProfile(
           browser()->GetProfile());
 
-  auto* tab = browser()->tab_strip_model()->GetActiveTab();
+  auto* tab = browser()->GetTabStripModel()->GetActiveTab();
   auto message = CreateChipMessage("User", CollaborationEvent::TAB_ADDED, tab);
 
   RunTestSequence(Do([&]() {

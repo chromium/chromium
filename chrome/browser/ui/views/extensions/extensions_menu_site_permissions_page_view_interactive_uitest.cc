@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuSitePermissionsPageViewInteractiveUITest,
       LoadTestExtension("extensions/blocked_actions/content_scripts");
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   GURL url = embedded_test_server()->GetURL("/simple.html");
   auto url_origin = url::Origin::Create(url);
 

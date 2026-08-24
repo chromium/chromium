@@ -6,7 +6,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(DseResetDialogBrowserTest,
 
   views::BubbleDialogDelegate* bubble = GetDseResetBubble(browser());
   content::LoadStopObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   // The "Search settings" button is the dialog's Cancel button.
   bubble->CancelDialog();
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(DseResetDialogBrowserTest,
   observer.Wait();
 
   content::WebContents* new_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   GURL current_url = new_tab->GetVisibleURL();
   bool is_valid_url = (current_url == GURL("chrome://settings/searchEngines") ||

@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_outline.h"
@@ -34,7 +34,7 @@ class FileSystemAccessRestorePermissionBubbleViewTest
     : public InProcessBrowserTest {
  public:
   content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetWebContentsAt(0);
+    return browser()->GetTabStripModel()->GetWebContentsAt(0);
   }
 
   void SetUpOnMainThread() override {
@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessRestorePermissionBubbleViewTest,
                        BubbleDismissedOnTabSwitch) {
   ASSERT_TRUE(AddTabAtIndex(1, GetURL("foo.com"),
                             ui::PageTransition::PAGE_TRANSITION_TYPED));
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   permissions::PermissionAction callback_result;
   GetFileSystemAccessRestorePermissionDialogForTesting(
@@ -140,9 +140,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessRestorePermissionBubbleViewTest,
       base::BindLambdaForTesting([&](permissions::PermissionAction result) {
         callback_result = result;
       }),
-      browser()->tab_strip_model()->GetWebContentsAt(0));
+      browser()->GetTabStripModel()->GetWebContentsAt(0));
 
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
 
   EXPECT_EQ(callback_result, permissions::PermissionAction::DISMISSED);
 }
@@ -151,11 +151,11 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessRestorePermissionBubbleViewTest,
                        NotCreatedForInactiveTab) {
   ASSERT_TRUE(AddTabAtIndex(1, GetURL("foo.com"),
                             ui::PageTransition::PAGE_TRANSITION_TYPED));
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
 
   auto* bubble = GetFileSystemAccessRestorePermissionDialogForTesting(
       kRequestData, base::DoNothing(),
-      browser()->tab_strip_model()->GetWebContentsAt(0));
+      browser()->GetTabStripModel()->GetWebContentsAt(0));
 
   EXPECT_EQ(bubble, nullptr);
 }
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessRestorePermissionBubbleViewTest,
                        ShowFileSystemAccessDialog) {
   ASSERT_TRUE(AddTabAtIndex(0, GetURL("example.com"),
                             ui::PageTransition::PAGE_TRANSITION_TYPED));
-  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* const tab_strip_model = browser()->GetTabStripModel();
   tab_strip_model->ActivateTabAt(0);
   tab_strip_model->AddToNewSplit(
       {1}, split_tabs::SplitTabVisualData(),

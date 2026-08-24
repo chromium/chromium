@@ -126,8 +126,8 @@ void DataSharingBubbleController::Show(data_sharing::RequestInfo request_info) {
   CHECK(net::GetValueForKeyInQuery(url.value(), data_sharing::kQueryParamFlow,
                                    &flow_value));
 
-  const BrowserView* const browser_view = BrowserView::GetBrowserViewForBrowser(
-      browser_->GetBrowserForMigrationOnly());
+  const BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(&browser_.get());
 
   views::View* anchor_view_for_share = nullptr;
   if (flow_value == data_sharing::kFlowShare) {
