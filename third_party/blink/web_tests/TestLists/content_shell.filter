@@ -58,7 +58,9 @@ external/wpt/css/css-contain/contain-size-flexbox-002.html
 external/wpt/css/css-contain/contain-size-grid-003.html
 external/wpt/css/css-contain/contain-size-inline-block-002.html
 external/wpt/css/css-contain/contain-size-inline-block-003.html
-external/wpt/css/css-contain/content-visibility/content-visibility-*
+external/wpt/css/css-contain/content-visibility/content-visibility-96.html
+external/wpt/css/css-contain/content-visibility/content-visibility-vs-scrollIntoView-001.html
+external/wpt/css/css-contain/content-visibility/content-visibility-with-top-layer-008.html
 external/wpt/css/css-contain/quote-scoping-002.html
 external/wpt/css/css-contain/quote-scoping-003.html
 external/wpt/css/css-contain/quote-scoping-004.html
