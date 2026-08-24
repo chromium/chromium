@@ -13,8 +13,11 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/new_glic_api_test.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -31,6 +34,11 @@ class GlicCueTargetBrowserTest : public GlicApiBrowserTest {
   void SetUpOnMainThread() override {
     GlicApiBrowserTest::SetUpOnMainThread();
     scoped_glic_bypass_.emplace();
+    auto* sync_service = SyncServiceFactory::GetForProfile(GetProfile());
+    if (sync_service) {
+      sync_service->GetUserSettings()->SetSelectedTypes(
+          /*sync_everything=*/false, {syncer::UserSelectableType::kHistory});
+    }
   }
 
   void TearDownOnMainThread() override {
@@ -95,6 +103,17 @@ IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTest, testIsEligible) {
 
   // Clean up.
   GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, true);
+  EXPECT_TRUE(target.IsEligible());
+
+  // Ineligible if history sync is off.
+  auto* sync_service = SyncServiceFactory::GetForProfile(GetProfile());
+  sync_service->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, {});
+  EXPECT_FALSE(target.IsEligible());
+
+  // Clean up.
+  sync_service->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, {syncer::UserSelectableType::kHistory});
   EXPECT_TRUE(target.IsEligible());
 }
 

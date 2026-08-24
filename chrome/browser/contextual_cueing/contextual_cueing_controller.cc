@@ -561,6 +561,22 @@ void ContextualCueingController::InitiateModelExecutionRequest(
 
   ukm::SourceId source_id = GetTabSourceId();
 
+  if (!sync_service_ ||
+      !sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kHistory)) {
+    CUEING_LOG("History sync is off.");
+    RecordContextualCueingDecision(source_id,
+                                   ContextualCueingDecision::kHistorySyncOff);
+    return;
+  }
+
+  if (IsUserSubjectToAgeRestrictions()) {
+    CUEING_LOG("User subject to age restrictions.");
+    RecordContextualCueingDecision(
+        source_id, ContextualCueingDecision::kAgeRestrictionEnforced);
+    return;
+  }
+
   if (!optimization_guide_keyed_service_) {
     RecordContextualCueingDecision(
         source_id, ContextualCueingDecision::kModelExecutionUnavailable);
@@ -666,10 +682,9 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
     std::vector<optimization_guide::proto::Tab> background_tabs,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
-  if (!tab_->IsActivated() ||
-      !tab_->GetContents() ||
-      !AreTabsEqual(active_tab, GetTabProtoFromWebContents(
-                                    tab_->GetContents()))) {
+  if (!tab_->IsActivated() || !tab_->GetContents() ||
+      !AreTabsEqual(active_tab,
+                    GetTabProtoFromWebContents(tab_->GetContents()))) {
     CUEING_LOG(
         "Model execution returned but tab for generated cue is no longer "
         "active.");
@@ -728,6 +743,14 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
     CUEING_LOG(base::StringPrintf("No CueTarget registered for '%s'",
                                   GetName(*target_type)));
     OnShowCueFailed(ContextualCueingDecision::kTargetFeatureNotRegistered);
+    return;
+  }
+
+  if (!sync_service_ ||
+      !sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kHistory)) {
+    CUEING_LOG("History sync is off.");
+    OnShowCueFailed(ContextualCueingDecision::kHistorySyncOff);
     return;
   }
 
@@ -799,16 +822,6 @@ ContextualCueingDecision ContextualCueingController::IsAllowedToShowCue() {
     return ContextualCueingDecision::kNoActiveTab;
   }
   ukm::SourceId source_id = GetTabSourceId();
-
-  if (!sync_service_ ||
-      !sync_service_->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kHistory)) {
-    CUEING_LOG("History sync is off.");
-    // If history sync is off, we cannot proceed to generate or show the cue.
-    RecordContextualCueingDecision(source_id,
-                                   ContextualCueingDecision::kHistorySyncOff);
-    return ContextualCueingDecision::kHistorySyncOff;
-  }
 
   // Check if the user has opted out of contextual cues.
   PrefService* pref_service = tab_->GetProfile()->GetPrefs();
@@ -1022,8 +1035,7 @@ void ContextualCueingController::ShowCue(
   page_action_controller->OverrideAccessibleName(
       kActionAnchoredContextualCue, base::UTF8ToUTF16(strings.action_text()));
   page_action_controller->OverrideTooltip(
-      kActionAnchoredContextualCue,
-      base::UTF8ToUTF16(strings.action_text()));
+      kActionAnchoredContextualCue, base::UTF8ToUTF16(strings.action_text()));
 
   auto menu_model = std::make_unique<ContextualCueingMenuModel>(
       tab_->GetProfile(), weak_ptr_factory_.GetWeakPtr(), cue_type, cue,

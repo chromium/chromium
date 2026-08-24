@@ -24,6 +24,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -31,6 +32,8 @@
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/pdf/common/constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/tabs/public/tab_handle_factory.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -140,6 +143,12 @@ bool GlicCueTarget::IsPageEligible(
 bool GlicCueTarget::IsEligible() const {
   auto* window = tab_->GetBrowserWindowInterface();
   if (!window) {
+    return false;
+  }
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(tab_->GetProfile());
+  if (!sync_service || !sync_service->GetUserSettings()->GetSelectedTypes().Has(
+                           syncer::UserSelectableType::kHistory)) {
     return false;
   }
   return GlicEnabling::IsEnabledForProfile(tab_->GetProfile()) &&

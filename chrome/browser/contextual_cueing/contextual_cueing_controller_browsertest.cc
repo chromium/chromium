@@ -1234,11 +1234,11 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
     return state_observer.GetCurrentPageActionState().anchored_message_showing;
   }));
 
-  // 7. Click again while anchored message is shown to invoke the cue and hide it.
+  // 7. Click again while anchored message is shown to invoke the cue and hide
+  // it.
   action->InvokeAction();
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !state_observer.GetCurrentPageActionState().showing;
-  }));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !state_observer.GetCurrentPageActionState().showing; }));
   EXPECT_EQ(tooltip_observer.tooltip_, u"");
 }
 
@@ -2102,5 +2102,137 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
           kProactiveCueInteractionName,
       static_cast<int64_t>(ContextualCueingInteraction::kCueEditPrompt));
 }
+
+class ContextualCueingControllerMultiSourceBrowserTest
+    : public ContextualCueingControllerBrowserTestBase {
+ public:
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{kContextualCueingV2,
+          {{"ContextualCueingV2DiscardShoppingPdfs", "true"},
+           {"ContextualCueingV2TabListVisibility", "always"},
+           {"ContextualCueingV2EnablePrivateInsightsLogging", "true"}}},
+         {kContextualCueingV2MultiSource, {}}},
+        /*disabled_features=*/{kContextualCueingV2EnforceAgeRestriction});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
+                       HistorySyncOff_LocalGeneratorSucceeds) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  cue_target()->eligible = false;
+  auto test_source_target = std::make_unique<TestCueTarget>();
+  test_source_target->eligible = true;
+  test_source_target->generate_result =
+      MakeCompleteResponse().contextual_cues(0);
+  contextual_cueing_controller()->RegisterCueTarget(
+      CueTargetType::kTestSource, std::move(test_source_target));
+
+  EnableHistorySync(false);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("https://www.activetab.com/abc")));
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kSuccess, 1);
+  VerifyProactiveCueDecision(ukm_recorder, ContextualCueingDecision::kSuccess);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
+                       HistorySyncOff_ModelExecutionTargetBlocked) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  cue_target()->eligible = true;
+  cue_target()->generate_result = std::nullopt;
+  SeedExecutionResult(MakeCompleteResponse());
+
+  EnableHistorySync(false);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("https://www.activetab.com/abc")));
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kHistorySyncOff,
+                                      1);
+  VerifyProactiveCueDecision(ukm_recorder,
+                             ContextualCueingDecision::kHistorySyncOff);
+}
+
+class ContextualCueingControllerMultiSourceWithAgeRestrictionBrowserTest
+    : public ContextualCueingControllerBrowserTestBase {
+ public:
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitWithFeatures(
+        {kContextualCueingV2, kContextualCueingV2MultiSource,
+         kContextualCueingV2EnforceAgeRestriction},
+        /*disabled_features=*/{});
+  }
+
+  void SetUserRestriction(bool is_restricted) {
+    auto account_info = identity_test_env()->MakePrimaryAccountAvailable(
+        "user@gmail.com", signin::ConsentLevel::kSignin);
+    AccountCapabilitiesTestMutator mutator(&account_info);
+    mutator.set_can_use_model_execution_features(!is_restricted);
+    identity_test_env()->UpdateAccountInfoForAccount(account_info);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualCueingControllerMultiSourceWithAgeRestrictionBrowserTest,
+    AgeRestriction_LocalGeneratorSucceeds) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  cue_target()->eligible = false;
+  auto test_source_target = std::make_unique<TestCueTarget>();
+  test_source_target->eligible = true;
+  test_source_target->generate_result =
+      MakeCompleteResponse().contextual_cues(0);
+  contextual_cueing_controller()->RegisterCueTarget(
+      CueTargetType::kTestSource, std::move(test_source_target));
+
+  SetUserRestriction(/*is_restricted=*/true);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("https://www.activetab.com/abc")));
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kSuccess, 1);
+  VerifyProactiveCueDecision(ukm_recorder, ContextualCueingDecision::kSuccess);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualCueingControllerMultiSourceWithAgeRestrictionBrowserTest,
+    AgeRestriction_ModelExecutionTargetBlocked) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  cue_target()->eligible = true;
+  cue_target()->generate_result = std::nullopt;
+  SeedExecutionResult(MakeCompleteResponse());
+
+  SetUserRestriction(/*is_restricted=*/true);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("https://www.activetab.com/abc")));
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.Decision",
+      ContextualCueingDecision::kAgeRestrictionEnforced, 1);
+  VerifyProactiveCueDecision(ukm_recorder,
+                             ContextualCueingDecision::kAgeRestrictionEnforced);
+}
+
 }  // namespace
 }  // namespace contextual_cueing
