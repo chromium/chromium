@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ROUTE_MATCHING_ROUTE_MAP_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/route_matching/navigation_preposition.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -46,49 +45,14 @@ class CORE_EXPORT RouteMap final : public GarbageCollected<RouteMap>,
     return *document;
   }
 
-  void SetNeedsStyleUpdateOnNavigation() {
-    needs_style_update_on_navigation_ = true;
-  }
-
   void AddURLPatternFromLocation(const AtomicString& dashed_ident, URLPattern*);
 
   const URLPattern* FindURLPatternByLocation(
       const AtomicString& location_name) const;
 
-  // When the new document in a cross-document navigation is ready, this
-  // function is called, in order to establish an active navigation. For
-  // same-document navigations, this is instead handled directly by the
-  // Navigation API.
-  void EstablishNavigationStateFromActivation();
-
-  // Set the navigation as started, based on the current NavigationState. This
-  // is used to match @navigation rules.
-  void SetNavigationStarted();
-
-  // The current URL has changed. This is used to match @navigation "at" rules.
-  void SetCommitted();
-
-  // Finish the navigation if allowed. Calling this if there's no active
-  // navigation is allowed, and has no effect.
-  //
-  // Returns false if we cannot finish yet, e.g. due to an active view
-  // transition.
-  bool AttemptSetNavigationFinished();
-
-  void OnPreviewStart();
-  void OnPreviewFinished();
-
-  // Return true if the URLPattern matches the current NavigationState, with the
-  // preposition given.
-  bool MatchesCurrentNavigation(NavigationPreposition, const URLPattern&) const;
-
  private:
-  void NotifyStyleEngineIfNeeded();
-
   // URLPattern entries defined by @location rules.
   HeapHashMap<AtomicString, Member<URLPattern>> locations_;
-
-  bool needs_style_update_on_navigation_ = false;
 };
 
 }  // namespace blink

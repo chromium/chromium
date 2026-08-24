@@ -68,7 +68,6 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/route_matching/route_map.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -2876,10 +2875,9 @@ bool StyleCascade::EvalIfCondition(CSSParserTokenStream& stream,
         const NavigationExpNode& node) override {
       // Evaluate navigation() function
       resolver_state_.StyleBuilder().SetAffectedByFunctionalNavigation();
-      RouteMap::Ensure(resolver_state_.GetDocument())
-          .SetNeedsStyleUpdateOnNavigation();
       StyleEngine& style_engine =
           resolver_state_.GetDocument().GetStyleEngine();
+      style_engine.SetNeedsStyleUpdateOnNavigation();
       bool result =
           style_engine.EvaluateFunctionalNavigationQuery(node.NavigationTest());
       return result ? KleeneValue::kTrue : KleeneValue::kFalse;

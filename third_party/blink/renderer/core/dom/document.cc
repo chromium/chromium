@@ -353,7 +353,7 @@
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_controller.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_size.h"
-#include "third_party/blink/renderer/core/route_matching/route_map.h"
+#include "third_party/blink/renderer/core/route_matching/navigation_state.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_api.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_builtins.h"
@@ -10137,8 +10137,7 @@ void Document::EnqueuePageRevealEvent() {
     //
     // TODO(crbug.com/436805487): This seems rather heavy. Should it be
     // conditioned on active view transitions or something?
-    auto& route_map = RouteMap::Ensure(*this);
-    route_map.EstablishNavigationStateFromActivation();
+    NavigationState::CreateFromActivation(*this);
   }
 
   dom_window_->SetHasBeenRevealed(false);

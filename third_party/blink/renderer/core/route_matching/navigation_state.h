@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/route_matching/navigation_phase.h"
+#include "third_party/blink/renderer/core/route_matching/navigation_preposition.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -17,6 +18,7 @@ namespace blink {
 
 class Document;
 class Element;
+class URLPattern;
 
 // Based on "navigation state":
 // https://drafts.csswg.org/css-navigation-1/#processing-model
@@ -57,12 +59,24 @@ class CORE_EXPORT NavigationState final
     return Supplement<Document>::From<NavigationState>(*document);
   }
 
+  Document& GetDocument() const {
+    Document* document = GetSupplementable();
+    DCHECK(document);
+    return *document;
+  }
+
   // Create a new NavigationState object and associate with the specified
   // Document.
-  static NavigationState& Create(Document&,
+  static NavigationState* Create(Document&,
                                  const KURL& old_url,
                                  const KURL& new_url,
                                  Element* source_element);
+
+  // When the new document in a cross-document navigation is ready, this
+  // function is called, in order to establish an active navigation. For
+  // same-document navigations, this is instead handled directly by the
+  // Navigation API. This function may return nullptr.
+  static NavigationState* CreateFromActivation(Document&);
 
   // Attempt to finish any ongoing navigation, based on the current
   // NavigationState associated (if any) with the specified Document. Will
@@ -95,7 +109,23 @@ class CORE_EXPORT NavigationState final
   void SetIsInPreview(bool b) { is_in_preview_ = b; }
   bool IsInPreview() const { return is_in_preview_; }
 
+  // Set the navigation as started, based on the current NavigationState. This
+  // is used to match @navigation rules.
+  void SetNavigationStarted();
+
+  // The current URL has changed. This is used to match @navigation "at" rules.
+  void SetCommitted();
+
+  void OnPreviewStart();
+  void OnPreviewFinished();
+
+  // Return true if the URLPattern matches the NavigationState, with the
+  // preposition given.
+  bool Matches(NavigationPreposition, const URLPattern&) const;
+
  private:
+  void NotifyStyleEngineIfNeeded();
+
   KURL old_url_;
   KURL new_url_;
 

@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/core/navigation_api/navigation_type_util.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/route_matching/navigation_state.h"
-#include "third_party/blink/renderer/core/route_matching/route_map.h"
 #include "third_party/blink/renderer/core/skeleton/skeleton_loader.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/event_timing.h"
@@ -300,9 +299,9 @@ void NavigationApi::UpdateForNavigation(HistoryItem& item,
     disposed_entry->DispatchEvent(*Event::Create(event_type_names::kDispose));
   }
 
-  if (auto* routemap = RouteMap::Get(window_->document())) {
+  if (auto* state = NavigationState::Get(window_->document())) {
     if (transition_) {
-      routemap->SetCommitted();
+      state->SetCommitted();
     }
   }
 
@@ -873,7 +872,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   ongoing_navigate_event_ = navigate_event;
 
   if (RuntimeEnabledFeatures::NavigationStateEnabled()) {
-    auto& state = NavigationState::Create(*window_->document(), window_->Url(),
+    auto* state = NavigationState::Create(*window_->document(), window_->Url(),
                                           params->url, params->source_element);
     if (params->frame_load_type == WebFrameLoadType::kBackForward) {
       if (destination_entry) {
@@ -882,15 +881,13 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
         NavigationState::HistoryTraverseType direction =
             next_index < previous_index ? NavigationState::kBack
                                         : NavigationState::kForward;
-        state.SetTraverseType(direction);
+        state->SetTraverseType(direction);
       }
     } else if (IsReloadLoadType(params->frame_load_type)) {
-      state.SetTraverseType(NavigationState::kReload);
+      state->SetTraverseType(NavigationState::kReload);
     }
-  }
 
-  if (auto* routemap = RouteMap::Get(window_->document())) {
-    routemap->SetNavigationStarted();
+    state->SetNavigationStarted();
   }
 
   has_dropped_navigation_ = false;

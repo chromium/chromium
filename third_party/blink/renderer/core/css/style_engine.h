@@ -333,6 +333,13 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // style recalc.
   bool EvaluateFunctionalNavigationQuery(const NavigationTestExpression&);
 
+  void SetNeedsStyleUpdateOnNavigation() {
+    needs_style_update_on_navigation_ = true;
+  }
+  bool NeedsStyleUpdateOnNavigation() const {
+    return needs_style_update_on_navigation_;
+  }
+
   void UpdateActiveStyle();
 
   String PreferredStylesheetSetName() const {
@@ -1086,6 +1093,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool fonts_need_update_{false};
   bool counter_styles_need_update_{false};
   bool position_try_styles_dirty_{false};
+  bool needs_style_update_on_navigation_{false};
 
   // Set to true if we allow marking style dirty from style recalc. Ideally, we
   // should get rid of this, but we keep track of where we allow it with

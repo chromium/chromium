@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_utilities.h"
-#include "third_party/blink/renderer/core/route_matching/route_map.h"
+#include "third_party/blink/renderer/core/route_matching/navigation_state.h"
 #include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
@@ -728,8 +728,8 @@ void ViewTransition::ProcessCurrentState() {
 
       case State::kPreview:
         CHECK(RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled());
-        if (RouteMap* route_map = RouteMap::Get(document_)) {
-          route_map->OnPreviewStart();
+        if (auto* state = NavigationState::Get(document_)) {
+          state->OnPreviewStart();
         }
         ResumeRendering();
         process_next_state = AdvanceTo(State::kAnimateTagDiscovery);
