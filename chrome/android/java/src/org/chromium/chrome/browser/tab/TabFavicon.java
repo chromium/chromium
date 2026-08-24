@@ -13,7 +13,6 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.JniOnceCallback;
-import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
@@ -326,8 +325,9 @@ public class TabFavicon extends TabWebContentsUserData {
         mFaviconHeight = icon.getHeight();
         mFaviconTabUrl = mTab.getUrl();
         mIsFaviconFallback = isFallback;
-        RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-        while (observers.hasNext()) observers.next().onFaviconUpdated(mTab, icon, iconUrl);
+        for (TabObserver observer : mTab.getTabObservers()) {
+            observer.onFaviconUpdated(mTab, icon, iconUrl);
+        }
     }
 
     @CalledByNative

@@ -33,7 +33,6 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 
-import java.util.Iterator;
 import java.util.concurrent.TimeoutException;
 
 /** Test that verifies back press will dismiss the selection popup. */
@@ -174,11 +173,11 @@ public class SelectionPopupBackPressTest {
                 controller.isSelectActionBarShowingSupplier().get());
     }
 
-    private boolean find(Iterator<TabObserver> observers, BackPressHandler handler) {
+    private boolean find(Iterable<TabObserver> observers, BackPressHandler handler) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    while (observers.hasNext()) {
-                        if (observers.next() == handler) {
+                    for (TabObserver observer : observers) {
+                        if (observer == handler) {
                             return true;
                         }
                     }

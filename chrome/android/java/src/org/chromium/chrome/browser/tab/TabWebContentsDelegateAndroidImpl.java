@@ -21,7 +21,6 @@ import org.chromium.base.AndroidInfo;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -72,21 +71,24 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         mHandler = new Handler();
         mCloseContentsRunnable =
                 () -> {
-                    RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-                    while (observers.hasNext()) observers.next().onCloseContents(mTab);
+                    for (TabObserver observer : mTab.getTabObservers()) {
+                        observer.onCloseContents(mTab);
+                    }
                 };
     }
 
     @CalledByNative
     private void onFindResultAvailable(FindNotificationDetails result) {
-        RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-        while (observers.hasNext()) observers.next().onFindResultAvailable(result);
+        for (TabObserver observer : mTab.getTabObservers()) {
+            observer.onFindResultAvailable(result);
+        }
     }
 
     @CalledByNative
     private void onFindMatchRectsAvailable(FindMatchRectsDetails result) {
-        RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-        while (observers.hasNext()) observers.next().onFindMatchRectsAvailable(result);
+        for (TabObserver observer : mTab.getTabObservers()) {
+            observer.onFindMatchRectsAvailable(result);
+        }
     }
 
     @CalledByNative
@@ -223,8 +225,9 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @Override
     public void onUpdateTargetUrl(GURL url) {
-        RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-        while (observers.hasNext()) observers.next().onUpdateTargetUrl(mTab, url);
+        for (TabObserver observer : mTab.getTabObservers()) {
+            observer.onUpdateTargetUrl(mTab, url);
+        }
         mDelegate.onUpdateTargetUrl(url);
     }
 
@@ -296,8 +299,9 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @Override
     public void navigationStateChanged(int flags) {
-        RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-        while (observers.hasNext()) observers.next().onNavigationStateChanged();
+        for (TabObserver observer : mTab.getTabObservers()) {
+            observer.onNavigationStateChanged();
+        }
 
         if ((flags & InvalidateTypes.TAB) != 0) {
             MediaCaptureNotificationServiceImpl.updateMediaNotificationForTab(
@@ -332,8 +336,9 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
             mTab.updateTitle();
         }
         if ((flags & InvalidateTypes.URL) != 0) {
-            observers = mTab.getTabObservers();
-            while (observers.hasNext()) observers.next().onUrlUpdated(mTab);
+            for (TabObserver observer : mTab.getTabObservers()) {
+                observer.onUrlUpdated(mTab);
+            }
         }
         mDelegate.navigationStateChanged(flags);
     }
@@ -350,8 +355,9 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
                         ContextUtils.getApplicationContext());
             }
         }
-        RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-        while (observers.hasNext()) observers.next().onSSLStateUpdated(mTab);
+        for (TabObserver observer : mTab.getTabObservers()) {
+            observer.onSSLStateUpdated(mTab);
+        }
         mDelegate.visibleSSLStateChanged();
     }
 

@@ -12,7 +12,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -192,10 +191,8 @@ public class TabStripNavigationFailureTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ObserverList.RewindableIterator<TabObserver> observers =
-                            TabTestUtils.getTabObservers(bgTab);
-                    while (observers.hasNext()) {
-                        observers.next().onLoadStopped(bgTab, /* toDifferentDocument= */ false);
+                    for (TabObserver observer : TabTestUtils.getTabObservers(bgTab)) {
+                        observer.onLoadStopped(bgTab, /* toDifferentDocument= */ false);
                     }
                 });
 

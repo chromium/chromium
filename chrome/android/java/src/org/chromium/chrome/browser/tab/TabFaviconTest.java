@@ -31,7 +31,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.ObserverList.RewindableIterator;
+import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -45,21 +45,6 @@ import org.chromium.url.JUnitTestGURLs;
 @Config(manifest = Config.NONE)
 public class TabFaviconTest {
     private static final int IDEAL_SIZE = 4;
-
-    private static class EmptyIterator implements RewindableIterator<TabObserver> {
-        @Override
-        public boolean hasNext() {
-            return false;
-        }
-
-        @Override
-        public TabObserver next() {
-            return null;
-        }
-
-        @Override
-        public void rewind() {}
-    }
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TabFavicon.Natives mTabFaviconJni;
@@ -87,7 +72,7 @@ public class TabFaviconTest {
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(null).when(mTab).getPendingLoadParams();
         doReturn(JUnitTestGURLs.EXAMPLE_URL).when(mTab).getUrl();
-        doReturn(new EmptyIterator()).when(mTab).getTabObservers();
+        doReturn(new ObserverList<>()).when(mTab).getTabObservers();
 
         mTabFavicon = TabFavicon.from(mTab);
     }

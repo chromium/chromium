@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tab;
 
-import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.contextmenu.ChipDelegate;
@@ -44,9 +43,8 @@ public class TabContextMenuPopulator implements ContextMenuPopulator {
                     .setLastTriggeringTouchPositionDp(
                             mParams.getTriggeringTouchXDp(), mParams.getTriggeringTouchYDp());
         }
-        RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-        while (observers.hasNext()) {
-            observers.next().onContextMenuShown(mTab);
+        for (TabObserver observer : mTab.getTabObservers()) {
+            observer.onContextMenuShown(mTab);
         }
         return itemGroups;
     }

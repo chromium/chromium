@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tab;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
@@ -102,17 +101,14 @@ public class TabBrowserControlsOffsetHelper implements TabObserver, UserData {
 
     private void notifyControlsOffsetChanged() {
         mOffsetInitialized = true;
-        RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-        while (observers.hasNext()) {
-            observers
-                    .next()
-                    .onBrowserControlsOffsetChanged(
-                            mTab,
-                            mTopControlsOffset,
-                            mBottomControlsOffset,
-                            mContentOffset,
-                            mTopControlsMinHeightOffset,
-                            mBottomControlsMinHeightOffset);
+        for (TabObserver observer : mTab.getTabObservers()) {
+            observer.onBrowserControlsOffsetChanged(
+                    mTab,
+                    mTopControlsOffset,
+                    mBottomControlsOffset,
+                    mContentOffset,
+                    mTopControlsMinHeightOffset,
+                    mBottomControlsMinHeightOffset);
         }
     }
 

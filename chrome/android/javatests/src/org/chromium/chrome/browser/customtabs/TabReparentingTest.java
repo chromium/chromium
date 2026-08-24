@@ -28,7 +28,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
@@ -170,10 +169,9 @@ public class TabReparentingTest {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         tabToBeReparented.removeObserver(observer);
-                        ObserverList.RewindableIterator<TabObserver> observers =
-                                TabTestUtils.getTabObservers(tabToBeReparented);
-                        while (observers.hasNext()) {
-                            Assert.assertFalse(observers.next() instanceof CustomTabObserver);
+                        for (TabObserver tabObserver :
+                                TabTestUtils.getTabObservers(tabToBeReparented)) {
+                            Assert.assertFalse(tabObserver instanceof CustomTabObserver);
                         }
                     });
             return newActivity;

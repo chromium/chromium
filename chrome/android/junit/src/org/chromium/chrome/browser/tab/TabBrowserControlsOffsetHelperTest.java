@@ -39,8 +39,7 @@ public class TabBrowserControlsOffsetHelperTest {
 
         ObserverList<TabObserver> observers = new ObserverList<>();
         observers.addObserver(mDispatchedTabObserver);
-        Mockito.when(mTab.getTabObservers())
-                .thenAnswer(invocation -> observers.rewindableIterator());
+        Mockito.when(mTab.getTabObservers()).thenReturn(observers);
 
         ArgumentCaptor<TabObserver> observerArg = ArgumentCaptor.forClass(TabObserver.class);
         mHelper = TabBrowserControlsOffsetHelper.get(mTab);

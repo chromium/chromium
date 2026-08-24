@@ -10,7 +10,6 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.UserData;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -209,11 +208,8 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
 
         // Relies on BrowserControlsManager and BottomControlsMediator to set the heights of the
         // top/bottom controls and their shadows.
-        RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-        while (observers.hasNext()) {
-            observers
-                    .next()
-                    .onOffsetTagsInfoChanged(mTab, mOffsetTagsInfo, newOffsetTags, constraints);
+        for (TabObserver observer : mTab.getTabObservers()) {
+            observer.onOffsetTagsInfoChanged(mTab, mOffsetTagsInfo, newOffsetTags, constraints);
         }
 
         mOffsetTagsInfo = newOffsetTags;

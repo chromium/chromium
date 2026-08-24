@@ -16,7 +16,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
@@ -172,9 +171,8 @@ public class BrandColorTest {
                 TaskTraits.UI_DEFAULT,
                 () -> {
                     Tab tab = mActivityTestRule.getActivity().getActivityTab();
-                    RewindableIterator<TabObserver> observers = TabTestUtils.getTabObservers(tab);
-                    while (observers.hasNext()) {
-                        observers.next().onLoadStarted(tab, true);
+                    for (TabObserver observer : TabTestUtils.getTabObservers(tab)) {
+                        observer.onLoadStarted(tab, true);
                     }
                 });
         checkForBrandColor(Color.parseColor(BRAND_COLOR_1));

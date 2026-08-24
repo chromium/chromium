@@ -31,7 +31,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
@@ -122,8 +121,9 @@ public class TabStateAttributesTest {
         getAttributes().addObserver(mAttributesObserver);
         assertEquals(DirtinessState.CLEAN, getAttributes().getDirtinessState());
 
-        RewindableIterator<TabObserver> observers = TabTestUtils.getTabObservers(mTab);
-        while (observers.hasNext()) observers.next().onTitleUpdated(mTab);
+        for (TabObserver observer : TabTestUtils.getTabObservers(mTab)) {
+            observer.onTitleUpdated(mTab);
+        }
 
         assertEquals(DirtinessState.UNTIDY, getAttributes().getDirtinessState());
         verify(mAttributesObserver).onTabStateDirtinessChanged(mTab, DirtinessState.UNTIDY);
@@ -133,8 +133,9 @@ public class TabStateAttributesTest {
     public void testFinishMainFrameNavigation() {
         TabStateAttributesRegistry.createAttributesForTab(
                 mTab, TabStateAttributes.StoreKey.class, TabCreationState.FROZEN_ON_RESTORE);
-        RewindableIterator<TabObserver> observers = TabTestUtils.getTabObservers(mTab);
-        while (observers.hasNext()) observers.next().onContentChanged(mTab);
+        for (TabObserver observer : TabTestUtils.getTabObservers(mTab)) {
+            observer.onContentChanged(mTab);
+        }
         WebContentsObserver webContentsObserver = mWebContentsObserverCaptor.getValue();
         getAttributes().addObserver(mAttributesObserver);
         GURL testGURL = JUnitTestGURLs.EXAMPLE_URL;
@@ -150,13 +151,14 @@ public class TabStateAttributesTest {
     public void testPageLoadFinished() {
         TabStateAttributesRegistry.createAttributesForTab(
                 mTab, TabStateAttributes.StoreKey.class, TabCreationState.FROZEN_ON_RESTORE);
-        RewindableIterator<TabObserver> observers = TabTestUtils.getTabObservers(mTab);
         getAttributes().addObserver(mAttributesObserver);
         GURL testGURL = JUnitTestGURLs.EXAMPLE_URL;
 
         assertEquals(DirtinessState.CLEAN, getAttributes().getDirtinessState());
 
-        while (observers.hasNext()) observers.next().onPageLoadFinished(mTab, testGURL);
+        for (TabObserver observer : TabTestUtils.getTabObservers(mTab)) {
+            observer.onPageLoadFinished(mTab, testGURL);
+        }
         assertEquals(DirtinessState.UNTIDY, getAttributes().getDirtinessState());
         verify(mAttributesObserver).onTabStateDirtinessChanged(mTab, DirtinessState.UNTIDY);
     }
@@ -165,22 +167,20 @@ public class TabStateAttributesTest {
     public void testLoadStopped_DifferentDocument() {
         TabStateAttributesRegistry.createAttributesForTab(
                 mTab, TabStateAttributes.StoreKey.class, TabCreationState.FROZEN_ON_RESTORE);
-        RewindableIterator<TabObserver> observers = TabTestUtils.getTabObservers(mTab);
         getAttributes().addObserver(mAttributesObserver);
 
         assertEquals(DirtinessState.CLEAN, getAttributes().getDirtinessState());
 
-        while (observers.hasNext()) {
-            observers.next().onLoadStopped(mTab, /* toDifferentDocument= */ true);
+        for (TabObserver observer : TabTestUtils.getTabObservers(mTab)) {
+            observer.onLoadStopped(mTab, /* toDifferentDocument= */ true);
         }
         assertEquals(DirtinessState.CLEAN, getAttributes().getDirtinessState());
         verifyNoMoreInteractions(mAttributesObserver);
         reset(mAttributesObserver);
 
         getAttributes().setStateForTesting(DirtinessState.UNTIDY);
-        observers = TabTestUtils.getTabObservers(mTab);
-        while (observers.hasNext()) {
-            observers.next().onLoadStopped(mTab, /* toDifferentDocument= */ true);
+        for (TabObserver observer : TabTestUtils.getTabObservers(mTab)) {
+            observer.onLoadStopped(mTab, /* toDifferentDocument= */ true);
         }
         assertEquals(DirtinessState.DIRTY, getAttributes().getDirtinessState());
         verify(mAttributesObserver).onTabStateDirtinessChanged(mTab, DirtinessState.DIRTY);
@@ -190,13 +190,12 @@ public class TabStateAttributesTest {
     public void testLoadStopped_SameDocument() {
         TabStateAttributesRegistry.createAttributesForTab(
                 mTab, TabStateAttributes.StoreKey.class, TabCreationState.FROZEN_ON_RESTORE);
-        RewindableIterator<TabObserver> observers = TabTestUtils.getTabObservers(mTab);
         getAttributes().addObserver(mAttributesObserver);
 
         assertEquals(DirtinessState.CLEAN, getAttributes().getDirtinessState());
 
-        while (observers.hasNext()) {
-            observers.next().onLoadStopped(mTab, /* toDifferentDocument= */ false);
+        for (TabObserver observer : TabTestUtils.getTabObservers(mTab)) {
+            observer.onLoadStopped(mTab, /* toDifferentDocument= */ false);
         }
         assertEquals(DirtinessState.CLEAN, getAttributes().getDirtinessState());
         verifyNoMoreInteractions(mAttributesObserver);
@@ -204,18 +203,16 @@ public class TabStateAttributesTest {
 
         RobolectricUtil.runAllBackgroundAndUi();
         getAttributes().setStateForTesting(DirtinessState.UNTIDY);
-        observers = TabTestUtils.getTabObservers(mTab);
-        while (observers.hasNext()) {
-            observers.next().onLoadStopped(mTab, /* toDifferentDocument= */ false);
+        for (TabObserver observer : TabTestUtils.getTabObservers(mTab)) {
+            observer.onLoadStopped(mTab, /* toDifferentDocument= */ false);
         }
         assertEquals(DirtinessState.UNTIDY, getAttributes().getDirtinessState());
         assertEquals(1, Robolectric.getForegroundThreadScheduler().size());
 
         // An additional call to onLoadStopped should not change the state, nor should another
         // task be queued.
-        observers = TabTestUtils.getTabObservers(mTab);
-        while (observers.hasNext()) {
-            observers.next().onLoadStopped(mTab, /* toDifferentDocument= */ false);
+        for (TabObserver observer : TabTestUtils.getTabObservers(mTab)) {
+            observer.onLoadStopped(mTab, /* toDifferentDocument= */ false);
         }
         assertEquals(DirtinessState.UNTIDY, getAttributes().getDirtinessState());
         assertEquals(1, Robolectric.getForegroundThreadScheduler().size());
@@ -233,7 +230,6 @@ public class TabStateAttributesTest {
     public void testLoadStopped_NTPInTabGroup() {
         TabStateAttributesRegistry.createAttributesForTab(
                 mTab, TabStateAttributes.StoreKey.class, TabCreationState.FROZEN_ON_RESTORE);
-        RewindableIterator<TabObserver> observers = TabTestUtils.getTabObservers(mTab);
         getAttributes().addObserver(mAttributesObserver);
 
         assertEquals(DirtinessState.CLEAN, getAttributes().getDirtinessState());
@@ -241,8 +237,8 @@ public class TabStateAttributesTest {
         mTab.setUrl(new GURL(getOriginalNativeNtpUrl()));
         mTab.setTabGroupId(new Token(1L, 2L));
 
-        while (observers.hasNext()) {
-            observers.next().onLoadStopped(mTab, /* toDifferentDocument= */ true);
+        for (TabObserver observer : TabTestUtils.getTabObservers(mTab)) {
+            observer.onLoadStopped(mTab, /* toDifferentDocument= */ true);
         }
         assertEquals(DirtinessState.DIRTY, getAttributes().getDirtinessState());
         verify(mAttributesObserver).onTabStateDirtinessChanged(mTab, DirtinessState.DIRTY);
@@ -255,8 +251,9 @@ public class TabStateAttributesTest {
         assertEquals(DirtinessState.CLEAN, getAttributes().getDirtinessState());
         getAttributes().addObserver(mAttributesObserver);
 
-        RewindableIterator<TabObserver> observers = TabTestUtils.getTabObservers(mTab);
-        while (observers.hasNext()) observers.next().onHidden(mTab, TabHidingType.CHANGED_TABS);
+        for (TabObserver observer : TabTestUtils.getTabObservers(mTab)) {
+            observer.onHidden(mTab, TabHidingType.CHANGED_TABS);
+        }
         assertEquals(DirtinessState.CLEAN, getAttributes().getDirtinessState());
         verifyNoMoreInteractions(mAttributesObserver);
         reset(mAttributesObserver);
@@ -264,15 +261,18 @@ public class TabStateAttributesTest {
         // If a tab is not closing, then hiding the tab should mark it as dirty.
         getAttributes().setStateForTesting(DirtinessState.UNTIDY);
         mTab.setClosing(false);
-        observers = TabTestUtils.getTabObservers(mTab);
-        while (observers.hasNext()) observers.next().onHidden(mTab, TabHidingType.CHANGED_TABS);
+        for (TabObserver observer : TabTestUtils.getTabObservers(mTab)) {
+            observer.onHidden(mTab, TabHidingType.CHANGED_TABS);
+        }
         assertEquals(DirtinessState.DIRTY, getAttributes().getDirtinessState());
         verify(mAttributesObserver).onTabStateDirtinessChanged(mTab, DirtinessState.DIRTY);
 
         // If a tab is closing, then hiding the tab should not mark it as dirty.
         getAttributes().setStateForTesting(DirtinessState.CLEAN);
         mTab.setClosing(true);
-        while (observers.hasNext()) observers.next().onHidden(mTab, TabHidingType.CHANGED_TABS);
+        for (TabObserver observer : TabTestUtils.getTabObservers(mTab)) {
+            observer.onHidden(mTab, TabHidingType.CHANGED_TABS);
+        }
         assertEquals(DirtinessState.CLEAN, getAttributes().getDirtinessState());
         verifyNoMoreInteractions(mAttributesObserver);
         reset(mAttributesObserver);
@@ -285,15 +285,17 @@ public class TabStateAttributesTest {
         assertEquals(DirtinessState.CLEAN, getAttributes().getDirtinessState());
         getAttributes().addObserver(mAttributesObserver);
 
-        RewindableIterator<TabObserver> observers = TabTestUtils.getTabObservers(mTab);
-        while (observers.hasNext()) observers.next().onClosingStateChanged(mTab, false);
+        for (TabObserver observer : TabTestUtils.getTabObservers(mTab)) {
+            observer.onClosingStateChanged(mTab, false);
+        }
         assertEquals(DirtinessState.CLEAN, getAttributes().getDirtinessState());
         verifyNoMoreInteractions(mAttributesObserver);
         reset(mAttributesObserver);
 
         getAttributes().setStateForTesting(DirtinessState.UNTIDY);
-        observers = TabTestUtils.getTabObservers(mTab);
-        while (observers.hasNext()) observers.next().onClosingStateChanged(mTab, false);
+        for (TabObserver observer : TabTestUtils.getTabObservers(mTab)) {
+            observer.onClosingStateChanged(mTab, false);
+        }
         assertEquals(DirtinessState.DIRTY, getAttributes().getDirtinessState());
         verify(mAttributesObserver).onTabStateDirtinessChanged(mTab, DirtinessState.DIRTY);
     }
@@ -306,16 +308,18 @@ public class TabStateAttributesTest {
         getAttributes().addObserver(mAttributesObserver);
 
         // Detaching a tab does not mark a tab as needing to be saved.
-        RewindableIterator<TabObserver> observers = TabTestUtils.getTabObservers(mTab);
-        while (observers.hasNext()) observers.next().onActivityAttachmentChanged(mTab, null);
+        for (TabObserver observer : TabTestUtils.getTabObservers(mTab)) {
+            observer.onActivityAttachmentChanged(mTab, null);
+        }
         assertEquals(DirtinessState.CLEAN, getAttributes().getDirtinessState());
         verifyNoMoreInteractions(mAttributesObserver);
         reset(mAttributesObserver);
 
         WindowAndroid window = mock(WindowAndroid.class);
         // Re-attaching a tab does mark a tab as needing to be saved.
-        observers = TabTestUtils.getTabObservers(mTab);
-        while (observers.hasNext()) observers.next().onActivityAttachmentChanged(mTab, window);
+        for (TabObserver observer : TabTestUtils.getTabObservers(mTab)) {
+            observer.onActivityAttachmentChanged(mTab, window);
+        }
         assertEquals(DirtinessState.UNTIDY, getAttributes().getDirtinessState());
         verify(mAttributesObserver).onTabStateDirtinessChanged(mTab, DirtinessState.UNTIDY);
     }
@@ -324,8 +328,9 @@ public class TabStateAttributesTest {
     public void testNavigationEntryUpdates() {
         TabStateAttributesRegistry.createAttributesForTab(
                 mTab, TabStateAttributes.StoreKey.class, TabCreationState.FROZEN_ON_RESTORE);
-        RewindableIterator<TabObserver> observers = TabTestUtils.getTabObservers(mTab);
-        while (observers.hasNext()) observers.next().onContentChanged(mTab);
+        for (TabObserver observer : TabTestUtils.getTabObservers(mTab)) {
+            observer.onContentChanged(mTab);
+        }
         WebContentsObserver webContentsObserver = mWebContentsObserverCaptor.getValue();
         getAttributes().addObserver(mAttributesObserver);
 
@@ -336,14 +341,16 @@ public class TabStateAttributesTest {
         reset(mAttributesObserver);
 
         getAttributes().setStateForTesting(DirtinessState.CLEAN);
-        observers = TabTestUtils.getTabObservers(mTab);
-        while (observers.hasNext()) observers.next().onNavigationEntriesDeleted(mTab);
+        for (TabObserver observer : TabTestUtils.getTabObservers(mTab)) {
+            observer.onNavigationEntriesDeleted(mTab);
+        }
         assertEquals(DirtinessState.DIRTY, getAttributes().getDirtinessState());
         verify(mAttributesObserver).onTabStateDirtinessChanged(mTab, DirtinessState.DIRTY);
 
         getAttributes().setStateForTesting(DirtinessState.CLEAN);
-        observers = TabTestUtils.getTabObservers(mTab);
-        while (observers.hasNext()) observers.next().onNavigationEntriesAppended(mTab);
+        for (TabObserver observer : TabTestUtils.getTabObservers(mTab)) {
+            observer.onNavigationEntriesAppended(mTab);
+        }
         assertEquals(DirtinessState.DIRTY, getAttributes().getDirtinessState());
         verify(mAttributesObserver, times(2))
                 .onTabStateDirtinessChanged(mTab, DirtinessState.DIRTY);

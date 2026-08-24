@@ -1022,7 +1022,7 @@ class TabImpl implements Tab, TabInternal {
     }
 
     private void triggerUpdatesOnAppendingNavigation(@Nullable String title) {
-        RewindableIterator<TabObserver> observers = getTabObservers();
+        RewindableIterator<TabObserver> observers = getRewindableTabObservers();
         while (observers.hasNext()) {
             observers.next().onUrlUpdated(this);
         }
@@ -1143,9 +1143,8 @@ class TabImpl implements Tab, TabInternal {
     @Override
     public void stopLoading() {
         if (isLoading()) {
-            RewindableIterator<TabObserver> observers = getTabObservers();
-            while (observers.hasNext()) {
-                observers.next().onPageLoadFinished(this, getUrl());
+            for (TabObserver observer : getTabObservers()) {
+                observer.onPageLoadFinished(this, getUrl());
             }
         }
         if (getWebContents() != null) getWebContents().stop();
@@ -1667,11 +1666,19 @@ class TabImpl implements Tab, TabInternal {
     }
 
     /**
-     * @return An {@link ObserverList.RewindableIterator} instance that points to all of the current
-     *     {@link TabObserver}s on this class. Note that calling {@link java.util.Iterator#remove()}
-     *     will throw an {@link UnsupportedOperationException}.
+     * Returns an {@link Iterable} that contains all of the current {@link TabObserver}s on this
+     * class.
      */
-    ObserverList.RewindableIterator<TabObserver> getTabObservers() {
+    Iterable<TabObserver> getTabObservers() {
+        return mObservers;
+    }
+
+    /**
+     * Returns an {@link ObserverList.RewindableIterator} instance that points to all of the current
+     * {@link TabObserver}s on this class. Note that calling {@link java.util.Iterator#remove()}
+     * will throw an {@link UnsupportedOperationException}.
+     */
+    ObserverList.RewindableIterator<TabObserver> getRewindableTabObservers() {
         return mObservers.rewindableIterator();
     }
 
@@ -2100,8 +2107,9 @@ class TabImpl implements Tab, TabInternal {
             return;
         }
         mThemeColor = themeColor;
-        RewindableIterator<TabObserver> observers = getTabObservers();
-        while (observers.hasNext()) observers.next().onDidChangeThemeColor(this, themeColor);
+        for (TabObserver observer : getTabObservers()) {
+            observer.onDidChangeThemeColor(this, themeColor);
+        }
     }
 
     /** Update the title for the current page if changed. */
@@ -2153,14 +2161,15 @@ class TabImpl implements Tab, TabInternal {
     void handleTabCrash() {
         mIsLoading = false;
 
-        RewindableIterator<TabObserver> observers = getTabObservers();
         // When the renderer crashes for a hidden spare tab, we can skip notifying the observers to
         // crash the underlying tab. This is because it is safe to keep the spare tab around without
         // a renderer process, and since the tab is hidden, we don't need to show a sad tab. When
         // the spare tab is used for navigation it will create a new renderer process.
         // TODO(crbug.com/40268909): Make this logic more robust for all hidden tab cases.
         if (!WarmupManager.getInstance().isSpareTab(this)) {
-            while (observers.hasNext()) observers.next().onCrash(this);
+            for (TabObserver observer : getTabObservers()) {
+                observer.onCrash(this);
+            }
         }
         mIsBeingRestored = false;
     }
@@ -2519,16 +2528,14 @@ class TabImpl implements Tab, TabInternal {
     }
 
     private void notifyPageTitleChanged() {
-        RewindableIterator<TabObserver> observers = getTabObservers();
-        while (observers.hasNext()) {
-            observers.next().onTitleUpdated(this);
+        for (TabObserver observer : getTabObservers()) {
+            observer.onTitleUpdated(this);
         }
     }
 
     private void notifyFaviconChanged() {
-        RewindableIterator<TabObserver> observers = getTabObservers();
-        while (observers.hasNext()) {
-            observers.next().onFaviconUpdated(this, null, null);
+        for (TabObserver observer : getTabObservers()) {
+            observer.onFaviconUpdated(this, null, null);
         }
     }
 

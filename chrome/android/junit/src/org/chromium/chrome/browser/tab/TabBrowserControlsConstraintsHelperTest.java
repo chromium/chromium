@@ -59,8 +59,7 @@ public class TabBrowserControlsConstraintsHelperTest {
 
         ObserverList<TabObserver> observers = new ObserverList<>();
         observers.addObserver(mTabObserver);
-        Mockito.when(mTab.getTabObservers())
-                .thenAnswer(invocation -> observers.rewindableIterator());
+        Mockito.when(mTab.getTabObservers()).thenReturn(observers);
 
         mVisibilityDelegate = new BrowserControlsVisibilityDelegate();
         Mockito.when(mDelegateFactory.createBrowserControlsVisibilityDelegate(Mockito.any()))
