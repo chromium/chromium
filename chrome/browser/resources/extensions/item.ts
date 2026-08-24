@@ -26,7 +26,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './item.css.js';
 import {getHtml} from './item.html.js';
 import {ItemMixin} from './item_mixin.js';
-import {computeInspectableViewLabel, createDummyExtensionInfo, EnableControl, getEnableControl, getEnableToggleAriaLabel, getItemSource, getItemSourceString, isEnabled, sortViews, SourceType, userCanChangeEnablement} from './item_util.js';
+import {canShowOpenReviewPageLink, computeInspectableViewLabel, createDummyExtensionInfo, EnableControl, getEnableControl, getEnableToggleAriaLabel, getItemSource, getItemSourceString, isEnabled, sortViews, SourceType, userCanChangeEnablement} from './item_util.js';
 import {UPLOAD_EXTENSION_TO_ACCOUNT_ITEMS_LIST_PAGE_HISTOGRAM_NAME} from './metrics_util.js';
 import {navigation, Page} from './navigation_helper.js';
 
@@ -468,18 +468,8 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
   }
 
   protected showOpenReviewPageLink_(): boolean {
-    if (!loadTimeData.getBoolean('cwsReviewPromptingEnabled')) {
-      return false;
-    }
-
-    const source = getItemSource(this.data);
-    if (source !== SourceType.WEBSTORE) {
-      return false;
-    }
-
-    return !!this.data.webStoreUrl && !this.data.mustRemainInstalled &&
-        this.showDescription_() && !this.showRepairButton_() &&
-        !this.showReloadButton_();
+    return canShowOpenReviewPageLink(this.data) && this.showDescription_() &&
+        !this.showRepairButton_() && !this.showReloadButton_();
   }
 
   protected showErrorsAsWarningsButtonLabel_(): boolean {

@@ -423,6 +423,10 @@ this text can be found by Ctrl + F because it isn't hidden. -->
         id="viewInStore" label="$i18n{viewInStore}"
         @click="${this.onViewInStoreClick_}" external>
     </cr-link-row>
+    <cr-link-row class="hr" ?hidden="${!this.showOpenReviewPageLink_()}"
+        id="reviewLink" label="$i18n{itemWriteReview}"
+        @click="${this.onOpenReviewPageClick_}" external>
+    </cr-link-row>
     <div class="section hr">
       <div class="section-title" role="heading" aria-level="2">
         $i18n{itemSource}

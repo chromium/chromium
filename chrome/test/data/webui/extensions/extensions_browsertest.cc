@@ -368,6 +368,15 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, UserScripts) {
   RunTestCase("UserScripts");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
+                       WriteReviewButtonVisibility) {
+  RunTestCase("WriteReviewButtonVisibility");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, WriteReviewButtonClick) {
+  RunTestCase("WriteReviewButtonClick");
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Item List Tests
 

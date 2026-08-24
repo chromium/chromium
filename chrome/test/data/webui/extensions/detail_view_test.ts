@@ -906,4 +906,61 @@ suite('ExtensionDetailViewTest', function() {
         'setItemAllowedUserScripts', [extensionData.id, true]);
   });
 
+  test('WriteReviewButtonVisibility', async () => {
+    // Hidden when feature flag is disabled.
+    loadTimeData.overrideValues({cwsReviewPromptingEnabled: false});
+    await updateItemData({
+      webStoreUrl: 'https://chromewebstore.google.com/detail/foo',
+      location: chrome.developerPrivate.Location.FROM_STORE,
+    });
+    assertFalse(testIsVisible('#reviewLink'));
+
+    // Visible when feature flag is enabled for CWS store extensions.
+    loadTimeData.overrideValues({cwsReviewPromptingEnabled: true});
+    await updateItemData({
+      webStoreUrl: 'https://chromewebstore.google.com/detail/foo',
+      location: chrome.developerPrivate.Location.FROM_STORE,
+      mustRemainInstalled: false,
+    });
+    assertTrue(testIsVisible('#reviewLink'));
+
+    // Positioned directly below #viewInStore in DOM order.
+    const viewInStore =
+        item.shadowRoot.querySelector<HTMLElement>('#viewInStore')!;
+    const reviewLink =
+        item.shadowRoot.querySelector<HTMLElement>('#reviewLink')!;
+    assertEquals(viewInStore.nextElementSibling, reviewLink);
+
+    // Visible in developer mode as well.
+    item.inDevMode = true;
+    await microtasksFinished();
+    assertTrue(testIsVisible('#reviewLink'));
+
+    item.inDevMode = false;
+    await microtasksFinished();
+    assertTrue(testIsVisible('#reviewLink'));
+
+    // Hidden when ineligible (e.g. unpacked).
+    await updateItemData({
+      location: chrome.developerPrivate.Location.UNPACKED,
+    });
+    assertFalse(testIsVisible('#reviewLink'));
+  });
+
+  test('WriteReviewButtonClick', async () => {
+    loadTimeData.overrideValues({cwsReviewPromptingEnabled: true});
+    await updateItemData({
+      webStoreUrl: 'https://chromewebstore.google.com/detail/foo',
+      location: chrome.developerPrivate.Location.FROM_STORE,
+      mustRemainInstalled: false,
+    });
+    assertTrue(testIsVisible('#reviewLink'));
+
+    const reviewLink =
+        item.shadowRoot.querySelector<HTMLElement>('#reviewLink')!;
+    assertTrue(!!reviewLink);
+    await mockDelegate.testClickingCalls(
+        reviewLink, 'openReviewPage', [extensionData.id]);
+  });
+
 });
