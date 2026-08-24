@@ -981,7 +981,7 @@ class MultiContentsViewOutlineHighlightUiTest : public MultiContentsViewUiTest {
     return Do([this, show_prompt]() {
       split_tabs::SplitTabHighlightController* const
           split_tab_highlight_controller =
-              browser()->GetFeatures().split_tab_highlight_controller();
+              split_tabs::SplitTabHighlightController::From(browser());
       if (show_prompt) {
         split_tab_highlight_controller->OnPermissionPromptShown();
       } else {

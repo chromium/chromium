@@ -43,11 +43,20 @@ const std::vector<ui::ElementIdentifier>& GetTrackedBubbleDialogs() {
 
 namespace split_tabs {
 
+DEFINE_USER_DATA(SplitTabHighlightController);
+
+// static
+SplitTabHighlightController* SplitTabHighlightController::From(
+    BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
 SplitTabHighlightController::SplitTabHighlightController(
     BrowserWindowInterface* browser,
     Delegate* delegate)
     : browser_window_interface_(browser),
-      split_tab_highlight_delegate_(delegate) {
+      split_tab_highlight_delegate_(delegate),
+      scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {
   tracked_bubble_visibility_ = base::MakeFlatMap<ui::ElementIdentifier, bool>(
       GetTrackedBubbleDialogs(), {},
       [](ui::ElementIdentifier id) { return std::make_pair(id, false); });

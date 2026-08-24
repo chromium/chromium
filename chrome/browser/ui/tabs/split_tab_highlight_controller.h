@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
 
@@ -41,9 +42,15 @@ class SplitTabHighlightController : public OmniboxTabHelper::Observer,
     virtual void SetHighlightActiveContentsView(bool is_highlighted) = 0;
   };
 
+  DECLARE_USER_DATA(SplitTabHighlightController);
+
   explicit SplitTabHighlightController(BrowserWindowInterface* browser,
                                        Delegate* delegate);
   ~SplitTabHighlightController() override;
+
+  // Returns the controller for `browser`, or null if it does not have one
+  // (e.g. no BrowserView).
+  static SplitTabHighlightController* From(BrowserWindowInterface* browser);
 
   bool ShouldHighlight();
 
@@ -73,6 +80,9 @@ class SplitTabHighlightController : public OmniboxTabHelper::Observer,
 
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
   raw_ptr<Delegate> split_tab_highlight_delegate_;
+
+  ui::ScopedUnownedUserData<SplitTabHighlightController>
+      scoped_unowned_user_data_;
 
   bool is_permission_prompt_showing_ = false;
   bool is_omnibox_popup_showing_ = false;

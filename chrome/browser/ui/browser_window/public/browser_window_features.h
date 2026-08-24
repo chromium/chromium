@@ -486,10 +486,6 @@ class BrowserWindowFeatures {
     return signin_view_controller_.get();
   }
 
-  split_tabs::SplitTabHighlightController* split_tab_highlight_controller() {
-    return split_tab_highlight_controller_.get();
-  }
-
   BrowserSyncedWindowDelegate* synced_window_delegate() {
     return synced_window_delegate_.get();
   }

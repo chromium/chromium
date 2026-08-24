@@ -1045,8 +1045,10 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
     if (browser_view) {
       split_tab_highlight_controller_ =
-          std::make_unique<split_tabs::SplitTabHighlightController>(
-              browser_view->browser(), browser_view->multi_contents_view());
+          GetUserDataFactory()
+              .CreateInstance<split_tabs::SplitTabHighlightController>(
+                  *browser, browser_view->browser(),
+                  browser_view->multi_contents_view());
     }
 
     if (base::FeatureList::IsEnabled(
