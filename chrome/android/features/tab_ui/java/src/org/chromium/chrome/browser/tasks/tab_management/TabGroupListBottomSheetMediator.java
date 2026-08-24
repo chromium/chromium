@@ -40,7 +40,6 @@ import java.util.Set;
  */
 @NullMarked
 public class TabGroupListBottomSheetMediator {
-
     private final BottomSheetController mBottomSheetController;
     private final TabGroupListBottomSheetCoordinatorDelegate mDelegate;
     private final ModelList mModelList;
@@ -63,6 +62,7 @@ public class TabGroupListBottomSheetMediator {
                     mCurrentlyShowing = false;
                     mBottomSheetController.removeObserver(mBottomSheetObserver);
                     mModelList.clear();
+                    mDelegate.invalidateContentHeight();
                 }
 
                 @Override
@@ -122,6 +122,7 @@ public class TabGroupListBottomSheetMediator {
      * @param tabs The tabs to be added to a tab group.
      */
     void requestShowContent(List<Tab> tabs) {
+        mDelegate.invalidateContentHeight();
         // Populate the list of tabs before sending the show-content request to the delegate.
         // This allows us to know the height of the bottom sheet.
         populateList(tabs);

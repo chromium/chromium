@@ -62,6 +62,9 @@ public class TabGroupListBottomSheetCoordinator {
          * @param content The content to be checked.
          */
         boolean isSameContentView(@Nullable BottomSheetContent content);
+
+        /** Invalidates any cached content height measurements. */
+        void invalidateContentHeight();
     }
 
     private final TabGroupListBottomSheetView mView;
@@ -192,6 +195,11 @@ public class TabGroupListBottomSheetCoordinator {
             @Override
             public boolean isSameContentView(@Nullable BottomSheetContent content) {
                 return content != null && content.getContentView() == mView.getContentView();
+            }
+
+            @Override
+            public void invalidateContentHeight() {
+                mView.invalidateContentHeight();
             }
         };
     }
