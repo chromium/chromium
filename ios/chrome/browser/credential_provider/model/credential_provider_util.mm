@@ -11,6 +11,7 @@
 #import "base/check_is_test.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/no_destructor.h"
+#import "base/strings/strcat.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -107,10 +108,17 @@ void ResetMaxNumberOfFaviconsForTesting() {
 NSString* RecordIdentifierForPasswordForm(
     const password_manager::PasswordForm& form) {
   // These are the UNIQUE keys in the login database.
-  return SysUTF16ToNSString(UTF8ToUTF16(form.url.spec() + "|") +
-                            form.username_element + u"|" + form.username_value +
-                            u"|" + form.password_element +
-                            UTF8ToUTF16("|" + form.signon_realm));
+  return SysUTF16ToNSString(base::StrCat({
+      UTF8ToUTF16(form.url.spec()),
+      u"|",
+      form.username_element,
+      u"|",
+      form.username_value,
+      u"|",
+      form.password_element,
+      u"|",
+      UTF8ToUTF16(form.signon_realm),
+  }));
 }
 
 NSString* GetFaviconFileKey(const GURL& url) {

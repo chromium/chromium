@@ -7,7 +7,9 @@
 #import "base/apple/foundation_util.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
+#import "components/password_manager/core/browser/password_form.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_test_util.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -126,6 +128,33 @@ TEST_F(CredentialProviderUtilTest, GetFaviconsListAndFreshness_WithFiles) {
   ASSERT_NSNE(nil, dict);
   EXPECT_EQ(1u, dict.count);
   EXPECT_NSNE(nil, dict[@"file1"]);
+}
+
+// Tests that RecordIdentifierForPasswordForm formats unique database keys
+// correctly.
+TEST_F(CredentialProviderUtilTest, RecordIdentifierForPasswordForm) {
+  password_manager::PasswordForm form;
+  form.url = GURL("https://example.com/login");
+  form.username_element = u"user_element";
+  form.username_value = u"user@example.com";
+  form.password_element = u"pass_element";
+  form.signon_realm = "https://example.com/";
+
+  EXPECT_NSEQ(
+      @"https://example.com/"
+      @"login|user_element|user@example.com|pass_element|https://example.com/",
+      RecordIdentifierForPasswordForm(form));
+}
+
+// Tests that RecordIdentifierForPasswordForm handles empty fields and Android
+// realms.
+TEST_F(CredentialProviderUtilTest,
+       RecordIdentifierForPasswordForm_EmptyAndAndroid) {
+  password_manager::PasswordForm form;
+  form.signon_realm = "android://hash@com.example.app";
+
+  EXPECT_NSEQ(@"||||android://hash@com.example.app",
+              RecordIdentifierForPasswordForm(form));
 }
 
 }  // namespace
