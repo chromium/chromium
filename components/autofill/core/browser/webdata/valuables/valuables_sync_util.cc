@@ -119,6 +119,17 @@ void TrimShipment(sync_pb::Shipment& shipment) {
   shipment.clear_product_names();
 }
 
+void TrimOffer(sync_pb::Offer& offer) {
+  offer.clear_issuer_name();
+  offer.clear_provider_name();
+  offer.clear_offer_short_title();
+  offer.clear_expiration_time_unix_epoch_micros();
+  offer.clear_offer_code();
+  offer.clear_offer_title_image_url();
+  offer.clear_issuer_domains();
+  offer.clear_description();
+}
+
 }  // namespace
 
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromLoyaltyCard(
@@ -286,9 +297,15 @@ AutofillValuableSpecifics TrimAutofillValuableSpecificsDataForCaching(
       }
       break;
     }
-    case AutofillValuableSpecifics::kEventTicket:
-    case AutofillValuableSpecifics::kTransitPass:
     case AutofillValuableSpecifics::kOffer: {
+      TrimOffer(*trimmed_specifics.mutable_offer());
+      if (trimmed_specifics.offer().ByteSizeLong() == 0) {
+        trimmed_specifics.clear_offer();
+      }
+      break;
+    }
+    case AutofillValuableSpecifics::kEventTicket:
+    case AutofillValuableSpecifics::kTransitPass: {
       // Chrome does not support these types.
       break;
     }

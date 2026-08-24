@@ -304,8 +304,9 @@ message TransitPass {
   repeated string agency_domains = 5;
 }
 
-// Represents an offer from Google Wallet. Note that this proto is
-// currently used by Android but not used in Chrome.
+// Represents an offer from Google Wallet. This proto is currently used for
+// Wallet Direct Offers in Chrome. Note that this is separately used by Android
+// for a different promo offer type that does not sync to Chrome.
 message Offer {
   // Localized displayable issuer name, like "Safeway".
   optional string issuer_name = 1;
@@ -327,6 +328,9 @@ message Offer {
 
   // Domains associated with the offer issuer.
   repeated string issuer_domains = 7;
+
+  // The description of the offer, like "50% off your next purchase".
+  optional string description = 8;
 }
 
 // Represents an Order from Google Wallet.
@@ -391,7 +395,8 @@ message AutofillValuableSpecifics {
     EventTicket event_ticket = 12;
     // Note that TransitPass is used by Android but not by Chrome.
     TransitPass transit_pass = 13;
-    // Note that Offer is used by Android but not by Chrome.
+    // Note that while Offer is used for Wallet Direct Offers in Chrome, this
+    // proto is also separately used for promo offers in Android.
     Offer offer = 14;
     Order order = 15;
     Shipment shipment = 16;

@@ -2359,6 +2359,7 @@ VISIT_PROTO_FIELDS(const sync_pb::Offer& proto) {
   VISIT(offer_code);
   VISIT(offer_title_image_url);
   VISIT_REP(issuer_domains);
+  VISIT(description);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::Order& proto) {

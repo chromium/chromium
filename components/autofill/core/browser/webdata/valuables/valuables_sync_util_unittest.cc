@@ -140,6 +140,25 @@ TEST(FlightReservationSyncUtilTest,
       0u);
 }
 
+TEST(OfferSyncUtilTest, TrimAutofillValuableSpecificsDataForCaching) {
+  sync_pb::AutofillValuableSpecifics specifics;
+  specifics.set_id("some_id");
+  specifics.set_is_editable(true);
+  specifics.mutable_offer()->set_issuer_name("Safeway");
+  specifics.mutable_offer()->set_provider_name("coupon.com");
+  specifics.mutable_offer()->set_offer_short_title("50% off");
+  specifics.mutable_offer()->set_expiration_time_unix_epoch_micros(123456789);
+  specifics.mutable_offer()->set_offer_code("12345");
+  specifics.mutable_offer()->set_offer_title_image_url(
+      "https://image.com/logo.png");
+  specifics.mutable_offer()->add_issuer_domains("safeway.com");
+  specifics.mutable_offer()->set_description("50% off your next purchase");
+
+  EXPECT_EQ(
+      TrimAutofillValuableSpecificsDataForCaching(specifics).ByteSizeLong(),
+      0u);
+}
+
 TEST(ValuableMetadataSyncUtilTest, CreateEntityDataFromValuableMetadata) {
   ValuableMetadata metadata = TestValuableMetadata();
   std::unique_ptr<syncer::EntityData> entity_data =
