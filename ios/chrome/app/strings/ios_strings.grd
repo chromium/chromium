@@ -694,6 +694,18 @@
       <message name="IDS_IOS_AUTOFILL_AI_PREVIOUSLY_FILLED_SECTION_TITLE" desc="Title for the previously filled section in the Autofill AI suggestions popup. [iOS only]">
         Previously filled
       </message>
+      <message name="IDS_IOS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_GOT_IT" desc="Primary button label for the Private Inference notice bottom sheet. [iOS only]">
+        Got it
+      </message>
+      <message name="IDS_IOS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_SETTINGS" desc="Secondary button label for the Private Inference notice bottom sheet. [iOS only]">
+        Settings
+      </message>
+      <message name="IDS_IOS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_SUBTITLE" desc="Subtitle of the bottom sheet notice for Autofill AI Private Inference. [iOS only]">
+        Chrome can now detect and fill more forms with smarter form understanding. To do this, page content and URLs can be processed in a private space in the cloud. Manage in settings.
+      </message>
+      <message name="IDS_IOS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_TITLE" desc="Title of the bottom sheet notice for Autofill AI Private Inference. [iOS only]">
+        Smarter autofill, kept private
+      </message>
       <message name="IDS_IOS_AUTOFILL_AI_SAVED_LOCALLY_FOOTER" desc="The notice text displayed in the footer when the Autofill AI entity (ex. Passport, Vehicle info etc.) is saved locally. [iOS only]">
           Your info is saved to your device
       </message>
