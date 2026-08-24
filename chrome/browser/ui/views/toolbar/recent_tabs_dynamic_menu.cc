@@ -73,7 +73,7 @@ void RecentTabsDynamicMenu::ExecuteRecentTab(
                                    recent_item.session_id(), &session_tab) &&
           session_tab && !session_tab->navigations.empty()) {
         SessionRestore::RestoreForeignSessionTab(
-            browser_window_interface_->tab_strip_model()
+            browser_window_interface_->GetTabStripModel()
                 ->GetActiveWebContents(),
             *session_tab, disposition);
       }

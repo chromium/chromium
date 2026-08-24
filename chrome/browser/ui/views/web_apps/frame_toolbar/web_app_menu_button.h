@@ -30,7 +30,6 @@ class WebAppMenuButton : public AppMenuButton,
   METADATA_HEADER(WebAppMenuButton, AppMenuButton)
 
  public:
-  static int GetMenuButtonSizeForBrowser(Browser* browser);
   explicit WebAppMenuButton(BrowserView* browser_view);
   WebAppMenuButton(const WebAppMenuButton&) = delete;
   WebAppMenuButton& operator=(const WebAppMenuButton&) = delete;

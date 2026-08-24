@@ -10,7 +10,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -119,7 +119,7 @@ class CookieControlsBubbleViewPixelTestBase : public DialogBrowserTest {
 
   void NavigateToUrlWithThirdPartyCookies() {
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     content::CookieChangeObserver observer(web_contents);
 
     ASSERT_TRUE(
@@ -194,7 +194,7 @@ class CookieControlsBubbleViewPixelTest
     cookie_controls_coordinator_->ShowBubble(
         BrowserView::GetBrowserViewForBrowser(browser())
             ->toolbar_button_provider(),
-        browser()->tab_strip_model()->GetActiveWebContents(),
+        browser()->GetTabStripModel()->GetActiveWebContents(),
         controller_.get());
     auto expiration = days_to_expiration
                           ? base::Time::Now() + base::Days(days_to_expiration)

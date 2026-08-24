@@ -50,8 +50,6 @@ class TestLocationBarViewDelegate : public LocationBarView::Delegate {
 class WebUILocationBarTest : public testing::Test {
  protected:
   void SetUp() override {
-    ON_CALL(mock_browser_, GetBrowserForMigrationOnly())
-        .WillByDefault(testing::Return(nullptr));
     ON_CALL(mock_browser_, GetProfile())
         .WillByDefault(testing::Return(&profile_));
     ON_CALL(mock_browser_, GetUnownedUserDataHost())

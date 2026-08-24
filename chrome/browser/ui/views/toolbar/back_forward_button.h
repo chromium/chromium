@@ -10,7 +10,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/window_open_disposition.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 class BackForwardButton : public ToolbarButton {
   METADATA_HEADER(BackForwardButton, ToolbarButton)
@@ -20,7 +20,7 @@ class BackForwardButton : public ToolbarButton {
 
   BackForwardButton(Direction direction,
                     PressedCallback callback,
-                    Browser* browser);
+                    BrowserWindowInterface* browser);
   BackForwardButton(const BackForwardButton&) = delete;
   BackForwardButton& operator=(const BackForwardButton&) = delete;
   ~BackForwardButton() override;
@@ -35,7 +35,7 @@ class BackForwardButton : public ToolbarButton {
 
   const std::u16string GetAccessiblePageLoadingMessage();
 
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
   const Direction direction_;
 
   // Reflects whether any modifiers are down, which would affect which tab would

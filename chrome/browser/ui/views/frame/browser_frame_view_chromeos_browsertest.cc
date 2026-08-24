@@ -45,7 +45,6 @@
 #include "chrome/browser/ui/ash/test_util.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -703,7 +702,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, IsToolbarButtonProvider) {
 IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, ShowManagePasswordsIcon) {
   SetUpWebApp();
   content::WebContents* web_contents =
-      app_browser_->tab_strip_model()->GetActiveWebContents();
+      app_browser_->GetTabStripModel()->GetActiveWebContents();
   IconLabelBubbleView* manage_passwords_icon =
       GetPageActionView(kActionShowPasswordsBubbleOrPage);
 
@@ -726,7 +725,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, ShowManagePasswordsIcon) {
 IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, ShowZoomIcon) {
   SetUpWebApp();
   content::WebContents* web_contents =
-      app_browser_->tab_strip_model()->GetActiveWebContents();
+      app_browser_->GetTabStripModel()->GetActiveWebContents();
   zoom::ZoomController* zoom_controller =
       zoom::ZoomController::FromWebContents(web_contents);
   IconLabelBubbleView* zoom_icon = GetPageActionView(kActionShowZoomBubble);
@@ -947,7 +946,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
   // make sure that test covers production scenario.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   ASSERT_TRUE(content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents()));
+      browser()->GetTabStripModel()->GetActiveWebContents()));
 
   EnterImmersiveFullscreenMode(browser());
 

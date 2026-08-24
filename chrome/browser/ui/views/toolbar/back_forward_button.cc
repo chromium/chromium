@@ -9,8 +9,9 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/chained_back_navigation_tracker.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/back_forward_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -30,14 +31,14 @@
 
 BackForwardButton::BackForwardButton(Direction direction,
                                      PressedCallback callback,
-                                     Browser* browser)
+                                     BrowserWindowInterface* browser)
     : ToolbarButton(std::move(callback),
                     std::make_unique<BackForwardMenuModel>(
                         browser,
                         direction == Direction::kBack
                             ? BackForwardMenuModel::ModelType::kBackward
                             : BackForwardMenuModel::ModelType::kForward),
-                    browser->tab_strip_model()),
+                    browser->GetTabStripModel()),
       browser_(browser),
       direction_(direction) {
   SetHideInkDropWhenShowingContextMenu(false);
@@ -102,7 +103,7 @@ void BackForwardButton::NotifyClick(const ui::Event& event) {
   }
 
   content::WebContents* web_contents =
-      browser_->tab_strip_model()->GetActiveWebContents();
+      browser_->GetTabStripModel()->GetActiveWebContents();
   if (web_contents) {
     ChainedBackNavigationTracker* tracker =
         ChainedBackNavigationTracker::FromWebContents(web_contents);
@@ -150,7 +151,7 @@ void BackForwardButton::StateChanged(ButtonState old_state) {
   if (old_state == ButtonState::STATE_NORMAL &&
       GetState() == ButtonState::STATE_HOVERED) {
     content::WebContents* active_contents =
-        browser_->tab_strip_model()->GetActiveWebContents();
+        browser_->GetTabStripModel()->GetActiveWebContents();
     if (active_contents) {
       active_contents->BackNavigationLikely(
           chrome_preloading_predictor::kBackButtonHover,

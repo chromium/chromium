@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, Bounds) {
 IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, BasicOmniboxState) {
   WaitForInitialWebUIToolbar(browser());
   LocationBar* location_bar = GetLocationBar();
-  auto* tab_strip_model = browser()->tab_strip_model();
+  auto* tab_strip_model = browser()->GetTabStripModel();
 
   auto* omnibox = location_bar->GetOmniboxView();
   ASSERT_TRUE(omnibox);
@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, PageActionNavigation) {
   auto& control = location_bar->page_action_control();
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
   auto* controller = tab->GetTabFeatures()->page_action_controller();
 
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, PageActionNavigation) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
 
-  web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   tab = tabs::TabInterface::GetFromContents(web_contents);
   controller = tab->GetTabFeatures()->page_action_controller();
 
@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, AllPageActionsPresent) {
   auto& control = location_bar->page_action_control();
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
   auto* controller = tab->GetTabFeatures()->page_action_controller();
 
@@ -367,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
                        ContentSettingIconAnimation) {
   WaitForInitialWebUIToolbar(browser());
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Block content on active WebContents to trigger content setting icons.
   auto* content_settings =
@@ -408,21 +408,21 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
                        StarredPageActionIconColor) {
   WaitForInitialWebUIToolbar(browser());
 
-  auto* tab = browser()->tab_strip_model()->GetActiveTab();
+  auto* tab = browser()->GetTabStripModel()->GetActiveTab();
   ASSERT_TRUE(tab);
 
   page_actions::WebUIPageActionControl control(
       BrowserActions::From(browser())->root_action_item());
   control.Init(GetWebUIToolbarWebView());
   control.UpdateController(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   auto* bookmark_controller = BookmarkPageActionController::From(tab);
   ASSERT_TRUE(bookmark_controller);
 
   // Set unstarred:
   bookmark_controller->URLStarredChanged(
-      browser()->tab_strip_model()->GetActiveWebContents(), /*starred=*/false);
+      browser()->GetTabStripModel()->GetActiveWebContents(), /*starred=*/false);
   auto states_unstarred = control.GetPageActionStates();
   auto it_unstarred = std::find_if(
       states_unstarred.begin(), states_unstarred.end(), [](const auto& state) {
@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
 
   // Set starred:
   bookmark_controller->URLStarredChanged(
-      browser()->tab_strip_model()->GetActiveWebContents(), /*starred=*/true);
+      browser()->GetTabStripModel()->GetActiveWebContents(), /*starred=*/true);
   auto states_starred = control.GetPageActionStates();
   auto it_starred = std::find_if(
       states_starred.begin(), states_starred.end(), [](const auto& state) {
@@ -482,16 +482,16 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
           }));
   BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->ThemeChanged();
 
-  auto* tab = browser()->tab_strip_model()->GetActiveTab();
+  auto* tab = browser()->GetTabStripModel()->GetActiveTab();
   ASSERT_TRUE(tab);
   BookmarkPageActionController::From(tab)->URLStarredChanged(
-      browser()->tab_strip_model()->GetActiveWebContents(), /*starred=*/true);
+      browser()->GetTabStripModel()->GetActiveWebContents(), /*starred=*/true);
 
   page_actions::WebUIPageActionControl control(
       BrowserActions::From(browser())->root_action_item());
   control.Init(GetWebUIToolbarWebView());
   control.UpdateController(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   auto states = control.GetPageActionStates();
   auto it = std::find_if(states.begin(), states.end(), [](const auto& state) {
@@ -524,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
                        ContentSettingIconNoReanimateOnBookmarkClick) {
   WaitForInitialWebUIToolbar(browser());
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Block content on active WebContents to trigger content setting icons.
   auto* content_settings =
@@ -685,7 +685,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
                        ContentSettingIconNoReanimateOnTabSwitch) {
   WaitForInitialWebUIToolbar(browser());
   content::WebContents* web_contents1 =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Block content on active WebContents (tab 0) to trigger content setting
   // icons.
@@ -768,12 +768,12 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
   chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), /*index=*/1,
                    /*foreground=*/true);
   content::WebContents* web_contents2 =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_NE(web_contents1, web_contents2);
   GetLocationBar()->Update(web_contents2);
 
   // Switch back to tab 0.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
   GetLocationBar()->Update(web_contents1);
 
   // Wait until icons are present again for tab 0.

@@ -20,7 +20,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -139,7 +138,7 @@ class LocationBarViewBrowserTest : public InProcessBrowserTest {
 // the bubble is closed, but only if zoom was reset.
 IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, LocationBarDecoration) {
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   zoom::ZoomController* zoom_controller =
       zoom::ZoomController::FromWebContents(web_contents);
   auto* zoom_view = GetZoomView();
@@ -204,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, MiddleClickPasteAndGo) {
 
   // Set up an observer to wait for the navigation.
   content::TestNavigationObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   // Simulate a middle-click on the location icon.
   ui::MouseEvent middle_click_event(ui::EventType::kMousePressed, gfx::Point(),
@@ -217,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, MiddleClickPasteAndGo) {
   observer.Wait();
 
   EXPECT_EQ(paste_url, browser()
-                           ->tab_strip_model()
+                           ->GetTabStripModel()
                            ->GetActiveWebContents()
                            ->GetLastCommittedURL());
 }
@@ -225,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, MiddleClickPasteAndGo) {
 // Ensure that location bar bubbles close when the webcontents hides.
 IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, BubblesCloseOnHide) {
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   zoom::ZoomController* zoom_controller =
       zoom::ZoomController::FromWebContents(web_contents);
   auto* zoom_view = GetZoomView();
@@ -391,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(SecurityIndicatorTest, CheckIndicatorText) {
       embedded_test_server()->GetURL("example.test", "/empty.html");
 
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(tab);
   LocationBarView* location_bar_view = GetLocationBarView();
 
@@ -428,7 +427,7 @@ class LocationBarViewGeolocationBackForwardCacheBrowserTest
   }
 
   content::WebContents* web_contents() const {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
  private:
@@ -532,7 +531,7 @@ class LocationBarViewPageActionHideWhileEditingTests
     controller->Show(kActionShowZoomBubble);
 
     // 3. Make the Zoom icon visible by actually adjusting page zoom from 100%.
-    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
     auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents);
     ASSERT_TRUE(zoom_controller);
     zoom_controller->SetZoomLevel(
@@ -781,7 +780,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(start_url, browser()
-                           ->tab_strip_model()
+                           ->GetTabStripModel()
                            ->GetActiveWebContents()
                            ->GetLastCommittedURL());
 
@@ -795,7 +794,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(start_url, browser()
-                           ->tab_strip_model()
+                           ->GetTabStripModel()
                            ->GetActiveWebContents()
                            ->GetLastCommittedURL());
 }

@@ -600,7 +600,7 @@ bool ShouldShowWindowIcon(const Browser* browser,
 void GetAnyTabAudioStates(const Browser* browser,
                           bool* any_tab_playing_audio,
                           bool* any_tab_playing_muted_audio) {
-  const TabStripModel* model = browser->tab_strip_model();
+  const TabStripModel* model = browser->GetTabStripModel();
   for (int i = 0; i < model->count(); i++) {
     auto* contents = model->GetWebContentsAt(i);
     auto* helper = RecentlyAudibleHelper::FromWebContents(contents);
@@ -915,7 +915,7 @@ BrowserView::BrowserView(Browser* browser)
 
   SetProperty(views::kElementIdentifierKey, kBrowserViewElementId);
 
-  browser_->tab_strip_model()->AddObserver(this);
+  browser_->GetTabStripModel()->AddObserver(this);
 
   main_background_region_ =
       AddChildView(std::make_unique<MainBackgroundRegionView>(*this));
@@ -1102,7 +1102,7 @@ BrowserView::~BrowserView() {
 
   // All the tabs should have been destroyed already. If we were closed by the
   // OS with some tabs than the BrowserNativeWidget should have destroyed them.
-  DCHECK_EQ(0, browser_->tab_strip_model()->count());
+  DCHECK_EQ(0, browser_->GetTabStripModel()->count());
 
   // Stop the animation timer explicitly here to avoid running it in a nested
   // message loop, which may run by Browser destructor.
@@ -1506,7 +1506,7 @@ bool BrowserView::IsAcceleratorRegistered(const ui::Accelerator& accelerator) {
 }
 
 WebContents* BrowserView::GetActiveWebContents() {
-  return browser_->tab_strip_model()->GetActiveWebContents();
+  return browser_->GetTabStripModel()->GetActiveWebContents();
 }
 
 bool BrowserView::GetSupportsTabStrip() const {
@@ -1561,14 +1561,14 @@ bool BrowserView::IsInSplitView() const {
 void BrowserView::OnVerticalTabStripModeChanged(
     tabs::VerticalTabStripStateController* controller) {
   // Clear selection model
-  if (auto* active_tab = browser_->tab_strip_model()->GetActiveTab()) {
+  if (auto* active_tab = browser_->GetTabStripModel()->GetActiveTab()) {
     tabs::TabStripModelSelectionState selection_state(
-        browser_->tab_strip_model());
+        browser_->GetTabStripModel());
     selection_state.SetActiveTab(active_tab);
     selection_state.SetAnchorTab(active_tab);
     selection_state.set_focused_group(
-        browser_->tab_strip_model()->GetFocusedGroup());
-    browser_->tab_strip_model()->SetSelectionFromModel(
+        browser_->GetTabStripModel()->GetFocusedGroup());
+    browser_->GetTabStripModel()->SetSelectionFromModel(
         std::move(selection_state));
   }
 
@@ -1886,7 +1886,7 @@ void BrowserView::OnBookmarkBarStateChanged(
 
 void BrowserView::UpdateLoadingAnimations(bool is_visible) {
   const bool tabs_need_loading_ui =
-      browser_->tab_strip_model()->TabsNeedLoadingUI();
+      browser_->GetTabStripModel()->TabsNeedLoadingUI();
   const bool should_animate = is_visible && tabs_need_loading_ui;
 
   if (should_animate == IsLoadingAnimationRunning()) {
@@ -1987,12 +1987,12 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   // Widget::IsActive is inconsistent between Mac and Aura, so don't check for
   // it on Mac. The check is also unnecessary for Mac, since restoring focus
   // won't activate the widget on that platform.
-  bool will_restore_focus = !browser_->tab_strip_model()->closing_all() &&
+  bool will_restore_focus = !browser_->GetTabStripModel()->closing_all() &&
                             GetWidget()->IsVisible() &&
                             !tab_change_in_split_view;
 #else
   bool will_restore_focus =
-      !browser_->tab_strip_model()->closing_all() && GetWidget()->IsActive() &&
+      !browser_->GetTabStripModel()->closing_all() && GetWidget()->IsActive() &&
       GetWidget()->IsVisible() && !tab_change_in_split_view;
 #endif
   // Update various elements that are interested in knowing the current
@@ -2301,7 +2301,7 @@ void BrowserView::FullscreenStateChanged() {
 
     // Reshow the split view after completing the toolbar sizing.
     const tabs::TabInterface* active_tab =
-        browser_->tab_strip_model()->GetActiveTab();
+        browser_->GetTabStripModel()->GetActiveTab();
     if (!IsFullscreen() && active_tab && active_tab->IsSplit()) {
       ShowSplitView(GetActiveContentsWebView()->HasFocus() ||
                     !GetFocusManager()->GetFocusedView());
@@ -3287,7 +3287,7 @@ void BrowserView::PreHandleDragUpdate(const content::DropData& drop_data,
     // full screen it may not be rendering a split, even though the active tab
     // is in a split.
     const bool is_in_split_view =
-        browser_->tab_strip_model()->GetActiveTab()->IsSplit();
+        browser_->GetTabStripModel()->GetActiveTab()->IsSplit();
     const gfx::Point point_in_multi_contents_view =
         views::View::ConvertPointToTarget(GetActiveContentsContainerView(),
                                           multi_contents_view_,
@@ -3375,7 +3375,7 @@ void BrowserView::CutCopyPaste(int command_id) {
   // whether that would still allow keypresses of ctrl-X/C/V to be sent as
   // key events (and not accelerators) to the WebContents so it can give the web
   // page a chance to override them.
-  WebContents* contents = browser_->tab_strip_model()->GetActiveWebContents();
+  WebContents* contents = browser_->GetTabStripModel()->GetActiveWebContents();
   if (contents) {
     void (WebContents::*method)();
     if (command_id == IDC_CUT) {
@@ -3449,7 +3449,7 @@ void BrowserView::OnSplitTabChanged(const SplitTabChange& change) {
   switch (change.type) {
     case SplitTabChange::Type::kAdded: {
       const tabs::TabInterface* active_tab =
-          browser_->tab_strip_model()->GetActiveTab();
+          browser_->GetTabStripModel()->GetActiveTab();
       if (active_tab->IsSplit()) {
         ShowSplitView(GetActiveContentsWebView()->HasFocus() ||
                       !GetFocusManager()->GetFocusedView());
@@ -3459,7 +3459,7 @@ void BrowserView::OnSplitTabChanged(const SplitTabChange& change) {
 
     case SplitTabChange::Type::kVisualsChanged: {
       const tabs::TabInterface* active_tab =
-          browser_->tab_strip_model()->GetActiveTab();
+          browser_->GetTabStripModel()->GetActiveTab();
 
       if (active_tab->GetSplit() == change.split_id) {
         multi_contents_view_->UpdateSplitVisualData(
@@ -3468,7 +3468,7 @@ void BrowserView::OnSplitTabChanged(const SplitTabChange& change) {
 
       if (change.GetVisualsChange()->reason() ==
           SplitTabChange::SplitVisualChangeReason::kLayoutUpdated) {
-        gfx::Range split_indices_range = browser_->tab_strip_model()
+        gfx::Range split_indices_range = browser_->GetTabStripModel()
                                              ->GetSplitData(change.split_id)
                                              ->GetIndexRange();
         for (size_t i = split_indices_range.start();
@@ -3481,7 +3481,7 @@ void BrowserView::OnSplitTabChanged(const SplitTabChange& change) {
 
     case SplitTabChange::Type::kContentsChanged: {
       const tabs::TabInterface* active_tab =
-          browser_->tab_strip_model()->GetActiveTab();
+          browser_->GetTabStripModel()->GetActiveTab();
 
       if (active_tab->GetSplit() == change.split_id) {
         multi_contents_view_->SwapContentsInSplitView();
@@ -3690,12 +3690,12 @@ std::u16string BrowserView::GetAccessibleWindowTitleForChannelAndProfile(
     Profile* profile) const {
   // Start with the tab title, which includes properties of the tab
   // like playing audio or network error.
-  int active_index = browser_->tab_strip_model()->active_index();
+  int active_index = browser_->GetTabStripModel()->active_index();
   std::u16string title;
   if (active_index > -1) {
-    title =
-        tabs::GetAccessibleTabLabel(browser_->tab_strip_model()->GetActiveTab(),
-                                    /*is_for_tab=*/false);
+    title = tabs::GetAccessibleTabLabel(
+        browser_->GetTabStripModel()->GetActiveTab(),
+        /*is_for_tab=*/false);
   } else {
     title = WindowMetadataController::From(browser_.get())
                 ->GetWindowTitleForCurrentTab(false /* include_app_name */);
@@ -4137,8 +4137,8 @@ void BrowserView::OnWidgetDestroying(views::Widget* widget) {
   // BrowserView. By destroying here we ensure all said classes are valid.
   // Note: The BrowserViewTest tests rely on the contents being destroyed in the
   // order that they were present in the tab strip.
-  while (browser()->tab_strip_model()->count()) {
-    browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
+  while (browser()->GetTabStripModel()->count()) {
+    browser()->GetTabStripModel()->DetachAndDeleteWebContentsAt(0);
   }
 }
 
@@ -4282,14 +4282,14 @@ void BrowserView::UpdateTabSearchBubbleHost() {
 }
 
 void BrowserView::ShowSplitView(bool focus_active_view) {
-  const int active_index = browser_->tab_strip_model()->active_index();
+  const int active_index = browser_->GetTabStripModel()->active_index();
 
   std::optional<split_tabs::SplitTabId> split_tab_id =
-      browser_->tab_strip_model()->GetTabAtIndex(active_index)->GetSplit();
+      browser_->GetTabStripModel()->GetTabAtIndex(active_index)->GetSplit();
 
   CHECK(split_tab_id.has_value());
   split_tabs::SplitTabData* split_data =
-      browser_->tab_strip_model()->GetSplitData(split_tab_id.value());
+      browser_->GetTabStripModel()->GetSplitData(split_tab_id.value());
 
   std::vector<tabs::TabInterface*> split_tabs = split_data->ListTabs();
 
@@ -4297,7 +4297,7 @@ void BrowserView::ShowSplitView(bool focus_active_view) {
     multi_contents_view_->SetWebContentsAtIndex(tab->GetContents(), i++);
   }
   const int first_split_tab_index =
-      browser_->tab_strip_model()->GetIndexOfTab(split_tabs[0]);
+      browser_->GetTabStripModel()->GetIndexOfTab(split_tabs[0]);
   const int relative_active_position = active_index - first_split_tab_index;
   multi_contents_view_->SetActiveIndex(relative_active_position);
 
@@ -4323,18 +4323,18 @@ void BrowserView::HideSplitView() {
 
 void BrowserView::UpdateActiveTabInSplitView() {
   CHECK(multi_contents_view_->IsInSplitView());
-  const int active_index = browser_->tab_strip_model()->active_index();
+  const int active_index = browser_->GetTabStripModel()->active_index();
 
   std::optional<split_tabs::SplitTabId> split_tab_id =
-      browser_->tab_strip_model()->GetTabAtIndex(active_index)->GetSplit();
+      browser_->GetTabStripModel()->GetTabAtIndex(active_index)->GetSplit();
 
   CHECK(split_tab_id.has_value());
 
-  tabs::TabInterface* first_tab = browser_->tab_strip_model()
+  tabs::TabInterface* first_tab = browser_->GetTabStripModel()
                                       ->GetSplitData(split_tab_id.value())
                                       ->ListTabs()[0];
   const int first_split_tab_index =
-      browser_->tab_strip_model()->GetIndexOfTab(first_tab);
+      browser_->GetTabStripModel()->GetIndexOfTab(first_tab);
   const int relative_active_position = active_index - first_split_tab_index;
   multi_contents_view_->SetActiveIndex(relative_active_position);
 
@@ -4565,7 +4565,7 @@ views::CloseRequestResult BrowserView::OnWindowCloseRequested() {
   }
 
   views::CloseRequestResult result = views::CloseRequestResult::kCanClose;
-  if (!browser_->tab_strip_model()->empty()) {
+  if (!browser_->GetTabStripModel()->empty()) {
     // Tab strip isn't empty.  Hide the frame (so it appears to have closed
     // immediately) and close all the tabs, allowing the renderers to shut
     // down. When the tab strip is empty we'll be called back again.
@@ -4859,7 +4859,7 @@ void BrowserView::Layout(PassKey) {
   // The above may result in a change in the location bar's position, to which a
   // permission bubble may be anchored. For that we must update its anchor
   // position.
-  WebContents* contents = browser_->tab_strip_model()->GetActiveWebContents();
+  WebContents* contents = browser_->GetTabStripModel()->GetActiveWebContents();
   if (contents &&
       permissions::PermissionRequestManager::FromWebContents(contents)) {
     permissions::PermissionRequestManager::FromWebContents(contents)
@@ -5264,7 +5264,7 @@ void BrowserView::LoadingAnimationCallback(base::TimeTicks timestamp) {
 
   if (ShouldShowWindowIcon()) {
     WebContents* web_contents =
-        browser_->tab_strip_model()->GetActiveWebContents();
+        browser_->GetTabStripModel()->GetActiveWebContents();
     // GetActiveWebContents can return null for example under Purify when
     // the animations are running slowly and this function is called on a timer
     // through LoadingAnimationCallback.
@@ -5367,7 +5367,7 @@ bool BrowserView::MaybeUpdateSplitView(content::WebContents* contents) {
 
   if (updated_state) {
     split_tabs::SplitTabData* split_data =
-        browser_->tab_strip_model()->GetSplitData(new_tab->GetSplit().value());
+        browser_->GetTabStripModel()->GetSplitData(new_tab->GetSplit().value());
     multi_contents_view_->ShowSplitView(*split_data->visual_data());
   } else if (current_state != updated_state) {
     multi_contents_view_->CloseSplitView();
@@ -5392,7 +5392,7 @@ bool BrowserView::MaybeUpdateDevtools(content::WebContents* contents) {
     std::optional<split_tabs::SplitTabId> split_tab_id = new_tab->GetSplit();
     CHECK(split_tab_id.has_value());
     split_tabs::SplitTabData* split_data =
-        browser_->tab_strip_model()->GetSplitData(split_tab_id.value());
+        browser_->GetTabStripModel()->GetSplitData(split_tab_id.value());
     std::vector<tabs::TabInterface*> split_tabs = split_data->ListTabs();
     for (tabs::TabInterface* tab : split_tabs) {
       devtools_layout_updated |=
@@ -5478,7 +5478,7 @@ void BrowserView::PrepareFullscreen(bool fullscreen) {
     // Clear the active web contents when exiting a tab fullscreen to prepare
     // to reshow the split view after toolbar sizing.
     const tabs::TabInterface* active_tab =
-        browser_->tab_strip_model()->GetActiveTab();
+        browser_->GetTabStripModel()->GetActiveTab();
     if (!IsInSplitView() && active_tab && active_tab->IsSplit()) {
       multi_contents_view_->GetActiveContentsView()->SetWebContents(nullptr);
     }
@@ -5513,7 +5513,7 @@ void BrowserView::ProcessFullscreen(bool fullscreen, const int64_t display_id) {
 
   // Reshow the split view after completing the toolbar sizing.
   const tabs::TabInterface* active_tab =
-      browser_->tab_strip_model()->GetActiveTab();
+      browser_->GetTabStripModel()->GetActiveTab();
   if (!fullscreen && active_tab && active_tab->IsSplit()) {
     ShowSplitView(GetActiveContentsWebView()->HasFocus() ||
                   !GetFocusManager()->GetFocusedView());
@@ -5716,7 +5716,7 @@ void BrowserView::UpdateAcceleratorMetrics(const ui::Accelerator& accelerator,
   if (command_id == IDC_NEW_TAB &&
       WindowFeatureController::From(browser_)->SupportsWindowFeature(
           WindowFeatureController::WindowFeature::kFeatureTabStrip)) {
-    TabStripModel* const model = browser_->tab_strip_model();
+    TabStripModel* const model = browser_->GetTabStripModel();
     const auto group_id = model->GetTabGroupForTab(model->active_index());
     if (group_id.has_value()) {
       base::RecordAction(base::UserMetricsAction("Accel_NewTabInGroup"));
@@ -6047,7 +6047,7 @@ void BrowserView::FrameColorsChanged() {
 }
 
 void BrowserView::UpdateAccessibleNameForAllTabs() {
-  for (int i = 0; i < browser()->tab_strip_model()->count(); ++i) {
+  for (int i = 0; i < browser()->GetTabStripModel()->count(); ++i) {
     UpdateAccessibleNameForTabAt(i);
   }
 }
@@ -6056,7 +6056,7 @@ void BrowserView::UpdateAccessibleNameForAllTabs() {
 // TabView::UpdateAccessibleName/TabView::UpdateAccessibleName.
 void BrowserView::UpdateAccessibleNameForTabAt(int index) {
   tabs::TabInterface* tab_interface =
-      browser()->tab_strip_model()->GetTabAtIndex(index);
+      browser()->GetTabStripModel()->GetTabAtIndex(index);
   std::u16string accessible_title =
       tabs::GetAccessibleTabLabel(tab_interface, /*is_for_tab=*/true);
   views::View* tab =

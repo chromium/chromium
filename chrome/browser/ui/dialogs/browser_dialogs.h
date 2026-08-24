@@ -161,7 +161,7 @@ std::unique_ptr<compose::ComposeDialogController> ShowComposeDialog(
 // desktop of the OS. Before the dialog is shown, the necessary metadata is
 // gathered from the browser's active WebContents.
 // Triggered from the three-dot menu on Chrome, Save & Share > Create Shortcut.
-void CreateDesktopShortcutForActiveWebContents(Browser* browser);
+void CreateDesktopShortcutForActiveWebContents(BrowserWindowInterface* browser);
 
 }  // namespace chrome
 

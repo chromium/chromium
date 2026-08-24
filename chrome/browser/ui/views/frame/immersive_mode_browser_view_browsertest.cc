@@ -8,9 +8,9 @@
 #include "base/test/run_until.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/ash/test_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
@@ -86,16 +86,16 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   // because if the focus is on the omnibox, the tab strip will remain revealed
   // in the immersive fullscreen mode and will interfere with this test waiting
   // for the revealer to be dismissed.
-  browser()->tab_strip_model()->GetActiveWebContents()->Focus();
+  browser()->GetTabStripModel()->GetActiveWebContents()->Focus();
 
   // Create three more tabs plus the existing one that browser tests start with.
   const GURL about_blank(url::kAboutBlankURL);
   ASSERT_TRUE(AddTabAtIndex(0, about_blank, ui::PAGE_TRANSITION_TYPED));
-  browser()->tab_strip_model()->GetActiveWebContents()->Focus();
+  browser()->GetTabStripModel()->GetActiveWebContents()->Focus();
   ASSERT_TRUE(AddTabAtIndex(0, about_blank, ui::PAGE_TRANSITION_TYPED));
-  browser()->tab_strip_model()->GetActiveWebContents()->Focus();
+  browser()->GetTabStripModel()->GetActiveWebContents()->Focus();
   ASSERT_TRUE(AddTabAtIndex(0, about_blank, ui::PAGE_TRANSITION_TYPED));
-  browser()->tab_strip_model()->GetActiveWebContents()->Focus();
+  browser()->GetTabStripModel()->GetActiveWebContents()->Focus();
 
   EnterImmersiveFullscreenMode(browser());
 
@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   // because if the focus is on the omnibox, the tab strip will remain revealed
   // in the immersive fullscreen mode and will interfere with this test waiting
   // for the revealer to be dismissed.
-  browser()->tab_strip_model()->GetActiveWebContents()->Focus();
+  browser()->GetTabStripModel()->GetActiveWebContents()->Focus();
 
   EnterImmersiveFullscreenMode(browser());
   EXPECT_FALSE(browser()->GetWindow()->IsMaximized());

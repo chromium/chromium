@@ -273,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(DeviceChooserBubbleTest,
                        ShowDeviceChooserDialogInSplitView) {
   ASSERT_TRUE(AddTabAtIndex(0, GetURL("example.com"),
                             ui::PageTransition::PAGE_TRANSITION_TYPED));
-  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* const tab_strip_model = browser()->GetTabStripModel();
   tab_strip_model->ActivateTabAt(0);
   tab_strip_model->AddToNewSplit(
       {1}, split_tabs::SplitTabVisualData(),
@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(DeviceChooserBubbleTest,
   ShowChooserBubble(browser(), std::make_unique<FakeUsbChooserController>(0));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   FullscreenController* fullscreen_controller = browser()
                                                     ->GetFeatures()
                                                     .exclusive_access_manager()

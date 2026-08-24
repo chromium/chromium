@@ -12,9 +12,9 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -97,7 +97,7 @@ OverflowMenu::~OverflowMenu() {
 }
 
 std::vector<OverflowMenu::ResponsiveElementInfo>
-OverflowMenu::GetDefaultResponsiveElements(Browser* browser) {
+OverflowMenu::GetDefaultResponsiveElements(BrowserWindowInterface* browser) {
   bool is_incognito = browser->GetProfile()->IsIncognitoProfile();
   // TODO(crbug.com/40912482): Fill in observed identifier.
   // Order matters because it should match overflow menu order top to bottom.

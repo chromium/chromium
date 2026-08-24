@@ -9,7 +9,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -39,7 +38,7 @@ ChromeLabsCoordinator* ChromeLabsCoordinator::From(
                  : nullptr;
 }
 
-ChromeLabsCoordinator::ChromeLabsCoordinator(Browser* browser)
+ChromeLabsCoordinator::ChromeLabsCoordinator(BrowserWindowInterface* browser)
     : browser_(browser),
       scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {
   pinned_actions_observation_.Observe(

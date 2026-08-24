@@ -10,7 +10,6 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -96,7 +95,7 @@ class BrowserFrameViewBrowserTest : public extensions::ExtensionBrowserTest {
 
     std::unique_ptr<web_app::WebAppInstallInfo> web_app_info =
         web_app::test::GetInstallInfoForCurrentManifest(
-            browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+            browser()->GetTabStripModel()->GetActiveWebContents()->GetWeakPtr(),
             manifest);
 
     webapps::AppId app_id =

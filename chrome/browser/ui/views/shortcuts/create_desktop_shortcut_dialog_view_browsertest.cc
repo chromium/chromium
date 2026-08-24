@@ -20,7 +20,6 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/shortcuts/create_shortcut_for_current_web_contents_task.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
@@ -131,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
 
   views::test::WidgetDestroyedWaiter destroy_waiter(widget);
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   web_contents->Close();
 
   destroy_waiter.Wait();
@@ -256,13 +255,13 @@ IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{}, "CreateDesktopShortcutDialog");
   ShowCreateDesktopShortcutDialogForTesting(
-      browser()->tab_strip_model()->GetActiveWebContents(), gfx::ImageSkia(),
+      browser()->GetTabStripModel()->GetActiveWebContents(), gfx::ImageSkia(),
       titles[0], test_future1.GetCallback());
   views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
 
   // Verify that a second request fails before the first dialog is closed.
   ShowCreateDesktopShortcutDialogForTesting(
-      browser()->tab_strip_model()->GetActiveWebContents(), gfx::ImageSkia(),
+      browser()->GetTabStripModel()->GetActiveWebContents(), gfx::ImageSkia(),
       titles[1], test_future2.GetCallback());
   EXPECT_TRUE(test_future2.Wait());
   auto dialog_result2 = test_future2.Get();
@@ -294,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
 
   base::test::TestFuture<bool> final_callback;
   CreateShortcutForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents(),
+      browser()->GetTabStripModel()->GetActiveWebContents(),
       final_callback.GetCallback());
   views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
   ASSERT_NE(widget, nullptr);
@@ -317,7 +316,7 @@ class PictureInPictureCreateShortcutDialogOcclusionTest
  protected:
   void ShowDialogUi() {
     ShowCreateDesktopShortcutDialogForTesting(
-        browser()->tab_strip_model()->GetActiveWebContents(), gfx::ImageSkia(),
+        browser()->GetTabStripModel()->GetActiveWebContents(), gfx::ImageSkia(),
         u"DialogTitle", base::DoNothing());
   }
   DocumentPictureInPictureMixinTestBase picture_in_picture_test_base_{

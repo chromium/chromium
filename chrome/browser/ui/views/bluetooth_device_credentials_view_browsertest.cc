@@ -26,8 +26,8 @@ class BluetoothDeviceCredentialsViewBrowserTest : public DialogBrowserTest {
 
   void ShowUi(const std::string& name) override {
     ShowBluetoothDeviceCredentialsDialog(
-        browser()->tab_strip_model()->GetActiveWebContents(), kDeviceIdentifier,
-        base::NullCallback());
+        browser()->GetTabStripModel()->GetActiveWebContents(),
+        kDeviceIdentifier, base::NullCallback());
   }
 
  private:

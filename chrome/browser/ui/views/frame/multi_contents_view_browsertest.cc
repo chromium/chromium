@@ -132,11 +132,11 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
 
   // After the drop, a new tab should be created in the split view.
   // The original tab is at index 0, the new tab from the drop is at index 1.
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
   EXPECT_EQ(GURL(url::kAboutBlankURL),
-            browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
+            browser()->GetTabStripModel()->GetWebContentsAt(0)->GetURL());
   EXPECT_EQ(kDropUrl,
-            browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
+            browser()->GetTabStripModel()->GetWebContentsAt(1)->GetURL());
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
@@ -161,16 +161,16 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
 
   // After the drop, a new tab should be created in the split view.
   // The original tab is at index 0, the new tab from the drop is at index 1.
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
   EXPECT_EQ(kDropUrl,
-            browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
+            browser()->GetTabStripModel()->GetWebContentsAt(0)->GetURL());
   EXPECT_EQ(GURL(url::kAboutBlankURL),
-            browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
+            browser()->GetTabStripModel()->GetWebContentsAt(1)->GetURL());
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
                        HandleDropTargetViewLinkDrop_PinnedWithStartDropTarget) {
-  browser()->tab_strip_model()->SetTabPinned(0, true);
+  browser()->GetTabStripModel()->SetTabPinned(0, true);
 
   ui::OSExchangeData data;
   const GURL kDropUrl("http://www.chromium.org/");
@@ -193,18 +193,18 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
   // After the drop, a new tab should be created in the split view. The original
   // tab is at index 0, the new tab from the drop is at index 1. Both tabs
   // should be pinned.
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
   EXPECT_EQ(kDropUrl,
-            browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
+            browser()->GetTabStripModel()->GetWebContentsAt(0)->GetURL());
   EXPECT_EQ(GURL(url::kAboutBlankURL),
-            browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
-  EXPECT_TRUE(browser()->tab_strip_model()->GetTabAtIndex(0)->IsPinned());
-  EXPECT_TRUE(browser()->tab_strip_model()->GetTabAtIndex(1)->IsPinned());
+            browser()->GetTabStripModel()->GetWebContentsAt(1)->GetURL());
+  EXPECT_TRUE(browser()->GetTabStripModel()->GetTabAtIndex(0)->IsPinned());
+  EXPECT_TRUE(browser()->GetTabStripModel()->GetTabAtIndex(1)->IsPinned());
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
                        HandleDropTargetViewLinkDrop_GroupedWithEndDropTarget) {
-  browser()->tab_strip_model()->AddToNewGroup({0});
+  browser()->GetTabStripModel()->AddToNewGroup({0});
 
   ui::OSExchangeData data;
   const GURL kDropUrl("http://www.chromium.org/");
@@ -227,15 +227,15 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
   // After the drop, a new tab should be created in the split view. The original
   // tab is at index 0, the new tab from the drop is at index 1. Both tabs
   // should be in a group.
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
   EXPECT_EQ(GURL(url::kAboutBlankURL),
-            browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
+            browser()->GetTabStripModel()->GetWebContentsAt(0)->GetURL());
   EXPECT_EQ(kDropUrl,
-            browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
+            browser()->GetTabStripModel()->GetWebContentsAt(1)->GetURL());
   EXPECT_TRUE(
-      browser()->tab_strip_model()->GetTabAtIndex(0)->GetGroup().has_value());
+      browser()->GetTabStripModel()->GetTabAtIndex(0)->GetGroup().has_value());
   EXPECT_TRUE(
-      browser()->tab_strip_model()->GetTabAtIndex(1)->GetGroup().has_value());
+      browser()->GetTabStripModel()->GetTabAtIndex(1)->GetGroup().has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
@@ -260,16 +260,16 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
 
   // After the drop, a new tab should be created in the split view.
   // The original tab is at index 0, the new tab from the drop is at index 1.
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
   EXPECT_EQ(GURL(content::kBlockedURL),
-            browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
+            browser()->GetTabStripModel()->GetWebContentsAt(0)->GetURL());
   EXPECT_EQ(GURL(url::kAboutBlankURL),
-            browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
+            browser()->GetTabStripModel()->GetWebContentsAt(1)->GetURL());
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
                        HandleTabDrop_EndDropTarget) {
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_EQ(1, tab_strip_model->count());
   EXPECT_FALSE(multi_contents_view()->IsInSplitView());
 
@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
                        HandleTabDrop_StartDropTarget) {
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   content::WebContents* original_contents =
       tab_strip_model->GetActiveWebContents();
   ASSERT_EQ(1, tab_strip_model->count());
@@ -387,7 +387,7 @@ class MultiContentsViewWebContentsReLayoutBrowserTest
   }
 
   void CheckNoResizeHappened() {
-    auto* tab_strip_model = browser()->tab_strip_model();
+    auto* tab_strip_model = browser()->GetTabStripModel();
     const GURL test_url = embedded_test_server()->GetURL(kReLayoutTestURL);
     for (int i = 0; i < tab_strip_model->count(); i++) {
       auto* web_contents = tab_strip_model->GetWebContentsAt(i);
@@ -409,7 +409,7 @@ class MultiContentsViewWebContentsReLayoutBrowserTest
   }
 
   void CreateSplitView() {
-    auto* tab_strip_model = browser()->tab_strip_model();
+    auto* tab_strip_model = browser()->GetTabStripModel();
     const int active_index = tab_strip_model->active_index();
 
     RunScheduledLayouts();
@@ -421,7 +421,7 @@ class MultiContentsViewWebContentsReLayoutBrowserTest
   }
 
   void LoadReLayoutTestPageInActiveSplitTabs() {
-    auto* tab_strip_model = browser()->tab_strip_model();
+    auto* tab_strip_model = browser()->GetTabStripModel();
     const int active_index = tab_strip_model->active_index();
     split_tabs::SplitTabId split_id =
         tab_strip_model->GetSplitForTab(active_index).value();
@@ -442,7 +442,7 @@ class MultiContentsViewWebContentsReLayoutBrowserTest
 IN_PROC_BROWSER_TEST_F(
     MultiContentsViewWebContentsReLayoutBrowserTest,
     SwitchingTabsShouldNotTriggerWebContentsReLayout_SplitNoSplit) {
-  auto* tab_strip_model = browser()->tab_strip_model();
+  auto* tab_strip_model = browser()->GetTabStripModel();
 
   const GURL test_url = embedded_test_server()->GetURL(kReLayoutTestURL);
 
@@ -478,7 +478,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     MultiContentsViewWebContentsReLayoutBrowserTest,
     SwitchingTabsShouldNotTriggerWebContentsReLayout_SplitSplit) {
-  auto* tab_strip_model = browser()->tab_strip_model();
+  auto* tab_strip_model = browser()->GetTabStripModel();
 
   const GURL test_url = embedded_test_server()->GetURL(kReLayoutTestURL);
 
@@ -522,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewWebContentsReLayoutBrowserTest,
                        EnterAndExitFullscreenInSplitTabShouldResizeTwoTimes) {
-  auto* tab_strip_model = browser()->tab_strip_model();
+  auto* tab_strip_model = browser()->GetTabStripModel();
 
   const GURL test_url = embedded_test_server()->GetURL(kReLayoutTestURL);
 
@@ -602,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewWebContentsReLayoutBrowserTest,
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, OnlyFocusTabsInSplitView) {
   // Set up tab strip with a regular tab and two split views with the last split
   // view being active.
-  auto* tab_strip_model = browser()->tab_strip_model();
+  auto* tab_strip_model = browser()->GetTabStripModel();
 
   EXPECT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
@@ -613,7 +613,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, OnlyFocusTabsInSplitView) {
   chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kSideBySide,
                       split_tabs::SplitTabCreatedSource::kToolbarButton);
 
-  ASSERT_EQ(5, browser()->tab_strip_model()->count());
+  ASSERT_EQ(5, browser()->GetTabStripModel()->count());
   const int active_index = tab_strip_model->active_index();
   ASSERT_EQ(4, active_index);
   EXPECT_TRUE(tab_strip_model->GetActiveTab()->IsSplit());

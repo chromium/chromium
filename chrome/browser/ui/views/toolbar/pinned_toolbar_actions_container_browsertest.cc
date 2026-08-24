@@ -87,7 +87,7 @@ class PinnedToolbarActionsContainerBrowserTest : public InProcessBrowserTest {
   }
 
   content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   BrowserView* browser_view() {
@@ -114,11 +114,10 @@ class PinnedToolbarActionsContainerBrowserTest : public InProcessBrowserTest {
         ->SetCurrentLanguage("en");
   }
 
-  Browser* CreateBrowser() {
+  BrowserWindowInterface* CreateBrowser() {
     BrowserWindowCreateParams params(browser()->GetProfile(),
                                      /*from_user_gesture=*/true);
-    Browser* browser =
-        CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
+    BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
     browser->GetWindow()->Show();
     return browser;
   }
@@ -141,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
       browser(), actions::kActionCut, container()->GetWeakPtrForTesting());
   pinned_button->menu_model()->ActivatedAt(2);
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   ASSERT_TRUE(content::NavigateToURL(web_contents, GURL("chrome://newtab/")));
   content::WaitForLoadStop(web_contents);
@@ -156,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
       browser(), actions::kActionCut, container()->GetWeakPtrForTesting());
   pinned_button->menu_model()->ActivatedAt(2);
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::WaitForLoadStop(web_contents);
   EXPECT_NE(web_contents->GetURL().possibly_invalid_spec(), "chrome://newtab/");
   EXPECT_TRUE(browser()->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
@@ -165,12 +164,10 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
                        CustomizeToolbarCanNotBeCalledFromIncognitoWindow) {
-  Browser* incognito_browser =
-      CreateBrowserWindow(BrowserWindowCreateParams(
-                              browser()->GetProfile()->GetPrimaryOTRProfile(
-                                  /*create_if_needed=*/true),
-                              /*from_user_gesture=*/true))
-          ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* incognito_browser = CreateBrowserWindow(
+      BrowserWindowCreateParams(browser()->GetProfile()->GetPrimaryOTRProfile(
+                                    /*create_if_needed=*/true),
+                                /*from_user_gesture=*/true));
   AddBlankTabAndShow(incognito_browser);
   auto pinned_button = std::make_unique<PinnedActionToolbarButton>(
       incognito_browser, actions::kActionCut,
@@ -198,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
       0, GURL(embedded_test_server()->GetURL("/french_page.html")),
       ui::PAGE_TRANSITION_TYPED));
 
-  TranslatePage(browser()->tab_strip_model()->GetActiveWebContents());
+  TranslatePage(browser()->GetTabStripModel()->GetActiveWebContents());
   EXPECT_EQ(pinned_button->GetStatusIndicatorForTesting()->GetVisible(), true);
 
   // Status indicator should still be visible after creating a new browser.
@@ -206,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
   EXPECT_EQ(pinned_button->GetStatusIndicatorForTesting()->GetVisible(), true);
 
   // Navigate to non-translated page.
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
   EXPECT_EQ(pinned_button->GetStatusIndicatorForTesting()->GetVisible(), false);
 }
 

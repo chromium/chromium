@@ -113,7 +113,7 @@ class MultiContentsViewTabDragEntrypointsUiTest
           return GetBrowserView().tab_strip_view()->GetTabAnchorView(
               GetBrowserView()
                   .browser()
-                  ->tab_strip_model()
+                  ->GetTabStripModel()
                   ->GetTabAtIndex(index)
                   ->GetHandle());
         }));
@@ -161,8 +161,7 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
   RunTestSequence(
       AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL(), 1),
       AddInstrumentedTab(kSecondTab, chrome::ChromeUINewTabURLAsGURL(), 2),
-      WaitForActiveTabChange(2),
-      NameTabViewAt("Tab to drag", 1),
+      WaitForActiveTabChange(2), NameTabViewAt("Tab to drag", 1),
       MoveMouseTo("Tab to drag"),
       DragMouseTo(kBrowserViewElementId, CenterPoint(), /*release=*/false),
       PollState(kBrowserCountPoller, GetBrowserCount()),
@@ -179,12 +178,11 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
                 return view->side() == side;
               },
               drop_side))),
-      ReleaseMouse(),
-      PollState(kDragStatePoller, GetDragActive()),
+      ReleaseMouse(), PollState(kDragStatePoller, GetDragActive()),
       WaitForState(kDragStatePoller, false),
       CheckResult(
           [this]() {
-            return browser()->tab_strip_model()->GetActiveTab()->IsSplit();
+            return browser()->GetTabStripModel()->GetActiveTab()->IsSplit();
           },
           true));
 }
@@ -252,24 +250,21 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
   RunTestSequence(
       AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUISettingsURL), 1),
       AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUISettingsURL), 2),
-      WaitForActiveTabChange(2),
-      NameTabViewAt("Tab to drag", 1),
+      WaitForActiveTabChange(2), NameTabViewAt("Tab to drag", 1),
       MoveMouseTo("Tab to drag"),
       DragMouseTo(kBrowserViewElementId, CenterPoint(), /*release=*/false),
       PollState(kBrowserCountPoller, GetBrowserCount()),
       WaitForState(kBrowserCountPoller, 2u),
       MoveMouseTo(base::BindLambdaForTesting(
           [&]() { return GetPointForDropSide(drop_side); })),
-      WaitTime(base::Milliseconds(500)),
-      Check([this]() {
+      WaitTime(base::Milliseconds(500)), Check([this]() {
         return !GetDropTargetView(GetBrowserView())->GetVisible();
       }),
-      ReleaseMouse(),
-      PollState(kDragStatePoller, GetDragActive()),
+      ReleaseMouse(), PollState(kDragStatePoller, GetDragActive()),
       WaitForState(kDragStatePoller, false),
       CheckResult(
           [this]() {
-            return browser()->tab_strip_model()->GetActiveTab()->IsSplit();
+            return browser()->GetTabStripModel()->GetActiveTab()->IsSplit();
           },
           false));
 }

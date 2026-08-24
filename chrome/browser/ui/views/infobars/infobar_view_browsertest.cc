@@ -51,7 +51,7 @@ class InfoBarViewBrowserTest : public InProcessBrowserTest {
  protected:
   infobars::ContentInfoBarManager* infobar_manager() {
     return infobars::ContentInfoBarManager::FromWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
   }
 
   InfoBarContainerView* info_bar_container_view() {
@@ -116,7 +116,7 @@ class InfoBarRefreshViewBrowserTest : public InProcessBrowserTest {
  protected:
   infobars::ContentInfoBarManager* infobar_manager() {
     return infobars::ContentInfoBarManager::FromWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
   }
 
   InfoBarContainerView* info_bar_container_view() {

@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/flag_descriptions.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -37,7 +37,7 @@
 
 namespace {
 
-void ShowFeedbackPage(Browser* browser,
+void ShowFeedbackPage(BrowserWindowInterface* browser,
                       std::string feedback_category_name,
                       std::u16string visible_name) {
   chrome::ShowFeedbackPage(
@@ -115,7 +115,7 @@ ChromeLabsItemView::ChromeLabsItemView(
     const flags_ui::FeatureEntry* feature_entry,
     base::RepeatingCallback<void(ChromeLabsItemView* item_view)>
         combobox_callback,
-    Browser* browser)
+    BrowserWindowInterface* browser)
     : feature_entry_(feature_entry) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);

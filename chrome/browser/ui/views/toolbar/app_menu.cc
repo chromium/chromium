@@ -39,11 +39,11 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
@@ -893,7 +893,7 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
 
  private:
   const content::WebContents* GetActiveWebContents() const {
-    return menu() ? menu()->browser_->tab_strip_model()->GetActiveWebContents()
+    return menu() ? menu()->browser_->GetTabStripModel()->GetActiveWebContents()
                   : nullptr;
   }
   content::WebContents* GetActiveWebContents() {
@@ -1091,7 +1091,7 @@ class AppMenu::RecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
 
 // AppMenu ------------------------------------------------------------------
 
-AppMenu::AppMenu(Browser* browser,
+AppMenu::AppMenu(BrowserWindowInterface* browser,
                  ui::MenuModel* model,
                  int run_types,
                  base::RepeatingClosure on_menu_closed_callback)

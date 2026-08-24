@@ -109,9 +109,9 @@ IN_PROC_BROWSER_TEST_P(HomeButtonAccessibilityTest, MAYBE_MiddleClickHome) {
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, url),
       WaitForElementNonzeroSize(kToolbarHomeButtonElementId),
-      Check([&]() { return browser()->tab_strip_model()->count() == 1; }),
+      Check([&]() { return browser()->GetTabStripModel()->count() == 1; }),
       PollState(kTabCountState,
-                [this]() { return browser()->tab_strip_model()->count(); }),
+                [this]() { return browser()->GetTabStripModel()->count(); }),
       MoveMouseToElement(kToolbarHomeButtonElementId),
       ClickMouse(ui_controls::MIDDLE), WaitForState(kTabCountState, 2));
 }

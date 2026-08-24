@@ -61,14 +61,14 @@ void TestWithBrowserView::SetUp() {
 void TestWithBrowserView::TearDown() {
   // Destroy Browsers directly managed by TestWithBrowserView.
   for (std::unique_ptr<Browser>& browser : additional_browsers_) {
-    browser->tab_strip_model()->CloseAllTabs();
+    browser->GetTabStripModel()->CloseAllTabs();
     browser.reset();
   }
 
   // Because CreateBrowserWindow() is overridden to return null, a real
   // BrowserView is created. Nullify the BrowserView pointer before destroying
   // the Browser to avoid dangling pointers.
-  browser_view_->browser()->tab_strip_model()->CloseAllTabs();
+  browser_view_->browser()->GetTabStripModel()->CloseAllTabs();
   browser_view_ = nullptr;
   ASSERT_TRUE(release_browser());
 

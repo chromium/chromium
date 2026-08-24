@@ -57,7 +57,7 @@ class IntentPickerDialogTest : public DialogBrowserTest {
                                 ->GetLocationBarView()),
         GetHighlightElement(),
         IntentPickerBubbleView::BubbleType::kLinkCapturing,
-        browser()->tab_strip_model()->GetActiveWebContents(),
+        browser()->GetTabStripModel()->GetActiveWebContents(),
         std::move(app_info), true, true,
         url::Origin::Create(GURL("https://c.com")), base::DoNothing());
   }

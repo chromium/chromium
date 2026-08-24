@@ -205,7 +205,7 @@ void ToolbarViewTest::RunToolbarCycleFocusTest(Browser* browser) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url2));
   // Navigate back once so forward is enabled too.
   content::TestNavigationObserver back_nav_observer(
-      browser->tab_strip_model()->GetActiveWebContents());
+      browser->GetTabStripModel()->GetActiveWebContents());
   chrome::BrowserCommandController::From(browser)->ExecuteCommand(IDC_BACK);
   back_nav_observer.Wait();
 
@@ -341,7 +341,7 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewTest, BackForwardButtonUpdate) {
 
       Do([this]() {
         auto& controller = browser()
-                               ->tab_strip_model()
+                               ->GetTabStripModel()
                                ->GetActiveWebContents()
                                ->GetController();
         controller.DeleteNavigationEntries(base::BindRepeating(

@@ -52,7 +52,6 @@
 #include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
-class Browser;
 class BrowserWindowInterface;
 class CommandUpdater;
 class ContentSettingBubbleModelDelegate;
@@ -124,7 +123,7 @@ class LocationBarView
     virtual ~Delegate() = default;
   };
 
-  LocationBarView(Browser* browser,
+  LocationBarView(BrowserWindowInterface* browser,
                   Profile* profile,
                   CommandUpdater* command_updater,
                   Delegate* delegate,
@@ -296,7 +295,7 @@ class LocationBarView
   //
   // 2. presentation_receiver_window_view is the other known case. However,
   // presentation_receiver_window_view is about to be sunsetted in a year or so.
-  Browser* browser() { return browser_; }
+  BrowserWindowInterface* browser() { return browser_; }
 
   // LocationIconView::Delegate:
   const LocationBarModel* GetLocationBarModel() const override;
@@ -515,7 +514,7 @@ class LocationBarView
   // The Browser this LocationBarView is in.  Note that at least
   // SimpleWebViewDialog uses a LocationBarView outside any browser
   // window, so this may be NULL.
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
 
   // May be nullptr in tests.
   const raw_ptr<Profile> profile_;

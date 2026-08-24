@@ -12,8 +12,8 @@
 #include "build/buildflag.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/flag_descriptions.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_item_view.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
@@ -95,7 +95,7 @@ END_METADATA
 }  // namespace
 
 ChromeLabsBubbleView::ChromeLabsBubbleView(views::Button* anchor_view,
-                                           Browser* browser)
+                                           BrowserWindowInterface* browser)
     : BubbleDialogDelegateView(anchor_view,
                                views::BubbleBorder::Arrow::TOP_RIGHT,
                                views::BubbleBorder::DIALOG_SHADOW,
@@ -182,7 +182,7 @@ ChromeLabsItemView* ChromeLabsBubbleView::AddLabItem(
     const LabInfo& lab,
     int default_index,
     const flags_ui::FeatureEntry* entry,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     base::RepeatingCallback<void(ChromeLabsItemView* item_view)>
         combobox_callback) {
   std::unique_ptr<ChromeLabsItemView> item_view =

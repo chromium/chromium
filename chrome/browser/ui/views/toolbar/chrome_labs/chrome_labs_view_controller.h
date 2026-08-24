@@ -9,7 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
 
-class Browser;
+class BrowserWindowInterface;
 class ChromeLabsBubbleView;
 struct LabInfo;
 class Profile;
@@ -23,7 +23,7 @@ struct FeatureEntry;
 class ChromeLabsViewController {
  public:
   ChromeLabsViewController(ChromeLabsBubbleView* chrome_labs_bubble_view,
-                           Browser* browser,
+                           BrowserWindowInterface* browser,
                            flags_ui::FlagsState* flags_state,
                            flags_ui::FlagsStorage* flags_storage);
   ~ChromeLabsViewController() = default;
@@ -46,7 +46,7 @@ class ChromeLabsViewController {
   raw_ptr<ChromeLabsBubbleView, AcrossTasksDanglingUntriaged>
       chrome_labs_bubble_view_;
   base::CallbackListSubscription restart_callback_;
-  raw_ptr<Browser, DanglingUntriaged> browser_;
+  raw_ptr<BrowserWindowInterface, DanglingUntriaged> browser_;
   raw_ptr<flags_ui::FlagsState, DanglingUntriaged> flags_state_;
   raw_ptr<flags_ui::FlagsStorage, DanglingUntriaged> flags_storage_;
 };

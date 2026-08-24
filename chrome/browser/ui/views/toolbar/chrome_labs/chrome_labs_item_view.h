@@ -11,7 +11,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
-class Browser;
+class BrowserWindowInterface;
 struct LabInfo;
 
 namespace flags_ui {
@@ -39,7 +39,7 @@ class ChromeLabsItemView : public views::View {
       const flags_ui::FeatureEntry* feature_entry,
       base::RepeatingCallback<void(ChromeLabsItemView* item_view)>
           combobox_callback,
-      Browser* browser);
+      BrowserWindowInterface* browser);
 
   ~ChromeLabsItemView() override;
 

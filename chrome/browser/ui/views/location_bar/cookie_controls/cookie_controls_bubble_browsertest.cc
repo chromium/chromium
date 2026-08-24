@@ -10,7 +10,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -113,7 +113,7 @@ class CookieControlsBubbleCoordinatorBrowserTest : public InProcessBrowserTest {
   }
 
   content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
  private:
@@ -164,7 +164,7 @@ class CookieControlsBubbleViewControllerBrowserTest
 
     const GURL url = GURL("http://a.com");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
 
     mock_bubble_view_ =
         std::make_unique<testing::NiceMock<MockCookieControlsBubbleView>>();
@@ -333,7 +333,7 @@ class CookieControlsBubbleViewImplBrowserTest : public InProcessBrowserTest {
 
     const GURL url = GURL("http://a.com");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
 
     controller_ = std::make_unique<content_settings::CookieControlsController>(
         CookieSettingsFactory::GetForProfile(GetProfile()), nullptr,

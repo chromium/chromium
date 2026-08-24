@@ -76,7 +76,7 @@ class InfoBarContainerViewBrowserTest : public InProcessBrowserTest {
 
   infobars::InfoBarManager* GetInfoBarManager() {
     return infobars::ContentInfoBarManager::FromWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
   }
 
   infobars::InfoBar* AddInfoBar(
@@ -230,13 +230,13 @@ IN_PROC_BROWSER_TEST_F(InfoBarContainerPriorityTest,
 
   // Open and switch to a new tab.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
 
   // The new tab should have an existing, but empty, infobar container.
   ASSERT_TRUE(GetInfoBarContainer()->IsEmpty());
 
   // Switch back to the first tab.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   // The state should be preserved.
   EXPECT_EQ(1u, GetVisibleInfoBarMessages().size());
@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(InfoBarContainerPriorityTest,
 
   // Put focus in web contents (outside infobars).
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(contents);
   contents->Focus();
 
@@ -326,7 +326,7 @@ class InfoBarContainerSplitTabTest : public InfoBarContainerViewBrowserTest {
 
   // Splits the tab at `index_to_split` with the currently active tab.
   void SplitTabWithActive(int index_to_split) {
-    browser()->tab_strip_model()->AddToNewSplit(
+    browser()->GetTabStripModel()->AddToNewSplit(
         {index_to_split},
         split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kSideBySide,
                                        0.5f),
@@ -335,7 +335,7 @@ class InfoBarContainerSplitTabTest : public InfoBarContainerViewBrowserTest {
 
   // Switches focus between the two panes of the active split tab.
   void SwitchSplitTabFocus() {
-    TabStripModel* tab_strip_model = browser()->tab_strip_model();
+    TabStripModel* tab_strip_model = browser()->GetTabStripModel();
     ASSERT_TRUE(tab_strip_model->GetActiveTab()->IsSplit());
 
     // In this test setup with exactly two tabs (0 and 1) involved in a split,
@@ -351,7 +351,7 @@ class InfoBarContainerSplitTabTest : public InfoBarContainerViewBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(InfoBarContainerSplitTabTest,
                        InfobarsAreIndependentInSplitTabs) {
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
 
   // 1. Set up two tabs. The browser starts with one tab, so navigate it and
   // add one more.

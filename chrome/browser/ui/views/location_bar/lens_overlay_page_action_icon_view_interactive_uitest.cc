@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest,
   // We need to wait for paint in order to take a screenshot of the page.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return browser()
-        ->tab_strip_model()
+        ->GetTabStripModel()
         ->GetActiveTab()
         ->GetContents()
         ->CompletedFirstVisuallyNonEmptyPaint();

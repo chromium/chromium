@@ -31,9 +31,9 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -443,7 +443,7 @@ class WebUIToolbarViewsInteractiveUiTest
     StepBuilder step = Do(base::BindOnce(
         [](Browser* browser) {
           content::WaitForLoadStop(
-              browser->tab_strip_model()->GetActiveWebContents());
+              browser->GetTabStripModel()->GetActiveWebContents());
         },
         base::Unretained(browser())));
     SetStepDescription(step, "DoWaitForLoadStop()");
@@ -608,7 +608,7 @@ class WebUIToolbarViewsInteractiveUiTest
   StepBuilder DoStartReloadWithoutClick() {
     StepBuilder step = Do(base::BindOnce(
         [](Browser* browser) {
-          browser->tab_strip_model()
+          browser->GetTabStripModel()
               ->GetActiveWebContents()
               ->GetController()
               .Reload(content::ReloadType::NORMAL, /*check_for_repost=*/false);
@@ -648,7 +648,7 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest, ReloadButton) {
   const GURL url = embedded_test_server()->GetURL("/title1.html");
 
   ReloadButtonTestNavigationObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   RunTestSequence(SetUpReloadButtonTest(), NavigateWebContents(TabId(), url),
                   WaitForReloadButtonReady(), MoveMouseOverReloadButton(),
@@ -667,7 +667,7 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest, ReloadButton) {
 IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
                        ReloadButtonMultipleClicksBeforeLoadStopIgnored) {
   ReloadButtonTestNavigationObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   // Simulate having shift pressed for some of the loads, which should not make
   // a difference to the logic under test.
@@ -699,7 +699,7 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
 IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
                        ReloadButtonMultipleClicksAfterLoadStopIgnored) {
   ReloadButtonTestNavigationObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   // Simulate having shift pressed for some of the loads, which should not make
   // a difference to the logic under test.
@@ -727,7 +727,7 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
   const GURL url = embedded_test_server()->GetURL("/title1.html");
 
   ReloadButtonTestNavigationObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   RunTestSequence(
       SetUpReloadButtonTest(), NavigateWebContents(TabId(), url),
@@ -754,7 +754,7 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
 IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
                        ReloadButtonClickAgainAfterReloadInterval2) {
   ReloadButtonTestNavigationObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   RunTestSequence(SetUpReloadButtonTest(), DoNavigateToDelayedUrl(),
                   // Set a short double click interval.
@@ -809,7 +809,7 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
   const GURL url = embedded_test_server()->GetURL("/title1.html");
 
   ReloadButtonTestNavigationObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   RunTestSequence(
       SetUpReloadButtonTest(), NavigateWebContents(TabId(), url),
@@ -838,7 +838,7 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
 IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
                        ReloadButtonNotClickedMouseNeverOverButton) {
   ReloadButtonTestNavigationObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   RunTestSequence(
       SetUpReloadButtonTest(), DoNavigateToDelayedUrl(),
@@ -867,7 +867,7 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
 IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
                        ReloadButtonNotClickedMouseHoverOverButton1) {
   ReloadButtonTestNavigationObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   RunTestSequence(
       SetUpReloadButtonTest(), DoNavigateToDelayedUrl(),
@@ -903,7 +903,7 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
 IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
                        ReloadButtonNotClickedMouseHoverOverButton2) {
   ReloadButtonTestNavigationObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   RunTestSequence(
       SetUpReloadButtonTest(), DoNavigateToDelayedUrl(),
@@ -935,7 +935,7 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
 IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
                        ReloadButtonIconMouseMovedOffOfButton) {
   ReloadButtonTestNavigationObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   RunTestSequence(
       SetUpReloadButtonTest(), DoNavigateToDelayedUrl(),
@@ -973,7 +973,7 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
 IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
                        ReloadButtonClickedMouseHoverOverButton1) {
   ReloadButtonTestNavigationObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   RunTestSequence(
       SetUpReloadButtonTest(), DoNavigateToDelayedUrl(),
@@ -1011,7 +1011,7 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
 IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
                        ReloadButtonClickedMouseHoverOverButton2) {
   ReloadButtonTestNavigationObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   RunTestSequence(
       SetUpReloadButtonTest(), DoNavigateToDelayedUrl(),
@@ -1043,7 +1043,7 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
 IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
                        ReloadButtonClickedThenStopClicked) {
   ReloadButtonTestNavigationObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   RunTestSequence(
       SetUpReloadButtonTest(), DoNavigateToDelayedUrl(),
@@ -1105,7 +1105,7 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarGlassFrameInteractiveUiTest, ReloadButton) {
   const GURL url = embedded_test_server()->GetURL("/title1.html");
 
   ReloadButtonTestNavigationObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   RunTestSequence(SetUpReloadButtonTest(), NavigateWebContents(TabId(), url),
                   WaitForReloadButtonReady(), MoveMouseOverReloadButton(),
@@ -1452,7 +1452,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
 
       Do(base::BindLambdaForTesting([&]() {
         EXPECT_EQ(
-            browser()->tab_strip_model()->GetActiveWebContents()->GetTitle(),
+            browser()->GetTabStripModel()->GetActiveWebContents()->GetTitle(),
             u"Title Of Awesomeness");
       })),
 
@@ -1882,7 +1882,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusMinimalInteractiveUiTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
   // Navigate back once so forward is enabled too.
   content::TestNavigationObserver back_nav_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   chrome::BrowserCommandController::From(browser())->ExecuteCommand(IDC_BACK);
   back_nav_observer.Wait();
 
@@ -2043,7 +2043,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusFullInteractiveUiTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
   // Navigate back once so forward is enabled too.
   content::TestNavigationObserver back_nav_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   chrome::BrowserCommandController::From(browser())->ExecuteCommand(IDC_BACK);
   back_nav_observer.Wait();
 
@@ -2178,7 +2178,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusFullRtlInteractiveUiTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
   // Navigate back once so forward is enabled too.
   content::TestNavigationObserver back_nav_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   chrome::BrowserCommandController::From(browser())->ExecuteCommand(IDC_BACK);
   back_nav_observer.Wait();
 

@@ -112,7 +112,7 @@ void WebDialogBrowserTest::SetUpOnMainThread() {
       std::make_unique<ChromeWebContentsHandler>());
   view->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   gfx::NativeView parent_view =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetNativeView();
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetNativeView();
   view_ = view.get();
   view_tracker_.SetView(view_);
 

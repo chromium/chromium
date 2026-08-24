@@ -300,12 +300,12 @@ TopControlsSlideControllerChromeOS::TopControlsSlideControllerChromeOS(
   DCHECK(browser_view->browser_widget());
   DCHECK(browser_view->browser());
   DCHECK(browser_view->GetIsNormalType());
-  DCHECK(browser_view->browser()->tab_strip_model());
+  DCHECK(browser_view->browser()->GetTabStripModel());
   if (LocationBar* location_bar = browser_view->GetLocationBar()) {
     observed_location_bar_.Observe(location_bar);
   }
 
-  browser_view_->browser()->tab_strip_model()->AddObserver(this);
+  browser_view_->browser()->GetTabStripModel()->AddObserver(this);
 
   auto* accessibility_manager = ash::AccessibilityManager::Get();
   if (accessibility_manager) {
@@ -321,7 +321,7 @@ TopControlsSlideControllerChromeOS::TopControlsSlideControllerChromeOS(
 TopControlsSlideControllerChromeOS::~TopControlsSlideControllerChromeOS() {
   OnEnabledStateChanged(false);
 
-  browser_view_->browser()->tab_strip_model()->RemoveObserver(this);
+  browser_view_->browser()->GetTabStripModel()->RemoveObserver(this);
 }
 
 bool TopControlsSlideControllerChromeOS::IsEnabled() const {

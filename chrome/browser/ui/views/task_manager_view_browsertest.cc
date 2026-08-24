@@ -316,15 +316,15 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, InitialSelection) {
 
   EXPECT_EQ(1UL, GetTable()->selection_model().size());
   EXPECT_EQ(GetTable()->GetFirstSelectedRow(),
-            FindRowForTab(browser()->tab_strip_model()->GetWebContentsAt(1)));
+            FindRowForTab(browser()->GetTabStripModel()->GetWebContentsAt(1)));
 
   // Activate tab 0. The selection should not change.
-  browser()->tab_strip_model()->ActivateTabAt(
+  browser()->GetTabStripModel()->ActivateTabAt(
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_EQ(1UL, GetTable()->selection_model().size());
   EXPECT_EQ(GetTable()->GetFirstSelectedRow(),
-            FindRowForTab(browser()->tab_strip_model()->GetWebContentsAt(1)));
+            FindRowForTab(browser()->GetTabStripModel()->GetWebContentsAt(1)));
 
   // If the user re-triggers chrome::ShowTaskManager (e.g. via shift-esc), this
   // should set the TaskManager selection to the active tab.
@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, InitialSelection) {
 
   EXPECT_EQ(1UL, GetTable()->selection_model().size());
   EXPECT_EQ(GetTable()->GetFirstSelectedRow(),
-            FindRowForTab(browser()->tab_strip_model()->GetWebContentsAt(0)));
+            FindRowForTab(browser()->GetTabStripModel()->GetWebContentsAt(0)));
 }
 
 // Test is flaky. https://crbug.com/41478531

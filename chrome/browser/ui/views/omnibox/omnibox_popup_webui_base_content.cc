@@ -281,7 +281,7 @@ void OmniboxPopupWebUIBaseContent::LoadContent() {
                                      browser);
     tab_selection_listener_ =
         std::make_unique<OmniboxPopupTabSelectionListener>(
-            weak_factory_.GetWeakPtr(), browser->tab_strip_model());
+            weak_factory_.GetWeakPtr(), browser->GetTabStripModel());
   }
   // Make the OmniboxController available to the OmniboxPopupUI.
   OmniboxPopupWebContentsHelper::CreateForWebContents(GetWebContents());

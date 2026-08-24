@@ -43,7 +43,6 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -52,6 +51,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
@@ -182,7 +182,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kActionItemUnderlineIndicatorKey, false)
 namespace {
 
 // Gets the display mode for a given browser.
-ToolbarView::DisplayMode GetDisplayMode(Browser* browser) {
+ToolbarView::DisplayMode GetDisplayMode(BrowserWindowInterface* browser) {
   // Checked in this order because even tabbed PWAs use the CUSTOM_TAB
   // display mode.
   if (web_app::AppBrowserController::IsWebApp(browser)) {
@@ -260,7 +260,8 @@ void SetRefreshMargins(views::View* button, bool expanded) {
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolbarView, kToolbarElementId);
 
-ToolbarView::ToolbarView(Browser* browser, BrowserView* browser_view)
+ToolbarView::ToolbarView(BrowserWindowInterface* browser,
+                         BrowserView* browser_view)
     : AnimationDelegateViews(this),
       browser_(browser),
       browser_view_(browser_view),
@@ -379,7 +380,7 @@ void ToolbarView::Init() {
     return;
   }
 
-  const auto callback = [](Browser* browser, int command,
+  const auto callback = [](BrowserWindowInterface* browser, int command,
                            const ui::Event& event) {
     chrome::ExecuteCommandWithDisposition(
         browser, command, ui::DispositionFromEventFlags(event.flags()));
@@ -1307,7 +1308,7 @@ views::LabelButton* ToolbarView::GetGlicButton() {
 // ToolbarView, LocationBarView::Delegate implementation:
 
 WebContents* ToolbarView::GetWebContents() {
-  return browser_->tab_strip_model()->GetActiveWebContents();
+  return browser_->GetTabStripModel()->GetActiveWebContents();
 }
 
 LocationBarModel* ToolbarView::GetLocationBarModel() {
@@ -1923,7 +1924,7 @@ WebUIToolbarWebView* ToolbarView::GetWebUIToolbarViewForTesting() {
 std::optional<BrowserRootView::DropIndex> ToolbarView::GetDropIndex(
     const ui::DropTargetEvent& event) {
   return BrowserRootView::DropIndex{
-      .index = browser_->tab_strip_model()->active_index(),
+      .index = browser_->GetTabStripModel()->active_index(),
       .relative_to_index =
           BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex};
 }

@@ -6,13 +6,13 @@
 
 #include "base/types/pass_key.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "ui/views/view_class_properties.h"
 
 void ToolbarButtonMenuHighlighter::MaybeHighlight(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     ToolbarButton* button,
     user_education::HighlightingSimpleMenuModelDelegate* menu_model) {
   if (auto* const service = UserEducationServiceFactory::GetForBrowserContext(

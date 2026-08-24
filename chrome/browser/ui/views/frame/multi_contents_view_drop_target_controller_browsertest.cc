@@ -10,7 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
@@ -44,7 +44,7 @@ class MultiContentsViewDropTargetControllerBrowserTest
     delegate_ = std::make_unique<MultiContentsViewDelegateImpl>(*browser());
     controller_ = std::make_unique<MultiContentsViewDropTargetController>(
         *drop_target_view(), *delegate_.get(), g_browser_process->local_state(),
-        browser()->tab_strip_model());
+        browser()->GetTabStripModel());
   }
 
   void TearDownOnMainThread() override {

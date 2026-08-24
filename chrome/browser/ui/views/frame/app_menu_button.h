@@ -19,7 +19,6 @@ class AppMenu;
 class ActionAppMenu;
 class AppMenuButtonObserver;
 class AppMenuModel;
-class Browser;
 class BrowserWindowInterface;
 
 namespace views {
@@ -71,7 +70,7 @@ class AppMenuButton : public ToolbarButton, public AppMenuControl {
 
  protected:
   void RunMenu(std::unique_ptr<AppMenuModel> menu_model,
-               Browser* browser,
+               BrowserWindowInterface* browser,
                int run_flags);
   // Not using an AppMenuModel because the new Block Style menu hierarchy
   // is managed by the Actions framework.

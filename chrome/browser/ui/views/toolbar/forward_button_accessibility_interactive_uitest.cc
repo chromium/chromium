@@ -98,15 +98,15 @@ IN_PROC_BROWSER_TEST_P(ForwardButtonAccessibilityTest,
       // Go back
       MoveMouseToElement(kToolbarBackButtonElementId), ClickMouse(),
       WaitForWebContentsNavigation(kWebContentsElementId, url1),
-      Check([&]() { return browser()->tab_strip_model()->count() == 1; }),
+      Check([&]() { return browser()->GetTabStripModel()->count() == 1; }),
       PollState(kTabCountState,
-                [this]() { return browser()->tab_strip_model()->count(); }),
+                [this]() { return browser()->GetTabStripModel()->count(); }),
       // Middle-click forward
       MoveMouseToElement(kToolbarForwardButtonElementId),
       ClickMouse(ui_controls::MIDDLE), WaitForState(kTabCountState, 2),
       Check([&]() {
         return browser()
-                   ->tab_strip_model()
+                   ->GetTabStripModel()
                    ->GetWebContentsAt(1)
                    ->GetVisibleURL() == url2;
       }));

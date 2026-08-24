@@ -13,12 +13,12 @@
 
 ScrimViewController::ScrimViewController(BrowserView* browser_view)
     : browser_view_(browser_view),
-      tab_strip_model_(browser_view->browser()->tab_strip_model()) {
-  browser_view_->browser()->tab_strip_model()->AddObserver(this);
+      tab_strip_model_(browser_view->browser()->GetTabStripModel()) {
+  browser_view_->browser()->GetTabStripModel()->AddObserver(this);
 }
 
 ScrimViewController::~ScrimViewController() {
-  browser_view_->browser()->tab_strip_model()->RemoveObserver(this);
+  browser_view_->browser()->GetTabStripModel()->RemoveObserver(this);
 }
 
 void ScrimViewController::OnTabStripModelChanged(

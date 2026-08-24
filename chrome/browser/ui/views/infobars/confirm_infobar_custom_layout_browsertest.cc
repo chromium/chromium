@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -79,7 +79,7 @@ class ConfirmInfobarCustomLayoutBrowserTest : public InProcessBrowserTest {
 
   infobars::ContentInfoBarManager* GetInfoBarManager() {
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     EXPECT_TRUE(web_contents);
     return infobars::ContentInfoBarManager::FromWebContents(web_contents);
   }

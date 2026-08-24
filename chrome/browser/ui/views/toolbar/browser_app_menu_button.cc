@@ -94,7 +94,7 @@ void BrowserAppMenuButton::ShowMenu(int run_types) {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  Browser* browser = toolbar_view_->browser();
+  BrowserWindowInterface* browser = toolbar_view_->browser();
 
   if (base::FeatureList::IsEnabled(features::kAppMenuGlowUp)) {
     RunActionMenu(browser, run_types);

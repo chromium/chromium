@@ -25,7 +25,6 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/mouse_constants.h"
 
-class Browser;
 class BrowserWindowInterface;
 class OmniboxController;
 class OmniboxPopupView;
@@ -50,7 +49,8 @@ class WebUILocationBar : public LocationBar,
                          public WebUIReadOnlyOmnibox::UpdatePropagator,
                          public OmniboxPopupPresenterDelegate {
  public:
-  WebUILocationBar(Browser* browser, LocationBarView::Delegate* delegate);
+  WebUILocationBar(BrowserWindowInterface* browser,
+                   LocationBarView::Delegate* delegate);
   ~WebUILocationBar() override;
 
   void Init(WebUIToolbarControlDelegate* delegate);

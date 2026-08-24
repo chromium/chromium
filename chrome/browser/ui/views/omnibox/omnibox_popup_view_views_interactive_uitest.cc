@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   event_generator.MoveMouseTo(
       browser_view->tab_strip_view()
           ->GetTabAnchorView(
-              browser()->tab_strip_model()->GetTabAtIndex(0)->GetHandle())
+              browser()->GetTabStripModel()->GetTabAtIndex(0)->GetHandle())
           ->GetBoundsInScreen()
           .CenterPoint());
   event_generator.ClickLeftButton();

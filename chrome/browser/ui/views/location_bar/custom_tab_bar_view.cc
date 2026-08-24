@@ -245,7 +245,7 @@ CustomTabBarView::CustomTabBarView(BrowserView* browser_view,
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
       .SetInteriorMargin(interior_margin);
 
-  browser_->tab_strip_model()->AddObserver(this);
+  browser_->GetTabStripModel()->AddObserver(this);
 }
 
 CustomTabBarView::~CustomTabBarView() = default;

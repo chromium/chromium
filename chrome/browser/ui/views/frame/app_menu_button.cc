@@ -107,7 +107,7 @@ void AppMenuButton::OnMenuClosed() {
 }
 
 void AppMenuButton::RunMenu(std::unique_ptr<AppMenuModel> menu_model,
-                            Browser* browser,
+                            BrowserWindowInterface* browser,
                             int run_flags) {
   // |menu_| must be reset before |menu_model_| is destroyed, as per the comment
   // in the class declaration.

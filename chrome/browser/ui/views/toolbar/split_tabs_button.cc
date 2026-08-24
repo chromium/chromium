@@ -14,7 +14,6 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -55,7 +54,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/view_class_properties.h"
 
-SplitTabsToolbarButton::SplitTabsToolbarButton(Browser* browser)
+SplitTabsToolbarButton::SplitTabsToolbarButton(BrowserWindowInterface* browser)
     : ToolbarButton(
           views::Button::PressedCallback(),
           std::make_unique<PinnedActionToolbarButtonMenuModel>(browser,
@@ -82,13 +81,13 @@ SplitTabsToolbarButton::SplitTabsToolbarButton(Browser* browser)
                                 kColorToolbarButtonIconInactive);
   UpdateButtonVisibility();
   split_tab_menu_ = std::make_unique<SplitTabMenuModel>(
-      browser_->tab_strip_model(),
+      browser_->GetTabStripModel(),
       SplitTabMenuModel::MenuSource::kToolbarButton);
-  browser->tab_strip_model()->AddObserver(this);
+  browser->GetTabStripModel()->AddObserver(this);
 }
 
 SplitTabsToolbarButton::~SplitTabsToolbarButton() {
-  browser_->tab_strip_model()->RemoveObserver(this);
+  browser_->GetTabStripModel()->RemoveObserver(this);
 }
 
 void SplitTabsToolbarButton::OnTabStripModelChanged(
@@ -149,7 +148,7 @@ SplitTabsToolbarButton::GetIconsForTesting() {
 }
 
 bool SplitTabsToolbarButton::IsActiveTabInSplit() {
-  TabStripModel* const tab_strip_model = browser_->tab_strip_model();
+  TabStripModel* const tab_strip_model = browser_->GetTabStripModel();
   return tab_strip_model && tab_strip_model->GetActiveTab() &&
          tab_strip_model->GetActiveTab()->IsSplit();
 }
@@ -208,7 +207,7 @@ void SplitTabsToolbarButton::UpdateButtonVisibility() {
 }
 
 void SplitTabsToolbarButton::UpdateButtonIcon() {
-  TabStripModel* const tab_strip_model = browser_->tab_strip_model();
+  TabStripModel* const tab_strip_model = browser_->GetTabStripModel();
   tabs::TabInterface* const active_tab = tab_strip_model->GetActiveTab();
   if (active_tab && active_tab->IsSplit()) {
     const split_tabs::SplitTabActiveLocation location =
@@ -264,7 +263,7 @@ void SplitTabsToolbarButton::UpdateAccessibilityRole(bool has_menu) {
 void SplitTabsToolbarButton::UpdateAccessibilityLabel(bool is_enabled) {
   auto string_id = IDS_ACCNAME_SPLIT_TABS_TOOLBAR_BUTTON_PINNED;
   if (is_enabled) {
-    TabStripModel* const tab_strip_model = browser_->tab_strip_model();
+    TabStripModel* const tab_strip_model = browser_->GetTabStripModel();
     tabs::TabInterface* const active_tab = tab_strip_model->GetActiveTab();
     CHECK(active_tab);
     std::optional<split_tabs::SplitTabId> split_tab_id = active_tab->GetSplit();
@@ -311,7 +310,7 @@ void SplitTabsToolbarButton::MaybeNotifyIndirectAccessIPHUsed() {
 void SplitTabsToolbarButton::MaybeAbortIndirectAccessIPH() {
   if (auto* const user_ed = BrowserUserEducationInterface::From(browser_);
       tabs::IsSplitViewHorizontalIndirectAccessEnabled() && user_ed) {
-    TabStripModel* const tab_strip_model = browser_->tab_strip_model();
+    TabStripModel* const tab_strip_model = browser_->GetTabStripModel();
     tabs::TabInterface* const active_tab = tab_strip_model->GetActiveTab();
     if (!active_tab || !active_tab->IsSplit() ||
         tab_strip_model->GetSplitData(active_tab->GetSplit().value())

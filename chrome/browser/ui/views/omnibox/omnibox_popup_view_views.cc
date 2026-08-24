@@ -65,7 +65,7 @@ BASE_FEATURE(kOmniboxRemovePopupWidgetSoftwareCompositing,
 std::optional<gfx::Rect> GetDebugWidgetBounds(
     LocationBarView* location_bar_view,
     int popup_results_height) {
-  Browser* browser = location_bar_view->browser();
+  BrowserWindowInterface* browser = location_bar_view->browser();
   if (!browser) {
     return std::nullopt;
   }

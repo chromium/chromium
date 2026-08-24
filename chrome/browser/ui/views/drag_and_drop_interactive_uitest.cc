@@ -574,7 +574,7 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
   }
 
   content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   //////////////////////
@@ -910,11 +910,11 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropValidUrlFromOutside) {
   ASSERT_TRUE(NavigateToTestPage("a.test"));
   ASSERT_TRUE(NavigateRightFrame(frame_site, "title1.html"));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::NavigationController& controller = web_contents->GetController();
   int initial_history_count = controller.GetEntryCount();
   GURL initial_url = web_contents->GetPrimaryMainFrame()->GetLastCommittedURL();
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
 
   // Focus the omnibox.
   chrome::FocusLocationBar(browser());
@@ -933,9 +933,9 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropValidUrlFromOutside) {
   // Verify that dropping |dragged_url| creates a new tab and navigates it to
   // that URL.
   wait_for_new_tab.Wait();
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
   content::WebContents* new_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::TestNavigationObserver(new_web_contents, 1).Wait();
   EXPECT_EQ(dragged_url,
             new_web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -1041,9 +1041,9 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_DropUrlIntoOmnibox) {
   ASSERT_TRUE(NavigateToTestPage("a.test"));
   ASSERT_TRUE(NavigateRightFrame(frame_site, "title1.html"));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   GURL initial_url = web_contents->GetPrimaryMainFrame()->GetLastCommittedURL();
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
 
   // Focus the omnibox.
   chrome::FocusLocationBar(browser());
@@ -1070,7 +1070,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_DropUrlIntoOmnibox) {
   // Drop into the Omnibox.
   ASSERT_TRUE(SimulateDropInOmnibox());
   // Verify that no new tab is opened.
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
 
   // Verify that the dropped URL is selected.
   EXPECT_TRUE(omnibox_view->IsSelectAll());
@@ -1103,11 +1103,11 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropFileFromOutside) {
   ASSERT_TRUE(NavigateToTestPage("a.test"));
   ASSERT_TRUE(NavigateRightFrame(frame_site, "title1.html"));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::NavigationController& controller = web_contents->GetController();
   int initial_history_count = controller.GetEntryCount();
   GURL initial_url = web_contents->GetPrimaryMainFrame()->GetLastCommittedURL();
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
 
   // Focus the omnibox.
   chrome::FocusLocationBar(browser());
@@ -1127,9 +1127,9 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropFileFromOutside) {
   // Verify that dropping |dragged_file| creates a new tab and navigates it to
   // the corresponding file: URL.
   wait_for_new_tab.Wait();
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
   content::WebContents* new_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::TestNavigationObserver(new_web_contents, 1).Wait();
   EXPECT_EQ(net::FilePathToFileURL(dragged_file),
             new_web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -1148,7 +1148,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropFileFromOutside) {
 // opens all files in new tab.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropMultipleFilesFromOutside) {
   ASSERT_TRUE(NavigateToTestPage("a.test"));
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
 
   // Drag files from outside the browser into/over the right frame.
   std::vector<ui::FileInfo> file_infos;
@@ -1174,11 +1174,11 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropMultipleFilesFromOutside) {
     observer->Wait();
   }
 
-  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+  ASSERT_EQ(3, browser()->GetTabStripModel()->count());
   // First file tab should be focused after drop.
   EXPECT_EQ(
       net::FilePathToFileURL(dragged_file_1),
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL());
 }
 
 // Scenario: drag URL from outside the browser and drop to the right frame.
@@ -2003,12 +2003,12 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_CrossTabDrag) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 2);
 
   content::WebContents* first_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   content::WebContents* second_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(1);
+      browser()->GetTabStripModel()->GetWebContentsAt(1);
   ASSERT_TRUE(NavigateNamedFrame("right", right_frame_site, "drop_target.html",
                                  second_contents));
 
@@ -2027,7 +2027,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_CrossTabDrag) {
   state.expected_dom_event_data.set_expected_page_position("(55, 50)");
 
   // Make the first tab active, then start the drag in the left frame.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
   DragStartWaiter drag_start_waiter(web_contents());
   drag_start_waiter.PostTaskWhenDragStarts(
       base::BindOnce(&DragAndDropBrowserTest::CrossTabDrag_Step2,
@@ -2046,11 +2046,11 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_CrossTabDrag) {
 
 void DragAndDropBrowserTest::CrossTabDrag_Step2(
     DragAndDropBrowserTest::CrossTabDrag_TestState* state) {
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
   content::WebContents* first_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   content::WebContents* second_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(1);
+      browser()->GetTabStripModel()->GetWebContentsAt(1);
   // Verify dragstart DOM event.
   {
     std::string dragstart_event;
@@ -2082,7 +2082,7 @@ void DragAndDropBrowserTest::CrossTabDrag_Step2(
     // Switch tabs before moving mouse to right frame. This simulates the case
     // where a drag is started, the user pressed alt+tab, then completes the
     // drop.
-    browser()->tab_strip_model()->ActivateTabAt(1);
+    browser()->GetTabStripModel()->ActivateTabAt(1);
     ASSERT_TRUE(SimulateMouseMoveToRightFrame());
 
     {  // Verify dragenter DOM event.
@@ -2299,14 +2299,14 @@ class DragAndDropBrowserTestNoParam : public InProcessBrowserTest {
     // Simulate mouse move to WebContents.
     // Keep sending mouse move until the current tab is closed.
     // After the current tab is closed, send mouse up to end drag and drop.
-    if (browser()->tab_strip_model()->count() == 1) {
+    if (browser()->GetTabStripModel()->count() == 1) {
       EXPECT_TRUE(ui_controls::SendMouseEventsNotifyWhenDone(
           ui_controls::LEFT, ui_controls::UP, std::move(quit)));
       return;
     }
 
     gfx::Rect bounds = browser()
-                           ->tab_strip_model()
+                           ->GetTabStripModel()
                            ->GetActiveWebContents()
                            ->GetContainerBounds();
     EXPECT_TRUE(ui_controls::SendMouseMoveNotifyWhenDone(
@@ -2320,12 +2320,12 @@ class DragAndDropBrowserTestNoParam : public InProcessBrowserTest {
 // TODO(crbug.com/441134573): Fix and reenable the test.
 IN_PROC_BROWSER_TEST_F(DragAndDropBrowserTestNoParam,
                        DISABLED_CloseTabDuringDrag) {
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
   ui_test_utils::TabAddedWaiter wait_for_new_tab(browser());
 
   // Create a new tab that closes itself on dragover event.
   ASSERT_TRUE(ExecJs(browser()
-                         ->tab_strip_model()
+                         ->GetTabStripModel()
                          ->GetActiveWebContents()
                          ->GetPrimaryMainFrame(),
                      "window.open('javascript:document.addEventListener("
@@ -2333,13 +2333,13 @@ IN_PROC_BROWSER_TEST_F(DragAndDropBrowserTestNoParam,
 
   wait_for_new_tab.Wait();
 
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
 
   base::RunLoop loop;
   SimulateDragFromOmniboxToWebContents(loop.QuitClosure());
   loop.Run();
 
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

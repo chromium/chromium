@@ -72,13 +72,13 @@ class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
     return popup_view()->metrics_weak_factory_.GetWeakPtr();
   }
 
-  SkColor GetSelectedColor(Browser* browser) {
+  SkColor GetSelectedColor(BrowserWindowInterface* browser) {
     return BrowserView::GetBrowserViewForBrowser(browser)
         ->GetColorProvider()
         ->GetColor(kColorOmniboxResultsBackgroundSelected);
   }
 
-  SkColor GetNormalColor(Browser* browser) {
+  SkColor GetNormalColor(BrowserWindowInterface* browser) {
     return BrowserView::GetBrowserViewForBrowser(browser)
         ->GetColorProvider()
         ->GetColor(kColorOmniboxResultsBackground);

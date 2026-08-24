@@ -30,7 +30,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace views {
 class Widget;
@@ -141,7 +141,7 @@ class OverflowMenu : public views::MenuDelegate,
   };
 
   static std::vector<ResponsiveElementInfo> GetDefaultResponsiveElements(
-      Browser* browser);
+      BrowserWindowInterface* browser);
 
   // All passed in pointers must outlive the created OverflowMenu.
   OverflowMenu(const std::vector<ResponsiveElementInfo>& responsive_elements,

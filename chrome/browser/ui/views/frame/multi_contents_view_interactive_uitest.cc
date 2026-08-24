@@ -510,7 +510,7 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest,
       EnterSplitView(2, 0), WaitForActiveTabChange(2),
       PressButton(kTabSearchButtonElementId),
       WaitForShow(kTabSearchBubbleElementId),
-      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(1); }),
+      Do([this]() { browser()->GetTabStripModel()->ActivateTabAt(1); }),
       WaitForHide(kTabSearchBubbleElementId), WaitForActiveTabChange(1),
       CheckActiveContentsHasFocus());
 }
@@ -550,7 +550,7 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest,
       WaitForShow(kTabSearchBubbleElementId),
       // Switch from a regular tab directly to an inactive tab, which is on
       // the left side of a split with the TabSearch bubble dialog opened.
-      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(1); }),
+      Do([this]() { browser()->GetTabStripModel()->ActivateTabAt(1); }),
       WaitForHide(kTabSearchBubbleElementId), WaitForActiveTabChange(1),
       CheckActiveContentsHasFocus(),
       // Switch out of the split view back to the regular tab
@@ -561,7 +561,7 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest,
       WaitForShow(kTabSearchBubbleElementId),
       // Switch from a regular tab directly to an inactive tab, which is on
       // the right side of a split with the TabSearch bubble dialog opened.
-      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(2); }),
+      Do([this]() { browser()->GetTabStripModel()->ActivateTabAt(2); }),
       WaitForHide(kTabSearchBubbleElementId), WaitForActiveTabChange(2),
       CheckActiveContentsHasFocus());
 }
@@ -951,21 +951,21 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, KeyboardShortcutCreatesSplit) {
   RunTestSequence(
       CheckResult(
           [&]() {
-            return browser()->tab_strip_model()->GetActiveTab()->IsSplit();
+            return browser()->GetTabStripModel()->GetActiveTab()->IsSplit();
           },
           false),
-      CheckResult([&]() { return browser()->tab_strip_model()->count(); }, 1),
+      CheckResult([&]() { return browser()->GetTabStripModel()->count(); }, 1),
       SendAccelerator(kBrowserViewElementId, accelerator),
       CheckResult(
           [&]() {
-            return browser()->tab_strip_model()->GetActiveTab()->IsSplit();
+            return browser()->GetTabStripModel()->GetActiveTab()->IsSplit();
           },
           true),
-      CheckResult([&]() { return browser()->tab_strip_model()->count(); }, 2),
+      CheckResult([&]() { return browser()->GetTabStripModel()->count(); }, 2),
       // Pressing the accelerator again shouldn't do anything since the active
       // tab is already in a split
       SendAccelerator(kBrowserViewElementId, accelerator),
-      CheckResult([&]() { return browser()->tab_strip_model()->count(); }, 2));
+      CheckResult([&]() { return browser()->GetTabStripModel()->count(); }, 2));
 }
 
 using ContentsViewOutlineHighlightObserver =

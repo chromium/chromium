@@ -34,7 +34,7 @@ class ContentSettingBubbleContentsInteractiveTest
   }
 
   content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   ContentSettingImageView& GetContentSettingImageView(

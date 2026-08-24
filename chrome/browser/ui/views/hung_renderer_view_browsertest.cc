@@ -54,7 +54,7 @@ class HungRendererDialogViewBrowserTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
     HungRendererDialogView::Show(
         web_contents,
         web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget(),
@@ -70,7 +70,7 @@ class HungRendererDialogViewBrowserTest : public DialogBrowserTest {
   }
 
   HungRendererDialogView* CreateDialogView() {
-    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
 
     return HungRendererDialogView::CreateInstance(
         web_contents, browser()->GetWindow()->GetNativeWindow());
@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest,
 
 // This is a regression test for https://crbug.com/41396098.
 IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest, InactiveWindow) {
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Simulate creation of the dialog, without initializing or showing it yet.
   // This is what happens when HungRendererDialogView::ShowForWebContents
@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest, InactiveWindow) {
 }
 
 IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest, ProcessClosed) {
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
 
   HungRendererDialogView* dialog = CreateDialogView();
   ASSERT_TRUE(dialog);

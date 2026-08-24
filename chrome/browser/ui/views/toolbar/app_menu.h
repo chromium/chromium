@@ -24,7 +24,7 @@
 #include "ui/views/controls/menu/menu_delegate.h"
 
 class BookmarkMenuDelegate;
-class Browser;
+class BrowserWindowInterface;
 
 namespace views {
 class MenuButtonController;
@@ -39,7 +39,7 @@ class AppMenu final : public views::MenuDelegate,
                       public BookmarkMergedSurfaceServiceObserver,
                       public GlobalErrorObserver {
  public:
-  AppMenu(Browser* browser,
+  AppMenu(BrowserWindowInterface* browser,
           ui::MenuModel* model,
           int run_types,
           base::RepeatingClosure on_menu_closed_callback);
@@ -191,7 +191,7 @@ class AppMenu final : public views::MenuDelegate,
   CommandIDToEntry command_id_to_entry_;
 
   // Browser the menu is being shown for.
-  const raw_ptr<Browser, DanglingUntriaged> browser_;
+  const raw_ptr<BrowserWindowInterface, DanglingUntriaged> browser_;
 
   const raw_ptr<ui::MenuModel> model_;
 

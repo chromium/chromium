@@ -22,8 +22,8 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_widget_fade_animator.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -327,7 +327,7 @@ class PictureInPictureBrowserFrameViewTest : public WebRtcTestBase,
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page_url));
 
     content::WebContents* active_web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     ASSERT_NE(nullptr, active_web_contents);
 
     // Enter document pip.
@@ -1189,7 +1189,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
 
   // Pretend that we're in auto-pip so that we get an overlay view.
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   // Ensure that there is a helper for `web_contents`.  This will no-op if
   // something has already created it, but right now it's dependent on having
   // the feature enabled.
@@ -1781,7 +1781,7 @@ IN_PROC_BROWSER_TEST_F(PiPIndicatorsBrowsertest, TestMediaBlockedIndicators) {
   content::WebContents* pip_web_contents = pip_frame_view()
                                                ->GetBrowserView()
                                                ->browser()
-                                               ->tab_strip_model()
+                                               ->GetTabStripModel()
                                                ->GetActiveWebContents();
   ASSERT_TRUE(pip_web_contents);
 

@@ -50,7 +50,7 @@ class AvatarToolbarButton;
 class AvatarToolbarButtonInterface;
 class BatterySaverButton;
 class BrowserAppMenuButton;
-class Browser;
+class BrowserWindowInterface;
 class ExtensionsToolbarButton;
 class ExtensionsToolbarDesktop;
 class HomeButton;
@@ -111,7 +111,7 @@ class ToolbarView : public views::AccessiblePaneView,
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToolbarElementId);
 
-  ToolbarView(Browser* browser, BrowserView* browser_view);
+  ToolbarView(BrowserWindowInterface* browser, BrowserView* browser_view);
   ToolbarView(const ToolbarView&) = delete;
   ToolbarView& operator=(const ToolbarView&) = delete;
   ~ToolbarView() override;
@@ -159,9 +159,13 @@ class ToolbarView : public views::AccessiblePaneView,
   // Shows a bookmark bubble and anchors it appropriately.
   void ShowBookmarkBubble(const GURL& url, bool already_bookmarked);
 
-  // Used to test whether `test_point` should be treated as part of the caption
-  // bar, which means it can be used to drag the window or open the window
-  // context menu. Should only be called when the toolbar is in the caption
+  // Returns true if the view is a descendant of the ToolbarView and should be
+  // treated as caption area for window dragging purposes.
+  // |test_point| is in coordinates of the Window to which this View belongs.
+  // The default implementation returns |false|, which means hit test events
+  // within the toolbar view are interactive and will not drag the window.
+  // In vertical tab strip (VTS) mode, buttons within the toolbar should remain
+  // interactive, but empty space between buttons should be treated as caption
   // area.
   bool IsPositionInWindowCaption(const gfx::Point& test_point) const;
 
@@ -169,7 +173,7 @@ class ToolbarView : public views::AccessiblePaneView,
   void RecordHitTestMetrics(bool is_caption_area);
 
   // Accessors.
-  Browser* browser() const { return browser_; }
+  BrowserWindowInterface* browser() const { return browser_; }
   views::Button* GetChromeLabsButton() const;
   ExtensionsToolbarDesktop* extensions_container() const {
     return extensions_container_;
@@ -416,7 +420,7 @@ class ToolbarView : public views::AccessiblePaneView,
 
   raw_ptr<ToolbarButton> ai_overlay_dialog_button_ = nullptr;
 
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
   const raw_ptr<BrowserView> browser_view_;
   base::WeakPtr<glic::GlicSplitButtonController> glic_split_button_controller_;
 

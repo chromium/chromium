@@ -13,9 +13,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
@@ -93,7 +93,7 @@ class ChromeLabsTestHelper {
 
   // Pins the Chrome Labs button to the toolbar. Must be called from
   // SetUpOnMainThread().
-  void PinChromeLabsButton(Browser* browser) {
+  void PinChromeLabsButton(BrowserWindowInterface* browser) {
     PinnedToolbarActionsModel* const actions_model =
         PinnedToolbarActionsModel::Get(browser->GetProfile());
     actions_model->UpdatePinnedState(kActionShowChromeLabs, true);
@@ -107,7 +107,7 @@ class ChromeLabsTestHelper {
   }
 
   // Clicks the Chrome Labs button to show the bubble.
-  void ShowChromeLabsBubble(Browser* browser) {
+  void ShowChromeLabsBubble(BrowserWindowInterface* browser) {
     views::Button* chrome_labs_button =
         BrowserView::GetBrowserViewForBrowser(browser)
             ->toolbar()

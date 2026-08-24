@@ -69,7 +69,7 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(
     kCustomPinnedActionToolbarButtonFactoryKey)
 
 PinnedActionToolbarButton::PinnedActionToolbarButton(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     actions::ActionId action_id,
     base::WeakPtr<PinnedToolbarActionsContainer> container)
     : ToolbarButton(

@@ -7,6 +7,7 @@
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -75,13 +76,12 @@ toolbar_ui_api::mojom::AvatarToolbarButtonState MapAvatarState(
 WebUIAvatarToolbarButton::WebUIAvatarToolbarButton(
     WebUIToolbarControlDelegate* delegate)
     : delegate_(delegate) {
-  // Only build the state manager when `delegate_` is backed by a real,
-  // legacy Browser -- lightweight test doubles that stub out
-  // GetBrowserForMigrationOnly() to return null (see e.g.
-  // WebUILocationBarTest) don't set up a full browser_process environment
-  // (notably no ProfileManager), which AvatarToolbarButtonStateManager's
-  // initialization depends on.
-  if (delegate_->GetBrowser()->GetBrowserForMigrationOnly()) {
+  // Only build the state manager when `delegate_` provides a browser and
+  // ProfileManager exists -- lightweight test doubles don't set up a full
+  // browser_process environment (notably no ProfileManager), which
+  // AvatarToolbarButtonStateManager's initialization depends on.
+  if (delegate_->GetBrowser() && g_browser_process &&
+      g_browser_process->profile_manager()) {
     state_manager_ = std::make_unique<AvatarToolbarButtonStateManager>(
         *this, delegate_->GetBrowser());
     state_manager_->InitializeStates();

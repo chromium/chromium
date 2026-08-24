@@ -2234,7 +2234,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
         kCustomPinnedActionToolbarButtonFactoryKey,
         std::make_unique<CreateCustomPinnedActionToolbarButtonCallback>(
             base::BindRepeating(
-                [](Browser* browser, actions::ActionId action_id,
+                [](BrowserWindowInterface* browser, actions::ActionId action_id,
                    base::WeakPtr<PinnedToolbarActionsContainer> container)
                     -> std::unique_ptr<PinnedActionToolbarButton> {
                   return std::make_unique<AiOverlayToolbarButton>(

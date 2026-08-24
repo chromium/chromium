@@ -10,7 +10,7 @@
 #include "components/user_education/common/menu/highlighting_menu_button_helper.h"
 #include "components/user_education/common/menu/highlighting_simple_menu_model_delegate.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 // In order to have automatic toolbar button menu highlighting:
 //  - Derive your model from user_education::HighlightingSimpleMenuModelDelegate
@@ -26,7 +26,7 @@ class ToolbarButtonMenuHighlighter
   // This is the "nicer" version of `MaybeHighlight()` that should actually be
   // used by toolbar buttons.
   void MaybeHighlight(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       ToolbarButton* button,
       user_education::HighlightingSimpleMenuModelDelegate* menu_model);
 };

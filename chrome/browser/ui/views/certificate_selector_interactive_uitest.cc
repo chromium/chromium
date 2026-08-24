@@ -89,12 +89,12 @@ class CertificateSelectorTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     ASSERT_TRUE(content::WaitForLoadStop(
-        browser()->tab_strip_model()->GetActiveWebContents()));
+        browser()->GetTabStripModel()->GetActiveWebContents()));
 
     selector_ = new TestCertificateSelector(
         net::FakeClientCertIdentityListFromCertificateList(
             {client_1_, client_2_}),
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
     selector_->Init();
     selector_->Show();
   }

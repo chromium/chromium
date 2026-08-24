@@ -890,7 +890,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,
   // (Verifies `PermissionRequestManager` did NOT set it).
   EXPECT_FALSE(presenter->IsPermissionPromptPreventingClose());
 
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   TestPermissionPromptDelegate test_delegate(web_contents);
 
   // Directly call `PermissionPromptFactory::CreatePermissionPrompt`
@@ -933,7 +933,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,
   ASSERT_TRUE(presenter);
   EXPECT_FALSE(presenter->IsShown());
 
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   TestPermissionPromptDelegate test_delegate(web_contents);
 
   // Directly call PermissionPromptFactory::CreatePermissionPrompt synchronously
@@ -960,7 +960,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(presenter->IsShown());
 
   // Allow prompt to drop if it cannot show quietly.
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   TestPermissionPromptDelegate test_delegate(web_contents);
   test_delegate.set_should_drop(true);
 

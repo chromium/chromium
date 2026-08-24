@@ -127,7 +127,7 @@ void BrowserDesktopWindowTreeHostLinux::TabDraggingKindChanged(
   CHECK(browser_view_);
   // If there's no tabs left, the browser window is about to close, so don't
   // call SetOverrideRedirect() to prevent the window from flashing.
-  if (!browser_view_->browser()->tab_strip_model()->count()) {
+  if (!browser_view_->browser()->GetTabStripModel()->count()) {
     return;
   }
 

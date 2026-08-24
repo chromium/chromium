@@ -12,10 +12,10 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shortcuts/create_shortcut_for_current_web_contents_task.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/controls/site_icon_text_and_origin_view.h"
 #include "chrome/browser/ui/views/shortcuts/create_desktop_shortcut_delegate.h"
 #include "chrome/grit/branded_strings.h"
@@ -157,9 +157,10 @@ void CreateShortcutForWebContents(
 
 namespace chrome {
 
-void CreateDesktopShortcutForActiveWebContents(Browser* browser) {
+void CreateDesktopShortcutForActiveWebContents(
+    BrowserWindowInterface* browser) {
   content::WebContents* const web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
 
   if (!web_contents) {
     return;

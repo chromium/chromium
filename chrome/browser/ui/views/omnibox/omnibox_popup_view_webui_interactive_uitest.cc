@@ -263,10 +263,10 @@ class OmniboxPopupViewWebUIFullV2Test : public OmniboxPopupViewWebUITest {
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test, TabSwitchStateSync) {
   // Create a new tab.
-  int initial_tab_index = browser()->tab_strip_model()->active_index();
+  int initial_tab_index = browser()->GetTabStripModel()->active_index();
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
-  int new_tab_index = browser()->tab_strip_model()->active_index();
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
+  int new_tab_index = browser()->GetTabStripModel()->active_index();
   ASSERT_NE(initial_tab_index, new_tab_index);
   // Type text in the omnibox of the active tab (new tab) and select it.
   omnibox_view()->SetUserText(u"test query");
@@ -288,11 +288,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test, TabSwitchStateSync) {
   }
 
   // Switch to another tab (initial tab).
-  browser()->tab_strip_model()->ActivateTabAt(initial_tab_index);
+  browser()->GetTabStripModel()->ActivateTabAt(initial_tab_index);
   // Verify the text is isolated (not the typed text) in the other tab.
   EXPECT_NE(u"test query", omnibox_view()->GetText());
   // Switch back to the original tab (new tab).
-  browser()->tab_strip_model()->ActivateTabAt(new_tab_index);
+  browser()->GetTabStripModel()->ActivateTabAt(new_tab_index);
   // Verify the text and selection are restored.
   EXPECT_EQ(u"test query", omnibox_view()->GetText());
   auto* popup_view_check = static_cast<OmniboxPopupViewWebUI*>(
@@ -312,9 +312,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test, TabSwitchStateSync) {
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test,
                        DISABLED_TabSwitchNoSavedState) {
   // Create a new tab.
-  int initial_tab_index = browser()->tab_strip_model()->active_index();
+  int initial_tab_index = browser()->GetTabStripModel()->active_index();
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
 
   // Focus the location bar to ensure the Omnibox has active focus.
   location_bar()->FocusLocation(/*is_user_initiated=*/true,
@@ -341,11 +341,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test,
 
   // Clear any saved omnibox state from the initial tab.
   content::WebContents* initial_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(initial_tab_index);
+      browser()->GetTabStripModel()->GetWebContentsAt(initial_tab_index);
   initial_contents->RemoveUserData(OmniboxTabHelper::kOmniboxStateKey);
 
   // Switch back to the initial tab.
-  browser()->tab_strip_model()->ActivateTabAt(initial_tab_index);
+  browser()->GetTabStripModel()->ActivateTabAt(initial_tab_index);
 
   // Verify the selection matches the focus state when activating a tab with
   // no saved state.
@@ -571,7 +571,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest,
   // (Verifies `PermissionRequestManager` did NOT set it).
   EXPECT_FALSE(presenter->IsPermissionPromptPreventingClose());
 
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   TestPermissionPromptDelegate test_delegate(web_contents);
 
   // Directly call `PermissionPromptFactory::CreatePermissionPrompt`

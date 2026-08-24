@@ -6,7 +6,7 @@
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -60,7 +60,7 @@ void OnPersonaToggled(ttc::AiOverlayDialogController* controller) {
 }  // namespace
 
 AiOverlayToolbarButton::AiOverlayToolbarButton(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     actions::ActionId action_id,
     base::WeakPtr<PinnedToolbarActionsContainer> container)
     : PinnedActionToolbarButton(browser, action_id, container) {
@@ -264,7 +264,7 @@ void AiOverlayToolbarButton::OnOptionsButtonPressed() {
   launch_button->SetTooltipText(u"Open Remembered Notes");
 
   auto on_open_notes = base::BindRepeating(
-      [](Browser* browser, views::View* view) {
+      [](BrowserWindowInterface* browser, views::View* view) {
         if (view && view->GetWidget()) {
           view->GetWidget()->CloseWithReason(
               views::Widget::ClosedReason::kUnspecified);

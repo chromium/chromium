@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(UIDevToolsBrowserTest, Connection) {
   GURL url(url_string);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::WebContentsConsoleObserver console_observer(web_contents);
   console_observer.SetPattern("*Content Security Policy*");
 

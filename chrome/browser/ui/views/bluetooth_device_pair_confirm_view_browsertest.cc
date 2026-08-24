@@ -45,8 +45,8 @@ class BluetoothDevicePairConfirmViewBrowserTest
                                     : std::nullopt;
 
     ShowBluetoothDevicePairConfirmDialog(
-        browser()->tab_strip_model()->GetActiveWebContents(), kDeviceIdentifier,
-        passkey, base::NullCallback());
+        browser()->GetTabStripModel()->GetActiveWebContents(),
+        kDeviceIdentifier, passkey, base::NullCallback());
   }
 };
 
@@ -69,7 +69,7 @@ IN_PROC_BROWSER_TEST_P(BluetoothDevicePairConfirmViewBrowserTest,
       future
           .GetCallback<const content::BluetoothDelegate::PairPromptResult&>());
   views::Widget* dialog_widget = constrained_window::ShowWebModalDialogViews(
-      view, browser()->tab_strip_model()->GetActiveWebContents());
+      view, browser()->GetTabStripModel()->GetActiveWebContents());
   ASSERT_NE(dialog_widget, nullptr);
 
   views::MdTextButton* ok_button = view->GetOkButton();

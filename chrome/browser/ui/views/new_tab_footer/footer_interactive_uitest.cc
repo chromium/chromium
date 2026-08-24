@@ -352,7 +352,7 @@ class FooterEnterpriseInteractiveTest : public FooterInteractiveTestBase {
         /*collection_id=*/"");
   }
 
-  Browser* CreateManagedGuestBrowser() {
+  BrowserWindowInterface* CreateManagedGuestBrowser() {
     ProfileManager* profile_manager = g_browser_process->profile_manager();
     base::FilePath guest_path = profile_manager->GetGuestProfilePath();
     Profile& guest_profile =
@@ -365,23 +365,19 @@ class FooterEnterpriseInteractiveTest : public FooterInteractiveTestBase {
             policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
 
     // Create browser and add tab.
-    Browser* guest_browser =
-        CreateBrowserWindow(
-            BrowserWindowCreateParams(guest_profile_otr,
-                                      /*from_user_gesture=*/true))
-            ->GetBrowserForMigrationOnly();
+    BrowserWindowInterface* guest_browser = CreateBrowserWindow(
+        BrowserWindowCreateParams(guest_profile_otr,
+                                  /*from_user_gesture=*/true));
     AddBlankTabAndShow(guest_browser);
     ui_test_utils::BrowserActivationWaiter(guest_browser).WaitForActivation();
     return guest_browser;
   }
 
-  Browser* CreateManagedIncognitoBrowser() {
-    Browser* incognito_browser =
-        CreateBrowserWindow(BrowserWindowCreateParams(
-                                browser()->GetProfile()->GetPrimaryOTRProfile(
-                                    /*create_if_needed=*/true),
-                                /*from_user_gesture=*/true))
-            ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* CreateManagedIncognitoBrowser() {
+    BrowserWindowInterface* incognito_browser = CreateBrowserWindow(
+        BrowserWindowCreateParams(browser()->GetProfile()->GetPrimaryOTRProfile(
+                                      /*create_if_needed=*/true),
+                                  /*from_user_gesture=*/true));
     incognito_scoped_browser_management_ =
         std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
             policy::ManagementServiceFactory::GetForProfile(
@@ -469,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,
 IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,
                        FooterShowsInGuestProfile) {
   // Create browser and add tab.
-  Browser* guest_browser = CreateManagedGuestBrowser();
+  BrowserWindowInterface* guest_browser = CreateManagedGuestBrowser();
   RunTestSequenceInContext(
       // Run the following steps with the guest browser as the default context.
       BrowserElements::From(guest_browser)->GetContext(),
@@ -481,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(FooterEnterpriseInteractiveTest,
                        FooterShowsInIncognito) {
-  Browser* incognito_browser = CreateManagedIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateManagedIncognitoBrowser();
   RunTestSequenceInContext(
       // Run the following steps with the incognito browser as the default
       // context.
@@ -606,7 +602,7 @@ IN_PROC_BROWSER_TEST_P(FooterSideBySideInteractiveTest, SplitNewTabPage) {
       // Navigate to the first tab and create a new split tab, so that the tab
       // picker screen is showing on the other tab in the split.
       Do([=, this]() {
-        browser()->tab_strip_model()->ExecuteContextMenuCommand(
+        browser()->GetTabStripModel()->ExecuteContextMenuCommand(
             0, TabStripModel::ContextMenuCommand::CommandAddToSplit);
       }),
       WaitForShow(kNtpFooterViewElementId, true),

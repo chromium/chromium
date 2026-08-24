@@ -82,7 +82,7 @@ ExternalProtocolDialogBrowserTest::~ExternalProtocolDialogBrowserTest() {
 void ExternalProtocolDialogBrowserTest::ShowUi(
     const std::string& initiating_origin) {
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   dialog_ = new ExternalProtocolDialog(
       web_contents, GURL("telnet://12345"), u"/usr/bin/telnet",
       url::Origin::Create(GURL(initiating_origin)),

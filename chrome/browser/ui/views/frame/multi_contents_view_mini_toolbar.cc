@@ -299,7 +299,7 @@ void MultiContentsViewMiniToolbar::CloseCurrentView() {
   base::RecordAction(
       base::UserMetricsAction("DesktopSplitView_MiniToolbarCloseView"));
 
-  TabStripModel* const model = browser_view_->browser()->tab_strip_model();
+  TabStripModel* const model = browser_view_->browser()->GetTabStripModel();
   if (model->GetIndexOfWebContents(web_contents_) == TabStripModel::kNoTab) {
     // Only close the WebContents if it exists. crbug.com/459828484
     return;

@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace views {
 class ImageButton;
@@ -20,7 +20,7 @@ class AiOverlayToolbarButton : public PinnedActionToolbarButton {
 
  public:
   AiOverlayToolbarButton(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       actions::ActionId action_id,
       base::WeakPtr<PinnedToolbarActionsContainer> container);
   AiOverlayToolbarButton(const AiOverlayToolbarButton&) = delete;

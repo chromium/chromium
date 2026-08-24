@@ -134,7 +134,7 @@ class ScopedBrowser {
   ScopedBrowser(const ScopedBrowser&) = delete;
   ScopedBrowser& operator=(const ScopedBrowser&) = delete;
   ~ScopedBrowser() {
-    browser()->tab_strip_model()->CloseAllTabs();
+    browser()->GetTabStripModel()->CloseAllTabs();
     browser_view_.ExtractAsDangling()->GetWidget()->CloseNow();
     content::RunAllTasksUntilIdle();
   }

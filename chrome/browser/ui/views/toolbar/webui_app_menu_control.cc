@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/toolbar/webui_app_menu_control.h"
 
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -153,7 +152,7 @@ void WebUIAppMenuControl::HandleContextMenu(const gfx::Rect& anchor_bounds,
   CHECK(browser_view);
   ToolbarView* toolbar_view = browser_view->toolbar();
   CHECK(toolbar_view);
-  Browser* browser = browser_window->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* browser = browser_window;
 
   // Explicitly destroy the old menu UI before recreating the model. `AppMenu`
   // holds a `raw_ptr` to `AppMenuModel`. If we don't reset `menu_` first,

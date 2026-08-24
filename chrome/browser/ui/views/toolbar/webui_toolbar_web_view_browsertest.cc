@@ -46,7 +46,6 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -54,6 +53,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/global_error/global_error.h"
@@ -573,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Accessibility) {
 
   // Trigger content blocked.
   content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   Profile* profile =
       Profile::FromBrowserContext(active_web_contents->GetBrowserContext());
   HostContentSettingsMapFactory::GetForProfile(profile)
@@ -1009,12 +1009,12 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
     // Click Back.
     {
       content::TestNavigationObserver nav_observer(
-          browser()->tab_strip_model()->GetActiveWebContents());
+          browser()->GetTabStripModel()->GetActiveWebContents());
       EXPECT_TRUE(
           content::ExecJs(web_view->GetWebContents(), test_case.back_script));
       nav_observer.Wait();
       EXPECT_EQ(url1, browser()
-                          ->tab_strip_model()
+                          ->GetTabStripModel()
                           ->GetActiveWebContents()
                           ->GetLastCommittedURL());
     }
@@ -1026,12 +1026,12 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
     // Click Forward.
     {
       content::TestNavigationObserver nav_observer(
-          browser()->tab_strip_model()->GetActiveWebContents());
+          browser()->GetTabStripModel()->GetActiveWebContents());
       EXPECT_TRUE(content::ExecJs(web_view->GetWebContents(),
                                   test_case.forward_script));
       nav_observer.Wait();
       EXPECT_EQ(url2, browser()
-                          ->tab_strip_model()
+                          ->GetTabStripModel()
                           ->GetActiveWebContents()
                           ->GetLastCommittedURL());
     }
@@ -1057,7 +1057,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   // Wait for the back button to be enabled.
   ASSERT_TRUE(WaitForButtonEnabled(web_view->GetWebContents(), kBackSelector));
 
-  int initial_tab_count = browser()->tab_strip_model()->count();
+  int initial_tab_count = browser()->GetTabStripModel()->count();
 
 #if BUILDFLAG(IS_MAC)
   // Ctrl+Click Back button.
@@ -1081,10 +1081,10 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   back_control->menu_runner_->Cancel();
 
   // Verify no new tab was opened.
-  EXPECT_EQ(initial_tab_count, browser()->tab_strip_model()->count());
+  EXPECT_EQ(initial_tab_count, browser()->GetTabStripModel()->count());
   // Verify we didn't navigate away.
   EXPECT_EQ(url2, browser()
-                      ->tab_strip_model()
+                      ->GetTabStripModel()
                       ->GetActiveWebContents()
                       ->GetLastCommittedURL());
 #else
@@ -1100,17 +1100,17 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   nav_observer.Wait();
 
   // Verify new tab was opened.
-  EXPECT_EQ(initial_tab_count + 1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(initial_tab_count + 1, browser()->GetTabStripModel()->count());
   EXPECT_EQ(url1, nav_observer.last_navigation_url());
 
   // Switch back to the first tab.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 #endif  // BUILDFLAG(IS_MAC)
 
   // Navigate back to enable the forward button.
   {
     content::TestNavigationObserver back_nav_observer(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
     chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
     back_nav_observer.Wait();
   }
@@ -1132,7 +1132,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
 
   // Wait for the navigation in the new browser's active tab.
   content::WebContents* new_tab =
-      new_browser->tab_strip_model()->GetActiveWebContents();
+      new_browser->GetTabStripModel()->GetActiveWebContents();
   content::TestNavigationObserver observer(new_tab);
   if (new_tab->GetLastCommittedURL() != url2) {
     observer.WaitForNavigationFinished();
@@ -1153,7 +1153,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
 
   // Release the pointer over the button.
   NavigationCounter nav_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   std::string script = base::StringPrintf(
       R"((() => {
           const home = %s;
@@ -1720,8 +1720,6 @@ class WebUIToolbarLifecycleBrowserTest : public InProcessBrowserTest {
           .WillRepeatedly(testing::ReturnRef(user_data_host));
       EXPECT_CALL(mock_browser, GetFeatures())
           .WillRepeatedly(testing::ReturnRef(browser->GetFeatures()));
-      EXPECT_CALL(mock_browser, GetBrowserForMigrationOnly())
-          .WillRepeatedly(testing::Return(browser));
 
       browser_elements = std::make_unique<TestBrowserElements>(
           mock_browser, BrowserElements::From(browser)->GetContext());
@@ -2342,11 +2340,11 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest,
 
   // Add a beforeunload handler to the active tab to pause the close process.
   ASSERT_TRUE(
-      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+      content::ExecJs(browser()->GetTabStripModel()->GetActiveWebContents(),
                       "window.addEventListener('beforeunload', "
                       "function(event) { event.returnValue = 'Foo'; });"));
   content::PrepContentsForBeforeUnloadTest(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   // Close the window. This should trigger the beforeunload dialog and set the
   // browser into the "attempting to close" state.
@@ -2380,7 +2378,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest,
   // Cleanup: Accept the beforeunload dialog to allow the browser to close.
   ui_test_utils::WaitForAppModalDialog();
   content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::JavaScriptDialogManager* dialog_manager =
       BrowserWebContentsDelegate::From(browser())->GetJavaScriptDialogManager(
           active_web_contents);
@@ -3370,7 +3368,7 @@ IN_PROC_BROWSER_TEST_F(WebUIReloadButtonBrowserTest, ClickReloadButton) {
 
     // Create a navigation observer on the active tab.
     content::WebContents* active_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     content::TestNavigationObserver nav_observer(active_contents);
 
     EXPECT_TRUE(content::ExecJs(webui_contents, script));
@@ -3431,7 +3429,7 @@ IN_PROC_BROWSER_TEST_F(WebUIReloadButtonBrowserTest,
   ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, GURL("chrome://version/"),
                                      ui::PAGE_TRANSITION_TYPED));
   content::WebContents* tab1 =
-      browser()->tab_strip_model()->GetWebContentsAt(1);
+      browser()->GetTabStripModel()->GetWebContentsAt(1);
   ASSERT_TRUE(tab1);
   content::RenderFrameSubmissionObserver frame_observer1(tab1);
   if (frame_observer1.render_frame_count() == 0) {
@@ -3439,7 +3437,7 @@ IN_PROC_BROWSER_TEST_F(WebUIReloadButtonBrowserTest,
   }
 
   // Background tab 1 by activating tab 0.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
   EXPECT_EQ(content::GetUnlockedCompositorFrameCount(), baseline_unlocked + 1);
   EXPECT_EQ(content::GetLockedCompositorFrameCount(), baseline_locked);
   EXPECT_TRUE(tab1->GetRenderWidgetHostView()->HasSavedCompositorFrame());
@@ -3515,7 +3513,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   // Create split [A, B].
   chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kSideBySide,
                       split_tabs::SplitTabCreatedSource::kToolbarButton);
-  auto* tab_strip_model = browser()->tab_strip_model();
+  auto* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return tab_strip_model->GetActiveTab()->IsSplit(); }));
 
@@ -3587,7 +3585,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   EXPECT_TRUE(
       WaitForButtonVisible(web_view->GetWebContents(), kSplitTabsSelector));
 
-  auto* tab_strip_model = browser()->tab_strip_model();
+  auto* tab_strip_model = browser()->GetTabStripModel();
 
   const struct {
     const char* name;
@@ -3641,7 +3639,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   EXPECT_TRUE(content::ExecJs(web_contents,
                               DispatchPointerDownAndUp(kSplitTabsSelector)));
 
-  auto* tab_strip_model = browser()->tab_strip_model();
+  auto* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return tab_strip_model->GetActiveTab()->IsSplit(); }));
 
@@ -3664,7 +3662,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   // Create a split tab group manually to simulate being in split mode.
   chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kSideBySide,
                       split_tabs::SplitTabCreatedSource::kToolbarButton);
-  auto* tab_strip_model = browser()->tab_strip_model();
+  auto* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return tab_strip_model->GetActiveTab()->IsSplit(); }));
 
@@ -3696,7 +3694,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   // Create split [A, B]. A is active.
   chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kSideBySide,
                       split_tabs::SplitTabCreatedSource::kToolbarButton);
-  auto* tab_strip_model = browser()->tab_strip_model();
+  auto* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return tab_strip_model->GetActiveTab()->IsSplit(); }));
 
@@ -3785,13 +3783,13 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, DropUrlOnToolbar) {
 
   GURL new_url("https://www.example.test/");
   content::TestNavigationObserver navigation_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   SimulateUriListDropOnToolbar(web_contents, new_url.spec());
 
   navigation_observer.Wait();
   EXPECT_EQ(new_url, browser()
-                         ->tab_strip_model()
+                         ->GetTabStripModel()
                          ->GetActiveWebContents()
                          ->GetLastCommittedURL());
 }
@@ -3810,7 +3808,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   content::WebContents* active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   NavigationCounter counter(active_contents);
 
   // Verify initial title is empty.
@@ -3852,7 +3850,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   content::WebContents* active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   NavigationCounter counter(active_contents);
 
   // Verify initial title is empty.
@@ -3894,7 +3892,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   content::WebContents* active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   NavigationCounter counter(active_contents);
 
   // Verify initial title is empty.
@@ -3927,7 +3925,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   content::WebContents* active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   NavigationCounter counter(active_contents);
 
   // Verify initial title is empty.
@@ -3958,14 +3956,14 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, DropUrlTextOnToolbar) {
   GURL test_url("https://www.example.test/");
 
   content::TestNavigationObserver navigation_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   SimulateDropOnToolbar(web_contents, test_url.spec());
 
   // Wait for the navigation to finish and assert.
   navigation_observer.Wait();
   EXPECT_EQ(test_url, browser()
-                          ->tab_strip_model()
+                          ->GetTabStripModel()
                           ->GetActiveWebContents()
                           ->GetLastCommittedURL());
 }
@@ -3982,7 +3980,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
 
   std::string search_term = "hello world";
   content::TestNavigationObserver navigation_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   SimulateDropOnToolbar(web_contents, search_term);
 
@@ -3990,7 +3988,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
   navigation_observer.Wait();
 
   GURL committed_url = browser()
-                           ->tab_strip_model()
+                           ->GetTabStripModel()
                            ->GetActiveWebContents()
                            ->GetLastCommittedURL();
 
@@ -4029,7 +4027,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, DropFileOnToolbar) {
       drop_data, gfx::PointF(click_point));
 
   content::TestNavigationObserver navigation_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   EXPECT_TRUE(content::ExecJs(
       web_contents, base::StringPrintf(R"(
@@ -4049,7 +4047,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, DropFileOnToolbar) {
 
   navigation_observer.Wait();
   EXPECT_EQ(file_url, browser()
-                          ->tab_strip_model()
+                          ->GetTabStripModel()
                           ->GetActiveWebContents()
                           ->GetLastCommittedURL());
 }
@@ -4723,12 +4721,12 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
 
     // Click the button.
     content::TestNavigationObserver nav_observer(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
     EXPECT_TRUE(content::ExecJs(web_view->GetWebContents(), script));
     nav_observer.Wait();
 
     EXPECT_EQ(home_url, browser()
-                            ->tab_strip_model()
+                            ->GetTabStripModel()
                             ->GetActiveWebContents()
                             ->GetLastCommittedURL());
   }
@@ -4743,7 +4741,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
 
   GURL home_url = GetHomeURL();
 
-  int initial_tab_count = browser()->tab_strip_model()->count();
+  int initial_tab_count = browser()->GetTabStripModel()->count();
   ui_test_utils::TabAddedWaiter tab_add_waiter(browser());
 
 #if BUILDFLAG(IS_MAC)
@@ -4760,12 +4758,12 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
 
   tab_add_waiter.Wait();
 
-  EXPECT_EQ(initial_tab_count + 1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(initial_tab_count + 1, browser()->GetTabStripModel()->count());
   // Verify new tab is in the background.
-  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
 
   content::WebContents* new_tab =
-      browser()->tab_strip_model()->GetWebContentsAt(initial_tab_count);
+      browser()->GetTabStripModel()->GetWebContentsAt(initial_tab_count);
   content::TestNavigationObserver observer(new_tab);
   if (new_tab->GetLastCommittedURL() != home_url) {
     observer.WaitForNavigationFinished();
@@ -4780,7 +4778,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
 
   GURL home_url = GetHomeURL();
 
-  int initial_tab_count = browser()->tab_strip_model()->count();
+  int initial_tab_count = browser()->GetTabStripModel()->count();
   ui_test_utils::TabAddedWaiter tab_add_waiter(browser());
 
 #if BUILDFLAG(IS_MAC)
@@ -4797,12 +4795,12 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
 
   tab_add_waiter.Wait();
 
-  EXPECT_EQ(initial_tab_count + 1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(initial_tab_count + 1, browser()->GetTabStripModel()->count());
   // Verify new tab is in the foreground.
-  EXPECT_EQ(initial_tab_count, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(initial_tab_count, browser()->GetTabStripModel()->active_index());
 
   content::WebContents* new_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::TestNavigationObserver observer(new_tab);
   if (new_tab->GetLastCommittedURL() != home_url) {
     observer.WaitForNavigationFinished();
@@ -4825,7 +4823,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
 
   // Release the pointer over the button.
   NavigationCounter nav_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   std::string script = base::StringPrintf(
       R"((() => {
           const target = %s;
@@ -4844,7 +4842,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
   nav_observer.WaitForNoNavigations();
 
   EXPECT_EQ(other_url, browser()
-                           ->tab_strip_model()
+                           ->GetTabStripModel()
                            ->GetActiveWebContents()
                            ->GetLastCommittedURL());
 }
@@ -4910,7 +4908,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
   ASSERT_TRUE(new_browser);
 
   content::WebContents* new_tab =
-      new_browser->tab_strip_model()->GetActiveWebContents();
+      new_browser->GetTabStripModel()->GetActiveWebContents();
   content::TestNavigationObserver observer(new_tab);
   if (new_tab->GetLastCommittedURL() != home_url) {
     observer.WaitForNavigationFinished();
@@ -5352,7 +5350,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewContentSettingsBrowserTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
   content::WebContents* active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Block images.
   TriggerContentBlocked(active_contents, ContentSettingsType::IMAGES);
@@ -5389,7 +5387,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewContentSettingsBrowserTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
   content::WebContents* active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Block ads, which has explanatory text.
   TriggerContentBlocked(active_contents, ContentSettingsType::ADS);
@@ -5426,7 +5424,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewContentSettingsBrowserTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
   content::WebContents* active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   TriggerContentBlocked(active_contents, ContentSettingsType::COOKIES);
   TriggerContentBlocked(active_contents, ContentSettingsType::GEOLOCATION);
@@ -5457,7 +5455,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewContentSettingsBrowserTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
   content::WebContents* active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   TriggerContentBlocked(active_contents, ContentSettingsType::COOKIES);
 
@@ -5534,7 +5532,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarSurfaceSyncBrowserTest, SetsDeadlineOnInit) {
   ASSERT_TRUE(toolbar_rwhv);
 
   content::WebContents* active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(active_contents);
   content::RenderWidgetHostView* main_rwhv =
       active_contents->GetRenderWidgetHostView();
@@ -5583,11 +5581,11 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarWebViewPermissionBrowserTest,
 
   test::PermissionRequestManagerTestApi test_api(browser());
   permissions::PermissionRequestObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   EXPECT_NE(nullptr, test_api.manager());
   test_api.AddSimpleRequest(browser()
-                                ->tab_strip_model()
+                                ->GetTabStripModel()
                                 ->GetActiveWebContents()
                                 ->GetPrimaryMainFrame(),
                             GetParam());

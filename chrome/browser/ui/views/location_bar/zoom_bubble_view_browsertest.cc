@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
 
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -51,7 +50,7 @@ class ZoomBubbleBrowserTest : public InProcessBrowserTest {
 
   void ShowInActiveTab(Browser* browser) {
     content::WebContents* web_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
+        browser->GetTabStripModel()->GetActiveWebContents();
     zoom_bubble_coordinator_->Show(web_contents, ZoomBubbleView::USER_GESTURE);
     EXPECT_TRUE(zoom_bubble_coordinator_->bubble());
   }
@@ -250,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, ImmersiveFullscreen) {
 // Tests that trying to open zoom bubble with stale WebContents is safe.
 IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, NoWebContentsIsSafe) {
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   zoom_bubble_coordinator_->Show(web_contents, ZoomBubbleView::AUTOMATIC);
   // Close the current tab and try opening the zoom bubble with stale
@@ -320,7 +319,7 @@ class TestZoomRequestClient : public extensions::ExtensionZoomRequestClient {
 IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest,
                        BubbleSuppressingExtensionRefreshesExistingBubble) {
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   zoom::ZoomController* zoom_controller =
       zoom::ZoomController::FromWebContents(web_contents);
   ASSERT_TRUE(zoom_controller);
@@ -358,7 +357,7 @@ class ZoomBubbleReuseTest : public ZoomBubbleBrowserTest {
     DCHECK(!client1 || !client1->ShouldSuppressBubble());
     DCHECK(!client2 || !client2->ShouldSuppressBubble());
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     zoom::ZoomController* zoom_controller =
         zoom::ZoomController::FromWebContents(web_contents);
     EXPECT_TRUE(zoom_controller);
@@ -433,7 +432,7 @@ class ZoomBubbleDialogTest : public DialogBrowserTest {
 
   void ShowInActiveTab(Browser* browser) {
     content::WebContents* web_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
+        browser->GetTabStripModel()->GetActiveWebContents();
     zoom_bubble_coordinator_->Show(web_contents, ZoomBubbleView::USER_GESTURE);
     EXPECT_TRUE(zoom_bubble_coordinator_->bubble());
   }
@@ -453,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleDialogTest, InvokeUi_default) {
 // automatically. This allows keyboard-only users to interact with the bubble.
 IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, FocusPreventsClose) {
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   zoom_bubble_coordinator_->Show(web_contents, ZoomBubbleView::AUTOMATIC);
   ZoomBubbleView* bubble = zoom_bubble_coordinator_->bubble();
   ASSERT_TRUE(bubble);
@@ -478,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, FocusPreventsClose) {
 IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest,
                        ResetButtonDisabledAtDefaultZoom) {
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   zoom::ZoomController* zoom_controller =
       zoom::ZoomController::FromWebContents(web_contents);
   ASSERT_TRUE(zoom_controller);

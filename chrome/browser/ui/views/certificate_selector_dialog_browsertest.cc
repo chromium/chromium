@@ -55,7 +55,7 @@ class CertificateSelectorDialogTest : public DialogBrowserTest {
     cert_2_ =
         net::ImportCertFromFile(net::GetTestCertsDirectory(), "client_2.pem");
 
-    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
     TestCertificateSelector* dialog = new TestCertificateSelector(
         net::FakeClientCertIdentityListFromCertificateList({cert_1_, cert_2_}),
         web_contents);

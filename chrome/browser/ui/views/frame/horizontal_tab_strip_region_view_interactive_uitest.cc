@@ -7,9 +7,9 @@
 #include "base/i18n/base_i18n_switches.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
@@ -360,8 +360,8 @@ class HorizontalTabStripRegionViewNewInteractiveUiTest
     int tabs_added = 0;
     while (!scroll_buttons->GetVisible() && tabs_added < kMaxTabsToAdd) {
       chrome::AddTabAt(browser(), GURL("about:blank"), -1, false);
-      browser()->tab_strip_model()->SetTabPinned(
-          browser()->tab_strip_model()->count() - 1, true);
+      browser()->GetTabStripModel()->SetTabPinned(
+          browser()->GetTabStripModel()->count() - 1, true);
       views::test::RunScheduledLayout(browser_view);
       ++tabs_added;
     }
@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
       EnsurePresent(kTabStripRegionElementId),
       WaitForShow(TabScrollButtonContainer::kTabScrollButtonContainer),
       Do([this]() {
-        auto* const model = browser()->tab_strip_model();
+        auto* const model = browser()->GetTabStripModel();
         while (model->count() > 1) {
           model->CloseWebContentsAt(model->count() - 1,
                                     TabCloseTypes::CLOSE_USER_GESTURE);
@@ -454,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
       EnsurePresent(kTabStripRegionElementId),
       WaitForShow(TabScrollButtonContainer::kTabScrollButtonContainer),
       Do([this]() {
-        auto* const model = browser()->tab_strip_model();
+        auto* const model = browser()->GetTabStripModel();
         for (int i = model->IndexOfFirstNonPinnedTab() - 1; i >= 0; --i) {
           model->CloseWebContentsAt(i, /*close_types=*/0);
         }
@@ -470,9 +470,9 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
       gfx::Rect(10, 10, 1000, 780));
 
   AddTabsUntilScrollable(/*extra_tabs=*/10);
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
-  const int last_tab_index = browser()->tab_strip_model()->count() - 1;
+  const int last_tab_index = browser()->GetTabStripModel()->count() - 1;
 
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                       kFirstTabVisibleObserver);
@@ -557,9 +557,9 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewRTLInteractiveUiTest,
   BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->SetBounds(
       gfx::Rect(10, 10, 1000, 780));
   AddTabsUntilScrollable(/*extra_tabs=*/10);
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
-  const int last_tab_index = browser()->tab_strip_model()->count() - 1;
+  const int last_tab_index = browser()->GetTabStripModel()->count() - 1;
 
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                       kFirstTabVisibleObserver);

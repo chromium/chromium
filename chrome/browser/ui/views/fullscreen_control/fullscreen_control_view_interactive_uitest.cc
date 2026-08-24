@@ -137,7 +137,7 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
   }
 
   content::WebContents* GetActiveWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   bool IsPopupCreated() { return GetFullscreenControlHost()->IsPopupCreated(); }

@@ -12,8 +12,8 @@
 #include "chrome/browser/download/download_request_limiter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/blocked_content/chrome_popup_navigation_delegate.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -111,7 +111,7 @@ void ContentSettingBubbleDialogTest::ApplyMediastreamSettings(
     bool mic_accessed,
     bool camera_accessed) {
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   GURL last_committed_url = web_contents->GetLastCommittedURL();
   // Default opt-in for camera PTZ permission to current tab.
@@ -137,7 +137,7 @@ void ContentSettingBubbleDialogTest::ApplyMediastreamSettings(
 void ContentSettingBubbleDialogTest::ApplyContentSettingsForType(
     ContentSettingsType content_type) {
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
           web_contents->GetPrimaryMainFrame());
@@ -188,7 +188,7 @@ void ContentSettingBubbleDialogTest::ApplyContentSettingsForType(
 void ContentSettingBubbleDialogTest::TriggerQuietNotificationPermissionRequest(
     QuietUiReason simulated_reason_for_quiet_ui) {
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   auto* permission_request_manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
   permission_request_manager->set_permission_ui_selector_for_testing(
@@ -239,7 +239,7 @@ void ContentSettingBubbleDialogTest::NavigateToContentTab() {
   GURL url(embedded_test_server()->GetURL(
       "/content_setting_bubble/mixed_script.html"));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::NavigateToURL(web_contents, url));
 }
 

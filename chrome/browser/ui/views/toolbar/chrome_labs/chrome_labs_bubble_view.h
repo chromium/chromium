@@ -12,7 +12,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
-class Browser;
+class BrowserWindowInterface;
 class ChromeLabsItemView;
 struct LabInfo;
 
@@ -26,14 +26,15 @@ class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
   METADATA_HEADER(ChromeLabsBubbleView, views::BubbleDialogDelegateView)
 
  public:
-  explicit ChromeLabsBubbleView(views::Button* anchor_view, Browser* browser);
+  explicit ChromeLabsBubbleView(views::Button* anchor_view,
+                                BrowserWindowInterface* browser);
   ~ChromeLabsBubbleView() override;
 
   ChromeLabsItemView* AddLabItem(
       const LabInfo& lab,
       int default_index,
       const flags_ui::FeatureEntry* entry,
-      Browser* browser,
+      BrowserWindowInterface* browser,
       base::RepeatingCallback<void(ChromeLabsItemView* item_view)>
           combobox_callback);
 

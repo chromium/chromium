@@ -277,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, MAYBE_BrowserFullscreenShowTopView) {
                                          .exclusive_access_manager()
                                          ->fullscreen_controller();
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   controller->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame());
   EXPECT_TRUE(browser_view->IsFullscreen());
   bool top_view_in_tab_fullscreen =
@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, TabFullscreenShowTopView) {
                                          .exclusive_access_manager()
                                          ->fullscreen_controller();
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   controller->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame());
   EXPECT_TRUE(browser_view->IsFullscreen());
 
@@ -344,8 +344,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, TabFullscreenShowTopView) {
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, TabFullscreenHideSplitView) {
   // Add a second tab and create a split
   chrome::AddTabAt(browser(), GURL(), -1, true);
-  browser()->tab_strip_model()->ActivateTabAt(0);
-  browser()->tab_strip_model()->AddToNewSplit(
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->AddToNewSplit(
       {1}, split_tabs::SplitTabVisualData(),
       split_tabs::SplitTabCreatedSource::kToolbarButton);
 
@@ -361,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, TabFullscreenHideSplitView) {
                                          .exclusive_access_manager()
                                          ->fullscreen_controller();
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   controller->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame());
   EXPECT_TRUE(browser_view->IsFullscreen());
 
@@ -592,7 +592,7 @@ INSTANTIATE_TEST_SUITE_P(CompositorDrivenThrobber,
 #endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(BrowserViewLoadingAnimationTest,
                        MAYBE_LoadingAnimationChangeOnMinimizeAndRestore) {
-  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* contents = browser()->GetTabStripModel()->GetActiveWebContents();
   content::TestNavigationObserver navigation_watcher(
       contents, 1, content::MessageLoopRunner::QuitMode::DEFERRED);
 
@@ -612,7 +612,7 @@ IN_PROC_BROWSER_TEST_P(BrowserViewLoadingAnimationTest,
     run_loop.Run();
   }
 
-  EXPECT_TRUE(browser()->tab_strip_model()->TabsNeedLoadingUI());
+  EXPECT_TRUE(browser()->GetTabStripModel()->TabsNeedLoadingUI());
   EXPECT_FALSE(browser_view()->IsLoadingAnimationRunning());
 
   {
@@ -625,12 +625,12 @@ IN_PROC_BROWSER_TEST_P(BrowserViewLoadingAnimationTest,
     run_loop.Run();
   }
 
-  EXPECT_TRUE(browser()->tab_strip_model()->TabsNeedLoadingUI());
+  EXPECT_TRUE(browser()->GetTabStripModel()->TabsNeedLoadingUI());
   EXPECT_TRUE(browser_view()->IsLoadingAnimationRunning());
 
   // Now block for the navigation to complete.
   navigation_watcher.Wait();
-  EXPECT_FALSE(browser()->tab_strip_model()->TabsNeedLoadingUI());
+  EXPECT_FALSE(browser()->GetTabStripModel()->TabsNeedLoadingUI());
 }
 
 // On Mac, voiceover treats tab modal dialogs as native windows, so setting an

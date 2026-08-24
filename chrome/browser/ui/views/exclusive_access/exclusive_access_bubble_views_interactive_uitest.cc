@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest,
   ASSERT_TRUE(IsWindowFullscreenForTabOrPending());
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Set up listeners for lock and mouse events.
   ASSERT_TRUE(content::ExecJs(web_contents, R"(

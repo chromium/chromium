@@ -98,7 +98,7 @@ class IntentChipButtonBrowserTest
   testing::AssertionResult DoAndWaitForIntentPickerIconUpdate(Action action) {
     base::test::TestFuture<void> intent_picker_done;
     auto* tab_helper = IntentPickerTabHelper::From(
-        browser()->tab_strip_model()->GetActiveTab());
+        browser()->GetTabStripModel()->GetActiveTab());
     tab_helper->SetIconUpdateCallbackForTesting(
         intent_picker_done.GetCallback());
     // On Mac, updating the icon requires asynchronous work that is done on the
@@ -286,7 +286,7 @@ class IntentChipButtonBrowserUiTest
   // UiBrowserTest:
   void ShowUi(const std::string& name) override {
     auto* const web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     auto* const tab_helper = IntentPickerTabHelper::From(
         tabs::TabInterface::GetFromContents(web_contents));
     base::RunLoop run_loop;
