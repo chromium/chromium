@@ -2456,6 +2456,30 @@ Called by update_net_trust_anchors.py.-->
       label="de7b6932e9c44582ce0de07abdab7eea90c75d6d2a07331df57bd5cb88553d13"/>
 </enum>
 
+<enum name="NetworkCallbackRegisterResult">
+  <int value="0" label="Success (Initial Try)"/>
+  <int value="1" label="Success (Initial Try - Security Retry)"/>
+  <int value="2" label="Success (Window Focus Self-Heal)"/>
+  <int value="3" label="Success (Window Focus Self-Heal - Security Retry)"/>
+  <int value="4" label="Failure (SecurityException)"/>
+  <int value="5" label="Failure (TooManyRequestsException / Limit Exceeded)"/>
+  <int value="6" label="Failure (IllegalArgumentException)"/>
+  <int value="7" label="Failure (Other RuntimeException)"/>
+</enum>
+
+<enum name="NetworkCallbackRegistrationException">
+  <int value="0" label="SecurityException"/>
+  <int value="1" label="TooManyRequestsException (or Max Requests message)"/>
+  <int value="2" label="IllegalArgumentException"/>
+  <int value="3" label="IllegalStateException"/>
+  <int value="4" label="Other RuntimeException"/>
+</enum>
+
+<enum name="NetworkCallbackSelfHealResult">
+  <int value="0" label="Recovered"/>
+  <int value="1" label="Failed"/>
+</enum>
+
 <enum name="NetworkConnectionCost">
   <int value="0" label="Unknown"/>
   <int value="1" label="Unmetered"/>

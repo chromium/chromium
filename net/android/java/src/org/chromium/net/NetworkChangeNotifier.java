@@ -146,6 +146,12 @@ public class NetworkChangeNotifier {
         mNativeChangeNotifiers.remove(nativeChangeNotifier);
     }
 
+    /** Returns {@code true} if default NetworkCallback failed to register. */
+    @VisibleForTesting
+    public boolean registerDefaultNetworkCallbackFailed() {
+        return mAutoDetector == null ? false : mAutoDetector.registerDefaultNetworkCallbackFailed();
+    }
+
     /**
      * Returns {@code true} if NetworkCallback failed to register, indicating that network-specific
      * callbacks will not be issued.

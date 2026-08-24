@@ -52,8 +52,13 @@ import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.net.ConnectivityManagerWrapper.NetworkState;
+import org.chromium.net.NetworkChangeNotifierAutoDetect.RegisterResult;
+import org.chromium.net.NetworkChangeNotifierAutoDetect.RegistrationExceptionCategory;
+import org.chromium.net.NetworkChangeNotifierAutoDetect.SelfHealResult;
 import org.chromium.net.NetworkChangeNotifierAutoDetect.WifiManagerDelegate;
 import org.chromium.net.test.util.NetworkChangeNotifierTestUtil;
 
@@ -242,6 +247,10 @@ public class NetworkChangeNotifierTest {
         private NetworkCallback mLastRegisteredNetworkCallback;
         private NetworkCallback mLastRegisteredDefaultNetworkCallback;
         private int mGetConnectionTypeCallCount;
+        private boolean mShouldFailDefaultNetworkCallbackRegistration;
+        private int mRemainingDefaultNetworkCallbackSecurityExceptions;
+        private boolean mShouldFailNetworkCallbackRegistration;
+        private int mRemainingNetworkCallbackSecurityExceptions;
 
         @Override
         public NetworkState getNetworkState(WifiManagerDelegate wifiManagerDelegate) {
@@ -288,7 +297,7 @@ public class NetworkChangeNotifierTest {
             return networks;
         }
 
-        // Dummy implementations to avoid NullPointerExceptions in default implementations:
+        // Placeholder implementations to avoid NullPointerExceptions in default implementations:
 
         @Override
         public Network getDefaultNetwork() {
@@ -304,18 +313,66 @@ public class NetworkChangeNotifierTest {
         @Override
         public void unregisterNetworkCallback(NetworkCallback networkCallback) {}
 
-        // Dummy implementation that also records the last registered callback.
+        private @Nullable RuntimeException mExceptionToThrowOnDefaultNetworkCallback;
+        private @Nullable RuntimeException mExceptionToThrowOnNetworkCallback;
+
+        // Placeholder implementation that also records the last registered callback.
         @Override
         public void registerNetworkCallback(
                 NetworkRequest networkRequest, NetworkCallback networkCallback, Handler handler) {
+            if (mRemainingNetworkCallbackSecurityExceptions > 0) {
+                mRemainingNetworkCallbackSecurityExceptions--;
+                throw new SecurityException("Mock security exception");
+            }
+            if (mExceptionToThrowOnNetworkCallback != null) {
+                throw mExceptionToThrowOnNetworkCallback;
+            }
+            if (mShouldFailNetworkCallbackRegistration) {
+                throw new RuntimeException("Mock registration failure");
+            }
             mLastRegisteredNetworkCallback = networkCallback;
         }
 
-        // Dummy implementation that also records the last registered callback.
+        // Placeholder implementation that also records the last registered callback.
         @Override
         public void registerDefaultNetworkCallback(
                 NetworkCallback networkCallback, Handler handler) {
+            if (mRemainingDefaultNetworkCallbackSecurityExceptions > 0) {
+                mRemainingDefaultNetworkCallbackSecurityExceptions--;
+                throw new SecurityException("Mock security exception");
+            }
+            if (mExceptionToThrowOnDefaultNetworkCallback != null) {
+                throw mExceptionToThrowOnDefaultNetworkCallback;
+            }
+            if (mShouldFailDefaultNetworkCallbackRegistration) {
+                throw new RuntimeException("Mock registration failure");
+            }
             mLastRegisteredDefaultNetworkCallback = networkCallback;
+        }
+
+        public void setExceptionToThrowOnDefaultNetworkCallback(
+                @Nullable RuntimeException exception) {
+            mExceptionToThrowOnDefaultNetworkCallback = exception;
+        }
+
+        public void setExceptionToThrowOnNetworkCallback(@Nullable RuntimeException exception) {
+            mExceptionToThrowOnNetworkCallback = exception;
+        }
+
+        public void setSecurityExceptionsToThrowOnDefaultNetworkCallback(int count) {
+            mRemainingDefaultNetworkCallbackSecurityExceptions = count;
+        }
+
+        public void setShouldFailDefaultNetworkCallbackRegistration(boolean shouldFail) {
+            mShouldFailDefaultNetworkCallbackRegistration = shouldFail;
+        }
+
+        public void setSecurityExceptionsToThrowOnNetworkCallback(int count) {
+            mRemainingNetworkCallbackSecurityExceptions = count;
+        }
+
+        public void setShouldFailNetworkCallbackRegistration(boolean shouldFail) {
+            mShouldFailNetworkCallbackRegistration = shouldFail;
         }
 
         public void setActiveNetworkExists(boolean networkExists) {
@@ -525,8 +582,6 @@ public class NetworkChangeNotifierTest {
                             String permission,
                             Handler scheduler,
                             int flags) {
-                        // Should not be used starting with Pie.
-                        Assert.assertFalse(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
                         return null;
                     }
 
@@ -839,6 +894,573 @@ public class NetworkChangeNotifierTest {
     }
 
     /**
+     * Tests that when RegistrationPolicyApplicationStatus receives a window focus gain while
+     * offline and registration failed, it triggers self-healing.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Android-AppBase"})
+    public void testRegistrationPolicyApplicationStatusWindowFocusChanged() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    NetworkChangeNotifierTestObserver observer =
+                            new NetworkChangeNotifierTestObserver();
+                    NetworkChangeNotifier.addConnectionTypeObserver(observer);
+
+                    final RegistrationPolicyApplicationStatus policy =
+                            (RegistrationPolicyApplicationStatus) mReceiver.getRegistrationPolicy();
+
+                    // 1. Chrome starts up online and registered before device goes to sleep
+                    mConnectivityWrapper.setActiveNetworkExists(true);
+                    mReceiver.register();
+                    observer.resetHasReceivedNotification();
+
+                    // 2. Overnight Doze mode starts: Chrome goes to background and unregisters
+                    mReceiver.unregister();
+                    mConnectivityWrapper.setActiveNetworkExists(false);
+
+                    // 3. User wakes device: Chrome registers while offline, but Doze causes
+                    // callback failure
+                    mConnectivityWrapper.setShouldFailDefaultNetworkCallbackRegistration(true);
+                    mReceiver.register();
+                    Assert.assertTrue(mReceiver.registerDefaultNetworkCallbackFailed());
+                    observer.resetHasReceivedNotification();
+
+                    // 4. Doze restriction ends and WiFi reconnects, but dead callbacks prevented OS
+                    // notification
+                    mConnectivityWrapper.setShouldFailDefaultNetworkCallbackRegistration(false);
+                    mConnectivityWrapper.setActiveNetworkExists(true);
+
+                    // 5. User focuses the TWA window -> onWindowFocusChanged(activity, true)
+                    var histogramWatcher =
+                            HistogramWatcher.newBuilder()
+                                    .expectIntRecord(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".SelfHealDefaultNetworkResult",
+                                            SelfHealResult.RECOVERED)
+                                    .expectIntRecord(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".RegisterDefaultNetworkCallbackResult",
+                                            RegisterResult.SUCCESS_SELF_HEAL)
+                                    .build();
+                    policy.onWindowFocusChanged(null, true);
+                    histogramWatcher.assertExpected();
+
+                    // 6. Verify self-healing updated navigator.onLine and restored live OS
+                    // callbacks!
+                    Assert.assertTrue(observer.hasReceivedNotification());
+                    Assert.assertFalse(mReceiver.registerDefaultNetworkCallbackFailed());
+                });
+    }
+
+    /**
+     * Tests that registerDefaultNetworkCallbackFailed() becomes true when default callback
+     * registration throws a RuntimeException, using a mock wrapper without exhausting callbacks.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Android-AppBase"})
+    public void testRegisterDefaultNetworkCallbackFailedWithMock() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mConnectivityWrapper.setShouldFailDefaultNetworkCallbackRegistration(true);
+                    var histogramWatcher =
+                            HistogramWatcher.newBuilder()
+                                    .expectIntRecord(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".RegistrationException",
+                                            RegistrationExceptionCategory.OTHER_RUNTIME_EXCEPTION)
+                                    .expectIntRecord(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".RegisterDefaultNetworkCallbackResult",
+                                            RegisterResult.FAILURE_OTHER_RUNTIME_EXCEPTION)
+                                    .build();
+                    mReceiver.register();
+                    histogramWatcher.assertExpected();
+                    Assert.assertTrue(mReceiver.registerDefaultNetworkCallbackFailed());
+                });
+    }
+
+    /**
+     * Tests that when registerDefaultNetworkCallback fails initially, unregistering and calling
+     * register() again after conditions improve will retry and recover
+     * registerDefaultNetworkCallbackFailed() back to false.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Android-AppBase"})
+    public void testRecoverDefaultNetworkCallbackOnRegister() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mConnectivityWrapper.setShouldFailDefaultNetworkCallbackRegistration(true);
+                    mReceiver.register();
+                    Assert.assertTrue(mReceiver.registerDefaultNetworkCallbackFailed());
+
+                    mReceiver.unregister();
+
+                    mConnectivityWrapper.setShouldFailDefaultNetworkCallbackRegistration(false);
+                    var recoveryWatcher =
+                            HistogramWatcher.newBuilder()
+                                    .expectIntRecord(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".RegisterDefaultNetworkCallbackResult",
+                                            RegisterResult.SUCCESS_INITIAL)
+                                    .build();
+                    mReceiver.register();
+                    recoveryWatcher.assertExpected();
+                    Assert.assertFalse(mReceiver.registerDefaultNetworkCallbackFailed());
+                });
+    }
+
+    /**
+     * Tests that registerNetworkCallbackFailed() becomes true when network callback registration
+     * throws a RuntimeException, using a mock wrapper without exhausting callbacks.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Android-AppBase"})
+    public void testRegisterNetworkCallbackFailedWithMock() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mConnectivityWrapper.setShouldFailNetworkCallbackRegistration(true);
+                    var histogramWatcher =
+                            HistogramWatcher.newBuilder()
+                                    .expectIntRecord(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".RegistrationException",
+                                            RegistrationExceptionCategory.OTHER_RUNTIME_EXCEPTION)
+                                    .expectIntRecord(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".RegisterNetworkCallbackResult",
+                                            RegisterResult.FAILURE_OTHER_RUNTIME_EXCEPTION)
+                                    .build();
+                    mReceiver.register();
+                    histogramWatcher.assertExpected();
+                    Assert.assertTrue(mReceiver.registerNetworkCallbackFailed());
+                });
+    }
+
+    /**
+     * Tests that when registerNetworkCallback fails initially, unregistering and calling register()
+     * again after conditions improve will retry and recover registerNetworkCallbackFailed() back to
+     * false.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Android-AppBase"})
+    public void testRecoverNetworkCallbackOnRegister() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mConnectivityWrapper.setShouldFailNetworkCallbackRegistration(true);
+                    mReceiver.register();
+                    Assert.assertTrue(mReceiver.registerNetworkCallbackFailed());
+
+                    mReceiver.unregister();
+
+                    mConnectivityWrapper.setShouldFailNetworkCallbackRegistration(false);
+                    var recoveryWatcher =
+                            HistogramWatcher.newBuilder()
+                                    .expectIntRecord(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".RegisterNetworkCallbackResult",
+                                            RegisterResult.SUCCESS_INITIAL)
+                                    .build();
+                    mReceiver.register();
+                    recoveryWatcher.assertExpected();
+                    Assert.assertFalse(mReceiver.registerNetworkCallbackFailed());
+                });
+    }
+
+    /**
+     * Tests that registerDefaultNetworkCallback retries once when catching a transient
+     * SecurityException and succeeds if the retry succeeds.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Android-AppBase"})
+    public void testRegisterDefaultNetworkCallbackRetriesOnSecurityException() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mConnectivityWrapper.setSecurityExceptionsToThrowOnDefaultNetworkCallback(1);
+                    var histogramWatcher =
+                            HistogramWatcher.newBuilder()
+                                    .expectIntRecord(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".RegisterDefaultNetworkCallbackResult",
+                                            RegisterResult.SUCCESS_INITIAL_SECURITY_RETRY)
+                                    .expectNoRecords(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".RegistrationException")
+                                    .build();
+                    mReceiver.register();
+                    histogramWatcher.assertExpected();
+                    Assert.assertFalse(mReceiver.registerDefaultNetworkCallbackFailed());
+                });
+    }
+
+    /**
+     * Tests that registerNetworkCallback retries once when catching a transient SecurityException
+     * and succeeds if the retry succeeds.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Android-AppBase"})
+    public void testRegisterNetworkCallbackRetriesOnSecurityException() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mConnectivityWrapper.setSecurityExceptionsToThrowOnNetworkCallback(1);
+                    var histogramWatcher =
+                            HistogramWatcher.newBuilder()
+                                    .expectIntRecord(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".RegisterNetworkCallbackResult",
+                                            RegisterResult.SUCCESS_INITIAL_SECURITY_RETRY)
+                                    .expectNoRecords(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".RegistrationException")
+                                    .build();
+                    mReceiver.register();
+                    histogramWatcher.assertExpected();
+                    Assert.assertFalse(mReceiver.registerNetworkCallbackFailed());
+                });
+    }
+
+    /**
+     * Tests that various registration exceptions (TooManyRequestsException,
+     * IllegalArgumentException) are categorized and recorded to UMA histograms properly.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Android-AppBase"})
+    public void testRegistrationExceptionCategorizationHistograms() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mConnectivityWrapper.setExceptionToThrowOnDefaultNetworkCallback(
+                            new IllegalArgumentException("Mock illegal argument"));
+                    mConnectivityWrapper.setExceptionToThrowOnNetworkCallback(
+                            new RuntimeException(
+                                    "this app has used up all available NetworkRequests"));
+
+                    var histogramWatcher =
+                            HistogramWatcher.newBuilder()
+                                    .expectIntRecord(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".RegistrationException",
+                                            RegistrationExceptionCategory
+                                                    .ILLEGAL_ARGUMENT_EXCEPTION)
+                                    .expectIntRecord(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".RegisterDefaultNetworkCallbackResult",
+                                            RegisterResult.FAILURE_ILLEGAL_ARGUMENT)
+                                    .expectIntRecord(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".RegistrationException",
+                                            RegistrationExceptionCategory
+                                                    .TOO_MANY_REQUESTS_EXCEPTION)
+                                    .expectIntRecord(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".RegisterNetworkCallbackResult",
+                                            RegisterResult.FAILURE_TOO_MANY_REQUESTS)
+                                    .build();
+
+                    mReceiver.register();
+                    histogramWatcher.assertExpected();
+                    Assert.assertTrue(mReceiver.registerDefaultNetworkCallbackFailed());
+                    Assert.assertTrue(mReceiver.registerNetworkCallbackFailed());
+                });
+    }
+
+    /**
+     * Tests that SelfHealDefaultNetworkResult and SelfHealNetworkResult record RECOVERED and FAILED
+     * outcomes independently.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Android-AppBase"})
+    public void testSelfHealResultHistograms() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    final RegistrationPolicyApplicationStatus policy =
+                            (RegistrationPolicyApplicationStatus) mReceiver.getRegistrationPolicy();
+
+                    // Initial registration where both callbacks fail.
+                    mConnectivityWrapper.setShouldFailDefaultNetworkCallbackRegistration(true);
+                    mConnectivityWrapper.setShouldFailNetworkCallbackRegistration(true);
+                    mReceiver.register();
+                    Assert.assertTrue(mReceiver.registerDefaultNetworkCallbackFailed());
+                    Assert.assertTrue(mReceiver.registerNetworkCallbackFailed());
+
+                    // Case 1: Recovery attempt where both succeed -> RECOVERED on both histograms.
+                    mConnectivityWrapper.setShouldFailDefaultNetworkCallbackRegistration(false);
+                    mConnectivityWrapper.setShouldFailNetworkCallbackRegistration(false);
+                    var watcherBoth =
+                            HistogramWatcher.newBuilder()
+                                    .expectIntRecord(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".SelfHealDefaultNetworkResult",
+                                            SelfHealResult.RECOVERED)
+                                    .expectIntRecord(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".SelfHealNetworkResult",
+                                            SelfHealResult.RECOVERED)
+                                    .build();
+                    policy.onWindowFocusChanged(null, true);
+                    watcherBoth.assertExpected();
+                    Assert.assertFalse(mReceiver.registerDefaultNetworkCallbackFailed());
+                    Assert.assertFalse(mReceiver.registerNetworkCallbackFailed());
+
+                    // Case 2: Only network callback fails, then recovers -> RECOVERED on network
+                    // only.
+                    mReceiver.unregister();
+                    mConnectivityWrapper.setShouldFailNetworkCallbackRegistration(true);
+                    mReceiver.register();
+                    Assert.assertFalse(mReceiver.registerDefaultNetworkCallbackFailed());
+                    Assert.assertTrue(mReceiver.registerNetworkCallbackFailed());
+
+                    mConnectivityWrapper.setShouldFailNetworkCallbackRegistration(false);
+                    var watcherNetwork =
+                            HistogramWatcher.newBuilder()
+                                    .expectIntRecord(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".SelfHealNetworkResult",
+                                            SelfHealResult.RECOVERED)
+                                    .expectNoRecords(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".SelfHealDefaultNetworkResult")
+                                    .build();
+                    policy.onWindowFocusChanged(null, true);
+                    watcherNetwork.assertExpected();
+                    Assert.assertFalse(mReceiver.registerNetworkCallbackFailed());
+
+                    // Case 3: Registration fails and retry also fails -> FAILED on default only.
+                    mReceiver.unregister();
+                    mConnectivityWrapper.setShouldFailDefaultNetworkCallbackRegistration(true);
+                    mReceiver.register();
+                    Assert.assertTrue(mReceiver.registerDefaultNetworkCallbackFailed());
+
+                    var watcherNone =
+                            HistogramWatcher.newBuilder()
+                                    .expectIntRecord(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".SelfHealDefaultNetworkResult",
+                                            SelfHealResult.FAILED)
+                                    .expectNoRecords(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".SelfHealNetworkResult")
+                                    .build();
+                    policy.onWindowFocusChanged(null, true);
+                    watcherNone.assertExpected();
+                    Assert.assertTrue(mReceiver.registerDefaultNetworkCallbackFailed());
+                });
+    }
+
+    /**
+     * Tests that window focus changes do NOT trigger self-healing when registrations are already
+     * healthy, or when focus is lost (hasFocus=false).
+     */
+    @Test
+    @MediumTest
+    @Feature({"Android-AppBase"})
+    public void testRegistrationPolicyApplicationStatusWindowFocusNoOpWhenHealthyOrLost() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    final RegistrationPolicyApplicationStatus policy =
+                            (RegistrationPolicyApplicationStatus) mReceiver.getRegistrationPolicy();
+
+                    // 1. Initial healthy registration (no failure).
+                    mReceiver.register();
+                    Assert.assertFalse(mReceiver.registerDefaultNetworkCallbackFailed());
+                    Assert.assertFalse(mReceiver.registerNetworkCallbackFailed());
+
+                    // 2. Gaining focus when healthy should be a no-op (no SelfHeal* emitted).
+                    var watcherHealthy =
+                            HistogramWatcher.newBuilder()
+                                    .expectNoRecords(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".SelfHealDefaultNetworkResult")
+                                    .expectNoRecords(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".SelfHealNetworkResult")
+                                    .build();
+                    policy.onWindowFocusChanged(null, true);
+                    watcherHealthy.assertExpected();
+
+                    // 3. Now simulate failure and verify focus loss (hasFocus=false) does nothing.
+                    mReceiver.unregister();
+                    mConnectivityWrapper.setShouldFailDefaultNetworkCallbackRegistration(true);
+                    mReceiver.register();
+                    Assert.assertTrue(mReceiver.registerDefaultNetworkCallbackFailed());
+
+                    var watcherLost =
+                            HistogramWatcher.newBuilder()
+                                    .expectNoRecords(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".SelfHealDefaultNetworkResult")
+                                    .expectNoRecords(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".SelfHealNetworkResult")
+                                    .build();
+                    policy.onWindowFocusChanged(null, false);
+                    watcherLost.assertExpected();
+                });
+    }
+
+    /**
+     * Tests that when registerDefaultNetworkCallback throws SecurityException on both initial try
+     * and immediate retry, it records FAILURE_SECURITY_EXCEPTION and logs 1 exception sample.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Android-AppBase"})
+    public void testRegisterDefaultNetworkCallbackSecurityExceptionFailure() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Throw SecurityException on both initial attempt and retry.
+                    mConnectivityWrapper.setSecurityExceptionsToThrowOnDefaultNetworkCallback(2);
+
+                    var histogramWatcher =
+                            HistogramWatcher.newBuilder()
+                                    .expectIntRecord(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".RegistrationException",
+                                            RegistrationExceptionCategory.SECURITY_EXCEPTION)
+                                    .expectIntRecord(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".RegisterDefaultNetworkCallbackResult",
+                                            RegisterResult.FAILURE_SECURITY_EXCEPTION)
+                                    .build();
+
+                    mReceiver.register();
+                    histogramWatcher.assertExpected();
+                    Assert.assertTrue(mReceiver.registerDefaultNetworkCallbackFailed());
+                });
+    }
+
+    /**
+     * Tests that when registerNetworkCallback throws SecurityException on both initial try and
+     * immediate retry, it records FAILURE_SECURITY_EXCEPTION and logs 1 exception sample.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Android-AppBase"})
+    public void testRegisterNetworkCallbackSecurityExceptionFailure() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Throw SecurityException on both initial attempt and retry.
+                    mConnectivityWrapper.setSecurityExceptionsToThrowOnNetworkCallback(2);
+
+                    var histogramWatcher =
+                            HistogramWatcher.newBuilder()
+                                    .expectIntRecord(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".RegistrationException",
+                                            RegistrationExceptionCategory.SECURITY_EXCEPTION)
+                                    .expectIntRecord(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".RegisterNetworkCallbackResult",
+                                            RegisterResult.FAILURE_SECURITY_EXCEPTION)
+                                    .build();
+
+                    mReceiver.register();
+                    histogramWatcher.assertExpected();
+                    Assert.assertTrue(mReceiver.registerNetworkCallbackFailed());
+                });
+    }
+
+    /**
+     * Tests that on pre-Android 28 (Pie) devices where default network callback is null,
+     * registerDefaultNetworkCallbackFailed() remains false and window focus does not trigger
+     * spurious self-healing or UMA records.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Android-AppBase"})
+    public void testSimulatePreAndroid28DoesNotFailOrSelfHeal() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mReceiver.simulatePreAndroid28ForTesting();
+                    mReceiver.register();
+
+                    // Pre-Android 28 devices with null default callback should NOT report failure.
+                    Assert.assertFalse(mReceiver.registerDefaultNetworkCallbackFailed());
+
+                    // Window focus gain should be a no-op (no UMA records emitted).
+                    var watcher =
+                            HistogramWatcher.newBuilder()
+                                    .expectNoRecords(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".SelfHealDefaultNetworkResult")
+                                    .expectNoRecords(
+                                            "Net.Android.NetworkChangeNotifier"
+                                                    + ".SelfHealNetworkResult")
+                                    .build();
+                    final RegistrationPolicyApplicationStatus policy =
+                            (RegistrationPolicyApplicationStatus) mReceiver.getRegistrationPolicy();
+                    policy.onWindowFocusChanged(null, true);
+                    watcher.assertExpected();
+                });
+    }
+
+    /**
+     * Tests that when the app transitions between foreground and background,
+     * registerNetworkCallbackFailed() and registerDefaultNetworkCallbackFailed() remain false (not
+     * treated as registration failures), and window focus changes while backgrounded do not trigger
+     * spurious self-healing or re-registration.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Android-AppBase"})
+    public void testBackgroundLifecycleDoesNotTriggerSelfHealOrReportFailure() {
+        final RegistrationPolicyApplicationStatus policy =
+                (RegistrationPolicyApplicationStatus) mReceiver.getRegistrationPolicy();
+
+        // 1. Initial healthy state with app in foreground.
+        triggerApplicationStateChange(policy, ApplicationState.HAS_RUNNING_ACTIVITIES);
+        Assert.assertTrue(mReceiver.isReceiverRegisteredForTesting());
+        Assert.assertFalse(mReceiver.registerDefaultNetworkCallbackFailed());
+        Assert.assertFalse(mReceiver.registerNetworkCallbackFailed());
+
+        // 2. App goes to background (activities paused / hidden).
+        triggerApplicationStateChange(policy, ApplicationState.HAS_PAUSED_ACTIVITIES);
+        Assert.assertFalse(mReceiver.isReceiverRegisteredForTesting());
+
+        // 3. Backgrounding must NOT set failure flags to true.
+        Assert.assertFalse(mReceiver.registerDefaultNetworkCallbackFailed());
+        Assert.assertFalse(mReceiver.registerNetworkCallbackFailed());
+
+        // 4. Window focus changes while backgrounded must NOT trigger self-healing or
+        // re-registration.
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                "Net.Android.NetworkChangeNotifier"
+                                        + ".SelfHealDefaultNetworkResult")
+                        .expectNoRecords(
+                                "Net.Android.NetworkChangeNotifier" + ".SelfHealNetworkResult")
+                        .build();
+        ThreadUtils.runOnUiThreadBlocking(() -> policy.onWindowFocusChanged(null, true));
+        watcher.assertExpected();
+        Assert.assertFalse(mReceiver.isReceiverRegisteredForTesting());
+        Assert.assertFalse(mReceiver.registerDefaultNetworkCallbackFailed());
+        Assert.assertFalse(mReceiver.registerNetworkCallbackFailed());
+
+        // 5. Returning to foreground should register normally without emitting self-heal metrics.
+        var foregroundWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                "Net.Android.NetworkChangeNotifier"
+                                        + ".SelfHealDefaultNetworkResult")
+                        .expectNoRecords(
+                                "Net.Android.NetworkChangeNotifier" + ".SelfHealNetworkResult")
+                        .build();
+        triggerApplicationStateChange(policy, ApplicationState.HAS_RUNNING_ACTIVITIES);
+        foregroundWatcher.assertExpected();
+        Assert.assertTrue(mReceiver.isReceiverRegisteredForTesting());
+        Assert.assertFalse(mReceiver.registerDefaultNetworkCallbackFailed());
+        Assert.assertFalse(mReceiver.registerNetworkCallbackFailed());
+    }
+
+    /**
      * Tests that when Chrome gets an intent indicating a change in max bandwidth, it sends a
      * notification to Java observers.
      */
@@ -968,7 +1590,7 @@ public class NetworkChangeNotifierTest {
                 new NetworkChangeNotifierAutoDetect(
                         observer, new RegistrationPolicyApplicationStatus());
 
-        // Insert a mocked dummy implementation for the ConnectivityDelegate.
+        // Insert a mocked placeholder implementation for the ConnectivityDelegate.
         ncn.setConnectivityManagerWrapperForTests(
                 new ConnectivityManagerWrapper() {
                     public final Network[] mNetworks =
@@ -1092,10 +1714,10 @@ public class NetworkChangeNotifierTest {
     }
 
     /**
-     * Creates a NetworkChangeNotifierAutoDetect wired to {@code observer} and a fresh
-     * {@link MockConnectivityManagerWrapper} (assigned to {@link #mConnectivityWrapper}), foregrounds
-     * the app so the NetworkCallback registers, and consumes the initial PURGE_LIST notification.
-     * The created notifier is stored in {@link #mReceiver}. Returns the registered NetworkCallback.
+     * Creates a NetworkChangeNotifierAutoDetect wired to {@code observer} and a fresh {@link
+     * MockConnectivityManagerWrapper} (assigned to {@link #mConnectivityWrapper}), foregrounds the
+     * app so the NetworkCallback registers, and consumes the initial PURGE_LIST notification. The
+     * created notifier is stored in {@link #mReceiver}. Returns the registered NetworkCallback.
      */
     private NetworkCallback setUpAutoDetectForCallbackTest(
             TestNetworkChangeNotifierAutoDetectObserver observer) throws Exception {
@@ -1264,7 +1886,10 @@ public class NetworkChangeNotifierTest {
         }
     }
 
-    /** Tests that getConnectionTypeFromCapabilities() returns the right ConnectionType per transport. */
+    /**
+     * Tests that getConnectionTypeFromCapabilities() returns the right ConnectionType per
+     * transport.
+     */
     @Test
     @UiThreadTest
     @MediumTest
