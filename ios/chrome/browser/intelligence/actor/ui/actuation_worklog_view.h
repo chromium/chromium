@@ -9,12 +9,30 @@
 
 @class ActuationWorklogChip;
 @class ActuationWorklogItem;
+@class ActuationWorklogView;
+
+// Delegate protocol for ActuationWorklogView collapse/expand events.
+@protocol ActuationWorklogViewDelegate <NSObject>
+- (void)worklogView:(ActuationWorklogView*)worklogView
+    didChangeCollapsed:(BOOL)collapsed;
+@end
 
 // View displaying the list of actuation steps using a timeline.
 @interface ActuationWorklogView : UIView
+
+// Delegate for collapse events.
+@property(nonatomic, weak) id<ActuationWorklogViewDelegate> delegate;
+
+// Reflects whether the worklog is collapsed.
+@property(nonatomic, assign) BOOL collapsed;
+
 - (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
+
+// Sets the collapsed state with optional animation.
+- (void)setCollapsed:(BOOL)collapsed animated:(BOOL)animated;
+
 // Sets or replaces all timeline items instantly.
 - (void)setItems:(NSArray<ActuationWorklogItem*>*)items;
 

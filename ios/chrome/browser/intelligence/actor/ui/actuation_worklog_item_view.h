@@ -21,6 +21,14 @@ enum class ActuationWorklogConnectorVisibility {
   kBoth,
 };
 
+@class ActuationWorklogItemView;
+
+// Delegate protocol for user interaction events on ActuationWorklogItemView.
+@protocol ActuationWorklogItemViewDelegate <NSObject>
+// Notifies delegate when the item view is tapped.
+- (void)worklogItemViewDidTapItem:(ActuationWorklogItemView*)itemView;
+@end
+
 // Unified view representing a step in the timeline. When no icon is provided,
 // we display a smaller dot view. The subtitle is hidden when nil. Optionally
 // links a connector above and below the icon.
@@ -35,6 +43,9 @@ enum class ActuationWorklogConnectorVisibility {
 // +------------------------------+
 @interface ActuationWorklogItemView : UIView
 
+// Delegate for user interaction events.
+@property(nonatomic, weak) id<ActuationWorklogItemViewDelegate> delegate;
+
 // Defines the visibility of the connector lines. Updating this property will
 // trigger a layout. Defaults to `ActuationWorklogConnectorVisibility::kNone`.
 @property(nonatomic, assign)
@@ -46,6 +57,15 @@ enum class ActuationWorklogConnectorVisibility {
 // visual continuity. Defaults to 0.0.
 @property(nonatomic, assign) CGFloat bottomBufferHeight;
 
+// Controls whether the item is collapsible and displays a caret indicator.
+@property(nonatomic, assign, getter=isCollapsible) BOOL collapsible;
+
+// Reflects whether the item is collapsed. Updating rotates the caret icon.
+@property(nonatomic, assign) BOOL collapsed;
+
+// Read-only access to the underlying item model.
+@property(nonatomic, readonly) ActuationWorklogItem* item;
+
 // Designated initializer
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
@@ -54,6 +74,9 @@ enum class ActuationWorklogConnectorVisibility {
 
 // Configures the view with a worklog item model.
 - (void)configureWithItem:(ActuationWorklogItem*)item;
+
+// Sets the collapsed state with optional rotation animation for the caret.
+- (void)setCollapsed:(BOOL)collapsed animated:(BOOL)animated;
 
 @end
 

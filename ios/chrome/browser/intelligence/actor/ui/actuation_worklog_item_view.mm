@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -26,6 +27,8 @@ const CGFloat kDotSizeSimple = 8.0;
 const CGFloat kDotSizeLabeled = 32.0;
 
 const CGFloat kIconSize = 16.0;
+const CGFloat kCaretSize = 14.0;
+const NSTimeInterval kAnimationDuration = 0.25;
 
 }  // namespace
 
@@ -34,8 +37,11 @@ const CGFloat kIconSize = 16.0;
   UIImageView* _iconView;
   UILabel* _titleLabel;
   UILabel* _subtitleLabel;
+  UIImageView* _caretImageView;
+  UIStackView* _titleStackView;
   UIStackView* _mainRowStack;
   UIView* _bottomBufferView;
+  UITapGestureRecognizer* _tapGestureRecognizer;
 
   NSLayoutConstraint* _dotSizeConstraint;
   NSLayoutConstraint* _bottomBufferHeightConstraint;
@@ -50,55 +56,7 @@ const CGFloat kIconSize = 16.0;
     self.clipsToBounds = YES;
     _connectorVisibility = ActuationWorklogConnectorVisibility::kNone;
 
-    _connectorLayer = [CAShapeLayer layer];
-    _connectorLayer.strokeColor = [UIColor colorNamed:kGrey400Color].CGColor;
-    _connectorLayer.lineWidth = kConnectorLineWidth;
-    _connectorLayer.lineDashPattern = @[ @(kDashLength), @(kDashLength) ];
-    [self.layer insertSublayer:_connectorLayer atIndex:0];
-
-    _dotView = [[UIView alloc] init];
-    _dotView.translatesAutoresizingMaskIntoConstraints = NO;
-    _dotView.clipsToBounds = YES;
-    _dotView.layer.borderColor = [UIColor colorNamed:kGrey400Color].CGColor;
-    [self addSubview:_dotView];
-
-    _iconView = [[UIImageView alloc] init];
-    _iconView.contentMode = UIViewContentModeScaleAspectFit;
-    _iconView.translatesAutoresizingMaskIntoConstraints = NO;
-    _iconView.tintColor = [UIColor colorNamed:kGrey600Color];
-    [_dotView addSubview:_iconView];
-
-    _mainRowStack = [[UIStackView alloc] init];
-    _mainRowStack.axis = UILayoutConstraintAxisVertical;
-    _mainRowStack.alignment = UIStackViewAlignmentFill;
-    _mainRowStack.layoutMarginsRelativeArrangement = YES;
-    _mainRowStack.clipsToBounds = YES;
-    _mainRowStack.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:_mainRowStack];
-
-    _titleLabel = [[UILabel alloc] init];
-    _titleLabel.numberOfLines = 0;
-    _titleLabel.adjustsFontForContentSizeCategory = YES;
-    _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    [_mainRowStack addArrangedSubview:_titleLabel];
-
-    _subtitleLabel = [[UILabel alloc] init];
-    _subtitleLabel.numberOfLines = 0;
-    _subtitleLabel.adjustsFontForContentSizeCategory = YES;
-    _subtitleLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-    _subtitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-    _subtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    [_mainRowStack addArrangedSubview:_subtitleLabel];
-
-    _bottomBufferView = [[UIView alloc] init];
-    _bottomBufferView.translatesAutoresizingMaskIntoConstraints = NO;
-    _bottomBufferView.hidden = YES;
-    _bottomBufferHeightConstraint =
-        [_bottomBufferView.heightAnchor constraintEqualToConstant:0.0];
-    _bottomBufferHeightConstraint.active = YES;
-    [self addSubview:_bottomBufferView];
-
+    [self setupSubviews];
     [self setupConstraints];
   }
   return self;
@@ -120,6 +78,36 @@ const CGFloat kIconSize = 16.0;
     _connectorVisibility = connectorVisibility;
     [self setNeedsLayout];
   }
+}
+
+- (void)setCollapsible:(BOOL)collapsible {
+  if (_collapsible == collapsible) {
+    return;
+  }
+  _collapsible = collapsible;
+  _caretImageView.hidden = !collapsible;
+  _tapGestureRecognizer.enabled = collapsible;
+  if (collapsible) {
+    [self applyCaretTransformAnimated:NO];
+  }
+}
+
+- (void)setCollapsed:(BOOL)collapsed {
+  [self setCollapsed:collapsed animated:NO];
+}
+
+- (void)setCollapsed:(BOOL)collapsed animated:(BOOL)animated {
+  _collapsed = collapsed;
+  [self applyCaretTransformAnimated:animated];
+}
+
+#pragma mark - Actions
+
+- (void)handleTap:(UITapGestureRecognizer*)sender {
+  if (!_collapsible) {
+    return;
+  }
+  [self.delegate worklogItemViewDidTapItem:self];
 }
 
 #pragma mark - UIView
@@ -149,7 +137,8 @@ const CGFloat kIconSize = 16.0;
     _connectorLayer.path = nil;
     return;
   }
-
+  // TODO(crbug.com/550337643): This needs to be adjusted for RTL so that the
+  // dashed lines are positioned at the end instead of the start.
   CGFloat lineCenterX = kTimelineGutterWidth / 2.0;
 
   BOOL hasTopLine =
@@ -161,8 +150,6 @@ const CGFloat kIconSize = 16.0;
   CGFloat start = hasTopLine ? 0.0 : _dotView.center.y;
   CGFloat end = hasBottomLine ? self.bounds.size.height : _dotView.center.y;
 
-  // TODO(crbug.com/532209191): This will need to take into account the various
-  // layout styles of the superviews (compact mode and full scrollable worklog)
   // Adjust dash phase to align with the parent container coordinate space
   // so that dashes across cells connect seamlessly without overlaps.
   UIView* parent = self.superview;
@@ -177,6 +164,76 @@ const CGFloat kIconSize = 16.0;
   [path moveToPoint:CGPointMake(lineCenterX, start)];
   [path addLineToPoint:CGPointMake(lineCenterX, end)];
   _connectorLayer.path = path.CGPath;
+}
+
+// Instantiates and adds all subviews and layout stack hierarchies.
+- (void)setupSubviews {
+  _connectorLayer = [CAShapeLayer layer];
+  _connectorLayer.strokeColor = [UIColor colorNamed:kGrey400Color].CGColor;
+  _connectorLayer.lineWidth = kConnectorLineWidth;
+  _connectorLayer.lineDashPattern = @[ @(kDashLength), @(kDashLength) ];
+  [self.layer insertSublayer:_connectorLayer atIndex:0];
+
+  _dotView = [[UIView alloc] init];
+  _dotView.translatesAutoresizingMaskIntoConstraints = NO;
+  _dotView.clipsToBounds = YES;
+  _dotView.layer.borderColor = [UIColor colorNamed:kGrey400Color].CGColor;
+  [self addSubview:_dotView];
+
+  _iconView = [[UIImageView alloc] init];
+  _iconView.contentMode = UIViewContentModeScaleAspectFit;
+  _iconView.translatesAutoresizingMaskIntoConstraints = NO;
+  _iconView.tintColor = [UIColor colorNamed:kGrey600Color];
+  [_dotView addSubview:_iconView];
+
+  _mainRowStack = [[UIStackView alloc] init];
+  _mainRowStack.axis = UILayoutConstraintAxisVertical;
+  _mainRowStack.layoutMarginsRelativeArrangement = YES;
+  _mainRowStack.clipsToBounds = YES;
+  _mainRowStack.translatesAutoresizingMaskIntoConstraints = NO;
+  [self addSubview:_mainRowStack];
+
+  _titleLabel = [[UILabel alloc] init];
+  _titleLabel.numberOfLines = 0;
+  _titleLabel.adjustsFontForContentSizeCategory = YES;
+  _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+
+  _caretImageView = [[UIImageView alloc] init];
+  _caretImageView.contentMode = UIViewContentModeScaleAspectFit;
+  _caretImageView.image =
+      SymbolTemplateWithPointSize(SymbolChevronDown, kCaretSize);
+  _caretImageView.tintColor = [UIColor colorNamed:kTextSecondaryColor];
+  _caretImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  _caretImageView.hidden = YES;
+  [_caretImageView setContentHuggingPriority:UILayoutPriorityRequired
+                                     forAxis:UILayoutConstraintAxisHorizontal];
+
+  _titleStackView = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ _titleLabel, _caretImageView ]];
+  _titleStackView.alignment = UIStackViewAlignmentCenter;
+  _titleStackView.spacing = kSpacingTiny;
+  _titleStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  [_mainRowStack addArrangedSubview:_titleStackView];
+
+  _subtitleLabel = [[UILabel alloc] init];
+  _subtitleLabel.numberOfLines = 0;
+  _subtitleLabel.adjustsFontForContentSizeCategory = YES;
+  _subtitleLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+  _subtitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  _subtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  [_mainRowStack addArrangedSubview:_subtitleLabel];
+
+  _bottomBufferView = [[UIView alloc] init];
+  _bottomBufferView.translatesAutoresizingMaskIntoConstraints = NO;
+  _bottomBufferView.hidden = YES;
+  [self addSubview:_bottomBufferView];
+
+  _tapGestureRecognizer =
+      [[UITapGestureRecognizer alloc] initWithTarget:self
+                                              action:@selector(handleTap:)];
+  _tapGestureRecognizer.enabled = NO;
+  [self addGestureRecognizer:_tapGestureRecognizer];
 }
 
 // Setup layout constraints.
@@ -216,6 +273,11 @@ const CGFloat kIconSize = 16.0;
   bottomConstraint.priority = UILayoutPriorityDefaultHigh - 1;
   bottomConstraint.active = YES;
 
+  _bottomBufferHeightConstraint =
+      [_bottomBufferView.heightAnchor constraintEqualToConstant:0.0];
+  _bottomBufferHeightConstraint.active = YES;
+
+  AddSquareConstraints(_caretImageView, kCaretSize);
   AddSameCenterConstraints(_iconView, _dotView);
   AddSquareConstraints(_iconView, kIconSize);
 }
@@ -297,6 +359,23 @@ const CGFloat kIconSize = 16.0;
   _bottomBufferHeightConstraint.constant = bottomBufferHeight;
   _bottomBufferView.hidden = (bottomBufferHeight == 0.0);
   [self setNeedsLayout];
+}
+
+// Computes and applies the target rotation transform to the caret image view.
+- (void)applyCaretTransformAnimated:(BOOL)animated {
+  // TODO(crbug.com/550337643): Adjust for RTL.
+  CGAffineTransform targetTransform =
+      _collapsed ? CGAffineTransformMakeRotation(-M_PI_2)
+                 : CGAffineTransformIdentity;
+  if (animated) {
+    UIImageView* caretImageView = _caretImageView;
+    [UIView animateWithDuration:kAnimationDuration
+                     animations:^{
+                       caretImageView.transform = targetTransform;
+                     }];
+  } else {
+    _caretImageView.transform = targetTransform;
+  }
 }
 
 @end

@@ -21,7 +21,11 @@ using intelligence::actor::kTimelineGutterWidth;
 const NSTimeInterval kAnimationDuration = 0.25;
 const NSTimeInterval kSpringAnimationDuration = 0.4;
 const CGFloat kSpringDamping = 1.0;
+
 }  // namespace
+
+@interface ActuationWorklogView () <ActuationWorklogItemViewDelegate>
+@end
 
 @implementation ActuationWorklogView {
   UIStackView* _mainStackView;
@@ -34,13 +38,10 @@ const CGFloat kSpringDamping = 1.0;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    self.backgroundColor = [UIColor clearColor];
     _itemViews = [NSMutableArray array];
 
     _itemsStackView = [[UIStackView alloc] init];
     _itemsStackView.axis = UILayoutConstraintAxisVertical;
-    _itemsStackView.alignment = UIStackViewAlignmentFill;
-    _itemsStackView.distribution = UIStackViewDistributionFill;
     _itemsStackView.translatesAutoresizingMaskIntoConstraints = NO;
 
     _toolChipView = [[ActorToolChipView alloc] init];
@@ -49,7 +50,6 @@ const CGFloat kSpringDamping = 1.0;
     UIView* spacer = [[UIView alloc] init];
     _chipContainer = [[UIStackView alloc]
         initWithArrangedSubviews:@[ _toolChipView, spacer ]];
-    _chipContainer.axis = UILayoutConstraintAxisHorizontal;
     _chipContainer.alignment = UIStackViewAlignmentCenter;
     _chipContainer.layoutMarginsRelativeArrangement = YES;
     _chipContainer.layoutMargins = UIEdgeInsetsMake(
@@ -61,8 +61,6 @@ const CGFloat kSpringDamping = 1.0;
     _mainStackView = [[UIStackView alloc]
         initWithArrangedSubviews:@[ _itemsStackView, _chipContainer ]];
     _mainStackView.axis = UILayoutConstraintAxisVertical;
-    _mainStackView.alignment = UIStackViewAlignmentFill;
-    _mainStackView.distribution = UIStackViewDistributionFill;
     _mainStackView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:_mainStackView];
 
@@ -72,6 +70,29 @@ const CGFloat kSpringDamping = 1.0;
 }
 
 #pragma mark - Public
+
+- (void)setCollapsed:(BOOL)collapsed {
+  [self setCollapsed:collapsed animated:NO];
+}
+
+- (void)setCollapsed:(BOOL)collapsed animated:(BOOL)animated {
+  if (_collapsed == collapsed) {
+    return;
+  }
+  _collapsed = collapsed;
+
+  if (animated) {
+    [UIView transitionWithView:self
+                      duration:kAnimationDuration
+                       options:UIViewAnimationOptionTransitionCrossDissolve
+                    animations:^{
+                      [self updateVisibilityAndConnectors];
+                    }
+                    completion:nil];
+  } else {
+    [self updateVisibilityAndConnectors];
+  }
+}
 
 - (void)setItems:(NSArray<ActuationWorklogItem*>*)items {
   CHECK(items);
@@ -87,93 +108,81 @@ const CGFloat kSpringDamping = 1.0;
   for (NSInteger i = 0; i < count; ++i) {
     ActuationWorklogItemView* itemView =
         [[ActuationWorklogItemView alloc] init];
-    itemView.connectorVisibility = [self connectorVisibilityAtIndex:i
-                                                         totalCount:count];
+    itemView.delegate = self;
     [itemView configureWithItem:items[i]];
     [_itemViews addObject:itemView];
     [_itemsStackView addArrangedSubview:itemView];
   }
 
-  [self layoutIfNeeded];
+  [self updateVisibilityAndConnectors];
 }
 
 - (void)addItem:(ActuationWorklogItem*)item {
   CHECK(item);
 
-  // Update the previous last item to connect downward with the new item.
-  NSInteger count = (NSInteger)_itemViews.count;
-  if (count > 0) {
-    ActuationWorklogItemView* lastView = _itemViews.lastObject;
-    lastView.connectorVisibility = [self connectorVisibilityAtIndex:count - 1
-                                                         totalCount:count + 1];
-  }
-
-  // Create and append the new view.
   ActuationWorklogItemView* itemView = [[ActuationWorklogItemView alloc] init];
-  itemView.connectorVisibility = [self connectorVisibilityAtIndex:count
-                                                       totalCount:count + 1];
+  itemView.delegate = self;
   [itemView configureWithItem:item];
+
   [_itemViews addObject:itemView];
+
+  // Pre-hide and set alpha 0 before adding to stack view so UIKit does not
+  // animate its frame from (0,0).
+  itemView.hidden = YES;
+  itemView.alpha = 0.0;
   [_itemsStackView addArrangedSubview:itemView];
 
-  itemView.alpha = 0.0;
-  itemView.hidden = YES;
-  [self layoutIfNeeded];
+  // Force layout synchronously outside any animation block to anchor the new
+  // view's target frame at the bottom of the stack.
+  [self updateVisibilityAndConnectors];
 
-  [UIView animateWithDuration:kAnimationDuration
-                   animations:^{
-                     itemView.hidden = NO;
-                     itemView.alpha = 1.0;
-                     [self layoutIfNeeded];
-                   }];
+  [UIView transitionWithView:self
+                    duration:kAnimationDuration
+                     options:UIViewAnimationOptionTransitionCrossDissolve
+                  animations:^{
+                    [self updateVisibilityAndConnectors];
+                  }
+                  completion:nil];
 }
 
 - (void)setLastItem:(ActuationWorklogItem*)item {
-  // Item removal.
   if (!item) {
     [self removeLastItem];
     return;
   }
 
   NSInteger count = (NSInteger)_itemViews.count;
-  // Presenting first item.
   if (count == 0) {
     [self addItem:item];
     return;
   }
 
-  // Mutating the last item.
   ActuationWorklogItemView* lastView = _itemViews.lastObject;
-  [UIView transitionWithView:lastView
+  [UIView transitionWithView:self
                     duration:kAnimationDuration
                      options:UIViewAnimationOptionTransitionCrossDissolve
                   animations:^{
                     [lastView configureWithItem:item];
+                    [self updateVisibilityAndConnectors];
                   }
                   completion:nil];
-
-  [UIView animateWithDuration:kAnimationDuration
-                   animations:^{
-                     [self layoutIfNeeded];
-                   }];
 }
 
 - (void)setChip:(ActuationWorklogChip*)chip {
-  // Chip removal.
   if (!chip) {
     [self setChipVisible:NO];
+    [self updateVisibilityAndConnectors];
     return;
   }
 
   BOOL chipAlreadyVisible = !_chipContainer.hidden;
-  // Presenting new chip.
   if (!chipAlreadyVisible) {
     [_toolChipView updateText:chip.text icon:chip.icon];
     [self setChipVisible:YES];
+    [self updateVisibilityAndConnectors];
     return;
   }
 
-  // Mutating the current chip.
   ActorToolChipView* chipView = _toolChipView;
   [UIView transitionWithView:_toolChipView
                     duration:kAnimationDuration
@@ -194,10 +203,63 @@ const CGFloat kSpringDamping = 1.0;
                    completion:nil];
 }
 
+#pragma mark - ActuationWorklogItemViewDelegate
+
+- (void)worklogItemViewDidTapItem:(ActuationWorklogItemView*)itemView {
+  if (_itemViews.count > 0 && itemView == _itemViews[0]) {
+    [self setCollapsed:!_collapsed animated:YES];
+    [self.delegate worklogView:self didChangeCollapsed:_collapsed];
+  }
+}
+
 #pragma mark - Private
 
-// Animates the removal of the last item and changes the active state of
-// the preceding item.
+// Synchronizes subview visibility and timeline connector styles with the
+// current `_collapsed` state. In collapsed mode, only the header item and
+// any currently active in-progress item remain visible.
+- (void)updateVisibilityAndConnectors {
+  NSInteger count = (NSInteger)_itemViews.count;
+  if (count == 0) {
+    return;
+  }
+
+  ActuationWorklogItemView* lastView = _itemViews.lastObject;
+  // Collapsing is only meaningful when multiple items exist in the worklog.
+  BOOL shouldCollapse = _collapsed && (count > 1);
+  // Keep the trailing item visible during collapse if it is actively running.
+  BOOL showLast = shouldCollapse && lastView.item.active;
+  for (NSInteger i = 0; i < count; ++i) {
+    ActuationWorklogItemView* view = _itemViews[i];
+    BOOL isFirst = (i == 0);
+    BOOL isLast = (i == count - 1);
+    // In collapsed mode, only show the header and any active in-progress items.
+    BOOL shouldBeVisible = !shouldCollapse || isFirst || (showLast && isLast);
+
+    // Unhide expanding items at alpha 0 so they fade in smoothly.
+    if (shouldBeVisible && view.hidden) {
+      view.hidden = NO;
+      view.alpha = 0.0;
+    }
+
+    // The first item acts as the collapse toggle when multiple items exist.
+    if (isFirst) {
+      view.collapsible = (count > 1);
+      [view setCollapsed:_collapsed animated:NO];
+    }
+
+    // Update timeline connector lines to match the current collapse state.
+    view.connectorVisibility =
+        shouldCollapse ? [self collapsedConnectorsAtIndex:i showLast:showLast]
+                       : [self connectorsAtIndex:i];
+    view.alpha = shouldBeVisible ? 1.0 : 0.0;
+    view.hidden = !shouldBeVisible;
+  }
+
+  [self layoutIfNeeded];
+}
+
+// Removes the trailing timeline item from the log with an animated
+// transition, synchronizing layout and connectors after removal.
 - (void)removeLastItem {
   ActuationWorklogItemView* lastView = _itemViews.lastObject;
   if (!lastView) {
@@ -205,26 +267,34 @@ const CGFloat kSpringDamping = 1.0;
   }
   [_itemViews removeLastObject];
 
-  [UIView animateWithDuration:kAnimationDuration
-      animations:^{
-        lastView.alpha = 0.0;
-        lastView.hidden = YES;
-        [self layoutIfNeeded];
-      }
-      completion:^(BOOL finished) {
-        [lastView removeFromSuperview];
-      }];
-
-  // Update connector visibility of the new last item.
-  ActuationWorklogItemView* newLastView = _itemViews.lastObject;
-  if (newLastView) {
-    NSInteger count = (NSInteger)_itemViews.count;
-    newLastView.connectorVisibility = [self connectorVisibilityAtIndex:count - 1
-                                                            totalCount:count];
+  if (_collapsed) {
+    // Anchor starting visibility and layout frames synchronously before UIKit
+    // takes the bitmap layer snapshot for the transition.
+    [self updateVisibilityAndConnectors];
+    [UIView transitionWithView:self
+        duration:kAnimationDuration
+        options:UIViewAnimationOptionTransitionCrossDissolve
+        animations:^{
+          [self updateVisibilityAndConnectors];
+        }
+        completion:^(BOOL finished) {
+          [lastView removeFromSuperview];
+        }];
+  } else {
+    [UIView animateWithDuration:kAnimationDuration
+        animations:^{
+          lastView.alpha = 0.0;
+          lastView.hidden = YES;
+          [self layoutIfNeeded];
+        }
+        completion:^(BOOL finished) {
+          [lastView removeFromSuperview];
+          [self updateVisibilityAndConnectors];
+        }];
   }
 }
 
-// Animates the visibility of the chip container.
+// Sets the visibility of the tool chip container at the bottom of the worklog.
 - (void)setChipVisible:(BOOL)visible {
   BOOL visibilityChanged = _chipContainer.hidden != !visible;
   if (!visibilityChanged) {
@@ -245,18 +315,46 @@ const CGFloat kSpringDamping = 1.0;
                    }];
 }
 
-// Determines the connector lines visibility based on the view's index and
-// total count in the log.
-- (ActuationWorklogConnectorVisibility)
-    connectorVisibilityAtIndex:(NSInteger)index
-                    totalCount:(NSInteger)count {
+// Returns the connector line segments (top, bottom, both, or none) for an
+// item at `index` when the worklog is in the expanded state.
+- (ActuationWorklogConnectorVisibility)connectorsAtIndex:(NSInteger)index {
+  NSInteger count = (NSInteger)_itemViews.count;
+  BOOL hasChip = !_chipContainer.hidden;
+  BOOL isFirst = (index == 0);
   BOOL isLast = (index == count - 1);
-  if (index == 0) {
-    return isLast ? ActuationWorklogConnectorVisibility::kNone
-                  : ActuationWorklogConnectorVisibility::kBottom;
+  if (isFirst && isLast) {
+    return hasChip ? ActuationWorklogConnectorVisibility::kBottom
+                   : ActuationWorklogConnectorVisibility::kNone;
   }
-  return isLast ? ActuationWorklogConnectorVisibility::kTop
-                : ActuationWorklogConnectorVisibility::kBoth;
+  if (isFirst) {
+    return ActuationWorklogConnectorVisibility::kBottom;
+  }
+  if (isLast) {
+    return hasChip ? ActuationWorklogConnectorVisibility::kBoth
+                   : ActuationWorklogConnectorVisibility::kTop;
+  }
+  return ActuationWorklogConnectorVisibility::kBoth;
+}
+
+// Returns the connector line segments for an item at `index` when the worklog
+// is in the collapsed state, accounting for whether the last active item or
+// tool chip is shown.
+- (ActuationWorklogConnectorVisibility)
+    collapsedConnectorsAtIndex:(NSInteger)index
+                      showLast:(BOOL)showLast {
+  NSInteger count = (NSInteger)_itemViews.count;
+  BOOL hasChip = !_chipContainer.hidden;
+  BOOL isFirst = (index == 0);
+  BOOL isLast = (index == count - 1);
+  if (isFirst) {
+    return (showLast || hasChip) ? ActuationWorklogConnectorVisibility::kBottom
+                                 : ActuationWorklogConnectorVisibility::kNone;
+  }
+  if (showLast && isLast) {
+    return hasChip ? ActuationWorklogConnectorVisibility::kBoth
+                   : ActuationWorklogConnectorVisibility::kTop;
+  }
+  return ActuationWorklogConnectorVisibility::kNone;
 }
 
 @end
