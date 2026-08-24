@@ -73,8 +73,9 @@ class DSEPrewarmNavigationThrottleBrowserTest : public PlatformBrowserTest {
   test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_;
 };
 
+// TODO(crbug.com/549677285): Disabling as this test seems flaky.
 IN_PROC_BROWSER_TEST_F(DSEPrewarmNavigationThrottleBrowserTest,
-                       ThrottleSearchNavigationDuringPrewarm) {
+                       DISABLED_ThrottleSearchNavigationDuringPrewarm) {
   auto* profile = GetProfile();
   auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(profile);
   ASSERT_TRUE(service);
