@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.63"
+rust-version = "1.90"
 name = "ordered-float"
-version = "5.3.0"
+version = "5.5.0"
 authors = [
     "Jonathan Reem <jonathan.reem@gmail.com>",
     "Matt Brubeck <mbrubeck@limpet.net>",
@@ -43,6 +43,7 @@ repository = "https://github.com/reem/rust-ordered-float"
 
 [features]
 default = ["std"]
+facet = ["dep:facet"]
 libm = ["num-traits/libm"]
 randtest = [
     "rand/std",
@@ -115,6 +116,12 @@ default-features = false
 version = "0.4.0"
 optional = true
 
+[dependencies.facet]
+version = "0.46.5"
+features = ["alloc"]
+optional = true
+default-features = false
+
 [dependencies.num-cmp]
 version = "0.1.0"
 optional = true
@@ -147,6 +154,11 @@ package = "rkyv"
 [dependencies.schemars]
 version = "0.8.8"
 optional = true
+
+[dependencies.schemars1]
+version = "1.2"
+optional = true
+package = "schemars"
 
 [dependencies.serde]
 version = "1.0"

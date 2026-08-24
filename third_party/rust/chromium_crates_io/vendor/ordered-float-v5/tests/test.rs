@@ -351,6 +351,15 @@ fn not_nan64_bounded() {
 }
 
 #[test]
+fn widen_f32_to_f64() {
+    let of: OrderedFloat<f64> = OrderedFloat(1.5f32).into();
+    assert_eq!(of, OrderedFloat(1.5f64));
+
+    let nn: NotNan<f64> = not_nan(1.5f32).into();
+    assert_eq!(nn, not_nan(1.5f64));
+}
+
+#[test]
 fn not_nan64_from_primitive() {
     assert_eq!(NotNan::<f64>::from_i8(42i8), Some(not_nan(42.0)));
     assert_eq!(NotNan::<f64>::from_u8(42u8), Some(not_nan(42.0)));

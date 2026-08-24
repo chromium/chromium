@@ -10,7 +10,7 @@ jobs:
       matrix:
         rust:
           - stable
-          - 1.63.0
+          - 1.90.0
     steps:
       - uses: r7kamura/rust-problem-matchers@v1
 
@@ -56,4 +56,4 @@ jobs:
         run: cargo test --features ${{ env.all_features }}
 
 env:
-  all_features: "arbitrary,bytemuck,rand,randtest,serde,schemars,proptest,rkyv,rkyv_ck,speedy"
+  all_features: "arbitrary,bytemuck,rand,randtest,serde,schemars,proptest,rkyv,rkyv_ck,speedy,facet"
