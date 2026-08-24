@@ -39,6 +39,10 @@ namespace enterprise_data_protection {
 class DataProtectionNavigationController;
 }  // namespace enterprise_data_protection
 
+namespace enterprise_reporting {
+class SaasUsageNavigationObserver;
+}  // namespace enterprise_reporting
+
 namespace glic {
 class ContextualCueingHelper;
 class GlicInstanceHelper;
@@ -125,6 +129,8 @@ class TabFeatures {
   std::unique_ptr<
       enterprise_data_protection::DataProtectionNavigationController>
       data_protection_tab_controller_;
+  std::unique_ptr<enterprise_reporting::SaasUsageNavigationObserver>
+      saas_usage_navigation_observer_;
 
   std::unique_ptr<glic::ContextualCueingHelper> contextual_cueing_helper_;
 #if BUILDFLAG(ENABLE_WEBUI_NTP)

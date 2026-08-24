@@ -12,6 +12,7 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
+#include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_navigation_observer.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/glic/public/features.h"
@@ -41,6 +42,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/enterprise/browser/reporting/reporting_features.h"
 #include "components/enterprise/data_protection/features.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/search/ntp_features.h"
@@ -169,6 +171,12 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
         std::make_unique<customize_chrome::SidePanelControllerAndroid>(*tab);
   }
 #endif
+
+  if (base::FeatureList::IsEnabled(enterprise_reporting::kSaasUsageReporting)) {
+    saas_usage_navigation_observer_ =
+        std::make_unique<enterprise_reporting::SaasUsageNavigationObserver>(
+            web_contents);
+  }
 }
 
 TabFeatures::~TabFeatures() = default;
