@@ -466,7 +466,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Mobile.RecentTabsManager.TotalTabsFromOtherDevicesOpenAll"
     units="count" expires_after="2024-09-19">
-  <owner>sczs@chromium.org</owner>
   <owner>edchin@chromium.org</owner>
   <summary>
     Records the total number of tabs opened when Open all was selected from

@@ -10951,7 +10951,6 @@ should be able to be added at any place in this file.
 
 <action name="ContentSuggestions.Feed.CardAction.ClosedReportContent">
   <owner>harringtond@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
     The user closed the 'report content' option for a Feed card.
@@ -11049,7 +11048,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ContentSuggestions.Feed.CardAction.NativeContextMenu">
-  <owner>sczs@chromium.org</owner>
   <owner>gogerald@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
@@ -11110,7 +11108,6 @@ should be able to be added at any place in this file.
 
 <action name="ContentSuggestions.Feed.CardAction.ReadLater">
   <owner>adamta@google.org</owner>
-  <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
     The user selected the 'Add to Reading List' option for a Feed card.
@@ -11119,7 +11116,6 @@ should be able to be added at any place in this file.
 
 <action name="ContentSuggestions.Feed.CardAction.ReportContent">
   <owner>harringtond@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
     The user selected the 'report content' option for a Feed card.
@@ -11152,7 +11148,6 @@ should be able to be added at any place in this file.
 
 <action name="ContentSuggestions.Feed.DeviceOrientationChanged.Landscape">
   <owner>adamta@google.org</owner>
-  <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
     The user rotates the device to landscape from the NTP with the feed visible.
@@ -11162,7 +11157,6 @@ should be able to be added at any place in this file.
 
 <action name="ContentSuggestions.Feed.DeviceOrientationChanged.Portrait">
   <owner>adamta@google.org</owner>
-  <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
     The user rotates the device to portrait from the NTP with the feed visible.
@@ -11172,7 +11166,6 @@ should be able to be added at any place in this file.
 
 <action name="ContentSuggestions.Feed.Engaged">
   <owner>adamta@google.org</owner>
-  <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
     The user has engaged with the feed or scrolled at least 1 inch into it
@@ -11182,7 +11175,6 @@ should be able to be added at any place in this file.
 
 <action name="ContentSuggestions.Feed.HeaderAction.ManageActivity">
   <owner>adamta@google.org</owner>
-  <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
     The user selected the 'Manage Activity' option in the feed header menu.
@@ -11192,7 +11184,6 @@ should be able to be added at any place in this file.
 <action name="ContentSuggestions.Feed.HeaderAction.ManageFollowing">
   <owner>edchin@google.com</owner>
   <owner>adamta@google.com</owner>
-  <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
     The user selected the 'Manage Following' option in the feed management
@@ -11203,7 +11194,6 @@ should be able to be added at any place in this file.
 <action name="ContentSuggestions.Feed.HeaderAction.ManageHidden">
   <owner>edchin@google.com</owner>
   <owner>adamta@google.com</owner>
-  <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
     The user selected the 'Manage Hidden' option in the feed management surface.
@@ -11212,7 +11202,6 @@ should be able to be added at any place in this file.
 
 <action name="ContentSuggestions.Feed.HeaderAction.ManageInterests">
   <owner>adamta@google.org</owner>
-  <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
     The user selected the 'Manage Interests' option in the feed header menu.
@@ -11222,7 +11211,6 @@ should be able to be added at any place in this file.
 <action name="ContentSuggestions.Feed.InfiniteFeedTriggered">
   <obsolete>Deprecated with refactored NTP in August 2021.</obsolete>
   <owner>adamta@google.org</owner>
-  <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
     The user has scrolled down enough to trigger the infinite feed pagination.
@@ -11230,7 +11218,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ContentSuggestions.Feed.SignIn.FeedSignInPromoUICancelTapped">
-  <owner>sczs@google.com</owner>
   <owner>tinazwang@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
@@ -11239,7 +11226,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ContentSuggestions.Feed.SignIn.FeedSignInPromoUIContinueTapped">
-  <owner>sczs@google.com</owner>
   <owner>tinazwang@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
@@ -11248,7 +11234,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ContentSuggestions.Feed.SignIn.ShowFeedSignInOnlyUIWithoutUserId">
-  <owner>sczs@google.com</owner>
   <owner>tinazwang@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
@@ -11258,7 +11243,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ContentSuggestions.Feed.SignIn.ShowFeedSignInOnlyUIWithUserId">
-  <owner>sczs@google.com</owner>
   <owner>tinazwang@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
@@ -11268,7 +11252,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ContentSuggestions.Feed.SignIn.ShowSignInDisableToastFromFeed">
-  <owner>sczs@google.com</owner>
   <owner>tinazwang@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
@@ -11278,7 +11261,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ContentSuggestions.Feed.SignIn.ShowSignInOnlyFlowFromFeed">
-  <owner>sczs@google.com</owner>
   <owner>tinazwang@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
@@ -11288,7 +11270,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ContentSuggestions.Feed.Sync.ShowDisableToastFromFeed">
-  <owner>sczs@google.com</owner>
   <owner>tinazwang@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
@@ -11298,7 +11279,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ContentSuggestions.Feed.Sync.ShowSyncFlowFromFeed">
-  <owner>sczs@google.com</owner>
   <owner>tinazwang@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
@@ -11309,7 +11289,6 @@ should be able to be added at any place in this file.
 <action name="ContentSuggestions.Feed.WebFeed.SortType.GroupByPublisher">
   <obsolete>Removed as of 10/2025.</obsolete>
   <owner>adamta@google.com</owner>
-  <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
     The user has selected to group by publisher from the feed sort menu.
@@ -11319,7 +11298,6 @@ should be able to be added at any place in this file.
 <action name="ContentSuggestions.Feed.WebFeed.SortType.SortByLatest">
   <obsolete>Removed as of 10/2025.</obsolete>
   <owner>adamta@google.com</owner>
-  <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
     The user has selected to sort by latest from the feed sort menu.
@@ -11328,7 +11306,6 @@ should be able to be added at any place in this file.
 
 <action name="ContentSuggestions.Feed.WillRefresh">
   <owner>adamta@google.org</owner>
-  <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
     The feed will trigger a refresh, either manually by the user or because of
@@ -17285,7 +17262,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="HistoryPage_RemoveSelected">
-  <owner>sczs@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <description>
     Action indicating that the selected history entries were deleted from the
     history list.
@@ -20286,7 +20263,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.SearchEngines.RecentlyViewed.Delete">
-  <owner>sczs@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <description>
     Recorded when user deletes for recently viewed search engines. iOS only.
@@ -20294,7 +20270,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.SearchEngines.RecentlyViewed.Edit">
-  <owner>sczs@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <description>
     Recorded when user enters edit mode for recently viewed search engines. iOS
@@ -20435,7 +20410,6 @@ should be able to be added at any place in this file.
 
 <action name="IOSBookmarkManagerCloseWithSwipe">
   <owner>rohitrao@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Recorded when a user closes bookmark manager by swiping down. iOS-only.
   </description>
@@ -20675,7 +20649,6 @@ should be able to be added at any place in this file.
 
 <action name="IOSHistoryCloseWithSwipe">
   <owner>rohitrao@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Recorded when a user closes History using swipe down gesture. iOS-only.
   </description>
@@ -20690,7 +20663,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOSLanguagesSettingsCloseWithSwipe">
-  <owner>sczs@chromium.org</owner>
   <owner>pkl@chromium.org</owner>
   <description>
     Reported when Languages Settings UI was dismissed using swipe down gesture.
@@ -20865,7 +20837,6 @@ should be able to be added at any place in this file.
 
 <action name="IOSRecentTabsCloseWithSwipe">
   <owner>gambard@google.com</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Recorded when a user closes Recent Tabs using swipe down gesture. iOS-only.
   </description>
@@ -20892,7 +20863,6 @@ should be able to be added at any place in this file.
 <action name="IOSSettingsCloseWithSwipe">
   <owner>edchin@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Reported when Settings UI was dismissed using swipe down gesture. iOS only.
   </description>
@@ -27177,7 +27147,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileAboutSettingsBack">
   <owner>gambard@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Reported when user goes back from Chrome About Settings UI to root Settings
     screen. iOS only.
@@ -27186,7 +27155,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileAboutSettingsClose">
   <owner>gambard@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Reported when Chrome About Settings UI was dismissed. iOS only.
   </description>
@@ -27328,7 +27296,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileAddressesSettingsBack">
   <owner>olivierrobin@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Reported when user goes back from Addresses Settings UI to root Settings
     screen. iOS only.
@@ -27337,7 +27304,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileAddressesSettingsClose">
   <owner>olivierrobin@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Reported when Addresses Settings UI was dismissed. iOS only.
   </description>
@@ -27391,7 +27357,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileBandwidthSettingsBack">
   <owner>gambard@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Reported when user goes back from Bandwidth Settings UI to root Settings
     screen. iOS only.
@@ -27400,7 +27365,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileBandwidthSettingsClose">
   <owner>gambard@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Reported when Bandwidth Settings UI was dismissed. iOS only.
   </description>
@@ -27458,7 +27422,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileBookmarkManagerClose">
   <owner>twellington@google.com</owner>
-  <owner>sczs@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <description>
     Recorded when a user closes bookmark manager on iOS or Android.
@@ -27516,7 +27479,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileBookmarkManagerEntryDeleted">
-  <owner>sczs@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     Action indicating that a bookmark was deleted from the bookmark manager.
   </description>
@@ -27647,7 +27610,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileBookmarkManagerRemoveSelected">
-  <owner>sczs@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <description>
     Action indicating that the selected bookmark entries were deleted from the
     bookmark manager.
@@ -27993,7 +27956,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileContentSettingsBack">
   <owner>gambard@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Reported when user goes back from Content Settings UI to root Settings
     screen. iOS only.
@@ -28002,7 +27964,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileContentSettingsClose">
   <owner>gambard@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Is reported when the Content Settings UI was dismissed. iOS only.
   </description>
@@ -28184,7 +28145,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileCreditCardSettingsBack">
   <owner>olivierrobin@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Reported when user goes back from Credit Card Settings UI to root Settings
     screen. iOS only.
@@ -28193,7 +28153,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileCreditCardSettingsClose">
   <owner>olivierrobin@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Reported when Credit Card Settings UI was dismissed. iOS only.
   </description>
@@ -29144,7 +29103,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileGoogleServicesSettingsBack">
   <owner>gambard@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Reported when user goes back from Google Services Settings UI to root
     Settings screen. iOS only.
@@ -29215,12 +29173,10 @@ should be able to be added at any place in this file.
 
 <action name="MobileHistoryClose">
   <owner>rohitrao@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>Recorded when a user closes History on iOS.</description>
 </action>
 
 <action name="MobileHistoryPage_EntryLinkOpenNewIncognitoTab">
-  <owner>sczs@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <description>
@@ -29232,7 +29188,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileHistoryPage_EntryLinkOpenNewTab">
-  <owner>sczs@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <description>
@@ -29764,7 +29719,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileLanguageSettingsBack">
   <owner>eugenebut@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>TODO(crbug.com/483962380): Write the description.</description>
 </action>
 
@@ -30716,7 +30670,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMessagesBadgeAcceptedTapped">
-  <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <description>
     User tapped on an accepted Infobar Message badge which displayed the Modal.
@@ -30724,7 +30677,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMessagesBadgeNonAcceptedTapped">
-  <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <description>
     User tapped on a non-accepted Infobar Message badge which displayed the
@@ -30733,7 +30685,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMessagesBannerDraggedDown">
-  <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <description>
     User dragged down the Infobar Message Banner which expanded it into a Modal.
@@ -30741,7 +30692,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMessagesBannerTapped">
-  <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <description>
     User tapped the Infobar Message Banner which expanded it into a Modal.
@@ -30749,13 +30699,11 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMessagesModalAcceptedTapped">
-  <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <description>User accepted the Infobar Modal main action.</description>
 </action>
 
 <action name="MobileMessagesModalCancelledTapped">
-  <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <description>
     User dismissed the Infobar Modal without any action.
@@ -30763,7 +30711,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMessagesModalNever">
-  <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <description>
     User dismissed both the Infobar Modal and the InfobarBadge.
@@ -30771,7 +30718,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMessagesModalSettings">
-  <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <description>
     User dismissed the Infobar Modal by opening the Infobar Settings.
@@ -30779,13 +30725,11 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMessagesOverflowBadgeShown" not_user_triggered="true">
-  <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <description>An Infobar Message overflow badge is shown.</description>
 </action>
 
 <action name="MobileMessagesOverflowBadgeTapped">
-  <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <description>User tapped on an Infobar Message overflow badge.</description>
 </action>
@@ -31781,7 +31725,6 @@ should be able to be added at any place in this file.
 
 <action name="MobilePasswordsSettingsBack">
   <owner>kazinova@google.com</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Reported when user goes back from Passwords Settings UI to root Settings
     screen. iOS only.
@@ -31791,7 +31734,6 @@ should be able to be added at any place in this file.
 <action name="MobilePasswordsSettingsClose">
   <owner>tmartino@chromium.org</owner>
   <owner>kazinova@google.com</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Reported when Passwords Settings UI was dismissed. iOS only.
   </description>
@@ -31878,7 +31820,6 @@ should be able to be added at any place in this file.
 
 <action name="MobilePrivacySettingsBack">
   <owner>msramek@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Reported when user goes back from Privacy Settings UI to root Settings
     screen. iOS only.
@@ -31887,7 +31828,6 @@ should be able to be added at any place in this file.
 
 <action name="MobilePrivacySettingsClose">
   <owner>msramek@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Reported when Privacy Settings UI was dismissed. iOS only.
   </description>
@@ -32103,7 +32043,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileRecentTabManagerOpenAllTabsFromOtherDevice">
-  <owner>sczs@chromium.org</owner>
   <owner>edchin@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <description>
@@ -32189,7 +32128,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileRecentTabManagerShowFullHistory">
   <owner>gambard@google.com</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Recorded when a user opens History from Recent Tabs on iOS.
   </description>
@@ -32223,7 +32161,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileRecentTabsClose">
   <owner>gambard@google.com</owner>
-  <owner>sczs@chromium.org</owner>
   <description>Recorded when a user closes Recent Tabs on iOS.</description>
 </action>
 
@@ -32407,7 +32344,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileSearchEngineSettingsBack">
   <owner>gambard@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Reported when user goes back from Search Engine Settings UI to root Settings
     screen. iOS only.
@@ -32416,7 +32352,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileSearchEngineSettingsClose">
   <owner>gambard@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Reported when Search Engine Settings UI was dismissed. iOS only.
   </description>
@@ -32449,7 +32384,6 @@ should be able to be added at any place in this file.
 <action name="MobileSettingsClose">
   <owner>edchin@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>Reported when Settings UI was dismissed. iOS only.</description>
 </action>
 
@@ -34866,7 +34800,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileVoiceSearchSettingsBack">
   <owner>rohitrao@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Reported when user goes back from Voice Search Settings UI to root Settings
     screen. iOS only.
@@ -34875,7 +34808,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileVoiceSearchSettingsClose">
   <owner>rohitrao@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Reported when Voice Search Settings UI was dismissed. iOS only.
   </description>
@@ -35923,7 +35855,6 @@ should be able to be added at any place in this file.
 
 <action name="NewTabPage.ViewHierarchyFixed">
   <owner>adamta@google.org</owner>
-  <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
     Recorded when the NTP detects a broken view hierarchy and repairs itself.
@@ -43189,7 +43120,6 @@ should be able to be added at any place in this file.
 
 <action name="Settings.Bandwidth">
   <owner>gambard@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Reported when user navigates to Bandwidth Settings. iOS only.
   </description>
@@ -43221,7 +43151,6 @@ should be able to be added at any place in this file.
 
 <action name="Settings.ContentSettings">
   <owner>gambard@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Reported when user navigates to Content Settings. iOS only.
   </description>
@@ -43476,7 +43405,6 @@ should be able to be added at any place in this file.
 
 <action name="Settings.Language">
   <owner>eugenebut@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>TODO(crbug.com/483964250): Write the description.</description>
 </action>
 
@@ -43526,7 +43454,6 @@ should be able to be added at any place in this file.
 
 <action name="Settings.Privacy">
   <owner>thgreenfrog@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Reported when user navigates to Language Settings. iOS only.
   </description>
@@ -45047,7 +44974,6 @@ should be able to be added at any place in this file.
 
 <action name="Settings.VoiceSearch">
   <owner>rohitrao@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Reported when user navigates to Voice Search Settings. iOS only.
   </description>
@@ -47611,7 +47537,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Impression_FromNTPFeedBottomSigninPromo">
-  <owner>sczs@chromium.org</owner>
   <owner>tinazwang@chromium.org</owner>
   <description>
     Recorded when showing sign-in promo card in the feed bottom.
@@ -47619,7 +47544,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Impression_FromNTPFeedCardMenuSigninPromo">
-  <owner>sczs@chromium.org</owner>
   <owner>tinazwang@chromium.org</owner>
   <description>
     Recorded when showing sign-in promo UI triggered by feed card menu
@@ -47629,7 +47553,6 @@ should be able to be added at any place in this file.
 
 <action name="Signin_Impression_FromNTPFeedTopPromo">
   <owner>mrefaat@google.com</owner>
-  <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
     Recorded when showing sign in entry in the NTP feed top section promo.
@@ -47875,7 +47798,6 @@ should be able to be added at any place in this file.
     not_user_triggered="true">
   <obsolete>Removed in M104.</obsolete>
   <owner>mrefaat@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded when starting sign-in using the promo view, with a default account,
@@ -48004,7 +47926,6 @@ should be able to be added at any place in this file.
   <obsolete>Removed in M104.</obsolete>
   <owner>mrefaat@chromium.org</owner>
   <owner>jlebel@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <description>
     Recorded when starting sign-in using the promo view, with no default
     account, from NTP content suggestions
@@ -48649,7 +48570,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromNTPFeedBottomSigninPromo">
-  <owner>sczs@chromium.org</owner>
   <owner>tinazwang@chromium.org</owner>
   <description>
     A sign-in flow is shown triggered by NTP feed bottom sign-in entry point.
@@ -48657,7 +48577,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromNTPFeedCardMenuSigninPromo">
-  <owner>sczs@chromium.org</owner>
   <owner>tinazwang@chromium.org</owner>
   <description>
     A sign-in flow is shown triggered by NTP feed card sign-in promo UI.
@@ -49348,7 +49267,6 @@ should be able to be added at any place in this file.
 <action name="Signin_SigninNewAccountNoExistingAccount_FromNTPFeedTopPromo">
   <obsolete>Removed in M104.</obsolete>
   <owner>mrefaat@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
@@ -49617,7 +49535,6 @@ should be able to be added at any place in this file.
 <action name="Signin_SigninNotDefault_FromNTPFeedTopPromo">
   <obsolete>Removed in M104.</obsolete>
   <owner>mrefaat@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
@@ -49763,7 +49680,6 @@ should be able to be added at any place in this file.
 <action name="Signin_SigninWithDefault_FromNTPFeedTopPromo">
   <obsolete>Removed in M104.</obsolete>
   <owner>mrefaat@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <owner>jlebel@chromium.org</owner>
   <description>
     Recorded on sign in start from access point

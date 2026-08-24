@@ -964,7 +964,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="ContentSuggestions.Feed.BrokenNTPHierarchy"
     enum="NTPBrokenViewHierarchyRelationship" expires_after="M120">
   <owner>adamta@google.com</owner>
-  <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     When the NTP view hierarchy is fixed upon NTP creation, this hisotgram logs
@@ -1118,7 +1117,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ContentSuggestions.Feed.FeedSignInUI" enum="FeedSignInUI"
     expires_after="2024-02-11">
-  <owner>sczs@chromium.org</owner>
   <owner>tinazwang@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1129,7 +1127,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ContentSuggestions.Feed.FeedSyncPromo" enum="FeedSyncPromo"
     expires_after="2023-10-10">
-  <owner>sczs@chromium.org</owner>
   <owner>tinazwang@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1215,7 +1212,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ContentSuggestions.Feed.Network.Duration{NetworkEvent}"
     units="ms" expires_after="2026-03-01">
-  <owner>sczs@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>The amount of time a {NetworkEvent} network event took.</summary>
@@ -1455,7 +1451,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="ContentSuggestions.Feed.UserActions.Commands"
     enum="FeedUserCommandType" expires_after="2025-01-05">
   <owner>harringtond@chromium.org</owner>
-  <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
     Recorded whenever an Elements commands has taken place which wasn't handled
