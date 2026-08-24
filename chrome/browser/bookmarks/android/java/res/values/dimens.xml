@@ -35,6 +35,7 @@ found in the LICENSE file.
   <dimen name="bookmark_search_box_padding_start">16dp</dimen>
   <dimen name="bookmark_search_box_row_margin_bottom_default">16dp</dimen>
   <dimen name="bookmark_search_box_row_margin_bottom_desktop">0dp</dimen>
+  <dimen name="bookmarks_bar_context_menu_end_icon_padding">44dp</dimen>
   <dimen name="bookmarks_bar_popup_max_width">420dp</dimen>
   <dimen name="bookmarks_bar_popup_min_height">182dp</dimen>
   <!-- go/keep-sorted end -->

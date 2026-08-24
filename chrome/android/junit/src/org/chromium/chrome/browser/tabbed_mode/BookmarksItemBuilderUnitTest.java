@@ -459,10 +459,10 @@ public class BookmarksItemBuilderUnitTest {
         assertNotNull(onlyNtpItem);
         assertNotNull(alwaysShowItem);
 
-        // All items have the same type (STANDARD) ensuring identical indentation.
-        assertEquals(AppMenuHandler.AppMenuItemType.STANDARD, alwaysHideItem.type);
-        assertEquals(AppMenuHandler.AppMenuItemType.STANDARD, onlyNtpItem.type);
-        assertEquals(AppMenuHandler.AppMenuItemType.STANDARD, alwaysShowItem.type);
+        // All items have the same type (STANDARD_NO_ICON) ensuring identical indentation.
+        assertEquals(AppMenuHandler.AppMenuItemType.STANDARD_NO_ICON, alwaysHideItem.type);
+        assertEquals(AppMenuHandler.AppMenuItemType.STANDARD_NO_ICON, onlyNtpItem.type);
+        assertEquals(AppMenuHandler.AppMenuItemType.STANDARD_NO_ICON, alwaysShowItem.type);
         assertEquals(
                 mContext.getString(R.string.bookmark_bar_setting_always_hide),
                 alwaysHideItem.model.get(AppMenuItemProperties.TITLE));
@@ -478,17 +478,20 @@ public class BookmarksItemBuilderUnitTest {
         assertFalse(onlyNtpItem.model.get(AppMenuItemProperties.CHECKED));
         assertTrue(alwaysShowItem.model.get(AppMenuItemProperties.CHECKABLE));
         assertFalse(alwaysShowItem.model.get(AppMenuItemProperties.CHECKED));
-        assertNotNull(alwaysHideItem.model.get(AppMenuItemProperties.ICON));
+        assertNotNull(alwaysHideItem.model.get(AppMenuItemProperties.END_ICON));
         assertTrue(
-                !(alwaysHideItem.model.get(AppMenuItemProperties.ICON) instanceof ColorDrawable));
-        assertTrue(onlyNtpItem.model.get(AppMenuItemProperties.ICON) instanceof ColorDrawable);
+                !(alwaysHideItem.model.get(AppMenuItemProperties.END_ICON)
+                        instanceof ColorDrawable));
+        assertTrue(onlyNtpItem.model.get(AppMenuItemProperties.END_ICON) instanceof ColorDrawable);
         assertEquals(
                 Color.TRANSPARENT,
-                ((ColorDrawable) onlyNtpItem.model.get(AppMenuItemProperties.ICON)).getColor());
-        assertTrue(alwaysShowItem.model.get(AppMenuItemProperties.ICON) instanceof ColorDrawable);
+                ((ColorDrawable) onlyNtpItem.model.get(AppMenuItemProperties.END_ICON)).getColor());
+        assertTrue(
+                alwaysShowItem.model.get(AppMenuItemProperties.END_ICON) instanceof ColorDrawable);
         assertEquals(
                 Color.TRANSPARENT,
-                ((ColorDrawable) alwaysShowItem.model.get(AppMenuItemProperties.ICON)).getColor());
+                ((ColorDrawable) alwaysShowItem.model.get(AppMenuItemProperties.END_ICON))
+                        .getColor());
 
         // 2. When bookmark bar is set to visible: "Always show" has checkmark, "Always hide" has
         // transparent drawable.
@@ -509,26 +512,30 @@ public class BookmarksItemBuilderUnitTest {
         assertNotNull(onlyNtpItem);
         assertNotNull(alwaysShowItem);
 
-        // All items maintain the same type (STANDARD) ensuring identical indentation.
-        assertEquals(AppMenuHandler.AppMenuItemType.STANDARD, alwaysHideItem.type);
-        assertEquals(AppMenuHandler.AppMenuItemType.STANDARD, onlyNtpItem.type);
-        assertEquals(AppMenuHandler.AppMenuItemType.STANDARD, alwaysShowItem.type);
+        // All items maintain the same type (STANDARD_NO_ICON) ensuring identical indentation.
+        assertEquals(AppMenuHandler.AppMenuItemType.STANDARD_NO_ICON, alwaysHideItem.type);
+        assertEquals(AppMenuHandler.AppMenuItemType.STANDARD_NO_ICON, onlyNtpItem.type);
+        assertEquals(AppMenuHandler.AppMenuItemType.STANDARD_NO_ICON, alwaysShowItem.type);
         assertTrue(alwaysHideItem.model.get(AppMenuItemProperties.CHECKABLE));
         assertFalse(alwaysHideItem.model.get(AppMenuItemProperties.CHECKED));
         assertTrue(onlyNtpItem.model.get(AppMenuItemProperties.CHECKABLE));
         assertFalse(onlyNtpItem.model.get(AppMenuItemProperties.CHECKED));
         assertTrue(alwaysShowItem.model.get(AppMenuItemProperties.CHECKABLE));
         assertTrue(alwaysShowItem.model.get(AppMenuItemProperties.CHECKED));
-        assertTrue(alwaysHideItem.model.get(AppMenuItemProperties.ICON) instanceof ColorDrawable);
-        assertEquals(
-                Color.TRANSPARENT,
-                ((ColorDrawable) alwaysHideItem.model.get(AppMenuItemProperties.ICON)).getColor());
-        assertTrue(onlyNtpItem.model.get(AppMenuItemProperties.ICON) instanceof ColorDrawable);
-        assertEquals(
-                Color.TRANSPARENT,
-                ((ColorDrawable) onlyNtpItem.model.get(AppMenuItemProperties.ICON)).getColor());
-        assertNotNull(alwaysShowItem.model.get(AppMenuItemProperties.ICON));
+
         assertTrue(
-                !(alwaysShowItem.model.get(AppMenuItemProperties.ICON) instanceof ColorDrawable));
+                alwaysHideItem.model.get(AppMenuItemProperties.END_ICON) instanceof ColorDrawable);
+        assertEquals(
+                Color.TRANSPARENT,
+                ((ColorDrawable) alwaysHideItem.model.get(AppMenuItemProperties.END_ICON))
+                        .getColor());
+        assertTrue(onlyNtpItem.model.get(AppMenuItemProperties.END_ICON) instanceof ColorDrawable);
+        assertEquals(
+                Color.TRANSPARENT,
+                ((ColorDrawable) onlyNtpItem.model.get(AppMenuItemProperties.END_ICON)).getColor());
+        assertNotNull(alwaysShowItem.model.get(AppMenuItemProperties.END_ICON));
+        assertTrue(
+                !(alwaysShowItem.model.get(AppMenuItemProperties.END_ICON)
+                        instanceof ColorDrawable));
     }
 }

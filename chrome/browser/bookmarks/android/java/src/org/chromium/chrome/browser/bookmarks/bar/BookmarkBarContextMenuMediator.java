@@ -7,15 +7,11 @@ package org.chromium.chrome.browser.bookmarks.bar;
 import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.PluralsRes;
 import androidx.annotation.StringRes;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -371,7 +367,7 @@ class BookmarkBarContextMenuMediator {
 
         listItems.add(BasicListMenu.buildMenuDivider(isIncognito));
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FLYOUT_IN_BOOKMARKS_BAR)) {
             listItems.add(
                     buildContextMenuSubmenuItem(
                             mContext.getString(R.string.bookmark_bar_settings_title),
@@ -572,15 +568,18 @@ class BookmarkBarContextMenuMediator {
             boolean isIncognito,
             boolean enabled,
             View.OnClickListener listener) {
-        Drawable startIcon =
-                isChecked
-                        ? AppCompatResources.getDrawable(
-                                mContext, R.drawable.material_ic_check_24dp)
-                        : new ColorDrawable(Color.TRANSPARENT);
+        int endIconMarginStartPx =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.bookmarks_bar_context_menu_end_icon_padding);
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                         .with(ListMenuItemProperties.TITLE, title)
-                        .with(ListMenuItemProperties.START_ICON_DRAWABLE, startIcon)
+                        .with(ListMenuItemProperties.END_ICON_MARGIN_START, endIconMarginStartPx)
+                        .with(
+                                ListMenuItemProperties.END_ICON_ID,
+                                isChecked
+                                        ? R.drawable.material_ic_check_24dp
+                                        : android.R.color.transparent)
                         .with(ListMenuItemProperties.CHECKABLE, true)
                         .with(ListMenuItemProperties.CHECKED, isChecked)
                         .with(
