@@ -296,7 +296,6 @@ public class SettingsPageTest {
 
     @Test
     @MediumTest
-    @Restriction(DeviceFormFactor.PHONE) // TODO(crbug.com/547765865): Fix for tablets/auto.
     public void testAccessibilityPageZoomDoesNotShowPopup() {
         mActivityTestRule.loadUrl("chrome-native://settings/");
 
@@ -309,7 +308,7 @@ public class SettingsPageTest {
         onView(withText(R.string.prefs_accessibility)).perform(click());
 
         // Verify the Accessibility preference screen is displayed.
-        onView(withText(R.string.zoom_info_preference_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.page_zoom_title)).check(matches(isDisplayed()));
 
         // Verify the page zoom popup window is not permitted to show on the settings native page.
         ThreadUtils.runOnUiThreadBlocking(
