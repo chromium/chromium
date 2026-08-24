@@ -264,11 +264,13 @@ std::vector<DropData::Metadata> DropDataToMetaData(const DropData& drop_data) {
         DropData::Kind::STRING, ui::kMimeTypeHtml16));
   }
 
-  // On Aura, filenames are available before drop.
+  // On Aura, filenames are available before drop, but we sanitize the
+  // paths to their BaseName to prevent leaking absolute paths
+  // (https://crbug.com/514524620).
   for (const auto& file_info : drop_data.filenames) {
     if (!file_info.path.empty()) {
       metadata.push_back(DropData::Metadata::CreateForFilePath(
-          file_info.path, file_info.display_name));
+          file_info.path.BaseName(), file_info.display_name));
     }
   }
 

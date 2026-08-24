@@ -51,6 +51,8 @@
 #include "content/public/common/drop_data.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fake_frame_widget.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/mock_render_input_router.h"
@@ -2287,6 +2289,28 @@ class DragTestContentBrowserClient : public ContentBrowserClient {
   }
 };
 
+class DragCaptureFrameWidget : public FakeFrameWidget {
+ public:
+  explicit DragCaptureFrameWidget(
+      mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget> receiver)
+      : FakeFrameWidget(std::move(receiver)) {}
+
+  void DragTargetDragEnter(blink::mojom::DragDataPtr drag_data,
+                           const gfx::PointF& point_in_viewport,
+                           const gfx::PointF& screen_point,
+                           blink::DragOperationsMask operations_allowed,
+                           uint32_t key_modifiers,
+                           DragTargetDragEnterCallback callback) override {
+    drag_data_ = std::move(drag_data);
+    std::move(callback).Run(ui::mojom::DragOperation::kCopy, true);
+  }
+
+  const blink::mojom::DragDataPtr& drag_data() const { return drag_data_; }
+
+ private:
+  blink::mojom::DragDataPtr drag_data_;
+};
+
 class RenderWidgetHostDragTest : public RenderViewHostImplTestHarness {
  public:
   RenderWidgetHostDragTest() {
@@ -2433,6 +2457,51 @@ TEST_F(RenderWidgetHostDragTest, SanitizeFilenameExtensionOnDrag) {
   // BaseName() should strip the path traversal components.
   EXPECT_EQ(drop_data().file_contents_filename_extension,
             FILE_PATH_LITERAL("payload.so"));
+}
+
+TEST_F(RenderWidgetHostDragTest, DragEnterDoesNotLeakPaths) {
+  // Bind our mock frame widget.
+  mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget> receiver =
+      BindFakeFrameWidgetInterfaces(main_test_rfh());
+  DragCaptureFrameWidget mock_frame_widget(std::move(receiver));
+
+  // Prepare drag data with files: one with display_name and one without.
+  DropData drop_data;
+  drop_data.filenames.emplace_back(
+      base::FilePath(FILE_PATH_LITERAL("/absolute/path/to/file1.txt")),
+      base::FilePath(FILE_PATH_LITERAL("display_name.txt")));
+  drop_data.filenames.emplace_back(
+      base::FilePath(FILE_PATH_LITERAL("/another/absolute/path/to/file2.txt")),
+      base::FilePath());
+
+  // Call DragTargetDragEnter.
+  base::RunLoop run_loop;
+  GetRenderWidgetHost()->DragTargetDragEnter(
+      drop_data, gfx::PointF(), gfx::PointF(),
+      blink::DragOperationsMask::kDragOperationEvery, 0,
+      base::BindOnce(
+          [](base::OnceClosure quit_closure, ui::mojom::DragOperation operation,
+             bool document_is_handling_drag) { std::move(quit_closure).Run(); },
+          run_loop.QuitClosure()));
+  run_loop.Run();
+
+  // Verify that the paths sent to renderer are sanitized to BaseName.
+  const auto& captured_drag_data = mock_frame_widget.drag_data();
+  ASSERT_TRUE(captured_drag_data);
+  ASSERT_EQ(captured_drag_data->items.size(), 2u);
+
+  const auto& item1 = captured_drag_data->items[0];
+  ASSERT_TRUE(item1->is_file());
+  EXPECT_EQ(item1->get_file()->path,
+            base::FilePath(FILE_PATH_LITERAL("file1.txt")));
+  EXPECT_EQ(item1->get_file()->display_name,
+            base::FilePath(FILE_PATH_LITERAL("display_name.txt")));
+
+  const auto& item2 = captured_drag_data->items[1];
+  ASSERT_TRUE(item2->is_file());
+  EXPECT_EQ(item2->get_file()->path,
+            base::FilePath(FILE_PATH_LITERAL("file2.txt")));
+  EXPECT_TRUE(item2->get_file()->display_name.empty());
 }
 
 // A plain <img> drag on macOS populates `file_contents` but supplies neither a
