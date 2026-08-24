@@ -153,7 +153,7 @@ void PrepareLanguageModels(Profile* const profile,
   // On Android, additionally create a ULPLanguageModel and populate it with
   // ULP data if not disabled.
 #if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(language::kDisableGmsCoreUlp)) {
+  if (base::FeatureList::IsEnabled(language::kGmsCoreUlp)) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(&language::LanguageBridge::GetULPLanguagesFromDevice,

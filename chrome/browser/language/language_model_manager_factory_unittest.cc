@@ -58,7 +58,7 @@ TEST(LanguageModelManagerFactoryTest, GetLanguageModels) {
 #if BUILDFLAG(IS_ANDROID)
 TEST(LanguageModelManagerFactoryTest, GetLanguageModelsWithGmsCoreUlpDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(language::kDisableGmsCoreUlp);
+  scoped_feature_list.InitAndDisableFeature(language::kGmsCoreUlp);
 
   content::BrowserTaskEnvironment task_environment;
 
@@ -77,7 +77,7 @@ TEST(LanguageModelManagerFactoryTest, GetLanguageModelsWithGmsCoreUlpDisabled) {
 
 TEST(LanguageModelManagerFactoryTest, GetLanguageModelsWithGmsCoreUlpEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(language::kDisableGmsCoreUlp);
+  scoped_feature_list.InitAndEnableFeature(language::kGmsCoreUlp);
 
   content::BrowserTaskEnvironment task_environment;
 
