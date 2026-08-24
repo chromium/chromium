@@ -131,12 +131,16 @@ AmountExtractionManager::ValidateAmountExtractionResponse(
 DenseSet<AmountExtractionManager::EligibleFeature>
 AmountExtractionManager::GetEligibleFeatures(
     bool is_autofill_payments_enabled,
-    bool should_suppress_suggestions,
     const std::vector<Suggestion>& suggestions,
-    FillingProduct filling_product,
     FieldType field_type) const {
+  const bool is_credit_card =
+      std::ranges::any_of(suggestions, [](const Suggestion& suggestion) {
+        return GetFillingProductFromSuggestionType(suggestion.type) ==
+               FillingProduct::kCreditCard;
+      });
+
   if (ShouldShowBnplSuggestions(autofill_manager_->client(), field_type) &&
-      filling_product == FillingProduct::kCreditCard &&
+      is_credit_card &&
       base::FeatureList::IsEnabled(
           features::kAutofillEnablePayNowPayLaterTabs)) {
     // In the Pay Now Pay Later tabs case, if there is no BNPL suggestion and no
@@ -177,13 +181,8 @@ AmountExtractionManager::GetEligibleFeatures(
     if (suggestions.empty()) {
       return {};
     }
-    // If there are no suggestions, do not trigger the search as suggestions
-    // showing is a requirement for amount extraction.
-    if (should_suppress_suggestions) {
-      return {};
-    }
     // Amount extraction is only offered for Credit Card filling scenarios.
-    if (filling_product != FillingProduct::kCreditCard) {
+    if (!is_credit_card) {
       return {};
     }
   }

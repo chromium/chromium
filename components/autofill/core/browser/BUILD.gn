@@ -1197,8 +1197,6 @@ static_library("browser") {
     "suggestions/suggestion_type.h",
     "suggestions/suggestion_util.cc",
     "suggestions/suggestion_util.h",
-    "suggestions/suggestions_context.cc",
-    "suggestions/suggestions_context.h",
     "suggestions/valuables/valuable_suggestion_generator.cc",
     "suggestions/valuables/valuable_suggestion_generator.h",
     "ui/addresses/autofill_address_util.cc",

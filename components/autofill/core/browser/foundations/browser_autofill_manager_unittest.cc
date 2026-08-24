@@ -802,9 +802,7 @@ class MockAmountExtractionManager : public payments::AmountExtractionManager {
   MOCK_METHOD(DenseSet<EligibleFeature>,
               GetEligibleFeatures,
               (bool is_autofill_payments_enabled,
-               bool should_suppress_suggestions,
                const std::vector<Suggestion>& suggestions,
-               FillingProduct filling_product,
                FieldType field_type),
               (const, override));
   MOCK_METHOD(void,
@@ -7402,7 +7400,7 @@ TEST_P(BrowserAutofillManagerSuggestionMergingTest, MergingLogic) {
   test_api(autofill_manager())
       .OnIndividualSuggestionsGenerated(
           form, form.fields()[0],
-          AutofillSuggestionTriggerSource::kFormControlElementClicked, {},
+          AutofillSuggestionTriggerSource::kFormControlElementClicked,
           base::TimeTicks::Now(), std::move(returned_suggestions));
 
   std::vector<SuggestionType> actual_types =
@@ -7448,7 +7446,7 @@ TEST_F(BrowserAutofillManagerTest, GeneratedFillingProductMetric) {
   test_api(autofill_manager())
       .OnIndividualSuggestionsGenerated(
           form, form.fields()[0],
-          AutofillSuggestionTriggerSource::kFormControlElementClicked, {},
+          AutofillSuggestionTriggerSource::kFormControlElementClicked,
           base::TimeTicks::Now(),
           {{SuggestionGenerator::SuggestionDataSource::kAddress,
             {Suggestion(SuggestionType::kAddressEntry)}},

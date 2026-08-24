@@ -158,9 +158,7 @@ class AmountExtractionManager {
   //   In the AI-based amount extraction case, if a BNPL suggestion is present;
   virtual DenseSet<EligibleFeature> GetEligibleFeatures(
       bool is_autofill_payments_enabled,
-      bool should_suppress_suggestions,
       const std::vector<Suggestion>& suggestions,
-      FillingProduct filling_product,
       FieldType field_type) const;
 
   // Fetch the page content for the AI-based amount extraction.

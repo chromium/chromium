@@ -241,11 +241,9 @@ TEST_F(AmountExtractionManagerTest, ShouldTriggerWhenEligible) {
   for (FieldType field_type : field_types) {
     EXPECT_THAT(amount_extraction_manager_->GetEligibleFeatures(
                     /*is_autofill_payments_enabled=*/true,
-                    /*should_suppress_suggestions=*/false,
                     /*suggestions=*/
                     std::vector<Suggestion>{
                         Suggestion(SuggestionType::kCreditCardEntry)},
-                    /*filling_product=*/FillingProduct::kCreditCard,
                     /*field_type=*/field_type),
                 ElementsAre(AmountExtractionManager::EligibleFeature::kBnpl));
   }
@@ -258,21 +256,17 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenCvcFieldIsClicked) {
   EXPECT_THAT(
       amount_extraction_manager_->GetEligibleFeatures(
           /*is_autofill_payments_enabled=*/true,
-          /*should_suppress_suggestions=*/false,
           /*suggestions=*/
           std::vector<Suggestion>{Suggestion(SuggestionType::kCreditCardEntry)},
-          /*filling_product=*/FillingProduct::kCreditCard,
           /*field_type=*/FieldType::CREDIT_CARD_VERIFICATION_CODE),
       IsEmpty());
-  EXPECT_THAT(
-      amount_extraction_manager_->GetEligibleFeatures(
-          /*is_autofill_payments_enabled=*/true,
-          /*should_suppress_suggestions=*/false,
-          /*suggestions=*/
-          std::vector<Suggestion>{Suggestion(SuggestionType::kCreditCardEntry)},
-          /*filling_product=*/FillingProduct::kCreditCard, /*field_type=*/
-          FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE),
-      IsEmpty());
+  EXPECT_THAT(amount_extraction_manager_->GetEligibleFeatures(
+                  /*is_autofill_payments_enabled=*/true,
+                  /*suggestions=*/
+                  std::vector<Suggestion>{Suggestion(
+                      SuggestionType::kCreditCardEntry)}, /*field_type=*/
+                  FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE),
+              IsEmpty());
 }
 
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenFeatureIsNotEnabled) {
@@ -285,10 +279,8 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenFeatureIsNotEnabled) {
   EXPECT_THAT(
       amount_extraction_manager_->GetEligibleFeatures(
           /*is_autofill_payments_enabled=*/true,
-          /*should_suppress_suggestions=*/false,
           /*suggestions=*/
           std::vector<Suggestion>{Suggestion(SuggestionType::kCreditCardEntry)},
-          /*filling_product=*/FillingProduct::kCreditCard,
           /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
       IsEmpty());
 }
@@ -300,10 +292,8 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenSearchIsOngoing) {
   EXPECT_THAT(
       amount_extraction_manager_->GetEligibleFeatures(
           /*is_autofill_payments_enabled=*/true,
-          /*should_suppress_suggestions=*/false,
           /*suggestions=*/
           std::vector<Suggestion>{Suggestion(SuggestionType::kCreditCardEntry)},
-          /*filling_product=*/FillingProduct::kCreditCard,
           /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
       IsEmpty());
 }
@@ -312,10 +302,8 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenAutofillUnavailable) {
   EXPECT_THAT(
       amount_extraction_manager_->GetEligibleFeatures(
           /*is_autofill_payments_enabled=*/false,
-          /*should_suppress_suggestions=*/false,
           /*suggestions=*/
           std::vector<Suggestion>{Suggestion(SuggestionType::kCreditCardEntry)},
-          /*filling_product=*/FillingProduct::kCreditCard,
           /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
       IsEmpty());
 }
@@ -327,10 +315,8 @@ TEST_F(AmountExtractionManagerTest,
   EXPECT_THAT(
       amount_extraction_manager_->GetEligibleFeatures(
           /*is_autofill_payments_enabled=*/true,
-          /*should_suppress_suggestions=*/false,
           /*suggestions=*/
           std::vector<Suggestion>{Suggestion(SuggestionType::kCreditCardEntry)},
-          /*filling_product=*/FillingProduct::kCreditCard,
           /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
       IsEmpty());
 }
@@ -348,10 +334,8 @@ TEST_F(
   EXPECT_THAT(
       amount_extraction_manager_->GetEligibleFeatures(
           /*is_autofill_payments_enabled=*/true,
-          /*should_suppress_suggestions=*/false,
           /*suggestions=*/
           std::vector<Suggestion>{Suggestion(SuggestionType::kCreditCardEntry)},
-          /*filling_product=*/FillingProduct::kCreditCard,
           /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
       IsEmpty());
 }
@@ -367,11 +351,9 @@ TEST_F(
   EXPECT_THAT(
       amount_extraction_manager_->GetEligibleFeatures(
           /*is_autofill_payments_enabled=*/true,
-          /*should_suppress_suggestions=*/false,
           /*suggestions=*/
           std::vector<Suggestion>{Suggestion(SuggestionType::kCreditCardEntry),
                                   Suggestion(SuggestionType::kLoadingThrobber)},
-          /*filling_product=*/FillingProduct::kCreditCard,
           /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
       ElementsAre(AmountExtractionManager::EligibleFeature::kBnpl));
 }
@@ -387,11 +369,9 @@ TEST_F(
   EXPECT_THAT(
       amount_extraction_manager_->GetEligibleFeatures(
           /*is_autofill_payments_enabled=*/true,
-          /*should_suppress_suggestions=*/false,
           /*suggestions=*/
           std::vector<Suggestion>{Suggestion(SuggestionType::kCreditCardEntry),
                                   Suggestion(SuggestionType::kBnplEntry)},
-          /*filling_product=*/FillingProduct::kCreditCard,
           /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
       ElementsAre(AmountExtractionManager::EligibleFeature::kBnpl));
 }
@@ -407,11 +387,9 @@ TEST_F(AmountExtractionManagerTest,
   EXPECT_THAT(
       amount_extraction_manager_->GetEligibleFeatures(
           /*is_autofill_payments_enabled=*/true,
-          /*should_suppress_suggestions=*/false,
           /*suggestions=*/
           std::vector<Suggestion>{Suggestion(SuggestionType::kCreditCardEntry),
                                   Suggestion(SuggestionType::kBnplEntry)},
-          /*filling_product=*/FillingProduct::kCreditCard,
           /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
       IsEmpty());
 }
@@ -432,11 +410,9 @@ TEST_F(
   EXPECT_THAT(
       amount_extraction_manager_->GetEligibleFeatures(
           /*is_autofill_payments_enabled=*/true,
-          /*should_suppress_suggestions=*/false,
           /*suggestions=*/
           std::vector<Suggestion>{Suggestion(SuggestionType::kCreditCardEntry),
                                   Suggestion(SuggestionType::kBnplEntry)},
-          /*filling_product=*/FillingProduct::kCreditCard,
           /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
       IsEmpty());
 }
@@ -455,11 +431,9 @@ TEST_F(AmountExtractionManagerTest,
   EXPECT_THAT(
       amount_extraction_manager_->GetEligibleFeatures(
           /*is_autofill_payments_enabled=*/true,
-          /*should_suppress_suggestions=*/false,
           /*suggestions=*/
           std::vector<Suggestion>{Suggestion(SuggestionType::kCreditCardEntry),
                                   Suggestion(SuggestionType::kBnplEntry)},
-          /*filling_product=*/FillingProduct::kCreditCard,
           /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
       IsEmpty());
 }
@@ -472,9 +446,7 @@ TEST_F(AmountExtractionManagerTest,
       features::kAutofillEnableAiBasedAmountExtraction};
   EXPECT_THAT(amount_extraction_manager_->GetEligibleFeatures(
                   /*is_autofill_payments_enabled=*/false,
-                  /*should_suppress_suggestions=*/false,
                   /*suggestions=*/std::vector<Suggestion>{},
-                  /*filling_product=*/FillingProduct::kCreditCard,
                   /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
               IsEmpty());
 }
@@ -487,10 +459,8 @@ TEST_F(AmountExtractionManagerTest,
   EXPECT_THAT(
       amount_extraction_manager_->GetEligibleFeatures(
           /*is_autofill_payments_enabled=*/true,
-          /*should_suppress_suggestions=*/false,
           /*suggestions=*/
           std::vector<Suggestion>{Suggestion(SuggestionType::kBnplEntry)},
-          /*filling_product=*/FillingProduct::kCreditCard,
           /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
       // Verifies the set contains exactly this one element
       testing::UnorderedElementsAre(
@@ -506,47 +476,18 @@ TEST_F(
   EXPECT_THAT(
       amount_extraction_manager_->GetEligibleFeatures(
           /*is_autofill_payments_enabled=*/true,
-          /*should_suppress_suggestions=*/false,
           /*suggestions=*/
           std::vector<Suggestion>{Suggestion(SuggestionType::kBnplEntry)},
-          /*filling_product=*/FillingProduct::kCreditCard,
           /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
       // Verifies the set contains exactly this one element
       testing::UnorderedElementsAre(
           AmountExtractionManager::EligibleFeature::kBnpl));
 }
 
-TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenFormIsNotCreditCard) {
-  EXPECT_THAT(
-      amount_extraction_manager_->GetEligibleFeatures(
-          /*is_autofill_payments_enabled=*/true,
-          /*should_suppress_suggestions=*/false,
-          /*suggestions=*/
-          std::vector<Suggestion>{Suggestion(SuggestionType::kCreditCardEntry)},
-          /*filling_product=*/FillingProduct::kAddress,
-          /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
-      IsEmpty());
-}
-
-TEST_F(AmountExtractionManagerTest,
-       ShouldNotTriggerWhenSuggestionIsSuppressed) {
-  EXPECT_THAT(
-      amount_extraction_manager_->GetEligibleFeatures(
-          /*is_autofill_payments_enabled=*/true,
-          /*should_suppress_suggestions=*/true,
-          /*suggestions=*/
-          std::vector<Suggestion>{Suggestion(SuggestionType::kCreditCardEntry)},
-          /*filling_product=*/FillingProduct::kCreditCard,
-          /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
-      IsEmpty());
-}
-
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenNoSuggestion) {
   EXPECT_THAT(amount_extraction_manager_->GetEligibleFeatures(
                   /*is_autofill_payments_enabled=*/true,
-                  /*should_suppress_suggestions=*/false,
                   /*suggestions=*/{},
-                  /*filling_product=*/FillingProduct::kCreditCard,
                   /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
               IsEmpty());
 }
@@ -561,10 +502,8 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerIfUrlNotEligible) {
   EXPECT_THAT(
       amount_extraction_manager_->GetEligibleFeatures(
           /*is_autofill_payments_enabled=*/true,
-          /*should_suppress_suggestions=*/false,
           /*suggestions=*/
           std::vector<Suggestion>{Suggestion(SuggestionType::kCreditCardEntry)},
-          /*filling_product=*/FillingProduct::kCreditCard,
           /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
       IsEmpty());
 }
@@ -578,11 +517,9 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerInIncognitoMode) {
   for (FieldType field_type : field_types) {
     EXPECT_THAT(amount_extraction_manager_->GetEligibleFeatures(
                     /*is_autofill_payments_enabled=*/true,
-                    /*should_suppress_suggestions=*/false,
                     /*suggestions=*/
                     std::vector<Suggestion>{
                         Suggestion(SuggestionType::kCreditCardEntry)},
-                    /*filling_product=*/FillingProduct::kCreditCard,
                     /*field_type=*/field_type),
                 IsEmpty());
   }
@@ -594,10 +531,8 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerIfNoBnplIssuer) {
   EXPECT_THAT(
       amount_extraction_manager_->GetEligibleFeatures(
           /*is_autofill_payments_enabled=*/true,
-          /*should_suppress_suggestions=*/false,
           /*suggestions=*/
           std::vector<Suggestion>{Suggestion(SuggestionType::kCreditCardEntry)},
-          /*filling_product=*/FillingProduct::kCreditCard,
           /*field_type=*/FieldType::CREDIT_CARD_NUMBER),
       IsEmpty());
 }

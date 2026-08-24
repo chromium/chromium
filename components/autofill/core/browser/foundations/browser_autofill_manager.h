@@ -49,7 +49,6 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
-#include "components/autofill/core/browser/suggestions/suggestions_context.h"
 #include "components/autofill/core/browser/ui/autofill_external_delegate.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
@@ -69,7 +68,6 @@ class AutofillAiAccessManager;
 
 class FormData;
 class FormFieldData;
-struct SuggestionsContext;
 
 namespace payments {
 class AiCardRecommendationManager;
@@ -508,7 +506,6 @@ class BrowserAutofillManager : public AutofillManager {
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source,
-      SuggestionsContext context,
       base::TimeTicks suggestion_generation_start_time,
       base::ScopedClosureRunner scoped_on_after,
       std::vector<SuggestionGenerator::ReturnedSuggestions>
@@ -565,7 +562,6 @@ class BrowserAutofillManager : public AutofillManager {
   void GenerateFooter(const FormData& form,
                       const FormFieldData& field,
                       AutofillSuggestionTriggerSource trigger_source,
-                      const SuggestionsContext& context,
                       base::TimeTicks suggestion_generation_start_time,
                       base::ScopedClosureRunner scoped_on_after,
                       bool show_suggestions,
@@ -588,7 +584,6 @@ class BrowserAutofillManager : public AutofillManager {
       const FormGlobalId& form_id,
       const FormFieldData& trigger_field,
       AutofillSuggestionTriggerSource trigger_source,
-      const SuggestionsContext& context,
       base::TimeTicks suggestion_generation_start_time,
       bool show_suggestions,
       std::vector<Suggestion> suggestions,
