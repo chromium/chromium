@@ -5439,15 +5439,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewContentSettingsBrowserTest,
   }));
 }
 
-// TODO(crbug.com/549794757): Failing on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_ContentSettingIconSuppressionE2E \
-  DISABLED_ContentSettingIconSuppressionE2E
-#else
-#define MAYBE_ContentSettingIconSuppressionE2E ContentSettingIconSuppressionE2E
-#endif
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewContentSettingsBrowserTest,
-                       MAYBE_ContentSettingIconSuppressionE2E) {
+                       ContentSettingIconSuppressionE2E) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   ASSERT_TRUE(webui_toolbar_view);
   views::WebView* web_ui_view = webui_toolbar_view->GetWebViewForTesting();
@@ -5481,7 +5474,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewContentSettingsBrowserTest,
   auto* location_bar = webui_toolbar_view->GetLocationBar();
   ASSERT_TRUE(location_bar);
   location_bar->content_setting_image_control()
-      .SetSuppressionThresholdForTesting(base::Seconds(1));
+      .SetSuppressionThresholdForTesting(base::Seconds(30));
 
   // Second click (simulating clicking to close)
   views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
@@ -5682,7 +5675,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPermissionBrowserTest,
 
   auto* location_bar = webui_toolbar_view->GetLocationBar();
   ASSERT_TRUE(location_bar);
-  location_bar->SetSuppressionThresholdForTesting(base::Seconds(1));
+  location_bar->SetSuppressionThresholdForTesting(base::Seconds(30));
 
   // Second click (simulating clicking to close): the pointerdown should trigger
   // OnLhsChipMousePressed which sets suppress_lhs_chip_clicked_, and then
