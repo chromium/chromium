@@ -354,6 +354,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 geslo in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google. S tem boste počistili tudi vse dvojnike.}one{{BOOKMARK_COUNT} geslo in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google. S tem boste počistili tudi vse dvojnike.}two{{BOOKMARK_COUNT} gesli in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google. S tem boste počistili tudi vse dvojnike.}few{{BOOKMARK_COUNT} gesla in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google. S tem boste počistili tudi vse dvojnike.}other{{BOOKMARK_COUNT} gesel in drugi elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google. S tem boste počistili tudi vse dvojnike.}}</translation>
 <translation id="125220115284141797">Privzeto</translation>
 <translation id="1252219782845132919">Skrij skupino</translation>
+<translation id="1252597096488926946">Odpenjanje gumbov za pomikanje</translation>
 <translation id="1252987234827889034">Prišlo je do napake profila</translation>
 <translation id="1254034280040157728">Veliki kanjon</translation>
 <translation id="1254593899333212300">Neposredna internetna povezava</translation>
@@ -985,6 +986,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1755601632425835748">Velikost besedila</translation>
 <translation id="1756963401828337401">Izbira zaslona za zajem</translation>
 <translation id="17584710573359123">Prikaži v Spletni trgovini Chrome</translation>
+<translation id="176013700366797492">Obiščite Google Denarnico, kjer lahko upravljate <ph name="BEGIN_LINK1" />nastavitve podatkov in zasebnosti<ph name="END_LINK1" /> ali upravljate <ph name="BEGIN_LINK2" />plačilna sredstva<ph name="END_LINK2" /> in <ph name="BEGIN_LINK3" />kartice<ph name="END_LINK3" />, kot so kartice zvestobe in osebni dokumenti.</translation>
 <translation id="1761402971842586829">Gumb <ph name="BUTTON_NAME" /> je preslikan v <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Računi osebe <ph name="NAME" /></translation>
 <translation id="176272781006230109">predlogi za nakupovanje</translation>
@@ -1970,6 +1972,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2508747373511408451">Aplikacija <ph name="APPLICATION_NAME" /> zahteva, da je Google Drive na voljo.</translation>
 <translation id="2509495747794740764">Vrednost za prilagajanje velikosti mora biti število med 10 in 200.</translation>
 <translation id="2509566264613697683">8 x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (izbrani jezik)</translation>
 <translation id="2513904627589542105">Samopreizkus</translation>
 <translation id="251425554130284360">Prikazane so strani, ki ste jih obiskali, in predlagana iskanja, s katerimi se boste lažje vrnili k nedavni dejavnosti.
@@ -5010,6 +5013,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4831226137013573603">izklop zvok mikrofona</translation>
 <translation id="483262387981411190">Začasna zaustavitev ali nadaljevanje upravljanja z obrazom</translation>
 <translation id="4833683849865011483">V tiskalnem strežniku je bil najden 1 tiskalnik.</translation>
+<translation id="4834388789911023644">Napišite mnenje</translation>
 <translation id="4835598628985424375">Našobljenje ustnic</translation>
 <translation id="4835677468087803981">Skrivanje kode PIN</translation>
 <translation id="4836504898754963407">Upravljanje prstnih odtisov</translation>
@@ -8580,6 +8584,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7625823789272218216">Novi zavihek na levi</translation>
 <translation id="762730429396410864">Ročno nastavite raven zmogljivosti CPE, ki se poroča spletnim mestom</translation>
 <translation id="7627749368210392160">Spletna mesta lahko s to funkcijo dostopajo do drugih naprav v lokalnem omrežju</translation>
+<translation id="7628068697012244394">Napišite mnenje</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), <ph name="GRADE" />. raven</translation>
 <translation id="762917478230183172">Izberite dejanje za posamezno tipko</translation>
 <translation id="7629206210984165492">Umirjeno</translation>
@@ -9006,6 +9011,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7949038991703929816">Zgodovine ni bilo mogoče naložiti. Poskrbite, da bodo datoteke vsebovale veljavne dnevnike storitve za posodabljanje.</translation>
 <translation id="7950629216186736592">Razlog: LBS podpira samo URL-je s protokoli http://, https:// in file://.</translation>
 <translation id="7950814699499457511">Izklopljeno • Ta razširitev še ni objavila postopkov zagotavljanja zasebnosti, na primer kako zbira in uporablja podatke</translation>
+<translation id="7951159420392892566">Odpenjanje gumbov za pomikanje</translation>
 <translation id="795130320946928025">Izklopi navidezno kartico</translation>
 <translation id="7952708427581814389">Spletna mesta lahko zahtevajo ogled besedila in slik v odložišču</translation>
 <translation id="7953236668995583915">Znova naložite to stran, če želite uporabiti posodobljene nastavitve na tem spletnem mestu</translation>

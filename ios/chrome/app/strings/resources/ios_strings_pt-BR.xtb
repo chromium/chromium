@@ -695,6 +695,7 @@
 <translation id="325717987950204592">Toque em "Privacidade e segurança"</translation>
 <translation id="3259451381796379533">Esta conta não funciona com o Gemini. Faça login com outra Conta do Google.</translation>
 <translation id="3265736395246760288">Faça login mais rápido em qualquer dispositivo sincronizado.</translation>
+<translation id="3268166994745151153">Isso significa que você vai perder seu progresso atual</translation>
 <translation id="3272527697863656322">Cancelar</translation>
 <translation id="3272955648592358996">Seus dados melhoram a IA do Google</translation>
 <translation id="3273510436356991673">Personalize sua tela inicial</translation>
@@ -1098,6 +1099,7 @@
 <translation id="4652817563047461855">Verifique se suas senhas estão seguras, descubra se elas foram comprometidas e receba conselhos de proteção on-line. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Ative o compartilhamento de conteúdo da página</translation>
 <translation id="4658335131052370646">Salvar</translation>
+<translation id="465947902531722727">Trocar de perfil</translation>
 <translation id="466307903888586355">O salvamento de arquivos foi bloqueado pela sua organização</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Sua organização requer o uso do modo de navegação particular. Os grupos de guias não são sincronizados no modo de navegação anônima.
@@ -1208,6 +1210,7 @@
 <translation id="4979397965658815378">Faça login com sua Conta do Google para ter seus favoritos, senhas, histórico e outras configurações em todos os seus dispositivos</translation>
 <translation id="4985921635659180565">Não é possível cancelar a exclusão programada de um arquivo.</translation>
 <translation id="498624032394115435">Qualquer pessoa com o link pode editar todas as guias.</translation>
+<translation id="498768198683310172">Começar a usar o Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, gerenciado pela sua organização.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Cor do grupo de guias <ph name="COLOR" /></translation>
@@ -1363,7 +1366,7 @@
 <translation id="5494920125229734069">Selecionar todas</translation>
 <translation id="5499648645977734083">Gerenciar formas de pagamento…</translation>
 <translation id="5501346139932663133">Apps do Google</translation>
-<translation id="5506763544823940561">Salvar imagem no…</translation>
+<translation id="5506763544823940561">Salvar imagem em…</translation>
 <translation id="5511959326926949696">Proteção extrema e opcional para o navegador. Só use esse modo se você achar que pode ser alvo de ataques cibernéticos altamente sofisticados.</translation>
 <translation id="5513681519188741830"><ph name="TIME" />h atrás</translation>
 <translation id="5520668942302483373">Sair do grupo</translation>
@@ -2153,6 +2156,7 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">Confirme sua identidade para preencher automaticamente informações sensíveis</translation>
 <translation id="8015826420689927262">Excluir anexo</translation>
+<translation id="8016869623424294549">Você está prestes a trocar de perfil</translation>
 <translation id="8017015647846870183">Do Gerenciador de Senhas do Google, incluindo senhas e chaves de acesso</translation>
 <translation id="802154636333426148">Falha no download</translation>
 <translation id="8023170444051056234">Você vai perder imediatamente o acesso ao grupo de guias "<ph name="GROUP_NAME" />", e ele será excluído de todos seus dispositivos</translation>

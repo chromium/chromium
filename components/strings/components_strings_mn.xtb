@@ -465,6 +465,7 @@
 <translation id="1757773103848038814">Monospace фонт</translation>
 <translation id="1757935267918149452">Google-н нууц үгийг өөрчлөх товчлуур, Google Бүртгэлийн нууц үгээ өөрчлөхийн тулд идэвхжүүлнэ үү</translation>
 <translation id="1759776526873274358">Таны аюулгүй байдлыг сайжруулахын тулд сайтуудын ашигладаг баталгаажуулах кодыг автоматаар бөглөнө. Chrome эдгээр кодыг таны Gmail-с авах боломжтой. <ph name="BEGIN_LINK" />Энэ онцлогийн талаар нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
+<translation id="176013700366797492"><ph name="BEGIN_LINK1" />Өгөгдөл, нууцлалын сонголтыг<ph name="END_LINK1" /> хянах эсвэл лояалти карт, ID зэрэг <ph name="BEGIN_LINK2" />төлбөрийн хэрэгсэл<ph name="END_LINK2" />, <ph name="BEGIN_LINK3" />тасалбарыг<ph name="END_LINK3" /> удирдахын тулд Google Wallet-д зочилно уу</translation>
 <translation id="1763864636252898013">Энэ сервер нь <ph name="DOMAIN" />-аа баталж чадсангүй; учир нь энэхүү сертификатыг таны төхөөрөмжийн үйлдлийн систем дэмждэггүй. Энэ нь тохиргоо буруу хийгдсэнээс эсвэл халдагч таны холболтонд саад учруулж байгаагаас шалтгаалж болох юм.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows сүлжээний оношилгоог ажиллуулж үзнэ үү<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Гэрэл зураг (архивын)</translation>
@@ -615,7 +616,7 @@
 <translation id="2058468041496756763">Та Chrome-н тохиргооноос хайлтын системээ хүссэн үедээ өөрчлөх боломжтой. Хэрэв таны сонгосон хайлтын систем харагдахгүй байвал сайтаас нь хайх боломжтой. Танд энэ нь Chrome-н тохиргоонд саяхан зочилсон хайлтын систем байдлаар жагсааснаар харагдах бөгөөд та өгөгдмөл болгох боломжтой.</translation>
 <translation id="2059166748188874810">Хотын захиргаа</translation>
 <translation id="2059202684901022309">22 x 34 инч</translation>
-<translation id="2063929825539050431">Энэ хуудсыг өөр төхөөрөмж рүү шуурхай илгээхийн тулд хаягийн мөрийг удаан дарна уу</translation>
+<translation id="2063929825539050431">Энэ хуудсыг өөр төхөөрөмж рүү шуурхай илгээхийн тулд хаяг оруулах хэсгийг удаан дарна уу</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 зөвлөмж}other{# зөвлөмж}}</translation>
 <translation id="2066969741541525119">Танай байгууллага уг сайтыг блоклосон байна</translation>
 <translation id="2071156619270205202">Энэ карт нь виртуал картын дугаарын эрхгүй байна.</translation>
@@ -788,6 +789,7 @@
 <translation id="2321291402658100099">Мэдээллийг удирдах</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 цонх}other{# цонх}}</translation>
 <translation id="232390861414237658">Энэ картыг Google Pay-д ашиглахаар хадгалсан үед Chrome-д хийсэн худалдан авалтад зориулж автоматаар бөглөнө үү</translation>
+<translation id="2325722389016720813">Автоматаар бөглөхийг ашиглах бол дээш, доош сумыг дарна уу. Автоматаар бөглөхийн тулд бичнэ үү.</translation>
 <translation id="2326283484705860548">Одоо та Google Wallet-н илүү их мэдээллийг автоматаар бөглөх боломжтой</translation>
 <translation id="2326747055382936979">Сайжруулсан автомат бөглөлтийг удирдах</translation>
 <translation id="2328651992442742497">Зөвшөөрсөн (өгөгдмөл)</translation>
@@ -2174,6 +2176,7 @@
 <translation id="4711628883879888561">Табын бүлэг дээр хамтран ажиллах</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4714279348049646935">Кредит цаг, хичээлийн түвшин, дүнгийн онооны утгаар жинлэсэн голч дүнг маань тооцоолж өгнө үү</translation>
+<translation id="4717533164160330041">Энэ онцлогийг ашиглахын тулд эхлээд Gmail-н ухаалаг онцлогуудыг асаана уу</translation>
 <translation id="471880041731876836">Танд энэ сайтад зочлох зөвшөөрөл алга</translation>
 <translation id="4718897478554657123">600 x 900 мм</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows сүлжээний оношилгоог ажиллуулж байна<ph name="END_LINK" /></translation>
@@ -2829,6 +2832,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Энэ төлбөрийн хэрэгслийг энэ төхөөрөмжөөс устгана</translation>
 <translation id="5794065675298686371">Үнэ мөшгөх мэдэгдлийг асаах</translation>
+<translation id="5796050750059455142">“<ph name="BEGIN_LINK" />Google-н бусад бүтээгдэхүүн дэх ухаалаг онцлогууд<ph name="LINK_END" />”-ыг асаана уу</translation>
 <translation id="5797984091151707075">Админы бодлогоор блоклосон</translation>
 <translation id="5804241973901381774">Зөвшөөрлүүд</translation>
 <translation id="5806871454498484178">Гүйлгэж, томруулахыг блоклосон</translation>
@@ -3135,6 +3139,7 @@
 <translation id="6329742260390895689">Мэдээллээ автоматаар бөглөхийн тулд Wallet-н тохиргооноос "Google дээр карт ашиглах" гэснийг асаана уу</translation>
 <translation id="6329815962353376655">&lt;Асуулт шивэх&gt;</translation>
 <translation id="633348045801643466">Тооцоо хийх үед <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />дараа төлөх<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> сонголтуудыг харуулах</translation>
+<translation id="6335364777769284858"><ph name="BEGIN_LINK" />Gmail-н тохиргооноос<ph name="LINK_END" /> “Ухаалаг онцлогууд”-ыг асаана уу</translation>
 <translation id="6336948221660696475">VR-г ашиглахыг зөвшөөрөөгүй</translation>
 <translation id="6337534724793800597">Журмуудыг нэрээр нь шүү</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" />-н утга буруу тул ашиглахгүй.</translation>

@@ -465,6 +465,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1757773103848038814">Püsisammuga font</translation>
 <translation id="1757935267918149452">Nupp Muuda Google'i parooli, aktiveerige nupp oma Google'i konto parooli muutmiseks</translation>
 <translation id="1759776526873274358">Kinnituskoodide automsuurendamiseksaatne täitmine saitidel, mis kasutavad neid teie turvalisuse . Chrome saab need koodid teie Gmailist. <ph name="BEGIN_LINK" />Lisateave selle funktsiooni kohta<ph name="LINK_END" /></translation>
+<translation id="176013700366797492">Külastage Google Walletit, et hallata <ph name="BEGIN_LINK1" />andmeid ja privaatsuseelistusi<ph name="END_LINK1" /> või <ph name="BEGIN_LINK2" />makseviise<ph name="END_LINK2" /> ja <ph name="BEGIN_LINK3" />pääsmeid<ph name="END_LINK3" />, näiteks kliendikaarte ja isikutunnistusi.</translation>
 <translation id="1763864636252898013">Server ei suutnud tõestada, et see on domeen <ph name="DOMAIN" />, seadme operatsioonisüsteem ei usalda selle turvasertifikaati. Selle põhjuseks võib olla vale seadistus või ründaja, kes on sekkunud teie ühendusse.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Proovige käitada Windowsi võrgudiagnostika tööriista<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Foto (arhiivimine)</translation>
@@ -788,6 +789,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2321291402658100099">Teabe haldamine</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 aknas}other{# aknas}}</translation>
 <translation id="232390861414237658">Täitke see kaart automaatselt Chrome'is tehtud ostude puhul, kui see on salvestatud Google Payga kasutamiseks</translation>
+<translation id="2325722389016720813">Automaatseks täitmiseks vajutage üles- või allanoolt. Automaatseks täitmiseks hakake teksti sisestama.</translation>
 <translation id="2326283484705860548">Nüüd saate Google Walletist automaatselt täita rohkem teavet.</translation>
 <translation id="2326747055382936979">Täiustatud automaattäite haldamine</translation>
 <translation id="2328651992442742497">Lubatud (vaikeseade)</translation>

@@ -465,6 +465,7 @@
 <translation id="1757773103848038814">Sabit Ölçülü Şrift</translation>
 <translation id="1757935267918149452">"Google parolunu dəyişin" düyməsi, aktivləşdirərək Google Hesabı parolunu dəyişin</translation>
 <translation id="1759776526873274358">Saytların təhlükəsizliyinizi artırmaq üçün istifadə etdiyi doğrulama kodlarını avtomatik doldurun. Chrome bu kodları Gmail-dən əldə edə bilər. <ph name="BEGIN_LINK" />Bu funksiya haqqında ətraflı məlumat<ph name="LINK_END" /></translation>
+<translation id="176013700366797492"><ph name="BEGIN_LINK1" />Data və məxfilik tərcihlərinə<ph name="END_LINK1" /> nəzarət etmək və ya <ph name="BEGIN_LINK2" />ödəniş metodlarını<ph name="END_LINK2" />, eləcə də loyallıq kartları və kimlik sənədləri kimi <ph name="BEGIN_LINK3" />giriş talonlarını<ph name="END_LINK3" /> idarə etmək üçün Google Pulqabına daxil olun</translation>
 <translation id="1763864636252898013">Bu server <ph name="DOMAIN" /> domenini təsdiqləyə bilmədi; onun təhlükəsizlik sertifikatı cihazınızın əməliyyat sistemi tərəfindən doğrulanmayıb. Buna səbəb yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantınızın ələ keçirilməsi ola bilər.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows Şəbəkə Diaqnostikasını işlətməyə çalışın<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Foto (arxiv)</translation>
@@ -788,6 +789,7 @@
 <translation id="2321291402658100099">Məlumatı idarə edin</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 pəncərə}other{# pəncərə}}</translation>
 <translation id="232390861414237658">Google Pay ilə istifadə üçün yadda saxlanıldıqda Chrome-da edilən satınalmalar üçün bu kartı avtomatik doldurun</translation>
+<translation id="2325722389016720813">Avtomatik tamamlamaq üçün yuxarı və ya aşağı oxa basın. Avtomatik tamamlamaq üçün yazın.</translation>
 <translation id="2326283484705860548">Artıq Google Pulqabıdakı daha çox məlumatı avtomatik doldura bilərsiniz</translation>
 <translation id="2326747055382936979">Qabaqcıl avtodoldurmanı idarə edin</translation>
 <translation id="2328651992442742497">İcazə verilib (defolt)</translation>

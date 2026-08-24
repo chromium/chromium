@@ -624,6 +624,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3557336313807607643">Kontakta əlavə edin</translation>
 <translation id="3560831525486613327">Yeni tab səhifəsi açın</translation>
 <translation id="3563767357928833671">Mübadilə buferindəki kontent göstərilir</translation>
+<translation id="356407858591811361">Yeni Anonim pəncərə açın</translation>
 <translation id="3566639033325271639">Ayarları güncəlləyin</translation>
 <translation id="3568945271227339929">Oğurlanmış parol yoxdur</translation>
 <translation id="3575464060651642446">Bu cihazda parollar yoxlanılır…</translation>
@@ -1548,6 +1549,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="7173338713290252554">Vebdə qiymət tarixçəsi</translation>
 <translation id="7177466738963138057">Bunu daha sonra Ayarlar bölməsində dəyişə bilərsiniz</translation>
 <translation id="7177873915659574692">QR kod yaratmaq olmur. URL'də <ph name="CHARACTER_LIMIT" /> ədəddən çox simvol var.</translation>
+<translation id="7179032284363038560">Bu cihazdan istifadə edən digər şəxslər fəaliyyəti görməyəcək. Məxfi nəzər sala bilərsiniz. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="7182051712900867547">Başqa hesabdan istifadə edin</translation>
 <translation id="7182520625618447753">Fərdi baxış təcrübəsi üçün ünvan panelinin mövqeyini aşağı və ya yuxarı dəyişin</translation>
 <translation id="7183517696921903380">Tətbiq filtri vərəqi açılıb.</translation>

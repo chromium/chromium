@@ -3317,6 +3317,19 @@ Người dùng có thể đặt hình đại diện từ bất kỳ tuỳ chọn
 <translation id="3036271748813538143">Kiểm soát việc có bật hành vi mới của trình phân tích cú pháp HTML cho phần tử &lt;select&gt; hay không</translation>
 <translation id="3038323923255997294">Tiếp tục chạy các ứng dụng dưới nền khi <ph name="PRODUCT_NAME" /> bị đóng</translation>
 <translation id="3039862327847526651">Kiểm soát việc sử dụng trình tối ưu hoá JavaScript</translation>
+<translation id="3040510138377915303">Kiểm soát việc cho phép hay không cho phép tác nhân <ph name="GEMINI_SPARK_PRODUCT_NAME" /> kết nối với <ph name="PRODUCT_NAME" /> và sử dụng tính năng tự động duyệt web. <ph name="GEMINI_SPARK_PRODUCT_NAME" /> có thể không dùng được trong tổ chức của bạn.
+
+0 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> được phép kết nối và sử dụng tính năng tự động duyệt web của <ph name="PRODUCT_NAME" />
+
+1 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> không được phép kết nối hoặc sử dụng tính năng tự động duyệt web của <ph name="PRODUCT_NAME" />
+
+Cảnh báo: Việc cho phép <ph name="GEMINI_SPARK_PRODUCT_NAME" /> kết nối với <ph name="PRODUCT_NAME" /> và sử dụng tính năng tự động duyệt web sẽ cho phép tác nhân <ph name="GEMINI_SPARK_PRODUCT_NAME" /> thực hiện các công việc tự động, có nhiều bước trên các máy khách <ph name="PRODUCT_NAME" /> bằng phiên trình duyệt đang hoạt động. Việc này tiềm ẩn những rủi ro bảo mật đáng kể, bao gồm rủi ro về thông tin đăng nhập, xâm nhập vào mạng cục bộ và mất tín hiệu nhận biết theo bối cảnh. Các chế độ kiểm soát hiện có về quản lý và bảo mật có thể không được tuân thủ.
+
+Quản trị viên nên cẩn thận đánh giá mô hình mối đe doạ đối với mạng, các nguyên tắc về tuân thủ và quyền riêng tư của tổ chức trước khi bật tính năng này.
+
+Chính sách này không có hiệu lực khi bạn tắt ứng dụng <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> hoặc chính sách tự động duyệt web của <ph name="PRODUCT_NAME" />. Ví dụ: Ứng dụng <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> có thể bị tắt theo chính sách <ph name="GEMINI_SETTINGS_POLICY_NAME" />. Để biết thêm thông tin về <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> trong <ph name="PRODUCT_NAME" />, vui lòng truy cập https://support.google.com/chrome/a?p=gemini_in_chrome.
+
+Tính năng tự động duyệt web của <ph name="PRODUCT_NAME" /> và <ph name="GEMINI_SPARK_PRODUCT_NAME" /> chỉ sử dụng được ở một số quốc gia hoặc ngôn ngữ. Việc đặt chính sách này thành 0 – Enabled (Bật) không đảm bảo rằng tính năng sẽ được bật; điều này vẫn tuỳ thuộc vào khả năng sử dụng tính năng. Để biết thêm thông tin về việc ra mắt tính năng, hãy xem Ghi chú phát hành Enterprise: https://chromeenterprise.google/resources/release-notes/.</translation>
 <translation id="3041887182529293512">Nếu bạn không đặt hoặc đặt chính sách này thành True, thì các nội dung đề xuất được tạo tự động sẽ hiển thị trên trang Thẻ mới, dựa trên nhật ký duyệt web, mối quan tâm hoặc vị trí của người dùng.
 
       Nếu bạn đặt chính sách này thành False, thì các nội dung đề xuất được tạo tự động sẽ không xuất hiện trên trang Thẻ mới.</translation>
@@ -4223,9 +4236,9 @@ dùng tuỳ chọn sử dụng khoá "keyEncipherment". Nếu không chắc ch�
 <translation id="366494444808132420">Cho phép tích hợp Gemini.</translation>
 <translation id="3665437376055221832">Chỉ nhắc người dùng khi không có chứng chỉ nào khớp với chính sách tự động chọn.</translation>
 <translation id="3671773704245936868">Tắt tính năng làm nổi bật tiêu điểm bằng bàn phím</translation>
-<translation id="367258298235646178">Cho phép quản trị viên tuỳ chỉnh hình thức của hình mờ được áp dụng theo quy tắc của quy trình Ngăn chặn mất dữ liệu (DLP). Phạm vi tuỳ chỉnh bao gồm cài đặt độ mờ của phần tô/viền, xác định cỡ chữ và cài đặt múi giờ của dấu thời gian.
-Nếu bạn không đặt chính sách này hoặc một số giá trị, Chrome sẽ sử dụng chế độ mặc định của hình mờ.
-Giá trị mặc định trên máy tính: độ mờ của phần tô là 4, độ mờ của viền là 6, cỡ chữ là 24. Giá trị mặc định trên iOS: độ mờ của phần tô là 10, độ mờ của viền là 15, cỡ chữ là 16. Trên tất cả các nền tảng, múi giờ của dấu thời gian mặc định là "user_device" (múi giờ trên thiết bị của người dùng).
+<translation id="367258298235646178">Cho phép quản trị viên tuỳ chỉnh giao diện của hình mờ được áp dụng theo các quy tắc Ngăn chặn mất dữ liệu (DLP). Phạm vi tuỳ chỉnh bao gồm đặt độ mờ của phần tô/viền, xác định cỡ chữ và đặt múi giờ của dấu thời gian.
+Nếu bạn không đặt chính sách này hoặc một số giá trị, Chrome sẽ sử dụng hành vi mặc định của chính nó về hình mờ.
+Giá trị mặc định trên máy tính: độ mờ của phần tô là 4, độ mờ của viền là 6, cỡ chữ là 24. Giá trị mặc định trên iOS: độ mờ của phần tô là 10, độ mờ của viền là 15, cỡ chữ là 16. Trên tất cả các nền tảng, múi giờ của dấu thời gian sẽ mặc định là "user_device" (múi giờ địa phương trên thiết bị của người dùng).
 
 "Độ mờ phần tô" là tỷ lệ phần trăm từ 0 (trong suốt hoàn toàn) đến 100 (mờ hoàn toàn).
 "Độ mờ viền" là tỷ lệ phần trăm từ 0 (trong suốt hoàn toàn) đến 100 (mờ hoàn toàn).
@@ -8189,6 +8202,7 @@ Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên b
       Nếu bạn không thiết lập chính sách này thì <ph name="PRODUCT_NAME" /> sẽ sử dụng phiên bản tối đa mặc định.
 
       Nếu không, bạn có thể đặt chính sách này thành một trong các giá trị sau: "tls1.2" hoặc "tls1.3". Khi bạn đặt chính sách này, <ph name="PRODUCT_NAME" /> sẽ không sử dụng các phiên bản SSL/TLS (Bảo mật tầng truyền tải) lớn hơn phiên bản được chỉ định. Giá trị không nhận dạng được sẽ bị bỏ qua.</translation>
+<translation id="6120465104321378808">Cho phép <ph name="GEMINI_SPARK_PRODUCT_NAME" /> kết nối với <ph name="PRODUCT_NAME" /> và sử dụng tính năng tự động duyệt web qua Gemini trong Chrome</translation>
 <translation id="6120909112796019291">Cho phép dùng tính năng Chỉnh sửa ảnh bằng AI tạo sinh và tham gia cải tiến các mô hình AI.</translation>
 <translation id="6123052603197028610">Không cho phép gửi các truy vấn đến máy chủ của Google để truy xuất dấu thời gian</translation>
 <translation id="6128539430475678271">Chặn Controlled Frame API trên các trang web này</translation>

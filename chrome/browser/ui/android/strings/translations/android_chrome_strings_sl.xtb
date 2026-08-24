@@ -557,6 +557,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3254409185687681395">Zaznamujte to stran</translation>
 <translation id="3265093782546847662">Vse strani domene <ph name="DOMAIN" /></translation>
 <translation id="3268048651973962414">Povlecite navzgor, če si želite ogledati rezultate iskanja</translation>
+<translation id="3268205181992599708">Omogočite mikrofon, če želite uporabljati glas</translation>
 <translation id="3269093882174072735">Naloži sliko</translation>
 <translation id="3280562213547448728">Glasovno iskanje</translation>
 <translation id="3282801380074962248">Razširitev razdelka</translation>
@@ -624,6 +625,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3557336313807607643">Dodaj med stike</translation>
 <translation id="3560831525486613327">Odprite stran »Nov zavihek«</translation>
 <translation id="3563767357928833671">Vsebina odložišča je prikazana</translation>
+<translation id="356407858591811361">Odpiranje novega anonimnega okna</translation>
 <translation id="3566639033325271639">Posodobi nastavitve</translation>
 <translation id="3568945271227339929">Ni ogroženih gesel</translation>
 <translation id="3575464060651642446">Preverjanje gesel v tej napravi …</translation>
@@ -1550,6 +1552,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7173338713290252554">Zgodovina cen v spletu</translation>
 <translation id="7177466738963138057">To lahko pozneje spremenite v nastavitvah</translation>
 <translation id="7177873915659574692">Kode QR ni mogoče ustvariti. URL vsebuje več kot toliko znakov: <ph name="CHARACTER_LIMIT" />.</translation>
+<translation id="7179032284363038560">Drugi, ki uporabljajo to napravo, ne bodo videli vaše dejavnosti, zato lahko brskate bolj zasebno. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="7182051712900867547">Uporabite drug račun</translation>
 <translation id="7182520625618447753">Za prilagojeno izkušnjo brskanja spremenite položaj naslovne vrstice na vrh ali dno</translation>
 <translation id="7183517696921903380">List filtra za aplikacije je odprt.</translation>

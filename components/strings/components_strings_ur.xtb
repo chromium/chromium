@@ -465,6 +465,7 @@
 <translation id="1757773103848038814">مونو اسپیس فونٹ</translation>
 <translation id="1757935267918149452">‏Google کا پاس ورڈ تبدیل کریں بٹن، اپنے Google اکاؤنٹ کا پاس ورڈ تبدیل کرنے کیلئے فعال کریں</translation>
 <translation id="1759776526873274358">‏توثیقی کوڈز کو آٹو فل کریں جنہیں سائٹس آپ کی سیکیورٹی بہتر بنانے کے لیے استعمال کرتی ہیں۔ ‫Chrome آپ کے Gmail سے یہ کوڈز حاصل کر سکتا ہے۔ <ph name="BEGIN_LINK" />اس خصوصیت کے بارے میں مزید جانیں<ph name="LINK_END" /></translation>
+<translation id="176013700366797492">‏<ph name="BEGIN_LINK1" />ڈیٹا اور رازداری کی ترجیحات<ph name="END_LINK1" /> کو کنٹرول کرنے یا <ph name="BEGIN_LINK2" />ادائیگی کے طریقوں<ph name="END_LINK2" /> اور <ph name="BEGIN_LINK3" />پاسز<ph name="END_LINK3" /> جیسے لائلٹی کارڈز اور IDs کا نظم کرنے کے لیے Google والٹ ملاحظہ کریں</translation>
 <translation id="1763864636252898013">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کا سیکیورٹی سرٹیفیکیٹ آپ کے آلہ کے آپریٹنگ سسٹم کے ذریعے بھروسہ مند نہیں ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن میں مانع بن رہے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
 <translation id="1768211456781949159">‏<ph name="BEGIN_LINK" />Windows نیٹ ورک کی تشخیصات چلانے کی کوشش کریں<ph name="END_LINK" />۔</translation>
 <translation id="1777422078676229054">تصویر (آرکائیول)</translation>
@@ -788,6 +789,7 @@
 <translation id="2321291402658100099">معلومات کا نظم کریں</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 ونڈو}other{# ونڈوز}}</translation>
 <translation id="232390861414237658">‏اس کارڈ کو Google Pay کے ساتھ استعمال کرنے کے لیے محفوظ کئے جانے پر اسے Chrome میں کی جانے والی خریداریوں کے لیے آٹو فل کریں</translation>
+<translation id="2325722389016720813">خودکار تکمیلات کے لیے اوپر یا نیچے کا تیر دبائیں۔ خودکار تکمیل کے لیے ٹائپ کریں۔</translation>
 <translation id="2326283484705860548">‏اب آپ Google والٹ سے خودکار طور پر مزید معلومات بھر سکتے ہیں</translation>
 <translation id="2326747055382936979">بہتر کردہ آٹو فل کا نظم کریں</translation>
 <translation id="2328651992442742497">اجازت ہے (ڈیفالٹ)</translation>

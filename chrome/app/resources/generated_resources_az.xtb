@@ -354,6 +354,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 əlfəcin və digər elementlər yalnız bu cihazda yadda saxlanılır. Onları digər cihazlarda istifadə etmək üçün Google Hesabınızda yadda saxlayın. Bununla bütün dublikatlar da təmizlənəcək.}other{{BOOKMARK_COUNT} əlfəcin və digər elementlər yalnız bu cihazda yadda saxlanılır. Onları digər cihazlarda istifadə etmək üçün Google Hesabınızda yadda saxlayın. Bununla bütün dublikatlar da təmizlənəcək.}}</translation>
 <translation id="125220115284141797">Defolt</translation>
 <translation id="1252219782845132919">Qrupu gizlədin</translation>
+<translation id="1252597096488926946">Sürüşdürmə düymələrinin bərkidilməsini ləğv edin</translation>
 <translation id="1252987234827889034">Profil xətası baş verdi</translation>
 <translation id="1254034280040157728">Böyük Kanyon</translation>
 <translation id="1254593899333212300">Birbaşa İnternet bağlantısı</translation>
@@ -976,6 +977,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1755601632425835748">Mətn ölçüsü</translation>
 <translation id="1756963401828337401">Çəkmək üçün ekran seçin</translation>
 <translation id="17584710573359123">Chrome Veb Mağazada baxın</translation>
+<translation id="176013700366797492"><ph name="BEGIN_LINK1" />Data və məxfilik tərcihlərinə<ph name="END_LINK1" /> nəzarət etmək və ya <ph name="BEGIN_LINK2" />ödəniş metodlarını<ph name="END_LINK2" />, eləcə də loyallıq kartları və kimlik sənədləri kimi <ph name="BEGIN_LINK3" />giriş talonlarını<ph name="END_LINK3" /> idarə etmək üçün Google Pulqabına daxil olun</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> <ph name="REMAPPING_OPTION" /> olaraq yenidən müəyyənləşdirildi.</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> adlı istifadəçinin hesabları</translation>
 <translation id="176272781006230109">şopinq təklifləri</translation>
@@ -1961,6 +1963,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2508747373511408451">Google Disk olmadan <ph name="APPLICATION_NAME" /> tətbiqi əlçatan olmur.</translation>
 <translation id="2509495747794740764">Miqyas miqdarı 10 və 200 aralığında olmalıdır.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (seçilib)</translation>
 <translation id="2513904627589542105">Özünü-yoxlama</translation>
 <translation id="251425554130284360">Son fəaliyyətə asanlıqla qayıtmaq üçün daxil olduğunuz səhifələri və axtarış təkliflərini görürsünüz.
@@ -4999,6 +5002,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4831226137013573603">mikrofonu səssiz edin</translation>
 <translation id="483262387981411190">Üz nəzarətini dayandırın və ya davam etdirin</translation>
 <translation id="4833683849865011483">Çap serverindən 1 printer tapıldı</translation>
+<translation id="4834388789911023644">Rəy yazın</translation>
 <translation id="4835598628985424375">Dodaqlarınızı bir-birinə sıxaraq büzün</translation>
 <translation id="4835677468087803981">PIN-i gizlədin</translation>
 <translation id="4836504898754963407">Barmaq izlərini idarə edin</translation>
@@ -8561,6 +8565,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7625823789272218216">Sola Yeni Tab</translation>
 <translation id="762730429396410864">Veb-saytlara bildirilən CPU performans səviyyəsini manual olaraq ayarlayın</translation>
 <translation id="7627749368210392160">Saytlar bu funksiyadan lokal şəbəkənizdəki digər cihazlara daxil olmaq üçün istifadə edə bilər</translation>
+<translation id="7628068697012244394">Rəy yazın</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Sinif <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Hər düymə üçün əməliyyat seçin</translation>
 <translation id="7629206210984165492">Təslim olmuş</translation>
@@ -8987,6 +8992,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7949038991703929816">Tarixçə yüklənmədi. Fayllarda keçərli güncəlləyici loqlar olduğuna əmin olun.</translation>
 <translation id="7950629216186736592">Səbəb: LBS yalnız http://, https:// və file:// URL-lərini dəstəkləyir.</translation>
 <translation id="7950814699499457511">Yanılı • Bu artırma datanın toplanma və istifadə qaydası kimi məxfilik təcrübələrini dərc etməyib</translation>
+<translation id="7951159420392892566">Sürüşdürmə düymələrinin bərkidilməsini ləğv edin</translation>
 <translation id="795130320946928025">Virtual kartı deaktiv edin</translation>
 <translation id="7952708427581814389">Saytlar mübadilə buferinizdəki mətn və şəkilləri görmək üçün icazə istəyə bilər</translation>
 <translation id="7953236668995583915">Bu saytda yenilənmiş ayarların tətbiqi üçün bu səhifəni yenidən yükləyin</translation>

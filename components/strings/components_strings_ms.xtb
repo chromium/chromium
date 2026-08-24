@@ -633,6 +633,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2090451897496479509">Hubungi penyedia untuk mendapatkan maklumat lanjut</translation>
 <translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">Bunyi</translation>
+<translation id="2092361763640578821">Ketahui lebih lanjut tentang</translation>
 <translation id="2093184051799735948">Gelintar <ph name="ENGINE_NAME" /> atau taip URL</translation>
 <translation id="2093982008204312032">Google Chrome cuba mematikan Windows Hello untuk mengisikan kata laluan.</translation>
 <translation id="2094505752054353250">Domain tidak padan</translation>
@@ -1545,6 +1546,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3642638418806704195">Aplikasi:</translation>
 <translation id="3647286794400715637">Setiap entri rentetan url mesti mengandungi antara 1 hingga 2 URL.</translation>
 <translation id="3647400963805615193">Butang Ketepikan Petua Chrome, tekan kekunci Enter untuk diketepikan, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
+<translation id="3647730822767756911">Pemantauan aktiviti</translation>
 <translation id="3648667207586409316">Apakah perkara yang boleh saya lakukan untuk mengurangkan tekanan?</translation>
 <translation id="3650584904733503804">Pengesahan berjaya</translation>
 <translation id="3650594806107685466">Untuk membantu memastikan kad anda selamat, masukkan CVC pada <ph name="SIDE_OF_CARD" /></translation>
@@ -2007,6 +2009,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4377869186417956230">Tukar kepada semua kad kesetiaan di bawah item menu ini.</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4378221908737133050">Buat senarai semak pembersihan menyeluruh untuk rumah saya</translation>
+<translation id="4379357028567121852">Daripada <ph name="APP_NAME" /></translation>
 <translation id="4381997246130185847">Anda boleh menyambung semula aktiviti anda atau membuat kumpulan tab baharu semasa dalam perjalanan</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Mulai sekarang, simpan fail anda pada storan awan</translation>
@@ -2397,6 +2400,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5061227663725596739">Adakah anda maksudkan <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Sejarah pencetakan</translation>
 <translation id="5068524481479508725">A10</translation>
+<translation id="5068915318814087203">Aktiviti penyemakan imbas tertentu mungkin dipantau oleh organisasi anda untuk mencegah kehilangan data; akses <ph name="BEGIN_LINK" />chrome://management<ph name="END_LINK" /> untuk mendapatkan butiran lanjut</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Menyemak alamat proksi<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Gulungan Kesepuluh</translation>
 <translation id="507130231501693183">Peti mel 4</translation>
@@ -2761,6 +2765,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5659593005791499971">E-mel</translation>
 <translation id="5660122698869360728">Folder pintar baharu yang membantu anda menyimpan semua halaman beli-belah anda pada satu tempat dan menjejaki harga, mendapatkan cerapan harga dan banyak lagi secara automatik.</translation>
 <translation id="5663955426505430495">Pentadbir peranti ini telah memasang sambungan bagi fungsi tambahan. Sambungan mempunyai akses kepada sesetengah data anda.</translation>
+<translation id="5664075349639500330">Ketahui perihal penyemakan imbas dalam Mod Terasing dengan lebih lanjut.</translation>
 <translation id="5675650730144413517">Halaman ini tidak berfungsi</translation>
 <translation id="5675959228867414813">Paparkan mengikut tarikh</translation>
 <translation id="567604591393105935">Helaian bawah Commerce dibuka pada ketinggian separuh</translation>
@@ -3275,6 +3280,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6547208576736763147">Dua tebukan kiri</translation>
 <translation id="6550245281449521513">Kunci tetikus tidak dibenarkan</translation>
 <translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />, baharu</translation>
+<translation id="6552244083450538912">Aktiviti anda mungkin kelihatan kepada: laman web yang anda lawati, majikan atau sekolah anda, penyedia perkhidmatan Internet anda</translation>
 <translation id="6552566579578780089">Pembayaran</translation>
 <translation id="6553777254569586547"><ph name="SUGGESTION_TITLE" />. <ph name="SUGGESTION_TYPE" />. <ph name="MATCH_POSITION" /> daripada <ph name="NUM_MATCHES_IN_GROUP" /> dalam kumpulan <ph name="GROUP_HEADER" />.</translation>
 <translation id="6554732001434021288">Terakhir dilawati <ph name="NUM_DAYS" /> hari yang lalu</translation>
@@ -3509,6 +3515,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6972867931824045907">Untuk menggunakan papan keratan anda, beri Chrome akses dalam <ph name="LINK" />.</translation>
 <translation id="6973656660372572881">Pelayan proksi tetap dan juga URL skrip .pac tidak ditetapkan.</translation>
 <translation id="6973988895180423160">3.5 x 5 in</translation>
+<translation id="6976229914347655621">Sambungan yang diperlukan oleh organisasi anda akan kekal dihidupkan; akses <ph name="BEGIN_LINK" />chrome://extensions<ph name="END_LINK" /> untuk mendapatkan butiran lanjut</translation>
 <translation id="6978236010531171013">Kongsi juga</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Redam (lalai)</translation>
@@ -3675,6 +3682,7 @@ Butiran tambahan:
 <translation id="7269151392155523061">Pintasan tidak boleh sama dengan kata kunci pengagregat carian yang ditakrifkan oleh <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">Fail yang anda muat turun dihantar kepada Google Cloud atau pihak ketiga untuk dianalisis. Contohnya, fail tersebut mungkin diimbas untuk mencari data sensitif atau perisian hasad dan mungkin disimpan berdasarkan dasar syarikat dan dapat dilihat oleh pentadbir anda.</translation>
 <translation id="7275334191706090484">Penanda Halaman Terurus</translation>
+<translation id="7278933725460302617">Kini anda dalam mod Terasing</translation>
 <translation id="7282894295403887199">Anda tidak boleh melawati halaman ini dalam Mod inkognito</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan kekunci Tab kemudian Enter untuk menukar kata laluan Google Account anda</translation>
 <translation id="7286908876112207905">Menampalkan kandungan ini pada laman ini tidak dibenarkan</translation>
@@ -3847,6 +3855,7 @@ Butiran tambahan:
 <translation id="7554791636758816595">Tab Baharu</translation>
 <translation id="7556328470713619625">Gunakan kunci laluan</translation>
 <translation id="7559278538486662777">Apl ini tidak dapat diubah saiz.</translation>
+<translation id="7561202748196702434">menyemak imbas dalam mod Terasing</translation>
 <translation id="7561784249784255101">Cakera Serba Boleh Digital</translation>
 <translation id="7564049878696755256">Anda boleh kehilangan akses kepada akaun <ph name="ORG_NAME" /> anda atau mengalami kecurian identiti. Chrome mengesyorkan supaya kata laluan anda ditukar sekarang.</translation>
 <translation id="7567204685887185387">Pelayan ini tidak dapat membuktikan bahawa domainnya ialah <ph name="DOMAIN" />; sijil keselamatannya mungkin telah dikeluarkan melalui penipuan. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang yang memintasi sambungan anda.</translation>
@@ -4382,6 +4391,7 @@ Butiran tambahan:
 <translation id="8473626140772740486">300 x 450 mm</translation>
 <translation id="8473863474539038330">Alamat dan pelbagai lagi</translation>
 <translation id="8474910779563686872">Tunjukkan butiran pembangun</translation>
+<translation id="84764251640219124">Laman disekat daripada menggunakan kuki pihak ketiga. Jika laman yang bergantung pada kuki ini tidak berfungsi, anda boleh <ph name="BEGIN_LINK" />cuba memberikan akses sementara kepada kuki pihak ketiga untuk laman itu<ph name="END_LINK" />.</translation>
 <translation id="8479754468255770962">Kokot bawah sebelah kiri</translation>
 <translation id="8483229036294884935">Alamat ini akan dipadamkan daripada Google Account anda, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">Diguna pakai untuk</translation>
@@ -4449,6 +4459,7 @@ Butiran tambahan:
 <translation id="8619130384334725124">Lalai semasa</translation>
 <translation id="8620276786115098679">Sampul Kaku 7</translation>
 <translation id="8622864575115813231">Menghubungi institusi kewangan anda...</translation>
+<translation id="8632584659860846053">Sejarah penyemakan imbas, kuki dan data laman, cache dan maklumat yang dimasukkan dalam borang anda akan dipadamkan setelah anda menutup semua Tetingkap Terasing</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">Chrome mengandungi ciri keselamatan terbina dalam untuk melindungi anda semasa menyemak imbas – seperti Penyemakan Imbas Selamat Google yang <ph name="BEGIN_LINK" />baru-baru ini menemukan pancingan data<ph name="END_LINK" /> pada laman yang cuba anda lawati. Laman pancingan data berpura-pura menjadi laman lain untuk memperdaya anda.<ph name="NEW_LINE" />Kadangkala, laman yang biasanya selamat juga terjejas disebabkan oleh penyerang. <ph name="BEGIN_ERROR_LINK" />Beritahu kami<ph name="END_ERROR_LINK" /> jika anda fikir terdapat kesilapan dan laman ini tidak mendatangkan bahaya.</translation>
 <translation id="8640996933372643759">Untuk berkongsi tab dan bekerjasama dengan orang lain, anda mestilah boleh log masuk ke Chrome</translation>

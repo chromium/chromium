@@ -613,7 +613,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2045871135676061132">Phong bì thư từ cá nhân</translation>
 <translation id="2048261947532620704">Đang dịch trang</translation>
 <translation id="2055016614992422886">Cuộc trò chuyện</translation>
-<translation id="2058468041496756763">Bạn có thể thay đổi công cụ tìm kiếm bất kỳ lúc nào trong phần cài đặt của Chrome. Nếu không thấy công cụ tìm kiếm mà bạn muốn, bạn có thể tìm kiếm trên trang web của công cụ đó. Bạn sẽ thấy công cụ đó trong danh sách công cụ tìm kiếm mà bạn đã truy cập gần đây trong phần cài đặt của Chrome và có thể đặt công cụ đó làm mặc định.</translation>
+<translation id="2058468041496756763">Bạn có thể thay đổi công cụ tìm kiếm bất kỳ lúc nào trong phần cài đặt của Chrome. Nếu không thấy công cụ tìm kiếm mà bạn muốn, hãy thực hiện một lượt tìm kiếm trên trang web của công cụ đó. Bạn sẽ thấy công cụ đó trong danh sách các công cụ tìm kiếm mà bạn đã truy cập gần đây trong phần cài đặt của Chrome và có thể đặt công cụ đó làm mặc định.</translation>
 <translation id="2059166748188874810">Thành phố tự trị</translation>
 <translation id="2059202684901022309">22 x 34 inch</translation>
 <translation id="2063929825539050431">Để gửi nhanh trang này đến một thiết bị khác, hãy chạm và giữ thanh địa chỉ</translation>
@@ -2178,6 +2178,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4711628883879888561">Cộng tác trên nhóm thẻ</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4714279348049646935">Tính điểm GPA của tôi bằng cách tính trọng số cho số tín chỉ, cấp độ môn học và giá trị quy đổi điểm</translation>
+<translation id="4717533164160330041">Để sử dụng tính năng này, trước tiên hãy bật các tính năng thông minh trong Gmail</translation>
 <translation id="471880041731876836">Bạn không có quyền để truy cập trang web này</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Chạy Chẩn đoán mạng của Windows<ph name="END_LINK" /></translation>
@@ -2835,6 +2836,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Phương thức thanh toán này sẽ bị xoá khỏi thiết bị này</translation>
 <translation id="5794065675298686371">Bật thông báo theo dõi giá</translation>
+<translation id="5796050750059455142">Bật "<ph name="BEGIN_LINK" />Các tính năng thông minh trong các sản phẩm khác của Google<ph name="LINK_END" />"</translation>
 <translation id="5797984091151707075">Bị chặn theo chính sách của quản trị viên</translation>
 <translation id="5804241973901381774">Quyền</translation>
 <translation id="5806871454498484178">Đã chặn cuộn và thu phóng</translation>
@@ -3142,6 +3144,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6329742260390895689">Để tự động điền thông tin, hãy bật chế độ "Sử dụng thẻ và vé trên các sản phẩm và dịch vụ của Google" trong phần cài đặt Wallet</translation>
 <translation id="6329815962353376655">&lt;Nhập câu hỏi&gt;</translation>
 <translation id="633348045801643466">Hiện các lựa chọn <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />thanh toán sau<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> khi thanh toán</translation>
+<translation id="6335364777769284858">Bật "Các tính năng thông minh" trong phần <ph name="BEGIN_LINK" />cài đặt Gmail<ph name="LINK_END" /></translation>
 <translation id="6336948221660696475">Không cho phép sử dụng thực tế ảo</translation>
 <translation id="6337534724793800597">Lọc chính sách theo tên</translation>
 <translation id="633770708279464947">Giá trị <ph name="SECURE_DNS_SALT" /> không hợp lệ và sẽ không được sử dụng.</translation>
@@ -4211,7 +4214,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8175796834047840627">Chrome đang đề xuất lưu thẻ của bạn vào Tài khoản Google vì bạn đã đăng nhập. Bạn có thể thay đổi hành động này trong phần cài đặt.</translation>
 <translation id="8176440868214972690">Quản trị viên của thiết bị này đã gửi một số thông tin (chẳng hạn như chế độ cài đặt hoặc chính sách) đến các trang web sau đây.</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> đã bị chặn do nội dung}other{<ph name="FILE_COUNT" /> tệp đã bị chặn do nội dung}}</translation>
-<translation id="8186171296341598122">Bạn có thể thay đổi công cụ tìm kiếm bất kỳ lúc nào trong phần cài đặt của Chromium. Nếu không thấy công cụ tìm kiếm mà bạn muốn, bạn có thể tìm kiếm trên trang web của công cụ đó. Bạn sẽ thấy công cụ đó trong danh sách công cụ tìm kiếm mà bạn đã truy cập gần đây trong phần cài đặt của Chromium và có thể đặt công cụ đó làm mặc định.</translation>
+<translation id="8186171296341598122">Bạn có thể thay đổi công cụ tìm kiếm bất kỳ lúc nào trong phần cài đặt của Chromium. Nếu không thấy công cụ tìm kiếm mà bạn muốn, hãy thực hiện một lượt tìm kiếm trên trang web của công cụ đó. Bạn sẽ thấy công cụ đó trong danh sách công cụ tìm kiếm mà bạn đã truy cập gần đây trong phần cài đặt của Chromium và có thể đặt công cụ đó làm mặc định.</translation>
 <translation id="8188830160449823068">IBAN chỉ được lưu vào thiết bị</translation>
 <translation id="8189557652711717875">Công cụ tìm kiếm mà bạn chọn sẽ được dùng cho những tính năng như tìm kiếm từ thanh địa chỉ và từ hình ảnh trên trang web.</translation>
 <translation id="8190193880870196235">Do một tiện ích quản lý</translation>

@@ -83,6 +83,7 @@
 <translation id="1818308510395330587">Selleks et rakendus <ph name="APP_NAME" /> saaks AR-i kasutada, lülitage sisse kaamera ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="1822318649925991542">Sirvimiskogemuse kohandamiseks vahetage asukohta.</translation>
 <translation id="1848033246551405023">Sans Serifi font</translation>
+<translation id="1861244985839668297">Kui see on sisse lülitatud, võivad saidid küsida luba HID-seadmete kasutamiseks. Kui see on välja lülitatud, ei saa saidid HID-seadmeid kasutada.</translation>
 <translation id="1861262398884155592">See kaust on tühi</translation>
 <translation id="1881806992065048905">Uue vahelehe välimuse alumine leht</translation>
 <translation id="1887786770086287077">Juurdepääs asukohale on selle seadme puhul välja lülitatud. Lülitage see sisse <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>

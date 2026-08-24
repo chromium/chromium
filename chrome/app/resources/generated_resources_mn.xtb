@@ -354,6 +354,7 @@
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 хавчуурга болон бусад зүйлийг зөвхөн энэ төхөөрөмжид хадгалсан. Эдгээрийг бусад төхөөрөмж дээрээ ашиглахын тулд Google Бүртгэлдээ хадгална уу. Энэ нь мөн аливаа хуулбарыг цэвэрлэнэ.}other{{BOOKMARK_COUNT} хавчуурга болон бусад зүйлийг зөвхөн энэ төхөөрөмжид хадгалсан. Эдгээрийг бусад төхөөрөмж дээрээ ашиглахын тулд Google Бүртгэлдээ хадгална уу. Энэ нь мөн аливаа хуулбарыг цэвэрлэнэ.}}</translation>
 <translation id="125220115284141797">Өгөгдмөл</translation>
 <translation id="1252219782845132919">Бүлгийг нуух</translation>
+<translation id="1252597096488926946">Гүйлгэх товчнуудыг бэхэлснийг болиулах</translation>
 <translation id="1252987234827889034">Профайлд алдаа гарлаа</translation>
 <translation id="1254034280040157728">Гранд Каньон</translation>
 <translation id="1254593899333212300">Интернетийн шууд холболт</translation>
@@ -985,6 +986,7 @@
 <translation id="1755601632425835748">Текстийн хэмжээ</translation>
 <translation id="1756963401828337401">Зураг авах дэлгэц сонгох</translation>
 <translation id="17584710573359123">Chrome Веб Дэлгүүрт харах</translation>
+<translation id="176013700366797492"><ph name="BEGIN_LINK1" />Өгөгдөл, нууцлалын сонголтыг<ph name="END_LINK1" /> хянах эсвэл лояалти карт, ID зэрэг <ph name="BEGIN_LINK2" />төлбөрийн хэрэгсэл<ph name="END_LINK2" />, <ph name="BEGIN_LINK3" />тасалбарыг<ph name="END_LINK3" /> удирдахын тулд Google Wallet-д зочилно уу</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" />-г <ph name="REMAPPING_OPTION" />-д дахин харгалзуулсан.</translation>
 <translation id="1761845175367251960"><ph name="NAME" />-н бүртгэлүүд</translation>
 <translation id="176272781006230109">дэлгүүр хэсэх зөвлөмж</translation>
@@ -1970,6 +1972,7 @@
 <translation id="2508747373511408451"><ph name="APPLICATION_NAME" /> аппликэйшн Google Драйвыг боломжтой байхыг шаарддаг.</translation>
 <translation id="2509495747794740764">Хэмжээний дугаар 10-с 200-н хоорондох тоо байх ёстой.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (сонгосон)</translation>
 <translation id="2513904627589542105">Өөрийгөө шалгах</translation>
 <translation id="251425554130284360">Та зочилсон хуудаснуудаа харж байгаа бөгөөд санал болгосон хайлтууд нь танд хамгийн сүүлийн үйл ажиллагаа руугаа хялбархан буцахад тусална.
@@ -5009,6 +5012,7 @@
 <translation id="4831226137013573603">микрофоны дууг хаах</translation>
 <translation id="483262387981411190">Царайн хяналтыг түр зогсоох эсвэл үргэлжлүүлэх</translation>
 <translation id="4833683849865011483">Хэвлэх серверээс 1 хэвлэгч олдлоо</translation>
+<translation id="4834388789911023644">Шүүмж бичих</translation>
 <translation id="4835598628985424375">Уруулаа цорвойлгох</translation>
 <translation id="4835677468087803981">ПИН-г нуух</translation>
 <translation id="4836504898754963407">Хурууны хээг удирдах</translation>
@@ -8571,6 +8575,7 @@
 <translation id="7625823789272218216">Шинэ табыг зүүн тийш нь</translation>
 <translation id="762730429396410864">Вебсайтуудад мэдээлсэн CPU-н гүйцэтгэлийн зэрэглэлийг гар аргаар тохируулах</translation>
 <translation id="7627749368210392160">Сайтууд энэ онцлогийг таны дотоод сүлжээн дээрх бусад төхөөрөмжид хандахад ашиглах боломжтой</translation>
+<translation id="7628068697012244394">Шүүмж бичих</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Зэрэглэл <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Товч тус бүрд үйлдэл сонгоно уу</translation>
 <translation id="7629206210984165492">Дүнсгэр</translation>
@@ -8997,6 +9002,7 @@
 <translation id="7949038991703929816">Түүхийг ачаалж чадсангүй. Файлууд шинэчлэгчийн хүчинтэй лог агуулж байгаа эсэхийг баталгаажуулна уу.</translation>
 <translation id="7950629216186736592">Шалтгаан: LBS нь зөвхөн http://, https://, болон file:// гэсэн URL-уудыг дэмждэг.</translation>
 <translation id="7950814699499457511">Асаалттай • Энэ өргөтгөл өгөгдлийг хэрхэн цуглуулж, ашигладаг гэх мэт нууцлалын практикаа нийтлээгүй байна</translation>
+<translation id="7951159420392892566">Гүйлгэх товчнуудыг бэхэлснийг болиулах</translation>
 <translation id="795130320946928025">Виртуал картыг унтраах</translation>
 <translation id="7952708427581814389">Сайтууд таны түр санах ойн текст болон зургийг харахыг хүсэх боломжтой</translation>
 <translation id="7953236668995583915">Шинэчилсэн тохиргоогоо энэ сайтад хэрэгжүүлэхийн тулд энэ хуудсыг дахин ачаална уу</translation>

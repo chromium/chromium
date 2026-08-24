@@ -695,6 +695,7 @@
 <translation id="325717987950204592">Nhấn vào "Quyền riêng tư và bảo mật"</translation>
 <translation id="3259451381796379533">Tài khoản này không dùng được Gemini. Đăng nhập bằng một Tài khoản Google khác.</translation>
 <translation id="3265736395246760288">Đăng nhập nhanh hơn trên mọi thiết bị đã đồng bộ hoá.</translation>
+<translation id="3268166994745151153">Nếu chuyển đổi hồ sơ, bạn sẽ mất tiến trình hiện tại</translation>
 <translation id="3272527697863656322">Huỷ</translation>
 <translation id="3272955648592358996">Dữ liệu của bạn giúp cải thiện AI của Google</translation>
 <translation id="3273510436356991673">Tuỳ chỉnh màn hình chính của bạn</translation>
@@ -1098,6 +1099,7 @@
 <translation id="4652817563047461855">Đảm bảo mật khẩu của bạn an toàn, tìm hiểu xem mật khẩu có bị lộ không và nhận lời khuyên giúp bạn tự bảo vệ bản thân trên mạng. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Bật tính năng chia sẻ thẻ</translation>
 <translation id="4658335131052370646">Lưu</translation>
+<translation id="465947902531722727">Chuyển đổi hồ sơ</translation>
 <translation id="466307903888586355">Tổ chức của bạn đã chặn tính năng lưu tệp</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Tổ chức của bạn yêu cầu bạn duyệt web ở chế độ riêng tư. Nhóm thẻ không được đồng bộ hoá ở chế độ ẩn danh.
@@ -1208,6 +1210,7 @@
 <translation id="4979397965658815378">Đăng nhập bằng Tài khoản Google để nhận dấu trang, mật khẩu, lịch sử và các cài đặt khác trên tất cả thiết bị của bạn</translation>
 <translation id="4985921635659180565">Sau khi lên lịch xoá, bạn không thể huỷ quá trình xoá.</translation>
 <translation id="498624032394115435">Bất cứ ai có đường liên kết này đều có thể chỉnh sửa tất cả các thẻ.</translation>
+<translation id="498768198683310172">Bắt đầu sử dụng Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, do tổ chức của bạn quản lý.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Màu của nhóm thẻ <ph name="COLOR" /></translation>
@@ -2153,6 +2156,7 @@
 <translation id="8011489434346330032">Trình kiểm tra web</translation>
 <translation id="8014007212279733632">Xác minh danh tính của bạn để tự động điền thông tin nhạy cảm</translation>
 <translation id="8015826420689927262">Xoá tệp đính kèm</translation>
+<translation id="8016869623424294549">Bạn sắp chuyển đổi hồ sơ</translation>
 <translation id="8017015647846870183">Có trong Trình quản lý mật khẩu của Google, bao gồm cả mật khẩu và khoá truy cập</translation>
 <translation id="802154636333426148">Tải xuống không thành công</translation>
 <translation id="8023170444051056234">Bạn sẽ mất ngay quyền truy cập vào nhóm thẻ "<ph name="GROUP_NAME" />" và nhóm thẻ này sẽ bị xoá khỏi mọi thiết bị của bạn</translation>

@@ -1370,7 +1370,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2044750031738659219">{0,plural, =1{Đóng cửa sổ khách}other{Đóng cửa sổ khách (# cửa sổ)}}</translation>
 <translation id="204497730941176055">Tên Mẫu Chứng chỉ của Microsoft</translation>
 <translation id="2045211794962848221">Bạn sẽ không thấy thông báo cụ thể này nữa</translation>
-<translation id="2045482258469113155">Chuyển hướng đến <ph name="URL" />?</translation>
+<translation id="2045482258469113155">Ý bạn là chuyển hướng đến <ph name="URL" />?</translation>
 <translation id="2045540927991079503">Mở đường liên kết bằng tài khoản</translation>
 <translation id="2045838962742066664">Nhập liệu nhanh</translation>
 <translation id="2046702855113914483">Mỳ tôm</translation>
@@ -1808,7 +1808,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2399699884460174994">Đã bật thông báo</translation>
 <translation id="2399939490305346086">Dữ liệu đăng nhập trên khóa bảo mật</translation>
 <translation id="240006516586367791">Điều khiển nội dung nghe nhìn</translation>
-<translation id="2405057019351885107">Trình duyệt giúp bạn làm việc hiệu quả hơn</translation>
+<translation id="2405057019351885107">Trình duyệt giúp bạn làm được nhiều việc hơn</translation>
 <translation id="2405887402346713222">Số sê-ri của thành phần và thiết bị</translation>
 <translation id="2406153734066939945">Xóa hồ sơ này và dữ liệu của hồ sơ?</translation>
 <translation id="2406942743794219791">Xác nhận công cụ tìm kiếm mặc định mà bạn muốn</translation>
@@ -6226,7 +6226,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5796956053441619942">Không hỗ trợ URL từ thiết bị từ xa</translation>
 <translation id="5798079537501238810">Các trang web có thể cài đặt trình xử lý thanh toán</translation>
 <translation id="5798086737841799234">Nhập mã xác nhận</translation>
-<translation id="5798574502832537664">Tìm định nghĩa hoặc tìm hiểu thêm về một chủ đề bằng cách chọn văn bản trên trang</translation>
+<translation id="5798574502832537664">Xem định nghĩa hoặc tìm hiểu thêm về một chủ đề bằng cách chọn văn bản trên trang</translation>
 <translation id="579915268381781820">Khóa bảo mật của bạn đã bị rút ra.</translation>
 <translation id="5799508265798272974">Máy ảo Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5799638114236977894">Hoán đổi với dạng xem bên phải</translation>
@@ -8827,7 +8827,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7807711621188256451">Luôn cho phép <ph name="HOST" /> truy cập máy ảnh của bạn</translation>
 <translation id="7810202088502699111">Cửa sổ bật lên đã bị chặn trên trang này.</translation>
 <translation id="7810367892333449285">Nội dung bạn nhập phải có định dạng <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ địa chỉ<ph name="LPA_2" />$<ph name="LPA_3" />mã nhận dạng để so khớp (không bắt buộc)<ph name="LPA_4" /></translation>
-<translation id="7810951505946824824">Chrome được xây dựng bằng dự án nguồn mở Chromium và phần mềm <ph name="BEGIN_HIGHLIGHT" />nguồn mở<ph name="END_HIGHLIGHT" /> khác.</translation>
+<translation id="7810951505946824824">Chrome được tạo ra nhờ dự án nguồn mở Chromium và các phần mềm <ph name="BEGIN_HIGHLIGHT" />nguồn mở<ph name="END_HIGHLIGHT" /> khác.</translation>
 <translation id="7811263553491007091">Hãy thử lại hoặc chọn một trong những giao diện đã tạo ở bên dưới.</translation>
 <translation id="7811926937048662341">Nhấp chuột phải vào đây rồi chọn "Hiện các thẻ theo chiều dọc"</translation>
 <translation id="7811986034759500329">Thiết lập trong phần cài đặt hệ thống</translation>
@@ -10667,7 +10667,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="9220820413868316583">Nhấc ngón tay lên rồi thử lại.</translation>
 <translation id="922152298093051471">Tuỳ chỉnh Chrome</translation>
 <translation id="9222839391870847423">Thời lượng: <ph name="DURATION" /></translation>
-<translation id="9223158240932249417">Không được phép hiển thị các thao tác đối với văn bản</translation>
+<translation id="9223158240932249417">Không được phép hiện các thao tác đối với văn bản</translation>
 <translation id="923306663772315007">Gửi đến thiết bị của bạn</translation>
 <translation id="923467487918828349">Hiển thị tất cả</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Để quản lý tiện ích, hãy mở Tiện ích}other{Để quản lý các tiện ích này, hãy mở Tiện ích}}</translation>

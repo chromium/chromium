@@ -624,6 +624,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3557336313807607643">Dodaj u kontakte</translation>
 <translation id="3560831525486613327">Otvorite stranicu nove kartice</translation>
 <translation id="3563767357928833671">Prikazan je sadržaj privremene memorije</translation>
+<translation id="356407858591811361">Novi prozor bez arhiviranja</translation>
 <translation id="3566639033325271639">Ažuriraj podešavanja</translation>
 <translation id="3568945271227339929">Nema ugroženih lozinki</translation>
 <translation id="3575464060651642446">Proveravaju se lozinke na ovom uređaju…</translation>
@@ -1550,6 +1551,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="7173338713290252554">Istorija cena širom veba</translation>
 <translation id="7177466738963138057">To možete da promenite kasnije u podešavanjima</translation>
 <translation id="7177873915659574692">Pravljenje QR koda nije uspelo. URL premašuje ograničenje za broj znakova (<ph name="CHARACTER_LIMIT" />).</translation>
+<translation id="7179032284363038560">Drugi koji koriste ovaj uređaj neće videti vaše aktivnosti, pa možete da pregledate privatnije. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="7182051712900867547">Koristi drugi nalog</translation>
 <translation id="7182520625618447753">Premestite traku za adresu na vrh ili dno da biste imali prilagođeni doživljaj pregledanja</translation>
 <translation id="7183517696921903380">Tabela sa filterima aplikacija je otvorena.</translation>

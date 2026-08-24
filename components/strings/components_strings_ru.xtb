@@ -633,6 +633,7 @@
 <translation id="2090451897496479509">За дополнительной информацией обратитесь к провайдеру.</translation>
 <translation id="2090686487550343086">Коды IBAN</translation>
 <translation id="2091887806945687916">Звук</translation>
+<translation id="2092361763640578821">Подробнее о</translation>
 <translation id="2093184051799735948">Запрос в <ph name="ENGINE_NAME" /> или URL</translation>
 <translation id="2093982008204312032">Google Chrome пытается отключить Windows Hello, чтобы не использовать этот сервис для подстановки паролей.</translation>
 <translation id="2094505752054353250">Несоответствие домена</translation>
@@ -1543,6 +1544,7 @@
 <translation id="3642638418806704195">Приложение:</translation>
 <translation id="3647286794400715637">Каждая запись должна содержать 1–2 URL.</translation>
 <translation id="3647400963805615193">Кнопка "Закрыть совет по работе с Chrome". Для выполнения действия нажмите Ввод. <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />.</translation>
+<translation id="3647730822767756911">Отслеживание активности</translation>
 <translation id="3648667207586409316">Как мне снизить уровень стресса?</translation>
 <translation id="3650584904733503804">Проверка выполнена успешно</translation>
 <translation id="3650594806107685466">Введите CVC-код <ph name="SIDE_OF_CARD" />. Это нужно для ее безопасности.</translation>
@@ -2005,6 +2007,7 @@
 <translation id="4377869186417956230">Перейти ко всем картам постоянного клиента в этом пункте меню.</translation>
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4378221908737133050">Создай контрольный список для генеральной уборки дома</translation>
+<translation id="4379357028567121852">Источник: <ph name="APP_NAME" /></translation>
 <translation id="4381997246130185847">Вы можете прямо на ходу продолжать работу со своими группами вкладок или создавать новые.</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">В дальнейшем сохраняйте их в облачном хранилище.</translation>
@@ -2174,6 +2177,7 @@
 <translation id="4711628883879888561">Общий доступ к группе вкладок</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4714279348049646935">Рассчитай мой средний балл (GPA) с учетом зачетных единиц, уровней курсов и оценок.</translation>
+<translation id="4717533164160330041">Чтобы использовать автозаполнение, включите умные функции в Gmail</translation>
 <translation id="471880041731876836">Доступ запрещен</translation>
 <translation id="4718897478554657123">600 x 900 мм</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Выполните диагностику сети в Windows<ph name="END_LINK" /></translation>
@@ -2394,6 +2398,7 @@
 <translation id="5061227663725596739">Вам нужен домен <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Историю печати.</translation>
 <translation id="5068524481479508725">A10</translation>
+<translation id="5068915318814087203">Ваша организация может отслеживать определенные действия в браузере, чтобы предотвратить потерю данных. Подробную информацию можно найти на странице <ph name="BEGIN_LINK" />chrome://management<ph name="END_LINK" />.</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Проверьте адрес прокси-сервера<ph name="END_LINK" />.</translation>
 <translation id="5070838744279127212">Десятый рулон</translation>
 <translation id="507130231501693183">Почтовый ящик 4</translation>
@@ -2758,6 +2763,7 @@
 <translation id="5659593005791499971">Эл. почта</translation>
 <translation id="5660122698869360728">Это новая умная папка, которая позволяет добавлять в закладки страницы с желаемыми покупками, автоматически отслеживать цены, получать полезную информацию и многое другое.</translation>
 <translation id="5663955426505430495">Администратор устройства установил расширения с дополнительными функциями для браузера. У расширений есть доступ к некоторым вашим данным.</translation>
+<translation id="5664075349639500330">Подробнее о просмотре в изолированном режиме.</translation>
 <translation id="5675650730144413517">Страница недоступна</translation>
 <translation id="5675959228867414813">Отсортировать по дате</translation>
 <translation id="567604591393105935">Нижний экран с информацией о товаре открыт на половину экрана</translation>
@@ -2829,6 +2835,7 @@
 <translation id="5789643057113097023">:</translation>
 <translation id="5793317771769868848">Этот способ оплаты будет удален с устройства.</translation>
 <translation id="5794065675298686371">Отслеживайте цены</translation>
+<translation id="5796050750059455142">Включите параметр <ph name="BEGIN_LINK" />Умные функции в других продуктах Google<ph name="LINK_END" />.</translation>
 <translation id="5797984091151707075">Заблокировано правилом администратора.</translation>
 <translation id="5804241973901381774">Разрешения</translation>
 <translation id="5806871454498484178">Изменение масштаба и прокрутка заблокированы</translation>
@@ -3136,6 +3143,7 @@
 <translation id="6329742260390895689">Чтобы ваши сведения подставлялись автоматически, в настройках Кошелька включите параметр "Использовать в сервисах Google".</translation>
 <translation id="6329815962353376655">&lt;Введите вопрос&gt;</translation>
 <translation id="633348045801643466">Показывать <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />варианты рассрочки<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> при оформлении покупки</translation>
+<translation id="6335364777769284858">Включите умные функции в <ph name="BEGIN_LINK" />настройках Gmail<ph name="LINK_END" />.</translation>
 <translation id="6336948221660696475">Запрос на использование VR отклонен</translation>
 <translation id="6337534724793800597">Фильтровать по названию</translation>
 <translation id="633770708279464947">Значение строки <ph name="SECURE_DNS_SALT" /> недопустимо и не будет использовано.</translation>
@@ -3270,6 +3278,7 @@
 <translation id="6547208576736763147">Два отверстия слева</translation>
 <translation id="6550245281449521513">Блокировка мыши запрещена</translation>
 <translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />, новый атрибут</translation>
+<translation id="6552244083450538912">Информация о ваших действиях может быть видна сайтам, которые вы посещаете, системному администратору в учебном заведении или на работе, а также вашему интернет-провайдеру.</translation>
 <translation id="6552566579578780089">Способы оплаты</translation>
 <translation id="6553777254569586547"><ph name="SUGGESTION_TITLE" />. <ph name="SUGGESTION_TYPE" />. <ph name="MATCH_POSITION" /> из <ph name="NUM_MATCHES_IN_GROUP" /> в группе "<ph name="GROUP_HEADER" />".</translation>
 <translation id="6554732001434021288">Последнее посещение: <ph name="NUM_DAYS" /> дн. назад</translation>
@@ -3504,6 +3513,7 @@
 <translation id="6972867931824045907">Чтобы использовать буфер обмена, предоставьте Chrome доступ в <ph name="LINK" /></translation>
 <translation id="6973656660372572881">Указаны как фиксированные прокси-серверы, так и URL PAC-скриптов.</translation>
 <translation id="6973988895180423160">3,5 x 5 дюймов</translation>
+<translation id="6976229914347655621">Расширения, необходимые вашей организации, останутся включенными. Подробную информацию можно найти на странице <ph name="BEGIN_LINK" />chrome://extensions<ph name="END_LINK" />.</translation>
 <translation id="6978236010531171013">Все равно поделиться</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6979440798594660689">Без звука (по умолчанию)</translation>
@@ -3670,6 +3680,7 @@
 <translation id="7269151392155523061">Быстрая команда не должна совпадать с ключевым словом поискового агрегатора, заданным в правиле <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" />.</translation>
 <translation id="7273111226200291353">Скачанные вами файлы отправляются в Google Cloud или сторонние сервисы для анализа. В частности, файлы могут быть просканированы на наличие конфиденциальных данных или вредоносного ПО. Также они могут быть доступны вашему администратору и храниться на основании правил компании.</translation>
 <translation id="7275334191706090484">Управляемые закладки</translation>
+<translation id="7278933725460302617">Включен изолированный режим</translation>
 <translation id="7282894295403887199">Вы не можете открыть эту страницу в режиме инкогнито</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы изменить пароль аккаунта Google, нажмите Tab, а затем Ввод.</translation>
 <translation id="7286908876112207905">Вставлять контент на этот сайт запрещено</translation>
@@ -3842,6 +3853,7 @@
 <translation id="7554791636758816595">Новая вкладка</translation>
 <translation id="7556328470713619625">Использовать ключ доступа</translation>
 <translation id="7559278538486662777">Изменить размер приложения нельзя.</translation>
+<translation id="7561202748196702434">просмотре в изолированном режиме</translation>
 <translation id="7561784249784255101">DVD</translation>
 <translation id="7564049878696755256">Кто-то посторонний мог получить доступ к вашим личным данным или аккаунту в домене <ph name="ORG_NAME" />. Рекомендуем немедленно сменить пароль.</translation>
 <translation id="7567204685887185387">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Его сертификат безопасности мог быть выдан обманным путем. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
@@ -4377,6 +4389,7 @@
 <translation id="8473626140772740486">300 x 450 мм</translation>
 <translation id="8473863474539038330">Адреса и другие данные</translation>
 <translation id="8474910779563686872">Показать сведения о разработчике</translation>
+<translation id="84764251640219124">Сайтам запрещено использовать сторонние файлы cookie. Если сайт, которому необходимы такие файлы, не работает, вы можете <ph name="BEGIN_LINK" />временно разрешить ему использовать их<ph name="END_LINK" />.</translation>
 <translation id="8479754468255770962">Скоба в левом нижнем углу</translation>
 <translation id="8483229036294884935">Адрес будет удален из вашего аккаунта Google (<ph name="ACCOUNT" />).</translation>
 <translation id="8488350697529856933">Объект применения</translation>
@@ -4443,6 +4456,7 @@
 <translation id="8619130384334725124">Используется по умолчанию</translation>
 <translation id="8620276786115098679">Конверт Kaku 7</translation>
 <translation id="8622864575115813231">Устанавливаем связь с вашим финансовым учреждением…</translation>
+<translation id="8632584659860846053">Ваша история браузера, файлы cookie и данные сайтов, кеш и информация, которую вы вводите в формы, будут удалены после того, как вы закроете все изолированные окна.</translation>
 <translation id="8634957317623797170">54 x 86 мм</translation>
 <translation id="8637362707224133343">В Chrome есть функции, защищающие вас при работе в браузере. К ним относится Google Безопасный просмотр. Недавно он обнаружил, что сайт, который вы попытались открыть, <ph name="BEGIN_LINK" />является фишинговым<ph name="END_LINK" />. Такие сайты похожи на знакомые вам страницы, но создаются с целью обмана.<ph name="NEW_LINE" />Помните, что злоумышленники могут взламывать даже защищенные ресурсы. Если вы считаете, что переход заблокирован по ошибке и сайт не представляет опасности, <ph name="BEGIN_ERROR_LINK" />сообщите нам об этом<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">Чтобы взаимодействовать с другими пользователями и делиться с ними вкладками, нужно войти в Chrome.</translation>

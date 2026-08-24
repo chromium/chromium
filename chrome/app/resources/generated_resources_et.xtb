@@ -354,6 +354,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 järjehoidja ja muud üksused on salvestatud ainult sellesse seadmesse. Nende kasutamiseks muudes seadmetes salvestage need oma Google’i kontole. Selle toimingu käigus eemaldatakse ka duplikaadid.}other{{BOOKMARK_COUNT} järjehoidjat ja muud üksused on salvestatud ainult sellesse seadmesse. Nende kasutamiseks muudes seadmetes salvestage need oma Google’i kontole. Selle toimingu käigus eemaldatakse ka duplikaadid.}}</translation>
 <translation id="125220115284141797">Vaikeseade</translation>
 <translation id="1252219782845132919">Peida grupp</translation>
+<translation id="1252597096488926946">Vabasta kerimisnupud</translation>
 <translation id="1252987234827889034">Ilmnes profiili viga</translation>
 <translation id="1254034280040157728">Suur kanjon</translation>
 <translation id="1254593899333212300">Otsene Interneti-ühendus</translation>
@@ -977,6 +978,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1755601632425835748">Teksti suurus</translation>
 <translation id="1756963401828337401">Jäädvustatava ekraani valimine</translation>
 <translation id="17584710573359123">Kuva Chrome'i veebipoes</translation>
+<translation id="176013700366797492">Külastage Google Walletit, et hallata <ph name="BEGIN_LINK1" />andmeid ja privaatsuseelistusi<ph name="END_LINK1" /> või <ph name="BEGIN_LINK2" />makseviise<ph name="END_LINK2" /> ja <ph name="BEGIN_LINK3" />pääsmeid<ph name="END_LINK3" />, näiteks kliendikaarte ja isikutunnistusi.</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> uuesti vastendatud järgmisega: <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Kasutaja <ph name="NAME" /> kontod</translation>
 <translation id="176272781006230109">ostusoovitused</translation>
@@ -1962,6 +1964,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2508747373511408451">Rakendus <ph name="APPLICATION_NAME" /> nõuab, et Google Drive oleks saadaval.</translation>
 <translation id="2509495747794740764">Skaleerimise määr peab olema arv vahemikus 10–200.</translation>
 <translation id="2509566264613697683">8-kordne</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (valitud)</translation>
 <translation id="2513904627589542105">Enesetest</translation>
 <translation id="251425554130284360">Näete külastatud lehti ja soovitatud otsinguid, mis aitavad teil hõlpsalt oma viimaste tegevuste juurde naasta.
@@ -5002,6 +5005,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4831226137013573603">mikrofoni vaigistamine</translation>
 <translation id="483262387981411190">Näoga juhtimise peatamine või jätkamine</translation>
 <translation id="4833683849865011483">Prindiserverist leiti 1 printer</translation>
+<translation id="4834388789911023644">Kirjutage arvustus</translation>
 <translation id="4835598628985424375">Huulte kortsutamine neid kokku surudes</translation>
 <translation id="4835677468087803981">Peida PIN-kood</translation>
 <translation id="4836504898754963407">Sõrmejälgede haldamine</translation>
@@ -8565,6 +8569,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7625823789272218216">Uus vaheleht vasakul</translation>
 <translation id="762730429396410864">Määrake veebisaitidele edastatava protsessori jõudlustase käsitsi.</translation>
 <translation id="7627749368210392160">Saidid saavad selle funktsiooni abil teie kohaliku võrgu teistele seadmetele juurdepääsu.</translation>
+<translation id="7628068697012244394">Kirjutage arvustus</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), klass <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Valige iga klahvi jaoks toiming</translation>
 <translation id="7629206210984165492">Vaikne</translation>
@@ -8991,6 +8996,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7949038991703929816">Ajaloo laadimine ebaõnnestus. Veenduge, et failid sisaldaksid kehtivaid värskendaja logisid.</translation>
 <translation id="7950629216186736592">Põhjus: LBS toetab ainult URL-e kujul http://, https:// ja file://.</translation>
 <translation id="7950814699499457511">Sees • See laiendus pole avaldanud privaatsuspõhimõtteid, milles kirjeldataks, kuidas laiendus andmeid kogub ja kasutab</translation>
+<translation id="7951159420392892566">Vabasta kerimisnupud</translation>
 <translation id="795130320946928025">Lülita virtuaalne kaart välja</translation>
 <translation id="7952708427581814389">Saidid saavad küsida luba lõikelaual oleva teksti ja piltide nägemiseks</translation>
 <translation id="7953236668995583915">Laadige see leht uuesti, et rakendada värskendatud seaded sellel saidil</translation>

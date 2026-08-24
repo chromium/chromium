@@ -624,6 +624,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3557336313807607643">Lisa kontaktidesse</translation>
 <translation id="3560831525486613327">Avage uus vaheleht.</translation>
 <translation id="3563767357928833671">Lõikelaua sisu on kuvatud</translation>
+<translation id="356407858591811361">Uue inkognito akna avamine</translation>
 <translation id="3566639033325271639">Seadete värskendamine</translation>
 <translation id="3568945271227339929">Ükski parool ei ole ohus</translation>
 <translation id="3575464060651642446">Selles seadmes paroolide kontrollimine…</translation>
@@ -1550,6 +1551,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7173338713290252554">Hinna ajalugu kogu veebis</translation>
 <translation id="7177466738963138057">Seda saate hiljem muuta jaotises Seaded</translation>
 <translation id="7177873915659574692">QR-koodi ei saa luua. URL on pikem kui <ph name="CHARACTER_LIMIT" /> tähemärki.</translation>
+<translation id="7179032284363038560">Teised, kes seda seadet kasutavad, ei näe teie tegevust, et saaksite privaatsemalt sirvida. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="7182051712900867547">Kasuta teist kontot</translation>
 <translation id="7182520625618447753">Kohandatud sirvimiskogemuse saamiseks võite vahetada aadressiriba asukohta, et kuvada see üleval või all.</translation>
 <translation id="7183517696921903380">Rakenduse alusel filtreerimise leht on avatud.</translation>

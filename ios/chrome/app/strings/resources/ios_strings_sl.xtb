@@ -695,6 +695,7 @@
 <translation id="325717987950204592">Dotaknite se »Zasebnost in varnost«</translation>
 <translation id="3259451381796379533">Ta račun ne bo deloval z Geminijem. Prijavite se z drugim računom Google.</translation>
 <translation id="3265736395246760288">Hitreje se prijavite v vseh sinhroniziranih napravah.</translation>
+<translation id="3268166994745151153">To pomeni, da boste izgubili trenutni napredek</translation>
 <translation id="3272527697863656322">Prekliči</translation>
 <translation id="3272955648592358996">Vaši podatki izboljšujejo Googlovo umetno inteligenco</translation>
 <translation id="3273510436356991673">Prilagajanje začetnega zaslona</translation>
@@ -1098,6 +1099,7 @@
 <translation id="4652817563047461855">Poskrbite za varnost gesel, preverite, ali so bila ogrožena, in poiščite nasvete za zaščito v spletu. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Vklop deljenja zavihkov</translation>
 <translation id="4658335131052370646">Shrani</translation>
+<translation id="465947902531722727">Preklopi profil</translation>
 <translation id="466307903888586355">Shranjevanje datotek blokira vaša organizacija</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Vaša organizacija zahteva, da brskate zasebno. Skupine zavihkov se v anonimnem načinu ne sinhronizirajo.
@@ -1208,6 +1210,7 @@
 <translation id="4979397965658815378">Prijavite se z Google Računom, da boste zaznamke, gesla, zgodovino in druge nastavitve imeli na voljo v vseh napravah.</translation>
 <translation id="4985921635659180565">Ko je datoteka načrtovana za izbris, tega ni mogoče preklicati.</translation>
 <translation id="498624032394115435">Vsi s povezavo lahko urejajo vse zavihke.</translation>
+<translation id="498768198683310172">Začni uporabljati Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, upravlja vaša organizacija.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Barva skupine zavihkov je <ph name="COLOR" /></translation>
@@ -2153,6 +2156,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8011489434346330032">Spletni pregledovalnik</translation>
 <translation id="8014007212279733632">Za samodejno izpolnjevanje občutljivih podatkov potrdite, da ste to vi</translation>
 <translation id="8015826420689927262">Izbris priloge</translation>
+<translation id="8016869623424294549">Preklopili boste med profili</translation>
 <translation id="8017015647846870183">Iz Googlovega upravitelja gesel, vključno z gesli in ključi za dostop</translation>
 <translation id="802154636333426148">Prenos ni uspel</translation>
 <translation id="8023170444051056234">Takoj boste izgubili dostop do skupine zavihkov »<ph name="GROUP_NAME" />« in izbrisana bo iz vseh vaših naprav</translation>

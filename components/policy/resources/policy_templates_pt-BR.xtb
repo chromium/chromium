@@ -1436,6 +1436,7 @@ Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> fechar
         |TIME_LIMITS| aplica o limite de uso diário e torna o app indisponível após o limite ser atingido no dia especificado. O limite de uso é especificado em |daily_limit_mins|. O limite de uso é redefinido diariamente no horário UTC transmitido em |reset_at|.
         Esta política é usada apenas para crianças.
         Esta política complementa a "UsageTimeLimit". Restrições especificadas em "UsageTimeLimit", como tempo de tela e hora de dormir, serão aplicadas independentemente de "PerAppTimeLimits".</translation>
+<translation id="1911003883066847257">Controla as configurações de reinicialização e reinício do navegador.</translation>
 <translation id="19133869326547269">Esta política foi descontinuada e não tem efeito porque o recurso "Clique para ligar" foi removido do Chrome.
 
 Descrição original:
@@ -3422,6 +3423,19 @@ Se a política for ativada ou não for definida, o usuário poderá definir a im
 <translation id="3036271748813538143">Controla se o novo comportamento do analisador HTML para o elemento &lt;select&gt; está ativado</translation>
 <translation id="3038323923255997294">Continua executando os aplicativos em segundo plano quando o <ph name="PRODUCT_NAME" /> é fechado</translation>
 <translation id="3039862327847526651">Controlar o uso de otimizadores do JavaScript</translation>
+<translation id="3040510138377915303">Controla se o agente do <ph name="GEMINI_SPARK_PRODUCT_NAME" /> tem permissão para se conectar ao <ph name="PRODUCT_NAME" /> e usar a navegação automática. O <ph name="GEMINI_SPARK_PRODUCT_NAME" /> pode não estar disponível na sua organização.
+
+0 = O <ph name="GEMINI_SPARK_PRODUCT_NAME" /> tem permissão para se conectar e usar a navegação automática do <ph name="PRODUCT_NAME" />
+
+1 = O <ph name="GEMINI_SPARK_PRODUCT_NAME" /> não tem permissão para se conectar ou usar a navegação automática do <ph name="PRODUCT_NAME" />
+
+Aviso: permitir que o <ph name="GEMINI_SPARK_PRODUCT_NAME" /> se conecte ao <ph name="PRODUCT_NAME" /> e use a navegação automática habilita o agente do <ph name="GEMINI_SPARK_PRODUCT_NAME" /> a realizar ações autônomas de várias etapas nos clientes do <ph name="PRODUCT_NAME" /> usando a sessão ativa do navegador. Isso envolve riscos significativos de segurança, incluindo riscos relacionados a credenciais, invasão da rede local e perda de sinais contextuais. Os controles de segurança e gerenciamento atuais podem não ser respeitados.
+
+Os admins devem avaliar com cuidado o modelo de ameaças à rede e as diretrizes de conformidade e privacidade da organização antes de ativar esse recurso.
+
+Essa política não tem efeito quando o app <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> ou as políticas de navegação automática do <ph name="PRODUCT_NAME" /> estão desativados. Por exemplo, o app <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> pode ser desativado pela política <ph name="GEMINI_SETTINGS_POLICY_NAME" />. Para mais informações sobre o <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> no <ph name="PRODUCT_NAME" />, acesse https://support.google.com/chrome/a?p=gemini_in_chrome.
+
+A navegação automática do <ph name="PRODUCT_NAME" /> e o <ph name="GEMINI_SPARK_PRODUCT_NAME" /> não estão disponíveis em todos os países ou idiomas. Definir essa política como 0 (ativada) não garante que o recurso será ativado. Ele ainda vai ficar sujeito à disponibilidade. Para mais informações sobre o lançamento, consulte as notas da versão do Enterprise: https://chromeenterprise.google/resources/release-notes/.</translation>
 <translation id="3041887182529293512">Se a política for definida como verdadeira ou não for definida, sugestões de conteúdo geradas automaticamente serão exibidas na página "Nova guia" com base no histórico de navegação, nos interesses ou na localização do usuário.
 
       Se ela for definida como falsa, essas sugestões não aparecerão na página "Nova guia".</translation>
@@ -8343,6 +8357,7 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
       Se essa política não for configurada, o <ph name="PRODUCT_NAME" /> vai usar a versão máxima padrão.
 
       Caso contrário, ela pode ser definida com um dos seguintes valores: "tls1.2" ou "tls1.3". Quando definida, o produto <ph name="PRODUCT_NAME" /> não vai usar versões SSL/TLS mais recentes que a versão especificada. Um valor não reconhecido vai ser ignorado.</translation>
+<translation id="6120465104321378808">Permite que o <ph name="GEMINI_SPARK_PRODUCT_NAME" /> se conecte ao <ph name="PRODUCT_NAME" /> e use a navegação automática do Gemini no Chrome</translation>
 <translation id="6120909112796019291">Permitir a edição de fotos com IA generativa e a melhoria de modelos de IA.</translation>
 <translation id="6123052603197028610">Não permitir consultas aos servidores do Google para recuperar carimbos de data/hora</translation>
 <translation id="6128539430475678271">Bloquear a API Controlled Frame nestes sites</translation>
