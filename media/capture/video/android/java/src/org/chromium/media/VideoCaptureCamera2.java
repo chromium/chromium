@@ -118,7 +118,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
             mWaitForDeviceClosedConditionVariable.open();
         }
     }
-    ;
 
     // Inner class to extend a Capture Session state change listener.
     private class CrPreviewSessionListener extends CameraCaptureSession.StateCallback {
@@ -282,7 +281,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
             }
         }
     }
-    ;
 
     // Inner class to extend a Photo Session state change listener.
     // Error paths must signal notifyTakePhotoError().
@@ -386,7 +384,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
                     AndroidVideoCaptureError.ANDROID_API_2_ERROR_RESTARTING_PREVIEW);
         }
     }
-    ;
 
     private class StopCaptureTask implements Runnable {
         @Override
