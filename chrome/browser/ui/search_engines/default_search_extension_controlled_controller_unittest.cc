@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -560,4 +561,117 @@ TEST_F(DefaultSearchExtensionControlledControllerTest,
   // via scoped_unowned_user_data_.
   EXPECT_EQ(&owned_controller,
             DefaultSearchExtensionControlledController::From(&browser_window_));
+}
+
+TEST_F(DefaultSearchExtensionControlledControllerTest,
+       HasUnacknowledgedMatchingDseExtensionTrueWhenMatchingAndUnacknowledged) {
+  // User had example.com as their search engine.
+  TemplateURLData user_dse_data;
+  user_dse_data.SetShortName(u"Example");
+  user_dse_data.SetKeyword(u"example");
+  user_dse_data.SetURL("https://www.example.com/search?q={searchTerms}");
+  TemplateURL* user_dse = template_url_service_->Add(
+      std::make_unique<TemplateURL>(user_dse_data, TemplateURL::NORMAL));
+  ASSERT_TRUE(user_dse);
+  template_url_service_->SetUserSelectedDefaultSearchProvider(user_dse);
+
+  // Extension sets the same origin, and is unacknowledged.
+  auto extension =
+      AddEnabledExtension(&profile_, "Test Extension", kExtensionId);
+  InstallExtensionControlledDse(profile_, *template_url_service_, *extension);
+
+  EXPECT_TRUE(settings_overridden_params::HasUnacknowledgedMatchingDseExtension(
+      &profile_));
+}
+
+TEST_F(
+    DefaultSearchExtensionControlledControllerTest,
+    HasUnacknowledgedMatchingDseExtensionTrueEvenWhenExplicitChoiceFeatureDisabled) {
+  // Disable the kSearchEngineExplicitChoiceDialog feature.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(
+      extensions_features::kSearchEngineExplicitChoiceDialog);
+
+  // User had example.com as their search engine.
+  TemplateURLData user_dse_data;
+  user_dse_data.SetShortName(u"Example");
+  user_dse_data.SetKeyword(u"example");
+  user_dse_data.SetURL("https://www.example.com/search?q={searchTerms}");
+  TemplateURL* user_dse = template_url_service_->Add(
+      std::make_unique<TemplateURL>(user_dse_data, TemplateURL::NORMAL));
+  ASSERT_TRUE(user_dse);
+  template_url_service_->SetUserSelectedDefaultSearchProvider(user_dse);
+
+  // Extension sets the same origin, and is unacknowledged.
+  auto extension =
+      AddEnabledExtension(&profile_, "Test Extension", kExtensionId);
+  InstallExtensionControlledDse(profile_, *template_url_service_, *extension);
+
+  // The metric detection must evaluate true regardless of the feature flag
+  // state.
+  EXPECT_TRUE(settings_overridden_params::HasUnacknowledgedMatchingDseExtension(
+      &profile_));
+}
+
+TEST_F(DefaultSearchExtensionControlledControllerTest,
+       HasUnacknowledgedMatchingDseExtensionFalseWhenAcknowledged) {
+  // User had example.com as their search engine.
+  TemplateURLData user_dse_data;
+  user_dse_data.SetShortName(u"Example");
+  user_dse_data.SetKeyword(u"example");
+  user_dse_data.SetURL("https://www.example.com/search?q={searchTerms}");
+  TemplateURL* user_dse = template_url_service_->Add(
+      std::make_unique<TemplateURL>(user_dse_data, TemplateURL::NORMAL));
+  ASSERT_TRUE(user_dse);
+  template_url_service_->SetUserSelectedDefaultSearchProvider(user_dse);
+
+  // Extension sets the same origin, but user has acknowledged it.
+  auto extension =
+      AddEnabledExtension(&profile_, "Test Extension", kExtensionId);
+  InstallExtensionControlledDse(profile_, *template_url_service_, *extension);
+  extensions::ExtensionPrefs::Get(&profile_)->UpdateExtensionPref(
+      extension->id(), ControlledHomeDialogController::kAcknowledgedPreference,
+      base::Value(true));
+
+  EXPECT_FALSE(
+      settings_overridden_params::HasUnacknowledgedMatchingDseExtension(
+          &profile_));
+}
+
+TEST_F(DefaultSearchExtensionControlledControllerTest,
+       HasUnacknowledgedMatchingDseExtensionFalseWhenOriginsDiffer) {
+  // User had Google as their search engine.
+  TemplateURLData user_dse_data;
+  user_dse_data.SetShortName(u"Google");
+  user_dse_data.SetKeyword(u"google");
+  user_dse_data.SetURL("https://www.google.com/search?q={searchTerms}");
+  TemplateURL* user_dse = template_url_service_->Add(
+      std::make_unique<TemplateURL>(user_dse_data, TemplateURL::NORMAL));
+  ASSERT_TRUE(user_dse);
+  template_url_service_->SetUserSelectedDefaultSearchProvider(user_dse);
+
+  // Extension sets a different origin (example.com).
+  auto extension =
+      AddEnabledExtension(&profile_, "Test Extension", kExtensionId);
+  InstallExtensionControlledDse(profile_, *template_url_service_, *extension);
+
+  EXPECT_FALSE(
+      settings_overridden_params::HasUnacknowledgedMatchingDseExtension(
+          &profile_));
+}
+
+TEST_F(DefaultSearchExtensionControlledControllerTest,
+       HasUnacknowledgedMatchingDseExtensionFalseWhenNoDseExtension) {
+  // Install a normal (non-extension) DSE.
+  TemplateURLData data;
+  data.SetShortName(u"Google");
+  data.SetKeyword(u"google");
+  data.SetURL("https://google.com/?q={searchTerms}");
+  TemplateURL* added = template_url_service_->Add(
+      std::make_unique<TemplateURL>(data, TemplateURL::NORMAL));
+  template_url_service_->SetUserSelectedDefaultSearchProvider(added);
+
+  EXPECT_FALSE(
+      settings_overridden_params::HasUnacknowledgedMatchingDseExtension(
+          &profile_));
 }

@@ -514,6 +514,26 @@ bool ExtensionSearchOverrideMatchesExistingEngine(Profile* profile) {
          secondary_search.origin == search_url.DeprecatedGetOriginAsURL();
 }
 
+bool HasUnacknowledgedMatchingDseExtension(Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+
+  const extensions::Extension* extension =
+      extensions::GetExtensionOverridingSearchEngine(profile);
+  if (!extension) {
+    return false;
+  }
+
+  if (!ExtensionSearchOverrideMatchesExistingEngine(profile)) {
+    return false;
+  }
+
+  return !ExtensionSettingsOverriddenDialog::HasAcknowledgedExtension(
+      *profile, extension->id(),
+      ControlledHomeDialogController::kAcknowledgedPreference);
+}
+
 void GetSearchOverriddenParamsThenRun(
     content::WebContents* web_contents,
     base::OnceCallback<
