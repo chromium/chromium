@@ -108,6 +108,7 @@ if (!is_android) {
       "//chrome/browser/ui",
       "//chrome/browser/ui:collected_cookies_infobar_delegate",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/page_info",
       "//chrome/browser/ui/select_file_policy",
       "//chrome/browser/ui/startup",

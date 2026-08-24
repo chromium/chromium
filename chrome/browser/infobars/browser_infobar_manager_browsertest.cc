@@ -14,8 +14,8 @@
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -46,9 +46,9 @@ InfoBarSpec BuildGlobalSpecSkippingIncognito() {
       .Build();
 }
 
-size_t InfoBarCountIn(Browser* browser) {
+size_t InfoBarCountIn(BrowserWindowInterface* browser) {
   return ContentInfoBarManager::FromWebContents(
-             browser->tab_strip_model()->GetActiveWebContents())
+             browser->GetTabStripModel()->GetActiveWebContents())
       ->infobars()
       .size();
 }
@@ -186,9 +186,9 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
   EXPECT_EQ(1u, infobar_manager1->infobars().size());
 
   // 2. Open a new browser window.
-  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
   content::WebContents* web_contents2 =
-      browser2->tab_strip_model()->GetActiveWebContents();
+      browser2->GetTabStripModel()->GetActiveWebContents();
   auto* infobar_manager2 =
       ContentInfoBarManager::FromWebContents(web_contents2);
 
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
   manager()->ShowGlobally(identifier);
 
   // Open a second browser.
-  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
 
   content::WebContents* web_contents1 =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
       ContentInfoBarManager::FromWebContents(web_contents1);
 
   content::WebContents* web_contents2 =
-      browser2->tab_strip_model()->GetActiveWebContents();
+      browser2->GetTabStripModel()->GetActiveWebContents();
   auto* infobar_manager2 =
       ContentInfoBarManager::FromWebContents(web_contents2);
 
@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
   manager()->ShowGlobally(identifier);
 
   // Open a second browser.
-  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
 
   content::WebContents* web_contents1 =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -312,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
       ContentInfoBarManager::FromWebContents(web_contents1);
 
   content::WebContents* web_contents2 =
-      browser2->tab_strip_model()->GetActiveWebContents();
+      browser2->GetTabStripModel()->GetActiveWebContents();
   auto* infobar_manager2 =
       ContentInfoBarManager::FromWebContents(web_contents2);
 
@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
                        ShowGloballyRespectsBrowserFilter) {
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   manager()->Register(BuildGlobalSpecSkippingIncognito());
 
   manager()->ShowGlobally(InfoBarDelegate::TEST_INFOBAR);
@@ -679,7 +679,7 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
                           .Build());
 
   manager()->ShowGlobally(identifier);
-  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
   ASSERT_EQ(1u, InfoBarCountIn(browser2));
 
   // Closing one window leaves the infobar up in the other, so the logical
@@ -921,9 +921,9 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
   EXPECT_EQ(1u, infobar_manager->infobars().size());
 
   // The instance is not tracked globally: new browsers do not receive it.
-  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
   EXPECT_EQ(0u, ContentInfoBarManager::FromWebContents(
-                    browser2->tab_strip_model()->GetActiveWebContents())
+                    browser2->GetTabStripModel()->GetActiveWebContents())
                     ->infobars()
                     .size());
 
@@ -1069,13 +1069,14 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest, TabMovement) {
   ASSERT_EQ(1u, infobar_manager->infobars().size());
 
   // 2. Create a second browser window.
-  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(second_browser);
 
   // 3. Move the tab containing the infobar to the second browser.
   std::unique_ptr<tabs::TabModel> tab_model =
       browser()->tab_strip_model()->DetachTabAtForInsertion(0);
-  second_browser->tab_strip_model()->AppendTab(std::move(tab_model), true);
+  second_browser->GetTabStripModel()->AppendTab(std::move(tab_model), true);
 
   // The infobar manager should still have the infobar on the moved tab.
   auto* new_infobar_manager =

@@ -29,7 +29,6 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
@@ -141,8 +140,8 @@ class ProfileWindowCountBrowserTest : public ProfileWindowBrowserTest,
                                       ->GetGuestBrowserCount());
   }
 
-  Browser* CreateGuestOrIncognitoBrowser() {
-    Browser* new_browser;
+  BrowserWindowInterface* CreateGuestOrIncognitoBrowser() {
+    BrowserWindowInterface* new_browser;
     // When |profile_| is null this means no browsers have been created,
     // this is the first browser instance.
     if (!profile_) {
@@ -165,11 +164,11 @@ IN_PROC_BROWSER_TEST_P(ProfileWindowCountBrowserTest, CountProfileWindows) {
   EXPECT_EQ(0, GetWindowCount());
 
   // Create a browser and check the count.
-  Browser* browser1 = CreateGuestOrIncognitoBrowser();
+  BrowserWindowInterface* browser1 = CreateGuestOrIncognitoBrowser();
   EXPECT_EQ(1, GetWindowCount());
 
   // Create another browser and check the count.
-  Browser* browser2 = CreateGuestOrIncognitoBrowser();
+  BrowserWindowInterface* browser2 = CreateGuestOrIncognitoBrowser();
   EXPECT_EQ(2, GetWindowCount());
 
   // Close one browser and count.
@@ -190,7 +189,7 @@ IN_PROC_BROWSER_TEST_P(ProfileWindowCountBrowserTest, CountProfileWindows) {
 #endif
 IN_PROC_BROWSER_TEST_P(ProfileWindowCountBrowserTest,
                        MAYBE_DevToolsWindowsNotCounted) {
-  Browser* browser = CreateGuestOrIncognitoBrowser();
+  BrowserWindowInterface* browser = CreateGuestOrIncognitoBrowser();
   EXPECT_EQ(1, GetWindowCount());
 
   DevToolsWindow* devtools_window =
@@ -222,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestIsOffTheRecord) {
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestIgnoresHistory) {
-  Browser* guest_browser = CreateGuestBrowser();
+  BrowserWindowInterface* guest_browser = CreateGuestBrowser();
 
   ui_test_utils::WaitForHistoryToLoad(HistoryServiceFactory::GetForProfile(
       guest_browser->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS));
@@ -241,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestIgnoresHistory) {
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestClearsCookies) {
-  Browser* guest_browser = CreateGuestBrowser();
+  BrowserWindowInterface* guest_browser = CreateGuestBrowser();
   Profile* guest_profile = guest_browser->GetProfile();
 
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -264,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestClearsCookies) {
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestClearsFindInPageCache) {
-  Browser* guest_browser = CreateGuestBrowser();
+  BrowserWindowInterface* guest_browser = CreateGuestBrowser();
   Profile* guest_profile = guest_browser->GetProfile();
 
   std::u16string fip_text = u"first guest session search text";
@@ -299,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestClearsFindInPageCache) {
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestCannotSignin) {
-  Browser* guest_browser = CreateGuestBrowser();
+  BrowserWindowInterface* guest_browser = CreateGuestBrowser();
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(guest_browser->GetProfile());
@@ -318,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestAppMenuLacksBookmarks) {
                   .has_value());
 
   // Guest browser has no bookmark menu.
-  Browser* guest_browser = CreateGuestBrowser();
+  BrowserWindowInterface* guest_browser = CreateGuestBrowser();
   AppMenuModel model_guest_profile(&accelerator_handler, guest_browser);
   EXPECT_FALSE(model_guest_profile
                    .GetIndexOfCommandId(AppMenuModel::kBookmarksMenuPlaceholder)
@@ -414,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
   IncognitoModePrefs::SetAvailability(
       profile->GetPrefs(), policy::IncognitoModeAvailability::kForced);
 
-  Browser* incognito_browser = CreateIncognitoBrowser(profile);
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser(profile);
   size_t num_browsers = GlobalBrowserCollection::GetInstance()->GetSize();
 
   base::test::TestFuture<BrowserWindowInterface*> future;
@@ -432,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(
     ProfileWindowBrowserTest,
     OpenBrowserWindowForProfileDoesNotReuseIncognitoWhenUnforced) {
   Profile* profile = browser()->GetProfile();
-  Browser* incognito_browser = CreateIncognitoBrowser(profile);
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser(profile);
   CloseBrowserSynchronously(browser());
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
 

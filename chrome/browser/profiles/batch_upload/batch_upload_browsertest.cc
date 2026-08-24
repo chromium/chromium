@@ -13,7 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/profiles/batch_upload_ui_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -58,7 +58,8 @@ class BatchUploadBrowserTest : public InProcessBrowserTest {
   // Opens the batch upload dialog using the service from the profile in
   // `browser`. Waits for the batch upload url to load if opening the view was
   // successful and `wait_for_url_load`.
-  bool OpenBatchUpload(Browser* browser, bool wait_for_url_load = true) {
+  bool OpenBatchUpload(BrowserWindowInterface* browser,
+                       bool wait_for_url_load = true) {
     content::TestNavigationObserver observer{
         GURL(chrome::kChromeUIBatchUploadURL)};
     observer.StartWatchingNewWebContents();
@@ -128,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(
   test_helper().SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
 
   Profile* profile = browser()->GetProfile();
-  Browser* browser_2 = CreateBrowser(profile);
+  BrowserWindowInterface* browser_2 = CreateBrowser(profile);
 
   // Second browser opens dialog.
   EXPECT_TRUE(OpenBatchUpload(browser_2));
@@ -265,7 +266,7 @@ class BatchUploadWithFakeDelegateBrowserTest : public BatchUploadBrowserTest {
 
   // The fake delegate will never show the actual content, so we should not wait
   // for the url to load.
-  bool OpenBatchUploadWithFakeDelegate(Browser* browser) {
+  bool OpenBatchUploadWithFakeDelegate(BrowserWindowInterface* browser) {
     return OpenBatchUpload(browser,
                            /*wait_for_url_load=*/false);
   }

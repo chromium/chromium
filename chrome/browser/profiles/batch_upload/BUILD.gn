@@ -99,6 +99,7 @@ source_set("browser_tests") {
     "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/profiles",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/profiles:avatar_toolbar_button",
