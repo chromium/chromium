@@ -24,10 +24,6 @@ class BrowserWindowInterface;
 class GURL;
 class Profile;
 
-#if !BUILDFLAG(IS_ANDROID)
-// TODO(stevenjb) eliminate this dependency.
-#endif
-
 namespace content {
 class WebContents;
 }
