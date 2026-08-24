@@ -121,6 +121,12 @@ struct AllocationEventDispatcherInternalTest : public DispatcherTest {
                                       void*) {
     return GetAllocatedAddress();
   }
+  static void* alloc_aligned_unchecked_function(size_t,
+                                                size_t,
+                                                allocator_shim::AllocToken,
+                                                void*) {
+    return GetAllocatedAddress();
+  }
   static void* realloc_function(void*,
                                 size_t,
                                 allocator_shim::AllocToken,
@@ -179,6 +185,7 @@ struct AllocationEventDispatcherInternalTest : public DispatcherTest {
       &alloc_zero_initialized_function,
       &alloc_zero_initialized_unchecked_function,
       &alloc_aligned_function,
+      &alloc_aligned_unchecked_function,
       &realloc_function,
       &realloc_unchecked_function,
       [](void*, void*) {},
@@ -299,6 +306,7 @@ TEST_F(AllocationEventDispatcherInternalTest, VerifyAllocatorShimDataIsSet) {
   EXPECT_NE(nullptr, allocator_dispatch->alloc_unchecked_function);
   EXPECT_NE(nullptr, allocator_dispatch->alloc_zero_initialized_function);
   EXPECT_NE(nullptr, allocator_dispatch->alloc_aligned_function);
+  EXPECT_NE(nullptr, allocator_dispatch->alloc_aligned_unchecked_function);
   EXPECT_NE(nullptr, allocator_dispatch->realloc_function);
   EXPECT_NE(nullptr, allocator_dispatch->realloc_unchecked_function);
   EXPECT_NE(nullptr, allocator_dispatch->free_function);
@@ -447,6 +455,33 @@ TEST_F(AllocationEventDispatcherInternalTest,
 
   auto* const allocated_address = allocator_dispatch->alloc_aligned_function(
       2048, GetAllocatedSize(), kAllocTokenForTesting, nullptr);
+
+  EXPECT_EQ(allocated_address, GetAllocatedAddress());
+}
+
+TEST_F(
+    AllocationEventDispatcherInternalTest,
+    VerifyAllocatorShimHooksTriggerCorrectly_alloc_aligned_unchecked_function) {
+  std::array<ObserverMock, kMaximumNumberOfObservers> observers;
+
+  for (auto& mock : observers) {
+    EXPECT_CALL(mock, OnAllocation(_)).Times(0);
+    EXPECT_CALL(mock, OnAllocation(AllocationNotificationMatches(
+                          GetAllocatedAddress(), GetAllocatedSize(),
+                          AllocationSubsystem::kAllocatorShim)))
+        .Times(1);
+    EXPECT_CALL(mock, OnFree(_)).Times(0);
+  }
+
+  auto const dispatch_data =
+      GetNotificationHooks(CreateTupleOfPointers(observers));
+
+  auto* const allocator_dispatch = dispatch_data.GetAllocatorDispatch();
+  allocator_dispatch->next = GetNextAllocatorDispatch();
+
+  auto* const allocated_address =
+      allocator_dispatch->alloc_aligned_unchecked_function(
+          2048, GetAllocatedSize(), kAllocTokenForTesting, nullptr);
 
   EXPECT_EQ(allocated_address, GetAllocatedAddress());
 }

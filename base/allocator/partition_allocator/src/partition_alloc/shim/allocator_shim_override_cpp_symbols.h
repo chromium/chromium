@@ -137,7 +137,7 @@ SHIM_CPP_SYMBOLS_EXPORT void* operator new(std::size_t size,
 #if PA_BUILDFLAG(FORWARD_THROUGH_MALLOC)
   return aligned_alloc(static_cast<size_t>(alignment), size);
 #else
-  return ShimCppAlignedNew(size, static_cast<size_t>(alignment));
+  return ShimCppAlignedNewNoThrow(size, static_cast<size_t>(alignment));
 #endif
 }
 
@@ -191,7 +191,7 @@ SHIM_CPP_SYMBOLS_EXPORT void* operator new[](std::size_t size,
 #if PA_BUILDFLAG(FORWARD_THROUGH_MALLOC)
   return aligned_alloc(static_cast<size_t>(alignment), size);
 #else
-  return ShimCppAlignedNew(size, static_cast<size_t>(alignment));
+  return ShimCppAlignedNewNoThrow(size, static_cast<size_t>(alignment));
 #endif
 }
 

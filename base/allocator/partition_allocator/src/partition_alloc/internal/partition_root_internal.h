@@ -1562,6 +1562,7 @@ PartitionRoot::GetAdjustedSizeForAlignment(size_t alignment,
   PA_CHECK(std::has_single_bit(alignment));
   // Catch unsupported alignment requests early.
   PA_CHECK(alignment <= internal::kMaxSupportedAlignment);
+  PA_CHECK(requested_size <= MaxAllocationSize());
 
   // Memory returned by the regular allocator *always* respects |kAlignment|,
   // which is a power of two, and any valid alignment is also a power of two.
@@ -1604,6 +1605,20 @@ template <AllocFlags flags>
 PA_ALWAYS_INLINE void* PartitionRoot::AlignedAllocInline(
     size_t alignment,
     size_t requested_size) {
+  // Reject excessive allocation sizes early before
+  // GetAdjustedSizeForAlignment() performs power-of-two size rounding, which
+  // would otherwise risk integer overflow or shifting by 32 bits on 32-bit
+  // platforms. Other allocation paths (Alloc, Realloc(nullptr, ...)) do not
+  // perform prior size adjustment and are checked downstream in
+  // PartitionDirectMap.
+  if (requested_size > MaxAllocationSize()) [[unlikely]] {
+    if constexpr (ContainsFlags(flags, AllocFlags::kReturnNull)) {
+      return nullptr;
+    }
+    internal::PartitionExcessiveAllocationSize(requested_size);
+    PA_NOTREACHED();
+  }
+
   auto adjusted_size = GetAdjustedSizeForAlignment(alignment, requested_size);
 
   // Overflow check. adjusted_size must be larger or equal to requested_size.

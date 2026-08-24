@@ -209,6 +209,7 @@ allocator_shim::AllocatorDispatch g_bad_malloc_dispatch = {
     &BadCalloc,         /* alloc_zero_initialized_function */
     &BadCalloc,         /* alloc_zero_initialized_unchecked_function */
     &BadAlignedAlloc,   /* alloc_aligned_function */
+    &BadAlignedAlloc,   /* alloc_aligned_unchecked_function */
     &BadRealloc,        /* realloc_function */
     &BadRealloc,        /* realloc_unchecked_function */
     &BadFree,           /* free_function */

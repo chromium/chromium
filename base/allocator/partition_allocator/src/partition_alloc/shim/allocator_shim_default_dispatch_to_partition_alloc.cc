@@ -305,6 +305,20 @@ void* PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
 template <partition_alloc::AllocFlags base_alloc_flags,
           partition_alloc::FreeFlags base_free_flags>
 void* PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
+    MemalignUnchecked(size_t alignment,
+                      size_t size,
+                      AllocToken alloc_token,
+                      void* context) {
+  partition_alloc::ScopedDisallowAllocations guard{};
+  return AllocateAlignedMemory<base_alloc_flags |
+                               partition_alloc::AllocFlags::kReturnNull>(
+      alignment, size, alloc_token);
+}
+
+// static
+template <partition_alloc::AllocFlags base_alloc_flags,
+          partition_alloc::FreeFlags base_free_flags>
+void* PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
     AlignedAlloc(size_t size,
                  size_t alignment,
                  AllocToken alloc_token,
@@ -823,6 +837,15 @@ void* DelegatedAllocAlignedFn(size_t alignment,
                                                       alloc_token, context);
 }
 
+void* DelegatedAllocAlignedUncheckedFn(size_t alignment,
+                                       size_t size,
+                                       AllocToken alloc_token,
+                                       void* context) {
+  const AllocatorDispatch* delegate = GetDelegate();
+  PA_MUSTTAIL return delegate->alloc_aligned_unchecked_function(
+      alignment, size, alloc_token, context);
+}
+
 void* DelegatedReallocFn(void* address,
                          size_t size,
                          AllocToken alloc_token,
@@ -1152,6 +1175,7 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     .alloc_zero_initialized_unchecked_function =
         &DelegatedAllocZeroInitializedUncheckedFn,
     .alloc_aligned_function = &DelegatedAllocAlignedFn,
+    .alloc_aligned_unchecked_function = &DelegatedAllocAlignedUncheckedFn,
     .realloc_function = &DelegatedReallocFn,
     .realloc_unchecked_function = &DelegatedReallocUncheckedFn,
     .free_function = &DelegatedFreeFn,

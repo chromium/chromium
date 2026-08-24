@@ -110,6 +110,17 @@ void* GlibcMemalign(size_t alignment,
   return __libc_memalign(alignment, size);
 }
 
+void* GlibcUncheckedMemalign(size_t alignment,
+                             size_t size,
+                             allocator_shim::AllocToken,
+                             void* context) {
+  if (size >= kMaxAllowedSize) [[unlikely]] {
+    return nullptr;
+  }
+
+  return __libc_memalign(alignment, size);
+}
+
 void GlibcFree(void* address, void* context) {
   __libc_free(address);
 }
@@ -146,15 +157,16 @@ size_t GlibcGetSizeEstimate(void* address, void* context) {
 }  // namespace
 
 const AllocatorDispatch AllocatorDispatch::default_dispatch = {
-    &GlibcMalloc,           /* alloc_function */
-    &GlibcUncheckedMalloc,  /* alloc_unchecked_function */
-    &GlibcCalloc,           /* alloc_zero_initialized_function */
-    &GlibcUncheckedCalloc,  /* alloc_zero_initialized_unchecked_function */
-    &GlibcMemalign,         /* alloc_aligned_function */
-    &GlibcRealloc,          /* realloc_function */
-    &GlibcUncheckedRealloc, /* realloc_unchecked_function */
-    &GlibcFree,             /* free_function */
-    GlibcFreeWithSize,      /* free_with_size_function */
+    &GlibcMalloc,            /* alloc_function */
+    &GlibcUncheckedMalloc,   /* alloc_unchecked_function */
+    &GlibcCalloc,            /* alloc_zero_initialized_function */
+    &GlibcUncheckedCalloc,   /* alloc_zero_initialized_unchecked_function */
+    &GlibcMemalign,          /* alloc_aligned_function */
+    &GlibcUncheckedMemalign, /* alloc_aligned_unchecked_function */
+    &GlibcRealloc,           /* realloc_function */
+    &GlibcUncheckedRealloc,  /* realloc_unchecked_function */
+    &GlibcFree,              /* free_function */
+    GlibcFreeWithSize,       /* free_with_size_function */
     GlibcFreeWithAlignment,
     /* free_with_alignment_function */
     GlibcFreeWithSizeAndAlignment,

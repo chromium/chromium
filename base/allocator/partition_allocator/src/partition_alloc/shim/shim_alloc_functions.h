@@ -115,6 +115,21 @@ PA_ALWAYS_INLINE void* ShimCppAlignedNew(
   return ptr;
 }
 
+PA_ALWAYS_INLINE void* ShimCppAlignedNewNoThrow(
+    size_t size,
+    size_t alignment,
+    allocator_shim::AllocToken alloc_token =
+        allocator_shim::AllocToken(allocator_shim::kDefaultPartitionIndex)) {
+  const allocator_shim::AllocatorDispatch* const chain_head =
+      allocator_shim::internal::GetChainHead();
+  void* context = nullptr;
+#if PA_BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  context = malloc_default_zone();
+#endif
+  return chain_head->alloc_aligned_unchecked_function(alignment, size,
+                                                      alloc_token, context);
+}
+
 PA_ALWAYS_INLINE void ShimCppDelete(void* address) {
   const allocator_shim::AllocatorDispatch* const chain_head =
       allocator_shim::internal::GetChainHead();

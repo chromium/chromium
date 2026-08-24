@@ -49,6 +49,20 @@ SHIM_ALWAYS_EXPORT void* operator new[](size_t size,
   return ShimCppNewNoThrow(size);
 }
 
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+SHIM_ALWAYS_EXPORT void* operator new(size_t size,
+                                      std::align_val_t alignment,
+                                      const std::nothrow_t&) noexcept {
+  return ShimCppAlignedNewNoThrow(size, static_cast<size_t>(alignment));
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+SHIM_ALWAYS_EXPORT void* operator new[](size_t size,
+                                        std::align_val_t alignment,
+                                        const std::nothrow_t&) noexcept {
+  return ShimCppAlignedNewNoThrow(size, static_cast<size_t>(alignment));
+}
+
 // Although `operator delete(void*)` is redirected to free(),
 // `operator delete` overloads with `size_t` (sized) and `std::align_val_t`
 // (aligned) must be explicitly overridden here to pass this information to
@@ -106,6 +120,28 @@ SHIM_ALWAYS_EXPORT void operator delete(void* p,
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 SHIM_ALWAYS_EXPORT void operator delete[](void* p,
                                           std::align_val_t alignment) noexcept {
+#if PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC)
+  ShimCppDeleteWithAlignment(p, static_cast<size_t>(alignment));
+#else
+  ShimCppDelete(p);
+#endif
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+SHIM_ALWAYS_EXPORT void operator delete(void* p,
+                                        std::align_val_t alignment,
+                                        const std::nothrow_t&) noexcept {
+#if PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC)
+  ShimCppDeleteWithAlignment(p, static_cast<size_t>(alignment));
+#else
+  ShimCppDelete(p);
+#endif
+}
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+SHIM_ALWAYS_EXPORT void operator delete[](void* p,
+                                          std::align_val_t alignment,
+                                          const std::nothrow_t&) noexcept {
 #if PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC)
   ShimCppDeleteWithAlignment(p, static_cast<size_t>(alignment));
 #else

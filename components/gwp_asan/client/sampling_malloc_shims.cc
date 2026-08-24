@@ -128,6 +128,20 @@ void* AllocAlignedFn(size_t alignment,
       alignment, size, alloc_token, context);
 }
 
+void* AllocAlignedUncheckedFn(size_t alignment,
+                              size_t size,
+                              allocator_shim::AllocToken alloc_token,
+                              void* context) {
+  if (sampling_state.Sample(size)) [[unlikely]] {
+    if (void* allocation = gpa->Allocate(size, alignment)) {
+      return allocation;
+    }
+  }
+
+  return g_allocator_dispatch.next->alloc_aligned_unchecked_function(
+      alignment, size, alloc_token, context);
+}
+
 void* ReallocFn(void* address,
                 size_t size,
                 allocator_shim::AllocToken alloc_token,
@@ -406,6 +420,7 @@ AllocatorDispatch g_allocator_dispatch = {
     &AllocZeroInitializedFn,
     &AllocZeroInitializedUncheckedFn,
     &AllocAlignedFn,
+    &AllocAlignedUncheckedFn,
     &ReallocFn,
     &ReallocUncheckedFn,
     &FreeFn,

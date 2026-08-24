@@ -122,6 +122,7 @@ AllocatorDispatch g_allocator_dispatch = {
     nullptr,                     // alloc_zero_initialized_function
     nullptr,                     // alloc_zero_initialized_unchecked_function
     nullptr,                     // alloc_aligned_function
+    nullptr,                     // alloc_aligned_unchecked_function
     nullptr,                     // realloc_function
     nullptr,                     // realloc_unchecked_function
     FreeFn,                      // free_function

@@ -108,6 +108,7 @@ constexpr AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &DefaultWinHeapCallocImpl,
     &DefaultWinHeapCallocImpl, /* alloc_zero_initialized_unchecked_function */
     &DefaultWinHeapMemalignImpl,
+    &DefaultWinHeapMemalignImpl, /* alloc_aligned_unchecked_function */
     &DefaultWinHeapReallocImpl,
     &DefaultWinHeapReallocImpl, /* realloc_unchecked_function */
     &DefaultWinHeapFreeImpl,

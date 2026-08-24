@@ -186,6 +186,19 @@ struct DispatcherImpl {
     return address;
   }
 
+  static void* AllocAlignedUncheckedFn(size_t alignment,
+                                       size_t size,
+                                       allocator_shim::AllocToken alloc_token,
+                                       void* context) {
+    void* const address =
+        allocator_dispatch_.next->alloc_aligned_unchecked_function(
+            alignment, size, alloc_token, context);
+
+    DoNotifyAllocationForShim(address, size);
+
+    return address;
+  }
+
   static void* ReallocFn(void* address,
                          size_t size,
                          allocator_shim::AllocToken alloc_token,
@@ -385,6 +398,7 @@ AllocatorDispatch DispatcherImpl<ObserverTypes...>::allocator_dispatch_ = {
     .alloc_zero_initialized_unchecked_function =
         AllocZeroInitializedUncheckedFn,
     .alloc_aligned_function = AllocAlignedFn,
+    .alloc_aligned_unchecked_function = AllocAlignedUncheckedFn,
     .realloc_function = ReallocFn,
     .realloc_unchecked_function = ReallocUncheckedFn,
     .free_function = FreeFn,

@@ -1497,6 +1497,10 @@ TEST_P(PartitionAllocWithSizedFreeTest, AllocSizes) {
     // Do we correctly get a null for a failed allocation?
     EXPECT_EQ(nullptr, allocator.root()->Alloc<AllocFlags::kReturnNull>(
                            3u * 1024 * 1024 * 1024, type_name));
+    EXPECT_EQ(nullptr, allocator.root()->AlignedAlloc<AllocFlags::kReturnNull>(
+                           64, 3u * 1024 * 1024 * 1024));
+    EXPECT_EQ(nullptr, allocator.root()->Realloc<AllocFlags::kReturnNull>(
+                           nullptr, 3u * 1024 * 1024 * 1024, type_name));
   }
 }
 
@@ -2873,9 +2877,23 @@ TEST_P(PartitionAllocDeathTest, SuspendTagCheckingScope) {
 TEST_P(PartitionAllocDeathTest, LargeAllocs) {
   // Largest alloc.
   EXPECT_DEATH(allocator.root()->Alloc(static_cast<size_t>(-1), type_name), "");
+  EXPECT_DEATH(allocator.root()->AlignedAlloc(64, static_cast<size_t>(-1)), "");
+  void* ptr = allocator.root()->Alloc(16, type_name);
+  EXPECT_DEATH(
+      allocator.root()->Realloc(ptr, static_cast<size_t>(-1), type_name), "");
+  EXPECT_DEATH(
+      allocator.root()->Realloc(nullptr, static_cast<size_t>(-1), type_name),
+      "");
   // And the smallest allocation we expect to die.
   // TODO(bartekn): Separate into its own test, as it wouldn't run (same below).
   EXPECT_DEATH(allocator.root()->Alloc(MaxAllocationSize() + 1, type_name), "");
+  EXPECT_DEATH(allocator.root()->AlignedAlloc(64, MaxAllocationSize() + 1), "");
+  EXPECT_DEATH(
+      allocator.root()->Realloc(ptr, MaxAllocationSize() + 1, type_name), "");
+  EXPECT_DEATH(
+      allocator.root()->Realloc(nullptr, MaxAllocationSize() + 1, type_name),
+      "");
+  allocator.root()->Free(ptr);
 }
 
 // These tests don't work deterministically when BRP is enabled on certain

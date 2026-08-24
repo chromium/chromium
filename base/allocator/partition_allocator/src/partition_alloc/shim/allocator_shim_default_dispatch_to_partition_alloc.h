@@ -69,6 +69,11 @@ class PartitionAllocFunctionsInternal {
                         AllocToken alloc_token,
                         void* context);
 
+  static void* MemalignUnchecked(size_t alignment,
+                                 size_t size,
+                                 AllocToken alloc_token,
+                                 void* context);
+
   static void* AlignedAlloc(size_t size,
                             size_t alignment,
                             AllocToken alloc_token,
@@ -142,6 +147,7 @@ class PartitionAllocFunctionsInternal {
         &Calloc,                    // alloc_zero_initialized_function
         &CallocUnchecked,           // alloc_zero_initialized_unchecked_function
         &Memalign,                  // alloc_aligned_function
+        &MemalignUnchecked,         // alloc_aligned_unchecked_function
         &Realloc,                   // realloc_function
         &ReallocUnchecked,          // realloc_unchecked_function
         &Free,                      // free_function
