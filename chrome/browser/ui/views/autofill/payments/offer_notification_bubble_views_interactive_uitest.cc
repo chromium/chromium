@@ -5,6 +5,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -72,6 +73,10 @@ class OfferNotificationBubbleViewsInteractiveUiTest
       case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
         ShowBubbleForGPayPromoCodeOfferAndVerify();
         break;
+      case AutofillOfferData::OfferType::WALLET_DIRECT_OFFER:
+        // TODO(crbug.com/546252995): Implement UI for Wallet Direct Offers.
+        NOTIMPLEMENTED();
+        break;
       case AutofillOfferData::OfferType::UNKNOWN:
         NOTREACHED();
     }
@@ -132,6 +137,10 @@ class OfferNotificationBubbleViewsInteractiveUiTest
         return "CardLinkedOffer";
       case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
         return "GPayPromoCodeOffer";
+      case AutofillOfferData::OfferType::WALLET_DIRECT_OFFER:
+        // TODO(crbug.com/546252995): Implement UI for Wallet Direct Offers.
+        NOTIMPLEMENTED();
+        return std::string();
       case AutofillOfferData::OfferType::UNKNOWN:
         NOTREACHED();
     }

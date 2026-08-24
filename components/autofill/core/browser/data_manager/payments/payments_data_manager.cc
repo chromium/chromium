@@ -965,7 +965,7 @@ PaymentsDataManager::GetActiveAutofillPromoCodeOffersForOrigin(
   std::ranges::for_each(
       autofill_offer_data_,
       [&](const std::unique_ptr<AutofillOfferData>& autofill_offer_data) {
-        if (autofill_offer_data.get()->IsPromoCodeOffer() &&
+        if (autofill_offer_data.get()->IsGPayPromoCodeOffer() &&
             autofill_offer_data.get()->IsActiveAndEligibleForOrigin(origin)) {
           promo_code_offers_for_origin.push_back(autofill_offer_data.get());
         }

@@ -44,6 +44,19 @@ AutofillOfferData AutofillOfferData::GPayPromoCodeOffer(
                            promo_code);
 }
 
+// static
+AutofillOfferData AutofillOfferData::WalletDirectOffer(
+    int64_t offer_id,
+    base::Time expiry,
+    const std::vector<GURL>& merchant_origins,
+    const GURL& offer_details_url,
+    const DisplayStrings& display_strings,
+    const std::string& promo_code) {
+  return AutofillOfferData(OfferType::WALLET_DIRECT_OFFER, offer_id, expiry,
+                           merchant_origins, offer_details_url, display_strings,
+                           promo_code);
+}
+
 AutofillOfferData::AutofillOfferData() = default;
 
 AutofillOfferData::~AutofillOfferData() = default;
@@ -141,12 +154,12 @@ bool AutofillOfferData::IsCardLinkedOffer() const {
   return GetOfferType() == OfferType::GPAY_CARD_LINKED_OFFER;
 }
 
-bool AutofillOfferData::IsPromoCodeOffer() const {
+bool AutofillOfferData::IsGPayPromoCodeOffer() const {
   return GetOfferType() == OfferType::GPAY_PROMO_CODE_OFFER;
 }
 
-bool AutofillOfferData::IsGPayPromoCodeOffer() const {
-  return GetOfferType() == OfferType::GPAY_PROMO_CODE_OFFER;
+bool AutofillOfferData::IsWalletDirectOffer() const {
+  return GetOfferType() == OfferType::WALLET_DIRECT_OFFER;
 }
 
 bool AutofillOfferData::IsActiveAndEligibleForOrigin(const GURL& origin) const {

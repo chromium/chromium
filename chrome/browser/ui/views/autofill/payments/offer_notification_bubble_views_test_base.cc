@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/notimplemented.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -153,6 +154,10 @@ void OfferNotificationBubbleViewsTestBase::SetUpOfferDataWithDomains(
       break;
     case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
       SetUpGPayPromoCodeOfferDataWithDomains(domains);
+      break;
+    case AutofillOfferData::OfferType::WALLET_DIRECT_OFFER:
+      // TODO(crbug.com/546252995): Implement UI for Wallet Direct Offers.
+      NOTIMPLEMENTED();
       break;
     case AutofillOfferData::OfferType::UNKNOWN:
       NOTREACHED();

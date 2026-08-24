@@ -172,7 +172,7 @@ const CreditCard* UnwrapCardOrVirtualCard(
 
 PromoCodeInfo TranslateOffer(const AutofillOfferData* data) {
   DCHECK(data);
-  DCHECK(data->IsPromoCodeOffer());
+  DCHECK(data->IsGPayPromoCodeOffer());
 
   std::u16string promo_code = base::ASCIIToUTF16(data->GetPromoCode());
   std::u16string details_text =

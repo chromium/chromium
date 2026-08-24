@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views.h"
 
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
@@ -65,6 +66,10 @@ void OfferNotificationBubbleViews::Init() {
       return;
     case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
       InitWithGPayPromoCodeOfferContent();
+      return;
+    case AutofillOfferData::OfferType::WALLET_DIRECT_OFFER:
+      // TODO(crbug.com/546252995): Implement UI for Wallet Direct Offers.
+      NOTIMPLEMENTED();
       return;
     case AutofillOfferData::OfferType::UNKNOWN:
       NOTREACHED();

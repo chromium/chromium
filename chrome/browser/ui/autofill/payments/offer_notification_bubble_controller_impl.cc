@@ -8,6 +8,7 @@
 
 #include "base/check_deref.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
@@ -78,6 +79,10 @@ std::u16string OfferNotificationBubbleControllerImpl::GetWindowTitle() const {
     case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_GPAY_PROMO_CODE_OFFERS_REMINDER_TITLE);
+    case AutofillOfferData::OfferType::WALLET_DIRECT_OFFER:
+      // TODO(crbug.com/546252995): Implement UI for Wallet Direct Offers.
+      NOTIMPLEMENTED();
+      return std::u16string();
     case AutofillOfferData::OfferType::UNKNOWN:
       NOTREACHED();
   }
