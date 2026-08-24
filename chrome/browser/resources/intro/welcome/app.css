@@ -14,6 +14,8 @@
   --content-width: 600px;
   --color-button-background-prominent: var(--color-sys-primary);
   --color-button-foreground-prominent: var(--color-sys-on-primary);
+  --color-toggle-button-track-on: var(--color-sys-primary);
+  --color-toggle-button-thumb-on: var(--color-sys-on-primary);
 
   align-items: center;
   background-image: url(images/shared_gradient_light_background.svg);
