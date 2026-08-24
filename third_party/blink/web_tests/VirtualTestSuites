@@ -5044,7 +5044,7 @@
     "bases": ["external/wpt/resource-timing/response-status-code.html"],
     "exclusive_tests": "ALL",
     "args": [
-      "--disable-field-trial-config",
+      "--enable-features=NetworkServiceInProcess2",
       "--disable-features=TcpPortRandomizationMac"
     ],
     "expires": "Oct 31, 2026"
