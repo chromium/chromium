@@ -34,26 +34,7 @@ int LensTranslateToggleMode() {
   return kLensTranslateToggleModeFeature.Get();
 }
 
-BASE_FEATURE(kLensUnaryApiSalientTextEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kLensSingleTapTextSelectionDisabled,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kLensGestureTextSelectionDisabled,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kLensBlockFetchObjectsInteractionRPCsOnSeparateHandshake,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kLensPrewarmHardStickinessInInputSelection,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kLensPrewarmHardStickinessInQueryFormulation,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensFetchSrpApiEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kLensExactMatchesEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensCameraNoStillOutputRequired,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -67,8 +48,6 @@ BASE_FEATURE(kLensInitialLvfZoomLevel90Percent,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensTripleCameraEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kLensStrokesAPIEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOmnientShaderV2Enabled, base::FEATURE_DISABLED_BY_DEFAULT);
 
