@@ -5,7 +5,6 @@
 #include "components/services/storage/sandboxed_vfs_file_impl.h"
 
 #include <algorithm>
-#include <cstring>
 #include <optional>
 
 #include "base/compiler_specific.h"
@@ -53,8 +52,10 @@ int SandboxedVfsFileImpl::Read(void* buffer, int size, sqlite3_int64 offset) {
       << "Read from database file with lock mode " << sqlite_lock_mode_
       << "of size" << size << " at offset " << offset;
 
-  const base::span<uint8_t> data = UNSAFE_TODO(base::span(
-      reinterpret_cast<uint8_t*>(buffer), base::checked_cast<size_t>(size)));
+  // SAFETY: This is a requirement of the SQLite VFS API, which specifies that
+  // `buffer` must point to at least `size` bytes of memory.
+  const base::span<uint8_t> data = UNSAFE_BUFFERS(base::span(
+      static_cast<uint8_t*>(buffer), base::checked_cast<size_t>(size)));
 
   // If we supported mmap()ed files, we'd check for a memory mapping here,
   // and try to fill as much of the request as possible from the mmap()ed
@@ -99,9 +100,10 @@ int SandboxedVfsFileImpl::Write(const void* buffer,
          file_type_ != sql::SandboxedVfsFileType::kDatabase)
       << "Write to database file with lock mode " << sqlite_lock_mode_;
 
-  base::span<const uint8_t> data =
-      UNSAFE_TODO(base::span(reinterpret_cast<const uint8_t*>(buffer),
-                             base::checked_cast<size_t>(size)));
+  // SAFETY: This is a requirement of the SQLite VFS API, which specifies that
+  // `buffer` must point to at least `size` bytes of memory.
+  const base::span<const uint8_t> data = UNSAFE_BUFFERS(base::span(
+      static_cast<const uint8_t*>(buffer), base::checked_cast<size_t>(size)));
 
   // If we supported mmap()ed files, we'd check for a memory mapping here,
   // and try to fill as much of the request as possible by copying to the
