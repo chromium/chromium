@@ -1829,7 +1829,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2413009156320833859">Tuỳ chỉnh trình duyệt cho phù hợp với bạn hơn nữa bằng các tiện ích trên <ph name="BEGIN_LINK1" />Cửa hàng Chrome trực tuyến<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Tiếp tục duyệt xem <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Tối</translation>
-<translation id="2415117815770324983">Đăng xuất bạn khỏi hầu hết các trang web. Bạn sẽ vẫn duy trì trạng thái đăng nhập vào Tài khoản Google.</translation>
 <translation id="2416435988630956212">Phím chức năng trên bàn phím</translation>
 <translation id="2419131370336513030">Xem các ứng dụng đã cài đặt</translation>
 <translation id="2419706071571366386">Vì lý do bảo mật, hãy đăng xuất khi bạn không sử dụng máy tính.</translation>
@@ -1981,7 +1980,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
         <ph name="BREAK" />
         Bạn có thể quản lý chế độ cài đặt qua trình đơn thẻ hoặc xem tuỳ chọn khác trong phần Tuỳ chỉnh Chrome.</translation>
 <translation id="2514465118223423406">Khi kết nối chuột</translation>
-<translation id="2514938842036917377">Thao tác này sẽ xoá <ph name="TOTAL_USAGE" /> dữ liệu do <ph name="SITE_NAME" />, các trang web có liên quan và ứng dụng đã cài đặt lưu trữ</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Xác nhận tên người dùng</translation>
 <translation id="2517472476991765520">Quét</translation>
@@ -3661,7 +3659,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3776508619697147021">Các trang web có thể yêu cầu tự động tải nhiều tệp xuống</translation>
 <translation id="3776796446459804932">Tiện ích này vi phạm chính sách của Cửa hàng Chrome trực tuyến.</translation>
 <translation id="3777483481409781352">Không kích hoạt được thiết bị di động</translation>
-<translation id="3777796259512476958">Bạn sẽ bị đăng xuất khỏi hầu hết các trang web</translation>
 <translation id="3778208826288864398">Khóa bảo mật đã bị khóa do bạn nhập sai mã PIN quá nhiều lần. Bạn cần đặt lại khóa bảo mật.</translation>
 <translation id="3778740492972734840">Công cụ dành cho &amp;Nhà phát triển</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{nhật ký duyệt web của bạn trên # trang web}other{nhật ký duyệt web của bạn trên # trang web}}</translation>
@@ -4522,7 +4519,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4432621511648257259">Mật khẩu không chính xác</translation>
 <translation id="4434611816075088065">Hiện không có vấn đề nào khác cần bạn chú ý</translation>
 <translation id="4435020454241191356">Thêm tên hoặc gắn nhãn cho hồ sơ của bạn</translation>
-<translation id="443503224864902151">Đăng xuất bạn khỏi hầu hết các trang web. Trạng thái đăng nhập vào Tài khoản Google vẫn sẽ duy trì để hệ thống có thể xoá dữ liệu đã đồng bộ hoá.</translation>
 <translation id="4436201444922652535">Đường liên kết</translation>
 <translation id="443719869834432257">Loại sự kiện: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Đề xuất lưu mật khẩu và khoá truy cập</translation>
@@ -8366,7 +8362,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="744366959743242014">Đang tải dữ liệu. Quá trình này có thể mất vài giây.</translation>
 <translation id="7443806024147773267">Sử dụng mật khẩu mỗi khi bạn đăng nhập vào Tài khoản Google của mình</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Hôm nay, cookie sẽ bị chặn trở lại}=1{Ngày mai, cookie sẽ bị chặn trở lại}other{Cookie sẽ bị chặn trở lại sau # ngày nữa}}</translation>
-<translation id="7446716846072322308">Thao tác này sẽ xoá <ph name="TOTAL_USAGE" /> dữ liệu do <ph name="SITE_NAME" /> và các trang web có liên quan lưu trữ</translation>
 <translation id="7448430327655618736">Tự động cài đặt ứng dụng</translation>
 <translation id="7448664748118305024">Xoá dữ liệu mà các trang web đã lưu vào thiết bị của bạn khi bạn đóng tất cả cửa sổ</translation>
 <translation id="7449806939046594699">Tổ chức của bạn đã chặn hành động sao chép nội dung này</translation>
@@ -9766,7 +9761,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8533670235862049797">Tính năng Duyệt web an toàn đang bật</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Các thẻ sẽ vẫn mở trên thiết bị này nhưng nhóm sẽ bị xoá khỏi mọi thiết bị đã đăng nhập vào <ph name="EMAIL" />}other{Các thẻ sẽ vẫn mở trên thiết bị này nhưng các nhóm sẽ bị xoá khỏi mọi thiết bị đã đăng nhập vào <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">URL Gia hạn Chứng chỉ của Netscape</translation>
-<translation id="8536810348276651776">Đăng xuất bạn khỏi hầu hết các trang web. Bạn sẽ vẫn duy trì trạng thái đăng nhập vào Tài khoản Google để áp dụng các chế độ cài đặt trong Family Link cho Chrome.</translation>
 <translation id="8536956381488731905">Âm thanh khi nhấn phím</translation>
 <translation id="8539727552378197395">Không (HttpOnly)</translation>
 <translation id="8540136935098276800">Nhập URL có định dạng chính xác</translation>

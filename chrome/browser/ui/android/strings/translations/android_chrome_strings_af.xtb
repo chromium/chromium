@@ -186,6 +186,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="1778457539567749232">Merk as ongelees</translation>
 <translation id="1779766957982586368">Maak venster toe</translation>
 <translation id="1780023393214832643">Wagwoorde is na <ph name="USERNAME" /> gestoor</translation>
+<translation id="1789543093145556097">Versteek altyd</translation>
 <translation id="1791662854739702043">Geïnstalleer</translation>
 <translation id="1792959175193046959">Verander enige tyd die verstekaflaailigging</translation>
 <translation id="1796666869097395659">Maak oortjie klein om later daarna terug te keer</translation>
@@ -522,6 +523,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3075397426753215787">Kies ’n toestel.</translation>
 <translation id="3080375898390966733">Deursoek oortjie met Google Lens</translation>
 <translation id="3080525922482950719">Jy kan bladsye stoor om later of vanlyn te lees</translation>
+<translation id="3082989400996696487">Wys slegs op Nuwe Oortjie-bladsy</translation>
 <translation id="3087734570205094154">Onderkant</translation>
 <translation id="3091010850649238832">Wys knipbordinhoud</translation>
 <translation id="3098745985164956033">Sommige prente word na Google toe gestuur om hul beskrywings vir jou te verbeter</translation>
@@ -767,6 +769,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="4164642020717536140">Vinnige en veilige webblaai</translation>
 <translation id="4165077084524712774">Meer nutsgoed</translation>
 <translation id="4170577491341606575">Kry tans jou goed \u2026</translation>
+<translation id="4172051516777682613">Wys altyd</translation>
 <translation id="4176838562184310003">Chrome het nie reg afgeskakel nie en kan probeer om jou verlore vensters en oortjies terug te stel. Sommige vensters kan geminimeer word wanneer hulle teruggestel word.</translation>
 <translation id="4177222230309051052">Kry al jou boekmerke</translation>
 <translation id="417865198503699526">Soek na ’n instelling</translation>
@@ -885,7 +888,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4599585406846903742">Enkelbladsyaansig</translation>
 <translation id="4601095002996233687">Omvattende skanderings vir verdagte aflaaie.</translation>
 <translation id="4606559747793337066">Chrome enkripteer en laai bladsye vooraf deur Google-bedieners sonder webkoekies wanneer ’n werf of app vra om skakels op hul bladsy privaat vooraf te laai. Dit versteek jou identiteit vir die voorafgelaaide werf.</translation>
-<translation id="4616150815774728855">Maak <ph name="WEBAPK_NAME" /> oop</translation>
 <translation id="4619615317237390068">Oortjies van ander toestelle af</translation>
 <translation id="4624065194742029982">Chrome Incognito</translation>
 <translation id="4634124774493850572">Gebruik wagwoord</translation>
@@ -1851,6 +1853,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="834313815369870491">Moet nooit werwe vertaal nie</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, multigekose vasgespelde Incognito-oortjie wat opgeneem word</translation>
 <translation id="8348430946834215779">Gebruik HTTPS waar moontlik en word gewaarsku voordat werwe laai wat dit nie steun nie</translation>
+<translation id="8349305172487531364">Boekmerkebalk</translation>
 <translation id="8354977102499939946">Soek vinnig met jou stem. Gaan na Instellings om hierdie kortpad te wysig.</translation>
 <translation id="8361737703487394103">Spring na ’n spesifieke oortjie (1–8)</translation>
 <translation id="8368001212524806591">Spoor prys na</translation>

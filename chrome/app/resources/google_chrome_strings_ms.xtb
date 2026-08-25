@@ -86,6 +86,7 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome mengesyorkan penjedaan tab yang memperlahankan penyemak imbas anda}other{Chrome mengesyorkan penjedaan tab yang memperlahankan penyemak imbas anda}}</translation>
 <translation id="1832046143430087831">Mempercepat laman dengan enjin V8 Chrome tetapi Chrome menjadi kurang tahan sedikit terhadap serangan. Tetapan ini dimatikan.</translation>
 <translation id="1838374766361614909">Kosongkan carian</translation>
+<translation id="1842869163383855194">Akses mudah untuk menggunakan Search dalam Chrome merentas peranti anda walaupun Chrome diminimumkan.</translation>
 <translation id="1843347690926158494">Cari tab ini dengan Google Lens</translation>
 <translation id="1849248141818021764">Pengguna yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda yang disulitkan. Ungkapan laluan tidak dihantar kepada atau disimpan oleh Google. Jika anda terlupa ungkapan laluan anda atau mahu menukar tetapan ini, anda perlu <ph name="BEGIN_LINK" />memadamkan data Chrome dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="1856809424654973980">Gunakan apl Chrome untuk terus menyemak imbas semasa dalam perjalanan</translation>
@@ -325,6 +326,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="4173512894976930765">Laman mungkin akan berfungsi seperti yang dijangkakan. Anda akan dilog keluar dari kebanyakan laman apabila anda menutup semua tetingkap Chrome, kecuali Google Account anda jika anda log masuk ke Chrome.</translation>
 <translation id="4175922240926474352">Chrome menyekat muat turun ini kerana laman tidak menggunakan sambungan selamat dan fail mungkin telah diubah</translation>
 <translation id="4191857738314598978">{0,plural, =1{Lancarkan semula Chrome dalam masa sehari}other{Lancarkan semula Chrome dalam masa # hari}}</translation>
+<translation id="4222394563269716113">Buka Search dalam Chrome dengan pintasan papan kekunci.</translation>
 <translation id="4222932583846282852">Membatalkan…</translation>
 <translation id="4224210481850767180">Pemasangan telah dibatalkan.</translation>
 <translation id="4242034826641750751">Chrome memerlukan kebenaran kamera dan mikrofon untuk laman ini</translation>
@@ -350,6 +352,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="4427306783828095590">Perlindungan yang dipertingkatkan melakukan pelbagai lagi perkara untuk menyekat pancingan data dan perisian hasad</translation>
 <translation id="4434353761996769206">Ralat pemasang: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Kongsi dokumen ini dengan Gemini dalam Chrome untuk mendapatkan ikhtisar pantas dan mengemukakan pertanyaan susulan</translation>
+<translation id="4447327682081576371">Tunjukkan Search dalam Chrome dalam bar menu Mac dan hidupkan pintasan papan kekunci</translation>
 <translation id="4450664632294415862">Chrome - Log Masuk Rangkaian - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Terdapat operasi lain sedang dijalankan pada Google Chrome. Sila cuba sebentar lagi.</translation>
 <translation id="4493028449971051158">Ralat permulaan: sila jalankan pemasang sebagai pentadbir.</translation>
@@ -435,6 +438,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="5402307365844630024">Togol Gemini dalam Chrome Beta</translation>
 <translation id="541844421954567481">Bawa kata laluan, tab dan pelbagai lagi semasa dalam perjalanan dengan apl Chrome pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="5430073640787465221">Fail pilihan anda rosak atau tidak sah. Google Chrome tidak dapat mengembalikan tetapan anda.</translation>
+<translation id="545114101312117217">Akses mudah kepada pintasan anda daripada Search dalam Chrome</translation>
 <translation id="5465210843490471889">Pilih profil Chrome untuk digunakan dengan <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="547202872422499512">Kini Chrome dilancarkan apabila Windows dimulakan supaya anda boleh mula menyemak imbas dengan serta-merta. Anda boleh mematikan pilihan ini dalam tetapan.</translation>
 <translation id="5486346529181556467">Tingkatkan keselamatan dalam talian untuk semua orang apabila anda melaporkan laman yang anda fikir berbahaya. Ketahui perihal <ph name="BEGIN_LINK" />dasar laman tidak selamat Google<ph name="END_LINK" /> dengan lebih lanjut.</translation>
@@ -621,7 +625,6 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="7161904924553537242">Selamat Datang ke Google Chrome</translation>
 <translation id="7193885263065350793">Organisasi anda menutup Chrome apabila apl tersebut tidak digunakan selama <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Anda log masuk menggunakan akaun terurus dan memberikan pentadbirnya kawalan terhadap profil Google Chrome anda. Data Chrome anda, seperti apl, penanda halaman, sejarah, kata laluan dan tetapan anda yang lain akan terikat kepada <ph name="USER_NAME" /> secara kekal. Anda akan dapat memadamkan data ini melalui Papan Pemuka Google Account, tetapi anda tidak akan dapat mengaitkan data ini dengan akaun lain. Anda boleh memilih membuat profil baharu untuk mengasingkan data Chrome anda yang sedia ada. <ph name="LEARN_MORE" /></translation>
-<translation id="7257689164441568409">Untuk meninggalkan atau kembali kepada Gemini dalam Chrome, gunakan pintasan papan kekunci.</translation>
 <translation id="7274402351400635015">Anda boleh menggunakan Chrome pada bila-bila masa anda mengklik pautan dalam mesej, dokumen dan apl lain. Apl juga akan disematkan pada bar tugas anda.</translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> mengurus Chrome</translation>
 <translation id="7285990705317078173">Muat turun Chrome pada telefon anda untuk menjejaki harga dan mendapatkan makluman apabila terdapat penurunan harga pada mana-mana laman</translation>
@@ -721,6 +724,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="8074398340364918139">Untuk mencari ciri atau sambungan Chrome tertentu, taip pintasan carian dalam bar alamat, diikuti dengan kekunci papan kekunci pilihan anda</translation>
 <translation id="8077579734294125741">Profil Chrome Lain</translation>
 <translation id="8086881907087796310">Pemasangan gagal kerana komputer anda tidak menepati keperluan perkakasan minimum.</translation>
+<translation id="8093772166980702367">Tunjukkan Search dalam Chrome dalam dulang sistem dan hidupkan pintasan papan kekunci</translation>
 <translation id="8110438089258398864">Anda boleh membuka semula AI Mode Google Search untuk mengemukakan pertanyaan semasa anda menyemak imbas</translation>
 <translation id="8113883687556086139">Sahkan identiti anda untuk menggunakan dan menyimpan data Chrome dalam akaun anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Menyesuaikan Chrome anda...</translation>

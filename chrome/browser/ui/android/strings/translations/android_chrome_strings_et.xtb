@@ -186,6 +186,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="1778457539567749232">Märgi mitteloetuks</translation>
 <translation id="1779766957982586368">Sulgeb akna</translation>
 <translation id="1780023393214832643">Kontole <ph name="USERNAME" /> salvestatud paroolid</translation>
+<translation id="1789543093145556097">Peida alati</translation>
 <translation id="1791662854739702043">Installitud</translation>
 <translation id="1792959175193046959">Allalaadimise vaikeasukohta saab alati muuta</translation>
 <translation id="1796666869097395659">Minimeerige vaheleht, et sellele hiljem naasta</translation>
@@ -522,6 +523,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3075397426753215787">Valige seade.</translation>
 <translation id="3080375898390966733">Otsige vahekaarti Google Lensiga</translation>
 <translation id="3080525922482950719">Saate lehed salvestada, et neid hiljem või võrguühenduseta lugeda</translation>
+<translation id="3082989400996696487">Kuva ainult uuel vahelehel</translation>
 <translation id="3087734570205094154">Alaserv</translation>
 <translation id="3091010850649238832">Kuva lõikelaua sisu</translation>
 <translation id="3098745985164956033">Mõned pildid saadetakse kirjelduste täiendamiseks Google'ile</translation>
@@ -768,6 +770,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4164642020717536140">Kiire ja turvaline veebisirvimine</translation>
 <translation id="4165077084524712774">Rohkem tööriistu</translation>
 <translation id="4170577491341606575">Teie asjade toomine…</translation>
+<translation id="4172051516777682613">Kuva alati</translation>
 <translation id="4176838562184310003">Chrome ei sulgunud õigesti ja võib proovida teie kaotatud aknad ja vahelehed taastada. Mõned aknad võivad taastamisel olla minimeeritud.</translation>
 <translation id="4177222230309051052">Hankige kõik oma järjehoidjad</translation>
 <translation id="417865198503699526">Otsige seadet.</translation>
@@ -886,7 +889,6 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4599585406846903742">Ühe lehe vaade</translation>
 <translation id="4601095002996233687">Põhjalikud kontrollid kahtlaste allalaadimiste korral.</translation>
 <translation id="4606559747793337066">Kui sait või rakendus palub lehel olevad lingid privaatselt eellaadida, krüpteerib Chrome need lehed ja laadib need Google'i serverite kaudu ilma küpsisefailideta. See peidab teie identiteedi eellaaditud saidi eest.</translation>
-<translation id="4616150815774728855">Ava <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619615317237390068">Muudest seadmetest pärinevad vahelehed</translation>
 <translation id="4624065194742029982">Chrome'i inkognito režiim</translation>
 <translation id="4634124774493850572">Kasuta parooli</translation>
@@ -1853,6 +1855,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="834313815369870491">Ära kunagi tõlgi järgmisi saite</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, mitmikvalikuga kinnitatud salvestav inkognito vaheleht</translation>
 <translation id="8348430946834215779">Kasutage võimalusel alati HTTPS-i ja saate enne HTTPS-i toetuseta saitide laadimist hoiatuse</translation>
+<translation id="8349305172487531364">Järjehoidjariba</translation>
 <translation id="8354977102499939946">Otsige kiirelt oma hääle abil. Selle otsetee muutmiseks avage menüü Seaded.</translation>
 <translation id="8361737703487394103">Konkreetsele vahelehele (1–8) liikumine</translation>
 <translation id="8368001212524806591">Jälgi hinda</translation>

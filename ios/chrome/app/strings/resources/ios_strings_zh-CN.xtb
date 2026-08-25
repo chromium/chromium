@@ -695,6 +695,7 @@
 <translation id="325717987950204592">点按“隐私与安全”</translation>
 <translation id="3259451381796379533">此账号无法使用 Gemini。请换个 Google 账号登录。</translation>
 <translation id="3265736395246760288">在任何已同步的设备上更快地登录。</translation>
+<translation id="3268166994745151153">这意味着您将丢失当前进度</translation>
 <translation id="3272527697863656322">取消</translation>
 <translation id="3272955648592358996">您的数据可以帮助改进 Google AI</translation>
 <translation id="3273510436356991673">打造您的专属主屏幕</translation>
@@ -1098,6 +1099,7 @@
 <translation id="4652817563047461855">确保密码安全，检查密码是否遭泄露，并了解如何保障上网安全。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">开启标签页分享功能</translation>
 <translation id="4658335131052370646">保存</translation>
+<translation id="465947902531722727">切换个人资料</translation>
 <translation id="466307903888586355">您的组织已禁止保存文件</translation>
 <translation id="4668929960204016307">、</translation>
 <translation id="4669618761237477717">您的组织要求您进行私密浏览。在无痕模式下，系统不会同步标签页分组。
@@ -1208,6 +1210,7 @@
 <translation id="4979397965658815378">登录 Google 账号，即可获取您在任何登录过的设备上的书签、密码、历史记录及其他设置</translation>
 <translation id="4985921635659180565">安排删除文件后便无法取消。</translation>
 <translation id="498624032394115435">知道链接的任何人都能修改所有标签页。</translation>
+<translation id="498768198683310172">开始使用 Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />，<ph name="EMAIL" />，由组织管理。</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />，<ph name="EMAIL" />。<ph name="AI_TIER" />。</translation>
 <translation id="4992255726304765516">标签页分组颜色为<ph name="COLOR" /></translation>
@@ -2153,6 +2156,7 @@
 <translation id="8011489434346330032">网页检查器</translation>
 <translation id="8014007212279733632">先验证身份，再自动填充敏感信息</translation>
 <translation id="8015826420689927262">删除附件</translation>
+<translation id="8016869623424294549">您即将切换个人资料</translation>
 <translation id="8017015647846870183">Google 密码管理工具中的数据，包括密码和通行密钥</translation>
 <translation id="802154636333426148">下载失败</translation>
 <translation id="8023170444051056234">您将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且该分组将从您的所有设备中删除</translation>

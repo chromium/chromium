@@ -1827,7 +1827,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2413009156320833859">Sérsníddu vafrann enn frekar með viðbótum frá <ph name="BEGIN_LINK1" />vefverslun Chrome<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Halda áfram að leita að <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Dökkt</translation>
-<translation id="2415117815770324983">Skráir þig út af flestum vefsvæðum. Þú verður áfram skráð(ur) inn á Google-reikninginn þinn</translation>
 <translation id="2416435988630956212">Aðgerðalyklar á lyklaborði</translation>
 <translation id="2419131370336513030">Skoða uppsett forrit</translation>
 <translation id="2419706071571366386">Til öryggis skaltu skrá þig út þegar tölvan þín er ekki í notkun.</translation>
@@ -1978,7 +1977,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
         <ph name="BREAK" />
         Þú getur stjórnað stillingum á valmynd spjaldsins eða skoðað fleiri valkosti í „Sérsníða Chrome“.</translation>
 <translation id="2514465118223423406">Þegar mús er tengd</translation>
-<translation id="2514938842036917377">Þetta verður til þess að <ph name="TOTAL_USAGE" /> af gögnum sem <ph name="SITE_NAME" /> geymir, tengdum vefsvæðum og uppsettum forritum verður eytt</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Staðfestu notandanafn þitt</translation>
 <translation id="2517472476991765520">Leita</translation>
@@ -3658,7 +3656,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3776508619697147021">Vefsvæði geta beðið um að fá að hlaða sjálfkrafa niður mörgum skrám</translation>
 <translation id="3776796446459804932">Þessi viðbót brýtur gegn stefnu vefverslunar Chrome.</translation>
 <translation id="3777483481409781352">Ekki var hægt að virkja farsíma</translation>
-<translation id="3777796259512476958">Skráir þig út af flestum vefsvæðum</translation>
 <translation id="3778208826288864398">Öryggislykillinn er læstur vegna þess að rangt PIN-númer var slegið inn of oft. Þú þarft að núllstilla öryggislykilinn.</translation>
 <translation id="3778740492972734840">Forritunartól</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{vafraferil fyrir # vefsvæði}one{vafraferil fyrir # vefsvæði}other{vafraferil fyrir # vefsvæði}}</translation>
@@ -4519,7 +4516,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4432621511648257259">Rangt aðgangsorð</translation>
 <translation id="4434611816075088065">Það er ekkert annað sem krefst athygli þinnar núna</translation>
 <translation id="4435020454241191356">Bættu við heiti eða merki fyrir prófílinn þinn</translation>
-<translation id="443503224864902151">Skráir þig út af flestum vefsvæðum. Þú verður áfram skráð(ur) inn á Google-reikninginn þinn svo að hægt sé að eyða samstilltum gögnum.</translation>
 <translation id="4436201444922652535">Tenglar</translation>
 <translation id="443719869834432257">Gerð tilviks: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Bjóðast til að vista aðgangsorð og aðgangslykla</translation>
@@ -8361,7 +8357,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="744366959743242014">Hleður gögnum. Þetta gæti tekið nokkrar sekúndur.</translation>
 <translation id="7443806024147773267">Hafðu aðgang að aðgangsorðunum þínum hvenær sem þú ert skráð(ur) inn á Google-reikninginn þinn</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Aftur verður lokað á fótspor í dag}=1{Aftur verður lokað á fótspor á morgun}one{Aftur verður lokað á fótspor eftir # dag}other{Aftur verður lokað á fótspor eftir # daga}}</translation>
-<translation id="7446716846072322308">Þetta verður til þess að <ph name="TOTAL_USAGE" /> af gögnum sem <ph name="SITE_NAME" /> geymir og tengdum vefsvæðum verður eytt</translation>
 <translation id="7448430327655618736">Setja forrit upp sjálfkrafa</translation>
 <translation id="7448664748118305024">Eyða gögnum sem vefsvæði hafa vistað í tækinu þegar þú lokar öllum gluggum</translation>
 <translation id="7449806939046594699">Fyrirtækið þitt lokaði á afritun á þessu efni</translation>
@@ -9759,7 +9754,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8533670235862049797">Kveikt er á öruggri vefnotkun</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Fliparnir verða opnir í þessu tæki en hópnum verður eytt úr öllum tækjum sem eru skráð inn á <ph name="EMAIL" />}one{Fliparnir verða opnir í þessu tæki en hópunum verður eytt úr öllum tækjum sem eru skráð inn á <ph name="EMAIL" />}other{Fliparnir verða opnir í þessu tæki en hópunum verður eytt úr öllum tækjum sem eru skráð inn á <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">Endurnýjunarvefslóð Netscape-vottorðs</translation>
-<translation id="8536810348276651776">Skráir þig út af flestum vefsvæðum. Þú verður áfram skráð(ur) inn á Google-reikninginn þinn svo að Family Link-stillingarnar þínar fyrir Chrome séu notaðar.</translation>
 <translation id="8536956381488731905">Takkahljóð</translation>
 <translation id="8539727552378197395">Nei (HttpOnly)</translation>
 <translation id="8540136935098276800">Sláðu inn vefslóð á réttu sniði</translation>

@@ -186,6 +186,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1778457539567749232">Markera som oläst</translation>
 <translation id="1779766957982586368">Stäng fönstret</translation>
 <translation id="1780023393214832643">Lösenorden har sparats i <ph name="USERNAME" /></translation>
+<translation id="1789543093145556097">Dölj alltid</translation>
 <translation id="1791662854739702043">Installerat</translation>
 <translation id="1792959175193046959">Ändra standardplats för nedladdningar när som helst</translation>
 <translation id="1796666869097395659">Minimera fliken om du vill återvända till den senare</translation>
@@ -522,6 +523,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3075397426753215787">Välj en enhet.</translation>
 <translation id="3080375898390966733">Sök på fliken med Google Lens</translation>
 <translation id="3080525922482950719">Du kan spara sidor som du vill läsa senare eller offline</translation>
+<translation id="3082989400996696487">Visa endast på sidan Ny flik</translation>
 <translation id="3087734570205094154">Nederst</translation>
 <translation id="3091010850649238832">Visa innehållet i Urklipp</translation>
 <translation id="3098745985164956033">Vissa bilder skickas till Google så att du får bättre beskrivningar</translation>
@@ -768,6 +770,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4164642020717536140">Snabb och säker webbsökning</translation>
 <translation id="4165077084524712774">Fler verktyg</translation>
 <translation id="4170577491341606575">Hämtar dina grejer \u2026</translation>
+<translation id="4172051516777682613">Visa alltid</translation>
 <translation id="4176838562184310003">Chrome stängdes inte av på rätt sätt och kan försöka återställa dina förlorade fönster och flikar. Vissa fönster kan minimeras när de återställs.</translation>
 <translation id="4177222230309051052">Få tillgång till alla dina bokmärken</translation>
 <translation id="417865198503699526">Sök efter en inställning</translation>
@@ -886,7 +889,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4599585406846903742">Enkelsidig vy</translation>
 <translation id="4601095002996233687">Ingående genomsökningar efter misstänkta nedladdningar.</translation>
 <translation id="4606559747793337066">När en webbplats eller app frågar om dess länkar ska läsas in privat i förväg krypterar Chrome sidorna och läser in dem i förväg via Googles servrar utan cookies. Det innebär att din identitet döljs från den förinlästa webbplatsen.</translation>
-<translation id="4616150815774728855">Öppna <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619615317237390068">Flikar från andra enheter</translation>
 <translation id="4624065194742029982">Inkognitoläget i Chrome</translation>
 <translation id="4634124774493850572">Använd lösenordet</translation>
@@ -1852,6 +1854,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="834313815369870491">Översätt aldrig webbplatser</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, fäst inkognitoflik som har valts tillsammans med andra och som spelas in</translation>
 <translation id="8348430946834215779">Använd HTTPS när det är möjligt och få en varning innan webbplatser som saknar stöd för HTTPS läses in</translation>
+<translation id="8349305172487531364">Bokmärkesfältet</translation>
 <translation id="8354977102499939946">Gör en röstsökning snabbt. Öppna inställningarna om du vill ändra genvägen.</translation>
 <translation id="8361737703487394103">Visa en specifik flik (1–8)</translation>
 <translation id="8368001212524806591">Bevaka pris</translation>

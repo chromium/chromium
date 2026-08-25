@@ -186,6 +186,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1778457539567749232">Tandai sebagai belum dibaca</translation>
 <translation id="1779766957982586368">Tutup jendela</translation>
 <translation id="1780023393214832643">Sandi disimpan ke <ph name="USERNAME" /></translation>
+<translation id="1789543093145556097">Selalu sembunyikan</translation>
 <translation id="1791662854739702043">Terinstal</translation>
 <translation id="1792959175193046959">Ubah lokasi download default kapan saja</translation>
 <translation id="1796666869097395659">Perkecil tab untuk membukanya kembali pada lain waktu</translation>
@@ -522,6 +523,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3075397426753215787">Pilih perangkat.</translation>
 <translation id="3080375898390966733">Telusuri tab dengan Google Lens</translation>
 <translation id="3080525922482950719">Anda dapat menyimpan halaman untuk dibaca nanti atau saat offline</translation>
+<translation id="3082989400996696487">Hanya tampilkan di Halaman Tab Baru</translation>
 <translation id="3087734570205094154">Bawah</translation>
 <translation id="3091010850649238832">Tampilkan konten papan klip</translation>
 <translation id="3098745985164956033">Beberapa gambar dikirim ke Google guna menyempurnakan deskripsi untuk Anda</translation>
@@ -767,6 +769,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="4164642020717536140">Penjelajahan web yang cepat dan aman</translation>
 <translation id="4165077084524712774">Alat lainnya</translation>
 <translation id="4170577491341606575">Mengambil data Anda\u2026</translation>
+<translation id="4172051516777682613">Selalu tampilkan</translation>
 <translation id="4176838562184310003">Chrome tidak ditutup dengan benar dan dapat mencoba memulihkan jendela serta tab yang hilang. Beberapa jendela mungkin diminimalkan saat dipulihkan.</translation>
 <translation id="4177222230309051052">Dapatkan semua bookmark Anda</translation>
 <translation id="417865198503699526">Telusuri setelan</translation>
@@ -885,7 +888,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4599585406846903742">Tampilan satu halaman</translation>
 <translation id="4601095002996233687">Pemindaian mendalam untuk download yang mencurigakan.</translation>
 <translation id="4606559747793337066">Saat sebuah situs atau aplikasi meminta untuk melakukan pramuat link yang ada di halamannya secara pribadi, Chrome akan mengenkripsi dan melakukan pramuat halaman melalui server Google tanpa cookie. Hal ini akan menyembunyikan identitas Anda dari situs yang dipramuat.</translation>
-<translation id="4616150815774728855">Buka <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619615317237390068">Tab dari perangkat lain</translation>
 <translation id="4624065194742029982">Mode Samaran Chrome</translation>
 <translation id="4634124774493850572">Gunakan sandi</translation>
@@ -1851,6 +1853,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="834313815369870491">Jangan pernah terjemahkan situs</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, Beberapa Tab Samaran yang Disematkan, Sedang Merekam, dan Dipilih</translation>
 <translation id="8348430946834215779">Gunakan HTTPS jika memungkinkan dan dapatkan peringatan sebelum memuat situs yang tidak mendukungnya</translation>
+<translation id="8349305172487531364">Bilah bookmark</translation>
 <translation id="8354977102499939946">Telusuri dengan cepat menggunakan suara Anda. Untuk mengedit pintasan ini, buka Setelan.</translation>
 <translation id="8361737703487394103">Beralih ke tab tertentu (1–8)</translation>
 <translation id="8368001212524806591">Pantau harga</translation>

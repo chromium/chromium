@@ -186,6 +186,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="1778457539567749232">Pažymėti kaip neskaitytą</translation>
 <translation id="1779766957982586368">Uždaryti langą</translation>
 <translation id="1780023393214832643">Slaptažodžiai išsaugoti paskyroje <ph name="USERNAME" /></translation>
+<translation id="1789543093145556097">Visada slėpti</translation>
 <translation id="1791662854739702043">Įdiegta</translation>
 <translation id="1792959175193046959">Numatytąją atsisiuntimo vietą galite bet kada pakeisti</translation>
 <translation id="1796666869097395659">Sumažinkite skirtuką, kad galėtumėte į jį grįžti vėliau</translation>
@@ -522,6 +523,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3075397426753215787">Įrenginio pasirinkimas.</translation>
 <translation id="3080375898390966733">Ieškoti skirtuke naudojant „Google Lens“</translation>
 <translation id="3080525922482950719">Išsaugoję puslapius galėsite skaityti juos vėliau arba neprisijungę</translation>
+<translation id="3082989400996696487">Rodyti tik naujo skirtuko puslapyje</translation>
 <translation id="3087734570205094154">Apačia</translation>
 <translation id="3091010850649238832">Rodyti iškarpinės turinį</translation>
 <translation id="3098745985164956033">Vaizdai siunčiami „Google“ norint patobulinti jums teikiamus aprašus</translation>
@@ -768,6 +770,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="4164642020717536140">Naršykite žiniatinklį sparčiai ir saugiai</translation>
 <translation id="4165077084524712774">Daugiau įrankių</translation>
 <translation id="4170577491341606575">Gaunami jūsų duomenys\u2026</translation>
+<translation id="4172051516777682613">Visada rodyti</translation>
 <translation id="4176838562184310003">„Chrome“ netinkamai išsijungė ir gali pabandyti atkurti langus bei skirtukus. Kai kurie langai gali būti sumažinti atkuriant.</translation>
 <translation id="4177222230309051052">Gaukite visas žymes</translation>
 <translation id="417865198503699526">Ieškokite nustatymo</translation>
@@ -886,7 +889,6 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4599585406846903742">Vieno puslapio peržiūra</translation>
 <translation id="4601095002996233687">Nuodugnus įtartinų atsisiuntimų nuskaitymas.</translation>
 <translation id="4606559747793337066">Kai svetainė ar programa paprašo privačiai iš anksto įkelti nuorodas savo puslapyje, „Chrome“ šifruoja ir iš anksto įkelia puslapius per „Google“ serverius be slapukų. Taip slepiama jūsų tapatybė nuo iš anksto įkeltos svetainės.</translation>
-<translation id="4616150815774728855">Atidaryti „<ph name="WEBAPK_NAME" />“</translation>
 <translation id="4619615317237390068">Skirtukai iš kitų įrenginių</translation>
 <translation id="4624065194742029982">„Chrome“ inkognito režimas</translation>
 <translation id="4634124774493850572">Naudoti slaptažodį</translation>
@@ -1852,6 +1854,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="834313815369870491">Niekada neversti svetainių</translation>
 <translation id="8348215005712416247">„<ph name="TAB_TITLE" />“, kelis kartus pasirinktas prisegtas įrašantis inkognito skirtukas</translation>
 <translation id="8348430946834215779">Kai įmanoma, naudokite HTTPS ir gaukite įspėjimą prieš įkeliant jo nepalaikančias svetaines</translation>
+<translation id="8349305172487531364">Žymių juosta</translation>
 <translation id="8354977102499939946">Sparčiai ieškokite balsu. Jei norite redaguoti šį spartųjį klavišą, eikite į skiltį „Nustatymai“.</translation>
 <translation id="8361737703487394103">Pereiti į konkretų skirtuką (1–8)</translation>
 <translation id="8368001212524806591">Stebėti kainą</translation>

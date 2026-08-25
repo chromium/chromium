@@ -1827,7 +1827,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2413009156320833859">Pasmaak jou blaaier nóg meer met uitbreidings vanaf die <ph name="BEGIN_LINK1" />Chrome Webwinkel<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Hervat blaai vir <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Donker</translation>
-<translation id="2415117815770324983">Meld jou by die meeste werwe af. Jy sal by jou Google-rekening aangemeld bly.</translation>
 <translation id="2416435988630956212">Sleutelbordfunksiesleutels</translation>
 <translation id="2419131370336513030">Bekyk geïnstalleerde programme</translation>
 <translation id="2419706071571366386">Vir sekuriteitredes moet jy afmeld wanneer jou rekenaar nie gebruik word nie.</translation>
@@ -1978,7 +1977,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
         <ph name="BREAK" />
         Jy kan instellings deur die kaartkieslys bestuur, of meer opsies sien in Pasmaak Chrome.</translation>
 <translation id="2514465118223423406">Wanneer ’n muis gekoppel is</translation>
-<translation id="2514938842036917377">Dit sal <ph name="TOTAL_USAGE" /> se data uitvee wat deur <ph name="SITE_NAME" />, verwante werwe en geïnstalleerde apps geberg is</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Bevestig jou gebruikernaam</translation>
 <translation id="2517472476991765520">Skandeer</translation>
@@ -3658,7 +3656,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3776508619697147021">Werwe kan vra om outomaties veelvuldige lêers af te laai</translation>
 <translation id="3776796446459804932">Hierdie uitbreiding oortree die Chrome Webwinkelbeleid.</translation>
 <translation id="3777483481409781352">Kon nie sellulêre toestel aktiveer nie</translation>
-<translation id="3777796259512476958">Meld jou by die meeste werwe af</translation>
 <translation id="3778208826288864398">Die sekuriteitsleutel is gesluit omdat die verkeerde PIN te veel keer ingevoer is. Jy moet die sekuriteitsleutel terugstel.</translation>
 <translation id="3778740492972734840">Ontwikkelaarnutsgoed</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{jou blaaigeskiedenis van # werf}other{jou blaaigeskiedenis van # werwe}}</translation>
@@ -4519,7 +4516,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4432621511648257259">Wagwoord is verkeerd</translation>
 <translation id="4434611816075088065">Niks anders het nou jou aandag nodig nie</translation>
 <translation id="4435020454241191356">Voeg ’n naam of etiket vir jou profiel by</translation>
-<translation id="443503224864902151">Meld jou by die meeste werwe af. Jy sal by jou Google-rekening aangemeld bly sodat jou gesinkroniseerde data uitgevee kan word.</translation>
 <translation id="4436201444922652535">Skakels</translation>
 <translation id="443719869834432257">Gevaltipe: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Aanbod om wagwoorde en toegangsleutels te stoor</translation>
@@ -8360,7 +8356,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="744366959743242014">Laai tans data. Dit kan 'n paar sekondes neem.</translation>
 <translation id="7443806024147773267">Kry toegang tot jou wagwoorde wanneer jy by jou Google-rekening aangemeld is</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Webkoekies sal vandag weer geblokkeer word}=1{Webkoekies sal môre weer geblokkeer word}other{# dae totdat webkoekies weer geblokkeer word}}</translation>
-<translation id="7446716846072322308">Dit sal <ph name="TOTAL_USAGE" /> se data uitvee wat deur <ph name="SITE_NAME" /> en verwante werwe geberg is</translation>
 <translation id="7448430327655618736">Installeer programme outomaties</translation>
 <translation id="7448664748118305024">Vee datawerwe wat jy op jou toestel gestoor het uit wanneer jy alle vensters toemaak</translation>
 <translation id="7449806939046594699">Jou organisasie het die kopiëring van hierdie inhoud geblokkeer</translation>
@@ -9758,7 +9753,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8533670235862049797">Veiligblaai is aan</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Die oortjies sal oop bly op hierdie toestel, maar die groep sal uitgevee word van alle toestelle wat by <ph name="EMAIL" /> aangemeld is}other{Die oortjies sal oop bly op hierdie toestel, maar die groepe sal uitgevee word van alle toestelle wat by <ph name="EMAIL" /> aangemeld is}}</translation>
 <translation id="8535005006684281994">Netscape-sertifikaathernuwing se URL</translation>
-<translation id="8536810348276651776">Meld jou op die meeste werwe af. Jy sal by jou Google-rekening aangemeld bly sodat jou Family Link-instellings vir Chrome geld.</translation>
 <translation id="8536956381488731905">Klank met sleuteldruk</translation>
 <translation id="8539727552378197395">Nee (NetHttp)</translation>
 <translation id="8540136935098276800">Voer 'n URL in wat reg geformateer is</translation>

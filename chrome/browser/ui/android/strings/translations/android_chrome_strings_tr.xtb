@@ -186,6 +186,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="1778457539567749232">Okunmadı olarak işaretle</translation>
 <translation id="1779766957982586368">Pencereyi kapat</translation>
 <translation id="1780023393214832643"><ph name="USERNAME" /> hesabına kaydedilen şifreler</translation>
+<translation id="1789543093145556097">Her zaman gizle</translation>
 <translation id="1791662854739702043">Yüklendi</translation>
 <translation id="1792959175193046959">Dosyaların indirileceği varsayılan konumu istediğiniz zaman değiştirebilirsiniz</translation>
 <translation id="1796666869097395659">Daha sonra geri dönmek için sekmeyi küçültün</translation>
@@ -522,6 +523,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3075397426753215787">Cihaz seçin.</translation>
 <translation id="3080375898390966733">Sekmede Google Lens ile arama yap</translation>
 <translation id="3080525922482950719">Sayfaları daha sonra veya çevrimdışı okumak için kaydedebilirsiniz</translation>
+<translation id="3082989400996696487">Yalnızca Yeni Sekme sayfasında göster</translation>
 <translation id="3087734570205094154">Altta</translation>
 <translation id="3091010850649238832">Pano içeriklerini göster</translation>
 <translation id="3098745985164956033">Bazı resimler size daha iyi açıklamalar sunmak için Google'a gönderilir</translation>
@@ -767,6 +769,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="4164642020717536140">Web'de hızlı ve güvenli bir şekilde gezinin.</translation>
 <translation id="4165077084524712774">Diğer araçlar</translation>
 <translation id="4170577491341606575">Öğeleriniz alınıyor\u2026</translation>
+<translation id="4172051516777682613">Her zaman göster</translation>
 <translation id="4176838562184310003">Chrome düzgün şekilde kapatılmadığı için kaybolan pencerelerinizi ve sekmelerinizi geri yüklemeyi deneyebilir. Geri yüklenen bazı pencereler simge durumuna küçültülebilir.</translation>
 <translation id="4177222230309051052">Tüm yer işaretlerinize ulaşın</translation>
 <translation id="417865198503699526">Ayar için arama yapın</translation>
@@ -885,7 +888,6 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="4599585406846903742">Tek sayfalı görünüm</translation>
 <translation id="4601095002996233687">Şüpheli indirme işlemleri için ayrıntılı taramalar.</translation>
 <translation id="4606559747793337066">Bir site veya uygulama kendi sayfasındaki bağlantıları gizli olarak önceden yüklemek istediğinde Chrome, sayfaları çerezler olmadan Google sunucuları aracılığıyla şifreler ve önceden yükler. Bu şekilde kimliğiniz önceden yüklenmiş siteden gizlenmiş olur.</translation>
-<translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> APK'sını aç</translation>
 <translation id="4619615317237390068">Diğer cihazlardan sekmeler</translation>
 <translation id="4624065194742029982">Chrome Gizli Modu</translation>
 <translation id="4634124774493850572">Şifreyi kullan</translation>
@@ -1851,6 +1853,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="834313815369870491">Siteleri asla çevirme</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, Medya Kaydeden Birden Çok Seçili Sabit Gizli Sekme</translation>
 <translation id="8348430946834215779">Mümkün olduğunda HTTPS kullanın ve HTTPS'yi desteklemeyen siteleri yüklemeden önce uyarı alın</translation>
+<translation id="8349305172487531364">Yer işaretleri çubuğu</translation>
 <translation id="8354977102499939946">Sesinizle hızlı bir şekilde arama yapın. Bu kısayolu düzenlemek için Ayarlar'a gidin.</translation>
 <translation id="8361737703487394103">Belirli bir sekmeye gidin (1–8)</translation>
 <translation id="8368001212524806591">Fiyatı takip et</translation>

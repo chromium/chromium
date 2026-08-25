@@ -1829,7 +1829,6 @@
 <translation id="2413009156320833859"><ph name="BEGIN_LINK1" />Chrome वेब स्टोअर<ph name="END_LINK1" /> वरील एक्स्टेंशनसह तुमचा ब्राउझर आणखी कस्टमाइझ करा</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> साठी ब्राउझिंग पुन्हा सुरू करा</translation>
 <translation id="2414886740292270097">गडद</translation>
-<translation id="2415117815770324983">तुम्हाला बहुतांश साइटवरून साइन आउट करते. तुम्ही तुमच्या Google खाते मध्ये साइन इन केलेले राहाल.</translation>
 <translation id="2416435988630956212">कीबोर्ड कार्य की</translation>
 <translation id="2419131370336513030">इंस्टॉल केलेली अ‍ॅप्स पहा</translation>
 <translation id="2419706071571366386">सुरक्षिततेसाठी, तुमचा काँप्युटर वापरला जात नसताना साइन आउट करा.</translation>
@@ -1981,7 +1980,6 @@
         <ph name="BREAK" />
         तुम्ही कार्ड मेनूमधून सेटिंग्ज व्यवस्थापित करू शकता किंवा Chrome कस्टमाइझ करा यामध्ये आणखी पर्याय पाहू शकता.</translation>
 <translation id="2514465118223423406">माउस कनेक्ट केलेला असताना</translation>
-<translation id="2514938842036917377">यामुळे <ph name="SITE_NAME" />, संबंधित साइट आणि इंस्टॉल केलेल्या अ‍ॅप्सनी स्टोअर केलेला <ph name="TOTAL_USAGE" /> डेटा हटवला जाईल</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">तुमचे वापरकर्ता नाव कन्फर्म करा</translation>
 <translation id="2517472476991765520">स्कॅन करा</translation>
@@ -3661,7 +3659,6 @@
 <translation id="3776508619697147021">साइट एकाहून अधिक फाइल आपोआप डाउनलोड करण्यासाठी विचारू शकतात</translation>
 <translation id="3776796446459804932">हे एक्स्टेंशन Chrome वेब स्टोअर धोरणाचे उल्लंघन करते.</translation>
 <translation id="3777483481409781352">मोबाइल डिव्हाइस ॲक्टिव्हेट करू शकलो नाही</translation>
-<translation id="3777796259512476958">तुम्हाला बहुतांश साइटवरून साइन आउट करते</translation>
 <translation id="3778208826288864398">चुकीचा पिन बऱ्याच वेळा एंटर केल्यामुळे, सिक्युरिटी की लॉक झाली आहे. तुम्हाला सिक्युरिटी की रीसेट करण्याची आवश्यकता असेल</translation>
 <translation id="3778740492972734840">&amp;विकसक साधने</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{तुमच्या # साइटचा ब्राउझिंग इतिहास}other{तुमच्या # साइटचा ब्राउझिंग इतिहास}}</translation>
@@ -4520,7 +4517,6 @@
 <translation id="4432621511648257259">पासवर्ड चुकीचा आहे</translation>
 <translation id="4434611816075088065">सध्या तुम्ही इतर कोणत्याही गोष्टीकडे लक्ष देणे आवश्यक नाही</translation>
 <translation id="4435020454241191356">तुमच्या प्रोफाइलसाठी नाव किंवा लेबल जोडा</translation>
-<translation id="443503224864902151">बऱ्याच साइटवरून तुम्हाला साइन आउट करते. तुम्ही तुमच्या Google खात्यामध्ये साइन इन केलेले राहाल, त्यामुळे तुमचा सिंक केलेला डेटा हटवला जाऊ शकतो.</translation>
 <translation id="4436201444922652535">लिंक</translation>
 <translation id="443719869834432257">इव्हेंटचा प्रकार: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">पासवर्ड आणि पासकी सेव्ह करण्याची ऑफर</translation>
@@ -8364,7 +8360,6 @@ I feel - विटांची इमारत</translation>
 <translation id="744366959743242014">डेटा लोड करत आहे, याला काही सेकंद लागू शकतात.</translation>
 <translation id="7443806024147773267">तुम्ही तुमच्या Google खात्यामध्ये कधीही साइन इन करता तेव्हा तुमचे पासवर्ड ॲक्सेस करा</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookies will be blocked again today}=1{उद्या पुन्हा कुकी ब्लॉक केल्या जातील}other{# दिवसांनी कुकी पुन्हा ब्लॉक केल्या जातील}}</translation>
-<translation id="7446716846072322308">यामुळे <ph name="SITE_NAME" /> आणि संबंधित साइटनी स्टोअर केलेला <ph name="TOTAL_USAGE" /> डेटा हटवला जाईल</translation>
 <translation id="7448430327655618736">अ‍ॅप्स आपोआप इंस्टॉल करा</translation>
 <translation id="7448664748118305024">तुम्ही सर्व विंडो बंद करता, तेव्हा साइटनी तुमच्या डिव्हाइसवर सेव्ह केलेला डेटा हटवा</translation>
 <translation id="7449806939046594699">तुमच्या संस्थेने हा आशय कॉपी करणे ब्लॉक केले आहे</translation>
@@ -9764,7 +9759,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8533670235862049797">सुरक्षित ब्राउझिंग सुरू आहे</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{टॅब या डिव्हाइसवर खुले राहतील, पण गट हा <ph name="EMAIL" /> मध्ये साइन इन केलेल्या सर्व डिव्हाइसवरून हटवला जाईल}other{टॅब या डिव्हाइसवर खुले राहतील, पण गट हे <ph name="EMAIL" /> मध्ये साइन इन केलेल्या सर्व डिव्हाइसवरून हटवले जातील}}</translation>
 <translation id="8535005006684281994">Netscape सर्टिफिकेट रिन्यूअल URL</translation>
-<translation id="8536810348276651776">तुम्हाला बहुतांश साइटवरून साइन आउट करते. तुम्ही तुमच्या Google खाते मध्ये साइन इन केलेले राहाल, जेणेकरून तुमची Chrome साठीची Family Link सेटिंग्ज लागू होतील.</translation>
 <translation id="8536956381488731905">की प्रेस करताना आवाज</translation>
 <translation id="8539727552378197395">नाही (HttpOnly)</translation>
 <translation id="8540136935098276800">योग्य प्रकारे फॉरमॅट केलेली URL एंटर करा</translation>

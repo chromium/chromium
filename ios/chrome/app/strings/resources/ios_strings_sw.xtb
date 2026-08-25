@@ -1510,7 +1510,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="5971459446352190251">Tafuta msimbo wa QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{Alamisho 1 imefutwa}other{Alamisho {count} zimefutwa}}</translation>
 <translation id="5972844218283131174">Acha kuchagua zote</translation>
-<translation id="597482816780655631">Gemini ni AI na inaweza kufanya makosa, yakiwemo makosa kuhusu watu. Huenda baadhi ya maudhui yasifae kwa kila mtu. Magumzo huhakikiwa na kutumiwa kuboresha Google. <ph name="BEGIN_LINK" />Pata maelezo kuhusu chaguo ulizo nazo<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Masharti<ph name="END_LINK" /> na <ph name="BEGIN_LINK" />Ilani yetu ya Faragha<ph name="END_LINK" /> vinatumika.</translation>
+<translation id="597482816780655631">Gemini ni AI na inaweza kukosea, hata kuhusu watu. Huenda baadhi ya maudhui yasifae kwa kila mtu. Magumzo huhakikiwa na kutumiwa kuboresha Google. <ph name="BEGIN_LINK" />Pata maelezo kuhusu chaguo ulizo nazo<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Masharti<ph name="END_LINK" /> na <ph name="BEGIN_LINK" />Ilani yetu ya Faragha<ph name="END_LINK" /> vinatumika.</translation>
 <translation id="5976160379964388480">Wengine </translation>
 <translation id="5977976211062815271">Kwenye kifaa hiki</translation>
 <translation id="5986043348928676121">Endelea</translation>
@@ -2421,7 +2421,7 @@ Ili uendelee kwenye kompyuta yako, badilisha utumie <ph name="OTHER_EMAIL" />. U
 <translation id="882557203579758546">Pata katika Ukurasa…</translation>
 <translation id="8829809207373502270">Ufunguo huu wa siri hautumiki tena. Ulifutwa kwenye <ph name="WEBSITE" /> na utafutwa hapa hivi karibuni. <ph name="BEGIN_LINK" />Kuhusu funguo za siri<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Kufunga vichupo visivyotumika</translation>
-<translation id="8831871601813227635"><ph name="BEGIN_LINK" />Masharti<ph name="END_LINK" /> yetu, <ph name="BEGIN_LINK" />Masharti ya Matumizi ya Data ya Mahali ya Korea<ph name="END_LINK" /> pamoja na <ph name="BEGIN_LINK" />Ilani ya Faragha<ph name="END_LINK" /> vinatumika. Magumzo huhakikiwa na kutumiwa kuboresha Google. Gemini ni AI na inaweza kufanya makosa, yakiwemo makosa kuhusu watu. Huenda baadhi ya maudhui yasifae kwa kila mtu. Unaweza <ph name="BEGIN_LINK" />kudhibiti shughuli zako<ph name="END_LINK" />, ikiwa ni pamoja na maelezo kuhusu mahali ulipo. <ph name="BEGIN_LINK" />Pata maelezo zaidi kuhusu chaguo ulizo nazo<ph name="END_LINK" /></translation>
+<translation id="8831871601813227635"><ph name="BEGIN_LINK" />Masharti<ph name="END_LINK" /> yetu, <ph name="BEGIN_LINK" />Masharti ya Matumizi ya Data ya Mahali ya Korea<ph name="END_LINK" /> pamoja na <ph name="BEGIN_LINK" />Ilani ya Faragha<ph name="END_LINK" /> vinatumika. Magumzo huhakikiwa na kutumiwa kuboresha Google. Gemini ni AI na inaweza kukosea, hata kuhusu watu. Huenda baadhi ya maudhui yasifae kwa kila mtu. Unaweza <ph name="BEGIN_LINK" />kudhibiti shughuli zako<ph name="END_LINK" />, ikiwa ni pamoja na maelezo kuhusu mahali ulipo. <ph name="BEGIN_LINK" />Pata maelezo zaidi kuhusu chaguo ulizo nazo<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">Panga kulingana na mchapishaji</translation>
 <translation id="884351711508006491">Taarifa zako huhifadhiwa kwenye kifaa chako.</translation>
 <translation id="8844136307393039959">Punguzo la bei kwenye bidhaa unayofuatilia</translation>

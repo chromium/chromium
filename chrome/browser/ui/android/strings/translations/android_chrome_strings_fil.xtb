@@ -186,6 +186,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="1778457539567749232">Markahan bilang hindi pa nababasa</translation>
 <translation id="1779766957982586368">Isara ang window</translation>
 <translation id="1780023393214832643">Mga password na naka-save sa <ph name="USERNAME" /></translation>
+<translation id="1789543093145556097">Palaging itago</translation>
 <translation id="1791662854739702043">Na-install</translation>
 <translation id="1792959175193046959">Baguhin ang default na lokasyon ng pag-download anumang oras</translation>
 <translation id="1796666869097395659">I-minimize ang tab para mabalikan ito sa ibang pagkakataon</translation>
@@ -522,6 +523,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="3075397426753215787">Pumili ng device.</translation>
 <translation id="3080375898390966733">Maghanap sa tab gamit ang Google Lens</translation>
 <translation id="3080525922482950719">Puwede kang mag-save ng mga page para basahin sa ibang pagkakataon o nang offline</translation>
+<translation id="3082989400996696487">Ipakita lang sa Page na Bagong Tab</translation>
 <translation id="3087734570205094154">Sa ilalim</translation>
 <translation id="3091010850649238832">Ipakita ang mga content ng clipboard</translation>
 <translation id="3098745985164956033">Ipinapadala sa Google ang ilang larawan para mapahusay ang mga paglalarawan para sa iyo</translation>
@@ -767,6 +769,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="4164642020717536140">Mabilis at secure na pag-browse sa web</translation>
 <translation id="4165077084524712774">Higit pang tool</translation>
 <translation id="4170577491341606575">Kinukuha ang iyong bagay-bagay\u2026</translation>
+<translation id="4172051516777682613">Palaging ipakita</translation>
 <translation id="4176838562184310003">Hindi nag-shut down nang tama ang Chrome at puwede nitong subukang i-restore ang iyong mga nawalang window at tab. Posibleng ma-minimize ang ilang window kapag na-restore.</translation>
 <translation id="4177222230309051052">Kunin ang lahat ng bookmark mo</translation>
 <translation id="417865198503699526">Maghanap ng setting</translation>
@@ -885,7 +888,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4599585406846903742">Isang page na view</translation>
 <translation id="4601095002996233687">Mga detalyadong pag-scan para sa mga kahina-hinalang pag-download.</translation>
 <translation id="4606559747793337066">Kapag hiniling ng isang site o app na pribadong mag-preload ng mga link sa page nito, mag-e-encrypt at magpi-preload ng mga page ang Chrome sa pamamagitan ng mga server ng Google nang walang cookies. Iha-hide nito ang iyong pagkakakilanlan sa na-preload na site.</translation>
-<translation id="4616150815774728855">Buksan ang <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619615317237390068">Mga tab mula sa iba pang device</translation>
 <translation id="4624065194742029982">Incognito sa Chrome</translation>
 <translation id="4634124774493850572">Gamitin ang password</translation>
@@ -1851,6 +1853,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="834313815369870491">Huwag isalin kailanman ang mga site</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, Naka-multiselect na Naka-pin at Nagre-record na Tab na Incognito</translation>
 <translation id="8348430946834215779">Gamitin ang HTTPS sa tuwing posible at makatanggap ng babala bago mag-load ng mga site na hindi sumusuporta rito</translation>
+<translation id="8349305172487531364">Bookmarks bar</translation>
 <translation id="8354977102499939946">Mabilis na maghanap gamit ang iyong boses. Para i-edit ang shortcut na ito, pumunta sa Mga Setting.</translation>
 <translation id="8361737703487394103">Pumunta sa partikular na tab (1–8)</translation>
 <translation id="8368001212524806591">Subaybayan ang presyo</translation>

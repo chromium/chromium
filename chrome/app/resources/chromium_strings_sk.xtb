@@ -153,7 +153,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2620436844016719705">Systém</translation>
 <translation id="2629740064077610681">Vaša organizácia si môže zobraziť a spravovať dáta prehliadania, napríklad záložky, históriu a heslá. Nemôže si zobraziť dáta prehliadania v profiloch prehliadača Chromium.</translation>
 <translation id="2635452620547538388">Ak chcete používať a ukladať údaje prehliadača Chromium vo svojom účte <ph name="ACCOUNT_EMAIL" />, overte svoju totožnosť</translation>
-<translation id="2636783171884046627">Na opustenie panela Gemini v prehliadači Chromium alebo návrat doň môžete používať klávesovú skratku.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{Rozšírená ochrana vyžaduje na použitie aktualizácie, aby ste znova spustili Chromium}=1{Rozšírená ochrana vyžaduje na použitie aktualizácie, aby ste znova spustili Chromium. Okno inkognito sa znova neotvorí.}few{Rozšírená ochrana vyžaduje na použitie aktualizácie, aby ste znova spustili Chromium. # okná inkognito sa znova neotvoria.}many{Advanced Protection requires that you relaunch Chromium to apply an update. Your # Incognito windows won't reopen.}other{Rozšírená ochrana vyžaduje na použitie aktualizácie, aby ste znova spustili Chromium. # okien inkognito sa znova neotvorí.}}</translation>
 <translation id="263863604136125912">Spustiť prehliadač Chromium</translation>
 <translation id="2648074677641340862">V priebehu inštalácie sa vyskytla chyba operačného systému. Stiahnite prehliadač Chromium znova.</translation>

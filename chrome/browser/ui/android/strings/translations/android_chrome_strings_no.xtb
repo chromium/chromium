@@ -186,6 +186,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1778457539567749232">Merk som ulest</translation>
 <translation id="1779766957982586368">Lukk vindu</translation>
 <translation id="1780023393214832643">Passord som er lagret i <ph name="USERNAME" /></translation>
+<translation id="1789543093145556097">Skjul alltid</translation>
 <translation id="1791662854739702043">Installert</translation>
 <translation id="1792959175193046959">Endre standard nedlastingssted når som helst</translation>
 <translation id="1796666869097395659">Minimer fanen for å gå tilbake til den senere</translation>
@@ -522,6 +523,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3075397426753215787">Velg en enhet.</translation>
 <translation id="3080375898390966733">Utfør fanesøk med Google Lens</translation>
 <translation id="3080525922482950719">Du kan lagre sider for å lese dem senere eller uten nett</translation>
+<translation id="3082989400996696487">Vis bare på Ny fane-siden</translation>
 <translation id="3087734570205094154">Bunn</translation>
 <translation id="3091010850649238832">Vis innholdet på utklippstavlen</translation>
 <translation id="3098745985164956033">Noen bilder blir sendt til Google for å gjøre beskrivelsene bedre</translation>
@@ -767,6 +769,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4164642020717536140">Rask og sikker nettlesing</translation>
 <translation id="4165077084524712774">Flere verktøy</translation>
 <translation id="4170577491341606575">Henter tingene dine\u2026</translation>
+<translation id="4172051516777682613">Vis alltid</translation>
 <translation id="4176838562184310003">Chrome ble ikke avsluttet på riktig måte og kan prøve å gjenopprette tapte vinduer og faner. Noen vinduer kan være minimert når de gjenopprettes.</translation>
 <translation id="4177222230309051052">Få alle bokmerkene dine</translation>
 <translation id="417865198503699526">Søk etter en innstilling</translation>
@@ -885,7 +888,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4599585406846903742">Visning med én side</translation>
 <translation id="4601095002996233687">Dybdeskanninger av mistenkelige nedlastinger.</translation>
 <translation id="4606559747793337066">Når nettsteder eller apper ber om privat forhåndslasting av linker på sidene sine, medfører det at Chrome krypterer og forhåndslaster sider gjennom Googles tjenere uten informasjonskapsler. Dermed skjules identiteten din for det forhåndslastede nettstedet.</translation>
-<translation id="4616150815774728855">Åpne <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619615317237390068">Faner fra andre enheter</translation>
 <translation id="4624065194742029982">Chrome Inkognito</translation>
 <translation id="4634124774493850572">Bruk passord</translation>
@@ -1851,6 +1853,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="834313815369870491">Oversett aldri nettsteder</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, flere valgte festede inkognitofaner for opptak</translation>
 <translation id="8348430946834215779">Bruk HTTPS når det er mulig, og bli advart før innlasting av nettsteder som ikke støtter dette</translation>
+<translation id="8349305172487531364">Bokmerkerad</translation>
 <translation id="8354977102499939946">Søk raskt med stemmen din. For å redigere denne snarveien, gå til Innstillinger.</translation>
 <translation id="8361737703487394103">Gå til en bestemt fane (1–8)</translation>
 <translation id="8368001212524806591">Spor prisen</translation>

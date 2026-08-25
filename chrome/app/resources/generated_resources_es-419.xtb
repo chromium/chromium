@@ -1814,7 +1814,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2413009156320833859">Personaliza aún más tu navegador con extensiones de <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" />.</translation>
 <translation id="2414159296888870200">Reanudar la búsqueda de <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Oscuro</translation>
-<translation id="2415117815770324983">Saldrás de la mayoría de los sitios. No saldrás de tu Cuenta de Google.</translation>
 <translation id="2416435988630956212">Teclas de función del teclado</translation>
 <translation id="2419131370336513030">Ver las apps instaladas</translation>
 <translation id="2419706071571366386">Como medida de seguridad, sal de la cuenta cuando no estés usando la computadora.</translation>
@@ -1965,7 +1964,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
         <ph name="BREAK" />
         Puedes administrar la configuración desde el menú de la tarjeta o ver más opciones en la sección Personalizar Chrome.</translation>
 <translation id="2514465118223423406">Cuando se conecta un mouse</translation>
-<translation id="2514938842036917377">Esta acción borrará <ph name="TOTAL_USAGE" /> de datos almacenados por <ph name="SITE_NAME" />, sitios relacionados y apps instaladas</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Confirmar tu nombre de usuario</translation>
 <translation id="2517472476991765520">Buscar</translation>
@@ -3645,7 +3643,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3776508619697147021">Permitir que los sitios soliciten permiso para descargar múltiples archivos de forma automática</translation>
 <translation id="3776796446459804932">Esta extensión infringe la política de Chrome Web Store.</translation>
 <translation id="3777483481409781352">No se pudo activar el dispositivo celular</translation>
-<translation id="3777796259512476958">Se cerrará tu sesión en la mayoría de los sitios.</translation>
 <translation id="3778208826288864398">Se ingresó el PIN de forma incorrecta demasiadas veces; por lo tanto, se bloqueó la llave de seguridad. Deberás restablecerla.</translation>
 <translation id="3778740492972734840">&amp;Herramientas del desarrollador</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{tu historial de navegación de # sitio}other{tu historial de navegación de # sitios}}</translation>
@@ -4506,7 +4503,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4432621511648257259">La contraseña es incorrecta</translation>
 <translation id="4434611816075088065">No hay nada más que requiera tu atención en este momento</translation>
 <translation id="4435020454241191356">Agrega un nombre o una etiqueta para tu perfil</translation>
-<translation id="443503224864902151">Saldrás de la mayoría de los sitios. Permanecerás en tu Cuenta de Google para que puedan borrarse tus datos sincronizados.</translation>
 <translation id="4436201444922652535">Vínculos</translation>
 <translation id="443719869834432257">Tipo de evento: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Ofrecer guardar contraseñas y llaves de acceso</translation>
@@ -8347,7 +8343,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="744366959743242014">Se están cargando los datos; esta acción puede tardar unos segundos.</translation>
 <translation id="7443806024147773267">Cuando accedas a tu Cuenta de Google, podrás consultar tus contraseñas en cualquier momento</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Hoy se volverán a bloquear las cookies}=1{Mañana se volverán a bloquear las cookies}other{Faltan # días para que se vuelvan a bloquear las cookies}}</translation>
-<translation id="7446716846072322308">Esta acción borrará <ph name="TOTAL_USAGE" /> de datos almacenados por <ph name="SITE_NAME" /> y sitios relacionados</translation>
 <translation id="7448430327655618736">Instala apps automáticamente</translation>
 <translation id="7448664748118305024">Borrar los datos que los sitios guardaron en tu dispositivo al cerrar todas las ventanas</translation>
 <translation id="7449806939046594699">Tu organización bloqueó la copia de este contenido</translation>
@@ -9745,7 +9740,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8533670235862049797">Se activó la Navegación segura</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Las pestañas permanecerán abiertas en este dispositivo, pero se borrará el grupo de todos los dispositivos en los que accediste a <ph name="EMAIL" />}other{Las pestañas permanecerán abiertas en este dispositivo, pero se borrarán los grupos de todos los dispositivos en los que accediste a <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">URL de renovación del certificado Netscape</translation>
-<translation id="8536810348276651776">Saldrás de la mayoría de los sitios. Permanecerás en tu Cuenta de Google para que se utilice la configuración de Family Link para Chrome.</translation>
 <translation id="8536956381488731905">Sonar al presionar teclas</translation>
 <translation id="8539727552378197395">No (HttpOnly)</translation>
 <translation id="8540136935098276800">Ingresa una URL con el formato correcto</translation>

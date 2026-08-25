@@ -1814,7 +1814,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2413009156320833859"><ph name="BEGIN_LINK1" />Chrome Web Mağazası<ph name="END_LINK1" />'ndaki uzantıları kullanarak tarayıcınızı daha fazla özelleştirin</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> öğesine göz atmaya devam edin</translation>
 <translation id="2414886740292270097">Koyu</translation>
-<translation id="2415117815770324983">Çoğu sitedeki oturumunuz kapatılır. Google Hesabınızın oturumu açık kalır.</translation>
 <translation id="2416435988630956212">Klavye işlev tuşları</translation>
 <translation id="2419131370336513030">Yüklenen uygulamaları görüntüle</translation>
 <translation id="2419706071571366386">Bilgisayarınızı kullanmadığınız zamanlarda güvenlik için çıkış yapın.</translation>
@@ -1965,7 +1964,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
         <ph name="BREAK" />
         Ayarları kart menüsünden yönetebilir veya Chrome'u Özelleştir bölümünden daha fazla seçeneğe erişebilirsiniz.</translation>
 <translation id="2514465118223423406">Bir fare bağlandığında</translation>
-<translation id="2514938842036917377">Bu işlem, <ph name="SITE_NAME" />, ilgili siteler ve yükledikleri uygulamalar tarafından depolanan <ph name="TOTAL_USAGE" /> veriyi silecek.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Kullanıcı adınızı onaylayın</translation>
 <translation id="2517472476991765520">Tara</translation>
@@ -3643,7 +3641,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3776508619697147021">Siteler birden fazla dosyayı otomatik olarak indirmek isteyebilir</translation>
 <translation id="3776796446459804932">Bu uzantı Chrome Web Mağazası politikasını ihlal ediyor.</translation>
 <translation id="3777483481409781352">Hücresel cihaz etkinleştirilemedi</translation>
-<translation id="3777796259512476958">Çoğu sitedeki oturumunuz kapatılır.</translation>
 <translation id="3778208826288864398">Çok sayıda yanlış PIN girildiği için güvenlik anahtarı kilitlendi. Güvenlik anahtarınızı sıfırlamanız gerekiyor.</translation>
 <translation id="3778740492972734840">&amp;Geliştirici araçları</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{# sitedeki tarama geçmişiniz}other{# sitedeki tarama geçmişiniz}}</translation>
@@ -4504,7 +4501,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4432621511648257259">Şifre yanlış</translation>
 <translation id="4434611816075088065">Şu anda ilgilenmeniz gereken başka bir konu yok</translation>
 <translation id="4435020454241191356">Profiliniz için bir ad veya etiket ekleyin</translation>
-<translation id="443503224864902151">Bu işlem, çoğu sitedeki oturumunuzu kapatır. Google Hesabınızda oturumunuz açık kalacağından senkronize edilmiş verileriniz silinebilecektir.</translation>
 <translation id="4436201444922652535">Bağlantılar</translation>
 <translation id="443719869834432257">Etkinlik Türü: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Şifreleri ve geçiş anahtarlarını kaydetmeyi öner</translation>
@@ -8344,7 +8340,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="744366959743242014">Veriler yükleniyor. Bu işlem birkaç saniye sürebilir.</translation>
 <translation id="7443806024147773267">Google Hesabınıza her giriş yaptığınızda şifrelerinize erişin</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Çerezler bugün tekrar engellenecek}=1{Çerezler yarın tekrar engellenecek}other{Çerezlerin tekrar engellenmesine # gün kaldı}}</translation>
-<translation id="7446716846072322308">Bu işlem, <ph name="SITE_NAME" /> ve ilgili siteler tarafından saklanan <ph name="TOTAL_USAGE" /> veriyi silecek</translation>
 <translation id="7448430327655618736">Uygulamaları otomatik olarak yükle</translation>
 <translation id="7448664748118305024">Sitelerin cihazıma kaydettiği veriler tüm pencereleri kapattığımda silinsin</translation>
 <translation id="7449806939046594699">Kuruluşunuz bu içeriğin kopyalanmasını engelledi</translation>
@@ -9742,7 +9737,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8533670235862049797">Güvenli Tarama açık</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Sekmeler bu cihazda açık kalır ancak grup, <ph name="EMAIL" /> hesabında oturum açılmış tüm cihazlardan silinir.}other{Sekmeler bu cihazda açık kalır ancak gruplar, <ph name="EMAIL" /> hesabında oturum açılmış tüm cihazlardan silinir.}}</translation>
 <translation id="8535005006684281994">Netscape Sertifikası Yenileme URL'si</translation>
-<translation id="8536810348276651776">Çoğu sitedeki oturumunuz kapatılır. Family Link ayarlarınızın Chrome'da geçerli olması için Google Hesabınızın oturumu açık kalır.</translation>
 <translation id="8536956381488731905">Tuşa basılınca ses çıkar</translation>
 <translation id="8539727552378197395">Hayır (HttpOnly)</translation>
 <translation id="8540136935098276800">Doğru biçimli bir URL girin</translation>

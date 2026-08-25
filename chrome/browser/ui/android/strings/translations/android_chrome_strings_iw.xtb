@@ -186,6 +186,7 @@
 <translation id="1778457539567749232">סימון ככרטיסייה שלא נקראה</translation>
 <translation id="1779766957982586368">סגירת חלון</translation>
 <translation id="1780023393214832643">הסיסמאות נשמרו בחשבון <ph name="USERNAME" /></translation>
+<translation id="1789543093145556097">הסתר תמיד</translation>
 <translation id="1791662854739702043">מותקן</translation>
 <translation id="1792959175193046959">אפשר תמיד לשנות את מיקום ההורדות</translation>
 <translation id="1796666869097395659">מזעור הכרטיסייה כדי לחזור אליה מאוחר יותר</translation>
@@ -522,6 +523,7 @@
 <translation id="3075397426753215787">צריך לבחור מכשיר.</translation>
 <translation id="3080375898390966733">‏חיפוש כרטיסייה עם Google Lens</translation>
 <translation id="3080525922482950719">ניתן לשמור דפים לקריאה במועד מאוחר יותר או במצב אופליין</translation>
+<translation id="3082989400996696487">הצגה רק בדף "כרטיסייה חדשה"</translation>
 <translation id="3087734570205094154">תחתית</translation>
 <translation id="3091010850649238832">הצגת התוכן שבלוח</translation>
 <translation id="3098745985164956033">‏חלק מהתמונות נשלחות אל Google כדי לשפר עבורך את התיאורים</translation>
@@ -767,6 +769,7 @@
 <translation id="4164642020717536140">גלישה מהירה ומאובטחת באינטרנט</translation>
 <translation id="4165077084524712774">כלים נוספים</translation>
 <translation id="4170577491341606575">הנתונים שלך בדרך…</translation>
+<translation id="4172051516777682613">להציג תמיד</translation>
 <translation id="4176838562184310003">‏‫Chrome לא נסגר כמו שצריך. רוצה לנסות לשחזר את החלונות והכרטיסיות שאבדו? יכול להיות שחלק מהחלונות ימוזערו אחרי השחזור.</translation>
 <translation id="4177222230309051052">הוספת כל הסימניות</translation>
 <translation id="417865198503699526">כאן ניתן לחפש הגדרה</translation>
@@ -885,7 +888,6 @@
 <translation id="4599585406846903742">תצוגת עמוד יחיד</translation>
 <translation id="4601095002996233687">סריקות מעמיקות לאיתור הורדות חשודות.</translation>
 <translation id="4606559747793337066">‏כשאתר או אפליקציה מבקשים לטעון מראש קישורים בדף שלהם באופן פרטי, דפדפן Chrome מצפין וטוען מראש את הדפים באמצעות השרתים של Google ללא קובצי Cookie. כך מוסתרת הזהות שלך מהאתר שנטען מראש.</translation>
-<translation id="4616150815774728855">פתיחה של <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619615317237390068">כרטיסיות ממכשירים אחרים</translation>
 <translation id="4624065194742029982">‏מצב פרטי ב-Chrome</translation>
 <translation id="4634124774493850572">שימוש בסיסמה</translation>
@@ -1851,6 +1853,7 @@
 <translation id="834313815369870491">אין לתרגם את האתרים אף פעם</translation>
 <translation id="8348215005712416247">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית שהוצמדה מתוך סדרת כרטיסיות שנבחרו והתוכן בה מוקלט</translation>
 <translation id="8348430946834215779">‏יש להשתמש ב-HTTPS כשאפשר, ולקבל אזהרה לפני שטוענים אתרים שלא תומכים ב-HTTPS</translation>
+<translation id="8349305172487531364">סרגל סימניות</translation>
 <translation id="8354977102499939946">חיפוש מהיר באמצעות הקול. ניתן לערוך את קיצור הדרך הזה ב'הגדרות'.</translation>
 <translation id="8361737703487394103">מעבר לכרטיסייה ספציפית (1-8)</translation>
 <translation id="8368001212524806591">מעקב אחר המחיר</translation>

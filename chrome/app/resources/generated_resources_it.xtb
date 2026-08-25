@@ -1813,7 +1813,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2413009156320833859">Personalizza ancora di più il tuo browser con le estensioni del <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Riprendi la navigazione per <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Scuro</translation>
-<translation id="2415117815770324983">Uscirai dalla maggior parte dei siti. Manterrai l'accesso al tuo Account Google.</translation>
 <translation id="2416435988630956212">Tasti funzione della tastiera</translation>
 <translation id="2419131370336513030">Visualizzare le app installate</translation>
 <translation id="2419706071571366386">Per sicurezza, disconnettiti quando non utilizzi il tuo computer.</translation>
@@ -1964,7 +1963,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
         <ph name="BREAK" />
         Puoi gestire le impostazioni dal menu della scheda o visualizzare altre opzioni in Personalizza Chrome.</translation>
 <translation id="2514465118223423406">Quando è collegato un mouse</translation>
-<translation id="2514938842036917377">Questa operazione comporterà l'eliminazione di <ph name="TOTAL_USAGE" /> di dati memorizzati da <ph name="SITE_NAME" />, siti correlati e app installate</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Conferma il tuo nome utente</translation>
 <translation id="2517472476991765520">Scansiona</translation>
@@ -3644,7 +3642,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3776508619697147021">I siti possono chiedere di scaricare automaticamente più file</translation>
 <translation id="3776796446459804932">Questa estensione vìola le norme del Chrome Web Store.</translation>
 <translation id="3777483481409781352">Impossibile attivare il dispositivo cellulare</translation>
-<translation id="3777796259512476958">Ti disconnette dalla maggior parte dei siti.</translation>
 <translation id="3778208826288864398">Il token di sicurezza è stato bloccato perché è stato inserito troppe volte il PIN errato. Dovrai reimpostare il token di sicurezza.</translation>
 <translation id="3778740492972734840">&amp;Strumenti per sviluppatori</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{la tua cronologia di navigazione di # sito}other{la tua cronologia di navigazione di # siti}}</translation>
@@ -4505,7 +4502,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4432621511648257259">Password errata</translation>
 <translation id="4434611816075088065">Al momento non c'è nient'altro che richiede la tua attenzione</translation>
 <translation id="4435020454241191356">Aggiungi un nome o un'etichetta per il tuo profilo</translation>
-<translation id="443503224864902151">Uscirai dalla maggior parte dei siti, ma non dal tuo Account Google, quindi i dati sincronizzati possono essere eliminati.</translation>
 <translation id="4436201444922652535">Link</translation>
 <translation id="443719869834432257">Tipo di evento: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Chiedi di salvare password e passkey</translation>
@@ -8342,7 +8338,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="744366959743242014">Caricamento dei dati in corso. L'operazione potrebbe richiedere alcuni secondi.</translation>
 <translation id="7443806024147773267">Puoi avere a disposizione le tue password ogni volta che accedi al tuo Account Google</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{I cookie verranno nuovamente bloccati oggi}=1{I cookie verranno nuovamente bloccati domani}other{# giorni al nuovo blocco dei cookie}}</translation>
-<translation id="7446716846072322308">Questa operazione comporterà l'eliminazione di <ph name="TOTAL_USAGE" /> di dati memorizzati da <ph name="SITE_NAME" /> e siti correlati</translation>
 <translation id="7448430327655618736">Installare automaticamente le app</translation>
 <translation id="7448664748118305024">Elimina i dati salvati dai siti sul dispositivo alla chiusura di tutte le finestre</translation>
 <translation id="7449806939046594699">La tua organizzazione ha bloccato la copia di questi contenuti</translation>
@@ -9740,7 +9735,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8533670235862049797">Navigazione sicura attiva</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Le schede rimarranno aperte su questo dispositivo, ma il gruppo verrà eliminato da tutti i dispositivi su cui è stato eseguito l'accesso a <ph name="EMAIL" />}other{Le schede rimarranno aperte su questo dispositivo, ma i gruppi verranno eliminati da tutti i dispositivi su cui è stato eseguito l'accesso a <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">URL di rinnovo certificato Netscape</translation>
-<translation id="8536810348276651776">Uscirai dalla maggior parte dei siti, ma non dal tuo Account Google, quindi si applicano le tue impostazioni di Family Link relative a Chrome.</translation>
 <translation id="8536956381488731905">Suono tasti</translation>
 <translation id="8539727552378197395">No (solo Http)</translation>
 <translation id="8540136935098276800">Inserisci un URL nel formato corretto</translation>

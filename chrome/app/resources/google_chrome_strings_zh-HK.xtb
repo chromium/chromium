@@ -628,7 +628,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7161904924553537242">歡迎使用 Google Chrome</translation>
 <translation id="7193885263065350793">您的機構會在 Chrome 閒置 <ph name="TIMEOUT_DURATION" />後將其關閉。</translation>
 <translation id="7242029209006116544">您已登入受管理的帳戶，並將管理控制權授予您的 Google Chrome 設定檔。您的 Chrome 數據 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。您可以透過 Google 帳戶資訊主頁刪除這些數據，但您無法將這些數據與其他帳戶建立關聯。如要另行保留現有的 Chrome 數據，您可以選擇建立新的設定檔。<ph name="LEARN_MORE" /></translation>
-<translation id="7257689164441568409">使用鍵盤快速鍵離開或返回 Chrome 版 Gemini。</translation>
 <translation id="7274402351400635015">你可以隨時使用 Chrome 開啟訊息、文件和其他應用程式中的連結，瀏覽器也會固定在工作列。</translation>
 <translation id="7285616922384953075">Chrome 由「<ph name="MANAGER" />」管理</translation>
 <translation id="7285990705317078173">在手機下載 Chrome，追蹤價格並在任何網站降價時接收通知</translation>
@@ -728,6 +727,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8074398340364918139">如要搜尋特定 Chrome 功能或擴充程式，請在網址列中輸入捷徑，然後按下你選取的鍵盤按鍵</translation>
 <translation id="8077579734294125741">其他 Chrome 設定檔</translation>
 <translation id="8086881907087796310">由於你的電腦不符合最低硬件要求，因此安裝失敗。</translation>
+<translation id="8110438089258398864">你可重新開啟「Google 搜尋 AI 模式」以在瀏覽時提問</translation>
 <translation id="8113883687556086139">請驗證你的身分，以在帳戶 <ph name="ACCOUNT_EMAIL" /> 中使用及儲存 Chrome 資料</translation>
 <translation id="8115695070094288807">自訂 Chrome…</translation>
 <translation id="8118331347066725040">提供你對「智能鏡頭」搜尋功能的意見</translation>
@@ -777,6 +777,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="856656450041460113">搜尋語言清單</translation>
 <translation id="8575047640889685742">使用<ph name="BEGIN_LINK" />密碼短語<ph name="END_LINK" />加密 Google 帳戶中的所有 Chrome 資料。系統將不會加密你在 Google Pay 中的付款方法和地址，Chrome 上的瀏覽記錄將不會同步。</translation>
 <translation id="8590782867495422699">重新開啟「Google 搜尋」AI 模式</translation>
+<translation id="8598779894319572882">你可透過工具列上的「Google 搜尋 AI 模式」按鈕，重新開啟「Google 搜尋 AI 模式」以在瀏覽時提問</translation>
 <translation id="8601359445272098721">新功能！你可選取「翻譯畫面」按鈕，翻譯畫面上的文字和圖片</translation>
 <translation id="8614913330719544658">Google Chrome 沒有回應，要立即重新啟動嗎？</translation>
 <translation id="8623450603356630491">在手機上登入 Chrome</translation>

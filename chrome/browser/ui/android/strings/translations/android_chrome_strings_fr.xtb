@@ -186,6 +186,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1778457539567749232">Marquer comme non lu</translation>
 <translation id="1779766957982586368">Fermer la fenêtre</translation>
 <translation id="1780023393214832643">Mots de passe enregistrés dans <ph name="USERNAME" /></translation>
+<translation id="1789543093145556097">Toujours masquer</translation>
 <translation id="1791662854739702043">Installé dans</translation>
 <translation id="1792959175193046959">Modifier à tout moment l'emplacement de téléchargement par défaut</translation>
 <translation id="1796666869097395659">Réduire l'onglet pour y revenir plus tard</translation>
@@ -522,6 +523,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3075397426753215787">Choisir un appareil.</translation>
 <translation id="3080375898390966733">Explorer l'onglet avec Google Lens</translation>
 <translation id="3080525922482950719">Vous pouvez enregistrer des pages pour les consulter plus tard ou hors connexion</translation>
+<translation id="3082989400996696487">Afficher uniquement sur la page "Nouvel onglet"</translation>
 <translation id="3087734570205094154">En bas</translation>
 <translation id="3091010850649238832">Afficher le contenu du presse-papiers</translation>
 <translation id="3098745985164956033">Les images sont envoyées à Google afin de vous proposer de meilleures descriptions</translation>
@@ -767,6 +769,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4164642020717536140">Navigation Web rapide et sécurisée</translation>
 <translation id="4165077084524712774">Autres outils</translation>
 <translation id="4170577491341606575">Chargement de vos données\u2026</translation>
+<translation id="4172051516777682613">Toujours afficher</translation>
 <translation id="4176838562184310003">Chrome ne s'est pas arrêté correctement et peut essayer de restaurer vos fenêtres et onglets perdus. Il est possible que certaines fenêtres soient réduites une fois restaurées.</translation>
 <translation id="4177222230309051052">Récupérer tous vos favoris</translation>
 <translation id="417865198503699526">Recherchez un paramètre</translation>
@@ -885,7 +888,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4599585406846903742">Vue sur une page</translation>
 <translation id="4601095002996233687">Analyses approfondies pour les téléchargements suspects.</translation>
 <translation id="4606559747793337066">Quand un site ou une appli demandent de précharger en mode privé des liens sur leur page, Chrome chiffre et précharge les pages via les serveurs de Google sans cookies. Le site préchargé ne sait alors rien de votre identité.</translation>
-<translation id="4616150815774728855">Ouvrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619615317237390068">Onglets d'autres appareils</translation>
 <translation id="4624065194742029982">Navigation privée dans Chrome</translation>
 <translation id="4634124774493850572">Utiliser le mot de passe</translation>
@@ -1851,6 +1853,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="834313815369870491">Ne jamais traduire les sites</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, onglet de navigation privée épinglé multisélectionné avec enregistrement en cours</translation>
 <translation id="8348430946834215779">Utiliser HTTPS autant que possible et recevoir un avertissement avant de charger des sites qui ne le prennent pas en charge</translation>
+<translation id="8349305172487531364">Barre de favoris</translation>
 <translation id="8354977102499939946">Rechercher rapidement par commande vocale. Pour modifier ce raccourci, accédez aux paramètres.</translation>
 <translation id="8361737703487394103">Accéder à un onglet spécifique (1 à 8)</translation>
 <translation id="8368001212524806591">Suivre les prix</translation>

@@ -186,6 +186,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1778457539567749232">Marcar como no leída</translation>
 <translation id="1779766957982586368">Cerrar ventana</translation>
 <translation id="1780023393214832643">Contraseñas guardadas en <ph name="USERNAME" /></translation>
+<translation id="1789543093145556097">Ocultar siempre</translation>
 <translation id="1791662854739702043">Instaladas</translation>
 <translation id="1792959175193046959">Cambia la ubicación predeterminada de las descargas en cualquier momento</translation>
 <translation id="1796666869097395659">Minimizar la pestaña para volver a ella más tarde</translation>
@@ -522,6 +523,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3075397426753215787">Selecciona un dispositivo.</translation>
 <translation id="3080375898390966733">Buscar en la pestaña con Google Lens</translation>
 <translation id="3080525922482950719">Puedes guardar páginas para leerlas más tarde o sin conexión</translation>
+<translation id="3082989400996696487">Mostrar solo en la página Nueva pestaña</translation>
 <translation id="3087734570205094154">Abajo</translation>
 <translation id="3091010850649238832">Muestra el contenido del portapapeles</translation>
 <translation id="3098745985164956033">Algunas imágenes se envían a Google para mejorar las descripciones que recibes</translation>
@@ -767,6 +769,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4164642020717536140">Navegación web rápida y segura</translation>
 <translation id="4165077084524712774">Más herramientas</translation>
 <translation id="4170577491341606575">Obteniendo tus cosas\u2026</translation>
+<translation id="4172051516777682613">Mostrar siempre</translation>
 <translation id="4176838562184310003">Chrome no se ha cerrado correctamente y puede intentar restaurar las ventanas y pestañas que has perdido. Algunas ventanas pueden estar minimizadas al restaurarse.</translation>
 <translation id="4177222230309051052">Accede a todos tus marcadores</translation>
 <translation id="417865198503699526">Busca un ajuste</translation>
@@ -885,7 +888,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4599585406846903742">Vista de una sola página</translation>
 <translation id="4601095002996233687">Análisis exhaustivos para detectar descargas sospechosas.</translation>
 <translation id="4606559747793337066">Cuando un sitio o una aplicación te pregunta si quieres precargar de forma privada los enlaces de su página, Chrome cifra y precarga las páginas mediante los servidores de Google sin cookies. De esta manera, se oculta tu identidad en el sitio precargado.</translation>
-<translation id="4616150815774728855">Abrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619615317237390068">Pestañas de otros dispositivos</translation>
 <translation id="4624065194742029982">Incógnito de Chrome</translation>
 <translation id="4634124774493850572">Usar contraseña</translation>
@@ -1851,6 +1853,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="834313815369870491">No traducir sitios nunca</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, pestaña de Incógnito en grabación en selección múltiple fijada</translation>
 <translation id="8348430946834215779">Usa HTTPS siempre que sea posible y recibe advertencias antes de cargar sitios que no sean compatibles con este protocolo</translation>
+<translation id="8349305172487531364">Barra de marcadores</translation>
 <translation id="8354977102499939946">Busca rápidamente con la voz. Para editar esta combinación de teclas, ve a Configuración.</translation>
 <translation id="8361737703487394103">Ir a una pestaña concreta (1-8)</translation>
 <translation id="8368001212524806591">Seguir precio</translation>

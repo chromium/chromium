@@ -1827,7 +1827,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2413009156320833859">Addaswch eich porwr hyd yn oed yn fwy gydag estyniadau o'r <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Parhau i bori ar gyfer <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Tywyll</translation>
-<translation id="2415117815770324983">Yn eich allgofnodi o'r rhan fwyaf o wefannau. Byddwch yn parhau wedi'ch mewngofnodi i'ch Cyfrif Google.</translation>
 <translation id="2416435988630956212">Bysellau swyddogaeth bysellfwrdd</translation>
 <translation id="2419131370336513030">Gweld apiau sydd wedi'u gosod</translation>
 <translation id="2419706071571366386">Er diogelwch, allgofnodwch pan nad yw'ch cyfrifiadur yn cael ei ddefnyddio.</translation>
@@ -1978,7 +1977,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
         <ph name="BREAK" />
         Gallwch reoli gosodiadau o'r ddewislen cardiau neu weld rhagor o ddewisiadau yn Customize Chrome.</translation>
 <translation id="2514465118223423406">Pan mae llygoden wedi'i gysylltu</translation>
-<translation id="2514938842036917377">Bydd hyn yn dileu <ph name="TOTAL_USAGE" /> o ddata sy'n cael eu storio gan <ph name="SITE_NAME" />, gwefannau cysylltiedig, ac apiau sydd wedi'u gosod</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Cadarnhewch eich enw defnyddiwr</translation>
 <translation id="2517472476991765520">Sganio</translation>
@@ -3658,7 +3656,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="3776508619697147021">Gall gwefannau ofyn am lawrlwytho mwy nag un ffeil yn awtomatig</translation>
 <translation id="3776796446459804932">Mae'r estyniad hwn yn mynd yn groes i bolisi Chrome Web Store.</translation>
 <translation id="3777483481409781352">Methu â gweithredu'r ddyfais symudol</translation>
-<translation id="3777796259512476958">Yn eich allgofnodi o'r mwyafrif o wefannau</translation>
 <translation id="3778208826288864398">Mae'r allwedd ddiogelwch wedi'i chloi oherwydd rhoddwyd y PIN anghywir gormod o weithiau. Bydd angen i chi ailosod yr allwedd ddiogelwch.</translation>
 <translation id="3778740492972734840">&amp;Offer datblygwr</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{eich hanes pori o # gwefan}zero{eich hanes pori o # gwefannau}two{eich hanes pori o # wefan}few{eich hanes pori o # gwefan}many{eich hanes pori o # gwefan}other{eich hanes pori o # gwefan}}</translation>
@@ -4519,7 +4516,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="4432621511648257259">Mae'r cyfrinair yn anghywir</translation>
 <translation id="4434611816075088065">Does dim byd arall angen eich sylw ar hyn o bryd</translation>
 <translation id="4435020454241191356">Ychwanegwch enw neu label ar gyfer eich proffil</translation>
-<translation id="443503224864902151">Yn eich allgofnodi o'r rhan fwyaf o wefannau. Byddwch yn parhau i fod wedi'ch mewngofnodi i'ch Cyfrif Google fel y gellir dileu'ch data sydd wedi'u cysoni.</translation>
 <translation id="4436201444922652535">Dolenni</translation>
 <translation id="443719869834432257">Math o Ddigwyddiad: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Gofyn i gadw cyfrineiriau a chodau pas</translation>
@@ -8367,7 +8363,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="744366959743242014">Wrthi'n llwytho data, mae'n bosib y bydd hyn yn cymryd hyd at ychydig eiliadau.</translation>
 <translation id="7443806024147773267">Gallwch gael mynediad at eich cyfrineiriau pryd bynnag y byddwch wedi mewngofnodi i'ch Cyfrif Google</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Bydd cwcis yn cael eu rhwystro eto heddiw}=1{Bydd cwcis yn cael eu rhwystro eto yfory}two{# ddiwrnod nes bydd cwcis yn cael eu rhwystro eto}few{# diwrnod nes bydd cwcis yn cael eu rhwystro eto}many{# diwrnod nes bydd cwcis yn cael eu rhwystro eto}other{# diwrnod nes bydd cwcis yn cael eu rhwystro eto}}</translation>
-<translation id="7446716846072322308">Bydd hyn yn dileu <ph name="TOTAL_USAGE" /> o ddata sy'n cael eu storio gan <ph name="SITE_NAME" /> a gwefannau cysylltiedig</translation>
 <translation id="7448430327655618736">Gosod apiau yn awtomatig</translation>
 <translation id="7448664748118305024">Dileu data y mae gwefannau wedi'u cadw i'ch dyfais pan fyddwch yn cau pob ffenestr</translation>
 <translation id="7449806939046594699">Rhwystrodd eich sefydliad gopïo'r cynnwys hwn</translation>
@@ -9765,7 +9760,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8533670235862049797">Mae Pori'n Ddiogel ymlaen</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Bydd y tabiau'n aros ar agor ar y ddyfais hon ond bydd y grŵp yn cael ei ddileu o bob dyfais sydd wedi'i mewngofnodi i <ph name="EMAIL" />}zero{Bydd y tabiau'n aros ar agor ar y ddyfais hon ond bydd y grwpiau yn cael eu dileu o bob dyfais sydd wedi'u mewngofnodi i <ph name="EMAIL" />}two{Bydd y tabiau'n aros ar agor ar y ddyfais hon ond bydd y grwpiau yn cael eu dileu o bob dyfais sydd wedi'u mewngofnodi i <ph name="EMAIL" />}few{Bydd y tabiau'n aros ar agor ar y ddyfais hon ond bydd y grwpiau yn cael eu dileu o bob dyfais sydd wedi'u mewngofnodi i <ph name="EMAIL" />}many{Bydd y tabiau'n aros ar agor ar y ddyfais hon ond bydd y grwpiau yn cael eu dileu o bob dyfais sydd wedi'u mewngofnodi i <ph name="EMAIL" />}other{Bydd y tabiau'n aros ar agor ar y ddyfais hon ond bydd y grwpiau yn cael eu dileu o bob dyfais sydd wedi'u mewngofnodi i <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">URL Adnewyddu Tystysgrif Netscape</translation>
-<translation id="8536810348276651776">Yn eich allgofnodi o'r mwyafrif o wefannau. Byddwch yn parhau i fod wedi'ch mewngofnodi i'ch Cyfrif Google fel bod eich gosodiadau Family Link ar gyfer Chrome yn berthnasol.</translation>
 <translation id="8536956381488731905">Troi'r sain ymlaen drwy bwyso'r fysell</translation>
 <translation id="8539727552378197395">Dim (HttpOnly)</translation>
 <translation id="8540136935098276800">Rhowch URL sydd wedi'i fformatio'n gywir</translation>

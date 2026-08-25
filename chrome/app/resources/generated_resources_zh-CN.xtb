@@ -354,6 +354,7 @@
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{有 1 个书签和其他内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。此操作还会清理所有重复项。}other{有 {BOOKMARK_COUNT} 个书签和其他内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。此操作还会清理所有重复项。}}</translation>
 <translation id="125220115284141797">默认</translation>
 <translation id="1252219782845132919">隐藏组</translation>
+<translation id="1252597096488926946">取消固定滚动按钮</translation>
 <translation id="1252987234827889034">发生个人资料错误</translation>
 <translation id="1254034280040157728">大峡谷</translation>
 <translation id="1254593899333212300">直接连接到互联网</translation>
@@ -976,6 +977,7 @@
 <translation id="1755601632425835748">文字大小</translation>
 <translation id="1756963401828337401">选择要截取的屏幕</translation>
 <translation id="17584710573359123">在 Chrome 应用商店中查看详情</translation>
+<translation id="176013700366797492">请前往 Google 钱包控制<ph name="BEGIN_LINK1" />数据和隐私偏好设置<ph name="END_LINK1" />，或管理<ph name="BEGIN_LINK2" />支付方式<ph name="END_LINK2" />和<ph name="BEGIN_LINK3" />卡券<ph name="END_LINK3" />（例如会员卡和身份证件）</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> 已重新映射为 <ph name="REMAPPING_OPTION" />。</translation>
 <translation id="1761845175367251960"><ph name="NAME" />的账号</translation>
 <translation id="176272781006230109">购物建议</translation>
@@ -1814,7 +1816,6 @@
 <translation id="2413009156320833859">使用 <ph name="BEGIN_LINK1" />Chrome 应用商店<ph name="END_LINK1" />中的扩展程序进一步自定义您的浏览器</translation>
 <translation id="2414159296888870200">继续浏览<ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">深色调</translation>
-<translation id="2415117815770324983">会致使您从大多数网站退出账号。但您的 Google 账号仍会保持登录状态。</translation>
 <translation id="2416435988630956212">键盘功能键</translation>
 <translation id="2419131370336513030">查看已安装的应用</translation>
 <translation id="2419706071571366386">为了安全起见，当您未使用计算机时，请退出账号。</translation>
@@ -1958,6 +1959,7 @@
 <translation id="2508747373511408451"><ph name="APPLICATION_NAME" />应用要求 Google 云端硬盘必须可用。</translation>
 <translation id="2509495747794740764">缩放值必须是一个介于 10 到 200 之间的数字。</translation>
 <translation id="2509566264613697683">8 倍</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />：<ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" />（已选择）</translation>
 <translation id="2513904627589542105">自测</translation>
 <translation id="251425554130284360">这里显示的是您访问过的网页和系统推荐的搜索内容，以方便您轻松回顾自己的近期活动。
@@ -1965,7 +1967,6 @@
         <ph name="BREAK" />
         您可从卡片菜单中管理设置，或者在“自定义 Chrome”部分中查看更多选项。</translation>
 <translation id="2514465118223423406">连接鼠标时</translation>
-<translation id="2514938842036917377">此操作会删除由 <ph name="SITE_NAME" />、相关网站和安装的应用存储的 <ph name="TOTAL_USAGE" /> 数据</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">确认您的用户名</translation>
 <translation id="2517472476991765520">扫描</translation>
@@ -3643,7 +3644,6 @@
 <translation id="3776508619697147021">网站可以请求自动下载多个文件</translation>
 <translation id="3776796446459804932">此扩展程序违反了 Chrome 应用商店政策。</translation>
 <translation id="3777483481409781352">无法激活移动网络设备</translation>
-<translation id="3777796259512476958">若删除此类数据，您会从大多数网站退出账号</translation>
 <translation id="3778208826288864398">此安全密钥已被锁定，因为您输错 PIN 码的次数过多。您需要重置此安全密钥。</translation>
 <translation id="3778740492972734840">开发者工具(&amp;D)</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{# 个网站上的浏览记录}other{# 个网站上的浏览记录}}</translation>
@@ -4503,7 +4503,6 @@
 <translation id="4432621511648257259">密码不正确</translation>
 <translation id="4434611816075088065">目前没有任何其他需要您注意的事项</translation>
 <translation id="4435020454241191356">为资料添加名称或标签</translation>
-<translation id="443503224864902151">您会从大多数网站中退出账号。您的 Google 账号仍会保持登录状态，以便删除已同步的数据。</translation>
 <translation id="4436201444922652535">链接</translation>
 <translation id="443719869834432257">事件类型：<ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">提示保存密码和通行密钥</translation>
@@ -4994,6 +4993,7 @@
 <translation id="4831226137013573603">麦克风静音</translation>
 <translation id="483262387981411190">暂停或恢复面部控制</translation>
 <translation id="4833683849865011483">通过打印服务器找到了 1 台打印机</translation>
+<translation id="4834388789911023644">撰写评价</translation>
 <translation id="4835598628985424375">撅起嘴唇</translation>
 <translation id="4835677468087803981">隐藏 PIN 码</translation>
 <translation id="4836504898754963407">管理指纹</translation>
@@ -8339,7 +8339,6 @@
 <translation id="744366959743242014">正在加载数据，这最多可能需要几秒钟的时间。</translation>
 <translation id="7443806024147773267">只要您登录自己的 Google 账号，即可获取您的密码</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookie 将于今天再次屏蔽}=1{Cookie 将于明天再次屏蔽}other{Cookie 将于 # 天后再次屏蔽}}</translation>
-<translation id="7446716846072322308">此操作会删除由 <ph name="SITE_NAME" /> 和相关网站存储的 <ph name="TOTAL_USAGE" /> 数据</translation>
 <translation id="7448430327655618736">自动安装应用</translation>
 <translation id="7448664748118305024">在关闭所有窗口时删除网站已保存到设备上的数据</translation>
 <translation id="7449806939046594699">您的组织已禁止复制此内容</translation>
@@ -8553,6 +8552,7 @@
 <translation id="7625823789272218216">在左侧新增标签页</translation>
 <translation id="762730429396410864">手动设置向网站报告的 CPU 性能层级</translation>
 <translation id="7627749368210392160">网站可以使用此功能访问本地网络中的其他设备</translation>
+<translation id="7628068697012244394">撰写评价</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />)，等级：<ph name="GRADE" /></translation>
 <translation id="762917478230183172">为每个键选择一项操作</translation>
 <translation id="7629206210984165492">冷清</translation>
@@ -8979,6 +8979,7 @@
 <translation id="7949038991703929816">未能加载历史记录。请确保文件包含有效的更新程序日志。</translation>
 <translation id="7950629216186736592">原因：LBS 仅支持 http://、https:// 和 file:// 网址。</translation>
 <translation id="7950814699499457511">已开启 • 此扩展程序尚未发布隐私权规范，例如如何收集和使用数据</translation>
+<translation id="7951159420392892566">取消固定滚动按钮</translation>
 <translation id="795130320946928025">停用虚拟卡</translation>
 <translation id="7952708427581814389">网站可以请求查看您剪贴板中的文字和图片</translation>
 <translation id="7953236668995583915">重新加载此页面，即可在该网站上应用更新后的设置</translation>
@@ -9349,7 +9350,7 @@
 <translation id="8231438895476693774">向新的拆分视图中添加标签页</translation>
 <translation id="823226567613548870">删除<ph name="BRAND" />数据</translation>
 <translation id="8233028084277069927">立即打开</translation>
-<translation id="8234795456569844941">请告诉我们在您收到个人资料错误消息之前发生的情况，以帮助我们的工程师解决此问题：</translation>
+<translation id="8234795456569844941">请告诉我们在您收到个人资料出错提示之前发生的情况，以帮助我们的工程师解决此问题：</translation>
 <translation id="8236802542508794819">此标签页与其他标签页共享资源，这可能会干扰调试。</translation>
 <translation id="8236911020904880539">退出</translation>
 <translation id="8236917170563564587">改为共享此标签页</translation>
@@ -9737,7 +9738,6 @@
 <translation id="8533670235862049797">“安全浏览”已开启</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{相应标签页将在此设备上保持打开状态，但系统会从所有已登录 <ph name="EMAIL" />的设备中删除该分组}other{相应标签页将在此设备上保持打开状态，但系统会从所有已登录 <ph name="EMAIL" />的设备中删除这些分组}}</translation>
 <translation id="8535005006684281994">Netscape 证书续订网址</translation>
-<translation id="8536810348276651776">会致使您从大多数网站退出账号。但您的 Google 账号仍会保持登录状态，所以 Chrome 中的 Family Link 设置依然有效。</translation>
 <translation id="8536956381488731905">按键音效</translation>
 <translation id="8539727552378197395">否（仅 Http）</translation>
 <translation id="8540136935098276800">请输入格式正确的网址</translation>

@@ -186,6 +186,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="1778457539567749232">Als ungelesen markieren</translation>
 <translation id="1779766957982586368">Fenster schließen</translation>
 <translation id="1780023393214832643">Unter <ph name="USERNAME" /> gespeicherte Passwörter</translation>
+<translation id="1789543093145556097">Immer ausblenden</translation>
 <translation id="1791662854739702043">Installiert</translation>
 <translation id="1792959175193046959">Du kannst den Standard-Downloadpfad jederzeit ändern</translation>
 <translation id="1796666869097395659">Tab minimieren, um später wieder dorthin zurückzukehren</translation>
@@ -522,6 +523,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3075397426753215787">Wähle ein Gerät aus.</translation>
 <translation id="3080375898390966733">Tab mit Google Lens durchsuchen</translation>
 <translation id="3080525922482950719">Du kannst Seiten speichern, um sie später oder offline zu lesen</translation>
+<translation id="3082989400996696487">Nur auf der Seite „Neuer Tab“ anzeigen</translation>
 <translation id="3087734570205094154">Unten</translation>
 <translation id="3091010850649238832">Inhalte der Zwischenablage anzeigen</translation>
 <translation id="3098745985164956033">Einige Bilder werden an Google gesendet, um die Beschreibungen zu verbessern</translation>
@@ -767,6 +769,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4164642020717536140">Schnelles und sicheres Surfen im Web</translation>
 <translation id="4165077084524712774">Weitere Tools</translation>
 <translation id="4170577491341606575">Daten werden abgerufen\u2026</translation>
+<translation id="4172051516777682613">Immer anzeigen</translation>
 <translation id="4176838562184310003">Chrome wurde nicht ordnungsgemäß heruntergefahren und kann versuchen, deine verlorenen Fenster und Tabs wiederherzustellen. Einige Fenster werden beim Wiederherstellen möglicherweise minimiert.</translation>
 <translation id="4177222230309051052">Alle deine Lesezeichen abrufen</translation>
 <translation id="417865198503699526">Nach einer Einstellung suchen</translation>
@@ -885,7 +888,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4599585406846903742">Einzelseitenansicht</translation>
 <translation id="4601095002996233687">Umfangreiche Scans nach verdächtigen Downloads.</translation>
 <translation id="4606559747793337066">Wenn eine Website oder App anfordert, Links auf einer ihrer Seiten privat vorab zu laden, verschlüsselt Chrome die Seiten und lädt sie ohne Cookies über Google-Server vorab. Dadurch wird deine Identität vor der vorab geladenen Website oder App verborgen.</translation>
-<translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> öffnen</translation>
 <translation id="4619615317237390068">Tabs von anderen Geräten</translation>
 <translation id="4624065194742029982">Der Inkognitomodus von Chrome</translation>
 <translation id="4634124774493850572">Passwort verwenden</translation>
@@ -1851,6 +1853,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="834313815369870491">Websites nie übersetzen</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, mehrfach ausgewählter, angepinnter Inkognitotab zum Aufzeichnen</translation>
 <translation id="8348430946834215779">Nach Möglichkeit HTTPS verwenden und warnen, bevor Websites geladen werden, die das Protokoll nicht unterstützen</translation>
+<translation id="8349305172487531364">Lesezeichenleiste</translation>
 <translation id="8354977102499939946">Schnelle Sprachsuche verwenden. Wenn du diese Verknüpfung bearbeiten möchtest, rufe die Einstellungen auf.</translation>
 <translation id="8361737703487394103">Zu einem bestimmten Tab wechseln (1–8)</translation>
 <translation id="8368001212524806591">Preis beobachten</translation>

@@ -1822,7 +1822,6 @@
 <translation id="2413009156320833859">አሳሽዎን ከ<ph name="BEGIN_LINK1" />Chrome የድር መደብር<ph name="END_LINK1" /> በሚገኙ ቅጥያዎች የበለጠ ያብጁ</translation>
 <translation id="2414159296888870200">ለ<ph name="MODULE_TITLE" /> ማሰስን ከቆመበት ይቀጥሉ</translation>
 <translation id="2414886740292270097">ጨለማ</translation>
-<translation id="2415117815770324983">ከአብዛኛዎቹ ጣቢያዎች ዘግተው እንዲወጡ ያደርግዎታል። ወደ Google መለያዎ እንደገቡ ይቆያሉ።</translation>
 <translation id="2416435988630956212">የቁልፍ ሰሌዳ ተግባር ቁልፎች</translation>
 <translation id="2419131370336513030">የተጫኑ መተግበረያዎችን ይመልከቱ</translation>
 <translation id="2419706071571366386">ለደህንነት ሲባል የእርስዎ ኮምፒውተር ጥቅም ላይ በማይውልበት ጊዜ ዘግተውት ይውጡ።</translation>
@@ -1973,7 +1972,6 @@
         <ph name="BREAK" />
         ቅንብሮችን ከካርድ ምናሌው ማቀናበር ወይም በChromeን አብጅ ውስጥ ተጨማሪ አማራጮችን ማየት ይችላሉ።</translation>
 <translation id="2514465118223423406">መዳፊት ሲገናኝ</translation>
-<translation id="2514938842036917377">ይህ በ<ph name="SITE_NAME" />፣ ተዛማጅ ጣቢያዎች እና በተጫኑ መተግበሪያዎች የተከማቸ <ph name="TOTAL_USAGE" /> ውሂብን ይሰርዛል</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">የተጠቃሚ ስምዎን ያረጋግጡ</translation>
 <translation id="2517472476991765520">ቃኝ</translation>
@@ -3653,7 +3651,6 @@
 <translation id="3776508619697147021">ጣቢያዎች ብዙ ፋይሎችን በራስ-ሰር ለማውረድ መጠየቅ ይችላሉ</translation>
 <translation id="3776796446459804932">ይህ ቅጥያ የChrome ድር ማከማቻ መመሪያን ይጥሳል።</translation>
 <translation id="3777483481409781352">የተንቀሳቃሽ ስልክ መሣሪያን ማግበር አልተቻለም</translation>
-<translation id="3777796259512476958">ከአብዛኛዎቹ ጣቢያዎች ዘግተው እንዲወጡ ያደርግዎታል</translation>
 <translation id="3778208826288864398">ትክክል ያልሆነ ፒን ከልክ በላይ ለብዙ ጊዜ ስለገባ ይህ የደህንነት ቁልፍ ተቆልፏል። የደህንነት ቁልፉን ዳግም ማቀናበር ያስፈልግዎታል።</translation>
 <translation id="3778740492972734840">&amp;የዴቬሎፐር መሳሪያዎች</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{የእርስዎ # ጣቢያ የአሰሳ ታሪክ}one{የእርስዎ # ጣቢያ የአሰሳ ታሪክ}other{የእርስዎ # ጣቢያዎች የአሰሳ ታሪክ}}</translation>
@@ -4512,7 +4509,6 @@
 <translation id="4432621511648257259">የይለፍ ቃል ትክክል አይደለም</translation>
 <translation id="4434611816075088065">አሁን ትኩረትዎን የሚፈልግ ምንም ነገር የለም</translation>
 <translation id="4435020454241191356">ለመገለጫዎ ስም ወይም መሰየሚያ ያክሉ</translation>
-<translation id="443503224864902151">ከአብዛኛዎቹ ጣቢያዎች ዘግተው ያስወጣዎታል። በእርስዎ የGoogle መለያ ውስጥ በመለያ እንደገቡ ስለሚቆዩ የእርስዎ የሰመረ ውሂብ ሊሰረዝ ይችላል።</translation>
 <translation id="4436201444922652535">አገናኞች</translation>
 <translation id="443719869834432257">የክስተት ዓይነት፦ <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">የይለፍ ቃሎትን እና የይለፍ ቁልፎችን ለማስቀመጥ አቅራቦት</translation>
@@ -8355,7 +8351,6 @@
 <translation id="744366959743242014">ውሂብን በመጫን ላይ፣ ይህ ጥቂት ሰከንዶችን ሊወስድ ይችላል።</translation>
 <translation id="7443806024147773267">ወደ የእርስዎ የ Google መለያ በገቡ ቁጥር የእርስዎን የይለፍ ቃላት ይድረሱባቸው</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{ኩኪዎች ዛሬ እንደገና ይታገዳሉ}=1{ኩኪዎች ነገ እንደገና ይታገዳሉ}one{ኩኪዎች እንደገና ታግደዋል እስከ # ቀን ድረስ}other{ኩኪዎች እንደገና ታግደዋል እስከ # ቀናት ድረስ}}</translation>
-<translation id="7446716846072322308">ይህ በ<ph name="SITE_NAME" /> እና ተዛማጅ ጣቢያዎች የተከማቸ <ph name="TOTAL_USAGE" /> ውሂብን ይሰርዛል</translation>
 <translation id="7448430327655618736">መተግበሪያዎችን በራስ-ሰር ጫን</translation>
 <translation id="7448664748118305024">ሁሉንም መስኮቶች በሚዘጉበት ጊዜ በመሳሪያዎ ላይ የተቀመጡ የውሂብ ጣቢያዎችን ይሰርዙ</translation>
 <translation id="7449806939046594699">ድርጅትዎ ይህን ይዘት መቅዳት አግዷል</translation>
@@ -9758,7 +9753,6 @@ nil</translation>
 <translation id="8533670235862049797">የጥንቃቄ አሰሳ በርቷል</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{ትሮቹ በዚህ መሣሪያ ላይ ክፍት እንደሆኑ ይቆያሉ፣ ነገር ግን ቡድኑ ወደ <ph name="EMAIL" /> ከገቡ ሁሉም መሣሪያዎች ይሰረዛል}one{ትሮቹ በዚህ መሣሪያ ላይ ክፍት እንደሆኑ ይቆያሉ፣ ነገር ግን ቡድኑ ወደ <ph name="EMAIL" /> ከገቡ ሁሉም መሣሪያዎች ይሰረዛል}other{ትሮቹ በዚህ መሣሪያ ላይ ክፍት እንደሆኑ ይቆያሉ፣ ነገር ግን ቡድኖቹ ወደ <ph name="EMAIL" /> ከገቡ ሁሉም መሣሪያዎች ይሰረዛሉ}}</translation>
 <translation id="8535005006684281994">የNetscape ሰርቲፊኬት የእድሳት ጊዜ URL</translation>
-<translation id="8536810348276651776">ከአብዛኛዎቹ ጣቢያዎች ዘግተው እንዲወጡ ያደርግዎታል። በGoogle መለያዎ ውስጥ ገብተው ይቆያሉ ስለዚህም የእርስዎ Family Link ቅንብሮች ለChrome ተፈጻሚ ይሆናሉ።</translation>
 <translation id="8536956381488731905">በቁልፍ መጫን ላይ የሚወጣ ድምፅ</translation>
 <translation id="8539727552378197395">አይ (ኤችቲቲፒ ብቻ)</translation>
 <translation id="8540136935098276800">በትክክል የተቀረጸ ዩአርኤል ያስገቡ</translation>

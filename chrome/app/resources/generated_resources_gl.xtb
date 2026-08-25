@@ -354,6 +354,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{Hai 1 marcador e outros elementos gardados só neste dispositivo. Para usalos noutros, gárdaos na túa Conta de Google. Esta acción tamén eliminará todos os duplicados do almacenamento.}other{Hai {BOOKMARK_COUNT} marcadores e outros elementos gardados só neste dispositivo. Para usalos noutros, gárdaos na túa Conta de Google. Esta acción tamén eliminará todos os duplicados do almacenamento.}}</translation>
 <translation id="125220115284141797">Predeterminadas</translation>
 <translation id="1252219782845132919">Ocultar grupo</translation>
+<translation id="1252597096488926946">Deixar de fixar botóns de desprazamento</translation>
 <translation id="1252987234827889034">Produciuse un erro no perfil</translation>
 <translation id="1254034280040157728">Gran Canón</translation>
 <translation id="1254593899333212300">Conexión directa a Internet</translation>
@@ -976,6 +977,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1755601632425835748">Tamaño do texto</translation>
 <translation id="1756963401828337401">Escolle unha pantalla para facer a captura</translation>
 <translation id="17584710573359123">Ver en Chrome Web Store</translation>
+<translation id="176013700366797492">Visita Google Wallet para controlar as <ph name="BEGIN_LINK1" />preferencias de datos e privacidade<ph name="END_LINK1" /> ou xestionar os <ph name="BEGIN_LINK2" />métodos de pago<ph name="END_LINK2" /> e os <ph name="BEGIN_LINK3" />pases<ph name="END_LINK3" /> (por exemplo, as tarxetas de fidelidade e os documentos de identidade)</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> remapeouse a <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Contas de <ph name="NAME" /></translation>
 <translation id="176272781006230109">suxestións de compras</translation>
@@ -1814,7 +1816,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2413009156320833859">Personaliza o navegador máis con extensións de <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Retomar a navegación de <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Escuro</translation>
-<translation id="2415117815770324983">Pecha a túa sesión na maioría dos sitios. Seguirás tendo a sesión iniciada na túa Conta de Google.</translation>
 <translation id="2416435988630956212">Teclas de función do teclado</translation>
 <translation id="2419131370336513030">Ver aplicacións instaladas</translation>
 <translation id="2419706071571366386">Por cuestións de seguranza, pecha sesión cando non esteas utilizando o ordenador.</translation>
@@ -1958,6 +1959,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2508747373511408451">Para poder usar a aplicación <ph name="APPLICATION_NAME" />, cómpre que Google Drive estea dispoñible.</translation>
 <translation id="2509495747794740764">A escala debe ser un número comprendido entre o 10 e o 200.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (seleccionado)</translation>
 <translation id="2513904627589542105">Proba automática</translation>
 <translation id="251425554130284360">Estás vendo as páxinas que visitaches e as buscas suxeridas para que poidas volver rapidamente á túa actividade máis recente.
@@ -1965,7 +1967,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <ph name="BREAK" />
 Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións en Personalizar Chrome.</translation>
 <translation id="2514465118223423406">Cando se conecte un rato</translation>
-<translation id="2514938842036917377">Ao realizar esta acción, eliminaranse os datos (<ph name="TOTAL_USAGE" />) que almacenase <ph name="SITE_NAME" />, os sitios relacionados e as aplicacións instaladas</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Confirma o teu nome de usuario</translation>
 <translation id="2517472476991765520">Buscar</translation>
@@ -3648,7 +3649,6 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3776508619697147021">Os sitios poden pedirche permiso para descargar automaticamente varios ficheiros</translation>
 <translation id="3776796446459804932">Esta extensión infrinxe a política de Chrome Web Store.</translation>
 <translation id="3777483481409781352">Non se puido activar o dispositivo móbil</translation>
-<translation id="3777796259512476958">Pecharase a túa sesión na maioría dos sitios</translation>
 <translation id="3778208826288864398">A chave de seguranza bloqueouse porque se introduciu o PIN demasiadas veces. Deberás restablecela.</translation>
 <translation id="3778740492972734840">&amp;Ferramentas para programadores</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{un historial de navegación de # sitio}other{un historial de navegación de # sitios}}</translation>
@@ -4509,7 +4509,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4432621511648257259">O contrasinal non é correcto</translation>
 <translation id="4434611816075088065">Agora mesmo non hai nada que precise a túa atención</translation>
 <translation id="4435020454241191356">Engade un nome ou etiqueta ao teu perfil</translation>
-<translation id="443503224864902151">Pecharase sesión na maioría dos sitios, pero seguirás tendo a sesión iniciada na túa Conta de Google. Por este motivo poden eliminarse os datos sincronizados.</translation>
 <translation id="4436201444922652535">Ligazóns</translation>
 <translation id="443719869834432257">Tipo de evento: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Ofrecer gardar contrasinais e claves de acceso</translation>
@@ -5001,6 +5000,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4831226137013573603">silenciar o micrófono</translation>
 <translation id="483262387981411190">Pór en pausa ou retomar o control facial</translation>
 <translation id="4833683849865011483">Atopouse 1 impresora no servidor de impresión</translation>
+<translation id="4834388789911023644">Escribir unha recensión</translation>
 <translation id="4835598628985424375">Facer o xesto de bicar</translation>
 <translation id="4835677468087803981">Ocultar o PIN</translation>
 <translation id="4836504898754963407">Xestionar impresións dixitais</translation>
@@ -8346,7 +8346,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="744366959743242014">Cargando datos. Este proceso pode tardar uns segundos.</translation>
 <translation id="7443806024147773267">Accede aos teus contrasinais sempre que teñas a sesión iniciada na túa Conta de Google</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{As cookies volveranse bloquear hoxe}=1{As cookies volveranse bloquear mañá}other{Faltan # días para que se volvan bloquear as cookies}}</translation>
-<translation id="7446716846072322308">Ao realizar esta acción, eliminaranse os datos (<ph name="TOTAL_USAGE" />) que almacenase <ph name="SITE_NAME" /> e os sitios relacionados</translation>
 <translation id="7448430327655618736">Instala aplicacións automaticamente</translation>
 <translation id="7448664748118305024">Eliminar os datos que os sitios gardaron no teu dispositivo cando peches todas as ventás</translation>
 <translation id="7449806939046594699">A túa organización bloqueou a opción de copiar este contido</translation>
@@ -8560,6 +8559,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7625823789272218216">Pestana nova á esquerda</translation>
 <translation id="762730429396410864">Define manualmente o nivel de rendemento da CPU que se lles comunicará aos sitios web</translation>
 <translation id="7627749368210392160">Os sitios poden usar esta función para acceder a outros dispositivos da túa rede local</translation>
+<translation id="7628068697012244394">Escribir unha recensión</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), grao <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Seleccionar unha acción para cada tecla</translation>
 <translation id="7629206210984165492">Apagado</translation>
@@ -8986,6 +8986,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7949038991703929816">Produciuse un erro ao cargar o historial. Comproba que os ficheiros conteñan rexistros de actualizador válidos.</translation>
 <translation id="7950629216186736592">Razón: LBS só admite os URL http://, https:// e file://.</translation>
 <translation id="7950814699499457511">Activada • Esta extensión non ten publicada ningunha práctica de privacidade (como, por exemplo, o modo en que recompila e usa os datos)</translation>
+<translation id="7951159420392892566">Deixar de fixar botóns de desprazamento</translation>
 <translation id="795130320946928025">Desactivar tarxeta virtual</translation>
 <translation id="7952708427581814389">Os sitios poden pedirche permiso para acceder ao texto e ás imaxes do portapapeis</translation>
 <translation id="7953236668995583915">Volve cargar esta páxina para aplicar a configuración actualizada neste sitio</translation>
@@ -9744,7 +9745,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8533670235862049797">A opción Navegación segura está activada</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{As pestanas permanecerán abertas neste dispositivo, pero o grupo eliminarase de todos os dispositivos nos que teñas a sesión iniciada en <ph name="EMAIL" />}other{As pestanas permanecerán abertas neste dispositivo, pero os grupos eliminaranse de todos os dispositivos nos que teñas a sesión iniciada en <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">URL de renovación do certificado de Netscape</translation>
-<translation id="8536810348276651776">Pecha a túa sesión na maioría dos sitios. Seguirás tendo a sesión iniciada na túa Conta de Google para que se aplique a configuración de Family Link para Chrome.</translation>
 <translation id="8536956381488731905">Reproducir son ao premer as teclas</translation>
 <translation id="8539727552378197395">Non (HttpOnly)</translation>
 <translation id="8540136935098276800">Pon un URL que teña un formato correcto</translation>

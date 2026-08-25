@@ -1815,7 +1815,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2413009156320833859">Dodatno prilagodite svoj preglednik pomoću proširenja iz <ph name="BEGIN_LINK1" />Chrome web-trgovine<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Nastavite pregledavati za modul <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Tamno</translation>
-<translation id="2415117815770324983">Odjavit ćete se s većine web-lokacija. Ostat ćete prijavljeni na Google račun.</translation>
 <translation id="2416435988630956212">Funkcijske tipke na tipkovnici</translation>
 <translation id="2419131370336513030">Pregled instaliranih aplikacija</translation>
 <translation id="2419706071571366386">Iz sigurnosnih razloga odjavite se kad ne upotrebljavate računalo.</translation>
@@ -1966,7 +1965,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
         <ph name="BREAK" />
         Postavkama možete upravljati putem izbornika kartice ili možete vidjeti više opcija u odjeljku Prilagodba Chromea.</translation>
 <translation id="2514465118223423406">Kad je povezan miš</translation>
-<translation id="2514938842036917377">Izbrisat će se <ph name="TOTAL_USAGE" /> podataka koje su spremile web-lokacija <ph name="SITE_NAME" />, povezane web-lokacije i instalirane aplikacije</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Potvrdite svoje korisničko ime</translation>
 <translation id="2517472476991765520">Traži</translation>
@@ -3645,7 +3643,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3776508619697147021">Web-lokacije mogu tražiti dopuštenje za automatsko preuzimanje više datoteka</translation>
 <translation id="3776796446459804932">To proširenje krši pravila Chrome web-trgovine.</translation>
 <translation id="3777483481409781352">Nije uspjela aktivacija mobilnog uređaja</translation>
-<translation id="3777796259512476958">Odjavit ćete se s većine web-lokacija</translation>
 <translation id="3778208826288864398">Sigurnosni je ključ zaključan jer je previše puta unesen pogrešan PIN. Morat ćete vratiti sigurnosni ključ na zadano.</translation>
 <translation id="3778740492972734840">&amp;Alati za razvojne programere</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{vaša povijest pregledavanja # web-lokacije}one{vaša povijest pregledavanja # web-lokacije}few{vaša povijest pregledavanja # web-lokacije}other{vaša povijest pregledavanja # web-lokacija}}</translation>
@@ -4506,7 +4503,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4432621511648257259">Zaporka nije točna</translation>
 <translation id="4434611816075088065">Trenutačno ni na što drugo ne trebate obratiti pažnju</translation>
 <translation id="4435020454241191356">Dodajte naziv ili oznaku za svoj profil</translation>
-<translation id="443503224864902151">Odjavit ćete se s većine web-lokacija. Ostat ćete prijavljeni na Google račun kako bi se sinkronizirani podaci mogli izbrisati.</translation>
 <translation id="4436201444922652535">Veze</translation>
 <translation id="443719869834432257">Vrsta događaja: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Ponudi spremanje zaporki i pristupnih ključeva</translation>
@@ -8346,7 +8342,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="744366959743242014">Učitavaju se podaci. To može potrajati nekoliko sekundi.</translation>
 <translation id="7443806024147773267">Pristupite svojim zaporkama kad god ste prijavljeni u svoj Google račun</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Kolačići će se danas ponovno blokirati}=1{Kolačići će se sutra ponovno blokirati}one{Kolačići će se ponovo blokirati za # dan}few{Kolačići će se ponovo blokirati za # dana}other{Kolačići će se ponovo blokirati za # dana}}</translation>
-<translation id="7446716846072322308">Izbrisat će se <ph name="TOTAL_USAGE" /> podataka koje su spremile web-lokacija <ph name="SITE_NAME" /> i povezane web-lokacije</translation>
 <translation id="7448430327655618736">Automatsko instaliranje aplikacija</translation>
 <translation id="7448664748118305024">Brisanje podataka koje su web-lokacije spremile na vaš uređaj kad zatvorite sve prozore</translation>
 <translation id="7449806939046594699">Vaša je organizacija blokirala kopiranje ovog sadržaja</translation>
@@ -9744,7 +9739,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8533670235862049797">Uključeno je Sigurno pregledavanje</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Kartice će ostati otvorene na ovom uređaju, ali će se grupa izbrisati sa svih uređaja na kojima ste prijavljeni na <ph name="EMAIL" />}one{Kartice će ostati otvorene na ovom uređaju, ali će se grupe izbrisati sa svih uređaja na kojima ste prijavljeni na <ph name="EMAIL" />}few{Kartice će ostati otvorene na ovom uređaju, ali će se grupe izbrisati sa svih uređaja na kojima ste prijavljeni na <ph name="EMAIL" />}other{Kartice će ostati otvorene na ovom uređaju, ali će se grupe izbrisati sa svih uređaja na kojima ste prijavljeni na <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">URL za obnavljanje Netscape certifikata</translation>
-<translation id="8536810348276651776">Odjavit ćete se s većine web-lokacija. Ostat ćete prijavljeni na Google račun, tako da će se primjenjivati postavke Family Linka za Chrome.</translation>
 <translation id="8536956381488731905">Zvuk pritiska tipke</translation>
 <translation id="8539727552378197395">Ne (samo http)</translation>
 <translation id="8540136935098276800">Unesite ispravno oblikovan URL</translation>

@@ -354,6 +354,7 @@
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{1 個書籤和其他項目只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。這也會清除任何重複項目。}other{{BOOKMARK_COUNT} 個書籤和其他項目只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。這也會清除任何重複項目。}}</translation>
 <translation id="125220115284141797">預設</translation>
 <translation id="1252219782845132919">隱藏群組</translation>
+<translation id="1252597096488926946">取消固定捲動按鈕</translation>
 <translation id="1252987234827889034">設定檔發生錯誤</translation>
 <translation id="1254034280040157728">大峽谷</translation>
 <translation id="1254593899333212300">直接連線到互聯網</translation>
@@ -984,6 +985,7 @@
 <translation id="1755601632425835748">文字大小</translation>
 <translation id="1756963401828337401">選擇要擷取的螢幕</translation>
 <translation id="17584710573359123">在「Chrome 網上應用程式商店」上查看</translation>
+<translation id="176013700366797492">前往「Google 錢包」控制<ph name="BEGIN_LINK1" />資料和私隱偏好設定<ph name="END_LINK1" />，或管理<ph name="BEGIN_LINK2" />付款方法<ph name="END_LINK2" />和<ph name="BEGIN_LINK3" />票卡<ph name="END_LINK3" /> (例如會員卡和 ID)</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" />已經重新對應去「<ph name="REMAPPING_OPTION" />」。</translation>
 <translation id="1761845175367251960"><ph name="NAME" />的帳戶</translation>
 <translation id="176272781006230109">購物建議</translation>
@@ -1826,7 +1828,6 @@
 <translation id="2413009156320833859">如要進一步自訂瀏覽器，可以使用「<ph name="BEGIN_LINK1" />Chrome 網上應用程式商店<ph name="END_LINK1" />」中的擴充程式</translation>
 <translation id="2414159296888870200">繼續瀏覽「<ph name="MODULE_TITLE" />」</translation>
 <translation id="2414886740292270097">灰暗</translation>
-<translation id="2415117815770324983">刪除 Cookie 後，大多數網站都會將你登出；但 Google 帳戶會保持登入狀態。</translation>
 <translation id="2416435988630956212">鍵盤功能鍵</translation>
 <translation id="2419131370336513030">查看已安裝的應用程式</translation>
 <translation id="2419706071571366386">為安全起見，當您未使用電腦時，請登出帳戶。</translation>
@@ -1970,6 +1971,7 @@
 <translation id="2508747373511408451">需要可存取「Google 雲端硬碟」才能使用「<ph name="APPLICATION_NAME" />」應用程式。</translation>
 <translation id="2509495747794740764">縮放比例必須介乎 10 和 200 之間的數字。</translation>
 <translation id="2509566264613697683">8 倍</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />：<ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (已選取)</translation>
 <translation id="2513904627589542105">自我測試</translation>
 <translation id="251425554130284360">目前顯示的是你曾瀏覽的網頁和建議搜尋項目，可協助你輕鬆繼續最近的活動。
@@ -1977,7 +1979,6 @@
         <ph name="BREAK" />
         你可透過資訊卡選單管理設定，或前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="2514465118223423406">連接滑鼠後</translation>
-<translation id="2514938842036917377">此操作會刪除 <ph name="SITE_NAME" /> 所儲存的資料 (共 <ph name="TOTAL_USAGE" />)、相關網站及所安裝的應用程式</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">確認您的使用者名稱</translation>
 <translation id="2517472476991765520">掃瞄</translation>
@@ -3655,7 +3656,6 @@
 <translation id="3776508619697147021">網站可要求自動下載多個檔案</translation>
 <translation id="3776796446459804932">這個擴充功能違反了 Chrome 網上應用程式商店政策。</translation>
 <translation id="3777483481409781352">無法啟用流動裝置</translation>
-<translation id="3777796259512476958">您會從大部分網站登出</translation>
 <translation id="3778208826288864398">由於您輸入太多次錯誤的 PIN，因此安全密鑰已被鎖定。您需要重設安全密鑰。</translation>
 <translation id="3778740492972734840">開發人員工具(&amp;D)</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{你在 # 個網站的瀏覽記錄}other{你在 # 個網站的瀏覽記錄}}</translation>
@@ -4516,7 +4516,6 @@
 <translation id="4432621511648257259">密碼不正確</translation>
 <translation id="4434611816075088065">目前沒有需要處理的事項</translation>
 <translation id="4435020454241191356">為設定檔加上名稱或標籤</translation>
-<translation id="443503224864902151">你會登出大多數網站，但會保持登入 Google 帳戶，以便刪除已同步的資料。</translation>
 <translation id="4436201444922652535">連結</translation>
 <translation id="443719869834432257">活動類型：<ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">提示儲存密碼和密鑰</translation>
@@ -5007,6 +5006,7 @@
 <translation id="4831226137013573603">將麥克風設定為靜音</translation>
 <translation id="483262387981411190">暫停或繼續使用面部控制功能</translation>
 <translation id="4833683849865011483">在列印伺服器中找到 1 部打印機</translation>
+<translation id="4834388789911023644">撰寫評論</translation>
 <translation id="4835598628985424375">嘟嘴</translation>
 <translation id="4835677468087803981">隱藏 PIN</translation>
 <translation id="4836504898754963407">管理指紋</translation>
@@ -8351,7 +8351,6 @@
 <translation id="744366959743242014">正在載入資料，最多可能需時幾秒才能完成。</translation>
 <translation id="7443806024147773267">系統會在您每次登入 Google 帳戶時都會存取密碼</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{系統將於今天再次封鎖 Cookie}=1{系統將於明天再次封鎖 Cookie}other{系統將於 # 天後再次封鎖 Cookie}}</translation>
-<translation id="7446716846072322308">此操作會刪除 <ph name="SITE_NAME" /> 所儲存的資料 (共 <ph name="TOTAL_USAGE" />) 及相關網站</translation>
 <translation id="7448430327655618736">自動安裝應用程式</translation>
 <translation id="7448664748118305024">在所有視窗關閉後刪除網站儲存至裝置的資料</translation>
 <translation id="7449806939046594699">你的機構禁止複製此內容</translation>
@@ -8565,6 +8564,7 @@
 <translation id="7625823789272218216">新分頁位於左側</translation>
 <translation id="762730429396410864">手動設定向網站報告的 CPU 效能層級</translation>
 <translation id="7627749368210392160">網站可使用此功能存取區域網絡上的其他裝置</translation>
+<translation id="7628068697012244394">撰寫評論</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />)，第 <ph name="GRADE" /> 級</translation>
 <translation id="762917478230183172">選取各個按鍵的操作</translation>
 <translation id="7629206210984165492">柔和</translation>
@@ -8989,6 +8989,7 @@
 <translation id="7949038991703929816">無法載入記錄，請確保檔案包含有效的更新工具記錄。</translation>
 <translation id="7950629216186736592">原因：LBS 只支援 http://、https:// 和 file:// 網址。</translation>
 <translation id="7950814699499457511">已開啟 • 此擴充程式尚未發佈私隱守則，例如擴充程式如何收集和使用資料</translation>
+<translation id="7951159420392892566">取消固定捲動按鈕</translation>
 <translation id="795130320946928025">停用虛擬卡</translation>
 <translation id="7952708427581814389">網站可要求查看剪貼簿上的文字和圖片</translation>
 <translation id="7953236668995583915">重新載入此頁面，即可將已更新的設定套用至此網站</translation>
@@ -9747,7 +9748,6 @@
 <translation id="8533670235862049797">「安全瀏覽」功能已開啟</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{分頁會在此裝置上保持開啟，但該群組會從所有已登入 <ph name="EMAIL" /> 的裝置刪除}other{分頁會在此裝置上保持開啟，但該群組會從所有已登入 <ph name="EMAIL" /> 的裝置刪除}}</translation>
 <translation id="8535005006684281994">Netscape 憑證更新網址</translation>
-<translation id="8536810348276651776">您會登出大多數網站，但會保持登入 Google 帳戶，以便系統套用 Family Link 的設定。</translation>
 <translation id="8536956381488731905">按鍵音效</translation>
 <translation id="8539727552378197395">否 (限 Http)</translation>
 <translation id="8540136935098276800">請輸入正確格式的網址</translation>

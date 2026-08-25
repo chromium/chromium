@@ -695,6 +695,7 @@
 <translation id="325717987950204592">輕按 [私隱權和安全性]</translation>
 <translation id="3259451381796379533">此帳戶無法使用 Gemini。請以其他 Google 帳戶登入。</translation>
 <translation id="3265736395246760288">在任何已同步的裝置上更快登入。</translation>
+<translation id="3268166994745151153">目前的進度將不會儲存</translation>
 <translation id="3272527697863656322">取消</translation>
 <translation id="3272955648592358996">你的資料有助改善 Google AI</translation>
 <translation id="3273510436356991673">自訂主畫面</translation>
@@ -1098,6 +1099,7 @@
 <translation id="4652817563047461855">確保密碼安全、檢查密碼是否被盜用，並提供可確保網上安全的建議。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">開啟分頁分享功能</translation>
 <translation id="4658335131052370646">儲存</translation>
+<translation id="465947902531722727">切換設定檔</translation>
 <translation id="466307903888586355">你的機構不允許儲存檔案</translation>
 <translation id="4668929960204016307">，</translation>
 <translation id="4669618761237477717">你的機構要求你私密瀏覽內容。在無痕模式下，系統不會同步分頁群組。
@@ -1208,6 +1210,7 @@
 <translation id="4979397965658815378">登入 Google 帳戶後，您即可在任何裝置上存取自己的書籤、密碼、記錄和其他設定</translation>
 <translation id="4985921635659180565">檔案預定刪除後，便無法取消操作。</translation>
 <translation id="498624032394115435">任何擁有連結的人均可編輯所有分頁。</translation>
+<translation id="498768198683310172">開始使用 Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />，<ph name="EMAIL" />，該帳戶由你的機構管理。</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />，<ph name="EMAIL" />。<ph name="AI_TIER" /></translation>
 <translation id="4992255726304765516">分頁群組顏色係<ph name="COLOR" /></translation>
@@ -2151,6 +2154,7 @@
 <translation id="8011489434346330032">網絡檢查工具</translation>
 <translation id="8014007212279733632">驗證身分以自動填入敏感資料</translation>
 <translation id="8015826420689927262">刪除附件</translation>
+<translation id="8016869623424294549">即將切換設定檔</translation>
 <translation id="8017015647846870183">「Google 密碼管理工具」上的資料，包括密碼和密鑰</translation>
 <translation id="802154636333426148">下載失敗</translation>
 <translation id="8023170444051056234">你將立即無法再存取「<ph name="GROUP_NAME" />」分頁群組，此分頁群組亦會從你的所有裝置刪除</translation>

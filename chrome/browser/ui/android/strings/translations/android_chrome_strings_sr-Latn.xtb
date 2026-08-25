@@ -186,6 +186,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="1778457539567749232">Označi kao nepročitano</translation>
 <translation id="1779766957982586368">Zatvaranje prozora</translation>
 <translation id="1780023393214832643">Lozinke su sačuvane na nalogu <ph name="USERNAME" /></translation>
+<translation id="1789543093145556097">Uvek sakrij</translation>
 <translation id="1791662854739702043">Instalirano</translation>
 <translation id="1792959175193046959">Promenite podrazumevanu lokaciju za preuzimanje u bilo kom trenutku</translation>
 <translation id="1796666869097395659">Umanjite karticu da biste se kasnije vratili na nju</translation>
@@ -522,6 +523,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3075397426753215787">Izaberite uređaj.</translation>
 <translation id="3080375898390966733">Pretraži karticu uz Google objektiv</translation>
 <translation id="3080525922482950719">Možete da sačuvate stranice da biste ih čitali kasnije ili oflajn</translation>
+<translation id="3082989400996696487">Prikazuj samo na stranici nove kartice</translation>
 <translation id="3087734570205094154">Dno</translation>
 <translation id="3091010850649238832">Prikaži sadržaj privremene memorije</translation>
 <translation id="3098745985164956033">Neke slike se šalju Google-u radi poboljšanja opisa</translation>
@@ -768,6 +770,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="4164642020717536140">Brzo i bezbedno pregledanje veba</translation>
 <translation id="4165077084524712774">Još alatki</translation>
 <translation id="4170577491341606575">Preuzimaju se stvari\u2026</translation>
+<translation id="4172051516777682613">Uvek prikaži</translation>
 <translation id="4176838562184310003">Chrome se nije pravilno isključio i može da proba da vrati izgubljene prozore i kartice. Neki prozori mogu da budu umanjeni pri vraćanju.</translation>
 <translation id="4177222230309051052">Preuzmite sve obeleživače</translation>
 <translation id="417865198503699526">Potražite podešavanje</translation>
@@ -886,7 +889,6 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="4599585406846903742">Prikaz na jednoj stranici</translation>
 <translation id="4601095002996233687">Detaljna skeniranja sumnjivih preuzimanja.</translation>
 <translation id="4606559747793337066">Kada sajt ili aplikacija zatraži da privatno predučitava linkove na stranici, Chrome šifruje i predučitava stranice preko Google servera bez kolačića. Na taj način se vaš identitet krije od predučitanog sajta.</translation>
-<translation id="4616150815774728855">Otvori <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619615317237390068">Kartice sa drugih uređaja</translation>
 <translation id="4624065194742029982">Chrome režim bez arhiviranja</translation>
 <translation id="4634124774493850572">Koristi lozinku</translation>
@@ -1853,6 +1855,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="834313815369870491">Nikad ne prevodi sajtove</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, višestruko izabrana zakačena kartica bez arhiviranja za snimanje</translation>
 <translation id="8348430946834215779">Koristite HTTPS kad god je to moguće i dobijajte upozorenje pre učitavanja sajtova koji ga ne podržavaju</translation>
+<translation id="8349305172487531364">Traka sa obeleživačima</translation>
 <translation id="8354977102499939946">Brzo pretražujte pomoću glasa. Da biste izmenili ovu prečicu, idite u Podešavanja.</translation>
 <translation id="8361737703487394103">Prelazak na određenu karticu (1–8)</translation>
 <translation id="8368001212524806591">Prati cenu</translation>

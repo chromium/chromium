@@ -154,7 +154,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2620436844016719705">System</translation>
 <translation id="2629740064077610681">Organisationen kan se och hantera webbinformation, till exempel bokmärken, historik och lösenord. Den kan inte se webbinformation i andra Chromium-profiler</translation>
 <translation id="2635452620547538388">Verifiera din identitet för att använda och spara Chromium-data i ditt konto, <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="2636783171884046627">Använd kortkommandot för att lämna eller återgå till Gemini i Chromium.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{Avancerat skydd kräver att du startar om Chromium så att en uppdatering tillämpas}=1{Avancerat skydd kräver att du startar om Chromium så att en uppdatering tillämpas. Inkognitofönstret öppnas inte igen.}other{Avancerat skydd kräver att du startar om Chromium så att en uppdatering tillämpas. De # inkognitofönstren öppnas inte igen.}}</translation>
 <translation id="263863604136125912">Starta Chromium</translation>
 <translation id="2648074677641340862">Ett operativsystemsfel inträffade under installationen. Ladda ned Chromium igen.</translation>

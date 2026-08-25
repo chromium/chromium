@@ -186,6 +186,7 @@
 <translation id="1778457539567749232">વાંચ્યા વગરનું તરીકે માર્ક કરો</translation>
 <translation id="1779766957982586368">વિન્ડો બંધ કરો</translation>
 <translation id="1780023393214832643">પાસવર્ડ <ph name="USERNAME" />માં સાચવ્યા</translation>
+<translation id="1789543093145556097">હંમેશાં છુપાવો</translation>
 <translation id="1791662854739702043">ઇન્સ્ટોલ કરેલું</translation>
 <translation id="1792959175193046959">ડિફૉલ્ટ ડાઉનલોડ સ્થાનને કોઈપણ સમયે બદલો</translation>
 <translation id="1796666869097395659">પછીથી ટૅબ પર પાછા ફરવા માટે તેને નાનું કરો</translation>
@@ -522,6 +523,7 @@
 <translation id="3075397426753215787">કોઈ ડિવાઇસ પસંદ કરો.</translation>
 <translation id="3080375898390966733">Google Lens વડે ટૅબ શોધો</translation>
 <translation id="3080525922482950719">તમે પછીથી અથવા ઑફલાઇન વાંચવા માટે પેજ સાચવી શકો છો</translation>
+<translation id="3082989400996696487">માત્ર નવા ટૅબ પેજ પર બતાવો</translation>
 <translation id="3087734570205094154">તળિયું</translation>
 <translation id="3091010850649238832">ક્લિપબોર્ડ પરના કન્ટેન્ટ બતાવો</translation>
 <translation id="3098745985164956033">તમારા માટે વર્ણનોને બહેતર બનાવવા માટે કેટલીક છબીઓ Googleને મોકલવામાં આવે છે</translation>
@@ -767,6 +769,7 @@
 <translation id="4164642020717536140">ઝડપી અને સુરક્ષિત વેબ બ્રાઉઝિંગ</translation>
 <translation id="4165077084524712774">વધુ ટૂલ</translation>
 <translation id="4170577491341606575">તમારું કન્ટેન્ટ મેળવી રહ્યાં છીએ\u2026</translation>
+<translation id="4172051516777682613">હંમેશા બતાવો</translation>
 <translation id="4176838562184310003">Chrome યોગ્ય રીતે શટ ડાઉન થયું નથી અને તમારી ગુમાવેલી વિન્ડો અને ટૅબ રિસ્ટોર કરવાનો પ્રયાસ કરી શકે છે. રિસ્ટોર કરતી વખતે કેટલીક વિન્ડો નાની કરવામાં આવી હોઈ શકે છે.</translation>
 <translation id="4177222230309051052">તમારા બધા બુકમાર્ક મેળવો</translation>
 <translation id="417865198503699526">સેટિંગ શોધો</translation>
@@ -885,7 +888,6 @@
 <translation id="4599585406846903742">સિંગલ પેજ વ્યૂ</translation>
 <translation id="4601095002996233687">શંકાસ્પદ ડાઉનલોડ માટે સવિસ્તર સ્કૅનની સુવિધા.</translation>
 <translation id="4606559747793337066">જ્યારે કોઈ સાઇટ કે ઍપ દ્વારા તેમના પેજ પર લિંકને ખાનગી રીતે પહેલેથી લોડ કરવાનું કહેવામાં આવે, ત્યારે Chrome, કુકી વિના Googleના સર્વર મારફતે પેજને એન્ક્રિપ્ટ અને પહેલેથી લોડ કરે છે. આ પહેલેથી લોડ કરેલી સાઇટથી તમારી ઓળખ છુપાવે છે.</translation>
-<translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> ખોલો</translation>
 <translation id="4619615317237390068">અન્ય ઉપકરણોમાંથી ટૅબ્સ</translation>
 <translation id="4624065194742029982">Chrome છૂપો મોડ</translation>
 <translation id="4634124774493850572">પાસવર્ડનો ઉપયોગ કરો</translation>
@@ -1851,6 +1853,7 @@
 <translation id="834313815369870491">સાઇટનો ક્યારેય અનુવાદ કરશો નહીં</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, એકથી વધુ પસંદ કરેલું પિન કરેલું રેકોર્ડ કરતું છૂપું ટૅબ</translation>
 <translation id="8348430946834215779">જ્યારે પણ શક્ય હોય ત્યારે HTTPSનો ઉપયોગ કરો અને તેને સપોર્ટ કરતી ન હોય તેવી સાઇટને લોડ કરતા પહેલાં ચેતવણી મેળવો</translation>
+<translation id="8349305172487531364">બુકમાર્ક બાર</translation>
 <translation id="8354977102499939946">તમારા અવાજ વડે ઝડપથી શોધો. આ શૉર્ટકટમાં ફેરફાર કરવા માટે, સેટિંગ પર જાઓ.</translation>
 <translation id="8361737703487394103">સીધા કોઈ ચોક્કસ ટૅબ પર જાઓ (1–8)</translation>
 <translation id="8368001212524806591">કિંમત ટ્રૅક કરો</translation>

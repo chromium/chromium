@@ -1814,7 +1814,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2413009156320833859">Personalize ainda mais o seu navegador com extensões da <ph name="BEGIN_LINK1" />Web Store do Chrome<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Retomar navegação para <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Escuro</translation>
-<translation id="2415117815770324983">A sua sessão é terminada na maioria dos sites. Mantém a sessão iniciada na sua Conta Google.</translation>
 <translation id="2416435988630956212">Teclas de função do teclado</translation>
 <translation id="2419131370336513030">Ver apps instaladas</translation>
 <translation id="2419706071571366386">Por motivos de segurança, termine a sessão quando não estiver a utilizar o computador.</translation>
@@ -1965,7 +1964,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
         <ph name="BREAK" />
         Pode gerir definições no menu do cartão ou ver mais opções em Personalizar o Chrome.</translation>
 <translation id="2514465118223423406">Quando um rato estiver ligado</translation>
-<translation id="2514938842036917377">Esta ação vai eliminar <ph name="TOTAL_USAGE" /> de dados armazenados por <ph name="SITE_NAME" />, sites relacionados e apps instaladas</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Confirme o seu nome de utilizador</translation>
 <translation id="2517472476991765520">Digitalizar</translation>
@@ -3646,7 +3644,6 @@ Quer pará-lo?</translation>
 <translation id="3776508619697147021">Os sites podem solicitar a transferência automática de vários ficheiros</translation>
 <translation id="3776796446459804932">Esta extensão viola a política da Web Store do Chrome.</translation>
 <translation id="3777483481409781352">Não foi possível ativar o dispositivo móvel</translation>
-<translation id="3777796259512476958">A sua sessão é terminada na maioria dos sites</translation>
 <translation id="3778208826288864398">A chave de segurança está bloqueada porque foi introduzido o PIN incorreto demasiadas vezes. Tem de repor a chave de segurança.</translation>
 <translation id="3778740492972734840">Ferramentas &amp;do programador</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{o seu histórico de navegação de # site}other{o seu histórico de navegação de # sites}}</translation>
@@ -4507,7 +4504,6 @@ Quer pará-lo?</translation>
 <translation id="4432621511648257259">Palavra-passe incorreta</translation>
 <translation id="4434611816075088065">Neste momento, nada mais precisa da sua atenção</translation>
 <translation id="4435020454241191356">Adicione um nome ou uma etiqueta ao seu perfil</translation>
-<translation id="443503224864902151">A sua sessão é terminada na maioria dos sites. Continua com sessão iniciada na sua Conta Google para poder eliminar os dados sincronizados.</translation>
 <translation id="4436201444922652535">Links</translation>
 <translation id="443719869834432257">Tipo de evento: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Propor guardar palavras-passe e chaves de acesso</translation>
@@ -8349,7 +8345,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="744366959743242014">A carregar dados, esta ação pode demorar alguns segundos.</translation>
 <translation id="7443806024147773267">Aceda às suas palavras-passe sempre que tiver sessão iniciada na sua Conta Google.</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Os cookies vão ser bloqueados novamente hoje}=1{Os cookies vão ser bloqueados novamente amanhã}other{# dias até os cookies serem bloqueados novamente}}</translation>
-<translation id="7446716846072322308">Esta ação vai eliminar <ph name="TOTAL_USAGE" /> de dados armazenados por <ph name="SITE_NAME" /> e sites relacionados</translation>
 <translation id="7448430327655618736">Instalar aplicações automaticamente</translation>
 <translation id="7448664748118305024">Eliminar dados que os sites guardaram no seu dispositivo quando fecha todas as janelas</translation>
 <translation id="7449806939046594699">A sua organização bloqueou a cópia deste conteúdo</translation>
@@ -9747,7 +9742,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8533670235862049797">A Navegação segura está ativada.</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Os separadores vão permanecer abertos neste dispositivo, mas o grupo vai ser eliminado de todos os dispositivos com sessão iniciada com o endereço <ph name="EMAIL" />}other{Os separadores vão permanecer abertos neste dispositivo, mas os grupo vão ser eliminados de todos os dispositivos com sessão iniciada com o endereço <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">URL de renovação de certificado Netscape</translation>
-<translation id="8536810348276651776">A sua sessão é terminada na maioria dos sites. Continua com sessão iniciada na sua Conta Google para que se apliquem as definições do Family Link para o Chrome.</translation>
 <translation id="8536956381488731905">Som ao premir as teclas</translation>
 <translation id="8539727552378197395">Não (HttpOnly)</translation>
 <translation id="8540136935098276800">Introduza um URL formatado corretamente.</translation>

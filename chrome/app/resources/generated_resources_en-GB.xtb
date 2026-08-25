@@ -1827,7 +1827,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2413009156320833859">Customise your browser even more with extensions from the <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Resume browsing for <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Dark</translation>
-<translation id="2415117815770324983">Signs you out of most sites. You'll stay signed in to your Google Account.</translation>
 <translation id="2416435988630956212">Keyboard function keys</translation>
 <translation id="2419131370336513030">View installed apps</translation>
 <translation id="2419706071571366386">For security, sign out when your computer isn't being used.</translation>
@@ -1978,7 +1977,6 @@ You can manage this account’s settings by installing the Family Link app on yo
         <ph name="BREAK" />
         You can manage settings from the card menu or see more options in Customise Chrome.</translation>
 <translation id="2514465118223423406">When a mouse is connected</translation>
-<translation id="2514938842036917377">This will delete <ph name="TOTAL_USAGE" /> of data stored by <ph name="SITE_NAME" />, related sites and installed apps</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Confirm your username</translation>
 <translation id="2517472476991765520">Scan</translation>
@@ -3658,7 +3656,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3776508619697147021">Sites can ask to automatically download multiple files</translation>
 <translation id="3776796446459804932">This extension violates the Chrome Web Store policy.</translation>
 <translation id="3777483481409781352">Could not activate mobile device</translation>
-<translation id="3777796259512476958">Signs you out of most sites</translation>
 <translation id="3778208826288864398">The security key is locked because the wrong PIN was entered too many times. You’ll need to reset the security key.</translation>
 <translation id="3778740492972734840">&amp;Developer tools</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{your browsing history of # site}other{your browsing history of # sites}}</translation>
@@ -4519,7 +4516,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4432621511648257259">Password incorrect</translation>
 <translation id="4434611816075088065">Nothing else needs your attention at the moment</translation>
 <translation id="4435020454241191356">Add a name or label for your profile</translation>
-<translation id="443503224864902151">Signs you out of most sites. You'll stay signed in to your Google Account so that your synced data can be deleted.</translation>
 <translation id="4436201444922652535">Links</translation>
 <translation id="443719869834432257">Event type: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Offer to save passwords and passkeys</translation>
@@ -8360,7 +8356,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="744366959743242014">Loading data; this may take up to a few seconds.</translation>
 <translation id="7443806024147773267">Access your passwords whenever you're signed in to your Google account</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookies will be blocked again today}=1{Cookies will be blocked again tomorrow}other{# days until cookies are blocked again}}</translation>
-<translation id="7446716846072322308">This will delete <ph name="TOTAL_USAGE" /> of data stored by <ph name="SITE_NAME" /> and related sites</translation>
 <translation id="7448430327655618736">Automatically install apps</translation>
 <translation id="7448664748118305024">Delete data sites that have been saved to your device when you close all windows</translation>
 <translation id="7449806939046594699">Your organisation blocked copying this content</translation>
@@ -9758,7 +9753,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8533670235862049797">Safe Browsing is on</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{The tabs will remain open on this device but the group will be deleted from all devices signed in to <ph name="EMAIL" />}other{The tabs will remain open on this device but the groups will be deleted from all devices signed in to <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">Netscape Certificate Renewal URL</translation>
-<translation id="8536810348276651776">Signs you out of most sites. You'll stay signed in to your Google Account so your Family Link settings for Chrome apply.</translation>
 <translation id="8536956381488731905">Sound on key-press</translation>
 <translation id="8539727552378197395">No (HttpOnly)</translation>
 <translation id="8540136935098276800">Enter a correctly formatted URL</translation>

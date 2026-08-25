@@ -186,6 +186,7 @@
 <translation id="1778457539567749232">እንዳልተነበበ ምልክት አድርግ</translation>
 <translation id="1779766957982586368">መስኮት ዝጋ</translation>
 <translation id="1780023393214832643"><ph name="USERNAME" /> ላይ የተቀመጡ የይለፍ ቃላት</translation>
+<translation id="1789543093145556097">ሁልጊዜ ደብቅ</translation>
 <translation id="1791662854739702043">የተጫነ</translation>
 <translation id="1792959175193046959">በማንኛውም ጊዜ ነባሪውን የማውረጃ ቦታ ይቀይሩ</translation>
 <translation id="1796666869097395659">በኋላ ላይ ወደ እሱ ለመመለስ ትርን ያሳንሱ</translation>
@@ -522,6 +523,7 @@
 <translation id="3075397426753215787">አንድ መሣሪያ ይምረጡ።</translation>
 <translation id="3080375898390966733">ትርን በGoogle ሌንስ ይፈልጉ</translation>
 <translation id="3080525922482950719">በኋላ ላይ ወይም ከመስመር ውጭ ለማንበብ ገጾችን ማስቀመጥ ይችላሉ</translation>
+<translation id="3082989400996696487">በአዲስ የትር ገጽ ላይ ብቻ አሳይ</translation>
 <translation id="3087734570205094154">ግርጌ</translation>
 <translation id="3091010850649238832">የቅንጥብ ሰሌዳ ይዘቶችን አሳይ</translation>
 <translation id="3098745985164956033">ለእርስዎ መግለጫዎችን ለማሻሻል አንዳንድ ምስሎች ወደ Google ይላካሉ</translation>
@@ -768,6 +770,7 @@
 <translation id="4164642020717536140">ፈጣን እና ደኅንነቱ የተጠበቀ የድር አሰሳ</translation>
 <translation id="4165077084524712774">ተጨማሪ መሣሪያዎች</translation>
 <translation id="4170577491341606575">የእርስዎን ነገሮች በማግኘት ላይ\u2026</translation>
+<translation id="4172051516777682613">ሁልጊዜ አሳይ</translation>
 <translation id="4176838562184310003">Chrome በትክክል አልተዘጋም እና የጠፉ መስኮቶችዎን እና ትሮችዎን ወደነበሩበት ለመመለስ መሞከር ይችላል። አንዳንድ መስኮቶች ወደነበሩበት ሲመለሱ ሊቀነሱ ይችላሉ።</translation>
 <translation id="4177222230309051052">ሁሉንም የእርስዎ እልባቶች ያግኙ</translation>
 <translation id="417865198503699526">ቅንብር ይፈልጉ</translation>
@@ -886,7 +889,6 @@
 <translation id="4599585406846903742">ነጠላ ገጽ ዕይታ</translation>
 <translation id="4601095002996233687">ለሚያጠራጥሩ ውርዶች በጥልቀት የሚደረጉ ቅኝቶች።</translation>
 <translation id="4606559747793337066">አንድ ጣቢያ ወይም መተግበሪያ በገፃቸው ላይ አገናኞችን በግል ቅድሚያ ለመጫን ሲጠይቅ Chrome ገፆችን ያመሠጥራል እና ያለ ኩኪዎች በGoogle አገልጋዮች በኩል ቅድሚያ ይጭናቸዋል። ይህ ማንነትዎን ቅድሚያ ከተጫነው ጣቢያ ይደብቃል።</translation>
-<translation id="4616150815774728855"><ph name="WEBAPK_NAME" />ን ይክፈቱ</translation>
 <translation id="4619615317237390068">ከሌሎች መሣሪያዎች የመጡ ትሮች</translation>
 <translation id="4624065194742029982">Chrome ማንነት የማያሳውቅ</translation>
 <translation id="4634124774493850572">የይለፍ ቃል ይጠቀሙ</translation>
@@ -1852,6 +1854,7 @@
 <translation id="834313815369870491">ጣቢያዎችን በጭራሽ አይተርጉሙ</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />፣ ብዙ የተመረጠ ፒን የተደረገ ቅጂ ማንነት የማያሳውቅ ትር</translation>
 <translation id="8348430946834215779">በተቻለ መጠን ኤችቲቲፒኤስ ይጠቀሙ እና እሱን የማይደግፉትን ጣቢያዎች ከመጫንዎ በፊት ማስጠንቀቂያ ያግኙ</translation>
+<translation id="8349305172487531364">የዕልባቶች አሞሌ</translation>
 <translation id="8354977102499939946">በድምጽዎ በፍጥነት ይፈልጉ። ይህን አቋራጭ ለማርትዕ ወደ ቅንብሮች ይሂዱ።</translation>
 <translation id="8361737703487394103">ወደ የተወሰነ ትር ዝለል (1–8)</translation>
 <translation id="8368001212524806591">የዋጋን ዱካ ይከታተሉ</translation>

@@ -1819,7 +1819,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2413009156320833859"><ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" /> kengaytmalari bilan brauzerni oʻzingizga moslang</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" />ni koʻrishda davom etish</translation>
 <translation id="2414886740292270097">Qorong‘i</translation>
-<translation id="2415117815770324983">Bir nechta saytlardagi hisobingizdan chiqasiz. Google hisobingizga kirgan holda qolasiz.</translation>
 <translation id="2416435988630956212">Klaviaturaning funksiya tugmalari</translation>
 <translation id="2419131370336513030">Oʻrnatilgan ilovalarni koʻrsatish</translation>
 <translation id="2419706071571366386">Kompyuterni ishlatmagan paytingizda xavfsizlik yuzasidan hisobingizdan chiqing.</translation>
@@ -1970,7 +1969,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
         <ph name="BREAK" />
         Sozlamalarni kartochka menyusidan boshqarishingiz yoki boshqa sozlamalarni “Chromeni moslash” orqali koʻrishingiz mumkin.</translation>
 <translation id="2514465118223423406">Sichqoncha ulanganda</translation>
-<translation id="2514938842036917377">Bunda <ph name="SITE_NAME" />, aloqador saytlar va oʻrnatilgan ilovalar saqlagan <ph name="TOTAL_USAGE" /> maʼlumotlar oʻchib ketadi</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Foydalanuvchi nomini tasdiqlang</translation>
 <translation id="2517472476991765520">Qidiruv</translation>
@@ -3648,7 +3646,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3776508619697147021">Saytlar birdaniga bir nechta fayl yuklab olishga ruxsat soʻrashi mumkin</translation>
 <translation id="3776796446459804932">Bu kengaytma Chrome internet-do'koni siyosatini buzmoqda.</translation>
 <translation id="3777483481409781352">Mobil tarmoq faollashmadi</translation>
-<translation id="3777796259512476958">Bir nechta saytdagi hisobingizdan chiqasiz</translation>
 <translation id="3778208826288864398">PIN kod koʻp marta xato kiritilganligi uchun elektron kalit qulflandi. Elektron kalit sozlamalarini qayta tiklang.</translation>
 <translation id="3778740492972734840">&amp;Dasturchilar asboblari</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{# ta saytda ochilgan sahifalar tarixi}other{# ta saytda ochilgan sahifalar tarixi}}</translation>
@@ -4509,7 +4506,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4432621511648257259">Parol xato kiritildi</translation>
 <translation id="4434611816075088065">Hozircha hammasi joyida</translation>
 <translation id="4435020454241191356">Profilingizga ism yoki nom kiriting</translation>
-<translation id="443503224864902151">Bir nechta saytdagi hisobingizdan chiqasiz, lekin Google hisobingizdan emas. Sinxronlangan maʼlumotlaringiz saqlanib qoladi.</translation>
 <translation id="4436201444922652535">Havolalar</translation>
 <translation id="443719869834432257">Tadbir turi: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Parollar va kalitlarni saqlashni taklif qilish</translation>
@@ -8348,7 +8344,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="744366959743242014">Maʼlumotlar yuklanmoqda, biroz kuting.</translation>
 <translation id="7443806024147773267">Istalgan qurilmadan Google hisobingizga kirsangiz, barcha parollaringizni doim ishlata olasiz.</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookie fayllar bugun yana bloklanadi}=1{Cookie fayllar ertaga yana bloklanadi}other{Cookie fayllar yana bloklanishiga # kun qoldi}}</translation>
-<translation id="7446716846072322308">Bunda <ph name="SITE_NAME" /> va aloqador saytlar saqlagan <ph name="TOTAL_USAGE" /> maʼlumotlar oʻchib ketadi</translation>
 <translation id="7448430327655618736">Ilovalarni avtomatik ravishda oʻrnatish</translation>
 <translation id="7448664748118305024">Barcha oynalar yopilganda qurilmangizda saqlangan sayt maʼlumotlarini oʻchirib tashlang</translation>
 <translation id="7449806939046594699">Tashkilotingiz ushbu kontentdan nusxa olishni taqiqlagan</translation>
@@ -9746,7 +9741,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8533670235862049797">Saytlarni xavfsiz kezish rejimi yoniq</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Varaqlar bu qurilmada ochiq qoladi, ammo guruh <ph name="EMAIL" /> hisobidan kirilgan barcha qurilmalardan oʻchirib tashlanadi}other{Varaqlar bu qurilmada ochiq qoladi, ammo guruh <ph name="EMAIL" /> hisobidan kirilgan barcha qurilmalardan oʻchirib tashlanadi}}</translation>
 <translation id="8535005006684281994">Netscape sertifikatini yangilash URL manzili</translation>
-<translation id="8536810348276651776">Bir nechta saytlardagi hisobingizdan chiqasiz. Chrome uchun Family Link sozlamalari amal qilishi uchun Google hisobingizga kirgan holda qolasiz.</translation>
 <translation id="8536956381488731905">Tugmalar tovushi</translation>
 <translation id="8539727552378197395">Yo‘q (HttpOnly)</translation>
 <translation id="8540136935098276800">URL manzilni xatosiz kiriting</translation>

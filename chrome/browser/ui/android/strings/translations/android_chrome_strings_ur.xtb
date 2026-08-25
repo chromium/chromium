@@ -186,6 +186,7 @@
 <translation id="1778457539567749232">نہ پڑھا ہوا کے بطور نشان زد کریں</translation>
 <translation id="1779766957982586368">ونڈو بند کریں</translation>
 <translation id="1780023393214832643"><ph name="USERNAME" /> میں پاس ورڈز محفوظ ہو گئے</translation>
+<translation id="1789543093145556097">ہمیشہ چھپائیں</translation>
 <translation id="1791662854739702043">انسٹال ہو گیا</translation>
 <translation id="1792959175193046959">ڈاؤن لوڈ کا ڈیفالٹ مقام کسی بھی وقت تبدیل کریں</translation>
 <translation id="1796666869097395659">بعد میں ٹیب پر واپس آنے کے لیے اسے چھوٹا کریں</translation>
@@ -522,6 +523,7 @@
 <translation id="3075397426753215787">کوئی آلہ منتخب کریں۔</translation>
 <translation id="3080375898390966733">‏‫Google لینز کے ساتھ ٹیب تلاش کریں</translation>
 <translation id="3080525922482950719">آپ بعد میں یا آف لائن پڑھنے کے لیے صفحات کو محفوظ کر سکتے ہیں</translation>
+<translation id="3082989400996696487">صرف نئے ٹیب کے صفحہ پر دکھائیں</translation>
 <translation id="3087734570205094154">نیچے</translation>
 <translation id="3091010850649238832">کلپ بورڈ مواد دکھائیں</translation>
 <translation id="3098745985164956033">‏آپ کے لیے تفصیلات میں بہتری لانے کے لیے Google کو کچھ تصاویر بھیجی جاتی ہیں</translation>
@@ -768,6 +770,7 @@
 <translation id="4164642020717536140">تیز اور محفوظ ویب براؤزنگ</translation>
 <translation id="4165077084524712774">مزید ٹولز</translation>
 <translation id="4170577491341606575">‏آپ کا ڈیٹا حاصل کیا جا رہا ہے‎\u2026</translation>
+<translation id="4172051516777682613">ہمیشہ دکھائیں</translation>
 <translation id="4176838562184310003">‏‫Chrome صحیح طریقے سے شٹ ڈاؤن نہیں ہوا اور آپ کی کھوئی ہوئی ونڈوز اور ٹیبز کو بحال کرنے کی کوشش کر سکتا ہے۔ بحال ہونے پر کچھ ونڈوز کو چھوٹا کیا جا سکتا ہے۔</translation>
 <translation id="4177222230309051052">اپنے تمام بک مارکس حاصل کریں</translation>
 <translation id="417865198503699526">ترتیب تلاش کریں</translation>
@@ -886,7 +889,6 @@
 <translation id="4599585406846903742">واحد صفحہ کا منظر</translation>
 <translation id="4601095002996233687">مشتبہ ڈاؤن لوڈز کے لیے گہرائی سے اسکینز کرتا ہے۔</translation>
 <translation id="4606559747793337066">‏جب کوئی سائٹ یا ایپ اپنے صفحہ پر لنکس کو نجی طور پر پیشگی لوڈ کرنے کا مطالبہ کرتی ہے تو Chrome کوکیز کے بغیر Google سرورز کے ذریعے صفحات کو مرموز اور پیشگی لوڈ کرتا ہے۔ اس سے پیشگی لوڈ کردہ سائٹ سے آپ کی شناخت پوشیدہ ہو جاتی ہے۔</translation>
-<translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> کو کھولیں</translation>
 <translation id="4619615317237390068">دیگر آلات کے ٹیبز</translation>
 <translation id="4624065194742029982">‏Chrome پوشیدگی</translation>
 <translation id="4634124774493850572">پاس ورڈ استعمال کریں</translation>
@@ -1853,6 +1855,7 @@
 <translation id="834313815369870491">سائٹس کا کبھی بھی ترجمہ نہ کریں</translation>
 <translation id="8348215005712416247">‫<ph name="TAB_TITLE" />، متعدد منتخب پن کردہ ریکارڈنگ پوشیدگی ٹیب</translation>
 <translation id="8348430946834215779">‏جب بھی ممکن ہو HTTPS کا استعمال کریں اور ان سائٹس کو لوڈ کرنے سے پہلے وارننگ حاصل کریں جو اس کی حمایت نہیں کرتی ہیں</translation>
+<translation id="8349305172487531364">بُک مارکس بار</translation>
 <translation id="8354977102499939946">اپنی آواز کی مدد سے فوری طور پر تلاش کریں۔ اس شارٹ کٹ میں ترمیم کرنے کیلئے ترتیبات پر جائیں۔</translation>
 <translation id="8361737703487394103">‏کسی مخصوص ٹیب پر جائیں ‎(1–8)</translation>
 <translation id="8368001212524806591">قیمت ٹریک کریں</translation>

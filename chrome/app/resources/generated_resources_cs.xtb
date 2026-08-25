@@ -1814,7 +1814,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2413009156320833859">Přizpůsobte si prohlížeč ještě více pomocí rozšíření z <ph name="BEGIN_LINK1" />Internetového obchodu Chrome<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Vrátit se k procházení položek <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Tmavá</translation>
-<translation id="2415117815770324983">Budete odhlášeni z většiny webů. Zůstanete přihlášeni ke svému účtu Google.</translation>
 <translation id="2416435988630956212">Funkční klávesy</translation>
 <translation id="2419131370336513030">Zobrazit nainstalované aplikace</translation>
 <translation id="2419706071571366386">Když počítač nepoužíváte, z bezpečnostních důvodů se odhlaste.</translation>
@@ -1965,7 +1964,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
         <ph name="BREAK" />
         Nastavení můžete spravovat v nabídce karty. Další možnosti zobrazíte v sekci Přizpůsobit Chrome.</translation>
 <translation id="2514465118223423406">Když je připojena myš</translation>
-<translation id="2514938842036917377">Tímto vymažete <ph name="TOTAL_USAGE" /> dat, která uložil web <ph name="SITE_NAME" /> a nainstalované aplikace</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Potvrďte své uživatelské jméno</translation>
 <translation id="2517472476991765520">Skenovat</translation>
@@ -3643,7 +3641,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3776508619697147021">Weby mohou žádat o automatické stažení několika souborů</translation>
 <translation id="3776796446459804932">Toto rozšíření porušuje zásady Internetového obchodu Chrome.</translation>
 <translation id="3777483481409781352">Aktivace mobilního zařízení se nezdařila</translation>
-<translation id="3777796259512476958">Budete odhlášeni z většiny webů</translation>
 <translation id="3778208826288864398">Bezpečnostní klíč je uzamčen, protože byl příliš mnohokrát zadán nesprávný PIN. Budete bezpečnostní klíč muset resetovat.</translation>
 <translation id="3778740492972734840">&amp;Nástroje pro vývojáře</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{vaše historie procházení # webu}few{vaše historie procházení # webů}many{vaše historie procházení # webu}other{vaše historie procházení # webů}}</translation>
@@ -4503,7 +4500,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4432621511648257259">Nesprávné heslo</translation>
 <translation id="4434611816075088065">Nic jiného teď vaši pozornost nevyžaduje</translation>
 <translation id="4435020454241191356">Přidejte název nebo štítek svého profilu</translation>
-<translation id="443503224864902151">Budete odhlášeni z většiny webů. Zůstanete přihlášeni k účtu Google, aby bylo možné vymazat synchronizovaná data.</translation>
 <translation id="4436201444922652535">Odkazy</translation>
 <translation id="443719869834432257">Typ události: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Nabízet ukládání hesel a přístupových klíčů</translation>
@@ -8342,7 +8338,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="744366959743242014">Probíhá načítání dat. Může trvat několik sekund.</translation>
 <translation id="7443806024147773267">Mějte hesla k dispozici vždy, když jste přihlášeni k účtu Google</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Soubory cookie budou dnes opět zablokovány}=1{Soubory cookie budou zítra opět zablokovány}few{Soubory cookie budou za # dny opět zablokovány}many{Soubory cookie budou za # dne opět zablokovány}other{Soubory cookie budou za # dnů opět zablokovány}}</translation>
-<translation id="7446716846072322308">Tímto smažete <ph name="TOTAL_USAGE" /> dat, která uložil web <ph name="SITE_NAME" /> a související weby</translation>
 <translation id="7448430327655618736">Automaticky instalovat aplikace</translation>
 <translation id="7448664748118305024">Při zavření všech oken smazat data webů uložená v zařízení</translation>
 <translation id="7449806939046594699">Vaše organizace kopírování tohoto obsahu zablokovala</translation>
@@ -9740,7 +9735,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8533670235862049797">Bezpečné prohlížení je zapnuté</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Karty zůstanou na tomto zařízení otevřené, ale skupina bude smazána ze všech zařízení přihlášených k účtu <ph name="EMAIL" />}few{Karty zůstanou na tomto zařízení otevřené, ale skupiny budou smazány ze všech zařízení přihlášených k účtu <ph name="EMAIL" />}many{Karty zůstanou na tomto zařízení otevřené, ale skupiny budou smazány ze všech zařízení přihlášených k účtu <ph name="EMAIL" />}other{Karty zůstanou na tomto zařízení otevřené, ale skupiny budou smazány ze všech zařízení přihlášených k účtu <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">Adresa URL pro obnovu certifikátu Netscape</translation>
-<translation id="8536810348276651776">Odhlásí vás z většiny webů. Zůstanete přihlášeni k účtu Google a bude tedy i nadále platit vaše nastavení Family Link pro Chrome.</translation>
 <translation id="8536956381488731905">Zvuk při stisku klávesy</translation>
 <translation id="8539727552378197395">Ne (HttpOnly)</translation>
 <translation id="8540136935098276800">Zadejte správně formátovanou adresu URL</translation>

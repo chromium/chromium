@@ -1814,7 +1814,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2413009156320833859">Personnalisez davantage votre navigateur avec des extensions du <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> : reprendre la navigation</translation>
 <translation id="2414886740292270097">Sombre</translation>
-<translation id="2415117815770324983">Vous serez déconnecté de la plupart des sites, mais vous resterez connecté à votre compte Google.</translation>
 <translation id="2416435988630956212">Touches de fonction du clavier</translation>
 <translation id="2419131370336513030">Afficher les applis installées</translation>
 <translation id="2419706071571366386">Par sécurité, déconnectez-vous lorsque vous n'utilisez plus votre ordinateur.</translation>
@@ -1965,7 +1964,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
         <ph name="BREAK" />
         Vous pouvez gérer les paramètres dans le menu de la carte ou voir plus d'options dans "Personnaliser Chrome".</translation>
 <translation id="2514465118223423406">Lorsqu'une souris est connectée</translation>
-<translation id="2514938842036917377">Cela supprimera <ph name="TOTAL_USAGE" /> de données stockées par <ph name="SITE_NAME" />, les sites associés et les applis installées</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Confirmer votre nom d'utilisateur</translation>
 <translation id="2517472476991765520">Scanner</translation>
@@ -3643,7 +3641,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3776508619697147021">Les sites peuvent demander à télécharger automatiquement plusieurs fichiers</translation>
 <translation id="3776796446459804932">Cette extension ne respecte pas les règles du Chrome Web Store.</translation>
 <translation id="3777483481409781352">Impossible d'activer l'appareil mobile</translation>
-<translation id="3777796259512476958">Vous déconnecte de la plupart des sites</translation>
 <translation id="3778208826288864398">La clé de sécurité est verrouillée, car vous avez saisi un code erroné trop de fois. Vous devez la réinitialiser.</translation>
 <translation id="3778740492972734840">Outils de &amp;développement</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{votre historique de navigation sur # site}one{votre historique de navigation sur # site}other{votre historique de navigation sur # sites}}</translation>
@@ -4504,7 +4501,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4432621511648257259">Mot de passe incorrect</translation>
 <translation id="4434611816075088065">Rien d'autre ne requiert votre attention pour le moment</translation>
 <translation id="4435020454241191356">Ajoutez un nom ou un libellé à votre profil</translation>
-<translation id="443503224864902151">Vous déconnecte de la plupart des sites. Toutefois, vous restez connecté à votre compte Google afin que vos données synchronisées puissent être supprimées.</translation>
 <translation id="4436201444922652535">Liens</translation>
 <translation id="443719869834432257">Type d'événement : <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Proposer d'enregistrer les mots de passe et les clés d'accès</translation>
@@ -8346,7 +8342,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="744366959743242014">Chargement des données en cours. Cette opération peut prendre quelques secondes.</translation>
 <translation id="7443806024147773267">Accédez à vos mots de passe chaque fois que vous êtes connecté à votre compte Google</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Les cookies seront de nouveau bloqués aujourd'hui}=1{Les cookies seront de nouveau bloqués demain}one{Les cookies seront de nouveau bloqués dans # jour}other{Les cookies seront de nouveau bloqués dans # jours}}</translation>
-<translation id="7446716846072322308">Cela supprimera <ph name="TOTAL_USAGE" /> de données stockées par <ph name="SITE_NAME" /> et les sites associés</translation>
 <translation id="7448430327655618736">Installer automatiquement des applications</translation>
 <translation id="7448664748118305024">Supprimer les données que les sites ont enregistrées sur votre appareil lorsque vous fermez toutes les fenêtres</translation>
 <translation id="7449806939046594699">Votre organisation a bloqué la copie de ce contenu</translation>
@@ -9744,7 +9739,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8533670235862049797">La navigation sécurisée est activée</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Les onglets resteront ouverts sur cet appareil, mais le groupe sera supprimé de tous les appareils connectés à <ph name="EMAIL" />}one{Les onglets resteront ouverts sur cet appareil, mais le groupe sera supprimé de tous les appareils connectés à <ph name="EMAIL" />}other{Les onglets resteront ouverts sur cet appareil, mais les groupes seront supprimés de tous les appareils connectés à <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">URL de renouvellement du certificat Netscape</translation>
-<translation id="8536810348276651776">Tu seras déconnecté de la plupart des sites, mais tu resteras connecté à ton compte Google afin que tes paramètres Family Link pour Chrome s'appliquent.</translation>
 <translation id="8536956381488731905">Son à chaque touche</translation>
 <translation id="8539727552378197395">Non (HttpOnly)</translation>
 <translation id="8540136935098276800">Saisissez une URL dont le format est correct</translation>

@@ -1814,7 +1814,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2413009156320833859">Pas je browser verder aan met extensies uit de <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Browsen hervatten voor <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Donker</translation>
-<translation id="2415117815770324983">Hiermee word je uitgelogd bij de meeste sites. Je blijft ingelogd op je Google-account.</translation>
 <translation id="2416435988630956212">Functietoetsen toetsenbord</translation>
 <translation id="2419131370336513030">Geïnstalleerde apps bekijken</translation>
 <translation id="2419706071571366386">Log om veiligheidsredenen uit wanneer je computer niet wordt gebruikt.</translation>
@@ -1965,7 +1964,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <ph name="BREAK" />
 Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het gedeelte Chrome aanpassen.</translation>
 <translation id="2514465118223423406">Als er een muis is aangesloten</translation>
-<translation id="2514938842036917377">Hiermee verwijder je <ph name="TOTAL_USAGE" /> aan gegevens die zijn opgeslagen door <ph name="SITE_NAME" />, gerelateerde sites en geïnstalleerde apps</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Bevestig je gebruikersnaam</translation>
 <translation id="2517472476991765520">Scannen</translation>
@@ -3643,7 +3641,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3776508619697147021">Sites kunnen vragen of ze automatisch meerdere bestanden mogen downloaden</translation>
 <translation id="3776796446459804932">Deze extensie schendt het beleid voor de Chrome Web Store.</translation>
 <translation id="3777483481409781352">Kan mobiel apparaat niet activeren</translation>
-<translation id="3777796259512476958">Hiermee word je uitgelogd van de meeste sites</translation>
 <translation id="3778208826288864398">De beveiligingssleutel is vergrendeld omdat je te vaak een onjuiste pincode hebt ingevoerd. De beveiligingssleutel moet worden gereset.</translation>
 <translation id="3778740492972734840">&amp;Hulpprogramma's voor ontwikkelaars</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{je browsegeschiedenis van # site}other{je browsegeschiedenis van # sites}}</translation>
@@ -4503,7 +4500,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4432621511648257259">Onjuist wachtwoord</translation>
 <translation id="4434611816075088065">Er is op dit moment niets anders dat je aandacht vereist</translation>
 <translation id="4435020454241191356">Voeg een naam of label toe voor je profiel</translation>
-<translation id="443503224864902151">Hiermee word je uitgelogd bij de meeste sites. Je blijft ingelogd op je Google-account zodat je gesynchroniseerde gegevens kunnen worden verwijderd.</translation>
 <translation id="4436201444922652535">Links</translation>
 <translation id="443719869834432257">Type gebeurtenis: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Aanbieden om wachtwoorden en toegangssleutels op te slaan</translation>
@@ -8338,7 +8334,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="744366959743242014">Gegevens worden geladen. Dit kan een paar seconden duren.</translation>
 <translation id="7443806024147773267">Toegang tot je wachtwoorden telkens wanneer je bent ingelogd op je Google-account</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookies worden vandaag weer geblokkeerd}=1{Cookies worden morgen weer geblokkeerd}other{# dagen tot cookies weer worden geblokkeerd}}</translation>
-<translation id="7446716846072322308">Hiermee verwijder je <ph name="TOTAL_USAGE" /> aan gegevens die zijn opgeslagen door <ph name="SITE_NAME" /> en gerelateerde sites</translation>
 <translation id="7448430327655618736">apps automatisch te installeren</translation>
 <translation id="7448664748118305024">Gegevens die sites op je apparaat hebben opgeslagen verwijderen als je alle vensters sluit</translation>
 <translation id="7449806939046594699">Je organisatie heeft het kopiëren van deze content geblokkeerd</translation>
@@ -9736,7 +9731,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8533670235862049797">Safe Browsing staat aan</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{De tabbladen blijven geopend op dit apparaat, maar de groep wordt verwijderd van alle apparaten die zijn ingelogd bij <ph name="EMAIL" />}other{De tabbladen blijven geopend op dit apparaat, maar de groepen worden verwijderd van alle apparaten die zijn ingelogd bij <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">URL voor verlengen van Netscape-certificaat</translation>
-<translation id="8536810348276651776">Hiermee word je uitgelogd van de meeste sites. Je blijft ingelogd op je Google-account zodat je instellingen voor Family Link voor Chrome van toepassing zijn.</translation>
 <translation id="8536956381488731905">Geluid bij toetsaanslag</translation>
 <translation id="8539727552378197395">Nee (HttpOnly)</translation>
 <translation id="8540136935098276800">Geef een correct opgemaakte URL op</translation>

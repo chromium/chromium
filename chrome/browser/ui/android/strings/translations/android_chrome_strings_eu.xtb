@@ -186,6 +186,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="1778457539567749232">Markatu irakurri gabeko gisa</translation>
 <translation id="1779766957982586368">Itxi leihoa</translation>
 <translation id="1780023393214832643"><ph name="USERNAME" /> erabiltzailearen kontuan gordetako pasahitzak</translation>
+<translation id="1789543093145556097">Ezkutatu beti</translation>
 <translation id="1791662854739702043">Instalatu da</translation>
 <translation id="1792959175193046959">Deskargen kokapen lehenetsia aldatzeko aukera duzu</translation>
 <translation id="1796666869097395659">Minimizatu fitxa geroago itzultzeko</translation>
@@ -522,6 +523,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3075397426753215787">Aukeratu gailu bat.</translation>
 <translation id="3080375898390966733">Bilatu fitxan Google Lens-ekin</translation>
 <translation id="3080525922482950719">Orriak gorde ditzakezu, geroago edo konexiorik ez daukazunean irakurtzeko</translation>
+<translation id="3082989400996696487">Erakutsi fitxa berriaren orrian soilik</translation>
 <translation id="3087734570205094154">Behekoa</translation>
 <translation id="3091010850649238832">Erakutsi arbeleko edukia</translation>
 <translation id="3098745985164956033">Jasotzen dituzun deskribapenak hobetzeko bidaltzen zaizkio irudi batzuk Google-ri</translation>
@@ -767,6 +769,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="4164642020717536140">Webguneak bizkor eta segurtasunez arakatu</translation>
 <translation id="4165077084524712774">Tresna gehiago</translation>
 <translation id="4170577491341606575">Zure datuak eskuratzen\u2026</translation>
+<translation id="4172051516777682613">Erakutsi beti</translation>
 <translation id="4176838562184310003">Chrome ez da behar bezala itxi. Galdutako leiho eta fitxak leheneratzen saia daiteke. Baliteke leiho batzuk minimizatuta leheneratzea.</translation>
 <translation id="4177222230309051052">Eskuratu laster-marka guztiak</translation>
 <translation id="417865198503699526">Bilatu ezarpen bat</translation>
@@ -885,7 +888,6 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="4599585406846903742">Orri bakarreko ikuspegia</translation>
 <translation id="4601095002996233687">Deskarga susmagarrien azterketa sakonak.</translation>
 <translation id="4606559747793337066">Webgune edo aplikazio batek orriko estekak modu pribatuan aurrez kargatzeko eskatzen duenean, Chrome-k Google-ren zerbitzarien bidez enkriptatzen eta aurrez kargatzen ditu orri horiek, cookierik gabe. Horrela, zure identitatea ezkutatzen zaio aurrez kargatutako webguneari.</translation>
-<translation id="4616150815774728855">Ireki <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619615317237390068">Beste gailu batzuetako fitxak</translation>
 <translation id="4624065194742029982">Chrome-ren ezkutuko modua</translation>
 <translation id="4634124774493850572">Erabili pasahitza</translation>
@@ -1851,6 +1853,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="834313815369870491">Inoiz itzuli behar ez diren webguneak</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" /> fitxa, beste batzuekin batera hautatuta, ezkutuko modukoa, ainguratuta, grabatzen</translation>
 <translation id="8348430946834215779">Erabili HTTPS ahal den guztietan eta jaso abisuak hura onartzen ez duten webguneak kargatu baino lehen</translation>
+<translation id="8349305172487531364">Laster-marken barra</translation>
 <translation id="8354977102499939946">Bilatu bizkor ahotsa erabilita. Lasterbide hau editatzeko, joan Ezarpenak atalera.</translation>
 <translation id="8361737703487394103">Joan fitxa jakin batera (1-8)</translation>
 <translation id="8368001212524806591">Egin prezioen jarraipena</translation>

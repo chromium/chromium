@@ -1827,7 +1827,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2413009156320833859">I-customize pa ang iyong browser gamit ang mga extension mula sa <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Ipagpatuloy ang pag-browse para sa <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Madilim</translation>
-<translation id="2415117815770324983">Isa-sign out ka sa karamihan ng mga site. Mananatili kang naka-sign in sa iyong Google Account.</translation>
 <translation id="2416435988630956212">Mga function key ng keyboard</translation>
 <translation id="2419131370336513030">Tingnan ang mga naka-install na app</translation>
 <translation id="2419706071571366386">Para sa seguridad, mag-sign out kapag hindi ginagamit ang iyong computer.</translation>
@@ -1978,7 +1977,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
         <ph name="BREAK" />
         Puwede mong pamahalaan ang mga setting mula sa menu ng card o tingnan ang higit pang opsyon sa I-customize ang Chrome.</translation>
 <translation id="2514465118223423406">Kapag nakakonekta ang mouse</translation>
-<translation id="2514938842036917377">Ide-delete nito ang <ph name="TOTAL_USAGE" /> na data na sino-store ng <ph name="SITE_NAME" />, magkakaugnay na site, at mga naka-install na app</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Kumpirmahin ang iyong username</translation>
 <translation id="2517472476991765520">I-scan</translation>
@@ -3658,7 +3656,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3776508619697147021">Puwedeng hilingin ng mga site na awtomatikong mag-download ng maraming file</translation>
 <translation id="3776796446459804932">Lumalabag ang extension na ito sa patakaran ng Chrome Web Store.</translation>
 <translation id="3777483481409781352">Hindi ma-activate ang cellular device</translation>
-<translation id="3777796259512476958">Isa-sign out ka sa karamihan ng site</translation>
 <translation id="3778208826288864398">Na-lock ang security key dahil napakaraming beses nang nailagay ang maling PIN. Kakailanganin mong i-reset ang security key.</translation>
 <translation id="3778740492972734840">Mga tool ng Nag-&amp;develop</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{iyong history ng pag-browse sa # site}one{iyong history ng pag-browse sa # site}other{iyong history ng pag-browse sa # na site}}</translation>
@@ -4519,7 +4516,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="4432621511648257259">Mali ang password</translation>
 <translation id="4434611816075088065">Wala nang ibang nangangailangan ng atensyon mo sa ngayon</translation>
 <translation id="4435020454241191356">Magdagdag ng pangalan o label para sa iyong profile</translation>
-<translation id="443503224864902151">Sina-sign out ka sa karamihan ng mga site. Mananatili kang naka-sign in sa iyong Google Account kaya made-delete ang naka-sync na data mo.</translation>
 <translation id="4436201444922652535">Mga Link</translation>
 <translation id="443719869834432257">Uri ng Event: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Mag-alok na i-save ang mga password at passkey</translation>
@@ -8362,7 +8358,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="744366959743242014">Nilo-load ang data, posible itong abutin nang ilang segundo.</translation>
 <translation id="7443806024147773267">I-access ang iyong mga password kapag naka-sign in ka sa Google Account mo</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Iba-block ulit ang cookies ngayong araw}=1{Iba-block ulit ang cookies bukas}one{# araw bago i-block ulit ang cookies}other{# na araw bago i-block ulit ang cookies}}</translation>
-<translation id="7446716846072322308">Ide-delete nito ang <ph name="TOTAL_USAGE" /> na data na sino-store ng <ph name="SITE_NAME" /> at magkakaugnay na site</translation>
 <translation id="7448430327655618736">Awtomatikong nag-i-install ng mga app</translation>
 <translation id="7448664748118305024">I-delete ang data na na-save ng mga site sa iyong device kapag isinara mo ang lahat ng window</translation>
 <translation id="7449806939046594699">Na-block ng iyong organisasyon ang pagkopya sa content na ito</translation>
@@ -9761,7 +9756,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8533670235862049797">Naka-on ang Ligtas na Pag-browse</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Mananatiling nakabukas ang mga tab sa device na ito pero made-delete ang grupo sa lahat ng device na naka-sign in sa <ph name="EMAIL" />}one{Mananatiling nakabukas ang mga tab sa device na ito pero made-delete ang mga grupo sa lahat ng device na naka-sign in sa <ph name="EMAIL" />}other{Mananatiling nakabukas ang mga tab sa device na ito pero made-delete ang mga grupo sa lahat ng device na naka-sign in sa <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">URL ng Pag-renew ng Netscape Certificate</translation>
-<translation id="8536810348276651776">Isa-sign out ka sa karamihan ng mga site. Mananatili kang naka-sign in sa iyong Google Account kaya malalapat ang mga setting mo ng Family Link para sa Chrome.</translation>
 <translation id="8536956381488731905">Tunog sa keypress</translation>
 <translation id="8539727552378197395">Hindi (HttpOnly)</translation>
 <translation id="8540136935098276800">Maglagay ng URL na tama ang pag-format</translation>

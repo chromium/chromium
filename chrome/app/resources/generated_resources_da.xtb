@@ -1828,7 +1828,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2413009156320833859">Tilpas din browser endnu mere med udvidelser fra <ph name="BEGIN_LINK1" />Chrome Webshop<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Genoptag søgningen efter <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Mørk</translation>
-<translation id="2415117815770324983">Dette logger dig ud af de fleste websites. Du forbliver logget ind på din Google-konto.</translation>
 <translation id="2416435988630956212">Funktionstaster på tastaturet</translation>
 <translation id="2419131370336513030">Se installerede apps</translation>
 <translation id="2419706071571366386">Af sikkerhedshensyn skal du logge ud, når computeren ikke bruges.</translation>
@@ -1979,7 +1978,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
         <ph name="BREAK" />
         Du kan administrere indstillingerne i kortmenuen eller se flere valgmuligheder under Tilpas Chrome.</translation>
 <translation id="2514465118223423406">Når der er tilsluttet en mus</translation>
-<translation id="2514938842036917377">Denne handling sletter <ph name="TOTAL_USAGE" /> data, der er gemt af <ph name="SITE_NAME" />, relaterede websites og installerede apps</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Bekræft dit brugernavn</translation>
 <translation id="2517472476991765520">Scan</translation>
@@ -3659,7 +3657,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3776508619697147021">Websites kan anmode om tilladelse til automatisk at downloade flere filer</translation>
 <translation id="3776796446459804932">Denne udvidelse krænker politikken for Chrome Webshop.</translation>
 <translation id="3777483481409781352">Mobilenheden kunne ikke aktiveres</translation>
-<translation id="3777796259512476958">Logger dig ud af de fleste websites</translation>
 <translation id="3778208826288864398">Sikkerhedsnøglen er låst, fordi der blev angivet en forkert pinkode for mange gange. Sikkerhedsnøglen skal nulstilles.</translation>
 <translation id="3778740492972734840">&amp;Udviklerværktøjer</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{din browserhistorik for # website}one{din browserhistorik for # website}other{din browserhistorik for # websites}}</translation>
@@ -4520,7 +4517,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4432621511648257259">Adgangskoden er forkert</translation>
 <translation id="4434611816075088065">Der er ikke andet, som kræver din opmærksomhed lige nu</translation>
 <translation id="4435020454241191356">Giv din profil et navn eller en etiket</translation>
-<translation id="443503224864902151">Logger dig ud af de fleste websites. Du forbliver logget ind på din Google-konto, så dine synkroniserede data kan slettes.</translation>
 <translation id="4436201444922652535">Links</translation>
 <translation id="443719869834432257">Hændelsestype: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Få tilbudt at gemme adgangskoder og adgangsnøgler</translation>
@@ -8363,7 +8359,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="744366959743242014">Der indlæses data. Dette kan tage et par sekunder.</translation>
 <translation id="7443806024147773267">Få adgang til dine adgangskoder, så snart du logger ind på din Google-konto</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookies blokeres igen fra i dag}=1{Cookies blokeres igen fra i morgen}one{Cookies blokeres igen om # dag}other{Cookies blokeres igen om # dage}}</translation>
-<translation id="7446716846072322308">Denne handling sletter <ph name="TOTAL_USAGE" /> data, der er gemt af <ph name="SITE_NAME" /> og relaterede websites</translation>
 <translation id="7448430327655618736">Installer apps automatisk</translation>
 <translation id="7448664748118305024">Slet data, som websites har gemt på din enhed, når du lukker alle vinduer</translation>
 <translation id="7449806939046594699">Din organisation har blokeret kopiering af dette indhold</translation>
@@ -9761,7 +9756,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8533670235862049797">Beskyttet browsing er aktiveret</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Fanerne forbliver åbne på denne enhed, men gruppen slettes fra alle enheder, hvor du er logget ind på <ph name="EMAIL" />}one{Fanerne forbliver åbne på denne enhed, men gruppen slettes fra alle enheder, hvor du er logget ind på <ph name="EMAIL" />}other{Fanerne forbliver åbne på denne enhed, men grupperne slettes fra alle enheder, hvor du er logget ind på <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">Webadresse for fornyelse af Netscape-certifikat</translation>
-<translation id="8536810348276651776">Logger dig ud af de fleste websites. Du forbliver logget ind på din Google-konto, så dine Family Link-indstillinger for Chrome anvendes.</translation>
 <translation id="8536956381488731905">Lyd ved tastetryk</translation>
 <translation id="8539727552378197395">Nej (HttpOnly)</translation>
 <translation id="8540136935098276800">Angiv en webadresse i korrekt format</translation>

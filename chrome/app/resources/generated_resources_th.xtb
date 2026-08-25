@@ -354,6 +354,7 @@
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{ระบบบันทึกบุ๊กมาร์ก 1 รายการและรายการอื่นๆ ไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google การดำเนินการนี้จะล้างรายการที่ซ้ำกันด้วย}other{ระบบบันทึกบุ๊กมาร์ก {BOOKMARK_COUNT} รายการและรายการอื่นๆ ไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google การดำเนินการนี้จะล้างรายการที่ซ้ำกันด้วย}}</translation>
 <translation id="125220115284141797">ค่าเริ่มต้น</translation>
 <translation id="1252219782845132919">ซ่อนกลุ่ม</translation>
+<translation id="1252597096488926946">เลิกปักหมุดปุ่มเลื่อน</translation>
 <translation id="1252987234827889034">เกิดข้อผิดพลาดของโปรไฟล์</translation>
 <translation id="1254034280040157728">แกรนด์แคนยอน</translation>
 <translation id="1254593899333212300">เชื่อมต่ออินเทอร์เน็ตโดยตรง</translation>
@@ -976,6 +977,7 @@
 <translation id="1755601632425835748">ขนาดข้อความ</translation>
 <translation id="1756963401828337401">เลือกหน้าจอที่จะจับภาพ</translation>
 <translation id="17584710573359123">ดูใน Chrome เว็บสโตร์</translation>
+<translation id="176013700366797492">ไปที่ Google Wallet เพื่อควบคุม<ph name="BEGIN_LINK1" />ค่ากำหนดข้อมูลและความเป็นส่วนตัว<ph name="END_LINK1" /> หรือจัดการ<ph name="BEGIN_LINK2" />วิธีการชำระเงิน<ph name="END_LINK2" />และ<ph name="BEGIN_LINK3" />บัตร<ph name="END_LINK3" /> เช่น บัตรสะสมคะแนนและบัตรประจำตัว</translation>
 <translation id="1761402971842586829">แมป <ph name="BUTTON_NAME" /> ใหม่เป็น <ph name="REMAPPING_OPTION" /> แล้ว</translation>
 <translation id="1761845175367251960">บัญชีของ <ph name="NAME" /></translation>
 <translation id="176272781006230109">คำแนะนำการเลือกซื้อ</translation>
@@ -1814,7 +1816,6 @@
 <translation id="2413009156320833859">ปรับแต่งเบราว์เซอร์ได้มากยิ่งขึ้นด้วยส่วนขยายจาก <ph name="BEGIN_LINK1" />Chrome เว็บสโตร์<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">เรียกดู <ph name="MODULE_TITLE" /> ต่อ</translation>
 <translation id="2414886740292270097">มืด</translation>
-<translation id="2415117815770324983">นำคุณออกจากระบบของเว็บไซต์ส่วนใหญ่ แต่คุณจะยังลงชื่อเข้าใช้บัญชี Google อยู่</translation>
 <translation id="2416435988630956212">แป้นฟังก์ชันของแป้นพิมพ์</translation>
 <translation id="2419131370336513030">ดูแอปที่ติดตั้งไว้</translation>
 <translation id="2419706071571366386">โปรดออกจากระบบเมื่อไม่ได้ใช้คอมพิวเตอร์เพื่อความปลอดภัย</translation>
@@ -1958,6 +1959,7 @@
 <translation id="2508747373511408451">แอปพลิเคชัน <ph name="APPLICATION_NAME" /> ต้องใช้ Google ไดรฟ์จึงจะแสดงได้</translation>
 <translation id="2509495747794740764">จำนวนขนาดต้องเป็นตัวเลขระหว่าง 10 และ 200</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946">ภาษา<ph name="LANGUAGE" /> (เลือกไว้)</translation>
 <translation id="2513904627589542105">การทดสอบด้วยตนเอง</translation>
 <translation id="251425554130284360">สิ่งที่เห็นนี้คือหน้าเว็บที่เคยเข้าชมและการค้นหาที่แนะนำเพื่อช่วยให้คุณกลับไปยังกิจกรรมล่าสุดได้โดยง่าย
@@ -1965,7 +1967,6 @@
         <ph name="BREAK" />
         คุณสามารถจัดการการตั้งค่าจากเมนูการ์ดหรือดูตัวเลือกเพิ่มเติมได้ใน "ปรับแต่ง Chrome"</translation>
 <translation id="2514465118223423406">เมื่อเชื่อมต่อเมาส์</translation>
-<translation id="2514938842036917377">การดำเนินการนี้จะลบข้อมูลที่ <ph name="SITE_NAME" />, เว็บไซต์ที่เกี่ยวข้อง และแอปที่ติดตั้งไว้จัดเก็บไว้รวมทั้งสิ้น <ph name="TOTAL_USAGE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">ยืนยันชื่อผู้ใช้ของคุณ</translation>
 <translation id="2517472476991765520">สแกน</translation>
@@ -3643,7 +3644,6 @@
 <translation id="3776508619697147021">เว็บไซต์ขอดาวน์โหลดไฟล์หลายไฟล์โดยอัตโนมัติได้</translation>
 <translation id="3776796446459804932">ส่วนขยายนี้ละเมิดนโยบาย Chrome เว็บสโตร์</translation>
 <translation id="3777483481409781352">เปิดใช้งานอุปกรณ์มือถือไม่สำเร็จ</translation>
-<translation id="3777796259512476958">นำคุณออกจากระบบของเว็บไซต์ส่วนใหญ่</translation>
 <translation id="3778208826288864398">คีย์ความปลอดภัยถูกล็อกเพราะคุณป้อน PIN ไม่ถูกต้องหลายครั้งเกินไป คุณจะต้องรีเซ็ตคีย์ความปลอดภัย</translation>
 <translation id="3778740492972734840">&amp;เครื่องมือสำหรับนักพัฒนาซอฟต์แวร์</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{ประวัติการท่องเว็บใน # เว็บไซต์}other{ประวัติการท่องเว็บใน # เว็บไซต์}}</translation>
@@ -4504,7 +4504,6 @@
 <translation id="4432621511648257259">รหัสผ่านไม่ถูกต้อง</translation>
 <translation id="4434611816075088065">ไม่มีกิจกรรมใดที่คุณต้องตรวจสอบในขณะนี้</translation>
 <translation id="4435020454241191356">เพิ่มชื่อหรือป้ายกำกับสำหรับโปรไฟล์ของคุณ</translation>
-<translation id="443503224864902151">นำคุณออกจากระบบของเว็บไซต์ส่วนใหญ่ แต่คุณจะยังลงชื่อเข้าใช้บัญชี Google อยู่เพื่อให้ลบข้อมูลที่ซิงค์ได้</translation>
 <translation id="4436201444922652535">ลิงก์</translation>
 <translation id="443719869834432257">ประเภทของกิจกรรม: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">เสนอให้บันทึกรหัสผ่านและพาสคีย์</translation>
@@ -4995,6 +4994,7 @@
 <translation id="4831226137013573603">ปิดเสียงไมโครโฟน</translation>
 <translation id="483262387981411190">หยุดการควบคุมใบหน้าชั่วคราวหรือใช้ต่อ</translation>
 <translation id="4833683849865011483">พบเครื่องพิมพ์ 1 เครื่องจากเซิร์ฟเวอร์การพิมพ์</translation>
+<translation id="4834388789911023644">เขียนรีวิว</translation>
 <translation id="4835598628985424375">ทำปากจู๋โดยบีบริมฝีปากเข้าหากัน</translation>
 <translation id="4835677468087803981">ซ่อน PIN</translation>
 <translation id="4836504898754963407">จัดการลายนิ้วมือ</translation>
@@ -8339,7 +8339,6 @@
 <translation id="744366959743242014">กำลังโหลดข้อมูล การดำเนินการนี้จะใช้เวลาไม่กี่วินาที</translation>
 <translation id="7443806024147773267">เข้าถึงรหัสผ่านได้เมื่อใดก็ตามที่ลงชื่อเข้าใช้บัญชี Google อยู่</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{คุกกี้จะถูกบล็อกอีกครั้งในวันนี้}=1{คุกกี้จะถูกบล็อกอีกครั้งในวันพรุ่งนี้}other{คุกกี้จะถูกบล็อกอีกครั้งในอีก # วัน}}</translation>
-<translation id="7446716846072322308">การดำเนินการนี้จะลบข้อมูลที่ <ph name="SITE_NAME" /> และเว็บไซต์ที่เกี่ยวข้องจัดเก็บไว้รวมทั้งสิ้น <ph name="TOTAL_USAGE" /></translation>
 <translation id="7448430327655618736">ติดตั้งแอปโดยอัตโนมัติ</translation>
 <translation id="7448664748118305024">ลบเว็บไซต์ข้อมูลที่บันทึกไว้ในอุปกรณ์เมื่อคุณปิดหน้าต่างทั้งหมด</translation>
 <translation id="7449806939046594699">องค์กรของคุณบล็อกการคัดลอกเนื้อหานี้</translation>
@@ -8553,6 +8552,7 @@
 <translation id="7625823789272218216">แท็บใหม่อยู่ด้านซ้าย</translation>
 <translation id="762730429396410864">ตั้งค่าระดับประสิทธิภาพของ CPU ที่รายงานไปยังเว็บไซต์ด้วยตนเอง</translation>
 <translation id="7627749368210392160">เว็บไซต์สามารถใช้ฟีเจอร์นี้เพื่อเข้าถึงอุปกรณ์อื่นๆ ในเครือข่ายภายในของคุณ</translation>
+<translation id="7628068697012244394">เขียนรีวิว</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />) ระดับ <ph name="GRADE" /></translation>
 <translation id="762917478230183172">เลือกการดำเนินการสำหรับแต่ละแป้น</translation>
 <translation id="7629206210984165492">ข่มอารมณ์</translation>
@@ -8979,6 +8979,7 @@
 <translation id="7949038991703929816">โหลดประวัติไม่สำเร็จ ตรวจสอบว่าไฟล์มีบันทึกโปรแกรมอัปเดตที่ถูกต้อง</translation>
 <translation id="7950629216186736592">เหตุผล: LBS รองรับ URL รูปแบบ http://, https:// และ file:// เท่านั้น</translation>
 <translation id="7950814699499457511">เปิด • ส่วนขยายนี้ไม่ได้เผยแพร่หลักปฏิบัติเกี่ยวกับนโยบายความเป็นส่วนตัว เช่น วิธีเก็บรวบรวมและใช้ข้อมูล</translation>
+<translation id="7951159420392892566">เลิกปักหมุดปุ่มเลื่อน</translation>
 <translation id="795130320946928025">ปิดใช้บัตรเสมือน</translation>
 <translation id="7952708427581814389">เว็บไซต์ขอดูข้อความและรูปภาพในคลิปบอร์ดของคุณได้</translation>
 <translation id="7953236668995583915">โหลดหน้านี้ซ้ำเพื่อใช้การตั้งค่าที่อัปเดตในเว็บไซต์นี้</translation>
@@ -9737,7 +9738,6 @@
 <translation id="8533670235862049797">Google Safe Browsing เปิดอยู่</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{แท็บจะยังคงเปิดอยู่ในอุปกรณ์นี้ แต่ระบบจะลบกลุ่มออกจากอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้ <ph name="EMAIL" />}other{แท็บจะยังคงเปิดอยู่ในอุปกรณ์นี้ แต่ระบบจะลบกลุ่มออกจากอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้ <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">URL การต่ออายุใบรับรองของ Netscape</translation>
-<translation id="8536810348276651776">นำคุณออกจากระบบของเว็บไซต์ส่วนใหญ่ แต่คุณจะยังลงชื่อเข้าใช้บัญชี Google อยู่เพื่อใช้การตั้งค่า Family Link สำหรับ Chrome</translation>
 <translation id="8536956381488731905">ส่งเสียงเมื่อกดปุ่ม</translation>
 <translation id="8539727552378197395">ไม่มี (HttpOnly)</translation>
 <translation id="8540136935098276800">ป้อน URL ที่มีรูปแบบที่ถูกต้อง</translation>

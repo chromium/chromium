@@ -21,7 +21,7 @@
 
       如果您未设置此政策，系统将不会应用任何限制，并且用户可以打印任何文档。</translation>
 <translation id="101438888985615157">将屏幕旋转 180 度</translation>
-<translation id="1016249716881514655"><ph name="CHROME_DEVTOOLS_NAME" />中的这些功能采用生成式 AI 模型来提供额外的调试信息。如需使用这些功能，<ph name="PRODUCT_NAME" /> 必须收集错误消息、堆栈轨迹、代码段和网络请求等数据，并将这些数据发送到用于运行生成式 AI 模型的 Google 服务器。网络请求中的响应正文或身份验证信息和 Cookie 标头不会包含在发送至服务器的数据中。
+<translation id="1016249716881514655"><ph name="CHROME_DEVTOOLS_NAME" />中的这些功能采用生成式 AI 模型来提供额外的调试信息。如需使用这些功能，<ph name="PRODUCT_NAME" /> 必须收集出错提示、堆栈轨迹、代码段和网络请求等数据，并将这些数据发送到用于运行生成式 AI 模型的 Google 服务器。网络请求中的响应正文或身份验证信息和 Cookie 标头不会包含在发送至服务器的数据中。
 
 0 表示允许使用此功能，同时允许 Google 使用相关数据改进其 AI 模型。相关数据可能包括提示、输入、输出、素材和书面反馈，具体取决于相应功能。这些数据也可能会由人工审核，以改进 AI 模型。默认值是 0，但以下注明的情况除外。
 
@@ -860,7 +860,7 @@ Chrome 政策的优先级高于此政策，例如：如果某个扩展程序已�
       如需详细了解有效的 <ph name="URL_LABEL" /> 格式，请访问 https://chromeenterprise.google/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="1595013560176869154">如果此政策已启用，系统会允许使用安全系数低的 PIN 码。安全系数低的 PIN 码的一些特征：由同一个数字构成 (1111)、数字以 1 为单位递增 (1234)、数字以 1 为单位递减 (4321)，以及常用的 PIN 码。如果此政策已停用，用户将无法设置安全系数低且易被猜中的 PIN 码。
 
-      如果此政策未设置，当系统认为 PIN 码的安全系数偏低时，就会向用户显示警告（而非错误消息）。</translation>
+      如果此政策未设置，当系统认为 PIN 码的安全系数偏低时，就会向用户显示警告（而非出错提示）。</translation>
 <translation id="1596396758769156412">如果此政策已停用或未设置，您的 <ph name="PRODUCT_OS_NAME" /> 设备将拒绝附近蓝牙外围设备发起的“Just Works”配对请求。
 
 如果此政策已启用，您的 <ph name="PRODUCT_OS_NAME" /> 设备将接受附近蓝牙外围设备发起的“Just Works”配对请求。
@@ -1373,6 +1373,7 @@ Chrome 政策的优先级高于此政策，例如：如果某个扩展程序已�
         |TIME_LIMITS| 会应用每日使用限制；当在某一天达到此限制后，相应应用在当天的剩余时间内便会一直处于不可用的状态。使用限制应在 |daily_limit_mins| 中指定。系统每天都会在指定的 UTC 时间（通过 |reset_at| 传递）重置使用限制。
         此政策仅适用于未成年用户。
         此政策是对“UsageTimeLimit”的补充。无论“PerAppTimeLimits”是如何设置的，系统都会强制执行“UsageTimeLimit”中指定的限制（例如屏幕使用时间和就寝时间）。</translation>
+<translation id="1911003883066847257">控制浏览器重启设置。</translation>
 <translation id="19133869326547269">此政策已被弃用，不会产生任何效力，因为 Chrome 已移除“点击通话”功能。
 
 原始描述：
@@ -3286,6 +3287,19 @@ PAC 样式的字符串：
 <translation id="3036271748813538143">控制是否为 &lt;select&gt; 元素启用新的 HTML 解析器行为</translation>
 <translation id="3038323923255997294">在<ph name="PRODUCT_NAME" />关闭后继续运行后台应用</translation>
 <translation id="3039862327847526651">控制对 JavaScript 优化工具的使用</translation>
+<translation id="3040510138377915303">控制是否允许 <ph name="GEMINI_SPARK_PRODUCT_NAME" /> 智能体连接到 <ph name="PRODUCT_NAME" /> 并使用自动浏览功能。您的组织可能无法使用 <ph name="GEMINI_SPARK_PRODUCT_NAME" />。
+
+0 = 允许 <ph name="GEMINI_SPARK_PRODUCT_NAME" /> 连接到 <ph name="PRODUCT_NAME" /> 并使用自动浏览功能
+
+1 = 不允许 <ph name="GEMINI_SPARK_PRODUCT_NAME" /> 连接到 <ph name="PRODUCT_NAME" /> 或使用自动浏览功能
+
+警告：如果允许 <ph name="GEMINI_SPARK_PRODUCT_NAME" /> 连接到 <ph name="PRODUCT_NAME" /> 并使用自动浏览功能，<ph name="GEMINI_SPARK_PRODUCT_NAME" /> 智能体将能够使用活跃的浏览器会话在 <ph name="PRODUCT_NAME" /> 客户端上执行自主的多步操作。这涉及重大的安全风险，包括凭证风险、本地网络入站以及情境感知信号的丢失。现有的管理和安全控制措施可能无法得到遵守。
+
+建议管理员在启用此功能之前，仔细评估组织的网络威胁模型、合规性和隐私权准则。
+
+如果 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 应用或 <ph name="PRODUCT_NAME" /> 自动浏览政策已停用，则此政策不会生效。例如，可通过 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 政策停用 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 应用。如需详细了解 <ph name="PRODUCT_NAME" /> 中的 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />，请访问 https://support.google.com/chrome/a?p=gemini_in_chrome。
+
+<ph name="PRODUCT_NAME" /> 自动浏览和 <ph name="GEMINI_SPARK_PRODUCT_NAME" /> 仅在部分国家/地区推出，且仅支持部分语言。将此政策设为 0（即已启用）并不能保证该功能一定会生效；其启用情况仍取决于实际的可用性。如需详细了解推出情况，请查看企业版版本说明：https://chromeenterprise.google/resources/release-notes/。</translation>
 <translation id="3041887182529293512">如果此政策设为 True 或未设置，系统将会在“新标签页”页面上显示根据用户的浏览记录、兴趣或位置信息自动生成的内容建议。
 
       如果此政策设为 False，系统将不会在“新标签页”页面上显示自动生成的内容建议。</translation>
@@ -5078,7 +5092,7 @@ LocalNetworkAccessIpAddressSpaceOverrides 政策的覆盖设置优先于此政�
 <translation id="4243419387411966417">禁止删除无法破解的密码</translation>
 <translation id="4245159233848584683">如果此政策已启用或未设置，当设备离线时，如果系统已设置设备本地账号以实现零延迟的自动登录，<ph name="PRODUCT_OS_NAME" /> 会显示网络配置提示。
 
-如果此政策已停用，系统则会显示错误消息。</translation>
+如果此政策已停用，系统则会显示出错提示。</translation>
 <translation id="4245192755797817012">此政策允许您设置一个网址格式列表，用于指定不允许哪些网站使用 Idle Detection API。
 
 如需详细了解有效的网站网址格式，请访问 https://chromeenterprise.google/policies/url-patterns。允许使用通配符 <ph name="WILDCARD_VALUE" />。此政策只能根据源进行匹配，因此网址格式中的任何路径都会被忽略。
@@ -8002,6 +8016,7 @@ Microsoft SharePoint 和 OneDrive 卡片需要由管理员进行额外配置。�
       如果您未配置此政策，<ph name="PRODUCT_NAME" /> 会使用默认的最高版本。
 
       否则，可将此政策设为以下值之一：“tls1.2”或“tls1.3”。如果您已配置此政策，<ph name="PRODUCT_NAME" /> 将不会使用比指定版本高的 SSL/TLS 版本。无法识别的值会被忽略。</translation>
+<translation id="6120465104321378808">允许 <ph name="GEMINI_SPARK_PRODUCT_NAME" /> 连接到 <ph name="PRODUCT_NAME" /> 并通过 Chrome 中的 Gemini 使用自动浏览功能</translation>
 <translation id="6120909112796019291">允许使用生成式 AI 照片编辑功能并改进 AI 模型。</translation>
 <translation id="6123052603197028610">不允许向 Google 服务器发送检索时间戳的查询</translation>
 <translation id="6128539430475678271">禁止在这些网站上使用 Controlled Frame API</translation>

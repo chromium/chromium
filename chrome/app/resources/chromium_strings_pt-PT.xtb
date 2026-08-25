@@ -152,7 +152,6 @@
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2629740064077610681">A sua organização pode ver e gerir os dados de navegação, como os marcadores, o histórico e as palavras-passe. Não consegue ver dados de navegação noutros perfis do Chromium</translation>
 <translation id="2635452620547538388">Valide a sua identidade para usar e guardar dados do Chromium na sua conta, <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="2636783171884046627">Para sair ou regressar ao Gemini no Chromium, use o atalho de teclado.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{A Proteção avançada requer que reinicie o Chromium para aplicar uma atualização}=1{A Proteção avançada requer que reinicie o Chromium para aplicar uma atualização. A janela de navegação anónima não vai ser reaberta.}other{A Proteção avançada requer que reinicie o Chromium para aplicar uma atualização. As # janelas de navegação anónima não vão ser reabertas.}}</translation>
 <translation id="263863604136125912">Iniciar o Chromium</translation>
 <translation id="2648074677641340862">Ocorreu um erro no sistema operativo durante a instalação. Descarregue novamente o Chromium.</translation>

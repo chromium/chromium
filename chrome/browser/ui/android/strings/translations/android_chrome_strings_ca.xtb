@@ -186,6 +186,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="1778457539567749232">Marca com a no llegit</translation>
 <translation id="1779766957982586368">Tanca la finestra</translation>
 <translation id="1780023393214832643">Contrasenyes desades a <ph name="USERNAME" />.</translation>
+<translation id="1789543093145556097">Amaga sempre</translation>
 <translation id="1791662854739702043">Instal·lat</translation>
 <translation id="1792959175193046959">Canvia la ubicació predeterminada de baixada en qualsevol moment</translation>
 <translation id="1796666869097395659">Minimitza la pestanya per tornar-hi més endavant</translation>
@@ -522,6 +523,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3075397426753215787">Tria un dispositiu.</translation>
 <translation id="3080375898390966733">Cerca a la pestanya amb Google Lens</translation>
 <translation id="3080525922482950719">Pots desar pàgines per llegir-les més endavant o sense connexió</translation>
+<translation id="3082989400996696487">Mostra només a la pàgina Pestanya nova</translation>
 <translation id="3087734570205094154">Part inferior</translation>
 <translation id="3091010850649238832">Mostra els continguts del porta-retalls</translation>
 <translation id="3098745985164956033">Algunes imatges s'envien a Google per millorar-ne les descripcions per a tu</translation>
@@ -767,6 +769,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4164642020717536140">Navegació web ràpida i segura</translation>
 <translation id="4165077084524712774">Més eines</translation>
 <translation id="4170577491341606575">S'estan obtenint les teves coses\u2026</translation>
+<translation id="4172051516777682613">Mostra sempre</translation>
 <translation id="4176838562184310003">Chrome no s'ha apagat correctament i pot provar de restaurar les finestres i les pestanyes perdudes. És possible que algunes finestres es minimitzin quan es restaurin.</translation>
 <translation id="4177222230309051052">Obtén totes les teves adreces d'interès</translation>
 <translation id="417865198503699526">Cerca una opció de configuració</translation>
@@ -885,7 +888,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4599585406846903742">Visualització d'una sola pàgina</translation>
 <translation id="4601095002996233687">Anàlisis detallades per comprovar si hi ha baixades sospitoses.</translation>
 <translation id="4606559747793337066">Quan un lloc web o una aplicació demana precarregar enllaços de la seva pàgina de manera privada, Chrome encripta i precarrega les pàgines mitjançant servidors de Google sense galetes. D'aquesta manera, el lloc web precarregat no pot veure la teva identitat.</translation>
-<translation id="4616150815774728855">Obre <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619615317237390068">Pestanyes d'altres dispositius</translation>
 <translation id="4624065194742029982">Mode d'incògnit a Chrome</translation>
 <translation id="4634124774493850572">Utilitza la contrasenya</translation>
@@ -1851,6 +1853,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="834313815369870491">No tradueixis mai els llocs web</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, pestanya d'incògnit de gravació fixada multiseleccionada</translation>
 <translation id="8348430946834215779">Utilitza HTTPS sempre que puguis i rep un advertiment abans de carregar llocs web que no admeten aquest protocol</translation>
+<translation id="8349305172487531364">Barra d'adreces d'interès</translation>
 <translation id="8354977102499939946">Cerca ràpidament amb la veu. Per editar aquesta drecera, ves a Configuració.</translation>
 <translation id="8361737703487394103">Ves a una pestanya específica (1-8)</translation>
 <translation id="8368001212524806591">Fes un seguiment del preu</translation>

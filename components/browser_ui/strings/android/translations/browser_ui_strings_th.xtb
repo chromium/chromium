@@ -83,6 +83,7 @@
 <translation id="1818308510395330587">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> ใช้ AR ให้เปิดใช้กล้องใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
 <translation id="1822318649925991542">สลับตำแหน่งเพื่อปรับแต่งประสบการณ์การท่องเว็บ</translation>
 <translation id="1848033246551405023">แบบอักษร Sans Serif</translation>
+<translation id="1861244985839668297">เมื่อเปิด เว็บไซต์จะขอใช้อุปกรณ์ HID ได้ เมื่อปิด เว็บไซต์จะใช้อุปกรณ์ HID ไม่ได้</translation>
 <translation id="1861262398884155592">โฟลเดอร์นี้ว่างเปล่า</translation>
 <translation id="1881806992065048905">Bottom Sheet ลักษณะที่ปรากฏของหน้าแท็บใหม่</translation>
 <translation id="1887786770086287077">ตอนนี้ตำแหน่งสำหรับอุปกรณ์เครื่องนี้ปิดอยู่ เปิดตำแหน่งได้ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>

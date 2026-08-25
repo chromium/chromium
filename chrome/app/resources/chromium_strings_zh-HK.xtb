@@ -153,7 +153,6 @@
 <translation id="2620436844016719705">系統</translation>
 <translation id="2629740064077610681">機構可查看和管理瀏覽資料 (例如書籤、記錄和密碼)，但無法查看其他 Chromium 設定檔中的瀏覽資料</translation>
 <translation id="2635452620547538388">請驗證你的身分，以在帳戶 <ph name="ACCOUNT_EMAIL" /> 中使用及儲存 Chromium 資料</translation>
-<translation id="2636783171884046627">使用鍵盤快速鍵離開或返回 Chromium 版 Gemini。</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{「進階保護功能」要求你重新啟動 Chromium 以套用更新}=1{「進階保護功能」要求你重新啟動 Chromium 以套用更新。無痕式視窗不會重新開啟。}other{「進階保護功能」要求你重新啟動 Chromium 以套用更新。# 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="263863604136125912">啟用 Chromium</translation>
 <translation id="2648074677641340862">安裝期間發生作業系統錯誤，請再次下載 Chromium。</translation>
@@ -444,6 +443,7 @@
 <translation id="5977420883993828287">已固定！你可透過工具列再次使用「內容相關工作」</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{根據機構規定，Chromium 會在閒置 1 分鐘後自動關閉。}other{根據機構規定，Chromium 會在閒置 # 分鐘後自動關閉。}}</translation>
 <translation id="5987687638152509985">更新 Chromium 即可開始同步</translation>
+<translation id="5990360079535151574">你可透過工具列上的「內容相關工作」按鈕，重新開啟「內容相關工作」以在瀏覽時提問</translation>
 <translation id="6003112304606738118">正在下載… 剩餘 <ph name="HOURS" /> 小時</translation>
 <translation id="6009821354356307391">繼續提問</translation>
 <translation id="6040143037577758943">關閉</translation>
@@ -593,6 +593,7 @@
 <translation id="7318036098707714271">您的偏好設定檔案已損毀或無效。
 
 Chromium 無法復原您的設定。</translation>
+<translation id="7324051657739063017">你可重新開啟「內容相關工作」以在瀏覽時提問</translation>
 <translation id="734373864078049451">您瀏覽的網頁、書籤和其他 Chromium 內容都在這裡。</translation>
 <translation id="7347827960336370838">只有知道密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 亦不會儲存密碼短語。如果忘記密碼短語或想變更此設定，你需要<ph name="BEGIN_LINK" />刪除帳戶中的 Chromium 資料<ph name="END_LINK" /></translation>
 <translation id="7349591376906416160">系統管理員已設定由 Chromium 開啟 <ph name="ALTERNATIVE_BROWSER_NAME" /> 以存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>

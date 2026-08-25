@@ -1814,7 +1814,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2413009156320833859">Mit Erweiterungen aus dem <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" /> kannst du deinen Browser noch weiter personalisieren.</translation>
 <translation id="2414159296888870200">Suche nach <ph name="MODULE_TITLE" /> fortsetzen</translation>
 <translation id="2414886740292270097">Dunkel</translation>
-<translation id="2415117815770324983">Du wirst von den meisten Websites abgemeldet. Du bleibst aber weiterhin in deinem Google-Konto angemeldet.</translation>
 <translation id="2416435988630956212">Funktionstasten der Tastatur</translation>
 <translation id="2419131370336513030">Installierte Apps anzeigen</translation>
 <translation id="2419706071571366386">Melde dich zur Sicherheit ab, wenn dein Computer nicht verwendet wird.</translation>
@@ -1965,7 +1964,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
         <ph name="BREAK" />
         Über das Kartenmenü kannst du die Einstellungen verwalten und unter „Chrome anpassen“ kannst du weitere Optionen aufrufen.</translation>
 <translation id="2514465118223423406">Wenn eine Maus angeschlossen ist</translation>
-<translation id="2514938842036917377">Dadurch werden <ph name="TOTAL_USAGE" /> Daten gelöscht, die von <ph name="SITE_NAME" />, ähnlichen Websites oder installierten Apps gespeichert wurden</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Nutzernamen bestätigen</translation>
 <translation id="2517472476991765520">Scannen</translation>
@@ -3643,7 +3641,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3776508619697147021">Websites dürfen nachfragen, ob sie automatisch mehrere Dateien herunterladen dürfen</translation>
 <translation id="3776796446459804932">Diese Erweiterung verletzt die Chrome Web Store-Richtlinien.</translation>
 <translation id="3777483481409781352">Mobilgerät konnte nicht aktiviert werden</translation>
-<translation id="3777796259512476958">Du wirst von den meisten Websites abgemeldet</translation>
 <translation id="3778208826288864398">Der Sicherheitsschlüssel wurde gesperrt, weil zu oft die falsche PIN eingegeben wurde. Du musst den Sicherheitsschlüssel zurücksetzen.</translation>
 <translation id="3778740492972734840">E&amp;ntwicklertools</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{dein Browserverlauf von # Website}other{dein Browserverlauf von # Websites}}</translation>
@@ -4504,7 +4501,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4432621511648257259">Falsches Passwort</translation>
 <translation id="4434611816075088065">Derzeit musst du nichts überprüfen</translation>
 <translation id="4435020454241191356">Füge einen Namen oder ein Label für dein Profil hinzu</translation>
-<translation id="443503224864902151">Hiermit wirst du von den meisten Websites abgemeldet. Du bleibst jedoch in deinem Google-Konto angemeldet, sodass deine synchronisierten Daten gelöscht werden können.</translation>
 <translation id="4436201444922652535">Links</translation>
 <translation id="443719869834432257">Ereignistyp: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Speichern von Passwörtern und Passkeys anbieten</translation>
@@ -8340,7 +8336,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="744366959743242014">Die Daten werden geladen. Das kann einige Sekunden dauern.</translation>
 <translation id="7443806024147773267">Überall dort, wo du mit deinem Google-Konto angemeldet bist, kannst du auf deine Passwörter zugreifen</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookies werden heute wieder blockiert}=1{Cookies werden morgen wieder blockiert}other{Noch # Tage, bis Cookies wieder blockiert werden}}</translation>
-<translation id="7446716846072322308">Dadurch werden <ph name="TOTAL_USAGE" /> Daten gelöscht, die von <ph name="SITE_NAME" /> und ähnlichen Websites gespeichert wurden</translation>
 <translation id="7448430327655618736">Apps automatisch installieren</translation>
 <translation id="7448664748118305024">Websitedaten löschen, die auf deinem Gerät gespeichert wurden, wenn du alle Fenster schließt</translation>
 <translation id="7449806939046594699">Deine Organisation hat das Kopieren dieses Inhalts blockiert</translation>
@@ -9738,7 +9733,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8533670235862049797">Safe Browsing ist aktiviert</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Die Tabs bleiben auf diesem Gerät geöffnet, aber die Gruppe wird von allen Geräten gelöscht, die im Konto <ph name="EMAIL" /> angemeldet sind}other{Die Tabs bleiben auf diesem Gerät geöffnet, aber die Gruppen werden von allen Geräten gelöscht, die im Konto <ph name="EMAIL" /> angemeldet sind}}</translation>
 <translation id="8535005006684281994">Verlängerungs-URL für Netscape-Zertifikate</translation>
-<translation id="8536810348276651776">Du wirst von den meisten Websites abgemeldet. Du bleibst jedoch in deinem Google-Konto angemeldet, sodass deine Family Link-Einstellungen für Chrome Anwendung finden.</translation>
 <translation id="8536956381488731905">Ton bei Tastendruck</translation>
 <translation id="8539727552378197395">Nein (nur HTTP)</translation>
 <translation id="8540136935098276800">Bitte gib eine korrekt formatierte URL ein</translation>

@@ -695,6 +695,7 @@
 <translation id="325717987950204592">แตะ "ความเป็นส่วนตัวและความปลอดภัย"</translation>
 <translation id="3259451381796379533">บัญชีนี้จะใช้กับ Gemini ไม่ได้ ลงชื่อเข้าใช้ด้วยบัญชี Google บัญชีอื่น</translation>
 <translation id="3265736395246760288">ลงชื่อเข้าใช้ได้เร็วขึ้นจากอุปกรณ์ที่ซิงค์ไว้</translation>
+<translation id="3268166994745151153">การดำเนินการนี้จะทำให้คุณสูญเสียความคืบหน้าปัจจุบัน</translation>
 <translation id="3272527697863656322">ยกเลิก</translation>
 <translation id="3272955648592358996">ข้อมูลของคุณจะปรับปรุง Google AI</translation>
 <translation id="3273510436356991673">ปรับแต่งหน้าจอหลัก</translation>
@@ -1098,6 +1099,7 @@
 <translation id="4652817563047461855">ตรวจสอบว่ารหัสผ่านปลอดภัย ดูว่ารหัสผ่านถูกละเมิดหรือไม่ และรับคำแนะนำที่จะช่วยปกป้องตัวคุณบนโลกออนไลน์ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">เปิดการแชร์แท็บ</translation>
 <translation id="4658335131052370646">บันทึก</translation>
+<translation id="465947902531722727">สลับโปรไฟล์</translation>
 <translation id="466307903888586355">องค์กรของคุณบล็อกการบันทึกไฟล์</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">องค์กรกำหนดให้คุณเรียกดูแบบส่วนตัว กลุ่มแท็บจะไม่ซิงค์ในโหมดไม่ระบุตัวตน
@@ -1208,6 +1210,7 @@
 <translation id="4979397965658815378">ลงชื่อเข้าใช้บัญชี Google เพื่อรับบุ๊กมาร์ก รหัสผ่าน ประวัติการเข้าชม และการตั้งค่าอื่นๆ บนอุปกรณ์ทั้งหมดของคุณ</translation>
 <translation id="4985921635659180565">เมื่อตั้งเวลาลบไฟล์แล้ว จะยกเลิกไม่ได้</translation>
 <translation id="498624032394115435">ทุกคนที่มีลิงก์จะแก้ไขแท็บทั้งหมดได้</translation>
+<translation id="498768198683310172">เริ่มใช้งาน Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> จัดการโดยองค์กร</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" /> <ph name="AI_TIER" /></translation>
 <translation id="4992255726304765516">สีของกลุ่มแท็บ <ph name="COLOR" /></translation>
@@ -2153,6 +2156,7 @@
 <translation id="8011489434346330032">เครื่องมือตรวจสอบเว็บ</translation>
 <translation id="8014007212279733632">ยืนยันว่าเป็นคุณเพื่อป้อนข้อมูลที่ละเอียดอ่อนโดยอัตโนมัติ</translation>
 <translation id="8015826420689927262">ลบไฟล์แนบ</translation>
+<translation id="8016869623424294549">คุณกำลังจะสลับโปรไฟล์</translation>
 <translation id="8017015647846870183">จากเครื่องมือจัดการรหัสผ่านบน Google ซึ่งรวมถึงรหัสผ่านและพาสคีย์</translation>
 <translation id="802154636333426148">การดาวน์โหลดล้มเหลว</translation>
 <translation id="8023170444051056234">คุณจะเสียสิทธิ์เข้าถึงกลุ่มแท็บ "<ph name="GROUP_NAME" />" ทันที และระบบจะลบกลุ่มออกจากอุปกรณ์ของคุณทุกเครื่อง</translation>

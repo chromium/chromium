@@ -186,6 +186,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1778457539567749232">Označit jako nepřečtené</translation>
 <translation id="1779766957982586368">Zavřít okno</translation>
 <translation id="1780023393214832643">Hesla uložená do účtu <ph name="USERNAME" /></translation>
+<translation id="1789543093145556097">Vždy skrýt</translation>
 <translation id="1791662854739702043">Nainstalováno</translation>
 <translation id="1792959175193046959">Výchozí umístění pro stažené soubory můžete kdykoliv změnit.</translation>
 <translation id="1796666869097395659">Minimalizovat kartu, abyste se k ní mohli vrátit později</translation>
@@ -522,6 +523,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3075397426753215787">Vyberte zařízení.</translation>
 <translation id="3080375898390966733">Vyhledat kartu pomocí Google Lens</translation>
 <translation id="3080525922482950719">Stránky si můžete uložit a přečíst si je později nebo v režimu offline</translation>
+<translation id="3082989400996696487">Zobrazovat pouze na stránce Nová karta</translation>
 <translation id="3087734570205094154">Až dolů</translation>
 <translation id="3091010850649238832">Zobrazit obsah schránky</translation>
 <translation id="3098745985164956033">Za účelem zlepšení popisů se některé obrázky odesílají do Googlu</translation>
@@ -767,6 +769,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4164642020717536140">Rychlé a bezpečné prohlížení webu</translation>
 <translation id="4165077084524712774">Další nástroje</translation>
 <translation id="4170577491341606575">Načítání vašich věcí\u2026</translation>
+<translation id="4172051516777682613">Vždy zobrazovat</translation>
 <translation id="4176838562184310003">Chrome nebyl řádně ukončen a může se pokusit obnovit ztracená okna a karty. Některá okna se možná při obnovení minimalizují.</translation>
 <translation id="4177222230309051052">Získejte všechny své záložky</translation>
 <translation id="417865198503699526">Vyhledat nastavení</translation>
@@ -885,7 +888,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4599585406846903742">Zobrazení jedné stránky</translation>
 <translation id="4601095002996233687">Hloubkové kontroly podezřelých souborů ke stažení.</translation>
 <translation id="4606559747793337066">Když web nebo aplikace požádá o soukromé předběžné načtení odkazů na stránce, Chrome stránky zašifruje a předběžně načte prostřednictvím serverů Google bez souborů cookie. To před předběžně načítaným webem skryje vaši identitu.</translation>
-<translation id="4616150815774728855">Do aplikace <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619615317237390068">Karty z ostatních zařízení</translation>
 <translation id="4624065194742029982">Anonymní režim prohlížeče Chrome</translation>
 <translation id="4634124774493850572">Použít heslo</translation>
@@ -1851,6 +1853,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="834313815369870491">Weby nikdy nepřekládat</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, jedna z několika vybraných připnutých nahrávajících anonymních karet</translation>
 <translation id="8348430946834215779">Používejte HTTPS, kdykoli je to možné, a nechte se upozornit, než načtete web, který tento protokol nepodporuje</translation>
+<translation id="8349305172487531364">Lišta záložek</translation>
 <translation id="8354977102499939946">Rychle vyhledávat hlasem. Tuto zkratku můžete upravit v Nastavení.</translation>
 <translation id="8361737703487394103">Přejít na konkrétní kartu (1–8)</translation>
 <translation id="8368001212524806591">Sledovat cenu</translation>

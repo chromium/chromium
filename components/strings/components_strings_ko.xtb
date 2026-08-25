@@ -632,6 +632,7 @@
 <translation id="2090451897496479509">자세한 내용은 제공업체에 문의하세요</translation>
 <translation id="2090686487550343086">IBAN</translation>
 <translation id="2091887806945687916">소리</translation>
+<translation id="2092361763640578821">다음에 대해 자세히 알아보기</translation>
 <translation id="2093184051799735948"><ph name="ENGINE_NAME" /> 검색 또는 URL 입력</translation>
 <translation id="2093982008204312032">Chrome에서 비밀번호 입력에 Windows Hello를 사용하지 않으려고 합니다.</translation>
 <translation id="2094505752054353250">도메인이 일치하지 않음</translation>
@@ -1542,6 +1543,7 @@
 <translation id="3642638418806704195">애플리케이션:</translation>
 <translation id="3647286794400715637">모든 URL 문자열 항목에는 1~2개의 URL이 포함되어야 합니다.</translation>
 <translation id="3647400963805615193">Chrome 도움말 닫기 버튼, Enter 키를 눌러 닫기, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
+<translation id="3647730822767756911">활동 모니터링</translation>
 <translation id="3648667207586409316">스트레스를 줄이기 위해 뭘 할 수 있을까?</translation>
 <translation id="3650584904733503804">유효성 검사 성공</translation>
 <translation id="3650594806107685466">카드의 보안을 위해 <ph name="SIDE_OF_CARD" />의 CVC를 입력하세요.</translation>
@@ -2004,6 +2006,7 @@
 <translation id="4377869186417956230">이 메뉴 항목에서 모든 포인트 카드로 변경합니다.</translation>
 <translation id="4378154925671717803">전화</translation>
 <translation id="4378221908737133050">집 대청소 체크리스트를 만들어 줘</translation>
+<translation id="4379357028567121852">출처: <ph name="APP_NAME" /></translation>
 <translation id="4381997246130185847">중단한 부분부터 이어서 진행하거나 이동 중에 새 탭 그룹을 만들 수 있습니다.</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">이제부터 클라우드 스토리지에 파일을 저장하세요.</translation>
@@ -2393,6 +2396,7 @@
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" />을(를) 찾으셨나요?</translation>
 <translation id="5066056036849835175">인쇄 기록</translation>
 <translation id="5068524481479508725">A10</translation>
+<translation id="5068915318814087203">데이터 손실을 방지하기 위해 조직에서 특정 탐색 활동을 모니터링할 수 있습니다. 자세한 내용은 <ph name="BEGIN_LINK" />chrome://management<ph name="END_LINK" />를 참고하세요.</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />프록시 주소 확인<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">10번째 롤</translation>
 <translation id="507130231501693183">메일박스 4</translation>
@@ -2757,6 +2761,7 @@
 <translation id="5659593005791499971">이메일</translation>
 <translation id="5660122698869360728">새로운 스마트 폴더를 통해 모든 쇼핑 페이지를 한곳에 저장하고, 자동으로 가격을 추적하고, 가격 정보를 확인하는 등 다양한 작업을 할 수 있습니다.</translation>
 <translation id="5663955426505430495">이 기기의 관리자가 추가 기능을 위한 확장 프로그램을 설치했습니다. 확장 프로그램에는 내 데이터 중 일부에 액세스할 권한이 있습니다.</translation>
+<translation id="5664075349639500330">분리 모드에서 탐색하는 방법 자세히 알아보기</translation>
 <translation id="5675650730144413517">페이지가 작동하지 않습니다.</translation>
 <translation id="5675959228867414813">날짜별로 표시</translation>
 <translation id="567604591393105935">상거래 하단 시트가 절반 높이로 열림</translation>
@@ -3269,6 +3274,7 @@
 <translation id="6547208576736763147">왼쪽 2공 펀칭</translation>
 <translation id="6550245281449521513">마우스 잠금이 허용되지 않음</translation>
 <translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />, new</translation>
+<translation id="6552244083450538912">방문한 웹사이트, 고용주 또는 학교, 인터넷 서비스 제공업체(ISP)에서 내 활동을 볼 수 있습니다.</translation>
 <translation id="6552566579578780089">결제</translation>
 <translation id="6553777254569586547"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_TYPE" />. <ph name="GROUP_HEADER" /> 그룹의 <ph name="NUM_MATCHES_IN_GROUP" />개 중 <ph name="MATCH_POSITION" />번째 항목입니다.</translation>
 <translation id="6554732001434021288">최근 방문: <ph name="NUM_DAYS" />일 전</translation>
@@ -3503,6 +3509,7 @@
 <translation id="6972867931824045907">클립보드를 사용하려면 <ph name="LINK" />에서 Chrome에 액세스 권한을 부여하세요.</translation>
 <translation id="6973656660372572881">고정 프록시 서버와 .pac 스크립트 URL이 모두 지정되어 있습니다.</translation>
 <translation id="6973988895180423160">3.5x5인치</translation>
+<translation id="6976229914347655621">조직에서 요구하는 확장 프로그램은 계속 사용 설정된 상태로 유지됩니다. 자세한 내용은 <ph name="BEGIN_LINK" />chrome://extensions<ph name="END_LINK" />에서 확인하세요.</translation>
 <translation id="6978236010531171013">무시하고 공유</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">음소거(기본값)</translation>
@@ -3669,6 +3676,7 @@
 <translation id="7269151392155523061">바로가기는 <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />에서 정의한 검색 애그리게이터 키워드와 같을 수 없습니다. <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">다운로드한 파일은 분석을 위해 Google Cloud 또는 서드 파티로 전송됩니다. 예를 들어, 민감한 정보 또는 멀웨어를 찾기 위해 파일을 스캔할 수 있으며 회사 정책에 따라 보관되어 관리자가 볼 수도 있습니다.</translation>
 <translation id="7275334191706090484">관리 북마크</translation>
+<translation id="7278933725460302617">이제 분리 모드가 사용 설정되었습니다</translation>
 <translation id="7282894295403887199">시크릿 모드에서는 이 페이지를 방문할 수 없습니다</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Google 계정 비밀번호 변경</translation>
 <translation id="7286908876112207905">이 사이트에는 이 콘텐츠를 붙여넣을 수 없습니다</translation>
@@ -3840,6 +3848,7 @@
 <translation id="7554791636758816595">새 탭</translation>
 <translation id="7556328470713619625">패스키 사용</translation>
 <translation id="7559278538486662777">이 앱은 크기를 조절할 수 없습니다.</translation>
+<translation id="7561202748196702434">분리 모드에서 탐색</translation>
 <translation id="7561784249784255101">디지털 다용도 디스크</translation>
 <translation id="7564049878696755256"><ph name="ORG_NAME" /> 계정에 액세스할 수 없게 되거나 신원 도용이 발생할 수도 있습니다. 따라서 지금 비밀번호를 변경하는 것이 좋습니다.</translation>
 <translation id="7567204685887185387">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 서버의 보안 인증서가 부정한 방식으로 발행되었을 수 있습니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
@@ -4375,6 +4384,7 @@
 <translation id="8473626140772740486">300x450mm</translation>
 <translation id="8473863474539038330">주소 및 기타</translation>
 <translation id="8474910779563686872">개발자 세부정보 표시</translation>
+<translation id="84764251640219124">사이트에서 서드 파티 쿠키를 사용하지 못하도록 차단되었습니다. 이러한 쿠키를 사용하는 사이트가 작동하지 않는 경우 <ph name="BEGIN_LINK" />사이트에 서드 파티 쿠키에 대한 임시 액세스 권한을 부여<ph name="END_LINK" />해 보세요.</translation>
 <translation id="8479754468255770962">왼쪽 하단 스테이플</translation>
 <translation id="8483229036294884935">이 주소가 Google 계정(<ph name="ACCOUNT" />)에서 삭제됩니다.</translation>
 <translation id="8488350697529856933">적용 대상</translation>
@@ -4441,6 +4451,7 @@
 <translation id="8619130384334725124">현재 기본값</translation>
 <translation id="8620276786115098679">봉투 Kaku 7</translation>
 <translation id="8622864575115813231">금융 기관에 문의 중…</translation>
+<translation id="8632584659860846053">모든 보안 시크릿 창을 닫으면 방문 기록, 쿠키 및 사이트 데이터, 캐시, 양식에 입력한 정보가 삭제됩니다.</translation>
 <translation id="8634957317623797170">54x86mm</translation>
 <translation id="8637362707224133343">Chrome에는 Google 세이프 브라우징과 같이 인터넷을 사용하는 동안 사용자를 보호해 주는 안전 기능이 내장되어 있으며, 사용자님이 방문하려고 한 사이트에서 <ph name="BEGIN_LINK" />최근에 피싱을 발견<ph name="END_LINK" />했습니다. 피싱 사이트는 사용자를 속이기 위해 다른 사이트인 것처럼 가장합니다.<ph name="NEW_LINE" />평소에 안전한 사이트도 가끔은 공격자에 의해 해킹당할 수 있습니다. 세이프 브라우징 기능의 오류이며 이 사이트가 위험을 초래하고 있지 않다고 생각되면 <ph name="BEGIN_ERROR_LINK" />Google에 알려주시기 바랍니다<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">탭을 공유하고 다른 사용자와 공동작업하려면 Chrome에 로그인할 수 있어야 합니다.</translation>

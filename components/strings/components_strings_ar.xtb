@@ -465,6 +465,7 @@
 <translation id="1757773103848038814">‏خط Monospace</translation>
 <translation id="1757935267918149452">‏زر تغيير كلمة مرور Google: انقر على هذا الزر لتغيير كلمة مرور حسابك على Google.</translation>
 <translation id="1759776526873274358">‏تملأ هذه الميزة تلقائيًا رموز التحقّق التي تستخدمها المواقع الإلكترونية لتحسين مستوى الأمان. ويمكن لمتصفّح Chrome الحصول على هذه الرموز من حسابك على Gmail. <ph name="BEGIN_LINK" />مزيد من المعلومات حول هذه الميزة<ph name="LINK_END" /></translation>
+<translation id="176013700366797492">‏يمكنك الانتقال إلى "محفظة Google" للتحكّم في <ph name="BEGIN_LINK1" />الإعدادات المفضَّلة للبيانات والخصوصية<ph name="END_LINK1" /> أو إدارة <ph name="BEGIN_LINK2" />طُرق الدفع<ph name="END_LINK2" /> و<ph name="BEGIN_LINK3" />البطاقات<ph name="END_LINK3" /> مثل بطاقات الولاء ومستندات تعريف الهوية</translation>
 <translation id="1763864636252898013">هذا الخادم لم يتمكن من إثبات أن ذلك <ph name="DOMAIN" />؛ بل إنه شهادة أمان غير موثوقة من خلال نظام تشغيل جهازك. وربما يكون السبب في ذلك خطأ في التكوين أو مهاجمًا يعترض الاتصال.</translation>
 <translation id="1768211456781949159">‏<ph name="BEGIN_LINK" />تجربة تشغيل بيانات التشخيص لشبكة Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">تصوير (أرشفة)</translation>
@@ -788,6 +789,7 @@
 <translation id="2321291402658100099">إدارة المعلومات</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{نافذة واحدة}zero{‫# نافذة}two{نافذتان}few{‫# نوافذ}many{‫# نافذة}other{‫# نافذة}}</translation>
 <translation id="232390861414237658">‏في حال حفظ هذه البطاقة لاستخدامها مع Google Pay، سيتم ملء بياناتها تلقائيًا لإجراء عمليات الشراء من خلال Chrome</translation>
+<translation id="2325722389016720813">يُرجى الضغط على السهم المتجه للأعلى أو للأسفل لعرض قائمة الإكمال التلقائي، أو بدء الكتابة لإكمال النص تلقائيًا.</translation>
 <translation id="2326283484705860548">‏يمكنك الآن ملء المزيد من المعلومات تلقائيًا من "محفظة Google"</translation>
 <translation id="2326747055382936979">إدارة ميزة "الملء التلقائي المحسّن"</translation>
 <translation id="2328651992442742497">مسموح به (الإعداد التلقائي)</translation>

@@ -153,7 +153,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2620436844016719705">Système</translation>
 <translation id="2629740064077610681">Votre organisation peut consulter et gérer les données de navigation, comme vos favoris, votre historique et vos mots de passe. Elle ne peut pas consulter les données de navigation dans d'autres profils Chromium</translation>
 <translation id="2635452620547538388">Confirmez votre identité pour utiliser et enregistrer les données Chromium dans votre compte, <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="2636783171884046627">Pour quitter Gemini dans Chromium ou y revenir, utilisez un raccourci-clavier.</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{La protection avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour}=1{La protection avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour. Votre fenêtre de navigation privée ne sera pas rouverte.}one{La protection avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour. # fenêtre de navigation privée ne sera pas rouverte.}other{La protection avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour. Vos # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="263863604136125912">Lancer Chromium</translation>
 <translation id="2648074677641340862">Une erreur de système d'exploitation s'est produite pendant l'installation. Veuillez télécharger de nouveau Chromium.</translation>

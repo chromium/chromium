@@ -465,6 +465,7 @@
 <translation id="1757773103848038814">等寬字型</translation>
 <translation id="1757935267918149452">改 Google 密碼按鈕，啟動之後就可以喺變更 Google 帳戶密碼</translation>
 <translation id="1759776526873274358">自動填入網站用來加強安全的驗證碼。Chrome 可從你的 Gmail 取得這些驗證碼。<ph name="BEGIN_LINK" />進一步瞭解此功能<ph name="LINK_END" /></translation>
+<translation id="176013700366797492">前往「Google 錢包」控制<ph name="BEGIN_LINK1" />資料和私隱偏好設定<ph name="END_LINK1" />，或管理<ph name="BEGIN_LINK2" />付款方法<ph name="END_LINK2" />和<ph name="BEGIN_LINK3" />票卡<ph name="END_LINK3" /> (例如會員卡和 ID)</translation>
 <translation id="1763864636252898013">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證未取得您裝置的操作系統的信任。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />嘗試執行 Windows 網絡診斷<ph name="END_LINK" />。</translation>
 <translation id="1777422078676229054">相紙 (封存用)</translation>
@@ -788,6 +789,7 @@
 <translation id="2321291402658100099">管理資料</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 個視窗}other{# 個視窗}}</translation>
 <translation id="232390861414237658">只要將此卡儲存至 Google Pay，就能在 Chrome 中購物時自動填入卡資料</translation>
+<translation id="2325722389016720813">㩒向上或向下箭咀就可以睇到自動完成建議。輸入文字就會自動完成。</translation>
 <translation id="2326283484705860548">你現在可自動填入更多「Google 錢包」資料</translation>
 <translation id="2326747055382936979">管理加強版自動填入</translation>
 <translation id="2328651992442742497">已允許 (預設)</translation>
@@ -2172,6 +2174,7 @@
 <translation id="4711628883879888561">協作建立分頁群組</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4714279348049646935">根據學分時數、課程等級和成績點值加權計算 GPA</translation>
+<translation id="4717533164160330041">如要使用此功能，請先在 Gmail 開啟智能功能</translation>
 <translation id="471880041731876836">您沒有此網站的瀏覽權限</translation>
 <translation id="4718897478554657123">600 x 900 毫米</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />執行 Windows 網絡診斷<ph name="END_LINK" /></translation>
@@ -2827,6 +2830,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">此付款方法將從此裝置上刪除</translation>
 <translation id="5794065675298686371">開啟價格追蹤通知</translation>
+<translation id="5796050750059455142">開啟「<ph name="BEGIN_LINK" />其他 Google 產品的智能功能<ph name="LINK_END" />」</translation>
 <translation id="5797984091151707075">已被管理員政策封鎖</translation>
 <translation id="5804241973901381774">權限</translation>
 <translation id="5806871454498484178">已封鎖捲動和縮放</translation>
@@ -3134,6 +3138,7 @@
 <translation id="6329742260390895689">如要自動填入資料，請在「錢包」設定中開啟「在 Google 使用票卡」</translation>
 <translation id="6329815962353376655">&lt;輸入問題&gt;</translation>
 <translation id="633348045801643466">在結帳頁面顯示<ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />稍後付款<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" />選項</translation>
+<translation id="6335364777769284858">在 <ph name="BEGIN_LINK" />Gmail 設定<ph name="LINK_END" />中開啟「智能功能」</translation>
 <translation id="6336948221660696475">不允許使用 VR</translation>
 <translation id="6337534724793800597">依名稱篩選政策</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> 的值無效，系統將不會使用該值。</translation>

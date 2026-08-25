@@ -1824,7 +1824,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2413009156320833859">Tilpass nettleseren din enda mer med utvidelser fra <ph name="BEGIN_LINK1" />Chrome Nettmarked<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Gjenoppta surfingen for <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Mørk</translation>
-<translation id="2415117815770324983">Du blir logget av de fleste nettsteder. Du forblir logget på Google-kontoen din.</translation>
 <translation id="2416435988630956212">Funksjonstaster på tastaturet</translation>
 <translation id="2419131370336513030">Se installerte apper</translation>
 <translation id="2419706071571366386">Av sikkerhetsårsaker bør du logge av når datamaskinen ikke er i bruk.</translation>
@@ -1975,7 +1974,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
         <ph name="BREAK" />
         Du kan administrere innstillinger via kortmenyen eller se flere alternativer i Tilpass Chrome.</translation>
 <translation id="2514465118223423406">Når en mus er koblet til</translation>
-<translation id="2514938842036917377">Dette medfører sletting av <ph name="TOTAL_USAGE" /> data som er lagret av <ph name="SITE_NAME" />, relaterte nettsteder og installerte apper</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Bekreft brukernavnet ditt</translation>
 <translation id="2517472476991765520">Skann</translation>
@@ -3655,7 +3653,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3776508619697147021">Nettsteder kan be om å få laste ned flere filer automatisk</translation>
 <translation id="3776796446459804932">Denne utvidelsen strider med retningslinjene for Chrome Nettmarked.</translation>
 <translation id="3777483481409781352">Kunne ikke aktivere mobilenheten</translation>
-<translation id="3777796259512476958">Logger deg av de fleste nettsteder</translation>
 <translation id="3778208826288864398">Sikkerhetsnøkkelen er låst fordi feil PIN-kode ble skrevet inn for mange ganger. Du må tilbakestille sikkerhetsnøkkelen.</translation>
 <translation id="3778740492972734840">&amp;Utviklerverktøy</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{nettleserloggen din for # nettsted}other{nettleserloggen din for # nettsteder}}</translation>
@@ -4514,7 +4511,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4432621511648257259">Passordet er feil</translation>
 <translation id="4434611816075088065">Det er ikke noe mer du trenger å ta stilling til akkurat nå</translation>
 <translation id="4435020454241191356">Legg til et navn eller en etikett for profilen din</translation>
-<translation id="443503224864902151">Logger deg av de fleste nettsteder. Du forblir pålogget Google-kontoen din, slik at de synkroniserte dataene dine kan slettes.</translation>
 <translation id="4436201444922652535">Linker</translation>
 <translation id="443719869834432257">Aktivitetstype: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Bli tilbudt å lagre passord og passnøkler</translation>
@@ -8352,7 +8348,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="744366959743242014">Laster inn data. Dette kan ta noen sekunder.</translation>
 <translation id="7443806024147773267">Få tilgang til passordene dine når du er logget på Google-kontoen</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Informasjonskapsler blir blokkert igjen i dag}=1{Informasjonskapsler blir blokkert igjen i morgen}other{# dager til informasjonskapsler blir blokkert igjen}}</translation>
-<translation id="7446716846072322308">Dette medfører sletting av <ph name="TOTAL_USAGE" /> data som er lagret av <ph name="SITE_NAME" /> og relaterte nettsteder</translation>
 <translation id="7448430327655618736">installere apper automatisk</translation>
 <translation id="7448664748118305024">Slett data som nettsteder har lagret på enheten din, når du lukker alle vinduer</translation>
 <translation id="7449806939046594699">Organisasjonen din har blokkert kopiering av dette innholdet</translation>
@@ -9750,7 +9745,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8533670235862049797">Safe Browsing er på</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Fanene forblir åpne på denne enheten, men gruppen blir slettet fra alle enheter som er logget på <ph name="EMAIL" />}other{Fanene forblir åpne på denne enheten, men gruppene blir slettet fra alle enheter som er logget på <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">Fornying av Netscape-sertifikat for nettadresse</translation>
-<translation id="8536810348276651776">Logger deg av de fleste nettsteder. Du forblir pålogget Google-kontoen din, slik at Family Link-innstillingene for Chrome fortsetter å gjelde.</translation>
 <translation id="8536956381488731905">Lyd ved tastetrykk</translation>
 <translation id="8539727552378197395">Nei (kun http)</translation>
 <translation id="8540136935098276800">Skriv inn en riktig formatert nettadresse</translation>

@@ -1819,7 +1819,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2413009156320833859"><ph name="BEGIN_LINK1" />Chrome Veb Marketdən<ph name="END_LINK1" /> əldə edilən artırmalar ilə brauzeri daha da fərdiləşdirin</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> üçün baxmağa davam edin</translation>
 <translation id="2414886740292270097">Qara</translation>
-<translation id="2415117815770324983">Əksər saytlardan çıxacaqsınız. Google Hesabına daxil olmuş kimi qalacaqsınız.</translation>
 <translation id="2416435988630956212">Klaviaturanın funksiya düymələri</translation>
 <translation id="2419131370336513030">Quraşdırılmış tətbiqlərə baxın</translation>
 <translation id="2419706071571366386">Təhlükəsizliyiniz üçün kompüterdən istifadə etmədikdə çıxış edin.</translation>
@@ -1971,7 +1970,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
         <ph name="BREAK" />
         Kart menyusunda ayarları idarə edə və ya Chrome-u fərdiləşdirin bölməsində digər seçimlərə baxa bilərsiniz.</translation>
 <translation id="2514465118223423406">Maus qoşulduqda</translation>
-<translation id="2514938842036917377">Bununla <ph name="SITE_NAME" /> və əlaqədar saytlar, quraşdırılmış tətbiqlər tərəfindən saxlanılan <ph name="TOTAL_USAGE" /> data silinəcək</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">İstifadəçi adınızı təsdiq edin</translation>
 <translation id="2517472476991765520">Skan edin</translation>
@@ -3651,7 +3649,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3776508619697147021">Saytlar çoxsaylı faylları avtomatik olaraq endirmək üçün icazə istəyə bilər</translation>
 <translation id="3776796446459804932">Bu artırma Chrome Veb Market qaydalarını pozur.</translation>
 <translation id="3777483481409781352">Mobil cihaz aktiv edilmədi</translation>
-<translation id="3777796259512476958">Əksər saytlardan çıxacaqsınız</translation>
 <translation id="3778208826288864398">Həddindən çox yanlış PIN daxil edildiyinə görə güvənlik açarı kilidləndi. Güvənlik açarını sıfırlamalısınız.</translation>
 <translation id="3778740492972734840">&amp;Developer alətləri</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{# sayt üzrə brauzer tarixçəniz}other{# sayt üzrə brauzer tarixçəniz}}</translation>
@@ -4510,7 +4507,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4432621511648257259">Parol yanlışdır</translation>
 <translation id="4434611816075088065">Nəzərdən keçiriləcək heç nə yoxdur</translation>
 <translation id="4435020454241191356">Profiliniz üçün ad və ya etiket əlavə edin</translation>
-<translation id="443503224864902151">Bir çox saytlardan çıxış edəcəksiniz. Google Hesabına daxil olmuş vəziyyətdə qalacaqsınız ki, sinxronlaşdırılmış data silinsin.</translation>
 <translation id="4436201444922652535">Keçidlər</translation>
 <translation id="443719869834432257">Tədbirin növü: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Parol və giriş açarlarını yadda saxlamağı təklif edin</translation>
@@ -8351,7 +8347,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="744366959743242014">Bir az səbr edin; data yüklənilir.</translation>
 <translation id="7443806024147773267">Google Hesabına hər dəfə daxil olduğunuz zaman parollarınızı əldə edin</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Kukilər bu gün yenidən bloklanacaq}=1{Kukilər sabah yenidən bloklanacaq}other{Kukilərin yenidən bloklanmasına # gün qalıb}}</translation>
-<translation id="7446716846072322308">Bununla <ph name="SITE_NAME" /> və əlaqədar saytlar tərəfindən saxlanılan <ph name="TOTAL_USAGE" /> data silinəcək</translation>
 <translation id="7448430327655618736">Tətbiqləri avtomatik quraşdırın</translation>
 <translation id="7448664748118305024">Bütün pəncərələri bağladığınız zaman saytların cihazınızda saxladığı məlumatı silin</translation>
 <translation id="7449806939046594699">Təşkilat bu kontentin kopiyalanmasını blokladı</translation>
@@ -9751,7 +9746,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8533670235862049797">Təhlükəsiz Baxış aktivdir</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Tablar bu cihazda açıq qalacaq, lakin qrup <ph name="EMAIL" /> hesabına daxil olmuş bütün cihazlardan silinəcək}other{Tablar bu cihazda açıq qalacaq, lakin qrup <ph name="EMAIL" /> hesabına daxil olmuş bütün cihazlardan silinəcək}}</translation>
 <translation id="8535005006684281994">Netscape Sertifikat Yeniləmə URL</translation>
-<translation id="8536810348276651776">Əksər saytlardan çıxacaqsınız. Chrome üçün Family Link ayarlarının tətbiq edilməsi məqsədilə Google Hesabından çıxarılmayacaqsınız.</translation>
 <translation id="8536956381488731905">Düyməyə basma səsi</translation>
 <translation id="8539727552378197395">Yoxdur (HttpOnly)</translation>
 <translation id="8540136935098276800">Düzgün formatlanmış URL daxil edin</translation>

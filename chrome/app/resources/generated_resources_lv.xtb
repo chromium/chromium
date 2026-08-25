@@ -1814,7 +1814,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2413009156320833859">Pielāgojiet pārlūkprogrammu vēl vairāk, izmantojot veikalā <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" /> pieejamos paplašinājumus.</translation>
 <translation id="2414159296888870200">Satura (<ph name="MODULE_TITLE" />) pārlūkošanas atsākšana</translation>
 <translation id="2414886740292270097">Tumšs</translation>
-<translation id="2415117815770324983">Tiksiet izrakstīts no lielākās daļas vietņu. Joprojām būsiet pierakstījies Google kontā.</translation>
 <translation id="2416435988630956212">Tastatūras funkciju taustiņi</translation>
 <translation id="2419131370336513030">Skatīt instalētās lietotnes</translation>
 <translation id="2419706071571366386">Drošības nolūkos izrakstieties no datora, kad esat beidzis to lietot.</translation>
@@ -1965,7 +1964,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
         <ph name="BREAK" />
         Varat pārvaldīt iestatījumus, izmantojot kartītes izvēlni, vai skatīt citas opcijas sadaļā “Chrome pielāgošana”.</translation>
 <translation id="2514465118223423406">Kad ir pievienota pele</translation>
-<translation id="2514938842036917377">Tādējādi tiks dzēsti <ph name="TOTAL_USAGE" /> datu, kas tiek glabāti vietnē <ph name="SITE_NAME" />, saistītajās vietnēs un instalētajās lietotnēs.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Lietotājvārda apstiprināšana</translation>
 <translation id="2517472476991765520">Meklēt</translation>
@@ -3643,7 +3641,6 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3776508619697147021">Atļaut vietnēm pieprasīt atļauju automātiski lejupielādēt vairākus failus</translation>
 <translation id="3776796446459804932">Šis paplašinājums pārkāpj Chrome interneta veikala politiku.</translation>
 <translation id="3777483481409781352">Nevarēja aktivizēt mobilo ierīci</translation>
-<translation id="3777796259512476958">Automātiski izrakstīsieties no lielākās daļas vietņu.</translation>
 <translation id="3778208826288864398">Šī drošības atslēga ir bloķēta, jo pārāk daudz reižu ievadīts nepareizs PIN. Jums būs jāatiestata drošības atslēga.</translation>
 <translation id="3778740492972734840">Izstrā&amp;dātāja rīki</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{jūsu pārlūkošanas vēsture # vietnē}zero{jūsu pārlūkošanas vēsture # vietnēs}one{jūsu pārlūkošanas vēsture # vietnē}other{jūsu pārlūkošanas vēsture # vietnēs}}</translation>
@@ -4504,7 +4501,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4432621511648257259">Parole nav pareiza</translation>
 <translation id="4434611816075088065">Šobrīd nekam citam nav jāpievērš uzmanība</translation>
 <translation id="4435020454241191356">Pievienojiet savam profilam nosaukumu vai iezīmi</translation>
-<translation id="443503224864902151">Jūs tiksiet izrakstīts no lielākās daļas vietņu. Jūs paliksiet pierakstījies Google kontā, lai varētu dzēst sinhronizētos datus.</translation>
 <translation id="4436201444922652535">Saites</translation>
 <translation id="443719869834432257">Notikuma veids: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Piedāvāt saglabāt paroles un piekļuves atslēgas</translation>
@@ -8345,7 +8341,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="744366959743242014">Notiek datu ielāde. Tā var ilgt dažas sekundes.</translation>
 <translation id="7443806024147773267">Piekļūstiet savām parolēm, kad vien esat pierakstījies Google kontā</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Šodien atkal tiks bloķēti sīkfaili}=1{Rīt atkal tiks bloķēti sīkfaili}zero{Pēc # dienām atkal tiks bloķēti sīkfaili}one{Pēc # dienas atkal tiks bloķēti sīkfaili}other{Pēc # dienām atkal tiks bloķēti sīkfaili}}</translation>
-<translation id="7446716846072322308">Tādējādi tiks dzēsti <ph name="TOTAL_USAGE" /> datu, kas tiek glabāti vietnē <ph name="SITE_NAME" /> un saistītajās vietnes.</translation>
 <translation id="7448430327655618736">Automātiski instalējiet lietotnes</translation>
 <translation id="7448664748118305024">Dzēst datus, ko vietnes ir saglabājušas jūsu ierīcē, kad aizverat visus logus</translation>
 <translation id="7449806939046594699">Jūsu organizācija bloķēja šī satura kopēšanu.</translation>
@@ -9743,7 +9738,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8533670235862049797">Ir ieslēgta droša pārlūkošana</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Cilnes paliks atvērtas šajā ierīcē, taču grupa tiks dzēsta no visām ierīcēm, kurās esat pierakstījies ar <ph name="EMAIL" />.}zero{Cilnes paliks atvērtas šajā ierīcē, taču grupas tiks dzēstas no visām ierīcēm, kurās esat pierakstījies ar <ph name="EMAIL" />.}one{Cilnes paliks atvērtas šajā ierīcē, taču grupas tiks dzēstas no visām ierīcēm, kurās esat pierakstījies ar <ph name="EMAIL" />.}other{Cilnes paliks atvērtas šajā ierīcē, taču grupas tiks dzēstas no visām ierīcēm, kurās esat pierakstījies ar <ph name="EMAIL" />.}}</translation>
 <translation id="8535005006684281994">Netscape sertifikāta atjaunošanas URL</translation>
-<translation id="8536810348276651776">Jūs tiksiet izrakstīts no lielākās daļas vietņu. Jūs paliksiet pierakstījies savā Google kontā, lai būtu spēkā jūsu Family Link iestatījumi pārlūkā Chrome.</translation>
 <translation id="8536956381488731905">Skaņa, nospiežot taustiņu</translation>
 <translation id="8539727552378197395">Nē (HttpOnly)</translation>
 <translation id="8540136935098276800">Ievadiet pareizi formatētu URL.</translation>

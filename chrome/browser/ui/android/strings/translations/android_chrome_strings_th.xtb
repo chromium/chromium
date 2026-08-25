@@ -186,6 +186,7 @@
 <translation id="1778457539567749232">ทำเครื่องหมายว่ายังไม่อ่าน</translation>
 <translation id="1779766957982586368">ปิดหน้าต่าง</translation>
 <translation id="1780023393214832643">บันทึกรหัสผ่านไปยัง <ph name="USERNAME" /> แล้ว</translation>
+<translation id="1789543093145556097">ซ่อนไว้ตลอด</translation>
 <translation id="1791662854739702043">ติดตั้งแล้ว</translation>
 <translation id="1792959175193046959">เปลี่ยนตำแหน่งเริ่มต้นในการดาวน์โหลดได้ทุกเมื่อ</translation>
 <translation id="1796666869097395659">ย่อแท็บเพื่อกลับไปดูในภายหลัง</translation>
@@ -522,6 +523,7 @@
 <translation id="3075397426753215787">เลือกอุปกรณ์</translation>
 <translation id="3080375898390966733">ค้นหาแท็บด้วย Google Lens</translation>
 <translation id="3080525922482950719">คุณบันทึกหน้าเว็บไว้อ่านภายหลังหรืออ่านขณะออฟไลน์ได้</translation>
+<translation id="3082989400996696487">แสดงในหน้าแท็บใหม่เท่านั้น</translation>
 <translation id="3087734570205094154">ด้านล่าง</translation>
 <translation id="3091010850649238832">แสดงเนื้อหาในคลิปบอร์ด</translation>
 <translation id="3098745985164956033">ระบบจะส่งรูปภาพบางส่วนไปยัง Google เพื่อปรับปรุงคำอธิบายสำหรับคุณ</translation>
@@ -624,6 +626,7 @@
 <translation id="3557336313807607643">เพิ่มในรายชื่อติดต่อ</translation>
 <translation id="3560831525486613327">เปิดหน้าแท็บใหม่</translation>
 <translation id="3563767357928833671">เนื้อหาในคลิปบอร์ดแสดงขึ้น</translation>
+<translation id="356407858591811361">เปิดหน้าต่างใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="3566639033325271639">อัปเดตการตั้งค่า</translation>
 <translation id="3568945271227339929">ไม่มีรหัสผ่านที่ถูกละเมิด</translation>
 <translation id="3575464060651642446">กำลังตรวจสอบรหัสผ่านในอุปกรณ์นี้…</translation>
@@ -767,6 +770,7 @@
 <translation id="4164642020717536140">ท่องเว็บอย่างรวดเร็วและปลอดภัย</translation>
 <translation id="4165077084524712774">เครื่องมืออื่นๆ</translation>
 <translation id="4170577491341606575">กำลังดึงข้อมูลของคุณ\u2026</translation>
+<translation id="4172051516777682613">แสดงทุกครั้ง</translation>
 <translation id="4176838562184310003">Chrome ไม่ได้ปิดอย่างถูกต้อง คุณสามารถลองคืนค่าหน้าต่างและแท็บเดิมที่เปิดไว้ได้ หน้าต่างบางรายการอาจย่อขนาดลงเมื่อคืนค่า</translation>
 <translation id="4177222230309051052">รับบุ๊กมาร์กทั้งหมด</translation>
 <translation id="417865198503699526">ค้นหาการตั้งค่า</translation>
@@ -885,7 +889,6 @@
 <translation id="4599585406846903742">ดูแบบหน้าเดียว</translation>
 <translation id="4601095002996233687">การสแกนเชิงลึกสำหรับการดาวน์โหลดที่น่าสงสัย</translation>
 <translation id="4606559747793337066">เมื่อเว็บไซต์หรือแอปขอโหลดลิงก์ล่วงหน้าแบบส่วนตัว Chrome จะเข้ารหัสและโหลดหน้าเว็บล่วงหน้าผ่านเซิร์ฟเวอร์ของ Google โดยไม่มีคุกกี้ การดำเนินการนี้จะซ่อนตัวตนของคุณจากเว็บไซต์ที่โหลดล่วงหน้า</translation>
-<translation id="4616150815774728855">เปิด <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619615317237390068">แท็บจากอุปกรณ์อื่นๆ</translation>
 <translation id="4624065194742029982">โหมดไม่ระบุตัวตนของ Chrome</translation>
 <translation id="4634124774493850572">ใช้รหัสผ่าน</translation>
@@ -1550,6 +1553,7 @@
 <translation id="7173338713290252554">ประวัติราคาในเว็บ</translation>
 <translation id="7177466738963138057">คุณสามารถเปลี่ยนค่านี้ภายหลังใน "การตั้งค่า"</translation>
 <translation id="7177873915659574692">สร้างคิวอาร์โค้ดไม่ได้ URL มีจำนวนอักขระมากกว่า <ph name="CHARACTER_LIMIT" /> ตัว</translation>
+<translation id="7179032284363038560">คนอื่นๆ ที่ใช้อุปกรณ์นี้จะไม่เห็นกิจกรรมของคุณ คุณจึงท่องเว็บได้แบบส่วนตัวมากขึ้น <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="7182051712900867547">ใช้บัญชีอื่น</translation>
 <translation id="7182520625618447753">สลับตำแหน่งแถบที่อยู่เป็นด้านบนหรือด้านล่างเพื่อประสบการณ์การท่องเว็บที่เหมาะกับคุณ</translation>
 <translation id="7183517696921903380">ชีตตัวกรองแอปเปิดอยู่</translation>
@@ -1851,6 +1855,7 @@
 <translation id="834313815369870491">ไม่ต้องแปลเว็บไซต์</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, แท็บการบันทึกเสียงที่ไม่ระบุตัวตนที่ปักหมุดซึ่งเลือกไว้หลายแท็บ</translation>
 <translation id="8348430946834215779">ใช้ HTTPS ทุกครั้งที่ทำได้และรับการแจ้งเตือนก่อนโหลดเว็บไซต์ที่ไม่รองรับ HTTPS</translation>
+<translation id="8349305172487531364">แถบบุ๊กมาร์ก</translation>
 <translation id="8354977102499939946">ค้นหาด้วยเสียงอย่างรวดเร็ว ไปที่การตั้งค่าเพื่อแก้ไขทางลัดนี้</translation>
 <translation id="8361737703487394103">ข้ามไปยังแท็บที่ต้องการ (1–8)</translation>
 <translation id="8368001212524806591">ติดตามราคา</translation>

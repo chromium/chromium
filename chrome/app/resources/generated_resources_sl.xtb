@@ -1828,7 +1828,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2413009156320833859">Prilagodite brskalnik s še več razširitvami iz <ph name="BEGIN_LINK1" />Spletne trgovine Chrome<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Nadaljevanje brskanja za modul <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Temno</translation>
-<translation id="2415117815770324983">Odjavi vas z večine spletnih mest. Ostali boste prijavljeni v račun Google.</translation>
 <translation id="2416435988630956212">Funkcijske tipke tipkovnice</translation>
 <translation id="2419131370336513030">Prikaz nameščenih aplikacij</translation>
 <translation id="2419706071571366386">Zaradi varnosti se odjavite iz računalnika, ko ga ne uporabljate.</translation>
@@ -1980,7 +1979,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
         <ph name="BREAK" />
         Upravljate lahko nastavitve v meniju kartice ali si ogledate več možnosti v razdelku za prilagajanje Chroma.</translation>
 <translation id="2514465118223423406">Ko je priključena miška</translation>
-<translation id="2514938842036917377">S tem boste izbrisali <ph name="TOTAL_USAGE" /> podatkov, ki so jih shranili spletno mesto <ph name="SITE_NAME" />, povezana spletna mesta in nameščene aplikacije</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Potrditev uporabniškega imena</translation>
 <translation id="2517472476991765520">Optično preberi</translation>
@@ -3660,7 +3658,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3776508619697147021">Spletna mesta lahko zahtevajo samodejno prenašanje več datotek.</translation>
 <translation id="3776796446459804932">Ta razširitev krši pravilnik Spletne trgovine Chrome.</translation>
 <translation id="3777483481409781352">Mobilne naprave ni bilo mogoče aktivirati</translation>
-<translation id="3777796259512476958">Odjavi vas z večine spletnih mest</translation>
 <translation id="3778208826288864398">Varnostni ključ je zaklenjen, ker ste prevečkrat vnesli napačno kodo PIN. Ponastaviti boste morali varnostni ključ.</translation>
 <translation id="3778740492972734840">&amp;Orodja za razvijalce</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{zgodovino brskanja za # spletno mesto}one{zgodovino brskanja za # spletno mesto}two{zgodovino brskanja za # spletni mesti}few{zgodovino brskanja za # spletna mesta}other{zgodovino brskanja za # spletnih mest}}</translation>
@@ -4521,7 +4518,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4432621511648257259">Napačno geslo</translation>
 <translation id="4434611816075088065">Trenutno vam ni treba ukrepati</translation>
 <translation id="4435020454241191356">Dodajte ime ali oznako za profil</translation>
-<translation id="443503224864902151">Odjavi vas iz večine spletnih mest. Ostali boste prijavljeni v račun Google, da bo mogoče izbrisati sinhronizirane podatke.</translation>
 <translation id="4436201444922652535">Povezave</translation>
 <translation id="443719869834432257">Vrsta dogodka: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Ponudi shranjevanje gesel in ključev za dostop</translation>
@@ -8370,7 +8366,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="744366959743242014">Podatki se nalagajo, to bo morda trajalo nekaj sekund.</translation>
 <translation id="7443806024147773267">Dostopajte do svojih gesel, ko ste prijavljeni v račun Google</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Piškotki bodo danes znova blokirani}=1{Piškotki bodo znova blokirani jutri}one{Še # dan in piškotki bodo znova blokirani}two{Še # dneva in piškotki bodo znova blokirani}few{Še # dni in piškotki bodo znova blokirani}other{Še # dni in piškotki bodo znova blokirani}}</translation>
-<translation id="7446716846072322308">S tem boste izbrisali <ph name="TOTAL_USAGE" /> podatkov, ki so jih shranili spletno mesto <ph name="SITE_NAME" /> in povezana spletna mesta.</translation>
 <translation id="7448430327655618736">Samodejno nameščanje aplikacij</translation>
 <translation id="7448664748118305024">Podatki spletnih mest, shranjeni v napravi, se izbrišejo, ko zaprete vsa okna</translation>
 <translation id="7449806939046594699">Vaša organizacija je blokirala kopiranje te vsebine</translation>
@@ -9770,7 +9765,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8533670235862049797">Varno brskanje je vklopljeno</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Zavihki bodo ostali odprti v tej napravi, vendar bo skupina izbrisana iz vseh naprav, v katerih ste prijavljeni v račun <ph name="EMAIL" />}one{Zavihki bodo ostali odprti v tej napravi, vendar bodo skupine izbrisane iz vseh naprav, v katerih ste prijavljeni v račun <ph name="EMAIL" />}two{Zavihki bodo ostali odprti v tej napravi, vendar bodo skupine izbrisane iz vseh naprav, v katerih ste prijavljeni v račun <ph name="EMAIL" />}few{Zavihki bodo ostali odprti v tej napravi, vendar bodo skupine izbrisane iz vseh naprav, v katerih ste prijavljeni v račun <ph name="EMAIL" />}other{Zavihki bodo ostali odprti v tej napravi, vendar bodo skupine izbrisane iz vseh naprav, v katerih ste prijavljeni v račun <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">Spletni naslov podaljšanja Netscapeovega potrdila</translation>
-<translation id="8536810348276651776">Odjavi vas iz večine spletnih mest. Ostali boste prijavljeni v račun Google, da se bodo uporabile nastavitve storitve Family Link za Chrome.</translation>
 <translation id="8536956381488731905">Zvok ob pritisku tipke</translation>
 <translation id="8539727552378197395">Ne (samo http)</translation>
 <translation id="8540136935098276800">Vnesite pravilno oblikovan URL</translation>

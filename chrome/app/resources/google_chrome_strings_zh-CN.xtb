@@ -620,7 +620,6 @@
 <translation id="7161904924553537242">欢迎使用 Google Chrome</translation>
 <translation id="7193885263065350793">贵组织会在 Chrome 闲置 <ph name="TIMEOUT_DURATION" />后将其关闭。</translation>
 <translation id="7242029209006116544">您目前登录的账号是一个受管理账号，该账号的管理员将能够控制您的 Google Chrome 个人资料。您的 Chrome 数据（例如您的应用、书签、历史记录、密码和其他设置）将永远与 <ph name="USER_NAME" /> 相关联。您可以通过 Google 账号信息中心删除这些数据，但无法将这些数据与其他账号相关联。您可以选择创建新的个人资料来单独存储现有的 Chrome 数据。<ph name="LEARN_MORE" /></translation>
-<translation id="7257689164441568409">可以使用键盘快捷键退出或返回 Chrome 中的 Gemini。</translation>
 <translation id="7274402351400635015">您可随时使用 Chrome 打开您在消息、文档和其他应用内点击的链接。Chromium 还将固定到任务栏。</translation>
 <translation id="7285616922384953075"><ph name="MANAGER" />负责管理 Chrome</translation>
 <translation id="7285990705317078173">在手机上下载 Chrome，即可跟踪价格并在有网站降价时收到提醒</translation>
@@ -720,6 +719,7 @@
 <translation id="8074398340364918139">若要在特定的 Chrome 功能或扩展程序中进行搜索，请先在地址栏中输入相应的快捷字词，然后按下您选择的键盘按键</translation>
 <translation id="8077579734294125741">其他 Chrome 个人资料</translation>
 <translation id="8086881907087796310">安装失败，因为您的计算机未达到最低硬件要求。</translation>
+<translation id="8110438089258398864">您可以重新打开 Google 搜索 AI 模式，以便在浏览时提问</translation>
 <translation id="8113883687556086139">请验证您的身份，以便将 Chrome 数据保存在您的账号 <ph name="ACCOUNT_EMAIL" /> 中并使用这些数据</translation>
 <translation id="8115695070094288807">正在打造您的专属 Chrome…</translation>
 <translation id="8118331347066725040">发送有关智能镜头搜索的反馈</translation>
@@ -769,6 +769,7 @@
 <translation id="856656450041460113">搜索语言列表</translation>
 <translation id="8575047640889685742">使用您<ph name="BEGIN_LINK" />自己的口令<ph name="END_LINK" />加密您 Google 账号中的所有 Chrome 数据。系统不会加密 Google Pay 中的支付方式和地址，也不会同步 Chrome 中的浏览记录。</translation>
 <translation id="8590782867495422699">重新打开 Google 搜索 AI 模式</translation>
+<translation id="8598779894319572882">点击工具栏上的“Google 搜索 AI 模式”按钮，即可重新打开 Google 搜索 AI 模式，以便在浏览时提问</translation>
 <translation id="8601359445272098721">新功能！您可以选择“翻译屏幕”按钮，翻译屏幕上的文字和图片</translation>
 <translation id="8614913330719544658">Google Chrome 未响应。是否立即重新启动？</translation>
 <translation id="8623450603356630491">在手机上登录 Chrome</translation>

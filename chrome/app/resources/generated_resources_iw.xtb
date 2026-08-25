@@ -1826,7 +1826,6 @@
 <translation id="2413009156320833859">‏אפשר להתאים אישית את הדפדפן עוד יותר באמצעות תוספים מ<ph name="BEGIN_LINK1" />חנות האינטרנט של Chrome<ph name="END_LINK1" />.</translation>
 <translation id="2414159296888870200">המשך הגלישה אל <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">כהה</translation>
-<translation id="2415117815770324983">‏תתבצע יציאה מרוב האתרים. החיבור לחשבון Google שלך ימשיך.</translation>
 <translation id="2416435988630956212">מקשי פונקציה במקלדת</translation>
 <translation id="2419131370336513030">צפייה באפליקציות המותקנות</translation>
 <translation id="2419706071571366386">מטעמי אבטחה, יש לצאת מהחשבון כשהמחשב לא בשימוש.</translation>
@@ -1977,7 +1976,6 @@
         <ph name="BREAK" />
         ניתן לנהל את ההגדרות דרך התפריט בכרטיס או לראות עוד אפשרויות ב'התאמה אישית של Chrome'.</translation>
 <translation id="2514465118223423406">כשהעכבר מחובר</translation>
-<translation id="2514938842036917377">הפעולה הזו תגרום למחיקת נתונים בנפח של <ph name="TOTAL_USAGE" /> שאוחסנו על ידי <ph name="SITE_NAME" />, אתרים קשורים והאפליקציות המותקנות</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">יש לאשר את שם המשתמש שלך</translation>
 <translation id="2517472476991765520">סריקה</translation>
@@ -3657,7 +3655,6 @@
 <translation id="3776508619697147021">אתרים יכולים לבקש הרשאה להוריד מספר קבצים באופן אוטומטי</translation>
 <translation id="3776796446459804932">‏התוסף מפר את המדיניות בחנות האינטרנט של Chrome.</translation>
 <translation id="3777483481409781352">לא ניתן היה להפעיל את הטלפון הסלולרי</translation>
-<translation id="3777796259512476958">תתבצע יציאה מהחשבון ברוב האתרים</translation>
 <translation id="3778208826288864398">מפתח האבטחה נעול כי הזנת קוד אימות שגוי יותר מדי פעמים. צריך לאפס את מפתח האבטחה.</translation>
 <translation id="3778740492972734840">&amp;כלים עבור מפתחים</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{היסטוריית הגלישה שלך באתר אחד}one{היסטוריית הגלישה שלך ב-# אתרים}two{היסטוריית הגלישה שלך ב-# אתרים}other{היסטוריית הגלישה שלך ב-# אתרים}}</translation>
@@ -4519,7 +4516,6 @@
 <translation id="4432621511648257259">הסיסמה שגויה</translation>
 <translation id="4434611816075088065">אין עוד משהו שדורש התייחסות כרגע</translation>
 <translation id="4435020454241191356">צריך להוסיף שם או תווית לפרופיל</translation>
-<translation id="443503224864902151">‏תבוצע יציאה מהחשבון מרוב האתרים. לא תבוצע יציאה מהחשבון שלך ב-Google, כדי שתהיה אפשרות למחוק את הנתונים המסונכרנים.</translation>
 <translation id="4436201444922652535">קישורים</translation>
 <translation id="443719869834432257">סוג האירוע: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">הצעה לשמירת סיסמאות ומפתחות גישה</translation>
@@ -8364,7 +8360,6 @@
 <translation id="744366959743242014">המערכת טוענת נתונים. הפעולה הזו עשויה להימשך כמה שניות.</translation>
 <translation id="7443806024147773267">‏לאחר שנכנסת לחשבון Google, הסיסמאות שלך תמיד זמינות</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{‏קובצי cookie ייחסמו היום שוב}=1{‏קובצי cookie ייחסמו מחר שוב}one{‏יש עוד # ימים עד שקובצי cookie ייחסמו שוב}two{‏יש עוד יומיים עד שקובצי cookie ייחסמו שוב}other{‏יש עוד # ימים עד שקובצי cookie ייחסמו שוב}}</translation>
-<translation id="7446716846072322308">הפעולה הזו תגרום למחיקת נתונים בנפח של <ph name="TOTAL_USAGE" /> שאוחסנו על ידי <ph name="SITE_NAME" /> ואתרים קשורים</translation>
 <translation id="7448430327655618736">התקנה אוטומטית של אפליקציות</translation>
 <translation id="7448664748118305024">מחיקת כל הנתונים מאתרים שמורים במכשיר כשסוגרים את כל החלונות</translation>
 <translation id="7449806939046594699">הארגון שלך חסם את האפשרות להעתיק את התוכן הזה</translation>
@@ -9762,7 +9757,6 @@
 <translation id="8533670235862049797">הגלישה הבטוחה מופעלת</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{הכרטיסיות יישארו פתוחות במכשיר הזה, אבל הקבוצה תימחק מכל המכשירים שמחוברים לחשבון <ph name="EMAIL" />}one{הכרטיסיות יישארו פתוחות במכשיר הזה, אבל הקבוצות יימחקו מכל המכשירים שמחוברים לחשבון <ph name="EMAIL" />}two{הכרטיסיות יישארו פתוחות במכשיר הזה, אבל הקבוצות יימחקו מכל המכשירים שמחוברים לחשבון <ph name="EMAIL" />}other{הכרטיסיות יישארו פתוחות במכשיר הזה, אבל הקבוצות יימחקו מכל המכשירים שמחוברים לחשבון <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">‏כתובת אתר לחידוש אישור Netscape</translation>
-<translation id="8536810348276651776">‏תתבצע יציאה מהחשבון ברוב האתרים. כדי שההגדרות של Family Link ל-Chrome יחולו, לא תתבצע יציאה מחשבון Google.</translation>
 <translation id="8536956381488731905">צלילים בהקשה</translation>
 <translation id="8539727552378197395">‏לא (Http בלבד)</translation>
 <translation id="8540136935098276800">‏יש להזין כתובת URL בפורמט חוקי</translation>

@@ -1827,7 +1827,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2413009156320833859">Anpassa webbläsaren ännu mer med tillägg från <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Fortsätt att söka efter <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Mörk</translation>
-<translation id="2415117815770324983">Du loggas ut från de flesta webbplatser. Du förblir inloggad på Google-kontot.</translation>
 <translation id="2416435988630956212">Funktionstangenter på tangentbordet</translation>
 <translation id="2419131370336513030">Visa installerade appar</translation>
 <translation id="2419706071571366386">Av säkerhetsskäl bör du logga ut när datorn inte används.</translation>
@@ -1978,7 +1977,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
         <ph name="BREAK" />
         Du kan hantera inställningarna i kortmenyn. Det finns även fler alternativ i Anpassa Chrome.</translation>
 <translation id="2514465118223423406">När en mus är ansluten</translation>
-<translation id="2514938842036917377"><ph name="TOTAL_USAGE" /> data som har lagrats av <ph name="SITE_NAME" />, relaterade webbplatser och installerade appar raderas</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Bekräfta ditt användarnamn</translation>
 <translation id="2517472476991765520">Sök</translation>
@@ -3658,7 +3656,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3776508619697147021">Webbplatser får begära tillstånd att ladda ned flera filer automatiskt</translation>
 <translation id="3776796446459804932">Det här tillägget bryter mot policyn för Chrome Web Store.</translation>
 <translation id="3777483481409781352">Det gick inte att aktivera enheten med mobildata</translation>
-<translation id="3777796259512476958">Du loggas ut från de flesta webbplatser</translation>
 <translation id="3778208826288864398">Säkerhetsnyckeln har låsts eftersom du har angett fel pinkod för många gånger. Du måste återställa säkerhetsnyckeln.</translation>
 <translation id="3778740492972734840">&amp;Verktyg för programmerare</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{din webbhistorik för # webbplats}other{din webbhistorik för # webbplatser}}</translation>
@@ -4519,7 +4516,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4432621511648257259">Fel lösenord</translation>
 <translation id="4434611816075088065">Inget annat behöver åtgärdas just nu</translation>
 <translation id="4435020454241191356">Lägg till ett namn eller en etikett för profilen</translation>
-<translation id="443503224864902151">Du loggas ut från de flesta webbplatser. Du är fortfarande inloggad på Google-kontot så att synkroniserad data kan raderas.</translation>
 <translation id="4436201444922652535">Länkar</translation>
 <translation id="443719869834432257">Händelsetyp: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Erbjud att spara lösenord och nycklar</translation>
@@ -8360,7 +8356,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="744366959743242014">Läser in data. Detta kan ta några sekunder.</translation>
 <translation id="7443806024147773267">Få tillgång till dina lösenord när du är inloggad på Google-kontot</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookies blockeras igen i dag}=1{Cookies blockeras igen i morgon}other{# dagar tills cookies blockeras igen}}</translation>
-<translation id="7446716846072322308"><ph name="TOTAL_USAGE" /> data som har lagrats av <ph name="SITE_NAME" /> och relaterade webbplatser raderas</translation>
 <translation id="7448430327655618736">Installera appar automatiskt</translation>
 <translation id="7448664748118305024">Radera data som webbplatser har sparat på enheten när du stänger alla fönster</translation>
 <translation id="7449806939046594699">Organisationen har blockerat kopiering av det här innehållet</translation>
@@ -9758,7 +9753,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8533670235862049797">Säker webbsökning är aktiverat</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Flikarna förblir öppna på den här enheten men gruppen raderas från alla enheter där du är inloggad på <ph name="EMAIL" />}other{Flikarna förblir öppna på den här enheten men grupperna raderas från alla enheter där du är inloggad på <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">Förnyelseadress för Netscape-certifikat</translation>
-<translation id="8536810348276651776">Du loggas ut från de flesta webbplatser. Du är fortfarande inloggad på Google-kontot så att dina Family Link-inställningar för Chrome gäller.</translation>
 <translation id="8536956381488731905">Knappljud</translation>
 <translation id="8539727552378197395">Nej (HttpOnly)</translation>
 <translation id="8540136935098276800">Ange en webbadress i rätt format</translation>

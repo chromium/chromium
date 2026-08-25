@@ -1812,7 +1812,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2413009156320833859">Dostosuj przeglądarkę jeszcze bardziej dzięki rozszerzeniom z <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Wznów przeglądanie: <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Ciemny</translation>
-<translation id="2415117815770324983">Wylogowuje z większości witryn. Nie nastąpi wylogowanie z konta Google.</translation>
 <translation id="2416435988630956212">Klawisze funkcyjne na klawiaturze</translation>
 <translation id="2419131370336513030">Przeglądaj zainstalowane aplikacje</translation>
 <translation id="2419706071571366386">Ze względów bezpieczeństwa wyloguj się na czas, gdy nie korzystasz z komputera.</translation>
@@ -1959,7 +1958,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="251425554130284360">Zobaczysz odwiedzone strony i sugerowane wyszukiwania, aby łatwo powrócić do swojej ostatniej aktywności.
         <ph name="BREAK" /><ph name="BREAK" />Możesz zarządzać ustawieniami w menu karty lub zobaczyć więcej opcji w sekcji dostosowania Chrome.</translation>
 <translation id="2514465118223423406">Po podłączeniu myszy</translation>
-<translation id="2514938842036917377">Spowoduje to usunięcie <ph name="TOTAL_USAGE" /> danych zapisanych przez stronę <ph name="SITE_NAME" />, podobne strony i zainstalowane aplikacje</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Potwierdź swoją nazwę użytkownika</translation>
 <translation id="2517472476991765520">Skanuj</translation>
@@ -3635,7 +3633,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3776508619697147021">Strony mogą prosić o zgodę na automatyczne pobieranie wielu plików</translation>
 <translation id="3776796446459804932">To rozszerzenie narusza zasady Chrome Web Store.</translation>
 <translation id="3777483481409781352">Nie udało się aktywować urządzenia komórkowego</translation>
-<translation id="3777796259512476958">Wylogowuje z większości stron internetowych</translation>
 <translation id="3778208826288864398">Klucz bezpieczeństwa jest zablokowany z powodu wprowadzenia nieprawidłowego kodu PIN zbyt wiele razy. Musisz zresetować klucz bezpieczeństwa.</translation>
 <translation id="3778740492972734840">&amp;Narzędzia dla deweloperów</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{Twoja historia przeglądania # witryny}few{Twoja historia przeglądania # witryn}many{Twoja historia przeglądania # witryn}other{Twoja historia przeglądania # witryny}}</translation>
@@ -4494,7 +4491,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4432621511648257259">Nieprawidłowe hasło</translation>
 <translation id="4434611816075088065">Nic więcej nie wymaga teraz Twojej uwagi</translation>
 <translation id="4435020454241191356">Dodaj nazwę lub etykietę profilu</translation>
-<translation id="443503224864902151">Spowoduje wylogowanie Cię z większości stron internetowych. Nie nastąpi wylogowanie z konta Google, więc będzie można usunąć zsynchronizowane dane.</translation>
 <translation id="4436201444922652535">Linki</translation>
 <translation id="443719869834432257">Typ zdarzenia: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Oferuj zapisywanie haseł i kluczy dostępu</translation>
@@ -8333,7 +8329,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="744366959743242014">Wczytuję dane. Może to potrwać kilka sekund.</translation>
 <translation id="7443806024147773267">Miej dostęp do swoich haseł zawsze wtedy, gdy zalogujesz się na swoje konto Google</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Pliki cookie zostaną ponownie zablokowane dzisiaj}=1{Pliki cookie zostaną ponownie zablokowane jutro}few{Do ponownego zablokowania plików cookie pozostały # dni}many{Do ponownego zablokowania plików cookie pozostało # dni}other{Do ponownego zablokowania plików cookie pozostało # dnia}}</translation>
-<translation id="7446716846072322308">Spowoduje to usunięcie <ph name="TOTAL_USAGE" /> danych zapisanych przez stronę <ph name="SITE_NAME" /> i podobne strony</translation>
 <translation id="7448430327655618736">Automatyczne instalowanie aplikacji</translation>
 <translation id="7448664748118305024">Po zamknięciu wszystkich okien usuwaj dane zapisywane przez witryny na urządzeniu</translation>
 <translation id="7449806939046594699">Twoja organizacja zablokowała kopiowanie tych treści</translation>
@@ -9731,7 +9726,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8533670235862049797">Bezpieczne przeglądanie jest włączone</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Karty pozostaną otwarte na tym urządzeniu, ale grupa zostanie usunięta ze wszystkich urządzeń zalogowanych na konto <ph name="EMAIL" />}few{Karty pozostaną otwarte na tym urządzeniu, ale grupy zostaną usunięte ze wszystkich urządzeń zalogowanych na konto <ph name="EMAIL" />}many{Karty pozostaną otwarte na tym urządzeniu, ale grupy zostaną usunięte ze wszystkich urządzeń zalogowanych na konto <ph name="EMAIL" />}other{Karty pozostaną otwarte na tym urządzeniu, ale grupy zostaną usunięte ze wszystkich urządzeń zalogowanych na konto <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">Adres URL odnowienia certyfikatu firmy Netscape</translation>
-<translation id="8536810348276651776">Wylogowuje z większości stron internetowych. Nie nastąpi wylogowanie z konta Google, więc w Chrome będzie można zastosować ustawienia Family Link.</translation>
 <translation id="8536956381488731905">Dźwięk przy naciśnięciu</translation>
 <translation id="8539727552378197395">Nie (HttpOnly)</translation>
 <translation id="8540136935098276800">Wpisz poprawnie sformatowany URL</translation>

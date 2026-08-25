@@ -186,6 +186,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="1778457539567749232">未読にする</translation>
 <translation id="1779766957982586368">ウィンドウを閉じる</translation>
 <translation id="1780023393214832643">パスワードを <ph name="USERNAME" /> に保存しました</translation>
+<translation id="1789543093145556097">常に非表示</translation>
 <translation id="1791662854739702043">インストール先</translation>
 <translation id="1792959175193046959">デフォルトのダウンロード保存先はいつでも変更できます</translation>
 <translation id="1796666869097395659">後で戻るにはタブを最小化します</translation>
@@ -522,6 +523,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="3075397426753215787">デバイスを選択します。</translation>
 <translation id="3080375898390966733">Google レンズでタブを検索</translation>
 <translation id="3080525922482950719">ページを保存して、後で読んだり、オフラインで読んだりできます</translation>
+<translation id="3082989400996696487">新しいタブページにのみ表示</translation>
 <translation id="3087734570205094154">下部</translation>
 <translation id="3091010850649238832">クリップボードの内容を表示</translation>
 <translation id="3098745985164956033">正確な説明を生成するため、画像が Google に送信される場合があります</translation>
@@ -767,6 +769,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4164642020717536140">高速で安全なウェブ ブラウジング</translation>
 <translation id="4165077084524712774">その他のツール</translation>
 <translation id="4170577491341606575">データを取得しています\u2026</translation>
+<translation id="4172051516777682613">常に表示</translation>
 <translation id="4176838562184310003">Chrome が正常にシャットダウンしませんでした。開いていたウィンドウとタブを復元できる場合があります。復元時に一部のウィンドウが最小化されることがあります。</translation>
 <translation id="4177222230309051052">すべてのブックマークにアクセス</translation>
 <translation id="417865198503699526">設定を検索</translation>
@@ -885,7 +888,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4599585406846903742">1 ページ表示</translation>
 <translation id="4601095002996233687">不審なダウンロードを詳しくスキャンします。</translation>
 <translation id="4606559747793337066">ページのリンクを非公開でプリロードするように求めるメッセージがサイトまたはアプリに表示された場合、Chrome は Cookie を使用せずに Google サーバーを経由してページを暗号化し、プリロードします。その結果、プリロードされたサイトでユーザーの ID が非表示になります。</translation>
-<translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> を起動</translation>
 <translation id="4619615317237390068">他のデバイスからのタブ</translation>
 <translation id="4624065194742029982">Chrome のシークレット モード</translation>
 <translation id="4634124774493850572">パスワードを使用</translation>
@@ -1851,6 +1853,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="834313815369870491">翻訳しないサイト</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />、複数選択された録画中の固定のシークレット タブ</translation>
 <translation id="8348430946834215779">可能な限り HTTPS を使用し、HTTPS をサポートしていないサイトは読み込む前に警告を表示します</translation>
+<translation id="8349305172487531364">ブックマーク バー</translation>
 <translation id="8354977102499939946">音声ですばやく検索します。このショートカットは [設定] で編集できます。</translation>
 <translation id="8361737703487394103">特定のタブに移動する（1～8）</translation>
 <translation id="8368001212524806591">価格のトラッキング</translation>

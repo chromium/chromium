@@ -151,7 +151,6 @@
 <translation id="2620436844016719705">系统</translation>
 <translation id="2629740064077610681">您的组织可以查看和管理浏览数据，例如您的书签、历史记录和密码，但无法查看其他 Chromium 资料中的浏览数据</translation>
 <translation id="2635452620547538388">请验证您的身份，以便将 Chromium 数据保存在您的账号 <ph name="ACCOUNT_EMAIL" /> 中并使用这些数据</translation>
-<translation id="2636783171884046627">可以使用键盘快捷键退出或返回 Chromium 中的 Gemini。</translation>
 <translation id="2637732208198500597">{COUNT,plural, =0{高级保护计划要求您重新启动 Chromium 以应用一项更新}=1{高级保护计划要求您重新启动 Chromium 以应用一项更新。无痕式窗口将不会重新打开。}other{高级保护计划要求您重新启动 Chromium 以应用一项更新。# 个无痕式窗口将不会重新打开。}}</translation>
 <translation id="263863604136125912">启动 Chromium</translation>
 <translation id="2648074677641340862">安装过程中出现操作系统错误。请重新下载 Chromium。</translation>
@@ -442,6 +441,7 @@
 <translation id="5977420883993828287">已固定！您可通过工具栏再次使用情境任务</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{您的组织会在 Chromium 闲置 1 分钟后自动关闭它。}other{您的组织会在 Chromium 闲置 # 分钟后自动关闭它。}}</translation>
 <translation id="5987687638152509985">更新 Chromium 以开始同步</translation>
+<translation id="5990360079535151574">您可以通过工具栏上的“情境任务”按钮重新打开情境任务，以便在浏览时提问</translation>
 <translation id="6003112304606738118">正在下载…还需 <ph name="HOURS" /> 小时</translation>
 <translation id="6009821354356307391">继续提问</translation>
 <translation id="6040143037577758943">关闭</translation>
@@ -591,6 +591,7 @@
 <translation id="7318036098707714271">您的偏好设置文件已损坏或无效。
 
 Chromium 无法恢复您的设置。</translation>
+<translation id="7324051657739063017">您可以重新打开情境任务，以便在浏览时提问</translation>
 <translation id="734373864078049451">您的上网记录、书签和其他Chromium内容都保存在此处。</translation>
 <translation id="7347827960336370838">只有知道您口令的人能读取您的加密数据。该口令不会被发送给 Google，也不会被 Google 存储。如果您忘记了口令或想更改此设置，将需要<ph name="BEGIN_LINK" />删除您账号中的 Chromium 数据<ph name="END_LINK" />。</translation>
 <translation id="7349591376906416160">您的系统管理员已将 Chromium 配置为使用<ph name="ALTERNATIVE_BROWSER_NAME" />访问 <ph name="TARGET_URL_HOSTNAME" />。</translation>

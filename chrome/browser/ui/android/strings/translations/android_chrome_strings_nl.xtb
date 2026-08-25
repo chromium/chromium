@@ -186,6 +186,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="1778457539567749232">Markeren als ongelezen</translation>
 <translation id="1779766957982586368">Venster sluiten</translation>
 <translation id="1780023393214832643">Wachtwoorden opgeslagen in <ph name="USERNAME" /></translation>
+<translation id="1789543093145556097">Altijd verbergen</translation>
 <translation id="1791662854739702043">Geïnstalleerd</translation>
 <translation id="1792959175193046959">Je kunt op elk gewenst moment de standaard downloadlocatie wijzigen</translation>
 <translation id="1796666869097395659">Tabblad minimaliseren om later terug te keren</translation>
@@ -522,6 +523,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3075397426753215787">Kies een apparaat.</translation>
 <translation id="3080375898390966733">Tabblad doorzoeken met Google Lens</translation>
 <translation id="3080525922482950719">Je kunt pagina's opslaan en later of offline lezen</translation>
+<translation id="3082989400996696487">Alleen tonen op de pagina Nieuw tabblad</translation>
 <translation id="3087734570205094154">Onderaan</translation>
 <translation id="3091010850649238832">Content op het klembord bekijken</translation>
 <translation id="3098745985164956033">Sommige afbeeldingen worden naar Google gestuurd om de beschrijvingen voor je te verbeteren</translation>
@@ -767,6 +769,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4164642020717536140">Browse snel en beveiligd op internet</translation>
 <translation id="4165077084524712774">Meer tools</translation>
 <translation id="4170577491341606575">Je gegevens ophalen\u2026</translation>
+<translation id="4172051516777682613">Altijd bekijken</translation>
 <translation id="4176838562184310003">Chrome is niet correct uitgezet en kan proberen je verloren vensters en tabbladen te herstellen. Sommige vensters worden misschien geminimaliseerd als ze worden hersteld.</translation>
 <translation id="4177222230309051052">Haal al je bookmarks op</translation>
 <translation id="417865198503699526">Zoek naar een instelling</translation>
@@ -885,7 +888,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4599585406846903742">Weergave met één pagina</translation>
 <translation id="4601095002996233687">Uitgebreide scans voor verdachte downloads.</translation>
 <translation id="4606559747793337066">Als een site of app vraagt om links op de sitepagina privé vooraf te laden, versleutelt en laadt Chrome de pagina's vooraf via Google-servers zonder cookies. Hierdoor wordt je identiteit voor de vooraf geladen site verborgen.</translation>
-<translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> openen</translation>
 <translation id="4619615317237390068">Tabbladen van andere apparaten</translation>
 <translation id="4624065194742029982">Chrome-incognitomodus</translation>
 <translation id="4634124774493850572">Wachtwoord gebruiken</translation>
@@ -1851,6 +1853,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="834313815369870491">Sites nooit vertalen</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, meervoudig geselecteerd vastgezet incognitotabblad voor opname</translation>
 <translation id="8348430946834215779">Gebruik waar mogelijk HTTPS en krijg een waarschuwing voordat er sites worden geladen die dit niet ondersteunen</translation>
+<translation id="8349305172487531364">Bookmarkbalk</translation>
 <translation id="8354977102499939946">Zoek snel met je stem. Je kunt deze snelkoppeling bewerken via Instellingen.</translation>
 <translation id="8361737703487394103">Naar een specifiek tabblad (1-8) gaan</translation>
 <translation id="8368001212524806591">Prijs volgen</translation>

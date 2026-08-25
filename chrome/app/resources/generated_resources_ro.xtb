@@ -1814,7 +1814,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2413009156320833859">Personalizează-ți și mai mult browserul cu extensii din <ph name="BEGIN_LINK1" />Magazinul web Chrome<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Reia navigarea pentru <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Întunecat</translation>
-<translation id="2415117815770324983">Te deconectează de pe majoritatea site-urilor. Vei rămâne conectat(ă) la Contul Google.</translation>
 <translation id="2416435988630956212">Tastele pentru funcții de la tastatură</translation>
 <translation id="2419131370336513030">Vezi aplicațiile instalate</translation>
 <translation id="2419706071571366386">Pentru securitate, deconectează-te când nu folosești computerul.</translation>
@@ -1965,7 +1964,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
         <ph name="BREAK" />
         Poți să gestionezi setările din meniul cardului sau să afișezi mai multe opțiuni în Personalizează Chrome.</translation>
 <translation id="2514465118223423406">Când este conectat un mouse</translation>
-<translation id="2514938842036917377">Astfel, se vor șterge <ph name="TOTAL_USAGE" /> din datele stocate de <ph name="SITE_NAME" />, site-urile conexe și aplicațiile instalate</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Confirmă numele de utilizator</translation>
 <translation id="2517472476991765520">Scanează</translation>
@@ -3644,7 +3642,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3776508619697147021">Site-urile pot solicita permisiunea de a descărca automat mai multe fișiere</translation>
 <translation id="3776796446459804932">Această extensie încalcă politica Magazinului web Chrome.</translation>
 <translation id="3777483481409781352">Dispozitivul celular nu a putut fi activat</translation>
-<translation id="3777796259512476958">Te deconectează de pe majoritatea site-urilor</translation>
 <translation id="3778208826288864398">Cheia de securitate este blocată deoarece codul PIN a fost introdus greșit de prea multe ori. Trebuie să resetezi cheia de securitate.</translation>
 <translation id="3778740492972734840">Instrumente pentru &amp;dezvoltatori</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{istoricul de navigare pentru # site}few{istoricul de navigare pentru # site-uri}other{istoricul de navigare pentru # de site-uri}}</translation>
@@ -4505,7 +4502,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4432621511648257259">Parolă incorectă</translation>
 <translation id="4434611816075088065">Momentan, nu există elemente care necesită atenție din partea ta</translation>
 <translation id="4435020454241191356">Adaugă un nume sau o etichetă pentru profil</translation>
-<translation id="443503224864902151">Te deconectează de pe majoritatea site-urilor. Vei rămâne conectat(ă) la Contul Google, astfel încât datele sincronizate să poată fi șterse.</translation>
 <translation id="4436201444922652535">Linkuri</translation>
 <translation id="443719869834432257">Tipul evenimentului: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Oferă salvarea parolelor și a cheilor de acces</translation>
@@ -8346,7 +8342,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="744366959743242014">Se încarcă datele. Procesul poate dura câteva secunde.</translation>
 <translation id="7443806024147773267">Accesează-ți parolele oricând te conectezi la Contul Google</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookie-urile vor fi blocate din nou astăzi}=1{Cookie-urile vor fi blocate din nou mâine}few{# zile până când cookie-urile vor fi blocate din nou}other{# de zile până când cookie-urile vor fi blocate din nou}}</translation>
-<translation id="7446716846072322308">Astfel, se vor șterge <ph name="TOTAL_USAGE" /> din datele stocate de <ph name="SITE_NAME" /> și site-urile conexe</translation>
 <translation id="7448430327655618736">Instalează automat aplicații</translation>
 <translation id="7448664748118305024">Șterge datele salvate de site-uri pe dispozitiv când închizi toate ferestrele</translation>
 <translation id="7449806939046594699">Organizația ta a blocat copierea acestui conținut</translation>
@@ -9744,7 +9739,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8533670235862049797">Navigarea sigură este activată</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Filele vor rămâne deschise pe acest dispozitiv, dar grupul se va șterge de pe toate dispozitivele conectate la <ph name="EMAIL" />}few{Filele vor rămâne deschise pe acest dispozitiv, dar grupurile se vor șterge de pe toate dispozitivele conectate la <ph name="EMAIL" />}other{Filele vor rămâne deschise pe acest dispozitiv, dar grupurile se vor șterge de pe toate dispozitivele conectate la <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">Adresă URL de reînnoire a certificatului Netscape</translation>
-<translation id="8536810348276651776">Te deconectează de pe majoritatea site-urilor. Vei rămâne conectat(ă) la Contul Google pentru a se aplica setările Family Link pentru Chrome.</translation>
 <translation id="8536956381488731905">Sunet la apăsarea tastei</translation>
 <translation id="8539727552378197395">Nu (numai Http)</translation>
 <translation id="8540136935098276800">Introdu o adresă URL formatată corect</translation>

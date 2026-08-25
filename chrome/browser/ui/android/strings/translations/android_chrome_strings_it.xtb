@@ -186,6 +186,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1778457539567749232">Segna come da leggere</translation>
 <translation id="1779766957982586368">Chiudi finestra</translation>
 <translation id="1780023393214832643">Password salvate su <ph name="USERNAME" /></translation>
+<translation id="1789543093145556097">Nascondi sempre</translation>
 <translation id="1791662854739702043">Installato</translation>
 <translation id="1792959175193046959">Modifica il percorso di download predefinito in qualsiasi momento</translation>
 <translation id="1796666869097395659">Riduci a icona la scheda per riaprirla in un secondo momento</translation>
@@ -522,6 +523,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3075397426753215787">Scegli un dispositivo.</translation>
 <translation id="3080375898390966733">Cerca nella scheda con Google Lens</translation>
 <translation id="3080525922482950719">Puoi salvare le pagine da leggere in un secondo momento o quando sei offline</translation>
+<translation id="3082989400996696487">Mostra solo nella pagina Nuova scheda</translation>
 <translation id="3087734570205094154">In basso</translation>
 <translation id="3091010850649238832">Mostra contenuti degli appunti</translation>
 <translation id="3098745985164956033">Alcune immagini vengono inviate a Google per migliorare le descrizioni</translation>
@@ -767,6 +769,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4164642020717536140">Navigazione sul web veloce e sicura</translation>
 <translation id="4165077084524712774">Altri strumenti</translation>
 <translation id="4170577491341606575">Recupero dei tuoi dati in corso…</translation>
+<translation id="4172051516777682613">Mostra sempre</translation>
 <translation id="4176838562184310003">Chrome non è stato chiuso correttamente e può tentare di ripristinare le finestre e le schede andate perse. Alcune finestre potrebbero essere ridotte a icona durante il ripristino.</translation>
 <translation id="4177222230309051052">Recupera tutti i tuoi preferiti</translation>
 <translation id="417865198503699526">Cerca un'impostazione</translation>
@@ -885,7 +888,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4599585406846903742">Visualizzazione a pagina singola</translation>
 <translation id="4601095002996233687">Scansioni approfondite per rilevare i download sospetti.</translation>
 <translation id="4606559747793337066">Quando un sito o un'app richiede di precaricare privatamente i link sulle sue pagine, Chrome cripta e precarica le pagine tramite i server di Google senza usare cookie. In questo modo la tua identità rimane nascosta ai siti precaricati.</translation>
-<translation id="4616150815774728855">Apri <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619615317237390068">Schede di altri dispositivi</translation>
 <translation id="4624065194742029982">Modalità Incognito di Chrome</translation>
 <translation id="4634124774493850572">Utilizza password</translation>
@@ -1851,6 +1853,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="834313815369870491">Non tradurre mai i siti</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, schede Incognito con registrazione fissate selezionate</translation>
 <translation id="8348430946834215779">Utilizza HTTPS quando possibile e ricevi un avviso prima di caricare i siti che non lo supportano</translation>
+<translation id="8349305172487531364">Barra dei preferiti</translation>
 <translation id="8354977102499939946">Cerca rapidamente con la tua voce. Per modificare questa scorciatoia, vai a Impostazioni.</translation>
 <translation id="8361737703487394103">Passa a una scheda specifica (1-8)</translation>
 <translation id="8368001212524806591">Monitora prezzo</translation>

@@ -186,6 +186,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1778457539567749232">Shëno si të palexuar</translation>
 <translation id="1779766957982586368">Mbyll dritaren</translation>
 <translation id="1780023393214832643">Fjalëkalimet e ruajtura te <ph name="USERNAME" /></translation>
+<translation id="1789543093145556097">Fshih gjithmonë</translation>
 <translation id="1791662854739702043">I instaluar</translation>
 <translation id="1792959175193046959">Ndrysho në çdo moment vendndodhjen e parazgjedhur të shkarkimit</translation>
 <translation id="1796666869097395659">Minimizo skedën për t'u kthyer më vonë tek ajo</translation>
@@ -522,6 +523,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3075397426753215787">Zgjidh një pajisje.</translation>
 <translation id="3080375898390966733">Kërko në skedë me "Lenten e Google"</translation>
 <translation id="3080525922482950719">Mund t'i ruash faqet për t'i lexuar më vonë ose offline</translation>
+<translation id="3082989400996696487">Shfaq vetëm në faqen e "Skedës së re"</translation>
 <translation id="3087734570205094154">Në fund</translation>
 <translation id="3091010850649238832">Shfaq përmbajtjet e kujtesës së fragmenteve</translation>
 <translation id="3098745985164956033">Disa imazhet i dërgohen Google për të përmirësuar përshkrimet për ty</translation>
@@ -767,6 +769,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4164642020717536140">Shfletim i shpejtë dhe i sigurt uebi</translation>
 <translation id="4165077084524712774">Vegla të tjera</translation>
 <translation id="4170577491341606575">Po merren gjërat e tua\u2026</translation>
+<translation id="4172051516777682613">Trego gjithmonë</translation>
 <translation id="4176838562184310003">Chrome nuk u mbyll siç duhet dhe mund të provojë të restaurojë dritaret dhe skedat e humbura. Disa dritare mund të minimizohen kur të restaurohen.</translation>
 <translation id="4177222230309051052">Merr të gjithë faqeshënuesit e tu</translation>
 <translation id="417865198503699526">Kërko për një cilësim</translation>
@@ -885,7 +888,6 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4599585406846903742">Pamja me një faqe</translation>
 <translation id="4601095002996233687">Skanime të thella për shkarkime të dyshimta.</translation>
 <translation id="4606559747793337066">Kur një sajt ose aplikacion kërkon të ngarkojë paraprakisht lidhje në mënyrë private në faqen e tij, Chrome i enkripton dhe i ngarkon paraprakisht faqet nëpërmjet serverëve të Google pa kuki. Kjo e fsheh identitetin tënd nga sajti i ngarkuar paraprakisht.</translation>
-<translation id="4616150815774728855">Hap <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619615317237390068">Skedat nga pajisjet e tjera</translation>
 <translation id="4624065194742029982">Modaliteti "i fshehtë" i Chrome</translation>
 <translation id="4634124774493850572">Përdor fjalëkalimin</translation>
@@ -1851,6 +1853,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="834313815369870491">Mos i përkthe asnjëherë sajtet</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, skeda "e fshehtë" e gozhduar në regjistrim dhe e zgjedhur me shumë të tjera</translation>
 <translation id="8348430946834215779">Përdor HTTPS kur është e mundur dhe merr paralajmërime para ngarkimit të sajteve që nuk e mbështesin atë</translation>
+<translation id="8349305172487531364">Shiriti i faqeshënuesve</translation>
 <translation id="8354977102499939946">Kërko me shpejtësi me zërin tënd. Për ta modifikuar këtë shkurtore, shko te "Cilësimet".</translation>
 <translation id="8361737703487394103">Kalo te një skedë specifike (1–8)</translation>
 <translation id="8368001212524806591">Monitoro çmimin</translation>

@@ -1827,7 +1827,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2413009156320833859">Dar labiau tinkinkite naršyklę naudodami plėtinius iš <ph name="BEGIN_LINK1" />„Chrome“ internetinės parduotuvės<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Tęsti naršymą pagal „<ph name="MODULE_TITLE" />“</translation>
 <translation id="2414886740292270097">Tamsi</translation>
-<translation id="2415117815770324983">Būsite atjungti nuo daugelio svetainių. Liksite prisijungę prie „Google“ paskyros.</translation>
 <translation id="2416435988630956212">Klaviatūros funkcijų klavišai</translation>
 <translation id="2419131370336513030">Žr. įdiegtas programas</translation>
 <translation id="2419706071571366386">Saugos sumetimais baigę naudoti kompiuterį atsijunkite.</translation>
@@ -1978,7 +1977,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
         <ph name="BREAK" />
         Galite tvarkyti nustatymus kortelės meniu arba peržiūrėti daugiau parinkčių skiltyje „Chrome“ tinkinimas“.</translation>
 <translation id="2514465118223423406">Kai prijungta pelė</translation>
-<translation id="2514938842036917377">Bus ištrinta <ph name="TOTAL_USAGE" /> duomenų, kuriuos saugo <ph name="SITE_NAME" />, susijusios svetainės ir įdiegtos programos</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Naudotojo vardo patvirtinimas</translation>
 <translation id="2517472476991765520">Nuskaityti</translation>
@@ -3658,7 +3656,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3776508619697147021">Svetainėse gali būti prašoma automatiškai atsisiųsti kelis failus</translation>
 <translation id="3776796446459804932">Šis plėtinys pažeidžia „Chrome“ internetinės parduotuvės politiką.</translation>
 <translation id="3777483481409781352">Nepavyko aktyvinti mobiliojo ryšio įrenginio</translation>
-<translation id="3777796259512476958">Būsite atjungti nuo daugelio svetainių</translation>
 <translation id="3778208826288864398">Saugos raktas užblokuotas, nes per daug kartų įvestas neteisingas PIN kodas. Turėsite nustatyti saugos raktą iš naujo.</translation>
 <translation id="3778740492972734840">&amp;Kūrėjo įrankiai</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{# svetainės naršymo istorija}one{# svetainės naršymo istorija}few{# svetainių naršymo istorija}many{# svetainės naršymo istorija}other{# svetainių naršymo istorija}}</translation>
@@ -4519,7 +4516,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4432621511648257259">Slaptažodis netinkamas</translation>
 <translation id="4434611816075088065">Šiuo metu nėra daugiau elementų, į kuriuos reikėtų atkreipti dėmesį</translation>
 <translation id="4435020454241191356">Pridėkite profilio pavadinimą arba etiketę</translation>
-<translation id="443503224864902151">Būsite atjungti nuo daugelio svetainių. Liksite prisijungę prie „Google“ paskyros, todėl sinchronizuoti duomenys gali būti ištrinti.</translation>
 <translation id="4436201444922652535">Nuorodos</translation>
 <translation id="443719869834432257">Įvykio tipas: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Siūlyti išsaugoti slaptažodžius ir prieigos raktus</translation>
@@ -8367,7 +8363,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="744366959743242014">Įkeliami duomenys. Tai gali užtrukti kelias sekundes.</translation>
 <translation id="7443806024147773267">Pasiekite slaptažodžius, kai esate prisijungę prie „Google“ paskyros</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Slapukai šiandien vėl bus užblokuoti}=1{Slapukai rytoj vėl bus užblokuoti}one{Liko # diena, kol slapukai vėl bus užblokuoti}few{Liko # dienos, kol slapukai vėl bus užblokuoti}many{Liko # dienos, kol slapukai vėl bus užblokuoti}other{Liko # dienų, kol slapukai vėl bus užblokuoti}}</translation>
-<translation id="7446716846072322308">Bus ištrinta <ph name="TOTAL_USAGE" /> duomenų, kuriuos saugo <ph name="SITE_NAME" /> ir susijusios svetainės</translation>
 <translation id="7448430327655618736">Automatiškai įdiekite programas</translation>
 <translation id="7448664748118305024">Ištrinti duomenis, kuriuos svetainės išsaugojo įrenginyje, uždarius visus langus</translation>
 <translation id="7449806939046594699">Jūsų organizacija užblokavo šio turinio kopijavimą</translation>
@@ -9765,7 +9760,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8533670235862049797">Saugus naršymas įjungtas</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Skirtukai liks atidaryti šiame įrenginyje, bet grupė bus ištrinta iš visų įrenginių, kuriuose prisijungta prie <ph name="EMAIL" />}one{Skirtukai liks atidaryti šiame įrenginyje, bet grupės bus ištrintos iš visų įrenginių, kuriuose prisijungta prie <ph name="EMAIL" />}few{Skirtukai liks atidaryti šiame įrenginyje, bet grupės bus ištrintos iš visų įrenginių, kuriuose prisijungta prie <ph name="EMAIL" />}many{Skirtukai liks atidaryti šiame įrenginyje, bet grupės bus ištrintos iš visų įrenginių, kuriuose prisijungta prie <ph name="EMAIL" />}other{Skirtukai liks atidaryti šiame įrenginyje, bet grupės bus ištrintos iš visų įrenginių, kuriuose prisijungta prie <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">„Netscape“ sertifikato atnaujinimo URL</translation>
-<translation id="8536810348276651776">Būsite atjungti nuo daugelio svetainių. Liksite prisijungę prie „Google“ paskyros, kad būtų taikomi „Chrome“ skirti „Family Link“ nustatymai.</translation>
 <translation id="8536956381488731905">Garsas paspaudus klavišą</translation>
 <translation id="8539727552378197395">Ne (HttpOnly)</translation>
 <translation id="8540136935098276800">Įveskite tinkamo formato URL</translation>

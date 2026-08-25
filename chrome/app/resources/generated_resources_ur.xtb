@@ -1816,7 +1816,6 @@
 <translation id="2413009156320833859">‏<ph name="BEGIN_LINK1" />Chrome ویب اسٹور<ph name="END_LINK1" /> سے ایکسٹینشنز کے ساتھ اپنے براؤزر کو اور زیادہ حسب ضرورت بنائیں</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> کیلئے براؤزنگ دوبارہ شروع کریں</translation>
 <translation id="2414886740292270097">گہری</translation>
-<translation id="2415117815770324983">‏ایسا کرنے پر آپ اکثر سائٹس سے سائن آؤٹ ہو جاتے ہیں۔ آپ اپنے Google اکاؤنٹ میں سائن ان رہیں گے۔</translation>
 <translation id="2416435988630956212">کی بورڈ کی فنکشن کلیدیں</translation>
 <translation id="2419131370336513030">انسٹال کردہ ایپس دیکھیں</translation>
 <translation id="2419706071571366386">سیکورٹی کے مد نظر جب آپ کا کمپیوٹر استعمال نہ ہو رہا ہو تو سائن آؤٹ کریں۔</translation>
@@ -1968,7 +1967,6 @@
         <ph name="BREAK" />
         آپ کارڈ مینو سے ترتیبات کا نظم کر سکتے یا Chrome کو حسب ضرورت بنائیں میں مزید اختیارات دیکھ سکتے ہیں۔</translation>
 <translation id="2514465118223423406">ماؤس کے منسلک ہونے پر</translation>
-<translation id="2514938842036917377">اس سے <ph name="SITE_NAME" />، متعلقہ سائٹس اور انسٹال شدہ ایپس کا اسٹور کردہ <ph name="TOTAL_USAGE" /> ڈیٹا حذف ہو جائے گا</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">اپنے صارف نام کی توثیق کریں</translation>
 <translation id="2517472476991765520">اسکین کریں</translation>
@@ -3646,7 +3644,6 @@
 <translation id="3776508619697147021">سائٹس خودکار طور پر متعدد فائلز ڈاؤن لوڈ کرنے کیلئے پوچھ سکتی ہیں</translation>
 <translation id="3776796446459804932">‏اس ایکسٹینشن سے Chrome ویب اسٹور کی پالیسی کی خلاف ورزی ہوتی ہے۔</translation>
 <translation id="3777483481409781352">سیلولر آلہ کو فعال نہیں کیا جا سکا</translation>
-<translation id="3777796259512476958">اکثر سائٹس سے آپ کو سائن آؤٹ کرتا ہے</translation>
 <translation id="3778208826288864398">‏کئی مرتبہ غلط PIN درج کرنے کی وجہ سے سیکیورٹی کلید مقفل ہو گئی ہے۔ آپ کو سیکیورٹی کلید دوبارہ ترتیب دینی ہوگی۔</translation>
 <translation id="3778740492972734840">&amp;ڈیولپر ٹولز</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{آپ کی # سائٹ کی براؤزنگ کی سرگزشت}other{آپ کی # سائٹس کی براؤزنگ کی سرگزشت}}</translation>
@@ -4507,7 +4504,6 @@
 <translation id="4432621511648257259">پاس ورڈ غلط ہے</translation>
 <translation id="4434611816075088065">ابھی کسی اور چیز کو آپ کی توجہ کی ضرورت نہیں ہے</translation>
 <translation id="4435020454241191356">اپنی پروفائل کیلئے ایک نام یا لیبل شامل کریں</translation>
-<translation id="443503224864902151">‏ایسا کرنے پر آپ بیشتر سائٹس سے سائن آؤٹ ہو جاتے ہیں۔ تاہم، آپ اپنے Google اکاؤنٹ میں سائن ان رہیں گے تاکہ آپ کے مطابقت پذیر کردہ ڈیٹا کو حذف کیا جا سکے۔</translation>
 <translation id="4436201444922652535">لنکس</translation>
 <translation id="443719869834432257">ایونٹ کی قسم: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">پاس ورڈز اور پاس کیز کو محفوظ کرنے کی پیشکش کریں</translation>
@@ -8345,7 +8341,6 @@
 <translation id="744366959743242014">ڈیٹا لوڈ ہو رہا ہے، اس میں کچھ سیکنڈز لگ سکتے ہیں۔</translation>
 <translation id="7443806024147773267">‏آپ جب بھی اپنے Google اکاؤنٹ میں سائن ان ہوں، اپنے پاس ورڈز تک رسائی حاصل کریں</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{کوکیز کو آج دوبارہ بلاک کر دیا جائے گا}=1{کوکیز کو کل دوبارہ بلاک کر دیا جائے گا}other{# دنوں میں کوکیز کو دوبارہ مسدود کر دیا جائے گا}}</translation>
-<translation id="7446716846072322308">اس سے <ph name="SITE_NAME" /> اور متعلقہ سائٹس کے ذریعے اسٹور کردہ <ph name="TOTAL_USAGE" /> ڈیٹا حذف ہو جائے گا</translation>
 <translation id="7448430327655618736">ایپس خودکار طور پر انسٹال کریں</translation>
 <translation id="7448664748118305024">تمام ونڈوز کو بند کرتے وقت اپنے آلے میں محفوظ کردہ ڈیٹا سائٹس کو حذف کریں</translation>
 <translation id="7449806939046594699">آپ کی تنظیم نے اس مواد کو کاپی کرنے سے بلاک کر دیا ہے</translation>
@@ -9745,7 +9740,6 @@
 <translation id="8533670235862049797">محفوظ براؤزنگ آن ہے</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{اس آلے پر ٹیبز کھلے رہیں گے لیکن گروپ کو ان تمام آلات سے حذف کر دیا جائے گا جو <ph name="EMAIL" /> میں سائن ان ہیں}other{اس آلے پر ٹیبز کھلے رہیں گے لیکن گروپس کو ان تمام آلات سے حذف کر دیا جائے گا جو <ph name="EMAIL" /> میں سائن ان ہیں}}</translation>
 <translation id="8535005006684281994">‏Netscape سرٹیفیکیٹ تجدید URL</translation>
-<translation id="8536810348276651776">‏اکثر سائٹس سے آپ کو سائن آؤٹ کرتا ہے۔ آپ اپنے Google اکاؤنٹ میں سائن ان رہیں گے تاکہ Chrome کے لیے آپ کے Family Link کی ترتیبات لاگو ہوں۔</translation>
 <translation id="8536956381488731905">کلید دبانے پر آواز</translation>
 <translation id="8539727552378197395">‏کوئی (HttpOnly) نہیں ہے</translation>
 <translation id="8540136935098276800">‏صحیح طور پر فارمیٹ کیا ہوا URL درج کریں</translation>

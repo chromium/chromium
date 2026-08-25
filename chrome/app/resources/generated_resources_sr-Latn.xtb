@@ -1815,7 +1815,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2413009156320833859">Dodatno prilagodite pregledač pomoću dodataka iz <ph name="BEGIN_LINK1" />Chrome Web Store-a<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Nastavite sa pregledanjem za <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Tamna</translation>
-<translation id="2415117815770324983">Odjaviće vas sa većine sajtova. Ostaćete prijavljeni na Google nalog.</translation>
 <translation id="2416435988630956212">Funkcijski tasteri na tastaturi</translation>
 <translation id="2419131370336513030">Prikaži instalirane aplikacije</translation>
 <translation id="2419706071571366386">Iz bezbednosnih razloga se odjavite kada ne koristite računar.</translation>
@@ -1967,7 +1966,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
         <ph name="BREAK" />
         Možete da upravljate podešavanjima iz menija kartice ili da vidite još opcija u meniju Prilagodite Chrome.</translation>
 <translation id="2514465118223423406">Kada je miš povezan</translation>
-<translation id="2514938842036917377">Ovim brišete <ph name="TOTAL_USAGE" /> podataka koje čuvaju <ph name="SITE_NAME" />, povezani sajtovi i instalirane aplikacije</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Potvrdite korisničko ime</translation>
 <translation id="2517472476991765520">Skeniraj</translation>
@@ -3647,7 +3645,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3776508619697147021">Sajtovi mogu da traže da automatski preuzimaju više fajlova</translation>
 <translation id="3776796446459804932">Ovaj dodatak krši smernice Chrome veb-prodavnice.</translation>
 <translation id="3777483481409781352">Aktiviranje mobilnog uređaja nije uspelo</translation>
-<translation id="3777796259512476958">Odjaviće vas sa većine sajtova</translation>
 <translation id="3778208826288864398">Bezbednosni ključ je zaključan jer ste previše puta uneli pogrešan PIN. Treba da resetujete bezbednosni ključ.</translation>
 <translation id="3778740492972734840">&amp;Alatke za programere</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{istoriju pregledanja za # sajt}one{istoriju pregledanja za # sajt}few{istoriju pregledanja za # sajta}other{istoriju pregledanja za # sajtova}}</translation>
@@ -4508,7 +4505,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4432621511648257259">Lozinka je netačna</translation>
 <translation id="4434611816075088065">Trenutno ništa drugo ne zahteva vašu pažnju</translation>
 <translation id="4435020454241191356">Dodajte naziv ili oznaku za profil</translation>
-<translation id="443503224864902151">Odjavljuje vas sa većine sajtova. Ne odjavljuje vas sa Google naloga, pa sinhronizovani podaci mogu da se izbrišu.</translation>
 <translation id="4436201444922652535">Linkovi</translation>
 <translation id="443719869834432257">Vrsta događaja: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Ponudi čuvanje lozinki i pristupnih ključeva</translation>
@@ -8353,7 +8349,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="744366959743242014">Podaci se učitavaju. To može da potraje i do nekoliko sekundi.</translation>
 <translation id="7443806024147773267">Pristupajte lozinkama uvek kada ste prijavljeni na Google nalog</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Kolačići će danas biti ponovo blokirani}=1{Kolačići će sutra biti ponovo blokirani}one{# dan dok se kolačići ponovo ne blokiraju}few{# dana dok se kolačići ponovo ne blokiraju}other{# dana dok se kolačići ponovo ne blokiraju}}</translation>
-<translation id="7446716846072322308">Ovim brišete <ph name="TOTAL_USAGE" /> podataka koje čuvaju <ph name="SITE_NAME" /> i povezani sajtovi</translation>
 <translation id="7448430327655618736">Automatski instalira aplikacije</translation>
 <translation id="7448664748118305024">Izbrišite podatke koje su sajtovi sačuvali na uređaju kada zatvorite sve prozore</translation>
 <translation id="7449806939046594699">Organizacija je blokirala kopiranje ovog sadržaja</translation>
@@ -9753,7 +9748,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8533670235862049797">Bezbedno pregledanje je uključeno</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Kartice će ostati otvorene na ovom uređaju, ali će se grupa izbrisati sa svih uređaja prijavljenih na <ph name="EMAIL" />}one{Kartice će ostati otvorene na ovom uređaju, ali će se grupe izbrisati sa svih uređaja prijavljenih na <ph name="EMAIL" />}few{Kartice će ostati otvorene na ovom uređaju, ali će se grupe izbrisati sa svih uređaja prijavljenih na <ph name="EMAIL" />}other{Kartice će ostati otvorene na ovom uređaju, ali će se grupe izbrisati sa svih uređaja prijavljenih na <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">URL adresa za obnovu Netscape sertifikata</translation>
-<translation id="8536810348276651776">Odjaviće vas sa većine sajtova. Ostaćete prijavljeni na Google nalog da bi se primenjivala Family Link podešavanja za Chrome.</translation>
 <translation id="8536956381488731905">Zvuk pri pritisku na taster</translation>
 <translation id="8539727552378197395">Ne (HttpOnly)</translation>
 <translation id="8540136935098276800">Unesite ispravno formatiran URL</translation>

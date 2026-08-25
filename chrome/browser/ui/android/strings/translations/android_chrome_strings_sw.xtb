@@ -186,6 +186,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="1778457539567749232">Tia alama kuwa hujasoma</translation>
 <translation id="1779766957982586368">Funga dirisha</translation>
 <translation id="1780023393214832643">Manenosiri yamehifadhiwa kwenye <ph name="USERNAME" /></translation>
+<translation id="1789543093145556097">Ficha kila wakati</translation>
 <translation id="1791662854739702043">Imesakinishwa</translation>
 <translation id="1792959175193046959">Badilisha sehemu chaguomsingi ya kupakua wakati wowote</translation>
 <translation id="1796666869097395659">Punguza kichupo ili urudi baadaye</translation>
@@ -522,6 +523,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3075397426753215787">Chagua kifaa.</translation>
 <translation id="3080375898390966733">Tafuta kichupo ukitumia Lenzi za Google</translation>
 <translation id="3080525922482950719">Unaweza kuhifadhi kurasa ili uzisome baadaye au nje ya mtandao</translation>
+<translation id="3082989400996696487">Onyesha tu kwenye Ukurasa wa Kichupo Kipya</translation>
 <translation id="3087734570205094154">Chini</translation>
 <translation id="3091010850649238832">Onyesha yaliyomo kwenye ubao wa kunakili</translation>
 <translation id="3098745985164956033">Baadhi ya picha hutumwa kwa Google ili kuboresha maelezo unayopata</translation>
@@ -767,6 +769,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="4164642020717536140">Kuvinjari kwa haraka na kwa usalama</translation>
 <translation id="4165077084524712774">Zana zaidi</translation>
 <translation id="4170577491341606575">Inakusanya data yako\u2026</translation>
+<translation id="4172051516777682613">Onyesha kila mara</translation>
 <translation id="4176838562184310003">Chrome haikuzimwa ipasavyo na inaweza kujaribu kurejesha madirisha na vichupo vyako vilivyopotea. Huenda baadhi ya madirisha yakawekwa kwenye upauzana wakati yatarejeshwa.</translation>
 <translation id="4177222230309051052">Pata alamisho zako zote</translation>
 <translation id="417865198503699526">Tafuta mipangilio</translation>
@@ -885,7 +888,6 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="4599585406846903742">Mwonekano wa ukurasa mmoja</translation>
 <translation id="4601095002996233687">Ukaguzi wa kina wa vipakuliwa vinavyoshukiwa.</translation>
 <translation id="4606559747793337066">Tovuti au programu inapoomba viungo vipakiwe mapema kwenye ukurasa wake kwa njia ya faragha, Chrome husimba kurasa kwa njia fiche na kuzipakia mapema kupitia seva za Google bila vidakuzi. Hali hii huficha utambulisho wako usionekane kwenye tovuti inayopakiwa mapema.</translation>
-<translation id="4616150815774728855">Fungua <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619615317237390068">Vichupo kutoka kwenye vifaa vingine</translation>
 <translation id="4624065194742029982">Hali fiche kwenye Chrome</translation>
 <translation id="4634124774493850572">Tumia nenosiri</translation>
@@ -1851,6 +1853,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="834313815369870491">Kamwe usitafsiri tovuti</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, Umechagua Mara Nyingi Kichupo cha Faragha Kinachorekodi ambacho Ulibandika</translation>
 <translation id="8348430946834215779">Tumia HTTPS panapowezekana na upate tahadhari kabla ya kupakia tovuti zisizotumia kiendelezi hicho</translation>
+<translation id="8349305172487531364">Sehemu ya Alamisho</translation>
 <translation id="8354977102499939946">Tafuta kwa haraka ukitumia sauti yako. Ili ubadilishe njia hii ya mkato, nenda kwenye Mipangilio.</translation>
 <translation id="8361737703487394103">Ruka uende kwenye kichupo mahususi (1–8)</translation>
 <translation id="8368001212524806591">Fuatilia bei</translation>

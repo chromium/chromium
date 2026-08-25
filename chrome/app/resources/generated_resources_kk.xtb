@@ -1814,7 +1814,6 @@
 <translation id="2413009156320833859">Браузерді <ph name="BEGIN_LINK1" />Chrome Web Store-дағы<ph name="END_LINK1" /> кеңейтімдермен одан әрі бейімдеңіз.</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> модулін шолуды жалғастыру</translation>
 <translation id="2414886740292270097">Күңгірт</translation>
-<translation id="2415117815770324983">Көп сайттан шығарыласыз. Бірақ Google аккаунтыңыздан шығарылмайсыз.</translation>
 <translation id="2416435988630956212">Пернетақтаның функциялық пернелері</translation>
 <translation id="2419131370336513030">Орнатылған қолданбаларды көру</translation>
 <translation id="2419706071571366386">Қауіпсіздік үшін компьютеріңіз пайдаланылмайтын кезде аккаунттан шығыңыз.</translation>
@@ -1965,7 +1964,6 @@
         <ph name="BREAK" />
         Параметрлерді карта мәзірінен реттеп, басқа опцияларды "Chrome-ды реттеу" бөлімінен көре аласыз.</translation>
 <translation id="2514465118223423406">Тінтуір жалғанған кезде</translation>
-<translation id="2514938842036917377"><ph name="SITE_NAME" /> сайтында, қатысты сайттар мен орнатылған қолданбаларда сақталған <ph name="TOTAL_USAGE" /> дерек жойылады.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Пайдаланушы атын растаңыз</translation>
 <translation id="2517472476991765520">Іздеу</translation>
@@ -3643,7 +3641,6 @@
 <translation id="3776508619697147021">Сайт автоматты түрде бірнеше файл жүктеп алуға рұқсат сұрай алады.</translation>
 <translation id="3776796446459804932">Бұл кеңейтім Chrome Web Store саясатын бұзады.</translation>
 <translation id="3777483481409781352">Ұялы құрылғыны іске қосу мүмкін болмады</translation>
-<translation id="3777796259512476958">Көп сайттардан шығарады</translation>
 <translation id="3778208826288864398">PIN коды бірнеше рет қате енгізілгендіктен, қауіпсіздік кілті құлыпталған. Қауіпсіздік кілтін бастапқы күйге қайтаруыңыз қажет.</translation>
 <translation id="3778740492972734840">&amp;Әзірлеуші құралдары</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{# сайтты қолдануыңыздың тарихы}other{# сайтты қолдануыңыздың тарихы}}</translation>
@@ -4504,7 +4501,6 @@
 <translation id="4432621511648257259">Құпия сөз қате</translation>
 <translation id="4434611816075088065">Қазір қауіпсіздікке қатысты ұсыныстар жоқ</translation>
 <translation id="4435020454241191356">Профиліңізге ат беріңіз немесе белгі қосыңыз</translation>
-<translation id="443503224864902151">Көп сайттардан шығарады. Google аккаунтыңызда қаласыз және синхрондалған деректер жойылады.</translation>
 <translation id="4436201444922652535">Сілтемелер</translation>
 <translation id="443719869834432257">Оқиға түрі: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Құпия сөздер мен кіру кілттерін сақтауды ұсыну</translation>
@@ -8338,7 +8334,6 @@
 <translation id="744366959743242014">Деректер жүктеліп жатыр, бұл бірнеше секунд уақыт алуы мүмкін.</translation>
 <translation id="7443806024147773267">Google аккаунтыңызға кіріп тұрған кез келген құрылғыдан құпия сөздеріңізді пайдалана аласыз.</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Бүгін cookie файлдары қайта блокталады.}=1{Ертең cookie файлдары қайта блокталады.}other{# күннен кейін cookie файлдары қайта блокталады.}}</translation>
-<translation id="7446716846072322308"><ph name="SITE_NAME" /> сайтында және қатысты сайттарда сақталған <ph name="TOTAL_USAGE" /> дерек жойылады.</translation>
 <translation id="7448430327655618736">Қолданбаларды автоматты түрде орнатыңыз</translation>
 <translation id="7448664748118305024">Барлық терезені жапқан кезде құрылғыңызға сақталған деректер сайттарын жою</translation>
 <translation id="7449806939046594699">Ұйымыңыз бұл контентті көшіруді блоктады.</translation>
@@ -9736,7 +9731,6 @@
 <translation id="8533670235862049797">Safe Browsing қосулы</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Қойындылар осы құрылғыда ашық қалады, бірақ топ <ph name="EMAIL" /> кірген барлық құрылғыдан жойылады.}other{Қойындылар осы құрылғыда ашық қалады, бірақ топтар <ph name="EMAIL" /> кірген барлық құрылғыдан жойылады.}}</translation>
 <translation id="8535005006684281994">Netscape сертификат жаңалау URL мекенжайы</translation>
-<translation id="8536810348276651776">Көп сайттардан шығарады. Chrome-ға арналған Family Link параметрлерін қолдану үшін Google аккаунтыңызға кірген күйде қаласыз.</translation>
 <translation id="8536956381488731905">Пернені басқанда дыбыс шығару</translation>
 <translation id="8539727552378197395">Жоқ (HttpOnly)</translation>
 <translation id="8540136935098276800">Дұрыс форматталған URL мекенжайын енгізіңіз.</translation>

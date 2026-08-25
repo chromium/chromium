@@ -186,6 +186,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1778457539567749232">Markér som ulæst</translation>
 <translation id="1779766957982586368">Luk vindue</translation>
 <translation id="1780023393214832643">Adgangskoderne er gemt på <ph name="USERNAME" /></translation>
+<translation id="1789543093145556097">Skjul altid</translation>
 <translation id="1791662854739702043">Installeret</translation>
 <translation id="1792959175193046959">Du kan til enhver tid skifte standardplaceringen for downloads</translation>
 <translation id="1796666869097395659">Minimer fanen, så du kan vende tilbage til den senere</translation>
@@ -522,6 +523,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3075397426753215787">Vælg en enhed.</translation>
 <translation id="3080375898390966733">Søg på fanen med Google Lens</translation>
 <translation id="3080525922482950719">Du kan gemme sider, som du vil læse senere, eller når du er offline</translation>
+<translation id="3082989400996696487">Vis kun på siden Ny fane</translation>
 <translation id="3087734570205094154">Bund</translation>
 <translation id="3091010850649238832">Vis indhold i udklipsholderen</translation>
 <translation id="3098745985164956033">Nogle billeder sendes til Google for at give dig bedre beskrivelser</translation>
@@ -767,6 +769,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4164642020717536140">Hurtig og sikker webbrowsing</translation>
 <translation id="4165077084524712774">Flere værktøjer</translation>
 <translation id="4170577491341606575">Henter dine data\u2026</translation>
+<translation id="4172051516777682613">Vis altid</translation>
 <translation id="4176838562184310003">Chrome blev ikke lukket korrekt og kan prøve at gendanne dine mistede vinduer og faner. Nogle vinduer kan være minimeret, når de gendannes.</translation>
 <translation id="4177222230309051052">Få alle dine bogmærker</translation>
 <translation id="417865198503699526">Søg efter en indstilling</translation>
@@ -885,7 +888,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4599585406846903742">Enkeltsidevisning</translation>
 <translation id="4601095002996233687">Grundige scanninger efter mistænkelige downloads.</translation>
 <translation id="4606559747793337066">Når et website eller en app beder om at forudindlæse links privat på det pågældende website, krypterer og forudindlæser Chrome siderne via Googles servere uden cookies. På denne måde skjules din identitet fra det forudindlæste website.</translation>
-<translation id="4616150815774728855">Åbn <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619615317237390068">Faner fra andre enheder</translation>
 <translation id="4624065194742029982">Inkognitotilstand i Chrome</translation>
 <translation id="4634124774493850572">Brug adgangskode</translation>
@@ -1851,6 +1853,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="834313815369870491">Oversæt aldrig websites</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, fastgjort inkognitofane med multivalg, der optager</translation>
 <translation id="8348430946834215779">Brug HTTPS, når det er muligt, og bliv advaret før indlæsning af websites, der ikke understøtter HTTPS</translation>
+<translation id="8349305172487531364">Bogmærkelinje</translation>
 <translation id="8354977102499939946">Søg hurtigt med din stemme. Gå til Indstillinger for at redigere denne genvej.</translation>
 <translation id="8361737703487394103">Skift til en bestemt fane (1-8)</translation>
 <translation id="8368001212524806591">Overvåg pris</translation>

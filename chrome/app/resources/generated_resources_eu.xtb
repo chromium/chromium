@@ -1813,7 +1813,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2413009156320833859">Pertsonalizatu arakatzailea are gehiago <ph name="BEGIN_LINK1" />Chrome Web Store-ko<ph name="END_LINK1" /> luzapenekin</translation>
 <translation id="2414159296888870200">Berrekin <ph name="MODULE_TITLE" /> arakatzeari</translation>
 <translation id="2414886740292270097">Iluna</translation>
-<translation id="2415117815770324983">Webgune gehienetako saioa amaitzen du. Google-ko kontuko saioa ez da amaituko.</translation>
 <translation id="2416435988630956212">Teklatuko funtzio-teklak</translation>
 <translation id="2419131370336513030">Ikusi instalatutako aplikazioak</translation>
 <translation id="2419706071571366386">Babestuta egoteko, amaitu saioa ordenagailua erabili behar ez duzunean.</translation>
@@ -1964,7 +1963,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
         <ph name="BREAK" />
         Ezarpenak kudeatzeko, joan txartelaren menura edo ikusi aukera gehiago Pertsonalizatu Chrome atalean.</translation>
 <translation id="2514465118223423406">Sagu bat konektatzen denean</translation>
-<translation id="2514938842036917377"><ph name="SITE_NAME" /> webguneak, erlazionatutako webguneek eta instalatutako aplikazioek gordetako datuen <ph name="TOTAL_USAGE" /> ezabatuko dira</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Berretsi erabiltzaile-izena</translation>
 <translation id="2517472476991765520">Bilatu</translation>
@@ -3642,7 +3640,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3776508619697147021">Webguneek fitxategi bat baino gehiago automatikoki deskargatzea eska dezakete</translation>
 <translation id="3776796446459804932">Luzapenak Chrome Web-dendaren gidalerroak urratzen ditu.</translation>
 <translation id="3777483481409781352">Ezin izan da aktibatu gailu mugikorra</translation>
-<translation id="3777796259512476958">Webgune gehienetako saioa amaitzen du</translation>
 <translation id="3778208826288864398">Segurtasun-giltza blokeatuta dago PINa gehiegitan idatzi delako oker. Segurtasun-giltza berrezarri behar da.</translation>
 <translation id="3778740492972734840">&amp;Garatzaileen tresnak</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{# gunetako arakatze-historia}other{# gunetako arakatze-historia}}</translation>
@@ -4503,7 +4500,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4432621511648257259">Pasahitz okerra</translation>
 <translation id="4434611816075088065">Ez duzu beste ezer egin behar oraingoz</translation>
 <translation id="4435020454241191356">Gehitu izen edo etiketa bat profilean</translation>
-<translation id="443503224864902151">Webgune gehienetako saioa amaitzen du. Google-ko kontuan saioa hasita edukitzen jarraituko duzu, sinkronizatutako datuak ezabatu ahal izateko.</translation>
 <translation id="4436201444922652535">Estekak</translation>
 <translation id="443719869834432257">Gertaera mota: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Eskaini pasahitzak eta sarbide-gakoak gordetzeko aukera</translation>
@@ -8337,7 +8333,6 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="744366959743242014">Datuak kargatzen; baliteke segundo batzuk behar izatea.</translation>
 <translation id="7443806024147773267">Pasahitzak eskura izango dituzu Google-ko kontuan saioa hasita badaukazu</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Gaur blokeatuko dira berriro cookieak}=1{Bihar blokeatuko dira berriro cookieak}other{# egun barru blokeatuko dira berriro cookieak}}</translation>
-<translation id="7446716846072322308"><ph name="SITE_NAME" /> webguneak eta erlazionatutako webguneek gordetako datuen <ph name="TOTAL_USAGE" /> ezabatuko dira</translation>
 <translation id="7448430327655618736">Instalatu aplikazioak automatikoki</translation>
 <translation id="7448664748118305024">Ezabatu webguneek gailuan gorde dituzten datuak leiho guztiak ixtean</translation>
 <translation id="7449806939046594699">Zure erakundeak eduki hau kopiatzeko aukera blokeatu du</translation>
@@ -9735,7 +9730,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8533670235862049797">Arakatze segurua aktibatuta dago</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Fitxak irekita mantenduko dira gailu honetan, baina <ph name="EMAIL" /> kontuarekin saioa hasita daukaten gailu guztietan ezabatuko da taldea}other{Fitxak irekita mantenduko dira gailu honetan, baina <ph name="EMAIL" /> kontuarekin saioa hasita daukaten gailu guztietan ezabatuko dira taldeak}}</translation>
 <translation id="8535005006684281994">Netscape ziurtagiria berritzeko URLa</translation>
-<translation id="8536810348276651776">Webgune gehienetako saioa amaitzen du. Google-ko kontuan saioa hasita jarraituko duzu; beraz, Family Link-en Chrome-rako ezarpenak aplikatuko dira.</translation>
 <translation id="8536956381488731905">Aktibatu soinua teklak sakatzean</translation>
 <translation id="8539727552378197395">Ez (Http soilik)</translation>
 <translation id="8540136935098276800">Idatzi formatu egokia duen URL bat</translation>

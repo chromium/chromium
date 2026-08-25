@@ -465,6 +465,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1757773103848038814">Tipo de letra monoespazado</translation>
 <translation id="1757935267918149452">Botón para cambiar o contrasinal de Google. Actívao para cambiar o contrasinal da túa Conta de Google</translation>
 <translation id="1759776526873274358">Autocompletar os códigos de verificación que usan os sitios para mellorar a túa seguranza. Chrome pode obtelos a partir da túa conta de Gmail. <ph name="BEGIN_LINK" />Máis información sobre esta función<ph name="LINK_END" /></translation>
+<translation id="176013700366797492">Visita Google Wallet para controlar as <ph name="BEGIN_LINK1" />preferencias de datos e privacidade<ph name="END_LINK1" /> ou xestionar os <ph name="BEGIN_LINK2" />métodos de pago<ph name="END_LINK2" /> e os <ph name="BEGIN_LINK3" />pases<ph name="END_LINK3" /> (por exemplo, as tarxetas de fidelidade e os documentos de identidade)</translation>
 <translation id="1763864636252898013">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o sistema operativo do teu dispositivo non confía no seu certificado de seguranza. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Proba a executar o diagnóstico de rede de Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Foto (arquivo)</translation>
@@ -788,6 +789,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2321291402658100099">Xestionar información</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 ventá}other{# ventás}}</translation>
 <translation id="232390861414237658">Autocompleta esta tarxeta para as compras que fagas en Chrome cando estea gardada para usar con Google Pay</translation>
+<translation id="2325722389016720813">Preme a frecha cara arriba ou cara abaixo para completar automaticamente o texto. Escribe para completar automaticamente o texto.</translation>
 <translation id="2326283484705860548">Xa podes autocompletar máis información de Google Wallet</translation>
 <translation id="2326747055382936979">Xestionar función de autocompletar mellorada</translation>
 <translation id="2328651992442742497">Permiso concedido (opción predeterminada)</translation>

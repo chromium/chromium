@@ -1826,7 +1826,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2413009156320833859">Wekea kivinjari chako mapendeleo zaidi ukitumia viendelezi kutoka katika <ph name="BEGIN_LINK1" />Duka la Chrome kwenye Wavuti<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Kuendelea kuvinjari <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Giza</translation>
-<translation id="2415117815770324983">Hukuondoa kwenye akaunti katika tovuti nyingi. Utasalia katika Akaunti yako ya Google.</translation>
 <translation id="2416435988630956212">Vitufe vya chaguo za kukokotoa kwenye kibodi</translation>
 <translation id="2419131370336513030">Angalia programu zilizosakinishwa</translation>
 <translation id="2419706071571366386">Kwa usalama, ondoka kwenye akaunti wakati kompyuta yako haitumiki.</translation>
@@ -1977,7 +1976,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
         <ph name="BREAK" />
         Unaweza kudhibiti mipangilio kwenye menyu ya kadi au angalia chaguo zaidi katika kipengele cha Weka Mipangilio ya Chrome Upendavyo.</translation>
 <translation id="2514465118223423406">Wakati umeunganisha kipanya</translation>
-<translation id="2514938842036917377">Hatua hii itafuta <ph name="TOTAL_USAGE" /> za data iliyohifadhiwa na <ph name="SITE_NAME" />, tovuti zinazohusiana na programu ulizoweka kweye kifaa</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Thibitisha jina lako la mtumiaji</translation>
 <translation id="2517472476991765520">Tafuta</translation>
@@ -3657,7 +3655,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3776508619697147021">Tovuti zinaweza kuomba ruhusa ya kupakua faili nyingi kiotomatiki</translation>
 <translation id="3776796446459804932">Kiendelezi hiki kinakiuka sera ya Duka la Wavuti ya Chrome.</translation>
 <translation id="3777483481409781352">Imeshindwa kuwasha kifaa cha mkononi</translation>
-<translation id="3777796259512476958">Hukuondoa kwenye tovuti nyingi</translation>
 <translation id="3778208826288864398">Tumefunga ufunguo wa usalama kwa sababu umeweka PIN isiyo sahihi mara nyingi mno. Utahitaji kubadilisha ufunguo wa usalama.</translation>
 <translation id="3778740492972734840">Zana za &amp;Wasanidi Programu</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{historia yako ya kuvinjari kwenye tovuti #}other{historia yako ya kuvinjari kwenye tovuti #}}</translation>
@@ -4516,7 +4513,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4432621511648257259">Nenosiri si sahihi</translation>
 <translation id="4434611816075088065">Hakuna kitu kingine unachopaswa kukagua kwa sasa hivi</translation>
 <translation id="4435020454241191356">Weka jina au lebo ya wasifu wako</translation>
-<translation id="443503224864902151">Hukuondoa kwenye akaunti za tovuti nyingi. Hutaondolewa kwenye Akaunti yako ya Google, kwa hivyo data yako iliyosawazishwa inaweza kufutwa.</translation>
 <translation id="4436201444922652535">Viungo</translation>
 <translation id="443719869834432257">Aina ya Tukio: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Ruhusu kipengele cha kuhifadhi manenosiri na funguo za siri</translation>
@@ -8357,7 +8353,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="744366959743242014">Inapakia data, hii inaweza kuchukua sekunde kadhaa.</translation>
 <translation id="7443806024147773267">Fikia manenosiri yako kila unapoingia katika Akaunti yako ya Google</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Vidakuzi vitazuiwa tena leo}=1{Vidakuzi vitazuiwa tena kesho}other{Zimesalia siku # kabla vidakuzi vizuiwe tena}}</translation>
-<translation id="7446716846072322308">Hatua hii itafuta <ph name="TOTAL_USAGE" /> za data iliyohifadhiwa na <ph name="SITE_NAME" /> na tovuti zinazohusiana</translation>
 <translation id="7448430327655618736">Kusakinisha programu kiotomatiki</translation>
 <translation id="7448664748118305024">Futa data ambazo tovuti zimehifadhi kwenye kifaa chako unapofunga madirisha yote</translation>
 <translation id="7449806939046594699">Shirika lako limezuia kunakili maudhui haya</translation>
@@ -9755,7 +9750,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8533670235862049797">Kipengele cha Kuvinjari Salama kimewashwa</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Vichupo havitafungwa kwenye kifaa hiki lakini kikundi kitafutwa kwenye vifaa vyote ulivyotumia kuingia katika akaunti ya <ph name="EMAIL" />}other{Vichupo havitafungwa kwenye kifaa hiki lakini vikundi vitafutwa kwenye vifaa vyote ulivyotumia kuingia katika akaunti ya <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">URL ya </translation>
-<translation id="8536810348276651776">Hukuondoa kwenye tovuti nyingi. Utaendelea kusalia kwenye Akaunti yako ya Google ili mipangilio yako ya Family Link kwenye Chrome itumike.</translation>
 <translation id="8536956381488731905">Itoe sauti unapobofya kitufe</translation>
 <translation id="8539727552378197395">La (HttpOnly)</translation>
 <translation id="8540136935098276800">Weka URL yenye muundo sahihi</translation>

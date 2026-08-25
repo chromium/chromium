@@ -1813,7 +1813,6 @@
 <translation id="2413009156320833859"><ph name="BEGIN_LINK1" />Chrome ウェブストア<ph name="END_LINK1" />の拡張機能でブラウザをさらにカスタマイズできます</translation>
 <translation id="2414159296888870200"><ph name="MODULE_TITLE" /> のブラウジングを再開</translation>
 <translation id="2414886740292270097">ダーク</translation>
-<translation id="2415117815770324983">ほとんどのサイトからログアウトします。Google アカウントへのログイン状態は維持されます。</translation>
 <translation id="2416435988630956212">キーボードのファンクション キー</translation>
 <translation id="2419131370336513030">インストール済みアプリの表示</translation>
 <translation id="2419706071571366386">セキュリティ確保のため、パソコンが使用されていないときにはログアウトします。</translation>
@@ -1964,7 +1963,6 @@
         <ph name="BREAK" />
         カードメニューから設定を管理することや、[Chrome をカスタマイズ] でその他のオプションを見ることができます。</translation>
 <translation id="2514465118223423406">マウスの接続時</translation>
-<translation id="2514938842036917377"><ph name="SITE_NAME" />、関連サイト、インストールされたアプリにより保存された <ph name="TOTAL_USAGE" /> のデータを削除します</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">ユーザー名を確認</translation>
 <translation id="2517472476991765520">スキャン</translation>
@@ -3642,7 +3640,6 @@
 <translation id="3776508619697147021">サイトが複数のファイルの自動ダウンロードを要求できるようにする</translation>
 <translation id="3776796446459804932">この拡張機能は Chrome ウェブストアのポリシーに違反しています。</translation>
 <translation id="3777483481409781352">モバイル デバイスを有効化できませんでした</translation>
-<translation id="3777796259512476958">ほとんどのサイトからログアウトします</translation>
 <translation id="3778208826288864398">PIN の入力間違いが許容回数を超えたため、セキュリティ キーがロックされています。セキュリティ キーをリセットする必要があります。</translation>
 <translation id="3778740492972734840">デベロッパー ツール(&amp;D)</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{# 件のサイトの閲覧履歴}other{# 件のサイトの閲覧履歴}}</translation>
@@ -4503,7 +4500,6 @@
 <translation id="4432621511648257259">パスワードが正しくありません。</translation>
 <translation id="4434611816075088065">他に確認の必要な項目はありません</translation>
 <translation id="4435020454241191356">プロファイルの名前またはラベルを追加してください</translation>
-<translation id="443503224864902151">ほとんどのサイトからログアウトします。ただし、同期データを削除できるように Google アカウントへのログイン状態は維持されます。</translation>
 <translation id="4436201444922652535">リンク</translation>
 <translation id="443719869834432257">イベントの種類: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">パスワードとパスキーを保存するか確認する</translation>
@@ -8340,7 +8336,6 @@
 <translation id="744366959743242014">データを読み込んでいます。これには数秒かかる場合があります。</translation>
 <translation id="7443806024147773267">Google アカウントにログインすれば、いつでもパスワードにアクセスできます。</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{今日から Cookie のブロックを再開します}=1{明日から Cookie のブロックを再開します}other{# 日後に Cookie のブロックを再開します}}</translation>
-<translation id="7446716846072322308"><ph name="SITE_NAME" /> と関連サイトにより保存された <ph name="TOTAL_USAGE" /> のデータを削除します</translation>
 <translation id="7448430327655618736">アプリの自動インストール</translation>
 <translation id="7448664748118305024">すべてのウィンドウを閉じるときに、サイトによりデバイスに保存されたデータを削除する</translation>
 <translation id="7449806939046594699">このコンテンツのコピーは組織でブロックされています</translation>
@@ -9737,7 +9732,6 @@
 <translation id="8533670235862049797">セーフ ブラウジングはオンになっています</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{タブはこのデバイスで引き続き表示されますが、グループは <ph name="EMAIL" /> にログインしているすべてのデバイスから削除されます}other{タブはこのデバイスで引き続き表示されますが、グループは <ph name="EMAIL" /> にログインしているすべてのデバイスから削除されます}}</translation>
 <translation id="8535005006684281994">Netscape 証明書更新 URL</translation>
-<translation id="8536810348276651776">ほとんどのサイトからログアウトします。ただし、Google アカウントへのログイン状態は維持されるため、Chrome のファミリー リンクの設定は適用されます。</translation>
 <translation id="8536956381488731905">キー操作音</translation>
 <translation id="8539727552378197395">いいえ（HTTP のみ）</translation>
 <translation id="8540136935098276800">正しい形式の URL を入力してください</translation>

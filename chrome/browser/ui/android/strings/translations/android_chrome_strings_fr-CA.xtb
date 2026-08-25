@@ -186,6 +186,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1778457539567749232">Marquer comme non lu</translation>
 <translation id="1779766957982586368">Fermer la fenêtre</translation>
 <translation id="1780023393214832643">Mots de passe enregistrés au compte <ph name="USERNAME" /></translation>
+<translation id="1789543093145556097">Toujours masquer</translation>
 <translation id="1791662854739702043">Module installé</translation>
 <translation id="1792959175193046959">Changer le dossier de téléchargement par défaut en tout temps</translation>
 <translation id="1796666869097395659">Réduire l'onglet pour y revenir plus tard</translation>
@@ -522,6 +523,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3075397426753215787">Choisissez un appareil.</translation>
 <translation id="3080375898390966733">Rechercher avec Lentille Google</translation>
 <translation id="3080525922482950719">Vous pouvez enregistrer des pages afin de les lire plus tard ou hors ligne</translation>
+<translation id="3082989400996696487">Afficher uniquement sur la page Nouvel onglet</translation>
 <translation id="3087734570205094154">Bas</translation>
 <translation id="3091010850649238832">Afficher le contenu du presse-papier</translation>
 <translation id="3098745985164956033">Certaines images sont envoyées à Google afin d'améliorer les descriptions pour vous</translation>
@@ -767,6 +769,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4164642020717536140">Navigation Web rapide et sécurisée</translation>
 <translation id="4165077084524712774">Plus d'outils</translation>
 <translation id="4170577491341606575">Récupération de vos données en cours…</translation>
+<translation id="4172051516777682613">Toujours afficher</translation>
 <translation id="4176838562184310003">Chrome ne s'est pas fermé correctement et pourrait essayer de restaurer vos fenêtres et onglets perdus. Certaines fenêtres pourraient être réduites lors de la restauration.</translation>
 <translation id="4177222230309051052">Ajoutez tous vos favoris</translation>
 <translation id="417865198503699526">Recherchez un paramètre</translation>
@@ -885,7 +888,6 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4599585406846903742">Affichage d'une seule page</translation>
 <translation id="4601095002996233687">Analyses approfondies des téléchargements suspects.</translation>
 <translation id="4606559747793337066">Lorsqu'un site ou une appli demande de précharger en privé des liens sur sa page, Chrome chiffre et précharge les pages par le biais de serveurs Google sans témoins. Cela permet de masquer votre identité auprès du site préchargé.</translation>
-<translation id="4616150815774728855">Ouvrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619615317237390068">Onglets ouverts sur d'autres appareils</translation>
 <translation id="4624065194742029982">Navigation privée de Chrome</translation>
 <translation id="4634124774493850572">Utiliser le mot de passe</translation>
@@ -1851,6 +1853,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="834313815369870491">Ne jamais traduire les sites suivants</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, onglet de navigation privée épinglé et multisélectionné avec enregistrement en cours</translation>
 <translation id="8348430946834215779">Dans la mesure du possible, utilisez le protocole HTTPS et soyez averti avant de charger des sites qui ne le prennent pas en charge</translation>
+<translation id="8349305172487531364">Barre de favoris</translation>
 <translation id="8354977102499939946">Effectuez une recherche rapide à l'aide de commandes vocales. Pour modifier ce raccourci, accédez à Paramètres.</translation>
 <translation id="8361737703487394103">Accéder à un onglet en particulier (1 à 8)</translation>
 <translation id="8368001212524806591">Suivre le prix</translation>

@@ -186,6 +186,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1778457539567749232">Mark as unread</translation>
 <translation id="1779766957982586368">Close window</translation>
 <translation id="1780023393214832643">Passwords saved to <ph name="USERNAME" /></translation>
+<translation id="1789543093145556097">Always hide</translation>
 <translation id="1791662854739702043">Installed</translation>
 <translation id="1792959175193046959">Change the default download location at any time</translation>
 <translation id="1796666869097395659">Minimise tab to return to it later</translation>
@@ -522,6 +523,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3075397426753215787">Choose a device.</translation>
 <translation id="3080375898390966733">Search tab with Google Lens</translation>
 <translation id="3080525922482950719">You can save pages to read later or offline</translation>
+<translation id="3082989400996696487">Only show on New tab page</translation>
 <translation id="3087734570205094154">Bottom</translation>
 <translation id="3091010850649238832">Show clipboard contents</translation>
 <translation id="3098745985164956033">Some images are sent to Google to improve descriptions for you</translation>
@@ -767,6 +769,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4164642020717536140">Fast and secure web browsing</translation>
 <translation id="4165077084524712774">More tools</translation>
 <translation id="4170577491341606575">Getting your stuff\u2026</translation>
+<translation id="4172051516777682613">Always show</translation>
 <translation id="4176838562184310003">Chrome didn't shut down correctly and can try to restore your lost windows and tabs. Some windows may be minimised when restored.</translation>
 <translation id="4177222230309051052">Get all your bookmarks</translation>
 <translation id="417865198503699526">Search for a setting</translation>
@@ -885,7 +888,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4599585406846903742">Single-page view</translation>
 <translation id="4601095002996233687">In-depth scans for suspicious downloads.</translation>
 <translation id="4606559747793337066">When a site or app asks to privately preload links on their page, Chrome encrypts and preloads pages through Google servers without cookies. This hides your identity from the preloaded site.</translation>
-<translation id="4616150815774728855">Open <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619615317237390068">Tabs from other devices</translation>
 <translation id="4624065194742029982">Chrome Incognito</translation>
 <translation id="4634124774493850572">Use password</translation>
@@ -1851,6 +1853,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="834313815369870491">Never translate sites</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, multi-selected pinned recording incognito tab</translation>
 <translation id="8348430946834215779">Use HTTPS whenever possible and receive a warning before loading sites that don’t support it</translation>
+<translation id="8349305172487531364">Bookmarks bar</translation>
 <translation id="8354977102499939946">Quickly search with your voice. To edit this shortcut, go to Settings.</translation>
 <translation id="8361737703487394103">Jump to a specific tab (1–8)</translation>
 <translation id="8368001212524806591">Track price</translation>

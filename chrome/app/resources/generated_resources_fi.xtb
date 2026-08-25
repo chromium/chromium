@@ -1826,7 +1826,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2413009156320833859">Yksilöi selaintasi entistä enemmän <ph name="BEGIN_LINK1" />Chrome Web Storen<ph name="END_LINK1" /> laajennuksilla</translation>
 <translation id="2414159296888870200">Jatka selaamista: <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Tumma</translation>
-<translation id="2415117815770324983">Kirjaa sinut ulos useimmilta sivustoilta. Pysyt kirjautuneena Google-tilillesi.</translation>
 <translation id="2416435988630956212">Näppäimistön toimintonäppäimet</translation>
 <translation id="2419131370336513030">Näytä asennetut sovellukset</translation>
 <translation id="2419706071571366386">Suosittelemme tietoturvasyistä, että kirjaudut ulos, kun tietokonettasi ei käytetä.</translation>
@@ -1977,7 +1976,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
         <ph name="BREAK" />
         Voit muuttaa asetuksia korttivalikossa. Lisää vaihtoehtoja löydät Yksilöi Chromea ‑osiosta.</translation>
 <translation id="2514465118223423406">Kun hiiri on yhdistetty</translation>
-<translation id="2514938842036917377">Tämä poistaa <ph name="TOTAL_USAGE" /> dataa, jonka <ph name="SITE_NAME" />, siihen liittyvät sivustot ja asennetut sovellukset ovat tallentaneet</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Vahvista käyttäjätunnuksesi</translation>
 <translation id="2517472476991765520">Etsi</translation>
@@ -3657,7 +3655,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3776508619697147021">Sivustot saavat pyytää lupaa ladata useita tiedostoja automaattisesti</translation>
 <translation id="3776796446459804932">Tämä laajennus loukkaa Chrome Web Storen käytäntöä.</translation>
 <translation id="3777483481409781352">Mobiililaitteen aktivointi epäonnistui</translation>
-<translation id="3777796259512476958">Kirjaa sinut ulos useimmilta sivustoilta</translation>
 <translation id="3778208826288864398">Suojausavain on lukittu, koska väärä PIN-koodi syötettiin liian monta kertaa. Suojausavain on nollattava.</translation>
 <translation id="3778740492972734840">&amp;Developer Tools</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{selaushistoriasi # sivustolla}other{selaushistoriasi # sivustolla}}</translation>
@@ -4515,7 +4512,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4432621511648257259">Väärä salasana</translation>
 <translation id="4434611816075088065">Mikään muu ei vaadi toimenpiteitä tällä hetkellä</translation>
 <translation id="4435020454241191356">Lisää profiilille nimi tai tunniste</translation>
-<translation id="443503224864902151">Tämä kirjaa sinut ulos useimmilta sivustoilta. Sinua ei kirjata ulos Google-tililtäsi, jotta synkronoitu datasi voidaan poistaa.</translation>
 <translation id="4436201444922652535">Linkit</translation>
 <translation id="443719869834432257">Tapahtumatyyppi: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Tarjoa salasanojen ja avainkoodien tallentamista</translation>
@@ -8356,7 +8352,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="744366959743242014">Ladataan dataa – tämä voi kestää muutaman sekunnin.</translation>
 <translation id="7443806024147773267">Käytä salasanojasi kaikkialla ollessasi kirjautuneena Google-tilille</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Evästeet estetään uudelleen tänään}=1{Evästeet estetään uudelleen huomenna}other{# päivää ennen kuin evästeet estetään uudelleen}}</translation>
-<translation id="7446716846072322308">Tämä poistaa <ph name="TOTAL_USAGE" /> dataa, jonka <ph name="SITE_NAME" /> ja siihen liittyvät sivustot ovat tallentaneet</translation>
 <translation id="7448430327655618736">asentaa sovellukset automaattisesti</translation>
 <translation id="7448664748118305024">Poista data, jota sivustot ovat tallentaneet laitteellesi, sulkiessasi kaikki ikkunat</translation>
 <translation id="7449806939046594699">Organisaatiosi on estänyt tämän sisällön kopioimisen</translation>
@@ -9754,7 +9749,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8533670235862049797">Selaussuoja on päällä</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Välilehdet pysyvät auki tällä laitteella, mutta ryhmä poistetaan kaikilta laitteilta, jotka ovat kirjautuneena tilille <ph name="EMAIL" />}other{Välilehdet pysyvät auki tällä laitteella, mutta ryhmä poistetaan kaikilta laitteilta, jotka ovat kirjautuneina tilille <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">Netscape-varmenteen uusimis-URL</translation>
-<translation id="8536810348276651776">Kirjaa sinut ulos useimmilta sivustoilta. Pysyt kirjautuneena Google-tilillesi, joten Chromen Family Link ‐asetukset ovat voimassa.</translation>
 <translation id="8536956381488731905">Ääni painettaessa</translation>
 <translation id="8539727552378197395">Ei (HttpOnly)</translation>
 <translation id="8540136935098276800">Lisää oikein muotoiltu URL-osoite</translation>

@@ -186,6 +186,7 @@
 <translation id="1778457539567749232">Уншаагүй болгож тэмдэглэх</translation>
 <translation id="1779766957982586368">Цонхыг хаах</translation>
 <translation id="1780023393214832643"><ph name="USERNAME" />-д хадгалсан нууц үгнүүд</translation>
+<translation id="1789543093145556097">Үргэлж нуух</translation>
 <translation id="1791662854739702043">Суулгасан</translation>
 <translation id="1792959175193046959">Таталтын өгөгдмөл байршлыг дурын үед өөрчлөх</translation>
 <translation id="1796666869097395659">Таб руу дараа буцаж очихын тулд үүнийг багасгана уу</translation>
@@ -522,6 +523,7 @@
 <translation id="3075397426753215787">Төхөөрөмж сонгоно уу.</translation>
 <translation id="3080375898390966733">Google Lens-р таб хайх</translation>
 <translation id="3080525922482950719">Та хуудаснуудыг дараа, эсвэл офлайнаар уншихаар хадгалж болно</translation>
+<translation id="3082989400996696487">Зөвхөн Шинэ таб хуудсан дээр харуулах</translation>
 <translation id="3087734570205094154">Доод</translation>
 <translation id="3091010850649238832">Түр санах ойн контентыг харуулах</translation>
 <translation id="3098745985164956033">Танд зориулан тайлбарыг сайжруулахын тулд зарим зургийг Google-д илгээдэг.</translation>
@@ -768,6 +770,7 @@
 <translation id="4164642020717536140">Хурдан, аюулгүй веб үзэх</translation>
 <translation id="4165077084524712774">Бусад хэрэгсэл</translation>
 <translation id="4170577491341606575">Таны юмнуудыг авч байна\u2026</translation>
+<translation id="4172051516777682613">Байнга харуулж байна уу</translation>
 <translation id="4176838562184310003">Chrome зохих ёсоор унтраагүй бөгөөд таны алдсан цонх, табыг сэргээхээр оролдох боломжтой. Сэргээхэд зарим цонхыг багасгасан байж магадгүй.</translation>
 <translation id="4177222230309051052">Бүх хавчуургаа аваарай</translation>
 <translation id="417865198503699526">Тохиргоо хайх</translation>
@@ -886,7 +889,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4599585406846903742">Нэг хуудсыг харах</translation>
 <translation id="4601095002996233687">Сэжигтэй татаж авсан файлд хийх нарийвчилсан скан.</translation>
 <translation id="4606559747793337066">Сайт, апп өөрийн хуудсан дээр холбооснуудыг нууцлалтайгаар урьдчилан ачаалахыг хүсэхэд Chrome хуудаснуудыг күүкигүйгээр Google-н серверүүдээр дамжуулан шифрлэж, урьдчилан ачаална. Энэ нь таны хувийн мэдээллийг урьдчилан ачаалсан сайтаас нууна.</translation>
-<translation id="4616150815774728855"><ph name="WEBAPK_NAME" />-г нээх</translation>
 <translation id="4619615317237390068">Бусад төхөөрөмжний таб</translation>
 <translation id="4624065194742029982">Chrome-н нууцлалын горим</translation>
 <translation id="4634124774493850572">Нууц үг ашиглах</translation>
@@ -1853,6 +1855,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="834313815369870491">Сайтуудыг хэзээ ч бүү орчуул</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, Олноороо сонгогдож, бэхлэгдсэн, бичлэг хийж буй нууцлалтай таб</translation>
 <translation id="8348430946834215779">Боломжтой үед HTTPS-г ашиглаж, түүнийг дэмждэггүй сайтуудыг ачаалахаас өмнө сануулга аваарай</translation>
+<translation id="8349305172487531364">Хайлтын жагсаалтын цонх</translation>
 <translation id="8354977102499939946">Дуу хоолойгоороо шуурхай хайгаарай. Энэ товчлолыг засахын тулд Тохиргоо руу очно уу.</translation>
 <translation id="8361737703487394103">Тодорхой таб руу очих (1–8)</translation>
 <translation id="8368001212524806591">Үнэ хянах</translation>

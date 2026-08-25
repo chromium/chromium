@@ -1814,7 +1814,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2413009156320833859">Prispôsobte si prehliadač ešte viac pomocou rozšírení z <ph name="BEGIN_LINK1" />Internetového obchodu Chrome<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Pokračovať v prehliadaní položky <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Tmavý režim</translation>
-<translation id="2415117815770324983">Touto akciou sa odhlásite z väčšiny webov. Vaše prihlásenie do účtu Google zostane aktívne.</translation>
 <translation id="2416435988630956212">Funkčné klávesy na klávesnici</translation>
 <translation id="2419131370336513030">Zobraziť inštalované aplikácie</translation>
 <translation id="2419706071571366386">Keď počítač nepoužívate, z bezpečnostných dôvodov sa odhláste.</translation>
@@ -1965,7 +1964,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
         <ph name="BREAK" />
         Môžete spravovať nastavenia v ponuke karty alebo si zobraziť ďalšie možnosti v sekcii Prispôsobenie Chromu.</translation>
 <translation id="2514465118223423406">Keď je pripojená myš</translation>
-<translation id="2514938842036917377">Týmto odstránite <ph name="TOTAL_USAGE" /> dát uložených webom <ph name="SITE_NAME" />, súvisiacimi webmi a nainštalovanými aplikáciami</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Potvrďte svoje používateľské meno</translation>
 <translation id="2517472476991765520">Skenovať</translation>
@@ -3645,7 +3643,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3776508619697147021">Weby môžu žiadať o automatické sťahovanie viacerých súborov</translation>
 <translation id="3776796446459804932">Toto rozšírenie porušuje pravidlá Internetového obchodu Chrome.</translation>
 <translation id="3777483481409781352">Mobilné zariadenie sa nepodarilo aktivovať</translation>
-<translation id="3777796259512476958">Odhlási vás z väčšiny webov</translation>
 <translation id="3778208826288864398">Bezpečnostný kľúč je uzamknutý, pretože bol príliš veľakrát zadaný nesprávny PIN. Musíte resetovať bezpečnostný kľúč.</translation>
 <translation id="3778740492972734840">&amp;Nástroje pre vývojárov</translation>
 <translation id="3779221255357533293">{BROWSING_HISTORY_COUNT,plural, =1{vaša história prehliadania # webu}few{vaša história prehliadania # webov}many{your browsing history of # sites}other{vaša história prehliadania # webov}}</translation>
@@ -4506,7 +4503,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4432621511648257259">Heslo je nesprávne</translation>
 <translation id="4434611816075088065">Momentálne nevyžaduje vašu pozornosť nič iné</translation>
 <translation id="4435020454241191356">Pridajte pre svoj profil názov alebo štítok</translation>
-<translation id="443503224864902151">Odhlási vás z väčšiny webov, ale nie z účtu Google, aby sa dali vaše synchronizované dáta odstrániť.</translation>
 <translation id="4436201444922652535">Odkazy</translation>
 <translation id="443719869834432257">Typ udalosti: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">Ponúkať ukladanie hesiel a prístupových kľúčov</translation>
@@ -8348,7 +8344,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="744366959743242014">Načítavajú sa údaje. Môže to niekoľko sekúnd trvať.</translation>
 <translation id="7443806024147773267">Získajte prístup k svojim heslám, keď sa prihlásite do účtu Google</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Súbory cookie budú dnes znova blokované}=1{Súbory cookie budú zajtra znova blokované}few{Do opätovného blokovania súborov cookie zostávajú # dni}many{Do opätovného blokovania súborov cookie zostáva # dňa}other{Do opätovného blokovania súborov cookie zostáva # dní}}</translation>
-<translation id="7446716846072322308">Týmto odstránite <ph name="TOTAL_USAGE" /> dát uložených webom <ph name="SITE_NAME" /> a súvisiacimi webmi</translation>
 <translation id="7448430327655618736">Inštalujte aplikácie automaticky</translation>
 <translation id="7448664748118305024">Odstrániť dáta webov uložené v zariadení po zavretí všetkých okien</translation>
 <translation id="7449806939046594699">Vaša organizácia zablokovala kopírovanie tohto obsahu</translation>
@@ -9746,7 +9741,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8533670235862049797">Bezpečné prehliadanie je zapnuté</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Karty zostanú v tomto zariadení otvorené, ale skupina bude odstránená zo všetkých zariadení prihlásených do účtu <ph name="EMAIL" />}few{Karty zostanú v tomto zariadení otvorené, ale skupiny budú odstránené zo všetkých zariadení prihlásených do účtu <ph name="EMAIL" />}many{The tabs will remain open on this device but the groups will be deleted from all devices signed into <ph name="EMAIL" />}other{Karty zostanú v tomto zariadení otvorené, ale skupiny budú odstránené zo všetkých zariadení prihlásených do účtu <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">Netscape – webová adresa pre obnovenie certifikátu</translation>
-<translation id="8536810348276651776">Touto akciou sa odhlásiš z väčšiny webov. Zachováš si prihlásenie do účtu Googlu, takže budú platiť nastavenia aplikácie Family Link pre Chrome.</translation>
 <translation id="8536956381488731905">Zvuk pri stlačení klávesa</translation>
 <translation id="8539727552378197395">Nie (HttpOnly)</translation>
 <translation id="8540136935098276800">Zadajte správne naformátovanú webovú adresu</translation>
