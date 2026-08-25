@@ -18,7 +18,6 @@
 #include "device/fido/device_response_converter.h"
 #include "device/fido/fido_test_data.h"
 #include "device/fido/opaque_attestation_statement.h"
-#include "device/fido/p256_public_key.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/fido_transport_protocol.h"
 #include "device/fido/public/fido_types.h"
@@ -617,7 +616,7 @@ TEST(CTAPResponseTest, TestParseRegisterResponseData) {
 // These test the parsing of the U2F raw bytes of the registration response.
 // Test that an EC public key serializes to CBOR properly.
 TEST(CTAPResponseTest, TestSerializedPublicKey) {
-  auto public_key = P256PublicKey::ExtractFromU2fRegistrationResponse(
+  auto public_key = PublicKey::FromU2fRegistrationResponse(
       static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256),
       test_data::kTestU2fRegisterResponse);
   ASSERT_TRUE(public_key);
@@ -639,7 +638,7 @@ TEST(CTAPResponseTest, TestParseU2fAttestationStatementCBOR) {
 
 // Tests that well-formed attested credential data serializes properly.
 TEST(CTAPResponseTest, TestSerializeAttestedCredentialData) {
-  auto public_key = P256PublicKey::ExtractFromU2fRegistrationResponse(
+  auto public_key = PublicKey::FromU2fRegistrationResponse(
       static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256),
       test_data::kTestU2fRegisterResponse);
   auto attested_data = AttestedCredentialData::CreateFromU2fRegisterResponse(
@@ -651,7 +650,7 @@ TEST(CTAPResponseTest, TestSerializeAttestedCredentialData) {
 
 // Tests that well-formed authenticator data serializes properly.
 TEST(CTAPResponseTest, TestSerializeAuthenticatorData) {
-  auto public_key = P256PublicKey::ExtractFromU2fRegistrationResponse(
+  auto public_key = PublicKey::FromU2fRegistrationResponse(
       static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256),
       test_data::kTestU2fRegisterResponse);
   auto attested_data = AttestedCredentialData::CreateFromU2fRegisterResponse(
@@ -671,7 +670,7 @@ TEST(CTAPResponseTest, TestSerializeAuthenticatorData) {
 
 // Tests that a U2F attestation object serializes properly.
 TEST(CTAPResponseTest, TestSerializeU2fAttestationObject) {
-  auto public_key = P256PublicKey::ExtractFromU2fRegistrationResponse(
+  auto public_key = PublicKey::FromU2fRegistrationResponse(
       static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256),
       test_data::kTestU2fRegisterResponse);
   auto attested_data = AttestedCredentialData::CreateFromU2fRegisterResponse(

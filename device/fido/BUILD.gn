@@ -22,20 +22,14 @@ component("fido") {
     "cbor_extract.h",
     "cbor_util.cc",
     "cbor_util.h",
-    "ed25519_public_key.cc",
-    "ed25519_public_key.h",
     "fido_user_verification_requirement.cc",
     "fido_user_verification_requirement.h",
     "opaque_attestation_statement.cc",
     "opaque_attestation_statement.h",
-    "p256_public_key.cc",
-    "p256_public_key.h",
     "prf_input.cc",
     "prf_input.h",
     "public_key.cc",
     "public_key.h",
-    "rsa_public_key.cc",
-    "rsa_public_key.h",
   ]
 
   defines = [ "IS_DEVICE_FIDO_IMPL" ]

@@ -8,7 +8,6 @@
 #include "base/time/time_override.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_test_data.h"
-#include "device/fido/p256_public_key.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public_key.h"
 #include "testing/gmock/include/gmock/gmock.h"

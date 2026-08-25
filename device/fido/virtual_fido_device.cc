@@ -23,7 +23,6 @@
 #include "crypto/keypair.h"
 #include "crypto/sign.h"
 #include "device/fido/large_blob.h"
-#include "device/fido/p256_public_key.h"
 #include "device/fido/public_key.h"
 #include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"

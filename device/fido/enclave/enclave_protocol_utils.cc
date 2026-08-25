@@ -36,7 +36,6 @@
 #include "device/fido/enclave/constants.h"
 #include "device/fido/enclave/types.h"
 #include "device/fido/json_request.h"
-#include "device/fido/p256_public_key.h"
 #include "device/fido/public/features.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/fido_transport_protocol.h"
@@ -495,7 +494,7 @@ ParseMakeCredentialResponse(cbor::Value response_value,
   } else {
     std::vector<uint8_t> credential_id =
         crypto::RandBytesAsVector(kCredentialIdSize);
-    auto public_key = P256PublicKey::ParseX962Uncompressed(
+    auto public_key = PublicKey::FromRawP256UncompressedPoint(
         static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256), *pubkey_field);
     std::array<uint8_t, 2> encoded_credential_id_length = {
         0, static_cast<uint8_t>(credential_id.size())};

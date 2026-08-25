@@ -16,11 +16,8 @@
 #include "components/cbor/reader.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/cbor_extract.h"
-#include "device/fido/ed25519_public_key.h"
-#include "device/fido/p256_public_key.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public_key.h"
-#include "device/fido/rsa_public_key.h"
 
 using device::cbor_extract::IntKey;
 using device::cbor_extract::Is;
@@ -116,51 +113,11 @@ AttestedCredentialData::ConsumeFromCtapResponse(
     return std::nullopt;
   }
   const int32_t algorithm = static_cast<int32_t>(algorithm64);
-  const int64_t key_type = *cose_key.kty;
 
-  std::unique_ptr<PublicKey> public_key;
-
-  if (key_type == static_cast<int64_t>(CoseKeyTypes::kEC2) ||
-      key_type == static_cast<int64_t>(CoseKeyTypes::kOKP)) {
-    auto curve = public_key_map.find(
-        cbor::Value(static_cast<int64_t>(CoseKeyKey::kEllipticCurve)));
-    if (curve == public_key_map.end() || !curve->second.is_integer()) {
-      return std::nullopt;
-    }
-    const int64_t curve_id = curve->second.GetInteger();
-
-    if (key_type == static_cast<int64_t>(CoseKeyTypes::kEC2) &&
-        curve_id == static_cast<int64_t>(CoseCurves::kP256)) {
-      auto p256_key = P256PublicKey::ExtractFromCOSEKey(
-          algorithm, public_key_cbor_bytes, public_key_map);
-      if (!p256_key) {
-        FIDO_LOG(ERROR) << "Invalid P-256 public key";
-        return std::nullopt;
-      }
-      public_key = std::move(p256_key);
-    } else if (key_type == static_cast<int64_t>(CoseKeyTypes::kOKP) &&
-               curve_id == static_cast<int64_t>(CoseCurves::kEd25519)) {
-      auto ed25519_key = Ed25519PublicKey::ExtractFromCOSEKey(
-          algorithm, public_key_cbor_bytes, public_key_map);
-      if (!ed25519_key) {
-        FIDO_LOG(ERROR) << "Invalid Ed25519 public key";
-        return std::nullopt;
-      }
-      public_key = std::move(ed25519_key);
-    }
-  } else if (key_type == static_cast<int64_t>(CoseKeyTypes::kRSA)) {
-    auto rsa_key = RSAPublicKey::ExtractFromCOSEKey(
-        algorithm, public_key_cbor_bytes, public_key_map);
-    if (!rsa_key) {
-      FIDO_LOG(ERROR) << "Invalid RSA public key";
-      return std::nullopt;
-    }
-    public_key = std::move(rsa_key);
-  }
-
+  std::unique_ptr<PublicKey> public_key =
+      PublicKey::FromCOSEKey(algorithm, public_key_cbor_bytes, public_key_map);
   if (!public_key) {
-    public_key = std::make_unique<PublicKey>(algorithm, public_key_cbor_bytes,
-                                             std::nullopt);
+    return std::nullopt;
   }
 
   return std::make_pair(

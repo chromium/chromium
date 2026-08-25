@@ -31,7 +31,6 @@
 #include "device/fido/attestation_statement.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
-#include "device/fido/p256_public_key.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public_key.h"
 
@@ -339,7 +338,7 @@ SerializedAttestationObject MakeAttestationObjectForCreation(
 
   using Flag = device::AuthenticatorData::Flag;
   std::unique_ptr<device::PublicKey> public_key =
-      device::P256PublicKey::ParseSpkiDer(
+      device::PublicKey::FromSpkiDer(
           base::strict_cast<int32_t>(device::CoseAlgorithmIdentifier::kEs256),
           public_key_spki_der);
   device::AttestedCredentialData attested_credential_data(

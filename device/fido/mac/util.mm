@@ -21,7 +21,6 @@
 #include "components/cbor/writer.h"
 #include "crypto/apple/keychain_v2.h"
 #include "crypto/hash.h"
-#include "device/fido/p256_public_key.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public_key.h"
 
@@ -149,7 +148,7 @@ std::unique_ptr<PublicKey> SecKeyRefToECPublicKey(SecKeyRef public_key_ref) {
     return nullptr;
   }
   auto key_data = base::apple::CFDataToSpan(data_ref.get());
-  auto key = P256PublicKey::ParseX962Uncompressed(
+  auto key = PublicKey::FromRawP256UncompressedPoint(
       static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256), key_data);
   if (!key) {
     LOG(ERROR) << "Unexpected public key format: " << base::HexEncode(key_data);

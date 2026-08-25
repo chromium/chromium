@@ -7,16 +7,43 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <optional>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "components/cbor/values.h"
 
 namespace device {
 
 // https://www.w3.org/TR/webauthn/#credentialpublickey
 struct COMPONENT_EXPORT(DEVICE_FIDO) PublicKey {
+  // FromCOSEKey parses a public key from a COSE_Key CBOR map. Returns nullptr
+  // if the key is invalid or corrupted. If the key type is unknown/unsupported,
+  // returns a PublicKey with nullopt der_bytes.
+  static std::unique_ptr<PublicKey> FromCOSEKey(
+      int32_t algorithm,
+      base::span<const uint8_t> cbor_bytes,
+      const cbor::Value::MapValue& map);
+
+  // FromSpkiDer parses an ASN.1, DER, SubjectPublicKeyInfo.
+  static std::unique_ptr<PublicKey> FromSpkiDer(
+      int32_t algorithm,
+      base::span<const uint8_t> spki_der);
+
+  // FromU2fRegistrationResponse parses the public key from a U2F registration
+  // response (reserved byte prefix + 65-byte uncompressed X9.62 point).
+  static std::unique_ptr<PublicKey> FromU2fRegistrationResponse(
+      int32_t algorithm,
+      base::span<const uint8_t> u2f_data);
+
+  // FromRawP256UncompressedPoint parses a 65-byte uncompressed X9.62 point for
+  // P-256 (0x04 || X || Y).
+  static std::unique_ptr<PublicKey> FromRawP256UncompressedPoint(
+      int32_t algorithm,
+      base::span<const uint8_t> x962);
+
   PublicKey(int32_t algorithm,
             base::span<const uint8_t> cbor_bytes,
             std::optional<std::vector<uint8_t>> der_bytes);

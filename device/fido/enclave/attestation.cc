@@ -19,7 +19,6 @@
 #include "crypto/evp.h"
 #include "device/fido/enclave/attestation_report.h"
 #include "device/fido/enclave/proto/evidence.pb.h"
-#include "device/fido/p256_public_key.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public_key.h"
 #include "net/cert/asn1_util.h"
@@ -213,9 +212,9 @@ base::expected<bssl::UniquePtr<EC_KEY>, const char*> EC_KEYFromCOSE(
   if (!cose_val.has_value() || !cose_val->is_map()) {
     return base::unexpected("failed to parse COSE structure");
   }
-  std::unique_ptr<PublicKey> pubkey = P256PublicKey::ExtractFromCOSEKey(
+  std::unique_ptr<PublicKey> pubkey = PublicKey::FromCOSEKey(
       /*algorithm=*/-7, cose_bytes, cose_val->GetMap());
-  if (!pubkey) {
+  if (!pubkey || !pubkey->der_bytes) {
     return base::unexpected("failed to parse COSE key");
   }
 
