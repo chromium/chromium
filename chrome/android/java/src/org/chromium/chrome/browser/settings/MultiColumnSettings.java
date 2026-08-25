@@ -269,6 +269,9 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
      * layout is in two column mode.
      */
     public boolean isLayoutOpen() {
+        // getView() may be null in tests before the fragment's view is created.
+        if (getView() == null) return false;
+
         if (isTwoColumn()) {
             return true;
         }
@@ -624,7 +627,8 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
 
     /** Returns whether the current layout is in two-column mode. */
     boolean isTwoColumn() {
-        SlidingPaneLayout slidingPane = getSlidingPaneLayout();
+        // getView() may be null in tests before the fragment's view is created.
+        SlidingPaneLayout slidingPane = getView() != null ? getSlidingPaneLayout() : null;
         // If SlidingPaneLayout has already completed layout, use its computed slideable state.
         if (slidingPane != null
                 && ViewCompat.isLaidOut(slidingPane)

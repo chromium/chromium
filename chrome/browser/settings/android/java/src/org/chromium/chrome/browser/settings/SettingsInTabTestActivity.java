@@ -112,7 +112,7 @@ public class SettingsInTabTestActivity extends ChromeBaseAppCompatActivity
                         assumeNonNull(mBottomSheetControllerSupplier.get()),
                         assumeNonNull(getModalDialogManager()),
                         new MockTab(TAB_ID, mProfile));
-        mFragmentDelegate.initSettings(contentView, "");
+        mFragmentDelegate.initSettingsForTesting(contentView, "");
 
         // Ensure bottom sheets are above the settings views.
         contentView.bringChildToFront(sheetContainer);
@@ -153,22 +153,21 @@ public class SettingsInTabTestActivity extends ChromeBaseAppCompatActivity
 
     @Override
     public @Nullable Fragment getMainFragment() {
-        SettingsHostFragment host = SettingsHostFragment.get(this);
-        return host != null ? host.getMainFragment() : null;
+        // Delegate to mFragmentDelegate rather than SettingsHostFragment.get(this), because get()
+        // requires the host fragment view to be isShown(), which may be false in test setups.
+        return mFragmentDelegate != null ? mFragmentDelegate.getMainFragment() : null;
     }
 
     @Override
     public void finishCurrentSettings(Fragment fragment) {
-        SettingsHostFragment host = SettingsHostFragment.get(this);
-        if (host != null) {
-            host.finishCurrentSettings(fragment);
+        if (mFragmentDelegate != null) {
+            mFragmentDelegate.finishCurrentSettings(fragment);
         }
     }
 
     @Override
     public @Nullable MultiColumnSettings getMultiColumnSettings() {
-        SettingsHostFragment host = SettingsHostFragment.get(this);
-        return host != null ? host.getMultiColumnSettings() : null;
+        return mFragmentDelegate != null ? mFragmentDelegate.getMultiColumnSettings() : null;
     }
 
     @Override

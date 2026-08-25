@@ -280,6 +280,12 @@ public class SettingsSearchCoordinator
     @SuppressWarnings("unchecked")
     @VisibleForTesting(otherwise = PRIVATE)
     @Nullable <T extends View> T findViewById(int id) {
+        // Preference header and detail panes (e.g. R.id.preferences_header) are hosted
+        // inside MultiColumnSettings, which is not in mActionBar's direct ancestor tree.
+        if (mMultiColumnSettings != null && mMultiColumnSettings.getView() != null) {
+            T view = (T) mMultiColumnSettings.getView().findViewById(id);
+            if (view != null) return view;
+        }
         if (mActionBar.getRootView() != null) {
             View parent = mActionBar;
             while (parent.getParent() != null && parent.getParent() instanceof View p) {
@@ -473,6 +479,11 @@ public class SettingsSearchCoordinator
     }
 
     @Override
+    public void onDetailLayoutUpdated() {
+        updateSearchUiWidth();
+    }
+
+    @Override
     public void onAccessibilityStateChanged(
             AccessibilityState.State oldAccessibilityState,
             AccessibilityState.State newAccessibilityState) {
@@ -657,7 +668,8 @@ public class SettingsSearchCoordinator
         if (toolbarTitle == null) return;
 
         if (toolbarTitle.getId() == View.NO_ID) toolbarTitle.setId(View.generateViewId());
-        View headerPane = requireViewById(R.id.preferences_header);
+        View headerPane = findViewById(R.id.preferences_header);
+        if (headerPane == null) return;
 
         // Multi-column mode adjusts the traversal order:
         // Before: Toolbar(icon > title > search UI > menu) > header pane > detail pane.
@@ -1171,7 +1183,8 @@ public class SettingsSearchCoordinator
 
             int detailPaneWidth = detailPane.getWidth();
             if (detailPaneWidth == 0) {
-                mHandler.post(this::updateSearchUiWidth);
+                // If the detail pane is not laid out yet, defer until onDetailLayoutUpdated()
+                // is called by MultiColumnSettings. Don't post to mHandler to prevent a busy loop.
                 return;
             }
             int maxDetailWidthPx = getPixelSize(R.dimen.settings_min_multi_column_screen_width);

@@ -110,6 +110,8 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DisableFeatures({
     ChromeFeatureList.AUTOFILL_ENABLE_WALLET_BRANDING,
+    // TODO(crbug.com/521895796): Adapt AutofillTestRule to work with SettingsInTab.
+    ChromeFeatureList.SETTINGS_IN_TAB,
 })
 @Batch(Batch.PER_CLASS)
 public class AutofillPaymentMethodsFragmentTest {

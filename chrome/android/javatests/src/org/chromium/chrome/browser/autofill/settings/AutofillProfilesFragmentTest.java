@@ -147,6 +147,8 @@ import java.util.concurrent.TimeoutException;
 /** Unit test suite for AutofillProfilesFragment. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @EnableFeatures({ChromeFeatureList.AUTOFILL_AI_SHOW_DIALOG_IN_SETTINGS_WHEN_UPSTREAMING_FAILS})
+// TODO(crbug.com/521895796): Adapt AutofillTestRule to work with SettingsInTab.
+@DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class AutofillProfilesFragmentTest {

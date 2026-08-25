@@ -95,6 +95,8 @@ import org.chromium.components.signin.test.util.TestAccounts;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+// TODO(crbug.com/521895796): Adapt SigninTestRule to work with SettingsInTab.
+@DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
 public class AutofillAndPasswordsFragmentTest {
     @Rule(order = 0)
     public SigninTestRule mSigninTestRule = new SigninTestRule();

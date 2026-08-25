@@ -211,7 +211,9 @@ public class SettingsNavigationImpl implements SettingsNavigation {
             if (activity == null) {
                 activity = ApplicationStatus.getLastTrackedFocusedActivity();
             }
-            assert activity != null;
+            // `activity` may be null in tests (e.g. Robolectric unit tests running with an
+            // Application context without a focused activity) or background services.
+            // SettingsHostFragment.get(null) will return null.
             SettingsHostFragment settingsHostFragment = SettingsHostFragment.get(activity);
             // SettingsHostFragment will be null if settings isn't open.
             if (settingsHostFragment != null) {

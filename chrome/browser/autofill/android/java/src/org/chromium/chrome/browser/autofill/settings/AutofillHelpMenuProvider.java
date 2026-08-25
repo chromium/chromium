@@ -14,6 +14,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.settings.SettingsInTab;
 
 /** A MenuProvider that adds a help icon to the toolbar and handles its clicks. */
 @NullMarked
@@ -22,6 +23,13 @@ public class AutofillHelpMenuProvider implements MenuProvider {
 
     public AutofillHelpMenuProvider(ChromeBaseSettingsFragment fragment) {
         mFragment = fragment;
+        if (SettingsInTab.isEnabled()) {
+            // When SettingsInTab is enabled, Settings is hosted in a browser tab with a standalone
+            // Toolbar managed by SettingsMenuHelper, rather than using the Activity's Action Bar.
+            // Bridge the MenuProvider to ChromeBaseSettingsFragment's options menu callbacks so
+            // SettingsMenuHelper can query the active fragment's menu items.
+            fragment.setMenuProvider(this);
+        }
     }
 
     @Override
