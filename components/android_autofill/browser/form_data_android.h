@@ -48,6 +48,8 @@ class FormDataAndroid {
   // changed by direct user input. If they differ, the form has changed enough
   // (e.g. by adding or removing fields) to warrant starting a new Autofill
   // session.
+  // TODO(crbug.com/542493825): Remove when
+  // `AutofillAndroidUseGlobalIdForFormComparison` launches.
   bool SimilarFormAs(const FormData& form) const;
 
   // Is invoked when the form field specified by `index` is changed to a new

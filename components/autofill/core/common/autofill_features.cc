@@ -529,6 +529,11 @@ BASE_FEATURE(kAutofillAndroidKeyboardAccessoryHoverPreview,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// If enabled, on Android, form comparisons are done by comparing
+// `FormGlobalId`s instead of checking form similarity via `SimilarFormAs()`.
+BASE_FEATURE(kAutofillAndroidUseGlobalIdForFormComparison,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature flag for kAutofillAtMemory.
 BASE_FEATURE(kAutofillAtMemory, base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -77,6 +77,11 @@ bool FormDataAndroid::SimilarFormAs(const FormData& form) const {
   // Note that comparing unique renderer ids alone is not a strict enough check,
   // since these remain constant even if the page has dynamically modified its
   // fields to have different labels, form control types, etc.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAndroidUseGlobalIdForFormComparison)) {
+    return form_.global_id() == form.global_id();
+  }
+
   auto SimilarityTuple = [](const FormData& f) {
     return std::tie(f.host_frame(), f.renderer_id(), f.name(), f.id_attribute(),
                     f.name_attribute(), f.url(), f.action());

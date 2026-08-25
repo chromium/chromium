@@ -2081,6 +2081,22 @@
             ]
         }
     ],
+    "AutofillAndroidUseGlobalIdForFormComparison": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillAndroidUseGlobalIdForFormComparison"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillBetterLocalHeuristicPlaceholderSupport": [
         {
             "platforms": [
