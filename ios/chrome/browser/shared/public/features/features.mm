@@ -47,7 +47,6 @@ BASE_FEATURE(kSharedHighlightingIOS, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIOSBrowserEditMenuMetrics, base::FEATURE_DISABLED_BY_DEFAULT);
 
-
 const char kIOSDockingPromoV2VariationParam[] =
     "IOSDockingPromoV2VariationParam";
 const char kIOSDockingPromoV2VariationHeader1[] =
@@ -357,7 +356,6 @@ bool IsPinnedTabsEnabled() {
   return ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
 }
 
-
 BASE_FEATURE(kEnableAppBackgroundRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAppBackgroundRefreshEnabled() {
@@ -381,7 +379,7 @@ BASE_FEATURE(kSeparateProfilesForManagedAccountsForceMigration,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSeparateProfilesForManagedAccountsImmediateForceMigration,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOmahaResyncTimerOnForeground, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -421,7 +419,6 @@ bool IsIOSExpandedTipsEnabled() {
   return base::FeatureList::IsEnabled(kIOSExpandedTips);
 }
 
-
 BASE_FEATURE(kIOSOneTimeDefaultBrowserNotification,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -438,7 +435,6 @@ BASE_FEATURE(kFRESignInHeaderTextUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
 bool FRESignInHeaderTextUpdate() {
   return base::FeatureList::IsEnabled(kFRESignInHeaderTextUpdate);
 }
-
 
 BASE_FEATURE(kIOSPushNotificationMultiProfile,
              base::FEATURE_ENABLED_BY_DEFAULT);

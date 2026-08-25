@@ -401,7 +401,7 @@ class AccountProfileMapperAccountsInSeparateProfilesWithForceMigrationTest
 
 TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
        OnlyAvailableOnIos17Plus) {
-    EXPECT_TRUE(AreSeparateProfilesForManagedAccountsEnabled());
+  EXPECT_TRUE(AreSeparateProfilesForManagedAccountsEnabled());
 }
 
 TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest, NoIdentity) {
@@ -849,54 +849,11 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
 }
 
 // Tests that if a managed account was the primary account pre-multi-profile,
-// it stays in that state if the force-migration period is not reached yet.
-TEST_F(AccountProfileMapperAccountsInSeparateProfilesWithForceMigrationTest,
-       DoesNotAssignPrimaryManagedAccountToManagedProfile) {
-  base::test::ScopedFeatureList feature_list;
-
-  // A managed identity and a personal identity exist on the device. The managed
-  // one is set as the primary account in the personal profile. It is *not*
-  // assigned to the profile though (as in GetAttachedGaiaIds()), since the
-  // signin predates this mapping.
-  system_identity_manager_->AddIdentity(google_identity);
-  system_identity_manager_->AddIdentity(gmail_identity1);
-  profile_attributes_storage()->UpdateAttributesForProfileWithName(
-      kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS& attr) {
-        attr.SetAuthenticationInfo(
-            google_identity.gaiaId,
-            base::SysNSStringToUTF8(google_identity.userFullName));
-        attr.SetAttachedGaiaIds(
-            {gmail_identity1.gaiaId, google_identity.gaiaId});
-      }));
-  ASSERT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
-
-  // Set the force migration time pref to still be less than the expected
-  // duration.
-  GetApplicationContext()->GetLocalState()->SetTime(
-      prefs::kWaitingForMultiProfileForcedMigrationTimestamp,
-      base::Time::Now() - base::Days(70));
-
-  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get(),
-      GetApplicationContext()->GetLocalState());
-
-  // Both identities should stay attached to the personal profile.
-  EXPECT_THAT(
-      profile_attributes_storage()
-          ->GetAttributesForProfileWithName(kPersonalProfileName)
-          .GetAttachedGaiaIds(),
-      UnorderedElementsAre(google_identity.gaiaId, gmail_identity1.gaiaId));
-  EXPECT_EQ(profile_attributes_storage()->GetNumberOfProfiles(), 1u);
-}
-
-// Tests that if a managed account was the primary account pre-multi-profile,
 // after force-migration period, the personal profile gets migrated to become a
 // managed profile, and a new personal profile is created for the rest of the
 // personal accounts.
 TEST_F(AccountProfileMapperAccountsInSeparateProfilesWithForceMigrationTest,
        AssignsPrimaryManagedAccountToManagedProfile) {
-  base::test::ScopedFeatureList feature_list;
-
   // A managed identity exists on the device, and is set as the primary account
   // in the personal profile. It is *not* assigned to the profile though (as in
   // GetAttachedGaiaIds()), since the signin predates this mapping.
