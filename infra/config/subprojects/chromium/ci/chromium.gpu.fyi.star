@@ -345,26 +345,19 @@ ci.thin_tester(
         ],
         per_test_modifications = {
             "android_webview_pixel_skia_gold_test": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+                reason = "TODO(crbug.com/40212160): Screenshot fails most of the time on these devices",
             ),
             "context_lost_passthrough_tests": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+                reason = "Explicit passthrough + Graphite and passthrough + Ganesh are already run",
             ),
             "expected_color_pixel_passthrough_test": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+                reason = "Explicit passthrough + Graphite and passthrough + Ganesh are already run",
             ),
             "pixel_skia_gold_passthrough_test": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+                reason = "Explicit passthrough + Graphite and passthrough + Ganesh are already run",
             ),
             "screenshot_sync_passthrough_tests": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
-            ),
-            "webgl2_conformance_gles_passthrough_tests": targets.remove(
-                reason = [
-                    "Currently not enough capacity to run these tests on this config.",
-                    "TODO(crbug.com/40208926): Re-enable once more of the Pixel 6 capacity",
-                    "is deployed.",
-                ],
+                reason = "Explicit passthrough + Graphite and passthrough + Ganesh are already run",
             ),
             "webgl2_conformance_validating_tests": targets.remove(
                 reason = [
@@ -374,7 +367,7 @@ ci.thin_tester(
                 ],
             ),
             "webgl_conformance_gles_passthrough_tests": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+                reason = "Explicit passthrough + Graphite and passthrough + Ganesh are already run",
             ),
         },
     ),

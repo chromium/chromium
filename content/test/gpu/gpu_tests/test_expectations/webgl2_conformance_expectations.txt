@@ -296,6 +296,17 @@ crbug.com/1421437 [ mac passthrough angle-opengl ] WebglExtension_WEBGL_shader_p
 [ linux amd display-server-wayland ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
 [ linux amd display-server-wayland passthrough angle-opengles ] WebglExtension_WEBGL_render_shared_exponent [ Skip ]
 
+# Extensions unavailable on Pixel 6.
+[ android android-pixel-6 passthrough arm ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
+[ android android-pixel-6 passthrough arm ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
+[ android android-pixel-6 passthrough arm ] WebglExtension_EXT_texture_norm16 [ Skip ]
+[ android android-pixel-6 passthrough arm ] WebglExtension_NV_shader_noperspective_interpolation [ Skip ]
+[ android android-pixel-6 passthrough arm ] WebglExtension_WEBGL_clip_cull_distance [ Skip ]
+[ android android-pixel-6 passthrough arm ] WebglExtension_WEBGL_compressed_texture_s3tc [ Skip ]
+[ android android-pixel-6 passthrough arm ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Skip ]
+[ android android-pixel-6 passthrough arm ] WebglExtension_WEBGL_draw_instanced_base_vertex_base_instance [ Skip ]
+[ android android-pixel-6 passthrough arm ] WebglExtension_WEBGL_multi_draw_instanced_base_vertex_base_instance [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################
@@ -766,6 +777,39 @@ crbug.com/530045332 [ android qualcomm no-passthrough ] conformance2/textures/mi
 # buffer is full) between draw calls would cause MaskConstancy test failures.
 crbug.com/429124907 [ android angle-opengles passthrough qualcomm ] deqp/functional/gles3/multisample/fbo_4_samples.html [ Failure ]
 crbug.com/429124907 [ android angle-opengles passthrough qualcomm ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
+
+## Pixel 6 ##
+
+crbug.com/40211033 [ android android-pixel-6 arm passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
+crbug.com/549525860 [ android android-pixel-6 arm passthrough ] conformance2/buffers/uniform-buffers.html [ Failure ]
+crbug.com/549525860 [ android android-pixel-6 arm passthrough ] conformance2/extensions/webgl-shader-pixel-local-storage.html [ Failure ]
+crbug.com/549525860 [ android android-pixel-6 arm passthrough ] conformance2/glsl3/array-as-return-value.html [ Failure ]
+crbug.com/549525860 [ android android-pixel-6 arm passthrough ] conformance2/glsl3/matrix-row-major.html [ Failure ]
+crbug.com/549525860 [ android android-pixel-6 arm passthrough ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
+crbug.com/549525860 [ android android-pixel-6 arm passthrough ] conformance2/glsl3/uninitialized-local-global-variables.html [ Failure ]
+crbug.com/549525860 [ android android-pixel-6 arm passthrough ] conformance2/misc/uninitialized-test-2.html [ Failure ]
+crbug.com/549525860 [ android android-pixel-6 arm passthrough ] conformance2/reading/read-pixels-pack-parameters.html [ Failure ]
+crbug.com/549525860 [ android android-pixel-6 arm passthrough ] conformance2/rendering/draw-buffers.html [ Failure ]
+crbug.com/549587690 [ android android-pixel-6 arm passthrough ] deqp/data/gles3/shaders/arrays.html [ Failure ]
+crbug.com/549733254 [ android android-pixel-6 arm passthrough ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_lines.html [ Failure ]
+crbug.com/549733254 [ android android-pixel-6 arm passthrough ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_points.html [ Failure ]
+crbug.com/549733254 [ android android-pixel-6 arm passthrough ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_triangles.html [ Failure ]
+crbug.com/549733254 [ android android-pixel-6 arm passthrough ] deqp/functional/gles3/transformfeedback/basic_types_separate_lines.html [ Failure ]
+crbug.com/549733254 [ android android-pixel-6 arm passthrough ] deqp/functional/gles3/transformfeedback/basic_types_separate_points.html [ Failure ]
+crbug.com/549733254 [ android android-pixel-6 arm passthrough ] deqp/functional/gles3/transformfeedback/basic_types_separate_triangles.html [ Failure ]
+crbug.com/549733254 [ android android-pixel-6 arm passthrough ] deqp/functional/gles3/transformfeedback/interpolation_centroid.html [ Failure ]
+crbug.com/549733254 [ android android-pixel-6 arm passthrough ] deqp/functional/gles3/transformfeedback/interpolation_flat.html [ Failure ]
+crbug.com/549733254 [ android android-pixel-6 arm passthrough ] deqp/functional/gles3/transformfeedback/interpolation_smooth.html [ Failure ]
+crbug.com/549733254 [ android android-pixel-6 arm passthrough ] deqp/functional/gles3/transformfeedback/random_interleaved_lines.html [ Failure ]
+crbug.com/549733254 [ android android-pixel-6 arm passthrough ] deqp/functional/gles3/transformfeedback/random_interleaved_points.html [ Failure ]
+crbug.com/549733254 [ android android-pixel-6 arm passthrough ] deqp/functional/gles3/transformfeedback/random_interleaved_triangles.html [ Failure ]
+crbug.com/549733254 [ android android-pixel-6 arm passthrough ] deqp/functional/gles3/transformfeedback/random_separate_lines.html [ Failure ]
+crbug.com/549733254 [ android android-pixel-6 arm passthrough ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
+crbug.com/549733254 [ android android-pixel-6 arm passthrough ] deqp/functional/gles3/transformfeedback/random_separate_triangles.html [ Failure ]
+crbug.com/549733256 [ android android-pixel-6 arm passthrough ] deqp/functional/gles3/uniformbuffers/instance_array_basic_type.html [ Failure ]
+crbug.com/549733256 [ android android-pixel-6 arm passthrough ] deqp/functional/gles3/uniformbuffers/random.html [ Failure ]
+crbug.com/549733256 [ android android-pixel-6 arm passthrough ] deqp/functional/gles3/uniformbuffers/single_basic_array.html [ Failure ]
+crbug.com/549733256 [ android android-pixel-6 arm passthrough ] deqp/functional/gles3/uniformbuffers/single_basic_type.html [ Failure ]
 
 ## Pixel 10 ##
 
