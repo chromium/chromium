@@ -41,6 +41,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
+#include "base/win/win_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace {
@@ -320,6 +321,11 @@ class ProfilePrefStoreManagerTest : public testing::Test,
   // any registry changes by this test don't affect other parts of the registry
   // on the machine running the test, and are cleaned up.
   registry_util::RegistryOverrideManager registry_override_;
+
+  // These tests require the machine not to be domain joined. This makes the
+  // tests pass on Dev machines, which are domain joined.
+  base::win::ScopedDomainStateForTesting scoped_domain_state_{false};
+  base::win::ScopedAzureADJoinStateForTesting scoped_aad_state_{std::nullopt};
 #endif  // BUILDFLAG(IS_WIN)
   std::vector<prefs::mojom::TrackedPreferenceMetadataPtr> configuration_;
   base::ScopedTempDir profile_dir_;
