@@ -1363,7 +1363,7 @@ source_set("core") {
       "//chrome/browser/ui/apps:impl",
       "//chrome/browser/ui/bookmarks:impl",
       "//chrome/browser/ui/content_settings:impl",
-      "//chrome/browser/ui/read_anything",
+      "//chrome/browser/ui/read_anything:impl",
       "//chrome/browser/ui/search",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:features",
