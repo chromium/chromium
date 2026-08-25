@@ -126,7 +126,7 @@ BASE_FEATURE(kUseHadSavedFrameAtStart, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
                    kSendAllSavedFramesToDelegatedFrameHost,
                    &kUseHadSavedFrameAtStart,
-                   false);
+                   true);
 
 // Extract any events in `visible_time_request` that should go to the
 // DelegatedFrameHost and sends them to `delegated_frame_host`. Modifies
