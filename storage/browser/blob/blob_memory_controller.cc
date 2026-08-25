@@ -897,7 +897,7 @@ void BlobMemoryController::MaybeScheduleEvictionUntilSystemHealthy(
 
   int effective_limit =
       base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)
-          ? memory_limit()
+          ? memory_limit().percent()
           : memory_limit_percent;
 
   size_t in_memory_limit = limits_.memory_limit_before_paging();

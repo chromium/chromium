@@ -74,7 +74,7 @@ MultiMemoryConsumerRegistration::~MultiMemoryConsumerRegistration() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-int MultiMemoryConsumerRegistration::GetMemoryLimit(
+MemoryLimit MultiMemoryConsumerRegistration::GetMemoryLimit(
     std::string_view name) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = consumers_.find(name);
@@ -130,7 +130,7 @@ AsyncMultiMemoryConsumerRegistration::~AsyncMultiMemoryConsumerRegistration() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-int AsyncMultiMemoryConsumerRegistration::GetMemoryLimit(
+MemoryLimit AsyncMultiMemoryConsumerRegistration::GetMemoryLimit(
     std::string_view name) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = consumers_.find(name);
