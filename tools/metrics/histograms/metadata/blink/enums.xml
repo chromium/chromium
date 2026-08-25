@@ -1472,8 +1472,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1101" label="SVG1DOMUriReference"/>
   <int value="1102" label="SVG1DOMZoomAndPan"/>
   <int value="1103" label="V8SVGGraphicsElement_Transform_AttributeGetter"/>
-  <int value="1104" label="MenuItemElement"/>
-  <int value="1105" label="MenuItemCloseTag"/>
+  <int value="1104" label="OBSOLETE_MenuItemElement"/>
+  <int value="1105" label="OBSOLETE_MenuItemCloseTag"/>
   <int value="1106" label="SVG1DOMMarkerElement"/>
   <int value="1107" label="SVG1DOMUseElement"/>
   <int value="1108" label="SVG1DOMMaskElement"/>
@@ -2297,7 +2297,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1908" label="OrientationSensorPopulateMatrix"/>
   <int value="1909" label="WindowOpenWithInvalidURL"/>
   <int value="1910" label="CrossOriginMainFrameNulledNameAccessed"/>
-  <int value="1911" label="MenuItemElementIconAttribute"/>
+  <int value="1911" label="OBSOLETE_MenuItemElementIconAttribute"/>
   <int value="1912" label="WebkitCSSMatrixSetMatrixValue"/>
   <int value="1913" label="WebkitCSSMatrixConstructFromString"/>
   <int value="1914" label="CanRequestURLHTTPContainingNewline"/>
