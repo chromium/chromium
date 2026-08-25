@@ -2,6 +2,38 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-group("ttc") {
-  # Resources target will be added in structural refactor CLs.
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("ttc") {
+  sources = [
+    "tool_controller.cc",
+    "tool_controller.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/actor",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/webui/ai_overlay_dialog:mojo_bindings",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "tool_controller_browsertest.cc" ]
+  deps = [
+    ":ttc",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/page_content_annotations/content",
+    "//content/test:browsertest_support",
+    "//testing/gtest",
+    "//third_party/blink/public/common",
+  ]
 }
