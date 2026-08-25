@@ -892,6 +892,8 @@ should be able to be added at any place in this file.
   <variant name="_TabOrganizationSuccess"
       summary="For the tab organization feature. (obsolete)"/>
   <variant name="_TabPinnedFeature" summary="For tab pinned overflow hint."/>
+  <variant name="_TabScrollButtonFeature"
+      summary="For the tab scroll button feature."/>
   <variant name="_TabSearch" summary="For the tab search feature."/>
   <variant name="_TabSearchComboButton"
       summary="For the tab search migration to a tab strip combo button."/>

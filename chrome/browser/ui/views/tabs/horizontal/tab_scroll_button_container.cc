@@ -6,12 +6,16 @@
 
 #include <algorithm>
 
+#include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -22,6 +26,7 @@
 #include "ui/views/controls/scrollbar/scroll_bar.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_observer.h"
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabScrollButtonContainer,
                                       kTabScrollButtonContainer);
@@ -36,7 +41,89 @@ namespace {
 constexpr base::TimeDelta kScrollAnimationTime = base::Milliseconds(300);
 constexpr int kScrollButtonSpacing = 1;
 constexpr int kScrollButtonHorizontalPadding = 4;
+constexpr base::TimeDelta kIPHDisplayDelay = base::Seconds(3);
 }  // namespace
+
+class TabScrollButtonContainer::TabScrollButtonIPHController
+    : public views::ViewObserver {
+ public:
+  TabScrollButtonIPHController(
+      BrowserWindowInterface* browser_window_interface,
+      TabScrollButtonContainer* tab_scroll_button_container);
+  TabScrollButtonIPHController(const TabScrollButtonIPHController&) = delete;
+  TabScrollButtonIPHController& operator=(const TabScrollButtonIPHController&) =
+      delete;
+  ~TabScrollButtonIPHController() override;
+
+  // views::ViewObserver:
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_view,
+                               bool visible) override;
+
+ private:
+  void MaybeShowIPH();
+
+  raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
+  raw_ptr<TabScrollButtonContainer> tab_scroll_button_container_ = nullptr;
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
+  base::OneShotTimer show_iph_timer_;
+};
+
+TabScrollButtonContainer::TabScrollButtonIPHController::
+    TabScrollButtonIPHController(
+        BrowserWindowInterface* browser_window_interface,
+        TabScrollButtonContainer* tab_scroll_button_container)
+    : browser_window_interface_(browser_window_interface),
+      tab_scroll_button_container_(tab_scroll_button_container) {
+  CHECK(tab_scroll_button_container_);
+  observation_.Observe(tab_scroll_button_container_);
+  if (tab_scroll_button_container_->GetVisible()) {
+    show_iph_timer_.Start(
+        FROM_HERE, kIPHDisplayDelay,
+        base::BindOnce(&TabScrollButtonContainer::TabScrollButtonIPHController::
+                           MaybeShowIPH,
+                       base::Unretained(this)));
+  }
+}
+
+TabScrollButtonContainer::TabScrollButtonIPHController::
+    ~TabScrollButtonIPHController() = default;
+
+void TabScrollButtonContainer::TabScrollButtonIPHController::
+    OnViewVisibilityChanged(views::View* observed_view,
+                            views::View* starting_view,
+                            bool visible) {
+  if (!visible) {
+    show_iph_timer_.Stop();
+    return;
+  }
+
+  if (auto* user_education =
+          BrowserUserEducationInterface::From(browser_window_interface_)) {
+    if (user_education->HasFeaturePromoBeenDismissed(
+            feature_engagement::kIPHTabScrollButtonFeature)) {
+      show_iph_timer_.Stop();
+      observation_.Reset();
+      return;
+    }
+  }
+
+  if (!show_iph_timer_.IsRunning()) {
+    show_iph_timer_.Start(
+        FROM_HERE, kIPHDisplayDelay,
+        base::BindOnce(&TabScrollButtonContainer::TabScrollButtonIPHController::
+                           MaybeShowIPH,
+                       base::Unretained(this)));
+  }
+}
+
+void TabScrollButtonContainer::TabScrollButtonIPHController::MaybeShowIPH() {
+  if (auto* user_education =
+          BrowserUserEducationInterface::From(browser_window_interface_)) {
+    user_education->MaybeShowFeaturePromo(
+        feature_engagement::kIPHTabScrollButtonFeature);
+  }
+}
 
 TabScrollButtonContainer::TabScrollButtonContainer(
     BrowserWindowInterface* browser_window_interface)
@@ -84,6 +171,15 @@ TabScrollButtonContainer::TabScrollButtonContainer(
   start_scroll_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets()));
   end_scroll_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets()));
   animation_.SetDuration(kScrollAnimationTime);
+
+  if (auto* user_education =
+          BrowserUserEducationInterface::From(browser_window_interface_)) {
+    if (!user_education->HasFeaturePromoBeenDismissed(
+            feature_engagement::kIPHTabScrollButtonFeature)) {
+      iph_controller_ = std::make_unique<TabScrollButtonIPHController>(
+          browser_window_interface_, this);
+    }
+  }
 }
 
 TabScrollButtonContainer::~TabScrollButtonContainer() = default;

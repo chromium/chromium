@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/tabs/horizontal/tab_scroll_button_container.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_icon.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
@@ -1680,6 +1681,27 @@ void MaybeRegisterChromeFeaturePromos(
           .SetMetadata(150, "jennserrano@google.com",
                        "Triggered when the bookmark bar is auto-hidden after "
                        "inactivity.")));
+
+  // kIPHTabScrollButtonFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHTabScrollButtonFeature,
+          TabScrollButtonContainer::kStartScrollButton, IDS_TAB_SCROLL_IPH_BODY,
+          IDS_TAB_SCROLL_IPH_HIDE_BUTTONS,
+          base::BindRepeating(
+              [](ContextPtr ctx,
+                 user_education::FeaturePromoHandle promo_handle) {
+                if (Browser* const browser = GetBrowser(ctx)) {
+                  browser->GetProfile()->GetPrefs()->SetBoolean(
+                      prefs::kTabScrollButtonsPinnedToTabstrip, false);
+                }
+              }))
+          .SetBubbleTitleText(IDS_TAB_SCROLL_IPH_TITLE)
+          .SetBubbleIcon(kLightbulbOutlineIcon)
+          .SetMetadata(
+              154, "dominicaustria@google.com",
+              "Triggered when the tab horizontal scroll buttons "
+              "become visible, and stays visible for a few sceonds.")));
 
   // kIPHMemorySaverModeFeature:
   registry.RegisterFeature(std::move(

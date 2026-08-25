@@ -537,6 +537,8 @@ DEFINE_VARIATION_PARAM(kIPHPwaQuietNotificationFeature,
 DEFINE_VARIATION_PARAM(kIPHTabAudioMutingFeature, "IPH_TabAudioMuting");
 DEFINE_VARIATION_PARAM(kIPHTabSearchComboButtonFeature,
                        "IPH_TabSearchComboButton");
+DEFINE_VARIATION_PARAM(kIPHTabScrollButtonFeature,
+                       "IPH_TabScrollButtonFeature");
 DEFINE_VARIATION_PARAM(kIPHDesktopPwaInstallFeature, "IPH_DesktopPwaInstall");
 DEFINE_VARIATION_PARAM(kIPHProfileSwitchFeature, "IPH_ProfileSwitch");
 DEFINE_VARIATION_PARAM(kIPHDesktopSharedHighlightingFeature,
@@ -928,6 +930,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHTabAudioMutingFeature),
         VARIATION_ENTRY(kIPHTabGroupsSharedTabChangedFeature),
         VARIATION_ENTRY(kIPHTabGroupsSharedTabFeedbackFeature),
+        VARIATION_ENTRY(kIPHTabScrollButtonFeature),
         VARIATION_ENTRY(kIPHTabSearchComboButtonFeature),
         VARIATION_ENTRY(kIPHWebUiHelpBubbleTestFeature),
 // keep-sorted end

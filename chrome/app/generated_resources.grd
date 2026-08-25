@@ -10591,6 +10591,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TAB_SCROLL_IPH_BODY" desc="Body text of the in-product help promo educating users on tab scrolling.">
         You can scroll or use your mouse wheel to see all your tabs
       </message>
+      <message name="IDS_TAB_SCROLL_IPH_HIDE_BUTTONS" desc="Text of the in-product help promo button to unpin scroll buttons.">
+        Hide scroll buttons
+      </message>
       <!-- /Tab Scroll Strings -->
 
       <!-- Organizer Panel Strings -->

@@ -54,6 +54,8 @@ class TabScrollButtonContainer : public views::View,
   void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
+  class TabScrollButtonIPHController;
+
   struct AnimationParams {
     bool scroll_to_start;
     int amount_to_scroll;
@@ -81,5 +83,7 @@ class TabScrollButtonContainer : public views::View,
 
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
+  std::unique_ptr<TabScrollButtonIPHController> iph_controller_;
 };
+
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_HORIZONTAL_TAB_SCROLL_BUTTON_CONTAINER_H_
