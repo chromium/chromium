@@ -20954,6 +20954,7 @@ from previous Chrome versions.
   <int value="1939639779"
       label="EnableSiteSearchAllowUserOverridePolicy:enabled"/>
   <int value="1939884866" label="web-otp-backend"/>
+  <int value="1940309009" label="SigninButtonProfileMenu:enabled"/>
   <int value="1940625534" label="NewOverviewUi:disabled"/>
   <int value="1941013139" label="FedCmUseOtherAccount:disabled"/>
   <int value="1941193767" label="WebAppUniversalInstall:enabled"/>
@@ -20967,6 +20968,7 @@ from previous Chrome versions.
   <int value="1944156526" label="sync-url"/>
   <int value="1944880313" label="ShimlessRMADynamicDeviceInfoInputs:enabled"/>
   <int value="1945031120" label="LanguageSettingsUpdate2:disabled"/>
+  <int value="1945362674" label="SigninButtonProfileMenu:disabled"/>
   <int value="1945637293" label="SurfacePolish:disabled"/>
   <int value="1946014982"
       label="MagnifierContinuousMouseFollowingModeSetting:disabled"/>

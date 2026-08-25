@@ -808,6 +808,13 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kSearchAIModeSignInPromoSelfDismissal);
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+// Opens a desktop-like profile menu from the toolbar sign-in button on Desktop
+// Android.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kSigninButtonProfileMenu);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Enables the new visual design for the profile switch interception bubble,
 // aligning it with the V2 style used for new profiles. Used in
 // dice_web_signin_intercept_handler.cc.

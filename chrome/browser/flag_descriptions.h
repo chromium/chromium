@@ -6495,6 +6495,12 @@ inline constexpr char kShowTabListAnimationsName[] =
 inline constexpr char kShowTabListAnimationsDescription[] =
     "Shows animations for each tab on the tab switcher on Android XR.";
 
+inline constexpr char kSigninButtonProfileMenuName[] =
+    "Signin Button Profile Menu";
+inline constexpr char kSigninButtonProfileMenuDescription[] =
+    "Opens a desktop-like profile menu when tapping the toolbar sign-in button "
+    "on Desktop Android.";
+
 inline constexpr char kSigninLevelUpButtonName[] = "Signin Level Up Button";
 inline constexpr char kSigninLevelUpButtonDescription[] =
     "Replaces signed out avatar with signin button on Android.";

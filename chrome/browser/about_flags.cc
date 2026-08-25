@@ -6731,7 +6731,6 @@ const FeatureEntry kFeatureEntries[] = {
          kContextualSuggestionsAblateOthersWhenPresentVariations,
          "ContextualSuggestionsAblateOthersWhenPresent")},
 
-
     {"omnibox-contextual-search-on-focus-suggestions",
      flag_descriptions::kOmniboxContextualSearchOnFocusSuggestionsName,
      flag_descriptions::kOmniboxContextualSearchOnFocusSuggestionsDescription,
@@ -10517,7 +10516,6 @@ const FeatureEntry kFeatureEntries[] = {
      MULTI_VALUE_TYPE(kAISemanticEmbedderChoices),
      flag_descriptions::kAIAPIsLinks},
 
-
     {"gemma4-for-built-in-ai", flag_descriptions::kGemma4ForBuiltInAIName,
      flag_descriptions::kGemma4ForBuiltInAIDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kGemma4Choices), flag_descriptions::kAIAPIsLinks},
@@ -13916,6 +13914,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kNtpAuroraV2,
                                     kNtpAuroraV2Variations,
                                     "NtpAuroraV2")},
+
+    {"signin-button-profile-menu",
+     flag_descriptions::kSigninButtonProfileMenuName,
+     flag_descriptions::kSigninButtonProfileMenuDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kSigninButtonProfileMenu)},
 #endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
