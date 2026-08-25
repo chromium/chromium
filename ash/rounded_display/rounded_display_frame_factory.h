@@ -10,11 +10,18 @@
 
 #include "ash/ash_export.h"
 #include "ash/frame_sink/ui_resource.h"
+#include "cc/resources/resource_pool.h"
+#include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
 
 namespace aura {
 class Window;
 }  // namespace aura
+
+namespace gpu {
+class ClientSharedImage;
+class SharedImageInterface;
+}  // namespace gpu
 
 namespace viz {
 class CompositorFrame;
@@ -53,6 +60,8 @@ class ASH_EXPORT RoundedDisplayFrameFactory {
       const viz::BeginFrameAck& begin_frame_ack,
       aura::Window& host_window,
       UiResourceManager& resource_manager,
+      viz::ClientResourceProvider& client_resource_provider,
+      cc::ResourcePool& resource_pool,
       const std::vector<RoundedDisplayGutter*>& gutters);
 
  private:
@@ -68,11 +77,18 @@ class ASH_EXPORT RoundedDisplayFrameFactory {
       const RoundedDisplayGutter& gutter,
       UiResourceManager& resource_manager) const;
 
+  cc::ResourcePool::InUsePoolResource AcquireResource(
+      const gfx::Size& size,
+      bool is_overlay_candidate,
+      cc::ResourcePool& resource_pool,
+      gpu::SharedImageInterface* sii) const;
+
   std::unique_ptr<UiResource> Draw(const RoundedDisplayGutter& gutter,
                                    UiResourceManager& resource_manager) const;
 
-  // Paints the gutter's texture into the SharedImage held by `resource`.
-  void Paint(const RoundedDisplayGutter& gutter, UiResource* resource) const;
+  // Paints the gutter's texture into the SharedImage.
+  void Paint(const RoundedDisplayGutter& gutter,
+             gpu::ClientSharedImage* client_shared_image) const;
 };
 
 }  // namespace ash
