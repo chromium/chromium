@@ -23,10 +23,6 @@
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ash/public/cpp/metrics_util.h"
-#endif
-
 namespace gfx {
 class ImageSkia;
 }

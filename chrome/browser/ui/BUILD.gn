@@ -2691,14 +2691,6 @@ static_library("ui") {
       "views/tabs/horizontal/tab_scroll_button_container.h",
       "views/tabs/horizontal_tab_style_views.cc",
       "views/tabs/horizontal_tab_style_views.h",
-      "views/tabs/hovercard/fade_footer_view.cc",
-      "views/tabs/hovercard/fade_footer_view.h",
-      "views/tabs/hovercard/hover_card_anchor_target.cc",
-      "views/tabs/hovercard/hover_card_anchor_target.h",
-      "views/tabs/hovercard/tab_hover_card_bubble_view.cc",
-      "views/tabs/hovercard/tab_hover_card_bubble_view.h",
-      "views/tabs/hovercard/tab_hover_card_controller.cc",
-      "views/tabs/hovercard/tab_hover_card_controller.h",
       "views/tabs/new_tab_button.cc",
       "views/tabs/new_tab_button.h",
       "views/tabs/new_tab_button_menu_model.cc",
@@ -3015,7 +3007,9 @@ static_library("ui") {
       "//chrome/browser/ui/views/tabs/groups:impl",
       "//chrome/browser/ui/views/tabs/horizontal",
       "//chrome/browser/ui/views/tabs/horizontal:impl",
+      "//chrome/browser/ui/views/tabs/hovercard",
       "//chrome/browser/ui/views/tabs/hovercard:hovercard_helpers",
+      "//chrome/browser/ui/views/tabs/hovercard:impl",
       "//chrome/browser/ui/views/tabs/organizer",
       "//chrome/browser/ui/views/tabs/shared",
       "//chrome/browser/ui/views/tabs/shared:impl",
@@ -3274,8 +3268,6 @@ static_library("ui") {
       # - c/b/ui/views/frame/themed_background.h
       # - c/b/ui/views/frame/vertical_tab_strip_region_view.h
       # - c/b/ui/views/tabs/horizontal/tab_scroll_button_container.h
-      # - c/b/ui/views/tabs/hovercard/hover_card_anchor_target.h
-      # - c/b/ui/views/tabs/hovercard/tab_hover_card_controller.h
       # - c/b/ui/views/tabs/tab_group_style.h
       # - c/b/ui/views/tabs/tab_slot_view.h
       # - c/b/ui/views/tabs/tab_style_views.h
@@ -3288,6 +3280,11 @@ static_library("ui") {
       # - c/b/ui/views/tabs/tab.h
       # - c/b/ui/views/tabs/tab_slot_controller.h
       "//chrome/browser/ui/views/tabs/tab:impl",
+
+      # TODO(crbug.com/451609048): Remove this circular dependency when the
+      # following header gets componentized:
+      # - c/b/ui/views/tabs/tab_slot_controller.h
+      "//chrome/browser/ui/views/tabs/hovercard",
 
       # TODO(crbug.com/451609048): Remove this circular dependency when the
       # following header gets componentized:
@@ -3313,14 +3310,17 @@ static_library("ui") {
       "//chrome/browser/ui/views/tabs/groups:impl",
 
       # TODO(crbug.com/451609048): Remove this circular dependency when the
+      # following header gets componentized:
+      # - c/b/ui/views/frame/vertical_tab_strip_region_view.h
+      "//chrome/browser/ui/views/tabs/hovercard:impl",
+
+      # TODO(crbug.com/451609048): Remove this circular dependency when the
       # following headers get componentized:
       # - c/b/ui/browser_commands.h
       # - c/b/ui/views/frame/browser_frame_view.h
       # - c/b/ui/views/frame/browser_view.h
       # - c/b/ui/views/frame/themed_background.h
       # - c/b/ui/views/frame/vertical_tab_strip_region_view.h
-      # - c/b/ui/views/tabs/hovercard/hover_card_anchor_target.h
-      # - c/b/ui/views/tabs/hovercard/tab_hover_card_controller.h
       # - c/b/ui/views/tabs/new_tab_button.h
       # - c/b/ui/views/tabs/tab_slot_view.h
       "//chrome/browser/ui/views/tabs/vertical:impl",
