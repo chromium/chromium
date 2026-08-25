@@ -3190,24 +3190,12 @@
     {
       "id": 437,
       "cr_bugs": [ 372358970 ],
-      "description": "AV1 RTC decoding may crash driver on some of the Intel devices",
+      "description": "AV1 RTC decoding may crash driver on some of the Intel devices with old drivers",
       "os": {
         "type": "win"
       },
       "vendor_id": "0x8086",
       "multi_gpu_category": "any",
-      "intel_gpu_series": [
-        "tigerlake",
-        "rocketlake",
-        "dg1",
-        "alderlake",
-        "alchemist",
-        "raptorlake",
-        "meteorlake",
-        "arrowlake",
-        "lunarlake",
-        "battlemage"
-      ],
       "features": [
         "use_first_valid_ref_for_av1_invalid_ref"
       ],
