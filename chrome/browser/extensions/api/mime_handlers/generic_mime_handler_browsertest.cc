@@ -19,20 +19,25 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/download/public/common/download_item.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
+#include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
+#include "content/public/browser/download_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/download_test_observer.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -437,6 +442,43 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
         }
       });
   EXPECT_FALSE(found_extension_frame);
+}
+
+// The "Download PDFs instead of automatically opening them in Chrome"
+// preference suppresses every in-browser PDF handler, not only the
+// built-in PDF viewer.
+IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
+                       AlwaysOpenPdfExternallySuppressesGenericHandler) {
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(kTestExtensionDir)));
+  profile()->GetPrefs()->SetBoolean(prefs::kPluginsAlwaysOpenPdfExternally,
+                                    true);
+
+  EXPECT_EQ(std::string(),
+            PluginUtils::GetExtensionIdForMimeType(profile(), kPdfMimeType,
+                                                   /*embedded=*/false));
+
+  // The built-in viewer also registers "text/pdf", so the preference has to
+  // cover that MIME type as well.
+  EXPECT_EQ(std::string(),
+            PluginUtils::GetExtensionIdForMimeType(profile(), "text/pdf",
+                                                   /*embedded=*/false));
+
+  content::DownloadTestObserverTerminal download_observer(
+      profile()->GetDownloadManager(), /*wait_count=*/1,
+      content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
+
+  // The response is downloaded, so no navigation commits in the tab and
+  // content::NavigateToURL() would report failure.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kTestPdfPath)));
+
+  // Assert rather than expect: if the handler still claims the response
+  // there is no download and the wait below would hang until timeout.
+  ASSERT_FALSE(FindMimeHandlerExtensionFrame());
+
+  download_observer.WaitForFinished();
+  EXPECT_EQ(1u, download_observer.NumDownloadsSeenInState(
+                    download::DownloadItem::COMPLETE));
 }
 
 // A generic MIME handler renders a top-level PDF as an embedded

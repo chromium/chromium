@@ -18,11 +18,11 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/common/pref_names.h"
+#include "components/pdf/common/constants.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/mime_handler/mime_handler_registry.h"
-#include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -30,9 +30,21 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 namespace {
 
+// Both MIME types the built-in PDF viewer registers in
+// chrome/browser/resources/pdf/manifest.json. "text/pdf" has no shared
+// constant.
+bool IsPdfMimeType(const std::string& mime_type) {
+  return mime_type == pdf::kPDFMimeType || mime_type == "text/pdf";
+}
+
 bool IsExtensionAllowedInProfile(Profile* profile,
-                                 const extensions::ExtensionId& extension_id) {
-  if (extension_id == extension_misc::kPdfExtensionId &&
+                                 const extensions::ExtensionId& extension_id,
+                                 const std::string& mime_type) {
+  // The preference promises that PDFs are downloaded rather than opened in
+  // Chrome. Any extension can register a handler for a PDF MIME type, so
+  // suppression has to key off the MIME type rather than a specific
+  // extension id.
+  if (IsPdfMimeType(mime_type) &&
       profile->GetPrefs()->GetBoolean(prefs::kPluginsAlwaysOpenPdfExternally)) {
     return false;
   }
@@ -47,7 +59,7 @@ bool IsExtensionAllowedForMimeType(Profile* profile,
                                    const extensions::ExtensionId& extension_id,
                                    const std::string& mime_type,
                                    bool embedded) {
-  if (!IsExtensionAllowedInProfile(profile, extension_id)) {
+  if (!IsExtensionAllowedInProfile(profile, extension_id, mime_type)) {
     return false;
   }
 
@@ -130,7 +142,7 @@ PluginUtils::GetMimeTypeToExtensionIdMap(
   CHECK(registry);
   for (const auto& [mime_type, handlers] : registry->GetHandlersByMimeType()) {
     for (const extensions::ExtensionId& extension_id : handlers) {
-      if (IsExtensionAllowedInProfile(profile, extension_id)) {
+      if (IsExtensionAllowedInProfile(profile, extension_id, mime_type)) {
         mime_type_to_extension_id_map[mime_type] = extension_id;
         break;
       }
