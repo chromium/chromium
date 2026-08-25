@@ -29,7 +29,6 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -42,6 +41,11 @@ import java.io.IOException;
 @Batch(Batch.UNIT_TESTS)
 public class ViewArcAnimatorRenderTest {
     private static final int ANIMATION_STEPS = 5;
+    private static final int CONTAINER_WIDTH = 500;
+    private static final int CONTAINER_HEIGHT = 500;
+    private static final int VIEW_SIZE = 60;
+    private static final float COORD_MIN = 50f;
+    private static final float COORD_MAX = 350f;
 
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
@@ -51,7 +55,7 @@ public class ViewArcAnimatorRenderTest {
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_HUB)
-                    .setRevision(0)
+                    .setRevision(1)
                     .build();
 
     private static Activity sActivity;
@@ -74,11 +78,9 @@ public class ViewArcAnimatorRenderTest {
                     mRootView = new FrameLayout(sActivity);
                     sActivity.setContentView(
                             mRootView,
-                            new ViewGroup.LayoutParams(
-                                    ViewGroup.LayoutParams.MATCH_PARENT,
-                                    ViewGroup.LayoutParams.MATCH_PARENT));
+                            new ViewGroup.LayoutParams(CONTAINER_WIDTH, CONTAINER_HEIGHT));
                     mView = new View(sActivity.getApplicationContext());
-                    mRootView.addView(mView, 100, 100);
+                    mRootView.addView(mView, VIEW_SIZE, VIEW_SIZE);
                     mView.setBackgroundColor(Color.BLUE);
                     mView.post(callbackHelper::notifyCalled);
                 });
@@ -96,17 +98,16 @@ public class ViewArcAnimatorRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/512052536")
     public void testQuadrantI_CounterClockwise() throws IOException {
         ObjectAnimator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 PathAnimationUtils.createViewArcAnimator(
                                         mView,
-                                        800f,
-                                        1200f,
-                                        50f,
-                                        50f,
+                                        COORD_MAX,
+                                        COORD_MAX,
+                                        COORD_MIN,
+                                        COORD_MIN,
                                         PathAnimationUtils.ArcDirection.COUNTER_CLOCKWISE));
 
         RenderTestAnimationUtils.stepThroughAnimation(
@@ -126,10 +127,10 @@ public class ViewArcAnimatorRenderTest {
                         () ->
                                 PathAnimationUtils.createViewArcAnimator(
                                         mView,
-                                        50f,
-                                        50f,
-                                        800f,
-                                        1200f,
+                                        COORD_MIN,
+                                        COORD_MIN,
+                                        COORD_MAX,
+                                        COORD_MAX,
                                         PathAnimationUtils.ArcDirection.CLOCKWISE));
 
         RenderTestAnimationUtils.stepThroughAnimation(
@@ -139,17 +140,16 @@ public class ViewArcAnimatorRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/512270063")
     public void testQuadrantII_CounterClockwise() throws IOException {
         ObjectAnimator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 PathAnimationUtils.createViewArcAnimator(
                                         mView,
-                                        800f,
-                                        50f,
-                                        50f,
-                                        1200f,
+                                        COORD_MAX,
+                                        COORD_MIN,
+                                        COORD_MIN,
+                                        COORD_MAX,
                                         PathAnimationUtils.ArcDirection.COUNTER_CLOCKWISE));
 
         RenderTestAnimationUtils.stepThroughAnimation(
@@ -169,10 +169,10 @@ public class ViewArcAnimatorRenderTest {
                         () ->
                                 PathAnimationUtils.createViewArcAnimator(
                                         mView,
-                                        50f,
-                                        1200f,
-                                        800f,
-                                        50f,
+                                        COORD_MIN,
+                                        COORD_MAX,
+                                        COORD_MAX,
+                                        COORD_MIN,
                                         PathAnimationUtils.ArcDirection.CLOCKWISE));
 
         RenderTestAnimationUtils.stepThroughAnimation(
@@ -188,10 +188,10 @@ public class ViewArcAnimatorRenderTest {
                         () ->
                                 PathAnimationUtils.createViewArcAnimator(
                                         mView,
-                                        50f,
-                                        50f,
-                                        800f,
-                                        1200f,
+                                        COORD_MIN,
+                                        COORD_MIN,
+                                        COORD_MAX,
+                                        COORD_MAX,
                                         PathAnimationUtils.ArcDirection.COUNTER_CLOCKWISE));
 
         RenderTestAnimationUtils.stepThroughAnimation(
@@ -205,17 +205,16 @@ public class ViewArcAnimatorRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/503405658")
     public void testQuadrantIII_Clockwise() throws IOException {
         ObjectAnimator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 PathAnimationUtils.createViewArcAnimator(
                                         mView,
-                                        800f,
-                                        1200f,
-                                        50f,
-                                        50f,
+                                        COORD_MAX,
+                                        COORD_MAX,
+                                        COORD_MIN,
+                                        COORD_MIN,
                                         PathAnimationUtils.ArcDirection.CLOCKWISE));
 
         RenderTestAnimationUtils.stepThroughAnimation(
@@ -231,10 +230,10 @@ public class ViewArcAnimatorRenderTest {
                         () ->
                                 PathAnimationUtils.createViewArcAnimator(
                                         mView,
-                                        50f,
-                                        1200f,
-                                        800f,
-                                        50f,
+                                        COORD_MIN,
+                                        COORD_MAX,
+                                        COORD_MAX,
+                                        COORD_MIN,
                                         PathAnimationUtils.ArcDirection.COUNTER_CLOCKWISE));
 
         RenderTestAnimationUtils.stepThroughAnimation(
@@ -248,17 +247,16 @@ public class ViewArcAnimatorRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/453805640")
     public void testQuadrantIV_Clockwise() throws IOException {
         ObjectAnimator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 PathAnimationUtils.createViewArcAnimator(
                                         mView,
-                                        800f,
-                                        50f,
-                                        50f,
-                                        1200f,
+                                        COORD_MAX,
+                                        COORD_MIN,
+                                        COORD_MIN,
+                                        COORD_MAX,
                                         PathAnimationUtils.ArcDirection.CLOCKWISE));
 
         RenderTestAnimationUtils.stepThroughAnimation(
