@@ -15,6 +15,8 @@ import {OffscreenBridge} from '../../common/offscreen_bridge.js';
 import {Output} from '../output/output.js';
 
 import {BackTranslateCallback, BrailleTranslator, TranslateCallback} from './braille_translator.js';
+import {CompositionCandidateProvider} from './composition_candidate_provider.js';
+import {WasmKanaKanjiProvider} from './wasm_kana_kanji_provider.js';
 
 type QueuedRequest = {
   type: 'translate',
@@ -29,16 +31,26 @@ export class TenjiTranslator implements BrailleTranslator {
    */
   readonly usesCompositionInput = true;
 
-  // TODO(crbug.com/510816368): Implement getCompositionCandidateProvider()
-  // with a conversion-engine-backed provider (e.g. a
-  // chrome.accessibilityPrivate.getKanaKanjiCandidates API) once available.
-  // Until then, this translator has no provider, so kana input is entered as
-  // composition text but committed as-is without conversion.
-
   private static initPromise_: Promise<boolean>|null = null;
   private static pendingRequest_ = false;
   private static requestQueue_: QueuedRequest[] = [];
   private static hasAnnouncedBackTranslateUnavailable_ = false;
+  private static compositionCandidateProvider_: CompositionCandidateProvider|
+      null = null;
+
+  /**
+   * Returns the CompositionCandidateProvider used to convert Japanese kana
+   * input to kanji before commit. Lazily instantiated (rather than assigned
+   * at field-initializer time) to avoid eagerly evaluating
+   * wasm_kana_kanji_provider.ts, which imports TenjiTranslator itself.
+   */
+  getCompositionCandidateProvider(): CompositionCandidateProvider {
+    if (!TenjiTranslator.compositionCandidateProvider_) {
+      TenjiTranslator.compositionCandidateProvider_ =
+          new WasmKanaKanjiProvider();
+    }
+    return TenjiTranslator.compositionCandidateProvider_;
+  }
 
   init(): Promise<boolean> {
     if (!TenjiTranslator.initPromise_) {

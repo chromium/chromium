@@ -175,6 +175,7 @@ export const BridgeConstants = {
       SRE_MOVE: 'sreMove',
       SRE_WALK: 'sreWalk',
       TENJI_BACK_TRANSLATE: 'tenjiBackTranslate',
+      TENJI_CONVERT: 'tenjiConvert',
       TENJI_START_WORKER: 'tenjiStartWorker',
       TENJI_TRANSLATE: 'tenjiTranslate',
     },

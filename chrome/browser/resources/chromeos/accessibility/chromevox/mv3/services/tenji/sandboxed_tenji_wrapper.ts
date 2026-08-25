@@ -65,11 +65,36 @@ interface BackTranslateResponse {
   error?: string;
 }
 
+interface ConvertMessage {
+  type: 'convert';
+  reading: string;
+  maxCandidates: number;
+}
+
+interface ConvertResponse {
+  type: 'convert';
+  candidates?: string[];
+  error?: string;
+}
+
+// The bindings for a std::vector<std::string> returned by an Embind-bound
+// function. Must be freed manually (see handleConvertMessage_ below) to
+// avoid leaking memory in the sandbox.
+interface EmbindStringVector {
+  size(): number;
+  get(index: number): string;
+  delete(): void;
+}
+
 interface TenjiModule {
   ToTenji(text: string): TranslateResult;
   ToTenjiWithOffsetMap(text: string, map: OffsetMap): TranslateResult;
   TenjiToHiragana(tenji: string): BackTranslateResult;
   OffsetMap: new() => OffsetMap;
+  // Kana-to-kanji conversion via the Mozc engine, compiled into this same
+  // WASM module alongside the Tenji translation library.
+  MozcConvertHiraganaToKanji(readingUtf8: string, maxCandidates: number):
+      EmbindStringVector;
 }
 
 declare global {
@@ -238,6 +263,37 @@ function handleBackTranslateMessage_(
   }
 }
 
+function handleConvertMessage_(convertMessage: ConvertMessage): void {
+  if (!tenjiModule) {
+    console.error('Received convert request before Tenji module was loaded');
+    const response: ConvertResponse = {
+      type: 'convert',
+      error: 'Tenji module not loaded',
+    };
+    postToParent(response);
+    return;
+  }
+  let result: EmbindStringVector|null = null;
+  try {
+    result = tenjiModule.MozcConvertHiraganaToKanji(
+        convertMessage.reading, convertMessage.maxCandidates);
+    const candidates: string[] = [];
+    for (let i = 0; i < result.size(); i++) {
+      candidates.push(result.get(i));
+    }
+    const response: ConvertResponse = {type: 'convert', candidates};
+    postToParent(response);
+  } catch (error) {
+    const errorMessage = errorToMessage(error);
+    const response: ConvertResponse = {type: 'convert', error: errorMessage};
+    postToParent(response);
+  } finally {
+    // Emscripten instances must be explicitly freed to prevent memory leaks
+    // in the sandbox.
+    result?.delete();
+  }
+}
+
 function handleMessage_(event: MessageEvent): void {
   if (!event.data) {
     return;
@@ -255,6 +311,11 @@ function handleMessage_(event: MessageEvent): void {
 
   if (event.data.type === 'backTranslate') {
     handleBackTranslateMessage_(event.data as BackTranslateMessage);
+    return;
+  }
+
+  if (event.data.type === 'convert') {
+    handleConvertMessage_(event.data as ConvertMessage);
     return;
   }
 

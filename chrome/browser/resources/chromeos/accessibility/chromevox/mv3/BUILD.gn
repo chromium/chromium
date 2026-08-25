@@ -64,6 +64,7 @@ ts_modules = [
   "background/braille/pan_strategy.ts",
   "background/braille/spans.ts",
   "background/braille/tenji_translator.ts",
+  "background/braille/wasm_kana_kanji_provider.ts",
   "background/captions_handler.ts",
   "background/chromevox.ts",
   "background/chromevox_range.ts",

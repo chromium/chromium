@@ -26,6 +26,8 @@ export class TenjiWorker {
   private translateRejector_?: (reason?: unknown) => void;
   private backTranslateResolver_?: (value: string|null) => void;
   private backTranslateRejector_?: (reason?: unknown) => void;
+  private convertResolver_?: (value: string[]) => void;
+  private convertRejector_?: (reason?: unknown) => void;
 
   constructor() {
     BridgeHelper.registerHandler(
@@ -37,6 +39,10 @@ export class TenjiWorker {
     BridgeHelper.registerHandler(
         TARGET, Action.TENJI_BACK_TRANSLATE,
         (tenjiString: string) => this.backTranslate_(tenjiString));
+    BridgeHelper.registerHandler(
+        TARGET, Action.TENJI_CONVERT,
+        (reading: string, maxCandidates: number) =>
+            this.convert_(reading, maxCandidates));
     window.addEventListener(
         'message', (event) => this.onSandboxResponse_(event));
   }
@@ -121,6 +127,27 @@ export class TenjiWorker {
     return resultPromise;
   }
 
+  private async convert_(reading: string, maxCandidates: number):
+      Promise<string[]> {
+    if (!this.sandbox_) {
+      this.initializeSandbox_();
+    }
+
+    if (this.convertRejector_) {
+      this.convertRejector_('Error: convert request already pending.');
+      this.convertResolver_ = undefined;
+      this.convertRejector_ = undefined;
+    }
+
+    const resultPromise = new Promise<string[]>((resolve, reject) => {
+      this.convertResolver_ = resolve;
+      this.convertRejector_ = reject;
+    });
+    this.sandbox_!.contentWindow!.postMessage(
+        {type: 'convert', reading, maxCandidates}, '*');
+    return resultPromise;
+  }
+
   private async translate_(text: string): Promise<
       {value: string, textToBraille: number[], brailleToText: number[]}> {
     if (!this.sandbox_) {
@@ -201,6 +228,25 @@ export class TenjiWorker {
 
       if (resolver) {
         resolver(event.data.error ? null : (event.data.value ?? null));
+      }
+      return;
+    }
+
+    if (event.data.type === 'convert') {
+      const resolver = this.convertResolver_;
+      const rejector = this.convertRejector_;
+      this.convertResolver_ = undefined;
+      this.convertRejector_ = undefined;
+
+      if (event.data.error) {
+        if (rejector) {
+          rejector(event.data.error);
+        }
+        return;
+      }
+
+      if (resolver) {
+        resolver(event.data.candidates ?? []);
       }
     }
   }
