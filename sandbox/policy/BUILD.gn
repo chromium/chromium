@@ -101,9 +101,7 @@ component("policy") {
         "linux/bpf_hardware_video_decoding_policy_linux.h",
       ]
     }
-    if (is_linux) {
-      deps += [ "//net" ]  # TODO(crbug.com/40220507): remove this.
-    }
+
     configs += [
       "//media:media_config",
       "//media/audio:platform_config",

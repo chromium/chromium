@@ -32,10 +32,6 @@
 #include "sandbox/policy/linux/bpf_base_policy_linux.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 
-#if BUILDFLAG(IS_LINUX)
-#include "net/base/features.h"  // nogncheck
-#endif
-
 using sandbox::bpf_dsl::Allow;
 using sandbox::bpf_dsl::Arg;
 using sandbox::bpf_dsl::BoolExpr;
@@ -183,19 +179,13 @@ ResultExpr RestrictSocketForNetworkService() {
   // changes (which is important for e.g. reestablishing connections when an IP
   // address changes). AddressTrackerLinux may run in the network service on
   // some systems.
-  bool use_netlink_in_network_service;
 #if BUILDFLAG(IS_LINUX)
-  // AddressTrackerLinux is brokered on Linux (depending on the feature flag),
-  // but not ChromeOS.
-  // TODO(crbug.com/40220507): once the kill-switch is removed, this check
-  // should be removed along with the DEPS and BUILD.gn modifications to allow
-  // depending on net/base/features.h.
-  use_netlink_in_network_service = !base::FeatureList::IsEnabled(
-      net::features::kAddressTrackerLinuxIsProxied);
+  // AddressTrackerLinux is brokered on Linux.
+  bool use_netlink_in_network_service = false;
 #else   // !BUILDFLAG(IS_LINUX)
   // TODO(crbug.com/40220507): remove the netlink allowance when
   // AddressTrackerLinux no longer runs in the network service on ChromeOS.
-  use_netlink_in_network_service = true;
+  bool use_netlink_in_network_service = true;
 #endif  // !BUILDFLAG(IS_LINUX)
   ResultExpr netlink_type_switch;
   if (use_netlink_in_network_service) {

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/base/address_map_linux.h"
+
 #include <linux/if.h>
 #include <linux/if_addr.h>
 #include <linux/netlink.h>
@@ -17,7 +19,6 @@
 #include "base/run_loop.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/test/scoped_feature_list.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/common/content_features.h"
@@ -26,9 +27,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
-#include "net/base/address_map_linux.h"
 #include "net/base/address_tracker_linux_test_util.h"
-#include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_change_notifier_factory.h"
 #include "net/base/network_change_notifier_linux.h"
@@ -206,8 +205,6 @@ class AddressMapLinuxBrowserTest : public ContentBrowserTest {
   };
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        net::features::kAddressTrackerLinuxIsProxied);
     ForceOutOfProcessNetworkService();
     ncn_mocked_factory_ =
         std::make_unique<NetworkChangeNotifierLinuxMockedNetlinkFactory>();
@@ -324,7 +321,6 @@ class AddressMapLinuxBrowserTest : public ContentBrowserTest {
     ExpectedConnectionType expected_connection_type_;
   };
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<NetworkChangeNotificationListener> notification_listener_;
 };
 }  // namespace

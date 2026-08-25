@@ -405,11 +405,8 @@ NetworkService::NetworkService(
   if (registry_) {
     mojo::SetDefaultProcessErrorHandler(base::BindRepeating(&HandleBadMessage));
 #if BUILDFLAG(IS_LINUX)
-    if (base::FeatureList::IsEnabled(
-            net::features::kAddressTrackerLinuxIsProxied)) {
-      net::NetworkChangeNotifier::SetFactory(
-          new network::NetworkChangeNotifierPassiveFactory());
-    }
+    net::NetworkChangeNotifier::SetFactory(
+        new network::NetworkChangeNotifierPassiveFactory());
 #endif
   }
 
@@ -460,8 +457,6 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
     // The NetworkChangeNotifierPassive should only be included if it's
     // necessary to instantiate an AddressMapCacheLinux rather than an
     // AddressTrackerLinux.
-    DCHECK(base::FeatureList::IsEnabled(
-        net::features::kAddressTrackerLinuxIsProxied));
     // There should be a factory that creates NetworkChangeNotifierPassives.
     DCHECK(net::NetworkChangeNotifier::GetFactory());
     // Network service should be out of process or it's unsandboxed and can just

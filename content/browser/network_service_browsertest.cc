@@ -424,17 +424,8 @@ class NetworkServiceConnectionTypeSyncedBrowserTest
     : public NetworkServiceBrowserTest {
  public:
   NetworkServiceConnectionTypeSyncedBrowserTest() {
-#if BUILDFLAG(IS_LINUX)
-    scoped_feature_list_.InitAndEnableFeature(
-        net::features::kAddressTrackerLinuxIsProxied);
-#else
-    scoped_feature_list_.Init();
-#endif
     ForceOutOfProcessNetworkService();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(NetworkServiceConnectionTypeSyncedBrowserTest,

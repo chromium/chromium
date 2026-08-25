@@ -180,11 +180,6 @@ class NetworkServiceBoostIOThreadTest : public testing::Test {
     std::vector<base::test::FeatureRef> disabled_features;
     (enable_feature ? enabled_features : disabled_features)
         .push_back(webrtc::features::kWebRTCBoostMediaIOThreads);
-#if BUILDFLAG(IS_LINUX)
-    // Constructing a NetworkService with a registry would otherwise install a
-    // NetworkChangeNotifier factory, which is only allowed once per process.
-    disabled_features.push_back(net::features::kAddressTrackerLinuxIsProxied);
-#endif
     // The feature list must be initialized before TaskEnvironment starts
     // ThreadPool threads that may query it.
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);

@@ -1,8 +1,7 @@
 include_rules = [
   "+media/gpu/buildflags.h",
   "+media/media_buildflags.h",
-  # TODO(crbug.com/40220507): remove this.
-  "+net/base/features.h",
+
   "+printing/buildflags",
   "+sandbox/constants.h",
   "+sandbox",

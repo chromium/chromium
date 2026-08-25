@@ -390,9 +390,7 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
       GetContentClient()->browser()->IsFirstPartySetsEnabled();
 
 #if BUILDFLAG(IS_LINUX)
-  if (base::FeatureList::IsEnabled(
-          net::features::kAddressTrackerLinuxIsProxied) &&
-      IsOutOfProcessNetworkService()) {
+  if (IsOutOfProcessNetworkService()) {
     auto [address_map, online_links] =
         net::NetworkChangeNotifier::GetAddressMapOwner()
             ->GetAddressTrackerLinux()
