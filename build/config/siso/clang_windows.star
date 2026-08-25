@@ -109,7 +109,7 @@ def __step_config(ctx, step_config):
                 "name": "clang-cl/cxx_module",
                 "handler": "clang_compile",
                 "action": "(.*_)?cxx_module",
-                "command_prefix": "..\\third_party\\llvm-build\\Release+Asserts\\bin\\clang-cl.exe",
+                "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\clang-cl.exe",
                 "inputs": rewrapper_config_inputs + [
                     "third_party/llvm-build/Release+Asserts/bin/clang-cl.exe",
                 ],

@@ -52,9 +52,10 @@ def _relpath(path, start) -> str:
     the absolute path, which is still valid in a modulemap.
     """
     try:
-        return os.path.relpath(path, start)
+        res = os.path.relpath(path, start)
     except ValueError:
-        return os.path.abspath(path)
+        res = os.path.abspath(path)
+    return res.replace('\\', '/')
 
 
 def _format_clang_args(args, os):
@@ -506,7 +507,9 @@ def combine_modulemaps(
             def rebase_path(p: str) -> str:
                 if p == '__assertion_handler':
                     return f'{custom_header_prefix}/__assertion_handler'
-                return os.path.normpath(os.path.join(prefix, p))
+                return os.path.normpath(os.path.join(prefix, p)).replace(
+                    '\\', '/'
+                )
 
             mm_content = _SIMPLE_HEADER_RE.sub(
                 lambda m: f'{m.group(1)}{rebase_path(m.group(2))}{m.group(3)}',
@@ -549,7 +552,7 @@ def combine_modulemaps(
                 modules[header.path.name] = 1
                 module_name = f'"{header.path.name}"'
             s.write(f'module {module_name} {{\n')
-            s.write(f'  {private}{textual}header "{header.path}"\n')
+            s.write(f'  {private}{textual}header "{header.path.as_posix()}"\n')
             for exp in header.exports:
                 s.write(f'  export {exp}\n')
             s.write('}\n')
@@ -558,7 +561,9 @@ def combine_modulemaps(
             prefix = _relpath(source_modulemap.parent, out.parent)
 
             def rebase_path(p: str) -> str:
-                return os.path.normpath(os.path.join(prefix, p))
+                return os.path.normpath(os.path.join(prefix, p)).replace(
+                    '\\', '/'
+                )
 
             mm_content = _SIMPLE_HEADER_RE.sub(
                 lambda m: f'{m.group(1)}{rebase_path(m.group(2))}{m.group(3)}',
