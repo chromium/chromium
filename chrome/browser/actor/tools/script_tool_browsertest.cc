@@ -84,6 +84,47 @@ class ActorToolsTestScriptTool : public ActorToolsTest,
     return {std::move(action_result), std::move(response)};
   }
 
+  void RunNavigatingScriptTool(content::RenderFrameHost& rfh,
+                               const std::string& name,
+                               const std::string& input_arguments) {
+    auto action = MakeScriptToolRequest(rfh, name, input_arguments);
+    content::TestNavigationObserver nav_observer(web_contents());
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
+
+    nav_observer.Wait();
+    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+
+    auto response = result.Get();
+    ExpectOkResult(*response[0].result);
+  }
+
+  content::RenderFrameHost& NavigateSubframe(
+      const GURL& main_url,
+      const GURL& subframe_url,
+      std::optional<std::string_view> allow = std::nullopt,
+      std::optional<std::string_view> sandbox = std::nullopt) {
+    CHECK(content::NavigateToURL(web_contents(), main_url));
+    if (sandbox.has_value()) {
+      CHECK(content::ExecJs(
+          web_contents(),
+          content::JsReplace(
+              "document.getElementById('iframe').setAttribute('sandbox', $1);",
+              *sandbox)));
+    }
+    if (allow.has_value()) {
+      CHECK(content::ExecJs(
+          web_contents(),
+          content::JsReplace(
+              "document.getElementById('iframe').setAttribute('allow', $1);",
+              *allow)));
+    }
+    CHECK(content::NavigateIframeToURL(web_contents(), "iframe", subframe_url));
+    content::RenderFrameHost* subframe = ChildFrameAt(main_frame(), 0);
+    CHECK(subframe);
+    return *subframe;
+  }
+
  private:
   base::test::ScopedFeatureList features_;
 };
@@ -832,18 +873,8 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, ToolSelfNavigates) {
       embedded_test_server()->GetURL("/actor/script_tool_self_navigate.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  const std::string input_arguments = R"JSON({"text": "test_input"})JSON";
-  auto action =
-      MakeScriptToolRequest(*main_frame(), "navigate", input_arguments);
-  content::TestNavigationObserver nav_observer(web_contents());
-  ActResultFuture result;
-  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
-
-  nav_observer.Wait();
-  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
-
-  auto response = result.Get();
-  ExpectOkResult(*response[0].result);
+  RunNavigatingScriptTool(*main_frame(), "navigate",
+                          R"JSON({"text": "test_input"})JSON");
 }
 
 IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, ToolNavigatesAsyncTask) {
@@ -851,18 +882,74 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, ToolNavigatesAsyncTask) {
       "/actor/script_tool_self_navigate_delayed.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  const std::string input_arguments = R"JSON({"text": "test_input"})JSON";
-  auto action =
-      MakeScriptToolRequest(*main_frame(), "navigate_delayed", input_arguments);
-  content::TestNavigationObserver nav_observer(web_contents());
-  ActResultFuture result;
-  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
+  RunNavigatingScriptTool(*main_frame(), "navigate_delayed",
+                          R"JSON({"text": "test_input"})JSON");
+}
 
-  nav_observer.Wait();
-  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, SameOriginSubframeInDocument) {
+  content::RenderFrameHost& subframe = NavigateSubframe(
+      embedded_test_server()->GetURL("/actor/simple_iframe.html"),
+      embedded_test_server()->GetURL("/actor/script_tool.html"));
+  ASSERT_FALSE(subframe.IsCrossProcessSubframe());
 
-  auto response = result.Get();
-  ExpectOkResult(*response[0].result);
+  const std::string input_arguments =
+      R"JSON({"text": "same_origin_subframe"})JSON";
+  auto action = MakeScriptToolRequest(subframe, "echo", input_arguments);
+  auto [action_result, response] = RunScriptTool(std::move(action));
+  EXPECT_EQ(response->result, "same_origin_subframe");
+}
+
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, SameOriginSubframeNavigates) {
+  content::RenderFrameHost& subframe = NavigateSubframe(
+      embedded_test_server()->GetURL("/actor/simple_iframe.html"),
+      embedded_test_server()->GetURL("/actor/script_tool_self_navigate.html"));
+  ASSERT_FALSE(subframe.IsCrossProcessSubframe());
+
+  RunNavigatingScriptTool(subframe, "navigate",
+                          R"JSON({"text": "test_input"})JSON");
+}
+
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool,
+                       CrossOriginSubframeInDocument) {
+  content::RenderFrameHost& subframe = NavigateSubframe(
+      embedded_https_test_server().GetURL("a.com", "/actor/simple_iframe.html"),
+      embedded_https_test_server().GetURL("b.com", "/actor/script_tool.html"),
+      /*allow=*/"tools");
+  ASSERT_TRUE(subframe.IsCrossProcessSubframe());
+
+  const std::string input_arguments =
+      R"JSON({"text": "cross_origin_subframe"})JSON";
+  auto action = MakeScriptToolRequest(subframe, "echo", input_arguments);
+  auto [action_result, response] = RunScriptTool(std::move(action));
+  EXPECT_EQ(response->result, "cross_origin_subframe");
+}
+
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, CrossOriginSubframeNavigates) {
+  content::RenderFrameHost& subframe = NavigateSubframe(
+      embedded_https_test_server().GetURL("a.com", "/actor/simple_iframe.html"),
+      embedded_https_test_server().GetURL(
+          "b.com", "/actor/script_tool_self_navigate.html"),
+      /*allow=*/"tools");
+  ASSERT_TRUE(subframe.IsCrossProcessSubframe());
+
+  RunNavigatingScriptTool(subframe, "navigate",
+                          R"JSON({"text": "test_input"})JSON");
+}
+
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool,
+                       OpaqueOriginSubframeInDocument) {
+  content::RenderFrameHost& subframe = NavigateSubframe(
+      embedded_test_server()->GetURL("/actor/simple_iframe.html"),
+      embedded_test_server()->GetURL("/actor/script_tool.html"),
+      /*allow=*/"tools",
+      /*sandbox=*/"allow-scripts");
+  EXPECT_TRUE(subframe.GetLastCommittedOrigin().opaque());
+
+  const std::string input_arguments =
+      R"JSON({"text": "opaque_origin_subframe"})JSON";
+  auto action = MakeScriptToolRequest(subframe, "echo", input_arguments);
+  auto [action_result, response] = RunScriptTool(std::move(action));
+  EXPECT_EQ(response->result, "opaque_origin_subframe");
 }
 
 IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, ToolReentrantExecution) {

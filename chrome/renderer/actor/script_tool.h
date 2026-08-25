@@ -35,6 +35,7 @@ class ScriptTool : public ToolBase {
 
   // actor::ToolBase
   ValidationResult Validate() override;
+  bool EnsureTargetInView() override;
   void Execute(ToolFinishedCallback callback) override;
   void Cancel() override;
   std::string DebugString() const override;

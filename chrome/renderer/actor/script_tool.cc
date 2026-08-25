@@ -136,4 +136,8 @@ ValidationResult ScriptTool::Validate() {
   return ValidationResult(MakeOkResult());
 }
 
+bool ScriptTool::EnsureTargetInView() {
+  return false;
+}
+
 }  // namespace actor

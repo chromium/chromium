@@ -20,6 +20,7 @@
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -88,21 +89,16 @@ mojom::ActionResultPtr ScriptToolHost::TimeOfUseValidation(
     return MakeResult(mojom::ActionResultCode::kTabWentAway);
   }
 
-  // Check that the target Document is associated with the target tab. Only
-  // main frames are supported.
-  // TODO(khushalsagar): Add support for subframes.
-  auto primary_document_id = optimization_guide::DocumentIdentifierUserData::
-                                 GetOrCreateForCurrentDocument(
-                                     tab->GetContents()->GetPrimaryMainFrame())
-                                     ->token();
-  if (primary_document_id != target_document_id_) {
+  // Check that the target Document is associated with the target tab.
+  content::RenderFrameHost* target_rfh =
+      optimization_guide::GetRenderFrameForDocumentIdentifier(
+          *tab->GetContents(), target_document_id_.ToString());
+  if (!target_rfh) {
     return MakeResult(mojom::ActionResultCode::kTabWentAway);
   }
 
-  target_frame_tree_node_id_ =
-      tab->GetContents()->GetPrimaryMainFrame()->GetFrameTreeNodeId();
-  target_document_ =
-      tab->GetContents()->GetPrimaryMainFrame()->GetWeakDocumentPtr();
+  target_frame_tree_node_id_ = target_rfh->GetFrameTreeNodeId();
+  target_document_ = target_rfh->GetWeakDocumentPtr();
   return MakeOkResult();
 }
 
