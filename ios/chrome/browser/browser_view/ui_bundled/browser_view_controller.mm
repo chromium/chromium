@@ -1757,9 +1757,12 @@ bool IsFullscreenNextIAEnabled() {
 // Updates the constraints for the NTP view.
 - (void)updateNTPConstraints {
   CHECK(IsFullscreenRefactoringEnabled());
+  UIViewController* NTPViewController = self.ntpCoordinator.viewController;
+  if (!NTPViewController.isViewLoaded || !NTPViewController.view.superview) {
+    return;
+  }
   [NSLayoutConstraint deactivateConstraints:_NTPConstraints];
   DCHECK(self.ntpCoordinator.isNTPActiveForCurrentWebState);
-  UIViewController* NTPViewController = self.ntpCoordinator.viewController;
 
   BOOL canShowTabStrip = CanShowTabStrip(self);
   BOOL isSplitToolbarMode = IsSplitToolbarMode(self);
