@@ -183,8 +183,8 @@ void RegisterInfoBars() {
   }
 }
 
+void RegisterPreProfileInitInfoBars() {
 #if BUILDFLAG(CHROME_FOR_TESTING)
-void RegisterChromeForTestingInfoBar() {
   if (IsInfoBarMigrated(InfoBarDelegate::CHROME_FOR_TESTING_INFOBAR_DELEGATE)) {
     auto* browser_infobar_manager =
         BrowserInfoBarManager::From(g_browser_process);
@@ -204,7 +204,7 @@ void RegisterChromeForTestingInfoBar() {
             .Build();
     browser_infobar_manager->Register(std::move(spec));
   }
-}
 #endif
+}
 
 }  // namespace infobars

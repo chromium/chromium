@@ -116,9 +116,7 @@ void ChromeBrowserMainExtraPartsViews::PreCreateThreads() {
 }
 
 void ChromeBrowserMainExtraPartsViews::PreProfileInit() {
-#if BUILDFLAG(CHROME_FOR_TESTING)
-  infobars::RegisterChromeForTestingInfoBar();
-#endif
+  infobars::RegisterPreProfileInitInfoBars();
   if (ui_devtools::UiDevToolsServer::IsUiDevToolsEnabled(
           ui_devtools::switches::kEnableUiDevTools)) {
     base::FilePath output_dir;
