@@ -35,6 +35,10 @@ class XRGPUTextureArraySwapChain final : public XRGPUSwapChain {
 
   void SetLayer(XRCompositionLayer* layer) override;
 
+  gpu::SyncToken GetSyncToken() const override {
+    return wrapped_swap_chain_->GetSyncToken();
+  }
+
   void Trace(Visitor* visitor) const override;
 
  private:
