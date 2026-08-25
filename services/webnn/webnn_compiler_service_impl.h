@@ -38,7 +38,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNCompilerServiceImpl
       mojom::CreateContextOptionsPtr context_options,
       const ContextProperties& context_properties,
       mojo::PendingRemote<mojom::WebNNModelLoader> model_loader,
-      mojo::PendingReceiver<mojom::WebNNCompilerContext> receiver) override;
+      mojo::PendingReceiver<mojom::WebNNCompilerContext> receiver,
+      CreateCompilerContextCallback callback) override;
 
   // Called when any compiler context in `compiler_contexts_` disconnects.
   void OnCompilerContextDisconnected();

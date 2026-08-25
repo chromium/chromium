@@ -29,5 +29,6 @@ interface WebNNCompilerService {
   CreateCompilerContext(CreateContextOptions context_options,
                         ContextProperties context_properties,
                         pending_remote<WebNNModelLoader> model_loader,
-                        pending_receiver<WebNNCompilerContext> receiver);
+                        pending_receiver<WebNNCompilerContext> receiver)
+      => (bool success);
 };

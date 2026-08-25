@@ -852,8 +852,9 @@ void GpuHostImpl::Delegate::RequestWebNNCompilerContext(
     const webnn::EpDeviceInfo& target_device,
     mojo::PendingReceiver<webnn::mojom::WebNNCompilerContext>
         compiler_context_receiver,
-    mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote) {
-  // Default: drop the endpoints (pipe disconnects).
+    mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote,
+    RequestWebNNCompilerContextResultCallback callback) {
+  std::move(callback).Run(false);
 }
 
 void GpuHostImpl::RequestWebNNCompilerContext(
@@ -862,10 +863,12 @@ void GpuHostImpl::RequestWebNNCompilerContext(
     const webnn::EpDeviceInfo& target_device,
     mojo::PendingReceiver<webnn::mojom::WebNNCompilerContext>
         compiler_context_receiver,
-    mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote) {
+    mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote,
+    RequestWebNNCompilerContextCallback callback) {
   delegate_->RequestWebNNCompilerContext(
       std::move(context_options), context_properties, target_device,
-      std::move(compiler_context_receiver), std::move(model_loader_remote));
+      std::move(compiler_context_receiver), std::move(model_loader_remote),
+      std::move(callback));
 }
 #endif  // BUILDFLAG(IS_WIN)
 

@@ -20,6 +20,7 @@ namespace webnn::ort {
 std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter>
 DispatchContextImplOrt::Create(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
+    mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver,
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
     mojom::CreateContextOptionsPtr options,
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
@@ -30,33 +31,31 @@ DispatchContextImplOrt::Create(
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
     gpu::SharedImageManager* shared_image_manager,
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-    ScopedTrace scoped_trace,
     EpDeviceInfo target_device) {
   DCHECK(owning_task_runner->RunsTasksInCurrentSequence());
 
   // Create the session options on the target EP device.
   auto session_options = ort::SessionOptions::Create(target_device, env);
 
-  auto task_runner = owning_task_runner;
   OrtHardwareDeviceType device_type = WebnnToOrtDeviceType(options->device);
   const EpWorkarounds ep_workarounds = env->GetEpWorkarounds(device_type);
 
-  std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> context_impl(
-      new DispatchContextImplOrt(
-          std::move(receiver), std::move(context_provider),
-          std::move(ep_workarounds),
-          std::move(options), std::move(session_options),
-          std::move(write_tensor_consumer), std::move(read_tensor_producer),
-          std::move(env), std::move(gpu_task_scheduler),
-          std::move(memory_tracker), std::move(owning_task_runner),
-          shared_image_manager, std::move(main_task_runner),
-          std::move(target_device)),
-      OnTaskRunnerDeleter(std::move(task_runner)));
-  return context_impl;
+  auto* dispatch_context = new DispatchContextImplOrt(
+      std::move(receiver), std::move(model_loader_receiver),
+      std::move(context_provider), std::move(ep_workarounds),
+      std::move(options), std::move(session_options),
+      std::move(write_tensor_consumer), std::move(read_tensor_producer),
+      std::move(env), std::move(gpu_task_scheduler), std::move(memory_tracker),
+      owning_task_runner, shared_image_manager, std::move(main_task_runner),
+      std::move(target_device));
+
+  return std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter>(
+      dispatch_context, OnTaskRunnerDeleter(std::move(owning_task_runner)));
 }
 
 DispatchContextImplOrt::DispatchContextImplOrt(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
+    mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver,
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
     const EpWorkarounds& ep_workarounds,
     mojom::CreateContextOptionsPtr options,
@@ -83,23 +82,11 @@ DispatchContextImplOrt::DispatchContextImplOrt(
                      std::move(owning_task_runner),
                      shared_image_manager,
                      std::move(main_task_runner)),
-      target_device_(std::move(target_device)) {}
+      target_device_(std::move(target_device)) {
+  model_loader_receiver_.Bind(std::move(model_loader_receiver));
+}
 
 DispatchContextImplOrt::~DispatchContextImplOrt() = default;
-
-base::WeakPtr<WebNNContextImpl> DispatchContextImplOrt::AsWeakPtr() {
-  return weak_factory_.GetWeakPtr();
-}
-
-base::WeakPtr<DispatchContextImplOrt> DispatchContextImplOrt::GetWeakPtr() {
-  return weak_factory_.GetWeakPtr();
-}
-
-void DispatchContextImplOrt::BindModelLoader(
-    mojo::PendingReceiver<mojom::WebNNModelLoader> receiver) {
-  model_loader_receiver_.reset();
-  model_loader_receiver_.Bind(std::move(receiver));
-}
 
 void DispatchContextImplOrt::CreateGraphBuilder(
     mojo::PendingReceiver<mojom::WebNNGraphBuilder> /*receiver*/) {

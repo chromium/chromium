@@ -119,16 +119,16 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
     virtual void TerminateGpuProcess(const std::string& message) = 0;
 #endif
 #if BUILDFLAG(IS_WIN)
-    // Requests the Browser to create a CompilerContext in the Compiler
-    // process, launching it first if needed.
+    using RequestWebNNCompilerContextResultCallback =
+        base::OnceCallback<void(bool success)>;
     virtual void RequestWebNNCompilerContext(
         webnn::mojom::CreateContextOptionsPtr context_options,
         const webnn::ContextProperties& context_properties,
         const webnn::EpDeviceInfo& target_device,
         mojo::PendingReceiver<webnn::mojom::WebNNCompilerContext>
             compiler_context_receiver,
-        mojo::PendingRemote<webnn::mojom::WebNNModelLoader>
-            model_loader_remote);
+        mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote,
+        RequestWebNNCompilerContextResultCallback callback);
 #endif
 
    protected:
@@ -320,8 +320,8 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
       const webnn::EpDeviceInfo& target_device,
       mojo::PendingReceiver<webnn::mojom::WebNNCompilerContext>
           compiler_context_receiver,
-      mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote)
-      override;
+      mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote,
+      RequestWebNNCompilerContextCallback callback) override;
 #endif
   void CreateWebNNWeightsFile(CreateWebNNWeightsFileCallback cb) override;
 

@@ -66,8 +66,8 @@ class FakeGpuHostForTesting : public viz::mojom::GpuHost {
       const webnn::EpDeviceInfo& target_device,
       mojo::PendingReceiver<webnn::mojom::WebNNCompilerContext>
           compiler_context_receiver,
-      mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote)
-      override;
+      mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote,
+      RequestWebNNCompilerContextCallback callback) override;
 #endif
   void CreateWebNNWeightsFile(CreateWebNNWeightsFileCallback callback) override;
 

@@ -21,6 +21,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_host_passkeys.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "sandbox/policy/switches.h"
 #include "services/webnn/host/execution_provider_initializer.h"
 #include "services/webnn/public/cpp/compiler_disconnect_reason.h"
@@ -148,8 +149,12 @@ void WebNNCompilerProcessHost::RequestCompilerContext(
     const webnn::EpDeviceInfo& target_device,
     mojo::PendingReceiver<webnn::mojom::WebNNCompilerContext>
         compiler_context_receiver,
-    mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote) {
+    mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote,
+    RequestCompilerContextResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), /*success=*/false);
 
   auto it = GetWebNNCompilerCrashCounts().find(target_device);
   const int crash_count =
@@ -159,7 +164,6 @@ void WebNNCompilerProcessHost::RequestCompilerContext(
           webnn::mojom::features::kWebNNCompilerProcess) ||
       !base::FeatureList::IsEnabled(
           webnn::mojom::features::kWebNNOnnxRuntime)) {
-    // Drop the pipe endpoints — peer endpoints will observe a disconnect.
     LOG(ERROR) << "[WebNN] RequestCompilerContext() failed: "
                   "WebNN Compiler process is disabled or has crashed too many "
                   "times for ["
@@ -173,7 +177,8 @@ void WebNNCompilerProcessHost::RequestCompilerContext(
   if (compiler_remote.is_bound()) {
     compiler_remote->CreateCompilerContext(
         std::move(context_options), context_properties,
-        std::move(model_loader_remote), std::move(compiler_context_receiver));
+        std::move(model_loader_remote), std::move(compiler_context_receiver),
+        std::move(wrapped_callback));
     return;
   }
 
@@ -184,7 +189,7 @@ void WebNNCompilerProcessHost::RequestCompilerContext(
       &WebNNCompilerProcessHost::OnEpsResolvedForCompilerContext,
       weak_ptr_factory_.GetWeakPtr(), std::move(context_options),
       context_properties, target_device, std::move(compiler_context_receiver),
-      std::move(model_loader_remote)));
+      std::move(model_loader_remote), std::move(wrapped_callback)));
 }
 
 void WebNNCompilerProcessHost::OnEpsResolvedForCompilerContext(
@@ -194,13 +199,13 @@ void WebNNCompilerProcessHost::OnEpsResolvedForCompilerContext(
     mojo::PendingReceiver<webnn::mojom::WebNNCompilerContext>
         compiler_context_receiver,
     mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote,
+    RequestCompilerContextResultCallback callback,
     base::flat_map<std::string, webnn::mojom::EpPackageInfoPtr>
         ep_package_info_map) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   const auto ep_it = ep_package_info_map.find(target_device.ep_name);
   if (ep_it == ep_package_info_map.end()) {
-    // Drop the pipe endpoints — peer endpoints will observe a disconnect.
     LOG(ERROR) << "[WebNN] RequestCompilerContext() failed: "
                   "EP package info not found for ["
                << target_device.ToSwitchValue() << "].";
@@ -213,8 +218,6 @@ void WebNNCompilerProcessHost::OnEpsResolvedForCompilerContext(
     compiler_remote =
         LaunchCompilerProcess(ep_library_path, target_device,
                               ServiceProcessHostPreloadLibraries::GetPassKey());
-    // Compiler process could not be launched — peer endpoints will observe a
-    // disconnect.
     if (!compiler_remote.is_bound()) {
       LOG(ERROR) << "[WebNN] RequestCompilerContext() failed: "
                     "WebNN Compiler process could not be launched for ["
@@ -232,7 +235,8 @@ void WebNNCompilerProcessHost::OnEpsResolvedForCompilerContext(
   // Compiler process, completing the pipe connections.
   compiler_remote->CreateCompilerContext(
       std::move(context_options), context_properties,
-      std::move(model_loader_remote), std::move(compiler_context_receiver));
+      std::move(model_loader_remote), std::move(compiler_context_receiver),
+      std::move(callback));
 }
 
 void WebNNCompilerProcessHost::OnDisconnected(

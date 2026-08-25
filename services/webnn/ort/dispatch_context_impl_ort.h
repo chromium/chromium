@@ -29,6 +29,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) DispatchContextImplOrt final
   // DispatchContextImplOrt.
   static std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> Create(
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
+      mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver,
       base::WeakPtr<WebNNContextProviderImpl> context_provider,
       mojom::CreateContextOptionsPtr options,
       mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
@@ -39,11 +40,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) DispatchContextImplOrt final
       scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
       gpu::SharedImageManager* shared_image_manager,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-      ScopedTrace scoped_trace,
       EpDeviceInfo target_device);
 
   DispatchContextImplOrt(
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
+      mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver,
       base::WeakPtr<WebNNContextProviderImpl> context_provider,
       const EpWorkarounds& ep_workarounds,
       mojom::CreateContextOptionsPtr options,
@@ -61,17 +62,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) DispatchContextImplOrt final
   DispatchContextImplOrt(const DispatchContextImplOrt&) = delete;
   DispatchContextImplOrt& operator=(const DispatchContextImplOrt&) = delete;
 
-  // Binds the model loader receiver, typically called after Browser wires
-  // the Compiler process pipes. The model loader receiver is the GPU end
-  // of the Compiler→GPU reverse channel.
-  void BindModelLoader(mojo::PendingReceiver<mojom::WebNNModelLoader> receiver);
-
   const EpDeviceInfo& target_device() const { return target_device_; }
-
-  base::WeakPtr<DispatchContextImplOrt> GetWeakPtr();
-
-  // WebNNContextImpl:
-  base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
 
   // mojom::WebNNContext:
   void CreateGraphBuilder(
@@ -91,9 +82,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) DispatchContextImplOrt final
   // the same EP device.
   EpDeviceInfo target_device_;
 
+  // Receiver end of the Compiler->GPU channel.
   mojo::Receiver<mojom::WebNNModelLoader> model_loader_receiver_{this};
-
-  base::WeakPtrFactory<DispatchContextImplOrt> weak_factory_{this};
 };
 
 }  // namespace webnn::ort

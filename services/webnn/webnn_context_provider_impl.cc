@@ -42,6 +42,7 @@
 #include "services/webnn/ort/environment.h"           // nogncheck
 #include "services/webnn/ort/ort_data_type.h"         // nogncheck
 #include "services/webnn/ort/ort_session_options.h"   // nogncheck
+#include "services/webnn/public/cpp/execution_providers_info.h"
 #include "services/webnn/public/cpp/win_app_runtime_package_info.h"
 #include "services/webnn/webnn_switches.h"
 #endif
@@ -165,30 +166,6 @@ void AsanUnsafeFeatureWarning(const char* reason,
   asan_service->Log("\nUnsafe feature: WebMachineLearningNeuralNetwork");
 }
 #endif
-
-#if BUILDFLAG(IS_WIN)
-// Posts BindModelLoader to the context's owning thread, guarded by a weak
-// pointer check to avoid use-after-free. Only called when
-// kWebNNCompilerProcess is enabled, so the context is always a
-// DispatchContextImplOrt.
-void PostBindModelLoaderOnOwningThread(
-    const scoped_refptr<base::SequencedTaskRunner>& owning_task_runner,
-    base::WeakPtr<ort::DispatchContextImplOrt> context_weak_ptr,
-    mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver) {
-  CHECK(model_loader_receiver.is_valid());
-  owning_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::WeakPtr<ort::DispatchContextImplOrt> weak_context,
-             mojo::PendingReceiver<mojom::WebNNModelLoader> receiver) {
-            if (!weak_context) {
-              return;
-            }
-            weak_context->BindModelLoader(std::move(receiver));
-          },
-          std::move(context_weak_ptr), std::move(model_loader_receiver)));
-}
-#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -484,16 +461,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 
   pending_sequences_.insert(sequence_id);
 
-  WebNNContextImplPtr context_impl(nullptr,
-                                   OnTaskRunnerDeleter(owning_task_runner));
-
   RecordDeviceType(options->device);
-
-#if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
-  // Cache this before any backend (e.g. CoreML) moves `options` and
-  // `context_impl` is still nullptr.
-  const bool should_use_in_process_tflite = ShouldUseInProcessTflite(*options);
-#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 
 #if BUILDFLAG(IS_WIN)
   if (ort::ShouldTryCreateOrtContext()) {
@@ -528,7 +496,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
     if (__builtin_available(macOS 14.4, *)) {
       mojo::PendingRemote<mojom::WebNNContext> remote;
       auto receiver = remote.InitWithNewPipeAndPassReceiver();
-      context_impl = coreml::ContextImplCoreml::Create(
+      WebNNContextImplPtr context_impl = coreml::ContextImplCoreml::Create(
           std::move(receiver), AsWeakPtr(), std::move(options),
           std::move(gpu_task_scheduler), memory_tracker, owning_task_runner,
           shared_image_manager_, main_thread_task_runner_);
@@ -543,37 +511,10 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   }
 #endif  // BUILDFLAG(IS_APPLE)
 
-#if BUILDFLAG(WEBNN_USE_LITERT)
-  // Attempt to create a LiteRT GPU context (`ContextImplLiteRt`) in the GPU
-  // process using the WebGPU accelerator preloaded prior to sandbox lockdown
-  // (`PreSandboxWebNNInitialization()`). If context creation fails or is not
-  // supported, returning `kNotSupportedError` from `OnCreateWebNNContextImpl`
-  // lets the renderer's `ML::createContext` fallback path create the in-process
-  // LiteRT context instead.
-  if (!context_impl && !should_use_in_process_tflite) {
-    CreateLiteRtContext(std::move(scoped_trace), std::move(options),
-                        std::move(gpu_task_scheduler),
-                        std::move(owning_task_runner), std::move(callback),
-                        params.is_incognito, memory_tracker);
-    return;
-  }
-#endif  // BUILDFLAG(WEBNN_USE_LITERT)
-
-
-#if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
-  // No GPU-process backend was selected and the request should be served by
-  // the renderer-process in-process TFLite backend.
-  if (!context_impl && should_use_in_process_tflite) {
-    FallbackInProcessTFLite(std::move(callback));
-    return;
-  }
-#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
-
-  OnCreateWebNNContextImpl(std::move(callback),
-                           mojo::PendingRemote<mojom::WebNNContext>(),
-                           mojo::ScopedDataPipeProducerHandle(),
-                           mojo::ScopedDataPipeConsumerHandle(), sequence_id,
-                           command_buffer_id, std::move(context_impl));
+  FallbackToTFLite(std::move(scoped_trace), std::move(options),
+                   std::move(gpu_task_scheduler), std::move(owning_task_runner),
+                   std::move(callback), params.is_incognito,
+                   std::move(memory_tracker), sequence_id, command_buffer_id);
 }
 
 void WebNNContextProviderImpl::OnCreateWebNNContextImpl(
@@ -618,89 +559,51 @@ void WebNNContextProviderImpl::OnCreateWebNNContextImpl(
       mojom::CreateContextResult::NewSuccess(std::move(success)));
 }
 
+void WebNNContextProviderImpl::FallbackToTFLite(
+    ScopedTrace scoped_trace,
+    mojom::CreateContextOptionsPtr options,
+    std::unique_ptr<GpuTaskScheduler> gpu_task_scheduler,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    CreateWebNNContextCallback callback,
+    bool is_incognito,
+    scoped_refptr<gpu::MemoryTracker> memory_tracker,
+    gpu::SequenceId sequence_id,
+    gpu::CommandBufferId command_buffer_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
+#if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
+  // Ask the renderer to create an in-process context.
+  if (ShouldUseInProcessTflite(*options)) {
+    FallbackInProcessTFLite(std::move(callback));
+    return;
+  }
+#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
+
+#if BUILDFLAG(WEBNN_USE_LITERT)
+  // Attempt to create a LiteRT GPU context (`ContextImplLiteRt`) in the GPU
+  // process using the WebGPU accelerator preloaded prior to sandbox lockdown
+  // (`PreSandboxWebNNInitialization()`). If context creation fails or is not
+  // supported, returning `kNotSupportedError` from `OnCreateWebNNContextImpl`
+  // lets the renderer's `ML::createContext` fallback path create the in-process
+  // LiteRT context instead.
+  CreateLiteRtContext(std::move(scoped_trace), std::move(options),
+                      std::move(gpu_task_scheduler), std::move(task_runner),
+                      std::move(callback), is_incognito,
+                      std::move(memory_tracker));
+#else
+  WebNNContextImplPtr context_impl(nullptr, OnTaskRunnerDeleter(task_runner));
+  OnCreateWebNNContextImpl(std::move(callback),
+                           mojo::PendingRemote<mojom::WebNNContext>(),
+                           mojo::ScopedDataPipeProducerHandle(),
+                           mojo::ScopedDataPipeConsumerHandle(), sequence_id,
+                           command_buffer_id, std::move(context_impl));
+#endif  // BUILDFLAG(WEBNN_USE_LITERT)
+}
+
 void WebNNContextProviderImpl::CreateWeightsFile(
     viz::mojom::GpuHost::CreateWebNNWeightsFileCallback callback) {
   gpu_host_->CreateWebNNWeightsFile(std::move(callback));
 }
-
-#if BUILDFLAG(IS_WIN)
-void WebNNContextProviderImpl::OnDispatchContextCreated(
-    CreateWebNNContextCallback callback,
-    mojo::PendingRemote<mojom::WebNNContext> remote,
-    mojo::ScopedDataPipeProducerHandle write_tensor_producer,
-    mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
-    gpu::SequenceId sequence_id,
-    WebNNContextImplPtr context_impl) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  pending_sequences_.erase(sequence_id);
-  CHECK(context_impl);
-
-  auto* dispatch_context =
-      static_cast<ort::DispatchContextImplOrt*>(context_impl.get());
-  auto options_clone = dispatch_context->options().Clone();
-  ContextProperties context_properties = context_impl->properties();
-  blink::WebNNContextToken context_handle = context_impl->handle();
-  gpu::CommandBufferId command_buffer_id =
-      context_impl->gpu_task_scheduler()->command_buffer_id();
-  auto context_weak_ptr = dispatch_context->GetWeakPtr();
-  scoped_refptr<base::SequencedTaskRunner> owning_task_runner(
-      dispatch_context->owning_task_runner());
-  const EpDeviceInfo& target_device = dispatch_context->target_device();
-
-  sequences_.emplace(context_handle, sequence_id);
-  context_impls_.emplace(std::move(context_impl));
-
-  UpdateWebNNServiceIntrospection();
-
-  // Create CompilerContext pipe: Renderer gets the remote, Compiler
-  // process gets the receiver.
-  mojo::PendingRemote<mojom::WebNNCompilerContext> compiler_context_remote;
-  auto compiler_context_receiver =
-      compiler_context_remote.InitWithNewPipeAndPassReceiver();
-
-  // Create ModelLoader pair: Compiler gets the remote (to send compiled
-  // models), GPU dispatch context gets the receiver (to load them).
-  mojo::PendingRemote<mojom::WebNNModelLoader> model_loader_remote;
-  auto model_loader_receiver =
-      model_loader_remote.InitWithNewPipeAndPassReceiver();
-
-  // Bind the ModelLoader receiver on the dispatch context's owning thread.
-  PostBindModelLoaderOnOwningThread(owning_task_runner,
-                                    std::move(context_weak_ptr),
-                                    std::move(model_loader_receiver));
-
-  // Request a CompilerContext from the Browser. The Browser will launch the
-  // Compiler process if needed. Fire-and-forget: if it fails, the Renderer
-  // observes the CompilerContext pipe disconnect.
-  gpu_host_->RequestWebNNCompilerContext(
-      std::move(options_clone), context_properties, target_device,
-      std::move(compiler_context_receiver), std::move(model_loader_remote));
-
-  // Return success to the Renderer immediately with the CompilerContext remote.
-  auto success = mojom::CreateContextSuccess::New(
-      std::move(remote), std::move(compiler_context_remote),
-      std::move(context_properties), std::move(context_handle),
-      std::move(write_tensor_producer), std::move(read_tensor_consumer),
-      command_buffer_id.GetUnsafeValue());
-  std::move(callback).Run(
-      mojom::CreateContextResult::NewSuccess(std::move(success)));
-}
-
-void WebNNContextProviderImpl::ReconnectCompilerContext(
-    mojom::CreateContextOptionsPtr options,
-    ContextProperties properties,
-    EpDeviceInfo target_device,
-    mojo::PendingReceiver<mojom::WebNNCompilerContext>
-        compiler_context_receiver,
-    mojo::PendingRemote<mojom::WebNNModelLoader> model_loader_remote) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-
-  gpu_host_->RequestWebNNCompilerContext(
-      std::move(options), properties, std::move(target_device),
-      std::move(compiler_context_receiver), std::move(model_loader_remote));
-}
-#endif  // BUILDFLAG(IS_WIN)
-
 
 #if BUILDFLAG(WEBNN_USE_LITERT)
 void WebNNContextProviderImpl::CreateLiteRtContext(
@@ -754,34 +657,53 @@ void WebNNContextProviderImpl::OnOrtEnvCreated(
   } else {
     auto env = std::move(env_creation_results.value());
     if (base::FeatureList::IsEnabled(mojom::features::kWebNNCompilerProcess)) {
-      // When the Compiler process is enabled, create a dispatch-only context
-      // that delegates graph building/compilation to a per-EP-device Compiler
-      // process. Fall back to another backend if no compatible EP device is
-      // found.
+      // When the Compiler process is enabled, graph compilation is delegated to
+      // a per-EP-device Compiler process and this provider only creates a
+      // dispatch context that runs the compiled graphs. If no compatible EP
+      // device is available, fall back to another backend. Otherwise request a
+      // compiler context first, and create the dispatch context only when the
+      // compiler context is available.
       OrtHardwareDeviceType device_type =
           ort::WebnnToOrtDeviceType(options->device);
       std::optional<EpDeviceInfo> selected_device =
           env->SelectEpDeviceForCompiler(device_type);
       if (selected_device.has_value()) {
-        scoped_trace.AddStep("ort::DispatchContextImplOrt::Create");
-        mojo::PendingRemote<mojom::WebNNContext> remote;
-        auto receiver = remote.InitWithNewPipeAndPassReceiver();
-        TensorDataPipes pipes = CreateTensorDataPipes();
-        task_runner->PostTaskAndReplyWithResult(
-            FROM_HERE,
-            base::BindOnce(&ort::DispatchContextImplOrt::Create,
-                           std::move(receiver), AsWeakPtr(), std::move(options),
-                           std::move(pipes.write_consumer),
-                           std::move(pipes.read_producer), std::move(env),
-                           std::move(gpu_task_scheduler),
-                           std::move(memory_tracker), task_runner,
-                           base::Unretained(shared_image_manager_.get()),
-                           main_thread_task_runner_, std::move(scoped_trace),
-                           std::move(*selected_device)),
-            base::BindOnce(&WebNNContextProviderImpl::OnDispatchContextCreated,
-                           AsWeakPtr(), std::move(callback), std::move(remote),
-                           std::move(pipes.write_producer),
-                           std::move(pipes.read_consumer), sequence_id));
+        scoped_trace.AddStep("RequestWebNNCompilerContext");
+
+        // Compute the context properties so the compiler context can be
+        // requested before the dispatch context is created.
+        const EpWorkarounds ep_workarounds = env->GetEpWorkarounds(device_type);
+        ContextProperties properties =
+            ort::ContextImplOrt::GetContextProperties(
+                ep_workarounds.resample2d_limit_to_nchw);
+
+        // Create the compiler context pipe (renderer->Compiler) and the
+        // model loader pipe (Compiler->GPU).
+        mojo::PendingRemote<mojom::WebNNCompilerContext>
+            compiler_context_remote;
+        auto compiler_context_receiver =
+            compiler_context_remote.InitWithNewPipeAndPassReceiver();
+        mojo::PendingRemote<mojom::WebNNModelLoader> model_loader_remote;
+        auto model_loader_receiver =
+            model_loader_remote.InitWithNewPipeAndPassReceiver();
+
+        // Defer creating the dispatch context (which would consume the GPU
+        // resources) until the compiler context confirms availability. If it is
+        // unavailable, the context can still fall back to another backend using
+        // these resources.
+        auto reply = base::BindOnce(
+            &WebNNContextProviderImpl::OnCompilerContextRequested, AsWeakPtr(),
+            std::move(scoped_trace), options->Clone(),
+            std::move(gpu_task_scheduler), std::move(task_runner),
+            std::move(callback), is_incognito, std::move(memory_tracker),
+            std::move(env), *selected_device,
+            std::move(compiler_context_remote),
+            std::move(model_loader_receiver), sequence_id, command_buffer_id);
+
+        gpu_host_->RequestWebNNCompilerContext(
+            std::move(options), properties, *selected_device,
+            std::move(compiler_context_receiver),
+            std::move(model_loader_remote), std::move(reply));
         return;
       }
     } else {
@@ -820,31 +742,110 @@ void WebNNContextProviderImpl::OnOrtEnvCreated(
     }
   }
 
-#if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
-  // If the request would be served by the renderer-process TFLite/LiteRT
-  // backend, skip the GPU-process fallbacks and instruct the renderer to
-  // create the in-process context instead.
-  if (ShouldUseInProcessTflite(*options)) {
-    FallbackInProcessTFLite(std::move(callback));
+  FallbackToTFLite(std::move(scoped_trace), std::move(options),
+                   std::move(gpu_task_scheduler), std::move(task_runner),
+                   std::move(callback), is_incognito, std::move(memory_tracker),
+                   sequence_id, command_buffer_id);
+}
+
+void WebNNContextProviderImpl::OnCompilerContextRequested(
+    ScopedTrace scoped_trace,
+    mojom::CreateContextOptionsPtr options,
+    std::unique_ptr<GpuTaskScheduler> gpu_task_scheduler,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    CreateWebNNContextCallback callback,
+    bool is_incognito,
+    scoped_refptr<gpu::MemoryTracker> memory_tracker,
+    scoped_refptr<ort::Environment> env,
+    EpDeviceInfo target_device,
+    mojo::PendingRemote<mojom::WebNNCompilerContext> compiler_context_remote,
+    mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver,
+    gpu::SequenceId sequence_id,
+    gpu::CommandBufferId command_buffer_id,
+    bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
+  if (!success) {
+    VLOG(1) << "[WebNN] Compiler context unavailable. Falling back to another "
+               "backend.";
+    FallbackToTFLite(std::move(scoped_trace), std::move(options),
+                     std::move(gpu_task_scheduler), std::move(task_runner),
+                     std::move(callback), is_incognito,
+                     std::move(memory_tracker), sequence_id, command_buffer_id);
     return;
   }
-#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 
-#if BUILDFLAG(WEBNN_USE_LITERT)
-  CreateLiteRtContext(std::move(scoped_trace), std::move(options),
-                      std::move(gpu_task_scheduler), std::move(task_runner),
-                      std::move(callback), is_incognito,
-                      std::move(memory_tracker));
-  return;
-#else
-  WebNNContextImplPtr context_impl(nullptr, OnTaskRunnerDeleter(task_runner));
+  scoped_trace.AddStep("ort::DispatchContextImplOrt::Create");
 
-  OnCreateWebNNContextImpl(std::move(callback),
-                           mojo::PendingRemote<mojom::WebNNContext>(),
-                           mojo::ScopedDataPipeProducerHandle(),
-                           mojo::ScopedDataPipeConsumerHandle(), sequence_id,
-                           command_buffer_id, std::move(context_impl));
-#endif  // BUILDFLAG(WEBNN_USE_LITERT)
+  mojo::PendingRemote<mojom::WebNNContext> remote;
+  auto receiver = remote.InitWithNewPipeAndPassReceiver();
+  TensorDataPipes pipes = CreateTensorDataPipes();
+
+  task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&ort::DispatchContextImplOrt::Create, std::move(receiver),
+                     std::move(model_loader_receiver), AsWeakPtr(),
+                     std::move(options), std::move(pipes.write_consumer),
+                     std::move(pipes.read_producer), std::move(env),
+                     std::move(gpu_task_scheduler), std::move(memory_tracker),
+                     task_runner, base::Unretained(shared_image_manager_.get()),
+                     main_thread_task_runner_, std::move(target_device)),
+      base::BindOnce(&WebNNContextProviderImpl::OnDispatchContextCreated,
+                     AsWeakPtr(), std::move(scoped_trace), std::move(callback),
+                     std::move(remote), std::move(pipes.write_producer),
+                     std::move(pipes.read_consumer), sequence_id,
+                     command_buffer_id, std::move(compiler_context_remote)));
+}
+
+void WebNNContextProviderImpl::OnDispatchContextCreated(
+    ScopedTrace scoped_trace,
+    CreateWebNNContextCallback callback,
+    mojo::PendingRemote<mojom::WebNNContext> remote,
+    mojo::ScopedDataPipeProducerHandle write_tensor_producer,
+    mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
+    gpu::SequenceId sequence_id,
+    gpu::CommandBufferId command_buffer_id,
+    mojo::PendingRemote<mojom::WebNNCompilerContext> compiler_context_remote,
+    WebNNContextImplPtr context_impl) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  scoped_trace.AddStep("OnDispatchContextCreated");
+
+  CHECK(context_impl);
+
+  pending_sequences_.erase(sequence_id);
+  sequences_.emplace(context_impl->handle(), sequence_id);
+
+  auto context_success = mojom::CreateContextSuccess::New(
+      std::move(remote), std::move(compiler_context_remote),
+      context_impl->properties(), context_impl->handle(),
+      std::move(write_tensor_producer), std::move(read_tensor_consumer),
+      command_buffer_id.GetUnsafeValue());
+  context_impls_.emplace(std::move(context_impl));
+
+  UpdateWebNNServiceIntrospection();
+
+  std::move(callback).Run(
+      mojom::CreateContextResult::NewSuccess(std::move(context_success)));
+}
+
+void WebNNContextProviderImpl::ReconnectCompilerContext(
+    mojom::CreateContextOptionsPtr options,
+    ContextProperties properties,
+    EpDeviceInfo target_device,
+    mojo::PendingReceiver<mojom::WebNNCompilerContext>
+        compiler_context_receiver,
+    mojo::PendingRemote<mojom::WebNNModelLoader> model_loader_remote) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
+  // This is a reconnect for an already-created context, so it cannot fall back
+  // to another backend at this point.
+  gpu_host_->RequestWebNNCompilerContext(
+      std::move(options), properties, target_device,
+      std::move(compiler_context_receiver), std::move(model_loader_remote),
+      base::BindOnce([](bool success) {
+        LOG_IF(ERROR, !success)
+            << "[WebNN] Compiler context failed to reconnect.";
+      }));
 }
 
 void WebNNContextProviderImpl::DidEnsureWebNNExecutionProvidersReady(

@@ -102,14 +102,13 @@ interface GpuHost {
   EnsureWebNNExecutionProvidersReady()
       => (map<string, webnn.mojom.EpPackageInfo> ep_package_info);
 
-  // Requests a CompilerContext in the Compiler process for a specific EP
-  // device. Each EP device has its own dedicated Compiler process and the
-  // Browser launches one on first use for that device.
+  // Tells the GPU host to create a compiler context in the Compiler process for
+  // a specific EP device. Each EP device has its own dedicated Compiler
+  // process, launched on first use.
   //
-  // The caller (GPU process) creates both pipes and passes the endpoints
-  // here. The Browser forwards them to the Compiler process. If the Compiler
-  // cannot be launched, the pipes are simply dropped (disconnecting the
-  // peer endpoints).
+  // The GPU process creates both pipes, and the host forwards the endpoints to
+  // the Compiler process. The host returns true if the compiler context was
+  // created successfully, false otherwise.
   [EnableIf=is_win]
   RequestWebNNCompilerContext(
       webnn.mojom.CreateContextOptions context_options,
@@ -117,7 +116,8 @@ interface GpuHost {
       webnn.mojom.EpDeviceInfo target_device,
       pending_receiver<webnn.mojom.WebNNCompilerContext>
           compiler_context_receiver,
-      pending_remote<webnn.mojom.WebNNModelLoader> model_loader_remote);
+      pending_remote<webnn.mojom.WebNNModelLoader> model_loader_remote)
+      => (bool success);
 
   // Tells the GPU host to create a temporary file that can be used to save all
   // weights in the WebNN graph. Returns the open file handle if the file was
