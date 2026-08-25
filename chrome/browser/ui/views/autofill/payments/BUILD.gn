@@ -472,3 +472,96 @@ source_set("save_and_fill_view_desktop") {
     "//content/public/browser",
   ]
 }
+
+source_set("omnibox_autofill_suggestion_view") {
+  public = [ "omnibox_autofill_suggestion_view.h" ]
+  sources = [ "omnibox_autofill_suggestion_view.cc" ]
+  public_deps = [
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+  deps = [
+    ":payments_view_util",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/autofill/popup:popup_row_content_view",
+    "//components/autofill/core/browser",
+    "//components/strings:components_strings",
+    "//components/vector_icons",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+}
+
+source_set("save_card_bubble_views") {
+  public = [ "save_card_bubble_views.h" ]
+  sources = [ "save_card_bubble_views.cc" ]
+  public_deps = [
+    ":dialog_view_ids",
+    "//base",
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/autofill/payments",
+    "//chrome/browser/ui/views/autofill:autofill_location_bar_bubble",
+    "//components/signin/public/base:signin_buildflags",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+  deps = [
+    ":payments_view_util",
+    "//build:buildflag_header_h",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+    "//components/resources:components_scaled_resources",
+    "//ui/base",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set(
+    "save_payment_method_and_virtual_card_enroll_confirmation_bubble_views") {
+  public = [
+    "save_payment_method_and_virtual_card_enroll_confirmation_bubble_views.h",
+  ]
+  sources = [
+    "save_payment_method_and_virtual_card_enroll_confirmation_bubble_views.cc",
+  ]
+  public_deps = [
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/views/autofill:autofill_location_bar_bubble",
+    "//components/autofill/core/browser",
+  ]
+  deps = [
+    ":dialog_view_ids",
+    ":payments_view_util",
+    "//base",
+    "//chrome/browser:resources",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/autofill/core/common",
+    "//ui/base",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/views",
+  ]
+}
+
+source_set("webauthn_dialog_view") {
+  public = [ "webauthn_dialog_view.h" ]
+  sources = [ "webauthn_dialog_view.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/autofill/payments",
+    "//ui/base/metadata",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/views",
+  ]
+  deps = [
+    "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/browser/ui/views/webauthn",
+    "//chrome/browser/ui/webauthn",
+    "//components/constrained_window",
+    "//components/tabs:public",
+    "//components/web_modal",
+    "//content/public/browser",
+  ]
+}

@@ -265,7 +265,10 @@ if (!is_android) {
     ]
 
     if (toolkit_views) {
-      deps += [ "//chrome/browser/ui/views/autofill/payments:virtual_card_enroll_bubble_views" ]
+      deps += [
+        "//chrome/browser/ui/views/autofill/payments:save_payment_method_and_virtual_card_enroll_confirmation_bubble_views",
+        "//chrome/browser/ui/views/autofill/payments:virtual_card_enroll_bubble_views",
+      ]
     }
   }
 }
@@ -400,6 +403,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/views/autofill/payments:payments_window_user_consent_dialog_view",
+      "//chrome/browser/ui/views/autofill/payments:save_card_bubble_views",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//components/autofill/content/browser:test_support",
