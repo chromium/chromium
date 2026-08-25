@@ -1553,8 +1553,7 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
 
   HttpResponseHeaders* headers = GetResponseHeaders();
   std::vector<SourceStreamType> types =
-      FilterSourceStream::GetContentEncodingTypes(
-          request_->accepted_stream_types(), *headers);
+      FilterSourceStream::GetContentEncodingTypes(*headers);
 
   if (request()->client_side_content_decoding_enabled() &&
       !headers->HasHeader("use-as-dictionary")) {
