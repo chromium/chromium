@@ -1,0 +1,3 @@
+Tests that Input.dispatchDragEvent sanitizes URLs (FilterURL) when dropping onto a web page.
+Dropped URI: about:blank#blocked
+
