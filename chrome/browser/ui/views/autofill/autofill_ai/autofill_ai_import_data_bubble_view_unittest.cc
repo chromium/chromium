@@ -10,9 +10,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/autofill_ai/mock_autofill_ai_import_data_controller.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
+#include "chrome/grit/browser_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "chrome/grit/browser_resources.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -20,8 +20,11 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/views/widget/widget_utils.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
+#include "ui/views/widget/widget_utils.h"
 
 // TODO(crbug.com/362227379): Consider having an interactive UI test to evaluate
 // both the controller and the view working together.
@@ -58,9 +61,7 @@ class AutofillAiImportDataBubbleViewTest : public ChromeViewsTestBase {
     return mock_controller_;
   }
 
-  void ResetViewPointer() {
-    view_ = nullptr;
-  }
+  void ResetViewPointer() { view_ = nullptr; }
 
  private:
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
@@ -186,8 +187,7 @@ TEST_F(AutofillAiImportDataBubbleViewTest,
       features::kAutofillAiWalletPassBranding2026);
   EXPECT_CALL(mock_controller(), IsWalletableEntity())
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(mock_controller(), IsSavePrompt())
-      .WillRepeatedly(Return(true));
+  EXPECT_CALL(mock_controller(), IsSavePrompt()).WillRepeatedly(Return(true));
   EXPECT_CALL(mock_controller(), GetSaveUpdateDialogTitleImagesResourceId())
       .WillRepeatedly(Return(IDR_AUTOFILL_SAVE_DRIVERS_LICENSE_LOTTIE));
   EXPECT_CALL(mock_controller(), GetNoticeStringId())
@@ -196,7 +196,14 @@ TEST_F(AutofillAiImportDataBubbleViewTest,
   CreateViewAndShow();
 
   ASSERT_NE(view()->GetBubbleFrameView()->title(), nullptr);
-  EXPECT_EQ(view()->GetBubbleFrameView()->title()->children().size(), 2u);
+  auto* title_view = views::AsViewClass<views::BoxLayoutView>(
+      view()->GetBubbleFrameView()->title());
+  ASSERT_NE(title_view, nullptr);
+  EXPECT_EQ(title_view->children().size(), 2u);
+  EXPECT_EQ(title_view->GetCrossAxisAlignment(),
+            views::BoxLayout::CrossAxisAlignment::kCenter);
+  EXPECT_EQ(title_view->children()[1]->GetProperty(views::kMarginsKey),
+            nullptr);
 }
 
 TEST_F(AutofillAiImportDataBubbleViewTest,
@@ -206,8 +213,7 @@ TEST_F(AutofillAiImportDataBubbleViewTest,
       features::kAutofillAiWalletPassBranding2026);
   EXPECT_CALL(mock_controller(), IsWalletableEntity())
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(mock_controller(), IsSavePrompt())
-      .WillRepeatedly(Return(true));
+  EXPECT_CALL(mock_controller(), IsSavePrompt()).WillRepeatedly(Return(true));
   EXPECT_CALL(mock_controller(), GetSaveUpdateDialogTitleImagesResourceId())
       .WillRepeatedly(Return(IDR_AUTOFILL_SAVE_DRIVERS_LICENSE_LOTTIE));
   EXPECT_CALL(mock_controller(), GetNoticeStringId())
@@ -226,15 +232,27 @@ TEST_F(AutofillAiImportDataBubbleViewTest,
       features::kAutofillAiWalletPassBranding2026);
   EXPECT_CALL(mock_controller(), IsWalletableEntity())
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(mock_controller(), IsSavePrompt())
-      .WillRepeatedly(Return(false));
+  EXPECT_CALL(mock_controller(), IsSavePrompt()).WillRepeatedly(Return(false));
   EXPECT_CALL(mock_controller(), GetNoticeStringId())
       .WillRepeatedly(
           Return(IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE));
   CreateViewAndShow();
 
   ASSERT_NE(view()->GetBubbleFrameView()->title(), nullptr);
-  EXPECT_EQ(view()->GetBubbleFrameView()->title()->children().size(), 2u);
+  auto* title_view = views::AsViewClass<views::BoxLayoutView>(
+      view()->GetBubbleFrameView()->title());
+  ASSERT_NE(title_view, nullptr);
+  EXPECT_EQ(title_view->children().size(), 2u);
+  EXPECT_EQ(title_view->GetCrossAxisAlignment(),
+            views::BoxLayout::CrossAxisAlignment::kStart);
+
+  gfx::Insets* margins =
+      title_view->children()[1]->GetProperty(views::kMarginsKey);
+  ASSERT_NE(margins, nullptr);
+  EXPECT_GT(margins->top(), 0);
+  EXPECT_EQ(margins->left(), 0);
+  EXPECT_EQ(margins->bottom(), 0);
+  EXPECT_EQ(margins->right(), 0);
 }
 
 }  // namespace
