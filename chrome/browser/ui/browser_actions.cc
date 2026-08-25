@@ -22,6 +22,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_controller.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
@@ -2385,8 +2386,24 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
 
   if (base::FeatureList::IsEnabled(contextual_cueing::kContextualCueingV2)) {
     root_action_item_->AddChild(
-        actions::ActionItem::Builder()
-            // Anchored message icon, strings and callback are set at cue time.
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  if (!bwi) {
+                    return;
+                  }
+                  auto* tab = bwi->GetActiveTabInterface();
+                  if (!tab) {
+                    return;
+                  }
+                  auto* controller =
+                      tab->GetTabFeatures()->contextual_cueing_controller();
+                  if (controller) {
+                    controller->OnActionInvoked();
+                  }
+                },
+                bwi))
             .SetActionId(kActionAnchoredContextualCue)
             .Build());
   }

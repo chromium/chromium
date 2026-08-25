@@ -7,6 +7,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/barrier_callback.h"
@@ -31,11 +32,6 @@ class BrowserWindowInterface;
 class OptimizationGuideKeyedService;
 class TabListInterface;
 class TemplateURLService;
-
-namespace actions {
-class ActionItem;
-class ActionInvocationContext;
-}  // namespace actions
 
 namespace favicon {
 class FaviconService;
@@ -123,6 +119,9 @@ class ContextualCueingController
       CueActionData action,
       std::string cue_id);
 
+  // Called when the anchored contextual cue action is invoked.
+  void OnActionInvoked();
+
  private:
   // Initiates a model execution request to MES for the current window state,
   // requesting only surfaces for the winning target.
@@ -208,15 +207,34 @@ class ContextualCueingController
       page_actions::PageActionController* page_action_controller,
       const std::vector<tabs::TabHandle>& tabs_to_show);
 #endif
+  struct ActiveCueData {
+    ActiveCueData(CueTargetType cue_type,
+                  optimization_guide::proto::ContextualCue cue,
+                  std::vector<tabs::TabHandle> tabs_to_show,
+                  std::vector<optimization_guide::proto::Tab> background_tabs,
+                  std::string cuj,
+                  CueActionData action_data,
+                  std::string cue_id);
+    ~ActiveCueData();
+    ActiveCueData(const ActiveCueData&);
+    ActiveCueData& operator=(const ActiveCueData&);
+
+    CueTargetType cue_type;
+    optimization_guide::proto::ContextualCue cue;
+    std::vector<tabs::TabHandle> tabs_to_show;
+    std::vector<optimization_guide::proto::Tab> background_tabs;
+    std::string cuj;
+    CueActionData action_data;
+    std::string cue_id;
+  };
+
   void OnCueClicked(CueTargetType cue_type,
                     optimization_guide::proto::ContextualCue cue,
                     std::vector<tabs::TabHandle> tabs_to_show,
                     std::vector<optimization_guide::proto::Tab> background_tabs,
                     std::string cuj,
                     CueActionData action,
-                    std::string cue_id,
-                    actions::ActionItem*,
-                    actions::ActionInvocationContext);
+                    std::string cue_id);
   void OnCueHidden();
   void OnCueFormFactorShown(CueFormFactor form_factor);
   void OnCueFormFactorHidden(CueFormFactor form_factor);
@@ -243,6 +261,7 @@ class ContextualCueingController
   const raw_ptr<tabs::TabInterface> tab_;
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
   std::set<SessionID> dependencies_;
+  std::optional<ActiveCueData> active_cue_data_;
   base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
       tab_list_observation_{this};
   raw_ptr<ContextualCueingService> contextual_cueing_service_;

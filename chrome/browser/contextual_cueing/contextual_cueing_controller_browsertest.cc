@@ -26,6 +26,7 @@
 #include "chrome/browser/private_insights/private_insights_service_factory.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -2101,6 +2102,89 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
       ukm::builders::ContextualCueing_CueInteraction::
           kProactiveCueInteractionName,
       static_cast<int64_t>(ContextualCueingInteraction::kCueEditPrompt));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
+                       TabMovedToNewWindowMaintainsContextualCue) {
+#if BUILDFLAG(IS_ANDROID)
+  GTEST_SKIP()
+      << "Contextual cueing anchored message not implemented for Android";
+#endif
+
+  ASSERT_FALSE(cue_target()->HasClickData());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  page_actions::PageActionController* first_controller =
+      GetPageActionController();
+  CHECK(first_controller);
+  page_actions::PageActionObserver first_observer(kActionAnchoredContextualCue);
+  first_observer.RegisterAsPageActionObserver(*first_controller);
+
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  SeedExecutionResult(MakeCompleteResponse());
+  SimulateFilterPassed();
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kSuccess, 1);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return first_observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+
+  // Create second browser and move the active tab to it.
+  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      browser()->tab_strip_model()->DetachTabAtForInsertion(/*index=*/1);
+  second_browser->tab_strip_model()->InsertDetachedTabAt(
+      /*index=*/0, std::move(detached_tab), AddTabTypes::ADD_ACTIVE);
+
+  page_actions::PageActionController* second_controller =
+      second_browser->GetActiveTabInterface()
+          ->GetTabFeatures()
+          ->page_action_controller();
+  CHECK(second_controller);
+  page_actions::PageActionObserver second_observer(kActionAnchoredContextualCue);
+  second_observer.RegisterAsPageActionObserver(*second_controller);
+
+  // The page action should still be showing on the tab in the second window.
+  EXPECT_TRUE(second_observer.GetCurrentPageActionState().showing);
+  EXPECT_FALSE(
+      second_observer.GetCurrentPageActionState().anchored_message_showing);
+
+  // Invoke the action on the second browser window. The first click opens the anchored message.
+  auto* action = actions::ActionManager::Get().FindAction(
+      kActionAnchoredContextualCue,
+      BrowserActions::From(second_browser)->root_action_item());
+  ASSERT_TRUE(action);
+  action->InvokeAction();
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return second_observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+
+  // Second click invokes the action.
+  action->InvokeAction();
+
+  TestCueTarget* second_cue_target = static_cast<TestCueTarget*>(
+      second_browser->GetActiveTabInterface()
+          ->GetTabFeatures()
+          ->contextual_cueing_controller()
+          ->GetTarget(CueTargetType::kGlic));
+  ASSERT_TRUE(second_cue_target);
+  ASSERT_TRUE(second_cue_target->HasClickData());
+  EXPECT_EQ("Prompt",
+            std::get<GlicCueActionData>(second_cue_target->click_data).prompt);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !second_observer.GetCurrentPageActionState().showing;
+  }));
 }
 
 class ContextualCueingControllerMultiSourceBrowserTest
