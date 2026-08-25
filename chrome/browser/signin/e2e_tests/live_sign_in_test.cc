@@ -24,6 +24,7 @@
 #include "chrome/browser/signin/e2e_tests/sign_in_test_observer.h"
 #include "chrome/browser/signin/e2e_tests/signin_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -208,21 +209,24 @@ IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_ChromeSigninAndSignout) {
 
 // This test can pass. Marked as manual because it TIMED_OUT on Win7.
 // See crbug.com/40107825.
-// Signs in an account through the settings page and enables Sync. Checks that
-// Sync is enabled.
+// Signs in an account through the settings page and enables Sync/History Sync.
 // Then, signs out on the web and checks that the account is removed from
-// cookies and Sync paused error is displayed.
-IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync, MANUAL_WebSignOut) {
+// cookies and Sync paused / Signin pending error is displayed.
+IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_WebSignOut) {
   std::optional<TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
   CHECK(test_account.has_value());
-  sign_in_functions.TurnOnSync(*test_account, 0);
+  sign_in_functions.SignInFromSettingsWithSyncChoice(
+      *test_account, 0,
+      SignInFunctions::SyncChoice::kAcceptAllOptionalDataTypesSync);
 
+  signin::ConsentLevel consent_level =
+      GetParam() ? signin::ConsentLevel::kSignin : signin::ConsentLevel::kSync;
   const CoreAccountInfo& primary_account =
-      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
+      identity_manager()->GetPrimaryAccountInfo(consent_level);
   EXPECT_FALSE(primary_account.IsEmpty());
   EXPECT_TRUE(gaia::AreEmailsSame(test_account->user, primary_account.email));
-  EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
+  EXPECT_EQ(sync_service()->IsSyncFeatureEnabled(), !GetParam());
 
   sign_in_functions.SignOutFromWeb();
 
@@ -238,6 +242,9 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync, MANUAL_WebSignOut) {
   EXPECT_TRUE(
       identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
           primary_account.account_id));
+  EXPECT_EQ(signin_util::GetSignedInState(identity_manager()),
+            GetParam() ? signin_util::SignedInState::kSignInPending
+                       : signin_util::SignedInState::kSyncPaused);
 #if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(sync_service()->GetUserActionableError(),
             syncer::SyncService::UserActionableError::kSignInNeedsUpdate);
