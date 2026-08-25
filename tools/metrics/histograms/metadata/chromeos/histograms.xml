@@ -1336,9 +1336,8 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Debugd.Perf.{FunctionName}" units="ms"
-    expires_after="2026-10-04">
+    expires_after="2027-08-09">
   <owner>enlightened@google.com</owner>
-  <owner>jorgelo@google.com</owner>
   <owner>chromeos-security-core@google.com</owner>
   <summary>
     Records the total time it takes for each call to LogTool::{FunctionName} to
