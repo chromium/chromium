@@ -178,13 +178,18 @@ static_library("test_support") {
       "test/fake_file_access.h",
       "test/fake_security_domains_server.cc",
       "test/fake_security_domains_server.h",
+      "test/fake_security_domains_url_loader_factory.cc",
+      "test/fake_security_domains_url_loader_factory.h",
       "test/mock_trusted_vault_throttling_connection.cc",
       "test/mock_trusted_vault_throttling_connection.h",
     ]
 
+    deps += [ "//services/network:test_support" ]
+
     public_deps += [
       "//components/trusted_vault/proto",
       "//net:test_support",
+      "//services/network/public/cpp",
       "//url",
     ]
   }
