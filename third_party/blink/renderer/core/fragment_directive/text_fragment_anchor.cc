@@ -76,7 +76,7 @@ bool CheckSecurityRestrictions(LocalFrame& frame) {
   // cross origin iframes or window.open.
   if (!frame.Loader()
            .GetDocumentLoader()
-           ->LastNavigationHadTrustedInitiator()) {
+           ->TextFragmentTokenHadTrustedInitiator()) {
     if (frame.Tree().Parent()) {
       TRACE_EVENT_INSTANT("blink", "CheckSecurityRestrictions", "Result",
                           "Cross-Origin Subframe");

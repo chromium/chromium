@@ -460,6 +460,9 @@ struct BLINK_EXPORT WebNavigationParams {
   // This is based on a user activation but is different from the above bit as
   // it can be propagated across redirects and is consumed on use.
   bool has_text_fragment_token = false;
+  // Whether the navigation that produced the text fragment token was initiated
+  // from the same-origin as the document or was browser-initiated.
+  bool text_fragment_token_had_trusted_initiator = false;
   // Whether this navigation was browser initiated.
   bool is_browser_initiated = false;
   // Whether the document should be able to access local file:// resources.

@@ -417,6 +417,7 @@ struct SameSizeAsDocumentLoader
   bool is_browser_initiated;
   bool is_prerendering;
   bool has_text_fragment_token;
+  bool text_fragment_token_had_trusted_initiator;
   std::optional<String> internal_scroll_to_text_fragment;
   bool was_discarded;
   bool loading_main_document_from_mhtml_archive;
@@ -655,6 +656,10 @@ DocumentLoader::DocumentLoader(
   // consume its token.
   has_text_fragment_token_ = TextFragmentAnchor::GenerateNewToken(*this) ||
                              params_->has_text_fragment_token;
+  if (params_->has_text_fragment_token) {
+    text_fragment_token_had_trusted_initiator_ =
+        params_->text_fragment_token_had_trusted_initiator;
+  }
 
   if (params_->internal_scroll_to_text_fragment) {
     // We store this in a separate member because params_ is cleared after
@@ -789,6 +794,8 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   params->should_have_sticky_user_activation =
       frame_->HasStickyUserActivation() && !frame_->IsMainFrame();
   params->has_text_fragment_token = has_text_fragment_token_;
+  params->text_fragment_token_had_trusted_initiator =
+      text_fragment_token_had_trusted_initiator_;
   if (internal_scroll_to_text_fragment_) {
     params->internal_scroll_to_text_fragment =
         WebString(*internal_scroll_to_text_fragment_);
@@ -1143,6 +1150,10 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     has_text_fragment_token_ =
         TextFragmentAnchor::GenerateNewTokenForSameDocument(
             *this, type, same_document_navigation_type);
+    if (has_text_fragment_token_) {
+      text_fragment_token_had_trusted_initiator_ =
+          last_navigation_had_trusted_initiator_;
+    }
   }
 
   SetHistoryItemStateForCommit(history_item_.Get(), type,
@@ -3316,6 +3327,10 @@ void DocumentLoader::CommitNavigation() {
   // API).
   last_navigation_had_trusted_initiator_ =
       !requestor_origin_ || is_same_origin_initiator;
+  if (has_text_fragment_token_) {
+    text_fragment_token_had_trusted_initiator_ =
+        last_navigation_had_trusted_initiator_;
+  }
 
   // The PaintHolding feature defers compositor commits until content has been
   // painted or 500ms have passed, whichever comes first. We require that this
