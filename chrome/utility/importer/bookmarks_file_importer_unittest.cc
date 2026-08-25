@@ -12,12 +12,16 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
 #include "chrome/common/importer/importer_bridge.h"
 #include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "components/user_data_importer/common/importer_data_types.h"
+#include "components/user_data_importer/content/fake_bookmark_html_parser.h"
+#include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -88,8 +92,15 @@ class MockImporterBridge : public ImporterBridge {
   ~MockImporterBridge() override = default;
 };
 
+class BookmarksFileImporterTest : public testing::Test {
+ protected:
+  content::BrowserTaskEnvironment task_environment_;
+  user_data_importer::FakeBookmarkHtmlParser fake_parser_;
+  mojo::Receiver<user_data_importer::mojom::BookmarkHtmlParser> receiver_{
+      &fake_parser_};
+};
 
-TEST(BookmarksFileImporterTest, CanImportURL) {
+TEST_F(BookmarksFileImporterTest, CanImportURL) {
   struct TestCase {
     const std::string url;
     const bool can_be_imported;
@@ -118,7 +129,7 @@ TEST(BookmarksFileImporterTest, CanImportURL) {
   }
 }
 
-TEST(BookmarksFileImporterTest, ImportBookmarks) {
+TEST_F(BookmarksFileImporterTest, ImportBookmarks) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath file_path = temp_dir.GetPath().AppendASCII("bookmarks.html");
@@ -149,15 +160,19 @@ TEST(BookmarksFileImporterTest, ImportBookmarks) {
   bookmark.creation_time = base::Time::UnixEpoch() + base::Seconds(456);
   expected_bookmarks.push_back(bookmark);
 
+  base::RunLoop run_loop;
   EXPECT_CALL(*bridge, NotifyStarted());
-  EXPECT_CALL(*bridge, NotifyEnded());
+  EXPECT_CALL(*bridge, NotifyEnded())
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_CALL(*bridge, AddBookmarks(expected_bookmarks, _));
 
+  importer->SetBookmarkHtmlParser(receiver_.BindNewPipeAndPassRemote());
   importer->StartImport(source_profile, user_data_importer::FAVORITES,
                         bridge.get());
+  run_loop.Run();
 }
 
-TEST(BookmarksFileImporterTest, ImportEmptyFile) {
+TEST_F(BookmarksFileImporterTest, ImportEmptyFile) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath file_path = temp_dir.GetPath().AppendASCII("bookmarks.html");
@@ -169,17 +184,21 @@ TEST(BookmarksFileImporterTest, ImportEmptyFile) {
   user_data_importer::SourceProfile source_profile;
   source_profile.source_path = file_path;
 
+  base::RunLoop run_loop;
   EXPECT_CALL(*bridge, NotifyStarted());
-  EXPECT_CALL(*bridge, NotifyEnded());
+  EXPECT_CALL(*bridge, NotifyEnded())
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_CALL(*bridge, AddBookmarks(_, _)).Times(0);
   EXPECT_CALL(*bridge, SetKeywords(_, _)).Times(0);
   EXPECT_CALL(*bridge, SetFavicons(_)).Times(0);
 
+  importer->SetBookmarkHtmlParser(receiver_.BindNewPipeAndPassRemote());
   importer->StartImport(source_profile, user_data_importer::FAVORITES,
                         bridge.get());
+  run_loop.Run();
 }
 
-TEST(BookmarksFileImporterTest, ImportWithInvalidBookmarks) {
+TEST_F(BookmarksFileImporterTest, ImportWithInvalidBookmarks) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath file_path = temp_dir.GetPath().AppendASCII("bookmarks.html");
@@ -205,15 +224,19 @@ TEST(BookmarksFileImporterTest, ImportWithInvalidBookmarks) {
   bookmark.creation_time = base::Time::UnixEpoch() + base::Seconds(123);
   expected_bookmarks.push_back(bookmark);
 
+  base::RunLoop run_loop;
   EXPECT_CALL(*bridge, NotifyStarted());
-  EXPECT_CALL(*bridge, NotifyEnded());
+  EXPECT_CALL(*bridge, NotifyEnded())
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_CALL(*bridge, AddBookmarks(expected_bookmarks, _));
 
+  importer->SetBookmarkHtmlParser(receiver_.BindNewPipeAndPassRemote());
   importer->StartImport(source_profile, user_data_importer::FAVORITES,
                         bridge.get());
+  run_loop.Run();
 }
 
-TEST(BookmarksFileImporterTest, ImportSearchEngine) {
+TEST_F(BookmarksFileImporterTest, ImportSearchEngine) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath file_path = temp_dir.GetPath().AppendASCII("bookmarks.html");
@@ -236,16 +259,20 @@ TEST(BookmarksFileImporterTest, ImportSearchEngine) {
   search_engine.display_name = u"Google Search";
   expected_search_engines.push_back(search_engine);
 
+  base::RunLoop run_loop;
   EXPECT_CALL(*bridge, NotifyStarted());
-  EXPECT_CALL(*bridge, NotifyEnded());
+  EXPECT_CALL(*bridge, NotifyEnded())
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_CALL(*bridge, AddBookmarks(_, _)).Times(0);
   EXPECT_CALL(*bridge, SetKeywords(expected_search_engines, false));
 
+  importer->SetBookmarkHtmlParser(receiver_.BindNewPipeAndPassRemote());
   importer->StartImport(source_profile, user_data_importer::FAVORITES,
                         bridge.get());
+  run_loop.Run();
 }
 
-TEST(BookmarksFileImporterTest, ImportWithFavicon) {
+TEST_F(BookmarksFileImporterTest, ImportWithFavicon) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath file_path = temp_dir.GetPath().AppendASCII("bookmarks.html");
@@ -262,8 +289,10 @@ TEST(BookmarksFileImporterTest, ImportWithFavicon) {
   user_data_importer::SourceProfile source_profile;
   source_profile.source_path = file_path;
 
+  base::RunLoop run_loop;
   EXPECT_CALL(*bridge, NotifyStarted());
-  EXPECT_CALL(*bridge, NotifyEnded());
+  EXPECT_CALL(*bridge, NotifyEnded())
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_CALL(*bridge,
               AddBookmarks(_, _));  // Expecting a bookmark to be added.
   EXPECT_CALL(
@@ -275,7 +304,9 @@ TEST(BookmarksFileImporterTest, ImportWithFavicon) {
                 Contains(GURL("http://www.google.com/"))),
           Field(&favicon_base::FaviconUsageData::png_data, Not(IsEmpty()))))));
 
+  importer->SetBookmarkHtmlParser(receiver_.BindNewPipeAndPassRemote());
   importer->StartImport(source_profile, user_data_importer::FAVORITES,
                         bridge.get());
+  run_loop.Run();
 }
 }  // namespace

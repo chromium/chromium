@@ -15,6 +15,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_data_importer/common/imported_bookmark_entry.h"
+#include "components/user_data_importer/mojom/bookmark_html_parser.mojom.h"
 #include "content/public/browser/service_process_host.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -68,10 +69,22 @@ void ExternalProcessImporterClient::Start() {
       IDS_BOOKMARK_BAR_FOLDER_NAME,
       l10n_util::GetStringUTF8(IDS_BOOKMARK_BAR_FOLDER_NAME));
 
+  mojo::PendingRemote<user_data_importer::mojom::BookmarkHtmlParser>
+      bookmark_html_parser;
+  // Note: `FAVORITES` corresponds to bookmarks.
+  if (items_ & user_data_importer::FAVORITES) {
+    content::ServiceProcessHost::Launch(
+        bookmark_html_parser.InitWithNewPipeAndPassReceiver(),
+        content::ServiceProcessHost::Options()
+            .WithDisplayName(IDS_CONTENT_BOOKMARK_PARSER_SERVICE_DISPLAY_NAME)
+            .Pass());
+  }
+
   // If the utility process hasn't started yet the message will queue until it
   // does.
   profile_import_->StartImport(source_profile_, items_, localized_strings,
-                               receiver_.BindNewPipeAndPassRemote());
+                               receiver_.BindNewPipeAndPassRemote(),
+                               std::move(bookmark_html_parser));
 }
 
 void ExternalProcessImporterClient::Cancel() {

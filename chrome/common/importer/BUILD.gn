@@ -10,6 +10,7 @@ mojom("interfaces") {
   sources = [ "profile_import.mojom" ]
 
   public_deps = [
+    "//components/user_data_importer/mojom",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
     "//url/mojom:url_mojom_gurl",

@@ -165,6 +165,8 @@ auto RunCSVPasswordParser(
 auto ContentBookmarkParser(
     mojo::PendingReceiver<user_data_importer::mojom::BookmarkHtmlParser>
         receiver) {
+  // The bookmarks parser requires Blink for handling favicon images.
+  content::UtilityThread::Get()->EnsureBlinkInitialized();
   return std::make_unique<
       user_data_importer::ContentBookmarkParserInUtilityProcess>(
       std::move(receiver));
