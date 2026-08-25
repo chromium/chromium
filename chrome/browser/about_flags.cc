@@ -11324,6 +11324,17 @@ const FeatureEntry kFeatureEntries[] = {
          safe_browsing::
              kClientSideDetectionServerModelForScamDetectionAndroid)},
 #endif  // BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
+    {"client-side-detection-server-model-for-scam-detection-desktop",
+     flag_descriptions::
+         kClientSideDetectionServerModelForScamDetectionDesktopName,
+     flag_descriptions::
+         kClientSideDetectionServerModelForScamDetectionDesktopDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         safe_browsing::
+             kClientSideDetectionServerModelForScamDetectionDesktop)},
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-keyboard-used-palm-suppression",

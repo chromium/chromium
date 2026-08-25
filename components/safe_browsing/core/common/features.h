@@ -170,7 +170,17 @@ BASE_DECLARE_FEATURE(kClientSideDetectionScamScore);
 BASE_DECLARE_FEATURE(kClientSideDetectionServerModelForScamDetectionAndroid);
 extern const base::FeatureParam<int>
     kClientSideDetectionServerModelMaxScansPerDay;
+#endif
 
+#if !BUILDFLAG(IS_ANDROID)
+// Inquire the server-side model instead of the on-device model for scam
+// detection on Desktop.
+BASE_DECLARE_FEATURE(kClientSideDetectionServerModelForScamDetectionDesktop);
+extern const base::FeatureParam<int>
+    kClientSideDetectionServerModelMaxScansPerDayDesktop;
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
 // Dedicated long-lived feature flag to control future server model rollout and
 // set the model version. This flag should not be cleaned up after the server
 // model is launched. See go/mes-config-rollouts#roll-out-via-finch on the

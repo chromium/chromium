@@ -1894,6 +1894,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "client-side-detection-server-model-for-scam-detection-desktop",
+    "owners": [
+      "tiffanysong@google.com",
+      "chrome-counter-abuse-alerts@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "cloud-gaming-device",
     "owners": [
       "chenjih@google.com",

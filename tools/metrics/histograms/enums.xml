@@ -11798,6 +11798,8 @@ from previous Chrome versions.
   <int value="-903178671" label="LaunchOnStartupInfoBar:disabled"/>
   <int value="-903039070" label="ComposeboxDriveContextMenuOption:enabled"/>
   <int value="-902719249" label="EnableSchemeBoundCookies:disabled"/>
+  <int value="-902495900"
+      label="ClientSideDetectionServerModelForScamDetectionDesktop:enabled"/>
   <int value="-902227224" label="MlRelevanceScoring:disabled"/>
   <int value="-902125579" label="ImmersiveUiMode:disabled"/>
   <int value="-901418755" label="TrafficCountersForWiFiTesting:enabled"/>
@@ -16386,6 +16388,8 @@ from previous Chrome versions.
   <int value="530311761" label="AIPromptAPIForWebPlatform:disabled"/>
   <int value="530828403" label="AllowStartingServiceManagerOnly:disabled"/>
   <int value="531157579" label="EnterOverviewFromWallpaper:enabled"/>
+  <int value="531193343"
+      label="ClientSideDetectionServerModelForScamDetectionDesktop:disabled"/>
   <int value="533064367" label="WebRtcHideLocalIpsWithMdns:disabled"/>
   <int value="533115840"
       label="HoldingSpaceInProgressDownloadsIntegration:enabled"/>
