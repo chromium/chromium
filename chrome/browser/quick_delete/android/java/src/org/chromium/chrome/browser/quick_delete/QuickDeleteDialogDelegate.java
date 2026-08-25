@@ -62,8 +62,6 @@ class QuickDeleteDialogDelegate {
      */
     private @Nullable PropertyModel mModalDialogPropertyModel;
 
-    private TimePeriodSpinnerOption mCurrentTimePeriodOption;
-
     /** The modal dialog controller to detect events on the dialog. */
     private final ModalDialogProperties.Controller mModalDialogController =
             new ModalDialogProperties.Controller() {
@@ -111,11 +109,6 @@ class QuickDeleteDialogDelegate {
         mOnDismissCallback = onDismissCallback;
         mTabModelSelector = tabModelSelector;
         mTimePeriodChangeObserver = timePeriodChangeObserver;
-
-        mCurrentTimePeriodOption =
-                new TimePeriodSpinnerOption(
-                        TimePeriod.LAST_15_MINUTES,
-                        mContext.getString(R.string.clear_browsing_data_tab_period_15_minutes));
     }
 
     /** A method to create the dialog attributes for the quick delete dialog. */
@@ -188,21 +181,13 @@ class QuickDeleteDialogDelegate {
                             AdapterView<?> adapterView, View view, int position, long id) {
                         TimePeriodSpinnerOption item =
                                 (TimePeriodSpinnerOption) adapterView.getItemAtPosition(position);
-                        mCurrentTimePeriodOption = item;
-                        @TimePeriod int timePeriod = mCurrentTimePeriodOption.getTimePeriod();
+                        @TimePeriod int timePeriod = item.getTimePeriod();
                         mTimePeriodChangeObserver.onTimePeriodChanged(timePeriod);
                         recordTimePeriodChange(timePeriod);
                     }
 
                     @Override
-                    public void onNothingSelected(AdapterView<?> adapterView) {
-                        // Revert back to default time.
-                        String message =
-                                mContext.getString(
-                                        R.string.clear_browsing_data_tab_period_15_minutes);
-                        mCurrentTimePeriodOption =
-                                new TimePeriodSpinnerOption(TimePeriod.LAST_15_MINUTES, message);
-                    }
+                    public void onNothingSelected(AdapterView<?> adapterView) {}
                 });
     }
 
