@@ -436,4 +436,38 @@ TEST_F(ChromePermissionsClientTest, IsPrivilegedInternalWebUIWithSubpaths) {
       /*already_overrode_requester=*/false));
   EXPECT_TRUE(client->IsPrivilegedInternalWebUIForUIRouting(web_contents()));
 }
+
+TEST_F(ChromePermissionsClientTest, AllowEmbeddedPermissionPromptForSurface) {
+  auto* client = ChromePermissionsClient::GetInstance();
+
+  GURL omnibox_everywhere_url(chrome::kChromeUIOmniboxEverywhereURL);
+  std::optional<GURL> google_url = client->GetCanonicalOriginOverride(
+      omnibox_everywhere_url, omnibox_everywhere_url);
+  ASSERT_TRUE(google_url.has_value());
+
+  // By default, the embedded permission prompt flag is disabled.
+  // Verify that Omnibox Everywhere bypasses the flag and returns true.
+  content::OverrideLastCommittedOrigin(
+      web_contents()->GetPrimaryMainFrame(),
+      url::Origin::Create(omnibox_everywhere_url));
+  EXPECT_TRUE(ChromePermissionsClient::AllowEmbeddedPermissionPromptForSurface(
+      web_contents()));
+  EXPECT_TRUE(client->IsPrivilegedInternalWebUI(
+      web_contents(), *google_url, /*already_overrode_requester=*/true));
+
+  // Verify that other surfaces return false when the flag is disabled.
+  GURL omnibox_url(chrome::kChromeUIOmniboxPopupURL);
+  content::OverrideLastCommittedOrigin(web_contents()->GetPrimaryMainFrame(),
+                                       url::Origin::Create(omnibox_url));
+  EXPECT_FALSE(ChromePermissionsClient::AllowEmbeddedPermissionPromptForSurface(
+      web_contents()));
+  EXPECT_FALSE(client->IsPrivilegedInternalWebUI(
+      web_contents(), *google_url, /*already_overrode_requester=*/true));
+
+  GURL ntp_url = chrome::ChromeUINewTabPageURLAsGURL();
+  content::OverrideLastCommittedOrigin(web_contents()->GetPrimaryMainFrame(),
+                                       url::Origin::Create(ntp_url));
+  EXPECT_FALSE(ChromePermissionsClient::AllowEmbeddedPermissionPromptForSurface(
+      web_contents()));
+}
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -23,6 +23,7 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
@@ -484,6 +486,48 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
 
   EXPECT_EQ(1, bubble_factory()->show_count());
   EXPECT_EQ(1, bubble_factory()->TotalRequestCount());
+}
+
+class PermissionRequestManagerOmniboxEverywhereBrowserTest
+    : public PermissionRequestManagerBrowserTest {
+ private:
+  base::test::ScopedFeatureList enable_omnibox_everywhere{
+      omnibox::kOmniboxEverywhere};
+};
+
+// Request via omnibox everywhere. PEPC should be used.
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerOmniboxEverywhereBrowserTest,
+                       OmniboxEverywhereUsesEmbeddedPermissionPrompt) {
+  // Navigate to Omnibox Everywhere URL.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIOmniboxEverywhereURL)));
+
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  auto* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+
+  // Request mic permission from the surface.
+  GURL omnibox_url(chrome::kChromeUIOmniboxEverywhereURL);
+  GURL canonical_origin = permissions::PermissionUtil::GetCanonicalOrigin(
+      ContentSettingsType::MEDIASTREAM_MIC, omnibox_url, omnibox_url);
+  auto request = std::make_unique<permissions::MockPermissionRequest>(
+      canonical_origin, permissions::RequestType::kMicStream,
+      /*embedded_permission_element_initiated=*/true);
+  manager->AddRequest(web_contents->GetPrimaryMainFrame(), std::move(request));
+
+  bubble_factory()->WaitForPermissionBubble();
+
+  // Verify it uses the embedded permission prompt flow model.
+  EXPECT_TRUE(manager->IsRequestInProgress());
+  EXPECT_TRUE(permissions::PermissionUtil::
+                  ShouldCurrentRequestUsePermissionElementSecondaryUI(
+                      manager, web_contents));
+  EXPECT_NE(nullptr, manager->GetEmbeddedPromptFlowModel());
+
+  manager->Dismiss(/*prompt_options=*/std::monostate());
+  EXPECT_TRUE(base::test::RunUntil(
+      [manager]() { return !manager->IsRequestInProgress(); }));
 }
 
 // Ignored permission request should not trigger a blocked activity indicator on
