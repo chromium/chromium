@@ -92,11 +92,15 @@ void AdjustParagraphDirectionality(std::u16string* paragraph) {
 #endif
 }
 
-}  // namespace
-
-std::string_view GetLanguage(std::string_view locale) {
-  return locale.substr(0, locale.find('-'));
+std::string_view GetLanguageSubtagWithFallback(std::string_view locale) {
+  size_t separator_pos = locale.find('-');
+  if (separator_pos == std::string_view::npos) {
+    separator_pos = locale.find('_');
+  }
+  return locale.substr(0, separator_pos);
 }
+
+}  // namespace
 
 std::optional<LanguageTag> CheckAndResolveLocale(const LanguageTag& locale,
                                                  CheckLocaleMode mode) {
@@ -288,8 +292,8 @@ std::u16string GetDisplayNameForLocaleWithoutCountry(
     std::string_view display_locale,
     bool is_for_ui,
     bool disallow_default) {
-  return GetDisplayNameForLocale(GetLanguage(locale), display_locale, is_for_ui,
-                                 disallow_default);
+  return GetDisplayNameForLocale(GetLanguageSubtagWithFallback(locale),
+                                 display_locale, is_for_ui, disallow_default);
 }
 
 std::u16string GetDisplayNameForLocale(
@@ -573,7 +577,12 @@ bool IsUserFacingUILocale(std::string_view locale) {
     return true;
   }
 
-  const std::string_view language = l10n_util::GetLanguage(locale);
+  std::optional<base::i18n::LanguageTag> language_tag =
+      base::i18n::GetLanguageTagFromString(locale);
+  if (!language_tag) {
+    return false;
+  }
+  const std::string_view language = language_tag->language_subtag();
 
   // Chinese locales (other than the ones that have strings on disk) should not
   // be shown.

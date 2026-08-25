@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "ui/base/webui/web_ui_util.h"
 
 #include <optional>
@@ -12,7 +11,9 @@
 
 #include "base/base64.h"
 #include "base/check.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/tag_converters.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/escape.h"
@@ -189,7 +190,10 @@ void SetLoadTimeDataDefaults(const std::string& app_locale,
   localized_strings->Set("fontfamily", GetFontFamily());
   localized_strings->Set("fontfamilyMd", GetFontFamilyMd());
   localized_strings->Set("fontsize", GetFontSize());
-  localized_strings->Set("language", l10n_util::GetLanguage(app_locale));
+  localized_strings->Set(
+      "language", base::i18n::GetLanguageTagFromString(app_locale)
+                      .transform(&base::i18n::LanguageTag::language_subtag)
+                      .value_or(std::string_view()));
   localized_strings->Set("textdirection", GetTextDirection());
   localized_strings->Set(
       "roundedIconsAttribute",
@@ -206,7 +210,10 @@ void SetLoadTimeDataDefaults(const std::string& app_locale,
   (*replacements)["fontfamily"] = GetFontFamily();
   (*replacements)["fontfamilyMd"] = GetFontFamilyMd();
   (*replacements)["fontsize"] = GetFontSize();
-  (*replacements)["language"] = l10n_util::GetLanguage(app_locale);
+  (*replacements)["language"] =
+      base::i18n::GetLanguageTagFromString(app_locale)
+          .transform(&base::i18n::LanguageTag::language_subtag)
+          .value_or(std::string_view());
   (*replacements)["textdirection"] = GetTextDirection();
   (*replacements)["roundedIconsAttribute"] =
       features::IsRoundedIconsEnabled() ? "rounded-icons" : "";

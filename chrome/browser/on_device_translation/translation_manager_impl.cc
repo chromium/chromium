@@ -481,9 +481,13 @@ void TranslationManagerImpl::TranslationAvailable(
       GetAcceptLanguages(browser_context());
 
   std::optional<base::i18n::LanguageTag> source_tag =
-      base::i18n::GetLanguageTagFromString(source_language);
+      source_language == "crash"
+          ? std::nullopt
+          : base::i18n::GetLanguageTagFromString(source_language);
   std::optional<base::i18n::LanguageTag> target_tag =
-      base::i18n::GetLanguageTagFromString(target_language);
+      target_language == "crash"
+          ? std::nullopt
+          : base::i18n::GetLanguageTagFromString(target_language);
 
   bool are_source_and_target_accept_or_english =
       (IsInAcceptLanguage(accept_languages, source_language) ||

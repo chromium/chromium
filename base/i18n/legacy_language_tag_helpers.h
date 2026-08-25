@@ -14,10 +14,11 @@
 namespace base::i18n {
 
 inline std::string GetLanguageSubtagUsingLanguageTag(std::string_view locale) {
-  return GetLanguageTagFromString(locale)
-      .transform(&LanguageTag::language_subtag)
-      .transform([](std::string_view subtag) { return std::string(subtag); })
-      .value_or(std::string());
+  std::optional<LanguageTag> tag = GetLanguageTagFromString(locale);
+  if (!tag) {
+    return std::string();
+  }
+  return std::string(tag->language_subtag());
 }
 
 }  // namespace base::i18n
