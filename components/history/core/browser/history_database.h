@@ -136,7 +136,7 @@ class HistoryDatabase : public DownloadDatabase,
   std::unique_ptr<sql::Transaction> CreateTransaction();
 
   // Returns true if at least one `Transaction` is active on the database.
-  int HasActiveTransactions() const { return db_.HasActiveTransactions(); }
+  bool HasActiveTransactions() const { return db_.HasActiveTransactions(); }
 
   // Drops all tables except the URL, and download tables, and recreates them
   // from scratch. This is done to rapidly clean up stuff when deleting all
