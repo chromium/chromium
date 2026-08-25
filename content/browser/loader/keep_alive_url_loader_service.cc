@@ -21,6 +21,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/public/browser/url_loader_throttles.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -95,6 +96,13 @@ void KeepAliveURLLoaderService::FactoryContext::OnDidCommitNavigation(
                            OnDidCommitPrerenderedPageActivation,
                        weak_ptr_factory.GetWeakPtr()));
   }
+
+  cached_is_fetch_retry_enabled.reset();
+  // Cache the feature flag for the newly committed document while
+  // `RenderFrameHostImpl` is guaranteed valid. This preserves feature
+  // state for requests dispatched during document unload whose IPCs arrive
+  // post-destruction.
+  std::ignore = IsFetchRetryEnabled();
 }
 
 void KeepAliveURLLoaderService::FactoryContext::
@@ -119,6 +127,30 @@ void KeepAliveURLLoaderService::FactoryContext::
 void KeepAliveURLLoaderService::FactoryContext::UpdateFactory(
     scoped_refptr<network::SharedURLLoaderFactory> new_factory) {
   factory = new_factory;
+}
+
+bool KeepAliveURLLoaderService::FactoryContext::IsFetchRetryEnabled() const {
+  if (!base::FeatureList::IsEnabled(blink::features::kFetchRetry)) {
+    return false;
+  }
+  std::optional<bool> overridden_state =
+      base::FeatureList::GetStateIfOverridden(blink::features::kFetchRetry);
+  if (overridden_state == std::make_optional(true)) {
+    return true;
+  }
+  if (cached_is_fetch_retry_enabled.has_value()) {
+    return *cached_is_fetch_retry_enabled;
+  }
+  if (auto* rfh = static_cast<RenderFrameHostImpl*>(
+          weak_document_ptr.AsRenderFrameHostIfValid())) {
+    if (auto* document_data =
+            RuntimeFeatureStateDocumentData::GetForCurrentDocument(rfh)) {
+      cached_is_fetch_retry_enabled =
+          document_data->runtime_feature_state_read_context()
+              .IsFetchRetryEnabled();
+    }
+  }
+  return cached_is_fetch_retry_enabled.value_or(false);
 }
 
 // KeepAliveURLLoaderFactoriesBase is an abstract base class for creating and
@@ -248,6 +280,15 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
           "Unexpected `resource_request` in "
           "KeepAliveURLLoaderFactoriesBase::CreateLoaderAndStart(): "
           "resource_request.trusted_params must not be set");
+      return nullptr;
+    }
+    if (resource_request.fetch_retry_options.has_value() &&
+        !context->IsFetchRetryEnabled()) {
+      mojo::ReportBadMessage(
+          "Unexpected `resource_request` in "
+          "KeepAliveURLLoaderFactoriesBase::CreateLoaderAndStart(): "
+          "resource_request.fetch_retry_options must not be set when "
+          "FetchRetry is disabled");
       return nullptr;
     }
 
