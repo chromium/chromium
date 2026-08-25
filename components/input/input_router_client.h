@@ -6,6 +6,7 @@
 #define COMPONENTS_INPUT_INPUT_ROUTER_CLIENT_H_
 
 #include "cc/input/touch_action.h"
+#include "components/input/dispatch_to_renderer_callback.h"
 #include "components/input/event_with_latency_info.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"

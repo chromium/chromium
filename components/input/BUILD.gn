@@ -59,6 +59,8 @@ component("input") {
     "render_widget_host_view_input_observer.h",
     "render_widget_targeter.cc",
     "render_widget_targeter.h",
+    "stylus_handwriting_handler.cc",
+    "stylus_handwriting_handler.h",
     "switches.cc",
     "switches.h",
     "tap_suppression_controller.cc",
@@ -101,6 +103,12 @@ component("input") {
   ]
   if (use_aura) {
     sources += [ "native_web_keyboard_event_aura.cc" ]
+  }
+  if (is_win) {
+    sources += [
+      "stylus_handwriting_handler_win.cc",
+      "stylus_handwriting_handler_win.h",
+    ]
   }
   if (is_android) {
     sources += [
@@ -208,6 +216,10 @@ source_set("unit_tests") {
       "native_web_keyboard_event_mac_unittest.mm",
       "web_input_event_builders_mac_unittest.mm",
     ]
+  }
+  if (is_win) {
+    sources += [ "stylus_handwriting_handler_win_unittest.cc" ]
+    deps += [ "//ui/gfx" ]
   }
 }
 
