@@ -1532,23 +1532,23 @@ void InlineItemsBuilderTemplate<MappingBuilder>::EnterInline(
   DCHECK(node);
 
   // https://drafts.csswg.org/css-writing-modes-3/#bidi-control-codes-injection-table
-  const ComputedStyle* style = node->Style();
-  if (style->RtlOrdering() == EOrder::kLogical) {
-    switch (style->GetUnicodeBidi()) {
+  const ComputedStyle& style = node->StyleRef();
+  if (style.RtlOrdering() == EOrder::kLogical) {
+    switch (style.GetUnicodeBidi()) {
       case UnicodeBidi::kNormal:
         break;
       case UnicodeBidi::kEmbed:
-        EnterBidiContext(node, style, uchar::kLeftToRightEmbedding,
+        EnterBidiContext(node, &style, uchar::kLeftToRightEmbedding,
                          uchar::kRightToLeftEmbedding,
                          uchar::kPopDirectionalFormatting);
         break;
       case UnicodeBidi::kBidiOverride:
-        EnterBidiContext(node, style, uchar::kLeftToRightOverride,
+        EnterBidiContext(node, &style, uchar::kLeftToRightOverride,
                          uchar::kRightToLeftOverride,
                          uchar::kPopDirectionalFormatting);
         break;
       case UnicodeBidi::kIsolate:
-        EnterBidiContext(node, style, uchar::kLeftToRightIsolate,
+        EnterBidiContext(node, &style, uchar::kLeftToRightIsolate,
                          uchar::kRightToLeftIsolate,
                          uchar::kPopDirectionalIsolate);
         break;
@@ -1560,14 +1560,14 @@ void InlineItemsBuilderTemplate<MappingBuilder>::EnterInline(
       case UnicodeBidi::kIsolateOverride:
         EnterBidiContext(node, uchar::kFirstStrongIsolate,
                          uchar::kPopDirectionalIsolate);
-        EnterBidiContext(node, style, uchar::kLeftToRightOverride,
+        EnterBidiContext(node, &style, uchar::kLeftToRightOverride,
                          uchar::kRightToLeftOverride,
                          uchar::kPopDirectionalFormatting);
         break;
     }
   }
 
-  if (style->GetTextEmphasisMark() != TextEmphasisMark::kNone) {
+  if (style.GetTextEmphasisMark() != TextEmphasisMark::kNone) {
     has_text_emphasis_ = true;
   }
 
@@ -1578,8 +1578,8 @@ void InlineItemsBuilderTemplate<MappingBuilder>::EnterInline(
     if (!node->Parent()->IsInlineRuby()) {
       // This creates a ruby column with a placeholder-only ruby-base.
       AppendOpaque(InlineItem::kOpenRubyColumn,
-                   IsLtr(style->Direction()) ? uchar::kLeftToRightIsolate
-                                             : uchar::kRightToLeftIsolate,
+                   IsLtr(style.Direction()) ? uchar::kLeftToRightIsolate
+                                            : uchar::kRightToLeftIsolate,
                    nullptr);
       AppendOpaque(InlineItem::kRubyLinePlaceholder, nullptr);
       is_score_line_break_disabled_ = true;
@@ -1605,8 +1605,8 @@ void InlineItemsBuilderTemplate<MappingBuilder>::EnterInline(
   typename MappingBuilder::SourceNodeScope scope(&mapping_builder_, nullptr);
   if (node->IsInlineRuby()) {
     AppendOpaque(InlineItem::kOpenRubyColumn,
-                 IsLtr(style->Direction()) ? uchar::kLeftToRightIsolate
-                                           : uchar::kRightToLeftIsolate,
+                 IsLtr(style.Direction()) ? uchar::kLeftToRightIsolate
+                                          : uchar::kRightToLeftIsolate,
                  node);
     if (kDisableForcedBreakInRubyColumn) {
       ++ruby_text_nesting_level_;
@@ -1708,7 +1708,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::ExitInline(
       // This produces almost-empty ruby-columns if </ruby> follows.
       // The beginning part of this function removes such ruby-columns.
       AppendOpaque(InlineItem::kOpenRubyColumn,
-                   IsLtr(node->Parent()->Style()->Direction())
+                   IsLtr(node->Parent()->StyleRef().Direction())
                        ? uchar::kLeftToRightIsolate
                        : uchar::kRightToLeftIsolate,
                    ruby_container);
