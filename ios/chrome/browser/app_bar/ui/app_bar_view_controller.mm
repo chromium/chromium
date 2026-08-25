@@ -6,6 +6,7 @@
 
 #import <CoreGraphics/CoreGraphics.h>
 
+#import <algorithm>
 #import <optional>
 
 #import "base/metrics/user_metrics.h"
@@ -55,6 +56,12 @@ constexpr CGFloat kButtonShadowOpacity = 0.2;
 constexpr CGFloat kButtonShadowOffset = 1;
 // The duration of animations in the App Bar.
 constexpr CGFloat kAppBarAnimationDuration = 0.25;
+// The progress value at which the buttons should be completely faded out
+// during the fullscreen transition with Glass Toolbar.
+constexpr CGFloat kButtonsFadeEndProgress = 0.5;
+// The distance the buttons should appear to move down during the fullscreen
+// transition with Glass Toolbar.
+constexpr CGFloat kButtonsFullscreenMoveDistance = 8;
 // Spacing between tab grid button and the tab grid spotlight view anchor.
 constexpr CGFloat kSpotlightViewHorizontalInset = 12;
 constexpr CGFloat kSpotlightViewVerticalInset = 2;
@@ -196,6 +203,8 @@ UIColor* AssistantHighlightBackgroundColor() {
   // Constraints to make buttons square in landscape so that long press
   // animation does not leak beyond bounds of app bar.
   NSArray<NSLayoutConstraint*>* _buttonWidthConstraints;
+  // Container view for buttons that clips contents to the top of the app bar.
+  UIView* _buttonsContainerView;
   // Stack view for buttons.
   UIStackView* _stackView;
   // Constraint for height of the app bar view.
@@ -230,6 +239,10 @@ UIColor* AssistantHighlightBackgroundColor() {
   // Update the alpha with a duration of 0 as it is already in an animation
   // block.
   [self setButtonsTitleAlpha:_fullscreenProgress animationDuration:0];
+  if (IsGlassToolbarEnabled()) {
+    [self
+        updateButtonsVerticalPositionForFullscreenProgress:_fullscreenProgress];
+  }
   [self updateTabSwitcherGuide];
   if (appBarPosition != AppBarPosition::kBottom) {
     _backgroundView.cornerRadius = kAppBarCornerRadius;
@@ -309,7 +322,7 @@ UIColor* AssistantHighlightBackgroundColor() {
   if ([self shouldHideButtonLabels]) {
     targetAlpha = 0;
   } else if (appBarPosition == AppBarPosition::kBottom) {
-    targetAlpha = buttonsTitleAlpha;
+    targetAlpha = IsGlassToolbarEnabled() ? 1.0 : buttonsTitleAlpha;
   } else if (appBarPosition == AppBarPosition::kLeft ||
              appBarPosition == AppBarPosition::kRight) {
     targetAlpha = 0;
@@ -344,6 +357,8 @@ UIColor* AssistantHighlightBackgroundColor() {
   _tabGridButton.transform = transform;
 
   if (_isRotated) {
+    _stackView.transform = CGAffineTransformIdentity;
+    _stackView.alpha = 1.0;
     _stackView.distribution = UIStackViewDistributionEqualSpacing;
     [NSLayoutConstraint activateConstraints:_buttonWidthConstraints];
     _leadingSpacer.hidden = NO;
@@ -361,6 +376,10 @@ UIColor* AssistantHighlightBackgroundColor() {
     _stackViewBottomConstraint.constant = 0;
     _stackViewLeadingConstraint.constant = kStackViewHorizontalMargin;
     _stackViewTrailingConstraint.constant = -kStackViewHorizontalMargin;
+    if (IsGlassToolbarEnabled()) {
+      [self updateButtonsVerticalPositionForFullscreenProgress:
+                _fullscreenProgress];
+    }
   }
   [self.view setNeedsLayout];
   [self.view layoutIfNeeded];
@@ -475,15 +494,22 @@ UIColor* AssistantHighlightBackgroundColor() {
   ];
 
   UIView* view = self.view;
-  [view addSubview:_stackView];
 
-  _stackViewBottomConstraint =
-      [_stackView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor];
+  _buttonsContainerView = [[UIView alloc] init];
+  _buttonsContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  _buttonsContainerView.clipsToBounds = YES;
+  [view addSubview:_buttonsContainerView];
+  AddSameConstraints(_buttonsContainerView, view);
+
+  [_buttonsContainerView addSubview:_stackView];
+
+  _stackViewBottomConstraint = [_stackView.bottomAnchor
+      constraintEqualToAnchor:_buttonsContainerView.bottomAnchor];
   _stackViewLeadingConstraint = [_stackView.leadingAnchor
-      constraintEqualToAnchor:view.leadingAnchor
+      constraintEqualToAnchor:_buttonsContainerView.leadingAnchor
                      constant:kStackViewHorizontalMargin];
   _stackViewTrailingConstraint = [_stackView.trailingAnchor
-      constraintEqualToAnchor:view.trailingAnchor
+      constraintEqualToAnchor:_buttonsContainerView.trailingAnchor
                      constant:-kStackViewHorizontalMargin];
 
   _heightConstraint = [view.heightAnchor
@@ -498,7 +524,8 @@ UIColor* AssistantHighlightBackgroundColor() {
     [_backgroundView.topAnchor constraintEqualToAnchor:view.topAnchor
                                               constant:-kAppBarCornerRadiusMax],
     _stackViewLeadingConstraint,
-    [_stackView.topAnchor constraintEqualToAnchor:view.topAnchor],
+    [_stackView.topAnchor
+        constraintEqualToAnchor:_buttonsContainerView.topAnchor],
     _stackViewTrailingConstraint,
     _stackViewBottomConstraint,
     _heightConstraint,
@@ -641,23 +668,63 @@ UIColor* AssistantHighlightBackgroundColor() {
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   _fullscreenProgress = progress;
-  [self setButtonsTitleAlpha:_fullscreenProgress animationDuration:0];
+  if (!IsGlassToolbarEnabled()) {
+    [self setButtonsTitleAlpha:_fullscreenProgress animationDuration:0];
+  }
 }
 
 - (void)animateFullscreenWithAnimator:(FullscreenAnimator*)animator {
-  [self setButtonsTitleAlpha:animator.finalProgress
-           animationDuration:animator.duration];
+  if (!IsGlassToolbarEnabled()) {
+    [self setButtonsTitleAlpha:animator.finalProgress
+             animationDuration:animator.duration];
+  }
 }
 
 #pragma mark - FullscreenBrowserAgentObserving
 
 - (void)fullscreenWillUpdateState:(FullscreenBrowserAgent*)agent {
   _fullscreenProgress = agent->bottom_progress();
-  [self setButtonsTitleAlpha:_fullscreenProgress
-           animationDuration:agent->animation_duration().InSecondsF()];
+  if (IsGlassToolbarEnabled()) {
+    [self
+        updateButtonsVerticalPositionForFullscreenProgress:_fullscreenProgress];
+    if (!agent->animation_duration().is_zero()) {
+      [self.view layoutIfNeeded];
+    }
+  } else {
+    [self setButtonsTitleAlpha:_fullscreenProgress
+             animationDuration:agent->animation_duration().InSecondsF()];
+  }
 }
 
 #pragma mark - Private
+
+// Updates the vertical position of the buttons according to the fullscreen
+// `progress`.
+- (void)updateButtonsVerticalPositionForFullscreenProgress:(CGFloat)progress {
+  CHECK(IsGlassToolbarEnabled());
+  if (self.layoutState.appBarPosition != AppBarPosition::kBottom) {
+    _stackView.transform = CGAffineTransformIdentity;
+    _stackView.alpha = 1.0;
+    return;
+  }
+
+  CGFloat minHeight =
+      IsAppBarHiddenInFullscreen() ? 0 : kAppBarHeightFullscreen;
+  CGFloat totalMove = [self currentAppBarHeightPortrait] - minHeight;
+  if (totalMove <= 0) {
+    _stackView.transform = CGAffineTransformIdentity;
+    _stackView.alpha = 1.0;
+    return;
+  }
+
+  CGFloat moveProgress = 1.0 - progress;
+  CGFloat translationY =
+      -moveProgress * (totalMove - kButtonsFullscreenMoveDistance);
+  _stackView.transform = CGAffineTransformMakeTranslation(0, translationY);
+  _stackView.alpha = std::clamp(
+      (progress - kButtonsFadeEndProgress) / (1.0 - kButtonsFadeEndProgress),
+      0.0, 1.0);
+}
 
 // Updates the height constraint based on the orientation and triggers layout.
 - (void)updateHeightConstraintForCurrentOrientation {
