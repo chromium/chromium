@@ -133,7 +133,6 @@ void SaveFieldTrialValuesForGroupApp() {
         removeObjectForKey:app_group::kChromeSupportsAISummarizationCapability];
     [capabilities
         removeObjectForKey:app_group::kChromeUserIsEligibleForGeminiCapability];
-    [shared_defaults removeObjectForKey:app_group::kAppSwitcherHashedUserID];
   }
 
   [shared_defaults setObject:capabilities

@@ -21,7 +21,6 @@ extern NSString* const kChromeSupportsAISummarizationCapability =
     @"SupportsAISummarization";
 extern NSString* const kChromeUserIsEligibleForGeminiCapability =
     @"UserIsEligibleForGemini";
-extern NSString* const kAppSwitcherHashedUserID = @"AppSwitcher.HashedUserID";
 extern NSString* const kChromeSupportOpenLinksParametersFromCapability =
     @"SupportOpenLinksParametersFrom";
 extern NSString* const kChromeSupportShareDefaultBrowserStatusCapability =

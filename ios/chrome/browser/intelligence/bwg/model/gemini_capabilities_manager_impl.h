@@ -14,7 +14,6 @@ class AuthenticationService;
 class GeminiService;
 class ProfileIOS;
 @class NSMutableDictionary;
-@class NSUserDefaults;
 
 class GeminiCapabilitiesManagerImpl : public GeminiCapabilitiesManager,
                                       public GeminiService::Observer {
@@ -36,8 +35,6 @@ class GeminiCapabilitiesManagerImpl : public GeminiCapabilitiesManager,
  private:
   // Helper methods to update specific capabilities.
   void UpdateSupportsAISummarization(NSMutableDictionary* capabilities);
-  void UpdateHashedUserID(NSUserDefaults* shared_defaults,
-                          bool has_primary_identity);
   void UpdateUserEligibility(NSMutableDictionary* capabilities,
                              bool user_eligible,
                              bool has_primary_identity);

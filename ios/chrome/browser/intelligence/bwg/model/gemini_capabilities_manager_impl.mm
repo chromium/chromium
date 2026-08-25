@@ -50,7 +50,6 @@ void GeminiCapabilitiesManagerImpl::UpdateCapabilities() {
   bool user_eligible =
       gemini_service_ && gemini_service_->IsProfileEligibleForGemini();
   UpdateSupportsAISummarization(capabilities);
-  UpdateHashedUserID(shared_defaults, has_primary_identity);
   UpdateUserEligibility(capabilities, user_eligible, has_primary_identity);
 
   if (![existing_capabilities isEqualToDictionary:capabilities]) {
@@ -65,24 +64,6 @@ void GeminiCapabilitiesManagerImpl::UpdateSupportsAISummarization(
     NSMutableDictionary* capabilities) {
   capabilities[app_group::kChromeSupportsAISummarizationCapability] =
       @(IsAppSwitcherAISummarizationEnabled());
-}
-
-void GeminiCapabilitiesManagerImpl::UpdateHashedUserID(
-    NSUserDefaults* shared_defaults,
-    bool has_primary_identity) {
-  if (!has_primary_identity) {
-    if ([shared_defaults objectForKey:app_group::kAppSwitcherHashedUserID]) {
-      [shared_defaults removeObjectForKey:app_group::kAppSwitcherHashedUserID];
-    }
-    return;
-  }
-  id<SystemIdentity> identity = authentication_service_->GetPrimaryIdentity();
-  NSString* existing_hashed_uid =
-      [shared_defaults stringForKey:app_group::kAppSwitcherHashedUserID];
-  if (![existing_hashed_uid isEqualToString:identity.hashedGaiaID]) {
-    [shared_defaults setObject:identity.hashedGaiaID
-                        forKey:app_group::kAppSwitcherHashedUserID];
-  }
 }
 
 void GeminiCapabilitiesManagerImpl::UpdateUserEligibility(
