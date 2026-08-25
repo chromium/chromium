@@ -9,6 +9,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
@@ -184,6 +185,7 @@ class TabContainerTest : public ChromeViewsTestBase {
   TabContainerTest()
       : animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
             gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {
+    scoped_feature_list_.InitAndDisableFeature(tabs::kTabStripUnification);
   }
   TabContainerTest(const TabContainerTest&) = delete;
   TabContainerTest& operator=(const TabContainerTest&) = delete;
@@ -433,12 +435,18 @@ class TabContainerTest : public ChromeViewsTestBase {
   gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
 
   int tab_container_width_ = 0;
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class TabContainerAccessibilityTreeTest : public TabContainerTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAccessibilityTreeForViews};
+ public:
+  TabContainerAccessibilityTreeTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures(
+        {features::kAccessibilityTreeForViews}, {tabs::kTabStripUnification});
+  }
 };
 
 TEST_F(TabContainerTest, ExitsClosingModeAtStandardWidth) {
