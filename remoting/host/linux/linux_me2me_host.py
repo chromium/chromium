@@ -1233,7 +1233,7 @@ class WaylandDesktop(Desktop):
   """Manage a single virtual wayland based desktop"""
 
   WL_SERVER_CHECK_DELAY_SECONDS = 1
-  WL_SERVER_CHECK_TIMEOUT_SECONDS = 30
+  WL_SERVER_CHECK_TIMEOUT_SECONDS = 60
   WL_SERVER_REPLY_TIMEOUT_SECONDS = 1
 
   def __init__(self, sizes, host_config, wayland_session):
