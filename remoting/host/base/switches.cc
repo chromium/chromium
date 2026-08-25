@@ -53,8 +53,9 @@ const char kOutputSwitchName[] = "output";
 const char kMojoPipeToken[] = "mojo-pipe-token";
 const char kCrashServerPipeHandle[] = "crash-server-pipe-handle";
 
-const char kEnablePeerConnectionProcessSwitch[] =
-    "enable-peer-connection-process";
+#if BUILDFLAG(IS_WIN)
+const char kUsePeerConnectionProcessSwitch[] = "use-peer-connection-process";
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_APPLE)
 const char kCheckPermissionSwitchName[] = "check-permission";

@@ -666,11 +666,16 @@ HostProcess::HostProcess(std::unique_ptr<ChromotingHostContext> context,
 #if BUILDFLAG(REMOTING_MULTI_PROCESS)
 #if BUILDFLAG(IS_LINUX)
   enable_peer_connection_process_ = multi_process_;
-#else
-  enable_peer_connection_process_ =
-      multi_process_ && base::CommandLine::ForCurrentProcess()->HasSwitch(
-                            kEnablePeerConnectionProcessSwitch);
-#endif  // BUILDFLAG(IS_LINUX)
+#elif BUILDFLAG(IS_WIN)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kUsePeerConnectionProcessSwitch)) {
+    std::string switch_value =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            kUsePeerConnectionProcessSwitch);
+    enable_peer_connection_process_ =
+        multi_process_ && (switch_value == "true" || switch_value == "1");
+  }
+#endif
 #endif
 
   // TODO(zijiehe):

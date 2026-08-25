@@ -68,7 +68,6 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   static inline constexpr const char* const kCopiedSwitchNames[] = {
       switches::kV,
       switches::kVModule,
-      kEnablePeerConnectionProcessSwitch,
   };
 
   using StoppedCallback = base::OnceCallback<void(int /*exit_code*/)>;
