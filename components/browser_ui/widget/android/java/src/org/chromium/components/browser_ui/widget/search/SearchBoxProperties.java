@@ -4,12 +4,15 @@
 
 package org.chromium.components.browser_ui.widget.search;
 
+import android.view.View;
+
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+import org.chromium.ui.util.ViewVisibility;
 
 /** Properties for the generic desktop search box. */
 @NullMarked
@@ -27,8 +30,8 @@ public class SearchBoxProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableBooleanPropertyKey CLEAR_BUTTON_VISIBILITY =
             new WritableBooleanPropertyKey();
-    public static final WritableIntPropertyKey SEARCH_LOUPE_VISIBILITY =
-            new WritableIntPropertyKey();
+    public static final WritableIntDefPropertyKey<ViewVisibility> SEARCH_LOUPE_VISIBILITY =
+            new WritableIntDefPropertyKey<>(View.VISIBLE);
 
     public static final PropertyKey[] ALL_KEYS = {
         TEXT_CHANGED_CALLBACK,

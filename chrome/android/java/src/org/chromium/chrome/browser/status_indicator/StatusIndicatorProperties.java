@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.status_indicator;
 
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.ViewVisibility;
 
 @NullMarked
 class StatusIndicatorProperties {
@@ -21,8 +23,8 @@ class StatusIndicatorProperties {
             new PropertyModel.WritableObjectPropertyKey<>();
 
     /** Visibility of the status indicator's Android view. */
-    static final PropertyModel.WritableIntPropertyKey ANDROID_VIEW_VISIBILITY =
-            new PropertyModel.WritableIntPropertyKey();
+    static final PropertyModel.WritableIntDefPropertyKey<ViewVisibility> ANDROID_VIEW_VISIBILITY =
+            new PropertyModel.WritableIntDefPropertyKey<>(View.GONE);
 
     /** Whether the composited version of the status indicator is visible. */
     static final PropertyModel.WritableBooleanPropertyKey COMPOSITED_VIEW_VISIBLE =
