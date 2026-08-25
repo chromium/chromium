@@ -2023,7 +2023,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     PaneManager paneManager = hubManager.getPaneManager();
                     TabSwitcherPaneBase tabSwitcherPaneBase =
                             (TabSwitcherPaneBase) paneManager.getDefaultPane();
-                    TabSwitcherUtils.openTabGroupDialog(
+                    TabSwitcherUtils.focusTabGroup(
                             tabGroupId,
                             tabGroupSyncService,
                             ((TabbedRootUiCoordinator) mRootUiCoordinator)

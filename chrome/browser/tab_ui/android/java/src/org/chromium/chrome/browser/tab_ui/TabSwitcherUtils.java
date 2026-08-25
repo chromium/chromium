@@ -68,15 +68,26 @@ public class TabSwitcherUtils {
     }
 
     /**
-     * Tries to open the tab group dialog for a tab group.
+     * Brings focus to a tab group identified by its sync ID.
      *
-     * @param syncId The id of the tab group, might or might not correspond to an open group.
-     * @param tabGroupSyncService Used to open closed groups and convert to local ids.
-     * @param tabGroupUiActionHandler Used to open a closed group.
-     * @param tabModel Used to get root id.
-     * @param requestOpenTabGroupDialog Callback to actually open a group dialog.
+     * <p>If the tab group is currently closed locally, it will first be opened via the {@link
+     * TabGroupUiActionHandler}.
+     *
+     * <p>When the Grid Tab Switcher / Hub is disabled (e.g., on Desktop Android), this selects the
+     * last shown tab of the group in the {@link TabModel} to focus the group on the tab strip.
+     * Otherwise, it invokes {@code requestOpenTabGroupDialog} to present the tab group dialog
+     * inside the tab switcher.
+     *
+     * @param syncId The sync ID of the tab group, which may or may not correspond to an open group.
+     * @param tabGroupSyncService Service used to retrieve sync group metadata and convert sync IDs
+     *     to local IDs.
+     * @param tabGroupUiActionHandler Handler used to open closed tab groups.
+     * @param tabModel The tab model used to resolve the group's last shown tab and update tab
+     *     selection when the tab switcher is disabled.
+     * @param requestOpenTabGroupDialog Callback invoked with the root tab ID to display the tab
+     *     group dialog when the tab switcher is enabled.
      */
-    public static void openTabGroupDialog(
+    public static void focusTabGroup(
             String syncId,
             TabGroupSyncService tabGroupSyncService,
             TabGroupUiActionHandler tabGroupUiActionHandler,

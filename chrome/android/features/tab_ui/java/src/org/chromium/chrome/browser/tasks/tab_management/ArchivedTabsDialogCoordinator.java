@@ -268,7 +268,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                                                                             rootId));
                             // Archive status is reset through any tab group open action in
                             // LocalTabGroupMutationHelper#createNewTabGroup().
-                            TabSwitcherUtils.openTabGroupDialog(
+                            TabSwitcherUtils.focusTabGroup(
                                     syncId,
                                     mTabGroupSyncService,
                                     mTabGroupUiActionHandlerSupplier.get(),
