@@ -1,18 +1,16 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_background_view.h"
+#import "ios/chrome/browser/ntp/ui_bundled/ntp_card_background_view.h"
 
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
-@implementation MagicStackModuleBackgroundView {
+@implementation NTPCardBackgroundView {
   UIView* _backgroundColorView;
   UIVisualEffectView* _backgroundBlurView;
 
@@ -34,31 +32,25 @@
   [super setBackgroundColor:color];
 }
 
+#pragma mark - Public
+
+- (void)fadeIn {
+  _faded = NO;
+  [self updateFadedState];
+}
+
+- (void)fadeOut {
+  _faded = YES;
+  [self updateFadedState];
+}
+
 #pragma mark - Private
-
-- (UIVisualEffectView*)backgroundBlurView {
-  if (_backgroundBlurView) {
-    return _backgroundBlurView;
-  }
-
-  _backgroundBlurView = [[UIVisualEffectView alloc] initWithEffect:nil];
-  _backgroundBlurView.translatesAutoresizingMaskIntoConstraints = NO;
-  return _backgroundBlurView;
-}
-
-- (UIView*)backgroundColorView {
-  if (_backgroundColorView) {
-    return _backgroundColorView;
-  }
-  _backgroundColorView = [[UIView alloc] init];
-  _backgroundColorView.translatesAutoresizingMaskIntoConstraints = NO;
-  return _backgroundColorView;
-}
 
 - (void)updateBackground {
   // If the background is an image, the modules use a blurred background.
   BOOL hasBlurredBackground =
       [self.traitCollection boolForNewTabPageImageBackgroundTrait];
+
   if (hasBlurredBackground) {
     UIView* backgroundBlurView = [self backgroundBlurView];
     if (!backgroundBlurView.superview) {
@@ -85,19 +77,28 @@
 
   NewTabPageColorPalette* colorPalette =
       [self.traitCollection objectForNewTabPageTrait];
-  backgroundColorView.backgroundColor = NTPModuleBackgroundColor(colorPalette);
+  backgroundColorView.backgroundColor = NTPCardBackgroundColor(colorPalette);
 
   [self updateFadedState];
 }
 
-- (void)fadeIn {
-  _faded = NO;
-  [self updateFadedState];
+- (UIVisualEffectView*)backgroundBlurView {
+  if (_backgroundBlurView) {
+    return _backgroundBlurView;
+  }
+
+  _backgroundBlurView = [[UIVisualEffectView alloc] initWithEffect:nil];
+  _backgroundBlurView.translatesAutoresizingMaskIntoConstraints = NO;
+  return _backgroundBlurView;
 }
 
-- (void)fadeOut {
-  _faded = YES;
-  [self updateFadedState];
+- (UIView*)backgroundColorView {
+  if (_backgroundColorView) {
+    return _backgroundColorView;
+  }
+  _backgroundColorView = [[UIView alloc] init];
+  _backgroundColorView.translatesAutoresizingMaskIntoConstraints = NO;
+  return _backgroundColorView;
 }
 
 // Updates the currently active view to the correct faded state.

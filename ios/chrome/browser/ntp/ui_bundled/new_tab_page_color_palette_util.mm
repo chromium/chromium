@@ -163,9 +163,13 @@ NewTabPageColorPalette* DefaultNTPColorPalette() {
   return color_palette;
 }
 
-UIColor* NTPModuleBackgroundColor(NewTabPageColorPalette* color_palette) {
+UIColor* NTPCardBackgroundColor(NewTabPageColorPalette* color_palette) {
   if (color_palette) {
     return color_palette.secondaryCellColor;
+  }
+
+  if (IsNTPRedesignEnabled()) {
+    return [UIColor colorNamed:kNTPCardBackgroundColor];
   }
 
   return [UIColor colorNamed:IsNewTabPageUICleanupEnabled()

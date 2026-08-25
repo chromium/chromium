@@ -30,8 +30,8 @@ UIImage* CreatePreviewImageForColorPalette(
 // Returns the color palette for an un-themed NTP in light or dark mode.
 NewTabPageColorPalette* DefaultNTPColorPalette();
 
-// Returns the background color for NTP modules (most visited tiles, magic stack
+// Returns the background color for NTP cards (most visited tiles, magic stack
 // cards, discover) based on the NTP `color_palette`, which may be nil.
-UIColor* NTPModuleBackgroundColor(NewTabPageColorPalette* color_palette);
+UIColor* NTPCardBackgroundColor(NewTabPageColorPalette* color_palette);
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_COLOR_PALETTE_UTIL_H_

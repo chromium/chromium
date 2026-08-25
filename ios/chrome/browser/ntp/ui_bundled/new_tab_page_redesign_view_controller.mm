@@ -7,7 +7,6 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_redesign_view_controller.h"
 
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_background_view.h"
 #import "ios/chrome/browser/content_suggestions/model/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_collection_view.h"
@@ -30,6 +29,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_quick_actions_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
+#import "ios/chrome/browser/ntp/ui_bundled/ntp_card_background_view.h"
 #import "ios/chrome/browser/ntp/ui_bundled/ntp_identity_disc_button.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
@@ -58,7 +58,7 @@ constexpr CGFloat kRestingSheetMVTTopMargin = 12.0;
 // container.
 constexpr CGFloat kMVTContainerBottomPadding = 10.0;
 
-// Corner radius for the MVT container when rendered with squircle styling.
+// Corner radius for the MVT container.
 constexpr CGFloat kMVTContainerCornerRadius = 24.0;
 constexpr CGFloat kLandscapeLogoTopMargin = 8.0;
 
@@ -168,7 +168,7 @@ const CGFloat kMinDragHandleHeight = 24.0;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.view.backgroundColor = [UIColor colorNamed:@"ntp_background_color"];
+  self.view.backgroundColor = [UIColor colorNamed:kNTPRedesignBackgroundColor];
 
   _backgroundImageView = [[HomeCustomizationImageView alloc] init];
   _backgroundImageView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -568,7 +568,7 @@ const CGFloat kMinDragHandleHeight = 24.0;
 
   _mostVisitedView =
       [self createContainerForMostVisitedCollectionView:collectionView
-                                             inSquircle:YES];
+                                          hasBackground:YES];
 
   if (IsMVTInBottomSheetEnabled()) {
     if (_bottomSheetViewController) {
@@ -681,15 +681,15 @@ const CGFloat kMinDragHandleHeight = 24.0;
 #pragma mark - Private
 
 // Creates a container view that wraps `collectionView` with bottom padding and
-// optional squircle background styling.
+// optional background styling.
 - (UIView*)createContainerForMostVisitedCollectionView:
                (MostVisitedTilesCollectionView*)collectionView
-                                            inSquircle:(BOOL)inSquircle {
+                                         hasBackground:(BOOL)hasBackground {
   UIView* container = [[UIView alloc] init];
   container.translatesAutoresizingMaskIntoConstraints = NO;
 
-  if (inSquircle) {
-    UIView* backgroundView = [[MagicStackModuleBackgroundView alloc] init];
+  if (hasBackground) {
+    UIView* backgroundView = [[NTPCardBackgroundView alloc] init];
     backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
     [container addSubview:backgroundView];
     AddSameConstraints(container, backgroundView);

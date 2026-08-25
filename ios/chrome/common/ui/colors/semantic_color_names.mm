@@ -27,6 +27,8 @@ NSString* const kPlaceholderImageTintColor = @"placeholder_image_tint_color";
 NSString* const kNewTabPageBackgroundColor = @"new_tab_page_background_color";
 NSString* const kSurfaceContainerLowColor = @"surface_container_low_color";
 NSString* const kNTPQuickActionChipColor = @"ntp_quick_action_chip_color";
+NSString* const kNTPRedesignBackgroundColor = @"ntp_redesign_background_color";
+NSString* const kNTPCardBackgroundColor = @"ntp_card_background_color";
 NSString* const kPrimaryBackgroundColor = @"primary_background_color";
 NSString* const kInvertedPrimaryBackgroundColor =
     @"inverted_primary_background_color";

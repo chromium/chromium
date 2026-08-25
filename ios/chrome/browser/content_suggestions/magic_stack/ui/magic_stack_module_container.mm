@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_utils.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_context_menu_interaction_handler.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module.h"
-#import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_background_view.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_container_delegate.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_content_view_delegate.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_contents_factory.h"
@@ -27,6 +26,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
+#import "ios/chrome/browser/ntp/ui_bundled/ntp_card_background_view.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -78,7 +78,7 @@ const CGFloat kSeparatorHeight = 0.5;
   ContentSuggestionsModuleType _type;
   BOOL _reducedBottomMargin;
   MagicStackContextMenuInteractionHandler* _contextMenuInteractionHandler;
-  MagicStackModuleBackgroundView* _backgroundView;
+  NTPCardBackgroundView* _backgroundView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame noInset:(BOOL)noInset {
@@ -273,7 +273,7 @@ const CGFloat kSeparatorHeight = 0.5;
     // Only create and add the background view if it isn't already in the view
     // heirarchy.
     if (!_backgroundView.superview) {
-      _backgroundView = [[MagicStackModuleBackgroundView alloc] init];
+      _backgroundView = [[NTPCardBackgroundView alloc] init];
       _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
       [self insertSubview:_backgroundView atIndex:0];
       AddSameConstraints(self, _backgroundView);

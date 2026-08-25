@@ -1137,7 +1137,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   NewTabPageColorPalette* colorPalette =
       [self.traitCollection objectForNewTabPageTrait];
 
-  _feedContainer.backgroundColor = NTPModuleBackgroundColor(colorPalette);
+  _feedContainer.backgroundColor = NTPCardBackgroundColor(colorPalette);
 }
 
 - (void)setNTPShortcutsHandler:

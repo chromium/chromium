@@ -6,11 +6,17 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
+#import "ios/chrome/browser/ntp/ui_bundled/ntp_card_background_view.h"
 #import "ios/chrome/browser/ntp/ui_bundled/scroll_delegate_proxy.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/device_form_factor.h"
@@ -21,23 +27,73 @@
 - (BOOL)isVoiceOverRunning;
 - (void)setupSuperviewConstraints;
 - (void)handleFeedPan:(UIPanGestureRecognizer*)gesture;
+- (void)applyBackgroundTheme;
 @end
 
 class NewTabPageBottomSheetViewControllerTest : public PlatformTest {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
+    feature_list_.InitAndEnableFeature(kNewTabPageRedesign);
     view_controller_ = [[NewTabPageBottomSheetViewController alloc] init];
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   NewTabPageBottomSheetViewController* view_controller_;
 };
 
-// Tests that the view controller loads its view correctly.
-TEST_F(NewTabPageBottomSheetViewControllerTest, TestLoadView) {
+// Tests that the view controller loads its view and default styling correctly.
+TEST_F(NewTabPageBottomSheetViewControllerTest, TestLoadViewAndDefaultStyling) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
   [view_controller_ loadViewIfNeeded];
   EXPECT_NE(nil, view_controller_.view);
+  EXPECT_NSEQ([UIColor colorNamed:kSurfaceContainerLowColor],
+              view_controller_.view.backgroundColor);
+
+  UIView* drag_handle = [view_controller_ valueForKey:@"_dragHandle"];
+  EXPECT_NE(nil, drag_handle);
+  EXPECT_NSEQ([UIColor colorNamed:kTextTertiaryColor],
+              drag_handle.backgroundColor);
+
+  UIVisualEffectView* blur_view =
+      [view_controller_ valueForKey:@"_blurBackgroundView"];
+  EXPECT_NE(nil, blur_view);
+  EXPECT_TRUE(blur_view.hidden);
+
+  UIView* feed_card_background =
+      [view_controller_ valueForKey:@"_feedCardBackgroundView"];
+  EXPECT_NE(nil, feed_card_background);
+
+  UIView* feed_color_view =
+      [feed_card_background valueForKey:@"_backgroundColorView"];
+  EXPECT_NE(nil, feed_color_view);
+  EXPECT_NSEQ([UIColor colorNamed:kNTPCardBackgroundColor],
+              feed_color_view.backgroundColor);
+
+  UIVisualEffectView* feed_blur_view =
+      [feed_card_background valueForKey:@"_backgroundBlurView"];
+  EXPECT_EQ(nil, feed_blur_view);
+}
+
+// Tests that the view controller applies blur background when
+// NewTabPageImageBackgroundTrait is true.
+TEST_F(NewTabPageBottomSheetViewControllerTest,
+       TestBackgroundImageBackgroundTrait) {
+  [view_controller_ loadViewIfNeeded];
+
+  [[[CustomUITraitAccessor alloc]
+      initWithMutableTraits:view_controller_.traitOverrides]
+      setBoolForNewTabPageImageBackgroundTrait:YES];
+  [view_controller_ applyBackgroundTheme];
+
+  EXPECT_NSEQ(UIColor.clearColor, view_controller_.view.backgroundColor);
+  UIVisualEffectView* blur_view =
+      [view_controller_ valueForKey:@"_blurBackgroundView"];
+  EXPECT_NE(nil, blur_view);
+  EXPECT_FALSE(blur_view.hidden);
 }
 
 // Tests that the feed view controller is correctly embedded as a child view

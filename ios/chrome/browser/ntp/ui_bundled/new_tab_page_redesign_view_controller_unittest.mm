@@ -15,7 +15,9 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -106,10 +108,13 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestLandscapeSafetyGuard) {
   EXPECT_EQ(resting_offset, max_allowed_offset);
 }
 
-// Tests that the view controller loads its view correctly.
+// Tests that the view controller loads its view correctly with redesign
+// background color.
 TEST_F(NewTabPageRedesignViewControllerTest, TestLoadView) {
   [view_controller_ loadViewIfNeeded];
   EXPECT_NE(nil, view_controller_.view);
+  EXPECT_NSEQ([UIColor colorNamed:kNTPRedesignBackgroundColor],
+              view_controller_.view.backgroundColor);
 }
 
 // Tests that didUpdateTopOffset in legacy mode (static-fakebox: false)

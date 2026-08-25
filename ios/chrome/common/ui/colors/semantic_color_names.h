@@ -40,6 +40,10 @@ extern NSString* const kNewTabPageBackgroundColor;
 extern NSString* const kSurfaceContainerLowColor;
 // Color used for quick action buttons on the NTP.
 extern NSString* const kNTPQuickActionChipColor;
+// Background color for NTP Redesign.
+extern NSString* const kNTPRedesignBackgroundColor;
+// Background color for NTP module and feed cards in NTP Redesign.
+extern NSString* const kNTPCardBackgroundColor;
 // Primary background color.
 extern NSString* const kPrimaryBackgroundColor;
 extern NSString* const kInvertedPrimaryBackgroundColor;

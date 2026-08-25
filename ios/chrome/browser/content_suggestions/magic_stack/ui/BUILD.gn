@@ -57,8 +57,6 @@ source_set("cells") {
     "magic_stack_edit_button_cell.mm",
     "magic_stack_layout_attributes.h",
     "magic_stack_layout_attributes.mm",
-    "magic_stack_module_background_view.h",
-    "magic_stack_module_background_view.mm",
     "magic_stack_module_collection_view_cell.h",
     "magic_stack_module_collection_view_cell.mm",
     "magic_stack_module_container.h",

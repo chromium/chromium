@@ -10,8 +10,11 @@
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
+#import "ios/chrome/browser/ntp/ui_bundled/ntp_card_background_view.h"
 #import "ios/chrome/browser/ntp/ui_bundled/scroll_delegate_proxy.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
@@ -37,6 +40,7 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
 @end
 
 @implementation NewTabPageBottomSheetViewController {
+  UIVisualEffectView* _blurBackgroundView;
   UIView* _dragHandle;
   UIView* _headerContainerView;
   UIView* _magicStackContainerView;
@@ -44,6 +48,7 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
   UIView* _mostVisitedContainerView;
   UIView* _mostVisitedView;
   UIView* _contentContainerView;
+  NTPCardBackgroundView* _feedCardBackgroundView;
   BottomSheetSnappingState _sheetState;
 
   CGSize _lastSize;
@@ -86,12 +91,6 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
   }
 }
 
-- (void)loadView {
-  UIBlurEffect* blurEffect =
-      [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemMaterial];
-  self.view = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-}
-
 - (void)viewDidLoad {
   [super viewDidLoad];
 
@@ -106,21 +105,25 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
   self.view.layer.cornerRadius = 24.0;
   self.view.layer.masksToBounds = YES;
 
-  UIVisualEffectView* visualEffectView = (UIVisualEffectView*)self.view;
+  _blurBackgroundView = [[UIVisualEffectView alloc]
+      initWithEffect:[UIBlurEffect
+                         effectWithStyle:UIBlurEffectStyleSystemMaterial]];
+  _blurBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+  _blurBackgroundView.userInteractionEnabled = NO;
+  [self.view insertSubview:_blurBackgroundView atIndex:0];
+  AddSameConstraints(self.view, _blurBackgroundView);
 
   // Add drag handle to bottom sheet.
   _dragHandle = [[UIView alloc] init];
   _dragHandle.translatesAutoresizingMaskIntoConstraints = NO;
-  _dragHandle.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.3];
+  _dragHandle.backgroundColor = [UIColor colorNamed:kTextTertiaryColor];
   _dragHandle.layer.cornerRadius = 2.5;
-  [visualEffectView.contentView addSubview:_dragHandle];
+  [self.view addSubview:_dragHandle];
 
   [NSLayoutConstraint activateConstraints:@[
-    [_dragHandle.centerXAnchor
-        constraintEqualToAnchor:visualEffectView.contentView.centerXAnchor],
-    [_dragHandle.topAnchor
-        constraintEqualToAnchor:visualEffectView.contentView.topAnchor
-                       constant:8],
+    [_dragHandle.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
+    [_dragHandle.topAnchor constraintEqualToAnchor:self.view.topAnchor
+                                          constant:8],
     [_dragHandle.widthAnchor constraintEqualToConstant:36],
     [_dragHandle.heightAnchor constraintEqualToConstant:5],
   ]];
@@ -128,13 +131,13 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
   // Add header container view that encapsulates MVT and Magic Stack.
   _headerContainerView = [[UIView alloc] init];
   _headerContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-  [visualEffectView.contentView addSubview:_headerContainerView];
+  [self.view addSubview:_headerContainerView];
 
   [NSLayoutConstraint activateConstraints:@[
     [_headerContainerView.leadingAnchor
-        constraintEqualToAnchor:visualEffectView.contentView.leadingAnchor],
+        constraintEqualToAnchor:self.view.leadingAnchor],
     [_headerContainerView.trailingAnchor
-        constraintEqualToAnchor:visualEffectView.contentView.trailingAnchor],
+        constraintEqualToAnchor:self.view.trailingAnchor],
     [_headerContainerView.topAnchor
         constraintEqualToAnchor:_dragHandle.bottomAnchor
                        constant:kContentContainerTopMargin],
@@ -180,19 +183,34 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
   // Add content container view.
   _contentContainerView = [[UIView alloc] init];
   _contentContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-  [visualEffectView.contentView addSubview:_contentContainerView];
+  _contentContainerView.clipsToBounds = YES;
+  _contentContainerView.layer.cornerRadius = kHomeModuleContainerCornerRadius;
+  _contentContainerView.layer.maskedCorners =
+      kCALayerMaxXMinYCorner | kCALayerMinXMinYCorner;
+  [self.view addSubview:_contentContainerView];
 
   [NSLayoutConstraint activateConstraints:@[
     [_contentContainerView.leadingAnchor
-        constraintEqualToAnchor:visualEffectView.contentView.leadingAnchor],
+        constraintEqualToAnchor:self.view.leadingAnchor],
     [_contentContainerView.trailingAnchor
-        constraintEqualToAnchor:visualEffectView.contentView.trailingAnchor],
+        constraintEqualToAnchor:self.view.trailingAnchor],
     [_contentContainerView.topAnchor
         constraintEqualToAnchor:_headerContainerView.bottomAnchor
                        constant:kMagicStackToFeedSpacing],
     [_contentContainerView.bottomAnchor
-        constraintEqualToAnchor:visualEffectView.contentView.bottomAnchor],
+        constraintEqualToAnchor:self.view.bottomAnchor],
   ]];
+
+  // Add feed card background view.
+  _feedCardBackgroundView = [[NTPCardBackgroundView alloc] init];
+  _feedCardBackgroundView.userInteractionEnabled = NO;
+  _feedCardBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+  [_contentContainerView insertSubview:_feedCardBackgroundView atIndex:0];
+  AddSameConstraints(_feedCardBackgroundView, _contentContainerView);
+
+  [self registerForTraitChanges:@[ NewTabPageImageBackgroundTrait.class ]
+                     withAction:@selector(applyBackgroundTheme)];
+  [self applyBackgroundTheme];
 
   // Add pan gesture recognizer.
   _sheetPanGesture =
@@ -214,6 +232,18 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
 
   if (_feedViewController) {
     [self embedFeedViewController];
+  }
+}
+
+- (void)applyBackgroundTheme {
+  BOOL hasBlurredBackground =
+      [self.traitCollection boolForNewTabPageImageBackgroundTrait];
+  if (hasBlurredBackground) {
+    self.view.backgroundColor = UIColor.clearColor;
+    _blurBackgroundView.hidden = NO;
+  } else {
+    self.view.backgroundColor = [UIColor colorNamed:kSurfaceContainerLowColor];
+    _blurBackgroundView.hidden = YES;
   }
 }
 
@@ -239,6 +269,7 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
   self.magicStackViewController = nil;
   _mostVisitedView = nil;
   _headerContainerView = nil;
+  _feedCardBackgroundView = nil;
 }
 
 - (BOOL)accessibilityPerformEscape {
@@ -344,6 +375,9 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
   _feedViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   [_contentContainerView addSubview:_feedViewController.view];
   AddSameConstraints(_feedViewController.view, _contentContainerView);
+  if (_feedCardBackgroundView) {
+    [_contentContainerView sendSubviewToBack:_feedCardBackgroundView];
+  }
   [_feedViewController didMoveToParentViewController:self];
 
   _feedViewController.view.hidden = NO;
