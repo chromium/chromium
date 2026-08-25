@@ -5,3 +5,10 @@ include_rules = [
   "+ui/gfx",
   "+ui/views",
 ]
+
+specific_include_rules = {
+  # The mock owns a host so tests get a default GetUnownedUserDataHost().
+  "mock_tab_interface\.h": [
+    "+ui/base/unowned_user_data",
+  ],
+}

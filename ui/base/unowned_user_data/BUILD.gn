@@ -5,7 +5,7 @@
 # Technically, this could be supported on more platforms, but these are the only
 # ones where it's needed today.
 
-assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+assert(is_win || is_mac || is_linux || is_chromeos || is_android || is_fuchsia)
 
 component("unowned_user_data") {
   defines = [ "IS_UNOWNED_USER_DATA_IMPL" ]

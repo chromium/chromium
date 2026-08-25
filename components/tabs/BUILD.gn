@@ -85,6 +85,8 @@ source_set("test_support") {
     ":public",
     "//testing/gmock",
   ]
+
+  public_deps = [ "//ui/base/unowned_user_data" ]
 }
 
 source_set("unit_tests") {
