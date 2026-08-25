@@ -15,6 +15,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.util.ViewVisibility;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -33,10 +34,6 @@ public class PeekViewUiState {
         int DEFAULT = 3;
     }
 
-    @IntDef({View.VISIBLE, View.INVISIBLE, View.GONE})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface Visibility {}
-
     private static final @DrawableRes int PEEK_ICON = R.drawable.ic_spark_blue_16dp;
     private static final @DrawableRes int BUTTON_ICON_ACTING = R.drawable.ic_pause_white_24dp;
     private static final @DrawableRes int BUTTON_ICON_PAUSED = R.drawable.ic_play_arrow_white_24dp;
@@ -53,9 +50,9 @@ public class PeekViewUiState {
     public final @DrawableRes int buttonIconResId;
     public final @DimenRes int buttonHorizontalPaddingResId;
     public final @ColorRes int iconTintResId;
-    public final @Visibility int buttonVisibility;
+    public final @ViewVisibility int buttonVisibility;
     public final @StringRes int buttonTextResId;
-    public final @Visibility int descriptionVisibility;
+    public final @ViewVisibility int descriptionVisibility;
     public final @StyleRes int titleTextAppearanceResId;
     public final @ColorRes int buttonBackgroundResId;
     public final @StringRes int buttonContentDescriptionResId;
@@ -68,9 +65,9 @@ public class PeekViewUiState {
             @ColorRes int buttonBackgroundResId,
             @DimenRes int buttonHorizontalPaddingResId,
             @ColorRes int iconTintResId,
-            @Visibility int buttonVisibility,
+            @ViewVisibility int buttonVisibility,
             @StringRes int buttonTextResId,
-            @Visibility int descriptionVisibility,
+            @ViewVisibility int descriptionVisibility,
             @StyleRes int titleTextAppearanceResId,
             @StringRes int buttonContentDescriptionResId) {
         this.type = type;
@@ -87,13 +84,12 @@ public class PeekViewUiState {
         this.buttonContentDescriptionResId = buttonContentDescriptionResId;
     }
 
-
     /**
      * Returns the visibility of the actor control button.
      *
      * @return The visibility of the actor control button.
      */
-    public @Visibility int getButtonVisibility() {
+    public @ViewVisibility int getButtonVisibility() {
         return buttonVisibility;
     }
 
@@ -102,7 +98,7 @@ public class PeekViewUiState {
      *
      * @return The visibility of the description view.
      */
-    public @Visibility int getDescriptionVisibility() {
+    public @ViewVisibility int getDescriptionVisibility() {
         return descriptionVisibility;
     }
 
