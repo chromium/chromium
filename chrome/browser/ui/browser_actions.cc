@@ -1802,7 +1802,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                 // TODO(crbug.com/356468503): Figure out how to capture
                 // action invocation location.
                 auto* cast_browser_controller =
-                    bwi->GetFeatures().cast_browser_controller();
+                    media_router::CastBrowserController::From(bwi);
                 if (cast_browser_controller) {
                   cast_browser_controller->ToggleDialog();
                 }

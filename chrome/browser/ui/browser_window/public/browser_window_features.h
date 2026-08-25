@@ -323,10 +323,6 @@ class BrowserWindowFeatures {
     return browser_select_file_dialog_controller_.get();
   }
 
-  media_router::CastBrowserController* cast_browser_controller() {
-    return cast_browser_controller_.get();
-  }
-
   ContentsBorderController* contents_border_controller() {
     return contents_border_controller_.get();
   }

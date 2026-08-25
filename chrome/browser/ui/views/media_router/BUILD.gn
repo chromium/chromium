@@ -43,6 +43,7 @@ source_set("media_router") {
     "//content/public/browser",
     "//ui/base",
     "//ui/base/metadata",
+    "//ui/base/unowned_user_data",
     "//ui/display",
     "//ui/events",
     "//ui/menus",

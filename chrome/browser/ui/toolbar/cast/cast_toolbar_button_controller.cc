@@ -115,9 +115,14 @@ void CastToolbarButtonController::OnDialogHidden() {
 }
 
 void CastToolbarButtonController::UpdateIcon() {
-  ProfileBrowserCollection::GetForProfile(profile_)
-      ->ForEach([](BrowserWindowInterface* browser) {
-        browser->GetFeatures().cast_browser_controller()->UpdateIcon();
+  ProfileBrowserCollection::GetForProfile(profile_)->ForEach(
+      [](BrowserWindowInterface* browser) {
+        // Not all windows have a controller (e.g. media routing disabled or
+        // no BrowserView).
+        if (auto* controller =
+                media_router::CastBrowserController::From(browser)) {
+          controller->UpdateIcon();
+        }
         return true;
       });
 }

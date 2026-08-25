@@ -29,6 +29,14 @@ constexpr char kLoggerComponent[] = "CastBrowserController";
 
 using Severity = media_router::IssueInfo::Severity;
 
+DEFINE_USER_DATA(CastBrowserController);
+
+// static
+CastBrowserController* CastBrowserController::From(
+    BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
 CastBrowserController::CastBrowserController(BrowserWindowInterface* browser)
     : CastBrowserController(
           browser,
@@ -39,6 +47,7 @@ CastBrowserController::CastBrowserController(BrowserWindowInterface* browser,
     : IssuesObserver(media_router->GetIssueManager()),
       MediaRoutesObserver(media_router),
       browser_(browser),
+      scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this),
       logger_(media_router->GetLogger()) {
   IssuesObserver::Init();
 }

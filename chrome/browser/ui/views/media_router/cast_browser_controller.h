@@ -11,6 +11,7 @@
 #include "components/media_router/browser/issues_observer.h"
 #include "components/media_router/browser/mirroring_media_controller_host.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/events/event.h"
 
 class BrowserWindowInterface;
@@ -28,6 +29,12 @@ class CastBrowserController : public IssuesObserver,
                               public MediaRoutesObserver,
                               public MirroringMediaControllerHost::Observer {
  public:
+  DECLARE_USER_DATA(CastBrowserController);
+
+  // Returns the controller for `browser`, or null if it does not have one
+  // (e.g. media routing disabled, or no BrowserView).
+  static CastBrowserController* From(BrowserWindowInterface* browser);
+
   explicit CastBrowserController(BrowserWindowInterface* browser);
   CastBrowserController(BrowserWindowInterface* browser,
                         MediaRouter* media_router);
@@ -63,6 +70,8 @@ class CastBrowserController : public IssuesObserver,
   void StopObservingMirroringMediaControllerHosts();
 
   const raw_ptr<BrowserWindowInterface> browser_;
+
+  ui::ScopedUnownedUserData<CastBrowserController> scoped_unowned_user_data_;
 
   // This value is set only when there is an outstanding issue.
   std::optional<media_router::IssueInfo::Severity> issue_severity_;
