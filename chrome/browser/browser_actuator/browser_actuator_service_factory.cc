@@ -7,10 +7,12 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/browser_actuator/internal/browser_actuator_service_impl.h"
 #include "components/browser_actuator/public/browser_actuator_service.h"
 #include "components/browser_actuator/public/features.h"
 #include "content/public/browser/browser_context.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace browser_actuator {
 
@@ -30,7 +32,9 @@ BrowserActuatorService* BrowserActuatorServiceFactory::GetForProfile(
 
 BrowserActuatorServiceFactory::BrowserActuatorServiceFactory()
     : ProfileKeyedServiceFactory("BrowserActuatorService",
-                                 ProfileSelections::BuildForRegularProfile()) {}
+                                 ProfileSelections::BuildForRegularProfile()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
 
 BrowserActuatorServiceFactory::~BrowserActuatorServiceFactory() = default;
 
@@ -41,7 +45,10 @@ BrowserActuatorServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  return std::make_unique<BrowserActuatorServiceImpl>();
+  Profile* profile = Profile::FromBrowserContext(context);
+  return std::make_unique<BrowserActuatorServiceImpl>(
+      context->GetURLLoaderFactory(),
+      IdentityManagerFactory::GetForProfile(profile));
 }
 
 }  // namespace browser_actuator

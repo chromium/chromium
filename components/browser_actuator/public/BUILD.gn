@@ -7,10 +7,7 @@ source_set("feature_list") {
     "features.cc",
     "features.h",
   ]
-  deps = [
-    "//base",
-    "//url",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("public") {
@@ -31,5 +28,6 @@ source_set("public") {
   public_deps = [
     ":feature_list",
     "//components/keyed_service/core",
+    "//third_party/protobuf:protobuf_lite",
   ]
 }

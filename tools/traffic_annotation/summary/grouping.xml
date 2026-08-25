@@ -418,6 +418,7 @@ after discussions on the right group.
       <annotation id="fetch_user_data_processing_consent"/>
       <annotation id="device_authorization_key_fetch"/>
       <annotation id="site_token_fetcher"/>
+      <annotation id="browser_actuator_transport"/>
     </sender>
   </group>
   <group name="Admin Features">

@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#include "url/gurl.h"
 
 namespace browser_actuator {
 
@@ -36,6 +37,12 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kProtoStreamStallTimeout);
 
 // Maximum number of concurrent active transport sessions.
 BASE_DECLARE_FEATURE_PARAM(int, kMaxTransportSessions);
+
+// Returns the full endpoint URL for sendSessionMessage.
+GURL GetSendSessionMessageEndpoint();
+
+// Returns the full endpoint URL for watchSessions.
+GURL GetWatchSessionsEndPoint();
 
 }  // namespace browser_actuator
 

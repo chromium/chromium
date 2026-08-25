@@ -8,7 +8,16 @@
 #include <memory>
 #include <string_view>
 
+#include "base/memory/scoped_refptr.h"
 #include "components/browser_actuator/public/browser_actuator_service.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 namespace browser_actuator {
 
@@ -16,7 +25,9 @@ class TransportChannelImpl;
 
 class BrowserActuatorServiceImpl : public BrowserActuatorService {
  public:
-  BrowserActuatorServiceImpl();
+  BrowserActuatorServiceImpl(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      signin::IdentityManager* identity_manager);
   ~BrowserActuatorServiceImpl() override;
 
   BrowserActuatorServiceImpl(const BrowserActuatorServiceImpl&) = delete;

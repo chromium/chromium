@@ -24,6 +24,7 @@ class ControlTransportHandlerFactory;
 class StreamConnectionDelegate;
 class TransportHandlerFactoryRegistryImpl;
 class TransportSessionRegistryImpl;
+class UpstreamMessageClient;
 
 // Connection status of the background transport channel downstream stream.
 enum class DownstreamConnectionState {
@@ -41,8 +42,8 @@ enum class DownstreamConnectionState {
 //    session so the *session* can advance its own last-seen position.
 //  * (re)connect: it builds the WatchSessionsRequest body from the sessions
 //    it can see in the registry.
-//  * upstream: it assembles the ActuatorUpstreamMessage for a session's
-//    outgoing send, reading that session's sequence counters.
+//  * upstream: it delegates the actual sending of the ActuatorUpstreamMessage
+//    to the injected UpstreamMessageClient.
 //
 // The channel never holds a last-seen number of its own; that lives on each
 // TransportSessionImpl. Sessions borrow the channel back (WeakPtr) only to
@@ -61,6 +62,7 @@ class TransportChannelImpl : public TransportChannel,
           std::unique_ptr<StreamConnectionDelegate> resume_delegate)>;
 
   explicit TransportChannelImpl(
+      std::unique_ptr<UpstreamMessageClient> upstream_message_client,
       StreamClientFactory stream_client_factory = StreamClientFactory());
   ~TransportChannelImpl() override;
 
@@ -123,6 +125,10 @@ class TransportChannelImpl : public TransportChannel,
 
   DownstreamConnectionState downstream_connection_state_ GUARDED_BY_CONTEXT(
       sequence_checker_) = DownstreamConnectionState::kDisconnected;
+
+  // The underlying network client for upstream messages.
+  std::unique_ptr<UpstreamMessageClient> upstream_message_client_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<TransportChannelImpl> weak_ptr_factory_{this};
 };

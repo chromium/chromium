@@ -4,15 +4,19 @@
 
 #include "components/browser_actuator/internal/transport_channel_impl.h"
 
+#include <optional>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/uuid.h"
 #include "components/browser_actuator/internal/control_transport_handler.h"
 #include "components/browser_actuator/internal/proto/transport_messages.pb.h"
 #include "components/browser_actuator/internal/transport/resume_body_connection_delegate.h"
 #include "components/browser_actuator/internal/transport/stream_connection_delegate.h"
+#include "components/browser_actuator/internal/transport/upstream_message_client/upstream_message_client.h"
 #include "components/browser_actuator/internal/transport_handler_factory_registry_impl.h"
 #include "components/browser_actuator/internal/transport_session_impl.h"
 #include "components/browser_actuator/internal/transport_session_registry_impl.h"
@@ -20,7 +24,10 @@
 namespace browser_actuator {
 
 TransportChannelImpl::TransportChannelImpl(
-    StreamClientFactory stream_client_factory) {
+    std::unique_ptr<UpstreamMessageClient> upstream_message_client,
+    StreamClientFactory stream_client_factory)
+    : upstream_message_client_(std::move(upstream_message_client)) {
+  CHECK(upstream_message_client_);
   handler_registry_ = std::make_unique<TransportHandlerFactoryRegistryImpl>();
   session_registry_ = std::make_unique<TransportSessionRegistryImpl>(
       weak_ptr_factory_.GetWeakPtr());
@@ -147,20 +154,25 @@ void TransportChannelImpl::SendUpstreamMessage(
     return;
   }
 
-  ActuatorUpstreamMessage upstream;
-  upstream.set_session_id(session_id);
-  upstream.set_client_sequence_number(session->IncrementClientSequenceNumber());
-  // Only correlate to a real received message.
+  int64_t client_sequence_number = session->IncrementClientSequenceNumber();
+  std::optional<int64_t> responding_to_sequence_number;
   if (session->has_last_seen_sequence_number()) {
-    upstream.set_responding_to_sequence_number(
-        session->last_seen_sequence_number());
+    responding_to_sequence_number = session->last_seen_sequence_number();
   }
-
-  // TODO(crbug.com/532660606): pack `payload` + `payload_type` into a
-  // typed_payload (google.protobuf.Any) once the outgoing payload proto lands.
-  // TODO(crbug.com/532660606): POST upstream.SerializeAsString() to the
-  // upstream endpoint (SimpleURLLoader::AttachStringForUpload,
-  // "application/x-protobuf").
+  upstream_message_client_->SendUpstreamMessage(
+      session_id, client_sequence_number, responding_to_sequence_number,
+      payload_type, message,
+      base::BindOnce(
+          [](std::string session_id, bool success, int response_code) {
+            if (!success) {
+              VLOG(1) << "Failed to send upstream message for session "
+                      << session_id << " (response code: " << response_code
+                      << ")";
+              // TODO(crbug.com/532661039): Consider adding retry buffering or
+              // closing the channel.
+            }
+          },
+          std::string(session_id)));
 }
 
 std::string TransportChannelImpl::BuildWatchSessionsRequestBody() {

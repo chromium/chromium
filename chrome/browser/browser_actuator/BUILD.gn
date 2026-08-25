@@ -15,10 +15,12 @@ source_set("factory") {
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//components/browser_actuator/internal",
     "//components/browser_actuator/public",
     "//components/keyed_service/core",
     "//content/public/browser",
+    "//services/network/public/cpp",
   ]
 }
 

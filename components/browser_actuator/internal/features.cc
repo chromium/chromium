@@ -4,7 +4,29 @@
 
 #include "components/browser_actuator/internal/features.h"
 
+#include <string>
+
+#include "base/strings/strcat.h"
+#include "components/browser_actuator/public/features.h"
+#include "net/base/url_util.h"
+#include "url/gurl.h"
+
 namespace browser_actuator {
+
+namespace {
+
+const base::FeatureParam<std::string> kBrowserActuatorEndpointUrlParam{
+    &kBrowserActuator, "BrowserActuatorEndpointUrl",
+    "https://confection.pa.googleapis.com/v1:"};
+
+const base::FeatureParam<std::string> kSendSessionMessagePathParam{
+    &kBrowserActuator, "BrowserActuatorSendSessionMessagePath",
+    "sendSessionMessage"};
+
+const base::FeatureParam<std::string> kWatchSessionsPathParam{
+    &kBrowserActuator, "BrowserActuatorWatchSessionsPath", "watchSessions"};
+
+}  // namespace
 
 BASE_FEATURE(kBrowserActuatorChannelEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -31,5 +53,17 @@ BASE_FEATURE_PARAM(int,
                    kMaxTransportSessions,
                    &kBrowserActuatorProtoStreamTransport,
                    3);
+
+GURL GetSendSessionMessageEndpoint() {
+  GURL base_url(base::StrCat({kBrowserActuatorEndpointUrlParam.Get(),
+                              kSendSessionMessagePathParam.Get()}));
+  return net::AppendQueryParameter(base_url, "alt", "proto");
+}
+
+GURL GetWatchSessionsEndPoint() {
+  GURL base_url(base::StrCat(
+      {kBrowserActuatorEndpointUrlParam.Get(), kWatchSessionsPathParam.Get()}));
+  return net::AppendQueryParameter(base_url, "alt", "proto");
+}
 
 }  // namespace browser_actuator
