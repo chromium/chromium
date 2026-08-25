@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/escape.h"
@@ -250,18 +251,33 @@ GlicNavigationThrottle::WillStartRequest() {
     }
   }
 
-  // Navigate to the target URL.
-  NavigateParams params(profile, target_url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params.disposition = WindowOpenDisposition::CURRENT_TAB;
-  params.source_contents = web_contents;
-  params.initiator_origin = navigation_handle()->GetInitiatorOrigin();
-  params.is_renderer_initiated = navigation_handle()->IsRendererInitiated();
-  params.user_gesture = navigation_handle()->HasUserGesture();
-  params.original_user_gesture = navigation_handle()->HasUserGesture();
+  // Navigate to the target URL asynchronously. Use a WeakPtr to avoid a
+  // heap-use-after-free if the WebContents is destroyed before the task runs.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce([](NavigateParams params) { Navigate(&params); },
-                     std::move(params)));
+      base::BindOnce(
+          [](base::WeakPtr<content::WebContents> web_contents, GURL target_url,
+             std::optional<url::Origin> initiator_origin,
+             bool is_renderer_initiated, bool user_gesture) {
+            if (!web_contents) {
+              return;
+            }
+            Profile* profile =
+                Profile::FromBrowserContext(web_contents->GetBrowserContext());
+            NavigateParams params(profile, target_url,
+                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+            params.disposition = WindowOpenDisposition::CURRENT_TAB;
+            params.source_contents = web_contents.get();
+            params.initiator_origin = initiator_origin;
+            params.is_renderer_initiated = is_renderer_initiated;
+            params.user_gesture = user_gesture;
+            params.original_user_gesture = user_gesture;
+            Navigate(&params);
+          },
+          web_contents->GetWeakPtr(), target_url,
+          navigation_handle()->GetInitiatorOrigin(),
+          navigation_handle()->IsRendererInitiated(),
+          navigation_handle()->HasUserGesture()));
   LogCaptureResult(is_glic_enabled, GeminiNavigationCaptureResult::kSuccess);
   return CANCEL;
 }
