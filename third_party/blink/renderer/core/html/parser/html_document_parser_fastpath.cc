@@ -11,6 +11,8 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -327,8 +329,9 @@ struct ScanTextResult {
     return TextToString();
   }
 
-  base::span<const Char> text;
-  UCharLiteralBufferType* escaped_text = nullptr;
+  base::raw_span<const Char, UnprotectedInRelease | DanglingUntriaged> text;
+  raw_ptr<UCharLiteralBufferType, UnprotectedInRelease | DanglingUntriaged>
+      escaped_text = nullptr;
   bool is_newline_then_whitespace_string = false;
   bool is_8bit = true;
 };

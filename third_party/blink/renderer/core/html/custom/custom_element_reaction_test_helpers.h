@@ -5,12 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CUSTOM_ELEMENT_REACTION_TEST_HELPERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CUSTOM_ELEMENT_REACTION_TEST_HELPERS_H_
 
-#include "third_party/blink/renderer/core/html/custom/custom_element_reaction.h"
-
 #include <initializer_list>
 #include <memory>
 
+#include "base/memory/raw_ref.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_reaction.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_queue.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_stack.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_test_helpers.h"
@@ -63,11 +63,11 @@ class Log : public Command {
   Log(const Log&) = delete;
   Log& operator=(const Log&) = delete;
   ~Log() override = default;
-  void Run(Element&) override { where_.push_back(what_); }
+  void Run(Element&) override { where_->push_back(what_); }
 
  private:
   char what_;
-  Vector<char>& where_;
+  const raw_ref<Vector<char>, UnprotectedInRelease | DanglingUntriaged> where_;
 };
 
 class Recurse : public Command {

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_PARSER_METRICS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_PARSER_METRICS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
@@ -49,7 +50,8 @@ class CORE_EXPORT HTMLParserMetrics {
 
   // UKM System data.
   const int64_t source_id_;
-  ukm::UkmRecorder* const recorder_;
+  const raw_ptr<ukm::UkmRecorder, UnprotectedInRelease | DanglingUntriaged>
+      recorder_;
 
   // Metrics data.
   unsigned chunk_count_ = 0;                  // For computing averages.

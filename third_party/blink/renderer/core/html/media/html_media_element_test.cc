@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "base/time/time_override.h"
@@ -838,7 +839,8 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
   Persistent<FullscreenMockChromeClient> chrome_client_;
 
   // Owned by WebMediaStubLocalFrameClient.
-  MockWebMediaPlayer* media_player_;
+  raw_ptr<MockWebMediaPlayer, UnprotectedInRelease | DanglingUntriaged>
+      media_player_;
   base::WeakPtr<WebMediaPlayer> media_player_weak_;
 
   TestMediaPlayerHost media_player_host_;

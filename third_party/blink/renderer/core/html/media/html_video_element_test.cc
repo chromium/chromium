@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 
+#include "base/memory/raw_ptr.h"
 #include "cc/layers/layer.h"
 #include "media/base/video_frame.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
@@ -256,7 +257,9 @@ class HTMLVideoElementTest : public PaintTestConfigurations,
   Persistent<HTMLVideoElement> video_;
 
   // Owned by HTMLVideoElementFrameClient.
-  HTMLVideoElementMockMediaPlayer* media_player_;
+  raw_ptr<HTMLVideoElementMockMediaPlayer,
+          UnprotectedInRelease | DanglingUntriaged>
+      media_player_;
 
   std::unique_ptr<SaveVideoFrameLocalFrameHost> frame_host_;
 };

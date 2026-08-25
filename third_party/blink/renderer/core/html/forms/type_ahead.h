@@ -28,6 +28,7 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -70,7 +71,8 @@ class CORE_EXPORT TypeAhead {
   void ResetSession();
 
  private:
-  TypeAheadDataSource* data_source_;
+  raw_ptr<TypeAheadDataSource, UnprotectedInRelease | DanglingUntriaged>
+      data_source_;
   // platform timestamp of last keyboard event in seconds
   std::optional<base::TimeTicks> last_type_time_;
   UChar repeating_char_;

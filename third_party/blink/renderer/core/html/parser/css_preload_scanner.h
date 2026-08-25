@@ -27,6 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_CSS_PRELOAD_SCANNER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_CSS_PRELOAD_SCANNER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/core/html/parser/preload_request.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -105,9 +106,13 @@ class CSSPreloadScanner {
   bool media_matches_ = true;
 
   // Below members only non-null during scan()
-  PreloadRequestStream* requests_ = nullptr;
-  const KURL* predicted_base_element_url_ = nullptr;
-  const PreloadRequest::ExclusionInfo* exclusion_info_;
+  raw_ptr<PreloadRequestStream, UnprotectedInRelease | DanglingUntriaged>
+      requests_ = nullptr;
+  raw_ptr<const KURL, UnprotectedInRelease | DanglingUntriaged>
+      predicted_base_element_url_ = nullptr;
+  raw_ptr<const PreloadRequest::ExclusionInfo,
+          UnprotectedInRelease | DanglingUntriaged>
+      exclusion_info_;
 };
 
 }  // namespace blink

@@ -217,7 +217,7 @@ void ColorChooserPopupUIController::WriteColorSuggestionPickerDocument(
 }
 
 Locale& ColorChooserPopupUIController::GetLocale() {
-  return locale_;
+  return *locale_;
 }
 
 void ColorChooserPopupUIController::SetValueAndClosePopup(

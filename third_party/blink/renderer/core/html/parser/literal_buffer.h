@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/checked_iterators.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
@@ -59,12 +60,12 @@ class LiteralBufferBase {
   ALWAYS_INLINE iterator begin() const {
     // SAFETY: The iterator is constructed with the start and end of the
     // allocated buffer, so it is safe.
-    return UNSAFE_BUFFERS(iterator(begin_, end_));
+    return UNSAFE_BUFFERS(iterator(begin_.get(), end_.get()));
   }
   ALWAYS_INLINE iterator end() const {
     // SAFETY: The iterator is constructed with the start and end of the
     // allocated buffer, so it is safe.
-    return UNSAFE_BUFFERS(iterator(begin_, end_, end_));
+    return UNSAFE_BUFFERS(iterator(begin_.get(), end_.get(), end_.get()));
   }
 
   ALWAYS_INLINE bool IsEmpty() const { return begin_ == end_; }
@@ -107,7 +108,7 @@ class LiteralBufferBase {
     // SAFETY: The `Grow()` call above ensures that there is enough capacity to
     // append `count` characters, or the program would have crashed due to
     // overflow.
-    UNSAFE_BUFFERS(end_ = std::ranges::copy(base::span(val), end_).out);
+    UNSAFE_BUFFERS(end_ = std::ranges::copy(base::span(val), end_.get()).out);
   }
 
   template <blink::wtf_size_t kOtherInlineSize>
@@ -125,7 +126,8 @@ class LiteralBufferBase {
     // SAFETY: The `Grow()` call above ensures that there is enough capacity to
     // copy `other_size` characters, or the program would have crashed due to
     // overflow.
-    UNSAFE_BUFFERS(base::span(begin_, other_size)).copy_from(base::span(other));
+    UNSAFE_BUFFERS(base::span(begin_.get(), other_size))
+        .copy_from(base::span(other));
     // SAFETY: `begin_` has at least `other_size` capacity, and `end_` is
     // updated to point to the end of the copied range.
     UNSAFE_BUFFERS(end_ = begin_ + other_size);
@@ -153,7 +155,7 @@ class LiteralBufferBase {
       // SAFETY: The `DCHECK_GE` above ensures that there is enough capacity to
       // copy `other_size` characters.
       UNSAFE_BUFFERS(
-          base::span(begin_, other_size).copy_from(base::span(other)));
+          base::span(begin_.get(), other_size).copy_from(base::span(other)));
       UNSAFE_BUFFERS(end_ = begin_ + other_size);
     }
   }
@@ -213,11 +215,14 @@ class LiteralBufferBase {
   // faster when `AddChar` is inlined, since `end_` is readily available in a
   // register.
   std::array<T, BUFFER_INLINE_CAPACITY> inline_storage{};
-  T* begin_ = inline_storage.data();
-  T* end_ = begin_;
+  raw_ptr<T, AllowPtrArithmetic | UnprotectedInRelease | DanglingUntriaged>
+      begin_ = inline_storage.data();
+  raw_ptr<T, AllowPtrArithmetic | UnprotectedInRelease | DanglingUntriaged>
+      end_ = begin_;
   // SAFETY: `begin_` points to the start of `inline_storage` and
   // `BUFFER_INLINE_CAPACITY` is the size of that array.
-  T* end_of_storage_ = UNSAFE_BUFFERS(begin_ + BUFFER_INLINE_CAPACITY);
+  raw_ptr<T, AllowPtrArithmetic | UnprotectedInRelease | DanglingUntriaged>
+      end_of_storage_ = UNSAFE_BUFFERS(begin_ + BUFFER_INLINE_CAPACITY);
 };
 
 template <blink::wtf_size_t kInlineSize>

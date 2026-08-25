@@ -27,6 +27,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_VIEW_SOURCE_PARSER_H_
 
 #include <memory>
+
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/decoded_data_document_parser.h"
@@ -63,7 +65,7 @@ class CORE_EXPORT HTMLViewSourceParser final
 
   HTMLInputStream input_;
   // Owned by `tokenizer_`.
-  HTMLToken* token_ = nullptr;
+  raw_ptr<HTMLToken, UnprotectedInRelease | DanglingUntriaged> token_ = nullptr;
   std::unique_ptr<HTMLTokenizer> tokenizer_;
   bool tracker_is_started_;
 

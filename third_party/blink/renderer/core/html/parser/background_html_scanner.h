@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_BACKGROUND_HTML_SCANNER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_BACKGROUND_HTML_SCANNER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
@@ -62,7 +63,7 @@ class CORE_EXPORT BackgroundHTMLScanner {
    private:
     // Careful this isolate doesn't belong to the sequence that this class
     // executes on.
-    v8::Isolate* isolate_;
+    raw_ptr<v8::Isolate, UnprotectedInRelease | DanglingUntriaged> isolate_;
     CrossThreadWeakPersistent<ScriptableDocumentParser> parser_;
     scoped_refptr<base::SequencedTaskRunner> task_runner_;
     wtf_size_t min_script_size_;

@@ -32,6 +32,7 @@
 #include <optional>
 #include <variant>
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -901,7 +902,8 @@ class CORE_EXPORT HTMLMediaElement
   LazyMediaLoadState lazy_media_load_state_ = LazyMediaLoadState::kNone;
 
   std::unique_ptr<WebMediaPlayer> web_media_player_;
-  cc::Layer* cc_layer_ = nullptr;
+  raw_ptr<cc::Layer, UnprotectedInRelease | DanglingUntriaged> cc_layer_ =
+      nullptr;
 
   // These two fields must be carefully set and reset: the actual derived type
   // of the attachment (same-thread vs cross-thread, for instance) must be the
@@ -1089,7 +1091,8 @@ class CORE_EXPORT HTMLMediaElement
 
   Member<AutoplayPolicy> autoplay_policy_;
 
-  RemotePlaybackClient* remote_playback_client_ = nullptr;
+  raw_ptr<RemotePlaybackClient, UnprotectedInRelease | DanglingUntriaged>
+      remote_playback_client_ = nullptr;
 
   Member<MediaControls> media_controls_;
   Member<HTMLMediaElementControlsList> controls_list_;

@@ -26,6 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_COLOR_CHOOSER_POPUP_UI_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_COLOR_CHOOSER_POPUP_UI_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/forms/color_chooser_ui_controller.h"
 #include "third_party/blink/renderer/core/page/page_popup_client.h"
@@ -81,8 +83,8 @@ class CORE_EXPORT ColorChooserPopupUIController final
   void WriteColorSuggestionPickerDocument(SegmentedBuffer&);
 
   Member<ChromeClient> chrome_client_;
-  PagePopup* popup_;
-  Locale& locale_;
+  raw_ptr<PagePopup, UnprotectedInRelease | DanglingUntriaged> popup_;
+  const raw_ref<Locale, UnprotectedInRelease | DanglingUntriaged> locale_;
   HeapMojoRemote<mojom::blink::EyeDropperChooser> eye_dropper_chooser_;
 };
 

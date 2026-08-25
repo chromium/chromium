@@ -33,6 +33,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_chooser.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -76,9 +77,11 @@ class CORE_EXPORT DateTimeChooserImpl final : public DateTimeChooser,
 
   Member<ChromeClient> chrome_client_;
   Member<DateTimeChooserClient> client_;
-  PagePopup* popup_;
+  raw_ptr<PagePopup, UnprotectedInRelease | DanglingUntriaged> popup_;
   // This pointer is valid only in the constructor.
-  const DateTimeChooserParameters* parameters_;
+  raw_ptr<const DateTimeChooserParameters,
+          UnprotectedInRelease | DanglingUntriaged>
+      parameters_;
   std::unique_ptr<Locale> locale_;
 };
 

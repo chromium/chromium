@@ -7,6 +7,7 @@
 
 #include <compare>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-blink.h"
 #include "third_party/blink/public/mojom/preloading/anchor_element_interaction_host.mojom-blink.h"
@@ -210,7 +211,8 @@ class CORE_EXPORT AnchorElementMetricsSender final
 
   Vector<mojom::blink::AnchorElementClickPtr> clicked_messages_;
 
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock, UnprotectedInRelease | DanglingUntriaged>
+      clock_;
 
   bool is_registered_for_lifecycle_notifications_ = false;
 

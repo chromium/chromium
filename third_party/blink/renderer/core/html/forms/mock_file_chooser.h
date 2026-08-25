@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ref.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -33,7 +34,7 @@ class MockFileChooser : public mojom::blink::FileChooser {
   }
 
   ~MockFileChooser() override {
-    broker_.SetBinderForTesting(FileChooser::Name_, {});
+    broker_->SetBinderForTesting(FileChooser::Name_, {});
   }
 
   void SetQuitClosure(base::OnceClosure reached_callback) {
@@ -71,7 +72,9 @@ class MockFileChooser : public mojom::blink::FileChooser {
       std::move(reached_callback_).Run();
   }
 
-  const blink::BrowserInterfaceBrokerProxy& broker_;
+  const raw_ref<const blink::BrowserInterfaceBrokerProxy,
+                UnprotectedInRelease | DanglingUntriaged>
+      broker_;
   mojo::ReceiverSet<FileChooser> receivers_;
   OpenFileChooserCallback callback_;
   FileChooserParamsPtr params_;
