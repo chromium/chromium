@@ -75,8 +75,6 @@ import java.util.List;
 @EnableFeatures(ChromeFeatureList.SESSION_RESTORE_AFTER_CRASH)
 public class TabbedCrashRecoveryDelegateUnitTest {
     private static final int HOST_WINDOW_ID = 0;
-    private static final int TEST_WINDOW_WIDTH = 800;
-    private static final int TEST_WINDOW_HEIGHT = 600;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

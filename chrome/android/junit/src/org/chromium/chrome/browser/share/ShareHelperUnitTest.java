@@ -56,9 +56,6 @@ import java.util.List;
 public class ShareHelperUnitTest {
     private static final String INTENT_EXTRA_CHOOSER_CUSTOM_ACTIONS =
             "android.intent.extra.CHOOSER_CUSTOM_ACTIONS";
-    private static final String KEY_CHOOSER_ACTION_ICON = "icon";
-    private static final String KEY_CHOOSER_ACTION_NAME = "name";
-    private static final String KEY_CHOOSER_ACTION_ACTION = "action";
     private static final String IMAGE_URI = "file://path/to/image.png";
     private static final ComponentName TEST_COMPONENT_NAME_1 =
             new ComponentName("test.package.one", "test.class.name.one");

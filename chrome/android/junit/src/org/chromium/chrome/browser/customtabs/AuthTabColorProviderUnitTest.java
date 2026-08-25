@@ -38,7 +38,6 @@ public class AuthTabColorProviderUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     private Activity mActivity;
-    private AuthTabColorProvider mAuthTabColorProvider;
 
     @Before
     public void setUp() {

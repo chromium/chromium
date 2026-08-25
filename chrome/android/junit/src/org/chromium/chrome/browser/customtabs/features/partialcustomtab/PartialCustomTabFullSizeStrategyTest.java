@@ -32,8 +32,6 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PartialCustomTabFullSizeStrategyTest {
-    private boolean mFullscreen;
-
     @Rule public final PartialCustomTabTestRule mPCCTTestRule = new PartialCustomTabTestRule();
 
     private PartialCustomTabFullSizeStrategy createPcctFullSizeStrategy() {

@@ -32,7 +32,6 @@ import java.util.List;
 public class TabbedWindowStateTrackerUnitTest {
     private static final int WINDOW_ID_0 = 0;
     private static final Rect WINDOW_BOUNDS_1 = new Rect(100, 100, 600, 400);
-    private static final Rect WINDOW_BOUNDS_2 = new Rect(200, 200, 700, 500);
 
     private TabbedWindowStateTracker mTracker;
 
