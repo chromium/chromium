@@ -256,7 +256,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             return mSharedStatics.getVariationsHeader();
         }
     }
-    ;
 
     private Statics mStaticsAdapter;
 

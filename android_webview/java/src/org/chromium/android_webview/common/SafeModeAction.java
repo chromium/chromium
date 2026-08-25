@@ -43,5 +43,4 @@ public abstract class SafeModeAction {
     public boolean executeAtStartup() {
         return true;
     }
-    ;
 }

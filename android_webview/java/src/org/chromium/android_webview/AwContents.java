@@ -941,7 +941,6 @@ public class AwContents implements SmartClipProvider {
             mSettings.setDipScale(dipScale);
         }
     }
-    ;
 
     // --------------------------------------------------------------------------------------------
     /**

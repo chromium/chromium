@@ -72,7 +72,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     private enum ActivationBy {
         LOAD_URL,
         JAVASCRIPT,
-    };
+    }
 
     private static final String TAG = "AwPrerenderTest";
 

@@ -43,7 +43,7 @@ public final class ProfileStore {
         int ASYNC_WEBVIEW_STARTUP = 1;
         int ANDROIDX_API_CALL = 2;
         int COUNT = 3;
-    };
+    }
 
     private final Map<String, Profile> mProfiles = new HashMap<>();
 

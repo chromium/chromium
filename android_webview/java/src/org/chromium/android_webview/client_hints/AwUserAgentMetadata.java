@@ -63,7 +63,7 @@ public class AwUserAgentMetadata {
         String BITNESS = "BITNESS";
         String WOW64 = "WOW64";
         String FORM_FACTORS = "FORM_FACTORS";
-    };
+    }
 
     public static final int BITNESS_DEFAULT = 0;
 
@@ -94,7 +94,7 @@ public class AwUserAgentMetadata {
         String XR = "XR";
         String EINK = "EInk";
         String WATCH = "Watch";
-    };
+    }
 
     // To better manage the data within this class, make the constructor as private to avoid
     // creating instances outside of the class.
