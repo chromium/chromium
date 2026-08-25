@@ -531,6 +531,39 @@ TEST(ActionChipGeneratorTest, GenerateFallbackChips) {
 }
 
 TEST(ActionChipGeneratorTest,
+     GenerateFallbackChipsForScaledChipsSmallOnlyGeneratesScaledChips) {
+  EnvironmentFixture env;
+  GeneratorFixture generator_fixture;
+
+  EXPECT_CALL(generator_fixture.mock_aim_eligibility_service(),
+              IsCreateImagesEligible())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(generator_fixture.mock_aim_eligibility_service(),
+              IsCanvasEligible())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(generator_fixture.mock_aim_eligibility_service(),
+              IsDeepSearchEligible())
+      .WillRepeatedly(Return(true));
+
+  base::test::ScopedFeatureList list;
+  list.InitWithFeaturesAndParameters(
+      {{ntp_features::kNtpScaledActionChips,
+        {{ntp_features::kNtpScaledActionChipsShowFallback.name, "true"}}},
+       {ntp_features::kNtpScaledActionChipsSmall,
+        {{ntp_features::kNtpMaxSmallChips.name, "5"}}},
+       {ntp_features::kNtpNextCanvasChip, {}}},
+      {});
+
+  base::RunLoop run_loop;
+  std::vector<ActionChipPtr> actual;
+  generator_fixture.GenerateActionChips(std::nullopt, run_loop, actual);
+  run_loop.Run();
+
+  // Only the 3 scaled chips are generated.
+  EXPECT_THAT(actual, ElementsAre(BrainstormChip(), LearnChip(), WriteChip()));
+}
+
+TEST(ActionChipGeneratorTest,
      GenerateStaticChipsWithoutCanvasChipWhenCanvasFlagDisabled) {
   EnvironmentFixture env;
   const GURL page_url("https://google.com/");
