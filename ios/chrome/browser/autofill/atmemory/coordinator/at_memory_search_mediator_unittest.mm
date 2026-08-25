@@ -108,9 +108,10 @@ class AtMemorySearchMediatorTest : public PlatformTest {
   // Creates an AtMemorySearchMediator.
   void CreateMediator() {
     mediator_ = [[AtMemorySearchMediator alloc]
-        initWithAtMemoryQueryService:&mock_query_service_
-                            webState:&web_state_
-                     firstRunService:&first_run_service_];
+        initWithAtMemoryManager:nullptr
+           atMemoryQueryService:&mock_query_service_
+                       webState:&web_state_
+                firstRunService:&first_run_service_];
     mediator_.consumer = mock_consumer_;
   }
 

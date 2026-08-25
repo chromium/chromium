@@ -19,6 +19,7 @@ source_set("coordinator") {
   ]
   deps = [
     "//components/autofill/core/browser",
+    "//components/autofill/ios/browser",
     "//components/personal_context/first_run",
     "//ios/chrome/browser/autofill/atmemory/model",
     "//ios/chrome/browser/autofill/atmemory/public",

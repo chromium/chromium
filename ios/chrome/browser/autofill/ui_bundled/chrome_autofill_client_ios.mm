@@ -21,6 +21,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/account_settings/account_setting_service.h"
 #import "components/application_locale_storage/application_locale_storage.h"
+#import "components/autofill/core/browser/at_memory/at_memory_manager.h"
 #import "components/autofill/core/browser/autofill_server_prediction.h"
 #import "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
@@ -184,6 +185,10 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
                   weak_ptr_factory_.GetWeakPtr()));
     }
   }
+
+  if (autofill::IsAutofillAtMemorySearchUIEnabled(this)) {
+    at_memory_manager_ = std::make_unique<AtMemoryManager>(this);
+  }
 }
 
 ChromeAutofillClientIOS::~ChromeAutofillClientIOS() {
@@ -335,6 +340,10 @@ AutofillAiModelExecutor* ChromeAutofillClientIOS::GetAutofillAiModelExecutor() {
 optimization_guide::RemoteModelExecutor*
 ChromeAutofillClientIOS::GetRemoteModelExecutor() {
   return OptimizationGuideServiceFactory::GetForProfile(profile_);
+}
+
+autofill::AtMemoryManager* ChromeAutofillClientIOS::GetAtMemoryManager() {
+  return at_memory_manager_.get();
 }
 
 autofill::AtMemoryQueryService*

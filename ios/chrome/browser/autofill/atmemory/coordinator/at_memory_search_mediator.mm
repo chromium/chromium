@@ -13,6 +13,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/at_memory/at_memory_manager.h"
 #import "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
 #import "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #import "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
@@ -34,6 +35,8 @@ constexpr std::string_view kNoticeInteractionsHistogram =
 }  // namespace
 
 @implementation AtMemorySearchMediator {
+  // Manager for AtMemory operations.
+  raw_ptr<autofill::AtMemoryManager> _atMemoryManager;
   // Service for executing AtMemory queries.
   raw_ptr<autofill::AtMemoryQueryService> _atMemoryQueryService;
   // The WebState for the active tab.
@@ -53,14 +56,15 @@ constexpr std::string_view kNoticeInteractionsHistogram =
 }
 
 - (instancetype)
-    initWithAtMemoryQueryService:
-        (autofill::AtMemoryQueryService*)atMemoryQueryService
-                        webState:(web::WebState*)webState
-                 firstRunService:
-                     (personal_context::PersonalContextFirstRunService*)
-                         firstRunService {
+    initWithAtMemoryManager:(autofill::AtMemoryManager*)atMemoryManager
+       atMemoryQueryService:
+           (autofill::AtMemoryQueryService*)atMemoryQueryService
+                   webState:(web::WebState*)webState
+            firstRunService:(personal_context::PersonalContextFirstRunService*)
+                                firstRunService {
   self = [super init];
   if (self) {
+    _atMemoryManager = atMemoryManager;
     _atMemoryQueryService = atMemoryQueryService;
     _webState = webState ? webState->GetWeakPtr() : nullptr;
     _firstRunService = firstRunService;
@@ -79,6 +83,7 @@ constexpr std::string_view kNoticeInteractionsHistogram =
         kNoticeInteractionsHistogram,
         autofill::AutofillMetrics::PopupNoticeInteractions::kDismissed);
   }
+  _atMemoryManager = nullptr;
   _atMemoryQueryService = nullptr;
   _webState = nullptr;
   _firstRunService = nullptr;
