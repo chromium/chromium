@@ -10237,6 +10237,68 @@
             ]
         }
     ],
+    "HappinessTrackingSystemSlowAndLaggyDeepDiveCBX": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "histogram_name": "ChromeOS.HaTS.SlowAndLaggyDeepDive",
+                        "prob": "0.12965",
+                        "survey_cycle_length": "7",
+                        "survey_start_date_ms": "1785092400000",
+                        "trigger_id": "GKQqYS9sn0jBnuKU19R0UWBA4P4Z"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSystemSlowAndLaggyDeepDive"
+                    ],
+                    "hardware_classes": [
+                        "brox",
+                        "brya",
+                        "guybrush",
+                        "nissa",
+                        "rauru",
+                        "rex",
+                        "skyrim"
+                    ]
+                }
+            ]
+        }
+    ],
+    "HappinessTrackingSystemSlowAndLaggyDeepDiveNonCBX": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "histogram_name": "ChromeOS.HaTS.SlowAndLaggyDeepDive",
+                        "prob": "0.0110",
+                        "survey_cycle_length": "7",
+                        "survey_start_date_ms": "1785092400000",
+                        "trigger_id": "GKQqYS9sn0jBnuKU19R0UWBA4P4Z"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSystemSlowAndLaggyDeepDive"
+                    ],
+                    "exclude_hardware_classes": [
+                        "brox",
+                        "brya",
+                        "guybrush",
+                        "nissa",
+                        "rauru",
+                        "rex",
+                        "skyrim"
+                    ]
+                }
+            ]
+        }
+    ],
     "HappinessTrackingSystemStability": [
         {
             "platforms": [
