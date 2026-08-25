@@ -1217,6 +1217,8 @@ void ToolsMenuModel::Build(BrowserWindowInterface* browser) {
                                     : kDockToRightOldIcon
           : features::IsRoundedIconsEnabled() ? kDockToRightIcon
                                               : kDockToLeftOldIcon);
+    }
+    if (!controller->ShouldDisplayVerticalTabs()) {
       const bool use_preview_badge =
           base::FeatureList::IsEnabled(tabs::kVerticalTabsPreviewBadge);
       const ui::NewBadgeType badge_type = use_preview_badge
@@ -2195,6 +2197,10 @@ void AppMenuModel::LogMenuAction(AppMenuAction action_id) {
 }
 
 // Note: When adding new menu items please place under an appropriate section.
+// Capitalization Policy (go/chrome-capitalization):
+// In-browser 3-dot app menus use sentence case across all platforms, including
+// macOS. Native macOS system menus (the main menu bar and right-click context
+// menus) use Title Case separately.
 // Menu is organised as follows:
 // - Extension toolbar overflow.
 // - Global browser errors and warnings.

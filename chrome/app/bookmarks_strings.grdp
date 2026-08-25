@@ -24,6 +24,12 @@
     <message name="IDS_UNNAMED_BOOKMARK_BUTTON_ACCESSIBLE_NAME" desc="Accessible name for unnamed bookmark buttons. Provides something to screen readers.">
       Unnamed bookmark for <ph name="url">$1<ex>https://example.com</ex></ph>
     </message>
+    <message name="IDS_SHOW_BOOKMARK_BAR" desc="The toggle to show the bookmark bar">
+      &amp;Show bookmarks bar
+    </message>
+    <message name="IDS_HIDE_BOOKMARK_BAR" desc="The toggle to hide the bookmark bar">
+      &amp;Hide bookmarks bar
+    </message>
   </if>
 
   <if expr="not use_titlecase">
@@ -128,12 +134,6 @@
       Add &amp;folder...
     </message>
     <if expr="not is_android">
-      <message name="IDS_SHOW_BOOKMARK_BAR" desc="The toggle to show the bookmark bar">
-        &amp;Show bookmarks bar
-      </message>
-      <message name="IDS_HIDE_BOOKMARK_BAR" desc="The toggle to hide the bookmark bar">
-        &amp;Hide bookmarks bar
-      </message>
       <message name="IDS_BOOKMARK_BAR_SUBMENU_LABEL" desc="Label for the bookmarks bar submenu">
         Bookmarks bar
       </message>
@@ -210,12 +210,6 @@
       Add &amp;Folder...
     </message>
     <if expr="not is_android">
-      <message name="IDS_SHOW_BOOKMARK_BAR" desc="In Title Case: The toggle to show the bookmark bar">
-        &amp;Show Bookmarks Bar
-      </message>
-      <message name="IDS_HIDE_BOOKMARK_BAR" desc="The toggle to hide the bookmark bar">
-        &amp;Hide Bookmarks Bar
-      </message>
       <message name="IDS_BOOKMARK_BAR_SUBMENU_LABEL" desc="In Title Case: Label for the bookmarks bar submenu">
         Bookmarks Bar
       </message>
@@ -375,13 +369,13 @@
   <message name="IDS_BOOKMARK_MANAGER_SEARCH_BUTTON" desc="Title of the button in the bookmark manager that triggers a search">
     Search bookmarks
   </message>
+  <message name="IDS_BOOKMARK_MANAGER_V2" desc="The label of the menu item that shows the bookmark manager">
+    &amp;Open bookmark manager
+  </message>
+  <message name="IDS_BOOKMARK_MANAGER" desc="The label of the menu item that shows the bookmark manager">
+    &amp;Open bookmarks manager
+  </message>
   <if expr="not use_titlecase">
-    <message name="IDS_BOOKMARK_MANAGER_V2" desc="The label of the menu item that shows the bookmark manager">
-      &amp;Open bookmark manager
-    </message>
-    <message name="IDS_BOOKMARK_MANAGER" desc="The label of the menu item that shows the bookmark manager">
-      &amp;Open Bookmarks Manager
-    </message>
     <message name="IDS_BOOKMARK_MANAGER_ORGANIZE_MENU" desc="Title of the organize menu in the bookmark manager.">
       Organize
     </message>
@@ -389,11 +383,17 @@
       Invalid URL
     </message>
   </if>
+  <!-- macOS Capitalization Policy (go/chrome-capitalization):
+       In-browser UI surfaces (such as the 3-dot app menu) use sentence
+       case cross-platform, including on macOS. Native macOS surfaces
+       (system menu bar and right-click context menus) follow Apple Human
+       Interface Guidelines (HIG) and use Title Case (e.g. `_MAC`
+       variants). -->
   <if expr="use_titlecase">
-    <message name="IDS_BOOKMARK_MANAGER_V2" desc="In Title Case: The label of the menu item that shows the bookmark manager">
+    <message name="IDS_BOOKMARK_MANAGER_V2_MAC" desc="In Title Case: The label of the menu item that shows the bookmark manager">
       &amp;Open Bookmark Manager
     </message>
-    <message name="IDS_BOOKMARK_MANAGER" desc="In Title Case: The label of the menu item that shows the bookmark manager">
+    <message name="IDS_BOOKMARK_MANAGER_MAC" desc="In Title Case: The label of the menu item that shows the bookmark manager">
       &amp;Open Bookmarks Manager
     </message>
     <message name="IDS_BOOKMARK_MANAGER_ORGANIZE_MENU" desc="In Title Case: Title of the organize menu in the bookmark manager.">
@@ -571,43 +571,23 @@
   <message name="IDS_BOOKMARKS_MENU" desc="The title of the Bookmarks menu in the Main menu and in the Mac menu bar.">
     &amp;Bookmarks
   </message>
-  <if expr="not use_titlecase">
-    <message name="IDS_BOOKMARKS_AND_LISTS_MENU" desc="The title of the 'Bookmarks and lists' menu in the App Menu.">
-      &amp;Bookmarks and lists
-    </message>
-  </if>
-  <if expr="use_titlecase">
-    <message name="IDS_BOOKMARKS_AND_LISTS_MENU" desc="The title of the 'Bookmarks and lists' menu in the App Menu.">
-      &amp;Bookmarks and Lists
-    </message>
-  </if>
-  <if expr="not use_titlecase">
-    <message name="IDS_SHOW_BOOKMARK_SIDE_PANEL" desc="Title of the menu item that opens the bookmark side panel.">
-      Show bookmarks in side panel
-    </message>
-  </if>
-  <if expr="use_titlecase">
-    <message name="IDS_SHOW_BOOKMARK_SIDE_PANEL" desc="Title of the menu item that opens the bookmark side panel.">
-      Show Bookmarks in Side Panel
-    </message>
-  </if>
-  <if expr="not use_titlecase">
-    <message name="IDS_BOOKMARK_THIS_TAB" desc="Title of the menu item that bookmarks the current tab.">
-      Bookmark this tab...
-    </message>
-  </if>
-  <if expr="use_titlecase">
-    <message name="IDS_BOOKMARK_THIS_TAB" desc="In Title Case: Title of the menu item that bookmarks the current tab.">
+  <message name="IDS_BOOKMARKS_AND_LISTS_MENU" desc="The title of the 'Bookmarks and lists' menu in the App Menu.">
+    &amp;Bookmarks and lists
+  </message>
+  <message name="IDS_SHOW_BOOKMARK_SIDE_PANEL" desc="Title of the menu item that opens the bookmark side panel.">
+    Show bookmarks in side panel
+  </message>
+  <message name="IDS_BOOKMARK_THIS_TAB" desc="Title of the menu item that bookmarks the current tab.">
+    Bookmark this tab...
+  </message>
+  <message name="IDS_BOOKMARK_ALL_TABS" desc="Title of the menu item that bookmarks all the tabs opened in this window.">
+    Bookmark all tabs...
+  </message>
+  <if expr="is_macosx">
+    <message name="IDS_BOOKMARK_THIS_TAB_MAC" desc="In Title Case: The Mac menu item that bookmarks the current tab.">
       Bookmark This Tab...
     </message>
-  </if>
-  <if expr="not use_titlecase">
-    <message name="IDS_BOOKMARK_ALL_TABS" desc="Title of the menu item that bookmarks all the tabs opened in this window.">
-      Bookmark all tabs...
-    </message>
-  </if>
-  <if expr="use_titlecase">
-    <message name="IDS_BOOKMARK_ALL_TABS" desc="In Title Case: Title of the menu item that bookmarks all the tabs opened in this window.">
+    <message name="IDS_BOOKMARK_ALL_TABS_MAC" desc="In Title Case: The Mac menu item that bookmarks all the tabs opened in this window.">
       Bookmark All Tabs...
     </message>
   </if>

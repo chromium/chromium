@@ -8,7 +8,7 @@
 namespace lens {
 
 // Returns the string ID for the Lens overlay entrypoint label.
-int GetLensOverlayEntrypointLabelAltIds();
+int GetLensOverlayEntrypointLabelAltIds(bool is_context_menu = false);
 
 }  // namespace lens
 

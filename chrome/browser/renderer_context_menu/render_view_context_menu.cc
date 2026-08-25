@@ -3253,7 +3253,8 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
     }
     menu_model_.AddItemWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH,
-        lens::GetLensOverlayEntrypointLabelAltIds(), icon);
+        lens::GetLensOverlayEntrypointLabelAltIds(/*is_context_menu=*/true),
+        icon);
     const int command_index =
         menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH)
             .value();

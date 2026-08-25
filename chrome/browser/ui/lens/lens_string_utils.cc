@@ -9,11 +9,12 @@
 
 namespace lens {
 
-int GetLensOverlayEntrypointLabelAltIds() {
+int GetLensOverlayEntrypointLabelAltIds(bool is_context_menu) {
   if (::features::IsMenuSimplificationEnabled()) {
     return IDS_LENS_OVERLAY_TAB_ENTRYPOINT_LABEL_V2;
   }
-  return IDS_LENS_OVERLAY_TAB_ENTRYPOINT_LABEL;
+  return is_context_menu ? IDS_LENS_OVERLAY_TAB_ENTRYPOINT_LABEL_CONTEXT_MENU
+                         : IDS_LENS_OVERLAY_TAB_ENTRYPOINT_LABEL;
 }
 
 }  // namespace lens

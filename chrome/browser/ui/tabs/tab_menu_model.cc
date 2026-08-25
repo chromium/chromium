@@ -240,6 +240,10 @@ void TabMenuModel::AppendGlicItems(int index,
   }
 }
 
+// Capitalization Policy (go/chrome-capitalization):
+// Native right-click tab context menus on macOS use Title Case (`_MAC` string
+// variants) to follow Apple Human Interface Guidelines (HIG), while other
+// platforms use sentence case.
 void TabMenuModel::Build(int index) {
   std::vector<int> indices;
   if (tab_strip_->IsTabSelected(index)) {
@@ -503,12 +507,25 @@ void TabMenuModel::Build(int index) {
 
   if (tabs::kVerticalTabsToggleInTabContextMenu.Get() && controller) {
     AddSeparator(ui::NORMAL_SEPARATOR);
+    const int switch_to_horizontal_id =
+#if BUILDFLAG(IS_MAC)
+        IDS_SWITCH_TO_HORIZONTAL_TAB_MAC;
+#else
+        IDS_SWITCH_TO_HORIZONTAL_TAB;
+#endif
+
+    const int switch_to_vertical_id =
+#if BUILDFLAG(IS_MAC)
+        IDS_SWITCH_TO_VERTICAL_TAB_MAC;
+#else
+        IDS_SWITCH_TO_VERTICAL_TAB;
+#endif
     if (controller->ShouldDisplayVerticalTabs()) {
       AddItemWithStringId(TabStripModel::CommandToggleVertical,
-                          IDS_SWITCH_TO_HORIZONTAL_TAB);
+                          switch_to_horizontal_id);
     } else {
       AddItemWithStringId(TabStripModel::CommandToggleVertical,
-                          IDS_SWITCH_TO_VERTICAL_TAB);
+                          switch_to_vertical_id);
       const bool use_preview_badge =
           base::FeatureList::IsEnabled(tabs::kVerticalTabsPreviewBadge);
       const user_education::DisplayNewBadge show_badge =
@@ -520,7 +537,7 @@ void TabMenuModel::Build(int index) {
     }
   }
 
-// Append extension items for the 'tab' context if the feature is enabled.
+  // Append extension items for the 'tab' context if the feature is enabled.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionTabContextMenu)) {
@@ -558,7 +575,8 @@ void TabMenuModel::Build(int index) {
   }
   SetEnabledAt(GetItemCount() - 1,
                tab_strip_->IsContextMenuCommandEnabled(
-                   index, TabStripModel::CommandCloseTabsToRight));
+                   index,
+                   TabStripModel::CommandCloseTabsToRight));
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel,

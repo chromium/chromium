@@ -113,6 +113,10 @@ void SystemMenuModelBuilder::BuildMenu(ui::SimpleMenuModel* model) {
   }
 }
 
+// Capitalization Policy (go/chrome-capitalization):
+// Native right-click context menus on macOS use Title Case (`_MAC` string
+// variants) to follow Apple Human Interface Guidelines (HIG), while other
+// platforms use sentence case.
 void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
     ui::SimpleMenuModel* model) {
 #if BUILDFLAG(IS_WIN)
@@ -142,19 +146,27 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
   AddItemWithIconMaybe(model, IDC_RESTORE_WINDOW, IDS_RESTORE_WINDOW_MENU,
                        views::kChromeRestoreIcon);
   model->AddSeparator(ui::NORMAL_SEPARATOR);
-#endif
+#endif  // BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_MAC)
+  model->AddItemWithStringId(IDC_NEW_TAB, IDS_NEW_TAB_MAC);
+#else
   model->AddItemWithStringId(IDC_NEW_TAB, IDS_NEW_TAB);
+#endif
   model->SetElementIdentifierAt(model->GetIndexOfCommandId(IDC_NEW_TAB).value(),
                                 kSystemMenuNewTabElementId);
+#if BUILDFLAG(IS_MAC)
+  model->AddItemWithStringId(IDC_RESTORE_TAB, IDS_REOPEN_CLOSED_TABS_MAC);
+#else
   model->AddItemWithStringId(IDC_RESTORE_TAB, IDS_RESTORE_TAB);
+#endif
   model->SetElementIdentifierAt(
       model->GetIndexOfCommandId(IDC_RESTORE_TAB).value(),
       kSystemMenuRestoreTabElementId);
 
-
 #if BUILDFLAG(IS_MAC)
-  model->AddItemWithStringId(IDC_BOOKMARK_ALL_TABS, IDS_BOOKMARK_ALL_TABS);
-  model->AddItemWithStringId(IDC_NAME_WINDOW, IDS_NAME_WINDOW);
+  model->AddItemWithStringId(IDC_BOOKMARK_ALL_TABS, IDS_BOOKMARK_ALL_TABS_MAC);
+  model->AddItemWithStringId(IDC_NAME_WINDOW, IDS_NAME_WINDOW_MAC);
 #else
   AddItemWithIconMaybe(model, IDC_BOOKMARK_ALL_TABS, IDS_BOOKMARK_ALL_TABS,
                        kBookmarkAllTabsChromeRefreshOldIcon);
@@ -179,9 +191,22 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
           tabs::VerticalTabStripStateController::From(browser())) {
     model->AddSeparator(ui::NORMAL_SEPARATOR);
 
+    const int switch_to_horizontal_id =
+#if BUILDFLAG(IS_MAC)
+        IDS_SWITCH_TO_HORIZONTAL_TAB_MAC;
+#else
+        IDS_SWITCH_TO_HORIZONTAL_TAB;
+#endif
+
+    const int switch_to_vertical_id =
+#if BUILDFLAG(IS_MAC)
+        IDS_SWITCH_TO_VERTICAL_TAB_MAC;
+#else
+        IDS_SWITCH_TO_VERTICAL_TAB;
+#endif
     if (controller->ShouldDisplayVerticalTabs()) {
       model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
-                                 IDS_SWITCH_TO_HORIZONTAL_TAB);
+                                 switch_to_horizontal_id);
 
       model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS_COLLAPSE,
                                  controller->IsCollapsed()
@@ -197,7 +222,7 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
       }
 
       model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
-                                 IDS_SWITCH_TO_VERTICAL_TAB);
+                                 switch_to_vertical_id);
       const bool use_preview_badge =
           base::FeatureList::IsEnabled(tabs::kVerticalTabsPreviewBadge);
       const ui::NewBadgeType badge_type = use_preview_badge
@@ -237,7 +262,14 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
 
   if (chrome::CanOpenTaskManager()) {
     model->AddSeparator(ui::NORMAL_SEPARATOR);
-    model->AddItemWithStringId(IDC_TASK_MANAGER_CONTEXT_MENU, IDS_TASK_MANAGER);
+    const int task_manager_string_id =
+#if BUILDFLAG(IS_MAC)
+        IDS_TASK_MANAGER_MAC;
+#else
+        IDS_TASK_MANAGER;
+#endif
+    model->AddItemWithStringId(IDC_TASK_MANAGER_CONTEXT_MENU,
+                               task_manager_string_id);
   }
 #if BUILDFLAG(IS_LINUX)
   model->AddSeparator(ui::NORMAL_SEPARATOR);
@@ -324,7 +356,13 @@ void SystemMenuModelBuilder::BuildSystemMenuForAppOrPopupWindow(
 #endif
   if (should_show_task_manager) {
     model->AddSeparator(ui::NORMAL_SEPARATOR);
-    model->AddItemWithStringId(IDC_TASK_MANAGER, IDS_TASK_MANAGER);
+    const int task_manager_string_id =
+#if BUILDFLAG(IS_MAC)
+        IDS_TASK_MANAGER_MAC;
+#else
+        IDS_TASK_MANAGER;
+#endif
+    model->AddItemWithStringId(IDC_TASK_MANAGER, task_manager_string_id);
   }
 #if BUILDFLAG(IS_LINUX)
   model->AddSeparator(ui::NORMAL_SEPARATOR);

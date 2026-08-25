@@ -236,6 +236,14 @@ class SystemMenuModelBuilderVerticalTabsTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+#if BUILDFLAG(IS_MAC)
+constexpr int kSwitchToVerticalTabStringId = IDS_SWITCH_TO_VERTICAL_TAB_MAC;
+constexpr int kSwitchToHorizontalTabStringId = IDS_SWITCH_TO_HORIZONTAL_TAB_MAC;
+#else
+constexpr int kSwitchToVerticalTabStringId = IDS_SWITCH_TO_VERTICAL_TAB;
+constexpr int kSwitchToHorizontalTabStringId = IDS_SWITCH_TO_HORIZONTAL_TAB;
+#endif
+
 IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderVerticalTabsTest,
                        VerticalTabsSystemMenu) {
   auto* controller = tabs::VerticalTabStripStateController::From(browser());
@@ -251,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderVerticalTabsTest,
   // In horizontal tabs, we should show:
   // - IDC_TOGGLE_VERTICAL_TABS (to switch to vertical tabs)
   EXPECT_TRUE(ContainsCommand(menu, IDC_TOGGLE_VERTICAL_TABS,
-                              IDS_SWITCH_TO_VERTICAL_TAB));
+                              kSwitchToVerticalTabStringId));
   EXPECT_FALSE(ContainsCommand(menu, IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER,
                                std::nullopt));
 
@@ -265,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderVerticalTabsTest,
              ->GetSystemMenuModel();
 
   EXPECT_TRUE(ContainsCommand(menu, IDC_TOGGLE_VERTICAL_TABS,
-                              IDS_SWITCH_TO_VERTICAL_TAB));
+                              kSwitchToVerticalTabStringId));
   EXPECT_FALSE(ContainsCommand(menu, IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER,
                                std::nullopt));
 
@@ -287,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderVerticalTabsTest,
   // - IDC_TOGGLE_VERTICAL_TABS_COLLAPSE
   // - IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER
   EXPECT_TRUE(ContainsCommand(menu, IDC_TOGGLE_VERTICAL_TABS,
-                              IDS_SWITCH_TO_HORIZONTAL_TAB));
+                              kSwitchToHorizontalTabStringId));
   EXPECT_TRUE(ContainsCommand(menu, IDC_TOGGLE_VERTICAL_TABS_COLLAPSE,
                               IDS_COLLAPSE_VERTICAL_TABS));
   EXPECT_TRUE(ContainsCommand(menu, IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER,
@@ -303,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderVerticalTabsTest,
              ->GetSystemMenuModel();
 
   EXPECT_TRUE(ContainsCommand(menu, IDC_TOGGLE_VERTICAL_TABS,
-                              IDS_SWITCH_TO_HORIZONTAL_TAB));
+                              kSwitchToHorizontalTabStringId));
   EXPECT_TRUE(ContainsCommand(menu, IDC_TOGGLE_VERTICAL_TABS_COLLAPSE,
                               IDS_COLLAPSE_VERTICAL_TABS));
   EXPECT_TRUE(ContainsCommand(menu, IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER,

@@ -660,6 +660,90 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_CONTENT_CONTEXT_LIVE_CAPTION_DISABLE" desc="The name of the Live Caption command in the content area context menu to disable Live Caption">
           &amp;Disable Live Caption
         </message>
+        <message name="IDS_YOUR_SAVED_INFO_CONTACT_INFO_SUBMENU_OPTION" desc="The text label of the contact info option for the Your saved info submenu that allows user to manage their list of saved addresses and Autofill preferences for addresses.">
+          &amp;Contact info
+        </message>
+
+        <message name="IDS_PASSWORDS_AND_AUTOFILL_MENU" desc="The text label of the passwords and autofill menu item">
+          Passwords and &amp;autofill
+        </message>
+
+        <message name="IDS_NEW_TAB" desc="The text label of a menu item for opening a new tab">
+          New &amp;tab
+        </message>
+
+        <message name="IDS_TASK_MANAGER" desc="The text label of the Task Manager menu item">
+          &amp;Task manager
+        </message>
+
+        <message name="IDS_NEW_WINDOW" desc="The text label of a menu item for opening a new window">
+          &amp;New window
+        </message>
+
+        <message name="IDS_NEW_INCOGNITO_WINDOW" desc="The text label of a menu item for opening a new Incognito window">
+          New &amp;Incognito window
+        </message>
+
+        <message name="IDS_INCOGNITO" desc="The text label for the Incognito button in the block header section of the App Menu">
+          Incognito
+        </message>
+
+        <message name="IDS_PROFILE_ROW_SYNC_IS_ON" desc="The text label of a menu item that notifies the user that sync is on.">
+          &amp;Sync is on
+        </message>
+
+        <message name="IDS_FIND_AND_EDIT_MENU" desc="The text label of the Find and edit sub menu item">
+          &amp;Find and edit
+        </message>
+
+        <message name="IDS_CAST_SAVE_AND_SHARE_MENU" desc="The text label of the Cast, save, and share sub menu item">
+          Cast, save, and share
+        </message>
+
+        <message name="IDS_SAVE_PAGE" desc="The text label of the Save Page As menu item">
+          Save page &amp;as...
+        </message>
+
+        <message name="IDS_MORE_TOOLS_MENU" desc="The text label of the Tools submenu for touch">
+          More too&amp;ls
+        </message>
+
+        <message name="IDS_CLOSE_PROFILE" desc="The text label of the Close profile menu item with one or more windows currently opened [ICU Syntax]">
+          {NUM_PROFILES, plural, =1 {&amp;Close this profile} other {&amp;Close this profile (# windows)}}
+        </message>
+
+        <message name="IDS_MANAGE_GOOGLE_ACCOUNT" desc="The text label of the Manage Google account item">
+          Manage your &amp;Google Account
+        </message>
+
+        <message name="IDS_OPEN_GUEST_PROFILE" desc="The text label of the open guest profile item">
+          &amp;Open Guest profile
+        </message>
+
+        <message name="IDS_ADD_NEW_PROFILE" desc="The text label of the add new profile item">
+          &amp;Add new profile
+        </message>
+
+        <message name="IDS_FEEDBACK" desc="The text label of the Report Bug menu item">
+          &amp;Report an issue...
+        </message>
+
+        <message name="IDS_DEV_TOOLS" desc="The text label of the Developer Tools menu item">
+          &amp;Developer tools
+        </message>
+
+        <message name="IDS_REPORT_UNSAFE_SITE" desc="Text label of the Report Unsafe Site menu item">
+          Report an &amp;unsafe site...
+        </message>
+
+        <message name="IDS_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS_ITEM" desc="The text for the link in the extensions menu, in the app menu, to visit chrome://extensions to view all extensions installed.">
+          Manage extensions
+        </message>
+
+        <message name="IDS_APP_MENU_CREATE_QR_CODE" desc="The text label for the Create QR Code item in the app menu">
+          Create &amp;QR code
+        </message>
+
         <if expr="not use_titlecase">
           <message name="IDS_CONTENT_CONTEXT_BACK" desc="The name of the Back command in the content area context menu">
             &amp;Back
@@ -1008,6 +1092,9 @@ are declared in tools/grit/grit_args.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD" desc="This is a context menu entry in the passwords submenu. It triggers password generation.">
             Suggest password...
+          </message>
+          <message name="IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION" desc="The text label of the addresses and more item for the passwords and autofill submenu">
+            &amp;Addresses and more
           </message>
         </if>
         <if expr="use_titlecase">
@@ -1372,6 +1459,9 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD" desc="In Title Case: This is a context menu entry in the passwords submenu. It triggers password generation.">
             Suggest Password...
           </message>
+          <message name="IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION" desc="In Title Case: The text label of the addresses and more item for the passwords and autofill submenu">
+            &amp;Addresses and More
+          </message>
         </if>
 
         <message name="IDS_SHARE_MENU_TITLE" desc="The label of the menu item used to share content (links, images, etc) with others.">
@@ -1433,15 +1523,6 @@ are declared in tools/grit/grit_args.gni.
           Verify
         </message>
         <if expr="not use_titlecase">
-          <message name="IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION" desc="The text label of the addresses and more item for the passwords and autofill submenu">
-            &amp;Addresses and more
-          </message>
-          <message name="IDS_YOUR_SAVED_INFO_CONTACT_INFO_SUBMENU_OPTION" desc="The text label of the contact info option for the Your saved info submenu that allows user to manage their list of saved addresses and Autofill preferences for addresses.">
-            &amp;Contact info
-          </message>
-          <message name="IDS_PASSWORDS_AND_AUTOFILL_MENU" desc="The text label of the passwords and autofill menu item">
-            Passwords and &amp;autofill
-          </message>
         <if expr="is_win or is_macosx or is_linux">
           <message name="IDS_RELAUNCH_TO_UPDATE_ALT" desc="Alternate text label of the relaunch to update Chrome menu item">
             Relaunch to update
@@ -1450,23 +1531,8 @@ are declared in tools/grit/grit_args.gni.
             Your tabs will reopen
           </message>
         </if>
-          <message name="IDS_NEW_TAB" desc="The text label of a menu item for opening a new tab">
-            New &amp;tab
-          </message>
-          <message name="IDS_NEW_INCOGNITO_TAB" desc="The text label of a menu item for opening a new incognito tab">
-            New Incognito &amp;tab
-          </message>
-          <message name="IDS_INCOGNITO" desc="The text label for the Incognito button in the block header section of the App Menu">
-            Incognito
-          </message>
           <message name="IDS_SHOW_AS_TAB" desc="The text label for the Show As tab menu item">
             &amp;Show as tab
-          </message>
-          <message name="IDS_NEW_WINDOW" desc="The text label of a menu item for opening a new window">
-            &amp;New window
-          </message>
-          <message name="IDS_NEW_INCOGNITO_WINDOW" desc="The text label of a menu item for opening a new Incognito window">
-            New &amp;Incognito window
           </message>
           <message name="IDS_NEW_ISOLATED_WINDOW" desc="The text label of a menu item for opening a new Isolated window">
             New &amp;Isolated window
@@ -1476,9 +1542,6 @@ are declared in tools/grit/grit_args.gni.
           </message>
           <message name="IDS_PROFILE_ROW_SIGNED_IN_MESSAGE" desc="A label to indicate that the profile is signed in.">
             Signed in
-          </message>
-          <message name="IDS_PROFILE_ROW_SYNC_IS_ON" desc="The text label of a menu item that notifies the user that sync is on.">
-            &amp;Sync is on
           </message>
           <message name="IDS_PROFILE_ROW_TURN_ON_SYNC" desc="The text label of a menu item that prompts the user to turn on sync.">
             Turn on &amp;sync...
@@ -1504,9 +1567,6 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_FIND" desc="The text label of the Find... menu item">
             &amp;Find...
           </message>
-          <message name="IDS_FIND_AND_EDIT_MENU" desc="The text label of the Find and edit sub menu item">
-            &amp;Find and edit
-          </message>
           <message name="IDS_PAYMENT_METHOD_SUBMENU_OPTION" desc="The text label of the payment method for the passwords and autofill submenu">
             &amp;Payment methods
           </message>
@@ -1516,9 +1576,6 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_SAVE_AND_SHARE_MENU" desc="The text label of the Save and share sub menu item">
             &amp;Save and share
           </message>
-          <message name="IDS_CAST_SAVE_AND_SHARE_MENU" desc="The text label of the Cast, save, and share sub menu item">
-            Cast, save, and share
-          </message>
           <message name="IDS_SAVE_AND_SHARE_MENU_CAST" desc="The text label of the Cast section of the Save and share sub menu">
             Cast
           </message>
@@ -1527,12 +1584,6 @@ are declared in tools/grit/grit_args.gni.
           </message>
           <message name="IDS_SAVE_AND_SHARE_MENU_SHARE" desc="The text label of the Share section of the Save and share sub menu">
             Share
-          </message>
-          <message name="IDS_SAVE_PAGE" desc="The text label of the Save Page As menu item">
-            Save page &amp;as...
-          </message>
-          <message name="IDS_MORE_TOOLS_MENU" desc="The text label of the Tools submenu for touch">
-            More too&amp;ls
           </message>
           <message name="IDS_ZOOM_MENU" desc="The text label of the Zoom submenu">
             &amp;Zoom
@@ -1567,29 +1618,11 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_SEARCH_TABS" desc="The text label of the Search Tabs... menu item">
           Search tabs...
           </message>
-          <message name="IDS_CLOSE_PROFILE" desc="The text label of the Close profile menu item with one or more windows currently opened [ICU Syntax]">
-            {NUM_PROFILES, plural, =1 {&amp;Close this profile} other {&amp;Close this profile (# windows)}}
-          </message>
-          <message name="IDS_MANAGE_GOOGLE_ACCOUNT" desc="The text label of the Manage Google account item">
-            Manage your &amp;Google Account
-          </message>
-          <message name="IDS_OPEN_GUEST_PROFILE" desc="The text label of the open guest profile item">
-            &amp;Open Guest profile
-          </message>
-          <message name="IDS_ADD_NEW_PROFILE" desc="The text label of the add new profile item">
-            &amp;Add new profile
-          </message>
         </if>
         <if expr="use_titlecase">
-          <message name="IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION" desc="In Title Case: The text label of the addresses and more item for the passwords and autofill submenu">
-            &amp;Addresses and More
-          </message>
-          <message name="IDS_YOUR_SAVED_INFO_CONTACT_INFO_SUBMENU_OPTION" desc="In Title Case: The text label of the contact info option for the Your saved info submenu that allows user to manage their list of saved addresses and Autofill preferences for addresses.">
-            &amp;Contact Info
-          </message>
-          <message name="IDS_PASSWORDS_AND_AUTOFILL_MENU" desc="In Title Case: The text label of the passwords and autofill menu item">
-            Passwords and &amp;Autofill
-          </message>
+
+
+
           <if expr="is_win or is_macosx or is_linux">
               <message name="IDS_RELAUNCH_TO_UPDATE_ALT" desc="In Title Case: Alternate text label of the relaunch to update Chrome menu item">
                 Relaunch to Update
@@ -1598,24 +1631,11 @@ are declared in tools/grit/grit_args.gni.
               Your tabs will reopen
             </message>
           </if>
-          <message name="IDS_NEW_TAB" desc="In Title Case: The text label of a menu item for opening a new tab">
-            New &amp;Tab
-          </message>
-          <message name="IDS_NEW_INCOGNITO_TAB" desc="In Title Case: The text label of a menu item for opening a new incognito tab">
-            New Incognito &amp;Tab
-          </message>
-          <message name="IDS_INCOGNITO" desc="The text label for the Incognito button in the block header section of the App Menu">
-            Incognito
-          </message>
           <message name="IDS_SHOW_AS_TAB" desc="In Title Case: The text label for the Show As tab menu item">
             &amp;Show As Tab
           </message>
-          <message name="IDS_NEW_WINDOW" desc="In Title Case: The text label of a menu item for opening a new window">
-            &amp;New Window
-          </message>
-          <message name="IDS_NEW_INCOGNITO_WINDOW" desc="In Title Case: The text label of a menu item for opening a new Incognito window">
-            New &amp;Incognito Window
-          </message>
+
+
           <message name="IDS_NEW_ISOLATED_WINDOW" desc="In Title Case: The text label of a menu item for opening a new Isolated window">
             New &amp;Isolated Window
           </message>
@@ -1625,9 +1645,7 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_PROFILE_ROW_SIGNED_IN_MESSAGE" desc="In Title Case: A label to indicate that the profile is signed in.">
             Signed in
           </message>
-          <message name="IDS_PROFILE_ROW_SYNC_IS_ON" desc="In Title Case: The text label of a menu item that notifies the user that sync is on.">
-            &amp;Sync is On
-          </message>
+
           <message name="IDS_PROFILE_ROW_TURN_ON_SYNC" desc="In Title Case: The text label of a menu item that prompts the user to turn on sync.">
             Turn on &amp;Sync...
           </message>
@@ -1655,9 +1673,7 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_FIND" desc="In Title Case: The text label of the Find... menu item">
             &amp;Find...
           </message>
-          <message name="IDS_FIND_AND_EDIT_MENU" desc="In Title Case: The text label of the Find and edit sub menu item">
-            &amp;Find and Edit
-          </message>
+
           <message name="IDS_PAYMENT_METHOD_SUBMENU_OPTION" desc="In Title Case: The text label of the payment method for the passwords and autofill submenu">
             &amp;Payment Methods
           </message>
@@ -1670,9 +1686,7 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_SAVE_SHARE_AND_CAST_MENU" desc="In Title Case: The text label of the Save, share, and cast sub menu item">
             Save, Share, and Cast
           </message>
-          <message name="IDS_CAST_SAVE_AND_SHARE_MENU" desc="In Title Case: The text label of the Cast, save, and share sub menu item">
-            Cast, Save, and Share
-          </message>
+
           <message name="IDS_SAVE_AND_SHARE_MENU_CAST" desc="In Title Case: The text label of the Cast section of the Save and share sub menu">
             Cast
           </message>
@@ -1682,12 +1696,8 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_SAVE_AND_SHARE_MENU_SHARE" desc="In Title Case: The text label of the Share section of the Save and share sub menu">
             Share
           </message>
-          <message name="IDS_SAVE_PAGE" desc="In Title Case: The text label of the Save Page As menu item">
-            Save Page &amp;As...
-          </message>
-          <message name="IDS_MORE_TOOLS_MENU" desc="In Title Case: The text label of the Tools submenu for touch">
-            More Too&amp;ls
-          </message>
+
+
           <message name="IDS_ZOOM_MENU" desc="In Title Case: The text label of the Zoom submenu">
             &amp;Zoom
           </message>
@@ -1721,18 +1731,10 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_SEARCH_TABS" desc="In Title Case:The text label of the Search Tabs... menu item">
           Search Tabs...
           </message>
-          <message name="IDS_CLOSE_PROFILE" desc="In Title Case: The text label of the Close profile menu item with one or more windows currently opened [ICU Syntax]">
-            {NUM_PROFILES, plural, =1 {&amp;Close This Profile} other {&amp;Close This Profile (# Windows)}}
-          </message>
-          <message name="IDS_MANAGE_GOOGLE_ACCOUNT" desc="In Title Case: The text label of the Manage Google account item">
-            Manage Your &amp;Google Account
-          </message>
-          <message name="IDS_OPEN_GUEST_PROFILE" desc="In Title Case: The text label of the open guest profile item">
-            &amp;Open Guest Profile
-          </message>
-          <message name="IDS_ADD_NEW_PROFILE" desc="In Title Case: The text label of the add new profile item">
-            &amp;Add New Profile
-          </message>
+
+
+
+
         </if>
       </if>
 
@@ -1748,16 +1750,16 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_ACCNAME_ZOOM_MINUS2" desc="The accessible description of the Make Text Smaller menu item in the merged menu">
         Make Text Smaller
       </message>
+      <message name="IDS_NAME_WINDOW" desc="The text label of the Name Window menu item, used to give a user-specified name to a window.">
+        Name &amp;window...
+      </message>
 
+      <message name="IDS_NEW_INCOGNITO_TAB" desc="The text label of a menu item for opening a new incognito tab">
+        New Incognito &amp;tab
+      </message>
       <if expr="not use_titlecase">
         <message name="IDS_VIEW_SOURCE" desc="The text label of the View Page Source menu item">
           View s&amp;ource
-        </message>
-        <message name="IDS_FEEDBACK" desc="The text label of the Report Bug menu item">
-          &amp;Report an issue...
-        </message>
-        <message name="IDS_DEV_TOOLS" desc="The text label of the Developer Tools menu item">
-          &amp;Developer tools
         </message>
         <message name="IDS_DEV_TOOLS_ELEMENTS" desc="The text label of the Inspect Elements menu item">
           &amp;Inspect elements
@@ -1768,52 +1770,43 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_DEV_TOOLS_DEVICES" desc="The text label of the Inspect Devices menu item">
           &amp;Inspect devices
         </message>
-        <message name="IDS_TASK_MANAGER" desc="The text label of the Task Manager menu item">
-          &amp;Task manager
-        </message>
         <message name="IDS_TAKE_SCREENSHOT" desc="The text label of the Take Screenshot menu item">
           T&amp;ake screenshot
-        </message>
-        <message name="IDS_REPORT_UNSAFE_SITE" desc="Text label of the Report Unsafe Site menu item">
-          Report an &amp;unsafe site...
-        </message>
-        <message name="IDS_RESTORE_SPLIT" desc="The text label of the Restore Split View menu item.">
-          R&amp;estore split view
-        </message>
-        <message name="IDS_RESTORE_TAB" desc="The text label of the Restore Tab menu item">
-          R&amp;eopen closed tab
-        </message>
-        <message name="IDS_REOPEN_WINDOW" desc="The text label of the Reopen Closed Window menu item">
-          R&amp;eopen closed window
-        </message>
-        <message name="IDS_REOPEN_GROUP" desc="The text label of the Reopen Closed Group menu item">
-          Reopen closed group
-        </message>
-        <message name="IDS_REOPEN_SPLIT" desc="The text label of the Reopen Closed Split menu item">
-          Reopen closed split view
-        </message>
-        <message name="IDS_RESTORE_WINDOW" desc="The text label of the Restore Window menu item">
-          &amp;Restore window
-        </message>
-        <message name="IDS_RESTORE_GROUP" desc="The text label of the Restore Group menu item">
-          &amp;Restore group
-        </message>
-        <message name="IDS_NAME_WINDOW" desc="The text label of the Name Window menu item, used to give a user-specified name to a window.">
-          Name &amp;window...
         </message>
         <message name="IDS_CHROMELABS" desc="The text label of the Chrome Labs menu item">
           Chrome &amp;Labs...
         </message>
       </if>
+      <!-- macOS Capitalization Policy (go/chrome-capitalization):
+           In-browser UI surfaces (such as the 3-dot app menu) use sentence
+           case cross-platform, including on macOS. Native macOS surfaces
+           (system menu bar and right-click context menus) follow Apple Human
+           Interface Guidelines (HIG) and use Title Case (e.g. `_MAC`
+           variants). -->
+      <message name="IDS_RESTORE_SPLIT" desc="The text label of the Restore Split View menu item.">
+        R&amp;estore split view
+      </message>
+      <message name="IDS_RESTORE_TAB" desc="The text label of the Restore Tab menu item">
+        R&amp;eopen closed tab
+      </message>
+      <message name="IDS_REOPEN_WINDOW" desc="The text label of the Reopen Closed Window menu item">
+        R&amp;eopen closed window
+      </message>
+      <message name="IDS_REOPEN_GROUP" desc="The text label of the Reopen Closed Group menu item">
+        Reopen closed group
+      </message>
+      <message name="IDS_REOPEN_SPLIT" desc="The text label of the Reopen Closed Split menu item">
+        Reopen closed split view
+      </message>
+      <message name="IDS_RESTORE_WINDOW" desc="The text label of the Restore Window menu item">
+        &amp;Restore window
+      </message>
+      <message name="IDS_RESTORE_GROUP" desc="The text label of the Restore Group menu item">
+        &amp;Restore group
+      </message>
       <if expr="use_titlecase">
         <message name="IDS_VIEW_SOURCE" desc="In Title Case: The text label of the View Page Source menu item">
           View S&amp;ource
-        </message>
-        <message name="IDS_FEEDBACK" desc="In Title Case: The text label of the Report Bug menu item">
-          &amp;Report an Issue...
-        </message>
-        <message name="IDS_DEV_TOOLS" desc="In Title Case: The text label of the Developer Tools menu item">
-          &amp;Developer Tools
         </message>
         <message name="IDS_DEV_TOOLS_CONSOLE" desc="In Title Case: The text label of the JavaScript console menu item">
           &amp;JavaScript Console
@@ -1821,41 +1814,20 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_DEV_TOOLS_DEVICES" desc="The text label of the Inspect Devices menu item">
           &amp;Inspect Devices
         </message>
-         <message name="IDS_DEV_TOOLS_ELEMENTS" desc="The text label of the Inspect Elements menu item">
+        <message name="IDS_DEV_TOOLS_ELEMENTS" desc="The text label of the Inspect Elements menu item">
           &amp;Inspect Elements
-        </message>
-        <message name="IDS_TASK_MANAGER" desc="In Title Case: The text label of the Task Manager menu item">
-          &amp;Task Manager
         </message>
         <message name="IDS_TAKE_SCREENSHOT" desc="The text label of the Take Screenshot menu item">
           T&amp;ake Screenshot
         </message>
-        <message name="IDS_RESTORE_SPLIT" desc="In Title Case: The text label of the Restore Split View menu item.">
-          R&amp;estore Split View
-        </message>
-        <message name="IDS_RESTORE_TAB" desc="In Title Case: The text label of the Restore Tab menu item">
-          R&amp;eopen Closed Tab
-        </message>
-        <message name="IDS_REOPEN_WINDOW" desc="In Title Case: The text label of the Reopen Closed Window menu item">
+        <message name="IDS_REOPEN_WINDOW_MAC" desc="In Title Case: The text label of the Reopen Closed Window menu item">
           R&amp;eopen Closed Window
         </message>
-        <message name="IDS_REOPEN_GROUP" desc="In Title Case: The text label of the Reopen Closed Group menu item">
+        <message name="IDS_REOPEN_GROUP_MAC" desc="In Title Case: The text label of the Reopen Closed Group menu item">
           Reopen Closed Group
         </message>
-        <message name="IDS_REOPEN_SPLIT" desc="In Title Case: The text label of the Reopen Closed Split menu item">
+        <message name="IDS_REOPEN_SPLIT_MAC" desc="In Title Case: The text label of the Reopen Closed Split menu item">
           Reopen Closed Split View
-        </message>
-        <message name="IDS_REPORT_UNSAFE_SITE" desc="In Title Case: Text label of the Report Unsafe Site menu item">
-          Report an &amp;Unsafe Site...
-        </message>
-        <message name="IDS_RESTORE_WINDOW" desc="In Title Case: The text label of the Restore Window menu item">
-          &amp;Restore Window
-        </message>
-        <message name="IDS_RESTORE_GROUP" desc="In Title Case: The text label of the Restore Group menu item">
-          &amp;Restore Group
-        </message>
-        <message name="IDS_NAME_WINDOW" desc="In Title Case: The text label of the Name Window menu item, used to give a user-specified name to a window.">
-          Name &amp;Window...
         </message>
         <message name="IDS_CHROMELABS" desc="In Title Case: The text label of the Chrome Labs menu item">
           Chrome &amp;Labs...
@@ -1918,20 +1890,21 @@ are declared in tools/grit/grit_args.gni.
         Chrome Enterprise release notes
       </message>
       <message name="IDS_CHROME_WHATS_NEW" desc="The text label of the Help menu item which takes the user to the Chrome What's New page.">
-        What's New
+        What's new
+      </message>
+      <message name="IDS_CLEAR_BROWSING_DATA" desc="The text label for the menu item for deleting of browsing data">
+        &amp;Delete browsing data...
+      </message>
+      <message name="IDS_IMPORT_SETTINGS_MENU_LABEL" desc="The app menu label to import bookmarks and settings.">
+        Import bookmarks and settings...
       </message>
       <if expr="not use_titlecase">
-        <message name="IDS_IMPORT_SETTINGS_MENU_LABEL" desc="In sentence case: The app menu label to import bookmarks and settings.">
-          Import bookmarks and settings...
-        </message>
+
         <message name="IDS_PROFILING_ENABLED" desc="The toggle to turn profiling on / off">
           &amp;Profiling enabled
         </message>
         <message name="IDS_FULLSCREEN" desc="Switches into fullscreen mode">
           &amp;Full screen
-        </message>
-        <message name="IDS_CLEAR_BROWSING_DATA" desc="The text label for the menu item for deleting of browsing data">
-          &amp;Delete browsing data...
         </message>
         <message name="IDS_SHOW_DOWNLOADS" desc="The show downloads menu in the app menu">
           &amp;Downloads
@@ -1944,9 +1917,6 @@ are declared in tools/grit/grit_args.gni.
         </message>
         <message name="IDS_EXTENSIONS_SUBMENU" desc="The extensions menu in the app menu (title case).">
           &amp;Extensions
-        </message>
-        <message name="IDS_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS_ITEM" desc="The text for the link in the extensions menu, in the app menu, to visit chrome://extensions to view all extensions installed (title case).">
-          Manage Extensions
         </message>
         <message name="IDS_EXTENSIONS_SUBMENU_CHROME_WEBSTORE_ITEM" desc="The text for the link in the extensions menu, in the app menu, to visit the Chrome Web Store to get more extensions (title case).">
           Visit Chrome Web Store
@@ -1980,17 +1950,12 @@ are declared in tools/grit/grit_args.gni.
         </message>
       </if>
       <if expr="use_titlecase">
-        <message name="IDS_IMPORT_SETTINGS_MENU_LABEL" desc="In Title Case: The app menu label to import bookmarks and settings.">
-          Import Bookmarks and Settings...
-        </message>
+
         <message name="IDS_PROFILING_ENABLED" desc="In Title Case: The toggle to turn profiling on / off">
           &amp;Profiling Enabled
         </message>
         <message name="IDS_FULLSCREEN" desc="In Title Case: Switches into fullscreen mode">
           &amp;Full Screen
-        </message>
-        <message name="IDS_CLEAR_BROWSING_DATA" desc="In Title Case: The text label for the menu item for deleting of browsing data">
-          &amp;Delete Browsing Data...
         </message>
         <message name="IDS_SHOW_DOWNLOADS" desc="In Title Case: The show downloads menu in the app menu">
           &amp;Downloads
@@ -2004,9 +1969,7 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_EXTENSIONS_SUBMENU" desc="In Title Case: The extensions menu in the app menu.">
           &amp;Extensions
         </message>
-        <message name="IDS_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS_ITEM" desc="In Title Case: The text for the link in the extensions menu, in the app menu, to visit chrome://extensions to view all extensions installed.">
-          Manage Extensions
-        </message>
+
         <message name="IDS_EXTENSIONS_SUBMENU_CHROME_WEBSTORE_ITEM" desc="In Title Case: The text for the link in the extensions menu, in the app menu, to visit the Chrome Web Store to get more extensions.">
           Visit Chrome Web Store
         </message>
@@ -2026,7 +1989,7 @@ are declared in tools/grit/grit_args.gni.
           &amp;Options
         </message>
         <message name="IDS_HELP_PAGE" desc="The text label of the Help Center menu item">
-          H&amp;elp Center
+          H&amp;elp center
         </message>
         <message name="IDS_BETA_FORUM" desc="The text label of the menu item that takes the user to the forum for Beta Chrome.">
           Beta Forum
@@ -3834,34 +3797,17 @@ are declared in tools/grit/grit_args.gni.
       </if>
 
       <!-- "Create application shortcuts" menu item -->
-      <if expr="use_titlecase">
-        <message name="IDS_ADD_TO_OS_LAUNCH_SURFACE" desc="In Title Case: Menu text for adding a bookmark app shortcut to the operating system.">
-          Create &amp;Shortcut...
-        </message>
-      </if>
-      <if expr="not use_titlecase">
-        <message name="IDS_ADD_TO_OS_LAUNCH_SURFACE" desc="Menu text for adding a bookmark app shortcut to the operating system.">
-          Create &amp;shortcut...
-        </message>
-      </if>
+      <message name="IDS_ADD_TO_OS_LAUNCH_SURFACE" desc="Menu text for adding a bookmark app shortcut to the operating system.">
+        Create &amp;shortcut...
+      </message>
 
       <!-- "Install web app" menu item -->
-      <if expr="use_titlecase">
-        <message name="IDS_INSTALL_TO_OS_LAUNCH_SURFACE" desc="In Title Case: Menu text for installing a web app to the operating system.">
-          &amp;Install <ph name="APP">$1<ex>Gmail</ex></ph>...
-        </message>
-        <message name="IDS_INSTALL_DIY_TO_OS_LAUNCH_SURFACE" desc="In Title Case: Menu text for installing a web page as a web app to the operating system.">
-          &amp;Install Page as App...
-        </message>
-      </if>
-      <if expr="not use_titlecase">
-        <message name="IDS_INSTALL_TO_OS_LAUNCH_SURFACE" desc="Menu text for installing a web app to the operating system.">
-          &amp;Install <ph name="APP">$1<ex>Gmail</ex></ph>...
-        </message>
-        <message name="IDS_INSTALL_DIY_TO_OS_LAUNCH_SURFACE" desc="Menu text for installing a web page as a web app to the operating system.">
-          &amp;Install page as app...
-        </message>
-      </if>
+      <message name="IDS_INSTALL_TO_OS_LAUNCH_SURFACE" desc="Menu text for installing a web app to the operating system.">
+        &amp;Install <ph name="APP">$1<ex>Gmail</ex></ph>...
+      </message>
+      <message name="IDS_INSTALL_DIY_TO_OS_LAUNCH_SURFACE" desc="Menu text for installing a web page as a web app to the operating system.">
+        &amp;Install page as app...
+      </message>
 
       <!-- "Uninstall web app" menu item -->
       <if expr="use_titlecase">
@@ -3875,16 +3821,9 @@ are declared in tools/grit/grit_args.gni.
         </message>
       </if>
 
-      <if expr="use_titlecase">
-        <message name="IDS_REVIEW_APP_UPDATE" desc="In Title Case: Menu text for reviewing a pending update for the current web app.">
-          Review App Update
-        </message>
-      </if>
-      <if expr="not use_titlecase">
-        <message name="IDS_REVIEW_APP_UPDATE" desc="Menu text for reviewing a pending update for the current web app.">
-          Review app update
-        </message>
-      </if>
+      <message name="IDS_REVIEW_APP_UPDATE" desc="Menu text for reviewing a pending update for the current web app.">
+        Review app update
+      </message>
 
       <!-- "Application Information" dialog -->
       <if expr="not use_titlecase">
@@ -9360,28 +9299,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- Reading List submenu in App Menu -->
-      <if expr="not use_titlecase">
-        <message name="IDS_READING_LIST_MENU" desc="The title of the Reading List submenu in the App Menu">
-          &amp;Reading list
-        </message>
-        <message name="IDS_READING_LIST_MENU_ADD_TAB" desc="">
-          Add tab to reading list
-        </message>
-        <message name="IDS_READING_LIST_MENU_SHOW_UI">
-          Show reading list
-        </message>
-      </if>
-      <if expr="use_titlecase">
-        <message name="IDS_READING_LIST_MENU" desc="The title of the Reading List submenu in the App Menu">
-          &amp;Reading List
-        </message>
-        <message name="IDS_READING_LIST_MENU_ADD_TAB" desc="">
-          Add Tab to Reading List
-        </message>
-        <message name="IDS_READING_LIST_MENU_SHOW_UI">
-          Show Reading List
-        </message>
-      </if>
+      <message name="IDS_READING_LIST_MENU" desc="The title of the Reading List submenu in the App Menu">
+        &amp;Reading list
+      </message>
+      <message name="IDS_READING_LIST_MENU_ADD_TAB" desc="">
+        Add tab to reading list
+      </message>
+      <message name="IDS_READING_LIST_MENU_SHOW_UI">
+        Show reading list
+      </message>
 
       <!-- Side panel strings -->
       <message name="IDS_ACCNAME_SIDE_PANEL_RESIZE" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the side panel resize handle is focused.">
@@ -9445,16 +9371,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Customize toolbar
         </message>
       </if>
-      <if expr="use_titlecase">
-        <message name="IDS_SIDE_PANEL_SHOW_TABS_FROM_OTHER_DEVICES" desc="Title of the menu item for showing the 'Tabs from other devices' side panel entry.">
-          Show Tabs From Other Devices in Side Panel
-        </message>
-      </if>
-      <if expr="not use_titlecase">
-        <message name="IDS_SIDE_PANEL_SHOW_TABS_FROM_OTHER_DEVICES" desc="Title of the menu item for showing the 'Tabs from other devices' side panel entry.">
-          Show tabs from other devices in side panel
-        </message>
-      </if>
+      <message name="IDS_SIDE_PANEL_SHOW_TABS_FROM_OTHER_DEVICES" desc="Title of the menu item for showing the 'Tabs from other devices' side panel entry.">
+        Show tabs from other devices in side panel
+      </message>
       <if expr="use_titlecase">
         <message name="IDS_SIDE_PANEL_TABS_FROM_OTHER_DEVICES_TITLE" desc="Title of the 'Tabs from other devices' side panel entry.">
           Tabs From Other Devices
@@ -9715,16 +9634,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- Reading mode strings -->
-      <if expr="use_titlecase">
-        <message name="IDS_SHOW_READING_MODE_SIDE_PANEL" desc="Context menu entry point to open the reading mode feature in the side panel.">
-          Reading Mode
-        </message>
-      </if>
-      <if expr="not use_titlecase">
-        <message name="IDS_SHOW_READING_MODE_SIDE_PANEL" desc="Context menu entry point to open the reading mode feature in the side panel.">
-          Reading mode
-        </message>
-      </if>
+      <message name="IDS_SHOW_READING_MODE_SIDE_PANEL" desc="Context menu entry point to open the reading mode feature in the side panel.">
+        Reading mode
+      </message>
       <if expr="use_titlecase">
         <message name="IDS_READING_MODE_TITLE" desc="Title of the reading mode feature, which gives users an accessible reading experience.">
           Reading Mode
@@ -10456,12 +10368,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- Vertical Tab Strings -->
+      <message name="IDS_SWITCH_TO_VERTICAL_TAB" desc="The button in context menu that switches to vertical tab view.">
+        Show tabs vertically
+      </message>
+      <message name="IDS_SWITCH_TO_HORIZONTAL_TAB" desc="The button in context menu that switches to horizontal tab view.">
+        Show tabs horizontally
+      </message>
       <if expr="use_titlecase">
         <then>
-          <message name="IDS_SWITCH_TO_VERTICAL_TAB" desc="In Title Case: The button in context menu that switches to vertical tab view.">
+          <message name="IDS_SWITCH_TO_VERTICAL_TAB_MAC" desc="In Title Case: The button in context menu that switches to vertical tab view.">
             Show Tabs Vertically
           </message>
-          <message name="IDS_SWITCH_TO_HORIZONTAL_TAB" desc="In Title Case: The button in context menu that switches to horizontal tab view.">
+          <message name="IDS_SWITCH_TO_HORIZONTAL_TAB_MAC" desc="In Title Case: The button in context menu that switches to horizontal tab view.">
             Show Tabs Horizontally
           </message>
           <message name="IDS_COLLAPSE_VERTICAL_TABS" desc="In Title Case: The tooltip for the button in the top container that collapses the vertical tab strip.">
@@ -10493,12 +10411,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
           </message>
         </then>
         <else>
-          <message name="IDS_SWITCH_TO_VERTICAL_TAB" desc="The button in context menu that switches to vertical tab view.">
-            Show tabs vertically
-          </message>
-          <message name="IDS_SWITCH_TO_HORIZONTAL_TAB" desc="The button in context menu that switches to horizontal tab view.">
-            Show tabs horizontally
-          </message>
           <message name="IDS_COLLAPSE_VERTICAL_TABS" desc="The tooltip for the button in the top container that collapses the vertical tab strip.">
             Collapse tabs
           </message>
@@ -12503,18 +12415,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_SEARCH_TAB_NAME" desc="The tab title for tab search in the tab search bubble">
         Search
       </message>
-      <if expr="use_titlecase">
-        <then>
-          <message name="IDS_TAB_SEARCH_MENU" desc="In Title Case: The text label for the tab search app menu item">
-            Tab Search
-          </message>
-        </then>
-        <else>
-          <message name="IDS_TAB_SEARCH_MENU" desc="The text label for the tab search menu item">
-            Tab search
-          </message>
-        </else>
-      </if>
+      <message name="IDS_TAB_SEARCH_MENU" desc="The text label for the tab search menu item">
+        Tab search
+      </message>
 
       <!-- Strings for Window Titles in Menus -->
       <if expr="not use_titlecase">
@@ -12538,21 +12441,21 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TABS_TITLE_CXMENU" desc="The label of the 'Tabs' title in the context menu of a saved tab group.">
         Tabs in group
       </message>
+      <message name="IDS_CREATE_NEW_TAB_GROUP" desc="The label of item in Everything menu to create a new tab group.">
+        Create new tab group
+      </message>
+      <message name="IDS_OPEN_GROUP_IN_BROWSER_MENU" desc="The title of the 'Open group' submenu item in the App Menu.">
+        Open group
+      </message>
+      <message name="IDS_SAVED_TAB_GROUPS_MENU" desc="The title of the 'Tab groups' menu in the App Menu.">
+        Tab groups
+      </message>
       <if expr="not use_titlecase">
         <message name="IDS_SAVED_TAB_GROUP_TABS_COUNT" desc="Title of unnamed saved tab group in Everything menu. [ICU_Syntax]">
           {NUM_TABS, plural, =1 {1 tab} other {# tabs}}
         </message>
-        <message name="IDS_CREATE_NEW_TAB_GROUP" desc="The label of item in Everything menu to create a new tab group.">
-          Create new tab group
-        </message>
         <message name="IDS_GROUP_UNGROUPED_TABS" desc="The label of item in system context menu to create a new tab group and put all ungrouped tabs in it.">
           Group all tabs
-        </message>
-        <message name="IDS_SAVED_TAB_GROUPS_MENU" desc="The title of the 'Tab groups' menu in the App Menu.">
-          Tab groups
-        </message>
-        <message name="IDS_OPEN_GROUP_IN_BROWSER_MENU" desc="The title of the 'Open group' submenu item in the App Menu.">
-          Open group
         </message>
         <message name="IDS_NEW_TAB_IN_GROUP" desc="The label of a context menu item for adding a new tab into an existing group.">
           New tab in <ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>
@@ -12571,17 +12474,8 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_SAVED_TAB_GROUP_TABS_COUNT" desc="In Title Case: Title of unnamed saved tab group in Everything menu. [ICU_Syntax]">
           {NUM_TABS, plural, =1 {1 Tab} other {# Tabs}}
         </message>
-        <message name="IDS_CREATE_NEW_TAB_GROUP" desc="The label of item in Everything menu to create a new tab group.">
-          Create New Tab Group
-        </message>
         <message name="IDS_GROUP_UNGROUPED_TABS" desc="The label of item in system context menu to create a new tab group and put all ungrouped tabs in it.">
           Group All Tabs
-        </message>
-        <message name="IDS_SAVED_TAB_GROUPS_MENU" desc="The title of the 'Tab Groups' menu in the App Menu.">
-          Tab Groups
-        </message>
-        <message name="IDS_OPEN_GROUP_IN_BROWSER_MENU" desc="The title of the 'Open Group' submenu item in the App Menu.">
-          Open Group
         </message>
         <message name="IDS_NEW_TAB_IN_GROUP" desc="The label of a context menu item for adding a new tab into a group.">
           New Tab in <ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>
@@ -12789,119 +12683,70 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             other {# members in the group}
           }
       </message>
+      <message name="IDS_TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP" desc="The label of the tab group header context menu item for adding a new tab into the current group.">
+        New tab in group
+      </message>
+      <message name="IDS_TAB_GROUP_HEADER_CXMENU_HOME" desc="Home option in tab group bubble">
+        Home
+      </message>
+      <message name="IDS_TAB_GROUP_HEADER_CXMENU_UNGROUP" desc="The label of the tab group header context menu item for ungrouping the current group.">
+        Ungroup
+      </message>
+      <message name="IDS_TAB_GROUP_HEADER_CXMENU_FOCUS_GROUP" desc="The label for focus group in the tab group editor bubble.">
+        Focus group
+      </message>
+      <message name="IDS_TAB_GROUP_HEADER_CXMENU_UNFOCUS_GROUP" desc="The label for unfocus group in the tab group editor bubble.">
+        Unfocus group
+      </message>
+      <message name="IDS_TAB_GROUP_HEADER_CXMENU_SHARE_GROUP" desc="The label of the tab group header context menu item for sharing the current group.">
+        Share group
+      </message>
+      <message name="IDS_TAB_GROUP_HEADER_CXMENU_RECENT_ACTIVITY" desc="The label of the tab group header context menu item for open recent activity for the current group.">
+        Recent activity
+      </message>
+      <message name="IDS_TAB_GROUP_HEADER_CXMENU_MANAGE_GROUP" desc="The label of the tab group header context menu item for managing the shared group.">
+        Manage sharing
+      </message>
+      <message name="IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP" desc="The label of the tab group header context menu item for closing all tabs in the current group.">
+        Close group
+      </message>
+      <message name="IDS_TAB_GROUP_HEADER_CXMENU_HIDE_GROUP" desc="The label of the tab group header context menu item for hiding a saved group into the bookmarks bar.">
+        Hide group
+      </message>
+      <message name="IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP" desc="The label of the tab group header context menu item for deleting all tabs in the current group.">
+        Delete group
+      </message>
+      <message name="IDS_TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW" desc="The label of the tab group header context menu item for moving the entire group to a new window.">
+        Move group to new window
+      </message>
+      <message name="IDS_TAB_GROUP_HEADER_CXMENU_OPEN_GROUP_IN_NEW_WINDOW" desc="The label of the saved tab group button context menu item for opening the entire group in a new window.">
+        Open group in new window
+      </message>
+      <message name="IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP" desc="The label of the saved tab group button context menu item to pin a gruop">
+        Pin group to bookmarks bar
+      </message>
+      <message name="IDS_TAB_GROUP_HEADER_CXMENU_UNPIN_GROUP" desc="The label of the saved tab group button context menu item to unpin a gruop">
+        Unpin group from bookmarks bar
+      </message>
       <if expr="not use_titlecase">
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP" desc="The label of the tab group header context menu item for adding a new tab into the current group.">
-          New tab in group
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_HOME" desc="Home option in tab group bubble">
-          Home
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_UNGROUP" desc="The label of the tab group header context menu item for ungrouping the current group.">
-          Ungroup
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_FOCUS_GROUP" desc="The label for focus group in the tab group editor bubble.">
-          Focus group
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_UNFOCUS_GROUP" desc="The label for unfocus group in the tab group editor bubble.">
-          Unfocus group
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_SHARE_GROUP" desc="The label of the tab group header context menu item for sharing the current group.">
-          Share group
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_RECENT_ACTIVITY" desc="The label of the tab group header context menu item for open recent activity for the current group.">
-          Recent activity
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_MANAGE_GROUP" desc="The label of the tab group header context menu item for managing the shared group.">
-          Manage sharing
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP" desc="The label of the tab group header context menu item for closing all tabs in the current group.">
-          Close group
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_HIDE_GROUP" desc="The label of the tab group header context menu item for hiding a saved group into the bookmarks bar.">
-          Hide group
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP" desc="The label of the tab group header context menu item for deleting all tabs in the current group.">
-          Delete group
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW" desc="The label of the tab group header context menu item for moving the entire group to a new window.">
-          Move group to new window
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_OPEN_GROUP_IN_NEW_WINDOW" desc="The label of the saved tab group button context menu item for opening the entire group in a new window.">
-          Open group in new window
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP" desc="The label of the saved tab group button context menu item to pin a gruop">
-          Pin group to bookmarks bar
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_UNPIN_GROUP" desc="The label of the saved tab group button context menu item to unpin a gruop">
-          Unpin group from bookmarks bar
-        </message>
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_CONVERT_GROUP_TO_BOOKMARK_FOLDER" desc="The label of the tab group header context menu item for moving the entire group to a new window.">
           Convert group to bookmark folder
         </message>
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_SEND_FEEDBACK" desc="The label of the tab group header context menu item for sending feedback for tab groups.">
           Send feedback
         </message>
-        <message name="IDS_TAB_GROUP_HEADER_BUBBLE_TITLE_PLACEHOLDER" desc="The placeholder text to display within the input field of the tab group editor bubble for naming a tab group.">
-          Name this group
-        </message>
       </if>
-
       <if expr="use_titlecase">
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP" desc="In Title Case: The label of the tab group header context menu item for adding a new tab into the current group.">
-          New Tab in Group
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_HOME" desc="Home option in tab group bubble">
-          Home
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_UNGROUP" desc="In Title Case: The label of the tab group header context menu item for ungrouping the current group.">
-          Ungroup
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_FOCUS_GROUP" desc="The label for focus group in the tab group editor bubble.">
-          Focus Group
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_UNFOCUS_GROUP" desc="The label for unfocus group in the tab group editor bubble.">
-          Unfocus Group
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_SHARE_GROUP" desc="The label of the tab group header context menu item for sharing the current group.">
-          Share Group
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_RECENT_ACTIVITY" desc="The label of the tab group header context menu item for open recent activity for the current group.">
-          Recent Activity
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_MANAGE_GROUP" desc="The label of the tab group header context menu item for managing the shared group.">
-          Manage Sharing
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP" desc="In Title Case: The label of the tab group header context menu item for closing all tabs in the current group.">
-          Close Group
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_HIDE_GROUP" desc="The label of the tab group header context menu item for hiding a saved group into the bookmarks bar.">
-          Hide Group
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP" desc="The label of the tab group header context menu item for deleting all tabs in the current group.">
-          Delete Group
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW" desc="In Title Case: The label of the tab group header context menu item for moving the entire group to a new window.">
-          Move Group to New Window
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_OPEN_GROUP_IN_NEW_WINDOW" desc="In Title Case: The label of the saved tab group button context menu item for opening the entire group in a new window.">
-          Open Group in New Window
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP" desc="The label of the saved tab group button context menu item to pin a gruop">
-          Pin Group to Bookmarks Bar
-        </message>
-        <message name="IDS_TAB_GROUP_HEADER_CXMENU_UNPIN_GROUP" desc="The label of the saved tab group button context menu item to unpin a gruop">
-          Unpin Group from Bookmarks Bar
-        </message>
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_CONVERT_GROUP_TO_BOOKMARK_FOLDER" desc="The label of the tab group header context menu item for moving the entire group to a new window.">
           Convert Group to Bookmark Folder
         </message>
         <message name="IDS_TAB_GROUP_HEADER_CXMENU_SEND_FEEDBACK" desc="In Title Case: The label of the tab group header context menu item for sending feedback for tab groups.">
           Send Feedback
         </message>
-        <message name="IDS_TAB_GROUP_HEADER_BUBBLE_TITLE_PLACEHOLDER" desc="In Title Case: The placeholder text to display within the input field of the tab group editor bubble for naming a tab group.">
-          Name This Group
-        </message>
       </if>
+      <message name="IDS_TAB_GROUP_HEADER_BUBBLE_TITLE_PLACEHOLDER" desc="The placeholder text to display within the input field of the tab group editor bubble for naming a tab group.">
+        Name this group
+      </message>
 
     <!-- Data Sharing -->
       <!-- Title Case Specific IDs -->
@@ -13514,12 +13359,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_APP_MENU_NEW_WEB_PAGE" desc="The new webpage menu in application windows">
           Open browser window
         </message>
-        <message name="IDS_APP_MENU_COPY_LINK" desc="The text label for the Copy link item in the app menu">
-          Copy &amp;link
-        </message>
-        <message name="IDS_APP_MENU_CREATE_QR_CODE" desc="The text label for the Create QR Code item in the app menu">
-          Create &amp;QR Code
-        </message>
       </if>
       <if expr="use_titlecase">
         <message name="IDS_APP_MENU_RELOAD" desc="In Title Case: The reload menu in application windows">
@@ -13528,13 +13367,11 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_APP_MENU_NEW_WEB_PAGE" desc="In Title Case: The new webpage menu in application windows">
           Open Browser Window
         </message>
-        <message name="IDS_APP_MENU_COPY_LINK" desc="In Title Case: The text label for the Copy link item in the app menu">
-          Copy &amp;Link
-        </message>
-        <message name="IDS_APP_MENU_CREATE_QR_CODE" desc="In Title Case: The text label for the Create QR Code item in the app menu">
-          Create &amp;QR Code
-        </message>
+
       </if>
+      <message name="IDS_APP_MENU_COPY_LINK" desc="The text label for the Copy link item in the app menu">
+        Copy &amp;link
+      </message>
       <message name="IDS_APP_MENU_BUTTON_UPDATE" desc="Short label next to app-menu button when an update is available.">
         Update
       </message>
@@ -13960,18 +13797,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_BUTTON_HINT_TEXT" desc="The hint text shown on received tab dialog shown from the toolbar button. Where 'THERE' is the device the user selected.">
         Choose a device. Then, to see the page, open Chrome there.
       </message>
-      <if expr="use_titlecase">
-        <then>
-          <message name="IDS_MENU_SEND_TAB_TO_SELF" desc="In Title Case: The label of a menu entry to share the current tab to another device">
-            Send to Your &amp;Device
-          </message>
-        </then>
-        <else>
-          <message name="IDS_MENU_SEND_TAB_TO_SELF" desc="The label of a menu entry to share the current tab to another device">
-            Send to your &amp;device
-          </message>
-        </else>
-      </if>
+      <message name="IDS_MENU_SEND_TAB_TO_SELF" desc="The label of a menu entry to share the current tab to another device">
+        Send to your &amp;device
+      </message>
       <message name="IDS_SEND_TAB_TO_SELF_DEVICE_LABEL" desc="The label for a target device in the Send Tab to Self context menu, which includes the device name and its last active time.">
         <ph name="DEVICE_NAME">$1<ex>Pixel 9 Pro</ex></ph> (<ph name="LAST_ACTIVE_TIME">$2<ex>Active 5 mins ago</ex></ph>)
       </message>
@@ -15151,10 +14979,19 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Failed To Create Data Directory
       </message>
 
+      <message name="IDS_RECENT_TABS_MENU" desc="The title of the Recent Tabs menu in the wrench menu.">
+        Recent tabs
+      </message>
+      <message name="IDS_RECENT_TABS_NO_DEVICE_TABS" desc="The label in the Recent Tabs menu in the wrench menu when there's no tabs from other devices.">
+        No tabs from other devices
+      </message>
+      <message name="IDS_RECENT_TABS_LOGIN_FOR_DEVICE_TABS" desc="The label in the Recent Tabs menu in the wrench menu to suggest logging in to see tabs from other devices.">
+        Sign in to see tabs from other devices
+      </message>
+      <message name="IDS_RECENT_TABS_SEE_DEVICE_TABS" desc="The label in the Recent Tabs menu in the wrench menu to see tabs from other devices.">
+        See tabs from other devices
+      </message>
       <if expr="use_titlecase">
-        <message name="IDS_RECENT_TABS_MENU" desc="In Title Case: The title of the Recent Tabs menu in the wrench menu.">
-          Recent Tabs
-        </message>
         <message name="IDS_RECENTLY_CLOSED_WINDOW" desc="In Title Case: Title of recently closed windows in Recent Tabs menu. [ICU_Syntax]">
           {NUM_TABS, plural, =1 {1 Tab} other {# Tabs}}
         </message>
@@ -15167,20 +15004,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_RECENTLY_CLOSED_SPLIT" desc="In Title Case: Title of recently closed split views in Recent Tabs menu.">
           Split View
         </message>
-        <message name="IDS_RECENT_TABS_NO_DEVICE_TABS" desc="In Title Case: The label in the Recent Tabs menu in the wrench menu when there's no tabs from other devices.">
-          No Tabs from Other Devices
-        </message>
-        <message name="IDS_RECENT_TABS_LOGIN_FOR_DEVICE_TABS" desc="In Title Case: The label in the Recent Tabs menu in the wrench menu to suggest logging in to see tabs from other devices.">
-          Sign In To See Tabs From Other Devices
-        </message>
-        <message name="IDS_RECENT_TABS_SEE_DEVICE_TABS" desc="The label in the Recent Tabs menu in the wrench menu to see tabs from other devices.">
-          See Tabs from Other Devices
-        </message>
       </if>
       <if expr="not use_titlecase">
-        <message name="IDS_RECENT_TABS_MENU" desc="The title of the Recent Tabs menu in the wrench menu.">
-          Recent tabs
-        </message>
         <message name="IDS_RECENTLY_CLOSED_WINDOW" desc="Title of recently closed windows in Recent Tabs menu. [ICU_Syntax]">
           {NUM_TABS, plural, =1 {1 tab} other {# tabs}}
         </message>
@@ -15192,15 +15017,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
         <message name="IDS_RECENTLY_CLOSED_SPLIT" desc="Title of recently closed split views in Recent Tabs menu.">
           Split view
-        </message>
-        <message name="IDS_RECENT_TABS_NO_DEVICE_TABS" desc="The label in the Recent Tabs menu in the wrench menu when there's no tabs from other devices.">
-          No tabs from other devices
-        </message>
-        <message name="IDS_RECENT_TABS_LOGIN_FOR_DEVICE_TABS" desc="The label in the Recent Tabs menu in the wrench menu to suggest logging in to see tabs from other devices.">
-          Sign in to see tabs from other devices
-        </message>
-        <message name="IDS_RECENT_TABS_SEE_DEVICE_TABS" desc="The label in the Recent Tabs menu in the wrench menu to see tabs from other devices.">
-          See tabs from other devices
         </message>
       </if>
 
@@ -15823,6 +15639,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <!-- App menu -->
         <message name="IDS_ABOUT_MAC" desc="In Title Case: The Mac menu item to open the about box.">
           About <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>
+        </message>
+        <message name="IDS_CLEAR_BROWSING_DATA_MAC" desc="In Title Case: The Mac menu item for clearing browsing data.">
+          Delete Browsing Data...
+        </message>
+        <message name="IDS_NAME_WINDOW_MAC" desc="In Title Case: The Mac menu item for naming a window.">
+          Name Window...
         </message>
         <message name="IDS_SERVICES_MAC" desc="In Title Case: The Mac menu item for the OS X services submenu (OS fills it in) in the app menu.">
           Services
@@ -19343,9 +19165,16 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_GLIC_SELECTION_OVERLAY_PRESELECTION_BUBBLE_TEXT" desc="Text that is shown in the Glic selection overlay preselection bubble. Informs the user to select text or image to ask Gemini.">
         Select any text or image to ask Gemini
       </message>
-      <message name="IDS_TAB_GROUP_HEADER_CXMENU_ASK_GEMINI" translateable="false" desc="The label of the tab group context menu item to ask Gemini about the tab group.">
-        Ask Gemini about this group
-      </message>
+      <if expr="use_titlecase">
+        <message name="IDS_TAB_GROUP_HEADER_CXMENU_ASK_GEMINI" translateable="false" desc="In Title Case: The label of the tab group context menu item to ask Gemini about the tab group.">
+          Ask Gemini about This Group
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_TAB_GROUP_HEADER_CXMENU_ASK_GEMINI" translateable="false" desc="The label of the tab group context menu item to ask Gemini about the tab group.">
+          Ask Gemini about this group
+        </message>
+      </if>
       <message name="IDS_COPIED_TO_CLIPBOARD_TOAST_BODY" desc="Text on a toast notification that is shown when an item has been copied to clipboard.">
         Copied to clipboard
       </message>
