@@ -99,3 +99,6 @@ crbug.com/549761710 InternalDiscoverFeedTestCase/testFeedAblationHidesFeed [ Pas
 # Gardening suppression 2026-08-21
 crbug.com/550305483 [ iPad Device ] TabStripSharedGroupTestCase/testTabStripSharedGroupDeleteSharedGroup [ Pass Failure ]
 crbug.com/550305489 [ iPad Device ] TabStripSharedGroupTestCase/testTabStripSharedGroupLeaveSharedGroup [ Pass Failure ]
+
+# Gardening suppression 2026-08-24
+crbug.com/552121965 [ iOS26.5 iPad ] ChildWindowOpenByDOMTestCase/testWindowClosedWithoutName [ Failure ]
