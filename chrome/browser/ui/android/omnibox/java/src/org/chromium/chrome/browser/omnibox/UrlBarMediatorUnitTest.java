@@ -570,6 +570,93 @@ public class UrlBarMediatorUnitTest {
     }
 
     @Test
+    public void onTextChanged_synchronizesSelectionInInputSession() {
+        var sessionState = new FuseboxSessionState();
+        UrlBarData initialData = UrlBarData.forNonUrlText("initial");
+        doReturn(initialData).when(mDelegate).getUrlBarDataForCurrentInput();
+
+        mMediator.beginInput(sessionState);
+
+        // Simulate typing and moving cursor to selection (1, 1).
+        TextSelection newSelection = new TextSelection(1, 1);
+        sessionState.getAutocompleteInput().setUserText("typed", newSelection);
+        mModel.get(UrlBarProperties.TEXT_CHANGE_LISTENER).onResult("typed");
+
+        // Subsequent setUrlBarData with matching text and selection should be deduplicated.
+        assertFalse(
+                mMediator.setUrlBarData(
+                        UrlBarData.forNonUrlText("typed"),
+                        ScrollType.SCROLL_TO_BEGINNING,
+                        newSelection));
+    }
+
+    @Test
+    public void onTextChanged_synchronizesSelectionUpdatedByListener() {
+        var sessionState = new FuseboxSessionState();
+        UrlBarData initialData = UrlBarData.forNonUrlText("initial");
+        doReturn(initialData).when(mDelegate).getUrlBarDataForCurrentInput();
+
+        TextSelection typedSelection = new TextSelection(5, 5);
+        mMediator =
+                new UrlBarMediator(
+                        ContextUtils.getApplicationContext(),
+                        mModel,
+                        text ->
+                                sessionState
+                                        .getAutocompleteInput()
+                                        .setUserText(text, typedSelection),
+                        /* richTextChangeListener= */ null,
+                        /* keyDownListener= */ null);
+        mModel.set(UrlBarProperties.DELEGATE, mDelegate);
+        mMediator.beginInput(sessionState);
+
+        // User types "hello", which triggers textChangeListener to update AutocompleteInput
+        // selection.
+        mModel.get(UrlBarProperties.TEXT_CHANGE_LISTENER).onResult("hello");
+
+        // setUrlBarData with matching text and selection should be deduplicated.
+        assertFalse(
+                mMediator.setUrlBarData(
+                        UrlBarData.forNonUrlText("hello"),
+                        ScrollType.SCROLL_TO_BEGINNING,
+                        typedSelection));
+    }
+
+    @Test
+    public void onTextChanged_synchronizesRangeSelection() {
+        var sessionState = new FuseboxSessionState();
+        UrlBarData initialData = UrlBarData.forNonUrlText("initial");
+        doReturn(initialData).when(mDelegate).getUrlBarDataForCurrentInput();
+
+        TextSelection rangeSelection = new TextSelection(2, 5);
+        mMediator =
+                new UrlBarMediator(
+                        ContextUtils.getApplicationContext(),
+                        mModel,
+                        text ->
+                                sessionState
+                                        .getAutocompleteInput()
+                                        .setUserText(text, rangeSelection),
+                        /* richTextChangeListener= */ null,
+                        /* keyDownListener= */ null);
+        mModel.set(UrlBarProperties.DELEGATE, mDelegate);
+        mMediator.beginInput(sessionState);
+
+        mModel.get(UrlBarProperties.TEXT_CHANGE_LISTENER).onResult("selected");
+
+        assertFalse(
+                mMediator.setUrlBarData(
+                        UrlBarData.forNonUrlText("selected"),
+                        ScrollType.SCROLL_TO_BEGINNING,
+                        rangeSelection));
+        assertTrue(
+                mMediator.setUrlBarData(
+                        UrlBarData.forNonUrlText("selected"),
+                        ScrollType.SCROLL_TO_BEGINNING,
+                        new TextSelection(0, 0)));
+    }
+
+    @Test
     public void setUrlBarData_inInputSession_selectionEquivalence() {
         var sessionState = new FuseboxSessionState();
         UrlBarData data = UrlBarData.forNonUrlText("test");

@@ -151,6 +151,9 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
         if (mTextChangeListener != null) {
             mTextChangeListener.onResult(text);
         }
+        if (isInInputSession()) {
+            mSelection = mCurrentInput.getSelection();
+        }
         updateShowHintText(text);
     }
 

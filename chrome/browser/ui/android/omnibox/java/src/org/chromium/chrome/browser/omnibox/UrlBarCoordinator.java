@@ -520,7 +520,6 @@ public class UrlBarCoordinator
         mIsReparenting = false;
         if (postReparentingFocus) {
             mUrlBar.requestFocus();
-            mMediator.pushCurrentInputToModel();
         } else {
             mUrlBar.clearFocus();
         }

@@ -1637,6 +1637,14 @@ class LocationBarMediator
         mToolbarParent.removeView(mLocationBarLayout);
         suggestionsContainer.addView(mLocationBarLayout, 0, marginLayoutParams);
         mDropdown = suggestionsContainer.takeDropdownView();
+        // Ensure mDropdown is detached from any previous parent before adding. During
+        // reparentToToolbar(), if mLocationBarLayout is in layout, removing mDropdown is
+        // posted asynchronously. If reparentToSuggestionsContainer() is subsequently invoked
+        // synchronously before that posted task executes, mDropdown remains attached to its
+        // prior parent and calling addView() would throw an IllegalStateException.
+        if (mDropdown.getParent() != null) {
+            ((ViewGroup) mDropdown.getParent()).removeView(mDropdown);
+        }
         int dropdownIndex =
                 mLocationBarLayout.indexOfChild(
                         mLocationBarLayout.findViewById(R.id.suggestions_container_placeholder));
