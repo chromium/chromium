@@ -13,6 +13,10 @@
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
+namespace actions {
+class ActionItem;
+}
+
 namespace content {
 class WebContents;
 }
@@ -57,10 +61,14 @@ class WalletReminderNoticeBubbleController
   BubbleType GetBubbleType() const override;
   base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
 
+  void OnBubbleClosed();
+
  protected:
   void DoShowBubble() override;
 
  private:
+  actions::ActionItem* GetActionItem();
+
   const raw_ref<tabs::TabInterface> tab_interface_;
 
   ui::ScopedUnownedUserData<WalletReminderNoticeBubbleController>

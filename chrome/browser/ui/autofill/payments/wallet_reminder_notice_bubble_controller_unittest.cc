@@ -120,6 +120,19 @@ TEST_F(WalletReminderNoticeBubbleControllerTest, GetLegalMessageLines) {
   EXPECT_EQ(controller_->GetLegalMessageLines(), legal_message_lines);
 }
 
+TEST_F(WalletReminderNoticeBubbleControllerTest, OnBubbleClosed) {
+  EXPECT_CALL(mock_autofill_bubble_handler_,
+              ShowWalletReminderNoticeBubble(web_contents(), controller_.get(),
+                                             /*is_user_gesture=*/false))
+      .WillOnce(testing::Return(&test_bubble_));
+
+  controller_->Show({TestLegalMessageLine("Line 1")});
+  EXPECT_EQ(controller_->GetBubbleView(), &test_bubble_);
+
+  controller_->OnBubbleClosed();
+  EXPECT_EQ(controller_->GetBubbleView(), nullptr);
+}
+
 TEST_F(WalletReminderNoticeBubbleControllerTest, GetBubbleType) {
   EXPECT_EQ(controller_->GetBubbleType(), BubbleType::kWalletReminderNotice);
 }

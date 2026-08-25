@@ -77,7 +77,9 @@ std::u16string WalletReminderNoticeBubbleView::GetWindowTitle() const {
 }
 
 void WalletReminderNoticeBubbleView::WindowClosing() {
-  // TODO(crbug.com/543473467): Handle closing the bubble via the controller.
+  if (controller_) {
+    controller_->OnBubbleClosed();
+  }
 }
 
 void WalletReminderNoticeBubbleView::Init() {
