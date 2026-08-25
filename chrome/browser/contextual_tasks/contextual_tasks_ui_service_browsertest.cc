@@ -846,4 +846,49 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(handled);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksUiServiceRearchitectureEnabledTest,
+    SidePanelNavigation_PostRearchitecture_WithHostOverride_RewritesHost) {
+  ContextualTasksUiService* ui_service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->GetProfile());
+  GURL initial_url("https://www.google.com/search?q=test");
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+
+  ui_service->StartTaskUiInSidePanel(browser(), tab, initial_url, nullptr);
+
+  auto* controller = ContextualTasksPanelController::From(browser());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return controller && controller->IsPanelOpenForContextualTask();
+  }));
+
+  content::WebContents* panel_contents = controller->GetActiveWebContents();
+  ASSERT_TRUE(panel_contents);
+
+  contextual_tasks::SetForcedEmbeddedPageHostOverride("test.google.com");
+
+  GURL url("https://www.google.com/search?q=host_test&gsc=2&hl=en&cs=0");
+  content::OpenURLParams params(url, content::Referrer(),
+                                WindowOpenDisposition::CURRENT_TAB,
+                                ui::PAGE_TRANSITION_LINK,
+                                /*is_renderer_initiated=*/false);
+
+  bool handled = ui_service->HandleNavigation(
+      params, panel_contents, /*is_from_embedded_page=*/true,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true,
+      /*is_mobile_ua=*/false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures());
+  EXPECT_TRUE(handled);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    content::NavigationEntry* entry =
+        panel_contents->GetController().GetPendingEntry()
+            ? panel_contents->GetController().GetPendingEntry()
+            : panel_contents->GetController().GetVisibleEntry();
+    return entry && entry->GetURL().host() == "test.google.com";
+  }));
+
+  contextual_tasks::SetForcedEmbeddedPageHostOverride("");
+}
+
 }  // namespace contextual_tasks

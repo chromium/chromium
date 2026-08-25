@@ -1310,18 +1310,20 @@ bool ContextualTasksUiService::HandleNavigationImplPostRearchitecture(
       << "ContextualTasks HandleNavigationImplPostRearchitecture: "
       << url_params.url.spec();
   // Check if the navigation originates from the side panel WebContents and
-  // requires parameters to be added.
-  if (ShouldAddRequiredSidePanelParams(url_params, source_contents)) {
+  // requires URL changes (e.g. forced host override, missing parameters) to be
+  // applied.
+  if (ShouldAddRequiredSidePanelUrlChanges(url_params, source_contents)) {
     OMNIBOX_LOG("nav_trace")
-        << "ContextualTasks HandleNavigationImplPostRearchitecture: adding "
-           "params";
-    return AddRequiredSidePanelParams(std::move(url_params), source_contents);
+        << "ContextualTasks HandleNavigationImplPostRearchitecture: adding url "
+           "changes";
+    return AddRequiredSidePanelUrlChanges(std::move(url_params),
+                                          source_contents);
   }
 
   return false;
 }
 
-bool ContextualTasksUiService::ShouldAddRequiredSidePanelParams(
+bool ContextualTasksUiService::ShouldAddRequiredSidePanelUrlChanges(
     const content::OpenURLParams& url_params,
     content::WebContents* source_contents) {
   if (!source_contents) {
@@ -1372,6 +1374,17 @@ bool ContextualTasksUiService::ShouldAddRequiredSidePanelParams(
     return false;
   }
 
+  // Check if host override is set and needs to be applied.
+  std::string forced_host = GetForcedEmbeddedPageHost();
+  if (!forced_host.empty() &&
+      !base::EqualsCaseInsensitiveASCII(url.host(), forced_host) &&
+      !IsSignInDomain(url)) {
+    OMNIBOX_LOG("nav_trace")
+        << "ShouldAddRequiredSidePanelUrlChanges: host mismatch: "
+        << std::string(url.host()) << " vs forced " << forced_host;
+    return true;
+  }
+
   // Retrieve expected common search parameters (gsc=2, hl, cs, gl=us, etc.).
   auto expected_params =
       GetCommonSearchParamsMapForContextualTasks(source_contents);
@@ -1383,12 +1396,13 @@ bool ContextualTasksUiService::ShouldAddRequiredSidePanelParams(
     bool has_key = net::GetValueForKeyInQuery(url, key, &current_val);
     if (!has_key) {
       OMNIBOX_LOG("nav_trace")
-          << "ShouldAddRequiredSidePanelParams: missing param " << key;
+          << "ShouldAddRequiredSidePanelUrlChanges: missing param " << key;
       return true;  // Missing parameter -> needs handling.
     }
     if (key == lens::kChromeSidePanelParameterKey && current_val != value) {
       OMNIBOX_LOG("nav_trace")
-          << "ShouldAddRequiredSidePanelParams: " << key << " value mismatch";
+          << "ShouldAddRequiredSidePanelUrlChanges: " << key
+          << " value mismatch";
       return true;
     }
   }
@@ -1396,17 +1410,18 @@ bool ContextualTasksUiService::ShouldAddRequiredSidePanelParams(
   return false;
 }
 
-bool ContextualTasksUiService::AddRequiredSidePanelParams(
+bool ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
     content::OpenURLParams url_params,
     content::WebContents* source_contents) {
   if (!source_contents) {
     return false;
   }
 
-  GURL new_url = AddCommonSidePanelParams(url_params.url, source_contents);
+  GURL new_url =
+      AddRequiredSidePanelUrlChanges(url_params.url, source_contents);
 
   OMNIBOX_LOG("nav_trace")
-      << "AddRequiredSidePanelParams: loading parameterized URL: "
+      << "AddRequiredSidePanelUrlChanges: loading parameterized URL: "
       << new_url.spec();
 
   // Load the parameterized URL into the side panel WebContents asynchronously
@@ -1430,7 +1445,7 @@ bool ContextualTasksUiService::AddRequiredSidePanelParams(
   return true;
 }
 
-GURL ContextualTasksUiService::AddCommonSidePanelParams(
+GURL ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
     const GURL& url,
     content::WebContents* source_contents) {
   if (!source_contents) {
@@ -1454,6 +1469,14 @@ GURL ContextualTasksUiService::AddCommonSidePanelParams(
       new_url = net::AppendOrReplaceQueryParameter(new_url, key, value);
     }
   }
+
+  std::string forced_host = GetForcedEmbeddedPageHost();
+  if (!forced_host.empty() && !IsSignInDomain(new_url)) {
+    GURL::Replacements replacements;
+    replacements.SetHostStr(forced_host);
+    new_url = new_url.ReplaceComponents(replacements);
+  }
+
   return new_url;
 }
 
