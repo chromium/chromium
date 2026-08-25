@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 
-#include "base/feature_list.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/container_query.h"
 #include "third_party/blink/renderer/core/css/container_state.h"
@@ -970,9 +968,7 @@ StyleRecalcChange ContainerQueryEvaluator::ApplyScrollStateAndStyleChanges(
   // Similarly for line-height and the lh unit.
   bool invalidate_for_relative_units =
       ((unit_flags_ & MediaQueryExpValue::kFontRelative) &&
-       (base::FeatureList::IsEnabled(blink::features::kCSSFontComparisonFix)
-            ? !base::ValuesEquivalent(old_style.GetFont(), new_style.GetFont())
-            : old_style.GetFont() != new_style.GetFont())) ||
+       !base::ValuesEquivalent(old_style.GetFont(), new_style.GetFont())) ||
       ((unit_flags_ & MediaQueryExpValue::kLineHeightRelative) &&
        old_style.ComputedLineHeight() != new_style.ComputedLineHeight());
 
