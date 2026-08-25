@@ -51,6 +51,33 @@ suite('SyncEncryptionOptions', function() {
     assertTrue(!!encryptWithPassphrase, 'encryptWithPassphrase');
   });
 
+  test('PassphraseRadioLabelsVisibility', async () => {
+    const spans =
+        encryptWithPassphrase.querySelectorAll<HTMLSpanElement>('span');
+    assertEquals(2, spans.length);
+    const [existingPassphraseSpan, newPassphraseSpan] = spans;
+    assertTrue(!!existingPassphraseSpan);
+    assertTrue(!!newPassphraseSpan);
+
+    // When there is no existing passphrase, the default label is shown.
+    assertTrue(existingPassphraseSpan.hidden);
+    assertFalse(newPassphraseSpan.hidden);
+
+    // When an empty string is set, the default label remains shown.
+    encryptionElement.existingPassphraseLabel = '';
+    await microtasksFinished();
+    assertTrue(existingPassphraseSpan.hidden);
+    assertFalse(newPassphraseSpan.hidden);
+
+    // When an existing passphrase label is provided, it is shown instead.
+    const testLabel = 'Existing passphrase label test';
+    encryptionElement.existingPassphraseLabel = testLabel;
+    await microtasksFinished();
+    assertFalse(existingPassphraseSpan.hidden);
+    assertTrue(newPassphraseSpan.hidden);
+    assertEquals(testLabel, existingPassphraseSpan.textContent.trim());
+  });
+
   test('RadioBoxesEnabledWhenUnencrypted', async () => {
     // Verify that the encryption radio boxes are enabled.
     assertFalse(encryptionRadioGroup.disabled);
