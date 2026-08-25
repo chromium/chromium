@@ -98,12 +98,13 @@ PhysicalSize VttCueLayoutAlgorithm::FirstInlineBoxSize(
   // The snap-to-lines step is the first line box size, per spec step 2:
   // https://w3c.github.io/webvtt/#apply-webvtt-cue-settings
   //
-  // This equals the VTTCueBox border-box height (a block container whose
-  // height is the sum of its line boxes), so stepping by this value places
-  // adjacent cues exactly touching - which PhysicalRect::Intersects() treats
-  // as non-overlapping (it requires a non-zero intersection area). N cues of
-  // line-height H therefore pack into exactly H*N pixels without gaps or
-  // false overlaps.
+  // For a single-line cue this equals the VTTCueBox border-box height; for
+  // wrapped cues the border box is the sum of all line boxes and the overlap
+  // loop will advance by one line at a time. Stepping by this value places
+  // adjacent single-line cues exactly touching - which
+  // PhysicalRect::Intersects() treats as non-overlapping (it requires a
+  // non-zero intersection area). N single-line cues of line-height H therefore
+  // pack into exactly H*N pixels without gaps or false overlaps.
   //
   // The VTTCueBackgroundBox kBox fragment may be taller than the line box on
   // some platforms (e.g. font-metrics ink overflow on Linux), but it is an

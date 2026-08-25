@@ -108,7 +108,8 @@ class CORE_EXPORT VTTCue final : public TextTrackCue {
 
   // For use by the IDL binding (constructor with RaisesException): validates
   // endTime (NaN and -Infinity are rejected; +Infinity is allowed for
-  // unbounded/open-ended cues per https://w3c.github.io/webvtt/#dom-vttcue-vttcue).
+  // unbounded/open-ended cues per
+  // https://w3c.github.io/webvtt/#dom-vttcue-vttcue).
   static VTTCue* Create(Document& document,
                         double start_time,
                         double end_time,

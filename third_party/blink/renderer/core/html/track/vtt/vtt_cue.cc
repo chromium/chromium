@@ -142,10 +142,10 @@ void VTTCueBackgroundBox::SetTrack(TextTrack* track) {
 
 // static
 VTTCue* VTTCue::Create(Document& document,
-                        double start_time,
-                        double end_time,
-                        const String& text,
-                        ExceptionState& exception_state) {
+                       double start_time,
+                       double end_time,
+                       const String& text,
+                       ExceptionState& exception_state) {
   // https://w3c.github.io/webvtt/#dom-vttcue-vttcue
   // endTime: NaN and -Infinity are invalid; +Infinity is valid (unbounded cue).
   // startTime needs no check here: unlike endTime it is not declared
@@ -280,8 +280,9 @@ V8LineAlignSetting VTTCue::lineAlign() const {
 
 void VTTCue::setLineAlign(const V8LineAlignSetting& value) {
   LineAlignSetting alignment = value.AsEnum();
-  if (alignment == line_align_)
+  if (alignment == line_align_) {
     return;
+  }
 
   CueWillChange();
   line_align_ = alignment;
@@ -337,8 +338,9 @@ V8PositionAlignSetting VTTCue::positionAlign() const {
 
 void VTTCue::setPositionAlign(const V8PositionAlignSetting& value) {
   PositionAlignSetting alignment = value.AsEnum();
-  if (alignment == position_align_)
+  if (alignment == position_align_) {
     return;
+  }
 
   CueWillChange();
   position_align_ = alignment;
