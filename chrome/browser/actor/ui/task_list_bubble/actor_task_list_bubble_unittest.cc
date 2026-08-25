@@ -60,8 +60,6 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());
 
-    glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
-
     profile_ = testing_profile_manager_->CreateTestingProfile(
         "profile",
         TestingProfile::TestingFactories{
@@ -138,7 +136,6 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
     actor_service_ = nullptr;
     profile_ = nullptr;
     testing_profile_manager_.reset();
-    glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
     ChromeViewsTestBase::TearDown();
   }
 
@@ -189,6 +186,8 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
   MockTabInterface& mock_tab() { return mock_tab_; }
 
  private:
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting
+      scoped_glic_bypass_;
   raw_ptr<TestingProfile> profile_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   signin::IdentityTestEnvironment identity_test_env_;

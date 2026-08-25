@@ -21,6 +21,7 @@
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
@@ -153,8 +154,6 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());
 
-    glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
-
     profile_ = testing_profile_manager_->CreateTestingProfile(
         "profile",
         TestingProfile::TestingFactories{
@@ -236,7 +235,6 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
     mock_glic_keyed_service_ = nullptr;
     profile_ = nullptr;
     testing_profile_manager_.reset();
-    glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
     anchor_widget_.reset();
     ChromeViewsTestBase::TearDown();
   }
@@ -264,6 +262,8 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
         kActorTaskListBubbleView, context);
   }
 
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting
+      scoped_glic_bypass_;
   raw_ptr<TestingProfile> profile_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   signin::IdentityTestEnvironment identity_test_env_;
