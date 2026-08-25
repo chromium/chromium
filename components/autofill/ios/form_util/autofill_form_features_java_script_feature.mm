@@ -62,6 +62,10 @@ GetReplacements() {
             base::FeatureList::IsEnabled(::kAutofillTrackPasswordFieldsIos)
         ? @"true"
         : @"false",
+    @"gCrWebPlaceholderAutofillSupportContentEditable" :
+            base::FeatureList::IsEnabled(::kAutofillSupportContentEditableIos)
+        ? @"true"
+        : @"false",
   };
 }
 }  // namespace

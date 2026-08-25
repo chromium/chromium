@@ -22,6 +22,7 @@ declare const gCrWebPlaceholderAutofillEmailVerification: boolean;
 declare const gCrWebPlaceholderAutofillReportFormSubmissionErrors: boolean;
 declare const gCrWebPlaceholderAutofillCountFormSubmissionInRenderer: boolean;
 declare const gCrWebPlaceholderAutofillTrackPasswordFieldsIos: boolean;
+declare const gCrWebPlaceholderAutofillSupportContentEditable: boolean;
 
 // LINT.IfChange(autofill_across_iframes_ios_throttling)
 /**
@@ -119,6 +120,15 @@ function isAutofillTrackPasswordFieldsEnabled(): boolean {
 }
 // LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_track_password_fields_ios)
 
+// LINT.IfChange(autofill_support_content_editable_ios)
+/**
+ * Whether or not contenteditable support is enabled.
+ */
+function isAutofillSupportContentEditableEnabled(): boolean {
+  return gCrWebPlaceholderAutofillSupportContentEditable;
+}
+// LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_support_content_editable_ios)
+
 // Expose globally via `gCrWeb` under the 'autofill_form_features' API name.
 const autofillFormFeatures = new CrWebApi('autofill_form_features');
 
@@ -150,5 +160,8 @@ autofillFormFeatures.addFunction(
 autofillFormFeatures.addFunction(
     'isAutofillTrackPasswordFieldsEnabled',
     isAutofillTrackPasswordFieldsEnabled);
+autofillFormFeatures.addFunction(
+    'isAutofillSupportContentEditableEnabled',
+    isAutofillSupportContentEditableEnabled);
 
 gCrWeb.registerApi(autofillFormFeatures);

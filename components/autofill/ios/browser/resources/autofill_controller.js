@@ -155,16 +155,47 @@ function extractForms(restrictUnownedFieldsToFormlessCheckout) {
 }
 
 /**
+ * Resolves the target element matching `fieldID`, checking activeElement,
+ * closest contenteditable container, or looking up by renderer ID.
+ *
+ * @param {number|string} fieldID Renderer ID of the target element.
+ * @return {Element|null} The resolved target element, or null if not found.
+ */
+function resolveActiveFieldOrEditableContainer(fieldID) {
+  if (fieldID == null) {
+    return null;
+  }
+
+  const activeElement = document.activeElement;
+  if (activeElement &&
+      fieldID.toString() === fillUtil.getUniqueID(activeElement)) {
+    return activeElement;
+  }
+
+  // If activeElement is a child node inside a contenteditable host, resolve the
+  // parent contenteditable container matching fieldID.
+  const container = activeElement?.closest?.('[contenteditable]');
+  if (container && fillUtil.isContentEditable(container) &&
+      fieldID.toString() === fillUtil.getUniqueID(container)) {
+    return container;
+  }
+
+  return null;
+}
+
+/**
  * Fills data into the active form field.
  *
  * @param {AutofillFormFieldData} data The data to fill in.
  * @return {boolean} Whether the field was filled successfully.
  */
 function fillActiveFormField(data) {
-  const activeElement = document.activeElement;
   const fieldID = data['renderer_id'];
-  if (typeof fieldID === 'undefined' ||
-      fieldID.toString() !== fillUtil.getUniqueID(activeElement)) {
+  if (typeof fieldID === 'undefined') {
+    return false;
+  }
+  const activeElement = resolveActiveFieldOrEditableContainer(fieldID);
+  if (!activeElement) {
     return false;
   }
   lastAutoFilledElement = activeElement;
@@ -486,7 +517,15 @@ function fillFormField(data, field) {
   }
 
   let filled = false;
-  if (isTextField(field) || inferenceUtil.isTextAreaElement(field) ||
+  if (fillUtil.isContentEditable(field)) {
+    // Default `should_insert_at_cursor` to true if the field is
+    // omitted/undefined.
+    const insertAtCursor = data['should_insert_at_cursor'] ?? true;
+    filled =
+        fillUtil.setContentEditableValue(data['value'], field, insertAtCursor);
+    wasEditedByUser.set(field, true);
+  } else if (
+      isTextField(field) || inferenceUtil.isTextAreaElement(field) ||
       (inferenceUtil.isDateField(field) &&
        autofillFormFeaturesApi.getFunction(
            'isAutofillSupportDateInputEnabled')())) {

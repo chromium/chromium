@@ -547,6 +547,69 @@ TEST_F(AutofillAgentTest,
   EXPECT_FALSE(completion_handler_success);
 }
 
+// Tests that checkIfSuggestionsAvailableForForm synchronously returns NO when
+// fieldType is kContentEditable and feature flag is enabled.
+TEST_F(AutofillAgentTest, CheckIfSuggestionsAvailable_ContentEditableEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kAutofillSupportContentEditableIos);
+
+  __block BOOL completion_handler_success = NO;
+  __block BOOL completion_handler_called = NO;
+
+  FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
+      initWithFormName:@"form"
+        formRendererID:FormRendererId(1)
+       fieldIdentifier:@"address"
+       fieldRendererID:FieldRendererId(2)
+             fieldType:FieldType::kContentEditable
+                  type:ActivityType::kFocus
+            typedValue:@""
+               frameID:base::SysUTF8ToNSString(kTestFrameId)
+          onlyPassword:NO];
+  [autofill_agent_ checkIfSuggestionsAvailableForForm:form_query
+                                       hasUserGesture:YES
+                                             webState:&fake_web_state_
+                                    completionHandler:^(BOOL success) {
+                                      completion_handler_success = success;
+                                      completion_handler_called = YES;
+                                    }];
+
+  EXPECT_TRUE(completion_handler_called);
+  EXPECT_FALSE(completion_handler_success);
+}
+
+// Tests that checkIfSuggestionsAvailableForForm falls through when fieldType
+// is kContentEditable and feature flag is disabled.
+TEST_F(AutofillAgentTest, CheckIfSuggestionsAvailable_ContentEditableDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kAutofillSupportContentEditableIos);
+
+  __block BOOL completion_handler_called = NO;
+
+  FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
+      initWithFormName:@"form"
+        formRendererID:FormRendererId(1)
+       fieldIdentifier:@"address"
+       fieldRendererID:FieldRendererId(2)
+             fieldType:FieldType::kContentEditable
+                  type:ActivityType::kFocus
+            typedValue:@""
+               frameID:base::SysUTF8ToNSString(kTestFrameId)
+          onlyPassword:NO];
+  [autofill_agent_ checkIfSuggestionsAvailableForForm:form_query
+                                       hasUserGesture:YES
+                                             webState:&fake_web_state_
+                                    completionHandler:^(BOOL success) {
+                                      completion_handler_called = YES;
+                                    }];
+
+  // Because feature is disabled, it does NOT return synchronously at step 2.
+  // Instead, it falls through to frame lookup and async form fetching.
+  EXPECT_FALSE(completion_handler_called);
+
+  web::test::WaitForBackgroundTasks();
+}
+
 // Tests that issuing a second suggestion query while one is already in-flight
 // cleanly invokes the first completion handler with NO, and the second
 // completion handler is fulfilled when suggestions are ready.

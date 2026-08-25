@@ -289,6 +289,67 @@ export function insertInputElementValueAtCursor(
   return filled;
 }
 
+/**
+ * Returns true if autofill support contenteditable is enabled.
+ */
+export function isAutofillSupportContentEditableEnabled(): boolean {
+  return isFeatureEnabled('isAutofillSupportContentEditableEnabled');
+}
+
+/**
+ * Checks if an element is contenteditable.
+ *
+ * @param element The element to check.
+ * @return True if the element is contenteditable.
+ */
+export function isContentEditable(element: Element|null|undefined): boolean {
+  if (!isAutofillSupportContentEditableEnabled()) {
+    return false;
+  }
+  return Boolean((element as HTMLElement)?.isContentEditable);
+}
+
+/**
+ * Sets or inserts a value into a contenteditable element.
+ *
+ * @param value The value to fill or insert.
+ * @param element The contenteditable element.
+ * @param insertAtCursor Whether to insert at current cursor/selection or
+ *     replace content.
+ * @return Whether the value was successfully filled.
+ */
+export function setContentEditableValue(
+    value: string, element: HTMLElement,
+    insertAtCursor: boolean = true): boolean {
+  let filled = false;
+  if (insertAtCursor) {
+    // `document.execCommand('insertText')` is used intentionally (despite
+    // standards deprecation) to preserve browser undo/redo history and trigger
+    // native input events for contenteditable elements in WebKit.
+    // Avoid calling `.focus` for now and simply fail the filling when the
+    // element isn't the active element.
+    try {
+      if (element === document.activeElement ||
+          element.contains(document.activeElement) ||
+          (document.activeElement &&
+           document.activeElement.contains(element))) {
+        filled = document.execCommand('insertText', false, value);
+      }
+    } catch (e) {
+      filled = false;
+    }
+  } else {
+    // Direct replacement fallback when inserting at cursor is disabled.
+    element.textContent = value;
+    filled = true;
+  }
+
+  if (filled) {
+    notifyElementValueChanged(element);
+  }
+  return filled;
+}
+
 declare interface PropertyDescriptor {
     get(): string;
     set?(): void;

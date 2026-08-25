@@ -155,22 +155,7 @@ function isAutofillTrackFormMutationsOptimizationEnabled(): boolean {
   return (window as any).gCrWebPlaceholderTrackFormMutationsOptimization;
 }
 
-/**
- * Returns true if autofill support contenteditable is enabled.
- */
-function isAutofillSupportContentEditableEnabled(): boolean {
-  return (window as any).gCrWebPlaceholderAutofillSupportContentEditable;
-}
 
-/**
- * Checks if an element is contenteditable.
- */
-function isContentEditable(element: Element): boolean {
-  if (!isAutofillSupportContentEditableEnabled()) {
-    return false;
-  }
-  return Boolean((element as HTMLElement).isContentEditable);
-}
 
 /**
  * Returns true if element1 and element2 have an ancestor/descendant
@@ -230,7 +215,7 @@ function formActivity(evt: Event): void {
   }
 
   let target = evt.target as Element;
-  if (!FORM_TAGS.has(target.tagName) && !isContentEditable(target)) {
+  if (!FORM_TAGS.has(target.tagName) && !fillUtil.isContentEditable(target)) {
     const path = evt.composedPath() as Element[];
     let foundValidTagName = false;
 
@@ -239,7 +224,7 @@ function formActivity(evt: Event): void {
     if (path) {
       for (const htmlElement of path) {
         if (FORM_TAGS.has(htmlElement.tagName) ||
-            isContentEditable(htmlElement)) {
+            fillUtil.isContentEditable(htmlElement)) {
           target = htmlElement;
           foundValidTagName = true;
           break;
@@ -257,7 +242,7 @@ function formActivity(evt: Event): void {
     wasEditedByUser.set(target, evt.isTrusted);
   }
 
-  const isTargetEditable = isContentEditable(target);
+  const isTargetEditable = fillUtil.isContentEditable(target);
   if (evt.target !== lastFocusedElement &&
       (!isTargetEditable || !areElementsRelated(lastFocusedElement, target))) {
     return;

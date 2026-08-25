@@ -13,6 +13,7 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/with_feature_override.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
@@ -556,5 +557,205 @@ TEST_F(FillJsTest, InsertInputElementValueAtCursorCursorPosition) {
       @"document.getElementById('input').selectionEnd == 10");
   EXPECT_NSEQ(result, @YES);
 }
+
+// Parameterized test fixture to test contenteditable feature enabled vs
+// disabled.
+class FillContentEditableJsTest : public base::test::WithFeatureOverride,
+                                  public FillJsTest {
+ public:
+  FillContentEditableJsTest()
+      : base::test::WithFeatureOverride(kAutofillSupportContentEditableIos) {}
+};
+
+// Tests inserting value at cursor into a simple contenteditable element.
+TEST_P(FillContentEditableJsTest, FillSimpleContentEditable) {
+  LoadHtml(@"<div id='ce' contenteditable='true'>Hello</div>");
+
+  id is_editable = ExecuteJavaScript(
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('isContentEditable')(document.getElementById('ce'));");
+  if (IsParamFeatureEnabled()) {
+    EXPECT_NSEQ(is_editable, @YES);
+
+    ExecuteJavaScript(@"document.getElementById('ce').focus();");
+    // Set selection range to position 5, at the end of the text "Hello".
+    ExecuteJavaScript(
+        @"const sel = window.getSelection();"
+        @"const range = document.createRange();"
+        @"const textNode = document.getElementById('ce').firstChild;"
+        @"range.setStart(textNode, 5);"
+        @"range.setEnd(textNode, 5);"
+        @"sel.removeAllRanges();"
+        @"sel.addRange(range);");
+
+    id filled =
+        ExecuteJavaScript(@"__gCrWeb.getRegisteredApi('fill_test_api')."
+                          @"getFunction('setContentEditableValue')(' World', "
+                          @"document.getElementById('ce'), true);");
+    EXPECT_NSEQ(filled, @YES);
+    id result =
+        ExecuteJavaScript(@"document.getElementById('ce').textContent;");
+    EXPECT_NSEQ(result, @"Hello World");
+  } else {
+    EXPECT_NSEQ(is_editable, @NO);
+  }
+}
+
+// Tests inserting value at cursor into a contenteditable element containing
+// child HTML tags.
+TEST_P(FillContentEditableJsTest, FillContentEditableWithChildTags) {
+  LoadHtml(@"<div id='ce' contenteditable='true'>"
+           @"<p id='p'>Header</p></div>");
+
+  id is_editable = ExecuteJavaScript(
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('isContentEditable')(document.getElementById('ce'));");
+  if (IsParamFeatureEnabled()) {
+    EXPECT_NSEQ(is_editable, @YES);
+
+    ExecuteJavaScript(@"document.getElementById('p').focus();");
+    // Set selection range to position 6, at the end of the text "Header".
+    ExecuteJavaScript(
+        @"const sel = window.getSelection();"
+        @"const range = document.createRange();"
+        @"const textNode = document.getElementById('p').firstChild;"
+        @"range.setStart(textNode, 6);"
+        @"range.setEnd(textNode, 6);"
+        @"sel.removeAllRanges();"
+        @"sel.addRange(range);");
+
+    id filled =
+        ExecuteJavaScript(@"__gCrWeb.getRegisteredApi('fill_test_api')."
+                          @"getFunction('setContentEditableValue')(' Text', "
+                          @"document.getElementById('ce'), true);");
+    EXPECT_NSEQ(filled, @YES);
+    id result =
+        ExecuteJavaScript(@"document.getElementById('ce').textContent;");
+    EXPECT_NSEQ(result, @"Header Text");
+  } else {
+    EXPECT_NSEQ(is_editable, @NO);
+  }
+}
+
+// Tests inserting value at cursor into a nested contenteditable element.
+TEST_P(FillContentEditableJsTest, FillNestedContentEditable) {
+  LoadHtml(@"<div id='outer' contenteditable='true'>Outer "
+           @"<div id='inner' contenteditable='true'>Inner</div></div>");
+
+  id is_outer_editable = ExecuteJavaScript(
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('isContentEditable')(document.getElementById('outer'));");
+  id is_inner_editable = ExecuteJavaScript(
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('isContentEditable')(document.getElementById('inner'));");
+  if (IsParamFeatureEnabled()) {
+    EXPECT_NSEQ(is_outer_editable, @YES);
+    EXPECT_NSEQ(is_inner_editable, @YES);
+
+    ExecuteJavaScript(@"document.getElementById('inner').focus();");
+    ExecuteJavaScript(
+        @"const sel = window.getSelection();"
+        @"const range = document.createRange();"
+        @"const textNode = document.getElementById('inner').firstChild;"
+        @"range.setStart(textNode, 5);"
+        @"range.setEnd(textNode, 5);"
+        @"sel.removeAllRanges();"
+        @"sel.addRange(range);");
+
+    ExecuteJavaScript(@"__gCrWeb.getRegisteredApi('fill_test_api')."
+                      @"getFunction('setContentEditableValue')(' Text', "
+                      @"document.getElementById('inner'), true);");
+
+    id inner_result =
+        ExecuteJavaScript(@"document.getElementById('inner').textContent;");
+    EXPECT_NSEQ(inner_result, @"Inner Text");
+  } else {
+    EXPECT_NSEQ(is_outer_editable, @NO);
+    EXPECT_NSEQ(is_inner_editable, @NO);
+  }
+}
+
+// Tests inserting value at cursor into a contenteditable element with a
+// sibling.
+TEST_P(FillContentEditableJsTest, FillContentEditableWithSibling) {
+  LoadHtml(@"<div>"
+           @"<div id='ce1' contenteditable='true'>First</div>"
+           @"<div id='ce2' contenteditable='true'>Second</div>"
+           @"</div>");
+
+  id is_ce1_editable = ExecuteJavaScript(
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('isContentEditable')(document.getElementById('ce1'));");
+  if (IsParamFeatureEnabled()) {
+    EXPECT_NSEQ(is_ce1_editable, @YES);
+
+    ExecuteJavaScript(@"document.getElementById('ce1').focus();");
+    ExecuteJavaScript(
+        @"{ const sel = window.getSelection();"
+        @"  const range = document.createRange();"
+        @"  const textNode = document.getElementById('ce1').firstChild;"
+        @"  range.setStart(textNode, 5);"
+        @"  range.setEnd(textNode, 5);"
+        @"  sel.removeAllRanges();"
+        @"  sel.addRange(range); }");
+
+    ExecuteJavaScript(@"__gCrWeb.getRegisteredApi('fill_test_api')."
+                      @"getFunction('setContentEditableValue')(' Text', "
+                      @"document.getElementById('ce1'), true);");
+
+    id result1 =
+        ExecuteJavaScript(@"document.getElementById('ce1').textContent;");
+    EXPECT_NSEQ(result1, @"First Text");
+
+    id result2 =
+        ExecuteJavaScript(@"document.getElementById('ce2').textContent;");
+    EXPECT_NSEQ(result2, @"Second");
+
+    ExecuteJavaScript(@"document.getElementById('ce2').focus();");
+    ExecuteJavaScript(
+        @"{ const sel = window.getSelection();"
+        @"  const range = document.createRange();"
+        @"  const textNode = document.getElementById('ce2').firstChild;"
+        @"  range.setStart(textNode, 6);"
+        @"  range.setEnd(textNode, 6);"
+        @"  sel.removeAllRanges();"
+        @"  sel.addRange(range); }");
+
+    ExecuteJavaScript(@"__gCrWeb.getRegisteredApi('fill_test_api')."
+                      @"getFunction('setContentEditableValue')(' Text', "
+                      @"document.getElementById('ce2'), true);");
+
+    id result2_updated =
+        ExecuteJavaScript(@"document.getElementById('ce2').textContent;");
+    EXPECT_NSEQ(result2_updated, @"Second Text");
+  } else {
+    EXPECT_NSEQ(is_ce1_editable, @NO);
+  }
+}
+
+// Tests replacing content in a contenteditable element when insertAtCursor is
+// false.
+TEST_P(FillContentEditableJsTest, FillContentEditableReplaceContent) {
+  LoadHtml(@"<div id='ce' contenteditable='true'>Initial Content</div>");
+
+  id is_editable = ExecuteJavaScript(
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('isContentEditable')(document.getElementById('ce'));");
+  if (IsParamFeatureEnabled()) {
+    EXPECT_NSEQ(is_editable, @YES);
+
+    ExecuteJavaScript(
+        @"__gCrWeb.getRegisteredApi('fill_test_api')."
+        @"getFunction('setContentEditableValue')('Replaced Content', "
+        @"document.getElementById('ce'), false);");
+    id result =
+        ExecuteJavaScript(@"document.getElementById('ce').textContent;");
+    EXPECT_NSEQ(result, @"Replaced Content");
+  } else {
+    EXPECT_NSEQ(is_editable, @NO);
+  }
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(FillContentEditableJsTest);
 
 }  // namespace autofill
