@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -213,15 +214,15 @@ std::optional<media::AudioType> AudioDecoder::IsValidAudioDecoderConfig(
     const AudioDecoderConfig& config,
     String* js_error_message) {
   if (config.numberOfChannels() == 0) {
-    *js_error_message = String::Format(
-        "Invalid channel count; channel count must be non-zero, received %d.",
+    *js_error_message = Format(
+        "Invalid channel count; channel count must be non-zero, received {}.",
         config.numberOfChannels());
     return std::nullopt;
   }
 
   if (config.sampleRate() == 0) {
-    *js_error_message = String::Format(
-        "Invalid sample rate; sample rate must be non-zero, received %d.",
+    *js_error_message = Format(
+        "Invalid sample rate; sample rate must be non-zero, received {}.",
         config.sampleRate());
     return std::nullopt;
   }
@@ -373,11 +374,11 @@ media::DecoderStatus::Or<AudioDecoder::OutputType*> AudioDecoder::MakeOutput(
           output->sample_rate())) {
     return media::DecoderStatus(
         media::DecoderStatus::Codes::kInvalidArgument,
-        String::Format("Invalid decoded audio output sample rate. Got %u, "
-                       "which is outside [%f, %f]",
-                       output->sample_rate(),
-                       blink::audio_utilities::MinAudioBufferSampleRate(),
-                       blink::audio_utilities::MaxAudioBufferSampleRate())
+        Format("Invalid decoded audio output sample rate. Got {}, which is "
+               "outside [{:f}, {:f}]",
+               output->sample_rate(),
+               blink::audio_utilities::MinAudioBufferSampleRate(),
+               blink::audio_utilities::MaxAudioBufferSampleRate())
             .Ascii());
   }
 
@@ -385,10 +386,9 @@ media::DecoderStatus::Or<AudioDecoder::OutputType*> AudioDecoder::MakeOutput(
       BaseAudioContext::MaxNumberOfChannels()) {
     return media::DecoderStatus(
         media::DecoderStatus::Codes::kInvalidArgument,
-        String::Format("Invalid decoded audio output channel "
-                       "count. Got %u, which exceeds %u",
-                       output->channel_count(),
-                       BaseAudioContext::MaxNumberOfChannels())
+        Format("Invalid decoded audio output channel count. Got {}, which "
+               "exceeds {}",
+               output->channel_count(), BaseAudioContext::MaxNumberOfChannels())
             .Ascii());
   }
 

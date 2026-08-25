@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -150,10 +151,10 @@ AudioEncoderTraits::ParsedConfig* ParseOpusConfigStatic(
   // Any multiple of a frame duration is allowed by RFC6716. Concretely, this
   // means any multiple of 2500 microseconds.
   if (frame_duration % kFrameDurationLowerBound.InMicroseconds() != 0) {
-    exception_state.ThrowTypeError(String::Format(
-        "Invalid Opus frameDuration; expected a multiple of %" PRIu64
-        ", received %" PRIu64 ".",
-        kFrameDurationLowerBound.InMicroseconds(), frame_duration));
+    exception_state.ThrowTypeError(
+        Format("Invalid Opus frameDuration; expected a multiple of {}, "
+               "received {}.",
+               kFrameDurationLowerBound.InMicroseconds(), frame_duration));
     return nullptr;
   }
 
@@ -230,16 +231,16 @@ AudioEncoderTraits::ParsedConfig* ParseConfigStatic(
   result->options.codec = audio_type->codec;
   result->options.channels = config->numberOfChannels();
   if (result->options.channels == 0) {
-    exception_state.ThrowTypeError(String::Format(
-        "Invalid channel count; channel count must be non-zero, received %d.",
+    exception_state.ThrowTypeError(Format(
+        "Invalid channel count; channel count must be non-zero, received {}.",
         result->options.channels));
     return nullptr;
   }
 
   result->options.sample_rate = config->sampleRate();
   if (result->options.sample_rate == 0) {
-    exception_state.ThrowTypeError(String::Format(
-        "Invalid sample rate; sample rate must be non-zero, received %d.",
+    exception_state.ThrowTypeError(Format(
+        "Invalid sample rate; sample rate must be non-zero, received {}.",
         result->options.sample_rate));
     return nullptr;
   }
@@ -247,9 +248,9 @@ AudioEncoderTraits::ParsedConfig* ParseConfigStatic(
   result->codec_string = config->codec();
   if (config->hasBitrate()) {
     if (config->bitrate() > std::numeric_limits<int>::max()) {
-      exception_state.ThrowTypeError(String::Format(
-          "Bitrate is too large; expected at most %d, received %" PRIu64,
-          std::numeric_limits<int>::max(), config->bitrate()));
+      exception_state.ThrowTypeError(
+          Format("Bitrate is too large; expected at most {}, received {}",
+                 std::numeric_limits<int>::max(), config->bitrate()));
       return nullptr;
     }
     result->options.bitrate = static_cast<int>(config->bitrate());
@@ -281,18 +282,16 @@ bool VerifyCodecSupportStatic(AudioEncoderTraits::ParsedConfig* config,
                               String* js_error_message) {
   if (config->options.channels < 1 ||
       config->options.channels > media::limits::kMaxChannels) {
-    *js_error_message = String::Format(
-        "Unsupported channel count; expected range from %d to "
-        "%d, received %d.",
+    *js_error_message = Format(
+        "Unsupported channel count; expected range from {} to {}, received {}.",
         1, media::limits::kMaxChannels, config->options.channels);
     return false;
   }
 
   if (config->options.sample_rate < media::limits::kMinSampleRate ||
       config->options.sample_rate > media::limits::kMaxSampleRate) {
-    *js_error_message = String::Format(
-        "Unsupported sample rate; expected range from %d to %d, "
-        "received %d.",
+    *js_error_message = Format(
+        "Unsupported sample rate; expected range from {} to {}, received {}.",
         media::limits::kMinSampleRate, media::limits::kMaxSampleRate,
         config->options.sample_rate);
     return false;
@@ -307,17 +306,17 @@ bool VerifyCodecSupportStatic(AudioEncoderTraits::ParsedConfig* config,
       }
       if (config->options.channels > 2) {
         // Our Opus implementation only supports up to 2 channels
-        *js_error_message = String::Format(
-            "Too many channels for Opus encoder; "
-            "expected at most 2, received %d.",
+        *js_error_message = Format(
+            "Too many channels for Opus encoder; expected at most 2, received "
+            "{}.",
             config->options.channels);
         return false;
       }
       if (config->options.bitrate.has_value() &&
           config->options.bitrate.value() <
               media::AudioOpusEncoder::kMinBitrate) {
-        *js_error_message = String::Format(
-            "Opus bitrate is too low; expected at least %d, received %d.",
+        *js_error_message = Format(
+            "Opus bitrate is too low; expected at least {}, received {}.",
             media::AudioOpusEncoder::kMinBitrate,
             config->options.bitrate.value());
         return false;

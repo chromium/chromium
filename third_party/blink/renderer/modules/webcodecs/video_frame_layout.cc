@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_plane_layout.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_rect_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -60,8 +61,8 @@ VideoFrameLayout::VideoFrameLayout(
       static_cast<wtf_size_t>(media::VideoFrame::NumPlanes(format_));
   if (layout.size() != num_planes) {
     exception_state.ThrowTypeError(
-        String::Format("Invalid layout. Expected %u planes, found %u.",
-                       num_planes, layout.size()));
+        blink::Format("Invalid layout. Expected {} planes, found {}.",
+                      num_planes, layout.size()));
     return;
   }
 
@@ -80,9 +81,9 @@ VideoFrameLayout::VideoFrameLayout(
     const uint32_t min_stride = columns * sample_bytes;
     if (stride < min_stride) {
       exception_state.ThrowTypeError(
-          String::Format("Invalid layout. Expected plane %u to have stride at "
-                         "least %u, found %u.",
-                         i, min_stride, stride));
+          blink::Format("Invalid layout. Expected plane {} to have stride at "
+                        "least {}, found {}.",
+                        i, min_stride, stride));
       return;
     }
 
@@ -92,8 +93,8 @@ VideoFrameLayout::VideoFrameLayout(
     // Each plane size must not overflow int for compatibility with libyuv.
     // There are probably tighter bounds we could enforce.
     if (!checked_bytes.Cast<int>().IsValid()) {
-      exception_state.ThrowTypeError(String::Format(
-          "Invalid layout. Plane %u with stride %u and height %u exceeds "
+      exception_state.ThrowTypeError(blink::Format(
+          "Invalid layout. Plane {} with stride {} and height {} exceeds "
           "implementation limit.",
           i, stride, rows));
       return;
@@ -103,9 +104,9 @@ VideoFrameLayout::VideoFrameLayout(
     // ArrayBuffer.
     if (!checked_end.IsValid()) {
       exception_state.ThrowTypeError(
-          String::Format("Invalid layout. Plane %u with offset %u and stride "
-                         "%u exceeds implementation limit.",
-                         i, offset, stride));
+          blink::Format("Invalid layout. Plane {} with offset {} and stride {} "
+                        "exceeds implementation limit.",
+                        i, offset, stride));
       return;
     }
 
@@ -113,8 +114,8 @@ VideoFrameLayout::VideoFrameLayout(
     end[i] = checked_end.ValueOrDie();
     for (wtf_size_t j = 0; j < i; j++) {
       if (offset < end[j] && planes_[j].offset < end[i]) {
-        exception_state.ThrowTypeError(String::Format(
-            "Invalid layout. Plane %u overlaps with plane %u.", i, j));
+        exception_state.ThrowTypeError(blink::Format(
+            "Invalid layout. Plane {} overlaps with plane {}.", i, j));
         return;
       }
     }

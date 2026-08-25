@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_init_util.h"
 
 #include <stdint.h>
+
 #include <cmath>
 #include <limits>
 
@@ -15,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_rect_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -56,9 +58,8 @@ gfx::Size ParseAndValidateDisplaySizeImpl(T* init,
       display_height > media::limits::kMaxDimension ||
       display_width * display_height > media::limits::kMaxCanvas) {
     exception_state.ThrowTypeError(
-        String::Format("Invalid display size (%u, %u); exceeds "
-                       "implementation limit.",
-                       display_width, display_height));
+        Format("Invalid display size ({}, {}); exceeds implementation limit.",
+               display_width, display_height));
     return gfx::Size();
   }
 

@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/libgav1/src/src/buffer_pool.h"
 #include "third_party/libgav1/src/src/decoder_state.h"
 #include "third_party/libgav1/src/src/gav1/status_code.h"
@@ -389,8 +390,8 @@ std::optional<media::VideoType> VideoDecoder::IsValidVideoDecoderConfig(
     const uint32_t coded_width = config.codedWidth();
     const uint32_t coded_height = config.codedHeight();
     if (!coded_width || !coded_height) {
-      *js_error_message = String::Format("Invalid coded size (%u, %u).",
-                                         coded_width, coded_height);
+      *js_error_message =
+          Format("Invalid coded size ({}, {}).", coded_width, coded_height);
       return std::nullopt;
     }
   }
@@ -412,9 +413,8 @@ std::optional<media::VideoType> VideoDecoder::IsValidVideoDecoderConfig(
     uint32_t display_aspect_width = config.displayAspectWidth();
     uint32_t display_aspect_height = config.displayAspectHeight();
     if (display_aspect_width == 0 || display_aspect_height == 0) {
-      *js_error_message =
-          String::Format("Invalid display aspect (%u, %u).",
-                         display_aspect_width, display_aspect_height);
+      *js_error_message = Format("Invalid display aspect ({}, {}).",
+                                 display_aspect_width, display_aspect_height);
       return std::nullopt;
     }
   }

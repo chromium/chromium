@@ -13,20 +13,21 @@ namespace blink {
 
 class DOMRectInit;
 class ExceptionState;
+class StringView;
 
 // Converts DOMRectInit to gfx::Rect. Validates that all values (including the
 // computed |right| and |bottom|) are nonnegative and fit into |coded_size|, and
 // that the result is nonempty. |rect_name| is the variable name in error
 // messages, eg. "name.x".
 gfx::Rect ToGfxRect(const DOMRectInit* rect,
-                    const char* rect_name,
+                    const StringView& rect_name,
                     const gfx::Size& coded_size,
                     ExceptionState& exception_state);
 
 // Checks |rect| x and y for sample alignment in all planes.
 bool ValidateOffsetAlignment(media::VideoPixelFormat format,
                              const gfx::Rect& rect,
-                             const char* rect_name,
+                             const StringView& rect_name,
                              ExceptionState& exception_state);
 
 // Computes the dimension of a plane (rounding up).

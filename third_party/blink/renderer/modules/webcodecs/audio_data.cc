@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_init.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -155,8 +156,8 @@ void CopyToPlanar(uint8_t* dest_data,
   // below.
   if (overflow ||
       !base::CheckMul(frames_to_copy, src_channel_count).IsValid()) {
-    exception_state.ThrowTypeError(String::Format(
-        "Provided options cause overflow when calculating offset."));
+    exception_state.ThrowTypeError(
+        "Provided options cause overflow when calculating offset.");
     return;
   }
 
@@ -267,9 +268,9 @@ AudioData::AudioData(ScriptState* script_state,
   if (init->numberOfChannels() > media::limits::kMaxChannels) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        String::Format("numberOfChannels exceeds supported implementation "
-                       "limits: %u vs %u.",
-                       init->numberOfChannels(), media::limits::kMaxChannels));
+        Format("numberOfChannels exceeds supported implementation limits: {} "
+               "vs {}.",
+               init->numberOfChannels(), media::limits::kMaxChannels));
     return;
   }
 
@@ -297,8 +298,8 @@ AudioData::AudioData(ScriptState* script_state,
   }
   if (total_bytes > array_span.size()) {
     exception_state.ThrowTypeError(
-        String::Format("data is too small: needs %u bytes, received %zu.",
-                       total_bytes, array_span.size()));
+        Format("data is too small: needs {} bytes, received {}.", total_bytes,
+               array_span.size()));
     return;
   }
 
@@ -319,10 +320,10 @@ AudioData::AudioData(ScriptState* script_state,
       sample_rate > media::limits::kMaxSampleRate) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        String::Format("sampleRate is outside of supported implementation "
-                       "limits: need between %u and %u, received %d.",
-                       media::limits::kMinSampleRate,
-                       media::limits::kMaxSampleRate, sample_rate));
+        Format("sampleRate is outside of supported implementation limits: need "
+               "between {} and {}, received {}.",
+               media::limits::kMinSampleRate, media::limits::kMaxSampleRate,
+               sample_rate));
     return;
   }
 
@@ -464,8 +465,8 @@ uint32_t AudioData::allocationSize(AudioDataCopyToOptions* copy_to_options,
   const uint32_t total_frames = static_cast<uint32_t>(data_->frame_count());
 
   if (offset >= total_frames) {
-    exception_state.ThrowRangeError(String::Format(
-        "Frame offset exceeds total frames (%u >= %u).", offset, total_frames));
+    exception_state.ThrowRangeError(Format(
+        "Frame offset exceeds total frames ({} >= {}).", offset, total_frames));
     return 0;
   }
 
@@ -476,8 +477,8 @@ uint32_t AudioData::allocationSize(AudioDataCopyToOptions* copy_to_options,
 
   if (frame_count > available_frames) {
     exception_state.ThrowRangeError(
-        String::Format("Frame count exceeds available_frames frames (%u > %u).",
-                       frame_count, available_frames));
+        Format("Frame count exceeds available_frames frames ({} > {}).",
+               frame_count, available_frames));
     return 0;
   }
 
@@ -496,8 +497,8 @@ uint32_t AudioData::allocationSize(AudioDataCopyToOptions* copy_to_options,
   if (overflow || !base::CheckMul(sample_count,
                                   media::SampleFormatToBytesPerChannel(format))
                        .AssignIfValid(&allocation_size)) {
-    exception_state.ThrowTypeError(String::Format(
-        "Provided options cause overflow when calculating allocation size."));
+    exception_state.ThrowTypeError(
+        "Provided options cause overflow when calculating allocation size.");
     return 0;
   }
 
@@ -587,8 +588,8 @@ void AudioData::copyTo(const AllowSharedBufferSource* destination,
       !base::CheckMul(offset_in_samples,
                       media::SampleFormatToBytesPerChannel(dest_format))
            .AssignIfValid(&offset_in_bytes)) {
-    exception_state.ThrowTypeError(String::Format(
-        "Provided options cause overflow when calculating offset."));
+    exception_state.ThrowTypeError(
+        "Provided options cause overflow when calculating offset.");
     return;
   }
 

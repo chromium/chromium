@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "v8/include/v8.h"
@@ -723,13 +724,15 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
       if (!wrapped_frame) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kOperationError,
-            String::Format("Failed to create a VideoFrame from "
-                           "CanvasImageSource with format: %s, "
-                           "coded size: %s, visibleRect: %s, display size: %s.",
-                           VideoPixelFormatToString(wrapped_format).c_str(),
-                           source_frame->coded_size().ToString().c_str(),
-                           parsed_init.visible_rect.ToString().c_str(),
-                           parsed_init.display_size.ToString().c_str()));
+            StrCat(
+                {"Failed to create a VideoFrame from "
+                 "CanvasImageSource with format: ",
+                 VideoPixelFormatToString(wrapped_format).c_str(),
+                 ", coded size: ",
+                 source_frame->coded_size().ToString().c_str(),
+                 ", visibleRect: ", parsed_init.visible_rect.ToString().c_str(),
+                 ", display size: ",
+                 parsed_init.display_size.ToString().c_str(), "."}));
         return nullptr;
       }
 
@@ -994,8 +997,8 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
       coded_height > media::limits::kMaxDimension ||
       coded_width * coded_height > media::limits::kMaxCanvas) {
     exception_state.ThrowTypeError(
-        String::Format("Coded size %u x %u exceeds implementation limit.",
-                       coded_width, coded_height));
+        Format("Coded size {} x {} exceeds implementation limit.", coded_width,
+               coded_height));
     return nullptr;
   }
   const gfx::Size src_coded_size(static_cast<int>(coded_width),
@@ -1087,12 +1090,11 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     if (!frame) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kOperationError,
-          String::Format("Failed to create a VideoFrame with format: %s, "
-                         "coded size: %s, visibleRect: %s, display size: %s.",
-                         VideoPixelFormatToString(media_fmt).c_str(),
-                         crop.size().ToString().c_str(),
-                         dest_visible_rect.ToString().c_str(),
-                         display_size.ToString().c_str()));
+          StrCat({"Failed to create a VideoFrame with format: ",
+                  VideoPixelFormatToString(media_fmt).c_str(),
+                  ", coded size: ", crop.size().ToString().c_str(),
+                  ", visibleRect: ", dest_visible_rect.ToString().c_str(),
+                  ", display size: ", display_size.ToString().c_str(), "."}));
       return nullptr;
     }
 

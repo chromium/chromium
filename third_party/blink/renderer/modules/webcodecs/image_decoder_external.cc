@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_skia.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -492,8 +493,7 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
     if (failed_) {
       request->exception = MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kEncodingError,
-          String::Format("Failed to decode frame at index %d",
-                         request->frame_index));
+          Format("Failed to decode frame at index {}", request->frame_index));
       continue;
     }
 
@@ -595,9 +595,9 @@ void ImageDecoderExternal::OnDecodeReady(
     // Once we're data complete, if no further image can be decoded, we should
     // reject the decode() since it can't be satisfied.
     if (data_complete_) {
-      request->range_error_message = String::Format(
-          "Unexpected end of image. Request for frame index %d "
-          "can't be satisfied.",
+      request->range_error_message = Format(
+          "Unexpected end of image. Request for frame index {} can't be "
+          "satisfied.",
           request->frame_index);
     }
 

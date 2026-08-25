@@ -87,10 +87,9 @@ EncoderBase<Traits>::EncoderBase(ScriptState* script_state,
 template <typename Traits>
 EncoderBase<Traits>::~EncoderBase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::UmaHistogramSparse(UNSAFE_TODO(
-      String::Format("Blink.WebCodecs.%s.FinalStatus", Traits::GetName())
-          .Ascii(),
-      static_cast<int>(logger_->status_code())));
+  base::UmaHistogramSparse(
+      StrCat({"Blink.WebCodecs.", Traits::GetName(), ".FinalStatus"}).Ascii(),
+      static_cast<int>(logger_->status_code()));
 }
 
 template <typename Traits>
