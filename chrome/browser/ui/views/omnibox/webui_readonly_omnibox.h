@@ -174,6 +174,8 @@ class WebUIReadOnlyOmnibox
   // passed to the constructor.
   void RequestUpdateWebUI();
 
+  bool has_focus() const { return has_focus_; }
+
  private:
   void ResetFormatting();
   void ResetBrowserVersion();

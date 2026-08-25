@@ -352,6 +352,7 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
 }
 
 void OmniboxPopupViewFullWebUI::OnFocus(bool query_zps) {
+  focused_ = true;
   bool changed = controller()->popup_state_manager()->popup_state() !=
                  OmniboxPopupState::kFull;
 
@@ -381,6 +382,7 @@ void OmniboxPopupViewFullWebUI::OnFocus(bool query_zps) {
 }
 
 void OmniboxPopupViewFullWebUI::OnBlur() {
+  focused_ = false;
   if (auto* popup_handler = GetPopupHandler()) {
     popup_handler->SetFocus(false);
   }

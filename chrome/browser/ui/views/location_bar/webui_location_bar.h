@@ -211,6 +211,9 @@ class WebUILocationBar : public LocationBar,
   void OnPageInfoBubbleClosed(views::Widget::ClosedReason closed_reason,
                               bool reload_prompt);
 
+  void HandleFocusRequestForFullPopup(
+      toolbar_ui_api::mojom::FocusRequestTarget target);
+
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;
   raw_ptr<LocationBarView::Delegate> delegate_ = nullptr;
   raw_ptr<WebUIToolbarControlDelegate> toolbar_delegate_ = nullptr;

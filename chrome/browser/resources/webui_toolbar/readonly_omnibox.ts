@@ -22,7 +22,7 @@ import {BrowserProxyImpl, INVALID_FOCUS_REQUEST_HANDLE} from './browser_proxy.js
 import type {BrowserProxy, FocusRequestHandle} from './browser_proxy.js';
 import {getCss} from './readonly_omnibox.css.js';
 import {getHtml} from './readonly_omnibox.html.js';
-import {getEventDispositionFlags} from './toolbar_button.js';
+import {BUTTON_LEFT, BUTTON_RIGHT, getEventDispositionFlags} from './toolbar_button.js';
 
 export interface ReadonlyOmniboxElement {
   $: {
@@ -185,7 +185,12 @@ enum UnelisionGesture {
 function isOnlyLeftButton(event: MouseEvent): boolean {
   // Left button has button # 0, and mask 1. We allow it to be both on
   // and off in buttons to handle both mousedown and mouseup.
-  return event.button === 0 && (event.buttons === 0 || event.buttons === 1);
+  return event.button === BUTTON_LEFT &&
+      (event.buttons === 0 || event.buttons === 1);
+}
+
+function isRightButton(event: MouseEvent): boolean {
+  return event.button === BUTTON_RIGHT;
 }
 
 function copyMaybeSelection(selection: MojomRange|null): MojomRange|null {
@@ -651,11 +656,13 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       }
     }
 
-    this.inputDelegate_.handlePointer(this, {
-      isPointerDown: true,
-      startZeroSuggest: false,
-      selection: this.getMojoSelection(),
-    });
+    if (!isRightButton(event)) {
+      this.inputDelegate_.handlePointer(this, {
+        isPointerDown: true,
+        startZeroSuggest: false,
+        selection: this.getMojoSelection(),
+      });
+    }
   }
 
   private onInputMouseUp(event: MouseEvent): void {
@@ -695,11 +702,13 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
     const zeroSuggest = isOnlyLeftButton(event) &&
         (this.selectAllOnMouseRelease_ || this.userText.length === 0);
-    this.inputDelegate_.handlePointer(this, {
-      isPointerDown: false,
-      startZeroSuggest: zeroSuggest,
-      selection: this.getMojoSelection(),
-    });
+    if (!isRightButton(event)) {
+      this.inputDelegate_.handlePointer(this, {
+        isPointerDown: false,
+        startZeroSuggest: zeroSuggest,
+        selection: this.getMojoSelection(),
+      });
+    }
 
     this.selectAllOnMouseRelease_ = false;
     this.updateAdjustedCopyResult_();
