@@ -158,6 +158,11 @@ class BrowserAnimationControllerTest : public testing::Test {
     task_environment_.FastForwardBy(base::Milliseconds(ms));
   }
 
+ protected:
+  gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_ =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -587,6 +592,10 @@ TEST_F(BrowserAnimationControllerTest, AnimationRestartedCallbacks) {
 }
 
 TEST_F(BrowserAnimationControllerTest, RichAnimationOff) {
+  // Reset the fixture's scoper first to restore PLATFORM mode so that
+  // SetRichAnimationRenderMode() succeeds (it returns nullptr if the mode is
+  // already forced).
+  animation_mode_reset_.reset();
   const auto lock = gfx::AnimationTestApi::SetRichAnimationRenderMode(
       gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
 
