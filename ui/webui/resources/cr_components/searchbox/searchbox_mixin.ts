@@ -129,6 +129,10 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       this.keywordModeManager_.inputKeywordModel = model;
     }
 
+    get keywordModeManager(): KeywordModeManager {
+      return this.keywordModeManager_;
+    }
+
     initialInputScrollHeight: number = 0;
 
     private controlKeyState_: ControlKeyState = ControlKeyState.UP;
@@ -503,6 +507,11 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       }
 
       if (e.key === 'Tab') {
+        if (!e.shiftKey && !e.isComposing &&
+            this.keywordModeManager_.acceptTab(
+                this.selectedMatch, this.selectedMatchIndex)) {
+          e.preventDefault();
+        }
         return;
       }
 
@@ -675,8 +684,6 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       this.keywordModeManager_.handleKeywordClick(match);
     }
 
-
-
     private computeSelectedMatch_() {
       if (!this.result || !this.result.matches) {
         return null;
@@ -734,6 +741,7 @@ export interface SearchboxMixinInterface {
   selectedMatch: AutocompleteMatch|null;
   selectedMatchIndex: number;
   inputKeywordModel: InputKeywordModel|null;
+  keywordModeManager: KeywordModeManager;
   showThumbnail: boolean;
 
   acceptInlineAutocomplete(e: KeyboardEvent): boolean;

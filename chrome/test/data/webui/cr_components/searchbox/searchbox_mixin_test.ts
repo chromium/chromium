@@ -1913,4 +1913,114 @@ suite('SearchboxMixinTest', () => {
         assertFalse(tabEvent.defaultPrevented);
         assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
       });
+
+  test(
+      'Tab key enters keyword mode when default match has keyword model',
+      async () => {
+        const mockInput = element.getInputElement();
+        const keyword = 'google.com';
+
+        const match = createSearchMatchForTesting({
+          allowedToBeDefaultMatch: true,
+          keywordModel: createMatchKeywordModelForTesting({
+            type: KeywordType.kChip,
+            keyword,
+            chipHint: 'Search Google',
+          }),
+        });
+        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
+          input: 'google',
+          matches: [match],
+        }));
+        await microtasksFinished();
+
+        const event = new KeyboardEvent('keydown', {
+          key: 'Tab',
+          bubbles: true,
+          cancelable: true,
+        });
+        element.handleKeyNavigation(event);
+        await microtasksFinished();
+
+        assertTrue(element.inputKeywordModel !== null);
+        assertEquals(KeywordType.kInKeyword, element.inputKeywordModel.type);
+        assertEquals(keyword, element.inputKeywordModel.keyword);
+        assertEquals('', mockInput.inputElement.value);
+        assertTrue(event.defaultPrevented);
+      });
+
+  test('Tab key on non-default match does not enter keyword mode', async () => {
+    const defaultMatch = createSearchMatchForTesting({
+      allowedToBeDefaultMatch: true,
+      contents: 'google search',
+    });
+    const secondaryMatchWithKeyword = createSearchMatchForTesting({
+      allowedToBeDefaultMatch: false,
+      contents: 'google bookmarks',
+      keywordModel: createMatchKeywordModelForTesting({
+        type: KeywordType.kChip,
+        keyword: 'google.com',
+        chipHint: 'Search Google',
+      }),
+    });
+    element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
+      input: 'google',
+      matches: [defaultMatch, secondaryMatchWithKeyword],
+    }));
+    await microtasksFinished();
+
+    // Select the second (non-default) match.
+    await element.getDropdownElement().selectIndex(1);
+    await microtasksFinished();
+
+    const event = new KeyboardEvent('keydown', {
+      key: 'Tab',
+      bubbles: true,
+      cancelable: true,
+    });
+    element.handleKeyNavigation(event);
+    await microtasksFinished();
+
+    assertFalse(
+        element.inputKeywordModel !== null &&
+        element.inputKeywordModel.type === KeywordType.kInKeyword);
+    assertFalse(event.defaultPrevented);
+  });
+
+  test(
+      'Tab key during IME composition does not enter keyword mode',
+      async () => {
+        const keyword = 'google.com';
+
+        const match = createSearchMatchForTesting({
+          allowedToBeDefaultMatch: true,
+          keywordModel: createMatchKeywordModelForTesting({
+            type: KeywordType.kChip,
+            keyword,
+            chipHint: 'Search Google',
+          }),
+        });
+        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
+          input: 'google',
+          matches: [match],
+        }));
+        await microtasksFinished();
+
+        const event = new KeyboardEvent('keydown', {
+          key: 'Tab',
+          bubbles: true,
+          cancelable: true,
+          isComposing: true,
+        });
+        element.handleKeyNavigation(event);
+        await microtasksFinished();
+
+        assertFalse(
+            element.inputKeywordModel !== null &&
+            element.inputKeywordModel.type === KeywordType.kInKeyword);
+        assertFalse(event.defaultPrevented);
+      });
 });
