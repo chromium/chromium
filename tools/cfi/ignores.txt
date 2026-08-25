@@ -228,6 +228,32 @@ src:*third_party/vulkan-loader/src/loader*
 src:*third_party/vulkan-validation-layers/src/layers/*
 src:*third_party/angle/src/common/vulkan/vulkan_icd.cpp
 
+# The OpenXR loader and Chromium's OpenXR code call into the dlopen'd OpenXR
+# runtime through function pointers, like the vulkan loader above: the loader
+# and its generated dispatch table, and the Chromium files that call extension
+# entry points resolved with xrGetInstanceProcAddr (directly, through the
+# destroy function an OpenXrExtensionHandle/ScopedOpenXrObject stores, or as a
+# PFN parameter in openxr_spatial_utils.cc). The unittests' mock runtime and
+# its trampoline dispatch through the same kind of pointers, and the mock's
+# xrCreateVulkanInstanceKHR side calls through vkGetInstanceProcAddr.
+src:*third_party/openxr/src/src/*
+src:*device/vr/openxr/linux/openxr_vulkan_context.cc
+src:*device/vr/openxr/msft/openxr_anchor_manager_msft.cc
+src:*device/vr/openxr/msft/openxr_scene_msft.cc
+src:*device/vr/openxr/msft/openxr_scene_observer_msft.cc
+src:*device/vr/openxr/openxr_api_wrapper.cc
+src:*device/vr/openxr/openxr_extension_handle.h
+src:*device/vr/openxr/openxr_hand_tracker.cc
+src:*device/vr/openxr/openxr_spatial_anchor_manager.cc
+src:*device/vr/openxr/openxr_spatial_framework_manager.cc
+src:*device/vr/openxr/openxr_spatial_hit_test_manager.cc
+src:*device/vr/openxr/openxr_spatial_plane_manager.cc
+src:*device/vr/openxr/openxr_spatial_utils.cc
+src:*device/vr/openxr/openxr_visibility_mask_handler.cc
+src:*device/vr/openxr/scoped_openxr_object.h
+src:*device/vr/openxr/test/fake_openxr_impl_api.cc
+src:*device/vr/openxr/test/openxr_mock_helper.cc
+
 # Calls to TFLiteDelegate functions in a shared library.
 src:*services/webnn/tflite/graph_impl_tflite.cc
 src:*third_party/tflite/src/tensorflow/lite/c/common_internal.cc

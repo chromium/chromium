@@ -4,6 +4,7 @@
 
 #include "device/vr/openxr/openxr_graphics_binding.h"
 
+#include "build/build_config.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
@@ -38,6 +39,10 @@ OpenXrGraphicsBinding::~OpenXrGraphicsBinding() {
 
 bool OpenXrGraphicsBinding::ShouldRenderBaseLayer() const {
   return layers_sequence_.empty() || overlay_visible_;
+}
+
+bool OpenXrGraphicsBinding::RequiresSharedImages() const {
+  return false;
 }
 
 void OpenXrGraphicsBinding::OnSessionCreated(XrSpace local_space,

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/debug/dump_without_crashing.h"
@@ -22,8 +23,10 @@
 #include "device/vr/openxr/openxr_input_helper.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/util/stage_utils.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
@@ -935,6 +938,14 @@ void OpenXrRenderLoop::SubmitFrameDrawnIntoTexture(
                     perfetto::Track(frame_index));
   DVLOG(3) << __func__ << " frame_index=" << frame_index;
 
+  // This frame can arrive after the session ended, or while a context loss is
+  // being repaired (context_provider_ null, is_presenting_ still true). Either
+  // way there is nothing to submit into, so bail before dereferencing it.
+  if (!is_presenting_ || !context_provider_) {
+    TRACE_EVENT_END("xr", perfetto::Track(frame_index));
+    return;
+  }
+
   if (camera_export_multi_result.HasData()) {
     presentation_receiver_.ReportBadMessage(
         "Received unexpected camera sync tokens.");
@@ -952,11 +963,28 @@ void OpenXrRenderLoop::SubmitFrameDrawnIntoTexture(
       graphics_binding_->EndSharedImagesExport(std::move(layer_updates),
                                                combined_sync_tokens);
 
-  gpu::ClientSharedImage::CreateGpuFenceForSyncTokens(
-      std::move(shared_images), std::move(combined_sync_tokens),
-      context_provider_->ContextGL(), context_provider_->ContextSupport(),
-      base::BindOnce(&OpenXrRenderLoop::OnWebXrTokenSignaled,
-                     weak_ptr_factory_.GetWeakPtr(), frame_index, layer_ids));
+  gpu::gles2::GLES2Interface* gl = context_provider_->ContextGL();
+
+  // supports_gpu_fence_ was established once in OnContextProviderCreated().
+  if (supports_gpu_fence_) {
+    gpu::ClientSharedImage::CreateGpuFenceForSyncTokens(
+        std::move(shared_images), std::move(combined_sync_tokens), gl,
+        context_provider_->ContextSupport(),
+        base::BindOnce(&OpenXrRenderLoop::OnWebXrTokenSignaled,
+                       weak_ptr_factory_.GetWeakPtr(), frame_index, layer_ids));
+    return;
+  }
+
+  // No GPU fence: a CPU finish guarantees the WebGL write completed before the
+  // binding reads the shared image. WaitOnFence is a no-op without a fence FD.
+  // TODO(crbug.com/506004811): use a GL-signal/Vulkan-wait fence if available.
+  for (const auto& sync_token : combined_sync_tokens) {
+    gl->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+  }
+  gl->Finish();
+  TRACE_EVENT_END("xr", perfetto::Track(frame_index));
+  MarkFrameSubmitted(frame_index);
+  MaybeCompositeAndSubmit(layer_ids);
 }
 
 void OpenXrRenderLoop::OnWebXrTokenSignaled(
@@ -1220,7 +1248,31 @@ void OpenXrRenderLoop::OnContextLostCallback(
   // were bound to.
   lost_context_provider.reset();
 
-  StartContextProviderIfNeeded(base::DoNothing());
+  if (graphics_binding_ && graphics_binding_->RequiresSharedImages()) {
+    // The in-flight frame's shared images died with the context, so neither
+    // MarkFrameSubmitted() nor SubmitFrameMissing() will run to clear
+    // `webxr_has_pose_`. End it so the deferred frame request can resume.
+    webxr_has_pose_ = false;
+    ClearPendingFrame();
+    if (!is_presenting_) {
+      // ClearPendingFrame() ends presentation if the OpenXR frame could not be
+      // ended; there is nothing left to restart.
+      return;
+    }
+  }
+
+  StartContextProviderIfNeeded(base::BindOnce(
+      &OpenXrRenderLoop::OnContextProviderRestarted, base::Unretained(this)));
+}
+
+// Continuation of OnContextLostCallback: if the replacement context provider
+// fails (context bind or shared image creation), nothing else notices, so end
+// the session instead of leaving deferred frame requests hanging.
+void OpenXrRenderLoop::OnContextProviderRestarted(bool success) {
+  DCHECK(task_runner()->BelongsToCurrentThread());
+  if (!success) {
+    ExitPresent(ExitXrPresentReason::kSharedImagesUnavailable);
+  }
 }
 
 // OpenXrRenderLoop::StartContextProvider queues a task on the main thread's
@@ -1248,17 +1300,55 @@ void OpenXrRenderLoop::OnContextProviderCreated(
 
   if (openxr_) {
     openxr_->OnContextProviderCreated(context_provider);
+
+    // CreateSharedMailboxes() has no failure signal, and creation can fail if
+    // the GPU process cannot serve a GL-accessible DMA-BUF SharedImage. The
+    // renderer expects shared buffers, so fail session establishment instead.
+    if (graphics_binding_->RequiresSharedImages() &&
+        openxr_->session() != XR_NULL_HANDLE &&
+        !graphics_binding_->IsUsingSharedImages()) {
+      LOG(ERROR) << __func__ << " shared image creation failed; ending session";
+      std::move(start_runtime_callback).Run(false);
+      return;
+    }
   }
 
   context_provider->AddObserver(this);
   context_provider_ = std::move(context_provider);
 
+  // GL_CHROMIUM_gpu_fence (EGL_ANDROID_native_fence_sync) is a fixed property
+  // of this context, so query it once here. Requesting a fence without it
+  // crashes the GPU process, so SubmitFrameDrawnIntoTexture() uses glFinish.
+  const char* extensions = reinterpret_cast<const char*>(
+      context_provider_->ContextGL()->GetString(GL_EXTENSIONS));
+  supports_gpu_fence_ =
+      extensions &&
+      std::string_view(extensions).find("GL_CHROMIUM_gpu_fence") !=
+          std::string_view::npos;
+  DVLOG(1) << __func__
+           << " GL_CHROMIUM_gpu_fence supported=" << supports_gpu_fence_;
+
   std::move(start_runtime_callback).Run(true);
+
+  // A frame request that ShouldDelayGetFrameData() deferred while the shared
+  // images were unavailable can be served now that they have been recreated.
+  if (delayed_get_frame_data_callback_ &&
+      (webxr_visible_ || on_webxr_submitted_)) {
+    std::move(delayed_get_frame_data_callback_).Run();
+  }
 }
 
 bool OpenXrRenderLoop::ShouldDelayGetFrameData() const {
   // If we've already given out a pose for the current frame, delay.
   if (webxr_has_pose_) {
+    return true;
+  }
+
+  // Blink DCHECKs on a drawable frame (non-negative frame_id) carrying no
+  // shared image, so defer instead of answering one while they are gone.
+  // OnContextProviderCreated() resumes the request once they are back.
+  if (graphics_binding_ && graphics_binding_->RequiresSharedImages() &&
+      !graphics_binding_->IsUsingSharedImages()) {
     return true;
   }
 

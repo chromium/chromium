@@ -20,14 +20,29 @@ declare_args() {
 
   enable_arcore = _is_xr_supported_android
 
-  use_command_buffer = is_win
+  # The VR browser overlay UI renders its shaders through the command-buffer GL
+  # bindings (VR_USE_COMMAND_BUFFER); Linux must select the same mode Windows
+  # does. Otherwise the overlay renderers compile against the native ui/gl
+  # bindings (VR_USE_NATIVE_GL), which are never made current on the browser's
+  # VR UI thread, and the first glCreateShader() dereferences a null
+  # gl::g_current_gl_context. The WebXR data path is unaffected -- it uses
+  # gpu::gles2::GLES2Interface directly, not these bindings.
+  use_command_buffer = is_win || is_linux
 
   # To build with OpenXR support, the OpenXR Loader needs to be pulled to
   # third_party/openxr.
-  enable_openxr = checkout_openxr &&
-                  (is_win || (_is_xr_supported_android &&
+  enable_openxr =
+      checkout_openxr &&
+      (is_win || is_linux || (_is_xr_supported_android &&
                               (current_cpu == "arm" || current_cpu == "arm64")))
 }
+
+# The OpenXR platforms where the runtime is an externally-installed desktop
+# runtime discovered through the loader, rather than part of the OS image as on
+# Android. They share the polling-for-availability and context-provider plumbing
+# in //content/services/isolated_xr_device, so it is guarded on this rather than
+# repeating (is_win || is_linux) at every site.
+is_desktop_openxr = is_win || is_linux
 
 declare_args() {
   # Enable VR device support whenever VR device SDK(s) are supported.

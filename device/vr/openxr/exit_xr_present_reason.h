@@ -16,6 +16,7 @@ enum class ExitXrPresentReason : int32_t {
   kSubmitFrameFailed = 7,
   kBrowserShutdown = 8,
   kXrPlatformHelperShutdown = 9,
+  kSharedImagesUnavailable = 10,
 };
 
 #endif  // DEVICE_VR_OPENXR_EXIT_XR_PRESENT_REASON_H_

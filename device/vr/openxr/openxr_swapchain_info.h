@@ -19,6 +19,10 @@
 #include "ui/gl/scoped_egl_image.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include <vulkan/vulkan_core.h>
+#endif
+
 namespace device {
 
 // TODO(crbug.com/40909689): Refactor this class.
@@ -28,6 +32,8 @@ struct OpenXrSwapchainInfo {
   explicit OpenXrSwapchainInfo(ID3D11Texture2D*);
 #elif BUILDFLAG(IS_ANDROID)
   explicit OpenXrSwapchainInfo(uint32_t texture);
+#elif BUILDFLAG(IS_LINUX)
+  explicit OpenXrSwapchainInfo(VkImage vk_image);
 #endif
   OpenXrSwapchainInfo();
   virtual ~OpenXrSwapchainInfo();
@@ -49,6 +55,9 @@ struct OpenXrSwapchainInfo {
   // texture prior to submission.
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_shared_texture = nullptr;
   Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence;
+#elif BUILDFLAG(IS_LINUX)
+  // The Vulkan image handle from the OpenXR swapchain.
+  VkImage vk_image = VK_NULL_HANDLE;
 #elif BUILDFLAG(IS_ANDROID)
   // Ideally this would be a gluint, but there are conflicting headers for GL
   // depending on *how* you want to use it; so we can't use it at the moment.

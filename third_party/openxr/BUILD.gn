@@ -164,6 +164,13 @@ if (enable_openxr) {
       "DISABLE_STD_FILESYSTEM",
     ]
 
+    if (is_linux) {
+      # glibc's secure_getenv() is available; without this the loader falls
+      # back to plain getenv() and emits a #pragma message that
+      # -Werror=#pragma-messages rejects.
+      defines += [ "HAVE_SECURE_GETENV" ]
+    }
+
     if (!allow_openxr_content_providers) {
       defines += [ "XRLOADER_DISABLE_CONTENT_PROVIDERS" ]
     }
@@ -218,6 +225,12 @@ if (enable_openxr) {
         "XR_OS_WINDOWS",
         "XR_USE_PLATFORM_WIN32",
         "XR_USE_GRAPHICS_API_D3D11",
+      ]
+    } else if (is_linux) {
+      defines = [
+        "XRLOADER_DISABLE_EXCEPTION_HANDLING",
+        "XR_OS_LINUX",
+        "XR_USE_GRAPHICS_API_VULKAN",
       ]
     } else {
       defines = [

@@ -17,7 +17,12 @@ OpenXrSwapchainInfo::OpenXrSwapchainInfo(ID3D11Texture2D* d3d11_texture)
 #elif BUILDFLAG(IS_ANDROID)
 OpenXrSwapchainInfo::OpenXrSwapchainInfo(uint32_t texture)
     : openxr_texture(texture) {}
+#elif BUILDFLAG(IS_LINUX)
+OpenXrSwapchainInfo::OpenXrSwapchainInfo(VkImage vk_image)
+    : vk_image(vk_image) {}
 #endif
+
+OpenXrSwapchainInfo::OpenXrSwapchainInfo() = default;
 
 OpenXrSwapchainInfo::~OpenXrSwapchainInfo() {
   // If shared images are being used, the mailbox holder should have been

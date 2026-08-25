@@ -38,7 +38,7 @@
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "ui/gfx/geometry/rect_f.h"
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #include "base/threading/thread.h"
 #endif
 
@@ -65,7 +65,7 @@ class XRThread : public base::android::JavaHandlerThread {
       : base::android::JavaHandlerThread(name) {}
   ~XRThread() override = default;
 };
-#elif BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 class XRThread : public base::Thread {
  public:
   explicit XRThread(const char* name) : base::Thread(name) {}
@@ -276,6 +276,7 @@ class OpenXrRenderLoop : public XRThread,
       scoped_refptr<viz::ContextProvider> context_provider);
   void OnContextLostCallback(
       scoped_refptr<viz::ContextProvider> context_provider);
+  void OnContextProviderRestarted(bool success);
 
   void OnWebXrTokenSignaled(int16_t frame_index,
                             std::vector<LayerId> updated_layers,
@@ -299,6 +300,11 @@ class OpenXrRenderLoop : public XRThread,
 
   scoped_refptr<viz::ContextProvider> context_provider_;
   VizContextProviderFactoryAsync context_provider_factory_async_;
+
+  // Whether this context advertises GL_CHROMIUM_gpu_fence (backed by
+  // EGL_ANDROID_native_fence_sync). Set once in OnContextProviderCreated();
+  // when false SubmitFrameDrawnIntoTexture falls back to a CPU glFinish.
+  bool supports_gpu_fence_ = false;
 
   FPSMeter fps_meter_;
   SlidingTimeDeltaAverage webxr_js_time_;
