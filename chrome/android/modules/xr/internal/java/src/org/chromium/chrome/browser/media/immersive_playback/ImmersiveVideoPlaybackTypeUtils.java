@@ -22,7 +22,7 @@ public class ImmersiveVideoPlaybackTypeUtils {
             case ImmersiveProjectionType.QUAD:
                 return XrSurfaceEntityShape.QUAD;
             case ImmersiveProjectionType.SPHERE:
-                return XrSurfaceEntityShape.SPHERE;
+                return XrSurfaceEntityShape.SEAMLESS_SPHERE;
             case ImmersiveProjectionType.HEMISPHERE:
                 return XrSurfaceEntityShape.HEMISPHERE;
             case ImmersiveProjectionType.CUSTOM:
