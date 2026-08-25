@@ -481,7 +481,7 @@ Error SqlPersistentStore::Backend::InitializeInternal(
       // write, SQLite silently ignores subsequent auto_vacuum changes. We must
       // run VACUUM here to force SQLite to apply the incremental vacuum setting
       // and rewrite the header.
-      std::ignore = db_.Execute("VACUUM");
+      std::ignore = db_.Vacuum();
     }
   }
 
