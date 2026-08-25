@@ -14,6 +14,7 @@ generate_grd("build_grdp") {
   input_files = [
     "attach_file.svg",
     "banana.svg",
+    "bolt.svg",
     "canvas.svg",
     "canvas_old.svg",
     "chevron.svg",
@@ -35,12 +36,14 @@ generate_grd("build_grdp") {
     "mic.svg",
     "mic_old.svg",
     "offline_dialog.svg",
+    "photo_spark.svg",
     "school.svg",
     "search_spark.svg",
     "share_unfilled.svg",
     "share_unfilled_old.svg",
     "suggestion.svg",
     "suggestion_old.svg",
+    "tab.svg",
     "twitter.svg",
   ]
   input_files_base_dir = rebase_path(".", "//")

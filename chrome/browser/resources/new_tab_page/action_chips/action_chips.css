@@ -97,6 +97,18 @@
   -webkit-mask-image: url(chrome://new-tab-page/icons/ink_pen.svg);
 }
 
+.icon-type-bolt {
+  -webkit-mask-image: url(chrome://new-tab-page/icons/bolt.svg);
+}
+
+.icon-type-photo-spark {
+  -webkit-mask-image: url(chrome://new-tab-page/icons/photo_spark.svg);
+}
+
+.icon-type-tab {
+  -webkit-mask-image: url(chrome://new-tab-page/icons/tab.svg);
+}
+
 .action-chip {
   align-items: center;
   background-color: var(--chip-background-color);
