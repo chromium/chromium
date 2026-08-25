@@ -14,7 +14,7 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import {SuggestInventory} from '//resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
+import {InputSource, QueryActionOverride, SuggestInventory} from '//resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo, SmartComposeStats, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {DriveDisclaimerStatus, DriveUploadError, InputMethod} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
@@ -22,9 +22,10 @@ import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/ung
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {ComposeboxFile, ComposeboxFileValidationError, ComposeboxInputModel, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, mapOriginToMojoSource, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, recordUserAction, TabSuggestionsState, TabUploadOrigin} from './common.js';
-import type {ComposeboxState, DriveUpload, TabUpload} from './common.js';
+import type {ComposeboxFuseboxActionRequest, ComposeboxState, DriveUpload, TabUpload} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
+import type {ComposeboxFileInputsElement} from './composebox_file_inputs.js';
 import type {ComposeboxInputElement} from './composebox_input.js';
 // <if expr="not is_android">
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
@@ -333,6 +334,7 @@ export const ComposeboxEmbedderMixin =
             TabSuggestionsState.NOT_STARTED;
         accessor transcript: string = '';
         accessor uploadButtonDisabled: boolean = false;
+        private fuseboxChipHint_: string|null = null;
         showTypedSuggest: boolean =
             loadTimeData.getBoolean('composeboxShowTypedSuggest');
         // Tracks the latest query sent for autocompletion. Used to filter out
@@ -654,6 +656,10 @@ export const ComposeboxEmbedderMixin =
         }
 
         getLensButtonElement(): HTMLElement|null {
+          return null;
+        }
+
+        getFileInputsElement(): ComposeboxFileInputsElement|null {
           return null;
         }
 
@@ -1098,6 +1104,10 @@ export const ComposeboxEmbedderMixin =
         }
 
         updateInputPlaceholder() {
+          if (this.fuseboxChipHint_ !== null) {
+            this.inputPlaceholder = this.fuseboxChipHint_;
+            return;
+          }
           if (this.inputState) {
             if (this.inputState.activeTool !== ToolMode.kUnspecified) {
               const config = this.inputState.toolConfigs.find(
@@ -1381,6 +1391,71 @@ export const ComposeboxEmbedderMixin =
             (entrypointAndMenu as ContextualEntrypointAndMenuElement)
                 .openMenuForMultiSelection();
           }
+        }
+
+        async handleFuseboxAction(request: ComposeboxFuseboxActionRequest) {
+          const action = request.fuseboxAction;
+          const isHint =
+              action?.queryActionOverride === QueryActionOverride.kHint;
+          if (isHint) {
+            this.fuseboxChipHint_ = request.suggestion;
+            this.updateInputPlaceholder();
+          }
+          this.state = {
+            text: isHint ? '' : request.suggestion,
+            files: request.files,
+            mode: action?.preselectedTool ?? ToolMode.kUnspecified,
+            model: action?.preselectedModel ?? ModelMode.kUnspecified,
+            suggestInventory: action?.preferredInventory ?? undefined,
+            // <if expr="not is_android">
+            smartTabSharingActive: false,
+            // </if>
+          };
+          if (action?.preselectedInputSource) {
+            switch (action.preselectedInputSource) {
+              case InputSource.kInputSourceGallery:
+                this.getFileInputsElement()?.openImagePicker();
+                break;
+              case InputSource.kInputSourceFilePicker:
+                this.getFileInputsElement()?.openFilePicker();
+                break;
+              case InputSource.kInputSourceTabPicker:
+                await this.openTabPicker();
+                break;
+              case InputSource.kInputSourceVoice:
+                this.onVoiceSearchButtonClick();
+                break;
+              default:
+                break;
+            }
+          }
+        }
+
+        private async openTabPicker() {
+          const contextEntrypoint = this.getContextEntrypointElement();
+          if (!(contextEntrypoint instanceof
+                ContextualEntrypointAndMenuElement)) {
+            return;
+          }
+          if (!this.inputState) {
+            const response = await this.getSearchboxHandler().getInputState();
+            if (response) {
+              this.inputState = response.state;
+            }
+          }
+          this.shareTabsFlyoutOpen = true;
+          await this.refreshTabSuggestions(true);
+          await this.updateComplete;
+          await contextEntrypoint.updateComplete;
+          const entrypointButton =
+              contextEntrypoint.shadowRoot?.querySelector<CrLitElement>(
+                  '#entrypointButton');
+          if (entrypointButton) {
+            await entrypointButton.updateComplete;
+          }
+          entrypointButton?.shadowRoot
+              ?.querySelector<HTMLElement>('#entrypoint')
+              ?.click();
         }
 
         async updateState(state: ComposeboxState) {
@@ -2839,6 +2914,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   getContextEntrypointElement(): ContextualEntrypointButtonElement
       |ContextualEntrypointAndMenuElement|null;
   getLensButtonElement(): HTMLElement|null;
+  getFileInputsElement(): ComposeboxFileInputsElement|null;
   addTabContextHandleCallback(
       tabUpload: TabUpload, replaceAutoActiveTabToken?: boolean,
       onBeforeUpdateFiles?: (attachment: ComposeboxFile) => void):
@@ -2864,6 +2940,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   }>): void;
   onContextMenuClosed(): Promise<void>;
   keepMenuOpenForMultiSelection(): Promise<void>;
+  handleFuseboxAction(request: ComposeboxFuseboxActionRequest): Promise<void>;
   onContextMenuOpened(): void;
   onRequestTabSuggestionsLoad(): void;
   onVoiceSearchButtonClick(): void;

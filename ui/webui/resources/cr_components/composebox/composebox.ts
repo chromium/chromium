@@ -236,6 +236,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     return this.shadowRoot?.querySelector('#lensIcon') || null;
   }
 
+  override getFileInputsElement(): ComposeboxFileInputsElement|null {
+    return this.shouldDisableFileInputs() ? null : this.$.fileInputs;
+  }
+
   constructor() {
     super();
     this.pageHandler_ = ComposeboxProxyImpl.getInstance().handler;

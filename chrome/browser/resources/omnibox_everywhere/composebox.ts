@@ -208,6 +208,10 @@ export class OmniboxEverywhereComposeboxElement extends ComposeboxEmbedderMixin
         null;
   }
 
+  override getFileInputsElement(): ComposeboxFileInputsElement|null {
+    return this.shouldDisableFileInputs() ? null : this.$.fileInputs;
+  }
+
   private unboundedMenuManager_ = new UnboundedMenuManager(
       () => this.getContextEntrypointElement() as HTMLElement | null);
 

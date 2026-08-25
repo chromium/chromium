@@ -5,7 +5,7 @@
 import {ComposeboxContextAddedMethod} from '//resources/cr_components/search/constants.js';
 import {assertNotReachedCase} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import type {SuggestInventory} from '//resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
+import type {FuseboxAction, SuggestInventory} from '//resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import {TabAttachmentSource} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {DriveUploadError, SearchContextAttachment, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
@@ -388,6 +388,14 @@ export interface TabUpload {
 }
 
 export type ContextualUpload = TabUpload|FileUpload|DriveUpload;
+
+// Represents an embedder-agnostic request to execute a FuseboxAction in a
+// Composebox instance
+export interface ComposeboxFuseboxActionRequest {
+  suggestion: string;
+  files: ContextualUpload[];
+  fuseboxAction?: FuseboxAction;
+}
 
 export enum GlifAnimationState {
   INELIGIBLE = 'ineligible',

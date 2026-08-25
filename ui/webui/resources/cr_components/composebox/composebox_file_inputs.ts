@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -43,15 +42,26 @@ export class ComposeboxFileInputsElement extends CrLitElement {
       loadTimeData.getString('composeboxImageFileTypes');
 
   protected onOpenFileUpload_() {
-    assert(this.$.fileInput);
-    this.$.fileInput.click();
+    this.openFilePicker();
   }
 
   protected onOpenImageUpload_() {
-    assert(this.$.imageInput);
-    this.$.imageInput.click();
+    this.openImagePicker();
   }
 
+  openFilePicker() {
+    if (this.disableFileInputs) {
+      return;
+    }
+    this.shadowRoot?.querySelector<HTMLInputElement>('#fileInput')?.click();
+  }
+
+  openImagePicker() {
+    if (this.disableFileInputs) {
+      return;
+    }
+    this.shadowRoot?.querySelector<HTMLInputElement>('#imageInput')?.click();
+  }
 
   protected onFileChange_(e: Event) {
     const input = e.target as HTMLInputElement;
