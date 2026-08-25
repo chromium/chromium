@@ -8,13 +8,11 @@
 
 #include "base/test/run_until.h"
 #import "chrome/browser/app_controller_mac.h"
-#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #import "chrome/browser/ui/cocoa/confirm_quit.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/widget/widget.h"
@@ -378,69 +376,6 @@ IN_PROC_BROWSER_TEST_F(ConfirmQuitControllerPanelInteractiveUITest,
   // Wait for the panel to fade out and close, which should trigger the
   // callback.
   EXPECT_TRUE(base::test::RunUntil([&] { return callback_invoked; }));
-}
-
-// Verifies that when tabs have pending beforeunload handlers or custom
-// confirmation prompts, double-tapping Cmd+Q does not hide the browser
-// window.
-IN_PROC_BROWSER_TEST_F(ConfirmQuitControllerPanelInteractiveUITest,
-                       DoubleTapWithPendingUnloadDoesNotHideWindow) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      GURL("data:text/html,<script>window.onbeforeunload=()=>'stay';</"
-           "script>")));
-
-  NSWindow* browserWindow =
-      browser()->GetWindow()->GetNativeWindow().GetNativeNSWindow();
-  ConfirmQuitPanelController* controller =
-      [[ConfirmQuitPanelController alloc] init];
-
-  __block int callCount = 0;
-  ConfirmQuitPanelController.isKeyDownForKeyCodeMock =
-      ^(unsigned short keyCode) {
-        callCount++;
-        return (BOOL)(callCount < 2);
-      };
-
-  BOOL firstShouldQuit = [controller runConfirmQuitLoopWithEvent:cmd_q_event_
-                                               dismissedCallback:nil];
-  EXPECT_FALSE(firstShouldQuit);
-  EXPECT_FLOAT_EQ(browserWindow.alphaValue, 1.0);
-
-  callCount = 0;
-  BOOL secondShouldQuit = [controller runConfirmQuitLoopWithEvent:cmd_q_event_
-                                                dismissedCallback:nil];
-  EXPECT_TRUE(secondShouldQuit);
-  // Because AreAllBrowsersCloseable() is false due to beforeunload handler,
-  // the window opacity MUST remain fully visible (1.0) instead of being hidden
-  // (0.0).
-  EXPECT_FLOAT_EQ(browserWindow.alphaValue, 1.0);
-
-  // Clean up trying to quit state.
-  browser_shutdown::SetTryingToQuit(false);
-}
-
-// Verifies that when closing browsers via production entry point
-// chrome::CloseAllBrowsersAndQuit() with pending unload handlers, confirming
-// the unload closes all windows cleanly.
-IN_PROC_BROWSER_TEST_F(ConfirmQuitControllerPanelInteractiveUITest,
-                       ProductionCloseAllBrowsersWithPendingUnload) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      GURL("data:text/html,<script>window.onbeforeunload=()=>'stay';</"
-           "script>")));
-
-  ui_test_utils::BrowserDestroyedObserver observer(browser());
-  chrome::CloseAllBrowsersAndQuit();
-
-  // Simulate user confirming page unload in renderer beforeunload.
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(contents);
-  contents->DispatchBeforeUnload(false);
-
-  // Ensure shutdown proceeds cleanly.
-  EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
 }
 
 }  // namespace

@@ -70,9 +70,6 @@ void ActorOverlayWebView::CloseUI() {
     // Re-enable mouse, keyboard, and a11y input events to the underlying web
     // contents by resetting the ScopedIgnoreInputEvents object.
     scoped_ignore_input_events_.reset();
-    // Reset tab interface tracking on close so EmbedderContextData does not
-    // hold a dangling raw_ptr to the tab when it is destroyed.
-    webui::SetTabInterface(web_contents(), nullptr);
     web_contents()->WasHidden();
   }
 }
