@@ -994,6 +994,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/ntp/NewTabPageLocationPolicyManagerUnitTest.java",
       "src/org/chromium/chrome/browser/ntp/NewTabPageUtilUnitTest.java",
       "src/org/chromium/chrome/browser/ntp/RecentTabsCoordinatorUnitTest.java",
+      "src/org/chromium/chrome/browser/ntp/RecentTabsGroupViewUnitTest.java",
       "src/org/chromium/chrome/browser/ntp/RecentTabsPageUnitTest.java",
       "src/org/chromium/chrome/browser/ntp/search/SearchBoxContainerViewUnitTest.java",
       "src/org/chromium/chrome/browser/ntp/search/SearchBoxMediatorUnitTest.java",

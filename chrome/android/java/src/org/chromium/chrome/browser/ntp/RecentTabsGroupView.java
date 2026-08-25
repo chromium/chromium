@@ -4,16 +4,26 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import static android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_COLLAPSE;
+import static android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_EXPAND;
+import static android.view.accessibility.AccessibilityNodeInfo.EXPANDED_STATE_COLLAPSED;
+import static android.view.accessibility.AccessibilityNodeInfo.EXPANDED_STATE_FULL;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.LevelListDrawable;
+import android.os.Build;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
@@ -31,6 +41,7 @@ public class RecentTabsGroupView extends RelativeLayout {
 
     private static final int DRAWABLE_LEVEL_EXPANDED = 1;
 
+    private boolean mIsExpanded;
     private RecentTabsGroupView mRow;
     private ImageView mExpandCollapseIcon;
     private TextView mDeviceLabel;
@@ -42,7 +53,7 @@ public class RecentTabsGroupView extends RelativeLayout {
      * @param context The context this view will work in.
      * @param attrs The attribute set for this view.
      */
-    public RecentTabsGroupView(Context context, AttributeSet attrs) {
+    public RecentTabsGroupView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -83,7 +94,7 @@ public class RecentTabsGroupView extends RelativeLayout {
         mDeviceLabel.setText(session.name);
         mTimeLabel.setVisibility(View.VISIBLE);
         mTimeLabel.setText(getTimeString(session));
-        setGroupViewHeight(true);
+        setGroupViewHeight(/* isTimeLabelVisible= */ true);
         configureExpandedCollapsed(isExpanded);
     }
 
@@ -95,7 +106,7 @@ public class RecentTabsGroupView extends RelativeLayout {
     public void configureForRecentlyClosedTabs(boolean isExpanded) {
         mDeviceLabel.setText(R.string.recently_closed);
         mTimeLabel.setVisibility(View.GONE);
-        setGroupViewHeight(false);
+        setGroupViewHeight(/* isTimeLabelVisible= */ false);
         configureExpandedCollapsed(isExpanded);
     }
 
@@ -107,11 +118,48 @@ public class RecentTabsGroupView extends RelativeLayout {
     public void configureForPromo(boolean isExpanded) {
         mDeviceLabel.setText(R.string.ntp_recent_tabs_sync_promo_title);
         mTimeLabel.setVisibility(View.GONE);
-        setGroupViewHeight(false);
+        setGroupViewHeight(/* isTimeLabelVisible= */ false);
         configureExpandedCollapsed(isExpanded);
     }
 
+    @Override
+    public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
+        super.onInitializeAccessibilityNodeInfo(info);
+        info.addAction(mIsExpanded ? ACTION_COLLAPSE : ACTION_EXPAND);
+        if (Build.VERSION.SDK_INT >= 36) {
+            info.setExpandedState(mIsExpanded ? EXPANDED_STATE_FULL : EXPANDED_STATE_COLLAPSED);
+        }
+    }
+
+    @Override
+    public boolean performAccessibilityAction(int action, @Nullable Bundle arguments) {
+        if (action == ACTION_EXPAND.getId() || action == ACTION_COLLAPSE.getId()) {
+            if (getParent() instanceof ExpandableListView parent) {
+                int position = parent.getPositionForView(this);
+                if (position != ExpandableListView.INVALID_POSITION) {
+                    long packedPos = parent.getExpandableListPosition(position);
+                    if (packedPos != ExpandableListView.PACKED_POSITION_VALUE_NULL
+                            && ExpandableListView.getPackedPositionType(packedPos)
+                                    == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
+                        int groupPos = ExpandableListView.getPackedPositionGroup(packedPos);
+                        if (groupPos >= 0) {
+                            if (action == ACTION_EXPAND.getId()) {
+                                parent.expandGroup(groupPos);
+                            } else {
+                                parent.collapseGroup(groupPos);
+                            }
+                            return true;
+                        }
+                    }
+                }
+            }
+            return performClick();
+        }
+        return super.performAccessibilityAction(action, arguments);
+    }
+
     private void configureExpandedCollapsed(boolean isExpanded) {
+        mIsExpanded = isExpanded;
         int level = isExpanded ? DRAWABLE_LEVEL_EXPANDED : DRAWABLE_LEVEL_COLLAPSED;
         mExpandCollapseIcon.getDrawable().setLevel(level);
     }
@@ -127,7 +175,9 @@ public class RecentTabsGroupView extends RelativeLayout {
 
     private CharSequence getTimeString(ForeignSession session) {
         long timeDeltaMs = System.currentTimeMillis() - session.modifiedTime;
-        if (timeDeltaMs < 0) timeDeltaMs = 0;
+        if (timeDeltaMs < 0) {
+            timeDeltaMs = 0;
+        }
 
         int daysElapsed = (int) (timeDeltaMs / (24L * 60L * 60L * 1000L));
         int hoursElapsed = (int) (timeDeltaMs / (60L * 60L * 1000L));
