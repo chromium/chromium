@@ -719,6 +719,9 @@ void OmniboxEverywhereUIManager::OnDrivePickerClosed() {
 
 void OmniboxEverywhereUIManager::OnScreensharePickerOpened() {
   is_screenshare_picker_open_ = true;
+  if (widget_) {
+    widget_->Hide();
+  }
 }
 
 void OmniboxEverywhereUIManager::OnScreensharePickerClosed() {

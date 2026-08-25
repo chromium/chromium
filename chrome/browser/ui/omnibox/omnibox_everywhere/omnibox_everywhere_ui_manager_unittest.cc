@@ -1552,22 +1552,28 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringScreensharePicker) {
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
 
-  // Mark screenshare picker as open.
+  // Mark screenshare picker as open. Opening the screenshare picker hides the
+  // widget to prevent it from obstructing screen capture.
   ui_manager->OnScreensharePickerOpened();
   EXPECT_TRUE(ui_manager->is_screenshare_picker_open_for_testing());
+  EXPECT_FALSE(widget->IsVisible());
 
-  // Simulating deactivation while screenshare picker is open should NOT close
+  // Simulating deactivation while screenshare picker is open should NOT destroy
   // the widget.
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
   EXPECT_TRUE(ui_manager->widget());
+  EXPECT_FALSE(widget->IsVisible());
+
+  // Closing screenshare picker restores and activates the widget.
+  ui_manager->OnScreensharePickerClosed();
+  EXPECT_TRUE(ui_manager->widget());
   EXPECT_TRUE(widget->IsVisible());
 
-  // Clean up: closing screenshare picker and triggering deactivation after
-  // grace period should hide the widget in ephemeral mode.
+  // Clean up: triggering deactivation after grace period should hide the widget
+  // in ephemeral mode.
   task_environment()->FastForwardBy(
       omnibox_everywhere::OmniboxEverywhereUIManager::kActivationGracePeriod +
       base::Milliseconds(1));
-  ui_manager->OnScreensharePickerClosed();
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
   EXPECT_TRUE(base::test::RunUntil([&]() { return !widget->IsVisible(); }));
 

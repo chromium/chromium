@@ -182,7 +182,7 @@ export class OmniboxEverywhereComposeboxElement extends ComposeboxEmbedderMixin
       () => this.getContextEntrypointElement() as HTMLElement | null);
   override computeShowDropdown(): boolean {
     return (this.unboundedMenuManager_?.isDialogOpen() ?? false) ||
-        super.computeShowDropdown();
+        this.isScreenshotMenuOpen || super.computeShowDropdown();
   }
 
   override onContextMenuOpened() {

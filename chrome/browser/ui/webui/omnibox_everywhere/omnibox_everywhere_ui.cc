@@ -415,9 +415,6 @@ void OmniboxEverywhereUI::OnScreensharePickerOpened() {
   if (auto* service =
           OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
     service->OnScreensharePickerOpened();
-    // The popup widget must remain alive while the picker or screenshot capture
-    // is in flight so the WebUI handler can asynchronously receive the captured
-    // bitmap and attach it as context.
   }
 }
 
@@ -534,7 +531,6 @@ void OmniboxEverywhereUI::ShowScreenshotMenu(
   }
 
   active_screenshot_handler_ = std::move(source_handler);
-  OnScreensharePickerOpened();
 
   screenshot_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
   screenshot_menu_model_->AddTitle(
@@ -577,30 +573,29 @@ void OmniboxEverywhereUI::ShowScreenshotMenu(
 }
 
 void OmniboxEverywhereUI::OnScreenshotMenuClosed() {
-  OnScreensharePickerClosed();
   if (active_screenshot_handler_) {
     active_screenshot_handler_->OnScreenshotMenuClosed();
   }
-  active_screenshot_handler_.reset();
 }
 
 void OmniboxEverywhereUI::ExecuteCommand(int command_id, int event_flags) {
   if (!active_screenshot_handler_) {
     return;
   }
+  auto handler = std::move(active_screenshot_handler_);
   switch (command_id) {
     case kScreenshotEntireScreen:
-      active_screenshot_handler_->StartScreenshare(
+      handler->StartScreenshare(
           /*prefer_entire_screen=*/true, base::DoNothing());
       break;
     case kScreenshotWindow:
-      active_screenshot_handler_->StartScreenshare(
+      handler->StartScreenshare(
           /*prefer_entire_screen=*/false, base::DoNothing());
       break;
     case kScreenshotRegion:
       // TODO(crbug.com/532198850): Region capture currently falls back to
       // window capture pending region selection support.
-      active_screenshot_handler_->StartScreenshare(
+      handler->StartScreenshare(
           /*prefer_entire_screen=*/false, base::DoNothing());
       break;
   }

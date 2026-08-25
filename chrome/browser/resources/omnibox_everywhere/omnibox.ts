@@ -498,7 +498,8 @@ export class OmniboxEverywhereOmniboxElement extends
   }
 
   override onInputWrapperFocusout(e: FocusEvent) {
-    if (this.unboundedMenuManager_.isDialogOpen()) {
+    if (this.unboundedMenuManager_.isDialogOpen() ||
+        this.isScreenshotMenuOpen) {
       return;
     }
     super.onInputWrapperFocusout(e);
