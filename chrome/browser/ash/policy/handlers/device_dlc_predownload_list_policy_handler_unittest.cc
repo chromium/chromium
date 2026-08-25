@@ -7,8 +7,8 @@
 #include <memory>
 #include <string_view>
 
-#include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
@@ -50,26 +50,17 @@ class DeviceDlcPredownloadListPolicyHandlerTest : public testing::Test {
   std::unique_ptr<DeviceDlcPredownloadListPolicyHandler> dlc_predownloader_;
 };
 
-void RecordGetExistingDlcsResult(std::string& out_err,
-                                 dlcservice::DlcsWithContent& out_dlcs,
-                                 std::string_view err,
-                                 const dlcservice::DlcsWithContent& dlcs) {
-  out_dlcs = dlcs;
-  out_err = err;
-}
-
 TEST_F(DeviceDlcPredownloadListPolicyHandlerTest, InstallSuccess) {
   SetDeviceDlcPredownloadPolicy(
       base::Value(base::ListValue().Append("scanner_drivers")));
 
-  std::string err;
-  dlcservice::DlcsWithContent dlcs;
-  ash::DlcserviceClient::Get()->GetExistingDlcs(base::BindOnce(
-      &RecordGetExistingDlcsResult, std::ref(err), std::ref(dlcs)));
+  base::test::TestFuture<std::string_view, const dlcservice::DlcsWithContent&>
+      existing_dlcs_future;
+  ash::DlcserviceClient::Get()->GetExistingDlcs(
+      existing_dlcs_future.GetCallback());
 
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(err, dlcservice::kErrorNone);
+  EXPECT_EQ(existing_dlcs_future.Get<0>(), dlcservice::kErrorNone);
+  const dlcservice::DlcsWithContent& dlcs = existing_dlcs_future.Get<1>();
   EXPECT_EQ(dlcs.dlc_infos_size(), 1);
   EXPECT_EQ(dlcs.dlc_infos().at(0).id(), "scanner_drivers");
 }
