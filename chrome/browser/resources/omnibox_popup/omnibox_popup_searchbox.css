@@ -267,6 +267,11 @@ cr-searchbox-dropdown::part(dropdown-content) {
   top: 0;
 }
 
+:host([dropdown-is-visible]) #composeButton::part(glow-container) {
+  margin-inline-end: 9px;
+  top: -2px;
+}
+
 #composeButton::part(compose-button) {
   --cr-hover-background-color: transparent;
   cursor: default;
