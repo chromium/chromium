@@ -12,7 +12,7 @@ namespace content {
 class WebContents;
 }
 
-// Interface for the @memory action in the keyboard accessory.
+// Interface for the AtMemory action in the keyboard accessory.
 class AtMemoryAccessoryController : public AccessoryController {
  public:
   AtMemoryAccessoryController() = default;

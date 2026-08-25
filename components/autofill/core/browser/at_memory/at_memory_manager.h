@@ -62,8 +62,8 @@ class AtMemoryManager {
   // the persisted state. Otherwise, returns empty query suggestions.
   AtMemoryManagerState GetInitialStateForField(const FieldGlobalId& field_id);
 
-  // Called when suggestions are shown. The manager initiates an @memory
-  // session if the `trigger_source` is an @memory one.
+  // Called when suggestions are shown. The manager initiates an AtMemory
+  // session if the `trigger_source` is an AtMemory one.
   // TODO(crbug.com/507770024): Rename to OnSuggestionsShown.
   void OnPopupShown(
       const FormGlobalId& form_id,
@@ -75,11 +75,11 @@ class AtMemoryManager {
       ukm::SourceId ukm_source_id);
 
   // Called when the user types in the filter/search bar. Returns true if
-  // handled by the manager (i.e., the current session is an @memory one).
+  // handled by the manager (i.e., the current session is an AtMemory one).
   bool OnFilterChanged(const std::u16string& filter);
 
   // Called when the user has explicitly submitted the search. Returns true if
-  // handled by the manager (i.e., the current session is an @memory one).
+  // handled by the manager (i.e., the current session is an AtMemory one).
   bool OnSearchSubmitted(const std::u16string& filter);
 
   // Called when suggestions are hidden.

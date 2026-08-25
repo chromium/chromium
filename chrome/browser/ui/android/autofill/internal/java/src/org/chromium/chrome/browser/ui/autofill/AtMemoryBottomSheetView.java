@@ -14,7 +14,7 @@ import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.Hom
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.ScreenId;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 
-/** View wrapper for the @memory bottom sheet. */
+/** View wrapper for the AtMemory bottom sheet. */
 @NullMarked
 public class AtMemoryBottomSheetView implements HomeProperties.SearchDelegate {
     private final View mContentView;

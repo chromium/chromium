@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** View wrapper for the flyout screen of the @memory bottom sheet. */
+/** View wrapper for the flyout screen of the AtMemory bottom sheet. */
 @NullMarked
 public class AtMemoryFlyoutView extends LinearLayout {
     private ConstraintLayout mChipsContainer;

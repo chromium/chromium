@@ -77,7 +77,7 @@ class AutofillPopupControllerImplTest
   }
 
   // Encapsulates the setup required to get the controller and its associated
-  // AtMemoryController into a search-ready state for @memory tests.
+  // AtMemoryController into a search-ready state for AtMemory tests.
   void ShowAtMemoryPopup() {
     // 1. Set the trigger source inside the delegate.
     manager().external_delegate().OnQuery(
@@ -103,7 +103,7 @@ class AutofillPopupControllerImplTest
                     AutofillSuggestionTriggerSource::kAtMemoryTriggerString);
   }
 
-  // Simulates a user typing a query into the @memory search bar and explicitly
+  // Simulates a user typing a query into the AtMemory search bar and explicitly
   // submitting the search (by accepting the search affordance), mocking the
   // backend response and updating the UI state.
   void SimulateAtMemoryQuery(const std::u16string& query,
@@ -1102,7 +1102,7 @@ TEST_F(AutofillPopupControllerImplTest,
               .no_results_message = u""}));
 }
 
-// Tests that the "no suggestions" message is not shown when @memory is
+// Tests that the "no suggestions" message is not shown when AtMemory is
 // triggered and the query returns results.
 TEST_F(AutofillPopupControllerImplTest,
        AtMemory_FilterWithResults_NoSuggestionsMessageNotShown) {
@@ -1115,7 +1115,7 @@ TEST_F(AutofillPopupControllerImplTest,
               .initial_value = {},
               .no_results_message = u""}));
 }
-// Tests that clearing the search query clears the suggestions in an @memory
+// Tests that clearing the search query clears the suggestions in an AtMemory
 // session.
 TEST_F(AutofillPopupControllerImplTest, AtMemory_ClearingFilterClearsResults) {
   ShowAtMemoryPopup();
@@ -1134,8 +1134,8 @@ TEST_F(AutofillPopupControllerImplTest, AtMemory_ClearingFilterClearsResults) {
   EXPECT_EQ(controller.GetSuggestions().size(), 0u);
 }
 
-// Tests that the "no suggestions" message is not shown when @memory is triggered
-// and the query returns no results.
+// Tests that the "no suggestions" message is not shown when AtMemory is
+// triggered and the query returns no results.
 TEST_F(AutofillPopupControllerImplTest,
        AtMemory_FilterWithNoResults_NoSuggestionsMessageNotShown) {
   ShowAtMemoryPopup();

@@ -14,7 +14,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 
-/** View for rendering illustration card items in the @memory bottom sheet list. */
+/** View for rendering illustration card items in the AtMemory bottom sheet list. */
 @NullMarked
 public class AtMemoryBottomSheetIllustrationCardView extends LinearLayout {
     private TextView mTitleView;

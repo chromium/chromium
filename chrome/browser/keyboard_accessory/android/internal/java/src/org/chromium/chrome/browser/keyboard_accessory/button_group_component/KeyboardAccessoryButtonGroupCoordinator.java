@@ -143,7 +143,7 @@ public class KeyboardAccessoryButtonGroupCoordinator {
     }
 
     /**
-     * Returns a delegate that executes on several @memory-related actions.
+     * Returns a delegate that executes on several AtMemory-related actions.
      *
      * @return A {@link KeyboardAccessoryCoordinator.AtMemoryDelegate}.
      */

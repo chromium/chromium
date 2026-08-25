@@ -610,13 +610,13 @@ enum AutofillSuggestionTriggerSource {
   kProactivePasswordRecovery = 20,
   // Suggestions triggered by the GLIC service.
   kGlic = 21,
-  // Suggestions triggered by the @memory feature (typing "@@").
+  // Suggestions triggered by the AtMemory feature (typing "@@").
   kAtMemoryTriggerString = 22,
-  // Suggestions triggered by the @memory feature via context menu.
+  // Suggestions triggered by the AtMemory feature via context menu.
   kAtMemoryContextMenu = 23,
   // Suggestions triggered by the inactivity timer.
   kAtMemoryInactivityNudge = 24,
-  // Suggestions triggered by the @memory keyboard shortcut.
+  // Suggestions triggered by the AtMemory keyboard shortcut.
   kAtMemoryKeyboardShortcut = 25,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillSuggestionTriggerSource)

@@ -513,7 +513,7 @@ class ManualFillingMediator
         if (webContents != null && !webContents.isDestroyed()) {
             enabled = ManualFillingComponentBridge.isAtMemoryEnabled(webContents);
             if (!enabled) {
-                // Hide the @memory bottom sheet if not enabled.
+                // Hide the AtMemory bottom sheet if not enabled.
                 ManualFillingComponentBridge.hideAtMemoryBottomSheet(webContents);
             }
         }

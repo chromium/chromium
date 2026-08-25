@@ -79,7 +79,7 @@ GURL StripAuthAndParams(const GURL& gurl);
 IsPasswordRequestManuallyTriggered IsPasswordsAutofillManuallyTriggered(
     AutofillSuggestionTriggerSource trigger_source);
 
-// Checks if the user triggered @memory on a field.
+// Checks if the user triggered AtMemory on a field.
 bool IsAtMemoryTriggerSource(AutofillSuggestionTriggerSource trigger_source);
 
 // Returns whether the feature `kAutofillPaymentsFieldSwapping` is enabled

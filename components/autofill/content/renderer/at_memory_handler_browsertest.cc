@@ -152,7 +152,7 @@ TEST_F(AtMemoryHandlerTest, AtMemorySearchTrigger) {
   testing::MockFunction<void(int)> check_point;
   {
     testing::InSequence s;
-    // 1. "a" -> No @memory trigger.
+    // 1. "a" -> No AtMemory trigger.
     EXPECT_CALL(
         autofill_driver(),
         AskForValuesToFill(
@@ -161,7 +161,7 @@ TEST_F(AtMemoryHandlerTest, AtMemorySearchTrigger) {
         .Times(0);
     EXPECT_CALL(check_point, Call(1));
 
-    // 2. "a@" -> No @memory trigger.
+    // 2. "a@" -> No AtMemory trigger.
     EXPECT_CALL(
         autofill_driver(),
         AskForValuesToFill(
@@ -170,7 +170,7 @@ TEST_F(AtMemoryHandlerTest, AtMemorySearchTrigger) {
         .Times(0);
     EXPECT_CALL(check_point, Call(2));
 
-    // 3. "a@@" -> @memory has triggered.
+    // 3. "a@@" -> AtMemory has triggered.
     EXPECT_CALL(
         autofill_driver(),
         AskForValuesToFill(
@@ -179,7 +179,7 @@ TEST_F(AtMemoryHandlerTest, AtMemorySearchTrigger) {
         .Times(1);
     EXPECT_CALL(check_point, Call(3));
 
-    // 4. "a@@b" -> No @memory trigger.
+    // 4. "a@@b" -> No AtMemory trigger.
     EXPECT_CALL(
         autofill_driver(),
         AskForValuesToFill(
@@ -409,7 +409,8 @@ TEST_F(AtMemoryHandlerTest, AtMemorySearchTrigger_Constraints) {
   task_environment_.RunUntilIdle();
 }
 
-// Tests that typing "@@" into an empty field triggers the @memory search popup.
+// Tests that typing "@@" into an empty field triggers the AtMemory search
+// popup.
 TEST_F(AtMemoryHandlerTest, MemorySearchTriggerTypedIntoEmptyField) {
   // 1. Setup Expectations:
   // Ignore standard Autofill noise during setup.
@@ -419,7 +420,7 @@ TEST_F(AtMemoryHandlerTest, MemorySearchTriggerTypedIntoEmptyField) {
           _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
           _))
       .Times(AnyNumber());
-  // Expect the specific @memory trigger.
+  // Expect the specific AtMemory trigger.
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(
@@ -432,7 +433,7 @@ TEST_F(AtMemoryHandlerTest, MemorySearchTriggerTypedIntoEmptyField) {
   SimulateSlowTyping("@@");
 }
 
-// Tests that typing "@@" in the middle of a string also triggers @memory.
+// Tests that typing "@@" in the middle of a string also triggers AtMemory.
 TEST_F(AtMemoryHandlerTest, MemorySearchTriggerInMiddle) {
   // 1. Setup Expectations:
   // Ignore standard Autofill noise during setup.
@@ -442,7 +443,7 @@ TEST_F(AtMemoryHandlerTest, MemorySearchTriggerInMiddle) {
           _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
           _))
       .Times(AnyNumber());
-  // Expect the specific @memory trigger.
+  // Expect the specific AtMemory trigger.
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(
@@ -478,7 +479,7 @@ TEST_F(AtMemoryHandlerTest, MemorySearchTriggerOverlappingPrefix) {
   SimulateSlowTyping("aaaab");
 }
 
-// Tests that typing "@@" in the password field doesn't trigger @memory.
+// Tests that typing "@@" in the password field doesn't trigger AtMemory.
 TEST_F(AtMemoryHandlerTest, MemorySearchNotTriggeredOnPasswordField) {
   // 1. Setup Expectations:
   // Ignore standard Autofill noise during setup.
@@ -488,7 +489,7 @@ TEST_F(AtMemoryHandlerTest, MemorySearchNotTriggeredOnPasswordField) {
           _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
           _))
       .Times(AnyNumber());
-  // Expect no @memory trigger.
+  // Expect no AtMemory trigger.
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(
@@ -502,7 +503,7 @@ TEST_F(AtMemoryHandlerTest, MemorySearchNotTriggeredOnPasswordField) {
   SimulateSlowTyping("a@@");
 }
 
-// Tests that typing "@@" in a disabled field doesn't trigger @memory.
+// Tests that typing "@@" in a disabled field doesn't trigger AtMemory.
 TEST_F(AtMemoryHandlerTest, MemorySearchNotTriggeredOnDisabledField) {
   EXPECT_CALL(
       autofill_driver(),
@@ -522,7 +523,7 @@ TEST_F(AtMemoryHandlerTest, MemorySearchNotTriggeredOnDisabledField) {
   SimulateSlowTyping("a@@");
 }
 
-// Tests that typing "@@" in a read-only field doesn't trigger @memory.
+// Tests that typing "@@" in a read-only field doesn't trigger AtMemory.
 TEST_F(AtMemoryHandlerTest, MemorySearchNotTriggeredOnReadOnlyField) {
   EXPECT_CALL(
       autofill_driver(),
@@ -662,7 +663,7 @@ TEST_F(AtMemoryHandlerTest, RefocusesAndRestoresCaretIfUnfocused) {
           _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
           _))
       .Times(AnyNumber());
-  // Expect the specific @memory trigger.
+  // Expect the specific AtMemory trigger.
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(
@@ -692,7 +693,7 @@ TEST_F(AtMemoryHandlerTest, NonStandardTriggerString) {
           _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
           _))
       .Times(AnyNumber());
-  // Expect the specific @memory trigger.
+  // Expect the specific AtMemory trigger.
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(
@@ -718,7 +719,7 @@ class AtMemoryHandlerContentEditableTest : public AtMemoryHandlerTest {
   }
 };
 
-// Tests that @memory popup is triggered if we type just the "@@".
+// Tests that AtMemory popup is triggered if we type just the "@@".
 TEST_F(AtMemoryHandlerContentEditableTest, TriggerViaTyping) {
   EXPECT_CALL(
       autofill_driver(),
@@ -729,14 +730,14 @@ TEST_F(AtMemoryHandlerContentEditableTest, TriggerViaTyping) {
   SimulateSlowTyping("@@");
 }
 
-// Tests that @memory popup triggers if we type the "@@" one symbol at a
+// Tests that AtMemory popup triggers if we type the "@@" one symbol at a
 // time, and is not triggered when the subsequent characters are typed.
 TEST_F(AtMemoryHandlerContentEditableTest, TriggerSequence) {
   testing::MockFunction<void(int)> check_point;
   {
     testing::InSequence s;
 
-    // 1. Typing first "@" -> No @memory trigger.
+    // 1. Typing first "@" -> No AtMemory trigger.
     EXPECT_CALL(
         autofill_driver(),
         AskForValuesToFill(
@@ -745,7 +746,7 @@ TEST_F(AtMemoryHandlerContentEditableTest, TriggerSequence) {
         .Times(0);
     EXPECT_CALL(check_point, Call(1));
 
-    // 2. Typing second "@" -> @memory triggers.
+    // 2. Typing second "@" -> AtMemory triggers.
     EXPECT_CALL(
         autofill_driver(),
         AskForValuesToFill(
@@ -754,7 +755,7 @@ TEST_F(AtMemoryHandlerContentEditableTest, TriggerSequence) {
         .Times(1);
     EXPECT_CALL(check_point, Call(2));
 
-    // 3. Typing something else -> No @memory trigger.
+    // 3. Typing something else -> No AtMemory trigger.
     EXPECT_CALL(
         autofill_driver(),
         AskForValuesToFill(
@@ -775,7 +776,7 @@ TEST_F(AtMemoryHandlerContentEditableTest, TriggerSequence) {
   check_point.Call(3);
 }
 
-// Tests that @memory popup triggers in the presence of non-trivial symbols.
+// Tests that AtMemory popup triggers in the presence of non-trivial symbols.
 TEST_F(AtMemoryHandlerContentEditableTest, TriggerWithComplexPrecedingText) {
   EXPECT_CALL(
       autofill_driver(),
@@ -786,7 +787,7 @@ TEST_F(AtMemoryHandlerContentEditableTest, TriggerWithComplexPrecedingText) {
   SimulateSlowTyping("Memory log #123 (Feb 2026): @@");
 }
 
-// Tests that @memory popup doesn't trigger on a single "@".
+// Tests that AtMemory popup doesn't trigger on a single "@".
 TEST_F(AtMemoryHandlerContentEditableTest, NoTriggerOnSingleAt) {
   EXPECT_CALL(
       autofill_driver(),
@@ -797,7 +798,7 @@ TEST_F(AtMemoryHandlerContentEditableTest, NoTriggerOnSingleAt) {
   SimulateSlowTyping("@");
 }
 
-// Tests that @memory popup doesn't trigger on selection.
+// Tests that AtMemory popup doesn't trigger on selection.
 TEST_F(AtMemoryHandlerContentEditableTest, NoTriggerOnSelection) {
   EXPECT_CALL(
       autofill_driver(),
@@ -819,7 +820,7 @@ TEST_F(AtMemoryHandlerContentEditableTest, NoTriggerOnSelection) {
   test_api(autofill_agent()).ContentEditableDidChange(GetWebElementById("ce"));
 }
 
-// Tests that @memory popup triggers each time the new trigger is typed.
+// Tests that AtMemory popup triggers each time the new trigger is typed.
 TEST_F(AtMemoryHandlerContentEditableTest, MultipleTriggers) {
   // Verify that it triggers every time @@ is completed.
   EXPECT_CALL(
@@ -964,7 +965,7 @@ TEST_F(AtMemoryHandlerContentEditableTest,
           _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
           _))
       .Times(AnyNumber());
-  // Expect the specific @memory trigger.
+  // Expect the specific AtMemory trigger.
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(
@@ -988,7 +989,7 @@ TEST_F(AtMemoryHandlerContentEditableTest,
 // Tests that a non-standard trigger string works in <div contenteditable>
 // fields.
 TEST_F(AtMemoryHandlerContentEditableTest, NonStandardTriggerString) {
-  // Expect the specific @memory trigger.
+  // Expect the specific AtMemory trigger.
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(

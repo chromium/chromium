@@ -20,7 +20,7 @@ namespace autofill {
 
 // Provides data from various Autofill backends (e.g. addresses, payments,
 // Autofill AI entities) and serves them in a standardized format suitable for
-// @memory search results.
+// AtMemory search results.
 class AutofillDataProvider {
  public:
   AutofillDataProvider(const PersonalDataManager* personal_data_manager,

@@ -173,7 +173,7 @@ IsPasswordRequestManuallyTriggered IsPasswordsAutofillManuallyTriggered(
       AutofillSuggestionTriggerSource::kManualFallbackPasswords);
 }
 
-// If any new @memory trigger source is added, all callers need to be reviewed.
+// If any new AtMemory trigger source is added, all callers need to be reviewed.
 // Many assume that there are only two possible values.
 bool IsAtMemoryTriggerSource(AutofillSuggestionTriggerSource trigger_source) {
   switch (trigger_source) {

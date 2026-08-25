@@ -626,7 +626,7 @@
       <message name="IDS_IOS_ASSISTANT_SHEET_GRABBER_ACCESSIBILITY_LABEL" desc="Accessibility label for the bottom sheet grabber in Assistant. Read by Text To Speech [iOS only]." meaning="Voice Over will read this to the user followed by 'Button' when the grabber is focused.">
         Sheet grabber
       </message>
-      <message name="IDS_IOS_AT_MEMORY_AI_DISCLOSURE" desc="The text shown at the bottom of the @memory bottom sheet to set user expectations regarding potential incorrect suggestions. [iOS only]">
+      <message name="IDS_IOS_AT_MEMORY_AI_DISCLOSURE" desc="The text shown at the bottom of the AtMemory bottom sheet to set user expectations regarding potential incorrect suggestions. [iOS only]">
         Gemini is AI and can make mistakes. <ph name="BEGIN_LINK">BEGIN_LINK</ph>More about relevant data sent to Google<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_AUTH_REASON" desc="A description that appears when the user needs to authenticate to use a suggestion.">

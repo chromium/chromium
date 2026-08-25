@@ -20,7 +20,7 @@ import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
-/** View for rendering personal context onboarding notice item in @memory bottom sheet list. */
+/** View for rendering personal context onboarding notice item in AtMemory bottom sheet list. */
 @NullMarked
 public class AtMemoryBottomSheetNoticeView extends LinearLayout {
     private TextViewWithClickableSpans mNoticeTextView;

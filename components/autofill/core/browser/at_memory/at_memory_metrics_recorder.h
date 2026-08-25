@@ -57,8 +57,8 @@ enum class AtMemoryQueryCompletedStatus {
   kMaxValue = kInternalError
 };
 
-// Encapsulates the state and logging logic for the @memory search funnel.
-// This class tracks the progression of a user's interaction with the @memory
+// Encapsulates the state and logging logic for the AtMemory search funnel.
+// This class tracks the progression of a user's interaction with the AtMemory
 // suggestions, from the initial display to the submission of a query.
 class AtMemoryMetricsRecorder {
  public:

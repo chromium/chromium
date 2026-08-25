@@ -1133,7 +1133,7 @@ public class KeyboardAccessoryViewTest {
         ArrayList<ImageButton> buttons = buttonGroupView.getButtons();
         assertEquals("Expected three buttons to be present.", 3, buttons.size());
 
-        // The first button should be the @memory spark icon.
+        // The first button should be the AtMemory spark icon.
         ImageButton atMemoryButton = buttons.get(0);
         assertEquals(
                 buttonGroupView.getContext().getString(R.string.at_memory_icon_description),

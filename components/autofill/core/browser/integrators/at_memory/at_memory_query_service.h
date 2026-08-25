@@ -40,7 +40,7 @@ namespace autofill {
 class AutofillClient;
 class AutofillDataProvider;
 
-// Service for querying @memory suggestions. Owned by the Profile, one per
+// Service for querying AtMemory suggestions. Owned by the Profile, one per
 // profile.
 class AtMemoryQueryService : public KeyedService {
  public:

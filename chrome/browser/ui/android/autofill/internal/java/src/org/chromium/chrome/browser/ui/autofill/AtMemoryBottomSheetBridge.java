@@ -22,7 +22,7 @@ import org.chromium.ui.base.WindowAndroid;
 
 import java.util.List;
 
-/** JNI wrapper for the @memory bottom sheet. */
+/** JNI wrapper for the AtMemory bottom sheet. */
 @NullMarked
 @JNINamespace("autofill")
 public class AtMemoryBottomSheetBridge implements AtMemoryBottomSheetCoordinator.Delegate {

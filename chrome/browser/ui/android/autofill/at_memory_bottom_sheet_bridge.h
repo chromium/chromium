@@ -24,7 +24,7 @@ namespace autofill {
 class AtMemorySuggestionController;
 
 // Bridge class owned by `AtMemorySuggestionController` providing an entry point
-// to trigger the @memory bottom sheet on Android.
+// to trigger the AtMemory bottom sheet on Android.
 class AtMemoryBottomSheetBridge {
  public:
   AtMemoryBottomSheetBridge(ui::WindowAndroid* window_android,

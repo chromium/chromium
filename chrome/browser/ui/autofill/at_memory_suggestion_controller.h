@@ -25,7 +25,7 @@ namespace autofill {
 class AtMemoryBottomSheetBridge;
 class AutofillSuggestionDelegate;
 
-// Controller for the @memory suggestion flow on Android.
+// Controller for the AtMemory suggestion flow on Android.
 class AtMemorySuggestionController : public AutofillSuggestionController {
  public:
   AtMemorySuggestionController(const AtMemorySuggestionController&) = delete;

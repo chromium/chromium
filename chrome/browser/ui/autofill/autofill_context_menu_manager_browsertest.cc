@@ -1069,8 +1069,8 @@ class AtMemoryContextMenuManagerTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Checks if the context menu model contains the @memory manual fallback entries
-// with correct UI strings. `arg` must be of type `ui::SimpleMenuModel`.
+// Checks if the context menu model contains the AtMemory manual fallback
+// entries with correct UI strings. `arg` must be of type `ui::SimpleMenuModel`.
 testing::AssertionResult ContainsAtMemoryFallback(
     const ui::SimpleMenuModel& arg) {
   for (size_t i = 0; i < arg.GetItemCount(); i++) {
@@ -1152,7 +1152,8 @@ IN_PROC_BROWSER_TEST_F(AtMemoryContextMenuManagerTest,
   ASSERT_FALSE(ContainsAtMemoryFallback(*menu_model()));
 }
 
-// Checks if the context menu model contains ONLY @memory manual fallback entry.
+// Checks if the context menu model contains ONLY AtMemory manual fallback
+// entry.
 testing::AssertionResult ContainsOnlyAtMemoryFallback(
     const ui::SimpleMenuModel& arg) {
   if (arg.GetItemCount() != 2) {

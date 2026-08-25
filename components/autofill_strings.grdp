@@ -829,19 +829,19 @@
   <message name="IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_PERSONAL_INTELLIGENCE" desc="Attribution text for Gemini-sourced results.">
     Suggested by Gemini
   </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_NO_DATA" desc="Message shown when no data is found in @memory search." translateable="false">
+  <message name="IDS_AUTOFILL_AT_MEMORY_NO_DATA" desc="Message shown when no data is found in AtMemory search." translateable="false">
     Couldn't find this info
   </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_AI_DISCLOSURE" desc="The text shown at the bottom of the @memory search popup to set user expectations regarding potential incorrect suggestions. $1 is the link text." translateable="false">
+  <message name="IDS_AUTOFILL_AT_MEMORY_AI_DISCLOSURE" desc="The text shown at the bottom of the AtMemory search popup to set user expectations regarding potential incorrect suggestions. $1 is the link text." translateable="false">
     Gemini is AI and can make mistakes. <ph name="LEARN_MORE">$1</ph>
   </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_AI_DISCLOSURE_LINK" desc="Link text for the AI disclosure that points to a settings page." translateable="false">
     More about relevant data sent to Google
   </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION" desc="Message shown when @memory search fails to connect to the server." translateable="false">
+  <message name="IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION" desc="Message shown when AtMemory search fails to connect to the server." translateable="false">
     Couldn't connect
   </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_GENERIC_ERROR" desc="Message shown when @memory search fails due to a generic or internal error." translateable="false">
+  <message name="IDS_AUTOFILL_AT_MEMORY_GENERIC_ERROR" desc="Message shown when AtMemory search fails due to a generic or internal error." translateable="false">
     Something went wrong
   </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_FETCH_ERROR_NOTIFICATION" desc="A toast message appearing at the top of the screen when fetching AtMemory information fails." translateable="false">
@@ -874,7 +874,7 @@
   <message name="IDS_AUTOFILL_AT_MEMORY_UNSUPPORTED_QUERY_DESCRIPTION" desc="A linkout that suggests using Gemini for a broader search or query, as the current recall feature could not handle the request. This text is a verb phrase short for the longer phrase: 'Try submitting your query to the Gemini in Chrome side panel'.">
     Ask Gemini in Chrome instead
   </message>
-  <message name="IDS_AUTOFILL_AT_MEMORY_PREVIOUSLY_FILLED" desc="Title shown in the @memory suggestions above suggestions that was previously filled on this page." translateable="false">
+  <message name="IDS_AUTOFILL_AT_MEMORY_PREVIOUSLY_FILLED" desc="Title shown in the AtMemory suggestions above suggestions that was previously filled on this page." translateable="false">
     Previously filled
   </message>
   <message name="IDS_AT_MEMORY_NOTICE_TEXT_NO_LOGGING" desc="Body text of an informational notice introducing a new enhanced autofill feature. 'Personal Intelligence' and 'Gemini' are proper branding names and should remain unlocalized and match standard guidelines across languages. 'Manage settings' is a hyperlink that navigates the user to the Chrome settings page to adjust their preferences." formatter_data="android_java">
@@ -884,7 +884,7 @@
     Now you can find and fill info from Gmail and more
   </message>
   <if expr="is_android">
-    <message name="IDS_AT_MEMORY_SEARCH_HINT" desc="Hint text for the search bar in the @memory bottom sheet." formatter_data="android_java" translateable="false">
+    <message name="IDS_AT_MEMORY_SEARCH_HINT" desc="Hint text for the search bar in the AtMemory bottom sheet." formatter_data="android_java" translateable="false">
       Find and fill
     </message>
     <message name="IDS_AT_MEMORY_OPEN_FLYOUT" desc="Content description for the button that opens the details page for a suggestion." formatter_data="android_java" translateable="false">
@@ -899,7 +899,7 @@
     <message name="IDS_AT_MEMORY_NOTICE_OK_BUTTON" desc="Standard acknowledgment button label to dismiss the informational notice." formatter_data="android_java">
       OK
     </message>
-    <message name="IDS_AT_MEMORY_AI_DISCLOSURE" desc="The text shown at the bottom of the @memory bottom sheet to set user expectations regarding potential incorrect suggestions." formatter_data="android_java" translateable="false">
+    <message name="IDS_AT_MEMORY_AI_DISCLOSURE" desc="The text shown at the bottom of the AtMemory bottom sheet to set user expectations regarding potential incorrect suggestions." formatter_data="android_java" translateable="false">
       Gemini is AI and can make mistakes. <ph name="BEGIN_LINK">&lt;link&gt;</ph>More about relevant data sent to Google<ph name="END_LINK">&lt;/link&gt;</ph>
     </message>
   </if>
