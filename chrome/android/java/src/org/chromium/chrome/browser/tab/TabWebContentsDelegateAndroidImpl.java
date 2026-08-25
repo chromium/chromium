@@ -4,13 +4,14 @@
 
 package org.chromium.chrome.browser.tab;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.os.Handler;
 import android.view.KeyEvent;
 
 import org.jni_zero.CalledByNative;
@@ -21,6 +22,7 @@ import org.chromium.base.AndroidInfo;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -53,7 +55,6 @@ import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.resources.dynamics.CaptureResult;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /** Implementation class of {@link TabWebContentsDelegateAndroid}. */
@@ -62,13 +63,11 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         implements Destroyable {
     private final TabImpl mTab;
     private final TabWebContentsDelegateAndroid mDelegate;
-    private final Handler mHandler;
     private final Runnable mCloseContentsRunnable;
 
     public TabWebContentsDelegateAndroidImpl(TabImpl tab, TabWebContentsDelegateAndroid delegate) {
         mTab = tab;
         mDelegate = delegate;
-        mHandler = new Handler();
         mCloseContentsRunnable =
                 () -> {
                     for (TabObserver observer : mTab.getTabObservers()) {
@@ -78,27 +77,28 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     }
 
     @CalledByNative
-    private void onFindResultAvailable(FindNotificationDetails result) {
+    private void onFindResultAvailable(
+            int numberOfMatches,
+            @JniType("gfx::Rect") Rect rendererSelectionRect,
+            int activeMatchOrdinal,
+            boolean finalUpdate) {
+        FindNotificationDetails details =
+                new FindNotificationDetails(
+                        numberOfMatches, rendererSelectionRect, activeMatchOrdinal, finalUpdate);
         for (TabObserver observer : mTab.getTabObservers()) {
-            observer.onFindResultAvailable(result);
+            observer.onFindResultAvailable(details);
         }
     }
 
     @CalledByNative
-    private void onFindMatchRectsAvailable(FindMatchRectsDetails result) {
+    private void onFindMatchRectsAvailable(
+            int version,
+            @JniType("std::vector<gfx::RectF>") RectF[] rects,
+            @JniType("gfx::RectF") RectF activeRect) {
+        FindMatchRectsDetails details = new FindMatchRectsDetails(version, rects, activeRect);
         for (TabObserver observer : mTab.getTabObservers()) {
-            observer.onFindMatchRectsAvailable(result);
+            observer.onFindMatchRectsAvailable(details);
         }
-    }
-
-    @CalledByNative
-    public List<Rect> createRectList() {
-        return new ArrayList<Rect>();
-    }
-
-    @CalledByNative
-    public void createRectAndAddToList(List<Rect> list, int x, int y, int right, int bottom) {
-        list.add(new Rect(x, y, right, bottom));
     }
 
     @CalledByNative
@@ -124,30 +124,6 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         return new PictureInPictureWindowOptions(windowBounds, disallowReturnToOpener);
     }
 
-    @CalledByNative
-    private static FindNotificationDetails createFindNotificationDetails(
-            int numberOfMatches,
-            @JniType("gfx::Rect") Rect rendererSelectionRect,
-            int activeMatchOrdinal,
-            boolean finalUpdate) {
-        return new FindNotificationDetails(
-                numberOfMatches, rendererSelectionRect, activeMatchOrdinal, finalUpdate);
-    }
-
-    @CalledByNative
-    private static FindMatchRectsDetails createFindMatchRectsDetails(
-            int version, int numRects, @JniType("gfx::RectF") RectF activeRect) {
-        return new FindMatchRectsDetails(version, numRects, activeRect);
-    }
-
-    @CalledByNative
-    private static void setMatchRectByIndex(
-            FindMatchRectsDetails findMatchRectsDetails,
-            int index,
-            @JniType("gfx::RectF") RectF rect) {
-        findMatchRectsDetails.rects[index] = rect;
-    }
-
     @Override
     public int getDisplayMode() {
         return mDelegate.getDisplayMode();
@@ -162,7 +138,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     @CalledByNative
     @Override
     protected boolean addNewContents(
-            WebContents sourceWebContents,
+            @Nullable WebContents sourceWebContents,
             WebContents webContents,
             GURL targetUrl,
             int disposition,
@@ -213,7 +189,9 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         // circular dependencies and this function observing the WebContents, not the Tab, there's
         // no correct destruction ordering, so check if the Tab is being destroyed, and if so, don't
         // try to use it.
-        if (mTab.isDestroyed()) return;
+        if (mTab.isDestroyed()) {
+            return;
+        }
         boolean isLoading = mTab.getWebContents() != null && mTab.getWebContents().isLoading();
         if (isLoading) {
             mTab.onLoadStarted(shouldShowLoadingUi);
@@ -378,17 +356,17 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @Override
     public void rendererUnresponsive() {
-        if (mTab.getWebContents() != null) {
-            TabWebContentsDelegateAndroidImplJni.get()
-                    .onRendererUnresponsive(mTab.getWebContents());
+        WebContents wc = mTab.getWebContents();
+        if (wc != null) {
+            TabWebContentsDelegateAndroidImplJni.get().onRendererUnresponsive(wc);
         }
-        mTab.handleRendererResponsiveStateChanged(false);
+        mTab.handleRendererResponsiveStateChanged(/* isResponsive= */ false);
         mDelegate.rendererUnresponsive();
     }
 
     @Override
     public void rendererResponsive() {
-        mTab.handleRendererResponsiveStateChanged(true);
+        mTab.handleRendererResponsiveStateChanged(/* isResponsive= */ true);
         mDelegate.rendererResponsive();
     }
 
@@ -396,8 +374,8 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     public void closeContents() {
         // Execute outside of callback, otherwise we end up deleting the native
         // objects in the middle of executing methods on them.
-        mHandler.removeCallbacks(mCloseContentsRunnable);
-        mHandler.post(mCloseContentsRunnable);
+        ThreadUtils.getUiThreadHandler().removeCallbacks(mCloseContentsRunnable);
+        ThreadUtils.getUiThreadHandler().post(mCloseContentsRunnable);
         mDelegate.closeContents();
     }
 
@@ -504,7 +482,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @CalledByNative
     @Override
-    public void nonDraggableRegionsChanged(List<Rect> regions) {
+    public void nonDraggableRegionsChanged(@JniType("std::vector<gfx::Rect>") List<Rect> regions) {
         mDelegate.nonDraggableRegionsChanged(regions);
     }
 
@@ -556,18 +534,20 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     }
 
     @Override
-    public Bitmap getBackForwardTransitionFallbackUXInternalPageIcon() {
-        Drawable drawable =
-                ApiCompatibilityUtils.getDrawable(
-                        mTab.getContext().getResources(), R.drawable.chromelogo16);
+    public @Nullable Bitmap getBackForwardTransitionFallbackUXInternalPageIcon() {
+        Context context = mTab.getContext();
+        Resources res = context.getResources();
+
+        Drawable drawable = ApiCompatibilityUtils.getDrawable(res, R.drawable.chromelogo16);
+        if (drawable == null) {
+            return null;
+        }
 
         drawable.setColorFilter(
-                SemanticColorUtils.getDefaultIconColor(mTab.getContext()), PorterDuff.Mode.SRC_IN);
+                SemanticColorUtils.getDefaultIconColor(context), PorterDuff.Mode.SRC_IN);
 
         int idealNativeFaviconSize =
-                mTab.getContext()
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.navigation_transitions_favicon_size);
+                res.getDimensionPixelSize(R.dimen.navigation_transitions_favicon_size);
 
         Bitmap bitmap =
                 Bitmap.createBitmap(
@@ -596,10 +576,12 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     @Override
     public void contentsZoomChange(boolean zoomIn) {
         WebContents wc = mTab.getWebContents();
-        if (zoomIn) {
-            ZoomController.zoomIn(wc);
-        } else {
-            ZoomController.zoomOut(wc);
+        if (wc != null) {
+            if (zoomIn) {
+                ZoomController.zoomIn(wc);
+            } else {
+                ZoomController.zoomOut(wc);
+            }
         }
     }
 
@@ -634,11 +616,12 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @Override
     public void destroy() {
+        ThreadUtils.getUiThreadHandler().removeCallbacks(mCloseContentsRunnable);
         mDelegate.destroy();
     }
 
     @NativeMethods
     interface Natives {
-        void onRendererUnresponsive(WebContents webContents);
+        void onRendererUnresponsive(@JniType("content::WebContents*") WebContents webContents);
     }
 }

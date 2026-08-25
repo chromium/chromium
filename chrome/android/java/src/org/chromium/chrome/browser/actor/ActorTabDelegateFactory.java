@@ -78,7 +78,7 @@ class ActorTabDelegateFactory implements TabDelegateFactory {
 
         @Override
         public boolean addNewContents(
-                WebContents sourceWebContents,
+                @Nullable WebContents sourceWebContents,
                 WebContents webContents,
                 GURL targetUrl,
                 int disposition,

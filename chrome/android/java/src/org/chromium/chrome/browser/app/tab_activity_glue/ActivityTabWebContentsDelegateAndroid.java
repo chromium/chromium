@@ -266,7 +266,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     protected boolean addNewContents(
-            WebContents sourceWebContents,
+            @Nullable WebContents sourceWebContents,
             WebContents webContents,
             GURL targetUrl,
             int disposition,
@@ -343,6 +343,10 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                         targetUrl.getSpec(),
                         "");
             }
+        }
+
+        if (sourceWebContents == null) {
+            return true;
         }
 
         Tab sourceTab = fromWebContents(sourceWebContents);
@@ -871,7 +875,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         return TabModelUtils.getTabModelByTab(tab);
     }
 
-    protected Tab fromWebContents(WebContents webContents) {
+    protected @Nullable Tab fromWebContents(WebContents webContents) {
         return TabUtils.fromWebContents(webContents);
     }
 

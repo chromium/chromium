@@ -23,7 +23,7 @@ public class TwaOfflineDataProvider implements UserData {
     private final @Nullable List<String> mAdditionalTwaOrigins;
     private final String mClientPackageName;
 
-    public static @Nullable TwaOfflineDataProvider from(Tab tab) {
+    public static @Nullable TwaOfflineDataProvider from(@Nullable Tab tab) {
         if (tab == null) return null;
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }

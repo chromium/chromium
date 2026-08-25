@@ -41,7 +41,7 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
      * @return {@code true} if new tab was created successfully with a given WebContents.
      */
     protected abstract boolean addNewContents(
-            WebContents sourceWebContents,
+            @Nullable WebContents sourceWebContents,
             WebContents webContents,
             GURL targetUrl,
             int disposition,

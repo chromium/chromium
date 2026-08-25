@@ -44,6 +44,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.PopupCreator;
 import org.chromium.chrome.browser.customtabs.PopupCreatorFactory;
@@ -119,7 +120,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         }
 
         @Override
-        protected Tab fromWebContents(WebContents webContents) {
+        protected @Nullable Tab fromWebContents(WebContents webContents) {
             return mTabMap.get(webContents);
         }
 
