@@ -60,7 +60,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -92,7 +91,6 @@ import java.util.stream.IntStream;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288719
 public class BookmarkBarTest {
 
     @Rule
