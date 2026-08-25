@@ -1107,7 +1107,7 @@ void WebUIBrowserWindow::ShowHatsDialog(
 }
 
 ExclusiveAccessContext* WebUIBrowserWindow::GetExclusiveAccessContext() {
-  return browser_->GetFeatures().webui_browser_exclusive_access_context();
+  return WebUIBrowserExclusiveAccessContext::From(browser_);
 }
 
 std::string WebUIBrowserWindow::GetWorkspace() const {

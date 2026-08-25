@@ -44,6 +44,7 @@ source_set("webui_browser") {
     "//components/browser_apis/ui_controllers/toolbar:mojom",
     "//components/guest_contents/common:mojom",
     "//content/public/browser",
+    "//ui/base/unowned_user_data",
     "//ui/color",
     "//ui/color:color_provider_key",
     "//ui/views",

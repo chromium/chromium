@@ -27,6 +27,14 @@
 // TODO(webium): Support immersive mode on Mac and honor platform preferences
 // like "Always show toolbar in fullscreen" on macOS and other platforms.
 
+DEFINE_USER_DATA(WebUIBrowserExclusiveAccessContext);
+
+// static
+WebUIBrowserExclusiveAccessContext* WebUIBrowserExclusiveAccessContext::From(
+    BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
 WebUIBrowserExclusiveAccessContext::WebUIBrowserExclusiveAccessContext(
     Profile* profile,
     BrowserWindowInterface* browser,
@@ -37,7 +45,8 @@ WebUIBrowserExclusiveAccessContext::WebUIBrowserExclusiveAccessContext(
       browser_(browser),
       tab_strip_model_(tab_strip_model),
       widget_(widget),
-      accelerator_provider_(accelerator_provider) {}
+      accelerator_provider_(accelerator_provider),
+      scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {}
 
 WebUIBrowserExclusiveAccessContext::~WebUIBrowserExclusiveAccessContext() =
     default;

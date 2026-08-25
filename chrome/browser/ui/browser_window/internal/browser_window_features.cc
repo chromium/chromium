@@ -786,9 +786,10 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   // resolves to this WebUI-specific implementation for WebUIBrowserWindow).
   if (webui_browser_window) {
     webui_browser_exclusive_access_context_ =
-        std::make_unique<WebUIBrowserExclusiveAccessContext>(
-            browser->GetProfile(), browser_, browser->GetTabStripModel(),
-            webui_browser_window->widget(), webui_browser_window);
+        GetUserDataFactory().CreateInstance<WebUIBrowserExclusiveAccessContext>(
+            *browser, browser->GetProfile(), browser_,
+            browser->GetTabStripModel(), webui_browser_window->widget(),
+            webui_browser_window);
   }
 
   exclusive_access_manager_ = std::make_unique<ExclusiveAccessManager>(

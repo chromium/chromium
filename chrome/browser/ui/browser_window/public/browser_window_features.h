@@ -497,10 +497,6 @@ class BrowserWindowFeatures {
   // supported for those cases.
   ToastService* toast_service() { return toast_service_.get(); }
 
-  WebUIBrowserExclusiveAccessContext* webui_browser_exclusive_access_context() {
-    return webui_browser_exclusive_access_context_.get();
-  }
-
 #if BUILDFLAG(IS_CHROMEOS)
   chromeos::LockedStateController* locked_state_controller() {
     return locked_state_controller_.get();
