@@ -366,6 +366,9 @@ void PipeToEngine::HandleNextEvent() {
 
 void PipeToEngine::ReadRequestChunkStepsBody(ScriptState* script_state,
                                              v8::Global<v8::Value> chunk) {
+  if (!script_state->ContextIsValid()) {
+    return;
+  }
   // This is needed because this method runs as an enqueued microtask, so the
   // isolate needs a current context.
   ScriptState::Scope scope(script_state);

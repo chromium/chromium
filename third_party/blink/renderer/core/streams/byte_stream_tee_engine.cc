@@ -206,6 +206,9 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
  private:
   void ChunkStepsBody(ScriptState* script_state,
                       v8::Global<v8::Value> value) const {
+    if (!script_state->ContextIsValid()) {
+      return;
+    }
     ScriptState::Scope scope(script_state);
     v8::Isolate* isolate = script_state->GetIsolate();
     // 1. Set readAgainForBranch1 to false.
@@ -388,6 +391,9 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
  private:
   void ChunkStepsBody(ScriptState* script_state,
                       DOMArrayBufferView* chunk) const {
+    if (!script_state->ContextIsValid()) {
+      return;
+    }
     // This is called in a microtask, the ScriptState needs to be put back
     // in scope.
     ScriptState::Scope scope(script_state);
