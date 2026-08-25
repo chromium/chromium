@@ -8,6 +8,7 @@
 
 #include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/test/icu_test_util.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,8 +20,7 @@
 namespace base::i18n {
 
 TEST(TimeZoneTest, Default) {
-  test::ScopedRestoreICUDefaultLocale restore_locale;
-  SetICUDefaultLocale("en_US");
+  ScopedDefaultIcuLocale restore_locale(GetKnownLanguageTag("en-US"));
   test::ScopedRestoreDefaultTimezone la_time("America/Los_Angeles");
 
   TimeZone tz = TimeZone::Default();
@@ -55,8 +55,7 @@ TEST(TimeZoneTest, CopyAndMove) {
 }
 
 TEST(TimeZoneTest, GetDisplayName) {
-  test::ScopedRestoreICUDefaultLocale restore_locale;
-  SetICUDefaultLocale("en_US");
+  ScopedDefaultIcuLocale restore_locale(GetKnownLanguageTag("en-US"));
 
   TimeZone tz = TimeZone::FromString("America/Los_Angeles");
   // Standard time display name.

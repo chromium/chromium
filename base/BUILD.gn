@@ -4119,6 +4119,7 @@ test("base_unittests") {
     ":rust_feature_unittests",
     ":sanitizer_buildflags",
     "//base/allocator:buildflags",
+    "//base/i18n:test_support",
     "//base/i18n:unittests",
     "//base/i18n/icubridge:unittests",
     "//base/logging/rust_logger:unittests",
