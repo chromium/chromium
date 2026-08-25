@@ -595,6 +595,8 @@ ContextImplOrt::CreateTensorFromSharedImageImpl(
     ScopedOrtStatus status(ort_interop_api->ImportMemory(
         external_resource_importer_.get(), &memory_descriptor,
         ScopedOrtExternalMemoryHandle::Receiver(memory_handle).get()));
+    base::UmaHistogramBoolean("WebNN.ORT.ImportMemorySuccess",
+                              status.is_valid());
     if (!status.is_valid()) {
       OrtExternalTensorDescriptor tensor_descriptor{};
       tensor_descriptor.version = ORT_API_VERSION;

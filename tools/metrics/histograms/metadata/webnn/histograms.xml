@@ -172,6 +172,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebNN.ORT.ImportMemorySuccess" enum="Boolean"
+    expires_after="2027-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    Records whether importing a D3D12 heap into the ORT backend succeeded.
+  </summary>
+</histogram>
+
 <histogram name="WebNN.ORT.TimingMs.{WebNNOrtActions}" units="ms"
     expires_after="2027-06-27">
   <owner>reillyg@chromium.org</owner>
