@@ -1289,6 +1289,49 @@ TEST_F(PermissionRequestManagerTest, UiSelectorUsedForGeolocation) {
   }
 }
 
+// Regression test for crbug.com/548056474.
+TEST_F(PermissionRequestManagerTest,
+       WebContentsDestroyedWithInFlightGeolocationAccuracySelector) {
+  base::test::ScopedFeatureList enable_approximate_location;
+  enable_approximate_location.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kPermissionPredictionsGeolocationAccuracy,
+       content_settings::features::kApproximateGeolocationPermission},
+      /*disabled_features=*/{});
+
+  ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  manager_->clear_permission_ui_selector_for_testing();
+  MockNotificationGeolocationPermissionUiSelector::CreateForManager(
+      manager_, Decision::UseNormalUiAndShowNoWarning(),
+      /*async_delay=*/base::Days(1));
+
+  MockPermissionRequest::MockPermissionRequestState request_state;
+  auto request = std::make_unique<MockPermissionRequest>(
+      RequestType::kGeolocation, PermissionRequestGestureType::GESTURE,
+      request_state.GetWeakPtr());
+
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       std::move(request));
+  WaitForBubbleToBeShown();
+
+  EXPECT_FALSE(prompt_factory_->is_visible());
+  EXPECT_TRUE(manager_->IsRequestInProgress());
+
+  prompt_factory_.reset();
+  manager_ = nullptr;
+  DeleteContents();
+
+  EXPECT_TRUE(request_state.cancelled);
+
+  const auto entries = ukm_recorder.GetEntriesByName("Permission");
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ(*ukm_recorder.GetEntryMetric(entries.back().get(),
+                                         "InitialGeolocationAccuracySelection"),
+            static_cast<int64_t>(GeolocationAccuracy::kPrecise));
+}
+
 TEST_F(PermissionRequestManagerTest,
        UiSelectionHappensSeparatelyForEachRequest) {
   manager_->clear_permission_ui_selector_for_testing();
