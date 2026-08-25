@@ -74,11 +74,39 @@ class GlicCueTargetBrowserTestAutoSubmitDisabled
   base::test::ScopedFeatureList features_;
 };
 
+class GlicCueTargetBrowserTestMessageFirstFreEnabled
+    : public GlicCueTargetBrowserTest {
+ public:
+  GlicCueTargetBrowserTestMessageFirstFreEnabled() {
+    features_.InitWithFeatures({features::kGlicMessageFirstFreForContextualCue,
+                                features::kGlicContextualCueingV2AutoSubmit},
+                               {});
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+class GlicCueTargetBrowserTestMessageFirstFreEnabledAutoSubmitDisabled
+    : public GlicCueTargetBrowserTest {
+ public:
+  GlicCueTargetBrowserTestMessageFirstFreEnabledAutoSubmitDisabled() {
+    features_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicMessageFirstFreForContextualCue},
+        /*disabled_features=*/{features::kGlicContextualCueingV2AutoSubmit});
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
 IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTest, testAllTestsAreRegistered) {
   AssertAllTestsRegistered({
       "GlicCueTargetBrowserTest",
       "GlicCueTargetBrowserTestAutoSubmitEnabled",
       "GlicCueTargetBrowserTestAutoSubmitDisabled",
+      "GlicCueTargetBrowserTestMessageFirstFreEnabled",
+      "GlicCueTargetBrowserTestMessageFirstFreEnabledAutoSubmitDisabled",
   });
 }
 
@@ -196,6 +224,106 @@ IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTest, testOnEditPrompt) {
 
   // Verifies that the JS client receives the correct prompt and
   // autoSubmit=false.
+  ExecuteJsTest();
+
+  // Verify tab2 was pinned.
+  auto* instance = GetOnlyGlicInstance();
+  ASSERT_TRUE(instance);
+  EXPECT_TRUE(instance->IsShowing());
+  EXPECT_TRUE(
+      instance->GetSharingManagerInternal().IsTabPinned(tab2->GetHandle()));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTestMessageFirstFreEnabled,
+                       testOnClickMessageFirstFreEnabled) {
+  GetProfile()->GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre,
+      static_cast<int>(prefs::FreStatus::kNotStarted));
+
+  GlicCueTarget target(*service(), nullptr,
+                       *GetTabListInterface()->GetActiveTab());
+
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
+  ActivateTab(tab1);
+
+  contextual_cueing::GlicCueActionData glic_data;
+  glic_data.prompt = "test prompt message first fre";
+  glic_data.tabs_to_share.emplace_back(tab2->GetHandle());
+
+  contextual_cueing::CueActionData data = glic_data;
+
+  // Clicking should invoke and auto-open with FreOverride::kTrustFirstInline.
+  target.OnClick(data);
+
+  // Verifies that the JS client receives the correct prompt, autoSubmit=true,
+  // and freOverride=FreOverride.TRUST_FIRST_INLINE.
+  ExecuteJsTest();
+
+  // Verify tab2 was pinned.
+  auto* instance = GetOnlyGlicInstance();
+  ASSERT_TRUE(instance);
+  EXPECT_TRUE(instance->IsShowing());
+  EXPECT_TRUE(
+      instance->GetSharingManagerInternal().IsTabPinned(tab2->GetHandle()));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicCueTargetBrowserTestMessageFirstFreEnabled,
+                       testOnClickMessageFirstFreEnabledHasConsented) {
+  GetProfile()->GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
+
+  GlicCueTarget target(*service(), nullptr,
+                       *GetTabListInterface()->GetActiveTab());
+
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
+  ActivateTab(tab1);
+
+  contextual_cueing::GlicCueActionData glic_data;
+  glic_data.prompt = "test prompt message first fre consented";
+  glic_data.tabs_to_share.emplace_back(tab2->GetHandle());
+
+  contextual_cueing::CueActionData data = glic_data;
+
+  // Clicking should invoke and auto-open with FreOverride::kUnspecified because
+  // the user has already completed the FRE.
+  target.OnClick(data);
+
+  // Verifies that the JS client receives the correct prompt, autoSubmit=true,
+  // and freOverride=FreOverride.UNSPECIFIED.
+  ExecuteJsTest();
+
+  // Verify tab2 was pinned.
+  auto* instance = GetOnlyGlicInstance();
+  ASSERT_TRUE(instance);
+  EXPECT_TRUE(instance->IsShowing());
+  EXPECT_TRUE(
+      instance->GetSharingManagerInternal().IsTabPinned(tab2->GetHandle()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GlicCueTargetBrowserTestMessageFirstFreEnabledAutoSubmitDisabled,
+    testOnClickMessageFirstFreEnabledAutoSubmitDisabled) {
+  GlicCueTarget target(*service(), nullptr,
+                       *GetTabListInterface()->GetActiveTab());
+
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
+  ActivateTab(tab1);
+
+  contextual_cueing::GlicCueActionData glic_data;
+  glic_data.prompt = "test prompt message first fre no auto submit";
+  glic_data.tabs_to_share.emplace_back(tab2->GetHandle());
+
+  contextual_cueing::CueActionData data = glic_data;
+
+  // Clicking should invoke but not auto-submit, and freOverride should be
+  // FreOverride::kUnspecified.
+  target.OnClick(data);
+
+  // Verifies that the JS client receives the correct prompt, autoSubmit=false,
+  // and freOverride=FreOverride.UNSPECIFIED.
   ExecuteJsTest();
 
   // Verify tab2 was pinned.
