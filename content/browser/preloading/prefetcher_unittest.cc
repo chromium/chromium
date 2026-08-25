@@ -70,6 +70,7 @@ TEST_F(PrefetcherTest, ProcessCandidatesForPrefetch) {
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
 
   auto candidate1 = blink::mojom::SpeculationCandidate::New();
+  candidate1->tags = {std::nullopt};
   candidate1->action = blink::mojom::SpeculationAction::kPrefetch;
   candidate1->requires_anonymous_client_ip_when_cross_origin = true;
   candidate1->url = GetCrossOriginUrl("/candidate1.html");

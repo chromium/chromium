@@ -93,6 +93,7 @@ class ContaminationDelayBrowserTest : public ContentBrowserTest {
     auto* prefetch_document_manager =
         PrefetchDocumentManager::GetOrCreateForCurrentDocument(rfh);
     auto candidate = blink::mojom::SpeculationCandidate::New();
+    candidate->tags = {std::nullopt};
     candidate->url = url;
     candidate->action = blink::mojom::SpeculationAction::kPrefetch;
     candidate->eagerness = blink::mojom::SpeculationEagerness::kImmediate;

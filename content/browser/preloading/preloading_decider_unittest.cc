@@ -1638,6 +1638,64 @@ TEST_F(PreloadingDeciderMLModelActiveTest,
   EXPECT_EQ(1u, prerenders.size());
 }
 
+// Regression test for crbug.com/550345163: a renderer-selected candidate the
+// browser considers unsuitable must be declined, not enacted with an empty tag
+// list (which used to CHECK() in the SpeculationRulesTags constructor).
+//
+// The ML model is used here because it is the one piece of browser-only state
+// in IsSuitableCandidate() that the renderer cannot mirror: once available, its
+// decisions supersede the hover heuristic, so the hover predictor's whole
+// eagerness set is dropped and nothing on standby matches. The behaviour under
+// test is the general "nothing suitable" path, not anything ML-specific.
+TEST_F(PreloadingDeciderMLModelActiveTest,
+       RendererSelectedHoverDoesNotEnactWhenNoSuitableCandidate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kSpeculationRulesRendererSideHeuristics);
+
+  const GURL url = GetSameOriginUrl("/candidate1.html");
+  auto candidate =
+      MakeCandidate(url, blink::mojom::SpeculationAction::kPrerender,
+                    blink::mojom::SpeculationEagerness::kModerate);
+  candidate->tags = {"moderate"};
+  auto enacted_candidate = candidate.Clone();
+
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(std::move(candidate));
+
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
+  ASSERT_TRUE(preloading_decider);
+  ScopedMockPrerenderer prerenderer(preloading_decider);
+  preloading_decider->UpdateSpeculationCandidates(candidates);
+
+  const auto& prerenders = prerenderer.Get()->prerenders_;
+  ASSERT_TRUE(prerenders.empty());
+
+  // Run the model with a score below the prerender threshold (60). This marks
+  // the model as available without enacting the candidate, mirroring a user
+  // hovering a link the model has already scored as unlikely.
+  preloading_decider->OnPreloadingHeuristicsModelDone(url, /*score=*/0.1);
+  ASSERT_TRUE(prerenders.empty());
+  ASSERT_TRUE(preloading_decider->IsOnStandByForTesting(
+      url, blink::mojom::SpeculationAction::kPrerender));
+
+  // The renderer has no visibility into the model, so it still enacts on hover.
+  preloading_decider->EnactRendererSelectedCandidate(
+      std::move(enacted_candidate),
+      blink::mojom::SpeculationHeuristic::kPointerHover);
+
+  // The model supersedes hover, so nothing is preloaded...
+  EXPECT_TRUE(prerenders.empty());
+  // ...and the candidate stays on standby so the model can still enact it.
+  EXPECT_TRUE(preloading_decider->IsOnStandByForTesting(
+      url, blink::mojom::SpeculationAction::kPrerender));
+
+  // A later high-confidence model result enacts the candidate normally.
+  preloading_decider->OnPreloadingHeuristicsModelDone(url, /*score=*/0.99);
+  ASSERT_EQ(1u, prerenders.size());
+}
+
 TEST_F(PreloadingDeciderMLModelActiveTest, ModelConfidenceThreshold) {
   const GURL url = GetSameOriginUrl("/candidate1.html");
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;

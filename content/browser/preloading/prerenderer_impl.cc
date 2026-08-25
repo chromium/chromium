@@ -476,6 +476,16 @@ bool PrerendererImpl::MaybePrerender(
           ? features::kPrerender2WarmUpCompositorForImmediate
           : features::kPrerender2WarmUpCompositorForNonImmediate);
 
+  // `SpeculationCandidate::tags` must never be empty: rules that specify no
+  // tags carry a single null tag instead (see blink.mojom).
+  // Candidates arriving over IPC are checked by SpeculationHostImpl's
+  // CandidatesAreValid(), and PreloadingDecider only ever overwrites `tags`
+  // with a non-empty merge, so an empty list here means a browser-side bug
+  // rather than a misbehaving renderer. This is where crbug.com/550345163
+  // crashed; the equivalent guard for prefetch lives in
+  // PrefetchDocumentManager's TagsFromCandidate().
+  CHECK(!candidate->tags.empty());
+
   PrerenderAttributes attributes(
       candidate->url,
       PreloadingTriggerTypeFromSpeculationInjectionType(

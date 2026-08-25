@@ -4932,6 +4932,7 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionForEligibleButNotStartedPrefetch) {
   const auto url_1 = GURL("https://example.com/one");
   const auto url_2 = GURL("https://example.com/two");
   auto candidate_1 = blink::mojom::SpeculationCandidate::New();
+  candidate_1->tags = {std::nullopt};
   candidate_1->url = url_1;
   candidate_1->action = blink::mojom::SpeculationAction::kPrefetch;
   candidate_1->eagerness = blink::mojom::SpeculationEagerness::kImmediate;
@@ -5024,6 +5025,7 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionDuringEligiblityCheck) {
 
   const auto url_1 = GURL("https://example.com/one");
   auto candidate_1 = blink::mojom::SpeculationCandidate::New();
+  candidate_1->tags = {std::nullopt};
   candidate_1->url = url_1;
   candidate_1->action = blink::mojom::SpeculationAction::kPrefetch;
   candidate_1->eagerness = blink::mojom::SpeculationEagerness::kImmediate;
@@ -5100,6 +5102,7 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionDuringProxyLookup) {
   // The URL is cross-site to trigger proxy lookup.
   const auto url_1 = GURL("https://cross-site.example.org/one");
   auto candidate_1 = blink::mojom::SpeculationCandidate::New();
+  candidate_1->tags = {std::nullopt};
   candidate_1->url = url_1;
   candidate_1->action = blink::mojom::SpeculationAction::kPrefetch;
   candidate_1->eagerness = blink::mojom::SpeculationEagerness::kImmediate;
@@ -5171,6 +5174,7 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionWhenHoldback) {
 
   const auto url_1 = GURL("https://example.com/one");
   auto candidate_1 = blink::mojom::SpeculationCandidate::New();
+  candidate_1->tags = {std::nullopt};
   candidate_1->url = url_1;
   candidate_1->action = blink::mojom::SpeculationAction::kPrefetch;
   candidate_1->eagerness = blink::mojom::SpeculationEagerness::kImmediate;
@@ -5432,6 +5436,7 @@ TEST_P(PrefetchServiceLimitsTest, PrefetchWithNoCandidateIsNotStarted) {
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
   auto candidate_1 = blink::mojom::SpeculationCandidate::New();
+  candidate_1->tags = {std::nullopt};
   candidate_1->url = url_1;
   candidate_1->action = blink::mojom::SpeculationAction::kPrefetch;
   candidate_1->eagerness = blink::mojom::SpeculationEagerness::kImmediate;
@@ -5492,6 +5497,7 @@ TEST_P(PrefetchServiceLimitsTest,
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
   auto candidate_1 = blink::mojom::SpeculationCandidate::New();
+  candidate_1->tags = {std::nullopt};
   candidate_1->url = url_1;
   candidate_1->action = blink::mojom::SpeculationAction::kPrefetch;
   candidate_1->eagerness = blink::mojom::SpeculationEagerness::kImmediate;
@@ -5552,6 +5558,7 @@ TEST_P(PrefetchServiceLimitsTest, CompletedPrefetchWithNoCandidateIsEvicted) {
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
   auto candidate_1 = blink::mojom::SpeculationCandidate::New();
+  candidate_1->tags = {std::nullopt};
   candidate_1->url = url_1;
   candidate_1->action = blink::mojom::SpeculationAction::kPrefetch;
   candidate_1->eagerness = blink::mojom::SpeculationEagerness::kImmediate;
@@ -5615,6 +5622,7 @@ TEST_P(PrefetchServiceLimitsTest, PrefetchReset) {
       mock_destruction_callback.Get());
 
   auto candidate = blink::mojom::SpeculationCandidate::New();
+  candidate->tags = {std::nullopt};
   candidate->url = url;
   candidate->action = blink::mojom::SpeculationAction::kPrefetch;
   candidate->eagerness = blink::mojom::SpeculationEagerness::kImmediate;
@@ -5708,6 +5716,7 @@ TEST_P(PrefetchServiceLimitsTest, NextPrefetchQueuedImmediatelyAfterReset) {
       mock_destruction_callback.Get());
 
   auto base_candidate = blink::mojom::SpeculationCandidate::New();
+  base_candidate->tags = {std::nullopt};
   base_candidate->action = blink::mojom::SpeculationAction::kPrefetch;
   base_candidate->eagerness = blink::mojom::SpeculationEagerness::kImmediate;
   base_candidate->referrer = blink::mojom::Referrer::New();
@@ -5809,6 +5818,7 @@ TEST_P(PrefetchServiceLimitsTest, PrefetchFailsAndIsReset) {
       mock_destruction_callback.Get());
 
   auto candidate = blink::mojom::SpeculationCandidate::New();
+  candidate->tags = {std::nullopt};
   candidate->url = url;
   candidate->action = blink::mojom::SpeculationAction::kPrefetch;
   candidate->eagerness = blink::mojom::SpeculationEagerness::kImmediate;
@@ -5861,6 +5871,7 @@ TEST_P(PrefetchServiceLimitsTest, ImmediatePrefetchLimitIsDynamic) {
       destruction_cb.Get());
 
   auto base_candidate = blink::mojom::SpeculationCandidate::New();
+  base_candidate->tags = {std::nullopt};
   base_candidate->action = blink::mojom::SpeculationAction::kPrefetch;
   base_candidate->eagerness = blink::mojom::SpeculationEagerness::kImmediate;
   base_candidate->referrer = blink::mojom::Referrer::New();
@@ -6028,6 +6039,7 @@ TEST_P(PrefetchServiceLimitsTest, RemoveCandidateForFailedPrefetch) {
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
   auto candidate = blink::mojom::SpeculationCandidate::New();
+  candidate->tags = {std::nullopt};
   candidate->url = url;
   candidate->action = blink::mojom::SpeculationAction::kPrefetch;
   candidate->eagerness = blink::mojom::SpeculationEagerness::kImmediate;
