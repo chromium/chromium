@@ -6,6 +6,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/background/omnibox_everywhere/omnibox_everywhere_background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
@@ -27,6 +29,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -642,6 +645,102 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest, BackgroundModeKeepAlive) {
     return !profile_manager->HasKeepAliveForTesting(
         profile, ProfileKeepAliveOrigin::kOmniboxEverywhere);
   }));
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_StatusIconContextMenuOpensSearchSettings \
+  DISABLED_StatusIconContextMenuOpensSearchSettings
+#else
+#define MAYBE_StatusIconContextMenuOpensSearchSettings \
+  StatusIconContextMenuOpensSearchSettings
+#endif
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
+                       MAYBE_StatusIconContextMenuOpensSearchSettings) {
+  StatusTray* status_tray = g_browser_process->status_tray();
+  if (!status_tray) {
+    GTEST_SKIP() << "StatusTray is not supported on this platform.";
+  }
+
+  PrefService* local_state = g_browser_process->local_state();
+  ASSERT_TRUE(local_state);
+
+  GlobalFeatures* features = g_browser_process->GetFeatures();
+  ASSERT_TRUE(features);
+  auto* controller = features->omnibox_everywhere_controller();
+  ASSERT_TRUE(controller);
+
+  // Enable background mode so background_mode_manager is active.
+  local_state->SetBoolean(prefs::kOmniboxEverywhereBackgroundMode, true);
+  ASSERT_TRUE(controller->background_mode_manager());
+
+  auto* delegate = static_cast<StatusIconMenuModel::Delegate*>(
+      controller->background_mode_manager());
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kInitialTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSettingsTab);
+
+  RunTestSequence(
+      InstrumentTab(kInitialTab),
+      NavigateWebContents(kInitialTab, GURL(chrome::kChromeUIVersionURL)),
+      InstrumentNextTab(kSettingsTab, AnyBrowser()), Do([delegate]() {
+        delegate->ExecuteCommand(
+            IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_SETTINGS, 0);
+      }),
+      WaitForWebContentsReady(kSettingsTab,
+                              chrome::GetSettingsUrl(chrome::kSearchSubPage)),
+      CheckResult([this] { return browser()->tab_strip_model()->count(); }, 2,
+                  "CheckTabCount"));
+
+  local_state->SetBoolean(prefs::kOmniboxEverywhereBackgroundMode, false);
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_StatusIconContextMenuOpensCustomizeKeyboardShortcut \
+  DISABLED_StatusIconContextMenuOpensCustomizeKeyboardShortcut
+#else
+#define MAYBE_StatusIconContextMenuOpensCustomizeKeyboardShortcut \
+  StatusIconContextMenuOpensCustomizeKeyboardShortcut
+#endif
+IN_PROC_BROWSER_TEST_F(
+    OmniboxEverywhereBrowserTest,
+    MAYBE_StatusIconContextMenuOpensCustomizeKeyboardShortcut) {
+  StatusTray* status_tray = g_browser_process->status_tray();
+  if (!status_tray) {
+    GTEST_SKIP() << "StatusTray is not supported on this platform.";
+  }
+
+  PrefService* local_state = g_browser_process->local_state();
+  ASSERT_TRUE(local_state);
+
+  GlobalFeatures* features = g_browser_process->GetFeatures();
+  ASSERT_TRUE(features);
+  auto* controller = features->omnibox_everywhere_controller();
+  ASSERT_TRUE(controller);
+
+  // Enable background mode so background_mode_manager is active.
+  local_state->SetBoolean(prefs::kOmniboxEverywhereBackgroundMode, true);
+  ASSERT_TRUE(controller->background_mode_manager());
+
+  auto* delegate = static_cast<StatusIconMenuModel::Delegate*>(
+      controller->background_mode_manager());
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kInitialTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSettingsTab);
+
+  RunTestSequence(
+      InstrumentTab(kInitialTab),
+      NavigateWebContents(kInitialTab, GURL(chrome::kChromeUIVersionURL)),
+      InstrumentNextTab(kSettingsTab, AnyBrowser()), Do([delegate]() {
+        delegate->ExecuteCommand(
+            IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT,
+            0);
+      }),
+      WaitForWebContentsReady(kSettingsTab,
+                              chrome::GetSettingsUrl(chrome::kSearchSubPage)),
+      CheckResult([this] { return browser()->tab_strip_model()->count(); }, 2,
+                  "CheckTabCount"));
+
+  local_state->SetBoolean(prefs::kOmniboxEverywhereBackgroundMode, false);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

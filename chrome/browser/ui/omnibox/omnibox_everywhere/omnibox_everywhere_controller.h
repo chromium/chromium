@@ -81,6 +81,10 @@ class OmniboxEverywhereController
     return ui_manager_.get();
   }
 
+  OmniboxEverywhereBackgroundModeManager* background_mode_manager() {
+    return background_mode_manager_.get();
+  }
+
   // Closes the Omnibox Everywhere widget if it is open.
   void Close();
 

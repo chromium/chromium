@@ -17,8 +17,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/browser/status_icons/status_tray.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -175,7 +177,9 @@ void OmniboxEverywhereBackgroundModeManager::ExecuteCommand(int command_id,
       break;
     case IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT:
     case IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_SETTINGS:
-      // Placeholders for now.
+      if (profile_) {
+        chrome::ShowSettingsSubPageForProfile(profile_, chrome::kSearchSubPage);
+      }
       break;
     default:
       NOTREACHED();
