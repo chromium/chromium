@@ -42,7 +42,8 @@ ComposeboxEverywhereHandler::ComposeboxEverywhereHandler(
     Profile* profile,
     content::WebContents* web_contents,
     GetSessionHandleCallback get_session_callback,
-    ClearSessionHandleCallback clear_session_callback)
+    ClearSessionHandleCallback clear_session_callback,
+    ScreenshareDelegate* screenshare_delegate)
     : ComposeboxHandler(
           std::move(pending_handler),
           std::move(pending_searchbox_handler),
@@ -54,7 +55,9 @@ ComposeboxEverywhereHandler::ComposeboxEverywhereHandler(
                                                        this),
           std::move(get_session_callback),
           std::move(clear_session_callback)),
-      service_(OmniboxEverywhereServiceFactory::GetForProfile(profile)) {}
+      service_(OmniboxEverywhereServiceFactory::GetForProfile(profile)) {
+  set_screenshare_delegate(screenshare_delegate);
+}
 
 ComposeboxEverywhereHandler::~ComposeboxEverywhereHandler() = default;
 

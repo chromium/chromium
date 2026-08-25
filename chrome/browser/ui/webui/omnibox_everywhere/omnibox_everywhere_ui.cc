@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/search/most_visited_metrics_logger.h"
@@ -339,7 +340,8 @@ void OmniboxEverywhereUI::CreatePageHandler(
           &OmniboxEverywhereUI::GetOrCreateContextualSessionHandle,
           base::Unretained(this)),
       base::BindRepeating(&OmniboxEverywhereUI::ClearContextualSessionHandle,
-                          base::Unretained(this)));
+                          base::Unretained(this)),
+      this);
 }
 
 void OmniboxEverywhereUI::BindInterface(
@@ -368,7 +370,23 @@ void OmniboxEverywhereUI::CreatePageHandler(
       metrics_reporter_service->metrics_reporter(), web_ui(), service,
       base::BindRepeating(
           &OmniboxEverywhereUI::GetOrCreateContextualSessionHandle,
-          base::Unretained(this)));
+          base::Unretained(this)),
+      this);
+}
+
+void OmniboxEverywhereUI::OnScreensharePickerOpened() {
+  if (auto* service =
+          OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
+    service->OnScreensharePickerOpened();
+    service->HidePopup();
+  }
+}
+
+void OmniboxEverywhereUI::OnScreensharePickerClosed() {
+  if (auto* service =
+          OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
+    service->OnScreensharePickerClosed();
+  }
 }
 
 void OmniboxEverywhereUI::BindInterface(

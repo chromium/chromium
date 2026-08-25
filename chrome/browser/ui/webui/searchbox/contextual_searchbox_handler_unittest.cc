@@ -3967,6 +3967,13 @@ class FakeDesktopCapturer : public webrtc::DesktopCapturer {
   raw_ptr<Callback> callback_ = nullptr;
 };
 
+class MockScreenshareDelegate
+    : public ContextualSearchboxHandler::ScreenshareDelegate {
+ public:
+  MOCK_METHOD(void, OnScreensharePickerOpened, (), (override));
+  MOCK_METHOD(void, OnScreensharePickerClosed, (), (override));
+};
+
 TEST_F(ContextualSearchboxHandlerTest, StartScreenshare_Success) {
   profile()->GetPrefs()->SetInteger(
       contextual_search::kSearchContentSharingSettings,
@@ -3982,6 +3989,11 @@ TEST_F(ContextualSearchboxHandlerTest, StartScreenshare_Success) {
       .config.mutable_composebox()
       ->mutable_image_upload()
       ->set_mime_types_allowed("image/png");
+
+  MockScreenshareDelegate delegate;
+  EXPECT_CALL(delegate, OnScreensharePickerOpened());
+  EXPECT_CALL(delegate, OnScreensharePickerClosed());
+  handler().set_screenshare_delegate(&delegate);
 
   FakeDesktopMediaPickerFactory picker_factory;
   handler().set_desktop_media_picker_factory_for_testing(&picker_factory);
@@ -4132,9 +4144,15 @@ TEST_F(ContextualSearchboxHandlerTest, StartScreenshare_SmallImageNotResized) {
   EXPECT_EQ(main_bitmap.height(), 30);
 
   handler().set_desktop_media_picker_factory_for_testing(nullptr);
+  handler().set_screenshare_delegate(nullptr);
 }
 
 TEST_F(ContextualSearchboxHandlerTest, StartScreenshare_Cancelled) {
+  MockScreenshareDelegate delegate;
+  EXPECT_CALL(delegate, OnScreensharePickerOpened());
+  EXPECT_CALL(delegate, OnScreensharePickerClosed());
+  handler().set_screenshare_delegate(&delegate);
+
   FakeDesktopMediaPickerFactory picker_factory;
   handler().set_desktop_media_picker_factory_for_testing(&picker_factory);
 
@@ -4150,6 +4168,7 @@ TEST_F(ContextualSearchboxHandlerTest, StartScreenshare_Cancelled) {
 
   EXPECT_FALSE(future.Get().has_value());
   handler().set_desktop_media_picker_factory_for_testing(nullptr);
+  handler().set_screenshare_delegate(nullptr);
 }
 #else
 TEST_F(ContextualSearchboxHandlerTest, StartScreenshare_AndroidAlwaysFails) {

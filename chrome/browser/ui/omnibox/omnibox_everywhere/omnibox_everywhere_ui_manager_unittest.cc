@@ -954,3 +954,43 @@ TEST_F(OmniboxEverywhereUIManagerTest,
 
   ui_manager->Shutdown();
 }
+
+TEST_F(OmniboxEverywhereUIManagerTest, ScreensharePickerStateTracking) {
+  auto ui_manager = CreateUIManager();
+  EXPECT_FALSE(ui_manager->is_screenshare_picker_open_for_testing());
+
+  ui_manager->OnScreensharePickerOpened();
+  EXPECT_TRUE(ui_manager->is_screenshare_picker_open_for_testing());
+
+  ui_manager->OnScreensharePickerClosed();
+  EXPECT_FALSE(ui_manager->is_screenshare_picker_open_for_testing());
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringScreensharePicker) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+  }
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Mark screenshare picker as open.
+  ui_manager->OnScreensharePickerOpened();
+  EXPECT_TRUE(ui_manager->is_screenshare_picker_open_for_testing());
+
+  // Simulating deactivation while screenshare picker is open should NOT close
+  // the widget.
+  ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+  EXPECT_TRUE(ui_manager->widget());
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Clean up: closing screenshare picker and triggering deactivation should
+  // hide the widget in ephemeral mode.
+  ui_manager->OnScreensharePickerClosed();
+  ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !widget->IsVisible(); }));
+}

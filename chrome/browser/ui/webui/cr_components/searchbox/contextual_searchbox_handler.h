@@ -146,6 +146,15 @@ class ContextualSearchboxHandler
 #endif
 {
  public:
+  class ScreenshareDelegate {
+   public:
+    virtual ~ScreenshareDelegate() = default;
+
+    // Invoked when the screenshare picker is opened or closed.
+    virtual void OnScreensharePickerOpened() {}
+    virtual void OnScreensharePickerClosed() {}
+  };
+
   struct ProcessedScreenshot {
     std::vector<uint8_t> png_bytes;
     std::optional<std::string> thumbnail_data_url;
@@ -160,9 +169,17 @@ class ContextualSearchboxHandler
       Profile* profile,
       content::WebContents* web_contents,
       std::unique_ptr<OmniboxClient> client,
-      GetSessionHandleCallback get_session_callback);
+      GetSessionHandleCallback get_session_callback,
+      ScreenshareDelegate* screenshare_delegate = nullptr);
 
   ~ContextualSearchboxHandler() override;
+
+  ScreenshareDelegate* screenshare_delegate() const {
+    return screenshare_delegate_;
+  }
+  void set_screenshare_delegate(ScreenshareDelegate* screenshare_delegate) {
+    screenshare_delegate_ = screenshare_delegate;
+  }
 
   virtual void SetAimButtonVisible(bool visible) {}
 
@@ -545,6 +562,8 @@ class ContextualSearchboxHandler
           request);
   void OnScreenshotProcessed(StartScreenshareCallback callback,
                              ProcessedScreenshot result);
+  void NotifyScreensharePickerOpened();
+  void NotifyScreensharePickerClosed();
 
   mojo::Receiver<drive_picker_host::mojom::DrivePickerResultHandler>
       drive_picker_result_handler_receiver_{this};
@@ -571,6 +590,9 @@ class ContextualSearchboxHandler
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  // The delegate must outlive this handler, typically implemented by the
+  // owning WebUIController.
+  raw_ptr<ScreenshareDelegate> screenshare_delegate_ = nullptr;
   OnDriveUploadClickedCallback drive_upload_click_callback_;
 
   base::WeakPtrFactory<ContextualSearchboxHandler> weak_ptr_factory_{this};

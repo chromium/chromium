@@ -27,7 +27,8 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler {
       MetricsReporter* metrics_reporter,
       content::WebUI* web_ui,
       OmniboxEverywhereService* service,
-      GetSessionHandleCallback get_session_callback);
+      GetSessionHandleCallback get_session_callback,
+      ScreenshareDelegate* screenshare_delegate = nullptr);
 
   OmniboxEverywhereHandler(const OmniboxEverywhereHandler&) = delete;
   OmniboxEverywhereHandler& operator=(const OmniboxEverywhereHandler&) = delete;
