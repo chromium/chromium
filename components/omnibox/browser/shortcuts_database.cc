@@ -214,7 +214,7 @@ bool ShortcutsDatabase::DeleteAllShortcuts() {
   if (!db_.Execute("DELETE FROM omni_box_shortcuts"))
     return false;
 
-  std::ignore = db_.Execute("VACUUM");
+  std::ignore = db_.Vacuum();
   return true;
 }
 
