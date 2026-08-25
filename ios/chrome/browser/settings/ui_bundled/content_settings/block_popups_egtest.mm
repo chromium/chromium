@@ -27,6 +27,7 @@
 #import "url/gurl.h"
 
 using chrome_test_util::ContentSettingsButton;
+using chrome_test_util::NavigationBarEditButton;
 using chrome_test_util::SettingsDoneButton;
 using testing::NavigationBarBackButton;
 
@@ -242,12 +243,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleBlockPopupsRequest(
     [[EarlGrey selectElementWithMatcher:grey_text(base::SysUTF8ToNSString(
                                             allowedPattern))]
         assertWithMatcher:grey_notVisible()];
-    [[EarlGrey selectElementWithMatcher:
-                   grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
-                                  IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
-                              grey_not(grey_accessibilityTrait(
-                                  UIAccessibilityTraitNotEnabled)),
-                              nil)] assertWithMatcher:grey_notVisible()];
+    [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+        assertWithMatcher:grey_notVisible()];
     [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
         assertWithMatcher:grey_sufficientlyVisible()];
 
@@ -260,12 +257,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleBlockPopupsRequest(
     [[EarlGrey selectElementWithMatcher:grey_text(base::SysUTF8ToNSString(
                                             allowedPattern))]
         assertWithMatcher:grey_sufficientlyVisible()];
-    [[EarlGrey selectElementWithMatcher:
-                   grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
-                                  IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
-                              grey_not(grey_accessibilityTrait(
-                                  UIAccessibilityTraitNotEnabled)),
-                              nil)]
+    [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
         assertWithMatcher:grey_sufficientlyVisible()];
 
     // Disable EarlGrey synchronization to avoid infinite spinner loop.

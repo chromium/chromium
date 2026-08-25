@@ -366,6 +366,10 @@ id<GREYMatcher> NavigationBarDoneButton() {
   return [ChromeMatchersAppInterface navigationBarDoneButton];
 }
 
+id<GREYMatcher> NavigationBarEditButton() {
+  return [ChromeMatchersAppInterface navigationBarEditButton];
+}
+
 id<GREYMatcher> BookmarksNavigationBarDoneButton() {
   return [ChromeMatchersAppInterface bookmarksNavigationBarDoneButton];
 }

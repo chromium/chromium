@@ -879,6 +879,14 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_userInteractionEnabled(), grey_sufficientlyVisible(), nil);
 }
 
++ (id<GREYMatcher>)navigationBarEditButton {
+  return grey_allOf(
+      [ChromeMatchersAppInterface
+          buttonWithAccessibilityLabelID:(IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON)],
+      grey_userInteractionEnabled(),
+      grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
+}
+
 + (id<GREYMatcher>)bookmarksNavigationBarDoneButton {
   return grey_accessibilityID(kBookmarksHomeNavigationBarDoneButtonIdentifier);
 }

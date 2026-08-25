@@ -290,6 +290,9 @@ id<GREYMatcher> NavigationBarCloseButton();
 // Returns a matcher for the done button on the navigation bar.
 id<GREYMatcher> NavigationBarDoneButton();
 
+// Returns a matcher for the edit button on the navigation bar.
+id<GREYMatcher> NavigationBarEditButton();
+
 // Returns a matcher for the done button on the Bookmarks navigation bar.
 id<GREYMatcher> BookmarksNavigationBarDoneButton();
 

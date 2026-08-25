@@ -30,6 +30,7 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::NavigationBarDoneButton;
+using chrome_test_util::NavigationBarEditButton;
 using chrome_test_util::PaymentMethodsButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
@@ -69,13 +70,6 @@ NSString* const kMandatoryReauthEditCardHistogramName =
 NSString* const kMandatoryReauthDeleteCardHistogramName =
     @"Autofill.PaymentMethods.MandatoryReauth.AuthEvent.SettingsPage."
     @"DeleteCard";
-
-// Return the edit button from the navigation bar.
-id<GREYMatcher> NavigationBarEditButton() {
-  return grey_allOf(
-      ButtonWithAccessibilityLabelId(IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
-      grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
-}
 
 // Matcher for the Delete button in the list view, located at the bottom of the
 // screen.

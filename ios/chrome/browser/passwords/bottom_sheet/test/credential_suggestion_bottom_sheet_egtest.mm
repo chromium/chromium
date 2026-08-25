@@ -46,6 +46,7 @@
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using chrome_test_util::NavigationBarEditButton;
 using chrome_test_util::WebViewMatcher;
 using password_manager_test_utils::DeleteCredential;
 using password_manager_test_utils::kDefaultUserDisplayName;
@@ -82,13 +83,6 @@ id<GREYMatcher> SubtitleWithPasskeysString(const GURL& url) {
       IDS_IOS_CREDENTIAL_BOTTOM_SHEET_SUBTITLE_WITH_PASSKEYS,
       url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
           url)));
-}
-
-// Returns the matcher for the edit button from the navigation bar.
-id<GREYMatcher> NavigationBarEditButton() {
-  return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
-                        IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
-                    grey_userInteractionEnabled(), nil);
 }
 
 // Returns the matcher for the use password button.

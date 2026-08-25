@@ -268,6 +268,9 @@
 // Matcher for the done button on the navigation bar.
 + (id<GREYMatcher>)navigationBarDoneButton;
 
+// Matcher for the edit button on the navigation bar.
++ (id<GREYMatcher>)navigationBarEditButton;
+
 // Matcher for the done button on the Bookmarks navigation bar.
 + (id<GREYMatcher>)bookmarksNavigationBarDoneButton;
 
