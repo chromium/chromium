@@ -403,8 +403,8 @@ bool PermissionUtil::ShouldCurrentRequestUsePermissionElementSecondaryUI(
   if (delegate->Requests().empty()) {
     return false;
   }
-  if (permissions::PermissionsClient::
-          AllowEmbeddedPermissionPromptForAllowlistedSurfaces() &&
+  if (permissions::PermissionsClient::AllowEmbeddedPermissionPromptForSurface(
+          web_contents) &&
       permissions::PermissionsClient::Get()
           ->IsPrivilegedInternalWebUIOrNewTabPage(
               web_contents, delegate->GetRequestingOrigin(),
@@ -726,11 +726,11 @@ bool PermissionUtil::CanPermissionRequestIgnoreStatus(
     content::PermissionStatusSource source,
     blink::mojom::PermissionStatus status,
     content::WebContents* web_contents) {
-  // Support requests from side panels/omnibox popup/NTP to be shown still, even
-  // if the permission status is denied. These requests will use the embedded
-  // permission prompt.
-  if (permissions::PermissionsClient::
-          AllowEmbeddedPermissionPromptForAllowlistedSurfaces() &&
+  // Support requests from side panels/omnibox popup/omnibox everywhere/NTP to
+  // be shown still, even if the permission status is denied. These requests
+  // will use the embedded permission prompt.
+  if (permissions::PermissionsClient::AllowEmbeddedPermissionPromptForSurface(
+          web_contents) &&
       permissions::PermissionsClient::Get()
           ->IsPrivilegedInternalWebUIOrNewTabPage(
               web_contents, request->requesting_origin,

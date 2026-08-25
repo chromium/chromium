@@ -103,8 +103,8 @@ void MediaStreamDevicesController::RequestPermissions(
     // Check if web contents has allowlisted capability to ignore the denied
     // status and denied reason.
     bool web_contents_has_allowlisted_permission =
-        permissions::PermissionsClient::
-            AllowEmbeddedPermissionPromptForAllowlistedSurfaces() &&
+        permissions::PermissionsClient::AllowEmbeddedPermissionPromptForSurface(
+            web_contents) &&
         permissions::PermissionsClient::Get()
             ->IsPrivilegedInternalWebUIOrNewTabPage(
                 web_contents, request.url_origin.GetURL(),
