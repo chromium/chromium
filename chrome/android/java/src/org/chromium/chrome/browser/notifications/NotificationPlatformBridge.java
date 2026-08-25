@@ -855,12 +855,6 @@ public class NotificationPlatformBridge {
         // Record whether it's known whether notifications can be shown to the user at all.
         NotificationSystemStatusUtil.recordAppNotificationStatusHistogram();
 
-        if (image != null) {
-            RecordHistogram.recordCount100000Histogram(
-                    "Notifications.Android.ImageMemorySizeInKB",
-                    image.getAllocationByteCount() / 1000);
-        }
-
         NotificationBuilderBase notificationBuilder =
                 prepareNotificationBuilder(
                         identifyingAttributes,

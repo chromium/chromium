@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.media.MediaFeatureList;
 import org.chromium.components.browser_ui.media.MediaFeatureMap;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogFeatureMap;
+import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.components.cached_flags.CachedFeatureParam;
 import org.chromium.components.cached_flags.CachedFlag;
 import org.chromium.components.cached_flags.CachedFlagUtils;
@@ -59,7 +60,8 @@ public class ChromeCachedFlags {
                     SigninFeatureMap.getInstance(),
                     PolicyFeatureMap.getInstance(),
                     MediaFeatureMap.getInstance(),
-                    PermissionsAndroidFeatureMap.getInstance());
+                    PermissionsAndroidFeatureMap.getInstance(),
+                    NotificationFeatureMap.getInstance());
 
     // The list of cached flags should be derived from the list of feature maps above.
     static final List<List<CachedFlag>> LISTS_OF_CACHED_FLAGS_FULL_BROWSER =
@@ -72,7 +74,8 @@ public class ChromeCachedFlags {
                     UiAndroidFeatureList.sFlagsCachedUiAndroid,
                     SigninFeatureMap.sCachedFlags,
                     PolicyFeatureMap.sCachedFlags,
-                    MediaFeatureList.getAllCachedFlags());
+                    MediaFeatureList.getAllCachedFlags(),
+                    NotificationFeatureMap.sCachedFlags);
     static final List<List<CachedFlag>> LISTS_OF_CACHED_FLAGS_MINIMAL_BROWSER =
             List.of(ChromeFeatureList.sFlagsCachedInMinimalBrowser);
 
@@ -86,7 +89,8 @@ public class ChromeCachedFlags {
                     ChromeFeatureList.sFlagsCachedInMinimalBrowser,
                     UiAndroidFeatureList.sFlagsCachedUiAndroid,
                     PolicyFeatureMap.sCachedFlags,
-                    MediaFeatureList.getAllCachedFlags());
+                    MediaFeatureList.getAllCachedFlags(),
+                    NotificationFeatureMap.sCachedFlags);
 
     // The list of feature params should be derived from the list of feature maps above.
     static final List<List<CachedFeatureParam<?>>> LISTS_OF_FEATURE_PARAMS_FULL_BROWSER =

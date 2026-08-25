@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.notifications;
 
+import static org.chromium.components.browser_ui.notifications.BitmapUtils.resizeBitmapIfNeeded;
+
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -21,6 +23,7 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
@@ -335,9 +338,19 @@ public class ChromeNotificationWrapperBuilder implements NotificationWrapperBuil
     @Override
     public NotificationWrapperBuilder setBigPictureStyle(
             Bitmap bigPicture, @Nullable CharSequence summaryText) {
-        if (bigPicture.getAllocationByteCount() / 1000 > BIG_PICTURE_BITMAP_MAX_SIZE_IN_KB) {
-            bigPicture = resizeBitmap(bigPicture, BIG_PICTURE_BITMAP_MAX_SIZE_IN_KB);
+        if (NotificationFeatureMap.sAndroidResizeLargeNotificationBitmaps.isEnabled()) {
+            bigPicture =
+                    resizeBitmapIfNeeded(
+                            mContext,
+                            bigPicture,
+                            BIG_PICTURE_MAX_WIDTH_DP,
+                            BIG_PICTURE_MAX_HEIGHT_DP,
+                            BIG_PICTURE_BITMAP_MAX_SIZE_IN_KB);
         }
+
+        RecordHistogram.recordCount100000Histogram(
+                "Notifications.Android.ImageMemorySizeInKB2",
+                bigPicture.getAllocationByteCount() / 1000);
 
         NotificationCompat.BigPictureStyle style =
                 new NotificationCompat.BigPictureStyle().bigPicture(bigPicture);
@@ -413,20 +426,5 @@ public class ChromeNotificationWrapperBuilder implements NotificationWrapperBuil
     public NotificationWrapper buildNotificationWrapper() {
         assert mMetadata != null;
         return new NotificationWrapper(build(), mMetadata, mIsSilent);
-    }
-
-    /**
-     * Scales down {@code bitmap} if its allocation byte count is larger than {@code
-     * maxSizeInKiloBytes}.
-     */
-    private static Bitmap resizeBitmap(Bitmap bitmap, int maxSizeInKiloBytes) {
-        int allocationByteCount = bitmap.getAllocationByteCount();
-        if (allocationByteCount / 1000 <= maxSizeInKiloBytes) return bitmap;
-
-        float scale = (float) Math.sqrt((double) (maxSizeInKiloBytes * 1000) / allocationByteCount);
-        int newWidth = Math.round(bitmap.getWidth() * scale);
-        int newHeight = Math.round(bitmap.getHeight() * scale);
-
-        return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, /* filter= */ true);
     }
 }

@@ -134,14 +134,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Notifications.Android.ImageMemorySizeInKB" units="KB"
+<histogram name="Notifications.Android.ImageMemorySizeInKB2" units="KB"
     expires_after="2027-05-31">
   <owner>peilinwang@google.com</owner>
   <owner>clank-performance-team@google.com</owner>
   <summary>
-    Record the memory size in KB of notification images. Recorded whenever we
-    try to display a notification with an image on Android with API level
-    greater than or equal to 19.
+    Record the memory size in KB of notification images. Recorded when setting
+    BigPictureStyle in ChromeNotificationWrapperBuilder on Android.
   </summary>
 </histogram>
 

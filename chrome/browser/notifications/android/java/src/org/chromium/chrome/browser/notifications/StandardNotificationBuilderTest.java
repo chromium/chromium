@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Build;
 import android.text.SpannableStringBuilder;
 
 import org.junit.Assert;
@@ -24,7 +25,9 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
+import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 
@@ -251,6 +254,48 @@ public class StandardNotificationBuilderTest {
         Assert.assertNotNull(notification.actions[0].getRemoteInputs());
         Assert.assertEquals(1, notification.actions[0].getRemoteInputs().length);
         Assert.assertEquals("Placeholder", notification.actions[0].getRemoteInputs()[0].getLabel());
+    }
+
+    @Test
+    @Feature({"Browser", "Notifications"})
+    @EnableFeatures({NotificationFeatureMap.ANDROID_RESIZE_LARGE_NOTIFICATION_BITMAPS})
+    public void testBigPictureResizing() {
+        Context context = RuntimeEnvironment.getApplication();
+        int width = 2000;
+        int height = 1000;
+        Bitmap largeImage = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+        NotificationBuilderBase builder =
+                new StandardNotificationBuilder(context)
+                        .setChannelId(ChromeChannelDefinitions.ChannelId.SITES)
+                        .setImage(largeImage);
+        Notification notification = buildNotification(builder);
+        Bitmap picture = NotificationTestUtil.getExtraPicture(notification);
+        Assert.assertNotNull(picture);
+
+        float density = context.getResources().getDisplayMetrics().density;
+        int expectedWidth =
+                Math.round(
+                        org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder
+                                        .BIG_PICTURE_MAX_WIDTH_DP
+                                * density);
+        int expectedHeight = Math.round((float) expectedWidth * height / width);
+
+        // The image should have been scaled down maintaining aspect ratio (2:1).
+        // On Android 14+ (API >= 34), EXTRA_PICTURE preserves the exact dimensions.
+        // On older versions (found through trial and error) Android's notification pipeline may
+        // scale it down further, so check that it's smaller and maintains the aspect ratio.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            Assert.assertEquals(expectedWidth, picture.getWidth());
+            Assert.assertEquals(expectedHeight, picture.getHeight());
+        } else {
+            Assert.assertTrue(picture.getWidth() < width);
+            Assert.assertTrue(picture.getHeight() < height);
+            Assert.assertEquals(
+                    (float) width / height,
+                    (float) picture.getWidth() / picture.getHeight(),
+                    0.01f);
+        }
     }
 
     private static PendingIntentProvider createIntent(Context context, String action) {

@@ -74,15 +74,4 @@ public class BitmapUtils {
 
         return Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
     }
-
-    /**
-     * Resizes the bitmap to fit within the desired memory size in kilobytes.
-     *
-     * @param bitmap The source bitmap.
-     * @param desiredSizeInKb The maximum desired memory size in kilobytes.
-     * @return The resized bitmap, or the original if within the memory limit.
-     */
-    public static Bitmap resizeBitmap(Bitmap bitmap, int desiredSizeInKb) {
-        return resizeBitmapByMemory(bitmap, desiredSizeInKb);
-    }
 }

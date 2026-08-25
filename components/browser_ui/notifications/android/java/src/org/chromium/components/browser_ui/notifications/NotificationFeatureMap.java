@@ -9,17 +9,32 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.cached_flags.CachedFlag;
+
+import java.util.List;
 
 /** Java accessor for base::Features listed in native */
 @JNINamespace("browser_ui")
 @NullMarked
 public final class NotificationFeatureMap extends FeatureMap {
+    public static final String ANDROID_RESIZE_LARGE_NOTIFICATION_BITMAPS =
+            "AndroidResizeLargeNotificationBitmaps";
     public static final String CACHE_NOTIIFICATIONS_ENABLED = "CacheNotificationsEnabled";
 
     private static final NotificationFeatureMap sInstance = new NotificationFeatureMap();
 
     // Do not instantiate this class.
     private NotificationFeatureMap() {}
+
+    public static final CachedFlag sAndroidResizeLargeNotificationBitmaps =
+            new CachedFlag(
+                    sInstance,
+                    ANDROID_RESIZE_LARGE_NOTIFICATION_BITMAPS,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ false);
+
+    public static final List<CachedFlag> sCachedFlags =
+            List.of(sAndroidResizeLargeNotificationBitmaps);
 
     /**
      * @return the singleton NotificationFeatureMap.
