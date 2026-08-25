@@ -12,21 +12,18 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import '../settings_page/settings_subpage.js';
-import '../settings_shared.css.js';
-import '../settings_vars.css.js';
 
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {routes} from '../route.js';
-import type {Route} from '../router.js';
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
 
-import {getTemplate} from './edit_dictionary_page.html.js';
+import {getCss} from './edit_dictionary_page.css.js';
+import {getHtml} from './edit_dictionary_page.html.js';
 import {LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
 
 // Max valid word size defined in
@@ -41,8 +38,10 @@ export interface SettingsEditDictionaryPageElement {
   };
 }
 
-const SettingsEditDictionaryPageElementBase = PrefServiceObserverMixin(
-    SettingsViewMixin(GlobalScrollTargetMixin(PolymerElement)));
+const SettingsEditDictionaryPageElementBase =
+    PrefServiceObserverMixinLit(SettingsViewMixinLit(CrLitElement));
+
+export type EditDictionaryPageElement = SettingsEditDictionaryPageElement;
 
 export class SettingsEditDictionaryPageElement extends
     SettingsEditDictionaryPageElementBase {
@@ -50,47 +49,28 @@ export class SettingsEditDictionaryPageElement extends
     return 'settings-edit-dictionary-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      newWordValue_: {
-        type: String,
-        value: '',
-      },
-
-      /**
-       * Needed by GlobalScrollTargetMixin.
-       */
-      subpageRoute: {
-        type: Object,
-        value: routes.EDIT_DICTIONARY,
-      },
-
-      words_: {
-        type: Array,
-        value() {
-          return [];
-        },
-      },
-
-      hasWords_: {
-        type: Boolean,
-        value: false,
-      },
-
-      enableSpellcheckingPref_: Object,
+      enableSpellcheckingPref_: {type: Object},
+      newWordValue_: {type: String},
+      words_: {type: Array},
+      hasWords_: {type: Boolean},
     };
   }
 
-  declare protected enableSpellcheckingPref_:
+  protected accessor enableSpellcheckingPref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
-  declare private newWordValue_: string;
-  declare subpageRoute: Route;
-  declare private words_: string[];
-  declare private hasWords_: boolean;
+  protected accessor newWordValue_: string = '';
+  protected accessor words_: string[] = [];
+  protected accessor hasWords_: boolean = false;
   private languageSettingsPrivate_:
       (typeof chrome.languageSettingsPrivate)|null = null;
 
@@ -100,18 +80,10 @@ export class SettingsEditDictionaryPageElement extends
     this.mirrorPrefs({
       'browser.enable_spellchecking': 'enableSpellcheckingPref_',
     });
-
-    // TODO(crbug.com/540914692): Workaround for Blink bug, by resetting
-    // focusgroup attribute restores FocusgroupData that was wiped out during
-    // detachment/attachment. Can probably remove this after migrating to Lit.
-    const list = this.shadowRoot!.querySelector('#list');
-    if (list) {
-      list.setAttribute('focusgroup', list.getAttribute('focusgroup')!);
-    }
   }
 
-  override ready() {
-    super.ready();
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
 
     this.languageSettingsPrivate_ =
         LanguagesBrowserProxyImpl.getInstance().getLanguageSettingsPrivate();
@@ -140,11 +112,11 @@ export class SettingsEditDictionaryPageElement extends
   /**
    * Check if the field is empty or invalid.
    */
-  private disableAddButton_(): boolean {
+  protected disableAddButton_(): boolean {
     return this.getTrimmedNewWord_().length === 0 || this.isWordInvalid_();
   }
 
-  private getErrorMessage_(): string {
+  protected getErrorMessage_(): string {
     if (this.newWordIsTooLong_()) {
       return loadTimeData.getString('addDictionaryWordLengthError');
     }
@@ -162,7 +134,7 @@ export class SettingsEditDictionaryPageElement extends
    * If the word is invalid, returns true (or a message if one is provided).
    * Otherwise returns false.
    */
-  private isWordInvalid_(): boolean {
+  protected isWordInvalid_(): boolean {
     return this.newWordAlreadyAdded_() || this.newWordIsTooLong_();
   }
 
@@ -177,22 +149,26 @@ export class SettingsEditDictionaryPageElement extends
   /**
    * Handles tapping on the Add Word button.
    */
-  private onAddWordClick_() {
+  protected onAddWordClick_() {
     this.addWordFromInput_();
     this.$.newWord.focus();
+  }
+
+  protected onNewWordValueChanged_(e: CustomEvent<{value: string}>) {
+    this.newWordValue_ = e.detail.value;
   }
 
   /**
    * Handles updates to the word list. Additions are unshifted to the top
    * of the list so that users can see them easily.
    */
-  private onCustomDictionaryChanged_(added: string[], removed: string[]) {
+  private async onCustomDictionaryChanged_(added: string[], removed: string[]) {
     const wasEmpty = this.words_.length === 0;
 
     for (const word of removed) {
       const index = this.words_.indexOf(word);
       if (index !== -1) {
-        this.splice('words_', index, 1);
+        this.words_.splice(index, 1);
       }
     }
 
@@ -200,24 +176,23 @@ export class SettingsEditDictionaryPageElement extends
       this.hasWords_ = false;
     }
 
-    // This is a workaround to ensure the dom-if is set to true before items
-    // are rendered so that focus works correctly in Polymer 2; see
-    // https://crbug.com/41430384.
     if (wasEmpty && added.length > 0) {
       this.hasWords_ = true;
     }
 
     for (const word of added) {
       if (!this.words_.includes(word)) {
-        this.unshift('words_', word);
+        this.words_.unshift(word);
       }
     }
 
+    this.requestUpdate();
+
     if (removed.length > 0) {
-      flush();
-      const focused = this.shadowRoot!.querySelector('.list-item:focus-within');
+      await this.updateComplete;
+      const focused = this.shadowRoot.querySelector('.list-item:focus-within');
       if (!focused) {
-        const toFocus = this.shadowRoot!.querySelector<HTMLElement>(
+        const toFocus = this.shadowRoot.querySelector<HTMLElement>(
             '.list-item:last-of-type cr-icon-button');
         toFocus?.focus();
       }
@@ -227,7 +202,7 @@ export class SettingsEditDictionaryPageElement extends
   /**
    * Handles Enter and Escape key presses for the new-word input.
    */
-  private onKeysPress_(e: KeyboardEvent) {
+  protected onNewWordKeydown_(e: KeyboardEvent) {
     if (e.key === 'Enter' && !this.disableAddButton_()) {
       this.addWordFromInput_();
     } else if (e.key === 'Escape') {
@@ -238,13 +213,15 @@ export class SettingsEditDictionaryPageElement extends
   /**
    * Handles tapping on a "Remove word" icon button.
    */
-  private onRemoveWordClick_(e: {model: {item: string}}) {
-    this.languageSettingsPrivate_!.removeSpellcheckWord(e.model.item);
+  protected onRemoveWordClick_(e: Event) {
+    const target = e.currentTarget as HTMLElement;
+    const item = target.dataset['item']!;
+    this.languageSettingsPrivate_!.removeSpellcheckWord(item);
   }
 
   // SettingsViewMixin implementation.
   override focusBackButton() {
-    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+    this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

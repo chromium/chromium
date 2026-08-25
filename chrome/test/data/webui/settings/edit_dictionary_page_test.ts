@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsEditDictionaryPageElement} from 'chrome://settings/lazy_load.js';
 import {LanguagesBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
@@ -49,10 +48,10 @@ suite('EditDictionaryPage', function() {
     const addWordButton = editDictPage.$.addWord;
     assertTrue(!!addWordButton);
     editDictPage.$.newWord.value = '';
-    await editDictPage.$.newWord.updateComplete;
+    await microtasksFinished();
     assertTrue(addWordButton.disabled);
     editDictPage.$.newWord.value = 'valid word';
-    await editDictPage.$.newWord.updateComplete;
+    await microtasksFinished();
     assertFalse(addWordButton.disabled);
     assertFalse(
         window.getComputedStyle(addWordButton)
@@ -64,17 +63,15 @@ suite('EditDictionaryPage', function() {
     const WORD = 'unique';
     languageSettingsPrivate.onCustomDictionaryChanged.callListeners([WORD], []);
     editDictPage.$.newWord.value = `${WORD} ${WORD}`;
-    await editDictPage.$.newWord.updateComplete;
-    flush();
+    await microtasksFinished();
     assertFalse(editDictPage.$.addWord.disabled);
 
     editDictPage.$.newWord.value = WORD;
-    await editDictPage.$.newWord.updateComplete;
-    flush();
+    await microtasksFinished();
     assertTrue(editDictPage.$.addWord.disabled);
 
     languageSettingsPrivate.onCustomDictionaryChanged.callListeners([], [WORD]);
-    flush();
+    await microtasksFinished();
     assertFalse(editDictPage.$.addWord.disabled);
   });
 
@@ -87,7 +84,7 @@ suite('EditDictionaryPage', function() {
     assertEquals(
         WORD, await languageSettingsPrivate.whenCalled('addSpellcheckWord'));
 
-    flush();
+    await microtasksFinished();
 
     // Clear input by pressing Escape.
     editDictPage.$.newWord.value = 'testEscape';
@@ -101,57 +98,58 @@ suite('EditDictionaryPage', function() {
     assertTrue(!!editDictPage);
     await languageSettingsPrivate.whenCalled('getSpellcheckWords');
 
-    flush();
+    await microtasksFinished();
 
     assertFalse(editDictPage.$.noWordsLabel.hidden);
-    assertFalse(!!editDictPage.shadowRoot!.querySelector('#list'));
+    assertFalse(!!editDictPage.shadowRoot.querySelector('#list'));
   });
 
   test('spellcheck edit dictionary page list has words', async () => {
     const addWordButton = editDictPage.$.addWord;
     editDictPage.$.newWord.value = 'valid word';
-    await editDictPage.$.newWord.updateComplete;
+    await microtasksFinished();
     addWordButton.click();
+    await microtasksFinished();
     editDictPage.$.newWord.value = 'valid word2';
-    await editDictPage.$.newWord.updateComplete;
+    await microtasksFinished();
     addWordButton.click();
-    flush();
+    await microtasksFinished();
 
     assertTrue(editDictPage.$.noWordsLabel.hidden);
-    assertTrue(!!editDictPage.shadowRoot!.querySelector('#list'));
-    assertEquals(2, editDictPage.shadowRoot!.querySelectorAll('.word').length);
+    assertTrue(!!editDictPage.shadowRoot.querySelector('#list'));
+    assertEquals(2, editDictPage.shadowRoot.querySelectorAll('.word').length);
   });
 
   test('spellcheck edit dictionary page remove is in tab order', async () => {
     const addWordButton = editDictPage.$.addWord;
     editDictPage.$.newWord.value = 'valid word';
-    await editDictPage.$.newWord.updateComplete;
+    await microtasksFinished();
     addWordButton.click();
-    flush();
+    await microtasksFinished();
 
     assertTrue(editDictPage.$.noWordsLabel.hidden);
-    assertTrue(!!editDictPage.shadowRoot!.querySelector('#list'));
-    assertEquals(1, editDictPage.shadowRoot!.querySelectorAll('.word').length);
+    assertTrue(!!editDictPage.shadowRoot.querySelector('#list'));
+    assertEquals(1, editDictPage.shadowRoot.querySelectorAll('.word').length);
 
     const removeWordButton =
-        editDictPage.shadowRoot!.querySelector('cr-icon-button')!;
+        editDictPage.shadowRoot.querySelector('cr-icon-button')!;
     // Button should be reachable in the tab order.
     assertEquals('0', removeWordButton.getAttribute('tabindex'));
     removeWordButton.click();
-    flush();
+    await microtasksFinished();
 
     assertFalse(editDictPage.$.noWordsLabel.hidden);
 
     editDictPage.$.newWord.value = 'valid word2';
-    await editDictPage.$.newWord.updateComplete;
+    await microtasksFinished();
     addWordButton.click();
-    flush();
+    await microtasksFinished();
 
     assertTrue(editDictPage.$.noWordsLabel.hidden);
-    assertTrue(!!editDictPage.shadowRoot!.querySelector('#list'));
-    assertEquals(1, editDictPage.shadowRoot!.querySelectorAll('.word').length);
+    assertTrue(!!editDictPage.shadowRoot.querySelector('#list'));
+    assertEquals(1, editDictPage.shadowRoot.querySelectorAll('.word').length);
     const newRemoveWordButton =
-        editDictPage.shadowRoot!.querySelector('cr-icon-button')!;
+        editDictPage.shadowRoot.querySelector('cr-icon-button')!;
     // Button should be reachable in the tab order.
     assertEquals('0', newRemoveWordButton.getAttribute('tabindex'));
   });
@@ -159,11 +157,11 @@ suite('EditDictionaryPage', function() {
   test('EditDictionaryPageFocusgroup', async () => {
     const addWordButton = editDictPage.$.addWord;
     editDictPage.$.newWord.value = 'valid word';
-    await editDictPage.$.newWord.updateComplete;
+    await microtasksFinished();
     addWordButton.click();
-    flush();
+    await microtasksFinished();
 
-    const list = editDictPage.shadowRoot!.querySelector('#list')!;
+    const list = editDictPage.shadowRoot.querySelector('#list')!;
     assertEquals('listbox block', list.getAttribute('focusgroup'));
   });
 });
@@ -198,22 +196,23 @@ suite('EditDictionaryPageFocus', function() {
   test('focus restored when last item deleted', async () => {
     const addWordButton = editDictPage.$.addWord;
     editDictPage.$.newWord.value = 'word1';
-    await editDictPage.$.newWord.updateComplete;
+    await microtasksFinished();
     addWordButton.click();
+    await microtasksFinished();
     editDictPage.$.newWord.value = 'word2';
-    await editDictPage.$.newWord.updateComplete;
+    await microtasksFinished();
     addWordButton.click();
-    flush();
+    await microtasksFinished();
 
-    const buttons = editDictPage.shadowRoot!.querySelectorAll('cr-icon-button');
+    const buttons = editDictPage.shadowRoot.querySelectorAll('cr-icon-button');
     assertEquals(2, buttons.length);
 
     // Focus the second item's delete button and click it.
     buttons[1]!.focus();
     buttons[1]!.click();
-    flush();
+    await microtasksFinished();
 
     // Focus should be restored to the remaining item's delete button.
-    assertEquals(buttons[0], editDictPage.shadowRoot!.activeElement);
+    assertEquals(buttons[0], editDictPage.shadowRoot.activeElement);
   });
 });
