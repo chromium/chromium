@@ -567,6 +567,7 @@ BASE_FEATURE(kAutofillAtMemoryInactivityNudge,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the previously filled suggestions from AtMemory are shown.
+// Takes no effect when `kAutofillAtMemorySearchStatefulness` is disabled.
 BASE_FEATURE(kAutofillAtMemoryPreviouslyFilled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -16,6 +16,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/containers/adapters.h"
 #include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -533,7 +534,7 @@ IsAsync AtMemoryManager::FillSearchResult(
   }
   if (base::FeatureList::IsEnabled(
           features::kAutofillAtMemorySearchStatefulness)) {
-    state_manager_.OnSuggestionAccepted();
+    state_manager_.OnSuggestionAccepted(suggestion);
   }
   // Transfer ownership of the metrics session to the filling path.
   // Ensures that the metrics will be properly recorded once the suggestion
@@ -762,11 +763,11 @@ void AtMemoryManager::MaybeAppendPersonalContextNotice(
   suggestions.insert(suggestions.begin(), std::move(notice));
 }
 
-// static
 void AtMemoryManager::MaybeAppendPreviouslyFilledSuggestions(
-    std::vector<Suggestion>& suggestions) {
+    std::vector<Suggestion>& suggestions) const {
   if (!base::FeatureList::IsEnabled(
-          features::kAutofillAtMemoryPreviouslyFilled)) {
+          features::kAutofillAtMemoryPreviouslyFilled) ||
+      state_manager_.previously_filled_suggestions().empty()) {
     return;
   }
   Suggestion suggestion(
@@ -775,8 +776,9 @@ void AtMemoryManager::MaybeAppendPreviouslyFilledSuggestions(
   suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   suggestion.acceptability =
       Suggestion::Acceptability::kUnselectableAndUnacceptable;
-  // TODO(crbug.com/494559543): Add the actual suggestions.
   suggestions.push_back(std::move(suggestion));
+  base::Extend(suggestions,
+               base::Reversed(state_manager_.previously_filled_suggestions()));
 }
 
 void AtMemoryManager::ExecuteQuery(const std::u16string& filter) {

@@ -186,8 +186,8 @@ class AtMemoryManager {
   void AdvanceFetchingSuggestion();
 
   // Appends previously filled suggestions to the list of suggestions.
-  static void MaybeAppendPreviouslyFilledSuggestions(
-      std::vector<Suggestion>& suggestions);
+  void MaybeAppendPreviouslyFilledSuggestions(
+      std::vector<Suggestion>& suggestions) const;
 
   // Shows all the suggestions in the empty state.
   // These suggestions will be in order:

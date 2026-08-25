@@ -2754,8 +2754,7 @@ TEST_F(AtMemoryManagerTestBase,
   base::test::ScopedFeatureList feature_list{
       features::kAutofillAtMemorySearchStatefulness};
 
-  FormGlobalId form_id = test::MakeFormGlobalId();
-  FieldGlobalId field_id = test::MakeFieldGlobalId();
+  auto [form_id, field_id] = SeeForm();
 
   EXPECT_TRUE(manager()
                   .GetStateForField(field_id, form_origin())
@@ -2788,6 +2787,109 @@ TEST_F(AtMemoryManagerTestBase,
 }
 
 INSTANTIATE_TEST_SUITE_P(All, AtMemoryManagerTest, testing::Bool());
+
+// Tests that empty query displays previously filled suggestions below the
+// header in newest-to-oldest order.
+TEST_F(AtMemoryManagerTestBase,
+       PreviouslyFilledSuggestionsDisplayedInNewestFirstOrder) {
+  base::test::ScopedFeatureList feature_list{
+      {features::kAutofillAtMemoryPreviouslyFilled,
+       features::kAutofillAtMemorySearchStatefulness}};
+
+  auto [form_id, field_id] = SeeForm();
+
+  // Initially empty query contains no header when no suggestions were accepted.
+  EXPECT_TRUE(manager().GetEmptyQuerySuggestions().empty());
+
+  // Accept suggestion 1.
+  Suggestion s1(u"Suggestion 1", SuggestionType::kAtMemorySearchResult);
+  s1.payload =
+      Suggestion::AtMemoryPayload(u"Suggestion 1", MemoryDataType::kNameFull);
+  manager().FillOrPreviewSearchResult(autofill_manager(),
+                                      mojom::ActionPersistence::kFill, form_id,
+                                      field_id, s1);
+
+  // Accept suggestion 2.
+  Suggestion s2(u"Suggestion 2", SuggestionType::kAtMemorySearchResult);
+  s2.payload = Suggestion::AtMemoryPayload(u"Suggestion 2",
+                                           MemoryDataType::kAddressFull);
+  manager().FillOrPreviewSearchResult(autofill_manager(),
+                                      mojom::ActionPersistence::kFill, form_id,
+                                      field_id, s2);
+
+  // Verify empty query suggestions contain header followed by s2 then s1
+  // (newest to oldest).
+  std::vector<Suggestion> empty_suggestions =
+      manager().GetEmptyQuerySuggestions();
+  ASSERT_EQ(empty_suggestions.size(), 3u);
+  EXPECT_EQ(empty_suggestions[0].type, SuggestionType::kTitle);
+  EXPECT_EQ(empty_suggestions[1].main_text.value, u"Suggestion 2");
+  EXPECT_EQ(empty_suggestions[2].main_text.value, u"Suggestion 1");
+}
+
+// Tests that empty query does not display previously filled suggestions when
+// previously filled suggestions are disabled.
+TEST_F(AtMemoryManagerTestBase,
+       PreviouslyFilledSuggestionsNotDisplayedWhenPreviouslyFilledDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillAtMemorySearchStatefulness},
+      /*disabled_features=*/{features::kAutofillAtMemoryPreviouslyFilled});
+
+  auto [form_id, field_id] = SeeForm();
+
+  Suggestion s1(u"Suggestion 1", SuggestionType::kAtMemorySearchResult);
+  s1.payload =
+      Suggestion::AtMemoryPayload(u"Suggestion 1", MemoryDataType::kNameFull);
+  manager().FillOrPreviewSearchResult(autofill_manager(),
+                                      mojom::ActionPersistence::kFill, form_id,
+                                      field_id, s1);
+
+  EXPECT_TRUE(manager().GetEmptyQuerySuggestions().empty());
+}
+
+// Tests that empty query does not display previously filled suggestions when
+// search statefulness is disabled.
+TEST_F(AtMemoryManagerTestBase,
+       PreviouslyFilledSuggestionsNotDisplayedWhenStatefulnessDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillAtMemoryPreviouslyFilled},
+      /*disabled_features=*/{features::kAutofillAtMemorySearchStatefulness});
+
+  auto [form_id, field_id] = SeeForm();
+
+  Suggestion s1(u"Suggestion 1", SuggestionType::kAtMemorySearchResult);
+  s1.payload =
+      Suggestion::AtMemoryPayload(u"Suggestion 1", MemoryDataType::kNameFull);
+  manager().FillOrPreviewSearchResult(autofill_manager(),
+                                      mojom::ActionPersistence::kFill, form_id,
+                                      field_id, s1);
+
+  EXPECT_TRUE(manager().GetEmptyQuerySuggestions().empty());
+}
+
+// Tests that empty query does not display previously filled suggestions when
+// both statefulness features are disabled.
+TEST_F(AtMemoryManagerTestBase,
+       PreviouslyFilledSuggestionsNotDisplayedWhenBothDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kAutofillAtMemoryPreviouslyFilled,
+                             features::kAutofillAtMemorySearchStatefulness});
+
+  auto [form_id, field_id] = SeeForm();
+
+  Suggestion s1(u"Suggestion 1", SuggestionType::kAtMemorySearchResult);
+  s1.payload =
+      Suggestion::AtMemoryPayload(u"Suggestion 1", MemoryDataType::kNameFull);
+  manager().FillOrPreviewSearchResult(autofill_manager(),
+                                      mojom::ActionPersistence::kFill, form_id,
+                                      field_id, s1);
+
+  EXPECT_TRUE(manager().GetEmptyQuerySuggestions().empty());
+}
 
 }  // namespace
 

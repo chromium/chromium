@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
@@ -58,9 +59,18 @@ void AtMemoryPersistedStateManager::OnSuggestionsChanged(
   search_state_->suggestions = std::move(suggestions);
 }
 
-void AtMemoryPersistedStateManager::OnSuggestionAccepted() {
+void AtMemoryPersistedStateManager::OnSuggestionAccepted(
+    const Suggestion& suggestion) {
   field_id_ = FieldGlobalId();
   search_state_.reset();
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillAtMemoryPreviouslyFilled)) {
+    return;
+  }
+  // TODO(crbug.com/494559543): Deduplicate suggestions.
+  // TODO(crbug.com/494559543): For secondary suggestions, push their
+  // corresponding primary suggestion instead.
+  previously_filled_suggestions_.push_back(suggestion);
 }
 
 bool AtMemoryPersistedStateManager::IsSearching() const {
@@ -68,12 +78,11 @@ bool AtMemoryPersistedStateManager::IsSearching() const {
 }
 
 void AtMemoryPersistedStateManager::StopSearching() {
-  if (search_state_) {
-    if (search_state_->is_searching) {
-      search_state_->suggestions.clear();
-    }
-    search_state_->is_searching = false;
+  if (!search_state_ || !search_state_->is_searching) {
+    return;
   }
+  search_state_->suggestions.clear();
+  search_state_->is_searching = false;
 }
 
 }  // namespace autofill

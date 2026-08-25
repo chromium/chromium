@@ -17,8 +17,11 @@
 
 namespace autofill {
 
-// Manages the single-field in-memory persisted search state for AtMemory
-// autofill.
+// Manages in-memory persisted state for AtMemory autofill:
+// 1. `search_state_`: Persisted search state (filter, suggestions, search
+//    status) for the active field across popup open/close lifecycles.
+// 2. `previously_filled_suggestions_`: History of suggestions accepted by the
+//    user, rendered in empty-query suggestion popups.
 //
 // Lifecycle invariant:
 // `GetStateForField()` MUST be called whenever a field is focused before
@@ -48,14 +51,16 @@ class AtMemoryPersistedStateManager {
   void OnFilterChanged(std::u16string_view filter);
   void OnFilterSubmitted(const std::u16string& filter);
   void OnSuggestionsChanged(std::vector<Suggestion> suggestions);
-  void OnSuggestionAccepted();
+  void OnSuggestionAccepted(const Suggestion& suggestion);
 
   bool IsSearching() const;
   void StopSearching();
 
-  const url::Origin& field_origin() const {
-    return field_origin_;
+  const std::vector<Suggestion>& previously_filled_suggestions() const {
+    return previously_filled_suggestions_;
   }
+
+  const url::Origin& field_origin() const { return field_origin_; }
 
  private:
   // Field id for which the `search_state_` is kept.
@@ -65,6 +70,8 @@ class AtMemoryPersistedStateManager {
   // State of the search for the active field. Reset if
   // `GetStateForField` is called for another field.
   std::optional<AtMemorySearchState> search_state_;
+  // Stores previously filled suggestions.
+  std::vector<Suggestion> previously_filled_suggestions_;
 };
 
 }  // namespace autofill

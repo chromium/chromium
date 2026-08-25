@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -120,7 +121,8 @@ TEST_F(AtMemoryPersistedStateManagerTest,
        OnSuggestionAcceptedResetsSearchState) {
   state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().OnFilterSubmitted(u"address");
-  state_manager().OnSuggestionAccepted();
+  state_manager().OnSuggestionAccepted(
+      Suggestion(u"123 Main St", SuggestionType::kAddressEntry));
 
   EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
             std::nullopt);
@@ -146,6 +148,41 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   EXPECT_EQ(restored_state->filter, u"ongoing_query");
   EXPECT_TRUE(restored_state->suggestions.empty());
   EXPECT_FALSE(restored_state->is_searching);
+}
+
+// Tests that `OnSuggestionAccepted` stores accepted suggestions in
+// `previously_filled_suggestions` when `kAutofillAtMemoryPreviouslyFilled`
+// is enabled.
+TEST_F(AtMemoryPersistedStateManagerTest, StoresPreviouslyFilledSuggestions) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+
+  Suggestion s1(u"Suggestion 1", SuggestionType::kAtMemorySearchResult);
+  Suggestion s2(u"Suggestion 2", SuggestionType::kAtMemorySearchResult);
+
+  state_manager().OnSuggestionAccepted(s1);
+  state_manager().OnSuggestionAccepted(s2);
+
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 2u);
+  EXPECT_EQ(state_manager().previously_filled_suggestions()[0].main_text.value,
+            u"Suggestion 1");
+  EXPECT_EQ(state_manager().previously_filled_suggestions()[1].main_text.value,
+            u"Suggestion 2");
+}
+
+// Tests that `OnSuggestionAccepted` does not store accepted suggestions in
+// `previously_filled_suggestions` when `kAutofillAtMemoryPreviouslyFilled`
+// is disabled.
+TEST_F(AtMemoryPersistedStateManagerTest,
+       DoesNotStorePreviouslyFilledSuggestionsWhenDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillAtMemoryPreviouslyFilled);
+
+  Suggestion s1(u"Suggestion 1", SuggestionType::kAtMemorySearchResult);
+  state_manager().OnSuggestionAccepted(s1);
+
+  EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
 }
 
 }  // namespace
