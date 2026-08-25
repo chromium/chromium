@@ -8,7 +8,7 @@
 
 #import "components/autofill/core/browser/payments/legal_message_line.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
+#import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/autofill/wallet_reminder_notice/ui/wallet_reminder_notice_consumer.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -40,7 +40,7 @@
                      IDS_AUTOFILL_WALLET_REMINDER_NOTICE_CONFIRM_BUTTON_LABEL)];
 
   if (!_legalMessageLines.empty()) {
-    [_consumer setDisclaimerText:[SaveCardMessageWithLinks
+    [_consumer setDisclaimerText:[AutofillLegalMessageLine
                                      convertFrom:_legalMessageLines]];
   }
 }

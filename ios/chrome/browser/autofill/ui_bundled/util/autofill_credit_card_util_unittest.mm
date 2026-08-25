@@ -10,7 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/payments/test_legal_message_line.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
-#import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
+#import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -103,7 +103,7 @@ TEST_F(AutofillCreditCardUtilTest, TestCreditCardData) {
 }
 
 // Test that `AutofillCreditCardUtilTest::CreateTextViewForLegalMessage` creates
-// a text view for given SaveCardMessageWithLinks.
+// a text view for given AutofillLegalMessageLine.
 TEST_F(AutofillCreditCardUtilTest, CreateTextViewForLegalMessage) {
   autofill::LegalMessageLines legal_message_lines =
       autofill::LegalMessageLines({autofill::TestLegalMessageLine(
@@ -113,11 +113,11 @@ TEST_F(AutofillCreditCardUtilTest, CreateTextViewForLegalMessage) {
                   /*start=*/10, /*end=*/23,
                   /*url_spec=*/"https://savecard.test"),
           })});
-  NSMutableArray<SaveCardMessageWithLinks*>* save_card_messages =
-      [SaveCardMessageWithLinks convertFrom:legal_message_lines];
+  NSMutableArray<AutofillLegalMessageLine*>* legal_messages =
+      [AutofillLegalMessageLine convertFrom:legal_message_lines];
 
-  UITextView* text_view = [AutofillCreditCardUtil
-      createTextViewForLegalMessage:save_card_messages[0]];
+  UITextView* text_view =
+      [AutofillCreditCardUtil createTextViewForLegalMessage:legal_messages[0]];
 
   EXPECT_FALSE(text_view.editable);
   EXPECT_NSEQ(text_view.attributedText.string,

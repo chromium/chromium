@@ -4,22 +4,22 @@
 
 source_set("message") {
   sources = [
-    "save_card_message_with_links.h",
-    "save_card_message_with_links.mm",
+    "autofill_legal_message_line.h",
+    "autofill_legal_message_line.mm",
   ]
   deps = [
+    "//base",
     "//components/autofill/core/browser:legal_message_line",
-    "//components/strings:components_strings",
-    "//ui/base",
     "//url",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "save_card_message_with_links_unittest.mm" ]
+  sources = [ "autofill_legal_message_line_unittest.mm" ]
   deps = [
     ":message",
+    "//base",
     "//components/autofill/core/browser:legal_message_line",
     "//components/autofill/core/browser:test_support",
     "//testing/gtest",

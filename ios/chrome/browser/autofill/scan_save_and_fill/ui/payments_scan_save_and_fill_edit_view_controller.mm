@@ -15,6 +15,7 @@
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_ui_type.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_mutator.h"
@@ -128,7 +129,7 @@ void StyleButtonForConfirmation(UIButtonConfiguration* config) {
   TableViewTextEditItem* _nicknameItem;
 
   // Legal messages to show at the bottom.
-  NSArray<SaveCardMessageWithLinks*>* _legalMessages;
+  NSArray<AutofillLegalMessageLine*>* _legalMessages;
 
   // Data source.
   UITableViewDiffableDataSource<NSNumber*, TableViewItem*>* _diffableDataSource;
@@ -494,7 +495,7 @@ void StyleButtonForConfirmation(UIButtonConfiguration* config) {
                           withImage:PrimaryButtonImageSpinner];
 }
 
-- (void)setLegalMessages:(NSArray<SaveCardMessageWithLinks*>*)legalMessages {
+- (void)setLegalMessages:(NSArray<AutofillLegalMessageLine*>*)legalMessages {
   _legalMessages = [legalMessages copy];
   if (self.isViewLoaded) {
     NSDiffableDataSourceSnapshot* snapshot = [_diffableDataSource snapshot];
@@ -520,7 +521,7 @@ void StyleButtonForConfirmation(UIButtonConfiguration* config) {
     footerView.layoutMargins = kFooterMargins;
     footerView.layoutMarginsRelativeArrangement = YES;
 
-    for (SaveCardMessageWithLinks* message in _legalMessages) {
+    for (AutofillLegalMessageLine* message in _legalMessages) {
       UITextView* legalTextView =
           [AutofillCreditCardUtil createTextViewForLegalMessage:message];
       legalTextView.delegate = self;

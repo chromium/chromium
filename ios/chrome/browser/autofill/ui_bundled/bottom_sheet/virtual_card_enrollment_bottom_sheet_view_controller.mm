@@ -10,6 +10,7 @@
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/util/autofill_credit_card_util.h"
 #import "ios/chrome/browser/net/model/crurl.h"
@@ -301,8 +302,8 @@ CGFloat const kCreditCardCellHeight = 64;
 }
 
 // Adds a text view for the given legal message to the under title view.
-- (void)addLegalMessages:(NSArray<SaveCardMessageWithLinks*>*)messages {
-  for (SaveCardMessageWithLinks* message in messages) {
+- (void)addLegalMessages:(NSArray<AutofillLegalMessageLine*>*)messages {
+  for (AutofillLegalMessageLine* message in messages) {
     UITextView* textView =
         [AutofillCreditCardUtil createTextViewForLegalMessage:message];
     textView.delegate = self;

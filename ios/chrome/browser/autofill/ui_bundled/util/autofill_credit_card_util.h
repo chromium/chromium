@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
-#import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
+#import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 
 @interface AutofillCreditCardUtil : NSObject
 
@@ -64,14 +64,12 @@
 + (BOOL)shouldEditCardFromPaymentsWebPage:(const autofill::CreditCard&)card;
 
 // Creates a text view suitable for payment flows to display
-// SaveCardMessageWithLinks. Adds hyperlinks in the specified range of text. If
+// AutofillLegalMessageLine. Adds hyperlinks in the specified range of text. If
 // the text view is expected to allow user interaction with the hyperlinks, then
 // the caller is responsible to set the UITextViewDelegate of the text view to
 // respond to user's actions.
-// TODO(crbug.com/413056780): Rename SaveCardMessageWithLinks to
-// LegalMessageLine.
 + (UITextView*)createTextViewForLegalMessage:
-    (SaveCardMessageWithLinks*)legalMessage;
+    (AutofillLegalMessageLine*)legalMessage;
 
 @end
 

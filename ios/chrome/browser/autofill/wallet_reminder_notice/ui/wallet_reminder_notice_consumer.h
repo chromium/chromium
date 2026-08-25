@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class SaveCardMessageWithLinks;
+@class AutofillLegalMessageLine;
 
 // Consumer interface for updating the Wallet Reminder Notice bottom sheet.
 @protocol WalletReminderNoticeConsumer <NSObject>
@@ -16,7 +16,7 @@
 - (void)setTitleString:(NSString*)titleString;
 
 // Sets the hyperlinked disclaimer text lines.
-- (void)setDisclaimerText:(NSArray<SaveCardMessageWithLinks*>*)disclaimerText;
+- (void)setDisclaimerText:(NSArray<AutofillLegalMessageLine*>*)disclaimerText;
 
 // Sets the text for the primary action button.
 - (void)setPrimaryActionString:(NSString*)primaryActionString;

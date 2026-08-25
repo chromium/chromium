@@ -13,7 +13,7 @@
 #import "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
-#import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
+#import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_save_card_modal_consumer.h"
@@ -297,15 +297,15 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
 
 #pragma mark - Private
 
-// Returns an array of UI SaveCardMessageWithLinks model objects.
-- (NSMutableArray<SaveCardMessageWithLinks*>*)legalMessages {
+// Returns an array of UI AutofillLegalMessageLine model objects.
+- (NSMutableArray<AutofillLegalMessageLine*>*)legalMessages {
   autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
       self.saveCardDelegate;
   // Only display legal Messages if the card is being uploaded and there are
   // any.
   if (delegate->is_for_upload() && !delegate->legal_message_lines().empty()) {
     return
-        [SaveCardMessageWithLinks convertFrom:delegate->legal_message_lines()];
+        [AutofillLegalMessageLine convertFrom:delegate->legal_message_lines()];
   }
   return [[NSMutableArray alloc] init];
 }

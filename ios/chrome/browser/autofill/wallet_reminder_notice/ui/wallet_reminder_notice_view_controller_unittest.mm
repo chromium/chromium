@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/autofill/wallet_reminder_notice/ui/wallet_reminder_notice_view_controller.h"
 
-#import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
+#import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -55,7 +55,7 @@ TEST_F(WalletReminderNoticeViewControllerTest, SetDisclaimerText) {
   WalletReminderNoticeViewController* view_controller =
       [[WalletReminderNoticeViewController alloc] init];
 
-  SaveCardMessageWithLinks* message = [[SaveCardMessageWithLinks alloc] init];
+  AutofillLegalMessageLine* message = [[AutofillLegalMessageLine alloc] init];
   message.messageText = @"Test legal disclaimer message";
 
   [view_controller setDisclaimerText:@[ message ]];

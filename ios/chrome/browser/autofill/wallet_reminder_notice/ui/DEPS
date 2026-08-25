@@ -5,13 +5,13 @@ include_rules = [
   "+ios/chrome/common/ui",
 ]
 
-# TODO(crbug.com/540389638): Remove this once SaveCardMessageWithLinks is moved to
+# TODO(crbug.com/540389638): Remove this once AutofillLegalMessageLine is moved to
 # public/.
 specific_include_rules = {
   "wallet_reminder_notice_view_controller.mm": [
-    "+ios/chrome/browser/autofill/model/message/save_card_message_with_links.h",
+    "+ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h",
   ],
   "wallet_reminder_notice_view_controller_unittest.mm": [
-    "+ios/chrome/browser/autofill/model/message/save_card_message_with_links.h",
+    "+ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h",
   ],
 }

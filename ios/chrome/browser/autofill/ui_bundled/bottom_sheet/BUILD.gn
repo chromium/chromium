@@ -302,6 +302,7 @@ source_set("virtual_card_enrollment_bottom_sheet_mediator") {
     "//components/autofill/core/browser",
     "//ios/chrome/browser/autofill/model/bottom_sheet:virtual_card_enrollment_callbacks",
     "//ios/chrome/browser/autofill/model/credit_card",
+    "//ios/chrome/browser/autofill/model/message",
     "//ios/chrome/browser/shared/public/commands",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -343,6 +344,7 @@ source_set("virtual_card_enrollment_bottom_sheet_mediator_unittest") {
     "//components/autofill/core/browser",  # This test depends on
                                            # autofill::VirtualCardEnrollUiModel.
     "//components/autofill/core/browser:test_support",
+    "//ios/chrome/browser/autofill/model/message",
     "//ios/chrome/browser/shared/public/commands",
     "//testing/gtest",
     "//third_party/ocmock",
@@ -363,6 +365,7 @@ source_set("virtual_card_enrollment_bottom_sheet_view_controller") {
     "//components/autofill/core/browser",
     "//components/resources:components_scaled_resources_grit",
     "//components/strings",
+    "//ios/chrome/browser/autofill/model/message",
     "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet:constants",
     "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet/resources",
     "//ios/chrome/browser/autofill/ui_bundled/util",

@@ -7,7 +7,7 @@
 #import "components/autofill/core/browser/payments/legal_message_line.h"
 #import "components/autofill/core/browser/payments/test_legal_message_line.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
+#import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/autofill/wallet_reminder_notice/ui/wallet_reminder_notice_consumer.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -19,7 +19,7 @@
 
 @property(nonatomic, copy) NSString* titleString;
 @property(nonatomic, copy) NSString* primaryActionString;
-@property(nonatomic, strong) NSArray<SaveCardMessageWithLinks*>* disclaimerText;
+@property(nonatomic, strong) NSArray<AutofillLegalMessageLine*>* disclaimerText;
 
 @end
 

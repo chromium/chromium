@@ -12,7 +12,7 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
+#import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_save_card_modal_constants.h"
@@ -76,7 +76,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, strong) NSString* cardCvc;
 // Card related Legal Messages to be displayed.
 @property(nonatomic, copy)
-    NSMutableArray<SaveCardMessageWithLinks*>* legalMessages;
+    NSMutableArray<AutofillLegalMessageLine*>* legalMessages;
 // YES if the Card being displayed has been accepted to be saved.
 @property(nonatomic, assign) BOOL currentCardSaveAccepted;
 // Set to YES if the Modal should support editing.
@@ -224,7 +224,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Add a `TableViewTextLinkItem` for each legal message and add logo to the
   // last item.
   for (size_t index = 0; index < self.legalMessages.count; index++) {
-    SaveCardMessageWithLinks* message = self.legalMessages[index];
+    AutofillLegalMessageLine* message = self.legalMessages[index];
     TableViewTextLinkItem* legalMessageItem =
         [[TableViewTextLinkItem alloc] initWithType:ItemTypeCardLegalMessage];
     // Logo needs to be added once, at the end of all legal messages, within the

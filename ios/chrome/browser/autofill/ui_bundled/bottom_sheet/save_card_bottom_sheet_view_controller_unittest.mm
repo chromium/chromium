@@ -7,7 +7,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "build/branding_buildflags.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
+#import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/image_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
@@ -96,7 +96,7 @@ TEST_F(SaveCardBottomSheetViewControllerTest, ShowsGPayPillIcon) {
 
   ViewSetup();
 
-  SaveCardMessageWithLinks* message = [[SaveCardMessageWithLinks alloc] init];
+  AutofillLegalMessageLine* message = [[AutofillLegalMessageLine alloc] init];
   [view_controller_ setLegalMessages:@[ message ]];
 
   // Set card data to trigger a table reload.
@@ -124,10 +124,10 @@ TEST_F(SaveCardBottomSheetViewControllerTest, ShowsGPayPillIcon) {
   EXPECT_NE(trailingConfig.image, nil);
   EXPECT_NSEQ(
       config.customAccessibilityLabel,
-      ([NSString stringWithFormat:
-                     @"%@, %@", @"Visa",
-                     l10n_util::GetNSString(
-                         IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME)]));
+      ([NSString
+          stringWithFormat:@"%@, %@", @"Visa",
+                           l10n_util::GetNSString(
+                               IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME)]));
 #else
   // If not a branded build, the trailing configuration should remain nil.
   TableViewCellContentConfiguration* config =

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/autofill/wallet_reminder_notice/ui/wallet_reminder_notice_view_controller.h"
 
-#import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
+#import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/autofill/ui_bundled/util/autofill_credit_card_util.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -23,7 +23,7 @@ const CGFloat kCustomSpacingAfterImage = 32.0;
 @end
 
 @implementation WalletReminderNoticeViewController {
-  NSArray<SaveCardMessageWithLinks*>* _disclaimerTextLines;
+  NSArray<AutofillLegalMessageLine*>* _disclaimerTextLines;
   UIStackView* _disclaimerStackView;
 }
 
@@ -44,7 +44,7 @@ const CGFloat kCustomSpacingAfterImage = 32.0;
   [self reloadConfiguration];
 }
 
-- (void)setDisclaimerText:(NSArray<SaveCardMessageWithLinks*>*)disclaimerText {
+- (void)setDisclaimerText:(NSArray<AutofillLegalMessageLine*>*)disclaimerText {
   _disclaimerTextLines = disclaimerText;
   if (!_disclaimerStackView) {
     _disclaimerStackView = [[UIStackView alloc] initWithFrame:CGRectZero];
@@ -57,7 +57,7 @@ const CGFloat kCustomSpacingAfterImage = 32.0;
     }
   }
 
-  for (SaveCardMessageWithLinks* message in _disclaimerTextLines) {
+  for (AutofillLegalMessageLine* message in _disclaimerTextLines) {
     UITextView* legalMessageTextView =
         [AutofillCreditCardUtil createTextViewForLegalMessage:message];
     legalMessageTextView.delegate = self;
