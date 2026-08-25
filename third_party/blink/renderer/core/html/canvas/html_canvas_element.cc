@@ -625,7 +625,11 @@ void HTMLCanvasElement::configureHighDynamicRange(
 bool HTMLCanvasElement::ShouldSkipPaintInvalidation() const {
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext()) &&
       IsInCanvasSubtree()) {
-    return false;
+    // Nested <canvas layoutsubtree> elements only record a CustomDataOp
+    // placeholder during paint and resolve their snapshot on demand, so they
+    // do not need paint invalidation when drawn to. Non-layoutsubtree canvases
+    // do need paint invalidation.
+    return layoutSubtree();
   }
   return (context_ && context_->IsComposited()) || (!!surface_layer_bridge_);
 }
@@ -741,6 +745,12 @@ void HTMLCanvasElement::OnAccelerationDisabled() {
 }
 
 void HTMLCanvasElement::SetNeedsCompositingUpdate() {
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext()) &&
+      IsInCanvasSubtree() && layoutSubtree()) {
+    // Nested layoutsubtree canvases cannot be composited and do not need
+    // repainting when their resource provider or context updates.
+    return;
+  }
   Element::SetNeedsCompositingUpdate();
 }
 
