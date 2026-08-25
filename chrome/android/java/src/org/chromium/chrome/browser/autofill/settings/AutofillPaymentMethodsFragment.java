@@ -1010,7 +1010,8 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                                 frag,
                                 PREF_CARD_BENEFITS,
                                 R.string.autofill_settings_page_card_benefits_label,
-                                R.string.autofill_settings_page_card_benefits_preference_summary);
+                                R.string.autofill_settings_page_card_benefits_preference_summary,
+                                AutofillCardBenefitsFragment.class.getName());
                     }
                     if (shouldShowBnplPref(personalDataManager, profile)) {
                         indexData.addEntryForKey(

@@ -342,6 +342,17 @@ public class AutofillSettingsSearchTest {
 
     @Test
     @SmallTest
+    public void testSearchCardBenefitsToggle() {
+        searchSettings("Show available card benefits");
+
+        clickSearchResult(withText(R.string.autofill_settings_page_card_benefits_label));
+
+        onView(highlighted(withText(R.string.autofill_settings_page_card_benefits_label)))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
     @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testSearchAutofill_autofillAndPasswordsDisabled() {
         var histogramWatcher =
