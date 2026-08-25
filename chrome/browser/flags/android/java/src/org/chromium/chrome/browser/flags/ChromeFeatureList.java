@@ -476,6 +476,7 @@ public abstract class ChromeFeatureList {
     public static final String CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW =
             "ContextualSearchSuppressShortView";
     public static final String CONTEXTUAL_TASKS = "ContextualTasks";
+    public static final String CONTEXTUAL_TASKS_SIDE_PANEL = "ContextualTasksSidePanel";
     public static final String CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID = "ContextMenuCopyVideoFrame";
     public static final String CONTEXT_MENU_DOWNLOAD_VIDEO_FRAME_ANDROID =
             "ContextMenuSaveVideoFrameAs";
@@ -1070,6 +1071,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sContextualPanelCloseButton =
             newCachedFlag(CONTEXTUAL_PANEL_CLOSE_BUTTON, true);
     public static final CachedFlag sContextualTasks = newCachedFlag(CONTEXTUAL_TASKS, false);
+    public static final CachedFlag sContextualTasksSidePanel =
+            newCachedFlag(CONTEXTUAL_TASKS_SIDE_PANEL, false);
     public static final CachedFlag sCpaTabGroupingButton =
             newCachedFlag(
                     CONTEXTUAL_PAGE_ACTION_TAB_GROUPING,
@@ -1519,6 +1522,7 @@ public abstract class ChromeFeatureList {
                     sContextMenuDownloadVideoFrame,
                     sContextualPanelCloseButton,
                     sContextualTasks,
+                    sContextualTasksSidePanel,
                     sCpaTabGroupingButton,
                     sCrossDeviceTabPaneAndroid,
                     sDefaultBrowserPromoEntryPoint,

@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoord
 import org.chromium.chrome.browser.compositor.overlays.strip.TabGroupContextMenuCoordinator;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripContextMenuCoordinator;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabUnderlineManager;
+import org.chromium.chrome.browser.contextual_tasks.ContextualTasksUtils;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -294,7 +295,7 @@ public class VerticalTabListCoordinator {
         mShareDelegateSupplier = shareDelegateSupplier;
         mDataSharingTabManager = dataSharingTabManager;
         mUndoBarThrottle = undoBarThrottle;
-        if (GlicEnabling.isEnabledByFlags() || ChromeFeatureList.sContextualTasks.isEnabled()) {
+        if (GlicEnabling.isEnabledByFlags() || ContextualTasksUtils.isContextualTasksUiEnabled()) {
             mTabUnderlineManager = new TabUnderlineManager(windowAndroid);
         } else {
             mTabUnderlineManager = null;
