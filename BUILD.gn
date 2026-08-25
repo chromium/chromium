@@ -113,6 +113,8 @@ group("gn_all") {
       "//third_party/angle/src/tests:angle_end2end_tests",
       "//third_party/angle/src/tests:angle_unittests",
       "//third_party/angle/src/tests:angle_white_box_tests",
+      "//third_party/chromium-bidi:webdriver_bidi_e2e_tests",
+      "//third_party/chromium-bidi:webdriver_bidi_unittests",
       "//third_party/flatbuffers:flatbuffers_unittests",
       "//third_party/highway:highway_tests",
       "//third_party/liburlpattern:liburlpattern_unittests",
@@ -153,8 +155,6 @@ group("gn_all") {
           "//chrome/browser/ui/actions:dump_actions",
           "//chrome/browser/ui/color:dump_colors",
           "//chrome/test:browser_tests",
-          "//third_party/chromium-bidi:webdriver_bidi_e2e_tests",
-          "//third_party/chromium-bidi:webdriver_bidi_unittests",
         ]
       }
       deps += [
