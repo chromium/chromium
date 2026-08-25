@@ -63,6 +63,8 @@ class Attribute {
  public:
   Attribute(const QualifiedName& name, const AtomicString& value)
       : name_(name), value_(value) {}
+  Attribute(const QualifiedName& name, AtomicString&& value)
+      : name_(name), value_(std::move(value)) {}
   Attribute(QualifiedName&& name, AtomicString&& value)
       : name_(std::move(name)), value_(std::move(value)) {}
 

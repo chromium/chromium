@@ -5,11 +5,14 @@
 #include "third_party/blink/renderer/core/html/parser/html_document_parser_fastpath.h"
 
 #include <algorithm>
+#include <array>
 #include <iostream>
+#include <optional>
 #include <string_view>
 #include <type_traits>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
@@ -256,6 +259,31 @@ HWY_ATTR ALWAYS_INLINE uint8_t SimdAdvanceAndLookup(base::span<const T> span,
 }
 #endif  // VECTORIZE_SCANNING
 
+// Returns true if `span` holds exactly the (ASCII) characters of `s`.
+//
+// This is deliberately not written as `span == s`. base::span's operator==
+// is implemented via std::ranges::equal(), which for these mixed
+// `Char`/`char` comparisons is not reduced to a memcmp() and ends up as an
+// out-of-line call that materializes checked iterators. The strings compared
+// here are tiny compile-time constants (tag names and the handful of named
+// character references the fast path supports), so a plain loop that the
+// compiler fully unrolls is considerably cheaper. This is hot: it runs for
+// every start and end tag.
+template <class Char, size_t n>
+ALWAYS_INLINE bool SpanMatches(base::span<const Char> span,
+                               base::span<const char, n> s) {
+  if (span.size() != n) {
+    return false;
+  }
+  for (size_t i = 0; i < n; ++i) {
+    // SAFETY: safe as i < n, and span.size() == n was checked above.
+    if (UNSAFE_BUFFERS(span.data()[i]) != UNSAFE_BUFFERS(s.data()[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
 template <class Char, size_t n>
 bool SpanMatchesLowercase(base::span<const Char> span,
                           base::span<const char, n> s) {
@@ -310,6 +338,25 @@ uint32_t TagnameHash(const String& s) {
 
 using UCharLiteralBufferType = UCharLiteralBuffer<32>;
 
+// Returns true if `string` is an 8-bit string consisting of exactly the code
+// units in `chars`. This is used on short ASCII attribute names, for which a
+// plain loop is cheaper than going through StringView/base::span equality.
+template <class Char>
+bool Equals8BitString(const String& string, base::span<const Char> chars) {
+  if (!string.Is8Bit() || string.length() != chars.size()) {
+    return false;
+  }
+  const base::span<const LChar> string_chars = string.Span8();
+  for (size_t i = 0; i < chars.size(); ++i) {
+    // SAFETY: safe as i < chars.size(), which equals string_chars.size().
+    if (UNSAFE_BUFFERS(string_chars.data()[i]) !=
+        UNSAFE_BUFFERS(chars.data()[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
 template <class Char>
 struct ScanTextResult {
   // Converts `text` to a String. This handles converting UChar to LChar if
@@ -344,12 +391,10 @@ String ScanTextResult<LChar>::TextToString() const {
 template <>
 String ScanTextResult<UChar>::TextToString() const {
   if (is_8bit) {
-    base::span<LChar> data;
-    auto impl = StringImpl::CreateUninitialized(text.size(), data);
-    for (size_t i = 0; i < text.size(); ++i) {
-      data[i] = static_cast<LChar>(text[i]);
-    }
-    return String(std::move(impl));
+    // The scan already established that all code units fit into 8 bits, so
+    // use the vectorized narrowing copy rather than a per-code-unit
+    // (bounds-checked) loop.
+    return String::Make8BitFrom16BitSource(text);
   }
   return String(StringImpl::Create8BitIfPossible(text));
 }
@@ -477,11 +522,20 @@ class HTMLFastPathParser {
   unsigned element_depth_ = 0;
   LiteralBufferType char_buffer_;
   UCharLiteralBufferType uchar_buffer_;
+  // Attribute names that are not built-in HTML attribute names (most commonly
+  // data-*) require creating an AtomicString and looking up a QualifiedName
+  // for every occurrence. Markup passed to innerHTML tends to repeat the same
+  // few such names many times (think of a list of `<li data-id="...">`), so
+  // the most recently seen ones are remembered here. See
+  // LookupUnknownAttributeName().
+  static constexpr size_t kUnknownAttributeNameCacheSize = 4;
+  std::array<std::optional<QualifiedName>, kUnknownAttributeNameCacheSize>
+      unknown_attribute_names_;
+  size_t next_unknown_attribute_name_slot_ = 0;
   // Used if the attribute name contains upper case ascii (which must be
   // mapped to lower case).
   LiteralBufferType attribute_name_buffer_;
   Vector<Attribute, kAttributePrealloc> attribute_buffer_;
-  Vector<StringImpl*> attribute_names_;
   HtmlFastPathResult parse_result_ = HtmlFastPathResult::kSucceeded;
 
   enum class PermittedParents {
@@ -1220,16 +1274,16 @@ class HTMLFastPathParser {
       }
       // Handle the most common named references.
     } else if (static constexpr auto amp = base::span_from_cstring("amp");
-               reference == amp) {
+               SpanMatches(reference, amp)) {
       out->AddChar('&');
     } else if (static constexpr auto lt = base::span_from_cstring("lt");
-               reference == lt) {
+               SpanMatches(reference, lt)) {
       out->AddChar('<');
     } else if (static constexpr auto gt = base::span_from_cstring("gt");
-               reference == gt) {
+               SpanMatches(reference, gt)) {
       out->AddChar('>');
     } else if (static constexpr auto nbsp = base::span_from_cstring("nbsp");
-               reference == nbsp) {
+               SpanMatches(reference, nbsp)) {
       out->AddChar(0xa0);
     } else {
       // This handles uncommon named references.
@@ -1338,32 +1392,106 @@ class HTMLFastPathParser {
     }
   }
 
-  Attribute ProcessAttribute(Span name_span,
-                             std::pair<Span, USpan> value_span) {
-    QualifiedName name = LookupHTMLAttributeName(
-        name_span.data(), static_cast<unsigned>(name_span.size()));
-    if (name == g_null_name) {
-      name = QualifiedName(AtomicString(name_span));
+  ALWAYS_INLINE AtomicString
+  MakeAttributeValue(std::pair<Span, USpan> value_span) {
+    // `value_span.second` is only used (non-empty) if the value contained
+    // character references.
+    if (!value_span.second.empty()) {
+      return AtomicString(value_span.second);
     }
+    // `value_span.first.data()` is only null if the attribute has no value at
+    // all (as in `<input checked>`). The null atom is used to represent
+    // absence of attributes; attributes with no value have the value set to
+    // the empty atom instead. (An empty but non-null span, as in `alt=""`,
+    // yields the empty atom as well.)
+    if (value_span.first.data()) [[likely]] {
+      return AtomicString(value_span.first);
+    }
+    return g_empty_atom;
+  }
 
-    // The string pointer in |value| is null for attributes with no values, but
-    // the null atom is used to represent absence of attributes; attributes with
-    // no values have the value set to an empty atom instead.
-    AtomicString value;
-    if (value_span.second.empty()) {
-      value = AtomicString(value_span.first);
+  // Appends the attribute `name_span`=`value_span` to `attribute_buffer_`. The
+  // Attribute is constructed in place: QualifiedName and AtomicString are both
+  // ref-counted, so materializing a temporary Attribute and moving it into the
+  // vector costs several ref-count updates and out-of-line destructor calls
+  // per attribute, which is significant at the rate attributes are parsed
+  // here.
+  ALWAYS_INLINE void AppendAttribute(Span name_span,
+                                     std::pair<Span, USpan> value_span) {
+    AtomicString value = MakeAttributeValue(value_span);
+    DCHECK(!value.IsNull());
+
+    const QualifiedName& name = LookupHTMLAttributeName(
+        name_span.data(), static_cast<unsigned>(name_span.size()));
+    if (name == g_null_name) [[unlikely]] {
+      attribute_buffer_.emplace_back(LookupUnknownAttributeName(name_span),
+                                     std::move(value));
     } else {
-      value = AtomicString(value_span.second);
+      attribute_buffer_.emplace_back(name, std::move(value));
     }
-    if (value.IsNull()) {
-      value = g_empty_atom;
+  }
+
+  // Returns the QualifiedName (null namespace, no prefix) for the attribute
+  // name `name_span`, which is not a built-in HTML attribute name, going
+  // through `unknown_attribute_names_`. `name_span` has already been
+  // lower-cased by ScanAttrName() where necessary and is compared
+  // code unit by code unit, so this yields exactly the QualifiedName that
+  // QualifiedName(AtomicString(name_span)) would.
+  const QualifiedName& LookupUnknownAttributeName(Span name_span) {
+    for (const std::optional<QualifiedName>& cached :
+         unknown_attribute_names_) {
+      if (!cached) {
+        // Slots are filled in order and never cleared.
+        break;
+      }
+      if (Equals8BitString(cached->LocalName().GetString(), name_span)) {
+        return *cached;
+      }
     }
-    return Attribute(std::move(name), std::move(value));
+    std::optional<QualifiedName>& slot =
+        unknown_attribute_names_[next_unknown_attribute_name_slot_];
+    next_unknown_attribute_name_slot_ =
+        (next_unknown_attribute_name_slot_ + 1) %
+        kUnknownAttributeNameCacheSize;
+    slot.emplace(AtomicString(name_span));
+    return *slot;
+  }
+
+  // Returns true if `attribute_buffer_` contains two attributes with the same
+  // local name. Local names are AtomicStrings, so this only needs to compare
+  // StringImpl pointers. Elements have very few attributes in practice, for
+  // which a quadratic scan over the already-built buffer is cheaper than
+  // maintaining (and sorting) a separate list of names per element.
+  bool HasDuplicateAttributes() const {
+    const wtf_size_t size = attribute_buffer_.size();
+    if (size < 2) {
+      return false;
+    }
+    // The limit is fairly arbitrary, it just needs to keep the quadratic scan
+    // cheap for pathological input.
+    constexpr wtf_size_t kMaxAttributesForQuadraticScan = kAttributePrealloc;
+    if (size <= kMaxAttributesForQuadraticScan) [[likely]] {
+      for (wtf_size_t i = 1; i < size; ++i) {
+        const StringImpl* name = attribute_buffer_[i].LocalName().Impl();
+        for (wtf_size_t j = 0; j < i; ++j) {
+          if (attribute_buffer_[j].LocalName().Impl() == name) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+    Vector<const StringImpl*, 32> names;
+    names.ReserveInitialCapacity(size);
+    for (const Attribute& attribute : attribute_buffer_) {
+      names.UncheckedAppend(attribute.LocalName().Impl());
+    }
+    std::sort(names.begin(), names.end());
+    return std::adjacent_find(names.begin(), names.end()) != names.end();
   }
 
   void ParseAttributes(Element* parent) {
     DCHECK(attribute_buffer_.empty());
-    DCHECK(attribute_names_.empty());
     while (true) {
       Span attr_name = ScanAttrName();
       if (attr_name.empty()) {
@@ -1400,27 +1528,17 @@ class HTMLFastPathParser {
         attr_value = ScanAttrValue();
         SkipWhitespace();
       }
-      Attribute attribute = ProcessAttribute(attr_name, attr_value);
-      attribute_names_.push_back(attribute.LocalName().Impl());
-      attribute_buffer_.push_back(std::move(attribute));
+      AppendAttribute(attr_name, attr_value);
     }
-    if (attribute_names_.size() == 2) {
-      if (attribute_names_[0] == attribute_names_[1]) {
-        return Fail(HtmlFastPathResult::kFailedParsingAttributes);
-      }
-    } else if (attribute_names_.size() > 2) {
-      std::sort(attribute_names_.begin(), attribute_names_.end());
-      if (std::adjacent_find(attribute_names_.begin(),
-                             attribute_names_.end()) !=
-          attribute_names_.end()) {
-        // Found duplicate attributes. We would have to ignore repeated
-        // attributes, but leave this to the general parser instead.
-        return Fail(HtmlFastPathResult::kFailedParsingAttributes);
-      }
+    if (HasDuplicateAttributes()) [[unlikely]] {
+      // We would have to ignore repeated attributes, but leave this to the
+      // general parser instead.
+      return Fail(HtmlFastPathResult::kFailedParsingAttributes);
     }
     parent->ParserSetAttributes(attribute_buffer_);
-    attribute_buffer_.clear();
-    attribute_names_.resize(0);
+    // Shrink() rather than clear(), so that the (inline or heap) backing is
+    // kept for the next element.
+    attribute_buffer_.Shrink(0);
   }
 
   template <class... Tags>
@@ -1436,7 +1554,7 @@ class HTMLFastPathParser {
 
   template <class Tag, class... OtherTags>
   Element* ParseSpecificElements(Span tagname) {
-    if (tagname == Tag::tagname) {
+    if (SpanMatches(tagname, Tag::tagname)) {
       return ParseElementAfterTagname<Tag>();
     }
     return ParseSpecificElements<OtherTags...>(tagname);
@@ -1467,7 +1585,7 @@ class HTMLFastPathParser {
                       : TagInfo::Tagname::AllowedInPhrasingOrFlowContent()) {  \
         /* See comment in Run() for details on why equality is checked */      \
         /* here. */                                                            \
-        if (tagname == TagInfo::Tagname::tagname) {                            \
+        if (SpanMatches(tagname, TagInfo::Tagname::tagname)) {                 \
           return ParseElementAfterTagname<typename TagInfo::Tagname>();        \
         }                                                                      \
       }                                                                        \
@@ -1477,7 +1595,7 @@ class HTMLFastPathParser {
       case TagnameHash(TagInfo::A::tagname):
         // <a> tags must not be nested, because HTML parsing would auto-close
         // the outer one when encountering a nested one.
-        if (tagname == TagInfo::A::tagname && !inside_of_tag_a_) {
+        if (SpanMatches(tagname, TagInfo::A::tagname) && !inside_of_tag_a_) {
           return non_phrasing_content
                      ? ParseElementAfterTagname<typename TagInfo::A>()
                      : ParseElementAfterTagname<
@@ -1499,7 +1617,8 @@ class HTMLFastPathParser {
           // <li>s autoclose when multiple are encountered. For example,
           // <li><li></li></li> results in sibling <li>s, not nested <li>s. Fail
           // in such a case.
-          if (tagname == TagInfo::Li::tagname && !inside_of_tag_li_) {
+          if (SpanMatches(tagname, TagInfo::Li::tagname) &&
+              !inside_of_tag_li_) {
             inside_of_tag_li_ = true;
             Element* result = ParseElementAfterTagname<typename TagInfo::Li>();
             inside_of_tag_li_ = false;
@@ -1558,7 +1677,7 @@ class HTMLFastPathParser {
     }
     Span tag_name_span = source_.subspan(pos_, tag_length);
     pos_ += tag_length;
-    if (tag_name_span == Tag::tagname ||
+    if (SpanMatches(tag_name_span, Tag::tagname) ||
         SpanMatchesLowercase(tag_name_span, Tag::tagname)) {
       SkipWhitespace();
       if (ConsumeNext() != '>') {
