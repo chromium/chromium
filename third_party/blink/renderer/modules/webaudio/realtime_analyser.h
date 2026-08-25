@@ -46,7 +46,7 @@ class RealtimeAnalyser final {
   static constexpr unsigned kMinFFTSize = 32;
   static constexpr unsigned kMaxFFTSize = 32768;
 
-  explicit RealtimeAnalyser(unsigned render_quantum_frames);
+  RealtimeAnalyser();
 
   RealtimeAnalyser(const RealtimeAnalyser&) = delete;
   RealtimeAnalyser& operator=(const RealtimeAnalyser&) = delete;
@@ -72,6 +72,10 @@ class RealtimeAnalyser final {
 
   // The audio thread writes input data here.
   void WriteInput(AudioBus*, uint32_t frames_to_process);
+
+  // Allocates internal audio buffers. Returns true on success or false
+  // if memory allocation failed.
+  bool InitializeBuffers(unsigned render_quantum_frames);
 
  private:
   unsigned GetWriteIndex() const {

@@ -40,7 +40,14 @@ AnalyserNode* AnalyserNode::Create(BaseAudioContext& context,
                                    ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  return MakeGarbageCollected<AnalyserNode>(context);
+  auto* node = MakeGarbageCollected<AnalyserNode>(context);
+  if (!node->GetAnalyserHandler().InitializeAnalyserBuffers()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Failed to initialize AnalyserNode due to insufficient memory.");
+    return nullptr;
+  }
+  return node;
 }
 
 AnalyserNode* AnalyserNode::Create(BaseAudioContext* context,

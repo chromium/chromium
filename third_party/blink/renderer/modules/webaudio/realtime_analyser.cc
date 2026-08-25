@@ -71,12 +71,17 @@ float EnsureFinite(float x, float default_value) {
 
 }  // namespace
 
-RealtimeAnalyser::RealtimeAnalyser(unsigned render_quantum_frames)
-    : input_buffer_(kInputBufferSize),
-      down_mix_bus_(AudioBus::Create(1, render_quantum_frames)),
-      fft_size_(kDefaultFFTSize),
-      magnitude_buffer_(kDefaultFFTSize / 2) {
+RealtimeAnalyser::RealtimeAnalyser() : fft_size_(kDefaultFFTSize) {
   analysis_frame_ = std::make_unique<FFTFrame>(kDefaultFFTSize);
+}
+
+bool RealtimeAnalyser::InitializeBuffers(unsigned render_quantum_frames) {
+  down_mix_bus_ = AudioBus::TryCreate(1, render_quantum_frames);
+  if (!down_mix_bus_) {
+    return false;
+  }
+  return input_buffer_.TryAllocate(kInputBufferSize) &&
+         magnitude_buffer_.TryAllocate(kDefaultFFTSize / 2);
 }
 
 bool RealtimeAnalyser::SetFftSize(uint32_t size) {

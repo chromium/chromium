@@ -21,13 +21,17 @@ constexpr unsigned kDefaultNumberOfOutputChannels = 1;
 }  // namespace
 
 AnalyserHandler::AnalyserHandler(AudioNode& node, float sample_rate)
-    : AudioHandler(NodeType::kNodeTypeAnalyser, node, sample_rate),
-      analyser_(node.context()->renderQuantumSize()) {
+    : AudioHandler(NodeType::kNodeTypeAnalyser, node, sample_rate) {
   AddInput();
   channel_count_ = kDefaultNumberOfInputChannels;
   AddOutput(kDefaultNumberOfOutputChannels);
 
   Initialize();
+}
+
+bool AnalyserHandler::InitializeAnalyserBuffers() {
+  return analyser_.InitializeBuffers(
+      GetDeferredTaskHandler().RenderQuantumFrames());
 }
 
 scoped_refptr<AnalyserHandler> AnalyserHandler::Create(AudioNode& node,
