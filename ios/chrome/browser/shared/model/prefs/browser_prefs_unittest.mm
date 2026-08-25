@@ -213,24 +213,6 @@ TEST_F(BrowserPrefsTest, RenameMostVisitedModuleEnabledProfilePref) {
 // [2] Local-state pref migrations and cleanup (triggered by
 // `MigrateObsoleteLocalStatePrefs()`).
 
-TEST_F(BrowserPrefsTest, RenameBottomOmniboxLocalStatePref) {
-  const bool test_value = true;  // Default is false
-
-  local_state()->SetBoolean(prefs::kBottomOmnibox, test_value);
-
-  ASSERT_EQ(local_state()->GetBoolean(prefs::kBottomOmnibox), test_value);
-  ASSERT_TRUE(local_state()
-                  ->FindPreference(omnibox::kIsOmniboxInBottomPosition)
-                  ->IsDefaultValue());
-
-  MigrateObsoleteLocalStatePrefs(local_state());
-
-  EXPECT_TRUE(
-      local_state()->FindPreference(prefs::kBottomOmnibox)->IsDefaultValue());
-  EXPECT_EQ(local_state()->GetBoolean(omnibox::kIsOmniboxInBottomPosition),
-            test_value);
-}
-
 TEST_F(BrowserPrefsTest, CleanupObsoleteLocalStatePrefs) {
   local_state()->SetInteger(
       prefs::kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness,

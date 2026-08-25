@@ -494,9 +494,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(prefs::kWidgetsForMultiProfile, false);
 
-  // Deprecated 09/2025.
-  registry->RegisterBooleanPref(prefs::kBottomOmnibox, false);
-
   // Deprecated 01/2026.
   registry->RegisterListPref(kMagicStackSafetyCheckNotificationsShown);
   registry->RegisterListPref(kBottomOmniboxByDefault);
@@ -1010,9 +1007,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   prefs->ClearPref(
       prefs::kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness);
 
-  // Added 09/2025.
-  RenameBooleanPref(omnibox::kIsOmniboxInBottomPosition, prefs::kBottomOmnibox,
-                    prefs);
   // Added 01/2026.
   prefs->ClearPref(kMagicStackSafetyCheckNotificationsShown);
   prefs->ClearPref(kBottomOmniboxByDefault);

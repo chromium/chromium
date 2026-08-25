@@ -349,7 +349,8 @@ TEST_F(TipsNotificationCriteriaTest, TestShouldSendOmniboxPosition_ShouldSend) {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     GTEST_SKIP() << "Test is running on a tablet, skipping.";
   }
-  // Not setting the kBottomOmnibox pref should cause the criteria to be met.
+  // Not setting the kIsOmniboxInBottomPosition pref should cause the criteria
+  // to be met.
   EXPECT_TRUE(criteria_->ShouldSendNotification(
       TipsNotificationType::kOmniboxPosition));
 }

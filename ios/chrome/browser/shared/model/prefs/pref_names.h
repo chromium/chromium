@@ -27,8 +27,6 @@ inline constexpr char kAppStoreRatingPolicyEnabled[] =
 // Boolean that is true when Suggest support is enabled.
 inline constexpr char kArticlesForYouEnabled[] = "suggestions.articles_enabled";
 
-// Boolean which indicates if the omnibox should be at the bottom of the screen.
-inline constexpr char kBottomOmnibox[] = "ios.bottom_omnibox";
 
 // Boolean that is true when Browser Lockdown Mode is enabled.
 inline constexpr char kBrowserLockdownModeEnabled[] =
