@@ -19,12 +19,9 @@ import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel.StateCh
 import org.chromium.chrome.browser.payments.ServiceWorkerPaymentAppBridge;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerUiObserver;
 import org.chromium.chrome.browser.payments.handler.toolbar.PaymentHandlerToolbarCoordinator.PaymentHandlerToolbarObserver;
-import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.payments.SslValidityChecker;
 import org.chromium.components.payments.ui.InputProtector;
 import org.chromium.content_public.browser.LifecycleState;
@@ -60,17 +57,11 @@ import java.lang.annotation.RetentionPolicy;
     // their own methods.
     private final Handler mHandler = new Handler();
     private final View mTabView;
-    private final BottomSheetController mBottomSheetController;
     private final int mToolbarViewHeightPx;
     private @CloseReason int mCloseReason = CloseReason.OTHERS;
-    private final TabObscuringHandler mTabObscuringHandler;
     private final ActivityStateListener mActivityStateListener;
     private final InputProtector mInputProtector;
 
-    /** A token held while the payment sheet is obscuring all visible tabs. */
-    private TabObscuringHandler.@Nullable Token mTabObscuringToken;
-
-    private @Nullable PropertyModel mScrimProperties;
     private boolean mIsDestroyed;
 
     @IntDef({
@@ -100,8 +91,6 @@ import java.lang.annotation.RetentionPolicy;
      * @param observer The {@link PaymentHandlerUiObserver} that observes this Payment Handler UI.
      * @param tabView The view of the main tab.
      * @param toolbarViewHeightPx The height of the toolbar view in px.
-     * @param sheetController A {@link BottomSheetController} to show UI in.
-     * @param tabObscuringHandler Handles the obscuring of tabs.
      * @param activity The current android {@link Activity}.
      */
     /* package */ PaymentHandlerMediator(
@@ -112,14 +101,11 @@ import java.lang.annotation.RetentionPolicy;
             PaymentHandlerUiObserver observer,
             View tabView,
             int toolbarViewHeightPx,
-            BottomSheetController sheetController,
-            TabObscuringHandler tabObscuringHandler,
             Activity activity,
             InputProtector inputProtector) {
         super(paymentHandlerWebContents);
         assert paymentHandlerWebContents != null;
         mTabView = tabView;
-        mBottomSheetController = sheetController;
         mPaymentRequestWebContents = paymentRequestWebContents;
         mPaymentHandlerWebContents = paymentHandlerWebContents;
         mToolbarViewHeightPx = toolbarViewHeightPx;
@@ -128,7 +114,6 @@ import java.lang.annotation.RetentionPolicy;
         mHider = hider;
         mPaymentHandlerUiObserver = observer;
         mModel.set(PaymentHandlerProperties.CONTENT_VISIBLE_HEIGHT_PX, contentVisibleHeight());
-        mTabObscuringHandler = tabObscuringHandler;
         mInputProtector = inputProtector;
 
         mActivityStateListener =
@@ -180,7 +165,6 @@ import java.lang.annotation.RetentionPolicy;
                 // that PaymentHandler wouldn't be closed for unknown reason.
         }
         mHandler.removeCallbacksAndMessages(null);
-        hideScrim();
     }
 
     // Implement View.OnLayoutChangeListener:
@@ -205,7 +189,7 @@ import java.lang.annotation.RetentionPolicy;
     @Override
     public void onSheetStateChanged(@SheetState int newState, int reason) {
         switch (newState) {
-            case BottomSheetController.SheetState.HIDDEN:
+            case SheetState.HIDDEN:
                 mCloseReason = CloseReason.USER;
                 mHandler.post(mHider);
                 break;
@@ -221,35 +205,10 @@ import java.lang.annotation.RetentionPolicy;
     @Override
     public void onSheetOffsetChanged(float heightFraction, float offsetPx) {}
 
-    /**
-     * Set whether to obscure all tabs. Note the difference between scrim and obscure, while scrims
-     * reduces the background visibility, obscure makes the background invisible to screen readers.
-     * @param obscure Whether to obscure all tabs.
-     */
-    private void setObscureState(boolean obscure) {
-        if (obscure && mTabObscuringToken == null) {
-            mTabObscuringToken =
-                    mTabObscuringHandler.obscure(TabObscuringHandler.Target.ALL_TABS_AND_TOOLBAR);
-        } else if (!obscure && mTabObscuringToken != null) {
-            mTabObscuringHandler.unobscure(mTabObscuringToken);
-            mTabObscuringToken = null;
-        }
-    }
-
-    private void showScrim() {
-        ScrimManager scrimManager = mBottomSheetController.getScrimManager();
-        if (scrimManager != null && !scrimManager.isShowingScrim()) {
-            mScrimProperties = mBottomSheetController.createScrimParams();
-            scrimManager.showScrim(mScrimProperties);
-        }
-        setObscureState(true);
-    }
-
     // Implement BottomSheetObserver:
     @Override
     public void onSheetOpened(@StateChangeReason int reason) {
         mPaymentHandlerUiObserver.onPaymentHandlerUiShown();
-        showScrim();
     }
 
     // Implement BottomSheetObserver:
@@ -262,17 +221,6 @@ import java.lang.annotation.RetentionPolicy;
     // Implement BottomSheetObserver:
     @Override
     public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {}
-
-    private void hideScrim() {
-        setObscureState(false);
-
-        ScrimManager coordinator = mBottomSheetController.getScrimManager();
-        if (coordinator != null && coordinator.isShowingScrim()) {
-            assert mScrimProperties != null;
-            coordinator.hideScrim(mScrimProperties, /* animate= */ true);
-            mScrimProperties = null;
-        }
-    }
 
     // Implement WebContentsObserver:
     @Override

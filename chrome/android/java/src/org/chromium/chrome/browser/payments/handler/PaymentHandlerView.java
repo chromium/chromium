@@ -111,11 +111,6 @@ import org.chromium.content_public.browser.WebContents;
     }
 
     @Override
-    public boolean hasCustomScrimLifecycle() {
-        return true;
-    }
-
-    @Override
     public int getVerticalScrollOffset() {
         return mWebContents == null
                 ? 0
