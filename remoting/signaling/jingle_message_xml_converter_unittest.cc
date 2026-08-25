@@ -144,51 +144,58 @@ TEST(JingleMessageXmlConverterTest, JingleMessageReply_Result) {
   EXPECT_FALSE(parsed_reply.error_type.has_value());
 }
 
-TEST(JingleMessageXmlConverterTest, JingleMessageReply_Error) {
-  struct ErrorTestCase {
-    JingleMessageReply::ErrorType type;
-    const char* expected_error_xml;
-  };
-  ErrorTestCase test_cases[] = {
-      {JingleMessageReply::BAD_REQUEST,
-       "<error type='modify'><bad-request/></error>"},
-      {JingleMessageReply::NOT_IMPLEMENTED,
-       "<error type='cancel'><feature-bad-request/></error>"},
-      {JingleMessageReply::INVALID_SID,
-       "<error type='modify'><item-not-found/><text xml:lang='en' "
-       "xmlns='jabber:client'>Invalid SID</text></error>"},
-      {JingleMessageReply::UNEXPECTED_REQUEST,
-       "<error type='modify'><unexpected-request/></error>"},
-      {JingleMessageReply::UNSUPPORTED_INFO,
-       "<error type='modify'><feature-not-implemented/></error>"},
-      {JingleMessageReply::UNSPECIFIED,
-       "<error type='cancel'><unspecified-error/></error>"},
-  };
+struct XmlErrorTestCase {
+  JingleMessageReply::ErrorType type;
+  const char* expected_error_xml;
+};
 
-  for (const auto& test_case : test_cases) {
-    JingleMessageReply reply(test_case.type);
-    reply.message_id = "test_id";
-    reply.to = SignalingAddress("to_jid");
-    reply.from = SignalingAddress("from_jid");
+class JingleMessageXmlConverterErrorReplyTest
+    : public testing::TestWithParam<XmlErrorTestCase> {};
 
-    std::unique_ptr<XmlElement> xml = JingleMessageReplyToXml(reply);
-    ASSERT_TRUE(xml);
+TEST_P(JingleMessageXmlConverterErrorReplyTest, ErrorReplyConversion) {
+  const XmlErrorTestCase& test_case = GetParam();
+  JingleMessageReply reply(test_case.type);
+  reply.message_id = "test_id";
+  reply.to = SignalingAddress("to_jid");
+  reply.from = SignalingAddress("from_jid");
 
-    std::string expected_xml_str = base::ReplaceStringPlaceholders(
-        "<iq type='error' id='test_id' to='to_jid' from='from_jid' "
-        "xmlns='jabber:client'>$1</iq>",
-        {test_case.expected_error_xml}, nullptr);
-    std::unique_ptr<XmlElement> expected(XmlElement::ForStr(expected_xml_str));
-    std::string error;
-    EXPECT_TRUE(VerifyXml(expected.get(), xml.get(), &error))
-        << "Error type: " << test_case.type << " - " << error;
+  std::unique_ptr<XmlElement> xml = JingleMessageReplyToXml(reply);
+  ASSERT_TRUE(xml);
 
-    JingleMessageReply parsed_reply;
-    EXPECT_TRUE(JingleMessageReplyFromXml(xml.get(), &parsed_reply));
-    EXPECT_EQ(parsed_reply.reply_type, JingleMessageReply::REPLY_ERROR);
-    EXPECT_EQ(parsed_reply.error_type, test_case.type);
-  }
+  std::string expected_xml_str = base::ReplaceStringPlaceholders(
+      "<iq type='error' id='test_id' to='to_jid' from='from_jid' "
+      "xmlns='jabber:client'>$1</iq>",
+      {test_case.expected_error_xml}, nullptr);
+  std::unique_ptr<XmlElement> expected(XmlElement::ForStr(expected_xml_str));
+  std::string error;
+  EXPECT_TRUE(VerifyXml(expected.get(), xml.get(), &error))
+      << "Error type: " << static_cast<int>(test_case.type) << " - " << error;
+
+  JingleMessageReply parsed_reply;
+  EXPECT_TRUE(JingleMessageReplyFromXml(xml.get(), &parsed_reply));
+  EXPECT_EQ(parsed_reply.reply_type, JingleMessageReply::REPLY_ERROR);
+  EXPECT_EQ(parsed_reply.error_type, test_case.type);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    AllConditions,
+    JingleMessageXmlConverterErrorReplyTest,
+    testing::Values(
+        XmlErrorTestCase{JingleMessageReply::BAD_REQUEST,
+                         "<error type='modify'><bad-request/></error>"},
+        XmlErrorTestCase{JingleMessageReply::NOT_IMPLEMENTED,
+                         "<error type='cancel'><feature-bad-request/></error>"},
+        XmlErrorTestCase{JingleMessageReply::INVALID_SID,
+                         "<error type='modify'><item-not-found/><text "
+                         "xml:lang='en' xmlns='jabber:client'>Invalid "
+                         "SID</text></error>"},
+        XmlErrorTestCase{JingleMessageReply::UNEXPECTED_REQUEST,
+                         "<error type='modify'><unexpected-request/></error>"},
+        XmlErrorTestCase{
+            JingleMessageReply::UNSUPPORTED_INFO,
+            "<error type='modify'><feature-not-implemented/></error>"},
+        XmlErrorTestCase{JingleMessageReply::UNSPECIFIED,
+                         "<error type='cancel'><unspecified-error/></error>"}));
 
 TEST(JingleMessageXmlConverterTest, Attachment_RoundTrip) {
   Attachment attachment;
@@ -223,9 +230,9 @@ TEST(JingleMessageXmlConverterTest, JingleAuthentication_RoundTrip) {
       AuthenticationMethod::PAIRED_SPAKE2_CURVE25519};
   auth.method = AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519;
   auth.id = "auth_id";
-  auth.spake_message = {1, 2, 3};
-  auth.verification_hash = {4, 5, 6};
-  auth.certificate = {7, 8, 9};
+  auth.spake_message = std::vector<uint8_t>(32, 0x01);
+  auth.verification_hash = std::vector<uint8_t>(32, 0xAA);
+  auth.certificate = std::vector<uint8_t>(32, 0xBB);
   auth.session_authz_host_token = "host_token";
   auth.session_authz_session_token = "session_token";
   auth.pairing_info.emplace();
