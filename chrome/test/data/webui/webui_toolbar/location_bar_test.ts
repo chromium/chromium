@@ -7,7 +7,7 @@ import 'chrome://webui-toolbar.top-chrome/app.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestSearchboxBrowserProxy} from 'chrome://webui-test/cr_components/searchbox/test_searchbox_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {OmniboxTextColor, SearchboxBrowserProxy} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {OmniboxTextColor, SearchboxBrowserProxy, SecurityChipRole} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {LocationBarElement, LocationBarState} from 'chrome://webui-toolbar.top-chrome/app.js';
 
 suite('LocationBar', function() {
@@ -40,6 +40,7 @@ suite('LocationBar', function() {
           text: '',
           tooltip: '',
           accessibilityState: {
+            role: SecurityChipRole.kButton,
             label: accessibilityLabel,
             description: accessibilityDescription,
           },
@@ -89,6 +90,7 @@ suite('LocationBar', function() {
           text: 'Not secure',
           tooltip: 'View site information',
           accessibilityState: {
+            role: SecurityChipRole.kButton,
             label: 'Not secure',
             description: '',
           },

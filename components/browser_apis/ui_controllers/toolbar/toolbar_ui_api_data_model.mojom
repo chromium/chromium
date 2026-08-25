@@ -701,7 +701,13 @@ enum SecurityLevel {
   kWarning,
 };
 
+enum SecurityChipRole {
+  kButton,
+  kImage,
+};
+
 struct SecurityChipAccessibilityState {
+  SecurityChipRole role;
   mojo_base.mojom.String16 label;
   mojo_base.mojom.String16 description;
 };

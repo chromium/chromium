@@ -7,7 +7,7 @@ import 'chrome://webui-toolbar.top-chrome/app.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {hasStyle, microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {BrowserProxyImpl, IconTable, IconType, LhsChipIdentifier, PointerProxyImpl} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {BrowserProxyImpl, IconTable, IconType, LhsChipIdentifier, PointerProxyImpl, SecurityChipRole} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {IconFromTableElement, LocationIconElement, PointerProxy} from 'chrome://webui-toolbar.top-chrome/app.js';
 
 class TestToolbarUiHandler extends TestBrowserProxy {
@@ -66,6 +66,7 @@ suite('LocationIconTest', function() {
       isVisible: true,
       isContextMenuVisible: false,
       accessibilityState: {
+        role: SecurityChipRole.kButton,
         label: '',
         description: '',
       },
@@ -96,6 +97,7 @@ suite('LocationIconTest', function() {
       isVisible: true,
       isContextMenuVisible: false,
       accessibilityState: {
+        role: SecurityChipRole.kButton,
         label: '',
         description: '',
       },
@@ -122,6 +124,7 @@ suite('LocationIconTest', function() {
       isVisible: true,
       isContextMenuVisible: false,
       accessibilityState: {
+        role: SecurityChipRole.kButton,
         label: '',
         description: '',
       },
@@ -150,6 +153,7 @@ suite('LocationIconTest', function() {
       isVisible: true,
       isContextMenuVisible: false,
       accessibilityState: {
+        role: SecurityChipRole.kButton,
         label: '',
         description: '',
       },
@@ -174,6 +178,7 @@ suite('LocationIconTest', function() {
       isVisible: true,
       isContextMenuVisible: false,
       accessibilityState: {
+        role: SecurityChipRole.kButton,
         label: '',
         description: '',
       },
@@ -195,6 +200,7 @@ suite('LocationIconTest', function() {
       isVisible: true,
       isContextMenuVisible: false,
       accessibilityState: {
+        role: SecurityChipRole.kButton,
         label: '',
         description: '',
       },
@@ -222,6 +228,7 @@ suite('LocationIconTest', function() {
       isVisible: true,
       isContextMenuVisible: false,
       accessibilityState: {
+        role: SecurityChipRole.kButton,
         label: '',
         description: '',
       },
@@ -279,6 +286,7 @@ suite('LocationIconTest', function() {
       text: '',
       tooltip: '',
       accessibilityState: {
+        role: SecurityChipRole.kButton,
         label: '',
         description: '',
       },
@@ -329,7 +337,8 @@ suite('LocationIconTest', function() {
       isTextDangerous: false,
       isVisible: true,
       isContextMenuVisible: false,
-      accessibilityState: {label: '', description: ''},
+      accessibilityState:
+          {role: SecurityChipRole.kButton, label: '', description: ''},
     };
     await microtasksFinished();
 
@@ -426,7 +435,8 @@ suite('LocationIconTest', function() {
       isTextDangerous: false,
       isVisible: true,
       isContextMenuVisible: false,
-      accessibilityState: {label: '', description: ''},
+      accessibilityState:
+          {role: SecurityChipRole.kButton, label: '', description: ''},
     };
     await microtasksFinished();
 
@@ -451,5 +461,41 @@ suite('LocationIconTest', function() {
 
     // Restore
     (window as any).clearTimeout = originalClearTimeout;
+  });
+
+  test('Accessibility state properties', async function() {
+    locationIcon.state = {
+      icon: {handleId: 10n},
+      securityLevel: 0,
+      text: '',
+      tooltip: '',
+      isClickable: true,
+      isTextDangerous: false,
+      isVisible: true,
+      isContextMenuVisible: false,
+      accessibilityState: {
+        role: SecurityChipRole.kImage,
+        label: 'Search icon',
+        description: 'Context description',
+      },
+    };
+    await microtasksFinished();
+
+    const container = locationIcon.$.container;
+    assertEquals('img', container.getAttribute('role'));
+    assertEquals('Search icon', container.getAttribute('aria-label'));
+    assertEquals(
+        'Context description', container.getAttribute('aria-description'));
+
+    // Verify the default button role updates correctly.
+    locationIcon.state = Object.assign({}, locationIcon.state, {
+      accessibilityState: {
+        role: SecurityChipRole.kButton,
+        label: 'A label',
+        description: 'A description',
+      },
+    });
+    await microtasksFinished();
+    assertEquals('button', container.getAttribute('role'));
   });
 });

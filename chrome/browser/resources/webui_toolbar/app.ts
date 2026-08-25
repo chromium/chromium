@@ -49,6 +49,7 @@ import {
   ContextMenuType,
   FocusRequestTarget,
   LhsChipIdentifier,
+  SecurityChipRole,
   OmniboxTextColor,
   PageActionId,
   PageActionTrigger,
@@ -116,6 +117,7 @@ export {
   INVALID_FOCUS_REQUEST_HANDLE,
   INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE,
   LhsChipIdentifier,
+  SecurityChipRole,
   LocationBarElement,
   LocationIconElement,
   OmniboxTextColor,
@@ -436,6 +438,7 @@ export class ToolbarAppElement extends AppElementBase {
           text: '',
           tooltip: '',
           accessibilityState: {
+            role: SecurityChipRole.kButton,
             label: '',
             description: '',
           },

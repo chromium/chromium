@@ -11,6 +11,7 @@ export function getHtml(this: LocationIconElement) {
   return html`<!--_html_template_start_-->
 <button id="container" type="button"
     title="${this.state.tooltip}"
+    role="${this.getAccessibilityRole_()}"
     aria-label="${this.state.accessibilityState.label}"
     aria-description="${this.state.accessibilityState.description}"
     tabindex="${this.state.isClickable ? '0' : '-1'}"

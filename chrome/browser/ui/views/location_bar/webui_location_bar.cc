@@ -600,6 +600,9 @@ void WebUILocationBar::UpdateLhsChipsState(bool icon_known) {
           location_icon_, mojo_security_level, security_chip_text,
           location_bar::GetSecurityChipTooltipText(is_editing_or_empty),
           toolbar_ui_api::mojom::SecurityChipAccessibilityState::New(
+              accessibility_state.role == ax::mojom::Role::kImage
+                  ? toolbar_ui_api::mojom::SecurityChipRole::kImage
+                  : toolbar_ui_api::mojom::SecurityChipRole::kButton,
               accessibility_state.name, accessibility_state.description),
           is_clickable, is_text_dangerous, !ShouldChipOverrideLocationIcon(),
           is_context_menu_visible),
