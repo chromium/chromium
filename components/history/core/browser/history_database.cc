@@ -453,7 +453,7 @@ bool HistoryDatabase::RecreateAllTablesButURL() {
 void HistoryDatabase::Vacuum() {
   DCHECK(!db_.HasActiveTransactions())
       << "Can not have a transaction when vacuuming.";
-  std::ignore = db_.Execute("VACUUM");
+  std::ignore = db_.Vacuum();
 }
 
 bool HistoryDatabase::Raze() {
