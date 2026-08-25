@@ -650,7 +650,6 @@ void SvgTextLayoutAlgorithm::PositionOnPath(
         } else {
           // 5.1.2.2. If the ‘side’ attribute of the ‘textPath’ element is
           // 'right', then reverse path.
-          // ==> We don't support 'side' attribute yet.
 
           // 5.1.2.4. Let offset be the value of the ‘textPath’ element's
           // ‘startOffset’ attribute, adjusted due to any ‘pathLength’

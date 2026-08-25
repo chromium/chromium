@@ -52,6 +52,16 @@ const SVGEnumerationMap& GetEnumerationMap<SVGTextPathSpacingType>() {
   return entries;
 }
 
+template <>
+const SVGEnumerationMap& GetEnumerationMap<SVGTextPathSideType>() {
+  static constexpr auto enum_items = std::to_array<const char* const>({
+      "left",
+      "right",
+  });
+  static const SVGEnumerationMap entries(enum_items);
+  return entries;
+}
+
 SVGTextPathElement::SVGTextPathElement(Document& document)
     : SVGTextContentElement(svg_names::kTextPathTag, document),
       SVGURIReference(this),
@@ -70,6 +80,10 @@ SVGTextPathElement::SVGTextPathElement(Document& document)
               this,
               svg_names::kSpacingAttr,
               kSVGTextPathSpacingExact)),
+      side_(MakeGarbageCollected<SVGAnimatedEnumeration<SVGTextPathSideType>>(
+          this,
+          svg_names::kSideAttr,
+          SVGTextPathSideType::kLeft)),
       path_(MakeGarbageCollected<SVGAnimatedPath>(this, svg_names::kPathAttr)) {
 }
 
@@ -79,6 +93,7 @@ void SVGTextPathElement::Trace(Visitor* visitor) const {
   visitor->Trace(start_offset_);
   visitor->Trace(method_);
   visitor->Trace(spacing_);
+  visitor->Trace(side_);
   visitor->Trace(path_);
   visitor->Trace(target_id_observer_);
   SVGTextContentElement::Trace(visitor);
@@ -101,7 +116,7 @@ void SVGTextPathElement::SvgAttributeChanged(
   if (attr_name == svg_names::kStartOffsetAttr ||
       attr_name == svg_names::kMethodAttr ||
       attr_name == svg_names::kSpacingAttr ||
-      attr_name == svg_names::kPathAttr) {
+      attr_name == svg_names::kSideAttr || attr_name == svg_names::kPathAttr) {
     if (LayoutObject* object = GetLayoutObject())
       MarkForLayoutAndParentResourceInvalidation(*object);
 
@@ -165,6 +180,8 @@ SVGAnimatedPropertyBase* SVGTextPathElement::PropertyFromAttribute(
     return method_.Get();
   } else if (attribute_name == svg_names::kSpacingAttr) {
     return spacing_.Get();
+  } else if (attribute_name == svg_names::kSideAttr) {
+    return side_.Get();
   } else if (attribute_name == svg_names::kPathAttr) {
     return path_.Get();
   } else {
@@ -180,7 +197,7 @@ SVGAnimatedPropertyBase* SVGTextPathElement::PropertyFromAttribute(
 
 void SVGTextPathElement::SynchronizeAllSVGAttributes() const {
   SVGAnimatedPropertyBase* attrs[]{start_offset_.Get(), method_.Get(),
-                                   spacing_.Get(), path_.Get()};
+                                   spacing_.Get(), side_.Get(), path_.Get()};
   SynchronizeListOfSVGAttributes(attrs);
   SVGURIReference::SynchronizeAllSVGAttributes();
   SVGTextContentElement::SynchronizeAllSVGAttributes();

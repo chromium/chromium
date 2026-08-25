@@ -6087,6 +6087,10 @@
       status: "experimental",
     },
     {
+      name: "SVGTextPathSideAttribute",
+      status: "experimental",
+    },
+    {
       name: "SvgUseNestedResourceDocuments",
       status: "stable",
     },

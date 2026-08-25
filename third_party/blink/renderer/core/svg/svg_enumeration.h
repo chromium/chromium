@@ -55,7 +55,8 @@ class SVGEnumeration : public SVGPropertyBase {
 
   template <typename Enum>
   explicit SVGEnumeration(Enum new_value)
-      : SVGEnumeration(new_value, GetEnumerationMap<Enum>()) {}
+      : SVGEnumeration(static_cast<uint16_t>(new_value),
+                       GetEnumerationMap<Enum>()) {}
 
   uint16_t Value() const {
     return value_ <= MaxExposedEnumValue() ? value_ : 0;
@@ -70,7 +71,7 @@ class SVGEnumeration : public SVGPropertyBase {
   }
   template <typename Enum>
   void SetEnumValue(Enum value) {
-    SetValue(value);
+    SetValue(static_cast<uint16_t>(value));
   }
 
   // SVGPropertyBase:
