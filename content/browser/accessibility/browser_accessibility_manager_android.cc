@@ -516,18 +516,21 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     }
     case ui::AXEventGenerator::Event::RANGE_VALUE_CHANGED:
       DCHECK(android_node->GetData().IsRangeValueSupported());
-      if (android_node->IsSlider()) {
-        wcax->HandleSliderChanged(android_node->GetUniqueId());
-      } else if ((android_node->GetRole() == ax::mojom::Role::kSpinButton &&
-                  !android_node->IsTextField()) ||
-                 android_node->GetRole() == ax::mojom::Role::kMeter) {
-        // TalkBack expects non-editable SpinButtons and Meter value to be
-        // changed via state description.
+      if ((android_node->GetRole() == ax::mojom::Role::kSpinButton &&
+           !android_node->IsTextField()) ||
+          android_node->GetRole() == ax::mojom::Role::kMeter ||
+          (android_node->IsSlider() &&
+           base::FeatureList::IsEnabled(
+               features::kAccessibilitySliderStateDescription))) {
+        // TalkBack expects SpinButtons (non-editable), Meter and Slider value
+        // to be changed via state description.
         if (isNodeLikelyKnownForExperiment(wcax, android_node->GetUniqueId())) {
           wcax->HandleWindowContentChange(
               android_node->GetUniqueId(),
               ANDROID_ACCESSIBILITY_EVENT_CONTENT_CHANGE_TYPE_STATE_DESCRIPTION);
         }
+      } else if (android_node->IsSlider()) {
+        wcax->HandleSliderChanged(android_node->GetUniqueId());
       }
       break;
     case ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED:

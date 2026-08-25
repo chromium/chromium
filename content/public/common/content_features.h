@@ -380,6 +380,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityExtendedSelection);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySyncFocusOnViewFocusGain);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityImeGetFormattedText);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityImproveLiveRegionAnnounce);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySliderStateDescription);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityRequestLayoutBasedActions);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kAccessibilityRequestScopedContentChangedEvents);

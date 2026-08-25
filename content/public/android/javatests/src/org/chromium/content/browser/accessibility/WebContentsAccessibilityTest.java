@@ -219,7 +219,7 @@ public class WebContentsAccessibilityTest {
     private static final String INPUT_RANGE_VALUE_MISMATCH =
             "Value for <input type='range'> is incorrect, did you honor 'step' value?";
     private static final String INPUT_RANGE_EVENT_ERROR =
-            "TYPE_VIEW_SCROLLED event not received before timeout.";
+            "TYPE_WINDOW_CONTENT_CHANGED event not received before timeout.";
     private static final String CACHING_ERROR = "AccessibilityNodeInfo cache has stale data";
     private static final String NODE_EXTRAS_UNCLIPPED_ERROR =
             "AccessibilityNodeInfo object should have unclipped bounds in extras bundle";
@@ -451,9 +451,11 @@ public class WebContentsAccessibilityTest {
     private void scrollRangeAndWaitForEvent(
             int viewId, AccessibilityNodeInfoCompat.AccessibilityActionCompat scrollAction)
             throws ExecutionException {
+        mTestData.setTypeWindowContentChangedCount(0);
         performActionOnUiThread(viewId, scrollAction, new Bundle());
-        CriteriaHelper.pollUiThread(() -> mTestData.hasReceivedEvent(), INPUT_RANGE_EVENT_ERROR);
-        mTestData.setReceivedEvent(false);
+        CriteriaHelper.pollUiThread(
+            () -> mTestData.getTypeWindowContentChangedCount() > 0,
+            INPUT_RANGE_EVENT_ERROR);
     }
 
     private ClipboardManager getClipboardManager() {
@@ -2778,12 +2780,8 @@ public class WebContentsAccessibilityTest {
 
         // Perform a series of slider increments and check results.
         for (int i = 1; i <= 10; i++) {
-            // Increment our slider using action, and poll until we receive the scroll event.
-            Assert.assertTrue(
-                    performActionOnUiThread(
-                            inputNodeVirtualViewId, ACTION_SCROLL_FORWARD, new Bundle()));
-            CriteriaHelper.pollUiThread(
-                    () -> mTestData.hasReceivedEvent(), INPUT_RANGE_EVENT_ERROR);
+            // Increment our slider using action, and poll until we receive the event.
+            scrollRangeAndWaitForEvent(inputNodeVirtualViewId, ACTION_SCROLL_FORWARD);
 
             // Refresh our node info to get the latest RangeInfo child object.
             mNodeInfo = createAccessibilityNodeInfo(inputNodeVirtualViewId);
@@ -2794,19 +2792,12 @@ public class WebContentsAccessibilityTest {
                     20 + i,
                     mNodeInfo.getRangeInfo().getCurrent(),
                     0.001);
-
-            // Reset polling value for next test
-            mTestData.setReceivedEvent(false);
         }
 
         // Perform a series of slider decrements and check results.
         for (int i = 1; i <= 20; i++) {
-            // Decrement our slider using action, and poll until we receive the scroll event.
-            Assert.assertTrue(
-                    performActionOnUiThread(
-                            inputNodeVirtualViewId, ACTION_SCROLL_BACKWARD, new Bundle()));
-            CriteriaHelper.pollUiThread(
-                    () -> mTestData.hasReceivedEvent(), INPUT_RANGE_EVENT_ERROR);
+            // Decrement our slider using action, and poll until we receive the event.
+            scrollRangeAndWaitForEvent(inputNodeVirtualViewId, ACTION_SCROLL_BACKWARD);
 
             // Refresh our node info to get the latest RangeInfo child object.
             mNodeInfo = createAccessibilityNodeInfo(inputNodeVirtualViewId);
@@ -2817,9 +2808,6 @@ public class WebContentsAccessibilityTest {
                     30 - i,
                     mNodeInfo.getRangeInfo().getCurrent(),
                     0.001);
-
-            // Reset polling value for next test
-            mTestData.setReceivedEvent(false);
         }
     }
 

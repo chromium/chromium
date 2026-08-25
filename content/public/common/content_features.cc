@@ -1392,6 +1392,11 @@ BASE_FEATURE(kAccessibilityImeGetFormattedText,
 BASE_FEATURE(kAccessibilityImproveLiveRegionAnnounce,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, allows Android to fire WINDOW_CONTENT_CHANGED events for value
+// changes made to slider controls.
+BASE_FEATURE(kAccessibilitySliderStateDescription,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When this feature is enabled, the accessibility tree will be requested to
 // layout based on the actions that are performed on the renderer side. In
 // particular this will be used to determine whether or not a node is clickable

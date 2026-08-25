@@ -1,2 +1,2 @@
 === END INITIAL PAGE LOAD ===
-TYPE_VIEW_SCROLLED class_name=android.widget.SeekBar [scrollDeltaX=-1, scrollDeltaY=-1] on class_name=android.widget.SeekBar
+TYPE_WINDOW_CONTENT_CHANGED [contentTypes=STATE_DESCRIPTION] on class_name=android.widget.SeekBar
