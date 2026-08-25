@@ -314,6 +314,7 @@ public class VerticalTabListCoordinator {
             SettableNonNullObservableSupplier<Integer> verticalTabsWidthSupplier,
             @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier,
             @Nullable ViewStub tabHoverCardViewStub,
+            @Nullable ViewStub tabGroupHoverCardViewStub,
             Supplier<TabContentManager> tabContentManagerSupplier,
             @Nullable UndoBarThrottle undoBarThrottle) {
         mCanActivateTabLayoutToggleMenuSupplier = canActivateTabLayoutToggleMenuSupplier;
@@ -402,6 +403,7 @@ public class VerticalTabListCoordinator {
                 new VerticalTabHoverCardController(
                         mContainerView,
                         tabHoverCardViewStub,
+                        tabGroupHoverCardViewStub,
                         tabModelSelector,
                         nullableSupplier,
                         this::isAnyContextMenuShowing);

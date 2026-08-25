@@ -117,6 +117,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabDragHandlerBase;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListItemOnClickListenerProvider;
@@ -212,9 +213,11 @@ public class VerticalTabListCoordinatorUnitTest {
     @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
     @Mock private VerticalTabRailCollapseController.RailCollapseListener mMockRailCollapseListener;
     @Mock private ViewStub mTabHoverCardViewStub;
+    @Mock private ViewStub mTabGroupHoverCardViewStub;
     @Mock private ViewGroup mHoverCardParent;
     @Mock private Supplier<TabContentManager> mTabContentManagerSupplier;
     @Mock private TabHoverCardView mTabHoverCardView;
+    @Mock private TabGroupHoverCardView mTabGroupHoverCardView;
     @Mock private ServiceStatus mServiceStatus;
     @Mock private TabModel mEmptyTabModel;
     @Mock private TabModel mNewTabModel;
@@ -298,6 +301,20 @@ public class VerticalTabListCoordinatorUnitTest {
                             return null;
                         })
                 .when(mTabHoverCardViewStub)
+                .setOnInflateListener(any());
+
+        when(mTabGroupHoverCardViewStub.getParent()).thenReturn(mHoverCardParent);
+        when(mTabGroupHoverCardView.getContext()).thenReturn(mActivity);
+        doAnswer(
+                        invocation -> {
+                            ViewStub.OnInflateListener listener = invocation.getArgument(0);
+                            if (listener != null) {
+                                listener.onInflate(
+                                        mTabGroupHoverCardViewStub, mTabGroupHoverCardView);
+                            }
+                            return null;
+                        })
+                .when(mTabGroupHoverCardViewStub)
                 .setOnInflateListener(any());
 
         doAnswer(
@@ -1305,6 +1322,7 @@ public class VerticalTabListCoordinatorUnitTest {
                         widthSupplier,
                         /* canActivateTabLayoutToggleMenuSupplier= */ null,
                         mTabHoverCardViewStub,
+                        mTabGroupHoverCardViewStub,
                         mTabContentManagerSupplier,
                         mUndoBarThrottle);
 
@@ -3843,6 +3861,7 @@ public class VerticalTabListCoordinatorUnitTest {
                         mVerticalTabsWidthSupplier,
                         /* canActivateTabLayoutToggleMenuSupplier= */ null,
                         mTabHoverCardViewStub,
+                        mTabGroupHoverCardViewStub,
                         mTabContentManagerSupplier,
                         mUndoBarThrottle);
 
@@ -3867,6 +3886,7 @@ public class VerticalTabListCoordinatorUnitTest {
                         mVerticalTabsWidthSupplier,
                         /* canActivateTabLayoutToggleMenuSupplier= */ null,
                         mTabHoverCardViewStub,
+                        mTabGroupHoverCardViewStub,
                         mTabContentManagerSupplier,
                         mUndoBarThrottle);
 

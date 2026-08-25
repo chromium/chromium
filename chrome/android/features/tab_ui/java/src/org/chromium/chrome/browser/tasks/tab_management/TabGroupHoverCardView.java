@@ -30,7 +30,7 @@ import java.util.List;
 @NullMarked
 public class TabGroupHoverCardView extends FrameLayout {
     /** Maximum number of child tab preview rows displayed in the hover card. */
-    static final int MAX_PREVIEW_TABS = 5;
+    public static final int MAX_PREVIEW_TABS = 5;
 
     private final TextView[] mChildTabViews = new TextView[MAX_PREVIEW_TABS];
 
@@ -71,11 +71,13 @@ public class TabGroupHoverCardView extends FrameLayout {
      * Binds resolved tab group data to child views.
      *
      * @param title The group display title.
-     * @param childTabTitles The list of formatted child tab titles (up to 5).
-     * @param excessCount The number of excess tabs beyond the 5 previews.
+     * @param childTabTitles The list of formatted child tab titles (up to {@value
+     *     #MAX_PREVIEW_TABS}).
+     * @param excessCount The number of excess tabs beyond {@value #MAX_PREVIEW_TABS} previews.
      * @param isIncognito True if displaying incognito colors.
      */
-    void bindData(String title, List<String> childTabTitles, int excessCount, boolean isIncognito) {
+    public void bindData(
+            String title, List<String> childTabTitles, int excessCount, boolean isIncognito) {
         updateColors(isIncognito);
 
         // Group Title.
@@ -113,19 +115,19 @@ public class TabGroupHoverCardView extends FrameLayout {
      * @param x Target X screen coordinate in pixels.
      * @param y Target Y screen coordinate in pixels.
      */
-    void show(float x, float y) {
+    public void show(float x, float y) {
         setX(x);
         setY(y);
         setVisibility(View.VISIBLE);
     }
 
     /** Hides the hover card. */
-    void hide() {
+    public void hide() {
         setVisibility(View.GONE);
     }
 
     /** Destroys references and hides the card. */
-    void destroy() {
+    public void destroy() {
         hide();
     }
 
