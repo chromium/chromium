@@ -34,6 +34,9 @@ class GlicActiveInstanceSharingManagerBrowserTest : public GlicBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(GlicActiveInstanceSharingManagerBrowserTest,
                        DelegatesToActiveInstance) {
+  // TODO(crbug.com/543550224): Flaky on non-desktop Android bots.
+  SKIP_TEST_FOR_NON_DESKTOP_ANDROID();
+
   // 1. Initial state: no instance, so no delegate.
   // GlicActiveInstanceSharingManager delegates to nothing if no active
   // instance. We can verify this by checking if it seems empty.
