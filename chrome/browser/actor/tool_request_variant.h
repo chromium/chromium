@@ -34,6 +34,7 @@ using ToolRequestVariant = std::variant<
     EnterFullscreenToolRequest,
     ExitFullscreenToolRequest,
 #endif
+    FindAndHighlightToolRequest,
     HistoryToolRequest,
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     LoadAndExtractContentToolRequest,
@@ -77,6 +78,7 @@ class ConvertToVariantFn : public ToolRequestVisitorFunctor {
   void Apply(const EnterFullscreenToolRequest&) override;
   void Apply(const ExitFullscreenToolRequest&) override;
 #endif
+  void Apply(const FindAndHighlightToolRequest&) override;
   void Apply(const HistoryToolRequest&) override;
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   void Apply(const LoadAndExtractContentToolRequest&) override;
