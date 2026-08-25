@@ -1493,10 +1493,6 @@ const base::FeatureParam<int> kTextClassifierTimeoutMs{&kTextClassifierTimeout,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
-// Enables backgrounding hidden renderers on Mac.
-BASE_FEATURE(kMacAllowBackgroundingRenderProcesses,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Changes how Chrome responds to accessibility activation signals on macOS
 // Sonoma, to avoid unnecessary changes to the screen reader state.
 BASE_FEATURE(kSonomaAccessibilityActivationRefinements,

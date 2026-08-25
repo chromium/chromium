@@ -6005,14 +6005,7 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
         process_priority == base::Process::Priority::kUserVisible) {
       process_priority = base::Process::Priority::kUserBlocking;
     }
-#if BUILDFLAG(IS_MAC)
-    if (base::FeatureList::IsEnabled(
-            features::kMacAllowBackgroundingRenderProcesses)) {
-      child_process_launcher_->SetProcessPriority(process_priority);
-    }
-#else   // !BUILDFLAG(IS_MAC)
     child_process_launcher_->SetProcessPriority(process_priority);
-#endif  // BUILDFLAG(IS_MAC)
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 
