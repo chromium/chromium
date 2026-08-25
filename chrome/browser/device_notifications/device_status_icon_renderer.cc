@@ -86,7 +86,8 @@ void DeviceStatusIconRenderer::AddProfile(Profile* profile) {
   if (device_system_tray_icon_->profiles().size() == 1) {
     auto* profile_manager = g_browser_process->profile_manager();
     CHECK(profile_manager);
-    profile_manager->GetProfileAttributesStorage().AddObserver(this);
+    profile_attributes_storage_observation_.Observe(
+        &profile_manager->GetProfileAttributesStorage());
   }
   RefreshIcon();
 }
@@ -94,9 +95,7 @@ void DeviceStatusIconRenderer::AddProfile(Profile* profile) {
 void DeviceStatusIconRenderer::RemoveProfile(Profile* profile) {
   RefreshIcon();
   if (device_system_tray_icon_->profiles().empty()) {
-    auto* profile_manager = g_browser_process->profile_manager();
-    CHECK(profile_manager);
-    profile_manager->GetProfileAttributesStorage().RemoveObserver(this);
+    profile_attributes_storage_observation_.Reset();
   }
 }
 

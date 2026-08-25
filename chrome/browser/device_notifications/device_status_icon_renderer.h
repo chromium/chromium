@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_DEVICE_NOTIFICATIONS_DEVICE_STATUS_ICON_RENDERER_H_
 #define CHROME_BROWSER_DEVICE_NOTIFICATIONS_DEVICE_STATUS_ICON_RENDERER_H_
 
+#include "base/scoped_observation.h"
 #include "chrome/browser/device_notifications/device_system_tray_icon.h"
 #include "chrome/browser/device_notifications/device_system_tray_icon_renderer.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_attributes_storage_observer.h"
 #include "chrome/browser/status_icons/status_icon.h"
 
@@ -69,6 +71,10 @@ class DeviceStatusIconRenderer : public DeviceSystemTrayIconRenderer,
 
   // The mapping of clickable system tray icon items to their click handlers
   std::vector<base::RepeatingClosure> command_id_callbacks_;
+
+  base::ScopedObservation<ProfileAttributesStorage,
+                          ProfileAttributesStorageObserver>
+      profile_attributes_storage_observation_{this};
 
   base::WeakPtrFactory<DeviceStatusIconRenderer> weak_factory_{this};
 };

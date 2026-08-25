@@ -498,6 +498,7 @@ class BrowserProcessImpl : public BrowserProcess,
   // Called to signal the process' main message loop to exit.
   base::OnceClosure quit_closure_;
 
+  // Must be destroyed before `profile_manager_`.
   std::unique_ptr<HidSystemTrayIcon> hid_system_tray_icon_;
   std::unique_ptr<UsbSystemTrayIcon> usb_system_tray_icon_;
 

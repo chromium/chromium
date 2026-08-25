@@ -617,9 +617,9 @@ void BrowserProcessImpl::StartTearDown() {
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-  // |hid_system_tray_icon_| and |usb_system_tray_icon_| must be destroyed
-  // before |system_notification_helper_| for ChromeOS and |status_tray_| for
-  // non-ChromeOS.
+  // `hid_system_tray_icon_` and `usb_system_tray_icon_` must be destroyed
+  // before `system_notification_helper_` for ChromeOS and `status_tray_` for
+  // non-ChromeOS, and before `profile_manager_`.
   hid_system_tray_icon_.reset();
   usb_system_tray_icon_.reset();
 

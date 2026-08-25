@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/device_notifications/device_status_icon_unittest.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/usb/usb_connection_tracker.h"
 #include "chrome/browser/usb/usb_connection_tracker_factory.h"
 #include "chrome/browser/usb/usb_system_tray_icon.h"
@@ -108,5 +109,33 @@ TEST_F(UsbStatusIconTest, ExtensionRemoval) {
 
 TEST_F(UsbStatusIconTest, ProfileUserNameExtensionOrigin) {
   TestProfileUserNameExtensionOrigin();
+}
+
+// Regression test for crbug.com/40050259 variant: ensures that destroying
+// the system tray icon while a profile device connection is still active
+// unregisters the DeviceStatusIconRenderer from ProfileAttributesStorage.
+// Otherwise, the dangling observer causes a use-after-free when profile
+// attributes are later modified.
+TEST_F(UsbStatusIconTest,
+       DestroyRendererWithProfileConnected_ThenRenameProfile) {
+  // Connect the only testing profile so AddProfile() registers the renderer
+  // as a ProfileAttributesStorage observer.
+  auto extension = CreateExtensionWithName("Test Extension");
+  AddExtensionToProfile(profile(), extension.get());
+  auto* connection_tracker =
+      GetDeviceConnectionTracker(profile(), /*create=*/true);
+  connection_tracker->IncrementConnectionCount(extension->origin());
+
+  // Destroy the system tray icon (and thus the renderer) while the profile
+  // is still connected.
+  ResetTestingBrowserProcessSystemTrayIcon();
+
+  // Modifying the profile attribute triggers a notification to
+  // ProfileAttributesStorage observers. If the renderer did not unregister
+  // upon destruction, this will dereference a dangling observer pointer.
+  profile_manager()
+      ->profile_attributes_storage()
+      ->GetProfileAttributesWithPath(profile()->GetPath())
+      ->SetLocalProfileName(u"renamed-profile", /*is_default_name=*/false);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
