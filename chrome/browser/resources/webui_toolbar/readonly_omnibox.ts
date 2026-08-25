@@ -996,7 +996,8 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     return this.adjustedCopyResult?.pageTitle || '';
   }
 
-  private populateDataTransfer_(dataTransfer: DataTransfer): boolean {
+  private populateDataTransfer_(
+      dataTransfer: DataTransfer, forClipboard: boolean): boolean {
     const input = this.$.textInput.inputElement;
     const selectionStart = input.selectionStart!;
     const selectionEnd = input.selectionEnd!;
@@ -1004,7 +1005,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     if (selectionStart !== selectionEnd && this.adjustedCopyResult) {
       dataTransfer.setData('text/plain', this.adjustedCopyResult.adjustedText);
 
-      if (this.adjustedCopyResult.adjustedUrl) {
+      if (this.adjustedCopyResult.adjustedUrl && !forClipboard) {
         dataTransfer.setData(
             'text/uri-list', this.adjustedCopyResult.adjustedUrl);
       }
@@ -1016,7 +1017,8 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   private onDragStart_(e: DragEvent): void {
     this.isDraggingFromSelf_ = true;
 
-    if (e.dataTransfer && this.populateDataTransfer_(e.dataTransfer)) {
+    if (e.dataTransfer &&
+        this.populateDataTransfer_(e.dataTransfer, /*forClipboard=*/ false)) {
       e.dataTransfer.effectAllowed = 'copy';
 
       if (this.adjustedCopyResult?.adjustedUrl) {
@@ -1030,13 +1032,15 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   }
 
   private onInputCopy_(e: ClipboardEvent): void {
-    if (e.clipboardData && this.populateDataTransfer_(e.clipboardData)) {
+    if (e.clipboardData &&
+        this.populateDataTransfer_(e.clipboardData, /*forClipboard=*/ true)) {
       e.preventDefault();
     }
   }
 
   private onInputCut_(e: ClipboardEvent): void {
-    if (e.clipboardData && this.populateDataTransfer_(e.clipboardData)) {
+    if (e.clipboardData &&
+        this.populateDataTransfer_(e.clipboardData, /*forClipboard=*/ true)) {
       e.preventDefault();
       // Go via execCommand to keep Ctrl-Z happy.
       document.execCommand('delete');
