@@ -98,6 +98,7 @@ source_set("browser_tests") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
+    "//base/i18n:test_support",
     "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",

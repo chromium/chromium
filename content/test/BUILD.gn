@@ -3191,6 +3191,7 @@ test("content_unittests") {
     "//base",
     "//base/allocator:buildflags",
     "//base/allocator/partition_allocator/src/partition_alloc:test_support",
+    "//base/i18n:test_support",
     "//base/test:fuzztest_support",
     "//base/test:proto_test_support",
     "//base/test:test_support",

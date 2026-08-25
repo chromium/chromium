@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 
+#include "base/i18n/language_tag.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
@@ -1063,7 +1065,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
                        GetLinkDropBoundsNoShiftRTL) {
-  base::i18n::SetICUDefaultLocale("ar");
+  base::i18n::ScopedDefaultIcuLocale scoped_locale(
+      base::i18n::GetKnownLanguageTag("ar"));
   ASSERT_TRUE(base::i18n::IsRTL());
 
   // Add a tab to ensure count > 0.
@@ -1100,7 +1103,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
                        GetLinkDropBoundsWithShiftRTL) {
-  base::i18n::SetICUDefaultLocale("ar");
+  base::i18n::ScopedDefaultIcuLocale scoped_locale(
+      base::i18n::GetKnownLanguageTag("ar"));
   ASSERT_TRUE(base::i18n::IsRTL());
 
   // Add a tab.

@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/containers/to_vector.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
@@ -460,7 +462,6 @@ TEST_F(AutofillAiImportUtilsTest, DoNotImportReadOnlyEntities) {
 
 TEST_F(AutofillAiImportUtilsTest, MaybeGetLocalizedDate) {
   using enum AttributeTypeName;
-  base::test::ScopedRestoreICUDefaultLocale restore_default_locale;
 
   EntityInstance entity =
       test::GetPassportEntityInstance({.expiry_date = u"2025-12-30"});
@@ -468,14 +469,26 @@ TEST_F(AutofillAiImportUtilsTest, MaybeGetLocalizedDate) {
     AttributeInstance a =
         entity.attribute(AttributeType(kPassportExpirationDate)).value();
     auto optional = [](std::u16string s) { return Optional(s); };
-    base::i18n::SetICUDefaultLocale("en_US");
-    EXPECT_THAT(MaybeGetLocalizedDate(a), optional(u"Dec 30, 2025"));
-    base::i18n::SetICUDefaultLocale("en_GB");
-    EXPECT_THAT(MaybeGetLocalizedDate(a), optional(u"30 Dec 2025"));
-    base::i18n::SetICUDefaultLocale("de_DE");
-    EXPECT_THAT(MaybeGetLocalizedDate(a), optional(u"30.12.2025"));
-    base::i18n::SetICUDefaultLocale("fr_FR");
-    EXPECT_THAT(MaybeGetLocalizedDate(a), optional(u"30 déc. 2025"));
+    {
+      base::i18n::ScopedDefaultIcuLocale scoped_locale(
+          base::i18n::GetKnownLanguageTag("en-US"));
+      EXPECT_THAT(MaybeGetLocalizedDate(a), optional(u"Dec 30, 2025"));
+    }
+    {
+      base::i18n::ScopedDefaultIcuLocale scoped_locale(
+          base::i18n::GetKnownLanguageTag("en-GB"));
+      EXPECT_THAT(MaybeGetLocalizedDate(a), optional(u"30 Dec 2025"));
+    }
+    {
+      base::i18n::ScopedDefaultIcuLocale scoped_locale(
+          base::i18n::GetKnownLanguageTag("de-DE"));
+      EXPECT_THAT(MaybeGetLocalizedDate(a), optional(u"30.12.2025"));
+    }
+    {
+      base::i18n::ScopedDefaultIcuLocale scoped_locale(
+          base::i18n::GetKnownLanguageTag("fr-FR"));
+      EXPECT_THAT(MaybeGetLocalizedDate(a), optional(u"30 déc. 2025"));
+    }
   }
   {
     AttributeInstance a =

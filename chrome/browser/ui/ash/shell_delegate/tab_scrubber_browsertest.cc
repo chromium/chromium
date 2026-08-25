@@ -11,6 +11,8 @@
 #include "ash/display/event_transformation_handler.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -531,7 +533,8 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, CloseBrowser) {
 // In an RTL layout, swipe 4 tabs in each direction. Each of the tabs should
 // become active.
 IN_PROC_BROWSER_TEST_F(TabScrubberTest, RTLMulti) {
-  base::i18n::SetICUDefaultLocale("ar");
+  base::i18n::ScopedDefaultIcuLocale scoped_locale(
+      base::i18n::GetKnownLanguageTag("ar"));
   ASSERT_TRUE(base::i18n::IsRTL());
 
   AddTabs(browser(), 4);
@@ -549,7 +552,8 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, RTLMulti) {
 // tabs. These tests have 5 total tabs. We will only received scroll events
 // on tabs 0, 2 and 4.
 IN_PROC_BROWSER_TEST_F(TabScrubberTest, RTLSkipped) {
-  base::i18n::SetICUDefaultLocale("ar");
+  base::i18n::ScopedDefaultIcuLocale scoped_locale(
+      base::i18n::GetKnownLanguageTag("ar"));
   ASSERT_TRUE(base::i18n::IsRTL());
 
   AddTabs(browser(), 4);
@@ -566,7 +570,8 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, RTLSkipped) {
 // In an RTL layout, move a tab to before the highlighted one. Make sure that
 // the highlighted tab index is updated correctly.
 IN_PROC_BROWSER_TEST_F(TabScrubberTest, RTLMoveBefore) {
-  base::i18n::SetICUDefaultLocale("ar");
+  base::i18n::ScopedDefaultIcuLocale scoped_locale(
+      base::i18n::GetKnownLanguageTag("ar"));
   ASSERT_TRUE(base::i18n::IsRTL());
 
   AddTabs(browser(), 2);

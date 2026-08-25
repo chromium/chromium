@@ -186,6 +186,7 @@ source_set("interactive_ui_tests") {
     ":global_media_controls",
     ":test_support",
     "//base",
+    "//base/i18n:test_support",
     "//chrome/browser/ui",
     "//chrome/browser/ui/global_media_controls",
     "//chrome/test:test_support",

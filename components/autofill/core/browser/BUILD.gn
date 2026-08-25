@@ -2349,6 +2349,7 @@ source_set("unit_tests") {
     ":test_support",
     ":unit_tests_bundle_data",
     "//base",
+    "//base/i18n:test_support",
     "//base/test:test_support",
     "//base/version_info",
     "//components/autofill/core/browser/actor:unit_tests",

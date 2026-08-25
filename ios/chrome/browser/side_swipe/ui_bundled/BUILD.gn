@@ -93,6 +93,7 @@ source_set("unit_tests") {
   deps = [
     ":ui_bundled",
     "//base",
+    "//base/i18n:test_support",
     "//base/test:test_support",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/reader_mode/model:test_support",

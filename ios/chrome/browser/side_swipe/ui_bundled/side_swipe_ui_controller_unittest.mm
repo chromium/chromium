@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_ui_controller.h"
 
+#import "base/i18n/language_tag.h"
 #import "base/i18n/rtl.h"
+#import "base/i18n/test/scoped_icu_locale.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_ui_controller+Testing.h"
 #import "testing/platform_test.h"
 
@@ -24,7 +26,8 @@ TEST_F(SideSwipeUIControllerTest, TestNativeSwipeIsEnabledOnRtlEnv) {
   [side_swipe_ui_controller_ setTrailingEdgeNavigationEnabled:NO];
 
   // Set the env lang to Arabic.
-  base::i18n::SetICUDefaultLocale("ar");
+  base::i18n::ScopedDefaultIcuLocale scoped_locale(
+      base::i18n::GetKnownLanguageTag("ar"));
 
   BOOL edgeNavigationIsEnabledOnLeftDirection =
       [side_swipe_ui_controller_ edgeNavigationIsEnabledForDirection:
@@ -41,9 +44,6 @@ TEST_F(SideSwipeUIControllerTest, TestNativeSwipeIsEnabledOnRtlEnv) {
   // On an RTL layout, edge navigation is disabled on right direction since
   // trailing edge navigation is disabled.
   EXPECT_FALSE(edgeNavigationIsEnabledOnRightDirection);
-
-  // Reset the lang env to en-US.
-  base::i18n::SetICUDefaultLocale("en-US");
 }
 
 // Tests if edge navigation is enabled on an LTR layout for a given direction.

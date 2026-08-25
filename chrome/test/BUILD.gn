@@ -385,6 +385,7 @@ static_library("test_support") {
 
   # New deps should go in the non-iOS section below.
   public_deps += [
+    "//base/i18n:test_support",
     "//base/test:test_support",
     "//chrome:resources",
     "//chrome:strings",
@@ -1892,6 +1893,7 @@ if (!is_android) {
       "//base:build_time",
       "//base:i18n",
       "//base/allocator:buildflags",
+      "//base/i18n:test_support",
       "//base/test:proto_test_support",
       "//base/test:test_proto",
       "//base/test:test_support",
@@ -5152,6 +5154,7 @@ test("unit_tests") {
     ":test_support",
     ":test_support_unit",
     "//base:base_stack_sampling_profiler_test_util",
+    "//base/i18n:test_support",
     "//base/test:test_support",
     "//build/config/compiler:compiler_buildflags",
     "//chrome:resources",

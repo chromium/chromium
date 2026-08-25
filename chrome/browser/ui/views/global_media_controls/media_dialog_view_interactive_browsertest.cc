@@ -4,6 +4,8 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -489,7 +491,8 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
                        MAYBE_ShowsMetadataAndControlsMediaInRTL) {
-  base::i18n::SetICUDefaultLocale("ar");
+  base::i18n::ScopedDefaultIcuLocale scoped_locale(
+      base::i18n::GetKnownLanguageTag("ar"));
   ASSERT_TRUE(base::i18n::IsRTL());
 
   // The toolbar icon should not start visible.

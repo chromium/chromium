@@ -7,7 +7,9 @@
 #include <string_view>
 
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
@@ -60,13 +62,19 @@ TEST(FontList, GetFontList) {
 
 #if BUILDFLAG(IS_WIN)
 TEST(FontList, GetFontListLocalized) {
-  base::i18n::SetICUDefaultLocale("ja-JP");
-  base::ListValue ja_fonts = content::GetFontList_SlowBlocking();
-  EXPECT_TRUE(HasFontWithName(ja_fonts, "MS Gothic", "ＭＳ ゴシック"));
+  {
+    base::i18n::ScopedDefaultIcuLocale scoped_locale(
+        base::i18n::GetKnownLanguageTag("ja-JP"));
+    EXPECT_TRUE(HasFontWithName(content::GetFontList_SlowBlocking(),
+                                "MS Gothic", "ＭＳ ゴシック"));
+  }
 
-  base::i18n::SetICUDefaultLocale("ko-KR");
-  base::ListValue ko_fonts = content::GetFontList_SlowBlocking();
-  EXPECT_TRUE(HasFontWithName(ko_fonts, "Malgun Gothic", "맑은 고딕"));
+  {
+    base::i18n::ScopedDefaultIcuLocale scoped_locale(
+        base::i18n::GetKnownLanguageTag("ko-KR"));
+    EXPECT_TRUE(HasFontWithName(content::GetFontList_SlowBlocking(),
+                                "Malgun Gothic", "맑은 고딕"));
+  }
 }
 #endif  // BUILDFLAG(IS_WIN)
 
