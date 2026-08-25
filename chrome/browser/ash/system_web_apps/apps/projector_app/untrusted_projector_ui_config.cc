@@ -9,10 +9,12 @@
 #include "base/feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "components/version_info/channel.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -59,6 +61,11 @@ std::unique_ptr<content::WebUIController>
 UntrustedProjectorUIConfig::CreateWebUIController(content::WebUI* web_ui,
                                                   const GURL& url) {
   ChromeUntrustedProjectorUIDelegate delegate;
+  Profile* profile = Profile::FromWebUI(web_ui);
   return std::make_unique<ash::UntrustedProjectorUI>(
-      web_ui, &delegate, Profile::FromWebUI(web_ui)->GetPrefs());
+      web_ui, &delegate, profile->GetPrefs(),
+      IdentityManagerFactory::GetForProfile(profile),
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess()
+          .get());
 }

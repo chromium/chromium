@@ -612,6 +612,7 @@ void PendingScreencastManager::SendDrivePatchRequest(
 
   if (!xhr_sender_) {
     xhr_sender_ = std::make_unique<ash::ProjectorXhrSender>(
+        ash::ProjectorAppClient::Get()->GetIdentityManager(),
         ash::ProjectorAppClient::Get()->GetUrlLoaderFactory());
   }
 

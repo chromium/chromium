@@ -19,6 +19,14 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "url/gurl.h"
 
+namespace network::mojom {
+class URLLoaderFactory;
+}  // namespace network::mojom
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace ash {
 
 // Handles messages from the Projector WebUIs (i.e.
@@ -32,7 +40,9 @@ class UntrustedProjectorPageHandlerImpl
           receiver,
       mojo::PendingRemote<projector::mojom::UntrustedProjectorPage>
           projector_remote,
-      PrefService* pref_service);
+      PrefService* pref_service,
+      signin::IdentityManager* identity_manager,
+      network::mojom::URLLoaderFactory* url_loader_factory);
   UntrustedProjectorPageHandlerImpl(const UntrustedProjectorPageHandlerImpl&) =
       delete;
   UntrustedProjectorPageHandlerImpl& operator=(
@@ -92,8 +102,10 @@ class UntrustedProjectorPageHandlerImpl
   mojo::Receiver<projector::mojom::UntrustedProjectorPageHandler> receiver_;
   mojo::Remote<projector::mojom::UntrustedProjectorPage> projector_remote_;
 
-  // Primary user pref service.
+  // The pref service for the profile that owns the WebUI.
   const raw_ptr<PrefService> pref_service_;
+  // The identity manager for the profile that owns the WebUI.
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   ProjectorXhrSender xhr_sender_;
 
   base::WeakPtrFactory<UntrustedProjectorPageHandlerImpl> weak_ptr_factory_{

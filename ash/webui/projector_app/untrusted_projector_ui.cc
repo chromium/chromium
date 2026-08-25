@@ -98,8 +98,13 @@ void CreateAndAddProjectorHTMLSource(content::WebUI* web_ui,
 UntrustedProjectorUI::UntrustedProjectorUI(
     content::WebUI* web_ui,
     UntrustedProjectorUIDelegate* delegate,
-    PrefService* pref_service)
-    : UntrustedWebUIController(web_ui), pref_service_(pref_service) {
+    PrefService* pref_service,
+    signin::IdentityManager* identity_manager,
+    network::mojom::URLLoaderFactory* url_loader_factory)
+    : UntrustedWebUIController(web_ui),
+      pref_service_(pref_service),
+      identity_manager_(identity_manager),
+      url_loader_factory_(url_loader_factory) {
   CreateAndAddProjectorHTMLSource(web_ui, delegate);
   ProjectorAppClient::Get()->NotifyAppUIActive(true);
 }
@@ -122,7 +127,8 @@ void UntrustedProjectorUI::Create(
         projector_handler,
     mojo::PendingRemote<projector::mojom::UntrustedProjectorPage> projector) {
   page_handler_ = std::make_unique<UntrustedProjectorPageHandlerImpl>(
-      std::move(projector_handler), std::move(projector), pref_service_);
+      std::move(projector_handler), std::move(projector), pref_service_,
+      identity_manager_, url_loader_factory_);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(UntrustedProjectorUI)

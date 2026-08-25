@@ -66,6 +66,7 @@ class ProjectorXhrSenderTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     sender_ = std::make_unique<ProjectorXhrSender>(
+        mock_app_client_.GetIdentityManager(),
         mock_app_client_.GetUrlLoaderFactory());
     mock_app_client_.AddSecondaryAccount(kTestUserSecondaryEmail);
   }
@@ -94,8 +95,8 @@ class ProjectorXhrSenderTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  std::unique_ptr<ProjectorXhrSender> sender_;
   MockAppClient mock_app_client_;
+  std::unique_ptr<ProjectorXhrSender> sender_;
 };
 
 TEST_F(ProjectorXhrSenderTest, Success) {

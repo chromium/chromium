@@ -189,8 +189,10 @@ projector::mojom::XhrResponsePtr CreateXhrResposne(
 }  // namespace
 
 ProjectorXhrSender::ProjectorXhrSender(
+    signin::IdentityManager* identity_manager,
     network::mojom::URLLoaderFactory* url_loader_factory)
-    : url_loader_factory_(url_loader_factory) {}
+    : oauth_token_fetcher_(identity_manager),
+      url_loader_factory_(url_loader_factory) {}
 ProjectorXhrSender::~ProjectorXhrSender() = default;
 
 void ProjectorXhrSender::Send(
@@ -235,10 +237,7 @@ void ProjectorXhrSender::Send(
   if (account_email.has_value() && !account_email->empty()) {
     email = *account_email;
   } else {
-    email = ProjectorAppClient::Get()
-                ->GetIdentityManager()
-                ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                .email;
+    email = oauth_token_fetcher_.GetPrimaryAccountInfo().email;
   }
 
   // Fetch OAuth token for authorizing the request.

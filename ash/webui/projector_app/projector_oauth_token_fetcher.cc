@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/projector/projector_controller.h"
-#include "ash/webui/projector_app/projector_app_client.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_tree.h"
 #include "base/time/time.h"
@@ -25,10 +24,6 @@ namespace {
 // soon to expire tokens to the Projector app.
 const base::TimeDelta kBufferTime = base::Seconds(4);
 
-signin::IdentityManager* GetIdentityManager() {
-  return ash::ProjectorAppClient::Get()->GetIdentityManager();
-}
-
 }  // namespace
 
 namespace ash {
@@ -42,19 +37,18 @@ AccessTokenRequests& AccessTokenRequests::operator=(AccessTokenRequests&&) =
 
 AccessTokenRequests::~AccessTokenRequests() = default;
 
-ProjectorOAuthTokenFetcher::ProjectorOAuthTokenFetcher() = default;
+ProjectorOAuthTokenFetcher::ProjectorOAuthTokenFetcher(
+    signin::IdentityManager* identity_manager)
+    : identity_manager_(identity_manager) {}
 
 ProjectorOAuthTokenFetcher::~ProjectorOAuthTokenFetcher() = default;
 
-// static
-std::vector<AccountInfo> ProjectorOAuthTokenFetcher::GetAccounts() {
-  return GetIdentityManager()
-      ->GetExtendedAccountInfoForAccountsWithRefreshToken();
+std::vector<AccountInfo> ProjectorOAuthTokenFetcher::GetAccounts() const {
+  return identity_manager_->GetExtendedAccountInfoForAccountsWithRefreshToken();
 }
 
-// static
-CoreAccountInfo ProjectorOAuthTokenFetcher::GetPrimaryAccountInfo() {
-  return GetIdentityManager()->GetPrimaryAccountInfo(
+CoreAccountInfo ProjectorOAuthTokenFetcher::GetPrimaryAccountInfo() const {
+  return identity_manager_->GetPrimaryAccountInfo(
       signin::ConsentLevel::kSignin);
 }
 
@@ -91,8 +85,8 @@ void ProjectorOAuthTokenFetcher::InvalidateToken(const std::string& token) {
   base::EraseIf(fetched_access_tokens_, [&token](const auto& pair) -> bool {
     return pair.second.token == token;
   });
-  GetIdentityManager()->RemoveAccessTokenFromCache(
-      GetIdentityManager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+  identity_manager_->RemoveAccessTokenFromCache(
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
       signin::OAuthConsumerId::kProjectorTokenFetcher, token);
 }
 
@@ -117,11 +111,9 @@ void ProjectorOAuthTokenFetcher::InitiateAccessTokenFetchFor(
   // kImmediate makes a one-shot immediate request.
   const auto mode = signin::AccessTokenFetcher::Mode::kImmediate;
 
-  // Create the fetcher via |identity_manager|.
-  auto* identity_manager = GetIdentityManager();
   std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher =
-      identity_manager->CreateAccessTokenFetcherForAccount(
-          identity_manager->FindExtendedAccountInfoByEmailAddress(email)
+      identity_manager_->CreateAccessTokenFetcherForAccount(
+          identity_manager_->FindExtendedAccountInfoByEmailAddress(email)
               .account_id,
           signin::OAuthConsumerId::kProjectorTokenFetcher,
           base::BindOnce(

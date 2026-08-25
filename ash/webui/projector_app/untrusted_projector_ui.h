@@ -18,6 +18,14 @@ namespace content {
 class WebUIDataSource;
 }  // namespace content
 
+namespace network::mojom {
+class URLLoaderFactory;
+}  // namespace network::mojom
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 class PrefService;
 
 namespace ash {
@@ -39,7 +47,9 @@ class UntrustedProjectorUI
  public:
   UntrustedProjectorUI(content::WebUI* web_ui,
                        UntrustedProjectorUIDelegate* delegate,
-                       PrefService* pref_service);
+                       PrefService* pref_service,
+                       signin::IdentityManager* identity_manager,
+                       network::mojom::URLLoaderFactory* url_loader_factory);
   UntrustedProjectorUI(const UntrustedProjectorUI&) = delete;
   UntrustedProjectorUI& operator=(const UntrustedProjectorUI&) = delete;
   ~UntrustedProjectorUI() override;
@@ -62,6 +72,8 @@ class UntrustedProjectorUI
       receiver_{this};
   std::unique_ptr<UntrustedProjectorPageHandlerImpl> page_handler_;
   const raw_ptr<PrefService> pref_service_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
 };
 
 }  // namespace ash
