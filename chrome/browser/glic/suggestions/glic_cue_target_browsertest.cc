@@ -12,7 +12,7 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
-#include "chrome/browser/glic/test_support/new_glic_api_test.h"
+#include "chrome/browser/glic/test_support/glic_api_test.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/prefs/pref_service.h"

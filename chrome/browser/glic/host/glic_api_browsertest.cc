@@ -52,9 +52,9 @@
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/test_support/fake_contextual_cueing_service.h"
+#include "chrome/browser/glic/test_support/glic_api_test.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_histogram_tester.h"
-#include "chrome/browser/glic/test_support/new_glic_api_test.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -316,7 +316,7 @@ class NewGlicApiTest : public GlicApiBrowserTest,
                        public WithTestParams,
                        public GlicApiTestPasskeys {
  public:
-  NewGlicApiTest() : GlicApiBrowserTest("./new_glic_api_browsertest.js") {
+  NewGlicApiTest() : GlicApiBrowserTest("./glic_api_browsertest.js") {
     embedded_test_server()->RegisterRequestHandler(
         base::BindRepeating(&SorryPageRequestHandler));
     scoped_vmodule_switches_.InitWithSwitches("*glic*=1");
@@ -3262,7 +3262,7 @@ class NewGlicGetHostCapabilityApiTest : public GlicApiBrowserTest,
                                         public GlicApiTestPasskeys {
  public:
   NewGlicGetHostCapabilityApiTest()
-      : GlicApiBrowserTest("./new_glic_api_browsertest.js") {
+      : GlicApiBrowserTest("./glic_api_browsertest.js") {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {features::kGlic, {}},
         {features::kGlicProcessCounterAbuseVerdict, {}},
@@ -3501,7 +3501,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testReloadWebUi) {
   ASSERT_TRUE(instance->host().GetPrimaryPageHandlerForTesting());
 }
 
-// Checks that all tests in new_glic_api_browsertest.ts have a corresponding
+// Checks that all tests in glic_api_browsertest.ts have a corresponding
 // test case in this file.
 // TODO(crbug.com/460826483): Enable on CrOS.
 // TODO(crbug.com/508123456): Enable on Android once all disabled createTab
@@ -3524,8 +3524,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testDoNothing) {
   ExecuteJsTest();
 }
 
-#define MAYBE_testDefaultInvocationSource testDefaultInvocationSource
-IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testDefaultInvocationSource) {
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testDefaultInvocationSource) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
 }

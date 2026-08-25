@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_TEST_SUPPORT_NEW_GLIC_API_TEST_H_
-#define CHROME_BROWSER_GLIC_TEST_SUPPORT_NEW_GLIC_API_TEST_H_
+#ifndef CHROME_BROWSER_GLIC_TEST_SUPPORT_GLIC_API_TEST_H_
+#define CHROME_BROWSER_GLIC_TEST_SUPPORT_GLIC_API_TEST_H_
 
 #include <sstream>
 #include <variant>
@@ -660,4 +660,4 @@ class GlicApiBrowserTestMixin : public T {
 using GlicApiBrowserTest = GlicApiBrowserTestMixin<GlicBrowserTest>;
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_TEST_SUPPORT_NEW_GLIC_API_TEST_H_
+#endif  // CHROME_BROWSER_GLIC_TEST_SUPPORT_GLIC_API_TEST_H_

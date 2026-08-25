@@ -25,7 +25,7 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/service/metrics/glic_invoke_metrics.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
-#include "chrome/browser/glic/test_support/new_glic_api_test.h"
+#include "chrome/browser/glic/test_support/glic_api_test.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"

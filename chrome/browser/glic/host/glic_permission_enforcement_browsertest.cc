@@ -4,7 +4,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/test_support/new_glic_api_test.h"
+#include "chrome/browser/glic/test_support/glic_api_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"

@@ -10,6 +10,8 @@ source_set("test_support") {
   sources = [
     "fake_contextual_cueing_service.cc",
     "fake_contextual_cueing_service.h",
+    "glic_api_test.cc",
+    "glic_api_test.h",
     "glic_browser_test.h",
     "glic_histogram_tester.h",
     "glic_test_environment.cc",
@@ -24,8 +26,6 @@ source_set("test_support") {
     "mock_glic_instance_coordinator.h",
     "mock_glic_keyed_service.cc",
     "mock_glic_keyed_service.h",
-    "new_glic_api_test.cc",
-    "new_glic_api_test.h",
     "test_result.h",
   ]
   if (!is_android) {

@@ -5,7 +5,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/test_support/new_glic_api_test.h"
+#include "chrome/browser/glic/test_support/glic_api_test.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"

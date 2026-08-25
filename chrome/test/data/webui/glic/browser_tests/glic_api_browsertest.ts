@@ -188,8 +188,8 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(this.host.openPinnedTabPicker);
     // Verifies that calling openPinnedTabPicker resolves cleanly without error
     // on non-mobile test platforms (where it is currently a no-op).
-    // TODO(crbug.com/548681335): Augment with end-to-end assertions once Android
-    // picker mocking/delegation is testable in browser tests.
+    // TODO(crbug.com/548681335): Augment with end-to-end assertions once
+    // Android picker mocking/delegation is testable in browser tests.
     await this.host.openPinnedTabPicker();
     await this.host.openPinnedTabPicker({});
   }
@@ -2960,7 +2960,6 @@ class FaviconTest extends ApiTests {
           .waitFor(f => checkFaviconBlob(f));
     }
   }
-
 
   async testFaviconIsUpdated() {
     assertDefined(this.host.getPinnedTabs);
