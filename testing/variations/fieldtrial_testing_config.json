@@ -9834,6 +9834,22 @@
             ]
         }
     ],
+    "GpuPersistentCache": [
+        {
+            "platforms": [
+                "android_webview",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GpuPersistentCache"
+                    ]
+                }
+            ]
+        }
+    ],
     "GpuPersistentCacheMetadata": [
         {
             "platforms": [
