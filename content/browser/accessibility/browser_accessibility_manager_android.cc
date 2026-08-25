@@ -9,6 +9,7 @@
 
 #include "base/android/android_info.h"
 #include "base/check.h"
+#include "base/debug/crash_logging.h"
 #include "base/i18n/char_iterator.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1004,6 +1005,9 @@ BrowserAccessibilityManagerAndroid::ConvertChromeSelectionPositionToAndroid(
 
   ui::AXNodePosition::AXPositionInstance position =
       ui::AXNodePosition::CreatePosition(*node, offset, affinity);
+  // TODO(crbug.com/550089859): Remove after crash reproduction case found.
+  const ui::AXNodePosition::AXPositionInstance original_position =
+      position->Clone();
   position = position->AsUnignoredSelectionPosition(
       is_backward ? ui::AXPositionAdjustmentBehavior::kMoveForward
                   : ui::AXPositionAdjustmentBehavior::kMoveBackward,
@@ -1112,6 +1116,11 @@ BrowserAccessibilityManagerAndroid::ConvertChromeSelectionPositionToAndroid(
   // RootWebArea). Childless root nodes are treated as leaves by
   // `AXNodePosition` and handled earlier in the text position branch.
   if (!parent_node) {
+    SCOPED_CRASH_KEY_STRING1024(
+        "ax", "tree", ax_tree() ? ax_tree()->ToString(/*verbose=*/false) : "");
+    SCOPED_CRASH_KEY_STRING256("ax", "position", original_position->ToString());
+    SCOPED_CRASH_KEY_STRING256("ax", "target_node",
+                               target_node->data().ToString(/*verbose=*/false));
     DUMP_WILL_BE_NOTREACHED();
     return std::nullopt;
   }
