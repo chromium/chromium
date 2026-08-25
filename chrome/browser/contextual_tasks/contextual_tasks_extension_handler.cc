@@ -292,7 +292,7 @@ void ContextualTasksExtensionHandler::SubmitQuery(const std::string& query_text,
 }
 void ContextualTasksExtensionHandler::OpenLensSearch() {}
 void ContextualTasksExtensionHandler::SetActiveToolMode(omnibox::ToolMode tool,
-                                                        bool is_set_by_server) {
+                                                        bool is_set_by_aim) {
   active_tool_ = tool;
 }
 void ContextualTasksExtensionHandler::RecordToolSelectionAction(

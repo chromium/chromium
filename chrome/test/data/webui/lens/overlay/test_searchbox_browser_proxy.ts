@@ -254,8 +254,8 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
     this.methodCalled('openProfilePicker');
   }
 
-  setActiveToolMode(tool: ToolMode, isSetByServer: boolean) {
-    this.methodCalled('setActiveToolMode', tool, isSetByServer);
+  setActiveToolMode(tool: ToolMode, isSetByAim: boolean = false) {
+    this.methodCalled('setActiveToolMode', tool, isSetByAim);
   }
 
   recordToolSelectionAction(tool: ToolMode) {
