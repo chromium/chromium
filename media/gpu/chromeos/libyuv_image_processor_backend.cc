@@ -21,6 +21,7 @@
 #include "third_party/libyuv/include/libyuv/convert.h"
 #include "third_party/libyuv/include/libyuv/convert_from.h"
 #include "third_party/libyuv/include/libyuv/convert_from_argb.h"
+#include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/libyuv/include/libyuv/scale.h"
 
 namespace media {
@@ -319,25 +320,21 @@ void LibYUVImageProcessorBackend::ProcessFrame(
         for (size_t plane = 0;
              plane < VideoFrame::NumPlanes(crop_intermediate_frame_->format());
              plane++) {
-          const uint8_t* src_row_ptr =
-              crop_intermediate_frame_->visible_data(plane);
-          uint8_t* dst_row_ptr = mapped_frame->GetWritableVisibleData(plane);
-          for (size_t row = 0;
-               row < VideoFrame::Rows(
-                         plane, crop_intermediate_frame_->format(),
-                         crop_intermediate_frame_->visible_rect().height());
-               row++) {
-            UNSAFE_TODO(
-                memcpy(dst_row_ptr, src_row_ptr,
-                       VideoFrame::Columns(
-                           plane, crop_intermediate_frame_->format(),
-                           crop_intermediate_frame_->visible_rect().width()) *
-                           VideoFrame::BytesPerElement(
-                               crop_intermediate_frame_->format(), plane)));
-            UNSAFE_TODO(src_row_ptr +=
-                        crop_intermediate_frame_->row_bytes(plane));
-            UNSAFE_TODO(dst_row_ptr += mapped_frame->row_bytes(plane));
-          }
+          const size_t num_rows = VideoFrame::Rows(
+              plane, crop_intermediate_frame_->format(),
+              crop_intermediate_frame_->visible_rect().height());
+          const size_t row_bytes_to_copy =
+              VideoFrame::Columns(
+                  plane, crop_intermediate_frame_->format(),
+                  crop_intermediate_frame_->visible_rect().width()) *
+              VideoFrame::BytesPerElement(crop_intermediate_frame_->format(),
+                                          plane);
+
+          libyuv::CopyPlane(crop_intermediate_frame_->visible_data(plane),
+                            crop_intermediate_frame_->row_bytes(plane),
+                            mapped_frame->GetWritableVisibleData(plane),
+                            mapped_frame->row_bytes(plane), row_bytes_to_copy,
+                            num_rows);
         }
       }
     }
