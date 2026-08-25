@@ -166,6 +166,53 @@ TEST_F(AutofillPolicyServiceTest, UserSettingDisabledBlocksAutofill) {
       url, AutofillClient::AutofillPolicyDataCategory::kContactInfo));
 }
 
+// Tests that IsAutofillTypeDisabledByEnterprisePolicy only evaluates
+// kAutofillTypesBlocked and is not affected by user settings.
+TEST_F(AutofillPolicyServiceTest, IsAutofillTypeDisabledByEnterprisePolicy) {
+  EXPECT_FALSE(AutofillPolicyService::IsAutofillTypeDisabledByEnterprisePolicy(
+      prefs_, GURL(),
+      AutofillClient::AutofillPolicyDataCategory::kContactInfo));
+
+  // Disabling user setting does not affect enterprise policy check.
+  prefs_.SetBoolean(prefs::kAutofillProfileEnabled, false);
+  EXPECT_FALSE(AutofillPolicyService::IsAutofillTypeDisabledByEnterprisePolicy(
+      prefs_, GURL(),
+      AutofillClient::AutofillPolicyDataCategory::kContactInfo));
+
+  // Setting a specific domain policy matches that domain but not an empty GURL.
+  base::ListValue blocked_list;
+  base::DictValue entry;
+  entry.Set("url_pattern", "https://example.com");
+  base::ListValue blocked_types;
+  blocked_types.Append("contact_info");
+  entry.Set("blocked_types", std::move(blocked_types));
+  blocked_list.Append(std::move(entry));
+  SetPolicy(std::move(blocked_list));
+
+  EXPECT_FALSE(AutofillPolicyService::IsAutofillTypeDisabledByEnterprisePolicy(
+      prefs_, GURL(),
+      AutofillClient::AutofillPolicyDataCategory::kContactInfo));
+  EXPECT_TRUE(AutofillPolicyService::IsAutofillTypeDisabledByEnterprisePolicy(
+      prefs_, GURL("https://example.com"),
+      AutofillClient::AutofillPolicyDataCategory::kContactInfo));
+
+  // Setting wildcard pattern '*' blocks empty GURL as well.
+  base::ListValue wildcard_list;
+  base::DictValue wildcard_entry;
+  wildcard_entry.Set("url_pattern", "*");
+  base::ListValue wildcard_types;
+  wildcard_types.Append("contact_info");
+  wildcard_entry.Set("blocked_types", std::move(wildcard_types));
+  wildcard_list.Append(std::move(wildcard_entry));
+  SetPolicy(std::move(wildcard_list));
+
+  EXPECT_TRUE(AutofillPolicyService::IsAutofillTypeDisabledByEnterprisePolicy(
+      prefs_, GURL(),
+      AutofillClient::AutofillPolicyDataCategory::kContactInfo));
+  EXPECT_FALSE(AutofillPolicyService::IsAutofillTypeDisabledByEnterprisePolicy(
+      prefs_, GURL(), AutofillClient::AutofillPolicyDataCategory::kPayments));
+}
+
 // Tests that live preference changes pushed by Group Policy dynamically
 // update the in-memory blocking cache without restarting the service.
 TEST_F(AutofillPolicyServiceTest,

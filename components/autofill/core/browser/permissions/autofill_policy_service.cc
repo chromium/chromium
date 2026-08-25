@@ -175,6 +175,14 @@ bool AutofillPolicyService::IsAutofillTypeBlockedByPolicyFromPref(
     return true;
   }
 
+  return IsAutofillTypeDisabledByEnterprisePolicy(prefs, url, category);
+}
+
+// static
+bool AutofillPolicyService::IsAutofillTypeDisabledByEnterprisePolicy(
+    const PrefService& prefs,
+    const GURL& url,
+    AutofillClient::AutofillPolicyDataCategory category) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillEnableAutofillSettingsEnterprisePolicy)) {
     return false;

@@ -252,6 +252,16 @@ public class EntityDataManagerTest {
     }
 
     @Test
+    public void testIsAutofillAiEntityTypeDisabledByEnterprisePolicy() {
+        when(mEntityDataManagerJniMock.getIsAutofillAiEntityTypeDisabledByEnterprisePolicy(
+                        NATIVE_PTR, EntityTypeName.PASSPORT))
+                .thenReturn(true);
+        assertTrue(
+                mEntityDataManager.getIsAutofillAiEntityTypeDisabledByEnterprisePolicy(
+                        EntityTypeName.PASSPORT));
+    }
+
+    @Test
     public void testIsAutofillAiAllowedByEnterprisePolicy() {
         when(mEntityDataManagerJniMock.getIsAutofillAiAllowedByEnterprisePolicy(NATIVE_PTR))
                 .thenReturn(true);

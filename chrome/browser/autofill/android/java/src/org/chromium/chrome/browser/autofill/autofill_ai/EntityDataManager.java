@@ -258,6 +258,15 @@ public class EntityDataManager implements Destroyable {
                 .getIsAutofillAiDisabledByEnterprisePolicy(mNativeEntityDataManagerAndroid);
     }
 
+    /** Returns whether a specific Autofill AI entity type is disabled by enterprise policy. */
+    public boolean getIsAutofillAiEntityTypeDisabledByEnterprisePolicy(
+            @EntityTypeName int entityTypeName) {
+        ThreadUtils.assertOnUiThread();
+        return EntityDataManagerJni.get()
+                .getIsAutofillAiEntityTypeDisabledByEnterprisePolicy(
+                        mNativeEntityDataManagerAndroid, entityTypeName);
+    }
+
     /** Returns whether Autofill AI is enabled by enterprise policy including logging. */
     public boolean getIsAutofillAiAllowedByEnterprisePolicy() {
         ThreadUtils.assertOnUiThread();
@@ -327,6 +336,9 @@ public class EntityDataManager implements Destroyable {
                 @JniType("autofill::AutofillAiOptInStatus") @AutofillAiOptInStatus int optInStatus);
 
         boolean getIsAutofillAiDisabledByEnterprisePolicy(long nativeEntityDataManagerAndroid);
+
+        boolean getIsAutofillAiEntityTypeDisabledByEnterprisePolicy(
+                long nativeEntityDataManagerAndroid, int entityTypeName);
 
         boolean getIsAutofillAiAllowedByEnterprisePolicy(long nativeEntityDataManagerAndroid);
 

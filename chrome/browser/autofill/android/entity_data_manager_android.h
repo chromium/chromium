@@ -138,6 +138,12 @@ class EntityDataManagerAndroid : public EntityDataManager::Observer {
   // enum instead of having a specific method to check the policy pref state.
   bool GetIsAutofillAiDisabledByEnterprisePolicy(JNIEnv* env);
 
+  // Checks whether a specific Autofill AI entity type is disabled by enterprise
+  // policy.
+  bool GetIsAutofillAiEntityTypeDisabledByEnterprisePolicy(
+      JNIEnv* env,
+      int entity_type_name);
+
   // Checks whether Autofill AI is enabled by enterprise policy including
   // logging.
   bool GetIsAutofillAiAllowedByEnterprisePolicy(JNIEnv* env);

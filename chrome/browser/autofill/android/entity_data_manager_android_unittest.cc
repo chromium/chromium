@@ -55,6 +55,12 @@ class EntityDataManagerAndroidTest : public testing::Test {
     personal_context::prefs::RegisterProfilePrefs(prefs_.registry());
     prefs_.registry()->RegisterIntegerPref(
         optimization_guide::prefs::kFindAndFillWithGeminiSettings, 0);
+    prefs_.registry()->RegisterIntegerPref(
+        optimization_guide::prefs::
+            kAutofillPredictionImprovementsEnterprisePolicyAllowed,
+        std::to_underlying(optimization_guide::model_execution::prefs::
+                               ModelExecutionEnterprisePolicyValue::kAllow),
+        user_prefs::PrefRegistrySyncable::LOSSY_PREF);
     entity_data_manager_ = std::make_unique<EntityDataManager>(
         &prefs_, identity_test_env_.identity_manager(), &sync_service_,
         webdata_helper_.autofill_webdata_service(),
@@ -355,6 +361,32 @@ TEST_F(EntityDataManagerAndroidTest,
   // Attempting to set enabled status should be ignored when managed by policy.
   entity_data_manager_android_->SetPersonalContextEnabled(env(), true);
   EXPECT_FALSE(entity_data_manager_android_->IsPersonalContextEnabled(env()));
+}
+
+TEST_F(EntityDataManagerAndroidTest,
+       GetIsAutofillAiEntityTypeDisabledByEnterprisePolicy) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAutofillSettingsEnterprisePolicy};
+
+  EXPECT_FALSE(entity_data_manager_android_
+                   ->GetIsAutofillAiEntityTypeDisabledByEnterprisePolicy(
+                       env(), static_cast<int>(EntityTypeName::kPassport)));
+
+  base::ListValue blocked_list;
+  base::DictValue entry;
+  entry.Set("url_pattern", "*");
+  base::ListValue types;
+  types.Append("identity_docs");
+  entry.Set("blocked_types", std::move(types));
+  blocked_list.Append(std::move(entry));
+  prefs_.SetList(prefs::kAutofillTypesBlocked, std::move(blocked_list));
+
+  EXPECT_TRUE(entity_data_manager_android_
+                  ->GetIsAutofillAiEntityTypeDisabledByEnterprisePolicy(
+                      env(), static_cast<int>(EntityTypeName::kPassport)));
+  EXPECT_FALSE(entity_data_manager_android_
+                   ->GetIsAutofillAiEntityTypeDisabledByEnterprisePolicy(
+                       env(), static_cast<int>(EntityTypeName::kVehicle)));
 }
 
 }  // namespace

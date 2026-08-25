@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_labels.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_utils.h"
@@ -41,6 +42,7 @@
 #include "components/autofill/core/browser/integrators/personal_context/personal_context_autofill_util.h"
 #include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
+#include "components/autofill/core/browser/permissions/autofill_policy_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/consent_auditor/consent_auditor.h"
@@ -406,6 +408,39 @@ void EntityDataManagerAndroid::OnEntityInstancesChanged() {
 bool EntityDataManagerAndroid::GetIsAutofillAiDisabledByEnterprisePolicy(
     JNIEnv* env) {
   return IsAutofillAiDisabledByEnterprisePolicy(prefs_);
+}
+
+bool EntityDataManagerAndroid::
+    GetIsAutofillAiEntityTypeDisabledByEnterprisePolicy(JNIEnv* env,
+                                                        int entity_type_name) {
+  if (IsAutofillAiDisabledByEnterprisePolicy(prefs_)) {
+    return true;
+  }
+  std::optional<EntityTypeName> type_name =
+      ToSafeEntityTypeName(entity_type_name);
+  if (!type_name) {
+    return false;
+  }
+  switch (*type_name) {
+    case EntityTypeName::kNationalIdCard:
+    case EntityTypeName::kPassport:
+    case EntityTypeName::kDriversLicense:
+      return AutofillPolicyService::IsAutofillTypeDisabledByEnterprisePolicy(
+          *prefs_, GURL(),
+          AutofillClient::AutofillPolicyDataCategory::kIdentityDocs);
+    case EntityTypeName::kVehicle:
+    case EntityTypeName::kFlightReservation:
+    case EntityTypeName::kRedressNumber:
+    case EntityTypeName::kKnownTravelerNumber:
+      return AutofillPolicyService::IsAutofillTypeDisabledByEnterprisePolicy(
+          *prefs_, GURL(), AutofillClient::AutofillPolicyDataCategory::kTravel);
+    case EntityTypeName::kOrder:
+    case EntityTypeName::kShipment:
+      return AutofillPolicyService::IsAutofillTypeDisabledByEnterprisePolicy(
+          *prefs_, GURL(),
+          AutofillClient::AutofillPolicyDataCategory::kShopping);
+  }
+  return false;
 }
 
 bool EntityDataManagerAndroid::GetIsAutofillAiAllowedByEnterprisePolicy(

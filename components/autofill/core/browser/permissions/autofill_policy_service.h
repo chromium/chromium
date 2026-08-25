@@ -36,6 +36,14 @@ class AutofillPolicyService : public KeyedService {
       const GURL& url,
       AutofillClient::AutofillPolicyDataCategory category);
 
+  // Returns true if the specified Autofill data category is disabled
+  // specifically by enterprise policy (`kAutofillTypesBlocked`) for the given
+  // `url`. This does not check user setting preferences.
+  [[nodiscard]] static bool IsAutofillTypeDisabledByEnterprisePolicy(
+      const PrefService& prefs,
+      const GURL& url,
+      AutofillClient::AutofillPolicyDataCategory category);
+
   // Evaluates the policy using the cached patterns in this service.
   [[nodiscard]] bool IsAutofillTypeBlockedByPolicy(
       const GURL& url,

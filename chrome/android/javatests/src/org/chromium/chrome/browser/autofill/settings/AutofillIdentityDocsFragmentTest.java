@@ -597,6 +597,8 @@ public class AutofillIdentityDocsFragmentTest {
     @MediumTest
     public void testToggleManagedByPolicy() {
         when(mEntityDataManager.getIsAutofillAiDisabledByEnterprisePolicy()).thenReturn(true);
+        when(mEntityDataManager.getIsAutofillAiEntityTypeDisabledByEnterprisePolicy(anyInt()))
+                .thenReturn(true);
         mSettingsTestRule.startSettingsActivity();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1024,6 +1026,8 @@ public class AutofillIdentityDocsFragmentTest {
     @MediumTest
     public void testAutofillAiEntities_addButtonNotEnabledWhenDisabledByPolicy() {
         when(mEntityDataManager.getIsAutofillAiDisabledByEnterprisePolicy()).thenReturn(true);
+        when(mEntityDataManager.getIsAutofillAiEntityTypeDisabledByEnterprisePolicy(anyInt()))
+                .thenReturn(true);
 
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
                 new LinkedHashMap<>();
