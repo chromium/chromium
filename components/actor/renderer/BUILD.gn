@@ -1,0 +1,20 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+assert(use_blink)
+
+source_set("renderer") {
+  sources = [
+    "renderer_page_stability_metrics.cc",
+    "renderer_page_stability_metrics.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/actor/core",
+    "//components/page_content_annotations/core",
+  ]
+}

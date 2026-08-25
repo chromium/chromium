@@ -3,6 +3,7 @@ include_rules = [
   "+chrome/grit",
   "+chrome/services/speech/buildflags/buildflags.h",
   "+components/actor/public",
+  "+components/actor/renderer",
   "+components/autofill/content/common",
   "+components/autofill/content/renderer",
   "+components/autofill/core/common",

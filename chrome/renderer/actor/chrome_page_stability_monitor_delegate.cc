@@ -4,8 +4,11 @@
 
 #include "chrome/renderer/actor/chrome_page_stability_monitor_delegate.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
+
+#include "components/actor/renderer/renderer_page_stability_metrics.h"
 
 namespace actor {
 
@@ -38,6 +41,11 @@ void ChromePageStabilityMonitorDelegate::LogEvent(
       }
       break;
   }
+}
+
+std::unique_ptr<PageStabilityMetrics>
+ChromePageStabilityMonitorDelegate::CreateMetrics() {
+  return std::make_unique<RendererPageStabilityMetrics>();
 }
 
 }  // namespace actor

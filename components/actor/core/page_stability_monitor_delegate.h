@@ -59,6 +59,10 @@ class PageStabilityMonitorDelegate
                         std::string_view event_name,
                         std::vector<mojom::JournalDetailsPtr> details) = 0;
 
+  // Factory method to create the metrics recorder. Virtual to allow subclasses
+  // to provide a platform-specific metrics recorder instance.
+  virtual std::unique_ptr<PageStabilityMetrics> CreateMetrics();
+
   TaskId task_id() const { return task_id_; }
   std::optional<std::string> active_state_event_name_;
 

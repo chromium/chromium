@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/actor/core/page_stability_metrics.h"
+#include "components/actor/renderer/renderer_page_stability_metrics.h"
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -16,18 +16,18 @@ namespace actor {
 
 using State = page_content_annotations::PageStabilityState;
 
-PageStabilityMetrics::PageStabilityMetrics() = default;
+RendererPageStabilityMetrics::RendererPageStabilityMetrics() = default;
 
-PageStabilityMetrics::~PageStabilityMetrics() {
+RendererPageStabilityMetrics::~RendererPageStabilityMetrics() {
   Flush();
 }
 
-void PageStabilityMetrics::Start() {
+void RendererPageStabilityMetrics::Start() {
   CHECK(start_waiting_time_.is_null());
   start_waiting_time_ = base::TimeTicks::Now();
 }
 
-void PageStabilityMetrics::WillMoveToState(State state) {
+void RendererPageStabilityMetrics::WillMoveToState(State state) {
   switch (state) {
     case State::kInitial:
       NOTREACHED();
@@ -80,7 +80,7 @@ void PageStabilityMetrics::WillMoveToState(State state) {
   }
 }
 
-void PageStabilityMetrics::OnNetworkAndMainThreadIdle() {
+void RendererPageStabilityMetrics::OnNetworkAndMainThreadIdle() {
   network_and_main_thread_stability_reached_ = true;
 
   CHECK(!start_monitoring_time_.is_null());
@@ -89,7 +89,7 @@ void PageStabilityMetrics::OnNetworkAndMainThreadIdle() {
       base::TimeTicks::Now() - start_monitoring_time_);
 }
 
-void PageStabilityMetrics::OnPaintStabilityReached() {
+void RendererPageStabilityMetrics::OnPaintStabilityReached() {
   paint_stability_reached_ = true;
 
   CHECK(!start_monitoring_time_.is_null());
@@ -98,7 +98,7 @@ void PageStabilityMetrics::OnPaintStabilityReached() {
       base::TimeTicks::Now() - start_monitoring_time_);
 }
 
-void PageStabilityMetrics::RecordTimingMetrics() {
+void RendererPageStabilityMetrics::RecordTimingMetrics() {
   const base::TimeTicks now = base::TimeTicks::Now();
   const base::TimeDelta total_duration = now - start_waiting_time_;
 
@@ -144,7 +144,7 @@ void PageStabilityMetrics::RecordTimingMetrics() {
   }
 }
 
-void PageStabilityMetrics::OnInteractionContentfulPaint() {
+void RendererPageStabilityMetrics::OnInteractionContentfulPaint() {
   const base::TimeTicks now = base::TimeTicks::Now();
 
   if (last_interaction_contentful_paint_time_.is_null()) {
@@ -160,7 +160,7 @@ void PageStabilityMetrics::OnInteractionContentfulPaint() {
   last_interaction_contentful_paint_time_ = now;
 }
 
-void PageStabilityMetrics::Flush() {
+void RendererPageStabilityMetrics::Flush() {
   if (flushed_) {
     return;
   }

@@ -5,50 +5,37 @@
 #ifndef COMPONENTS_ACTOR_CORE_PAGE_STABILITY_METRICS_H_
 #define COMPONENTS_ACTOR_CORE_PAGE_STABILITY_METRICS_H_
 
-#include "base/time/time.h"
-#include "components/actor/core/page_stability_metrics_common.h"
 #include "components/page_content_annotations/core/page_stability_state.h"
 
 namespace actor {
 
+// Abstract interface for recording metrics related to page stability
+// monitoring.
 class PageStabilityMetrics {
  public:
-  PageStabilityMetrics();
-  ~PageStabilityMetrics();
+  PageStabilityMetrics() = default;
+  PageStabilityMetrics(const PageStabilityMetrics&) = delete;
+  PageStabilityMetrics& operator=(const PageStabilityMetrics&) = delete;
+  virtual ~PageStabilityMetrics() = default;
 
-  void Start();
+  // Called when page stability waiting starts.
+  virtual void Start() = 0;
 
-  void WillMoveToState(page_content_annotations::PageStabilityState state);
+  // Called when moving to a new `PageStabilityState`.
+  virtual void WillMoveToState(
+      page_content_annotations::PageStabilityState state) = 0;
 
-  void OnNetworkAndMainThreadIdle();
+  // Called when the network and main-thread idle condition is reached.
+  virtual void OnNetworkAndMainThreadIdle() {}
 
-  void OnPaintStabilityReached();
+  // Called when paint stability is reached.
+  virtual void OnPaintStabilityReached() {}
 
-  void OnInteractionContentfulPaint();
+  // Called when an interaction contentful paint occurs.
+  virtual void OnInteractionContentfulPaint() {}
 
-  void Flush();
-
- private:
-  void RecordTimingMetrics();
-
-  PageStabilityOutcome stability_outcome_ = PageStabilityOutcome::kUnknown;
-
-  bool network_and_main_thread_stability_reached_ = false;
-  bool paint_stability_reached_ = false;
-
-  // The time at which it starts to wait for page stabilization.
-  base::TimeTicks start_waiting_time_;
-
-  // The time at which it starts to actively monitor page stabilization.
-  base::TimeTicks start_monitoring_time_;
-
-  // The time at which the last interaction contentful paint was detected.
-  base::TimeTicks last_interaction_contentful_paint_time_;
-
-  base::TimeDelta total_time_between_interaction_contentful_paints_;
-  int subsequent_contentful_paint_count_ = 0;
-
-  bool flushed_ = false;
+  // Flushes any remaining unrecorded metrics.
+  virtual void Flush() {}
 };
 
 }  // namespace actor

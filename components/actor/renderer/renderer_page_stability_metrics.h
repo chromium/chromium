@@ -1,0 +1,59 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_ACTOR_RENDERER_RENDERER_PAGE_STABILITY_METRICS_H_
+#define COMPONENTS_ACTOR_RENDERER_RENDERER_PAGE_STABILITY_METRICS_H_
+
+#include "base/time/time.h"
+#include "components/actor/core/page_stability_metrics.h"
+#include "components/actor/core/page_stability_metrics_common.h"
+#include "components/page_content_annotations/core/page_stability_state.h"
+
+namespace actor {
+
+// Records metrics related to page stability monitoring in the renderer process.
+class RendererPageStabilityMetrics final : public PageStabilityMetrics {
+ public:
+  RendererPageStabilityMetrics();
+  RendererPageStabilityMetrics(const RendererPageStabilityMetrics&) = delete;
+  RendererPageStabilityMetrics& operator=(const RendererPageStabilityMetrics&) =
+      delete;
+  ~RendererPageStabilityMetrics() override;
+
+  // PageStabilityMetrics:
+  void Start() override;
+  void WillMoveToState(
+      page_content_annotations::PageStabilityState state) override;
+  void OnNetworkAndMainThreadIdle() override;
+  void OnPaintStabilityReached() override;
+  void OnInteractionContentfulPaint() override;
+  void Flush() override;
+
+ private:
+  // Records timing histograms based on `stability_outcome_`.
+  void RecordTimingMetrics();
+
+  PageStabilityOutcome stability_outcome_ = PageStabilityOutcome::kUnknown;
+
+  bool network_and_main_thread_stability_reached_ = false;
+  bool paint_stability_reached_ = false;
+
+  // The time at which it starts to wait for page stabilization.
+  base::TimeTicks start_waiting_time_;
+
+  // The time at which it starts to actively monitor page stabilization.
+  base::TimeTicks start_monitoring_time_;
+
+  // The time at which the last interaction contentful paint was detected.
+  base::TimeTicks last_interaction_contentful_paint_time_;
+
+  base::TimeDelta total_time_between_interaction_contentful_paints_;
+  int subsequent_contentful_paint_count_ = 0;
+
+  bool flushed_ = false;
+};
+
+}  // namespace actor
+
+#endif  // COMPONENTS_ACTOR_RENDERER_RENDERER_PAGE_STABILITY_METRICS_H_

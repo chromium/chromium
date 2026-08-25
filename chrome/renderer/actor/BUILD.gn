@@ -48,6 +48,7 @@ source_set("actor") {
     "//chrome/common",
     "//components/actor/core",
     "//components/actor/core:logging",
+    "//components/actor/renderer",
     "//components/page_content_annotations/content/renderer",
     "//components/page_content_annotations/core",
     "//third_party/blink/public:blink",

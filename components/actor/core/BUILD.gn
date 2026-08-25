@@ -53,7 +53,6 @@ source_set("core") {
     "actor_util.h",
     "journal_details_builder.cc",
     "journal_details_builder.h",
-    "page_stability_metrics.cc",
     "page_stability_metrics.h",
     "page_stability_metrics_common.cc",
     "page_stability_metrics_common.h",

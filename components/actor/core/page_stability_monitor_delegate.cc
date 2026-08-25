@@ -51,8 +51,10 @@ void PageStabilityMonitorDelegate::OnEvent(
   std::visit(
       absl::Overload{
           [&](const page_content_annotations::PageStabilityMonitorStartEvent&) {
-            metrics_ = std::make_unique<PageStabilityMetrics>();
-            metrics_->Start();
+            metrics_ = CreateMetrics();
+            if (metrics_) {
+              metrics_->Start();
+            }
           },
           [&](const page_content_annotations::
                   PageStabilityMonitorStartDelayEvent& e) {
@@ -186,6 +188,11 @@ base::TimeDelta PageStabilityMonitorDelegate::GetInitialPaintTimeout() const {
 base::TimeDelta PageStabilityMonitorDelegate::GetSubsequentPaintTimeout()
     const {
   return thresholds_.subsequent_paint_timeout;
+}
+
+std::unique_ptr<PageStabilityMetrics>
+PageStabilityMonitorDelegate::CreateMetrics() {
+  return nullptr;
 }
 
 }  // namespace actor

@@ -31,6 +31,7 @@ class ChromePageStabilityMonitorDelegate : public PageStabilityMonitorDelegate {
   void LogEvent(mojom::JournalEntryType type,
                 std::string_view event_name,
                 std::vector<mojom::JournalDetailsPtr> details) override;
+  std::unique_ptr<PageStabilityMetrics> CreateMetrics() override;
 
  private:
   // The Journal to log events to.
