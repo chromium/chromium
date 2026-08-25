@@ -272,4 +272,20 @@ TEST_F(WebRtcMediaStreamTrackAdapterTest, LastReferenceOnSignalingThread) {
   RunMessageLoopsUntilIdle();
 }
 
+TEST_F(WebRtcMediaStreamTrackAdapterTest, DisposeOnSignalingThread) {
+  track_adapter_ =
+      blink::WebRtcMediaStreamTrackAdapter::CreateLocalTrackAdapter(
+          dependency_factory_.Get(), main_thread_, CreateLocalAudioTrack());
+  EXPECT_TRUE(track_adapter_->is_initialized());
+
+  dependency_factory_->GetWebRtcSignalingTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<blink::WebRtcMediaStreamTrackAdapter> adapter) {
+            adapter->Dispose();
+          },
+          track_adapter_));
+  RunMessageLoopsUntilIdle();
+}
+
 }  // namespace blink

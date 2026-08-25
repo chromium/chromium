@@ -110,6 +110,17 @@ void WebRtcMediaStreamTrackAdapterTraits::Destruct(
 }
 
 void WebRtcMediaStreamTrackAdapter::Dispose() {
+  if (!main_thread_->BelongsToCurrentThread()) {
+    PostCrossThreadTask(
+        *main_thread_, FROM_HERE,
+        CrossThreadBindOnce(&WebRtcMediaStreamTrackAdapter::DisposeOnMainThread,
+                            WrapRefCounted(this)));
+    return;
+  }
+  DisposeOnMainThread();
+}
+
+void WebRtcMediaStreamTrackAdapter::DisposeOnMainThread() {
   DCHECK(main_thread_->BelongsToCurrentThread());
   DCHECK(is_initialized_);
   if (is_disposed_)
