@@ -13,6 +13,7 @@ import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.lifetime.ApplicationLifetime;
 
 /** Triggered when Android's locale changes. */
 @NullMarked
@@ -33,8 +34,18 @@ public class LocaleChangedBroadcastReceiver extends BroadcastReceiver {
                 () -> {
                     ChannelsUpdater.getInstance().updateLocale();
                     result.finish();
-                    Log.e(TAG, "Killing process because of locale change.");
-                    Process.killProcess(Process.myPid());
+
+                    // See https://crbug.com/545907093 for why we restart on locale change.
+                    if (ApplicationLifetime.shouldRestartForLocaleSwitch()) {
+                        Log.e(TAG, "Restarting process because of settings locale change.");
+                        // This task is on a background thread, so post back to the UI thread.
+                        PostTask.postTask(
+                                TaskTraits.UI_DEFAULT,
+                                () -> ApplicationLifetime.terminate(/* restart= */ true));
+                    } else {
+                        Log.e(TAG, "Killing process because of OS locale change.");
+                        Process.killProcess(Process.myPid());
+                    }
                 });
     }
 }

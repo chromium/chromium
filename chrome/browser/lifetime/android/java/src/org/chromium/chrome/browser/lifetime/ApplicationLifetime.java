@@ -22,6 +22,20 @@ public class ApplicationLifetime {
     }
 
     private static final ObserverList<Observer> sObservers = new ObserverList<>();
+    private static boolean sRestartForLocaleSwitch;
+
+    /**
+     * Sets whether Chrome should restart when a locale change is processed. Set to true when a
+     * locale change is initiated by the user from within Chrome. See https://crbug.com/545907093.
+     */
+    public static void setRestartForLocaleSwitch(boolean restart) {
+        sRestartForLocaleSwitch = restart;
+    }
+
+    /** Returns whether Chrome should restart (rather than terminate) on locale change. */
+    public static boolean shouldRestartForLocaleSwitch() {
+        return sRestartForLocaleSwitch;
+    }
 
     /**
      * Adds an observer to watch for application termination.

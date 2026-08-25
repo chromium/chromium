@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.history.HistoryDeletionBridge;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.incognito.IncognitoTabLauncher;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
+import org.chromium.chrome.browser.lifetime.ApplicationLifetime;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
 import org.chromium.chrome.browser.media.MediaViewerUtils;
@@ -279,6 +280,10 @@ public class ProcessInitializationHandler {
         warmUpSharedPrefs();
 
         DeviceUtils.updateDeviceSpecificUserAgentSwitch(ContextUtils.getApplicationContext());
+        // ChromeLifetimeController is pure Java and safe to initialize pre-native. It is
+        // initialized early so that ApplicationLifetime.terminate() can restart the process
+        // if a locale change occurs before post-native initialization.
+        ChromeLifetimeController.initialize();
         ApplicationStatus.registerStateListenerForAllActivities(
                 (activity, newState) -> {
                     if (newState == ActivityState.CREATED || newState == ActivityState.DESTROYED) {
@@ -292,8 +297,15 @@ public class ProcessInitializationHandler {
                         // RTL, where stale natively-loaded resources are not reloaded
                         // (http://crbug.com/41215786).
                         if (!mInitialLocale.equals(Locale.getDefault())) {
-                            Log.e(TAG, "Killing process because of locale change.");
-                            Process.killProcess(Process.myPid());
+                            // See http://crbug.com/545907093 for why we restart when the user
+                            // changes the locale within Chrome.
+                            if (ApplicationLifetime.shouldRestartForLocaleSwitch()) {
+                                Log.e(TAG, "Restarting process because of settings locale change.");
+                                ApplicationLifetime.terminate(/* restart= */ true);
+                            } else {
+                                Log.e(TAG, "Killing process because of OS locale change.");
+                                Process.killProcess(Process.myPid());
+                            }
                         }
                     }
                 });
@@ -394,7 +406,6 @@ public class ProcessInitializationHandler {
         ProfileManagerUtils.removeSessionCookiesForAllProfiles();
         AppBannerManager.setAppDetailsDelegate(
                 assumeNonNull(ServiceLoaderUtil.maybeCreate(AppDetailsDelegate.class)));
-        ChromeLifetimeController.initialize();
         Clipboard.getInstance().setImageFileProvider(new ClipboardImageFileProvider());
 
         DecoderServiceHost.setIntentSupplier(
