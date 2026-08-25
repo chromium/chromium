@@ -203,26 +203,25 @@ class BrowserDelegate {
   // Resets the location bar so that its permanent text is shown.
   virtual void ResetLocationBar() = 0;
 
-  // Enters locked fullscreen mode.
-  // Pins the window, updates browser commands, and optionally focuses the
-  // toolbar.
-  // TODO(crbug.com/434082728): Remove this OnTask/LockedFullscreen
-  // consolidation is completed. This will be replaced with lock method for
-  // OnTask.
-  virtual void EnterLockedFullscreen(bool focus_toolbar) = 0;
+  enum class OnTaskState {
+    // Normal browser state; not managed by or locked for OnTask.
+    kUnlocked,
+    // Prepared for OnTask (managed window with DevTools disabled), but not
+    // physically locked/pinned yet.
+    kPrepared,
+    // Locked for OnTask (pinned window in locked fullscreen with toolbar and
+    // tab strip enabled).
+    kLocked,
+    // Locked for OnTask but paused (pinned window with tab switching and
+    // immersive mode disabled).
+    kPaused,
+  };
 
-  // Leaves locked fullscreen mode.
-  // Unpins the window and updates browser commands.
-  // TODO(crbug.com/434082728): Remove this OnTask/LockedFullscreen
-  // consolidation is completed. This will be replaced with unlock method for
-  // OnTask.
-  virtual void LeaveLockedFullscreen() = 0;
+  // Sets the OnTask state for this browser window.
+  virtual void SetOnTaskState(OnTaskState state) = 0;
 
-  // Sets whether command shortcuts related to DevTools are enabled.
-  virtual void SetDevToolsCommandsEnabled(bool enabled) = 0;
-
-  // Sets whether command shortcuts related to tab switching are enabled.
-  virtual void SetTabSwitchCommandsEnabled(bool enabled) = 0;
+  // Returns true if the browser is in the specified `state`.
+  virtual bool IsOnTaskState(OnTaskState state) const = 0;
 
   // Activates the web contents at the specified tab strip index.
   virtual void ActivateWebContentsAt(size_t index) = 0;
@@ -230,9 +229,21 @@ class BrowserDelegate {
   // Sets whether the background of the web contents area is visible.
   virtual void SetContentsBackgroundVisible(bool visible) = 0;
 
-  //// The following functions are added purely for convenience. ////
+  // Enters locked fullscreen mode.
+  // Pins the window and updates browser commands.
+  // TODO(crbug.com/438540029): Remove once LockedStateController migration is
+  // complete.
+  virtual void EnterLockedFullscreen() = 0;
+
+  // Leaves locked fullscreen mode.
+  // Unpins the window and updates browser commands.
+  // TODO(crbug.com/438540029): Remove once LockedStateController migration is
+  // complete.
+  virtual void LeaveLockedFullscreen() = 0;
 
   // Returns whether the browser window is in locked fullscreen mode.
+  // TODO(crbug.com/438540029): Remove once LockedStateController migration is
+  // complete.
   virtual bool IsLockedFullscreen() const = 0;
 
  protected:

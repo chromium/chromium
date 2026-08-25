@@ -10,13 +10,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
-#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
-#include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -137,7 +134,8 @@ void OnTaskSystemWebAppManagerImpl::SetPinStateForSystemWebAppWindow(
     return;
   }
 
-  const bool currently_pinned = browser->IsLockedFullscreen();
+  const bool currently_pinned =
+      browser->IsOnTaskState(ash::BrowserDelegate::OnTaskState::kLocked);
 
   // If the window is not pinned, and we don't want it pinned, check if we need
   // to exit standard fullscreen mode (e.g. after a session restore).
@@ -162,12 +160,9 @@ void OnTaskSystemWebAppManagerImpl::SetPinStateForSystemWebAppWindow(
   // unpinning it. This fixes a bug on tablets that results in no content being
   // rendered on pinning.
   browser->Show();
-  if (pinned) {
-    browser->EnterLockedFullscreen(/*focus_toolbar=*/true);
-  } else {
-    browser->LeaveLockedFullscreen();
-    browser->SetDevToolsCommandsEnabled(false);
-  }
+  browser->SetOnTaskState(pinned
+                              ? ash::BrowserDelegate::OnTaskState::kLocked
+                              : ash::BrowserDelegate::OnTaskState::kPrepared);
 }
 
 void OnTaskSystemWebAppManagerImpl::SetPauseStateForSystemWebAppWindow(
@@ -201,6 +196,9 @@ void OnTaskSystemWebAppManagerImpl::SetPauseStateForSystemWebAppWindow(
     // Force pause camera and microphone inputs.
     PauseCameraInput(true);
     PauseMicrophoneInput(true);
+    if (browser->IsOnTaskState(ash::BrowserDelegate::OnTaskState::kLocked)) {
+      browser->SetOnTaskState(ash::BrowserDelegate::OnTaskState::kPaused);
+    }
   } else {
     // Restore inputs to their cached states only if previous states were
     // cached.
@@ -214,8 +212,10 @@ void OnTaskSystemWebAppManagerImpl::SetPauseStateForSystemWebAppWindow(
     // Clear the cached states.
     was_camera_disabled_ = std::nullopt;
     was_microphone_disabled_ = std::nullopt;
+    if (browser->IsOnTaskState(ash::BrowserDelegate::OnTaskState::kPaused)) {
+      browser->SetOnTaskState(ash::BrowserDelegate::OnTaskState::kLocked);
+    }
   }
-  browser->SetTabSwitchCommandsEnabled(!paused);
 
   // Configure SWA window and the OnTask pod for paused mode. This needs to be
   // done after switching tabs to ensure the pod is not visible when in paused
@@ -345,13 +345,10 @@ void OnTaskSystemWebAppManagerImpl::PrepareSystemWebAppWindowForOnTask(
   if (!browser) {
     return;
   }
-  browser->SetDevToolsCommandsEnabled(false);
-
   // Configure the browser window for OnTask. This is required to ensure
   // downstream components (especially UI controls) are setup for locked mode
   // transitions.
-  OnTaskLockedController::From(&browser->GetBrowser())
-      ->set_locked_for_on_task(true);
+  browser->SetOnTaskState(ash::BrowserDelegate::OnTaskState::kPrepared);
   MakeWindowResizable(browser->GetNativeWindow());
   browser->SetSkipWarningUserOnClose(true);
 
@@ -423,7 +420,8 @@ void OnTaskSystemWebAppManagerImpl::SetAllChromeTabsMuted(bool muted) {
 
 bool OnTaskSystemWebAppManagerImpl::IsWindowPinned(SessionID window_id) {
   BrowserDelegate* const browser = GetBrowserWindowWithID(window_id);
-  return browser ? browser->IsLockedFullscreen() : false;
+  return browser &&
+         browser->IsOnTaskState(ash::BrowserDelegate::OnTaskState::kLocked);
 }
 
 void OnTaskSystemWebAppManagerImpl::SetWindowTrackerForTesting(

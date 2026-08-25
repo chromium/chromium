@@ -368,7 +368,7 @@ void MaybeSetLockedFullscreenState(const api::windows::Update::Params& params,
       auto* delegate =
           ash::BrowserController::GetInstance()->GetDelegate(browser);
       if (delegate && !delegate->IsLockedFullscreen()) {
-        delegate->EnterLockedFullscreen(/*focus_toolbar=*/false);
+        delegate->EnterLockedFullscreen();
       }
     }
   }
@@ -1369,7 +1369,7 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
       auto* delegate =
           ash::BrowserController::GetInstance()->GetDelegate(new_window);
       if (delegate) {
-        delegate->EnterLockedFullscreen(/*focus_toolbar=*/false);
+        delegate->EnterLockedFullscreen();
       }
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)

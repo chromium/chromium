@@ -8,6 +8,9 @@
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "chrome/app/chrome_command_ids.h"
+// TODO(crbug.com/365146870): on_task_locked_controller.h|cc and associated code
+// will be removed.
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_type.h"
 #include "chrome/browser/ash/browser_delegate/browser_type_conversion.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -304,14 +307,64 @@ void BrowserDelegateImpl::ResetLocationBar() {
   BrowserWindow::FromBrowser(&*browser_)->GetLocationBar()->Revert();
 }
 
-void BrowserDelegateImpl::EnterLockedFullscreen(bool focus_toolbar) {
+void BrowserDelegateImpl::SetOnTaskState(OnTaskState state) {
+  switch (state) {
+    case OnTaskState::kUnlocked:
+      if (IsLockedFullscreen()) {
+        LeaveLockedFullscreen();
+      }
+      SetDevToolsCommandsEnabled(true);
+      boca::OnTaskLockedController::From(&browser_.get())
+          ->set_locked_for_on_task(false);
+      break;
+    case OnTaskState::kPrepared:
+      if (IsLockedFullscreen()) {
+        LeaveLockedFullscreen();
+      }
+      SetDevToolsCommandsEnabled(false);
+      boca::OnTaskLockedController::From(&browser_.get())
+          ->set_locked_for_on_task(true);
+      break;
+    case OnTaskState::kLocked:
+      boca::OnTaskLockedController::From(&browser_.get())
+          ->set_locked_for_on_task(true);
+      if (!IsLockedFullscreen()) {
+        EnterLockedFullscreen();
+        BrowserWindow::FromBrowser(&*browser_)->FocusToolbar();
+      }
+      SetTabSwitchCommandsEnabled(true);
+      break;
+    case OnTaskState::kPaused:
+      SetTabSwitchCommandsEnabled(false);
+      break;
+  }
+}
+
+bool BrowserDelegateImpl::IsOnTaskState(OnTaskState state) const {
+  switch (state) {
+    case OnTaskState::kUnlocked:
+      return !boca::OnTaskLockedController::From(&browser_.get())
+                  ->is_locked_for_on_task() &&
+             !IsLockedFullscreen();
+    case OnTaskState::kPrepared:
+      return boca::OnTaskLockedController::From(&browser_.get())
+                 ->is_locked_for_on_task() &&
+             !IsLockedFullscreen();
+    // In non-unified mode, there is no explicit state for paused, so just
+    // return true if it's locked, as this is temporary.
+    case OnTaskState::kPaused:
+    case OnTaskState::kLocked:
+      return boca::OnTaskLockedController::From(&browser_.get())
+                 ->is_locked_for_on_task() &&
+             IsLockedFullscreen();
+  }
+}
+
+void BrowserDelegateImpl::EnterLockedFullscreen() {
   CHECK(!IsLockedFullscreen());
   ash::PinWindow(GetNativeWindow(), /*trusted=*/true);
   chrome::BrowserCommandController::From(&browser_.get())
       ->LockedFullscreenStateChanged();
-  if (focus_toolbar) {
-    BrowserWindow::FromBrowser(&*browser_)->FocusToolbar();
-  }
 }
 
 void BrowserDelegateImpl::LeaveLockedFullscreen() {
@@ -322,6 +375,8 @@ void BrowserDelegateImpl::LeaveLockedFullscreen() {
 }
 
 bool BrowserDelegateImpl::IsLockedFullscreen() const {
+  // TODO(crbug.com/438540029): Rename WindowPinType::kLockedFullscreen to
+  // WindowPinType::kTrustedPinned.
   return ash::GetWindowPinType(GetNativeWindow()) ==
          chromeos::WindowPinType::kLockedFullscreen;
 }

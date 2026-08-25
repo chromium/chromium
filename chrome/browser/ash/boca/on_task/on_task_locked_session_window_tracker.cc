@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/boca/on_task/on_task_pod_controller_impl.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
-#include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
@@ -159,7 +158,7 @@ void LockedSessionWindowTracker::MaybeCloseBrowser(
       ash::IsBrowserForSystemWebApp(*browser, ash::SystemWebAppType::BOCA);
 
   if (browser_ &&
-      !platform_util::IsBrowserLockedFullscreen(&browser_->GetBrowser()) &&
+      !browser_->IsOnTaskState(ash::BrowserDelegate::OnTaskState::kLocked) &&
       !is_boca_app_instance) {
     // New instance that is not a Boca SWA instance and was spawned when the
     // Boca SWA instance being tracked is not in locked fullscreen mode. Skip
@@ -439,7 +438,7 @@ void LockedSessionWindowTracker::OnBrowserActivated(
   if (browser != browser_) {
     if (browser->GetType() == ash::BrowserType::kNormal &&
         browser != authorized_oauth_browser_ &&
-        platform_util::IsBrowserLockedFullscreen(&browser_->GetBrowser())) {
+        browser_->IsOnTaskState(ash::BrowserDelegate::OnTaskState::kLocked)) {
       aura::Window* const window = browser->GetNativeWindow();
       if (window) {
         std::unique_ptr<aura::WindowTracker> tracker =

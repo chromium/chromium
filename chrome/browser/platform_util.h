@@ -119,6 +119,8 @@ gfx::NativeWindow GetActiveWindow();
 // Returns true if the given browser window is in locked fullscreen mode
 // (a special type of fullscreen where the user is locked into one browser
 // window).
+// TODO(crbug.com/365146870): Deprecate in favor of LockedStateController and
+// BrowserDelegate::IsOnTaskState.
 bool IsBrowserLockedFullscreen(const BrowserWindowInterface* browser);
 #endif
 
