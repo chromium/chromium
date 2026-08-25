@@ -13,8 +13,10 @@
 
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/functional/function_ref.h"
+#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/win/windows_version.h"
@@ -459,9 +461,9 @@ HWND InitTestWidget(Widget& widget,
   return host_api.GetHWND();
 }
 
-// Helper to find the active Win32 #32768 popup menu window on the thread.
-HWND FindActivePopupMenuHWND() {
-  HWND found_menu_hwnd = nullptr;
+// Helper to find all active Win32 #32768 popup menu windows on the thread.
+std::vector<HWND> FindActivePopupMenuHWNDs() {
+  std::vector<HWND> hwnds;
   ::EnumThreadWindows(
       ::GetCurrentThreadId(),
       [](HWND hwnd, LPARAM lParam) -> BOOL {
@@ -471,13 +473,18 @@ HWND FindActivePopupMenuHWND() {
         if (len > 0 &&
             std::wstring_view(class_name, static_cast<size_t>(len)) ==
                 kSystemMenuClassName) {
-          *reinterpret_cast<HWND*>(lParam) = hwnd;
-          return FALSE;
+          reinterpret_cast<std::vector<HWND>*>(lParam)->push_back(hwnd);
         }
         return TRUE;
       },
-      reinterpret_cast<LPARAM>(&found_menu_hwnd));
-  return found_menu_hwnd;
+      reinterpret_cast<LPARAM>(&hwnds));
+  return hwnds;
+}
+
+// Helper to find the active Win32 #32768 popup menu window on the thread.
+HWND FindActivePopupMenuHWND() {
+  const std::vector<HWND> hwnds = FindActivePopupMenuHWNDs();
+  return hwnds.empty() ? nullptr : hwnds.front();
 }
 
 // Helper to verify that a child window inherits capture exclusion from its
@@ -513,16 +520,29 @@ void ShowTestPopupMenu(HWND hwnd, base::FunctionRef<void(HWND)> callback) {
   static thread_local Context* g_context = nullptr;
   g_context = &context;
 
-  ::BringWindowToTop(hwnd);
-  ::SetActiveWindow(hwnd);
-  ::SetForegroundWindow(hwnd);
+  // When tests run in parallel, another test process may steal foreground
+  // focus and cause TrackPopupMenu to dismiss prematurely. Retry if needed.
+  for (int attempt = 0; attempt < 5 && !context.callback_executed; ++attempt) {
+    ::BringWindowToTop(hwnd);
+    ::SetActiveWindow(hwnd);
+    ::SetForegroundWindow(hwnd);
 
-  // Use a thread timer (null HWND) to ensure timer messages are delivered
-  // directly during the modal TrackPopupMenu message loop.
-  UINT_PTR timer_id =
-      ::SetTimer(nullptr, 0, 10, [](HWND, UINT, UINT_PTR id, DWORD) {
-        if (g_context && !g_context->callback_executed) {
+    // Use a thread timer (null HWND) to ensure timer messages are delivered
+    // directly during the modal TrackPopupMenu message loop.
+    UINT_PTR timer_id =
+        ::SetTimer(nullptr, 0, 10, [](HWND, UINT, UINT_PTR id, DWORD) {
+          if (!g_context || g_context->callback_executed) {
+            return;
+          }
+
           if (HWND menu_hwnd = FindActivePopupMenuHWND()) {
+            // Manually pump Chromium's task queue to allow production PostTask
+            // to execute while inside this Win32 timer tick.
+            base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+            base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE, run_loop.QuitClosure());
+            run_loop.Run();
+
             g_context->callback_executed = true;
             ::KillTimer(nullptr, id);
             // Execute the callback outside of EnumThreadWindows to
@@ -532,15 +552,86 @@ void ShowTestPopupMenu(HWND hwnd, base::FunctionRef<void(HWND)> callback) {
             g_context->callback(menu_hwnd);
             ::EndMenu();
           }
-        }
-      });
+        });
 
-  HMENU menu = ::CreatePopupMenu();
-  ::AppendMenu(menu, MF_STRING, 1, L"Test Item");
-  ::TrackPopupMenu(menu, TPM_LEFTALIGN | TPM_TOPALIGN | TPM_NOANIMATION, 0, 0,
-                   0, hwnd, nullptr);
-  ::DestroyMenu(menu);
-  ::KillTimer(nullptr, timer_id);
+    HMENU menu = ::CreatePopupMenu();
+    ::AppendMenu(menu, MF_STRING, 1, L"Test Item");
+    ::TrackPopupMenu(menu, TPM_LEFTALIGN | TPM_TOPALIGN | TPM_NOANIMATION, 0, 0,
+                     0, hwnd, nullptr);
+    ::DestroyMenu(menu);
+    ::KillTimer(nullptr, timer_id);
+  }
+
+  EXPECT_TRUE(context.callback_executed);
+  g_context = nullptr;
+}
+
+// Helper to display a native popup menu with a submenu modally, locate both
+// Win32 #32768 windows, execute a test callback, and dismiss the menu.
+void ShowTestPopupMenuWithSubMenu(
+    HWND hwnd,
+    base::FunctionRef<void(const std::vector<HWND>&)> callback) {
+  struct Context {
+    base::FunctionRef<void(const std::vector<HWND>&)> callback;
+    bool callback_executed = false;
+    int tick_count = 0;
+  } context{callback};
+
+  static thread_local Context* g_context = nullptr;
+  g_context = &context;
+
+  // When tests run in parallel, another test process may steal foreground
+  // focus and cause TrackPopupMenu to dismiss prematurely. Retry if needed.
+  for (int attempt = 0; attempt < 5 && !context.callback_executed; ++attempt) {
+    g_context->tick_count = 0;
+
+    ::BringWindowToTop(hwnd);
+    ::SetActiveWindow(hwnd);
+    ::SetForegroundWindow(hwnd);
+
+    UINT_PTR timer_id =
+        ::SetTimer(nullptr, 0, 10, [](HWND, UINT, UINT_PTR id, DWORD) {
+          if (!g_context || g_context->callback_executed) {
+            return;
+          }
+
+          std::vector<HWND> hwnds = FindActivePopupMenuHWNDs();
+          if (hwnds.size() >= 2) {
+            // Manually pump Chromium's task queue to allow production PostTask
+            // to execute while inside this Win32 timer tick.
+            base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+            base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE, run_loop.QuitClosure());
+            run_loop.Run();
+
+            g_context->callback_executed = true;
+            ::KillTimer(nullptr, id);
+            g_context->callback(hwnds);
+            ::EndMenu();
+          } else if (hwnds.size() == 1) {
+            // Send keystrokes on separate timer ticks to navigate into the
+            // submenu. VK_DOWN selects the item; VK_RIGHT expands the submenu.
+            const int step = g_context->tick_count++ % 4;
+            if (step == 0) {
+              ::PostMessage(hwnds[0], WM_KEYDOWN, VK_DOWN, 0);
+              ::PostMessage(hwnds[0], WM_KEYUP, VK_DOWN, 0);
+            } else if (step == 1) {
+              ::PostMessage(hwnds[0], WM_KEYDOWN, VK_RIGHT, 0);
+              ::PostMessage(hwnds[0], WM_KEYUP, VK_RIGHT, 0);
+            }
+          }
+        });
+
+    HMENU sub_menu = ::CreatePopupMenu();
+    ::AppendMenu(sub_menu, MF_STRING, 2, L"SubItem");
+    HMENU menu = ::CreatePopupMenu();
+    ::AppendMenu(menu, MF_POPUP | MF_STRING,
+                 reinterpret_cast<UINT_PTR>(sub_menu), L"SubMenu");
+    ::TrackPopupMenu(menu, TPM_LEFTALIGN | TPM_TOPALIGN | TPM_NOANIMATION, 0, 0,
+                     0, hwnd, nullptr);
+    ::DestroyMenu(menu);
+    ::KillTimer(nullptr, timer_id);
+  }
 
   EXPECT_TRUE(context.callback_executed);
   g_context = nullptr;
@@ -560,6 +651,61 @@ TEST_F(DesktopWindowTreeHostWinTest, ExcludeActiveSystemMenuFromCapture) {
     DWORD affinity = WDA_NONE;
     EXPECT_TRUE(::GetWindowDisplayAffinity(menu_hwnd, &affinity));
     EXPECT_EQ(GetExpectedExclusionAffinity(), affinity);
+  });
+  widget.CloseNow();
+}
+
+TEST_F(DesktopWindowTreeHostWinTest, ExcludeActiveSystemSubMenuFromCapture) {
+  Widget widget;
+  HWND hwnd =
+      InitTestWidget(widget,
+                     CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                  Widget::InitParams::TYPE_WINDOW),
+                     /*exclude_capture=*/true);
+
+  ShowTestPopupMenuWithSubMenu(hwnd, [&](const std::vector<HWND>& hwnds) {
+    ASSERT_GE(hwnds.size(), 2u);
+    for (HWND menu_hwnd : hwnds) {
+      DWORD affinity = WDA_NONE;
+      EXPECT_TRUE(::GetWindowDisplayAffinity(menu_hwnd, &affinity));
+      EXPECT_EQ(GetExpectedExclusionAffinity(), affinity);
+    }
+  });
+  widget.CloseNow();
+}
+
+TEST_F(DesktopWindowTreeHostWinTest,
+       ExcludeActiveSystemSubMenuFromCaptureUpdate) {
+  Widget widget;
+  HWND hwnd =
+      InitTestWidget(widget,
+                     CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                  Widget::InitParams::TYPE_WINDOW),
+                     /*exclude_capture=*/false);
+
+  ShowTestPopupMenuWithSubMenu(hwnd, [&](const std::vector<HWND>& hwnds) {
+    ASSERT_GE(hwnds.size(), 2u);
+    for (HWND menu_hwnd : hwnds) {
+      DWORD affinity = WDA_NONE;
+      EXPECT_TRUE(::GetWindowDisplayAffinity(menu_hwnd, &affinity));
+      EXPECT_EQ(static_cast<DWORD>(WDA_NONE), affinity);
+    }
+
+    // Enable capture exclusion while sub menu is open.
+    widget.SetExcludeFromScreenCapture(true);
+    for (HWND menu_hwnd : hwnds) {
+      DWORD affinity = WDA_NONE;
+      EXPECT_TRUE(::GetWindowDisplayAffinity(menu_hwnd, &affinity));
+      EXPECT_EQ(GetExpectedExclusionAffinity(), affinity);
+    }
+
+    // Disable capture exclusion while sub menu is open.
+    widget.SetExcludeFromScreenCapture(false);
+    for (HWND menu_hwnd : hwnds) {
+      DWORD affinity = WDA_NONE;
+      EXPECT_TRUE(::GetWindowDisplayAffinity(menu_hwnd, &affinity));
+      EXPECT_EQ(static_cast<DWORD>(WDA_NONE), affinity);
+    }
   });
   widget.CloseNow();
 }

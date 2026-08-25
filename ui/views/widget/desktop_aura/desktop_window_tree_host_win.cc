@@ -20,6 +20,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
@@ -107,9 +108,9 @@ void UpdateMouseLockRegion(aura::Window* window, bool locked) {
   ::ClipCursor(&window_rect);
 }
 
-// Applies the display affinity to the active Win32 native system/popup menu
-// window on the current thread, if one exists.
-void ApplyAffinityToActiveSystemMenu(DWORD affinity) {
+// Applies display affinity to all active Win32 native system/popup menu
+// windows on the current thread.
+void ApplyAffinityToActiveSystemMenus(DWORD affinity) {
   ::EnumThreadWindows(
       ::GetCurrentThreadId(),
       [](HWND hwnd, LPARAM lParam) -> BOOL {
@@ -1472,9 +1473,13 @@ bool DesktopWindowTreeHostWin::PreHandleMSG(UINT message,
                                             LRESULT* result) {
   if (message == WM_INITMENUPOPUP) {
     // Intercept native popup menu initialization to propagate our capture
-    // exclusion state to the native menu window.
+    // exclusion state to the native menu window. Since sub-menu windows are
+    // created by Win32 after WM_INITMENUPOPUP returns, post a task to apply
+    // the affinity once the menu window has been created.
     if (exclude_from_capture_ && IsCaptureExclusionAllowed()) {
-      ApplyAffinityToActiveSystemMenu(GetExclusionAffinity());
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&ApplyAffinityToActiveSystemMenus,
+                                    GetExclusionAffinity()));
     }
   }
   return false;
@@ -1696,7 +1701,7 @@ void DesktopWindowTreeHostWin::UpdateDisplayAffinity() {
   SetWindowDisplayAffinity(GetHWND(), affinity);
 
   // Propagate the new display affinity to any active native system menu.
-  ApplyAffinityToActiveSystemMenu(affinity);
+  ApplyAffinityToActiveSystemMenus(affinity);
 
   // Propagate the new display affinity to all owned windows on the current
   // thread.
