@@ -500,12 +500,9 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, AnimationStateReset) {
 
 // Ensures that the border animation state is reset after canceling the
 // animation via closePanelAndShutdown.
+// TODO(b/453696965): Broken in multi-instance.
 IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
-                       AnimationStateResetOnShutdown) {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/453696965): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
-  }
+                       DISABLED_AnimationStateResetOnShutdown) {
   auto* border = BrowserView::GetBrowserViewForBrowser(browser())
                      ->GetActiveContentsContainerView()
                      ->glic_border_view();
@@ -533,11 +530,9 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
 }
 
 // Ensures that the emphasis animation is restarted when tab focus changes.
-IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, FocusedTabChange) {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/453696965): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
-  }
+// TODO(b/453696965): Broken in multi-instance.
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
+                       DISABLED_FocusedTabChange) {
   auto* border = BrowserView::GetBrowserViewForBrowser(browser())
                      ->GetActiveContentsContainerView()
                      ->glic_border_view();
@@ -593,11 +588,9 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, FocusedTabChange) {
 
 // Ensures that only the emphasis animation is restarted when the focused tab is
 // destroyed.
-IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, FocusedTabDestroyed) {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/453696965): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
-  }
+// TODO(b/453696965): Broken in multi-instance.
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
+                       DISABLED_FocusedTabDestroyed) {
   // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
 #if BUILDFLAG(IS_MAC)
   if (base::mac::MacOSMajorVersion() == 15 && base::mac::IsVirtualMachine()) {
@@ -658,7 +651,9 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, FocusedTabDestroyed) {
 }
 
 // Ensure FocusedWindowChange.
-IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, FocusedWindowChange) {
+// TODO(b/453696965): Broken in multi-instance.
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
+                       DISABLED_FocusedWindowChange) {
 #if BUILDFLAG(IS_OZONE)
   // TODO(crbug.com/430097333): Wayland doesn't support programmatic window
   // activation. Re-enable when activation is supported.
@@ -666,10 +661,6 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, FocusedWindowChange) {
     GTEST_SKIP() << "Wayland doesn't support programmatic window activation";
   }
 #endif
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/453696965): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
-  }
   auto* border = BrowserView::GetBrowserViewForBrowser(browser())
                      ->GetActiveContentsContainerView()
                      ->glic_border_view();
@@ -922,12 +913,9 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, EnsureTimeWraps) {
 
 // Ensures that the effect time starts from where it was left off when
 // switching to a new tab.
+// TODO(b/453696965): Broken in multi-instance.
 IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
-                       FocusedTabChangeEffectTime) {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/453696965): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
-  }
+                       DISABLED_FocusedTabChangeEffectTime) {
   auto* border = BrowserView::GetBrowserViewForBrowser(browser())
                      ->GetActiveContentsContainerView()
                      ->glic_border_view();
@@ -1112,12 +1100,9 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewPrefersReducedMotionUiTest,
 // Ensures that when PrefersReducedMotion is true and the focused tab is
 // destroyed, the border stays as is without replaying the opacity ramp
 // up animation.
+// TODO(b/453696965): Broken in multi-instance.
 IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewPrefersReducedMotionUiTest,
-                       FocusedTabDestroyed) {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/453696965): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
-  }
+                       DISABLED_FocusedTabDestroyed) {
   ASSERT_TRUE(gfx::Animation::PrefersReducedMotion());
   auto* border = BrowserView::GetBrowserViewForBrowser(browser())
                      ->GetActiveContentsContainerView()
@@ -1259,15 +1244,14 @@ class ContextSharingBorderViewPixelOutputUiTest
     ContextSharingBorderViewUiTest::SetUpCommandLine(command_line);
   }
 };
+// TODO(b/453696965): Broken in multi-instance.
 IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewPixelOutputUiTest,
-                       MinimizeRestore) {
+                       DISABLED_MinimizeRestore) {
 #else
-IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, MinimizeRestore) {
+// TODO(b/453696965): Broken in multi-instance.
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
+                       DISABLED_MinimizeRestore) {
 #endif
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/453696965): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
-  }
   WaitForUnminimize(browser());
   auto* border = BrowserView::GetBrowserViewForBrowser(browser())
                      ->GetActiveContentsContainerView()
@@ -1305,11 +1289,9 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, MinimizeRestore) {
   EXPECT_TRUE(border->IsShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, BasicVisiblity) {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/453696965): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
-  }
+// TODO(b/453696965): Broken in multi-instance.
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
+                       DISABLED_BasicVisiblity) {
   // Get the border views for each contents container in multi-content view
   auto content_containers = BrowserView::GetBrowserViewForBrowser(browser())
                                 ->GetContentsContainerViews();

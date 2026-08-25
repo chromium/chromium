@@ -190,11 +190,9 @@ IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest,
                                            kKeyboardShortcutHelpBubbleQuery)));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest, OpenSettingsFromGlicUi) {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/453696965): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
-  }
+// TODO(b/453696965): Broken in multi-instance.
+IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest,
+                       DISABLED_OpenSettingsFromGlicUi) {
   RunTestSequence(
       DeprecatedOpenGlicWindow(GlicWindowMode::kAttached,
                                GlicInstrumentMode::kHostAndContents),

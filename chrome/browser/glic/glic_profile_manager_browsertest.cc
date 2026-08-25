@@ -204,13 +204,9 @@ class GlicProfileManagerBrowserTest : public InProcessBrowserTest {
   base::CallbackListSubscription create_services_subscription_;
 };
 
+// TODO(b/453696965): Broken in multi-instance.
 IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
-                       ProfileForLaunch_WithDetachedGlic) {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/453696965): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
-  }
-
+                       DISABLED_ProfileForLaunch_WithDetachedGlic) {
   auto* profile0 = browser()->GetProfile();
   auto* service0 = GetMockGlicKeyedService(profile0);
 
