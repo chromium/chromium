@@ -230,7 +230,7 @@
         "resultdb": {
           "result_format": "tast"
         },
-        "shard_level_retries_on_ctp": 1,
+        "shard_level_retries_on_ctp": 2,
         "test": "chrome_flaky_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_flaky_tast_tests/",
         "timeout_sec": 7200,
@@ -755,7 +755,7 @@
         "resultdb": {
           "result_format": "tast"
         },
-        "shard_level_retries_on_ctp": 1,
+        "shard_level_retries_on_ctp": 2,
         "test": "chrome_flaky_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_flaky_tast_tests/",
         "timeout_sec": 7200,
@@ -901,7 +901,7 @@
         "resultdb": {
           "result_format": "tast"
         },
-        "shard_level_retries_on_ctp": 1,
+        "shard_level_retries_on_ctp": 2,
         "test": "chrome_flaky_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_flaky_tast_tests/",
         "timeout_sec": 7200,
