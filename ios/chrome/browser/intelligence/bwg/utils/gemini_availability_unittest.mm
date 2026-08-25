@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/fake_gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_test_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -88,6 +89,8 @@ TEST_F(GeminiAvailabilityTest, PageActionMenuIneligibleProfile) {
 
 TEST_F(GeminiAvailabilityTest, ContextualEntryPointAllowed) {
   fake_gemini_service_->SetIsEligible(true);
+  gemini::test::SetUpEligibleAccount(profile_.get());
+
   GeminiAvailabilityResult result = IsGeminiAvailable(
       EntryPoint::ImageContextMenu, profile_.get(), &web_state_);
   EXPECT_TRUE(result.visible);

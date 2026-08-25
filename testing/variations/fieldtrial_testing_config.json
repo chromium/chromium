@@ -10446,22 +10446,6 @@
             ]
         }
     ],
-    "HeliosUpdatedEligibility": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GeminiUpdatedConsent",
-                        "GeminiUpdatedEligibility"
-                    ]
-                }
-            ]
-        }
-    ],
     "HeliosWithReaderMode": [
         {
             "platforms": [

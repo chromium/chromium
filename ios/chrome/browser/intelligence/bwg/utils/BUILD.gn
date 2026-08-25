@@ -63,6 +63,22 @@ source_set("availability") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "gemini_test_utils.h",
+    "gemini_test_utils.mm",
+  ]
+  public_deps = [ "//components/signin/public/identity_manager" ]
+  deps = [
+    "//base",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager:test_support",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -74,6 +90,7 @@ source_set("unit_tests") {
     ":availability",
     ":feature_availability",
     ":prefs",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/signin/public/identity_manager",
