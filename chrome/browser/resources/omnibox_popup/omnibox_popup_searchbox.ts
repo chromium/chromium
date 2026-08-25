@@ -280,7 +280,7 @@ export class OmniboxPopupSearchboxElement extends
   // executing. Used to suppress recording spurious history edits when input
   // text updates programmatically during undo/redo execution.
   private isUndoRedo_: boolean = false;
-  // Observes resize events on input element to evaluate AIM button
+  // Observes resize events on `#inputWrapper` to evaluate AIM button
   // expanded/collapsed state.
   private inputResizeObserver_: ResizeObserver|null = null;
   // Cached width of the AIM button in its expanded state (when rendered as
@@ -355,7 +355,7 @@ export class OmniboxPopupSearchboxElement extends
     this.inputResizeObserver_ = new ResizeObserver(() => {
       this.updateAimButtonCollapse_();
     });
-    this.inputResizeObserver_.observe(this.$.input.inputElement);
+    this.inputResizeObserver_.observe(this.$.inputWrapper);
 
     // When `selectAllOnMouseRelease_` is true (set during `onInputMousedown_`
     // when the input is focused and the selection is collapsed), prevent the
