@@ -31,11 +31,6 @@ IN_PROC_BROWSER_TEST_F(WebThemeEngineImplDefaultBrowserTest, GetSystemColor) {
       base::win::VersionType::SUITE_SERVER) {
     return;
   }
-  // TODO(crbug.com/550092588): Disabled on Win11 due to highlighter color
-  // difference.
-  if (base::win::GetVersion() >= base::win::Version::WIN11) {
-    GTEST_SKIP() << "Skipping on Win11 due to highlighter color difference.";
-  }
   GURL url(
       "data:text/html,"
       "<!doctype html><html>"
@@ -121,19 +116,23 @@ IN_PROC_BROWSER_TEST_F(WebThemeEngineImplDefaultBrowserTest, GetSystemColor) {
                                   "window",
                                   "windowFrame",
                                   "windowText"};
+  // Default highlighter color is different between windows 10 and 11.
+  const std::string expected_highlight_color =
+      base::win::GetVersion() >= base::win::Version::WIN11 ? "rgb(0, 120, 212)"
+                                                           : "rgb(0, 120, 215)";
   const std::vector<std::string> expected_colors = {
-      "rgb(0, 0, 0)",       "rgb(255, 255, 255)", "rgb(0, 102, 204)",
-      "rgb(255, 255, 255)", "rgb(255, 255, 255)", "rgb(240, 240, 240)",
-      "rgb(240, 240, 240)", "rgb(240, 240, 240)", "rgb(0, 0, 0)",
-      "rgb(255, 255, 255)", "rgb(0, 0, 0)",       "rgb(0, 0, 0)",
-      "rgb(255, 255, 255)", "rgb(0, 0, 0)",       "rgb(109, 109, 109)",
-      "rgb(0, 120, 215)",   "rgb(255, 255, 255)", "rgb(0, 0, 0)",
-      "rgb(255, 255, 255)", "rgb(128, 128, 128)", "rgb(255, 255, 255)",
-      "rgb(0, 0, 0)",       "rgb(0, 102, 204)",   "rgb(255, 255, 255)",
-      "rgb(0, 0, 0)",       "rgb(255, 255, 255)", "rgb(0, 0, 0)",
-      "rgb(240, 240, 240)", "rgb(0, 0, 0)",       "rgb(0, 0, 0)",
-      "rgb(0, 0, 0)",       "rgb(0, 102, 204)",   "rgb(255, 255, 255)",
-      "rgb(0, 0, 0)",       "rgb(0, 0, 0)"};
+      "rgb(0, 0, 0)",           "rgb(255, 255, 255)", "rgb(0, 102, 204)",
+      "rgb(255, 255, 255)",     "rgb(255, 255, 255)", "rgb(240, 240, 240)",
+      "rgb(240, 240, 240)",     "rgb(240, 240, 240)", "rgb(0, 0, 0)",
+      "rgb(255, 255, 255)",     "rgb(0, 0, 0)",       "rgb(0, 0, 0)",
+      "rgb(255, 255, 255)",     "rgb(0, 0, 0)",       "rgb(109, 109, 109)",
+      expected_highlight_color, "rgb(255, 255, 255)", "rgb(0, 0, 0)",
+      "rgb(255, 255, 255)",     "rgb(128, 128, 128)", "rgb(255, 255, 255)",
+      "rgb(0, 0, 0)",           "rgb(0, 102, 204)",   "rgb(255, 255, 255)",
+      "rgb(0, 0, 0)",           "rgb(255, 255, 255)", "rgb(0, 0, 0)",
+      "rgb(240, 240, 240)",     "rgb(0, 0, 0)",       "rgb(0, 0, 0)",
+      "rgb(0, 0, 0)",           "rgb(0, 102, 204)",   "rgb(255, 255, 255)",
+      "rgb(0, 0, 0)",           "rgb(0, 0, 0)"};
 
   ASSERT_EQ(ids.size(), expected_colors.size());
 
