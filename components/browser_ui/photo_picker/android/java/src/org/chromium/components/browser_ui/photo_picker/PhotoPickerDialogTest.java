@@ -836,6 +836,7 @@ public class PhotoPickerDialogTest
     @LargeTest
     @Feature("RenderTest")
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/1360427")
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // b/552512252
     public void testBorderPersistence() throws Exception {
         setupTestFilesWith80ColoredSquares();
         createDialog(false, Arrays.asList("image/*")); // Multi-select = false.
