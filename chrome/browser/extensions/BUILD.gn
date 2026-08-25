@@ -1667,6 +1667,7 @@ static_library("test_support") {
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/webui:theme_source",
     "//chrome/test/base:chrome_test_utils",
+    "//chrome/test/base:testing_browser_process",
     "//chrome/test/base:testing_profile",
     "//components/crx_file",
     "//components/feed:feature_list",

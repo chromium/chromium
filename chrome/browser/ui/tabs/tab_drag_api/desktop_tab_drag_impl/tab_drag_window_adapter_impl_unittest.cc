@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/browser_apis/tab_drag/sessions/tab_drag_session_manager.h"
 #include "components/browser_apis/tab_drag/sessions/tab_drag_window_registry.h"

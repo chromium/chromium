@@ -301,6 +301,7 @@ source_set("testing_profile_impl") {
   ]
   public_deps = [ ":testing_profile" ]
   deps = [
+    ":testing_browser_process",
     "//chrome/browser:browser_features",
     "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser/autocomplete",
@@ -375,12 +376,34 @@ source_set("testing_profile_impl") {
 source_set("testing_browser_process") {
   testonly = true
   sources = [
-    "testing_browser_process.cc",
     "testing_browser_process.h",
-    "testing_browser_process_platform_part.cc",
     "testing_browser_process_platform_part.h",
   ]
+
+  deps = [ "//base" ]
   public_deps = [
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
+    "//chrome/browser/upgrade_detector",
+    "//chrome/common:buildflags",
+    "//components/activity_reporter",
+    "//components/signin/core/browser",
+    "//extensions/buildflags",
+    "//media:media_buildflags",
+    "//printing/buildflags",
+    "//ui/base/unowned_user_data",
+  ]
+}
+
+source_set("testing_browser_process_impl") {
+  testonly = true
+  sources = [
+    "testing_browser_process.cc",
+    "testing_browser_process_platform_part.cc",
+  ]
+  public_deps = [
+    ":testing_browser_process",
     ":testing_profile_impl",
     "//base",
     "//base/test:test_support",
@@ -462,33 +485,13 @@ source_set("testing_browser_process") {
       "//chrome/browser/ui/apps",
     ]
   }
-  if (enable_extensions_core) {
-    deps += [
-      "//chrome/browser/extensions",
-      "//chrome/browser/extensions:test_support",
-    ]
-
-    # TODO(crbug.com/353332589): Remove once testing_browser_process is split
-    # into a thin header target and an impl target (see testing_profile split).
-    allow_circular_includes_from +=
-        [ "//chrome/browser/extensions:test_support" ]
-  }
   if (enable_printing) {
     deps += [ "//chrome/browser/printing" ]
   }
   if (is_chromeos) {
     deps += [
       "//chrome/browser/ash/policy/core",
-      "//chrome/browser/ash/settings:test_support",
-      "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/media_galleries",
-    ]
-
-    # TODO(crbug.com/353332589): Remove once testing_browser_process is split
-    # into a thin header target and an impl target (see testing_profile split).
-    allow_circular_includes_from += [
-      "//chrome/browser/ash/settings:test_support",
-      "//chrome/browser/ash/system_web_apps/test_support",
     ]
   }
   if (enable_chrome_notifications) {

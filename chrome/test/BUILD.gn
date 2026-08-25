@@ -201,7 +201,7 @@ static_library("test_support") {
     "//chrome/test/base:scoped_metrics_service_for_synthetic_trials",
     "//chrome/test/base:test_launcher_utils",
     "//chrome/test/base:test_switches",
-    "//chrome/test/base:testing_browser_process",
+    "//chrome/test/base:testing_browser_process_impl",
     "//chrome/test/base:testing_profile_impl",
     "//chrome/test/base:tracing",
     "//chrome/test/base:web_feature_histogram_tester",
