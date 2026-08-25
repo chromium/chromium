@@ -215,6 +215,7 @@ public class FuseboxAttachmentModelList
      * for adding attachments.
      *
      * @param attachment The attachment to add
+     * @return Whether the attachment was successfully added.
      */
     public boolean add(FuseboxAttachment attachment) {
         if (mComposeboxQueryControllerBridge == null || getRemainingAttachments() == 0) {

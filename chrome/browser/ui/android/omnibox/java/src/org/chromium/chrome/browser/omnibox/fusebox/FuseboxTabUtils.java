@@ -37,6 +37,7 @@ public class FuseboxTabUtils {
      * tabs based on specific tab model - including incognito tab model.
      *
      * @param tab The tab to be checked.
+     * @return Whether the tab is eligible for attachment.
      */
     public static boolean isTabEligibleForAttachment(@Nullable Tab tab) {
         // TODO: This also has to check the eligibility here:
@@ -50,6 +51,7 @@ public class FuseboxTabUtils {
      * Returns the whether a tab is active.
      *
      * @param tab The tab to be checked.
+     * @return Whether the tab is active.
      */
     public static boolean isTabActive(@Nullable Tab tab) {
         // Note: this intentionally accepts tabs that haven't finished loading.
@@ -69,6 +71,7 @@ public class FuseboxTabUtils {
      * @param context An Android context.
      * @param favicon The favicon of the tab.
      * @param iconSizePx The size (both width and height) to scale to.
+     * @return Scaled drawable for the tab favicon or default globe fallback.
      */
     public static Drawable getDrawableForTabFavicon(
             Context context, @Nullable Bitmap favicon, @Px int iconSizePx) {
@@ -90,6 +93,7 @@ public class FuseboxTabUtils {
      *
      * @param selector The TabModelSelector to harvest from.
      * @param attachedIds Set of tab IDs currently attached to the Fusebox.
+     * @return List of eligible recent tabs for attachment.
      */
     public static List<Tab> getEligibleRecentTabs(
             TabModelSelector selector, Set<Integer> attachedIds) {

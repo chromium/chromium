@@ -341,6 +341,7 @@ class LocationBarPhone extends LocationBarLayout {
      * <p>If the URL does not fit, it is start-aligned, horizontal scrolling is enabled to allow
      * navigating the full text, and its layout width is capped.
      *
+     * @param centeringApplied Whether the location bar layout is centered on screen.
      * @param fitsInCenteringSpace True if the URL fits within the maximum allowed centering width.
      * @param finalUrlWidth The target width to set on the UrlBar's layout parameters.
      * @param urlBarLayoutParams The ConstraintLayout LayoutParams for the UrlBar.

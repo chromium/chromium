@@ -103,6 +103,7 @@ public class LocationBarBackgroundDrawable extends Drawable {
      * @param context The context to use.
      * @param cornerRadiusPx The corner radius in pixels.
      * @param strokePx The stroke width in pixels.
+     * @param blurStrokePx Additional stroke width in pixels for the blur effect.
      */
     public LocationBarBackgroundDrawable(
             Context context, @Px float cornerRadiusPx, @Px float strokePx, @Px float blurStrokePx) {

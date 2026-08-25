@@ -215,6 +215,7 @@ public abstract class BaseSuggestionViewBinder<T extends View>
     }
 
     /**
+     * @param model Property model containing suggestion view properties.
      * @return Whether the current {@link BrandedColorScheme} is INCOGNITO.
      */
     private static boolean isIncognito(PropertyModel model) {

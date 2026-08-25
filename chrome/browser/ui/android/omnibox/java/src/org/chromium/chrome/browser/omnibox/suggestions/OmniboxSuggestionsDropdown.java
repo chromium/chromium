@@ -292,6 +292,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      * Constructs a new list designed for containing omnibox suggestions.
      *
      * @param context Context used for contained views.
+     * @param attrs Attribute set from layout inflation.
      */
     public OmniboxSuggestionsDropdown(Context context, AttributeSet attrs) {
         this(context, attrs, new SuggestionLayoutScrollListener(context));
@@ -535,6 +536,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     }
 
     /**
+     * @param index Position index of the rendered zero-suggest item.
      * @return The Suggestion view at specific index.
      */
     public @Nullable View getDropdownItemViewForTest(int index) {

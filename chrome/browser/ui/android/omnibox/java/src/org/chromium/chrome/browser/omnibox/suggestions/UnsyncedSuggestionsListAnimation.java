@@ -48,6 +48,9 @@ public class UnsyncedSuggestionsListAnimation
      * @param showSuggestionsListCallback Callback that shows the suggestions list when invoked.
      * @param isToolbarBottomAnchoredSupplier Supplier that tells us if the toolbar is
      *     bottom-anchored at the beginning of the focus animation process.
+     * @param omniboxVerticalTranslationSupplier Supplier providing vertical translation offset.
+     * @param usePopoverAnimationSupplier Supplier indicating whether to use popover animations.
+     * @param context Android context for resolving resources and animations.
      */
     public UnsyncedSuggestionsListAnimation(
             PropertyModel listPropertyModel,

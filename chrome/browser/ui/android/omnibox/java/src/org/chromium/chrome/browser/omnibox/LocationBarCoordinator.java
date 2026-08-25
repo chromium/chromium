@@ -241,9 +241,9 @@ public class LocationBarCoordinator
      * @param pageZoomManager The {@link PageZoomManager} for managing the page zoom.
      * @param tabFaviconFunction Function to get tab favicon.
      * @param snackbarManager Manager for snackbars.
-     * @param scrimManager Manager for scrims.
      * @param bottomContainerView The bottom container view.
      * @param omniboxChipManager The {@link OmniboxChipManager} to show chips in the omnibox.
+     * @param scrimHandler Handler managing scrim visibility during location bar focus.
      * @param userEducationHelper The {@link UserEducationHelper} to show any user education events.
      */
     public LocationBarCoordinator(
@@ -1184,6 +1184,7 @@ public class LocationBarCoordinator
      * bar. This should also be used to create animators for hiding toolbar buttons.
      *
      * @param button The {@link View} of the button to hide.
+     * @return Animator for hiding the button during tablet unfocus.
      */
     public ObjectAnimator createHideButtonAnimatorForTablet(View button) {
         assert isTabletWindow();
@@ -1195,6 +1196,7 @@ public class LocationBarCoordinator
      * bar. This should also be used to create animators for showing toolbar buttons.
      *
      * @param button The {@link View} of the button to show.
+     * @return Animator for showing the button during tablet unfocus.
      */
     public ObjectAnimator createShowButtonAnimatorForTablet(View button) {
         assert isTabletWindow();

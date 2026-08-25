@@ -156,9 +156,8 @@ public class StatusMediator
      * @param windowAndroid The current {@link WindowAndroid}.
      * @param pageInfoAction Callback to display the page info UI surface.
      * @param fuseboxStateSupplier Notifies about the state of the fusebox.
-     * @param onPlusButtonClicked Toggle the fusebox attachments menu when plus button used.
      * @param fuseboxLayoutModeSupplier Notifies about the layout mode of the fusebox.
-     * @param previewMatchUrlSupplier Holds the url of a preview match, null otherwise.
+     * @param onPlusButtonClicked Toggle the fusebox attachments menu when plus button used.
      */
     public StatusMediator(
             OmniboxResourceProvider resourceProvider,

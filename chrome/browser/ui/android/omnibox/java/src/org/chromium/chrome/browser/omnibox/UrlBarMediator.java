@@ -64,8 +64,6 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
      *
      * @param context The current Android's context.
      * @param model MVC property model to write changes to.
-     * @param focusChangeCallback The callback that will be notified when focus changes on the
-     *     UrlBar.
      * @param textChangeListener The listener for text changes.
      * @param richTextChangeListener The listener for rich text changes.
      * @param keyDownListener The listener for key down events.
@@ -320,6 +318,7 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
      * @param autocompleteText The text to be appended to the user text.
      * @param additionalText This string is displayed adjacent to the omnibox if this match is the
      *     default. Will usually be URL when autocompleting a title, and empty otherwise.
+     * @param siteSearchLabel Text label displayed for site search in the URL bar.
      */
     public void setAutocompleteText(
             String userText,

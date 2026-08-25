@@ -26,6 +26,7 @@ public class RecognitionTestHelper {
      *
      * @param texts the queries representing transcription results
      * @param confidences confidence values for corresponding queries
+     * @return Bundle containing voice recognition test results and scores.
      */
     public static Bundle createPlaceholderBundle(String[] texts, float[] confidences) {
         Bundle b = new Bundle();

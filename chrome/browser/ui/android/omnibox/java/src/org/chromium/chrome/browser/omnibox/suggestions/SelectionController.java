@@ -310,7 +310,7 @@ public abstract class SelectionController {
      * Applies selection change at specific position.
      *
      * @param position the index of an element to change the state of
-     * @param state the desired new state
+     * @param isSelected Whether the suggestion item view is currently selected.
      */
     protected abstract void setItemState(int position, boolean isSelected);
 }

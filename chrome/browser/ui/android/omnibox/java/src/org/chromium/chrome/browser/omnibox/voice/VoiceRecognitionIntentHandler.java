@@ -197,7 +197,8 @@ public class VoiceRecognitionIntentHandler {
     /**
      * Checks if the RECORD_AUDIO permission has been granted, and requests it if it hasn't.
      *
-     * @param onPermissionResolved The callback to invoke once permission is resolved.
+     * @param callback Callback to notify if audio recording permission is unavailable.
+     * @param onPermissionGranted Action to execute when audio permission is granted.
      */
     private void ensureAudioPermissionGranted(
             RecognitionCallback callback, Runnable onPermissionGranted) {

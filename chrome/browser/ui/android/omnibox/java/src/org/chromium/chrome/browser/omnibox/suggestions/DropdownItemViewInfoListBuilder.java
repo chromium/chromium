@@ -75,6 +75,7 @@ class DropdownItemViewInfoListBuilder {
      * @param context Current context
      * @param host Component creating suggestion view delegates and responding to suggestion events
      * @param textProvider Provider of querying/editing the Omnibox
+     * @param actionDelegate Delegate handling user interaction events with suggestions.
      * @return AutocompleteUIContext with all necessary dependencies
      */
     private AutocompleteUIContext createUIContext(
@@ -101,6 +102,7 @@ class DropdownItemViewInfoListBuilder {
      * @param context Current context.
      * @param host Component creating suggestion view delegates and responding to suggestion events.
      * @param textProvider Provider of querying/editing the Omnibox.
+     * @param actionDelegate Delegate capable of executing omnibox action specific tasks.
      */
     @Initializer
     void initDefaultProcessors(
@@ -200,8 +202,10 @@ class DropdownItemViewInfoListBuilder {
      *
      * @param input The input for which produced the suggestions.
      * @param groupDetails The details describing this (vertical) suggestions group
+     * @param previousDetails Optional group configuration of the immediately preceding section.
      * @param groupMatches The matches that belong to this suggestions group
      * @param firstVerticalPosition The index of the first AutocompleteMatch in the target list
+     * @return The list of dropdown item view infos for the vertical group.
      */
     @VisibleForTesting
     List<DropdownItemViewInfo> buildVerticalSuggestionsGroup(
@@ -277,6 +281,7 @@ class DropdownItemViewInfoListBuilder {
      * @param groupDetails The details describing this (vertical) suggestions group
      * @param groupMatches The matches that belong to this suggestions group
      * @param position The index on the target list
+     * @return The list of dropdown item view infos for the horizontal group.
      */
     @VisibleForTesting
     List<DropdownItemViewInfo> buildHorizontalSuggestionsGroup(
@@ -423,6 +428,7 @@ class DropdownItemViewInfoListBuilder {
      *
      * @param suggestion The suggestion to be processed.
      * @param position Position of the suggestion in the list.
+     * @return The matching SuggestionProcessor capable of handling the suggestion.
      */
     private SuggestionProcessor getProcessorForSuggestion(
             AutocompleteMatch suggestion, int position) {

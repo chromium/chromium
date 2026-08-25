@@ -79,8 +79,7 @@ public class AutocompleteController {
     /**
      * Acquire an instance of AutocompleteController associated with the supplied Profile.
      *
-     * @return An existing (if one is available) or new (otherwise) instance of the
-     *     AutocompleteController associated with the supplied profile.
+     * @param nativeController Pointer to the native AutocompleteControllerAndroid object.
      */
     @CalledByNative
     private AutocompleteController(long nativeController) {
@@ -298,6 +297,7 @@ public class AutocompleteController {
      * @param elapsedTimeSinceModified the number of ms that passed between the user first modifying
      *     text in the omnibox and selecting a suggestion
      * @param completedLength the length of the default match's inline autocompletion if any
+     * @param action Optional OmniboxAction executed alongside the suggestion selection.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void onSuggestionSelected(
@@ -397,6 +397,7 @@ public class AutocompleteController {
      * @param match the AutocompleteMatch object to get the updated destination URL for
      * @param elapsedTimeSinceInputChange the number of ms between the time the user started typing
      *     in the omnibox and the time the user has selected a suggestion
+     * @return The updated destination GURL with searchbox stats, or null if native is invalid.
      */
     @Nullable GURL updateMatchDestinationUrlWithQueryFormulationTime(
             AutocompleteMatch match, long elapsedTimeSinceInputChange) {

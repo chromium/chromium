@@ -145,6 +145,7 @@ public final class MostVisitedTilesProcessorUnitTest {
     }
 
     /**
+     * @param placement Placement index of the horizontal render group.
      * @param tiles List of tiles that should be presented to the Processor
      * @return Collection of ListItems describing type and properties of each TileView.
      */

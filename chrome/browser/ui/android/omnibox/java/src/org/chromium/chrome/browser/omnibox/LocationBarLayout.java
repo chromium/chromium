@@ -434,6 +434,7 @@ public class LocationBarLayout extends ConstraintLayout {
      *     getting focused.
      * @param isUrlFocusChangeInProgress True if the url focus change is in progress.
      * @param isOnTablet True if the current page is on the tablet.
+     * @return Calculated horizontal translationX offset for the URL bar.
      */
     float getUrlBarTranslationXForFocusAndScrollAnimationOnNtp(
             float ntpSearchBoxScrollFraction,

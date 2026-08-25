@@ -646,7 +646,7 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
      * Get Fusebox popup icon tint list.
      *
      * @param isBottomSheet Whether the popup is presented as a bottom sheet.
-     * @see #getFuseboxPopupIconTintList(Context, int, boolean)
+     * @return Tint list for Fusebox popup icons.
      */
     public ColorStateList getFuseboxPopupIconTintList(boolean isBottomSheet) {
         return getFuseboxPopupIconTintList(mContext, getBrandedColorScheme(), isBottomSheet);
@@ -656,7 +656,7 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
      * Get Fusebox popup icon background tint list.
      *
      * @param isBottomSheet Whether the popup is presented as a bottom sheet.
-     * @see #getFuseboxPopupIconBackgroundTintList(Context, int, boolean)
+     * @return Background tint list for Fusebox popup icons, or null if unstyled.
      */
     public @Nullable ColorStateList getFuseboxPopupIconBackgroundTintList(boolean isBottomSheet) {
         return getFuseboxPopupIconBackgroundTintList(

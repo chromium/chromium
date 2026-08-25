@@ -90,9 +90,11 @@ class OmniboxSuggestionsDropdownEmbedderImpl
      *     alignment view directly (which would cause double margin counting on focus).
      * @param alignmentViewLeftOffsetSupplier Supplier of the left offset for the alignment view,
      *     allowing popover mode to publish horizontal shifts.
+     * @param forcePhoneStyleOmnibox Whether to force phone layout styling for suggestions.
      * @param baseChromeLayout The base view hosting Chrome that certain views (e.g. the omnibox
      *     suggestion list) will position themselves relative to. If null, the content view will be
      *     used.
+     * @param controlsPositionSupplier Supplier for the current controls position.
      * @param keyboardHeightSupplier Supplies the current height of the keyboard.
      * @param bottomWindowPaddingSupplier Supplier of the height of the bottom-most region of the
      *     window that should be considered part of the window's height. This region is suitable for

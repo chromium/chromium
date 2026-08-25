@@ -60,6 +60,7 @@ public class LocationBarFocusScrimHandler {
      * @param clickDelegate Click handler for the scrim.
      * @param scrimTarget View that the scrim should be anchored to.
      * @param tabStripHeightSupplier Supplier for the tab strip height.
+     * @param bottomControlsStacker Controller managing positioning of bottom controls.
      */
     public LocationBarFocusScrimHandler(
             ScrimManager scrimManager,

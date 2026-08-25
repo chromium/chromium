@@ -1083,7 +1083,6 @@ class AutocompleteMediator
      * parameter on regular web search URLs.
      *
      * @param suggestion The chosen omnibox suggestion.
-     * @param matchIndex The index of the chosen omnibox suggestion.
      * @param url The URL associated with the suggestion to navigate to.
      * @return The url to navigate to.
      */
@@ -1571,6 +1570,7 @@ class AutocompleteMediator
      * @param eventTime The timestamp when the navigation was triggered.
      * @param openInNewTab Whether the URL will be loaded in a new tab.
      * @param openInNewWindow Whether the URL will be loaded in a new window.
+     * @return Whether navigation was successfully dispatched for the suggestion.
      */
     /* package */ boolean loadUrlForOmniboxMatch(
             int matchIndex, long eventTime, boolean openInNewTab, boolean openInNewWindow) {

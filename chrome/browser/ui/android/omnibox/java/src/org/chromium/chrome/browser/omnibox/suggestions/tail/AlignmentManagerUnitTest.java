@@ -45,6 +45,7 @@ public class AlignmentManagerUnitTest {
      * @param view View requesting additional padding data.
      * @param queryWidth length of the tail query displayed in the suggestion.
      * @param fullWidth length of the full query that would be executed.
+     * @return The calculated start padding in pixels to align the tail suggestion.
      */
     private int paddingFor(TailSuggestionView view, int queryWidth, int fullWidth) {
         return mManager.requestStartPadding(view, queryWidth, fullWidth, TEXT_AREA_WIDTH);

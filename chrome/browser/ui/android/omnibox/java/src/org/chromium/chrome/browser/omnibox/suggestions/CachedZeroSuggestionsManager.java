@@ -133,6 +133,7 @@ public class CachedZeroSuggestionsManager {
     /**
      * Read previously stored AutocompleteResult from cache.
      *
+     * @param pageClass The page classification type for the cached suggestions.
      * @return AutocompleteResult populated with the content of the SharedPreferences cache.
      */
     static AutocompleteResult readFromCache(@PageClassification int pageClass) {

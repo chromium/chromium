@@ -76,6 +76,7 @@ public class SpacingRecyclerViewItemDecoration extends ItemDecoration {
      *
      * <p>This call is intended to be used by derived classes. Keep this call protected.
      *
+     * @param elementSpace Spacing in pixels between consecutive elements in the list.
      * @return true if element space has been updated
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)

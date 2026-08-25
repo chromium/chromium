@@ -69,6 +69,7 @@ public class ComposeboxQueryControllerBridge {
      *
      * @param profile The profile for the session.
      * @param webContents The WebContents hosting the WebUI that needs to be communicated with.
+     * @return New controller instance, or null if initialization fails.
      */
     public static @Nullable ComposeboxQueryControllerBridge create(
             Profile profile, @Nullable WebContents webContents) {
@@ -128,6 +129,9 @@ public class ComposeboxQueryControllerBridge {
     /**
      * Add the given file to the current session.
      *
+     * @param fileName Name of the file being added.
+     * @param fileType MIME type or extension of the file.
+     * @param fileData Binary content of the file.
      * @return unique token representig the file, used to manipulate added files.
      */
     @Nullable String addFile(String fileName, String fileType, byte[] fileData) {

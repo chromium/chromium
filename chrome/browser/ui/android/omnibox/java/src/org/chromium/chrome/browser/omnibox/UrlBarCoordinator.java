@@ -78,8 +78,6 @@ public class UrlBarCoordinator
      *
      * @param context The current Android's context.
      * @param urlBar The {@link UrlBar} view this coordinator encapsulates.
-     * @param windowDelegate Delegate for accessing and mutating window properties, e.g. soft input
-     *     mode.
      * @param actionModeCallback Callback to handle changes in contextual action Modes.
      * @param focusChangeCallback The callback that will be notified when focus changes on the
      *     UrlBar.

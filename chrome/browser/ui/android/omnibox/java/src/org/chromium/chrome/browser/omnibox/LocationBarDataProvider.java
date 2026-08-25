@@ -178,8 +178,6 @@ public interface LocationBarDataProvider {
 
     /**
      * Returns the resource ID of the icon that should be displayed or 0 if no icon should be shown.
-     *
-     * @param isTablet Whether or not the display context of the icon is a tablet.
      */
     @DrawableRes
     int getSecurityIconResource(boolean isTablet);

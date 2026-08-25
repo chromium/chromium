@@ -71,6 +71,7 @@ public final class AutocompleteUIContext {
      * @param bookmarkState Bookmark state provider
      * @param activityTabSupplier Activity tab supplier
      * @param shareDelegateSupplier Share delegate supplier, may be null
+     * @param toolbarPositionSupplier Supplier providing the current toolbar position.
      * @param actionDelegate Delegate for OmniboxAction execution
      */
     @VisibleForTesting
@@ -107,6 +108,7 @@ public final class AutocompleteUIContext {
      * @param bookmarkState Bookmark state provider
      * @param activityTabSupplier Activity tab supplier
      * @param shareDelegateSupplier Share delegate supplier, may be null
+     * @param toolbarPositionSupplier Supplier providing the current toolbar position.
      * @param actionDelegate Delegate for OmniboxAction execution
      */
     public AutocompleteUIContext(

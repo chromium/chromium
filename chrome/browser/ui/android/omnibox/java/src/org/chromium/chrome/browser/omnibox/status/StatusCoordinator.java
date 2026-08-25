@@ -72,8 +72,10 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
      * @param resourceProvider Provides omnibox-specific resources.
      * @param isTablet Whether the UI is shown on a tablet.
      * @param statusView The status view, used to supply and manipulate child views.
+     * @param locationBarDataProvider Provider for location bar and page state.
      * @param templateUrlServiceSupplier A supplier for {@link TemplateUrlService} used to query the
      *     default search engine.
+     * @param profileSupplier Supplier providing the active user Profile.
      * @param windowAndroid The {@link WindowAndroid} that is used by the owning {@link Activity}.
      * @param pageInfoAction Displays page info popup.
      * @param browserControlsVisibilityDelegate Delegate interface allowing control of the

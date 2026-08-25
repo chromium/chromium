@@ -234,8 +234,7 @@ public class UrlBar extends AutocompleteEditText {
          * cut/copy actions. If null is returned, the existing text will be cut or copied.
          *
          * @param currentText The current displayed text.
-         * @param selectionStart The selection start in the display text.
-         * @param selectionEnd The selection end in the display text.
+         * @param selection The current text selection range in the URL bar.
          * @return The text to be cut/copied instead of the currently selected text.
          */
         default @Nullable String getReplacementCutCopyText(
@@ -261,8 +260,7 @@ public class UrlBar extends AutocompleteEditText {
          * cut/copy actions. If null is returned, the existing text will be cut or copied.
          *
          * @param currentText The current displayed text.
-         * @param selectionStart The selection start in the display text.
-         * @param selectionEnd The selection end in the display text.
+         * @param selection The current text selection range in the URL bar.
          * @return The text to be cut/copied instead of the currently selected text.
          */
         @Nullable String getReplacementCutCopyText(String currentText, TextSelection selection);
