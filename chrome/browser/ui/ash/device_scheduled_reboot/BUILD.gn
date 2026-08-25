@@ -18,14 +18,15 @@ static_library("device_scheduled_reboot") {
     "//ash",
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser/notifications",
     "//chrome/browser/profiles",
     "//chrome/browser/ui/views/relaunch_notification",
+    "//chromeos/ash/components/browser_context_helper",
     "//components/constrained_window",
     "//components/strings:components_strings_grit",
     "//components/user_manager",
     "//components/vector_icons",
     "//ui/base",
+    "//ui/message_center",
     "//ui/message_center/public/cpp",
   ]
 }
@@ -40,17 +41,19 @@ source_set("unit_tests") {
 
   deps = [
     ":device_scheduled_reboot",
+    "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/login/users:test_support",
-    "//chrome/browser/notifications",
     "//chrome/browser/profiles",
     "//chrome/browser/ui",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//components/account_id",
     "//components/constrained_window",
     "//components/user_manager",
     "//content/test:test_support",
     "//testing/gtest",
+    "//ui/message_center",
     "//ui/views",
   ]
 }

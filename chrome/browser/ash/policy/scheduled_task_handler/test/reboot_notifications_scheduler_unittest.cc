@@ -10,11 +10,11 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/test/fake_reboot_notifications_scheduler.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
@@ -24,6 +24,7 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/message_center.h"
 
 using testing::UnorderedElementsAre;
 
@@ -54,6 +55,7 @@ class RebootNotificationsSchedulerTest : public testing::Test {
 
     profile_ =
         profile_manager_->CreateTestingProfile(account_id.GetUserEmail());
+    ash::AnnotatedAccountId::Set(profile_, account_id);
     prefs_ = profile_->GetPrefs();
 
     notifications_scheduler_ =
@@ -61,9 +63,7 @@ class RebootNotificationsSchedulerTest : public testing::Test {
             task_environment_.GetMockClock(),
             task_environment_.GetMockTickClock(), prefs_.get());
 
-    display_service_tester_ =
-        std::make_unique<NotificationDisplayServiceTester>(profile_);
-
+    message_center::MessageCenter::Initialize();
     user_manager_->LoginUser(account_id, true);
     EXPECT_EQ(ProfileManager::GetActiveUserProfile(), profile_);
 
@@ -72,8 +72,8 @@ class RebootNotificationsSchedulerTest : public testing::Test {
   }
 
   void TearDown() override {
-    display_service_tester_.reset();
     notifications_scheduler_.reset();
+    message_center::MessageCenter::Shutdown();
     prefs_ = nullptr;
     profile_ = nullptr;
     profile_manager_.reset();
@@ -82,9 +82,7 @@ class RebootNotificationsSchedulerTest : public testing::Test {
   }
 
   int GetDisplayedNotificationCount() const {
-    return display_service_tester_
-        ->GetDisplayedNotificationsForType(NotificationHandler::Type::TRANSIENT)
-        .size();
+    return message_center::MessageCenter::Get()->GetNotifications().size();
   }
 
  protected:
@@ -98,7 +96,6 @@ class RebootNotificationsSchedulerTest : public testing::Test {
   raw_ptr<TestingProfile> profile_ = nullptr;
   raw_ptr<PrefService> prefs_ = nullptr;
   std::unique_ptr<FakeRebootNotificationsScheduler> notifications_scheduler_;
-  std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 };
 
 TEST_F(RebootNotificationsSchedulerTest, ShowNotificationAndDialogOnSchedule) {

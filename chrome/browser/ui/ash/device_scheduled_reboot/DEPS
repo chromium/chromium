@@ -11,10 +11,15 @@ include_rules = [
   # refactor ash codes in //chrome to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/login/users",
-  "+chrome/browser/notifications",
   "+chrome/browser/profiles/profile_manager.h",
   "+chrome/browser/ui/test",
   "+chrome/browser/ui/views/chrome_constrained_window_views_client.h",
   "+chrome/browser/ui/views/relaunch_notification",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  "reboot_notification_controller(_unittest)?\\.cc": [
+    "+ui/message_center/message_center.h",
+  ],
+}

@@ -9,19 +9,20 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
-#include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
@@ -102,11 +103,13 @@ void RebootNotificationController::CloseRebootNotification() const {
   if (!ShouldNotifyUser()) {
     return;
   }
-  NotificationDisplayService* notification_display_service =
-      NotificationDisplayServiceFactory::GetForProfile(
-          ProfileManager::GetActiveUserProfile());
-  notification_display_service->Close(NotificationHandler::Type::TRANSIENT,
-                                      ash::kPendingRebootNotificationId);
+  const user_manager::User& user =
+      CHECK_DEREF(ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+          ProfileManager::GetActiveUserProfile()));
+  message_center::MessageCenter::Get()->RemoveNotification(
+      ash::CreateUserScopedNotificationId(ash::kPendingRebootNotificationId,
+                                          user.username_hash()),
+      /*by_user=*/false);
 }
 
 void RebootNotificationController::CloseRebootDialog() {
@@ -122,22 +125,26 @@ void RebootNotificationController::ShowNotification(
     const message_center::RichNotificationData& data,
     scoped_refptr<message_center::NotificationDelegate> delegate) const {
   // Create notification.
-  message_center::Notification notification = ash::CreateSystemNotification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, id, title, message,
-      std::u16string(), GURL(), message_center::NotifierId(), data, delegate,
+  const user_manager::User& user =
+      CHECK_DEREF(ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+          ProfileManager::GetActiveUserProfile()));
+  const std::string notification_id =
+      ash::CreateUserScopedNotificationId(id, user.username_hash());
+  message_center::NotifierId notifier_id;
+  notifier_id.profile_id = user.GetAccountId().GetUserEmail();
+  auto notification = ash::CreateSystemNotificationPtr(
+      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
+      std::u16string(), GURL(), notifier_id, data, delegate,
       ::features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
                                           : vector_icons::kBusinessOldIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 
-  NotificationDisplayService* notification_display_service =
-      NotificationDisplayServiceFactory::GetForProfile(
-          ProfileManager::GetActiveUserProfile());
   // Close old notification.
-  notification_display_service->Close(NotificationHandler::Type::TRANSIENT, id);
+  message_center::MessageCenter::Get()->RemoveNotification(notification_id,
+                                                           /*by_user=*/false);
   // Display new notification.
-  notification_display_service->Display(NotificationHandler::Type::TRANSIENT,
-                                        notification,
-                                        /*metadata=*/nullptr);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 }
 
 bool RebootNotificationController::ShouldNotifyUser() const {

@@ -18,9 +18,14 @@ include_rules = [
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/settings",
   "+chrome/browser/browser_process.h",
-  "+chrome/browser/notifications",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/device_scheduled_reboot",
   "+chrome/common/chrome_features.h",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "reboot_notifications_scheduler_unittest\\.cc": [
+    "+ui/message_center/message_center.h",
+  ],
+}

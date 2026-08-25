@@ -47,6 +47,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/settings:test_support",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/dbus/update_engine",
     "//chromeos/ash/components/install_attributes:test_support",
@@ -67,5 +68,6 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/icu:icui18n",
     "//third_party/icu:icuuc_public",
+    "//ui/message_center",
   ]
 }

@@ -20,7 +20,6 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/first_run",
-  "+chrome/browser/notifications",
   "+chrome/browser/policy",
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
@@ -53,6 +52,10 @@ specific_include_rules = {
     "+chrome/browser/ui/navigator/browser_navigator.h",
     "+chrome/browser/ui/navigator/browser_navigator_params.h",
     "+chrome/browser/ui/tabs/tab_enums.h",
+  ],
+
+  "full_restore_app_launch_handler_browsertest\\.cc": [
+    "+ui/message_center/message_center.h",
   ],
 
   ".*test\\.cc": [
