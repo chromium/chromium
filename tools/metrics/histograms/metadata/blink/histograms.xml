@@ -289,6 +289,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Blink.Animation.RangeOffsetHasRelativeOrElementDependentLength"
+    enum="Boolean" expires_after="2027-08-20">
+  <owner>kevers@chromium.org</owner>
+  <owner>animations-dev@chromium.org</owner>
+  <summary>
+    Records whether a script-provided animation range offset contains a relative
+    or element-dependent length and would be rejected if the experimental
+    behavior were enabled. A false sample represents an absolute length or
+    percentage. Recorded each time Blink converts a valid animation range offset
+    supplied through the Web Animations API, before the runtime feature controls
+    whether a TypeError is thrown. This measures the compatibility risk of
+    rejecting relative and element-dependent offsets.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Animation.SDA.BoundaryMisalignment"
     units="16ths of a pixel" expires_after="2024-09-01">
   <owner>kevers@chromium.org</owner>

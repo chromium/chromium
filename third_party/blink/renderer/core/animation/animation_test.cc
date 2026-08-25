@@ -91,6 +91,7 @@
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -98,6 +99,9 @@
 
 namespace blink {
 namespace {
+
+constexpr char kRelativeUnitHistogram[] =
+    "Blink.Animation.RangeOffsetHasRelativeOrElementDependentLength";
 
 void ExpectRelativeErrorWithinEpsilon(double expected, double observed) {
   EXPECT_NEAR(1.0, observed / expected, std::numeric_limits<double>::epsilon());
@@ -218,6 +222,13 @@ class AnimationAnimationTestNoCompositing : public PaintTestConfigurations,
     timing.fill_mode = fill_mode;
     return MakeGarbageCollected<KeyframeEffect>(nullptr, MakeEmptyEffectModel(),
                                                 timing);
+  }
+
+  void SetAnimationTarget() {
+    SetBodyInnerHTML("<div id=target></div>");
+    UpdateAllLifecyclePhasesForTest();
+    To<KeyframeEffect>(animation->effect())
+        ->setTarget(GetElementById("target"));
   }
 
   void SimulateFrame(double time_ms) {
@@ -367,6 +378,54 @@ TEST_P(AnimationAnimationTestNoCompositing, InitialState) {
   EXPECT_FALSE(animation->pending());
   EXPECT_EQ(1, animation->playbackRate());
   EXPECT_TIME(0, GetStartTimeMs(animation));
+}
+
+TEST_P(AnimationAnimationTestNoCompositing,
+       RangeStartAcceptsRelativeUnitsAndRecordsPotentialRejection) {
+  ScopedAnimationRangeRejectRelativeLengthsForTest scoped_feature(false);
+  base::HistogramTester histogram_tester;
+  DummyExceptionStateForTesting exception_state;
+  SetAnimationTarget();
+
+  animation->setRangeStart(
+      MakeGarbageCollected<Animation::RangeBoundary>(String("2em")),
+      exception_state);
+
+  EXPECT_TRUE(animation->GetRangeStartInternal().has_value());
+  EXPECT_FALSE(exception_state.HadException());
+  histogram_tester.ExpectUniqueSample(kRelativeUnitHistogram, true, 1);
+}
+
+TEST_P(AnimationAnimationTestNoCompositing,
+       RangeStartRejectsRelativeUnitsAndRecordsPotentialRejection) {
+  ScopedAnimationRangeRejectRelativeLengthsForTest scoped_feature(true);
+  base::HistogramTester histogram_tester;
+  DummyExceptionStateForTesting exception_state;
+  SetAnimationTarget();
+
+  animation->setRangeStart(
+      MakeGarbageCollected<Animation::RangeBoundary>(String("2em")),
+      exception_state);
+
+  EXPECT_FALSE(animation->GetRangeStartInternal().has_value());
+  EXPECT_TRUE(exception_state.HadException());
+  histogram_tester.ExpectUniqueSample(kRelativeUnitHistogram, true, 1);
+}
+
+TEST_P(AnimationAnimationTestNoCompositing,
+       RangeStartAcceptsAbsoluteUnitsAndRecordsNoPotentialRejection) {
+  ScopedAnimationRangeRejectRelativeLengthsForTest scoped_feature(true);
+  base::HistogramTester histogram_tester;
+  DummyExceptionStateForTesting exception_state;
+  SetAnimationTarget();
+
+  animation->setRangeStart(
+      MakeGarbageCollected<Animation::RangeBoundary>(String("2px")),
+      exception_state);
+
+  EXPECT_TRUE(animation->GetRangeStartInternal().has_value());
+  EXPECT_FALSE(exception_state.HadException());
+  histogram_tester.ExpectUniqueSample(kRelativeUnitHistogram, false, 1);
 }
 
 TEST_P(AnimationAnimationTestNoCompositing, CurrentTimeDoesNotSetOutdated) {

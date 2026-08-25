@@ -619,6 +619,11 @@
       status: "stable",
     },
     {
+      // https://issues.chromium.org/issues/546237331
+      name: "AnimationRangeRejectRelativeLengths",
+      status: "experimental",
+    },
+    {
       // https://drafts.csswg.org/web-animations-2/#triggers
       name: "AnimationTrigger",
       status: "stable",

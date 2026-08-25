@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/animation/timeline_offset.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range_offset.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value_mappings.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -27,6 +29,53 @@ namespace {
 void ThrowExceptionForInvalidTimelineOffset(ExceptionState& exception_state) {
   exception_state.ThrowTypeError(
       "Animation range must be a name <length-percent> pair");
+}
+
+enum class TimelineOffsetValueType {
+  kValid,
+  kRelativeOrElementDependent,
+  kInvalid,
+};
+
+TimelineOffsetValueType ClassifyTimelineOffsetValue(const CSSValue* value) {
+  const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
+  if (!primitive_value) {
+    return TimelineOffsetValueType::kInvalid;
+  }
+  if (primitive_value->IsElementDependent()) {
+    return TimelineOffsetValueType::kRelativeOrElementDependent;
+  }
+
+  if (primitive_value->IsPercentage()) {
+    return TimelineOffsetValueType::kValid;
+  }
+
+  CSSPrimitiveValue::LengthTypeFlags unit_types;
+  primitive_value->AccumulateLengthUnitTypes(unit_types);
+  if (!unit_types.any()) {
+    return TimelineOffsetValueType::kInvalid;
+  }
+
+  unit_types.reset(CSSPrimitiveValue::kUnitTypePixels);
+  unit_types.reset(CSSPrimitiveValue::kUnitTypePercentage);
+  return unit_types.none()
+             ? TimelineOffsetValueType::kValid
+             : TimelineOffsetValueType::kRelativeOrElementDependent;
+}
+
+bool ShouldRejectTimelineOffsetValue(const CSSValue* value) {
+  const TimelineOffsetValueType value_type = ClassifyTimelineOffsetValue(value);
+  if (value_type == TimelineOffsetValueType::kInvalid) {
+    return true;
+  }
+
+  const bool would_reject =
+      value_type == TimelineOffsetValueType::kRelativeOrElementDependent;
+  base::UmaHistogramBoolean(
+      "Blink.Animation.RangeOffsetHasRelativeOrElementDependentLength",
+      would_reject);
+  return would_reject &&
+         RuntimeEnabledFeatures::AnimationRangeRejectRelativeLengthsEnabled();
 }
 
 }  // anonymous namespace
@@ -145,6 +194,10 @@ std::optional<TimelineOffset> TimelineOffset::Create(
   // Resolve the offset and store CSS text for values that need re-resolution.
   std::optional<String> style_dependent_offset_str;
   if (css_offset_value) {
+    if (ShouldRejectTimelineOffsetValue(css_offset_value)) {
+      ThrowExceptionForInvalidTimelineOffset(exception_state);
+      return std::nullopt;
+    }
     offset = ResolveLength(element, css_offset_value);
     if (IsStyleDependent(css_offset_value) || offset.IsFixed()) {
       style_dependent_offset_str = css_offset_value->CssText();
@@ -176,20 +229,17 @@ std::optional<TimelineOffset> TimelineOffset::Create(
     const CSSPrimitiveValue* css_value =
         DynamicTo<CSSPrimitiveValue>(offset->ToCSSValue());
 
-    if (!css_value || (!css_value->IsPx() && !css_value->IsPercentage() &&
-                       css_value->IsResolvableBeforeLayout())) {
+    if (ShouldRejectTimelineOffsetValue(css_value)) {
       exception_state.ThrowTypeError(
-          "CSSNumericValue must be a length or percentage for animation "
-          "range.");
+          "CSSNumericValue must use an absolute length or percentage for "
+          "animation range.");
       return std::nullopt;
     }
 
-    // px and percentage values can only be constructed in typed OM using
-    // expressions which are resolvable at parse time. There are no CSS.sign,
-    // CSS.siblingIndex, or CSS.siblingCount which could be used to construct
-    // expressions that would return no value for GetValueIfKnown() below.
-    // When such constructs are specified and implemented the CHECKs below will
-    // trigger and this code needs to handle those cases.
+    // Pure px and percentage CSSNumericValues have a context-independent
+    // numeric result. Element-dependent expressions are rejected when the
+    // feature is enabled and cannot currently be constructed through CSS Typed
+    // OM when it is disabled.
     if (css_value->IsPx()) {
       std::optional<double> number = css_value->GetValueIfKnown();
       CHECK(number.has_value());
@@ -200,7 +250,6 @@ std::optional<TimelineOffset> TimelineOffset::Create(
       CHECK(number.has_value());
       parsed_offset = Length::Percent(number.value());
     } else {
-      DCHECK(!css_value->IsResolvableBeforeLayout());
       parsed_offset = TimelineOffset::ResolveLength(element, css_value);
       style_dependent_offset_str = css_value->CssText();
     }
