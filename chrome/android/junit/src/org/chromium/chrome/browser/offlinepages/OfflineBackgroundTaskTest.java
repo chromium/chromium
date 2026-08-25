@@ -63,7 +63,6 @@ public class OfflineBackgroundTaskTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private PersistableBundle mTaskExtras;
-    private long mTestTime;
     private final TriggerConditions mTriggerConditions =
             new TriggerConditions(!REQUIRE_POWER, MINIMUM_BATTERY_LEVEL, REQUIRE_UNMETERED);
     private final DeviceConditions mDeviceConditions =

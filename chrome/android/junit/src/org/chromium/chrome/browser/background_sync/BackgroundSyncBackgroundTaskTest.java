@@ -49,7 +49,6 @@ public class BackgroundSyncBackgroundTaskTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private PersistableBundle mTaskExtras;
-    private long mTaskTime;
 
     @Mock private BackgroundSyncBackgroundTask.Natives mNativeMock;
     @Mock private BackgroundTaskScheduler mTaskScheduler;

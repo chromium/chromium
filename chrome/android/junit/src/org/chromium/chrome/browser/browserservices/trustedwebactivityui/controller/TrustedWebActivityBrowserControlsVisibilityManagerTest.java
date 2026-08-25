@@ -20,7 +20,6 @@ import static org.mockito.Mockito.when;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.view.ContextThemeWrapper;
 
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -63,9 +62,6 @@ import org.chromium.components.security_state.SecurityStateModelJni;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
-    private static final Rect APP_WINDOW_RECT = new Rect(0, 0, 1600, 800);
-    private static final Rect WIDEST_UNOCCLUDED_RECT = new Rect(0, 10, 1580, 760);
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock public TabObserverRegistrar mTabObserverRegistrar;
     @Mock public CustomTabActivityTabProvider mTabProvider;

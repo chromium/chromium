@@ -49,7 +49,6 @@ public class PeriodicBackgroundSyncChromeWakeUpTaskTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private PersistableBundle mTaskExtras;
-    private long mTaskTime;
 
     @Mock private PeriodicBackgroundSyncChromeWakeUpTask.Natives mNativeMock;
     @Mock private BackgroundTaskScheduler mTaskScheduler;
