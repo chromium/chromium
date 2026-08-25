@@ -335,7 +335,7 @@ void WaapUIMetricsService::OnNewWindowBrowserWindowShowRequestedToFirstPaint(
     base::TimeTicks request_time,
     base::TimeTicks paint_time) {
   RecordNewWindowPaintMetric(
-      "BrowserWindow.ShowRequestedToFirstPaint.FromConstructor2", source,
+      "BrowserWindow.ShowRequestedToFirstPaint2", source,
       with_existing_window, request_time, paint_time);
 }
 
