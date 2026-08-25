@@ -17,10 +17,6 @@
 
 namespace send_tab_to_self {
 
-class ReceivingUiHandler;
-class SendTabToSelfEntry;
-class SendTabToSelfModel;
-
 // Service that listens for SendTabToSelf model changes and calls UI
 // handlers to update the UI accordingly.
 // TODO(crbug.com/519101926): Consider moving this service to

@@ -74,9 +74,9 @@ class FakeSendTabToSelfModel final : public SendTabToSelfModel {
     GURL url;
     std::string title;
     std::string target_device_cache_guid;
-    PageContext context = PageContext();
-    NavigationHistory navigation_history = {};
-    base::Time shared_time = base::Time();
+    PageContext context;
+    NavigationHistory navigation_history;
+    base::Time shared_time;
   };
 
   // Simulates an entry being added from a remote device.
