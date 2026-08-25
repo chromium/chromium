@@ -94,13 +94,16 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
 
     void show(List<AutofillSuggestion> suggestions) {
         applyScreenState(getScreenState(suggestions), suggestions);
-        mModel.set(VISIBLE, true);
     }
 
     void onDismissed() {
         applyScreenState(AtMemoryScreenState.HIDDEN, List.of());
 
         mDelegate.onDismissed();
+    }
+
+    void onSheetOpened() {
+        mModel.set(VISIBLE, true);
     }
 
     private AtMemoryScreenState getScreenState(List<AutofillSuggestion> suggestions) {

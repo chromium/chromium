@@ -29,6 +29,14 @@ public class AtMemoryBottomSheetCoordinator {
     private final BottomSheetObserver mBottomSheetObserver =
             new BottomSheetObserver() {
                 @Override
+                public void onSheetOpened(@BottomSheetController.StateChangeReason int reason) {
+                    if (mBottomSheetController.getCurrentSheetContent() != null
+                            && mBottomSheetController.getCurrentSheetContent() == mContent) {
+                        mMediator.onSheetOpened();
+                    }
+                }
+
+                @Override
                 public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
                     if (mBottomSheetController.getCurrentSheetContent() != null
                             && mBottomSheetController.getCurrentSheetContent() == mContent) {

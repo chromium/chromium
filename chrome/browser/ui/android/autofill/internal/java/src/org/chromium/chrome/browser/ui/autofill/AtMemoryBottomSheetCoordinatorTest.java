@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -33,6 +34,8 @@ import org.chromium.chrome.browser.personal_context.first_run.PersonalContextFir
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 
 import java.util.List;
 
@@ -94,9 +97,15 @@ public class AtMemoryBottomSheetCoordinatorTest {
 
     @Test
     public void testShow_FocusSearchArea() {
+        ArgumentCaptor<BottomSheetObserver> observerCaptor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
         when(mBottomSheetController.requestShowContent(any(), eq(true))).thenReturn(true);
+        when(mBottomSheetController.getCurrentSheetContent())
+                .thenReturn(mCoordinator.getBottomSheetContentForTesting());
 
         mCoordinator.show(List.of());
+        verify(mBottomSheetController).addObserver(observerCaptor.capture());
+        observerCaptor.getValue().onSheetOpened(StateChangeReason.NONE);
 
         View contentView = mCoordinator.getBottomSheetContentForTesting().getContentView();
         View searchInput = contentView.findViewById(R.id.search_query_input);
