@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {AudioBrowserProxyImpl} from './audio_browser_proxy.js';
 import type {ReadAloudNode, Segment} from './read_aloud_types.js';
 import {TsReadModelImpl} from './ts_model_impl.js';
 import {V8ModelImpl} from './v8_model_impl.js';
@@ -44,7 +45,7 @@ export interface ReadAloudModelBrowserProxy {
 
 export function getReadAloudModel(): ReadAloudModelBrowserProxy {
   return instance ||
-      (!chrome.readingMode.isPhraseHighlightingEnabled ?
+      (!AudioBrowserProxyImpl.getInstance().isPhraseHighlightingEnabled() ?
            instance = new TsReadModelImpl() :
            instance = new V8ModelImpl());
 }

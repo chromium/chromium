@@ -4,12 +4,13 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement, LanguageToastElement, SpEmptyStateElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {AppStyleUpdater, BrowserProxy, ContentBrowserProxyImpl, ContentController, ContentType, LineFocusController, LineFocusMovement, LineFocusStyle, NodeStore, ReadAloudNode, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VisualBrowserProxyImpl, VoiceClientSideStatusCode, VoiceLanguageController, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AppStyleUpdater, AudioBrowserProxyImpl, BrowserProxy, ContentBrowserProxyImpl, ContentController, ContentType, LineFocusController, LineFocusMovement, LineFocusStyle, NodeStore, ReadAloudNode, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VisualBrowserProxyImpl, VoiceClientSideStatusCode, VoiceLanguageController, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertLT, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
 import {microtasksFinished, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, emitEvent, setContent, setupBasicSpeech} from './common.js';
+import {createApp, emitEvent, mockMetrics, setContent, setupBasicSpeech} from './common.js';
+import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
 import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
@@ -38,28 +39,35 @@ suite('AppContent', () => {
   setup(async () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    window.scrollTo(0, 0);
+
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     visualBrowserProxy = new TestVisualBrowserProxy();
     VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
     contentBrowserProxy = new TestContentBrowserProxy();
     ContentBrowserProxyImpl.setInstance(contentBrowserProxy);
-
+    AudioBrowserProxyImpl.setInstance(new TestAudioBrowserProxy());
     speech = new TestSpeechBrowserProxy();
     SpeechBrowserProxyImpl.setInstance(speech);
+    mockMetrics();
+
     readAloudModel = new TestReadAloudModelBrowserProxy();
     setInstance(readAloudModel);
+
     nodeStore = new NodeStore();
     NodeStore.setInstance(nodeStore);
+    SelectionController.setInstance(new SelectionController());
     notificationManager = new VoiceNotificationManager();
     VoiceNotificationManager.setInstance(notificationManager);
     voiceLanguageController = new VoiceLanguageController();
     VoiceLanguageController.setInstance(voiceLanguageController);
+    lineFocusController = new LineFocusController();
+    LineFocusController.setInstance(lineFocusController);
+
     speechController = new SpeechController();
     SpeechController.setInstance(speechController);
     contentController = new ContentController();
     ContentController.setInstance(contentController);
-    lineFocusController = new LineFocusController();
-    LineFocusController.setInstance(lineFocusController);
 
     app = await createApp();
     emptyState =
@@ -1123,7 +1131,7 @@ suite('AppContent', () => {
     let appStyleUpdater: AppStyleUpdater;
 
     setup(async () => {
-      app.remove();
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
       app = await createApp();
       appStyleUpdater = new AppStyleUpdater(app);
     });

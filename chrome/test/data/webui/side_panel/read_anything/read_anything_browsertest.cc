@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
@@ -47,13 +46,7 @@ class ReadAnythingMochaBrowserTest : public WebUIMochaBrowserTest {
 
 using ReadAnythingMochaTest = ReadAnythingMochaBrowserTest;
 
-// TODO(crbug.com/550813339): Flaky on Linux, ChromeOS, and Windows.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-#define MAYBE_Speech DISABLED_Speech
-#else
-#define MAYBE_Speech Speech
-#endif
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, MAYBE_Speech) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Speech) {
   RunSidePanelTest("side_panel/read_anything/speech_test.js", "mocha.run()");
 }
 
@@ -254,8 +247,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LineSpacing) {
                    "mocha.run()");
 }
 
-// TODO(crbug.com/501840500): It is flaky on all platforms.
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, DISABLED_Movement) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Movement) {
   RunSidePanelTest("side_panel/read_anything/movement_test.js", "mocha.run()");
 }
 
@@ -263,14 +255,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Toolbar) {
   RunSidePanelTest("side_panel/read_anything/toolbar_test.js", "mocha.run()");
 }
 
-// TODO(crbug.com/550834958): Flaky on Linux, ChromeOS, and Windows.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-#define MAYBE_AppReceivesToolbarChanges DISABLED_AppReceivesToolbarChanges
-#else
-#define MAYBE_AppReceivesToolbarChanges AppReceivesToolbarChanges
-#endif
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest,
-                       MAYBE_AppReceivesToolbarChanges) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, AppReceivesToolbarChanges) {
   RunSidePanelTest(
       "side_panel/read_anything/app_receives_toolbar_changes_test.js",
       "mocha.run()");
@@ -301,13 +286,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechUsesMaxTextLength) {
       "mocha.run()");
 }
 
-// TODO(crbug.com/550882557): Flaky on Linux, ChromeOS, and Windows.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-#define MAYBE_ReadAloudHighlight DISABLED_ReadAloudHighlight
-#else
-#define MAYBE_ReadAloudHighlight ReadAloudHighlight
-#endif
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, MAYBE_ReadAloudHighlight) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ReadAloudHighlight) {
   RunSidePanelTest("side_panel/read_anything/read_aloud_highlighting_test.js",
                    "mocha.run()");
 }
@@ -373,13 +352,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SettingsMenu) {
                    "mocha.run()");
 }
 
-// TODO(crbug.com/549300296): Flaky on Linux, ChromeOS, and Windows.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-#define MAYBE_ToolbarSettingsMenu DISABLED_ToolbarSettingsMenu
-#else
-#define MAYBE_ToolbarSettingsMenu ToolbarSettingsMenu
-#endif
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, MAYBE_ToolbarSettingsMenu) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ToolbarSettingsMenu) {
   RunSidePanelTest("side_panel/read_anything/toolbar_settings_menu_test.js",
                    "mocha.run()");
 }
