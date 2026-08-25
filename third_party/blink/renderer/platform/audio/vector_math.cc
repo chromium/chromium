@@ -147,21 +147,24 @@ void Vsma(base::span<const float> source,
           float scale,
           base::span<float> dest,
           size_t frames_to_process) {
-  impl::Vsma(source.data(), 1, &scale, dest.data(), 1, frames_to_process);
+  impl::Vsma(source.first(frames_to_process), scale,
+             dest.first(frames_to_process));
 }
 
 void Vsmul(base::span<const float> source,
            float scale,
            base::span<float> dest,
            size_t frames_to_process) {
-  impl::Vsmul(source.data(), 1, &scale, dest.data(), 1, frames_to_process);
+  impl::Vsmul(source.first(frames_to_process), scale,
+              dest.first(frames_to_process));
 }
 
 void Vsadd(base::span<const float> source,
            float addend,
            base::span<float> dest,
            size_t frames_to_process) {
-  impl::Vsadd(source.data(), 1, &addend, dest.data(), 1, frames_to_process);
+  impl::Vsadd(source.first(frames_to_process), addend,
+              dest.first(frames_to_process));
 }
 
 float Vsvesq(base::span<const float> source, size_t frames_to_process) {

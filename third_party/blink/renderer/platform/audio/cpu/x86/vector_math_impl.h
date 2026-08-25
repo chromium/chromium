@@ -98,8 +98,9 @@ void Conv(const float* source_p,
 void Vadd(base::span<const float> source1,
           base::span<const float> source2,
           base::span<float> dest) {
-  DCHECK_EQ(source1.size(), dest.size());
-  DCHECK_EQ(source2.size(), dest.size());
+  // CHECK allows the compiler to elide bounds checks (docs/unsafe_buffers.md).
+  CHECK_EQ(source1.size(), dest.size());
+  CHECK_EQ(source2.size(), dest.size());
   DCHECK(IsAligned(source1.data()));
   DCHECK_EQ(0u, dest.size() % kPackedFloatsPerRegister);
 
@@ -134,8 +135,9 @@ void Vadd(base::span<const float> source1,
 void Vsub(base::span<const float> source1,
           base::span<const float> source2,
           base::span<float> dest) {
-  DCHECK_EQ(source1.size(), dest.size());
-  DCHECK_EQ(source2.size(), dest.size());
+  // CHECK allows the compiler to elide bounds checks (docs/unsafe_buffers.md).
+  CHECK_EQ(source1.size(), dest.size());
+  CHECK_EQ(source2.size(), dest.size());
   DCHECK(IsAligned(source1.data()));
   DCHECK_EQ(0u, dest.size() % kPackedFloatsPerRegister);
 
@@ -173,7 +175,8 @@ void Vclip(base::span<const float> source,
            float low_threshold,
            float high_threshold,
            base::span<float> dest) {
-  DCHECK_EQ(source.size(), dest.size());
+  // CHECK allows the compiler to elide bounds checks (docs/unsafe_buffers.md).
+  CHECK_EQ(source.size(), dest.size());
   DCHECK(IsAligned(source.data()));
   DCHECK_EQ(0u, dest.size() % kPackedFloatsPerRegister);
 
@@ -232,8 +235,9 @@ void Vmaxmgv(const float* source_p, float* max_p, size_t frames_to_process) {
 void Vmul(base::span<const float> source1,
           base::span<const float> source2,
           base::span<float> dest) {
-  DCHECK_EQ(source1.size(), dest.size());
-  DCHECK_EQ(source2.size(), dest.size());
+  // CHECK allows the compiler to elide bounds checks (docs/unsafe_buffers.md).
+  CHECK_EQ(source1.size(), dest.size());
+  CHECK_EQ(source2.size(), dest.size());
   DCHECK(IsAligned(source1.data()));
   DCHECK_EQ(0u, dest.size() % kPackedFloatsPerRegister);
 
@@ -266,91 +270,87 @@ void Vmul(base::span<const float> source1,
 }
 
 // dest[k] += scale * source[k]
-void Vsma(const float* source_p,
-          const float* scale,
-          float* dest_p,
-          size_t frames_to_process) {
-  const float* const source_end_p = UNSAFE_TODO(source_p + frames_to_process);
+void Vsma(base::span<const float> source, float scale, base::span<float> dest) {
+  // CHECK allows the compiler to elide bounds checks (docs/unsafe_buffers.md).
+  CHECK_EQ(source.size(), dest.size());
+  DCHECK(IsAligned(source.data()));
+  DCHECK_EQ(0u, dest.size() % kPackedFloatsPerRegister);
 
-  DCHECK(IsAligned(source_p));
-  DCHECK_EQ(0u, frames_to_process % kPackedFloatsPerRegister);
+  const MType m_scale = MM_PS(set1)(scale);
 
-  const MType m_scale = MM_PS(set1)(*scale);
-
-#define SCALAR_MULTIPLY_AND_ADD_ALL(loadDest, storeDest)        \
-  while (source_p < source_end_p) {                             \
-    MType m_source = MM_PS(load)(source_p);                     \
-    MType m_dest = MM_PS(loadDest)(dest_p);                     \
-    m_dest = MM_PS(add)(m_dest, MM_PS(mul)(m_scale, m_source)); \
-    MM_PS(storeDest)(dest_p, m_dest);                           \
-    source_p += kPackedFloatsPerRegister;                       \
-    dest_p += kPackedFloatsPerRegister;                         \
+#define SCALAR_MULTIPLY_AND_ADD_ALL(loadDest, storeDest)                   \
+  for (size_t i = 0; i < dest.size(); i += kPackedFloatsPerRegister) {     \
+    MType m_source =                                                       \
+        MM_PS(load)(source.subspan(i, kPackedFloatsPerRegister).data());   \
+    MType m_dest =                                                         \
+        MM_PS(loadDest)(dest.subspan(i, kPackedFloatsPerRegister).data()); \
+    m_dest = MM_PS(add)(m_dest, MM_PS(mul)(m_scale, m_source));            \
+    MM_PS(storeDest)(dest.subspan(i, kPackedFloatsPerRegister).data(),     \
+                     m_dest);                                              \
   }
 
-  if (IsAligned(dest_p)) {
-    UNSAFE_TODO(SCALAR_MULTIPLY_AND_ADD_ALL(load, store));
+  if (IsAligned(dest.data())) {
+    SCALAR_MULTIPLY_AND_ADD_ALL(load, store);
   } else {
-    UNSAFE_TODO(SCALAR_MULTIPLY_AND_ADD_ALL(loadu, storeu));
+    SCALAR_MULTIPLY_AND_ADD_ALL(loadu, storeu);
   }
 
 #undef SCALAR_MULTIPLY_AND_ADD_ALL
 }
 
 // dest[k] = scale * source[k]
-void Vsmul(const float* source_p,
-           const float* scale,
-           float* dest_p,
-           size_t frames_to_process) {
-  const float* const source_end_p = UNSAFE_TODO(source_p + frames_to_process);
+void Vsmul(base::span<const float> source,
+           float scale,
+           base::span<float> dest) {
+  // CHECK allows the compiler to elide bounds checks (docs/unsafe_buffers.md).
+  CHECK_EQ(source.size(), dest.size());
+  DCHECK(IsAligned(source.data()));
+  DCHECK_EQ(0u, dest.size() % kPackedFloatsPerRegister);
 
-  DCHECK(IsAligned(source_p));
-  DCHECK_EQ(0u, frames_to_process % kPackedFloatsPerRegister);
+  const MType m_scale = MM_PS(set1)(scale);
 
-  const MType m_scale = MM_PS(set1)(*scale);
-
-#define SCALAR_MULTIPLY_ALL(storeDest)            \
-  while (source_p < source_end_p) {               \
-    MType m_source = MM_PS(load)(source_p);       \
-    MType m_dest = MM_PS(mul)(m_scale, m_source); \
-    MM_PS(storeDest)(dest_p, m_dest);             \
-    source_p += kPackedFloatsPerRegister;         \
-    dest_p += kPackedFloatsPerRegister;           \
+#define SCALAR_MULTIPLY_ALL(storeDest)                                   \
+  for (size_t i = 0; i < dest.size(); i += kPackedFloatsPerRegister) {   \
+    MType m_source =                                                     \
+        MM_PS(load)(source.subspan(i, kPackedFloatsPerRegister).data()); \
+    MType m_dest = MM_PS(mul)(m_scale, m_source);                        \
+    MM_PS(storeDest)(dest.subspan(i, kPackedFloatsPerRegister).data(),   \
+                     m_dest);                                            \
   }
 
-  if (IsAligned(dest_p)) {
-    UNSAFE_TODO(SCALAR_MULTIPLY_ALL(store));
+  if (IsAligned(dest.data())) {
+    SCALAR_MULTIPLY_ALL(store);
   } else {
-    UNSAFE_TODO(SCALAR_MULTIPLY_ALL(storeu));
+    SCALAR_MULTIPLY_ALL(storeu);
   }
 
 #undef SCALAR_MULTIPLY_ALL
 }
 
 // dest[k] = addend + source[k]
-void Vsadd(const float* source_p,
-           const float* addend,
-           float* dest_p,
-           size_t frames_to_process) {
-  const float* const source_end_p = UNSAFE_TODO(source_p + frames_to_process);
+void Vsadd(base::span<const float> source,
+           float addend,
+           base::span<float> dest) {
+  // CHECK allows the compiler to elide bounds checks (docs/unsafe_buffers.md).
+  CHECK_EQ(source.size(), dest.size());
+  DCHECK(IsAligned(source.data()));
+  DCHECK_EQ(0u, dest.size() % kPackedFloatsPerRegister);
 
-  DCHECK(IsAligned(source_p));
-  DCHECK_EQ(0u, frames_to_process % kPackedFloatsPerRegister);
+  const MType m_addend = MM_PS(set1)(addend);
 
-  const MType m_addend = MM_PS(set1)(*addend);
-
-#define SCALAR_ADD_ALL(storeDest)                  \
-  while (source_p < source_end_p) {                \
-    MType m_source = MM_PS(load)(source_p);        \
-    MType m_dest = MM_PS(add)(m_addend, m_source); \
-    MM_PS(storeDest)(dest_p, m_dest);              \
-    source_p += kPackedFloatsPerRegister;          \
-    dest_p += kPackedFloatsPerRegister;            \
+#define SCALAR_ADD_ALL(storeDest)                                        \
+  for (size_t i = 0; i < dest.size(); i += kPackedFloatsPerRegister) {   \
+    MType m_source =                                                     \
+        MM_PS(load)(source.subspan(i, kPackedFloatsPerRegister).data()); \
+    MType m_dest = MM_PS(add)(m_addend, m_source);                       \
+    MM_PS(storeDest)(dest.subspan(i, kPackedFloatsPerRegister).data(),   \
+                     m_dest);                                            \
   }
 
-  if (IsAligned(dest_p)) {
-    UNSAFE_TODO(SCALAR_ADD_ALL(store));
+  if (IsAligned(dest.data())) {
+    SCALAR_ADD_ALL(store);
   } else {
-    UNSAFE_TODO(SCALAR_ADD_ALL(storeu));
+    SCALAR_ADD_ALL(storeu);
   }
 
 #undef SCALAR_ADD_ALL

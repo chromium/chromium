@@ -62,27 +62,15 @@ void Vmul(base::span<const float> source1,
           base::span<float> dest);
 
 // dest[k] += scale * source[k]
-void Vsma(const float* source_p,
-          const float* scale,
-          float* dest_p,
-          size_t frames_to_process);
+void Vsma(base::span<const float> source, float scale, base::span<float> dest);
 
 // dest[k] = scale * source[k]
-void Vsmul(const float* source_p,
-           const float* scale,
-           float* dest_p,
-           size_t frames_to_process);
+void Vsmul(base::span<const float> source, float scale, base::span<float> dest);
 
 // dest[k] = addend + source[k]
-void Vsadd(const float* source_p,
-           const float* addend,
-           float* dest_p,
-           size_t frames_to_process);
-
-void Vsadd(const float* source_p,
+void Vsadd(base::span<const float> source,
            float addend,
-           float* dest_p,
-           size_t frames_to_process);
+           base::span<float> dest);
 
 // sum += sum(source[k]^2) for all k
 void Vsvesq(const float* source_p, float* sum_p, size_t frames_to_process);

@@ -360,48 +360,33 @@ ALWAYS_INLINE static void Vmul(base::span<const float> source1,
   }
 }
 
-ALWAYS_INLINE static void Vsma(const float* source_p,
-                               int source_stride,
-                               const float* scale,
-                               float* dest_p,
-                               int dest_stride,
-                               size_t frames_to_process) {
-  const float k = *scale;
-  while (frames_to_process > 0u) {
-    *dest_p += k * *source_p;
-    UNSAFE_TODO(source_p += source_stride);
-    UNSAFE_TODO(dest_p += dest_stride);
-    --frames_to_process;
+ALWAYS_INLINE static void Vsma(base::span<const float> source,
+                               float scale,
+                               base::span<float> dest) {
+  // CHECK allows the compiler to elide bounds checks (docs/unsafe_buffers.md).
+  CHECK_EQ(source.size(), dest.size());
+  for (size_t i = 0; i < dest.size(); ++i) {
+    dest[i] += scale * source[i];
   }
 }
 
-ALWAYS_INLINE static void Vsmul(const float* source_p,
-                                int source_stride,
-                                const float* scale,
-                                float* dest_p,
-                                int dest_stride,
-                                size_t frames_to_process) {
-  const float k = *scale;
-  while (frames_to_process > 0u) {
-    *dest_p = k * *source_p;
-    UNSAFE_TODO(source_p += source_stride);
-    UNSAFE_TODO(dest_p += dest_stride);
-    --frames_to_process;
+ALWAYS_INLINE static void Vsmul(base::span<const float> source,
+                                float scale,
+                                base::span<float> dest) {
+  // CHECK allows the compiler to elide bounds checks (docs/unsafe_buffers.md).
+  CHECK_EQ(source.size(), dest.size());
+  for (size_t i = 0; i < dest.size(); ++i) {
+    dest[i] = scale * source[i];
   }
 }
 
-ALWAYS_INLINE static void Vsadd(const float* source_p,
-                                int source_stride,
-                                const float* addend,
-                                float* dest_p,
-                                int dest_stride,
-                                size_t frames_to_process) {
-  const float k = *addend;
-  while (frames_to_process > 0u) {
-    *dest_p = *source_p + k;
-    UNSAFE_TODO(source_p += source_stride);
-    UNSAFE_TODO(dest_p += dest_stride);
-    --frames_to_process;
+ALWAYS_INLINE static void Vsadd(base::span<const float> source,
+                                float addend,
+                                base::span<float> dest) {
+  // CHECK allows the compiler to elide bounds checks (docs/unsafe_buffers.md).
+  CHECK_EQ(source.size(), dest.size());
+  for (size_t i = 0; i < dest.size(); ++i) {
+    dest[i] = source[i] + addend;
   }
 }
 
