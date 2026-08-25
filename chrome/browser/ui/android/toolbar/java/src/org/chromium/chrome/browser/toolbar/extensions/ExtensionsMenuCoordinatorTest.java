@@ -55,6 +55,8 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarCoordinatorImpl.MenuButtonPinningDelegate;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
+import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridgeJni;
 import org.chromium.chrome.browser.ui.extensions.ExtensionTestUtils;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridgeJni;
@@ -69,7 +71,9 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuHost;
+import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 
@@ -93,6 +97,8 @@ public class ExtensionsMenuCoordinatorTest {
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private ExtensionsToolbarBridge mExtensionsToolbarBridge;
     @Mock private ExtensionsMenuBridge.Natives mExtensionsMenuBridgeJniMock;
+    @Mock private ExtensionActionContextMenuBridge.Native mActionContextMenuBridgeJniMock;
+    @Mock private MenuModelBridge mActionContextMenuModelBridge;
     @Mock private MenuButtonPinningDelegate mMenuButtonPinningDelegate;
     @Mock private Tracker mTracker;
     @Mock private WindowAndroid mWindowAndroid;
@@ -115,6 +121,13 @@ public class ExtensionsMenuCoordinatorTest {
         TrackerFactory.setTrackerForTests(mTracker);
         ExtensionsMenuBridgeJni.setInstanceForTesting(mExtensionsMenuBridgeJniMock);
         when(mExtensionsMenuBridgeJniMock.init(any(), anyLong(), anyLong())).thenReturn(1L);
+
+        ExtensionActionContextMenuBridgeJni.setInstanceForTesting(mActionContextMenuBridgeJniMock);
+        when(mActionContextMenuBridgeJniMock.init(anyLong(), any(), any(), anyInt()))
+                .thenReturn(10000L);
+        when(mActionContextMenuBridgeJniMock.getMenuModelBridge(anyLong()))
+                .thenReturn(mActionContextMenuModelBridge);
+        when(mActionContextMenuModelBridge.populateModelList()).thenReturn(new ModelList());
 
         AppCompatActivity activity =
                 Robolectric.buildActivity(AppCompatActivity.class).setup().get();
@@ -172,7 +185,107 @@ public class ExtensionsMenuCoordinatorTest {
 
     @After
     public void tearDown() {
+        org.chromium.base.lifetime.LifetimeAssert.resetForTesting();
         mExtensionsMenuCoordinator.destroy();
+    }
+
+    /**
+     * Tests that triggering an extension action from the menu executes the action and closes the
+     * menu.
+     */
+    @Test
+    public void testTriggeringExtensionClosesMenu() {
+        ListMenuHost.PopupMenuShownListener shownListener =
+                mock(ListMenuHost.PopupMenuShownListener.class);
+        mExtensionsMenuButton.addPopupListener(shownListener);
+
+        mExtensionsMenuButton.performClick();
+        triggerOnMediatorReady();
+        verify(shownListener).onPopupMenuShown();
+        assertTrue(mExtensionsMenuCoordinator.isExtensionsMenuOpen());
+
+        View primaryActionButton =
+                mExtensionsMenuCoordinator
+                        .getContentView()
+                        .findViewById(R.id.extensions_menu_item_primary_action);
+        assertNotNull(primaryActionButton);
+
+        primaryActionButton.performClick();
+
+        verify(mExtensionsMenuBridgeJniMock).executeAction(anyLong(), eq("id_a"));
+
+        mExtensionsMenuCoordinator.closeExtensionsMenuIfOpen();
+        assertFalse(mExtensionsMenuCoordinator.isExtensionsMenuOpen());
+    }
+
+    /** Tests that clicking the context menu button on an extension item opens the context menu. */
+    @Test
+    public void testClickingContextMenuButton() {
+        org.chromium.content_public.browser.WebContents webContents =
+                mock(org.chromium.content_public.browser.WebContents.class);
+        when(mTab.getWebContents()).thenReturn(webContents);
+        mCurrentTabSupplier.set(mTab);
+
+        mExtensionsMenuButton.performClick();
+        triggerOnMediatorReady();
+
+        View contextMenuButton =
+                mExtensionsMenuCoordinator
+                        .getContentView()
+                        .findViewById(R.id.extensions_menu_item_context_menu);
+        assertNotNull(contextMenuButton);
+
+        contextMenuButton.performClick();
+
+        verify(mActionContextMenuBridgeJniMock)
+                .init(eq(BROWSER_WINDOW_POINTER), eq("id_a"), eq(webContents), anyInt());
+    }
+
+    /** Tests that the reload page prompt is shown and clicking reload notifies native. */
+    @Test
+    public void testReloadPageSection_VisibilityAndClick() {
+        mExtensionsMenuButton.performClick();
+        triggerOnMediatorReady();
+
+        mExtensionsMenuCoordinator
+                .getMainPageModel()
+                .set(
+                        ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE,
+                        ExtensionsMenuTypes.OptionalSectionType.RELOAD_PAGE);
+
+        View reloadSection =
+                mExtensionsMenuCoordinator
+                        .getContentView()
+                        .findViewById(R.id.extensions_menu_reload_section);
+        assertEquals(View.VISIBLE, reloadSection.getVisibility());
+
+        View reloadButton =
+                mExtensionsMenuCoordinator
+                        .getContentView()
+                        .findViewById(R.id.extensions_menu_reload_button);
+        reloadButton.performClick();
+
+        verify(mExtensionsMenuBridgeJniMock).onReloadPageButtonClicked(anyLong());
+    }
+
+    /** Tests that the extensions menu button state is updated when the menu opens and closes. */
+    @Test
+    public void testExtensionsMenuButtonHighlight() {
+        org.chromium.content_public.browser.WebContents webContents =
+                mock(org.chromium.content_public.browser.WebContents.class);
+        when(mTab.getWebContents()).thenReturn(webContents);
+
+        mExtensionsMenuButton.performClick();
+        triggerOnMediatorReady();
+
+        mExtensionsMenuCoordinator.onActiveWebContentsChanged(webContents);
+
+        assertTrue(mExtensionsMenuCoordinator.isExtensionsMenuOpen());
+        verify(mExtensionsToolbarBridge)
+                .getMenuButtonState(eq(webContents), anyInt(), anyInt(), anyFloat(), anyInt());
+
+        mExtensionsMenuCoordinator.closeExtensionsMenuIfOpen();
+        assertFalse(mExtensionsMenuCoordinator.isExtensionsMenuOpen());
     }
 
     private ExtensionsMenuTypes.MenuEntryState wrap(ExtensionsMenuTypes.MenuEntryState entry) {
