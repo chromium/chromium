@@ -512,7 +512,6 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
     }
     [self updateButtons:@[ _forwardButton ]
         forFullscreenProgress:_fullscreenProgress];
-    [self.view layoutIfNeeded];
     return;
   }
 
@@ -526,7 +525,6 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
     if (!canGoForward) {
       _forwardButton.enabled = NO;
     }
-    [self.view layoutIfNeeded];
     return;
   }
 
