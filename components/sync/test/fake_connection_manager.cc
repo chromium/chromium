@@ -85,13 +85,13 @@ HttpResponse FakeConnectionManager::PostBuffer(
   client_to_server_response.Clear();
 
   if (!IsAccessTokenInfoValid(access_token_info)) {
-    return HttpResponse::ForNetError(net::HTTP_UNAUTHORIZED);
+    return HttpResponse::ForHttpStatusCode(net::HTTP_UNAUTHORIZED);
   }
 
   if (access_token_info.token != kValidAccessToken) {
     // Simulate server-side auth failure.
     ClearCachedAccessToken();
-    return HttpResponse::ForNetError(net::HTTP_UNAUTHORIZED);
+    return HttpResponse::ForHttpStatusCode(net::HTTP_UNAUTHORIZED);
   }
 
   if (--countdown_to_postbuffer_fail_ == 0) {

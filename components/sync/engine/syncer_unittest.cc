@@ -13,6 +13,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -21,11 +22,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/extensions_activity.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/active_devices_invalidation_info.h"
@@ -81,14 +84,50 @@ sync_pb::EntitySpecifics MakeBookmarkSpecificsToCommit() {
 
 // Syncer unit tests. Unfortunately a lot of these tests
 // are outdated and need to be reworked and updated.
-class SyncerTest : public testing::Test,
-                   public SyncCycle::Delegate,
-                   public SyncEngineEventListener {
+class SyncerTestBase : public SyncCycle::Delegate,
+                       public SyncEngineEventListener {
  public:
-  SyncerTest() = default;
+  explicit SyncerTestBase(bool use_propagated_access_token) {
+    feature_list_.InitWithFeatureState(kSyncUsePropagatedAccessToken,
+                                       use_propagated_access_token);
 
-  SyncerTest(const SyncerTest&) = delete;
-  SyncerTest& operator=(const SyncerTest&) = delete;
+    mock_server_ = std::make_unique<FakeConnectionManager>();
+    debug_info_getter_ = std::make_unique<MockDebugInfoGetter>();
+    std::vector<SyncEngineEventListener*> listeners;
+    listeners.push_back(this);
+
+    data_type_registry_ = std::make_unique<DataTypeRegistry>(
+        &mock_nudge_handler_, &cancelation_signal_, &encryption_handler_);
+
+    EnableDatatype(BOOKMARKS);
+    EnableDatatype(EXTENSIONS);
+    EnableDatatype(NIGORI);
+    EnableDatatype(PREFERENCES);
+
+    context_ = std::make_unique<SyncCycleContext>(
+        mock_server_.get(), extensions_activity_.get(), listeners,
+        debug_info_getter_.get(), data_type_registry_.get(), local_cache_guid(),
+        mock_server_->store_birthday(), "fake_bag_of_chips",
+        /*poll_interval=*/base::Minutes(30),
+        /*account_email=*/"test@example.com",
+        /*sync_access_token_fetcher=*/nullptr);
+    auto syncer = std::make_unique<Syncer>(&cancelation_signal_);
+    // The syncer is destroyed with the scheduler that owns it.
+    syncer_ = syncer.get();
+    scheduler_ = std::make_unique<SyncSchedulerImpl>(
+        "TestSyncScheduler", BackoffDelayProvider::FromDefaults(),
+        context_.get(), std::move(syncer), false);
+
+    mock_server_->SetKeystoreKey("encryption_key");
+  }
+
+  ~SyncerTestBase() override {
+    mock_server_.reset();
+    scheduler_.reset();
+  }
+
+  SyncerTestBase(const SyncerTestBase&) = delete;
+  SyncerTestBase& operator=(const SyncerTestBase&) = delete;
 
   // SyncCycle::Delegate implementation.
   void OnThrottled(const base::TimeDelta& throttle_duration) override {
@@ -137,9 +176,20 @@ class SyncerTest : public testing::Test,
   void OnBackedOffTypesChanged(DataTypeSet backed_off_types) override {}
   void OnMigrationRequested(DataTypeSet types) override {}
 
+  // Resets the sync cycle. When `kSyncUsePropagatedAccessToken` is enabled,
+  // SyncerProtoUtil forwards `cycle->access_token_info()` to the network layer
+  // (ServerConnectionManager) instead of relying on credentials cached inside
+  // FakeConnectionManager. In real execution, SyncSchedulerImpl fetches and
+  // attaches a token before creating the cycle. A valid token is supplied here
+  // so Syncer's normal sync and configuration cycles succeed under the feature.
   void ResetCycle() {
-    cycle_ = std::make_unique<SyncCycle>(context_.get(), this,
-                                         signin::AccessTokenInfo());
+    signin::AccessTokenInfo access_token_info;
+    if (base::FeatureList::IsEnabled(kSyncUsePropagatedAccessToken)) {
+      access_token_info.token = "AccessToken";
+      access_token_info.expiration_time = base::Time::Now() + base::Hours(1);
+    }
+    cycle_ =
+        std::make_unique<SyncCycle>(context_.get(), this, access_token_info);
   }
 
   bool SyncShareNudge() {
@@ -160,42 +210,6 @@ class SyncerTest : public testing::Test,
     ResetCycle();
     return syncer_->ConfigureSyncShare(
         types, sync_pb::SyncEnums::RECONFIGURATION, cycle_.get());
-  }
-
-  void SetUp() override {
-    mock_server_ = std::make_unique<FakeConnectionManager>();
-    debug_info_getter_ = std::make_unique<MockDebugInfoGetter>();
-    std::vector<SyncEngineEventListener*> listeners;
-    listeners.push_back(this);
-
-    data_type_registry_ = std::make_unique<DataTypeRegistry>(
-        &mock_nudge_handler_, &cancelation_signal_, &encryption_handler_);
-
-    EnableDatatype(BOOKMARKS);
-    EnableDatatype(EXTENSIONS);
-    EnableDatatype(NIGORI);
-    EnableDatatype(PREFERENCES);
-
-    context_ = std::make_unique<SyncCycleContext>(
-        mock_server_.get(), extensions_activity_.get(), listeners,
-        debug_info_getter_.get(), data_type_registry_.get(), local_cache_guid(),
-        mock_server_->store_birthday(), "fake_bag_of_chips",
-        /*poll_interval=*/base::Minutes(30),
-        /*account_email=*/"test@example.com",
-        /*sync_access_token_fetcher=*/nullptr);
-    auto syncer = std::make_unique<Syncer>(&cancelation_signal_);
-    // The syncer is destroyed with the scheduler that owns it.
-    syncer_ = syncer.get();
-    scheduler_ = std::make_unique<SyncSchedulerImpl>(
-        "TestSyncScheduler", BackoffDelayProvider::FromDefaults(),
-        context_.get(), std::move(syncer), false);
-
-    mock_server_->SetKeystoreKey("encryption_key");
-  }
-
-  void TearDown() override {
-    mock_server_.reset();
-    scheduler_.reset();
   }
 
   const std::string local_cache_guid() { return "lD16ebCGCZh+zkiZ68gWDw=="; }
@@ -242,6 +256,7 @@ class SyncerTest : public testing::Test,
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   FakeSyncEncryptionHandler encryption_handler_;
@@ -267,7 +282,17 @@ class SyncerTest : public testing::Test,
   std::unique_ptr<MockDebugInfoGetter> debug_info_getter_;
 };
 
-TEST_F(SyncerTest, CommitFiltersThrottledEntries) {
+// Parameterized on `bool` (whether `kSyncUsePropagatedAccessToken` is enabled)
+// to verify that Syncer correctly performs sync cycles (GetUpdates, Commits,
+// Configuration) both with legacy cached auth and with access tokens propagated
+// through SyncCycle.
+class SyncerTest : public testing::TestWithParam<bool>, public SyncerTestBase {
+ public:
+  SyncerTest() : SyncerTestBase(GetParam()) {}
+  ~SyncerTest() override = default;
+};
+
+TEST_P(SyncerTest, CommitFiltersThrottledEntries) {
   const DataTypeSet throttled_types = {BOOKMARKS};
 
   GetProcessor(BOOKMARKS)->AppendCommitRequest(
@@ -291,7 +316,7 @@ TEST_F(SyncerTest, CommitFiltersThrottledEntries) {
   EXPECT_EQ(1, GetProcessor(BOOKMARKS)->GetLocalChangesCallCount());
 }
 
-TEST_F(SyncerTest, GetUpdatesPartialThrottled) {
+TEST_P(SyncerTest, GetUpdatesPartialThrottled) {
   const sync_pb::EntitySpecifics bookmark = MakeSpecifics(BOOKMARKS);
   const sync_pb::EntitySpecifics pref = MakeSpecifics(PREFERENCES);
 
@@ -346,7 +371,7 @@ TEST_F(SyncerTest, GetUpdatesPartialThrottled) {
   EXPECT_EQ(2U, GetProcessor(BOOKMARKS)->GetNumUpdateResponses());
 }
 
-TEST_F(SyncerTest, GetUpdatesPartialFailure) {
+TEST_P(SyncerTest, GetUpdatesPartialFailure) {
   const sync_pb::EntitySpecifics bookmark = MakeSpecifics(BOOKMARKS);
   const sync_pb::EntitySpecifics pref = MakeSpecifics(PREFERENCES);
 
@@ -401,7 +426,7 @@ TEST_F(SyncerTest, GetUpdatesPartialFailure) {
   EXPECT_EQ(2U, GetProcessor(BOOKMARKS)->GetNumUpdateResponses());
 }
 
-TEST_F(SyncerTest, TestSimpleCommit) {
+TEST_P(SyncerTest, TestSimpleCommit) {
   const std::string kSyncId1 = "id1";
   const std::string kSyncId2 = "id2";
 
@@ -417,7 +442,7 @@ TEST_F(SyncerTest, TestSimpleCommit) {
               UnorderedElementsAre(kSyncId1, kSyncId2));
 }
 
-TEST_F(SyncerTest, TestSimpleGetUpdates) {
+TEST_P(SyncerTest, TestSimpleGetUpdates) {
   std::string id = "some_id";
   std::string parent_id = "0";
   std::string name = "in_root";
@@ -448,7 +473,7 @@ TEST_F(SyncerTest, TestSimpleGetUpdates) {
 // Committing more than kDefaultMaxCommitBatchSize items requires that
 // we post more than one commit command to the server.  This test makes
 // sure that scenario works as expected.
-TEST_F(SyncerTest, CommitManyItemsInOneGo_Success) {
+TEST_P(SyncerTest, CommitManyItemsInOneGo_Success) {
   int num_batches = 3;
   int items_to_commit = kDefaultMaxCommitBatchSize * num_batches;
 
@@ -475,7 +500,7 @@ TEST_F(SyncerTest, CommitManyItemsInOneGo_Success) {
 
 // Test that a single failure to contact the server will cause us to exit the
 // commit loop immediately.
-TEST_F(SyncerTest, CommitManyItemsInOneGo_PostBufferFail) {
+TEST_P(SyncerTest, CommitManyItemsInOneGo_PostBufferFail) {
   int num_batches = 3;
   int items_to_commit = kDefaultMaxCommitBatchSize * num_batches;
 
@@ -518,7 +543,7 @@ TEST_F(SyncerTest, CommitManyItemsInOneGo_PostBufferFail) {
 
 // Test that a single conflict response from the server will cause us to exit
 // the commit loop immediately.
-TEST_F(SyncerTest, CommitManyItemsInOneGo_CommitConflict) {
+TEST_P(SyncerTest, CommitManyItemsInOneGo_CommitConflict) {
   int num_batches = 2;
   int items_to_commit = kDefaultMaxCommitBatchSize * num_batches;
 
@@ -539,7 +564,7 @@ TEST_F(SyncerTest, CommitManyItemsInOneGo_CommitConflict) {
 }
 
 // Tests that sending debug info events works.
-TEST_F(SyncerTest, SendDebugInfoEventsOnGetUpdates_HappyCase) {
+TEST_P(SyncerTest, SendDebugInfoEventsOnGetUpdates_HappyCase) {
   debug_info_getter_->AddDebugEvent();
   debug_info_getter_->AddDebugEvent();
 
@@ -570,7 +595,7 @@ TEST_F(SyncerTest, SendDebugInfoEventsOnGetUpdates_HappyCase) {
 }
 
 // Tests that debug info events are dropped on server error.
-TEST_F(SyncerTest, SendDebugInfoEventsOnGetUpdates_PostFailsDontDrop) {
+TEST_P(SyncerTest, SendDebugInfoEventsOnGetUpdates_PostFailsDontDrop) {
   debug_info_getter_->AddDebugEvent();
   debug_info_getter_->AddDebugEvent();
 
@@ -600,7 +625,7 @@ TEST_F(SyncerTest, SendDebugInfoEventsOnGetUpdates_PostFailsDontDrop) {
 
 // Tests that commit failure with conflict will trigger GetUpdates for next
 // cycle of sync
-TEST_F(SyncerTest, CommitFailureWithConflict) {
+TEST_P(SyncerTest, CommitFailureWithConflict) {
   ConfigureNoGetUpdatesRequired();
 
   GetProcessor(PREFERENCES)
@@ -625,7 +650,7 @@ TEST_F(SyncerTest, CommitFailureWithConflict) {
 }
 
 // Tests that sending debug info events on Commit works.
-TEST_F(SyncerTest, SendDebugInfoEventsOnCommit_HappyCase) {
+TEST_P(SyncerTest, SendDebugInfoEventsOnCommit_HappyCase) {
   // Make sure GetUpdate isn't call as it would "steal" debug info events before
   // Commit has a chance to send them.
   ConfigureNoGetUpdatesRequired();
@@ -656,7 +681,7 @@ TEST_F(SyncerTest, SendDebugInfoEventsOnCommit_HappyCase) {
 }
 
 // Tests that debug info events are not dropped on server error.
-TEST_F(SyncerTest, SendDebugInfoEventsOnCommit_PostFailsDontDrop) {
+TEST_P(SyncerTest, SendDebugInfoEventsOnCommit_PostFailsDontDrop) {
   // Make sure GetUpdate isn't call as it would "steal" debug info events before
   // Commit has a chance to send them.
   ConfigureNoGetUpdatesRequired();
@@ -701,7 +726,7 @@ TEST_F(SyncerTest, SendDebugInfoEventsOnCommit_PostFailsDontDrop) {
   EXPECT_EQ(0, mock_server_->last_request().debug_info().events_size());
 }
 
-TEST_F(SyncerTest, TestClientCommandDuringUpdate) {
+TEST_P(SyncerTest, TestClientCommandDuringUpdate) {
   using sync_pb::ClientCommand;
 
   auto command = std::make_unique<ClientCommand>();
@@ -736,7 +761,7 @@ TEST_F(SyncerTest, TestClientCommandDuringUpdate) {
   EXPECT_EQ(base::Milliseconds(1050), last_bookmarks_commit_delay_);
 }
 
-TEST_F(SyncerTest, TestClientCommandDuringCommit) {
+TEST_P(SyncerTest, TestClientCommandDuringCommit) {
   using sync_pb::ClientCommand;
 
   auto command = std::make_unique<ClientCommand>();
@@ -773,7 +798,7 @@ TEST_F(SyncerTest, TestClientCommandDuringCommit) {
   EXPECT_EQ(base::Milliseconds(1050), last_bookmarks_commit_delay_);
 }
 
-TEST_F(SyncerTest, ShouldPopulateSingleClientFlag) {
+TEST_P(SyncerTest, ShouldPopulateSingleClientFlag) {
   GetProcessor(BOOKMARKS)->AppendCommitRequest(
       ClientTagHash::FromHashed("tag1"), MakeBookmarkSpecificsToCommit(),
       "id1");
@@ -798,7 +823,7 @@ TEST_F(SyncerTest, ShouldPopulateSingleClientFlag) {
                   .single_client_with_old_invalidations());
 }
 
-TEST_F(SyncerTest,
+TEST_P(SyncerTest,
        ShouldPopulateSingleClientFlagForStandaloneInvalidationsOnly) {
   GetProcessor(BOOKMARKS)->AppendCommitRequest(
       ClientTagHash::FromHashed("tag1"), MakeBookmarkSpecificsToCommit(),
@@ -825,7 +850,7 @@ TEST_F(SyncerTest,
                    .single_client_with_old_invalidations());
 }
 
-TEST_F(SyncerTest, ShouldPopulateSingleClientForOldInvalidations) {
+TEST_P(SyncerTest, ShouldPopulateSingleClientForOldInvalidations) {
   GetProcessor(BOOKMARKS)->AppendCommitRequest(
       ClientTagHash::FromHashed("tag1"), MakeBookmarkSpecificsToCommit(),
       "id1");
@@ -852,7 +877,7 @@ TEST_F(SyncerTest, ShouldPopulateSingleClientForOldInvalidations) {
                   .single_client_with_old_invalidations());
 }
 
-TEST_F(SyncerTest, ShouldPopulateFcmRegistrationTokens) {
+TEST_P(SyncerTest, ShouldPopulateFcmRegistrationTokens) {
   GetProcessor(BOOKMARKS)->AppendCommitRequest(
       ClientTagHash::FromHashed("tag1"), MakeBookmarkSpecificsToCommit(),
       "id1");
@@ -879,7 +904,7 @@ TEST_F(SyncerTest, ShouldPopulateFcmRegistrationTokens) {
               ElementsAre("token"));
 }
 
-TEST_F(SyncerTest, ShouldPopulateFcmRegistrationTokensForInterestedTypesOnly) {
+TEST_P(SyncerTest, ShouldPopulateFcmRegistrationTokensForInterestedTypesOnly) {
   GetProcessor(BOOKMARKS)->AppendCommitRequest(
       ClientTagHash::FromHashed("tag1"), MakeBookmarkSpecificsToCommit(),
       "id1");
@@ -907,7 +932,7 @@ TEST_F(SyncerTest, ShouldPopulateFcmRegistrationTokensForInterestedTypesOnly) {
               ElementsAre("token_1"));
 }
 
-TEST_F(SyncerTest, ShouldNotPopulateTooManyFcmRegistrationTokens) {
+TEST_P(SyncerTest, ShouldNotPopulateTooManyFcmRegistrationTokens) {
   std::map<std::string, DataTypeSet> fcm_token_and_interested_data_types;
   for (size_t i = 0; i < 7; ++i) {
     fcm_token_and_interested_data_types["token_" + base::NumberToString(i)] = {
@@ -939,7 +964,7 @@ TEST_F(SyncerTest, ShouldNotPopulateTooManyFcmRegistrationTokens) {
               IsEmpty());
 }
 
-TEST_F(SyncerTest,
+TEST_P(SyncerTest,
        ShouldNotPopulateOptimizationFlagsIfDeviceInfoRecentlyUpdated) {
   EnableDatatype(DEVICE_INFO);
   mock_server_->AddUpdateSpecifics("id", /*parent_id=*/"", "name",
@@ -975,7 +1000,7 @@ TEST_F(SyncerTest,
                   .empty());
 }
 
-TEST_F(SyncerTest, ClientTagServerCreatedUpdatesWork) {
+TEST_P(SyncerTest, ClientTagServerCreatedUpdatesWork) {
   mock_server_->AddUpdateDirectory("1", "0", "permitem1", 1, 10,
                                    foreign_cache_guid(), "-1");
   mock_server_->SetLastUpdateClientTag("clienttag");
@@ -995,7 +1020,7 @@ TEST_F(SyncerTest, ClientTagServerCreatedUpdatesWork) {
   EXPECT_FALSE(entity.is_deleted());
 }
 
-TEST_F(SyncerTest, GetUpdatesSetsRequestedTypes) {
+TEST_P(SyncerTest, GetUpdatesSetsRequestedTypes) {
   // The expectations of this test happen in the MockConnectionManager's
   // GetUpdates handler.  EnableDatatype sets the expectation value from our
   // set of enabled/disabled datatypes.
@@ -1022,7 +1047,7 @@ TEST_F(SyncerTest, GetUpdatesSetsRequestedTypes) {
 
 // A typical scenario: server and client each have one update for the other.
 // This is the "happy path" alternative to UpdateFailsThenDontCommit.
-TEST_F(SyncerTest, UpdateThenCommit) {
+TEST_P(SyncerTest, UpdateThenCommit) {
   std::string to_receive = "some_id1";
   std::string to_commit = "some_id2";
   std::string parent_id = "0";
@@ -1049,7 +1074,7 @@ TEST_F(SyncerTest, UpdateThenCommit) {
 // Same as above, but this time we fail to download updates.
 // We should not attempt to commit anything unless we successfully downloaded
 // updates, otherwise we risk causing a server-side conflict.
-TEST_F(SyncerTest, UpdateFailsThenDontCommit) {
+TEST_P(SyncerTest, UpdateFailsThenDontCommit) {
   std::string to_receive = "some_id1";
   std::string to_commit = "some_id2";
   std::string parent_id = "0";
@@ -1075,7 +1100,7 @@ TEST_F(SyncerTest, UpdateFailsThenDontCommit) {
 
 // Downloads two updates successfully.
 // This is the "happy path" alternative to ConfigureFailsDontApplyUpdates.
-TEST_F(SyncerTest, ConfigureDownloadsTwoBatchesSuccess) {
+TEST_P(SyncerTest, ConfigureDownloadsTwoBatchesSuccess) {
   // Construct the first GetUpdates response.
   mock_server_->AddUpdatePref("id1", "", "one", 1, 10);
   mock_server_->SetChangesRemaining(1);
@@ -1094,7 +1119,7 @@ TEST_F(SyncerTest, ConfigureDownloadsTwoBatchesSuccess) {
 }
 
 // Same as the above case, but this time the second batch fails to download.
-TEST_F(SyncerTest, ConfigureFailsDontApplyUpdates) {
+TEST_P(SyncerTest, ConfigureFailsDontApplyUpdates) {
   // The scenario: we have two batches of updates with one update each. A
   // normal configure step would download all the updates one batch at a time
   // and apply them. This configure will succeed in downloading the first batch
@@ -1123,7 +1148,7 @@ TEST_F(SyncerTest, ConfigureFailsDontApplyUpdates) {
 // Tests that if type is not registered with DataTypeRegistry (e.g. because
 // type's LoadModels failed), Syncer::ConfigureSyncShare runs without triggering
 // DCHECK.
-TEST_F(SyncerTest, ConfigureFailedUnregisteredType) {
+TEST_P(SyncerTest, ConfigureFailedUnregisteredType) {
   // Simulate type being unregistered before configuration by including type
   // that isn't registered with DataTypeRegistry.
   SyncShareConfigureTypes({APPS});
@@ -1131,7 +1156,7 @@ TEST_F(SyncerTest, ConfigureFailedUnregisteredType) {
   // No explicit verification, DCHECK shouldn't have been triggered.
 }
 
-TEST_F(SyncerTest, GetKeySuccess) {
+TEST_P(SyncerTest, GetKeySuccess) {
   KeystoreKeysHandler* keystore_keys_handler =
       data_type_registry_->keystore_keys_handler();
   EXPECT_TRUE(keystore_keys_handler->NeedKeystoreKey());
@@ -1142,7 +1167,7 @@ TEST_F(SyncerTest, GetKeySuccess) {
   EXPECT_FALSE(keystore_keys_handler->NeedKeystoreKey());
 }
 
-TEST_F(SyncerTest, GetKeyEmpty) {
+TEST_P(SyncerTest, GetKeyEmpty) {
   KeystoreKeysHandler* keystore_keys_handler =
       data_type_registry_->keystore_keys_handler();
   EXPECT_TRUE(keystore_keys_handler->NeedKeystoreKey());
@@ -1157,7 +1182,7 @@ TEST_F(SyncerTest, GetKeyEmpty) {
 // Verify that commit only types are never requested in GetUpdates, but still
 // make it into the commit messages. Additionally, make sure failing GU types
 // are correctly removed before commit.
-TEST_F(SyncerTest, CommitOnlyTypes) {
+TEST_P(SyncerTest, CommitOnlyTypes) {
   mock_server_->set_partial_failure(true);
   mock_server_->SetPartialFailureTypes({PREFERENCES});
 
@@ -1188,7 +1213,7 @@ TEST_F(SyncerTest, CommitOnlyTypes) {
   EXPECT_TRUE(commit.entries(1).specifics().has_user_event());
 }
 
-TEST_F(SyncerTest, ShouldEarlyExitDownloadIfRequested) {
+TEST_P(SyncerTest, ShouldEarlyExitDownloadIfRequested) {
   // Construct the first GetUpdates response.
   mock_server_->AddUpdatePref("id1", "", "one", 1, 10);
   mock_server_->SetChangesRemaining(1);
@@ -1219,20 +1244,28 @@ enum {
   TEST_PARAM_BIT_COUNT
 };
 
-class MixedResult : public SyncerTest,
-                    public ::testing::WithParamInterface<int> {
+class MixedResult : public testing::TestWithParam<std::tuple<bool, int>>,
+                    public SyncerTestBase {
+ public:
+  MixedResult() : SyncerTestBase(std::get<0>(GetParam())) {}
+  ~MixedResult() override = default;
+
  protected:
   bool ShouldFailBookmarkCommit() {
-    return (GetParam() & (1 << TEST_PARAM_BOOKMARK_ENABLE_BIT)) == 0;
+    return (std::get<1>(GetParam()) & (1 << TEST_PARAM_BOOKMARK_ENABLE_BIT)) ==
+           0;
   }
   bool ShouldFailAutofillCommit() {
-    return (GetParam() & (1 << TEST_PARAM_AUTOFILL_ENABLE_BIT)) == 0;
+    return (std::get<1>(GetParam()) & (1 << TEST_PARAM_AUTOFILL_ENABLE_BIT)) ==
+           0;
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(ExtensionsActivity,
-                         MixedResult,
-                         testing::Range(0, 1 << TEST_PARAM_BIT_COUNT));
+INSTANTIATE_TEST_SUITE_P(
+    ExtensionsActivity,
+    MixedResult,
+    testing::Combine(testing::Bool(),
+                     testing::Range(0, 1 << TEST_PARAM_BIT_COUNT)));
 
 TEST_P(MixedResult, ExtensionsActivity) {
   GetProcessor(PREFERENCES)
@@ -1278,5 +1311,13 @@ TEST_P(MixedResult, ExtensionsActivity) {
         << "Should not restore records after successful bookmark commit.";
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SyncerTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "PropagatedAccessToken"
+                                             : "CachedAccessToken";
+                         });
 
 }  // namespace syncer
