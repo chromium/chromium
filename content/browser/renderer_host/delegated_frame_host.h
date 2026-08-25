@@ -205,7 +205,7 @@ class CONTENT_EXPORT DelegatedFrameHost
     return weak_factory_.GetWeakPtr();
   }
 
-  const ui::Layer* stale_content_layer() const {
+  const ui::LayerWithExternalTexture* stale_content_layer() const {
     return stale_content_layer_.get();
   }
 

@@ -39,7 +39,6 @@ class COMPOSITOR_EXPORT LayerSurface : public Layer {
   ~LayerSurface() override;
 
   // Layer:
-  bool HasExternalContent() const override;
   std::unique_ptr<Layer> Clone() const override;
   bool ShouldSchedulePaint() const override;
 

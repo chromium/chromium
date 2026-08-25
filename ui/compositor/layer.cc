@@ -1049,11 +1049,6 @@ base::WeakPtr<Layer> Layer::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-
-bool Layer::HasExternalContent() const {
-  return false;
-}
-
 bool Layer::SchedulePaint(const gfx::Rect& invalid_rect) {
   if (!ShouldSchedulePaint()) {
     return false;

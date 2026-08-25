@@ -1465,9 +1465,7 @@ void VideoOverlayWindowViews::UpdateLayerBoundsWithLetterboxing(
   window_background_view_->SetBoundsRect(
       gfx::Rect(gfx::Point(0, 0), GetBounds().size()));
   video_view_->SetBoundsRect(video_bounds);
-  if (video_view_->layer()->HasExternalContent()) {
-    video_view_->layer()->AsSurface()->SetSurfaceSize(video_bounds.size());
-  }
+  video_view_->layer()->AsSurface()->SetSurfaceSize(video_bounds.size());
 
   if (IsOverlayViewShown()) {
     overlay_view_->SetBoundsRect(gfx::Rect(GetBounds().size()));

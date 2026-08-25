@@ -25,10 +25,6 @@ LayerSurface::~LayerSurface() {
   Destroy();
 }
 
-bool LayerSurface::HasExternalContent() const {
-  return true;
-}
-
 bool LayerSurface::ShouldSchedulePaint() const {
   return false;
 }

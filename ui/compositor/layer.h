@@ -452,10 +452,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   const std::string& name() const { return name_; }
   void SetName(const std::string& name);
 
-  // Returns true if the layer has external content, such as a surface layer or
-  // an external texture.
-  virtual bool HasExternalContent() const;
-
   // Returns true if the layer should schedule a paint when requested. By
   // default, this is true for layers with painted content or external
   // transferable resources, but false for layers that do not draw or draw

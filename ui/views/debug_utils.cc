@@ -88,14 +88,16 @@ std::string PrintViewGraphImpl(const View* view) {
   if (!view->parent()) {
     result.append(", shape=box");
   }
-  if (view->layer()) {
-    if (view->layer()->HasExternalContent()) {
+  if (auto* layer = view->layer()) {
+    const bool has_external_content =
+        layer->AsSurface() || layer->AsWithExternalTexture();
+    if (has_external_content) {
       result.append(", color=green");
     } else {
       result.append(", color=red");
     }
 
-    if (view->layer()->fills_bounds_opaquely()) {
+    if (layer->fills_bounds_opaquely()) {
       result.append(", style=filled");
     }
   }

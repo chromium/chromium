@@ -104,10 +104,6 @@ std::unique_ptr<Layer> LayerWithExternalTexture::CreateMirror(
   return mirror;
 }
 
-bool LayerWithExternalTexture::HasExternalContent() const {
-  return true;
-}
-
 void LayerWithExternalTexture::RecomputeDrawsContentAndUVRect() {
   gfx::Size size(bounds_.size());
   if (texture_layer_.get()) {

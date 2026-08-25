@@ -2838,11 +2838,10 @@ TEST_P(LayerWithDelegateTest, TransferableResourceMirroring) {
       resource, base::BindOnce(ReturnMailbox, &release_callback_run),
       gfx::Size(10, 10));
   EXPECT_FALSE(release_callback_run);
-  EXPECT_TRUE(layer->HasExternalContent());
   EXPECT_TRUE(layer->HasTransferableResource());
 
   auto mirror = layer->Mirror();
-  EXPECT_TRUE(mirror->HasExternalContent());
+  ASSERT_TRUE(mirror->AsWithExternalTexture());
   EXPECT_TRUE(mirror->AsWithExternalTexture()->HasTransferableResource());
 
   // Clearing the resource on a mirror layer should not release the source layer
@@ -2851,7 +2850,7 @@ TEST_P(LayerWithDelegateTest, TransferableResourceMirroring) {
   EXPECT_FALSE(release_callback_run);
 
   mirror = layer->Mirror();
-  EXPECT_TRUE(mirror->HasExternalContent());
+  ASSERT_TRUE(mirror->AsWithExternalTexture());
 
   // Clearing the transferable resource on the source layer should clear it from
   // the mirror layer as well.
@@ -2871,8 +2870,8 @@ TEST_P(LayerWithDelegateTest, TransferableResourceMirroring) {
       resource, base::BindOnce(ReturnMailbox, &release_callback_run),
       gfx::Size(10, 10));
   EXPECT_FALSE(release_callback_run);
-  EXPECT_TRUE(layer->HasExternalContent());
-  EXPECT_TRUE(mirror->HasExternalContent());
+  EXPECT_TRUE(layer->HasTransferableResource());
+  ASSERT_TRUE(mirror->AsWithExternalTexture());
   EXPECT_TRUE(mirror->AsWithExternalTexture()->HasTransferableResource());
 
   layer.reset();

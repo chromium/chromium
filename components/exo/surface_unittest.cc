@@ -823,8 +823,8 @@ TEST_P(SurfaceTest, MirrorLayers) {
   EXPECT_EQ(buffer_size, surface->window()->bounds().size());
   EXPECT_EQ(buffer_size, surface->window()->layer()->bounds().size());
   EXPECT_EQ(buffer_size, old_layer_owner->root()->bounds().size());
-  EXPECT_TRUE(shell_surface->host_window()->layer()->HasExternalContent());
-  EXPECT_TRUE(old_layer_owner->root()->HasExternalContent());
+  EXPECT_TRUE(shell_surface->host_window()->layer()->AsSurface());
+  EXPECT_TRUE(old_layer_owner->root()->AsSurface());
 }
 
 TEST_P(SurfaceTest, SetViewport) {

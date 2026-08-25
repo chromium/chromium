@@ -50,7 +50,6 @@ class COMPOSITOR_EXPORT LayerWithExternalTexture
   bool HasTransferableResource() const;
 
   // Layer:
-  bool HasExternalContent() const override;
   void RecomputeDrawsContentAndUVRect() override;
   bool ShouldSchedulePaint() const override;
 
