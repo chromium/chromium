@@ -787,16 +787,6 @@ TEST_F(ChromeDownloadManagerDelegateTest, InterceptDownloadByOfflinePages) {
       false /*is_content_initiated*/, nullptr);
   EXPECT_TRUE(should_intercept);
 
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        download::features::kEnableDownloadSaveAsContextMenu);
-    should_intercept = delegate()->InterceptDownloadIfApplicable(
-        kUrl, "", "", mime_type, "", 10, false /*is_transient*/,
-        false /*is_content_initiated*/, nullptr);
-    EXPECT_FALSE(should_intercept);
-  }
-
   should_intercept = delegate()->InterceptDownloadIfApplicable(
       kUrl, "", "", mime_type, "", 10, false /*is_transient*/,
       true /*is_content_initiated*/, nullptr);

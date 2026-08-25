@@ -568,24 +568,16 @@ public class ContextMenuTest {
         Tab tab = mActivityTestRule.getActivityTab();
         switchToDesktopUserAgent(tab);
         int callCount = mDownloadTestRule.getChromeDownloadCallCount();
-        boolean isSaveAsEnabled =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU);
         ContextMenuUtils.selectContextMenuItem(
                 InstrumentationRegistry.getInstrumentation(),
-                isSaveAsEnabled ? null : mActivityTestRule.getActivity(),
+                mActivityTestRule.getActivity(),
                 tab,
                 "testEmptySpace",
                 R.id.contextmenu_save_page);
 
-        if (isSaveAsEnabled) {
-            CriteriaHelper.pollUiThread(
-                    () -> mActivityTestRule.getActivity().getModalDialogManager().isShowing());
-            onView(withId(R.id.positive_button)).perform(click());
-        }
-
         // Wait for the download to complete and see if we got the right file
         Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(callCount));
-        Assert.assertTrue(mDownloadTestRule.hasDownloadedRegex(".*context_menu_test.*"));
+        Assert.assertTrue(mDownloadTestRule.hasDownloadedRegex(".*context_menu_test.html.*"));
     }
 
     @Test
@@ -597,24 +589,16 @@ public class ContextMenuTest {
         DeviceInput.setSupportsPrecisionPointerForTesting(true);
         Tab tab = mActivityTestRule.getActivityTab();
         int callCount = mDownloadTestRule.getChromeDownloadCallCount();
-        boolean isSaveAsEnabled =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU);
         ContextMenuUtils.selectContextMenuItemFromRightClick(
                 InstrumentationRegistry.getInstrumentation(),
-                isSaveAsEnabled ? null : mActivityTestRule.getActivity(),
+                mActivityTestRule.getActivity(),
                 tab,
                 "testEmptySpace",
                 R.id.contextmenu_save_page);
 
-        if (isSaveAsEnabled) {
-            CriteriaHelper.pollUiThread(
-                    () -> mActivityTestRule.getActivity().getModalDialogManager().isShowing());
-            onView(withId(R.id.positive_button)).perform(click());
-        }
-
         // Wait for the download to complete and see if we got the right file
         Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(callCount));
-        Assert.assertTrue(mDownloadTestRule.hasDownloadedRegex(".*context_menu_test.*"));
+        Assert.assertTrue(mDownloadTestRule.hasDownloadedRegex(".*context_menu_test.html.*"));
     }
 
     @Test

@@ -96,16 +96,12 @@ public class SaveAndShareItemBuilder {
      * @return A {@link ListItem} representing the Download page menu item.
      */
     public ListItem buildDownloadPageItem(boolean showIcon) {
-        int titleId =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU)
-                        ? R.string.menu_save_page_as
-                        : R.string.menu_download_page;
         return AppMenuItemUtils.createStandardListItem(
                 AppMenuItemUtils.buildModelForStandardMenuItem(
                         mContext,
                         mAppMenuItemTheme,
                         R.id.download_page_id,
-                        titleId,
+                        R.string.menu_download_page,
                         showIcon ? R.drawable.ic_file_download_white_24dp : Resources.ID_NULL,
                         mIsMenuIconAtStart),
                 showIcon);

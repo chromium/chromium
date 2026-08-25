@@ -1223,9 +1223,7 @@ bool ChromeDownloadManagerDelegate::InterceptDownloadIfApplicable(
       offline_pages::OfflinePageUtils::CanDownloadAsOfflinePage(url,
                                                                 mime_type)) {
 #if BUILDFLAG(IS_ANDROID)
-    if (profile_->IsOffTheRecord() ||
-        base::FeatureList::IsEnabled(
-            download::features::kEnableDownloadSaveAsContextMenu)) {
+    if (profile_->IsOffTheRecord()) {
       return false;
     }
 #endif  // BUILDFLAG(IS_ANDROID)
