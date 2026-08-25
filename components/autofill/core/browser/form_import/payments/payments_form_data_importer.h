@@ -158,7 +158,8 @@ class PaymentsFormDataImporter {
   // Tries to initiate the saving of the `extracted_credit_card` if applicable.
   // `submitted_form` is the form from which the card was
   // imported. `is_credit_card_upstream_enabled` indicates if server card
-  // storage is enabled. Returns true if a save is initiated.
+  // storage is enabled. Returns `true` if a mandatory re-auth, VCN enrollment,
+  // or card (or CVC) save prompt was initiated.
   bool ProcessExtractedCreditCard(
       const FormStructure& submitted_form,
       const std::optional<CreditCard>& extracted_credit_card,

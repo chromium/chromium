@@ -246,6 +246,12 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
     wallet_reminder_notice_ui_delegate_ = std::move(ui_delegate);
   }
 
+  void set_wallet_reminder_notice_manager(
+      std::unique_ptr<WalletReminderNoticeManager>
+          wallet_reminder_notice_manager) {
+    wallet_reminder_notice_manager_ = std::move(wallet_reminder_notice_manager);
+  }
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   OmniboxAutofillDelegate* GetOmniboxAutofillDelegate() override;
   void ShowExpandedOmniboxAutofillChip(

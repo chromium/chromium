@@ -321,17 +321,39 @@ bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
     return false;
   }
 
+  bool is_wallet_reminder_notice_eligible = false;
+  WalletReminderNoticeManager* wallet_reminder_notice_manager = nullptr;
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableWalletReminderNotice)) {
+    wallet_reminder_notice_manager =
+        client_->GetPaymentsAutofillClient()->GetWalletReminderNoticeManager();
+    is_wallet_reminder_notice_eligible =
+        wallet_reminder_notice_manager &&
+        wallet_reminder_notice_manager->IsWalletReminderNoticeEligible(
+            *extracted_credit_card);
+  }
+
   // If a virtual card was extracted from the form, we do not do anything with
-  // virtual cards beyond this point. Try to offer mandatory re-auth before
-  // returning.
+  // virtual cards beyond this point. Try to offer mandatory re-auth or show the
+  // Wallet reminder notice before returning.
   if (credit_card_import_type_ ==
       PaymentsFormDataImporter::CreditCardImportType::kVirtualCard) {
-    return ProceedWithCardMandatoryReauthOptInIfApplicable();
+    if (ProceedWithCardMandatoryReauthOptInIfApplicable()) {
+      return true;
+    } else if (is_wallet_reminder_notice_eligible) {
+      wallet_reminder_notice_manager->ShowWalletReminderNotice();
+    }
+    return false;
   }
 
   // Do not offer upload save for google domain.
   if (net::HasGoogleHost(submitted_form.main_frame_origin().GetURL()) &&
       is_credit_card_upstream_enabled) {
+    // The Wallet reminder notice can still be applicable even for Google
+    // domains.
+    if (is_wallet_reminder_notice_eligible) {
+      wallet_reminder_notice_manager->ShowWalletReminderNotice();
+    }
     return false;
   }
 
@@ -366,17 +388,13 @@ bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
   }
 
   if (ProceedWithCardMandatoryReauthOptInIfApplicable()) {
-    // Try to offer mandatory re-auth as the last step.
+    // Try to offer mandatory re-auth as the second-to-last step.
     return true;
   }
 
-  if (WalletReminderNoticeManager* wallet_reminder_notice_manager =
-          client_->GetPaymentsAutofillClient()
-              ->GetWalletReminderNoticeManager()) {
-    if (wallet_reminder_notice_manager->IsWalletReminderNoticeEligible(
-            *extracted_credit_card)) {
-      wallet_reminder_notice_manager->ShowWalletReminderNotice();
-    }
+  // Try to show the Wallet reminder notice as the last step.
+  if (is_wallet_reminder_notice_eligible) {
+    wallet_reminder_notice_manager->ShowWalletReminderNotice();
   }
 
   return false;

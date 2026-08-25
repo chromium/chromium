@@ -35,7 +35,8 @@ bool WalletReminderNoticeManager::IsWalletReminderNoticeEligible(
     return false;
   }
   if (extracted_card.record_type() !=
-      CreditCard::RecordType::kMaskedServerCard) {
+          CreditCard::RecordType::kMaskedServerCard &&
+      extracted_card.record_type() != CreditCard::RecordType::kVirtualCard) {
     return false;
   }
   if (prefs::HasShownWalletReminderNotice(client_->GetPrefs())) {
