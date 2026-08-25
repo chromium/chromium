@@ -81,8 +81,6 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
@@ -106,7 +104,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-import java.util.ArrayList;
 import java.util.Locale;
 import java.util.function.Supplier;
 
@@ -153,18 +150,6 @@ public class FeedSurfaceCoordinatorTest {
             return false;
         }
     }
-
-    private static class TestTabModel extends EmptyTabModel {
-        public final ArrayList<TabModelObserver> mObservers = new ArrayList<>();
-
-        @Override
-        public void addObserver(TabModelObserver observer) {
-            mObservers.add(observer);
-        }
-    }
-
-    private final TestTabModel mTabModel = new TestTabModel();
-    private final TestTabModel mTabModelIncognito = new TestTabModel();
 
     private FeedSurfaceCoordinator mCoordinator;
 

@@ -22,7 +22,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.Px;
@@ -39,7 +38,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ActivityState;
@@ -100,7 +98,6 @@ public class FeedSurfaceMediatorTest {
     @Captor private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlServiceObserverCaptor;
     @Captor private ArgumentCaptor<View.OnLayoutChangeListener> mLayoutChangeListenerCaptor;
 
-    private final Context mContext = RuntimeEnvironment.application;
     private Activity mActivity;
     private FeedSurfaceMediator mFeedSurfaceMediator;
 
