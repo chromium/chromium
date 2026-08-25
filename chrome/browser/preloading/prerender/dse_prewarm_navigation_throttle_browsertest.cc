@@ -84,6 +84,9 @@ IN_PROC_BROWSER_TEST_F(DSEPrewarmNavigationThrottleBrowserTest,
   GURL search_url = embedded_test_server()->GetURL("search.example.com",
                                                    "/title1.html?q=test");
 
+  ASSERT_TRUE(content::NavigateToURL(
+      GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
   // When prewarm is not ongoing, navigation proceeds without being deferred.
   {
     content::TestNavigationObserver nav_observer(GetWebContents(), 1);
