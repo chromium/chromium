@@ -135,9 +135,8 @@ class HistoryDatabase : public DownloadDatabase,
   // this, NOT any `HistoryDBTask`, which has a non-owning pointer to this.
   std::unique_ptr<sql::Transaction> CreateTransaction();
 
-  // We DO NOT support transaction nesting. It's considered a "misfeature", and
-  // so the return value of this should always be 0 or 1 during runtime.
-  int transaction_nesting() const { return db_.transaction_nesting(); }
+  // Returns true if at least one `Transaction` is active on the database.
+  int HasActiveTransactions() const { return db_.HasActiveTransactions(); }
 
   // Drops all tables except the URL, and download tables, and recreates them
   // from scratch. This is done to rapidly clean up stuff when deleting all

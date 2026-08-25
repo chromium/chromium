@@ -3434,13 +3434,9 @@ void HistoryBackend::BeginSingletonTransaction() {
   TRACE_EVENT0("browser", "HistoryBackend::BeginSingletonTransaction");
   DCHECK(!singleton_transaction_);
 
-  DCHECK_EQ(db_->transaction_nesting(), 0);
+  DCHECK(!db_->HasActiveTransactions());
   singleton_transaction_ = db_->CreateTransaction();
-
-  bool success = singleton_transaction_->Begin();
-  if (success) {
-    DCHECK_EQ(db_->transaction_nesting(), 1);
-  } else {
+  if (!singleton_transaction_->Begin()) {
     // Failing to begin the transaction happens very occasionally in the wild,
     // at about 1 failure per million, almost exclusively on Windows. Previous
     // analysis showed SQLITE_BUSY to be the main cause, which could suggest
@@ -3460,18 +3456,17 @@ void HistoryBackend::CommitSingletonTransactionIfItExists() {
                "HistoryBackend::CommitSingletonTransactionIfItExists");
 
   if (!singleton_transaction_) {
-    DCHECK_EQ(db_->transaction_nesting(), 0)
+    DCHECK(!db_->HasActiveTransactions())
         << "There should not be any transactions other than the singleton one.";
     return;
   }
 
-  DCHECK_EQ(db_->transaction_nesting(), 1)
-      << "Someone opened multiple transactions.";
+  DCHECK(db_->HasActiveTransactions())
+      << "The global transaction should be active.";
 
   bool success = singleton_transaction_->Commit();
   if (success) {
-    DCHECK_EQ(db_->transaction_nesting(), 0)
-        << "Someone left a transaction open.";
+    DCHECK(!db_->HasActiveTransactions()) << "Someone left a transaction open.";
   }
   // The long-running transaction fails to commit about 1 per 100,000 times.
   // The crash reports are again predominantly on Windows. More discussion in
