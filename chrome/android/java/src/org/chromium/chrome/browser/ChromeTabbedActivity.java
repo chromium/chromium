@@ -3308,7 +3308,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 intent.getIntExtra(
                         IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, NewWindowAppSource.UNKNOWN);
         if (newWindowAppSource == NewWindowAppSource.CRASH_RECOVERY
-                && ChromeFeatureList.sSessionRestoreAfterCrash.isEnabled()) {
+                && MultiWindowUtils.isSessionRestoreAfterCrashEnabled()) {
             TabbedCrashRecoveryDelegate.getInstance().registerRecovery(mWindowId);
         }
     }

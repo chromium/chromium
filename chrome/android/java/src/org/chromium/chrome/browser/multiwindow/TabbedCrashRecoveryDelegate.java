@@ -25,7 +25,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -210,7 +209,7 @@ public class TabbedCrashRecoveryDelegate {
      * initialization.
      */
     /* package */ void initializeCrashRecoveryMetadata() {
-        if (!ChromeFeatureList.sSessionRestoreAfterCrash.isEnabled()) {
+        if (!MultiWindowUtils.isSessionRestoreAfterCrashEnabled()) {
             return;
         }
 

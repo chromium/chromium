@@ -1759,6 +1759,15 @@ public class MultiWindowUtils implements ActivityStateListener {
         return ChromeFeatureList.sSyncRestoreOnStartupPref.isEnabled() && DeviceInfo.isDesktop();
     }
 
+    /**
+     * Returns whether session restore after crash is enabled.
+     *
+     * @return {@code true} if the feature is enabled; {@code false} otherwise.
+     */
+    public static boolean isSessionRestoreAfterCrashEnabled() {
+        return ChromeFeatureList.sSessionRestoreAfterCrash.isEnabled() || DeviceInfo.isDesktop();
+    }
+
     /* package */ static int getRunningTabbedActivityCount() {
         int numActivities = 0;
         List<Activity> activities = ApplicationStatus.getRunningActivities();

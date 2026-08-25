@@ -9,7 +9,6 @@ import android.graphics.Rect;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
 
 /** A {@link ChromeAndroidTaskFeature} that tracks and persists window state. */
@@ -27,7 +26,7 @@ public class TabbedWindowStateTracker implements ChromeAndroidTaskFeature {
      */
     public static @Nullable TabbedWindowStateTracker create(int windowId) {
         if (!MultiWindowUtils.isMultiInstanceApi31Enabled()
-                || !ChromeFeatureList.sSessionRestoreAfterCrash.isEnabled()) {
+                || !MultiWindowUtils.isSessionRestoreAfterCrashEnabled()) {
             return null;
         }
         return new TabbedWindowStateTracker(windowId);

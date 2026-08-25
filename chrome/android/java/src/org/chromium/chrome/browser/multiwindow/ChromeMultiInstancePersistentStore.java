@@ -11,7 +11,6 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceDataProto.InstanceData;
 import org.chromium.chrome.browser.preferences.MultiInstancePreferenceKeys;
@@ -403,7 +402,7 @@ class ChromeMultiInstancePersistentStore extends MultiInstancePersistentStore {
 
     static void writeIsRecoverable(int instanceId, boolean isRecoverable) {
         if (sData != null
-                && ChromeFeatureList.sSessionRestoreAfterCrash.isEnabled()
+                && MultiWindowUtils.isSessionRestoreAfterCrashEnabled()
                 && hasInstance(instanceId)) {
             putInstance(
                     instanceId, getInstanceFromProto(instanceId).setIsRecoverable(isRecoverable));

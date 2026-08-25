@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabsTask;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
@@ -130,7 +129,7 @@ import java.util.Set;
 
     @Override
     public void onForegroundBrowserProcessInitialized() {
-        if (!ChromeFeatureList.sSessionRestoreAfterCrash.isEnabled()) return;
+        if (!MultiWindowUtils.isSessionRestoreAfterCrashEnabled()) return;
 
         // If a ChromeTabbedActivity has already initialized, immediate crash recovery was already
         // evaluated / handled. Do not set a pending crash recovery state.
