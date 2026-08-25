@@ -50,6 +50,7 @@
 #include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
+#include "services/network/public/cpp/timing_allow_origin_parser.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
@@ -2373,6 +2374,120 @@ TEST_F(ServiceWorkerMainResourceLoaderTest,
   EXPECT_FALSE(loader);
   EXPECT_FALSE(race_client_remote.is_connected());
 }
+
+struct TimingAllowTestCase {
+  std::optional<std::string> request_initiator;
+  network::mojom::FetchResponseType response_type;
+  std::optional<std::string> timing_allow_origin;
+  bool expected_timing_allow_passed;
+};
+
+class ServiceWorkerMainResourceLoaderTimingAllowTest
+    : public ServiceWorkerMainResourceLoaderTest,
+      public testing::WithParamInterface<TimingAllowTestCase> {};
+
+TEST_P(ServiceWorkerMainResourceLoaderTimingAllowTest, CheckTimingAllowPassed) {
+  const auto& test_case = GetParam();
+  service_worker_->DeferResponse();
+  auto request = CreateRequest();
+  if (test_case.request_initiator) {
+    request->request_initiator =
+        url::Origin::Create(GURL(*test_case.request_initiator));
+  } else {
+    request->request_initiator = std::nullopt;
+  }
+  StartRequest(std::move(request));
+  service_worker_->RunUntilFetchEvent();
+
+  auto response = blink::mojom::FetchAPIResponse::New();
+  response->status_code = 200;
+  response->status_text = "OK";
+  response->response_type = test_case.response_type;
+  if (test_case.timing_allow_origin) {
+    response->parsed_headers = network::mojom::ParsedHeaders::New();
+    response->parsed_headers->timing_allow_origin =
+        network::ParseTimingAllowOrigin(*test_case.timing_allow_origin);
+  }
+
+  service_worker_->FinishRespondWithCustomResponse(std::move(response));
+  client_.RunUntilComplete();
+  EXPECT_EQ(test_case.expected_timing_allow_passed,
+            client_.response_head()->timing_allow_passed);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ServiceWorkerMainResourceLoaderTest,
+    ServiceWorkerMainResourceLoaderTimingAllowTest,
+    testing::Values(
+        // 1. Same-origin request initiator (https://example.com):
+        // Same-origin (kBasic) and synthetic (kDefault) responses pass.
+        TimingAllowTestCase{"https://example.com",
+                            network::mojom::FetchResponseType::kBasic,
+                            std::nullopt, true},
+        TimingAllowTestCase{"https://example.com",
+                            network::mojom::FetchResponseType::kDefault,
+                            std::nullopt, true},
+        // Filtered responses without Timing-Allow-Origin header fail.
+        TimingAllowTestCase{"https://example.com",
+                            network::mojom::FetchResponseType::kCors,
+                            std::nullopt, false},
+        TimingAllowTestCase{"https://example.com",
+                            network::mojom::FetchResponseType::kError,
+                            std::nullopt, false},
+        TimingAllowTestCase{"https://example.com",
+                            network::mojom::FetchResponseType::kOpaque,
+                            std::nullopt, false},
+        TimingAllowTestCase{"https://example.com",
+                            network::mojom::FetchResponseType::kOpaqueRedirect,
+                            std::nullopt, false},
+        // Filtered responses with valid Timing-Allow-Origin pass.
+        TimingAllowTestCase{"https://example.com",
+                            network::mojom::FetchResponseType::kCors, "*",
+                            true},
+        TimingAllowTestCase{"https://example.com",
+                            network::mojom::FetchResponseType::kOpaque, "*",
+                            true},
+        TimingAllowTestCase{"https://example.com",
+                            network::mojom::FetchResponseType::kCors,
+                            "https://example.com", true},
+        // Filtered responses with mismatching Timing-Allow-Origin fail.
+        TimingAllowTestCase{"https://example.com",
+                            network::mojom::FetchResponseType::kCors,
+                            "https://other.example.com", false},
+        TimingAllowTestCase{"https://example.com",
+                            network::mojom::FetchResponseType::kOpaque,
+                            "https://other.example.com", false},
+
+        // 2. Cross-origin request initiator (https://other.example.com):
+        // Same-origin responses without TAO fail because initiator is
+        // cross-origin.
+        TimingAllowTestCase{"https://other.example.com",
+                            network::mojom::FetchResponseType::kBasic,
+                            std::nullopt, false},
+        TimingAllowTestCase{"https://other.example.com",
+                            network::mojom::FetchResponseType::kDefault,
+                            std::nullopt, false},
+        // With matching TAO, they pass.
+        TimingAllowTestCase{"https://other.example.com",
+                            network::mojom::FetchResponseType::kBasic,
+                            "https://other.example.com", true},
+        TimingAllowTestCase{"https://other.example.com",
+                            network::mojom::FetchResponseType::kDefault,
+                            "https://other.example.com", true},
+        TimingAllowTestCase{"https://other.example.com",
+                            network::mojom::FetchResponseType::kCors,
+                            "https://other.example.com", true},
+        TimingAllowTestCase{"https://other.example.com",
+                            network::mojom::FetchResponseType::kCors,
+                            std::nullopt, false},
+
+        // 3. No request initiator:
+        TimingAllowTestCase{std::nullopt,
+                            network::mojom::FetchResponseType::kBasic,
+                            std::nullopt, false},
+        TimingAllowTestCase{std::nullopt,
+                            network::mojom::FetchResponseType::kCors, "*",
+                            false}));
 
 }  // namespace service_worker_main_resource_loader_unittest
 }  // namespace content

@@ -1335,9 +1335,18 @@ void ServiceWorkerMainResourceLoader::StartResponse(
         fetch_event_timing_->respond_with_settled_time;
   }
 
-  if (resource_request_.request_initiator && response_head_->parsed_headers &&
-      (resource_request_.request_initiator->IsSameOriginWith(
-           resource_request_.url) ||
+  // Synthetic and same-origin responses are same-origin to the requesting
+  // client if the request initiator is same-origin with the request URL, so
+  // the timing allow check trivially passes. Filtered responses wrap a
+  // cross-origin response for which the timing allow check must not be
+  // assumed to have passed unless the Timing-Allow-Origin check passes.
+  if (resource_request_.request_initiator &&
+      ((resource_request_.request_initiator->IsSameOriginWith(
+            resource_request_.url) &&
+        (response_head_->response_type ==
+             network::mojom::FetchResponseType::kBasic ||
+         response_head_->response_type ==
+             network::mojom::FetchResponseType::kDefault)) ||
        (response_head_->parsed_headers &&
         network::TimingAllowOriginCheck(
             response_head_->parsed_headers->timing_allow_origin,

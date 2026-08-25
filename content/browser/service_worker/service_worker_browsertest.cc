@@ -279,14 +279,22 @@ VerifySaveDataNotInAccessControlRequestHeader(
 
 std::unique_ptr<net::test_server::HttpResponse> HandleServerTimingRequest(
     const net::test_server::HttpRequest& request) {
-  if (request.relative_url != "/server_timing_test") {
+  if (request.relative_url != "/server_timing_test" &&
+      request.relative_url != "/server_timing_test_tao") {
     return nullptr;
   }
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   response->set_code(net::HTTP_OK);
-  response->set_content_type("text/plain");
+  response->set_content_type("text/html");
+  response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+  response->AddCustomHeader("Access-Control-Expose-Headers",
+                            "Server-Timing, Timing-Allow-Origin");
   response->AddCustomHeader("Server-Timing", "db;dur=53");
-  response->set_content("sample content for timing test");
+  if (request.relative_url == "/server_timing_test_tao") {
+    response->AddCustomHeader("Timing-Allow-Origin", "*");
+  }
+  response->set_content(
+      "<html><body>sample content for timing test</body></html>");
   return response;
 }
 
@@ -1461,6 +1469,71 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, SubresourceTimingAllowPassed) {
       cross_origin_server.GetURL("/server_timing_test").spec().c_str());
 
   EXPECT_EQ(true, EvalJs(shell(), script));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
+                       MainResourceTimingAllowPassed) {
+  StartServerAndNavigateToSetup();
+
+  net::EmbeddedTestServer cross_origin_server;
+  cross_origin_server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+  cross_origin_server.RegisterRequestHandler(
+      base::BindRepeating(&HandleServerTimingRequest));
+  ASSERT_TRUE(cross_origin_server.Start());
+
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            embedded_test_server()->GetURL(
+                                "/service_worker/create_service_worker.html")));
+  EXPECT_EQ("DONE",
+            EvalJs(shell(), "register('fetch_event_respond_with_fetch.js');"));
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/service_worker/empty.html")));
+
+  // 1. Same-origin iframe request forwarded by the Service Worker to a
+  // cross-origin response without TAO: timing allow check must fail,
+  // serverTiming must be empty.
+  const std::string iframe_target_no_tao =
+      embedded_test_server()
+          ->GetURL("/service_worker/empty.html?url=" +
+                   cross_origin_server.GetURL("/server_timing_test").spec())
+          .spec();
+  const std::string script_no_tao = base::StringPrintf(
+      "new Promise(resolve => {\n"
+      "  const iframe = document.createElement('iframe');\n"
+      "  iframe.src = '%s';\n"
+      "  iframe.onload = () => {\n"
+      "    const entries = performance.getEntriesByName('%s');\n"
+      "    resolve(entries.length > 0 && entries[0].serverTiming.length === "
+      "0);\n"
+      "  };\n"
+      "  document.body.appendChild(iframe);\n"
+      "});",
+      iframe_target_no_tao.c_str(), iframe_target_no_tao.c_str());
+  EXPECT_EQ(true, EvalJs(shell(), script_no_tao));
+
+  // 2. Same-origin iframe request forwarded by the Service Worker to a
+  // cross-origin response with TAO: timing allow check passes, serverTiming
+  // is exposed.
+  const std::string iframe_target_tao =
+      embedded_test_server()
+          ->GetURL("/service_worker/empty.html?url=" +
+                   cross_origin_server.GetURL("/server_timing_test_tao").spec())
+          .spec();
+  const std::string script_tao = base::StringPrintf(
+      "new Promise(resolve => {\n"
+      "  const iframe = document.createElement('iframe');\n"
+      "  iframe.src = '%s';\n"
+      "  iframe.onload = () => {\n"
+      "    const entries = performance.getEntriesByName('%s');\n"
+      "    resolve(entries.length > 0 && entries[0].serverTiming.length === 1 "
+      "&& "
+      "            entries[0].serverTiming[0].name === 'db');\n"
+      "  };\n"
+      "  document.body.appendChild(iframe);\n"
+      "});",
+      iframe_target_tao.c_str(), iframe_target_tao.c_str());
+  EXPECT_EQ(true, EvalJs(shell(), script_tao));
 }
 
 // A document that commits with a non-opaque origin because its response carries
