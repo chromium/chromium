@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_STATE_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "gin/public/context_holder.h"
 #include "gin/public/gin_embedders.h"
 #include "gin/public/wrappable_pointer_tags.h"
@@ -20,6 +22,10 @@
 #include "v8/include/v8.h"
 
 namespace blink {
+
+namespace scheduler {
+class EventLoop;
+}  // namespace scheduler
 
 class DOMWrapperWorld;
 class ExecutionContext;
@@ -209,6 +215,12 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   }
   void DetachGlobalObject();
 
+  // Enqueues a microtask on the event loop associated with this ScriptState.
+  // When the microtask runs, if this ScriptState's context is valid, it enters
+  // a ScriptState::Scope before running the callback, passing this ScriptState
+  // to it.
+  void EnqueueMicrotask(base::OnceCallback<void(ScriptState*)>);
+
   V8PerContextData* PerContextData() const { return per_context_data_.Get(); }
   void DisposePerContextData();
 
@@ -230,7 +242,10 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   }
 
  protected:
-  ScriptState(v8::Local<v8::Context>, DOMWrapperWorld*, ExecutionContext*);
+  ScriptState(v8::Local<v8::Context>,
+              DOMWrapperWorld*,
+              ExecutionContext*,
+              scoped_refptr<scheduler::EventLoop>);
 
  private:
   static void OnV8ContextCollectedCallback(

@@ -133,12 +133,10 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
   void ChunkSteps(ScriptState* script_state,
                   v8::Local<v8::Value> chunk,
                   ExceptionState&) const override {
-    scoped_refptr<scheduler::EventLoop> event_loop =
-        ExecutionContext::From(script_state)->GetAgent()->event_loop();
     v8::Global<v8::Value> value(script_state->GetIsolate(), chunk);
-    event_loop->EnqueueMicrotask(
-        BindOnce(&ByteTeeReadRequest::ChunkStepsBody, WrapPersistent(this),
-                 WrapPersistent(script_state), std::move(value)));
+    script_state->EnqueueMicrotask(BindOnce(&ByteTeeReadRequest::ChunkStepsBody,
+                                            WrapPersistent(this),
+                                            std::move(value)));
   }
 
   void CloseSteps(ScriptState* script_state) const override {
@@ -204,12 +202,8 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
   }
 
  private:
-  void ChunkStepsBody(ScriptState* script_state,
-                      v8::Global<v8::Value> value) const {
-    if (!script_state->ContextIsValid()) {
-      return;
-    }
-    ScriptState::Scope scope(script_state);
+  void ChunkStepsBody(v8::Global<v8::Value> value,
+                      ScriptState* script_state) const {
     v8::Isolate* isolate = script_state->GetIsolate();
     // 1. Set readAgainForBranch1 to false.
     engine_->read_again_for_branch_[0] = false;
@@ -300,11 +294,9 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
   void ChunkSteps(ScriptState* script_state,
                   DOMArrayBufferView* chunk,
                   ExceptionState&) const override {
-    scoped_refptr<scheduler::EventLoop> event_loop =
-        ExecutionContext::From(script_state)->GetAgent()->event_loop();
-    event_loop->EnqueueMicrotask(
+    script_state->EnqueueMicrotask(
         BindOnce(&ByteTeeReadIntoRequest::ChunkStepsBody, WrapPersistent(this),
-                 WrapPersistent(script_state), WrapPersistent(chunk)));
+                 WrapPersistent(chunk)));
   }
 
   void CloseSteps(ScriptState* script_state,
@@ -389,14 +381,8 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
   }
 
  private:
-  void ChunkStepsBody(ScriptState* script_state,
-                      DOMArrayBufferView* chunk) const {
-    if (!script_state->ContextIsValid()) {
-      return;
-    }
-    // This is called in a microtask, the ScriptState needs to be put back
-    // in scope.
-    ScriptState::Scope scope(script_state);
+  void ChunkStepsBody(DOMArrayBufferView* chunk,
+                      ScriptState* script_state) const {
     // 1. Set readAgainForBranch1 to false.
     engine_->read_again_for_branch_[0] = false;
     // 2. Set readAgainForBranch2 to false.

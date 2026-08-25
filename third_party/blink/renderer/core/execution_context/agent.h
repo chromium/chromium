@@ -118,7 +118,7 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent>,
 
   raw_ptr<v8::Isolate, UnprotectedInRelease | DanglingUntriaged> isolate_;
   scoped_refptr<RejectedPromises> rejected_promises_;
-  scoped_refptr<scheduler::EventLoop> event_loop_;
+  const scoped_refptr<scheduler::EventLoop> event_loop_;
   const base::UnguessableToken cluster_id_;
   const AgentClusterKey agent_cluster_key_;
   const AgentType agent_type_;

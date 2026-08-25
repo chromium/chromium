@@ -5,8 +5,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_state_impl.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_initializer.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 
 namespace blink {
 
@@ -35,7 +37,12 @@ ScriptState* ScriptStateImpl::Create(v8::Local<v8::Context> context,
 ScriptStateImpl::ScriptStateImpl(v8::Local<v8::Context> context,
                                  DOMWrapperWorld* world,
                                  ExecutionContext* execution_context)
-    : ScriptState(context, world, execution_context),
+    : ScriptState(context,
+                  world,
+                  execution_context,
+                  execution_context
+                      ? execution_context->GetAgent()->event_loop()
+                      : nullptr),
       execution_context_(execution_context) {}
 
 void ScriptStateImpl::Trace(Visitor* visitor) const {
