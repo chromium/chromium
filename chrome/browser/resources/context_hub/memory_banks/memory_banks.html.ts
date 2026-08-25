@@ -37,7 +37,7 @@ export function getHtml(this: MemoryBanksElement) {
                 </cr-checkbox>
                 <div class="action-buttons">
                   <cr-button ?disabled="${this.selectedIds.size === 0}"
-                      @click="${this.onCopyClick_}">
+                       @click="${this.onCopyClick_}">
                     Copy selected
                   </cr-button>
                   <cr-button ?disabled="${this.selectedIds.size === 0}"
@@ -117,7 +117,7 @@ export function getHtml(this: MemoryBanksElement) {
               ${
               this.searchQuery ?
                   html`
-                <h2>Search results</h2>
+                <h2>Search results (${this.getFilteredEntries_().length})</h2>
                 ${
                       this.getFilteredEntries_().length === 0 ?
                           html`
@@ -133,19 +133,38 @@ export function getHtml(this: MemoryBanksElement) {
                 `}
               ` :
                   html`
-                <h2>Recently saved</h2>
-                <div class="grid">
-                  ${
-                      this.recentlySaved_.map(
-                          entry => getMemoryBankEntryHtml.call(this, entry))}
-                </div>
+                ${
+  !this.selectedCollection && this.getRecentlySaved_().length > 0 ?
+      html`
+                  <h2>Recently saved</h2>
+                  <div class="grid">
+                    ${
+          this.getRecentlySaved_().map(
+              entry => getMemoryBankEntryHtml.call(this, entry))}
+                  </div>
+                ` :
+      ''}
 
-                <h2>All saved</h2>
-                <div class="grid">
-                  ${
-                      this.entries.map(
-                          entry => getMemoryBankEntryHtml.call(this, entry))}
-                </div>
+                <cr-tabs
+                    .tabNames="${this.getTabNames_()}"
+                    .tabIcons="${this.getTabIcons_()}"
+                    .selected="${this.getSelectedTabIndex_()}"
+                    @selected-changed="${this.onTabsSelectedChanged_}">
+                </cr-tabs>
+
+                ${
+      this.getFilteredEntries_()
+          .length ===
+      0 ? html`
+                  <p>No memories in this view.</p>
+                ` :
+          html`
+                  <div class="grid">
+                    ${
+              this.getFilteredEntries_()
+                  .map(entry => getMemoryBankEntryHtml.call(this, entry))}
+                  </div>
+                `}
               `}
             `}
         </section>

@@ -8,6 +8,7 @@ import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_search_field/cr_search_field.js';
+import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -32,6 +33,9 @@ function downloadFile(filename: string, content: string) {
   URL.revokeObjectURL(url);
 }
 
+const FOLDER_TAB_ICON: string =
+    'chrome://resources/images/icon_folder_open.svg';
+
 export class MemoryBanksElement extends CrLitElement {
   static get is() {
     return 'memory-banks';
@@ -50,6 +54,7 @@ export class MemoryBanksElement extends CrLitElement {
       entries: {type: Array},
       selectedIds: {type: Object},
       searchQuery: {type: String},
+      selectedCollection: {type: String},
       geminiResponse_: {type: String},
       isAskingGemini_: {type: Boolean},
       showGeminiPanel_: {type: Boolean},
@@ -59,6 +64,7 @@ export class MemoryBanksElement extends CrLitElement {
   accessor entries: MemoryBankEntry[] = [];
   accessor selectedIds: Set<bigint> = new Set();
   accessor searchQuery: string = '';
+  accessor selectedCollection: string = '';
   protected accessor geminiResponse_: string = '';
   protected accessor isAskingGemini_: boolean = false;
   protected accessor showGeminiPanel_: boolean = false;
@@ -75,21 +81,69 @@ export class MemoryBanksElement extends CrLitElement {
     this.entries = entries;
   }
 
-  protected get recentlySaved_(): MemoryBankEntry[] {
+  protected getAvailableCollections_(): string[] {
+    const set = new Set<string>();
+    for (const entry of this.entries) {
+      if (entry.collection) {
+        set.add(entry.collection);
+      }
+    }
+    return Array.from(set).sort();
+  }
+
+  protected getRecentlySaved_(): MemoryBankEntry[] {
     return this.entries.slice(0, 3);
   }
 
   protected getFilteredEntries_(): MemoryBankEntry[] {
-    if (!this.searchQuery) {
-      return this.entries;
+    if (this.searchQuery) {
+      const query = this.searchQuery.toLowerCase();
+      return this.entries.filter(entry => {
+        return entry.tabTitle.toLowerCase().includes(query) ||
+            entry.url.toLowerCase().includes(query) ||
+            (entry.selectedText &&
+             entry.selectedText.toLowerCase().includes(query)) ||
+            (entry.note && entry.note.toLowerCase().includes(query)) ||
+            (entry.collection &&
+             entry.collection.toLowerCase().includes(query)) ||
+            (entry.tags &&
+             entry.tags.some(tag => tag.toLowerCase().includes(query)));
+      });
     }
-    const query = this.searchQuery.toLowerCase();
-    return this.entries.filter(entry => {
-      return entry.tabTitle.toLowerCase().includes(query) ||
-          entry.url.toLowerCase().includes(query) ||
-          (entry.selectedText &&
-           entry.selectedText.toLowerCase().includes(query));
-    });
+
+    if (this.selectedCollection) {
+      return this.entries.filter(e => e.collection === this.selectedCollection);
+    }
+
+    return this.entries;
+  }
+
+  protected getTabNames_(): string[] {
+    return ['All', ...this.getAvailableCollections_()];
+  }
+
+  protected getTabIcons_(): string[] {
+    return this.getTabNames_().map(() => FOLDER_TAB_ICON);
+  }
+
+  protected getSelectedTabIndex_(): number {
+    if (!this.selectedCollection) {
+      return 0;
+    }
+    const index =
+        this.getAvailableCollections_().indexOf(this.selectedCollection);
+    return index === -1 ? 0 : index + 1;
+  }
+
+  protected onTabsSelectedChanged_(e: CustomEvent<{value: number}>) {
+    const index = e.detail.value;
+    if (index === 0) {
+      this.selectedCollection = '';
+    } else {
+      this.selectedCollection =
+          this.getAvailableCollections_()[index - 1] || '';
+    }
+    this.selectedIds = new Set();
   }
 
   convertMojoTimeToDate(mojoTime: {internalValue: bigint}): Date {
@@ -227,6 +281,15 @@ export class MemoryBanksElement extends CrLitElement {
             `Title: ${entry.tabTitle}`,
             `URL: ${entry.url}`,
           ];
+          if (entry.collection) {
+            lines.push(`Collection: ${entry.collection}`);
+          }
+          if (entry.tags && entry.tags.length > 0) {
+            lines.push(`Tags: ${entry.tags.join(', ')}`);
+          }
+          if (entry.note) {
+            lines.push(`Note: "${entry.note}"`);
+          }
           if (entry.selectedText) {
             lines.push(`Content: "${entry.selectedText}"`);
           }

@@ -36,7 +36,8 @@ export function getHtml(this: MemoryBanksElement, entry: MemoryBankEntry) {
             style="background-image: ${getFaviconForPageURL(entry.url, true)}">
         </div>
         <div class="meta-text">
-          <span class="card-title">${entry.tabTitle}</span>
+          <span class="card-title" title="${entry.tabTitle}">${
+      entry.tabTitle}</span>
           <span class="card-date">
             ${
       this.convertMojoTimeToDate(entry.timestamp)
