@@ -535,6 +535,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
   RunTypedTest<kMacTextMarker>("ax-text-marker-range-for-ui-element.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AXLineTextMarkerRangeForTextMarker) {
+  RunTypedTest<kMacTextMarker>(
+      "ax-line-text-marker-range-for-text-marker.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityColumns) {
   RunTypedTest<kMacMethods>("accessibility-columns.html");
 }

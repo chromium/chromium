@@ -1,0 +1,34 @@
+<!--
+@SCRIPT:
+  // The 2nd node is the text area, the 15th character is in the second line.
+  range1:= textarea.AXLineTextMarkerRangeForTextMarker({:2, 15, down})
+  textarea.accessibilityAttributeValue(AXStringForTextMarkerRange, range1)
+
+  // The 3rd node is the contenteditable. The 3rd character is in the first div.
+  range2:= contenteditable.AXLineTextMarkerRangeForTextMarker({:3, 3, down})
+  contenteditable.accessibilityAttributeValue(AXStringForTextMarkerRange, range2)
+
+  // The 7th node is the span with "2 ", and the 1st character is in that
+  // same span. The line range should include both spans in the lines.
+  range3:= contenteditable.AXLineTextMarkerRangeForTextMarker({:7, 1, down})
+  contenteditable.accessibilityAttributeValue(AXStringForTextMarkerRange, range3)
+
+  // The 8th node is the span with "line with span", and the 3rd character is in
+  // that same span. The line range should include the previous span ("2 ").
+  range4:= contenteditable.AXLineTextMarkerRangeForTextMarker({:8, 3, down})
+  contenteditable.accessibilityAttributeValue(AXStringForTextMarkerRange, range4)
+-->
+<!DOCTYPE html>
+<html>
+<body>
+<textarea id="textarea" rows="3">
+first line
+second line
+third line
+</textarea>
+<div id="contenteditable" contenteditable="true">
+<div>1 line</div>
+<div><span>2 </span><span>line with spans</span></div>
+</div>
+</body>
+</html>

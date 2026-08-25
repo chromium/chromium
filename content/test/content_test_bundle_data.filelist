@@ -7229,6 +7229,8 @@ data/accessibility/mac/text-operation/ax-text-operation-select-expected.txt
 data/accessibility/mac/text-operation/ax-text-operation-select.html
 data/accessibility/mac/text-operation/ax-text-operation-uppercase-expected.txt
 data/accessibility/mac/text-operation/ax-text-operation-uppercase.html
+data/accessibility/mac/textmarker/ax-line-text-marker-range-for-text-marker-expected.txt
+data/accessibility/mac/textmarker/ax-line-text-marker-range-for-text-marker.html
 data/accessibility/mac/textmarker/ax-next-word-end-text-marker-for-text-marker-expected.txt
 data/accessibility/mac/textmarker/ax-next-word-end-text-marker-for-text-marker.html
 data/accessibility/mac/textmarker/ax-previous-word-start-text-marker-for-text-marker-expected.txt

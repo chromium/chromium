@@ -1,0 +1,15 @@
+// The 2nd node is the text area, the 15th character is in the second line.
+range1={anchor: {:2, 11, down}, focus: {:2, 23, down}}
+textarea.accessibilityAttributeValue(AXStringForTextMarkerRange, range1)='second line
+'
+// The 3rd node is the contenteditable. The 3rd character is in the first div.
+range2={anchor: {:3, 0, down}, focus: {:3, 6, down}}
+contenteditable.accessibilityAttributeValue(AXStringForTextMarkerRange, range2)='1 line'
+// The 7th node is the span with "2 ", and the 1st character is in that
+// same span. The line range should include both spans in the lines.
+range3={anchor: {:7, 0, down}, focus: {:unknown, 15, down}}
+contenteditable.accessibilityAttributeValue(AXStringForTextMarkerRange, range3)='2 line with spans'
+// The 8th node is the span with "line with span", and the 3rd character is in
+// that same span. The line range should include the previous span ("2 ").
+range4={anchor: {:unknown, 0, down}, focus: {:unknown, 15, down}}
+contenteditable.accessibilityAttributeValue(AXStringForTextMarkerRange, range4)='2 line with spans'

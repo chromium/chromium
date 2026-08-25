@@ -2524,7 +2524,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
     //
     // Note that hard line breaks are on a line of their own.
     AXPosition startPosition = position->CreatePreviousLineStartPosition(
-        ui::AXMovementOptions(ui::AXBoundaryBehavior::kStopAtAnchorBoundary,
+        ui::AXMovementOptions(ui::AXBoundaryBehavior::kStopAtLastAnchorBoundary,
                               ui::AXBoundaryDetection::kCheckInitialPosition));
     AXPosition endPosition =
         startPosition->CreateNextLineStartPosition(ui::AXMovementOptions(
