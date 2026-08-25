@@ -137,7 +137,7 @@ class ContextualTasksContextService
   // Called when the user starts typing a query.
   //
   // This will pre-flight any pending embeddings required.
-  void OnTypedQuery(
+  virtual void OnTypedQuery(
       base::WeakPtr<BrowserWindowInterface> browser_window_interface);
 
   void SetClockForTesting(const base::TickClock* tick_clock);

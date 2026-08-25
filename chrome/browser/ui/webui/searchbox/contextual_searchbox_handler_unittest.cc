@@ -304,6 +304,10 @@ class MockContextualTasksContextService
                base::OnceCallback<
                    void(std::vector<base::WeakPtr<content::WebContents>>)>),
               (override));
+  MOCK_METHOD(void,
+              OnTypedQuery,
+              (base::WeakPtr<BrowserWindowInterface>),
+              (override));
 };
 
 }  // namespace
@@ -1570,6 +1574,35 @@ TEST_F(SmartTabSharingTest, IsSmartTabSharingActive_AvailabilityDisabled) {
   profile()->GetPrefs()->SetBoolean(
       contextual_tasks::kContextualTasksShareOpenTabsEveryThread, true);
   EXPECT_FALSE(handler().IsSmartTabSharingActive());
+}
+
+TEST_F(SmartTabSharingTest, QueryAutocomplete_CallsOnTypedQueryWhenActive) {
+  handler().set_smart_tab_sharing_active_override(true);
+
+  ASSERT_TRUE(mock_service_);
+  EXPECT_CALL(*mock_service_, OnTypedQuery(testing::_)).Times(1);
+
+  handler().QueryAutocomplete(
+      0, /*tab_id=*/std::nullopt, u"test",
+      /*prevent_inline_autocomplete=*/false, 0,
+      omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
+      /*is_on_focus=*/false, /*keyword=*/"",
+      searchbox::mojom::InputMethod::kKeyboard);
+}
+
+TEST_F(SmartTabSharingTest,
+       QueryAutocomplete_DoesNotCallOnTypedQueryWhenInactive) {
+  handler().set_smart_tab_sharing_active_override(false);
+
+  ASSERT_TRUE(mock_service_);
+  EXPECT_CALL(*mock_service_, OnTypedQuery(testing::_)).Times(0);
+
+  handler().QueryAutocomplete(
+      0, /*tab_id=*/std::nullopt, u"test",
+      /*prevent_inline_autocomplete=*/false, 0,
+      omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
+      /*is_on_focus=*/false, /*keyword=*/"",
+      searchbox::mojom::InputMethod::kKeyboard);
 }
 
 TEST_F(SmartTabSharingTest, SubmitQuery_SmartTabSharingOverrideDisabled) {

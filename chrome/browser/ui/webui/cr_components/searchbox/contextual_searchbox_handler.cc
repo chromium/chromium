@@ -1973,7 +1973,7 @@ void ContextualSearchboxHandler::QueryAutocomplete(
     bool is_on_focus,
     const std::string& keyword,
     searchbox::mojom::InputMethod input_method) {
-  if (contextual_tasks_context_service_) {
+  if (contextual_tasks_context_service_ && IsSmartTabSharingActive()) {
     BrowserWindowInterface* browser_window =
         webui::GetBrowserWindowInterface(web_contents_);
     contextual_tasks_context_service_->OnTypedQuery(
