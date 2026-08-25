@@ -7,6 +7,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "background_tracing_manager_browsertest\\.cc": [
+    "+ui/ozone/public/ozone_platform.h",
+  ],
   "tracing_controller_impl\\.cc": [
     "+v8"
   ],

@@ -65,6 +65,10 @@
 #include "third_party/zlib/google/compression_utils.h"
 #include "third_party/zlib/zlib.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace content {
 namespace {
 
@@ -930,6 +934,12 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
                        MAYBE_RunStartupTracing) {
+#if BUILDFLAG(IS_OZONE)
+  // TODO(crbug.com/40267734): Flaky on Linux Wayland.
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Flaky on Linux Wayland (crbug.com/40267734)";
+  }
+#endif
   TestBackgroundTracingHelper background_tracing_helper;
 
   std::unique_ptr<TestStartupPreferenceManagerImpl> preferences_moved(
