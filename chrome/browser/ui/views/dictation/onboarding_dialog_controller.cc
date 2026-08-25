@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "build/branding_buildflags.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
@@ -49,13 +50,6 @@ inline constexpr char kOnboardingDialogName[] = "DictationOnboardingDialog";
 // TODO(crbug.com/530962875): Update typography font styles once PM & UX
 // reach alignment.
 std::unique_ptr<views::View> CreateOnboardingCardView() {
-  const gfx::VectorIcon& data_sharing_icon =
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      vector_icons::kAudioSparkIcon;
-#else
-      vector_icons::kLightbulbIcon;
-#endif
-
   return views::Builder<views::BoxLayoutView>()
       .SetOrientation(views::BoxLayout::Orientation::kVertical)
       .SetBetweenChildSpacing(1)
@@ -75,7 +69,7 @@ std::unique_ptr<views::View> CreateOnboardingCardView() {
               .AddChildren(
                   views::Builder<views::ImageView>()
                       .SetImage(ui::ImageModel::FromVectorIcon(
-                          data_sharing_icon, ui::kColorSysPrimary, 20))
+                          kScreensaverAutoIcon, ui::kColorSysPrimary, 20))
                       .SetProperty(views::kMarginsKey,
                                    gfx::Insets::TLBR(2, 0, 0, 0)),
                   views::Builder<views::Label>()
