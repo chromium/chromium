@@ -220,31 +220,8 @@ const LayerWithExternalTexture* Layer::AsWithExternalTexture() const {
 
 Layer::Layer(LayerType type)
     : type_(type),
-      compositor_(nullptr),
-      parent_(nullptr),
       subpixel_position_offset_(
-          std::make_unique<SubpixelPositionOffsetCache>()),
-      visible_(true),
-      fills_bounds_opaquely_(true),
-      background_blur_sigma_(0.0f),
-      layer_saturation_(0.0f),
-      layer_brightness_(0.0f),
-      layer_grayscale_(0.0f),
-      layer_inverted_(false),
-      layer_blur_sigma_(0.0f),
-      layer_sepia_(0.0f),
-      layer_hue_rotation_(0.0f),
-      layer_mask_(nullptr),
-      layer_mask_back_link_(nullptr),
-      zoom_(1),
-      zoom_inset_(0),
-      owner_(nullptr),
-      cc_layer_(nullptr),
-      device_scale_factor_(1.0f),
-      cache_render_surface_requests_(0),
-      backdrop_filter_quality_(1.0f),
-      trilinear_filtering_request_(0) {
-}
+          std::make_unique<SubpixelPositionOffsetCache>()) {}
 
 Layer::~Layer() {
   CHECK(!cc_layer_);
