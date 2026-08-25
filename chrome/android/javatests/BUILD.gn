@@ -1324,11 +1324,11 @@ android_library("chrome_test_java_org.chromium.chrome.browser.share") {
     "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/scroll_capture/ScrollCaptureCallbackRenderTest.java",
     "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfBottomSheetRenderTest.java",
     "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfCoordinatorTest.java",
+    "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfNotificationTest.java",
     "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetTest.java",
     "src/org/chromium/chrome/browser/share/ShareButtonControllerTest.java",
     "src/org/chromium/chrome/browser/share/ShareDelegateImplIntegrationTest.java",
     "src/org/chromium/chrome/browser/share/ShareDelegateImplTest.java",
-    "src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfNotificationTest.java",
   ]
 
   deps = [
