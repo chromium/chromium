@@ -21,4 +21,6 @@ found in the LICENSE file.
 
     <!-- Ntp customization preview dialog theme color. -->
     <color name="ntp_upload_image_preview_dialog_color_list">@color/default_text_color_list</color>
+
+    <color name="search_box_shadow_color">@android:color/black</color>
 </resources>
