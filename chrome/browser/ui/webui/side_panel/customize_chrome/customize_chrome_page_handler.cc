@@ -546,7 +546,8 @@ void CustomizeChromePageHandler::OnBrowserWindowInterfaceChanged() {
     return;
   }
 
-  auto* footer_controller = browser->GetFeatures().new_tab_footer_controller();
+  auto* footer_controller =
+      new_tab_footer::NewTabFooterController::From(browser);
   CHECK(footer_controller);
   footer_controller_observation_.Observe(footer_controller);
 }

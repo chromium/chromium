@@ -861,9 +861,11 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   if (browser_view) {
     if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
       new_tab_footer_controller_ =
-          std::make_unique<new_tab_footer::NewTabFooterController>(
-              browser_view->browser()->GetProfile(),
-              browser_view->GetContentsContainerViews());
+          GetUserDataFactory()
+              .CreateInstance<new_tab_footer::NewTabFooterController>(
+                  *browser, browser_view->browser()->GetProfile(),
+                  browser_view->GetContentsContainerViews(),
+                  browser->GetUnownedUserDataHost());
     }
   }
 

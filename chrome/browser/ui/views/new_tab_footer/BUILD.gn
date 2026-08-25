@@ -29,7 +29,10 @@ source_set("new_tab_footer") {
     "//ui/views",
     "//ui/views/controls/webview",
   ]
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//ui/base/unowned_user_data",
+  ]
 }
 
 source_set("browser_tests") {

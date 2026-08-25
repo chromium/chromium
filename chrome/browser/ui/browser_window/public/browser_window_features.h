@@ -408,10 +408,6 @@ class BrowserWindowFeatures {
     return most_recent_shared_tab_update_store_.get();
   }
 
-  new_tab_footer::NewTabFooterController* new_tab_footer_controller() {
-    return new_tab_footer_controller_.get();
-  }
-
   omnibox::OmniboxPopupCloser* omnibox_popup_closer() {
     return omnibox_popup_closer_.get();
   }

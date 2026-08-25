@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_controller_observer.h"
@@ -24,11 +25,20 @@
 
 namespace new_tab_footer {
 
+DEFINE_USER_DATA(NewTabFooterController);
+
+// static
+NewTabFooterController* NewTabFooterController::From(
+    BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
 NewTabFooterController::NewTabFooterController(
     Profile* profile,
     const std::vector<raw_ptr<ContentsContainerView, DanglingUntriaged>>&
-        contents_container_views)
-    : profile_(profile) {
+        contents_container_views,
+    ui::UnownedUserDataHost& host)
+    : scoped_unowned_user_data_(host, *this), profile_(profile) {
   for (ContentsContainerView* contents_container_view :
        contents_container_views) {
     footer_controllers_.push_back(std::make_unique<ContentsViewFooterCotroller>(

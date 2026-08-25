@@ -45,9 +45,7 @@ class FooterControllerExtensionTestBase
   void SetUpOnMainThread() override {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
     profile()->GetPrefs()->SetBoolean(prefs::kNtpFooterVisible, true);
-    browser()
-        ->GetFeatures()
-        .new_tab_footer_controller()
+    new_tab_footer::NewTabFooterController::From(browser())
         ->SkipErrorPageCheckForTesting(true);
   }
 
