@@ -1383,3 +1383,29 @@ TEST_F(ComposeboxInputStateManagerTest, OnDriveDisclaimerChecked) {
       pref_service_.GetInteger(contextual_search::kDriveConsentState),
       static_cast<int>(contextual_search::DriveConsentState::kRestricted));
 }
+
+// Test that changing or clearing the primary account immediately resets the
+// Drive consent state preference to kNotReady.
+TEST_F(ComposeboxInputStateManagerTest,
+       TestPrimaryAccountChangeResetsDriveConsentPref) {
+  pref_service_.SetInteger(
+      contextual_search::kDriveConsentState,
+      static_cast<int>(contextual_search::DriveConsentState::kConsent));
+  EXPECT_EQ(pref_service_.GetInteger(contextual_search::kDriveConsentState),
+            static_cast<int>(contextual_search::DriveConsentState::kConsent));
+
+  identity_test_env_.MakePrimaryAccountAvailable("user@example.com",
+                                                 signin::ConsentLevel::kSignin);
+  EXPECT_EQ(pref_service_.GetInteger(contextual_search::kDriveConsentState),
+            static_cast<int>(contextual_search::DriveConsentState::kNotReady));
+
+  pref_service_.SetInteger(
+      contextual_search::kDriveConsentState,
+      static_cast<int>(contextual_search::DriveConsentState::kConsent));
+  EXPECT_EQ(pref_service_.GetInteger(contextual_search::kDriveConsentState),
+            static_cast<int>(contextual_search::DriveConsentState::kConsent));
+
+  identity_test_env_.ClearPrimaryAccount();
+  EXPECT_EQ(pref_service_.GetInteger(contextual_search::kDriveConsentState),
+            static_cast<int>(contextual_search::DriveConsentState::kNotReady));
+}

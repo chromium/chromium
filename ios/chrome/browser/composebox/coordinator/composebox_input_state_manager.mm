@@ -23,6 +23,7 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/util.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
@@ -205,6 +206,7 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
 }  // namespace
 
 @interface ComposeboxInputStateManager () <ComposeboxModeObserver,
+                                           IdentityManagerObserving,
                                            SearchEngineObserving>
 @end
 
@@ -225,6 +227,9 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
   raw_ptr<AimEligibilityService> _aimEligibilityService;
   // Identity manager for checking account status.
   raw_ptr<signin::IdentityManager> _identityManager;
+  // Bridge to observe `IdentityManager` events.
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserverBridge;
   // Template URL service for checking default search engine.
   raw_ptr<TemplateURLService> _templateURLService;
   // Whether the current session is incognito.
@@ -305,6 +310,11 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
     _prefService = prefService;
     _aimEligibilityService = aimEligibilityService;
     _identityManager = identityManager;
+    if (_identityManager) {
+      _identityManagerObserverBridge =
+          std::make_unique<signin::IdentityManagerObserverBridge>(
+              _identityManager, self);
+    }
     _templateURLService = templateURLService;
     _urlLoaderFactory = urlLoaderFactory;
     // sessionHandle can be nil only in tests.
@@ -342,6 +352,7 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
   _webStateList = nullptr;
   _prefService = nullptr;
   _aimEligibilityService = nullptr;
+  _identityManagerObserverBridge.reset();
   _identityManager = nullptr;
   _templateURLService = nullptr;
   _sessionHandle.reset();
@@ -705,6 +716,29 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
 - (void)templateURLServiceShuttingDown:(TemplateURLService*)urlService {
   _searchEngineObserver.reset();
   _templateURLService = nullptr;
+}
+
+#pragma mark - IdentityManagerObserving
+
+- (void)primaryAccountDidChange:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+    case signin::PrimaryAccountChangeEvent::Type::kSet: {
+      // Immediately reset cached Drive consent state when switching accounts or
+      // signing out to prevent leaking the previous account's consent state
+      // while asynchronous FACS status queries are in flight.
+      if (_prefService) {
+        _prefService->SetInteger(
+            contextual_search::kDriveConsentState,
+            static_cast<int>(contextual_search::DriveConsentState::kNotReady));
+      }
+      [self updateSearchboxConfig];
+      break;
+    }
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
 }
 
 #pragma mark - ComposeboxModeObserver
