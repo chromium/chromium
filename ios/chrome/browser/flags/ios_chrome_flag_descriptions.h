@@ -1227,6 +1227,13 @@ inline constexpr char
         "screen "
         "potentially retriggering.";
 
+inline constexpr char
+    kLensBlockFetchObjectsInteractionRPCsOnSeparateHandshakeName[] =
+        "Lens blocks fetch objects interaction RPCs on separate handshake";
+inline constexpr char
+    kLensBlockFetchObjectsInteractionRPCsOnSeparateHandshakeDescription[] =
+        "When enabled, RPCs are blocked on separate handshake.";
+
 inline constexpr char kLensBypassCompressionForC2paName[] =
     "Lens Bypass Compression for C2PA";
 inline constexpr char kLensBypassCompressionForC2paDescription[] =
@@ -1264,6 +1271,11 @@ inline constexpr char kLensEnableSendUrlsInComposeboxesName[] =
 inline constexpr char kLensEnableSendUrlsInComposeboxesDescription[] =
     "Enables sending urls in AIM composeboxes.";
 
+inline constexpr char kLensExactMatchesEnabledName[] =
+    "Lens exact matches enabled";
+inline constexpr char kLensExactMatchesEnabledDescription[] =
+    "Enables exact matches in the Lens results.";
+
 inline constexpr char kLensFetchSrpApiEnabledName[] =
     "Lens fetch SRP API enabled";
 inline constexpr char kLensFetchSrpApiEnabledDescription[] =
@@ -1283,6 +1295,11 @@ inline constexpr char kLensFollowupsFullHeightEnabledName[] =
     "Lens followups full height enabled";
 inline constexpr char kLensFollowupsFullHeightEnabledDescription[] =
     "Enables followups full height in the Lens overlay.";
+
+inline constexpr char kLensGestureTextSelectionDisabledName[] =
+    "Disable Lens gesture text selection";
+inline constexpr char kLensGestureTextSelectionDisabledDescription[] =
+    "When disabled, turns off gesture text selection.";
 
 inline constexpr char kLensInitialLvfZoomLevel90PercentName[] =
     "Initial Lens camera zoom 90 percent";
@@ -1316,10 +1333,26 @@ inline constexpr char kLensOverlayNavigationHistoryDescription[] =
     "When enabled, web navigation in the Lens overlay are recorded in browser "
     "history.";
 
+inline constexpr char kLensPrewarmHardStickinessInInputSelectionName[] =
+    "Lens prewarm hard stickiness in input selection";
+inline constexpr char kLensPrewarmHardStickinessInInputSelectionDescription[] =
+    "When enabled, input selection prewarms hard stickiness.";
+
+inline constexpr char kLensPrewarmHardStickinessInQueryFormulationName[] =
+    "Lens prewarm hard stickiness in query formulation";
+inline constexpr char
+    kLensPrewarmHardStickinessInQueryFormulationDescription[] =
+        "When enabled, query formulation prewarms hard stickiness.";
+
 inline constexpr char kLensSearchHeadersCheckEnabledName[] =
     "Lens search headers check";
 inline constexpr char kLensSearchHeadersCheckEnabledDescription[] =
     "When enabled, ensures headers are attached to Lens search requests.";
+
+inline constexpr char kLensSingleTapTextSelectionDisabledName[] =
+    "Disable Lens single tap text selection";
+inline constexpr char kLensSingleTapTextSelectionDisabledDescription[] =
+    "When disabled, single taps do not trigger text selections.";
 
 inline constexpr char kLensStreamServiceWebChannelTransportEnabledName[] =
     "Lens stream service web channel transport";
@@ -1336,6 +1369,11 @@ inline constexpr char kLensTripleCameraEnabledName[] =
     "Enable Lens triple camera";
 inline constexpr char kLensTripleCameraEnabledDescription[] =
     "When enabled, Lens LVF uses virtual triple camera.";
+
+inline constexpr char kLensUnaryApiSalientTextEnabledName[] =
+    "Lens unary API salient text enabled";
+inline constexpr char kLensUnaryApiSalientTextEnabledDescription[] =
+    "Enables the unary salient text API.";
 
 inline constexpr char kLocationBarBadgeMigrationName[] =
     "LocationBarBadgeMigration";
@@ -1865,6 +1903,10 @@ inline constexpr char kStartSurfaceUserSettingName[] =
     "Start Surface User Setting";
 inline constexpr char kStartSurfaceUserSettingDescription[] =
     "Enables the user setting toggle to control the Start Surface.";
+
+inline constexpr char kStrokesAPIEnabledName[] = "Enable Strokes API for Lens";
+inline constexpr char kStrokesAPIEnabledDescription[] =
+    "When enabled, Lens will use the Strokes API.";
 
 inline constexpr char kSupportGoogleOneDeepLinkName[] =
     "Support Google One Deep Link";
