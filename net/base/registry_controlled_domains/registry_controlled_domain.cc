@@ -540,13 +540,6 @@ bool SameDomainOrHost(const url::Origin& origin1,
   return SameDomainOrHost(origin1.host(), origin2.host(), filter);
 }
 
-bool SameDomainOrHost(const url::Origin& origin1,
-                      const std::optional<url::Origin>& origin2,
-                      PrivateRegistryFilter filter) {
-  return origin2.has_value() &&
-         SameDomainOrHost(origin1, origin2.value(), filter);
-}
-
 bool SameDomainOrHost(const GURL& gurl,
                       const url::Origin& origin,
                       PrivateRegistryFilter filter) {

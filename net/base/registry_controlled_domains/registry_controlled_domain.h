@@ -212,10 +212,6 @@ NET_EXPORT bool SameDomainOrHost(const GURL& gurl1,
 NET_EXPORT bool SameDomainOrHost(const url::Origin& origin1,
                                  const url::Origin& origin2,
                                  PrivateRegistryFilter filter);
-// Note: this returns false if |origin2| is not set.
-NET_EXPORT bool SameDomainOrHost(const url::Origin& origin1,
-                                 const std::optional<url::Origin>& origin2,
-                                 PrivateRegistryFilter filter);
 NET_EXPORT bool SameDomainOrHost(const GURL& gurl,
                                  const url::Origin& origin,
                                  PrivateRegistryFilter filter);
