@@ -158,9 +158,6 @@ void WidgetInputHandlerManagerTest::SetUp() {
 }
 
 TEST_F(WidgetInputHandlerManagerTest, DISABLED_VizHostRace) {
-  std::atomic<bool> start_flag{false};
-  std::atomic<int> threads_ready{0};
-  std::atomic<int> threads_finished{0};
   const int kOpsPerThread = 1000;
 
   scoped_refptr<WidgetInputHandlerManager> manager =
@@ -173,32 +170,31 @@ TEST_F(WidgetInputHandlerManagerTest, DISABLED_VizHostRace) {
           /*io_thread_id=*/base::kInvalidThreadId,
           /*main_thread_id=*/base::PlatformThread::CurrentId());
 
-  auto reader_runner = base::ThreadPool::CreateSequencedTaskRunner({});
+  base::WaitableEvent start_event(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  base::WaitableEvent worker_ready(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
 
-  auto reader_worker = [&]() {
-    threads_ready++;
-    while (!start_flag.load(std::memory_order_acquire)) {
-      std::this_thread::yield();
-    }
+  base::RunLoop run_loop;
 
-    for (int i = 0; i < kOpsPerThread; ++i) {
-      manager->GetVizWidgetInputHandlerHost();
-    }
-    threads_finished++;
-  };
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, {base::WithBaseSyncPrimitives()},
+      base::BindOnce(
+          [](scoped_refptr<WidgetInputHandlerManager> manager,
+             base::WaitableEvent* ready, base::WaitableEvent* start, int ops) {
+            ready->Signal();
+            start->Wait();
+            for (int i = 0; i < ops; ++i) {
+              manager->GetVizWidgetInputHandlerHost();
+            }
+          },
+          manager, &worker_ready, &start_event, kOpsPerThread),
+      run_loop.QuitClosure());
 
-  reader_runner->PostTask(FROM_HERE, base::BindLambdaForTesting(reader_worker));
-
-  // Main thread acts as the writer.
-  threads_ready++;
-
-  // Wait until reader thread is ready.
-  while (threads_ready.load(std::memory_order_relaxed) < 2) {
-    std::this_thread::yield();
-  }
-
-  // Signal the starting flag to allow reader thread to start.
-  start_flag.store(true, std::memory_order_release);
+  worker_ready.Wait();
+  start_event.Signal();
 
   std::vector<mojo::PendingReceiver<mojom::blink::WidgetInputHandlerHost>>
       receivers;
@@ -208,12 +204,8 @@ TEST_F(WidgetInputHandlerManagerTest, DISABLED_VizHostRace) {
     receivers.push_back(std::move(receiver));
     manager->SetVizHost(std::move(viz_host_remote));
   }
-  threads_finished++;
 
-  // Wait until reader thread is finished.
-  while (threads_finished.load(std::memory_order_relaxed) < 2) {
-    std::this_thread::yield();
-  }
+  run_loop.Run();
 }
 
 TEST_F(WidgetInputHandlerManagerTest, NoLeakWithoutDisconnect) {
@@ -313,9 +305,6 @@ TEST_F(WidgetInputHandlerManagerTest, ClearClientBreaksCycleEvenIfCopiesExistFor
 }
 
 TEST_F(WidgetInputHandlerManagerTest, MultiThreadedHostAccess) {
-  std::atomic<bool> start_flag{false};
-  std::atomic<int> threads_ready{0};
-  std::atomic<int> threads_finished{0};
   const int kOpsPerThread = 1000;
 
   scoped_refptr<WidgetInputHandlerManager> manager =
@@ -332,37 +321,37 @@ TEST_F(WidgetInputHandlerManagerTest, MultiThreadedHostAccess) {
   auto receiver = host_remote.InitWithNewPipeAndPassReceiver();
   manager->SetHost(std::move(host_remote));
 
-  auto reader_runner = base::ThreadPool::CreateSequencedTaskRunner({});
+  base::WaitableEvent start_event(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  base::WaitableEvent worker_ready(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
 
-  auto reader_worker = [&]() {
-    threads_ready++;
-    while (!start_flag.load(std::memory_order_acquire)) {
-      std::this_thread::yield();
-    }
+  base::RunLoop run_loop;
 
-    for (int i = 0; i < kOpsPerThread; ++i) {
-      manager->GetWidgetInputHandlerHost();
-    }
-    threads_finished++;
-  };
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, {base::WithBaseSyncPrimitives()},
+      base::BindOnce(
+          [](scoped_refptr<WidgetInputHandlerManager> manager,
+             base::WaitableEvent* ready, base::WaitableEvent* start, int ops) {
+            ready->Signal();
+            start->Wait();
+            for (int i = 0; i < ops; ++i) {
+              manager->GetWidgetInputHandlerHost();
+            }
+          },
+          manager, &worker_ready, &start_event, kOpsPerThread),
+      run_loop.QuitClosure());
 
-  reader_runner->PostTask(FROM_HERE, base::BindLambdaForTesting(reader_worker));
-
-  threads_ready++;
-  while (threads_ready.load(std::memory_order_relaxed) < 2) {
-    std::this_thread::yield();
-  }
-
-  start_flag.store(true, std::memory_order_release);
+  worker_ready.Wait();
+  start_event.Signal();
 
   for (int i = 0; i < kOpsPerThread; ++i) {
     manager->GetWidgetInputHandlerHost();
   }
-  threads_finished++;
 
-  while (threads_finished.load(std::memory_order_relaxed) < 2) {
-    std::this_thread::yield();
-  }
+  run_loop.Run();
 }
 
 }  // namespace blink::test
