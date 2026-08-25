@@ -104,6 +104,9 @@ public class ReadAloudNativeBridgeUnitTest {
     public void testOutboundCommands_whenInitialized() {
         mBridge.initialize(mProfile, mController);
 
+        mBridge.initializeSession(mWebContents);
+        verify(mNativeBridgeNatives).initializeSession(eq(NATIVE_PTR), eq(mWebContents));
+
         mBridge.play(mWebContents);
         verify(mNativeBridgeNatives).play(eq(NATIVE_PTR), eq(mWebContents));
 

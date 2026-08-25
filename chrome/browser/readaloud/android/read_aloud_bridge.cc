@@ -181,6 +181,13 @@ static jlong JNI_ReadAloudNativeBridge_Init(
   return reinterpret_cast<jlong>(bridge_ptr);
 }
 
+void ReadAloudBridge::InitializeSession(JNIEnv* env,
+                                        content::WebContents* web_contents) {
+  if (service_) {
+    service_->Initialize(web_contents);
+  }
+}
+
 void ReadAloudBridge::Play(JNIEnv* env, content::WebContents* web_contents) {
   if (service_) {
     service_->Play(web_contents);

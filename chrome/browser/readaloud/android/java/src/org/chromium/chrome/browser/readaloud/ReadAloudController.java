@@ -1328,6 +1328,10 @@ public class ReadAloudController
                                     : getLanguage(metadata.languageCode()));
                     mPlayback = playback;
                     mPlayback.addListener(ReadAloudController.this);
+                    if (ReadAloudFeatures.isNativeEnabled()
+                            && mPlayback instanceof NativePlayback nativePlayback) {
+                        nativePlayback.initializeSession();
+                    }
                 },
                 exception -> {
                   String message = assumeNonNull(assumeNonNull(exception).getMessage());

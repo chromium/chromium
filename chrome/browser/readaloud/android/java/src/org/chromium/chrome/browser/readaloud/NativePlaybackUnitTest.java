@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -64,6 +66,8 @@ public class NativePlaybackUnitTest {
         assertEquals(PlaybackMode.CLASSIC, mPlayback.getMetadata().playbackMode());
         assertEquals(PlaybackListener.State.BUFFERING, mPlayback.getState());
         verify(mBridgeMock).setPlaybackMode(PlaybackMode.CLASSIC.getValue());
+        mPlayback.initializeSession();
+        verify(mBridgeMock).initializeSession(mWebContents);
     }
 
     @Test
@@ -79,6 +83,7 @@ public class NativePlaybackUnitTest {
     public void testAddListenerNotifiesInitialData() {
         mPlayback.addListener(mListener);
         verify(mListener).onPlaybackDataChanged(mDataCaptor.capture());
+        verify(mListener).onMetadataChanged(eq(mPlayback.getMetadata()));
         assertEquals(PlaybackListener.State.BUFFERING, mDataCaptor.getValue().state());
     }
 
@@ -121,6 +126,7 @@ public class NativePlaybackUnitTest {
     @Test
     public void testUpdateMetadata() {
         mPlayback.addListener(mListener);
+        reset(mListener);
         mPlayback.updateMetadata("Title", "Publisher");
         assertEquals("Title", mPlayback.getMetadata().title());
         assertEquals("Publisher", mPlayback.getMetadata().publisher());

@@ -69,6 +69,7 @@ class ReadAloudBridge : public ReadAloudService::Delegate {
   void OnNativeDestroyed() override;
 
   // JNI Zero instance method dispatch targets (Java -> C++ Commands):
+  void InitializeSession(JNIEnv* env, content::WebContents* web_contents);
   void Play(JNIEnv* env, content::WebContents* web_contents);
   void Pause(JNIEnv* env);
   void Stop(JNIEnv* env);

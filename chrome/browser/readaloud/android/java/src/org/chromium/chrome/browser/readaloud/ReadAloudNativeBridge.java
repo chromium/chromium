@@ -91,6 +91,14 @@ class ReadAloudNativeBridge {
     // before supplying the native handle to JNI Zero.
     // ============================================================================
 
+    /** Initializes the native playback session for the given web contents. */
+    public void initializeSession(@Nullable WebContents webContents) {
+        ThreadUtils.assertOnUiThread();
+        if (mNativeReadAloudBridge != 0 && webContents != null && !webContents.isDestroyed()) {
+            ReadAloudNativeBridgeJni.get().initializeSession(mNativeReadAloudBridge, webContents);
+        }
+    }
+
     /** Starts or resumes audio playback. */
     public void play(@Nullable WebContents webContents) {
         ThreadUtils.assertOnUiThread();
@@ -314,6 +322,12 @@ class ReadAloudNativeBridge {
     interface Natives {
         // Initializes the native ReadAloudBridge C++ instance.
         long init(@JniType("Profile*") Profile profile, ReadAloudNativeBridge bridge);
+
+        // Initializes the native playback session for the given web contents without starting audio
+        // playback.
+        void initializeSession(
+                long nativeReadAloudBridge,
+                @JniType("content::WebContents*") WebContents webContents);
 
         // Starts or resumes audio playback.
         void play(

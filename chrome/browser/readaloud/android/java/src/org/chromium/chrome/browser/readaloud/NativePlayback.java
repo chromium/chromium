@@ -149,6 +149,11 @@ class NativePlayback implements Playback {
         }
     }
 
+    void initializeSession() {
+        ThreadUtils.assertOnUiThread();
+        mNativeBridge.initializeSession(mWebContents);
+    }
+
     @Override
     public Playback.Metadata getMetadata() {
         ThreadUtils.assertOnUiThread();
@@ -159,8 +164,9 @@ class NativePlayback implements Playback {
     public void addListener(PlaybackListener listener) {
         ThreadUtils.assertOnUiThread();
         mListeners.addObserver(listener);
-        // Immediately emit current data so newly subscribed UI observers can render initial state.
+        // Emit initial state to the newly added observer.
         listener.onPlaybackDataChanged(mPlaybackData);
+        listener.onMetadataChanged(mMetadata);
     }
 
     @Override
