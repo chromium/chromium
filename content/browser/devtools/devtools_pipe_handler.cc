@@ -463,10 +463,6 @@ void DevToolsPipeHandler::DispatchProtocolMessage(
 
 void DevToolsPipeHandler::AgentHostClosed(DevToolsAgentHost* agent_host) {}
 
-bool DevToolsPipeHandler::MayAccessAllCookies() {
-  return true;
-}
-
 bool DevToolsPipeHandler::UsesBinaryProtocol() {
   return mode_ == ProtocolMode::kCBOR;
 }

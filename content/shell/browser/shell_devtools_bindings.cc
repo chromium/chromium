@@ -436,8 +436,4 @@ void ShellDevToolsBindings::AgentHostClosed(DevToolsAgentHost* agent_host) {
     delegate_->Close();
 }
 
-bool ShellDevToolsBindings::MayAccessAllCookies() {
-  return true;
-}
-
 }  // namespace content

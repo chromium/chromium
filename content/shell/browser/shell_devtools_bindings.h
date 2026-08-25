@@ -57,8 +57,6 @@ class ShellDevToolsBindings : public WebContentsObserver,
 
   WebContents* inspected_contents() { return inspected_contents_; }
 
-  bool MayAccessAllCookies() override;
-
  private:
   // content::DevToolsAgentHostClient implementation.
   void AgentHostClosed(DevToolsAgentHost* agent_host) override;

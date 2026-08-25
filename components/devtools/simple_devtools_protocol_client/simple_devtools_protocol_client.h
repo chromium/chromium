@@ -66,7 +66,6 @@ class SimpleDevToolsProtocolClient : public content::DevToolsAgentHostClient {
   void DispatchProtocolMessage(content::DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> json_message) override;
   void AgentHostClosed(content::DevToolsAgentHost* agent_host) override;
-  bool MayAccessAllCookies() override;
 
   // Virtual for tests.
   virtual void DispatchProtocolMessageTask(base::DictValue message);

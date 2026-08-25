@@ -2327,41 +2327,10 @@ void NetworkHandler::ClearBrowserCookies(
     return;
   }
 
-  NetworkHandler::ClearCookies(
-      storage_partition_, CHECK_DEREF(client_.get()),
-      base::BindRepeating(
-          [](base::WeakPtr<NetworkHandler> handler,
-             const net::CanonicalCookie& cookie) {
-            return handler && handler->CanAccessCookie(cookie);
-          },
-          weak_factory_.GetWeakPtr()),
-      base::BindOnce(&ClearBrowserCookiesCallback::sendSuccess,
-                     std::move(callback)));
-}
-
-// static
-void NetworkHandler::ClearCookies(
-    StoragePartition* storage_partition,
-    DevToolsAgentHostClient& client,
-    base::RepeatingCallback<bool(const net::CanonicalCookie&)> filter,
-    base::OnceClosure callback) {
-  auto* cookie_manager = storage_partition->GetCookieManagerForBrowserProcess();
-
-  if (client.MayAccessAllCookies()) {
-    // Unrestricted clients can clear all cookies atomically.
-    cookie_manager->DeleteCookies(
-        network::mojom::CookieDeletionFilter::New(),
-        base::BindOnce(base::IgnoreArgs<uint32_t>(std::move(callback))));
-  } else {
-    // Restricted clients must filter by URL permissions before deletion.
-    cookie_manager->GetAllCookies(
-        base::BindOnce(&DeleteFilteredCookies, base::Unretained(cookie_manager),
-                       /*name=*/std::nullopt,
-                       /*normalized_domain=*/std::nullopt,
-                       /*path=*/std::nullopt, /*partition_key=*/nullptr,
-                       /*filter_by_partition_key=*/false, std::move(filter),
-                       std::move(callback)));
-  }
+  storage_partition_->GetCookieManagerForBrowserProcess()->DeleteCookies(
+      network::mojom::CookieDeletionFilter::New(),
+      base::IgnoreArgs<uint32_t>(base::BindOnce(
+          &ClearBrowserCookiesCallback::sendSuccess, std::move(callback))));
 }
 
 bool NetworkHandler::CanAccessCookie(const net::CanonicalCookie& cookie) const {

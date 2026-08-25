@@ -216,8 +216,6 @@ class BrowserToPageConnector {
       connector_->AgentHostClosed(agent_host);
     }
 
-    bool MayAccessAllCookies() override { return true; }
-
     bool AllowUnsafeOperations() override {
       return permissions_.allow_unsafe_operations;
     }
@@ -634,10 +632,6 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
   void AgentHostClosed(DevToolsAgentHost* agent_host) override {
     DCHECK(agent_host == agent_host_.get());
     Detach(true);
-  }
-
-  bool MayAccessAllCookies() override {
-    return GetRootClient()->MayAccessAllCookies();
   }
 
   bool MayAttachToRenderFrameHost(RenderFrameHost* rfh) override {

@@ -90,8 +90,6 @@ class StorageHandler : public DevToolsDomainHandler, public Storage::Backend {
                     std::unique_ptr<Storage::Backend::ClearCookiesCallback>
                         callback) override;
 
-  bool CanAccessCookie(const net::CanonicalCookie& cookie) const;
-
   // Ignores all double calls to track an origin.
   Response TrackCacheStorageForOrigin(const std::string& origin) override;
   Response TrackCacheStorageForStorageKey(
