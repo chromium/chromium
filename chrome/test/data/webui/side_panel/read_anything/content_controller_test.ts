@@ -507,7 +507,7 @@ suite('ContentController', () => {
       visualBrowserProxy.linksEnabled = true;
       contentBrowserProxy
           .htmlTagMap = {[contentBrowserProxy.rootId]: 'a', [childId]: ''};
-      contentBrowserProxy.url = url;
+      contentBrowserProxy.urlMap = {[contentBrowserProxy.rootId]: url};
       contentBrowserProxy.textContentMap = {[childId]: url};
       contentBrowserProxy
           .childrenMap = {[contentBrowserProxy.rootId]: [childId]};
@@ -526,7 +526,7 @@ suite('ContentController', () => {
       visualBrowserProxy.linksEnabled = false;
       contentBrowserProxy
           .htmlTagMap = {[contentBrowserProxy.rootId]: 'a', [childId]: ''};
-      contentBrowserProxy.url = url;
+      contentBrowserProxy.urlMap = {[contentBrowserProxy.rootId]: url};
       contentBrowserProxy.textContentMap = {[childId]: url};
       contentBrowserProxy
           .childrenMap = {[contentBrowserProxy.rootId]: [childId]};
@@ -790,7 +790,7 @@ suite('ContentController', () => {
       link = document.createElement('a');
       link.href = linkUrl;
       contentBrowserProxy.htmlTagMap = {[linkId]: 'a'};
-      contentBrowserProxy.url = linkUrl;
+      contentBrowserProxy.urlMap = {[linkId]: linkUrl};
     });
 
     test('does nothing if no content', () => {

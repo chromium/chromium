@@ -26,8 +26,8 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
   axMapping: AxSegment[] = [];
   htmlTagMap: {[key: number]: string} = {1: 'div'};
   leafNodeSet: Set<number> = new Set();
-  url: string = '';
-  htmlId: string = '';
+  urlMap: {[key: number]: string} = {};
+  htmlIdMap: {[key: number]: string} = {};
   textDirection: string = '';
   altText: string = '';
   language: string = '';
@@ -207,12 +207,12 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
 
   getUrl(nodeId: number): string {
     this.methodCalled('getUrl', nodeId);
-    return this.url;
+    return this.urlMap[nodeId] || '';
   }
 
   getHtmlId(nodeId: number): string {
     this.methodCalled('getHtmlId', nodeId);
-    return this.htmlId;
+    return this.htmlIdMap[nodeId] || '';
   }
 
   getTextDirection(nodeId: number): string {
