@@ -135,7 +135,6 @@ static_library("session") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/consent_auditor",
     "//chrome/browser/net",
-    "//chrome/browser/notifications",
     "//chrome/browser/prefs:util",
     "//chrome/browser/signin",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
@@ -162,6 +161,8 @@ static_library("session") {
     "//components/exo",
     "//components/session_manager/core",
     "//components/sync_preferences",
+    "//components/user_manager",
+    "//ui/message_center",
   ]
 
   allow_circular_includes_from = [

@@ -32,7 +32,6 @@ include_rules = [
   "+chrome/browser/consent_auditor",
   "+chrome/browser/global_features.h",
   "+chrome/browser/net",
-  "+chrome/browser/notifications",
   "+chrome/browser/policy",
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
