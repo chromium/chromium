@@ -107,16 +107,6 @@ GURL GetExtensionsPageUrl(const ExtensionId& extension_id);
 bool IsMojoJsEnabledForExtension(const Extension* extension,
                                  content::BrowserContext* context);
 
-// Returns true if `extension` is allowed to report JS errors.
-bool IsJsErrorReportingEnabledForExtension(const Extension* extension,
-                                           content::BrowserContext* context);
-
-// Returns true if JS errors in `extension` should crash the browser in
-// non-official development builds.
-bool ShouldCrashOnExtensionJsErrorInDevelopmentBuild(
-    const Extension* extension,
-    content::BrowserContext* context);
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 // Represents the type of settings override configured by the extension.
 // DSE = Default Search Engine.

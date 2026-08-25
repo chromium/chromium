@@ -13,8 +13,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/test_extension_system.h"
-#include "chrome/browser/ui/webui/omnibox/aim_eligibility_extension/aim_eligibility_extension_binder_provider.h"
-#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
 #include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
@@ -22,6 +20,8 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/test_renderer_host.h"
+#include "extensions/browser/extension_config_map.h"
+#include "extensions/browser/extension_config_map_factory.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -32,6 +32,18 @@
 
 namespace extensions {
 namespace {
+
+constexpr char kTestExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
+
+class TestExtensionConfigProvider : public ExtensionConfigProvider {
+ public:
+  TestExtensionConfigProvider() : ExtensionConfigProvider(kTestExtensionId) {}
+  ~TestExtensionConfigProvider() override = default;
+
+  bool IsJsErrorReportingEnabled() const override { return true; }
+
+  bool ShouldCrashOnJsErrorInDevelopmentBuild() const override { return true; }
+};
 
 class MockJsErrorReportProcessor : public JsErrorReportProcessor {
  public:
@@ -72,7 +84,9 @@ class ChromeExtensionWebContentsObserverUnitTest
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()));
     extension_system->CreateExtensionService(
         base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
-    AimEligibilityExtensionBinderProvider::Register(profile());
+    ExtensionConfigMapFactory::GetOrCreateForBrowserContext(profile())
+        ->RegisterConfigProvider(
+            std::make_unique<TestExtensionConfigProvider>());
     ChromeExtensionWebContentsObserver::CreateForWebContents(web_contents());
   }
 
@@ -91,7 +105,7 @@ TEST_F(ChromeExtensionWebContentsObserverUnitTest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Test Component Extension")
           .SetLocation(mojom::ManifestLocation::kComponent)
-          .SetID(extension_misc::kAimEligibilityExtensionId)
+          .SetID(kTestExtensionId)
           .Build();
   ExtensionRegistrar::Get(profile())->AddExtension(extension);
 
@@ -128,7 +142,7 @@ TEST_F(ChromeExtensionWebContentsObserverUnitTest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Test Component Extension")
           .SetLocation(mojom::ManifestLocation::kComponent)
-          .SetID(extension_misc::kAimEligibilityExtensionId)
+          .SetID(kTestExtensionId)
           .Build();
   ExtensionRegistrar::Get(profile())->AddExtension(extension);
 
@@ -164,7 +178,7 @@ TEST_F(ChromeExtensionWebContentsObserverUnitTest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Test Component Extension")
           .SetLocation(mojom::ManifestLocation::kComponent)
-          .SetID(extension_misc::kAimEligibilityExtensionId)
+          .SetID(kTestExtensionId)
           .Build();
   ExtensionRegistrar::Get(profile())->AddExtension(extension);
 

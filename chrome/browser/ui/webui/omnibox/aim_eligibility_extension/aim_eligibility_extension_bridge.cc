@@ -8,12 +8,15 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/omnibox/aim_eligibility_extension/aim_eligibility_extension_binder_provider.h"
 #include "chrome/browser/ui/webui/omnibox/aim_eligibility_extension/aim_eligibility_extension_bridge_factory.h"
+#include "chrome/browser/ui/webui/omnibox/aim_eligibility_extension/aim_eligibility_extension_config_provider.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "extensions/browser/component_extension_resource_manager.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/constants.h"
 
 AimEligibilityExtensionBridge::AimEligibilityExtensionBridge(Profile* profile)
     : profile_(*profile), service_worker_page_handler_factory_(*profile) {
+  AimEligibilityExtensionConfigProvider::Register(profile);
   AimEligibilityExtensionBinderProvider::Register(profile);
 
   auto* resource_manager = extensions::ExtensionsBrowserClient::Get()

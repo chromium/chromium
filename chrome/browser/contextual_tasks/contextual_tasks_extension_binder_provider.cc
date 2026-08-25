@@ -35,21 +35,17 @@ void ContextualTasksExtensionBinderProvider::Register(
           std::make_unique<ContextualTasksExtensionBinderProvider>());
 }
 
-ContextualTasksExtensionBinderProvider::
-    ContextualTasksExtensionBinderProvider() = default;
+ContextualTasksExtensionBinderProvider::ContextualTasksExtensionBinderProvider()
+    : ExtensionMojoBinderProvider(extension_misc::kContextualTasksExtensionId) {
+}
 
 ContextualTasksExtensionBinderProvider::
     ~ContextualTasksExtensionBinderProvider() = default;
 
-extensions::ExtensionId ContextualTasksExtensionBinderProvider::GetExtensionId()
-    const {
-  return extension_misc::kContextualTasksExtensionId;
-}
-
 void ContextualTasksExtensionBinderProvider::PopulateFrameBinders(
     mojo::BinderMapWithContext<content::RenderFrameHost*>& binder_map,
     content::RenderFrameHost* render_frame_host,
-    const extensions::Extension* extension) {
+    const extensions::Extension& extension) {
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           contextual_tasks::kContextualTasksRearchitecture)) {

@@ -14,7 +14,6 @@
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/stack_frame.h"
-#include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -56,18 +55,18 @@ class ChromeExtensionWebContentsObserver
       content::WebContents* web_contents) override;
   void SetUpRenderFrameHost(
       content::RenderFrameHost* render_frame_host) override;
+#if !BUILDFLAG(IS_ANDROID)
+  void OnExtensionJsError(
+      content::RenderFrameHost* source_frame,
+      const Extension& extension,
+      const std::u16string& message,
+      int32_t line_no,
+      const GURL& url,
+      const std::optional<std::u16string>& untrusted_stack_trace) override;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // content::WebContentsObserver overrides.
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-#if !BUILDFLAG(IS_ANDROID)
-  void OnDidAddMessageToConsole(
-      content::RenderFrameHost* source_frame,
-      blink::mojom::ConsoleMessageLevel log_level,
-      const std::u16string& message,
-      int32_t line_no,
-      const std::u16string& source_id,
-      const std::optional<std::u16string>& untrusted_stack_trace) override;
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Reloads an extension if it is on the terminated list.
   void ReloadIfTerminated(content::RenderFrameHost* render_frame_host);

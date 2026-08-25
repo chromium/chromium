@@ -74,6 +74,7 @@ source_set("contextual_tasks") {
       "contextual_tasks_extension_binder_provider.h",
       "contextual_tasks_extension_bridge.h",
       "contextual_tasks_extension_bridge_factory.h",
+      "contextual_tasks_extension_config_provider.h",
     ]
     public_deps += [ "//extensions/browser" ]
   }
@@ -121,6 +122,7 @@ source_set("impl") {
       "contextual_tasks_extension_binder_provider.cc",
       "contextual_tasks_extension_bridge.cc",
       "contextual_tasks_extension_bridge_factory.cc",
+      "contextual_tasks_extension_config_provider.cc",
     ]
     if (!is_android) {
       sources += [
@@ -751,7 +753,7 @@ source_set("interactive_ui_tests") {
       ":ui",
       "//chrome/browser/tab_list",
       "//chrome/browser/ui/contextual_search",
-      "//chrome/browser/ui/lens:lens",
+      "//chrome/browser/ui/lens",
       "//chrome/browser/ui/lens:test_support",
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
       "//components/lens:enterprise_policy",

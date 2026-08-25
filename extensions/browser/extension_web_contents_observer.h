@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_EXTENSION_WEB_CONTENTS_OBSERVER_H_
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/compiler_specific.h"
@@ -16,6 +17,8 @@
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
+#include "url/gurl.h"
 
 namespace content {
 class BrowserContext;
@@ -133,11 +136,38 @@ class ExtensionWebContentsObserver : public content::WebContentsObserver {
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void MediaPictureInPictureChanged(bool is_picture_in_picture) override;
+  void OnDidAddMessageToConsole(
+      content::RenderFrameHost* source_frame,
+      blink::mojom::ConsoleMessageLevel log_level,
+      const std::u16string& message,
+      int32_t line_no,
+      const std::u16string& source_id,
+      const std::optional<std::u16string>& untrusted_stack_trace) override;
 
   // Initializes state for any processes associated with the new
   // `render_frame_host`, such as granting process access to new schemes.
   virtual void SetUpRenderFrameHost(
       content::RenderFrameHost* render_frame_host);
+
+  // Returns true if `extension` is allowed to use Mojo JS bindings.
+  // Default queries ExtensionMojoBinderRegistry.
+  virtual bool IsMojoJsEnabled(const Extension& extension) const;
+
+  // Returns true if JS error reporting (e.g. stack trace collection) should be
+  // enabled for the given `extension`. Default queries ExtensionConfigMap.
+  virtual bool IsJsErrorReportingEnabled(const Extension& extension) const;
+
+  // Called when a JS error console message is received from an extension frame
+  // after message level, scheme, frame lifecycle, and extension-configuration
+  // checks have passed. Embedders can override this to perform
+  // embedder-specific error reporting or crash-in-development handling.
+  virtual void OnExtensionJsError(
+      content::RenderFrameHost* source_frame,
+      const Extension& extension,
+      const std::u16string& message,
+      int32_t line_no,
+      const GURL& url,
+      const std::optional<std::u16string>& untrusted_stack_trace);
 
  private:
   using PassKey = base::PassKey<ExtensionWebContentsObserver>;

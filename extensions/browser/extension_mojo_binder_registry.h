@@ -7,12 +7,13 @@
 
 #include <memory>
 
-#include "base/containers/flat_map.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/types/pass_key.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace content {
 class BrowserContext;
@@ -30,17 +31,18 @@ class Extension;
 // `ExtensionMojoBinderRegistry` KeyedService for a given BrowserContext.
 class ExtensionMojoBinderProvider {
  public:
-  virtual ~ExtensionMojoBinderProvider() = default;
+  explicit ExtensionMojoBinderProvider(ExtensionId extension_id);
+  virtual ~ExtensionMojoBinderProvider();
 
   // Returns the ID of the component extension supported by this provider.
-  virtual ExtensionId GetExtensionId() const = 0;
+  const ExtensionId& extension_id() const { return extension_id_; }
 
   // Registers Mojo interface binders for document frames belonging to this
   // extension.
   virtual void PopulateFrameBinders(
       mojo::BinderMapWithContext<content::RenderFrameHost*>& binder_map,
       content::RenderFrameHost* render_frame_host,
-      const Extension* extension) {}
+      const Extension& extension) {}
 
   // Registers Mojo interface binders for service workers belonging to this
   // extension.
@@ -48,14 +50,10 @@ class ExtensionMojoBinderProvider {
       mojo::BinderMapWithContext<const content::ServiceWorkerVersionBaseInfo&>&
           binder_map,
       content::BrowserContext* browser_context,
-      const Extension* extension) {}
+      const Extension& extension) {}
 
-  // Returns true if `extension` is allowed to report JS errors.
-  virtual bool IsJsErrorReportingEnabled() const;
-
-  // Returns true if `extension` should crash on JS errors in development
-  // builds.
-  virtual bool ShouldCrashOnJsErrorInDevelopmentBuild() const;
+ private:
+  const ExtensionId extension_id_;
 };
 
 // A registry for extension-scoped Mojo interface binder providers. It decouples
@@ -83,7 +81,7 @@ class ExtensionMojoBinderRegistry : public KeyedService {
   void PopulateFrameBinders(
       mojo::BinderMapWithContext<content::RenderFrameHost*>* binder_map,
       content::RenderFrameHost* render_frame_host,
-      const Extension* extension);
+      const Extension& extension);
 
   // Populates the binder map with Mojo binders provided by the registered
   // extension provider for the given service worker.
@@ -91,17 +89,10 @@ class ExtensionMojoBinderRegistry : public KeyedService {
       mojo::BinderMapWithContext<const content::ServiceWorkerVersionBaseInfo&>*
           binder_map,
       content::BrowserContext* browser_context,
-      const Extension* extension);
+      const Extension& extension);
 
   // Returns true if `extension` is allowed to use MojoJS bindings.
-  bool IsMojoJsEnabled(const Extension* extension) const;
-
-  // Returns true if `extension` is allowed to report JS errors.
-  bool IsJsErrorReportingEnabled(const Extension* extension) const;
-
-  // Returns true if `extension` should crash on JS errors in development
-  // builds.
-  bool ShouldCrashOnJsErrorInDevelopmentBuild(const Extension* extension) const;
+  bool IsMojoJsEnabled(const Extension& extension) const;
 
   void ClearProvidersForTesting();
 
@@ -110,12 +101,11 @@ class ExtensionMojoBinderRegistry : public KeyedService {
       std::unique_ptr<ExtensionMojoBinderProvider> provider);
 
   ExtensionMojoBinderProvider* GetProviderIfAllowed(
-      const Extension* extension) const;
-
-  base::flat_map<ExtensionId, std::unique_ptr<ExtensionMojoBinderProvider>>
-      providers_;
+      const Extension& extension) const;
 
   SEQUENCE_CHECKER(sequence_checker_);
+  absl::flat_hash_map<ExtensionId, std::unique_ptr<ExtensionMojoBinderProvider>>
+      providers_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace extensions

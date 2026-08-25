@@ -53,29 +53,16 @@ void AimEligibilityExtensionBinderProvider::Register(
           std::make_unique<AimEligibilityExtensionBinderProvider>());
 }
 
-AimEligibilityExtensionBinderProvider::AimEligibilityExtensionBinderProvider() =
-    default;
+AimEligibilityExtensionBinderProvider::AimEligibilityExtensionBinderProvider()
+    : ExtensionMojoBinderProvider(extension_misc::kAimEligibilityExtensionId) {}
+
 AimEligibilityExtensionBinderProvider::
     ~AimEligibilityExtensionBinderProvider() = default;
-
-extensions::ExtensionId AimEligibilityExtensionBinderProvider::GetExtensionId()
-    const {
-  return extension_misc::kAimEligibilityExtensionId;
-}
-
-bool AimEligibilityExtensionBinderProvider::IsJsErrorReportingEnabled() const {
-  return true;
-}
-
-bool AimEligibilityExtensionBinderProvider::
-    ShouldCrashOnJsErrorInDevelopmentBuild() const {
-  return true;
-}
 
 void AimEligibilityExtensionBinderProvider::PopulateFrameBinders(
     mojo::BinderMapWithContext<content::RenderFrameHost*>& binder_map,
     content::RenderFrameHost* render_frame_host,
-    const extensions::Extension* extension) {
+    const extensions::Extension& extension) {
   binder_map.Add<aim_eligibility::mojom::PageHandlerFactory>(
       base::BindRepeating(&BindFactoryReceiverForFrame));
 
@@ -94,7 +81,7 @@ void AimEligibilityExtensionBinderProvider::PopulateServiceWorkerBinders(
     mojo::BinderMapWithContext<const content::ServiceWorkerVersionBaseInfo&>&
         binder_map,
     content::BrowserContext* browser_context,
-    const extensions::Extension* extension) {
+    const extensions::Extension& extension) {
   binder_map.Add<aim_eligibility::mojom::PageHandlerFactory>(
       base::BindRepeating(&BindFactoryReceiverForWorker, browser_context));
 }

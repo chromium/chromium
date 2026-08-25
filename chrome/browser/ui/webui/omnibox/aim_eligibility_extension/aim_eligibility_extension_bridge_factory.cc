@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/omnibox/aim_eligibility_extension/aim_eligibility_extension_bridge.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "extensions/browser/extension_config_map_factory.h"
 #include "extensions/browser/extension_mojo_binder_registry_factory.h"
 
 // static
@@ -35,6 +36,7 @@ AimEligibilityExtensionBridgeFactory::AimEligibilityExtensionBridgeFactory()
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(AimEligibilityServiceFactory::GetInstance());
+  DependsOn(extensions::ExtensionConfigMapFactory::GetInstance());
   DependsOn(extensions::ExtensionMojoBinderRegistryFactory::GetInstance());
 }
 

@@ -8,6 +8,7 @@
 #include "base/values.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_extension_binder_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_extension_bridge_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_extension_config_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -18,6 +19,7 @@ namespace contextual_tasks {
 
 ContextualTasksExtensionBridge::ContextualTasksExtensionBridge(Profile* profile)
     : profile_(*profile) {
+  ContextualTasksExtensionConfigProvider::Register(profile);
   ContextualTasksExtensionBinderProvider::Register(profile);
   auto* client = extensions::ExtensionsBrowserClient::Get();
   CHECK(client) << "ExtensionsBrowserClient must exist.";

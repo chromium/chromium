@@ -8,6 +8,7 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_extension_bridge.h"
 #include "chrome/browser/profiles/profile.h"
+#include "extensions/browser/extension_config_map_factory.h"
 #include "extensions/browser/extension_mojo_binder_registry_factory.h"
 
 namespace contextual_tasks {
@@ -33,6 +34,7 @@ ContextualTasksExtensionBridgeFactory::ContextualTasksExtensionBridgeFactory()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {
+  DependsOn(extensions::ExtensionConfigMapFactory::GetInstance());
   DependsOn(extensions::ExtensionMojoBinderRegistryFactory::GetInstance());
 }
 

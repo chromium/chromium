@@ -14,6 +14,8 @@ source_set("aim_eligibility_extension") {
     "aim_eligibility_extension_bridge.h",
     "aim_eligibility_extension_bridge_factory.cc",
     "aim_eligibility_extension_bridge_factory.h",
+    "aim_eligibility_extension_config_provider.cc",
+    "aim_eligibility_extension_config_provider.h",
     "aim_eligibility_extension_frame_page_handler_factory.cc",
     "aim_eligibility_extension_frame_page_handler_factory.h",
     "aim_eligibility_extension_service_worker_page_handler_factory.cc",
