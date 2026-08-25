@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ios/rules.gni")
+
 source_set("ui") {
   sources = [
     "level_up_all_tasks_view_controller.h",
@@ -41,9 +43,22 @@ source_set("ui") {
     "//ui/base",
   ]
 
-  public_deps = [ ":lottie_resources" ]
+  public_deps = [
+    ":lottie_resources",
+    ":resources",
+  ]
 
   frameworks = [ "UIKit.framework" ]
+}
+
+bundle_data_xcassets("resources") {
+  catalog = "resources/Assets.xcassets"
+  sources = [
+    "resources/Assets.xcassets/Contents.json",
+    "resources/Assets.xcassets/level_up_promo_header_image.imageset/Contents.json",
+    "resources/Assets.xcassets/level_up_promo_header_image.imageset/level_up_promo@2x.png",
+    "resources/Assets.xcassets/level_up_promo_header_image.imageset/level_up_promo@3x.png",
+  ]
 }
 
 bundle_data("lottie_resources") {
