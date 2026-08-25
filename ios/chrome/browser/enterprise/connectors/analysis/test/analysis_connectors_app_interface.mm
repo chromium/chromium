@@ -34,10 +34,10 @@ constexpr char kFakeEnrollmentToken[] = "fake-enrollment-token";
           "url_list": ["*"],
           "tags": ["dlp", "malware"]
         }],
-          "block_until_verdict": 1,
-          "block_password_protected": true,
-          "block_large_files": true
-        })"},
+        "block_until_verdict": 1,
+        "block_password_protected": true,
+        "block_large_files": true
+      })"},
       /*machine_scope=*/true);
 }
 
@@ -45,6 +45,29 @@ constexpr char kFakeEnrollmentToken[] = "fake-enrollment-token";
   PrefService* prefs = chrome_test_util::GetOriginalProfile()->GetPrefs();
   prefs->ClearPref(enterprise_connectors::AnalysisConnectorPref(
       enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED));
+}
+
+// Sets the prefs to enable Bulk Data Entry connectors.
++ (void)setBulkDataEntryRules {
+  PrefService* prefs = chrome_test_util::GetOriginalProfile()->GetPrefs();
+  enterprise_connectors::test::SetAnalysisConnectorsPrefs(
+      prefs, enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY, {R"({
+        "service_provider": "google",
+        "enable": [{
+          "url_list": ["*"],
+          "tags": ["dlp"]
+        }],
+        "block_until_verdict": 1,
+        "minimum_data_size": 1
+      })"},
+      /*machine_scope=*/true);
+}
+
+// Clears all Bulk Data Entry rules.
++ (void)clearBulkDataEntryRules {
+  PrefService* prefs = chrome_test_util::GetOriginalProfile()->GetPrefs();
+  prefs->ClearPref(enterprise_connectors::AnalysisConnectorPref(
+      enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY));
 }
 
 + (void)setBrowserDMToken {

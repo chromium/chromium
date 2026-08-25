@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/enterprise/connectors/core/cloud_content_scanning/upload_request_test_server.h"
 #import "components/enterprise/data_controls/core/browser/features.h"
+#import "components/safe_browsing/core/common/safebrowsing_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/edit_menu_app_interface.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/edit_menu_matchers.h"
+#import "ios/chrome/browser/enterprise/connectors/analysis/test/analysis_connectors_app_interface.h"
 #import "ios/chrome/browser/enterprise/data_controls/test/data_controls_app_interface.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
@@ -16,6 +19,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/components/enterprise/analysis/features.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/element_selector.h"
 #import "net/test/embedded_test_server/default_handlers.h"
@@ -31,6 +35,9 @@ NSString* const kLoadReaderModeFailedMessage =
 NSString* const kCopyLinkFailedMessage = @"Copying link failed";
 NSString* const kBlockCopyingLinkFailedMessage =
     @"Link should not have been copied";
+
+// The text for testing paste event.
+NSString* const kCopiedText = @"Text to copy";
 
 // Path to a page compatible with reader mode.
 const char kArticlePath[] = "/article.html";
@@ -91,7 +98,10 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
 @interface DataControlsTestCase : ChromeTestCase
 @end
 
-@implementation DataControlsTestCase
+@implementation DataControlsTestCase {
+  std::unique_ptr<enterprise_connectors::test::UploadRequestTestServer>
+      _uploadServer;
+}
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
@@ -103,16 +113,116 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
     config.features_enabled.push_back(data_controls::kDataControlsSearchWith);
   }
 
+  if ([self isContentAnalysisTest]) {
+    config.features_enabled.push_back(
+        enterprise_connectors::kEnableBulkDataEntryConnectorIOS);
+    config.additional_args.push_back(base::StrCat(
+        {"--", safe_browsing::switches::kCloudBinaryUploadServiceUrlFlag, "=",
+         _uploadServer->GetServiceURL().spec()}));
+  }
+
+  if ([self isContentAnalysisAllowTest]) {
+    _uploadServer->SetScanResultSuccess();
+  } else if ([self isContentAnalysisWarnTest]) {
+    _uploadServer->SetScanResultWarn();
+  } else if ([self isContentAnalysisBlockTest]) {
+    _uploadServer->SetScanResultBlock();
+  }
+
   return config;
 }
 
 - (void)setUp {
+  if ([self isContentAnalysisTest]) {
+    _uploadServer = std::make_unique<
+        enterprise_connectors::test::UploadRequestTestServer>();
+    // `Start` must be called before `setUp` as the server URL is passed in the
+    // `AppLaunchConfiguration`.
+    if (!_uploadServer->Start()) {
+      // Use `NOTREACHED()` instead of `GREYAssertTrue` because `GREYAssertTrue`
+      // can only be used after calling the `-setUp` method of the super class.
+      NOTREACHED();
+    }
+  }
   [super setUp];
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 }
 
 - (void)tearDownHelper {
+  [ChromeEarlGrey clearPasteboard];
+  [AnalysisConnectorsAppInterface clearBrowserDMToken];
+  [AnalysisConnectorsAppInterface clearBulkDataEntryRules];
+  _uploadServer.reset();
   [super tearDownHelper];
+}
+
+- (BOOL)isContentAnalysisTest {
+  return [self isContentAnalysisAllowTest] ||
+         [self isContentAnalysisWarnTest] || [self isContentAnalysisBlockTest];
+}
+
+- (BOOL)isContentAnalysisAllowTest {
+  return [self isRunningTest:@selector(testPasteAllowIfContentAnalysisSuccess)];
+}
+
+- (BOOL)isContentAnalysisWarnTest {
+  return
+      [self
+          isRunningTest:@selector(testPasteAllowIfContentAnalysisWarnBypass)] ||
+      [self isRunningTest:@selector(testPasteBlockIfContentAnalysisWarnCancel)];
+}
+
+- (BOOL)isContentAnalysisBlockTest {
+  return [self isRunningTest:@selector(testPasteBlockIfContentAnalysisFailure)];
+}
+
+#pragma mark - Helpers
+
+// Navigate to the test page for Paste Content Analysis then write `kCopiedText`
+// to clipboard.
+- (void)setupPasteContentAnalysis {
+  [AnalysisConnectorsAppInterface setBulkDataEntryRules];
+  [AnalysisConnectorsAppInterface setBrowserDMToken];
+
+  [ChromeEarlGrey clearPasteboard];
+  const GURL initialURL = self.testServer->GetURL(kPastebinPath);
+  [ChromeEarlGrey loadURL:initialURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kSensitiveInformationText];
+
+  [ChromeEarlGrey copyTextToPasteboard:kCopiedText];
+}
+
+// Focus and longpress on the Pastebin in the test page and tap the `paste`
+// button in the edit menu.
+- (void)triggerPasteOnPastebin {
+  // Using JavaScript to focus on the pastebin first then longpress because
+  // edit menu does not always show up if simply tapping on the pastebin.
+  [ChromeEarlGrey
+      evaluateJavaScriptForSideEffect:
+          [NSString stringWithFormat:@"document.getElementById('%@').focus();",
+                                     base::SysUTF8ToNSString(kPastebinId)]];
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:[ElementSelector
+                                    selectorWithElementID:kPastebinId]];
+
+  // Tap the paste button in the edit menu.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:[EditMenuAppInterface
+                                              editMenuPasteButtonMatcher]];
+  [[EarlGrey selectElementWithMatcher:[EditMenuAppInterface
+                                          editMenuPasteButtonMatcher]]
+      performAction:grey_tap()];
+}
+
+// Return the test page pasted text in the pastebin as a `NSString`.
+- (NSString*)pastedText {
+  return base::SysUTF8ToNSString(
+      [ChromeEarlGrey
+          evaluateJavaScript:
+              [NSString
+                  stringWithFormat:@"document.getElementById('%@').value;",
+                                   base::SysUTF8ToNSString(kPastebinId)]]
+          .GetString());
 }
 
 #pragma mark - Tests
@@ -575,4 +685,74 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   [DataControlsAppInterface clearDataControlRules];
 }
 
+// Tests that when Pasteboard Content Analysis is turned on and scan result is
+// SUCCESS, paste is allowed.
+- (void)testPasteAllowIfContentAnalysisSuccess {
+  [self setupPasteContentAnalysis];
+
+  [self triggerPasteOnPastebin];
+
+  // Taps on the WebState scroll view to shift focus away from the text box.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::WebStateScrollViewMatcher()]
+      performAction:grey_tap()];
+
+  // Check that the text is correctly pasted into the textbox.
+  GREYAssertEqualObjects([self pastedText], kCopiedText,
+                         @"Fail to paste the correct text.");
+}
+
+// Tests that when Pasteboard Content Analysis is turned on and scan result is
+// FAILURE, paste is blocked.
+- (void)testPasteBlockIfContentAnalysisFailure {
+  [self setupPasteContentAnalysis];
+
+  [self triggerPasteOnPastebin];
+
+  // Check that the snackbar is shown.
+  id<GREYMatcher> snackbarMessage = grey_text(l10n_util::GetNSString(
+      IDS_ENTERPRISE_CONTENT_ANALYSIS_PASTE_BLOCKED_MESSAGE));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:snackbarMessage];
+
+  // Check that text is not pasted into the textbox.
+  GREYAssertEqualObjects([self pastedText], @"",
+                         @"Fail to block paste on Content Analysis Failure.");
+}
+
+// Tests that when Pasteboard Content Analysis is turned on and scan result is
+// WARN, if the user chooses to bypass, paste is allowed.
+- (void)testPasteAllowIfContentAnalysisWarnBypass {
+  [self setupPasteContentAnalysis];
+
+  [self triggerPasteOnPastebin];
+
+  // Tap the "Continue" button on the warning dialog.
+  [[EarlGrey
+      selectElementWithMatcher:
+          chrome_test_util::AlertItemWithAccessibilityLabelId(
+              IDS_ENTERPRISE_CONTENT_ANALYSIS_PASTE_WARN_CONTINUE_BUTTON)]
+      performAction:grey_tap()];
+
+  // Check that the text is correctly pasted into the textbox.
+  GREYAssertEqualObjects([self pastedText], kCopiedText,
+                         @"Fail to paste the correct text.");
+}
+
+// Tests that when Pasteboard Content Analysis is turned on and scan result is
+// WARN, if the user chooses to cancel, paste is blocked.
+- (void)testPasteBlockIfContentAnalysisWarnCancel {
+  [self setupPasteContentAnalysis];
+
+  [self triggerPasteOnPastebin];
+
+  // Tap the "Cancel" button on the warning dialog.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_CANCEL)] performAction:grey_tap()];
+
+  // Check that text is not pasted into the textbox.
+  GREYAssertEqualObjects(
+      [self pastedText], @"",
+      @"Fail to block paste on Content Analysis Warn Cancel.");
+}
 @end

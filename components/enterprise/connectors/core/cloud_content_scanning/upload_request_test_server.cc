@@ -16,6 +16,10 @@ namespace {
 // Safe Browsing Enterprise Upload url.
 constexpr char kSbEnterpriseUpload[] = "/safebrowsing/uploads/scan";
 
+// Tags in the header.
+constexpr char kDlpTag[] = "tag=dlp";
+constexpr char kMalwareTag[] = "tag=malware";
+
 }  // namespace
 
 UploadRequestTestServer::UploadRequestTestServer()
@@ -58,21 +62,24 @@ UploadRequestTestServer::HandleRequest(
 
   enterprise_connectors::ContentAnalysisResponse analysis_response;
 
-  // Since the Analysis Connectors Prefs contains both DLP and Malware tags, we
-  // need to add both of the result.
-  auto* dlp_result = analysis_response.add_results();
-  dlp_result->set_tag("dlp");
-  dlp_result->set_status(
-      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-  auto* rule = dlp_result->add_triggered_rules();
-  rule->set_rule_name("warning_rule_name");
-  rule->set_action(scan_result_);
+  // Only add the tags if they are present in the header.
+  if (request.relative_url.contains(kDlpTag)) {
+    auto* dlp_result = analysis_response.add_results();
+    dlp_result->set_tag("dlp");
+    dlp_result->set_status(
+        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+    auto* rule = dlp_result->add_triggered_rules();
+    rule->set_rule_name("warning_rule_name");
+    rule->set_action(scan_result_);
+  }
 
-  auto* malware_result = analysis_response.add_results();
-  malware_result->set_status(ContentAnalysisResponse::Result::SUCCESS);
-  malware_result->set_tag("malware");
-  auto* malware_rule = malware_result->add_triggered_rules();
-  malware_rule->set_action(scan_result_);
+  if (request.relative_url.contains(kMalwareTag)) {
+    auto* malware_result = analysis_response.add_results();
+    malware_result->set_status(ContentAnalysisResponse::Result::SUCCESS);
+    malware_result->set_tag("malware");
+    auto* malware_rule = malware_result->add_triggered_rules();
+    malware_rule->set_action(scan_result_);
+  }
 
   std::string serialized_analysis_response;
   analysis_response.SerializeToString(&serialized_analysis_response);
