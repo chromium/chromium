@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_EMAIL_VERIFICATION_STRIKE_DATABASE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_EMAIL_VERIFICATION_STRIKE_DATABASE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_EVP_EMAIL_VERIFICATION_STRIKE_DATABASE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_EVP_EMAIL_VERIFICATION_STRIKE_DATABASE_H_
 
 #include <array>
 #include <optional>
@@ -17,6 +17,15 @@
 #include "crypto/hash.h"
 
 namespace autofill {
+
+// Computes a privacy-preserving 1-byte truncated SHA-256 hex string ID from an
+// email address, preventing plaintext email storage in the strike database.
+inline std::string GetEmailVerificationStrikeDatabaseId(
+    std::string_view email) {
+  const std::array<uint8_t, crypto::hash::kSha256Size> hash =
+      crypto::hash::Sha256(email);
+  return base::HexEncode(base::span(hash).first<1>());
+}
 
 struct EmailVerificationStrikeDatabaseTraits {
   static constexpr std::string_view kName = "EmailVerification";
@@ -42,15 +51,11 @@ class EmailVerificationStrikeDatabase
       strike_database::StrikeDatabaseBase* strike_db)
       : HistoryClearableStrikeDatabase(strike_db) {}
 
-  static std::string GetId(const std::string& email) {
-    // Use just the first byte of the hash for privacy reasons, so that the
-    // original email can't be determined from the hash.
-    const std::array<uint8_t, crypto::hash::kSha256Size> hash =
-        crypto::hash::Sha256(email);
-    return base::HexEncode(base::span(hash).first<1>());
+  static std::string GetId(std::string_view email) {
+    return GetEmailVerificationStrikeDatabaseId(email);
   }
 };
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_EMAIL_VERIFICATION_STRIKE_DATABASE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_EVP_EMAIL_VERIFICATION_STRIKE_DATABASE_H_

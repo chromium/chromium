@@ -17,7 +17,7 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/core/browser/strike_databases/email_verification_strike_database.h"
+#include "components/autofill/core/browser/strike_databases/evp/email_verification_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"

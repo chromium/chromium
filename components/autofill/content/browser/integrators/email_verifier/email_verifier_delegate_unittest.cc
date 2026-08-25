@@ -25,7 +25,8 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
-#include "components/autofill/core/browser/strike_databases/email_verification_strike_database.h"
+#include "components/autofill/core/browser/strike_databases/evp/email_verification_not_signed_in_strike_database.h"
+#include "components/autofill/core/browser/strike_databases/evp/email_verification_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -931,6 +932,257 @@ TEST_F(EmailVerifierDelegateTest, ClearsStrikesOnAccept) {
   EXPECT_EQ(
       strike_db.GetStrikes(EmailVerificationStrikeDatabase::GetId(email_utf8)),
       0);
+}
+
+// Verifies that when the user is logged out, 1 strike is added to the
+// not-signed-in strike database, but not to the main strike database.
+TEST_F(EmailVerifierDelegateTest, NotSignedInAddsStrike) {
+  base::HistogramTester histogram_tester;
+  FormStructure* form = SetUpValidForm();
+
+  std::string email_utf8 = "johndoe@hades.com";
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable(email_utf8, _, _))
+      .WillOnce(RunOnceCallback<2>(
+          std::nullopt,
+          blink::mojom::EmailVerificationRequestResult::kUserLoggedOut,
+          base::Milliseconds(100)));
+
+  client().set_test_strike_database(std::make_unique<TestStrikeDatabase>());
+  EmailVerificationStrikeDatabase strike_db(client().GetStrikeDatabase());
+  EmailVerificationNotSignedInStrikeDatabase not_signed_in_strike_db(
+      client().GetStrikeDatabase());
+
+  EXPECT_CALL(driver(),
+              UpdateEmailVerificationState(
+                  form->field(0)->global_id(),
+                  mojom::EmailVerificationState::kLoggedOutOrUnsupported));
+
+  TriggerDefaultFormFill(*form);
+
+  // 1 strike added to not-signed-in strike database.
+  EXPECT_EQ(not_signed_in_strike_db.GetStrikes(
+                EmailVerificationNotSignedInStrikeDatabase::GetId(email_utf8)),
+            1);
+  // 0 strikes added to main strike database.
+  EXPECT_EQ(
+      strike_db.GetStrikes(EmailVerificationStrikeDatabase::GetId(email_utf8)),
+      0);
+
+  histogram_tester.ExpectUniqueSample("Blink.Evp.Autofill.FlowResult",
+                                      EvpAutofillFlowResult::kNotVerifiable, 1);
+}
+
+// Verifies that non-logged-out failures (e.g. DNS fetch failure) do not add
+// strikes to the not-signed-in strike database.
+TEST_F(EmailVerifierDelegateTest,
+       OtherCheckIfVerifiableFailureDoesNotAddStrike) {
+  base::HistogramTester histogram_tester;
+  FormStructure* form = SetUpValidForm();
+
+  std::string email_utf8 = "johndoe@hades.com";
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable(email_utf8, _, _))
+      .WillOnce(RunOnceCallback<2>(
+          std::nullopt,
+          blink::mojom::EmailVerificationRequestResult::kDnsFetchFailed,
+          base::Milliseconds(100)));
+
+  client().set_test_strike_database(std::make_unique<TestStrikeDatabase>());
+  EmailVerificationNotSignedInStrikeDatabase not_signed_in_strike_db(
+      client().GetStrikeDatabase());
+
+  TriggerDefaultFormFill(*form);
+
+  EXPECT_EQ(not_signed_in_strike_db.GetStrikes(
+                EmailVerificationNotSignedInStrikeDatabase::GetId(email_utf8)),
+            0);
+
+  histogram_tester.ExpectUniqueSample("Blink.Evp.Autofill.FlowResult",
+                                      EvpAutofillFlowResult::kNotVerifiable, 1);
+}
+
+// Verifies that when an email reaches 3 strikes in the not-signed-in strike
+// database, verification is blocked before CheckIfVerifiable is called.
+TEST_F(EmailVerifierDelegateTest, BlockedByNotSignedInStrikes) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list{
+      ::features::kEmailVerificationProtocol};
+
+  FormStructure* form = SetUpValidForm();
+
+  client().set_test_strike_database(std::make_unique<TestStrikeDatabase>());
+  EmailVerificationNotSignedInStrikeDatabase not_signed_in_strike_db(
+      client().GetStrikeDatabase());
+  not_signed_in_strike_db.AddStrikes(
+      3, EmailVerificationNotSignedInStrikeDatabase::GetId("test@example.com"));
+
+  // CheckIfVerifiable, Verify, and ShowEmailVerificationPopup should NOT be
+  // called!
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable).Times(0);
+  EXPECT_CALL(email_verifier(), Verify).Times(0);
+  EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
+  EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
+  EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
+
+  AutofillProfile profile = test::GetFullProfile();
+  profile.SetInfoWithVerificationStatus(EMAIL_ADDRESS, u"test@example.com",
+                                        "en-US",
+                                        VerificationStatus::kUserVerified);
+
+  base::flat_set<FieldGlobalId> filled_field_ids = {
+      form->field(0)->global_id()};
+
+  delegate().OnFillOrPreviewForm(
+      manager(), form->global_id(), form->field(0)->global_id(),
+      mojom::ActionPersistence::kFill, filled_field_ids, /*skip_reasons=*/{},
+      &profile);
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Autofill.FlowResult",
+      EvpAutofillFlowResult::kStrikeDatabaseBlock, 1);
+}
+
+// Verifies that when the user accepts the verification prompt, strikes in the
+// not-signed-in strike database are cleared.
+TEST_F(EmailVerifierDelegateTest, ClearsNotSignedInStrikesOnAccept) {
+  base::test::ScopedFeatureList feature_list{
+      ::features::kEmailVerificationProtocol};
+
+  FormStructure* form = SetUpValidForm();
+
+  client().set_test_strike_database(std::make_unique<TestStrikeDatabase>());
+  EmailVerificationNotSignedInStrikeDatabase not_signed_in_strike_db(
+      client().GetStrikeDatabase());
+  std::string email_utf8 = "johndoe@hades.com";
+
+  not_signed_in_strike_db.AddStrikes(
+      2, EmailVerificationNotSignedInStrikeDatabase::GetId(email_utf8));
+  ASSERT_FALSE(not_signed_in_strike_db.ShouldBlockFeature(
+      EmailVerificationNotSignedInStrikeDatabase::GetId(email_utf8)));
+
+  SetUpVerificationExpectations(*form);
+
+  TriggerDefaultFormFill(*form);
+
+  popup_shown_run_loop_.Run();
+
+  // Verify that strikes in not-signed-in database are cleared.
+  EXPECT_EQ(not_signed_in_strike_db.GetStrikes(
+                EmailVerificationNotSignedInStrikeDatabase::GetId(email_utf8)),
+            0);
+}
+
+// Verifies that when a user already allowed EVP (already_allowed == true),
+// strikes in the not-signed-in strike database are cleared upon a successful
+// verifiable check.
+TEST_F(EmailVerifierDelegateTest, ClearsNotSignedInStrikesWhenAlreadyAllowed) {
+  FormStructure* form = SetUpValidForm();
+  FieldGlobalId field_id = form->field(0)->global_id();
+  std::string email = "johndoe@hades.com";
+
+  PrefService* prefs = client().GetPrefs();
+  ASSERT_TRUE(prefs);
+  ScopedDictPrefUpdate update(prefs, prefs::kAutofillEmailVerificationState);
+  base::DictValue email_dict;
+  email_dict.Set("allowed", true);
+  email_dict.Set("issuer_site", "https://example.com");
+  email_dict.Set("timestamp", base::TimeToValue(base::Time::Now()));
+  update->Set(email, std::move(email_dict));
+
+  client().set_test_strike_database(std::make_unique<TestStrikeDatabase>());
+  EmailVerificationNotSignedInStrikeDatabase not_signed_in_strike_db(
+      client().GetStrikeDatabase());
+  not_signed_in_strike_db.AddStrikes(
+      2, EmailVerificationNotSignedInStrikeDatabase::GetId(email));
+  ASSERT_EQ(not_signed_in_strike_db.GetStrikes(
+                EmailVerificationNotSignedInStrikeDatabase::GetId(email)),
+            2);
+
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable(email, _, _))
+      .WillOnce(RunOnceCallback<2>(
+          CreateVerifiableResult(email),
+          blink::mojom::EmailVerificationRequestResult::kSuccess,
+          base::Milliseconds(100)));
+
+  EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
+
+  EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
+      .WillOnce(RunOnceCallback<2>(
+          std::optional<std::string>("test_token"),
+          blink::mojom::EmailVerificationRequestResult::kSuccess,
+          base::Milliseconds(200)));
+
+  EXPECT_CALL(driver(),
+              SendEmailVerificationToken(field_id, email, "test_token"));
+  EXPECT_CALL(driver(), UpdateEmailVerificationState(
+                            field_id, mojom::EmailVerificationState::kLoading));
+  EXPECT_CALL(driver(),
+              UpdateEmailVerificationState(
+                  field_id, mojom::EmailVerificationState::kVerified));
+
+  TriggerDefaultFormFill(*form);
+
+  EXPECT_EQ(not_signed_in_strike_db.GetStrikes(
+                EmailVerificationNotSignedInStrikeDatabase::GetId(email)),
+            0);
+}
+
+// Verifies that when StrikeDatabase is null (e.g. Incognito or disabled),
+// logged-out responses, permission decisions, and already-allowed checks
+// execute safely without crashing.
+TEST_F(EmailVerifierDelegateTest, NullStrikeDatabase_Safe) {
+  base::test::ScopedFeatureList feature_list{
+      ::features::kEmailVerificationProtocol};
+
+  FormStructure* form = SetUpValidForm();
+  std::string email = "johndoe@hades.com";
+
+  // Ensure StrikeDatabase is null.
+  ASSERT_EQ(client().GetStrikeDatabase(), nullptr);
+
+  // 1. Logged out response is safe with null strike database.
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_CALL(email_verifier(), CheckIfVerifiable(email, _, _))
+        .WillOnce(RunOnceCallback<2>(
+            std::nullopt,
+            blink::mojom::EmailVerificationRequestResult::kUserLoggedOut,
+            base::Milliseconds(100)));
+
+    TriggerDefaultFormFill(*form);
+
+    histogram_tester.ExpectUniqueSample("Blink.Evp.Autofill.FlowResult",
+                                        EvpAutofillFlowResult::kNotVerifiable,
+                                        1);
+  }
+
+  // 2. Permission prompt Decline is safe with null strike database.
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_CALL(email_verifier(), CheckIfVerifiable(email, _, _))
+        .WillOnce(RunOnceCallback<2>(
+            CreateVerifiableResult(email),
+            blink::mojom::EmailVerificationRequestResult::kSuccess,
+            base::Milliseconds(100)));
+    EXPECT_CALL(client(), ShowEmailVerificationPopup)
+        .WillOnce(RunOnceCallback<3>(
+            AutofillClient::EmailVerificationPermissionUiStatus::kDeclined));
+    EXPECT_CALL(email_verifier(), Verify).Times(0);
+
+    TriggerDefaultFormFill(*form);
+
+    histogram_tester.ExpectUniqueSample(
+        "Blink.Evp.Autofill.FlowResult",
+        EvpAutofillFlowResult::kUserDeclinedPermissionPrompt, 1);
+  }
+
+  // 3. Permission prompt Allow is safe with null strike database.
+  {
+    SetUpVerificationExpectations(*form);
+
+    TriggerDefaultFormFill(*form);
+
+    popup_shown_run_loop_.Run();
+  }
 }
 
 TEST_F(EmailVerifierDelegateTest, OnFillOrPreviewFieldVerificationTriggered) {

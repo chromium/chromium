@@ -11,12 +11,15 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
+#include "components/autofill/core/browser/strike_databases/evp/email_verification_not_signed_in_strike_database.h"
+#include "components/autofill/core/browser/strike_databases/evp/email_verification_strike_database.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/webid/email_verifier.h"
@@ -210,7 +213,16 @@ class EmailVerifierDelegate : public AutofillManager::Observer,
   void OnFieldLostFocus(AutofillManager& manager,
                         const FieldGlobalId& field_id);
 
+  EmailVerificationStrikeDatabase* GetEmailVerificationStrikeDatabase();
+  EmailVerificationNotSignedInStrikeDatabase*
+  GetEmailVerificationNotSignedInStrikeDatabase();
+
   MetricsObserver metrics_observer_;
+
+  const raw_ref<AutofillClient> client_;
+  std::optional<EmailVerificationStrikeDatabase> email_verification_strike_db_;
+  std::optional<EmailVerificationNotSignedInStrikeDatabase>
+      email_verification_not_signed_in_strike_db_;
   base::ObserverList<Observer> observers_;
 
   ScopedAutofillManagersObservation observation_{this};
