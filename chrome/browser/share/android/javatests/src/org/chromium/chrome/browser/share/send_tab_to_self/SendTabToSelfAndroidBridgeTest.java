@@ -23,6 +23,7 @@ import android.net.Uri;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -41,6 +42,7 @@ import org.robolectric.shadows.ShadowToast;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -129,6 +131,11 @@ public class SendTabToSelfAndroidBridgeTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(TestAccounts.ACCOUNT1);
+    }
+
+    @After
+    public void tearDown() {
+        DeviceInfo.resetIsDesktopForTesting();
     }
 
     @Test
@@ -671,6 +678,44 @@ public class SendTabToSelfAndroidBridgeTest {
         // Clean up global static state.
         ApplicationStatus.onStateChangeForTesting(mTabbedActivity, ActivityState.DESTROYED);
         MessagesFactory.detachMessageDispatcher(mMessageDispatcher);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
+    public void testShowMessageBanner_ClickActionNullSelector_disabledOnDesktop_doesNotShowHub() {
+        DeviceInfo.setIsDesktopForTesting(true);
+
+        // Trigger the banner display logic.
+        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 1);
+
+        // Capture the enqueued PropertyModel to verify its content and action callbacks.
+        ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mMessageDispatcher).enqueueWindowScopedMessage(messageCaptor.capture(), eq(false));
+
+        PropertyModel model = messageCaptor.getValue();
+        Supplier<Integer> onPrimaryAction = model.get(MessageBannerProperties.ON_PRIMARY_ACTION);
+
+        // Set up a mock ChromeTabbedActivity and LayoutManager to verify that the action suppresses
+        // opening the tab switcher when GTS is disabled on desktop.
+        LayoutManagerChrome layoutManager = mock(LayoutManagerChrome.class);
+        when(mTabbedActivity.getLayoutManager()).thenReturn(layoutManager);
+        when(mTabbedActivity.getTabModelSelector()).thenReturn(null);
+        // Register the mock activity with ApplicationStatus so getLastTrackedFocusedActivity()
+        // returns it.
+        ApplicationStatus.onStateChangeForTesting(mTabbedActivity, ActivityState.CREATED);
+        try {
+            // Execute the primary action.
+            int result = onPrimaryAction.get();
+
+            // Verify that the banner dismisses immediately and showLayout is NOT called.
+            Assert.assertEquals(PrimaryActionClickBehavior.DISMISS_IMMEDIATELY, result);
+            verify(layoutManager, never()).showLayout(eq(LayoutType.HUB), anyBoolean());
+        } finally {
+            // Clean up global static state.
+            ApplicationStatus.onStateChangeForTesting(mTabbedActivity, ActivityState.DESTROYED);
+            MessagesFactory.detachMessageDispatcher(mMessageDispatcher);
+        }
     }
 
     @Test

@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.SendTabToSelfTabCardLabelData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
@@ -499,7 +500,8 @@ public class SendTabToSelfAndroidBridge {
         if (selector == null) {
             // Fall back to opening the tab switcher directly if the tab model selector is
             // unavailable (e.g. during activity startup, recreation, or mock test execution).
-            if (tabbedActivity.getLayoutManager() != null) {
+            if (tabbedActivity.getLayoutManager() != null
+                    && !TabSwitcherUtils.isGridTabSwitcherDisabled()) {
                 tabbedActivity.getLayoutManager().showLayout(LayoutType.HUB, true);
             }
             return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
