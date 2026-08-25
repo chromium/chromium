@@ -396,6 +396,10 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
+    @DisableFeatures({
+        SigninFeatures.SIGN_OUT_OF_CHROME,
+        SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA
+    })
     public void testPressingSignOut() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
 
@@ -405,9 +409,27 @@ public class ManageSyncSettingsTest {
 
         onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
         onView(withId(R.id.sign_out_button)).perform(click());
-        if (DeviceInfo.isDesktop()) {
-            onView(withText(R.string.sign_out)).inRoot(isDialog()).perform(click());
-        }
+        Assert.assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @EnableFeatures({
+        SigninFeatures.SIGN_OUT_OF_CHROME,
+        SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA
+    })
+    @Restriction(DeviceFormFactor.DESKTOP)
+    public void testPressingSignOut_desktopSignOut() {
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+
+        Assert.assertNotNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
+
+        startManageSyncPreferences();
+
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+        onView(withId(R.id.sign_out_button)).perform(click());
+        onView(withText(R.string.sign_out)).inRoot(isDialog()).perform(click());
         Assert.assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
     }
 

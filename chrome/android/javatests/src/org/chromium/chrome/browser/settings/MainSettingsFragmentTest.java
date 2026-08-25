@@ -338,6 +338,10 @@ public class MainSettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
+    @DisableFeatures({
+        SigninFeatures.SIGN_OUT_OF_CHROME,
+        SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA
+    })
     public void testPressingSignOut() {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
 
@@ -345,12 +349,42 @@ public class MainSettingsFragmentTest {
 
         onView(withText(accountInfo.getEmail())).perform(click());
         onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
-        if (DeviceInfo.isDesktop()) {
-            onView(withText(R.string.manage_sync_settings_sign_out_of_chrome)).perform(click());
-            onView(withText(R.string.sign_out)).inRoot(isDialog()).perform(click());
-        } else {
-            onView(withText(R.string.sign_out)).perform(click());
-        }
+        onView(withText(R.string.sign_out)).perform(click());
+        Assert.assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
+
+        Activity activity = mSettingsTestRule.getActivity();
+        final String expectedSnackbarMessage =
+                activity.getString(R.string.sign_out_snackbar_message);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    SnackbarManager snackbarManager =
+                            ((SnackbarManager.SnackbarManageable) activity).getSnackbarManager();
+                    Criteria.checkThat(snackbarManager.isShowing(), Matchers.is(true));
+                    TextView snackbarMessage = activity.findViewById(R.id.snackbar_message);
+                    Criteria.checkThat(snackbarMessage, Matchers.notNullValue());
+                    Criteria.checkThat(
+                            snackbarMessage.getText().toString(),
+                            Matchers.is(expectedSnackbarMessage));
+                });
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @EnableFeatures({
+        SigninFeatures.SIGN_OUT_OF_CHROME,
+        SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA
+    })
+    @Restriction(DeviceFormFactor.DESKTOP)
+    public void testPressingSignOut_desktopSignOut() {
+        CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
+
+        startSettings();
+
+        onView(withText(accountInfo.getEmail())).perform(click());
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+        onView(withText(R.string.manage_sync_settings_sign_out_of_chrome)).perform(click());
+        onView(withText(R.string.sign_out)).inRoot(isDialog()).perform(click());
         Assert.assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
 
         Activity activity = mSettingsTestRule.getActivity();
@@ -373,6 +407,10 @@ public class MainSettingsFragmentTest {
     @LargeTest
     @Feature({"Sync"})
     @Policies.Add(@Policies.Item(key = "SyncDisabled", string = "true"))
+    @DisableFeatures({
+        SigninFeatures.SIGN_OUT_OF_CHROME,
+        SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA
+    })
     public void testPressingSignOutSyncDisabled() {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInWithoutWaitingForTesting();
 
@@ -380,12 +418,44 @@ public class MainSettingsFragmentTest {
 
         onView(withText(accountInfo.getEmail())).perform(click());
         onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
-        if (DeviceInfo.isDesktop()) {
-            onView(withText(R.string.manage_sync_settings_sign_out_of_chrome)).perform(click());
-            onView(withText(R.string.sign_out)).inRoot(isDialog()).perform(click());
-        } else {
-            onView(withText(R.string.sign_out)).perform(click());
-        }
+        onView(withText(R.string.sign_out)).perform(click());
+        Assert.assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
+
+        Activity activity = mSettingsTestRule.getActivity();
+        final String expectedSnackbarMessage =
+                activity.getString(
+                        R.string.account_settings_sign_out_snackbar_message_sync_disabled);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    SnackbarManager snackbarManager =
+                            ((SnackbarManager.SnackbarManageable) activity).getSnackbarManager();
+                    Criteria.checkThat(snackbarManager.isShowing(), Matchers.is(true));
+                    TextView snackbarMessage = activity.findViewById(R.id.snackbar_message);
+                    Criteria.checkThat(snackbarMessage, Matchers.notNullValue());
+                    Criteria.checkThat(
+                            snackbarMessage.getText().toString(),
+                            Matchers.is(expectedSnackbarMessage));
+                });
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @Policies.Add(@Policies.Item(key = "SyncDisabled", string = "true"))
+    @EnableFeatures({
+        SigninFeatures.SIGN_OUT_OF_CHROME,
+        SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA
+    })
+    @Restriction(DeviceFormFactor.DESKTOP)
+    public void testPressingSignOutSyncDisabled_desktopSignOut() {
+        CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInWithoutWaitingForTesting();
+
+        startSettings();
+
+        onView(withText(accountInfo.getEmail())).perform(click());
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+        onView(withText(R.string.manage_sync_settings_sign_out_of_chrome)).perform(click());
+        onView(withText(R.string.sign_out)).inRoot(isDialog()).perform(click());
         Assert.assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
 
         Activity activity = mSettingsTestRule.getActivity();
