@@ -304,6 +304,76 @@ TEST_F(SearchboxHandlerTest, QuestionMarkKeywordInput) {
   handler.reset();
 }
 
+TEST_F(SearchboxHandlerTest, QueryAutocomplete_IsOnFocusDoesNotSetUserText) {
+  content::RenderViewHostTestEnabler test_render_host_factories;
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+
+  testing::NiceMock<MockBrowserWindowInterface> browser_window_interface;
+  ui::UnownedUserDataHost unowned_user_data_host;
+#if !BUILDFLAG(IS_ANDROID)
+  BrowserWindowFeatures browser_window_features;
+  SetupMockBrowserWindowInterface(browser_window_interface, profile(),
+                                  browser_window_features,
+                                  unowned_user_data_host);
+#else
+  ON_CALL(browser_window_interface, GetProfile())
+      .WillByDefault(testing::Return(profile()));
+  ON_CALL(browser_window_interface, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(unowned_user_data_host));
+#endif
+  webui::SetBrowserWindowInterface(web_contents.get(),
+                                   &browser_window_interface);
+
+  auto handler = std::make_unique<RealboxHandlerPublic>(
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+      page_.BindAndGetRemote(), profile(), web_contents.get(),
+      base::BindLambdaForTesting(
+          []() -> contextual_search::ContextualSearchSessionHandle* {
+            return nullptr;
+          }));
+
+  handler->autocomplete_controller_observation_.Reset();
+  auto autocomplete_controller =
+      std::make_unique<testing::NiceMock<MockAutocompleteController>>(
+          std::make_unique<MockAutocompleteProviderClient>(), 0);
+  handler->SetAutocompleteControllerForTesting(
+      std::move(autocomplete_controller));
+
+  auto omnibox_edit_model =
+      std::make_unique<testing::NiceMock<MockOmniboxEditModel>>(
+          handler->omnibox_controller());
+  auto* mock_omnibox_edit_model = omnibox_edit_model.get();
+  handler->omnibox_controller()->SetEditModelForTesting(
+      std::move(omnibox_edit_model));
+
+  // When `is_on_focus` is true, SetUserText should NOT be called.
+  EXPECT_CALL(*mock_omnibox_edit_model, SetUserText(_)).Times(0);
+
+  handler->QueryAutocomplete(
+      0, /*tab_id=*/std::nullopt, u"", /*prevent_inline_autocomplete=*/false, 0,
+      omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
+      /*is_on_focus=*/true, /*keyword=*/"",
+      searchbox::mojom::InputMethod::kKeyboard);
+
+  testing::Mock::VerifyAndClearExpectations(mock_omnibox_edit_model);
+
+  // When `is_on_focus` is false (user input), SetUserText SHOULD be called.
+  EXPECT_CALL(*mock_omnibox_edit_model, SetUserText(std::u16string(u"test")))
+      .Times(1);
+
+  handler->QueryAutocomplete(
+      1, /*tab_id=*/std::nullopt, u"test",
+      /*prevent_inline_autocomplete=*/false, 4,
+      omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
+      /*is_on_focus=*/false, /*keyword=*/"",
+      searchbox::mojom::InputMethod::kKeyboard);
+
+  testing::Mock::VerifyAndClearExpectations(mock_omnibox_edit_model);
+
+  handler.reset();
+}
+
 class RealboxHandlerTest : public SearchboxHandlerTest {
  public:
   RealboxHandlerTest() = default;
@@ -464,10 +534,7 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
   {
     SCOPED_TRACE("Empty input");
 
-    std::u16string input_text;
-    EXPECT_CALL(*omnibox_edit_model_, SetUserText(_))
-        .Times(1)
-        .WillOnce(SaveArg<0>(&input_text));
+    EXPECT_CALL(*omnibox_edit_model_, SetUserText(_)).Times(0);
 
     AutocompleteInput input;
     EXPECT_CALL(*autocomplete_controller_, Start(_))
@@ -480,7 +547,6 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
         /*is_on_focus=*/true, /*keyword=*/"",
         searchbox::mojom::InputMethod::kKeyboard);
 
-    EXPECT_EQ(input_text, u"");
     EXPECT_EQ(input.text(), u"");
     EXPECT_EQ(input.focus_type(), metrics::OmniboxFocusType::INTERACTION_FOCUS);
     EXPECT_EQ(input.current_url().spec(), "");
@@ -857,10 +923,7 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
   {
     SCOPED_TRACE("Empty input");
 
-    std::u16string input_text;
-    EXPECT_CALL(*omnibox_edit_model_, SetUserText(_))
-        .Times(1)
-        .WillOnce(SaveArg<0>(&input_text));
+    EXPECT_CALL(*omnibox_edit_model_, SetUserText(_)).Times(0);
 
     AutocompleteInput input;
     EXPECT_CALL(*autocomplete_controller_, Start(_))
@@ -890,7 +953,6 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
         /*is_on_focus=*/true, /*keyword=*/"",
         searchbox::mojom::InputMethod::kKeyboard);
 
-    EXPECT_EQ(input_text, u"");
     EXPECT_EQ(input.text(), u"");
     EXPECT_EQ(input.focus_type(), metrics::OmniboxFocusType::INTERACTION_FOCUS);
     EXPECT_EQ(input.current_url(), page_url);

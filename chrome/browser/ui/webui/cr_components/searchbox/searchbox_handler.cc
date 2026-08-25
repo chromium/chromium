@@ -1174,22 +1174,26 @@ void SearchboxHandler::QueryAutocomplete(
 
   if (!base::FeatureList::IsEnabled(
           omnibox::kWebUISearchboxWithoutModelController)) {
-    // This will SetInputInProgress and consequently mark the input timer so
-    // that Omnibox.TypingDuration will be logged correctly.
-    edit_model()->SetUserText(input);
+    if (!is_on_focus) {
+      // For non-ZPS input, this will SetInputInProgress and consequently mark
+      // the input timer so that Omnibox.TypingDuration will be logged
+      // correctly.
+      edit_model()->SetUserText(input);
+    }
     // There are various `CHECK()`s and assumptions in the `OmniboxEditModel`
     // that verify the keyword state is set. Even though we're relying on
     // searchbox webUI code to manage its keyword state, we need to propagate to
     // `OmniboxEditModel`'s too to avoid crashes and bugs. This won't be
-    // necessary as we kill the `OmniboxEditModel`. `SetUserText()` above clears
-    // the `OmniboxEditModel`'s keyword state. So we only have to set it here if
-    // in keyword mode, and don't have to clear it if not in keyword mode.
+    // necessary as we kill the `OmniboxEditModel`.
     if (is_keyword_selected && template_url) {
       edit_model()->SetKeywordInfo(
           KeywordState::kKeyword, template_url->keyword(),
           /*keyword_placeholder=*/u"",
           keyword == "?" ? metrics::OmniboxEventProto::QUESTION_MARK
                          : metrics::OmniboxEventProto::SPACE_AT_END);
+    } else {
+      edit_model()->SetKeywordInfo(KeywordState::kNone, u"", u"",
+                                   metrics::OmniboxEventProto::INVALID);
     }
   } else if (!is_on_focus &&
              metrics_tracker_.time_user_first_modified_omnibox().is_null()) {

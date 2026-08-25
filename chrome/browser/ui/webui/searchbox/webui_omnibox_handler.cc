@@ -488,6 +488,7 @@ void WebuiOmniboxHandler::OnFocusChanged(bool focused) {
       edit_model()->OnKillFocus();
     }
   }
+  UpdateAimButtonVisibility();
 }
 
 // TODO(crbug.com/469098088): Use something other than
@@ -520,17 +521,7 @@ void WebuiOmniboxHandler::OnResultChanged(AutocompleteController* controller,
     metrics_reporter_->Mark("ResultChanged");
   }
 
-  // Update visibility of the AIM page action.
-  if (omnibox_controller() &&
-      omnibox_controller()->client()->IsChromeOmniboxClient()) {
-    auto* client =
-        static_cast<ChromeOmniboxClient*>(omnibox_controller()->client());
-    if (LocationBar* location_bar = client->GetLocationBar()) {
-      SetAimButtonVisible(
-          omnibox::AiModePageActionController::ShouldShowPageAction(
-              profile_, *location_bar));
-    }
-  }
+  UpdateAimButtonVisibility();
 
   SearchboxHandler::OnResultChanged(controller, default_match_changed);
 }
@@ -585,6 +576,19 @@ void WebuiOmniboxHandler::OnTabDidInsert(tabs::TabInterface* tab) {
         UpdateTabListObservation(
             TabListInterface::From(browser_window_interface));
       }
+    }
+  }
+}
+
+void WebuiOmniboxHandler::UpdateAimButtonVisibility() {
+  if (omnibox_controller() &&
+      omnibox_controller()->client()->IsChromeOmniboxClient()) {
+    auto* client =
+        static_cast<ChromeOmniboxClient*>(omnibox_controller()->client());
+    if (LocationBar* location_bar = client->GetLocationBar()) {
+      SetAimButtonVisible(
+          omnibox::AiModePageActionController::ShouldShowPageAction(
+              profile_, *location_bar));
     }
   }
 }

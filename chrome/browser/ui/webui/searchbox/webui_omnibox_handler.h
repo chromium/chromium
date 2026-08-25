@@ -127,6 +127,8 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
                        tabs::TabInterface::DetachReason reason);
   void OnTabDidInsert(tabs::TabInterface* tab);
 
+  void UpdateAimButtonVisibility();
+
   // Delegate to observe WebContents.
   // Managed as a separate class to prevent member naming conflicts
   // of `web_contents_` with a member of the same name in `SearchboxHandler`.

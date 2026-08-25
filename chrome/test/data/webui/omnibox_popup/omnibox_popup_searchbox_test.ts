@@ -2172,4 +2172,38 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertEquals(null, searchbox.inputKeywordModel);
    assertEquals('youtube.com', searchbox.getInputElement().inputElement.value);
  });
+
+ test('FocusLostHidesAimButton', async () => {
+   // Explicitly set focus and enable AIM button visibility.
+   callbackRouter.setFocus(true);
+   testProxy.page.setAimButtonVisible(true);
+   await microtasksFinished();
+
+   const composeButton = searchbox.$.composeButton;
+   assertTrue(!!composeButton);
+   assertTrue(isVisible(composeButton));
+
+   // When focus is lost, AIM button should be hidden.
+   callbackRouter.setFocus(false);
+   await microtasksFinished();
+
+   assertFalse(isVisible(composeButton));
+
+   // Refocus, then type text into the Omnibox.
+   callbackRouter.setFocus(true);
+   searchbox.getInputElement().setInputText('temporary text');
+   testProxy.page.setAimButtonVisible(true);
+   await microtasksFinished();
+
+   assertTrue(isVisible(composeButton));
+
+   // If focus is lost with temporary text in the Omnibox, then AIM button
+   // should be hidden.
+   callbackRouter.setFocus(false);
+   await microtasksFinished();
+
+   assertFalse(isVisible(composeButton));
+   assertEquals(
+       'temporary text', searchbox.getInputElement().inputElement.value);
+ });
 });

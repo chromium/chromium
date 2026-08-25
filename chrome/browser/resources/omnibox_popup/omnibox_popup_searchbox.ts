@@ -877,8 +877,9 @@ export class OmniboxPopupSearchboxElement extends
     await this.updateComplete;
   }
   /**
-   * Resets selection range, blurs input, and clears autocomplete matches when
-   * focus is lost to external targets or when clicking outside.
+   * Resets selection range, blurs input, clears autocomplete matches, and
+   * resets AIM button visibility when focus is lost to external targets or when
+   * clicking outside.
    */
   private handleFocusLost_() {
     this.getInputElement().setSelectionRange(0, 0);
@@ -888,6 +889,10 @@ export class OmniboxPopupSearchboxElement extends
     // select_all_on_mouse_release_ (in omnibox_view_views) to be set to the
     // correct value.
     this.clearAutocompleteMatches();
+    // Due to inconsistent focus detection, resetting AIM button visibility
+    // here is necessary in order to guarantee that the AIM button is hidden
+    // when the user defocuses the Omnibox.
+    this.aimButtonVisible_ = false;
   }
 
   /**
