@@ -31,8 +31,8 @@
 
 enum AutoKeyword { "auto" };
 enum DirectionSetting { "" /* horizontal */, "rl", "lr" };
-// enum LineAlignSetting { "start", "middle", "end" };
-// enum PositionAlignSetting { "start", "middle", "end", "auto" };
+enum LineAlignSetting { "start", "center", "end" };
+enum PositionAlignSetting { "line-left", "center", "line-right", "auto" };
 enum AlignSetting { "start", "center", "end", "left", "right" };
 
 [
@@ -43,9 +43,9 @@ enum AlignSetting { "start", "center", "end", "left", "right" };
     attribute DirectionSetting vertical;
     attribute boolean snapToLines;
     [GetterCallWith=ScriptState] attribute (double or AutoKeyword) line;
-    // attribute LineAlignSetting lineAlign;
+    [RuntimeEnabled=WebVTTLineAndPositionAlignment] attribute LineAlignSetting lineAlign;
     [RaisesException=Setter, GetterCallWith=ScriptState] attribute (double or AutoKeyword) position;
-    // attribute PositionAlignSetting positionAlign;
+    [RuntimeEnabled=WebVTTLineAndPositionAlignment] attribute PositionAlignSetting positionAlign;
     [RaisesException=Setter] attribute double size;
     attribute AlignSetting align;
     attribute DOMString text;

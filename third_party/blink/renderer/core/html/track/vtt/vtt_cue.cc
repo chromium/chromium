@@ -32,6 +32,8 @@
 #include <cmath>
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_direction_setting.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_line_align_setting.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_position_align_setting.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_autokeyword_double.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -272,6 +274,20 @@ void VTTCue::setLine(const V8UnionAutoKeywordOrDouble* position) {
   CueDidChange();
 }
 
+V8LineAlignSetting VTTCue::lineAlign() const {
+  return V8LineAlignSetting(line_align_);
+}
+
+void VTTCue::setLineAlign(const V8LineAlignSetting& value) {
+  LineAlignSetting alignment = value.AsEnum();
+  if (alignment == line_align_)
+    return;
+
+  CueWillChange();
+  line_align_ = alignment;
+  CueDidChange();
+}
+
 bool VTTCue::TextPositionIsAuto() const {
   return std::isnan(text_position_);
 }
@@ -312,6 +328,20 @@ void VTTCue::setPosition(const V8UnionAutoKeywordOrDouble* position,
 
   CueWillChange();
   text_position_ = text_position;
+  CueDidChange();
+}
+
+V8PositionAlignSetting VTTCue::positionAlign() const {
+  return V8PositionAlignSetting(position_align_);
+}
+
+void VTTCue::setPositionAlign(const V8PositionAlignSetting& value) {
+  PositionAlignSetting alignment = value.AsEnum();
+  if (alignment == position_align_)
+    return;
+
+  CueWillChange();
+  position_align_ = alignment;
   CueDidChange();
 }
 
@@ -930,16 +960,43 @@ void VTTCue::ParseSettings(const VTTRegionMap* region_map,
           if (is_negative && number)
             number = -number;
         }
-        if (!value_input.IsAtEnd()) {
-          break;
+        // Check for an optional comma-separated lineAlign keyword.
+        // https://w3c.github.io/webvtt/#collect-webvtt-cue-timings-and-settings
+        // ("If name is a case-sensitive match for "line""): value splits at
+        // the first comma into linepos and linealign, and linealign must be a
+        // case-sensitive match for "start", "center" or "end" -- "Otherwise
+        // if linealign is not null, then jump to the step labeled next
+        // setting", i.e. any other non-null suffix voids the whole setting.
+        if (value_input.IsAtEnd()) {
+          // No comma suffix: set line, keep default lineAlign.
+          // 5. Let cue's WebVTT cue line be number.
+          line_position_ = number;
+          // 6. If the last character in linepos is a U+0025 PERCENT SIGN
+          //    character (%), then let cue's WebVTT cue snap-to-lines
+          //    flag be false. Otherwise, let it be true.
+          snap_to_lines_ = !is_percentage;
+          // Steps 7 - 9 skipped.
+        } else if (value_input.Scan(',')) {
+          // Comma present: parse lineAlign keyword.
+          // On any invalid keyword, the entire setting is ignored.
+          // Use exact full-string comparison (not prefix-advancing Scan) to
+          // prevent "startend" from matching "start" then "end".
+          LineAlignSetting new_line_align;
+          String keyword = value_input.RestOfInputAsString();
+          if (keyword == "start") {
+            new_line_align = LineAlignSetting::kStart;
+          } else if (keyword == "center") {
+            new_line_align = LineAlignSetting::kCenter;
+          } else if (keyword == "end") {
+            new_line_align = LineAlignSetting::kEnd;
+          } else {
+            break;  // Invalid keyword: ignore entire setting.
+          }
+          line_position_ = number;
+          snap_to_lines_ = !is_percentage;
+          line_align_ = new_line_align;
         }
-        // 5. Let cue's WebVTT cue line be number.
-        line_position_ = number;
-        // 6. If the last character in linepos is a U+0025 PERCENT SIGN
-        //    character (%), then let cue's WebVTT cue snap-to-lines
-        //    flag be false. Otherwise, let it be true.
-        snap_to_lines_ = !is_percentage;
-        // Steps 7 - 9 skipped.
+        // else: extra content without a comma -> ignore (falls through).
         break;
       }
       case CueSetting::kPosition: {
@@ -953,12 +1010,41 @@ void VTTCue::ParseSettings(const VTTRegionMap* region_map,
         if (!ScanPercentage(value_input, number)) {
           break;
         }
-        if (!value_input.IsAtEnd()) {
-          break;
+        // Check for an optional comma-separated positionAlign keyword.
+        // https://w3c.github.io/webvtt/#collect-webvtt-cue-timings-and-settings
+        // ("If name is a case-sensitive match for "position""): value splits
+        // at the first comma into colpos and colalign, and colalign must be a
+        // case-sensitive match for "line-left", "center" or "line-right" --
+        // otherwise a non-null suffix jumps to the next setting, voiding the
+        // whole setting.
+        if (value_input.IsAtEnd()) {
+          // No comma suffix: set position, keep default positionAlign.
+          // 4. Let cue's cue position be number.
+          text_position_ = number;
+          // Steps 5 - 7 skipped.
+        } else if (value_input.Scan(',')) {
+          // Comma present: parse positionAlign keyword.
+          // On any invalid keyword, the entire setting is ignored.
+          // Use exact full-string comparison (not prefix-advancing Scan) to
+          // prevent "line-leftauto" from matching "line-left" then "auto".
+          PositionAlignSetting new_position_align;
+          String keyword = value_input.RestOfInputAsString();
+          if (keyword == "line-left") {
+            new_position_align = PositionAlignSetting::kLineLeft;
+          } else if (keyword == "center") {
+            new_position_align = PositionAlignSetting::kCenter;
+          } else if (keyword == "line-right") {
+            new_position_align = PositionAlignSetting::kLineRight;
+          } else {
+            // Note: "auto" is deliberately absent. The colalign keyword list
+            // is only the three strings above; "auto" is expressible through
+            // the positionAlign IDL attribute, not the file format.
+            break;  // Invalid keyword: ignore entire setting.
+          }
+          text_position_ = number;
+          position_align_ = new_position_align;
         }
-        // 4. Let cue's cue position be number.
-        text_position_ = number;
-        // Steps 5 - 7 skipped.
+        // else: extra content without a comma -> ignore (falls through).
         break;
       }
       case CueSetting::kSize: {

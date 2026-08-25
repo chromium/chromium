@@ -11078,7 +11078,9 @@ interface VTTCue : TextTrackCue
     attribute @@toStringTag
     getter align
     getter line
+    getter lineAlign
     getter position
+    getter positionAlign
     getter region
     getter size
     getter snapToLines
@@ -11088,7 +11090,9 @@ interface VTTCue : TextTrackCue
     method getCueAsHTML
     setter align
     setter line
+    setter lineAlign
     setter position
+    setter positionAlign
     setter region
     setter size
     setter snapToLines

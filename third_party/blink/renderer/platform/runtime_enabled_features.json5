@@ -7223,6 +7223,14 @@
       status: "stable",
     },
     {
+      name: "WebVTTLineAndPositionAlignment",
+      status: "experimental",
+      // No base::Feature while experimental: avoids a mutable-constant
+      // binary-size cost on Android. Add one (for the Finch killswitch)
+      // when this ships.
+      base_feature: "none",
+    },
+    {
       name: "WebVTTRegions",
       status: "experimental",
     },
