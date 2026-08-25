@@ -81,8 +81,6 @@ class SignInFunctions {
 
   void SignOutFromWeb();
 
-  void TurnOffSync();
-
   void SignOut();
 
  private:

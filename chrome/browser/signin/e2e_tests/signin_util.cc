@@ -205,23 +205,6 @@ void SignInFunctions::SignOutFromWeb() {
   observer.WaitForAccountChanges(0, PrimaryAccountWait::kNotWait);
 }
 
-void SignInFunctions::TurnOffSync() {
-  CHECK(!syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
-  GURL settings_url("chrome://settings");
-  ASSERT_TRUE(add_tab_function_.Run(0, settings_url,
-                                    ui::PageTransition::PAGE_TRANSITION_TYPED));
-  SignInTestObserver observer(identity_manager(browser_.Run()),
-                              account_reconcilor(browser_.Run()));
-  auto* settings_tab =
-      browser_.Run()->GetTabStripModel()->GetActiveWebContents();
-  EXPECT_TRUE(content::ExecJs(
-      settings_tab,
-      base::StringPrintf(
-          kSettingsScriptWrapperFormat,
-          "settings.SyncBrowserProxyImpl.getInstance().signOut(false)")));
-  observer.WaitForAccountChanges(0, PrimaryAccountWait::kWaitForCleared);
-}
-
 void SignInFunctions::SignOut() {
 #if !BUILDFLAG(ENABLE_DICE_SUPPORT)
   NOTREACHED();

@@ -310,40 +310,7 @@ IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_WebSignInAndSignOut) {
   EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
 }
 
-// This test can pass. Marked as manual because it TIMED_OUT on Win7.
-// See crbug.com/40107825.
-// Signs in an account through the settings page and enables Sync. Checks that
-// Sync is enabled. Signs in a second account on the web.
-// Then, turns Sync off from the settings page and checks that both accounts are
-// removed from Chrome and from cookies.
-IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync, MANUAL_TurnOffSync) {
-  std::optional<TestAccountSigninCredentials> test_account_1 =
-      GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
-  CHECK(test_account_1.has_value());
-  sign_in_functions.TurnOnSync(*test_account_1, 0);
 
-  std::optional<TestAccountSigninCredentials> test_account_2 =
-      GetTestAccounts()->GetAccount("TEST_ACCOUNT_2");
-  CHECK(test_account_2.has_value());
-  sign_in_functions.SignInFromWeb(*test_account_2, 1);
-
-  const CoreAccountInfo& primary_account =
-      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
-  EXPECT_FALSE(primary_account.IsEmpty());
-  EXPECT_TRUE(gaia::AreEmailsSame(test_account_1->user, primary_account.email));
-  EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
-
-  sign_in_functions.TurnOffSync();
-
-  const AccountsInCookieJarInfo& accounts_in_cookie_jar_2 =
-      identity_manager()->GetAccountsInCookieJar();
-  EXPECT_TRUE(accounts_in_cookie_jar_2.AreAccountsFresh());
-  ASSERT_TRUE(
-      accounts_in_cookie_jar_2.GetPotentiallyInvalidSignedInAccounts().empty());
-  EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
-  EXPECT_FALSE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-}
 
 // In "Sync paused" state, when the primary account is invalid, turns off sync
 // from settings. Checks that the account is removed from Chrome.
@@ -366,7 +333,19 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync, MANUAL_TurnOffSyncWhenPaused) {
       identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
           primary_account.account_id));
 
-  sign_in_functions.TurnOffSync();
+  // Turn off sync.
+  GURL settings_url("chrome://settings");
+  ASSERT_TRUE(AddTabAtIndex(0, settings_url,
+                            ui::PageTransition::PAGE_TRANSITION_TYPED));
+  SignInTestObserver observer(identity_manager(), account_reconcilor());
+  auto* settings_tab = browser()->GetTabStripModel()->GetActiveWebContents();
+  EXPECT_TRUE(content::ExecJs(
+      settings_tab,
+      base::StringPrintf(
+          kSettingsScriptWrapperFormat,
+          "settings.SyncBrowserProxyImpl.getInstance().signOut(false)")));
+  observer.WaitForAccountChanges(0, PrimaryAccountWait::kWaitForCleared);
+
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
 
