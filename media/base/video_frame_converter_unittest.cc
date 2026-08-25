@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/memory/raw_span.h"
 #include "base/test/scoped_feature_list.h"
 #include "media/base/media_switches.h"
 #include "media/base/test_helpers.h"
@@ -117,11 +118,17 @@ bool IsConversionSupported(VideoPixelFormat src, VideoPixelFormat dest) {
   switch (dest) {
     case PIXEL_FORMAT_I420:
     case PIXEL_FORMAT_I420A:
+    case PIXEL_FORMAT_I422:
+    case PIXEL_FORMAT_I422A:
     case PIXEL_FORMAT_I444:
     case PIXEL_FORMAT_I444A:
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_NV12A:
+    case PIXEL_FORMAT_NV16:
+    case PIXEL_FORMAT_NV24:
     case PIXEL_FORMAT_P010LE:
+    case PIXEL_FORMAT_P210LE:
+    case PIXEL_FORMAT_P410LE:
     case PIXEL_FORMAT_YUV420P10:
     case PIXEL_FORMAT_YUV444P10:
       break;
@@ -294,6 +301,105 @@ TEST(VideoFrameConverterRegressionTest, WeirdScaling) {
 
   VideoFrameConverter converter;
   ASSERT_TRUE(converter.ConvertAndScale(*src_frame, *dest_frame).is_ok());
+}
+
+TEST(VideoFrameConverterFastPathTest, ConversionsAvoidScratch) {
+  constexpr gfx::Size kSize(64, 64);
+  struct Conversion {
+    VideoPixelFormat src;
+    VideoPixelFormat dest;
+  };
+
+  struct ConversionGroup {
+    const char* name;
+    base::raw_span<const Conversion> cases;
+  };
+
+  constexpr Conversion kBiplanarToBiplanarDirect[] = {
+      {PIXEL_FORMAT_NV12, PIXEL_FORMAT_NV12},
+      {PIXEL_FORMAT_NV12, PIXEL_FORMAT_NV16},
+      {PIXEL_FORMAT_NV12, PIXEL_FORMAT_NV24},
+      {PIXEL_FORMAT_NV12A, PIXEL_FORMAT_NV12},
+      {PIXEL_FORMAT_NV12A, PIXEL_FORMAT_NV12A},
+      {PIXEL_FORMAT_NV12A, PIXEL_FORMAT_NV16},
+      {PIXEL_FORMAT_NV12A, PIXEL_FORMAT_NV24},
+      {PIXEL_FORMAT_NV16, PIXEL_FORMAT_NV12},
+      {PIXEL_FORMAT_NV16, PIXEL_FORMAT_NV16},
+      {PIXEL_FORMAT_NV16, PIXEL_FORMAT_NV24},
+      {PIXEL_FORMAT_NV24, PIXEL_FORMAT_NV12},
+      {PIXEL_FORMAT_NV24, PIXEL_FORMAT_NV16},
+      {PIXEL_FORMAT_NV24, PIXEL_FORMAT_NV24},
+  };
+
+  constexpr Conversion kPlanarToBiplanarDirect[] = {
+      {PIXEL_FORMAT_I420, PIXEL_FORMAT_NV12},
+      {PIXEL_FORMAT_I422, PIXEL_FORMAT_NV16},
+      {PIXEL_FORMAT_I444, PIXEL_FORMAT_NV12},
+      {PIXEL_FORMAT_I444, PIXEL_FORMAT_NV24},
+  };
+
+  constexpr Conversion kBiplanarToPlanarSameSampling[] = {
+      {PIXEL_FORMAT_NV12, PIXEL_FORMAT_I420},
+      {PIXEL_FORMAT_NV12A, PIXEL_FORMAT_I420},
+      {PIXEL_FORMAT_NV12A, PIXEL_FORMAT_I420A},
+      {PIXEL_FORMAT_NV16, PIXEL_FORMAT_I422},
+      {PIXEL_FORMAT_NV24, PIXEL_FORMAT_I444},
+  };
+
+  constexpr Conversion kPlanarAlphaToBiplanarDirect[] = {
+      {PIXEL_FORMAT_I420A, PIXEL_FORMAT_NV12},
+      {PIXEL_FORMAT_I420A, PIXEL_FORMAT_NV12A},
+      {PIXEL_FORMAT_I422A, PIXEL_FORMAT_NV16},
+      {PIXEL_FORMAT_I444A, PIXEL_FORMAT_NV12},
+      {PIXEL_FORMAT_I444A, PIXEL_FORMAT_NV12A},
+      {PIXEL_FORMAT_I444A, PIXEL_FORMAT_NV24},
+  };
+
+  constexpr Conversion kBiplanar10BitDirect[] = {
+      {PIXEL_FORMAT_P010LE, PIXEL_FORMAT_P010LE},
+      {PIXEL_FORMAT_P210LE, PIXEL_FORMAT_P210LE},
+      {PIXEL_FORMAT_P410LE, PIXEL_FORMAT_P410LE},
+      {PIXEL_FORMAT_NV12, PIXEL_FORMAT_P010LE},
+      {PIXEL_FORMAT_NV12A, PIXEL_FORMAT_P010LE},
+      {PIXEL_FORMAT_NV16, PIXEL_FORMAT_P210LE},
+      {PIXEL_FORMAT_NV24, PIXEL_FORMAT_P410LE},
+      {PIXEL_FORMAT_P010LE, PIXEL_FORMAT_NV12},
+      {PIXEL_FORMAT_P210LE, PIXEL_FORMAT_NV16},
+      {PIXEL_FORMAT_P410LE, PIXEL_FORMAT_NV24},
+      {PIXEL_FORMAT_P010LE, PIXEL_FORMAT_YUV420P10},
+      {PIXEL_FORMAT_P410LE, PIXEL_FORMAT_YUV444P10},
+      {PIXEL_FORMAT_YUV420AP10, PIXEL_FORMAT_P010LE},
+      {PIXEL_FORMAT_YUV422AP10, PIXEL_FORMAT_P210LE},
+      {PIXEL_FORMAT_YUV444AP10, PIXEL_FORMAT_P410LE},
+  };
+
+  const ConversionGroup kGroups[] = {
+      {"biplanar to biplanar direct", kBiplanarToBiplanarDirect},
+      {"planar to biplanar direct", kPlanarToBiplanarDirect},
+      {"biplanar to same-sampling planar", kBiplanarToPlanarSameSampling},
+      {"planar alpha to biplanar direct", kPlanarAlphaToBiplanarDirect},
+      {"biplanar 10-bit direct", kBiplanar10BitDirect},
+  };
+
+  for (const auto& group : kGroups) {
+    SCOPED_TRACE(group.name);
+    for (const auto& test_case : group.cases) {
+      SCOPED_TRACE(base::StringPrintf(
+          "%s -> %s", VideoPixelFormatToString(test_case.src).c_str(),
+          VideoPixelFormatToString(test_case.dest).c_str()));
+      auto src_frame = VideoFrame::CreateZeroInitializedFrame(
+          test_case.src, kSize, gfx::Rect(kSize), kSize, base::TimeDelta());
+      auto dest_frame = VideoFrame::CreateZeroInitializedFrame(
+          test_case.dest, kSize, gfx::Rect(kSize), kSize, base::TimeDelta());
+      ASSERT_TRUE(src_frame);
+      ASSERT_TRUE(dest_frame);
+      FillFourColors(*src_frame);
+
+      VideoFrameConverter converter;
+      ASSERT_TRUE(converter.ConvertAndScale(*src_frame, *dest_frame).is_ok());
+      EXPECT_EQ(converter.get_pool_size_for_testing(), 0u);
+    }
+  }
 }
 
 TEST(VideoFrameConverterUnsupportedTest, UnsupportedConversions) {
@@ -607,11 +713,17 @@ constexpr auto kInputFormats = std::to_array<VideoPixelFormat>({
 constexpr auto kOutputFormats = std::to_array<VideoPixelFormat>({
     PIXEL_FORMAT_I420,
     PIXEL_FORMAT_I420A,
+    PIXEL_FORMAT_I422,
+    PIXEL_FORMAT_I422A,
     PIXEL_FORMAT_I444,
     PIXEL_FORMAT_I444A,
     PIXEL_FORMAT_NV12,
     PIXEL_FORMAT_NV12A,
+    PIXEL_FORMAT_NV16,
+    PIXEL_FORMAT_NV24,
     PIXEL_FORMAT_P010LE,
+    PIXEL_FORMAT_P210LE,
+    PIXEL_FORMAT_P410LE,
     PIXEL_FORMAT_YUV420P10,
     PIXEL_FORMAT_YUV444P10,
 });

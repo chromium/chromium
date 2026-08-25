@@ -4,6 +4,7 @@
 
 #include "media/base/video_frame_converter_internals.h"
 
+#include "media/base/video_types.h"
 #include "third_party/libyuv/include/libyuv.h"
 
 namespace {
@@ -71,6 +72,17 @@ const libyuv::ArgbConstants* GetArgbConstantsForColorSpace(
   }
 }
 
+void CopyVisiblePlanes(const VideoFrame& src_frame, VideoFrame& dest_frame) {
+  DCHECK_EQ(src_frame.format(), dest_frame.format());
+  DCHECK_EQ(src_frame.visible_rect().size(), dest_frame.visible_rect().size());
+  for (size_t i = 0; i < VideoFrame::NumPlanes(dest_frame.format()); ++i) {
+    libyuv::CopyPlane(src_frame.visible_data(i), src_frame.stride(i),
+                      dest_frame.GetWritableVisibleData(i),
+                      dest_frame.stride(i), dest_frame.GetVisibleRowBytes(i),
+                      dest_frame.GetVisibleRows(i));
+  }
+}
+
 bool ARGBScale(const VideoFrame& src_frame,
                VideoFrame& dest_frame,
                libyuv::FilterMode filter) {
@@ -106,6 +118,37 @@ bool ARGBToI420x(const VideoFrame& src_frame,
     return false;
   }
   if (dest_frame.format() == PIXEL_FORMAT_I420) {
+    return true;
+  }
+  return libyuv::ARGBExtractAlpha(
+             src_frame.visible_data(VideoFrame::Plane::kARGB),
+             src_frame.stride(VideoFrame::Plane::kARGB),
+             dest_frame.GetWritableVisibleData(VideoFrame::Plane::kA),
+             dest_frame.stride(VideoFrame::Plane::kA),
+             dest_frame.visible_rect().width(),
+             dest_frame.visible_rect().height()) == 0;
+}
+
+bool ARGBToI422x(const VideoFrame& src_frame,
+                 VideoFrame& dest_frame,
+                 const libyuv::ArgbConstants* matrix) {
+  DCHECK(IsSupportedRGBFormat(src_frame.format()));
+  DCHECK(dest_frame.format() == PIXEL_FORMAT_I422 ||
+         dest_frame.format() == PIXEL_FORMAT_I422A);
+  if (libyuv::ARGBToI422Matrix(
+          src_frame.visible_data(VideoFrame::Plane::kARGB),
+          src_frame.stride(VideoFrame::Plane::kARGB),
+          dest_frame.GetWritableVisibleData(VideoFrame::Plane::kY),
+          dest_frame.stride(VideoFrame::Plane::kY),
+          dest_frame.GetWritableVisibleData(VideoFrame::Plane::kU),
+          dest_frame.stride(VideoFrame::Plane::kU),
+          dest_frame.GetWritableVisibleData(VideoFrame::Plane::kV),
+          dest_frame.stride(VideoFrame::Plane::kV), matrix,
+          dest_frame.visible_rect().width(),
+          dest_frame.visible_rect().height()) != 0) {
+    return false;
+  }
+  if (dest_frame.format() == PIXEL_FORMAT_I422) {
     return true;
   }
   return libyuv::ARGBExtractAlpha(
@@ -294,6 +337,8 @@ void Convert16To8Plane(const VideoFrame& src_frame, VideoFrame& dest_frame) {
 void Convert8To16Plane(const VideoFrame& src_frame, VideoFrame& dest_frame) {
   DCHECK(src_frame.format() == PIXEL_FORMAT_I420 ||
          src_frame.format() == PIXEL_FORMAT_I420A ||
+         src_frame.format() == PIXEL_FORMAT_I422 ||
+         src_frame.format() == PIXEL_FORMAT_I422A ||
          src_frame.format() == PIXEL_FORMAT_I444 ||
          src_frame.format() == PIXEL_FORMAT_I444A);
   DCHECK(dest_frame.format() == PIXEL_FORMAT_YUV420P10 ||
@@ -328,77 +373,81 @@ void Shift12To10(VideoFrame& frame) {
   }
 }
 
-bool I420xToNV12x(const VideoFrame& src_frame, VideoFrame& dest_frame) {
+bool I4xxxToNVxx(const VideoFrame& src_frame, VideoFrame& dest_frame) {
   DCHECK(src_frame.format() == PIXEL_FORMAT_I420 ||
-         src_frame.format() == PIXEL_FORMAT_I420A);
-  DCHECK(dest_frame.format() == PIXEL_FORMAT_NV12 ||
-         dest_frame.format() == PIXEL_FORMAT_NV12A);
-  DCHECK_EQ(src_frame.visible_rect().size(), dest_frame.visible_rect().size());
-  if (libyuv::I420ToNV12(
-          src_frame.visible_data(VideoFrame::Plane::kY),
-          src_frame.stride(VideoFrame::Plane::kY),
-          src_frame.visible_data(VideoFrame::Plane::kU),
-          src_frame.stride(VideoFrame::Plane::kU),
-          src_frame.visible_data(VideoFrame::Plane::kV),
-          src_frame.stride(VideoFrame::Plane::kV),
-          dest_frame.GetWritableVisibleData(VideoFrame::Plane::kY),
-          dest_frame.stride(VideoFrame::Plane::kY),
-          dest_frame.GetWritableVisibleData(VideoFrame::Plane::kUV),
-          dest_frame.stride(VideoFrame::Plane::kUV),
-          dest_frame.visible_rect().width(),
-          dest_frame.visible_rect().height()) != 0) {
-    return false;
-  }
-  if (dest_frame.format() == PIXEL_FORMAT_NV12) {
-    return true;
-  }
-  libyuv::CopyPlane(
-      src_frame.visible_data(VideoFrame::Plane::kA),
-      src_frame.stride(VideoFrame::Plane::kA),
-      dest_frame.GetWritableVisibleData(VideoFrame::Plane::kATriPlanar),
-      dest_frame.stride(VideoFrame::Plane::kATriPlanar),
-      dest_frame.visible_rect().width(), dest_frame.visible_rect().height());
-  return true;
-}
-
-bool I444xToNV12x(const VideoFrame& src_frame, VideoFrame& dest_frame) {
-  DCHECK(src_frame.format() == PIXEL_FORMAT_I444 ||
+         src_frame.format() == PIXEL_FORMAT_I420A ||
+         src_frame.format() == PIXEL_FORMAT_I422 ||
+         src_frame.format() == PIXEL_FORMAT_I422A ||
+         src_frame.format() == PIXEL_FORMAT_I444 ||
          src_frame.format() == PIXEL_FORMAT_I444A);
   DCHECK(dest_frame.format() == PIXEL_FORMAT_NV12 ||
-         dest_frame.format() == PIXEL_FORMAT_NV12A);
+         dest_frame.format() == PIXEL_FORMAT_NV12A ||
+         dest_frame.format() == PIXEL_FORMAT_NV16 ||
+         dest_frame.format() == PIXEL_FORMAT_NV24);
+  DCHECK(dest_frame.format() != PIXEL_FORMAT_NV12A ||
+         src_frame.format() == PIXEL_FORMAT_I420A ||
+         src_frame.format() == PIXEL_FORMAT_I444A);
   DCHECK_EQ(src_frame.visible_rect().size(), dest_frame.visible_rect().size());
-  if (libyuv::I444ToNV12(
-          src_frame.visible_data(VideoFrame::Plane::kY),
-          src_frame.stride(VideoFrame::Plane::kY),
-          src_frame.visible_data(VideoFrame::Plane::kU),
-          src_frame.stride(VideoFrame::Plane::kU),
-          src_frame.visible_data(VideoFrame::Plane::kV),
-          src_frame.stride(VideoFrame::Plane::kV),
-          dest_frame.GetWritableVisibleData(VideoFrame::Plane::kY),
-          dest_frame.stride(VideoFrame::Plane::kY),
-          dest_frame.GetWritableVisibleData(VideoFrame::Plane::kUV),
-          dest_frame.stride(VideoFrame::Plane::kUV),
-          dest_frame.visible_rect().width(),
-          dest_frame.visible_rect().height()) != 0) {
-    return false;
+
+  const auto src_sampling =
+      VideoPixelFormatToChromaSampling(src_frame.format());
+  const auto dest_sampling =
+      VideoPixelFormatToChromaSampling(dest_frame.format());
+  if (src_sampling == dest_sampling) {
+    libyuv::CopyPlane(src_frame.visible_data(VideoFrame::Plane::kY),
+                      src_frame.stride(VideoFrame::Plane::kY),
+                      dest_frame.GetWritableVisibleData(VideoFrame::Plane::kY),
+                      dest_frame.stride(VideoFrame::Plane::kY),
+                      dest_frame.visible_rect().width(),
+                      dest_frame.visible_rect().height());
+    MergeUV(src_frame, dest_frame);
+  } else {
+    DCHECK(dest_frame.format() == PIXEL_FORMAT_NV12 ||
+           dest_frame.format() == PIXEL_FORMAT_NV12A);
+    DCHECK(src_sampling == VideoChromaSampling::k420 ||
+           src_sampling == VideoChromaSampling::k444);
+    auto convert = src_sampling == VideoChromaSampling::k420
+                       ? libyuv::I420ToNV12
+                       : libyuv::I444ToNV12;
+    if (convert(src_frame.visible_data(VideoFrame::Plane::kY),
+                src_frame.stride(VideoFrame::Plane::kY),
+                src_frame.visible_data(VideoFrame::Plane::kU),
+                src_frame.stride(VideoFrame::Plane::kU),
+                src_frame.visible_data(VideoFrame::Plane::kV),
+                src_frame.stride(VideoFrame::Plane::kV),
+                dest_frame.GetWritableVisibleData(VideoFrame::Plane::kY),
+                dest_frame.stride(VideoFrame::Plane::kY),
+                dest_frame.GetWritableVisibleData(VideoFrame::Plane::kUV),
+                dest_frame.stride(VideoFrame::Plane::kUV),
+                dest_frame.visible_rect().width(),
+                dest_frame.visible_rect().height()) != 0) {
+      return false;
+    }
   }
-  if (dest_frame.format() == PIXEL_FORMAT_NV12) {
-    return true;
+  if (dest_frame.format() == PIXEL_FORMAT_NV12A) {
+    libyuv::CopyPlane(
+        src_frame.visible_data(VideoFrame::Plane::kA),
+        src_frame.stride(VideoFrame::Plane::kA),
+        dest_frame.GetWritableVisibleData(VideoFrame::Plane::kATriPlanar),
+        dest_frame.stride(VideoFrame::Plane::kATriPlanar),
+        dest_frame.visible_rect().width(), dest_frame.visible_rect().height());
   }
-  libyuv::CopyPlane(
-      src_frame.visible_data(VideoFrame::Plane::kA),
-      src_frame.stride(VideoFrame::Plane::kA),
-      dest_frame.GetWritableVisibleData(VideoFrame::Plane::kATriPlanar),
-      dest_frame.stride(VideoFrame::Plane::kATriPlanar),
-      dest_frame.visible_rect().width(), dest_frame.visible_rect().height());
   return true;
 }
 
 void MergeUV(const VideoFrame& src_frame, VideoFrame& dest_frame) {
   DCHECK(src_frame.format() == PIXEL_FORMAT_I420 ||
-         src_frame.format() == PIXEL_FORMAT_I420A);
+         src_frame.format() == PIXEL_FORMAT_I420A ||
+         src_frame.format() == PIXEL_FORMAT_I422 ||
+         src_frame.format() == PIXEL_FORMAT_I422A ||
+         src_frame.format() == PIXEL_FORMAT_I444 ||
+         src_frame.format() == PIXEL_FORMAT_I444A);
   DCHECK(dest_frame.format() == PIXEL_FORMAT_NV12 ||
-         dest_frame.format() == PIXEL_FORMAT_NV12A);
+         dest_frame.format() == PIXEL_FORMAT_NV12A ||
+         dest_frame.format() == PIXEL_FORMAT_NV16 ||
+         dest_frame.format() == PIXEL_FORMAT_NV24);
+  DCHECK_EQ(VideoPixelFormatToChromaSampling(src_frame.format()),
+            VideoPixelFormatToChromaSampling(dest_frame.format()));
   DCHECK_EQ(src_frame.visible_rect().size(), dest_frame.visible_rect().size());
   libyuv::MergeUVPlane(
       src_frame.visible_data(VideoFrame::Plane::kU),
@@ -433,28 +482,67 @@ void SplitUV(const VideoFrame& src_frame, VideoFrame& dest_frame) {
                        src_frame.GetVisibleRows(VideoFrame::Plane::kUV));
 }
 
-bool NV12xScale(const VideoFrame& src_frame,
-                VideoFrame& dest_frame,
-                libyuv::FilterMode filter) {
+bool NVxxScale(const VideoFrame& src_frame,
+               VideoFrame& dest_frame,
+               libyuv::FilterMode filter) {
   DCHECK(src_frame.format() == PIXEL_FORMAT_NV12 ||
-         src_frame.format() == PIXEL_FORMAT_NV12A);
+         src_frame.format() == PIXEL_FORMAT_NV12A ||
+         src_frame.format() == PIXEL_FORMAT_NV16 ||
+         src_frame.format() == PIXEL_FORMAT_NV24);
   DCHECK(dest_frame.format() == PIXEL_FORMAT_NV12 ||
-         dest_frame.format() == PIXEL_FORMAT_NV12A);
-  if (libyuv::NV12Scale(
-          src_frame.visible_data(VideoFrame::Plane::kY),
-          src_frame.stride(VideoFrame::Plane::kY),
-          src_frame.visible_data(VideoFrame::Plane::kUV),
-          src_frame.stride(VideoFrame::Plane::kUV),
-          src_frame.visible_rect().width(), src_frame.visible_rect().height(),
-          dest_frame.GetWritableVisibleData(VideoFrame::Plane::kY),
-          dest_frame.stride(VideoFrame::Plane::kY),
-          dest_frame.GetWritableVisibleData(VideoFrame::Plane::kUV),
-          dest_frame.stride(VideoFrame::Plane::kUV),
-          dest_frame.visible_rect().width(), dest_frame.visible_rect().height(),
-          filter) != 0) {
-    return false;
+         dest_frame.format() == PIXEL_FORMAT_NV12A ||
+         dest_frame.format() == PIXEL_FORMAT_NV16 ||
+         dest_frame.format() == PIXEL_FORMAT_NV24);
+  DCHECK(dest_frame.format() != PIXEL_FORMAT_NV12A ||
+         src_frame.format() == PIXEL_FORMAT_NV12A);
+  if (src_frame.visible_rect().size() == dest_frame.visible_rect().size()) {
+    filter = libyuv::kFilterNone;
   }
-  if (dest_frame.format() == PIXEL_FORMAT_NV12) {
+  if (((src_frame.format() == PIXEL_FORMAT_NV12 ||
+        src_frame.format() == PIXEL_FORMAT_NV12A) &&
+       (dest_frame.format() == PIXEL_FORMAT_NV12 ||
+        dest_frame.format() == PIXEL_FORMAT_NV12A)) ||
+      (src_frame.format() == PIXEL_FORMAT_NV24 &&
+       dest_frame.format() == PIXEL_FORMAT_NV24)) {
+    auto scale = src_frame.format() == PIXEL_FORMAT_NV24 ? libyuv::NV24Scale
+                                                         : libyuv::NV12Scale;
+    if (scale(src_frame.visible_data(VideoFrame::Plane::kY),
+              src_frame.stride(VideoFrame::Plane::kY),
+              src_frame.visible_data(VideoFrame::Plane::kUV),
+              src_frame.stride(VideoFrame::Plane::kUV),
+              src_frame.visible_rect().width(),
+              src_frame.visible_rect().height(),
+              dest_frame.GetWritableVisibleData(VideoFrame::Plane::kY),
+              dest_frame.stride(VideoFrame::Plane::kY),
+              dest_frame.GetWritableVisibleData(VideoFrame::Plane::kUV),
+              dest_frame.stride(VideoFrame::Plane::kUV),
+              dest_frame.visible_rect().width(),
+              dest_frame.visible_rect().height(), filter) != 0) {
+      return false;
+    }
+  } else {
+    if (libyuv::ScalePlane(
+            src_frame.visible_data(VideoFrame::Plane::kY),
+            src_frame.stride(VideoFrame::Plane::kY),
+            src_frame.GetVisibleColumns(VideoFrame::Plane::kY),
+            src_frame.GetVisibleRows(VideoFrame::Plane::kY),
+            dest_frame.GetWritableVisibleData(VideoFrame::Plane::kY),
+            dest_frame.stride(VideoFrame::Plane::kY),
+            dest_frame.GetVisibleColumns(VideoFrame::Plane::kY),
+            dest_frame.GetVisibleRows(VideoFrame::Plane::kY), filter) != 0 ||
+        libyuv::UVScale(
+            src_frame.visible_data(VideoFrame::Plane::kUV),
+            src_frame.stride(VideoFrame::Plane::kUV),
+            src_frame.GetVisibleColumns(VideoFrame::Plane::kUV),
+            src_frame.GetVisibleRows(VideoFrame::Plane::kUV),
+            dest_frame.GetWritableVisibleData(VideoFrame::Plane::kUV),
+            dest_frame.stride(VideoFrame::Plane::kUV),
+            dest_frame.GetVisibleColumns(VideoFrame::Plane::kUV),
+            dest_frame.GetVisibleRows(VideoFrame::Plane::kUV), filter) != 0) {
+      return false;
+    }
+  }
+  if (dest_frame.format() != PIXEL_FORMAT_NV12A) {
     return true;
   }
   libyuv::ScalePlane(
@@ -468,42 +556,19 @@ bool NV12xScale(const VideoFrame& src_frame,
   return true;
 }
 
-bool NV12xToI420x(const VideoFrame& src_frame, VideoFrame& dest_frame) {
+void NVxxToI4xxx(const VideoFrame& src_frame, VideoFrame& dest_frame) {
   DCHECK(src_frame.format() == PIXEL_FORMAT_NV12 ||
-         src_frame.format() == PIXEL_FORMAT_NV12A);
+         src_frame.format() == PIXEL_FORMAT_NV12A ||
+         src_frame.format() == PIXEL_FORMAT_NV16 ||
+         src_frame.format() == PIXEL_FORMAT_NV24);
   DCHECK(dest_frame.format() == PIXEL_FORMAT_I420 ||
-         dest_frame.format() == PIXEL_FORMAT_I420A);
-  DCHECK_EQ(src_frame.visible_rect().size(), dest_frame.visible_rect().size());
-  if (libyuv::NV12ToI420(
-          src_frame.visible_data(VideoFrame::Plane::kY),
-          src_frame.stride(VideoFrame::Plane::kY),
-          src_frame.visible_data(VideoFrame::Plane::kUV),
-          src_frame.stride(VideoFrame::Plane::kUV),
-          dest_frame.GetWritableVisibleData(VideoFrame::Plane::kY),
-          dest_frame.stride(VideoFrame::Plane::kY),
-          dest_frame.GetWritableVisibleData(VideoFrame::Plane::kU),
-          dest_frame.stride(VideoFrame::Plane::kU),
-          dest_frame.GetWritableVisibleData(VideoFrame::Plane::kV),
-          dest_frame.stride(VideoFrame::Plane::kV),
-          dest_frame.visible_rect().width(),
-          dest_frame.visible_rect().height()) != 0) {
-    return false;
-  }
-  if (dest_frame.format() == PIXEL_FORMAT_I420) {
-    return true;
-  }
-  libyuv::CopyPlane(src_frame.visible_data(VideoFrame::Plane::kATriPlanar),
-                    src_frame.stride(VideoFrame::Plane::kATriPlanar),
-                    dest_frame.GetWritableVisibleData(VideoFrame::Plane::kA),
-                    dest_frame.stride(VideoFrame::Plane::kA),
-                    dest_frame.visible_rect().width(),
-                    dest_frame.visible_rect().height());
-  return true;
-}
-
-void NV24ToI444(const VideoFrame& src_frame, VideoFrame& dest_frame) {
-  DCHECK_EQ(src_frame.format(), PIXEL_FORMAT_NV24);
-  DCHECK_EQ(dest_frame.format(), PIXEL_FORMAT_I444);
+         dest_frame.format() == PIXEL_FORMAT_I420A ||
+         dest_frame.format() == PIXEL_FORMAT_I422 ||
+         dest_frame.format() == PIXEL_FORMAT_I444);
+  DCHECK(dest_frame.format() != PIXEL_FORMAT_I420A ||
+         src_frame.format() == PIXEL_FORMAT_NV12A);
+  DCHECK_EQ(VideoPixelFormatToChromaSampling(src_frame.format()),
+            VideoPixelFormatToChromaSampling(dest_frame.format()));
   DCHECK_EQ(src_frame.visible_rect().size(), dest_frame.visible_rect().size());
   libyuv::CopyPlane(src_frame.visible_data(VideoFrame::Plane::kY),
                     src_frame.stride(VideoFrame::Plane::kY),
@@ -512,12 +577,26 @@ void NV24ToI444(const VideoFrame& src_frame, VideoFrame& dest_frame) {
                     dest_frame.visible_rect().width(),
                     dest_frame.visible_rect().height());
   SplitUV(src_frame, dest_frame);
+  if (dest_frame.format() == PIXEL_FORMAT_I420A) {
+    libyuv::CopyPlane(src_frame.visible_data(VideoFrame::Plane::kATriPlanar),
+                      src_frame.stride(VideoFrame::Plane::kATriPlanar),
+                      dest_frame.GetWritableVisibleData(VideoFrame::Plane::kA),
+                      dest_frame.stride(VideoFrame::Plane::kA),
+                      dest_frame.visible_rect().width(),
+                      dest_frame.visible_rect().height());
+  }
 }
 
-bool NV12xToP010(const VideoFrame& src_frame, VideoFrame& dest_frame) {
+bool NVxxToPx10(const VideoFrame& src_frame, VideoFrame& dest_frame) {
   DCHECK(src_frame.format() == PIXEL_FORMAT_NV12 ||
-         src_frame.format() == PIXEL_FORMAT_NV12A);
-  DCHECK_EQ(dest_frame.format(), PIXEL_FORMAT_P010LE);
+         src_frame.format() == PIXEL_FORMAT_NV12A ||
+         src_frame.format() == PIXEL_FORMAT_NV16 ||
+         src_frame.format() == PIXEL_FORMAT_NV24);
+  DCHECK(dest_frame.format() == PIXEL_FORMAT_P010LE ||
+         dest_frame.format() == PIXEL_FORMAT_P210LE ||
+         dest_frame.format() == PIXEL_FORMAT_P410LE);
+  DCHECK_EQ(VideoPixelFormatToChromaSampling(src_frame.format()),
+            VideoPixelFormatToChromaSampling(dest_frame.format()));
   DCHECK_EQ(src_frame.visible_rect().size(), dest_frame.visible_rect().size());
 
   for (size_t i = 0; i < VideoFrame::NumPlanes(dest_frame.format()); ++i) {
@@ -540,7 +619,7 @@ bool NV12xToP010(const VideoFrame& src_frame, VideoFrame& dest_frame) {
   return true;
 }
 
-bool I4xxxPxxToP010(const VideoFrame& src_frame, VideoFrame& dest_frame) {
+bool I4xxxPxxToPx10(const VideoFrame& src_frame, VideoFrame& dest_frame) {
   DCHECK(src_frame.format() == PIXEL_FORMAT_YUV420P10 ||
          src_frame.format() == PIXEL_FORMAT_YUV422P10 ||
          src_frame.format() == PIXEL_FORMAT_YUV444P10 ||
@@ -550,7 +629,11 @@ bool I4xxxPxxToP010(const VideoFrame& src_frame, VideoFrame& dest_frame) {
          src_frame.format() == PIXEL_FORMAT_YUV420AP10 ||
          src_frame.format() == PIXEL_FORMAT_YUV422AP10 ||
          src_frame.format() == PIXEL_FORMAT_YUV444AP10);
-  DCHECK_EQ(dest_frame.format(), PIXEL_FORMAT_P010LE);
+  DCHECK(dest_frame.format() == PIXEL_FORMAT_P010LE ||
+         dest_frame.format() == PIXEL_FORMAT_P210LE ||
+         dest_frame.format() == PIXEL_FORMAT_P410LE);
+  DCHECK_EQ(VideoPixelFormatToChromaSampling(src_frame.format()),
+            VideoPixelFormatToChromaSampling(dest_frame.format()));
   DCHECK_EQ(src_frame.visible_rect().size(), dest_frame.visible_rect().size());
 
   const int depth = (src_frame.format() == PIXEL_FORMAT_YUV420P12 ||
@@ -645,35 +728,30 @@ bool Px10ToIx10(const VideoFrame& src_frame, VideoFrame& dest_frame) {
   return true;
 }
 
-bool P010ToNV12x(const VideoFrame& src_frame, VideoFrame& dest_frame) {
-  DCHECK_EQ(src_frame.format(), PIXEL_FORMAT_P010LE);
+void Px10ToNVxx(const VideoFrame& src_frame, VideoFrame& dest_frame) {
+  DCHECK(src_frame.format() == PIXEL_FORMAT_P010LE ||
+         src_frame.format() == PIXEL_FORMAT_P210LE ||
+         src_frame.format() == PIXEL_FORMAT_P410LE);
   DCHECK(dest_frame.format() == PIXEL_FORMAT_NV12 ||
-         dest_frame.format() == PIXEL_FORMAT_NV12A);
+         dest_frame.format() == PIXEL_FORMAT_NV16 ||
+         dest_frame.format() == PIXEL_FORMAT_NV24);
+  DCHECK_EQ(VideoPixelFormatToChromaSampling(src_frame.format()),
+            VideoPixelFormatToChromaSampling(dest_frame.format()));
   DCHECK_EQ(src_frame.visible_rect().size(), dest_frame.visible_rect().size());
-  if (libyuv::P010ToNV12(
-          reinterpret_cast<const uint16_t*>(
-              src_frame.visible_data(VideoFrame::Plane::kY)),
-          src_frame.stride(VideoFrame::Plane::kY) / 2,
-          reinterpret_cast<const uint16_t*>(
-              src_frame.visible_data(VideoFrame::Plane::kUV)),
-          src_frame.stride(VideoFrame::Plane::kUV) / 2,
-          dest_frame.GetWritableVisibleData(VideoFrame::Plane::kY),
-          dest_frame.stride(VideoFrame::Plane::kY),
-          dest_frame.GetWritableVisibleData(VideoFrame::Plane::kUV),
-          dest_frame.stride(VideoFrame::Plane::kUV),
-          dest_frame.visible_rect().width(),
-          dest_frame.visible_rect().height()) != 0) {
-    return false;
+
+  for (size_t i = 0; i < VideoFrame::NumPlanes(dest_frame.format()); ++i) {
+    int cols = dest_frame.GetVisibleColumns(i);
+    if (i == VideoFrame::Plane::kUV) {
+      cols *= 2;  // UV plane has 2 elements per chroma column.
+    }
+    libyuv::Convert16To8Plane(
+        base::subtle::reinterpret_span<const uint16_t>(
+            src_frame.GetVisiblePlaneData(i))
+            .data(),
+        src_frame.stride(i) / sizeof(uint16_t),
+        dest_frame.GetWritableVisibleData(i), dest_frame.stride(i),
+        /*scale=*/256, cols, dest_frame.GetVisibleRows(i));
   }
-  if (dest_frame.format() == PIXEL_FORMAT_NV12) {
-    return true;
-  }
-  libyuv::SetPlane(
-      dest_frame.GetWritableVisibleData(VideoFrame::Plane::kATriPlanar),
-      dest_frame.stride(VideoFrame::Plane::kATriPlanar),
-      dest_frame.GetVisibleColumns(VideoFrame::Plane::kATriPlanar),
-      dest_frame.GetVisibleRows(VideoFrame::Plane::kATriPlanar), 255);
-  return true;
 }
 
 }  // namespace media::internals

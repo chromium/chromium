@@ -26,11 +26,18 @@ MEDIA_EXPORT const libyuv::ArgbConstants* GetArgbConstantsForColorSpace(
 //
 // If a method doesn't support scaling it's noted in the comments.
 
+// Scaling not supported.
+void CopyVisiblePlanes(const VideoFrame& src_frame, VideoFrame& dst_frame);
+
 bool ARGBScale(const VideoFrame& src_frame,
                VideoFrame& dst_frame,
                libyuv::FilterMode filter);
 
 bool ARGBToI420x(const VideoFrame& src_frame,
+                 VideoFrame& dst_frame,
+                 const libyuv::ArgbConstants* matrix);
+
+bool ARGBToI422x(const VideoFrame& src_frame,
                  VideoFrame& dst_frame,
                  const libyuv::ArgbConstants* matrix);
 
@@ -54,10 +61,7 @@ void Convert8To16Plane(const VideoFrame& src_frame, VideoFrame& dst_frame);
 void Shift12To10(VideoFrame& frame);
 
 // Scaling not supported.
-bool I420xToNV12x(const VideoFrame& src_frame, VideoFrame& dst_frame);
-
-// Scaling not supported.
-bool I444xToNV12x(const VideoFrame& src_frame, VideoFrame& dst_frame);
+bool I4xxxToNVxx(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
 // Scaling not supported.
 void MergeUV(const VideoFrame& src_frame, VideoFrame& dst_frame);
@@ -65,27 +69,24 @@ void MergeUV(const VideoFrame& src_frame, VideoFrame& dst_frame);
 // Scaling not supported.
 void SplitUV(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
-bool NV12xScale(const VideoFrame& src_frame,
-                VideoFrame& dst_frame,
-                libyuv::FilterMode filter);
+bool NVxxScale(const VideoFrame& src_frame,
+               VideoFrame& dst_frame,
+               libyuv::FilterMode filter);
 
 // Scaling not supported.
-bool NV12xToI420x(const VideoFrame& src_frame, VideoFrame& dst_frame);
+void NVxxToI4xxx(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
 // Scaling not supported.
-void NV24ToI444(const VideoFrame& src_frame, VideoFrame& dst_frame);
+bool NVxxToPx10(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
 // Scaling not supported.
-bool NV12xToP010(const VideoFrame& src_frame, VideoFrame& dst_frame);
-
-// Scaling not supported.
-bool I4xxxPxxToP010(const VideoFrame& src_frame, VideoFrame& dst_frame);
+bool I4xxxPxxToPx10(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
 // Scaling not supported.
 bool Px10ToIx10(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
 // Scaling not supported.
-bool P010ToNV12x(const VideoFrame& src_frame, VideoFrame& dst_frame);
+void Px10ToNVxx(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
 }  // namespace media::internals
 
