@@ -15,9 +15,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -47,6 +49,7 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -586,6 +589,112 @@ public class MultiColumnSettingsUnitTest {
                             View.IMPORTANT_FOR_ACCESSIBILITY_AUTO,
                             headerGroup.getImportantForAccessibility());
                 });
+    }
+
+    @Test
+    @SmallTest
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    public void testEmptyBackStack_InTwoColumnMode_EnsuresInitialDetailFragment() {
+        mBlankUiActivityTestRule.launchActivity(null);
+        BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TestMultiColumnSettings settings = new TestMultiColumnSettings();
+                    settings.setIsTwoColumnForTesting(true);
+
+                    activity.getSupportFragmentManager()
+                            .beginTransaction()
+                            .add(android.R.id.content, settings)
+                            .commitNow();
+
+                    // Open a detail fragment with addToBackStack=true.
+                    settings.showDetailFragment(new TestFragment(), true, null);
+                    settings.getChildFragmentManager().executePendingTransactions();
+                    assertEquals(1, settings.getChildFragmentManager().getBackStackEntryCount());
+
+                    // Pop the back stack so entry count becomes 0.
+                    settings.getChildFragmentManager().popBackStackImmediate();
+                    assertEquals(0, settings.getChildFragmentManager().getBackStackEntryCount());
+
+                    // The initial detail fragment should be re-populated in two-column mode.
+                    assertNotNull(
+                            "Detail fragment should be present in two-column mode when back stack"
+                                    + " is empty",
+                            settings.getChildFragmentManager()
+                                    .findFragmentById(R.id.preferences_detail));
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    public void testEmptyBackStack_InSingleColumnMode_ClosesSlidingPane() {
+        mBlankUiActivityTestRule.launchActivity(null);
+        BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
+
+        final TestMultiColumnSettings[] settingsHolder = new TestMultiColumnSettings[1];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    DisplayMetrics metrics = activity.getResources().getDisplayMetrics();
+                    int narrowWidth =
+                            (int)
+                                    TypedValue.applyDimension(
+                                            TypedValue.COMPLEX_UNIT_DIP, 400, metrics);
+                    FrameLayout container = new FrameLayout(activity);
+                    container.setId(View.generateViewId());
+                    activity.setContentView(
+                            container,
+                            new ViewGroup.LayoutParams(
+                                    narrowWidth, ViewGroup.LayoutParams.MATCH_PARENT));
+
+                    TestMultiColumnSettings settings = new TestMultiColumnSettings();
+                    settingsHolder[0] = settings;
+                    settings.setIsTwoColumnForTesting(false);
+
+                    activity.getSupportFragmentManager()
+                            .beginTransaction()
+                            .add(container.getId(), settings)
+                            .commitNow();
+                });
+
+        // Wait for the layout and measure pass to complete so SlidingPaneLayout evaluates
+        // isSlideable() with the narrow container width.
+        CriteriaHelper.pollUiThread(
+                () -> settingsHolder[0].getSlidingPaneLayout().isSlideable(),
+                "SlidingPaneLayout should become slideable with narrow container");
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TestMultiColumnSettings settings = settingsHolder[0];
+                    // Open a detail fragment with addToBackStack=true.
+                    settings.showDetailFragment(new TestFragment(), true, null);
+                    settings.getChildFragmentManager().executePendingTransactions();
+                });
+
+        // Wait for the detail pane to slide open.
+        CriteriaHelper.pollUiThread(
+                () -> settingsHolder[0].getSlidingPaneLayout().isOpen(),
+                "SlidingPaneLayout should open when detail fragment is shown");
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(
+                            1,
+                            settingsHolder[0].getChildFragmentManager().getBackStackEntryCount());
+                    // Pop the back stack so entry count becomes 0.
+                    settingsHolder[0].getChildFragmentManager().popBackStackImmediate();
+                    assertEquals(
+                            0,
+                            settingsHolder[0].getChildFragmentManager().getBackStackEntryCount());
+                });
+
+        // In single-column mode, SlidingPaneLayout should close when detail is popped.
+        CriteriaHelper.pollUiThread(
+                () -> !settingsHolder[0].getSlidingPaneLayout().isOpen(),
+                "SlidingPaneLayout closes when detail fragment is popped in single-column mode");
     }
 
     @Test

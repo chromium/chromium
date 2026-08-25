@@ -779,6 +779,10 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         }
 
         void updateEnabledState() {
+            // This method may be called from delayed tasks that outlive the view, for example the
+            // postDelayed() call in onViewCreated().
+            if (getView() == null) return;
+
             // Trigger closePane() when
             // - the first page was the main menu, or main menu is not yet created
             //   after activity restart.
@@ -1088,6 +1092,8 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         getChildFragmentManager()
                 .addOnBackStackChangedListener(
                         () -> {
+                            // This listener can outlive the View lifecycle.
+                            if (getView() == null) return;
                             // On some specific devices, FragmentManager's BackStackChangedListener
                             // seems to be called *before* the back stack is updated, specifically
                             // if this is triggered from the system back button and the fragment
@@ -1104,6 +1110,22 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
                                 getSlidingPaneLayout()
                                         .postDelayed(
                                                 mOnBackPressedCallback::updateEnabledState, 100);
+                            }
+                            // When the back stack becomes empty (e.g. after popping a detail
+                            // fragment added in single-column mode or finishing a subpage):
+                            // - In two-column mode, populate the initial detail fragment so the
+                            //   detail pane does not remain blank.
+                            // - In single-column mode, close the sliding pane and restore header
+                            //   focusability when no detail fragment remains.
+                            if (getChildFragmentManager().getBackStackEntryCount() == 0) {
+                                if (isTwoColumn()) {
+                                    ensureInitialDetailFragment();
+                                } else if (getChildFragmentManager()
+                                                .findFragmentById(R.id.preferences_detail)
+                                        == null) {
+                                    getSlidingPaneLayout().closePane();
+                                    updateHeaderPaneFocusability();
+                                }
                             }
                         });
 

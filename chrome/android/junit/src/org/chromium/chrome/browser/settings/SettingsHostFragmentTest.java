@@ -408,6 +408,37 @@ public class SettingsHostFragmentTest {
     }
 
     @Test
+    public void testFinishCurrentSettings_MultiColumnSettings_TwoColumnMode() {
+        // Create a MultiColumnSettings with a FirstFakeSettingsFragment as the initial fragment.
+        mSettingsHostFragment = new TestMultiColumnSettingsHostFragment();
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(
+                        android.R.id.content,
+                        mSettingsHostFragment,
+                        SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG)
+                .commitNow();
+
+        MultiColumnSettings multiColumnSettings =
+                (MultiColumnSettings) mSettingsHostFragment.getActiveFragment();
+        assertNotNull(multiColumnSettings);
+
+        // Show a detail fragment in two-column mode.
+        multiColumnSettings.showDetailFragment(
+                new SecondFakeSettingsFragment(), /* addToBackStack= */ false, /* tag= */ null);
+        multiColumnSettings.getChildFragmentManager().executePendingTransactions();
+
+        Fragment active = mSettingsHostFragment.getMainFragment();
+        assertTrue(active instanceof SecondFakeSettingsFragment);
+
+        // Finishing settings should reset the detail fragment to the initial detail fragment.
+        mSettingsHostFragment.finishCurrentSettings(active);
+        multiColumnSettings.getChildFragmentManager().executePendingTransactions();
+        assertTrue(mSettingsHostFragment.getMainFragment() instanceof FirstFakeSettingsFragment);
+    }
+
+    @Test
     public void testSetDependencyProvider_whenNotAdded_defersRegistrationUntilAttached() {
         SettingsHostFragment fragment = new TestSettingsHostFragment();
         FragmentDependencyProvider mockProvider = mock(FragmentDependencyProvider.class);
