@@ -72,14 +72,14 @@ SkiaVkAndroidImageRepresentation::BeginWriteAccess(
   DCHECK_EQ(mode_, RepresentationAccessMode::kNone);
   DCHECK(promise_texture_);
 
-  if (!BeginAccess(/*readonly=*/false, begin_semaphores, end_semaphores,
-                   base::ScopedFD())) {
-    return {};
-  }
-
   auto* gr_context = context_state_->gr_context();
   if (gr_context->abandoned()) {
     LOG(ERROR) << "GrContext is abandoned.";
+    return {};
+  }
+
+  if (!BeginAccess(/*readonly=*/false, begin_semaphores, end_semaphores,
+                   base::ScopedFD())) {
     return {};
   }
 
@@ -92,15 +92,13 @@ SkiaVkAndroidImageRepresentation::BeginWriteAccess(
         &surface_props);
     if (!surface_) {
       LOG(ERROR) << "MakeFromBackendTexture() failed.";
+      EndAccess(/*readonly=*/false);
       return {};
     }
     surface_msaa_count_ = final_msaa_count;
   }
 
   *end_state = GetEndAccessState();
-
-  if (!surface_)
-    return {};
   return {surface_};
 }
 
@@ -119,8 +117,10 @@ SkiaVkAndroidImageRepresentation::BeginWriteAccess(
 
   *end_state = GetEndAccessState();
 
-  if (!promise_texture_)
+  if (!promise_texture_) {
+    EndAccess(/*readonly=*/false);
     return {};
+  }
   return {promise_texture_};
 }
 
@@ -154,8 +154,10 @@ SkiaVkAndroidImageRepresentation::BeginReadAccess(
 
   *end_state = GetEndAccessState();
 
-  if (!promise_texture_)
+  if (!promise_texture_) {
+    EndAccess(/*readonly=*/true);
     return {};
+  }
   return {promise_texture_};
 }
 

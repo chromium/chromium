@@ -132,6 +132,7 @@ SkiaGLImageRepresentationDXGISwapChain::BeginWriteAccess(
   if (!surfaces.empty()) {
     if (!static_cast<DXGISwapChainImageBacking*>(backing())
              ->DidBeginWriteAccess(update_rect)) {
+      SkiaGLImageRepresentation::EndWriteAccess();
       return {};
     }
   }

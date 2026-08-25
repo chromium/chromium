@@ -89,6 +89,7 @@ ExternalVkImageSkiaImageRepresentation::BeginWriteAccess(
       if (!surface) {
         DLOG(ERROR) << "MakeFromBackendTexture() failed.";
         context_state_->EraseCachedSkSurface(promise_texture.get());
+        EndAccess(/*readonly=*/false);
         return {};
       }
       context_state_->CacheSkSurface(promise_texture.get(), surface);

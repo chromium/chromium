@@ -45,23 +45,29 @@ bool GLTexturePassthroughAndroidImageRepresentation::BeginAccess(GLenum mode) {
 
   if (read_only_mode) {
     base::ScopedFD write_sync_fd;
-    if (!android_backing()->BeginRead(this, &write_sync_fd))
+    if (!android_backing()->BeginRead(this, &write_sync_fd)) {
       return false;
-    if (!gl::InsertEglFenceAndWait(std::move(write_sync_fd)))
+    }
+    if (!gl::InsertEglFenceAndWait(std::move(write_sync_fd))) {
+      android_backing()->EndRead(this, base::ScopedFD());
       return false;
+    }
   } else {
     base::ScopedFD sync_fd;
-    if (!android_backing()->BeginWrite(&sync_fd))
+    if (!android_backing()->BeginWrite(&sync_fd)) {
       return false;
-
-    if (!gl::InsertEglFenceAndWait(std::move(sync_fd)))
+    }
+    if (!gl::InsertEglFenceAndWait(std::move(sync_fd))) {
+      android_backing()->EndWrite(base::ScopedFD());
       return false;
+    }
   }
 
-  if (read_only_mode)
+  if (read_only_mode) {
     mode_ = RepresentationAccessMode::kRead;
-  else
+  } else {
     mode_ = RepresentationAccessMode::kWrite;
+  }
 
   return true;
 }
