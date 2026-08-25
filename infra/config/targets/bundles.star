@@ -4299,13 +4299,13 @@ targets.bundle(
         "android_webview_gpu_telemetry_tests",
         "gpu_passthrough_ganesh_telemetry_tests",
         "gpu_passthrough_telemetry_tests",
-        "gpu_webcodecs_validating_ganesh_telemetry_test",
         "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl2_conformance_validating_telemetry_tests",
         "gpu_webgl_conformance_gles_passthrough_ganesh_telemetry_tests",
         "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl_conformance_validating_ganesh_telemetry_tests",
-        "gpu_webrtc_validating_ganesh_telemetry_test",
+        "webcodecs_validating_ganesh_tests",
+        "webrtc_validating_ganesh_tests",
     ],
     per_test_modifications = {
         "gpu_process_launch_tests": targets.remove(
@@ -4657,24 +4657,6 @@ targets.bundle(
     },
 )
 
-# TODO(crbug.com/541312843): Update this to properly include validating/ganesh
-# in the suite name.
-targets.bundle(
-    name = "gpu_webcodecs_validating_ganesh_telemetry_test",
-    targets = [
-        "webcodecs_tests",
-    ],
-    per_test_modifications = {
-        "webcodecs_tests": [
-            targets.mixin(
-                args = [
-                    "--extra-browser-args=--use-cmd-decoder=validating --disable-skia-graphite",
-                ],
-            ),
-        ],
-    },
-)
-
 targets.bundle(
     name = "gpu_webcodecs_validating_graphite_telemetry_test",
     targets = [
@@ -4806,24 +4788,6 @@ targets.bundle(
                 android_swarming = targets.swarming(
                     shards = 6,
                 ),
-            ),
-        ],
-    },
-)
-
-# TODO(crbug.com/541312843): Actually include validating/ganesh in the suite
-# name.
-targets.bundle(
-    name = "gpu_webrtc_validating_ganesh_telemetry_test",
-    targets = [
-        "webrtc_tests",
-    ],
-    per_test_modifications = {
-        "webrtc_tests": [
-            targets.mixin(
-                args = [
-                    "--extra-browser-args=--use-cmd-decoder=validating --disable-skia-graphite",
-                ],
             ),
         ],
     },

@@ -2747,6 +2747,18 @@ targets.tests.gpu_telemetry_test(
 )
 
 targets.tests.gpu_telemetry_test(
+    name = "webcodecs_validating_ganesh_tests",
+    telemetry_test_name = "webcodecs",
+    mixins = [
+        "has_native_resultdb_integration",
+        "gpu_force_command_decoder_validating",
+        "gpu_force_skia_ganesh",
+        "gpu_integration_test_common_args",
+    ],
+    module_scheme = "flat",
+)
+
+targets.tests.gpu_telemetry_test(
     name = "webrtc_metal_passthrough_graphite_tests",
     telemetry_test_name = "webrtc",
     mixins = [
@@ -2776,6 +2788,18 @@ targets.tests.gpu_telemetry_test(
     telemetry_test_name = "webrtc",
     mixins = [
         "has_native_resultdb_integration",
+        "gpu_integration_test_common_args",
+    ],
+    module_scheme = "flat",
+)
+
+targets.tests.gpu_telemetry_test(
+    name = "webrtc_validating_ganesh_tests",
+    telemetry_test_name = "webrtc",
+    mixins = [
+        "has_native_resultdb_integration",
+        "gpu_force_command_decoder_validating",
+        "gpu_force_skia_ganesh",
         "gpu_integration_test_common_args",
     ],
     module_scheme = "flat",

@@ -160,7 +160,7 @@ ci.thin_tester(
             "screenshot_sync_passthrough_tests": targets.remove(
                 reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
-            "webcodecs_tests": targets.remove(
+            "webcodecs_validating_ganesh_tests": targets.remove(
                 reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
             "webgl_conformance_gles_passthrough_ganesh_tests": targets.remove(
@@ -169,7 +169,7 @@ ci.thin_tester(
             "webgl_conformance_validating_ganesh_tests": targets.remove(
                 reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
-            "webrtc_tests": targets.remove(
+            "webrtc_validating_ganesh_tests": targets.remove(
                 reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
         },
@@ -562,7 +562,7 @@ ci.thin_tester(
             "webcodecs_graphite_tests": targets.remove(
                 reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
-            "webcodecs_tests": targets.per_test_modification(
+            "webcodecs_validating_ganesh_tests": targets.per_test_modification(
                 mixins = targets.mixin(
                     swarming = targets.swarming(
                         shards = 9,  # due to many timeouts crbug.com/447317875
@@ -598,7 +598,7 @@ ci.thin_tester(
             "webrtc_graphite_tests": targets.remove(
                 reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
-            "webrtc_tests": targets.per_test_modification(
+            "webrtc_validating_ganesh_tests": targets.per_test_modification(
                 replacements = targets.replacements(
                     args = {
                         # This is currently necessary due to this config
@@ -685,7 +685,7 @@ ci.thin_tester(
             "screenshot_sync_passthrough_tests": targets.remove(
                 reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
-            "webcodecs_tests": targets.remove(
+            "webcodecs_validating_ganesh_tests": targets.remove(
                 reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
             "webgl2_conformance_gles_passthrough_tests": targets.remove(
@@ -700,7 +700,7 @@ ci.thin_tester(
             "webgl_conformance_gles_passthrough_tests": targets.remove(
                 reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
-            "webrtc_tests": targets.remove(
+            "webrtc_validating_ganesh_tests": targets.remove(
                 reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
             "gl_tests_validating": targets.mixin(
@@ -782,7 +782,7 @@ ci.thin_tester(
             "screenshot_sync_passthrough_tests": targets.remove(
                 reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
-            "webcodecs_tests": targets.remove(
+            "webcodecs_validating_ganesh_tests": targets.remove(
                 reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
             "webgl2_conformance_gles_passthrough_tests": targets.remove(
@@ -797,7 +797,7 @@ ci.thin_tester(
             "webgl_conformance_gles_passthrough_tests": targets.remove(
                 reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
-            "webrtc_tests": targets.remove(
+            "webrtc_validating_ganesh_tests": targets.remove(
                 reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
             "gl_tests_validating": targets.mixin(
@@ -895,7 +895,7 @@ ci.thin_tester(
             "webcodecs_graphite_tests": targets.remove(
                 reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
-            "webcodecs_tests": targets.remove(
+            "webcodecs_validating_ganesh_tests": targets.remove(
                 reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
             "webgl2_conformance_gles_passthrough_tests": targets.remove(
@@ -919,7 +919,7 @@ ci.thin_tester(
             "webrtc_graphite_tests": targets.remove(
                 reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
-            "webrtc_tests": targets.remove(
+            "webrtc_validating_ganesh_tests": targets.remove(
                 reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
             ),
         },

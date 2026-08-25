@@ -1064,7 +1064,7 @@
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test_android_chrome",
         "module_scheme": "flat",
-        "name": "webcodecs_tests",
+        "name": "webcodecs_validating_ganesh_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1274,7 +1274,7 @@
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test_android_chrome",
         "module_scheme": "flat",
-        "name": "webrtc_tests",
+        "name": "webrtc_validating_ganesh_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
