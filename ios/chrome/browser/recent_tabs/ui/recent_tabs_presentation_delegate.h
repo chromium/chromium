@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#include <string>
+
 namespace synced_sessions {
 struct DistantSession;
 }
@@ -30,6 +32,8 @@ struct DistantSession;
 // Asks the presenter to display the reauthenticate the primary account.
 // The primary should be available.
 - (void)showPrimaryAccountReauth;
+// Tells the receiver to delete the foreign session with `sessionTag`.
+- (void)deleteForeignSession:(const std::string&)sessionTag;
 @end
 
 #endif  // IOS_CHROME_BROWSER_RECENT_TABS_UI_RECENT_TABS_PRESENTATION_DELEGATE_H_

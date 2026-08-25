@@ -26,7 +26,6 @@
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/authentication/history_sync/coordinator/history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/history_sync/model/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_consumer.h"
@@ -794,7 +793,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
         [weakSelf removeSection:sectionIdentifier forSessionWithTag:sessionTag];
       }
       completion:^(BOOL) {
-        [weakSelf deleteSession:sessionTag];
+        [weakSelf.presentationDelegate deleteForeignSession:sessionTag];
       }];
 }
 
@@ -831,13 +830,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
   [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex]
                 withRowAnimation:UITableViewRowAnimationLeft];
-}
-
-// Helper for removeSessionAtTableSectionWithIdentifier
-- (void)deleteSession:(std::string)sessionTag {
-  SessionSyncServiceFactory::GetForProfile(self.profile)
-      ->GetOpenTabsUIDelegate()
-      ->DeleteForeignSession(sessionTag);
 }
 
 #pragma mark - Private

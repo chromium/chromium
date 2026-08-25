@@ -13,6 +13,8 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service.h"
+#import "components/sync_sessions/open_tabs_ui_delegate.h"
+#import "components/sync_sessions/session_sync_service.h"
 #import "ios/chrome/browser/authentication/history_sync/coordinator/history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/history_sync/coordinator/history_sync_popup_coordinator.h"
 #import "ios/chrome/browser/authentication/history_sync/model/history_sync_utils.h"
@@ -284,6 +286,12 @@
     _historySyncPopupCoordinator.delegate = self;
     [_historySyncPopupCoordinator start];
   }
+}
+
+- (void)deleteForeignSession:(const std::string&)sessionTag {
+  SessionSyncServiceFactory::GetForProfile(self.profile)
+      ->GetOpenTabsUIDelegate()
+      ->DeleteForeignSession(sessionTag);
 }
 
 #pragma mark - RecentTabsContextMenuDelegate

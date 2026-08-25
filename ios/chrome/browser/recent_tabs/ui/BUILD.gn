@@ -20,7 +20,6 @@ source_set("ui") {
     "//components/sync",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/history_sync/coordinator",
     "//ios/chrome/browser/authentication/history_sync/model:history_sync_utils",
     "//ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator",
     "//ios/chrome/browser/authentication/ui_bundled",
