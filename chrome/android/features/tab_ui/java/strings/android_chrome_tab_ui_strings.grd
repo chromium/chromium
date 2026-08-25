@@ -1103,11 +1103,27 @@
           =1 {Move tab right}
           other {Move tabs right}}
       </message>
+      <message name="IDS_MOVE_TABS_UP" desc="Menu item for moving tab(s) up in the vertical tab order.">
+        {TAB_COUNT, plural,
+          =1 {Move tab up}
+          other {Move tabs up}}
+      </message>
+      <message name="IDS_MOVE_TABS_DOWN" desc="Menu item for moving tab(s) down in the vertical tab order.">
+        {TAB_COUNT, plural,
+          =1 {Move tab down}
+          other {Move tabs down}}
+      </message>
       <message name="IDS_MOVE_TAB_GROUP_LEFT" desc="Menu item for moving a tab group to the left in the tab strip order.">
         Move tab group left
       </message>
       <message name="IDS_MOVE_TAB_GROUP_RIGHT" desc="Menu item for moving a tab group to the right in the tab strip order.">
         Move tab group right
+      </message>
+      <message name="IDS_MOVE_TAB_GROUP_UP" desc="Menu item for moving a tab group up in the vertical tab order.">
+        Move tab group up
+      </message>
+      <message name="IDS_MOVE_TAB_GROUP_DOWN" desc="Menu item for moving a tab group down in the vertical tab order.">
+        Move tab group down
       </message>
       <message name="IDS_PIN_TABS_MENU_ITEM" desc="Content description for an action which pins a selection of tabs.">
         {TAB_COUNT, plural,

@@ -97,12 +97,17 @@ public abstract class TabStripReorderingHelper<T> extends TabOverflowMenuCoordin
      *     truly left, not "start", so it is still left in RTL.
      * @param moveRightString The string for moving an item of this type to the right.
      * @param isIncognito Whether this tab strip item is in an incognito model.
+     * @param isVertical Whether the layout is vertical (where RTL flipping is skipped).
      * @return A list of menu list items for reordering the item with id {@code id}.
      */
     protected List<ListItem> createReorderItems(
-            T id, String moveLeftString, String moveRightString, boolean isIncognito) {
+            T id,
+            String moveLeftString,
+            String moveRightString,
+            boolean isIncognito,
+            boolean isVertical) {
         if (!isGesturesEnabled()) return List.of();
-        boolean isRtl = LocalizationUtils.isLayoutRtl();
+        boolean isRtl = LocalizationUtils.isLayoutRtl() && !isVertical;
         ListItem moveTowardsStartItem =
                 new ListItemBuilder()
                         .withTitle(isRtl ? moveRightString : moveLeftString)

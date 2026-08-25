@@ -1277,17 +1277,16 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     }
 
     private List<ListItem> createReorderItems(AnchorInfo anchorInfo, boolean isIncognito) {
+        boolean isVerticalTabs = mTabStripLayout == TabStripLayoutType.VERTICAL;
+        int moveStartPlural = isVerticalTabs ? R.plurals.move_tabs_up : R.plurals.move_tabs_left;
+        int moveEndPlural = isVerticalTabs ? R.plurals.move_tabs_down : R.plurals.move_tabs_right;
+        int count = anchorInfo.getAllTabIds().size();
         return createReorderItems(
                 anchorInfo,
-                mActivity
-                        .getResources()
-                        .getQuantityString(
-                                R.plurals.move_tabs_left, anchorInfo.getAllTabIds().size()),
-                mActivity
-                        .getResources()
-                        .getQuantityString(
-                                R.plurals.move_tabs_right, anchorInfo.getAllTabIds().size()),
-                isIncognito);
+                mActivity.getResources().getQuantityString(moveStartPlural, count),
+                mActivity.getResources().getQuantityString(moveEndPlural, count),
+                isIncognito,
+                isVerticalTabs);
     }
 
     /** Ungroups any tabs in {@code tabs} which are currently in a group. */
