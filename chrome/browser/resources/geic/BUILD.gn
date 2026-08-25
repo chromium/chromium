@@ -34,7 +34,16 @@ bundle_js("geic_mojo_bindings_rollup") {
   input = rebase_path("$target_gen_dir/tsc", root_build_dir)
   js_module_in_files = [ "geic_mojo_bindings_wrapper.js" ]
 
-  deps = [ ":build_ts" ]
+  deps = [
+    ":build_ts",
+
+    # Unlike standard WebUI, the panel is a remote HTTPS origin and can't load
+    # from chrome://resources/, so bindings.js is inlined into the bundle rather
+    # than excluded. That makes it a build input, so declare where it comes
+    # from.
+
+    "//mojo/public/js:bindings_module",
+  ]
 
   external_paths = [
     "//resources/mojo/mojo/public/js/|" +
