@@ -1538,10 +1538,10 @@ PartitionRoot::GetAdjustedSizeForAlignment(size_t alignment,
   // slot span are aligned to slot size, from the beginning of the span.
   //
   // For alignments <=PartitionPageSize(), the code below adjusts the request
-  // size to be a power of two, no less than alignment. Since slot spans are
-  // aligned to PartitionPageSize(), which is also a power of two, this will
-  // automatically guarantee alignment on the adjusted size boundary, thanks to
-  // the natural alignment described above.
+  // size to be a multiple of alignment, no less than alignment. Since slot
+  // spans are aligned to PartitionPageSize(), which is a multiple of alignment,
+  // every slot in the slot span will automatically guarantee alignment on the
+  // adjusted size boundary, thanks to the natural alignment described above.
   //
   // For alignments >PartitionPageSize(), we need to pass the request down the
   // stack to only give us a slot span aligned to this more restrictive
@@ -1580,13 +1580,18 @@ PartitionRoot::GetAdjustedSizeForAlignment(size_t alignment,
     if (raw_size < alignment) [[unlikely]] {
       raw_size = alignment;
     } else {
-      // PartitionAlloc only guarantees alignment for power-of-two sized
-      // allocations. To make sure this applies here, round up the allocation
-      // size.
-      raw_size = static_cast<size_t>(1)
-                 << (int{sizeof(size_t) * 8} - std::countl_zero(raw_size - 1));
+      if (settings_.use_tighter_aligned_alloc_bound) {
+        raw_size = internal::base::bits::AlignUp(raw_size, alignment);
+      } else {
+        // PartitionAlloc only guarantees alignment for power-of-two sized
+        // allocations. To make sure this applies here, round up the allocation
+        // size.
+        raw_size = static_cast<size_t>(1) << (int{sizeof(size_t) * 8} -
+                                              std::countl_zero(raw_size - 1));
+        PA_DCHECK(std::has_single_bit(raw_size));
+      }
     }
-    PA_DCHECK(std::has_single_bit(raw_size));
+    PA_DCHECK(raw_size % alignment == 0);
     // Adjust back, because AllocInternalNoHooks/Alloc will adjust it again.
     adjusted_size = AdjustSizeForExtrasSubtract(raw_size);
     // TODO(crbug.com/491627887): Remove this metric once we've confirmed the

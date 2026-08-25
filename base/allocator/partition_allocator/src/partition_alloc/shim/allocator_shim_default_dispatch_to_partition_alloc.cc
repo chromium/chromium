@@ -1075,7 +1075,8 @@ void ConfigurePartitions(
         scheduler_loop_quarantine_thread_local_config,
     partition_alloc::internal::SchedulerLoopQuarantineConfig
         scheduler_loop_quarantine_for_advanced_memory_safety_checks_config,
-    EventuallyZeroFreedMemory eventually_zero_freed_memory) {
+    EventuallyZeroFreedMemory eventually_zero_freed_memory,
+    EnableTighterAlignedAllocBound enable_tighter_aligned_alloc_bound) {
   partition_alloc::PartitionOptions opts;
   // The caller of ConfigurePartitions() will decide whether this or
   // another partition will have the thread cache enabled, by calling
@@ -1088,6 +1089,10 @@ void ConfigurePartitions(
   opts.backup_ref_ptr_extra_extras_size = brp_extra_extras_size;
   opts.eventually_zero_freed_memory =
       eventually_zero_freed_memory
+          ? partition_alloc::PartitionOptions::kEnabled
+          : partition_alloc::PartitionOptions::kDisabled;
+  opts.tighter_aligned_alloc_bound =
+      enable_tighter_aligned_alloc_bound
           ? partition_alloc::PartitionOptions::kEnabled
           : partition_alloc::PartitionOptions::kDisabled;
   opts.scheduler_loop_quarantine_global_config =

@@ -1152,6 +1152,9 @@ void PartitionRoot::Init(PartitionOptions opts) {
         internal::GetMetadataOffset(settings_.pool_handle);
 #endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
 
+    settings_.use_tighter_aligned_alloc_bound =
+        (opts.tighter_aligned_alloc_bound == PartitionOptions::kEnabled);
+
     initialized_ = true;
   }
 

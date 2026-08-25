@@ -167,6 +167,7 @@ struct PartitionOptions {
   ThreadIsolationOption thread_isolation;
 #endif
 
+  EnableToggle tighter_aligned_alloc_bound = kDisabled;
 };
 
 constexpr PartitionOptions::PartitionOptions() = default;
@@ -251,6 +252,8 @@ class alignas(internal::kPartitionCachelineSize)
 #if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
     std::ptrdiff_t metadata_offset_ = 0;
 #endif
+
+    bool use_tighter_aligned_alloc_bound = false;
   };
 
   Settings settings_;
@@ -626,6 +629,12 @@ class alignas(internal::kPartitionCachelineSize)
   void ResetForTesting(bool allow_leaks);
   void ResetBookkeepingForTesting();
   void SetGlobalEmptySlotSpanRingIndexForTesting(int16_t index);
+  void SetUseTighterAlignedAllocBoundForTesting(bool enable) {
+    settings_.use_tighter_aligned_alloc_bound = enable;
+  }
+  bool use_tighter_aligned_alloc_bound_for_testing() const {
+    return settings_.use_tighter_aligned_alloc_bound;
+  }
 
   PA_ALWAYS_INLINE BucketDistribution GetBucketDistribution() const;
 
