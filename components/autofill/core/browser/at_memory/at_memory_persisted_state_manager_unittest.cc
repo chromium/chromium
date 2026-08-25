@@ -12,9 +12,19 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace autofill {
 namespace {
+
+url::Origin FieldOrigin() {
+  return url::Origin::Create(GURL("https://example.com"));
+}
+
+url::Origin OtherFieldOrigin() {
+  return url::Origin::Create(GURL("https://other.com"));
+}
 
 class AtMemoryPersistedStateManagerTest : public testing::Test {
  public:
@@ -31,19 +41,24 @@ class AtMemoryPersistedStateManagerTest : public testing::Test {
 };
 
 TEST_F(AtMemoryPersistedStateManagerTest, ReturnsNulloptForNewField) {
-  EXPECT_EQ(state_manager().GetInitialStateForField(field_id()), std::nullopt);
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
+            std::nullopt);
+  EXPECT_EQ(state_manager().field_origin(), FieldOrigin());
 }
 
 TEST_F(AtMemoryPersistedStateManagerTest, OpenCloseWithoutEditReturnsNullopt) {
-  EXPECT_EQ(state_manager().GetInitialStateForField(field_id()), std::nullopt);
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
+            std::nullopt);
   // Opening again on the same field without typing or searching returns
   // nullopt.
-  EXPECT_EQ(state_manager().GetInitialStateForField(field_id()), std::nullopt);
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
+            std::nullopt);
+  EXPECT_EQ(state_manager().field_origin(), FieldOrigin());
 }
 
 TEST_F(AtMemoryPersistedStateManagerTest,
        StoresFilterAndSuggestionsForSameField) {
-  state_manager().GetInitialStateForField(field_id());
+  state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().OnFilterSubmitted(u"address");
   EXPECT_TRUE(state_manager().IsSearching());
 
@@ -55,30 +70,33 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   EXPECT_FALSE(state_manager().IsSearching());
 
   const std::optional<AtMemoryManagerState>& restored_state =
-      state_manager().GetInitialStateForField(field_id());
+      state_manager().GetStateForField(field_id(), FieldOrigin());
   ASSERT_TRUE(restored_state.has_value());
   EXPECT_EQ(restored_state->filter, u"address");
   ASSERT_EQ(restored_state->suggestions.size(), 1u);
   EXPECT_EQ(restored_state->suggestions[0].main_text.value, u"123 Main St");
   EXPECT_FALSE(restored_state->is_searching);
+  EXPECT_EQ(state_manager().field_origin(), FieldOrigin());
 }
 
 TEST_F(AtMemoryPersistedStateManagerTest,
        ResetsStateWhenAccessingDifferentField) {
-  state_manager().GetInitialStateForField(field_id());
+  state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().OnFilterSubmitted(u"address");
 
   std::vector<Suggestion> suggestions;
   suggestions.emplace_back(u"123 Main St", SuggestionType::kAddressEntry);
   state_manager().OnSuggestionsChanged(suggestions);
 
-  EXPECT_EQ(state_manager().GetInitialStateForField(other_field_id()),
+  EXPECT_EQ(state_manager().GetStateForField(other_field_id(),
+                                                    OtherFieldOrigin()),
             std::nullopt);
+  EXPECT_EQ(state_manager().field_origin(), OtherFieldOrigin());
 }
 
 TEST_F(AtMemoryPersistedStateManagerTest,
        OnFilterChangedClearsSuggestionsAndSearching) {
-  state_manager().GetInitialStateForField(field_id());
+  state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().OnFilterSubmitted(u"addr");
   EXPECT_TRUE(state_manager().IsSearching());
 
@@ -86,7 +104,7 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   EXPECT_FALSE(state_manager().IsSearching());
 
   const std::optional<AtMemoryManagerState>& state =
-      state_manager().GetInitialStateForField(field_id());
+      state_manager().GetStateForField(field_id(), FieldOrigin());
   ASSERT_TRUE(state.has_value());
   EXPECT_EQ(state->filter, u"add");
   EXPECT_TRUE(state->suggestions.empty());
@@ -94,20 +112,23 @@ TEST_F(AtMemoryPersistedStateManagerTest,
 
   // Clearing the filter resets state so that next open returns nullopt.
   state_manager().OnFilterChanged(u"");
-  EXPECT_EQ(state_manager().GetInitialStateForField(field_id()), std::nullopt);
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
+            std::nullopt);
 }
 
 TEST_F(AtMemoryPersistedStateManagerTest, OnSuggestionAcceptedResetsState) {
-  state_manager().GetInitialStateForField(field_id());
+  state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().OnFilterSubmitted(u"address");
   state_manager().OnSuggestionAccepted();
 
-  EXPECT_EQ(state_manager().GetInitialStateForField(field_id()), std::nullopt);
+  EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
+            std::nullopt);
+  EXPECT_EQ(state_manager().field_origin(), FieldOrigin());
 }
 
 TEST_F(AtMemoryPersistedStateManagerTest,
        StopSearchingClearsIncompleteSuggestions) {
-  state_manager().GetInitialStateForField(field_id());
+  state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().OnFilterSubmitted(u"ongoing_query");
   EXPECT_TRUE(state_manager().IsSearching());
 
@@ -119,7 +140,7 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   EXPECT_FALSE(state_manager().IsSearching());
 
   const std::optional<AtMemoryManagerState>& restored_state =
-      state_manager().GetInitialStateForField(field_id());
+      state_manager().GetStateForField(field_id(), FieldOrigin());
   ASSERT_TRUE(restored_state.has_value());
   EXPECT_EQ(restored_state->filter, u"ongoing_query");
   EXPECT_TRUE(restored_state->suggestions.empty());

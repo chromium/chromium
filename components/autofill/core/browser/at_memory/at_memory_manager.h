@@ -57,10 +57,11 @@ class AtMemoryManager {
 
   ~AtMemoryManager();
 
-  // Returns the initial state (suggestions and filter) for `field_id`.
+  // Returns the state (suggestions and filter) for `field_id`.
   // If search statefulness is enabled and persisted state exists, returns
   // the persisted state. Otherwise, returns empty query suggestions.
-  AtMemoryManagerState GetInitialStateForField(const FieldGlobalId& field_id);
+  AtMemoryManagerState GetStateForField(const FieldGlobalId& field_id,
+                                        const url::Origin& field_origin);
 
   // Called when suggestions are shown. The manager initiates an AtMemory
   // session if the `trigger_source` is an AtMemory one.
@@ -149,10 +150,6 @@ class AtMemoryManager {
 
   // Creates the search affordance suggestion.
   static Suggestion CreateSearchAffordanceSuggestion(std::u16string query);
-
-  void set_target_field_origin(const url::Origin& origin) {
-    target_field_origin_ = origin;
-  }
 
   // Creates a source attribution suggestion ("Suggested by Gemini").
   static Suggestion CreateSourceAttributionSuggestion();
@@ -288,6 +285,10 @@ class AtMemoryManager {
   BrowserAutofillManager* GetBrowserAutofillManager(
       const FormGlobalId& form_id);
 
+  // Returns the active target field origin depending on whether search
+  // statefulness is enabled.
+  const url::Origin& target_field_origin() const;
+
   // Encapsulates state for the currently visible AtMemory popup.
   struct PopupState {
     AutofillSuggestionTriggerSource trigger_source =
@@ -296,6 +297,8 @@ class AtMemoryManager {
     // TODO(crbug.com/535486238): Reconsider where metrics_recorder should live.
     std::unique_ptr<AtMemoryMetricsRecorder> metrics_recorder;
     // Flag indicating that a search query is in progress.
+    // TODO(crbug.com/535486238): Remove `is_searching` once
+    // `kAutofillAtMemorySearchStatefulness` is fully launched.
     bool is_searching = false;
     // Timer used to rotate the fetching suggestions while searching.
     base::RepeatingTimer fetching_timer;
@@ -307,9 +310,10 @@ class AtMemoryManager {
 
   std::optional<PopupState> popup_state_;
 
-  // Origin of the target field for the active search session.
-  // TODO(crbug.com/535486238): Consider moving `target_field_origin_` into
-  // `state_manager_`.
+  // Origin of the target field for the active search session. Only set when
+  // `kAutofillAtMemorySearchStatefulness` is disabled.
+  // TODO(crbug.com/535486238): Remove `target_field_origin_` once
+  // `kAutofillAtMemorySearchStatefulness` is fully launched.
   url::Origin target_field_origin_;
 
   AtMemoryPersistedStateManager state_manager_;

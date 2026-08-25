@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/at_memory/at_memory_manager_state.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "url/origin.h"
 
 namespace autofill {
 
@@ -20,7 +21,7 @@ namespace autofill {
 // autofill.
 //
 // Lifecycle invariant:
-// `GetInitialStateForField()` MUST be called whenever a field is focused before
+// `GetStateForField()` MUST be called whenever a field is focused before
 // invoking any mutation methods (`OnFilterChanged`, `OnFilterSubmitted`).
 // When a new field is focused, any existing state for a prior field is reset.
 //
@@ -39,9 +40,10 @@ class AtMemoryPersistedStateManager {
 
   // Returns the existing persisted state if `field_id` matches the stored
   // persisted AtMemory search state. Otherwise resets state and initializes a
-  // new persisted AtMemory search state for `field_id`.
-  const std::optional<AtMemoryManagerState>& GetInitialStateForField(
-      const FieldGlobalId& field_id);
+  // new persisted AtMemory search state for `field_id` with `field_origin`.
+  const std::optional<AtMemoryManagerState>& GetStateForField(
+      const FieldGlobalId& field_id,
+      const url::Origin& field_origin);
 
   void OnFilterChanged(std::u16string_view filter);
   void OnFilterSubmitted(const std::u16string& filter);
@@ -51,8 +53,13 @@ class AtMemoryPersistedStateManager {
   bool IsSearching() const;
   void StopSearching();
 
+  const url::Origin& field_origin() const {
+    return field_origin_;
+  }
+
  private:
   FieldGlobalId field_id_;
+  url::Origin field_origin_;
   std::optional<AtMemoryManagerState> state_;
 };
 

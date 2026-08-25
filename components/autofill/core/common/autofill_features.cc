@@ -570,7 +570,10 @@ BASE_FEATURE(kAutofillAtMemoryInactivityNudge,
 BASE_FEATURE(kAutofillAtMemoryPreviouslyFilled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables search statefulness for AtMemory.
+// When enabled, preserves the active AtMemory search query and fetched
+// suggestions when the popup is dismissed, restoring them if the user reopens
+// suggestions on the same field. State is reset once a suggestion is accepted
+// or a different field is focused.
 BASE_FEATURE(kAutofillAtMemorySearchStatefulness,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

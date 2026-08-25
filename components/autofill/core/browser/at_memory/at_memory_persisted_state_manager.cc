@@ -14,10 +14,12 @@ AtMemoryPersistedStateManager::AtMemoryPersistedStateManager() = default;
 AtMemoryPersistedStateManager::~AtMemoryPersistedStateManager() = default;
 
 const std::optional<AtMemoryManagerState>&
-AtMemoryPersistedStateManager::GetInitialStateForField(
-    const FieldGlobalId& field_id) {
+AtMemoryPersistedStateManager::GetStateForField(
+    const FieldGlobalId& field_id,
+    const url::Origin& field_origin) {
   if (field_id_ != field_id) {
     field_id_ = field_id;
+    field_origin_ = field_origin;
     state_.reset();
   }
   return state_;

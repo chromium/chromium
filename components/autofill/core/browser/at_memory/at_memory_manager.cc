@@ -392,14 +392,17 @@ AtMemoryManager::AtMemoryManager(AutofillClient* client)
 
 AtMemoryManager::~AtMemoryManager() = default;
 
-AtMemoryManagerState AtMemoryManager::GetInitialStateForField(
-    const FieldGlobalId& field_id) {
+AtMemoryManagerState AtMemoryManager::GetStateForField(
+    const FieldGlobalId& field_id,
+    const url::Origin& field_origin) {
   if (base::FeatureList::IsEnabled(
           features::kAutofillAtMemorySearchStatefulness)) {
     if (const std::optional<AtMemoryManagerState>& state =
-            state_manager_.GetInitialStateForField(field_id)) {
+            state_manager_.GetStateForField(field_id, field_origin)) {
       return *state;
     }
+  } else {
+    target_field_origin_ = field_origin;
   }
   return {.suggestions = GetEmptyQuerySuggestions()};
 }
@@ -415,6 +418,13 @@ BrowserAutofillManager* AtMemoryManager::GetBrowserAutofillManager(
     }
   }
   return nullptr;
+}
+
+const url::Origin& AtMemoryManager::target_field_origin() const {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillAtMemorySearchStatefulness)
+             ? state_manager_.field_origin()
+             : target_field_origin_;
 }
 
 void AtMemoryManager::OnPopupShown(
@@ -437,7 +447,12 @@ void AtMemoryManager::OnPopupShown(
         form ? form->form_signature() : FormSignature(0);
     const FieldSignature field_signature =
         field ? field->GetFieldSignature() : FieldSignature(0);
-    target_field_origin_ = field ? field->origin() : url::Origin();
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillAtMemorySearchStatefulness)) {
+      if (field) {
+        target_field_origin_ = field->origin();
+      }
+    }
     popup_state_.emplace();
     popup_state_->trigger_source = trigger_source;
     popup_state_->update_callback = std::move(update_callback);
@@ -487,11 +502,9 @@ void AtMemoryManager::OnPopupHidden() {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillAtMemorySearchStatefulness)) {
     CancelPendingQueries();
+    target_field_origin_ = url::Origin();
   }
   popup_state_.reset();
-  // TODO(crbug.com/535486238): Consider moving `target_field_origin_` into
-  // `state_manager_`.
-  target_field_origin_ = url::Origin();
 }
 
 IsAsync AtMemoryManager::FillOrPreviewSearchResult(
@@ -1225,7 +1238,7 @@ IsAsync AtMemoryManager::FillSensitivePersonalContextData(
   query_service->AuthenticateAndFetchPiiEntity(
       *client_,
       GetAuthenticationMessage(
-          GetTargetFieldOrigin(target_field_origin_, *client_)),
+          GetTargetFieldOrigin(target_field_origin(), *client_)),
       payload.value, payload.memory_data_type,
       GetMetadataFromSuggestion(suggestion),
       base::BindOnce(&AtMemoryManager::OnSensitivePersonalContextDataFetched,
@@ -1325,7 +1338,7 @@ IsAsync AtMemoryManager::FillSensitiveAutofillAiData(
 
   return IsAsync(bam->GetAutofillAiAccessManager().FetchEntityInstance(
       *entity, /*will_fill_sensitive_info=*/true,
-      GetTargetFieldOrigin(target_field_origin_, *client_), base::DoNothing(),
+      GetTargetFieldOrigin(target_field_origin(), *client_), base::DoNothing(),
       base::BindOnce(&AtMemoryManager::OnAutofillAiFetched,
                      fill_weak_ptr_factory_.GetWeakPtr(), form_id, field_id,
                      suggestion, attribute_type, std::move(metrics))));
