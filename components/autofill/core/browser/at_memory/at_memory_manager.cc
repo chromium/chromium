@@ -449,9 +449,7 @@ void AtMemoryManager::OnPopupShown(
         field ? field->GetFieldSignature() : FieldSignature(0);
     if (!base::FeatureList::IsEnabled(
             features::kAutofillAtMemorySearchStatefulness)) {
-      if (field) {
-        target_field_origin_ = field->origin();
-      }
+      target_field_origin_ = field ? field->origin() : url::Origin();
     }
     popup_state_.emplace();
     popup_state_->trigger_source = trigger_source;

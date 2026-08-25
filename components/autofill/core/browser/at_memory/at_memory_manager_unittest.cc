@@ -2610,7 +2610,11 @@ TEST_P(AtMemoryManagerTest,
   EXPECT_CALL(
       mock_query_service(),
       AuthenticateAndFetchPiiEntity(
-          Ref(autofill_client()), GetAuthenticationMessage(uncached_origin),
+          Ref(autofill_client()),
+          GetAuthenticationMessage(
+              !GetParam()
+                  ? autofill_client().GetLastCommittedPrimaryMainFrameOrigin()
+                  : uncached_origin),
           std::u16string_view(u"1234"), MemoryDataType::kPassportNumber, _, _))
       .WillOnce(RunOnceCallback<5>(u"1234"));
 
