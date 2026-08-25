@@ -125,7 +125,7 @@ export class PolicyLogsAppElement extends CrLitElement {
   }
 
   protected getLogTimestamp(log: Log): string {
-    return new Date(Number(log.timestamp)).toLocaleString('en-CA', {
+    return new Date(log.timestamp).toLocaleString('en-CA', {
       timeZoneName: 'short',
       hour12: false,
     });
