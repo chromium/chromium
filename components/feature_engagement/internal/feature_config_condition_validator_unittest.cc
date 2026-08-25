@@ -1228,6 +1228,24 @@ TEST_F(FeatureConfigConditionValidatorTest, TestConcurrentPromosBlockingNone) {
 }
 
 TEST_F(FeatureConfigConditionValidatorTest,
+       TestConcurrentPromosSelfBlockingEvenWhenBlockedByNone) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kFeatureConfigTestFeatureFoo}, {});
+
+  FeatureConfig non_blocking_config = GetNonBlockingFeatureConfig();
+  validator_.NotifyIsShowing(kFeatureConfigTestFeatureFoo, non_blocking_config,
+                             {kFeatureConfigTestFeatureFoo.name});
+  ConditionValidator::Result result = GetResult(non_blocking_config);
+  EXPECT_FALSE(result.NoErrors());
+  EXPECT_FALSE(result.currently_showing_ok);
+
+  validator_.NotifyDismissed(kFeatureConfigTestFeatureFoo);
+  result = GetResult(non_blocking_config);
+  EXPECT_TRUE(result.NoErrors());
+  EXPECT_TRUE(result.currently_showing_ok);
+}
+
+TEST_F(FeatureConfigConditionValidatorTest,
        TestConcurrentPromosBlockingExplicitBlocked) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(

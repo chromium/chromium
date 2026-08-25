@@ -2154,6 +2154,41 @@ TEST_F(FeatureConfigConditionValidatorTrackerTest, TestTriggeringWithSnooze) {
   EXPECT_TRUE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureFoo));
 }
 
+TEST_F(FeatureConfigConditionValidatorTrackerTest,
+       TestConcurrentTriggeringBlockedByNone) {
+  FeatureConfig config =
+      configuration_->GetFeatureConfig(kTrackerTestFeatureFoo);
+  config.blocked_by.type = BlockedBy::Type::NONE;
+  config.blocking.type = Blocking::Type::NONE;
+  config.session_rate.type = ANY;
+  config.session_rate.value = 0;
+  config.trigger.comparator.type = ANY;
+  config.trigger.comparator.value = 0;
+  configuration_->SetConfiguration(&kTrackerTestFeatureFoo, config);
+
+  ScopedIphFeatureList list;
+  list.InitAndEnableFeatures({kTrackerTestFeatureFoo});
+
+  // Ensure all initialization is finished.
+  StoringInitializedCallback callback;
+  tracker_->AddOnInitializedCallback(base::BindOnce(
+      &StoringInitializedCallback::OnInitialized, base::Unretained(&callback)));
+  base::RunLoop().RunUntilIdle();
+
+  // First call should trigger.
+  EXPECT_TRUE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureFoo));
+
+  // Second call while still showing should NOT trigger, even though
+  // BlockedBy::Type::NONE is set. Without the self-blocking check in
+  // FeatureConfigConditionValidator, this would hit a DCHECK in TrackerImpl.
+  EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureFoo));
+
+  // Dismissing the feature should allow it to trigger again.
+  tracker_->Dismissed(kTrackerTestFeatureFoo);
+  EXPECT_TRUE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureFoo));
+  tracker_->Dismissed(kTrackerTestFeatureFoo);
+}
+
 }  // namespace test
 
 }  // namespace feature_engagement

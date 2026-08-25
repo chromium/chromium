@@ -201,6 +201,12 @@ bool FeatureConfigConditionValidator::IsBlocked(
     const base::Feature& feature,
     const FeatureConfig& config,
     const Configuration* configuration) const {
+  // A feature is always blocked from triggering if it is already showing,
+  // regardless of its BlockedBy or Blocking configuration.
+  if (currently_showing_features_.contains(feature.name)) {
+    return true;
+  }
+
   switch (config.blocked_by.type) {
     case BlockedBy::Type::NONE:
       return false;
