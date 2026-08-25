@@ -15,4 +15,7 @@ version.workspace = true
 
 [dependencies]
 log = { workspace = true }
-symphonia-core = { version = "0.6.0", path = "../symphonia-core" }
+symphonia-core = { version = "0.6.1", path = "../symphonia-core" }
+
+[lints]
+workspace = true
