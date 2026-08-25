@@ -16,16 +16,8 @@ group("tests") {
 
 # Basic smoke tests for fuzzing
 test("fuzzing_unittests") {
-  # The most basic smoketest for FUZZ_TEST macros.
-  # The main purpose is to ensure that this builds in all configurations:
-  # * on regular builders, this will produce a unit test executable
-  # * on ASAN builders, this will produce a unit test executable which
-  #   additionally has sancov instrumentation to support --fuzz=
-  #   arguments
-  # * on libfuzzer and centipede builders this will enable different
-  #   options again.
-  sources = [ "fuzztest_smoketest.cc" ]
-  fuzztests = [ "FuzzTestSmokeTest.StringsAlwaysOccupyPositiveSpace" ]
+  sources = [ "fuzztest_cq_smoke_test.cc" ]
+  fuzztests = [ "FuzzTestCqSmokeTest.StringsAlwaysOccupyPositiveSpace" ]
 
   deps = [
     "//base/test:run_all_unittests",
@@ -52,24 +44,27 @@ test("fuzzing_unittests") {
     ]
 
     data_deps += [
+      ":llvm_crashing_fuzzer",
+      ":llvm_stub_fuzzer",
+      ":lpm_stub_fuzzer",
       ":stacktrace_test_fuzzer",
-      "//testing/libfuzzer/fuzzers:empty_fuzzer",
-      "//testing/libfuzzer/fuzzers:string_compare_fuzzer",
-      "//testing/libfuzzer/fuzzers:string_compare_proto_fuzzer",
     ]
 
     # The __generate targets (the wrappers) are only generated on Linux, Mac,
     # and Windows (see _building_fuzztest_fuzzer in testing/test.gni).
     if (use_fuzztest_wrapper && (is_linux || is_mac || is_win)) {
-      data_deps += [ ":stub_fuzztest_StubFuzzer_Stub_fuzzer__generate" ]
-      defines += [ "USING_FUZZTEST_WRAPPER" ]
-    }
-
-    # The fuzzer depends on //content/public/browser, which is not supported in
-    # builds where use_blink is false (such as standard iOS/Catalyst).
-    if (use_blink) {
-      data_deps += [ "//testing/libfuzzer/fuzzers:lpm_empty_fuzzer" ]
-      defines += [ "BUILD_LPM_EMPTY_FUZZER" ]
+      data_deps += [
+        ":fuzztest_crashing_fuzzer_FuzzTestCrashing_FastCrash_fuzzer__generate",
+        ":fuzztest_proto_crashing_fuzzer_FuzzTestProtoCrashing_FastCrash_fuzzer__generate",
+        ":fuzztest_proto_stub_fuzzer_FuzzTestProtoStub_Stub_fuzzer__generate",
+        ":fuzztest_stub_fuzzer_FuzzTestStub_Stub_fuzzer__generate",
+      ]
+      if (use_centipede) {
+        data_deps += [
+          ":wrapped_llvm_crashing_fuzzer_LLVMFuzzer_TestOneInput_fuzzer__generate",
+          ":wrapped_llvm_stub_fuzzer_LLVMFuzzer_TestOneInput_fuzzer__generate",
+        ]
+      }
     }
 
     data += [
@@ -100,13 +95,13 @@ test("fuzzing_unittests") {
 # correctly. Only compile them when compiling the test itself.
 if (use_fuzzing_engine && !is_win) {
   fuzzer_test("test_dict_only") {
-    sources = [ "../fuzzers/empty_fuzzer.cc" ]
+    sources = [ "llvm_stub_fuzzer.cc" ]
     dict = "test.dict"
     additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
   }
 
   fuzzer_test("test_config_only") {
-    sources = [ "../fuzzers/empty_fuzzer.cc" ]
+    sources = [ "llvm_stub_fuzzer.cc" ]
     libfuzzer_options = [
       "some_test_option=test_value",
       "max_len=1024",
@@ -115,7 +110,7 @@ if (use_fuzzing_engine && !is_win) {
   }
 
   fuzzer_test("test_config_and_dict") {
-    sources = [ "../fuzzers/empty_fuzzer.cc" ]
+    sources = [ "llvm_stub_fuzzer.cc" ]
     dict = "test.dict"
     libfuzzer_options = [
       "max_len=random(1337, 31337)",
@@ -126,7 +121,7 @@ if (use_fuzzing_engine && !is_win) {
   }
 
   fuzzer_test("test_config_and_seed_corpus") {
-    sources = [ "../fuzzers/empty_fuzzer.cc" ]
+    sources = [ "llvm_stub_fuzzer.cc" ]
     seed_corpus = "test_corpus"
     libfuzzer_options = [
       "some_test_option=test_value",
@@ -136,7 +131,7 @@ if (use_fuzzing_engine && !is_win) {
   }
 
   fuzzer_test("test_config_and_seed_corpuses") {
-    sources = [ "../fuzzers/empty_fuzzer.cc" ]
+    sources = [ "llvm_stub_fuzzer.cc" ]
     seed_corpuses = [
       "test_corpus",
       "test_corpus_2",
@@ -149,7 +144,7 @@ if (use_fuzzing_engine && !is_win) {
   }
 
   fuzzer_test("test_dict_from_subdir") {
-    sources = [ "../fuzzers/empty_fuzzer.cc" ]
+    sources = [ "llvm_stub_fuzzer.cc" ]
     dict = "dicts_subdir/test_subdir.dict"
     additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
   }
@@ -165,6 +160,107 @@ if (use_fuzzing_engine && !is_win) {
   }
 }
 
+# Test fuzzer targets used as fixtures for the smoke tests in this directory.
+# All targets are marked with `no_clusterfuzz` to prevent continuous fuzzing on
+# ClusterFuzz bots.
+
+# To catch bugs that only present themselves in content fuzzers, e.g.
+# https://crbug.com/524216727, depend on content when possible. In component
+# builds, //content/public/browser brings in many shared libraries. Centipede
+# attempts to symbolize all of them, which causes the tests to time out. Avoid
+# bringing in so many symbols to avoid this.
+_test_fuzzer_extra_deps = []
+if (use_blink && !use_centipede) {
+  _test_fuzzer_extra_deps += [ "//content/public/browser" ]
+}
+
+fuzzer_test("llvm_stub_fuzzer") {
+  sources = [ "llvm_stub_fuzzer.cc" ]
+  deps = _test_fuzzer_extra_deps
+  additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
+  is_fuzztest_compatible = false
+}
+
+fuzzer_test("llvm_crashing_fuzzer") {
+  sources = [ "llvm_crashing_fuzzer.cc" ]
+  deps = [ "//base" ]
+  deps += _test_fuzzer_extra_deps
+  additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
+  is_fuzztest_compatible = false
+}
+
+# Regression test fuzzer for LPM.
+fuzzer_test("lpm_stub_fuzzer") {
+  sources = [ "lpm_stub_fuzzer.cc" ]
+  deps = [ "//third_party/libprotobuf-mutator" ]
+  deps += _test_fuzzer_extra_deps
+  additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
+  is_fuzztest_compatible = false
+}
+
+test("fuzztest_stub_fuzzer") {
+  sources = [ "fuzztest_stub_fuzzer.cc" ]
+  fuzztests = [ "FuzzTestStub.Stub" ]
+  deps = [ "//third_party/fuzztest:fuzztest_gtest_main" ]
+  deps += _test_fuzzer_extra_deps
+  configs += [ "//testing/libfuzzer:no_clusterfuzz" ]
+}
+
+test("fuzztest_crashing_fuzzer") {
+  sources = [ "fuzztest_crashing_fuzzer.cc" ]
+  fuzztests = [ "FuzzTestCrashing.FastCrash" ]
+  deps = [
+    "//base",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+  deps += _test_fuzzer_extra_deps
+  configs += [ "//testing/libfuzzer:no_clusterfuzz" ]
+}
+
+test("fuzztest_proto_stub_fuzzer") {
+  sources = [ "fuzztest_proto_stub_fuzzer.cc" ]
+  fuzztests = [ "FuzzTestProtoStub.Stub" ]
+  deps = [
+    "//testing/libfuzzer/proto:string_compare_proto_fuzzable",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+  deps += _test_fuzzer_extra_deps
+  configs += [ "//testing/libfuzzer:no_clusterfuzz" ]
+}
+
+test("fuzztest_proto_crashing_fuzzer") {
+  sources = [ "fuzztest_proto_crashing_fuzzer.cc" ]
+  fuzztests = [ "FuzzTestProtoCrashing.FastCrash" ]
+  deps = [
+    "//base",
+    "//testing/libfuzzer/proto:string_compare_proto_fuzzable",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+  deps += _test_fuzzer_extra_deps
+  configs += [ "//testing/libfuzzer:no_clusterfuzz" ]
+}
+
+if (use_centipede) {
+  test("wrapped_llvm_stub_fuzzer") {
+    sources = [ "llvm_stub_fuzzer.cc" ]
+    fuzztests = [ "LLVMFuzzer.TestOneInput" ]
+    deps = [ "//third_party/fuzztest:llvm_wrapper" ]
+    deps += _test_fuzzer_extra_deps
+    configs += [ "//testing/libfuzzer:no_clusterfuzz" ]
+  }
+
+  test("wrapped_llvm_crashing_fuzzer") {
+    sources = [ "llvm_crashing_fuzzer.cc" ]
+    fuzztests = [ "LLVMFuzzer.TestOneInput" ]
+    deps = [
+      "//base",
+      "//third_party/fuzztest:llvm_wrapper",
+    ]
+    deps += _test_fuzzer_extra_deps
+    configs += [ "//testing/libfuzzer:no_clusterfuzz" ]
+  }
+}
+
 fuzzer_test("stacktrace_test_fuzzer") {
   sources = [ "stacktrace_test_fuzzer.cc" ]
   deps = [
@@ -175,14 +271,4 @@ fuzzer_test("stacktrace_test_fuzzer") {
 
   # TODO(crbug.com/509668952): Remove this when FuzzTest is supported by tests.
   is_fuzztest_compatible = false
-}
-
-# A stub fuzztest target used by
-# FuzzerSmokeTest.WrapperDoesNotLeakChildOnSIGTERM to verify that the fuzztest
-# wrapper does not leak child processes on SIGTERM.
-test("stub_fuzztest") {
-  sources = [ "stub_fuzztest.cc" ]
-  fuzztests = [ "StubFuzzer.Stub" ]
-  deps = [ "//third_party/fuzztest:fuzztest_gtest_main" ]
-  configs += [ "//testing/libfuzzer:no_clusterfuzz" ]
 }

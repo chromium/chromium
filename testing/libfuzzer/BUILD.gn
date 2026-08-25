@@ -24,6 +24,7 @@ buildflag_header("buildflags") {
     "ARCHIVE_SEED_CORPUS=$archive_seed_corpus",
     "REGISTER_FUZZTESTS_IN_TEST_SUITES=$register_fuzztests_in_test_suites",
     "USE_CENTIPEDE=$use_centipede",
+    "USE_FUZZTEST_WRAPPER=$use_fuzztest_wrapper",
   ]
 }
 

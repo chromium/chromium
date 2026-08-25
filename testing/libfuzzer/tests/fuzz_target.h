@@ -15,12 +15,6 @@
 
 namespace fuzzing {
 
-// Overengineered, but makes for readable `Fuzz()` callsites.
-struct FuzzOptions {
-  // How long to fuzz at most, in seconds.
-  int timeout_secs = 0;
-};
-
 // Represents a fuzz target binary and the ability to fuzz with it.
 //
 // Thread-compatible.
@@ -39,10 +33,7 @@ class FuzzTarget final {
   // Note that whether the target exited successfully or not depends on how it
   // was run, not only whether it found in crash. In out-of-process fuzzing
   // mode, this may be true even if the target found a crash.
-  bool Fuzz(const FuzzOptions& options);
-
-  // The last output (stdout and stderr) of running the target with `Fuzz()`.
-  std::string_view output() const { return output_; }
+  bool Fuzz();
 
   // Returns all the crashing inputs found by this fuzz target across all calls
   // to `Fuzz()`.
@@ -59,9 +50,9 @@ class FuzzTarget final {
   // c) makes for simpler function signatures
 
   // The command line to execute for `Fuzz()`.
-  base::CommandLine FuzzCommandLine(const FuzzOptions& options) const;
-  base::CommandLine LibfuzzerCommandLine(const FuzzOptions& options) const;
-  base::CommandLine CentipedeCommandLine(const FuzzOptions& options) const;
+  base::CommandLine FuzzCommandLine() const;
+  base::CommandLine LibfuzzerCommandLine() const;
+  base::CommandLine CentipedeCommandLine() const;
 
   // The directory in which crashing inputs are stored.
   base::FilePath CrashingInputsDir() const;
@@ -73,9 +64,6 @@ class FuzzTarget final {
 
   // Temp directory in which to store working files and crashing inputs.
   base::ScopedTempDir temp_dir_;
-
-  // See `output()`.
-  std::string output_;
 };
 
 }  // namespace fuzzing

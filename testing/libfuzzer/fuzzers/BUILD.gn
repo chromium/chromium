@@ -13,14 +13,6 @@ import("//v8/gni/v8.gni")
 group("fuzzers") {
 }
 
-fuzzer_test("empty_fuzzer") {
-  sources = [ "empty_fuzzer.cc" ]
-  additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
-
-  # TODO(crbug.com/509668952): Remove this when smoke tests support FuzzTest.
-  is_fuzztest_compatible = false
-}
-
 fuzzer_test("string_compare_fuzzer") {
   sources = [ "string_compare_fuzzer.cc" ]
   additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
@@ -63,25 +55,6 @@ fuzzer_test("string_compare_proto_fuzzer") {
 
   # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
   is_fuzztest_compatible = false
-}
-
-# The fuzzer depends on //content/public/browser, which is not supported in
-# builds where use_blink is false (such as standard iOS/Catalyst).
-if (use_blink) {
-  # Regression test fuzzer for LPM. Depends on //content/public/browser to more
-  # closely match other LPM fuzzers and catch errors that would be present in
-  # those fuzzers. See https://crbug.com/524216727.
-  fuzzer_test("lpm_empty_fuzzer") {
-    sources = [ "lpm_empty_fuzzer.cc" ]
-    deps = [
-      "//content/public/browser",
-      "//third_party/libprotobuf-mutator",
-    ]
-    additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
-
-    # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
-    is_fuzztest_compatible = false
-  }
 }
 
 fuzzer_test("snappy_compress_fuzzer") {
