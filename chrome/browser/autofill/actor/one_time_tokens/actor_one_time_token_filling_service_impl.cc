@@ -18,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -99,6 +100,58 @@ GetAutofillManager(const tabs::TabInterface& tab) {
     return *static_cast<BrowserAutofillManager*>(autofill_manager);
   }
   return base::unexpected(kAutofillNotAvailable);
+}
+
+ActorOneTimeTokenFillingServiceRetrieveOtp MapError(
+    OneTimeTokenRetrievalError error) {
+  switch (error) {
+    case OneTimeTokenRetrievalError::kUnknown:
+      return kUnknownError;
+    case OneTimeTokenRetrievalError::kSmsOtpBackendError:
+    case OneTimeTokenRetrievalError::kSmsOtpBackendTimeout:
+    case OneTimeTokenRetrievalError::kSmsOtpBackendPlatformNotSupported:
+    case OneTimeTokenRetrievalError::kSmsOtpBackendApiNotAvailable:
+    case OneTimeTokenRetrievalError::kSmsOtpBackendUserPermissionRequired:
+    case OneTimeTokenRetrievalError::kSmsOtpGmscoreVersionNotSupported:
+    case OneTimeTokenRetrievalError::kSmsOtpBackendInitializationFailed:
+    case OneTimeTokenRetrievalError::kSmsOtpUnknown:
+      NOTREACHED();
+    case OneTimeTokenRetrievalError::kGmailOtpBackendAuthError:
+      return kGmailOtpBackendAuthError;
+    case OneTimeTokenRetrievalError::kGmailOtpBackendNetworkError:
+      return kGmailOtpBackendNetworkError;
+    case OneTimeTokenRetrievalError::kGmailOtpBackendInvalidResponse:
+      return kGmailOtpBackendInvalidResponse;
+    case OneTimeTokenRetrievalError::kGmailOtpUnknown:
+      return kGmailOtpUnknown;
+    case OneTimeTokenRetrievalError::kGmailOtpBackendApiNotAvailable:
+      return kGmailOtpBackendApiNotAvailable;
+    case OneTimeTokenRetrievalError::kGmailOtpBackendInitializationFailed:
+      return kGmailOtpBackendInitializationFailed;
+    case OneTimeTokenRetrievalError::
+        kGmailOtpBackendSmartFeaturesInGmailConsentRequired:
+      return kGmailOtpBackendSmartFeaturesInGmailConsentRequired;
+    case OneTimeTokenRetrievalError::
+        kGmailOtpBackendSmartFeaturesInOtherGoogleProductsConsentRequired:
+      return kGmailOtpBackendSmartFeaturesInOtherGoogleProductsConsentRequired;
+    case OneTimeTokenRetrievalError::
+        kGmailOtpBackendDmaCrossProductSharingConsentRequired:
+      return kGmailOtpBackendDmaCrossProductSharingConsentRequired;
+    case OneTimeTokenRetrievalError::kGmailOtpBackendBadMessageReference:
+      return kGmailOtpBackendBadMessageReference;
+    case OneTimeTokenRetrievalError::kGmailOtpBackendMessageIdNotFound:
+      return kGmailOtpBackendMessageIdNotFound;
+    case OneTimeTokenRetrievalError::kGmailOtpBackendWrongTokenTypeRequested:
+      return kGmailOtpBackendWrongTokenTypeRequested;
+    case OneTimeTokenRetrievalError::kGmailOtpBackendOneTimeTokenExpired:
+      return kGmailOtpBackendOneTimeTokenExpired;
+    case OneTimeTokenRetrievalError::kGmailOtpBackendOtpAttributeNotFound:
+      return kGmailOtpBackendOtpAttributeNotFound;
+    case OneTimeTokenRetrievalError::kGmailOtpBackendServerError:
+      return kGmailOtpBackendServerError;
+    case OneTimeTokenRetrievalError::kSubscriptionExpired:
+      return kRetrievalTimeout;
+  }
 }
 
 }  // namespace
@@ -296,11 +349,7 @@ void ActorOneTimeTokenFillingServiceImpl::OnOtpRetrieved(
                       .AddError("Failed to retrieve OTP from backend.")
                       .Add("error_code", result.error())
                       .Build());
-    // TODO(crbug.com/532013198): Expand `kError` into all possible errors.
-    RecordActorOneTimeTokenFillingServiceRetrieveOtp(
-        result.error() == OneTimeTokenRetrievalError::kSubscriptionExpired
-            ? kRetrievalTimeout
-            : kError);
+    RecordActorOneTimeTokenFillingServiceRetrieveOtp(MapError(result.error()));
     std::move(retrieve_otp_callback_).Run(base::unexpected(result.error()));
     return;
   }

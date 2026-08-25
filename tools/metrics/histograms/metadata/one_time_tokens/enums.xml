@@ -38,6 +38,23 @@ found in the LICENSE file.
   <int value="7" label="(Obsolete) NoCallback"/>
   <int value="8" label="SuccessReceivedMatchFound"/>
   <int value="9" label="RetrievalTimeout"/>
+  <int value="10" label="GmailOtpBackendAuthError"/>
+  <int value="11" label="GmailOtpBackendNetworkError"/>
+  <int value="12" label="GmailOtpBackendInvalidResponse"/>
+  <int value="13" label="GmailOtpUnknown"/>
+  <int value="14" label="GmailOtpBackendApiNotAvailable"/>
+  <int value="15" label="GmailOtpBackendInitializationFailed"/>
+  <int value="16" label="GmailOtpBackendSmartFeaturesInGmailConsentRequired"/>
+  <int value="17"
+      label="GmailOtpBackendSmartFeaturesInOtherGoogleProductsConsentRequired"/>
+  <int value="18" label="GmailOtpBackendDmaCrossProductSharingConsentRequired"/>
+  <int value="19" label="GmailOtpBackendBadMessageReference"/>
+  <int value="20" label="GmailOtpBackendMessageIdNotFound"/>
+  <int value="21" label="GmailOtpBackendWrongTokenTypeRequested"/>
+  <int value="22" label="GmailOtpBackendOneTimeTokenExpired"/>
+  <int value="23" label="GmailOtpBackendOtpAttributeNotFound"/>
+  <int value="24" label="GmailOtpBackendServerError"/>
+  <int value="25" label="UnknownError"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.h:ActorOneTimeTokenFillingServiceRetrieveOtp) -->

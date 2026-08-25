@@ -26,7 +26,23 @@ enum class ActorOneTimeTokenFillingServiceRetrieveOtp {
   // kNoCallback = 7,  // Obsolete.
   kSuccessReceivedMatchFound = 8,
   kRetrievalTimeout = 9,
-  kMaxValue = kRetrievalTimeout,
+  kGmailOtpBackendAuthError = 10,
+  kGmailOtpBackendNetworkError = 11,
+  kGmailOtpBackendInvalidResponse = 12,
+  kGmailOtpUnknown = 13,
+  kGmailOtpBackendApiNotAvailable = 14,
+  kGmailOtpBackendInitializationFailed = 15,
+  kGmailOtpBackendSmartFeaturesInGmailConsentRequired = 16,
+  kGmailOtpBackendSmartFeaturesInOtherGoogleProductsConsentRequired = 17,
+  kGmailOtpBackendDmaCrossProductSharingConsentRequired = 18,
+  kGmailOtpBackendBadMessageReference = 19,
+  kGmailOtpBackendMessageIdNotFound = 20,
+  kGmailOtpBackendWrongTokenTypeRequested = 21,
+  kGmailOtpBackendOneTimeTokenExpired = 22,
+  kGmailOtpBackendOtpAttributeNotFound = 23,
+  kGmailOtpBackendServerError = 24,
+  kUnknownError = 25,
+  kMaxValue = kUnknownError,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:ActorOneTimeTokenFillingServiceRetrieveOtpEvent)
 
