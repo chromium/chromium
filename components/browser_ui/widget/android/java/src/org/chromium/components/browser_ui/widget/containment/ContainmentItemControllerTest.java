@@ -49,10 +49,6 @@ public class ContainmentItemControllerTest {
     private int mDefaultMargin;
     private int mBackgroundColor;
 
-    private static final int CUSTOM_TOP_MARGIN = 100;
-    private static final int CUSTOM_BOTTOM_MARGIN = 200;
-    private static final int CUSTOM_HORIZONTAL_MARGIN = 50;
-
     private Context mContext;
     private ContainmentItemController mController;
     private PreferenceScreen mPreferenceScreen;

@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessi
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionWindow;
 import org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.sync_device_info.FormFactor;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -54,7 +53,6 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class RestoreTabsDialogMediatorUnitTest {
-    private static final String RESTORE_TABS_USED = EventConstants.RESTORE_TABS_PROMO_USED;
     private static final String TEST_CONTENT_DESRIPTION = "Test content description";
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

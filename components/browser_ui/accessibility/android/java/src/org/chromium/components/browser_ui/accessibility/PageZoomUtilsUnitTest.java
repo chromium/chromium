@@ -24,7 +24,6 @@ import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.HostZoomMap;
-import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link PageZoomUtils}. */
 @SmallTest
@@ -59,8 +58,6 @@ public class PageZoomUtilsUnitTest {
     @Mock private HostZoomMapImpl.Natives mHostZoomMapMock;
 
     @Mock private BrowserContextHandle mContextMock;
-
-    private PropertyModel mModel;
 
     @Before
     public void setUp() {

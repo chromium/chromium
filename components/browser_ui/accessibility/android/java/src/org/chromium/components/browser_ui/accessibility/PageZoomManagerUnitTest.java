@@ -36,7 +36,6 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentFeatures;
-import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 /** Unit tests for {@link PageZoomManager}. */
@@ -59,7 +58,6 @@ public class PageZoomManagerUnitTest {
     @Mock private WebContents mWebContentsMock;
     @Mock private BrowserContextHandle mBrowserContextHandleMock;
 
-    private PropertyModel mModel;
     private PageZoomManager mManager;
 
     @Before
