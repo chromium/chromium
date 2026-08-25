@@ -213,6 +213,33 @@ public interface ChromeAndroidTask {
     void removeAllFeaturesForActivity(ActivityWindowAndroid activityWindowAndroid);
 
     /**
+     * Returns the currently <i>valid</i> {@link Profile}s in the {@code Activity} represented by
+     * the given {@link ActivityWindowAndroid}.
+     *
+     * <p>A <i>valid</i> Profile is one that the user can switch to <i>at the moment this method is
+     * called</i>, i.e., the Profile is guaranteed to have a corresponding native {@code
+     * BrowserWindowInterface}.
+     *
+     * <p>This method abstracts away the complexity in {@link SupportedProfileType} and {@link
+     * TabModelSelector#getModels()}. A few examples:
+     *
+     * <ul>
+     *   <li>For a single-Profile incognito {@code ChromeActivity}, the return value of {@link
+     *       TabModelSelector#getModels()} still includes the regular tab model with a non-null
+     *       Profile.
+     *   <li>For a mixed-Profile {@code ChromeActivity}, if the initial Profile is regular, the
+     *       return value of {@link TabModelSelector#getModels()} will include an incognito tab
+     *       model with a null Profile. However, if the initial Profile is incognito, the return
+     *       value will include the regular tab model with a valid Profile.
+     * </ul>
+     *
+     * <p>A typical use case of this method is to support {@link SupportedProfileType#MIXED} in a UI
+     * component backed by {@code BrowserWindowInterface}-scoped native objects. The UI component
+     * can use this method to obtain valid Profiles and initialize the corresponding native objects.
+     */
+    List<Profile> getValidProfilesForActivity(ActivityWindowAndroid activityWindowAndroid);
+
+    /**
      * Returns the address of the native {@code BrowserWindowInterface} associated with the given
      * {@link Profile} and the topmost {@code ChromeActivity} in this Task.
      *

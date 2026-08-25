@@ -541,16 +541,36 @@ public class SidePanelContainerCoordinatorIntegrationTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
-    public void testMixedProfileMode_openAndClosePanelInIncognitoPane() {
+    public void
+            testMixedProfileMode_initialProfileIsRegular_switchToIncognito_openAndClosePanelInIncognitoPane() {
         // Arrange.
         var coordinator = getSidePanelContainerCoordinator();
-        var incognitoTabPageStation = mResponsivePageStation.openNewIncognitoTabFast();
-        var incognitoTab = incognitoTabPageStation.getTab();
+        var incognitoTabStation = mResponsivePageStation.openNewIncognitoTabFast();
+        var incognitoTab = incognitoTabStation.getTab();
 
         // Act & Assert.
         showPanel(incognitoTab);
         waitForContainerViewOpen(coordinator);
         closePanel(incognitoTab);
+        waitForContainerViewClose(coordinator);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void
+            testMixedProfileMode_initialProfileIsIncognito_switchToRegular_openAndClosePanelInRegularPane() {
+        // Arrange: Start the activity in incognito mode, then switch to the regular pane.
+        mFreshCtaTransitTestRule.closeAllWindowsAndDeleteInstanceAndTabState();
+        var incognitoPageStation = mFreshCtaTransitTestRule.startOnIncognitoBlankPage();
+        var regularTabStation = incognitoPageStation.openNewTabFast();
+        var regularTab = regularTabStation.getTab();
+        var coordinator = getSidePanelContainerCoordinator();
+
+        // Act & Assert.
+        showPanel(regularTab);
+        waitForContainerViewOpen(coordinator);
+        closePanel(regularTab);
         waitForContainerViewClose(coordinator);
     }
 

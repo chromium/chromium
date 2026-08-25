@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeatureKey
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTrackerFactory;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -192,7 +193,17 @@ final class SidePanelNativeBridgeSelector {
     /** Initializes native objects. */
     void init() {
         var currentProfile = assertNonNull(mTabModelSelector.getCurrentModel().getProfile());
-        createNativeBridges(currentProfile);
+        List<Profile> validProfiles =
+                mChromeAndroidTask.getValidProfilesForActivity(mWindowAndroid);
+        assert validProfiles.contains(currentProfile) : "current profile isn't in valid profiles";
+
+        for (var profile : validProfiles) {
+            createNativeBridges(profile);
+        }
+
+        // Do initialization work for the current profile.
+        var nativeBridges = assertNonNull(mNativeBridges.get(currentProfile));
+        nativeBridges.mCoordinatorBridge.init();
     }
 
     /** Returns the {@link SidePanelCoordinatorAndroidBridge} for the current {@link Profile}. */
@@ -359,9 +370,6 @@ final class SidePanelNativeBridgeSelector {
 
         mNativeBridges.put(
                 profile, new NativeBridges(coordinatorBridge, windowScopedRegistryBridge));
-
-        // Do initialization work for the current profile.
-        coordinatorBridge.init();
     }
 
     private void assertCurrentProfile(Profile profile) {

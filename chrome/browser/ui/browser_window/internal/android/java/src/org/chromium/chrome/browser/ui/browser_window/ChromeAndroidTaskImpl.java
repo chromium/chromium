@@ -781,6 +781,21 @@ final class ChromeAndroidTaskImpl
         removeAllFeaturesForActivityInternal(activityWindowAndroid);
     }
 
+    @Override
+    public List<Profile> getValidProfilesForActivity(ActivityWindowAndroid activityWindowAndroid) {
+        ThreadUtils.assertOnUiThread();
+
+        List<Profile> profiles = new ArrayList<>();
+        for (var obj : mActivityScopedObjectsDeque) {
+            if (obj.mActivityScopedObjects.mActivityWindowAndroid == activityWindowAndroid) {
+                profiles.addAll(obj.mAndroidBrowserWindows.keySet());
+                break;
+            }
+        }
+
+        return profiles;
+    }
+
     // TODO(crbug.com/486858979): Mark this as deprecated and add Activity as a parameter.
     @Override
     public long getOrCreateNativeBrowserWindowPtr(Profile profile) {
