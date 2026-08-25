@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 chromium::import! {
-    "//media/filters:symphonia_glue";
+    "//media/filters:symphonia_decoder_bridge";
 }
 
 use num_traits::ToBytes;
 use rust_gtest_interop::prelude::*;
 use symphonia::core::audio::{layouts, AudioBuffer, AudioMut, AudioSpec, GenericAudioBufferRef};
-use symphonia_glue::{
+use symphonia_decoder_bridge::{
     create_audio_buffer, detect_mpeg_audio_codec_id, ffi, init_symphonia_decoder,
     SymphoniaRawSampleBuffer,
 };
@@ -54,7 +54,7 @@ fn test_conversion<S, E, F>(
 // Ensure that we override Symphonia's default behavior of promoting S16 to
 // S32 on output. This allows for strict sample wise comparison with other
 // audio decoder implementations.
-#[gtest(SymphoniaGlueTest, S32ToS16Conversion)]
+#[gtest(SymphoniaDecoderBridgeTest, S32ToS16Conversion)]
 fn test_s32_to_s16_conversion() {
     const SAMPLES: &[i32] = &[0, 0x7FFF0000, i32::MIN, 0x12345678];
     const EXPECTED: &[i16] = &[0, 0x7FFF, i16::MIN, 0x1234];
@@ -72,7 +72,7 @@ fn test_s32_to_s16_conversion() {
 }
 
 // Verify that we do not adjust bit depth of S32 when bytes_per_sample is 4.
-#[gtest(SymphoniaGlueTest, NoBitDepthAdjustingS32)]
+#[gtest(SymphoniaDecoderBridgeTest, NoBitDepthAdjustingS32)]
 fn test_no_bit_depth_adjusting_s32() {
     const SAMPLES: &[i32] = &[0, 0x7FFF0000, i32::MIN, 0x12345678];
     const SAMPLE_RATE: u32 = 44100;
@@ -89,7 +89,7 @@ fn test_no_bit_depth_adjusting_s32() {
 }
 
 // Verify that we do not adjust bit depth of F32 when bytes_per_sample is 4.
-#[gtest(SymphoniaGlueTest, NoBitDepthAdjustingF32)]
+#[gtest(SymphoniaDecoderBridgeTest, NoBitDepthAdjustingF32)]
 fn test_no_bit_depth_adjusting_f32() {
     const SAMPLES: &[f32] = &[0.0, 0.5, -0.5, 1.0];
     const SAMPLE_RATE: u32 = 48000;
@@ -106,7 +106,7 @@ fn test_no_bit_depth_adjusting_f32() {
 }
 
 // Verify that we clip F32 values outside [-1.0, 1.0] for MP3 only.
-#[gtest(SymphoniaGlueTest, F32Clamping)]
+#[gtest(SymphoniaDecoderBridgeTest, F32Clamping)]
 fn test_f32_clamping() {
     const SAMPLES: &[f32] = &[2.0, -2.0, 1.0, -1.0];
     const EXPECTED: &[f32] = &[1.0, -1.0, 1.0, -1.0];
@@ -124,7 +124,7 @@ fn test_f32_clamping() {
 }
 
 // Verify that we do not clip F32 values outside [-1.0, 1.0] for non-MP3 codecs.
-#[gtest(SymphoniaGlueTest, NoF32ClampingForNonMp3)]
+#[gtest(SymphoniaDecoderBridgeTest, NoF32ClampingForNonMp3)]
 fn test_no_f32_clamping_for_non_mp3() {
     const SAMPLES: &[f32] = &[2.0, -2.0, 1.0, -1.0];
     const SAMPLE_RATE: u32 = 48000;
@@ -141,7 +141,7 @@ fn test_no_f32_clamping_for_non_mp3() {
 }
 
 // Verify that we handle U8 correctly.
-#[gtest(SymphoniaGlueTest, U8Conversion)]
+#[gtest(SymphoniaDecoderBridgeTest, U8Conversion)]
 fn test_u8_conversion() {
     const SAMPLES: &[u8] = &[0, 128, 255, 64];
     const SAMPLE_RATE: u32 = 22050;
@@ -158,7 +158,7 @@ fn test_u8_conversion() {
 }
 
 // Verify that we handle S16 correctly when no bit_depth_adjusting is needed.
-#[gtest(SymphoniaGlueTest, S16Conversion)]
+#[gtest(SymphoniaDecoderBridgeTest, S16Conversion)]
 fn test_s16_conversion() {
     const SAMPLES: &[i16] = &[0, 0x7FFF, i16::MIN, 0x1234];
     const SAMPLE_RATE: u32 = 44100;
@@ -176,7 +176,7 @@ fn test_s16_conversion() {
 
 // Verify that we handle S24 correctly (padding to 32 bits and shifting left by
 // 8).
-#[gtest(SymphoniaGlueTest, S24Conversion)]
+#[gtest(SymphoniaDecoderBridgeTest, S24Conversion)]
 fn test_s24_conversion() {
     let samples = vec![
         symphonia::core::audio::sample::i24(0),
@@ -205,7 +205,7 @@ fn test_s24_conversion() {
 }
 
 // Verify that we handle unsupported buffer types.
-#[gtest(SymphoniaGlueTest, UnsupportedBufferType)]
+#[gtest(SymphoniaDecoderBridgeTest, UnsupportedBufferType)]
 fn test_unsupported_buffer_type() {
     let spec = AudioSpec::new(44100, layouts::CHANNEL_LAYOUT_MONO);
     let audio_buf = AudioBuffer::<f64>::new(spec, 1);
@@ -216,7 +216,7 @@ fn test_unsupported_buffer_type() {
 }
 
 // Verify that decoder initialization fails for invalid config.
-#[gtest(SymphoniaGlueTest, DecoderInitFailure)]
+#[gtest(SymphoniaDecoderBridgeTest, DecoderInitFailure)]
 fn test_decoder_init_failure() {
     let config = ffi::SymphoniaDecoderConfig {
         codec: ffi::SymphoniaAudioCodec::Flac,
@@ -245,7 +245,7 @@ fn test_decoder_init_failure() {
 
 // Verify that FLAC decoder initialization succeeds even if the "fLaC" marker
 // is present in the extra data.
-#[gtest(SymphoniaGlueTest, FlacInitWithMarker)]
+#[gtest(SymphoniaDecoderBridgeTest, FlacInitWithMarker)]
 fn test_flac_init_with_marker() {
     let mut extra_data = vec![
         102, 76, 97, 67, // "fLaC"
@@ -283,7 +283,7 @@ fn test_flac_init_with_marker() {
 
 // Verify that FLAC decoder initialization succeeds with 38-byte extra data
 // (Header + STREAMINFO).
-#[gtest(SymphoniaGlueTest, FlacInitWithHeaderOnly)]
+#[gtest(SymphoniaDecoderBridgeTest, FlacInitWithHeaderOnly)]
 fn test_flac_init_with_header_only() {
     let extra_data = vec![
         0, 0, 0, 34, // STREAMINFO header
@@ -308,7 +308,7 @@ fn test_flac_init_with_header_only() {
 // Verify that FLAC decoder initialization fails as expected when only the
 // marker and invalid data are provided. The marker should be stripped, but
 // the resulting data will still fail validation in Symphonia.
-#[gtest(SymphoniaGlueTest, FlacInitWithMarkerOnly)]
+#[gtest(SymphoniaDecoderBridgeTest, FlacInitWithMarkerOnly)]
 fn test_flac_init_with_marker_only() {
     let extra_data = vec![
         102, 76, 97, 67, // "fLaC"
@@ -332,7 +332,7 @@ fn test_flac_init_with_marker_only() {
 // Verify that FLAC decoder initialization fails as expected when a
 // non-STREAMINFO metadata block is provided. The marker should be stripped, but
 // the block will fail validation in Symphonia which expects STREAMINFO first.
-#[gtest(SymphoniaGlueTest, FlacInitWithOtherBlock)]
+#[gtest(SymphoniaDecoderBridgeTest, FlacInitWithOtherBlock)]
 fn test_flac_init_with_other_block() {
     let extra_data = vec![
         102, 76, 97, 67, // "fLaC"
@@ -357,7 +357,7 @@ fn test_flac_init_with_other_block() {
 }
 
 // Verify that stereo data is correctly interleaved.
-#[gtest(SymphoniaGlueTest, StereoInterleaving)]
+#[gtest(SymphoniaDecoderBridgeTest, StereoInterleaving)]
 fn test_stereo_interleaving() {
     const SAMPLE_RATE: u32 = 44100;
     let spec = AudioSpec::new(SAMPLE_RATE, layouts::CHANNEL_LAYOUT_STEREO);
@@ -383,7 +383,7 @@ fn test_stereo_interleaving() {
 }
 
 // Verify that Symphonia errors are correctly mapped to FFI statuses.
-#[gtest(SymphoniaGlueTest, ErrorMapping)]
+#[gtest(SymphoniaDecoderBridgeTest, ErrorMapping)]
 fn test_error_mapping() {
     use std::io::{Error as IoError, ErrorKind};
     use symphonia::core::errors::Error;
@@ -408,7 +408,7 @@ fn test_error_mapping() {
 }
 
 // Verify that FFI packets are correctly converted to Symphonia packets.
-#[gtest(SymphoniaGlueTest, PacketConversion)]
+#[gtest(SymphoniaDecoderBridgeTest, PacketConversion)]
 fn test_packet_conversion() {
     let ffi_packet =
         ffi::SymphoniaPacket { timestamp_us: 12345, duration_us: 6789, data: &[0xAA, 0xBB, 0xCC] };
@@ -420,7 +420,7 @@ fn test_packet_conversion() {
 }
 
 // Verify that we handle zero frames correctly.
-#[gtest(SymphoniaGlueTest, ZeroFrames)]
+#[gtest(SymphoniaDecoderBridgeTest, ZeroFrames)]
 fn test_zero_frames() {
     const SAMPLE_RATE: u32 = 44100;
     // Test 5.1 channels (6 channels) zero-length frame handling in Symphonia 0.6.
@@ -437,7 +437,7 @@ fn test_zero_frames() {
     expect_true!(result.data.is_empty());
 }
 
-#[gtest(SymphoniaGlueTest, DetectMpegAudioCodecId)]
+#[gtest(SymphoniaDecoderBridgeTest, DetectMpegAudioCodecId)]
 fn test_detect_mpeg_audio_codec_id() {
     use symphonia::core::codecs::audio::well_known::*;
 
@@ -471,7 +471,7 @@ fn test_detect_mpeg_audio_codec_id() {
 
 // Verify that an MP3-configured decoder dynamically updates to MP2 when
 // an MP2 packet is encountered.
-#[gtest(SymphoniaGlueTest, Mp2LayerSwitching)]
+#[gtest(SymphoniaDecoderBridgeTest, Mp2LayerSwitching)]
 fn test_mp2_layer_switching() {
     let config = ffi::SymphoniaDecoderConfig {
         codec: ffi::SymphoniaAudioCodec::Mp3,

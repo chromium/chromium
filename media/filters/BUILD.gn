@@ -6,14 +6,14 @@ import("//media/gpu/args.gni")
 import("//media/media_options.gni")
 
 if (media_use_symphonia) {
-  rust_static_library("symphonia_glue") {
+  rust_static_library("symphonia_decoder_bridge") {
     # Needed because CXX generates unsafe code, for example using export_name
     # is inherently unsafe.
     allow_unsafe = true
 
-    crate_root = "symphonia_glue.rs"
-    sources = [ "symphonia_glue.rs" ]
-    cxx_bindings = [ "symphonia_glue.rs" ]
+    crate_root = "symphonia_decoder_bridge.rs"
+    sources = [ "symphonia_decoder_bridge.rs" ]
+    cxx_bindings = [ "symphonia_decoder_bridge.rs" ]
     visibility = [ ":*" ]
     deps = [ "//third_party/rust/symphonia/v0_6:lib" ]
   }
@@ -159,7 +159,7 @@ source_set("filters") {
       "symphonia_audio_decoder.cc",
       "symphonia_audio_decoder.h",
     ]
-    deps += [ ":symphonia_glue" ]
+    deps += [ ":symphonia_decoder_bridge" ]
   }
 
   if (media_use_libvpx) {
@@ -468,10 +468,10 @@ if (media_use_symphonia) {
   rust_static_library("rust_unittests") {
     testonly = true
     is_gtest_unittests = true
-    crate_root = "symphonia_glue_unittest.rs"
-    sources = [ "symphonia_glue_unittest.rs" ]
+    crate_root = "symphonia_decoder_bridge_unittest.rs"
+    sources = [ "symphonia_decoder_bridge_unittest.rs" ]
     deps = [
-      ":symphonia_glue",
+      ":symphonia_decoder_bridge",
       "//testing/rust_gtest_interop",
       "//third_party/rust/num_traits/v0_2:lib",
       "//third_party/rust/symphonia/v0_6:lib",

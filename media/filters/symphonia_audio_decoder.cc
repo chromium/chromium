@@ -37,7 +37,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/sample_format.h"
 #include "media/base/timestamp_constants.h"
-#include "media/filters/symphonia_glue.rs.h"
+#include "media/filters/symphonia_decoder_bridge.rs.h"
 
 namespace media {
 

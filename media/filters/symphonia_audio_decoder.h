@@ -26,7 +26,7 @@
 #error "This file should only be included with Symphonia support enabled."
 #endif
 
-#include "media/filters/symphonia_glue.rs.h"
+#include "media/filters/symphonia_decoder_bridge.rs.h"
 
 namespace base {
 class SequencedTaskRunner;
