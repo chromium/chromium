@@ -182,6 +182,9 @@ public final class StatusMediatorUnitTest {
         doReturn(AutocompleteInput.AutocompleteState.ENABLED)
                 .when(mAutocompleteInput)
                 .getAutocompleteState();
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+        doReturn(mWebContents).when(mTab).getWebContents();
+        doReturn(mNavigationController).when(mWebContents).getNavigationController();
 
         mContext =
                 new ContextThemeWrapper(
@@ -1409,6 +1412,25 @@ public final class StatusMediatorUnitTest {
 
         assertNull(mModel.get(StatusProperties.STATUS_CLICK_LISTENER));
         assertFalse(mModel.get(StatusProperties.STATUS_VIEW_HOVER_ENABLED));
+    }
+
+    @Test
+    @SmallTest
+    public void statusIcon_blankWhenPendingNavigation() {
+        mMediator.updateSecurityIcon(R.drawable.ic_settings_tune_24dp, 0, 0);
+        assertEquals(
+                R.drawable.ic_settings_tune_24dp,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
+
+        doReturn(mNavigationEntry).when(mNavigationController).getPendingEntry();
+        mMediator.updateSecurityIcon(R.drawable.ic_info_24dp, 0, 0);
+        assertNull(mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
+
+        doReturn(null).when(mNavigationController).getPendingEntry();
+        mMediator.updateSecurityIcon(R.drawable.ic_info_24dp, 0, 0);
+        assertEquals(
+                R.drawable.ic_info_24dp,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
     }
 
     private void setDisplayState(@DisplayState int state) {
