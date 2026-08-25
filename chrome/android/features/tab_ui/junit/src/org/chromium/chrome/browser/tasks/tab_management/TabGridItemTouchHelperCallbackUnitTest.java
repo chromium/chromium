@@ -278,6 +278,36 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
+    public void onReleaseTab_MovedDuringDrag() {
+        // Start dragging card at position 1 (tab 2).
+        mItemTouchHelperCallback.onSelectedChanged(
+                mMockViewHolder2, ItemTouchHelper.ACTION_STATE_DRAG);
+        assertThat(
+                mModel.get(POSITION2).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.SELECTED_CARD_ZOOM_IN));
+        assertThat(mModel.get(POSITION2).model.get(CARD_ALPHA), equalTo(0.8f));
+
+        // Simulate the tab being pinned or moved to index 0 during drag.
+        mModel.move(POSITION2, POSITION1);
+
+        // Now release drag.
+        mItemTouchHelperCallback.onSelectedChanged(
+                mMockViewHolder2, ItemTouchHelper.ACTION_STATE_IDLE);
+
+        // Tab 2 (now at position 0) should be unzoomed/deselected.
+        assertThat(
+                mModel.get(POSITION1).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.SELECTED_CARD_ZOOM_OUT));
+        assertThat(mModel.get(POSITION1).model.get(CARD_ALPHA), equalTo(1f));
+
+        // Tab 1 (now at position 1) should remain unaffected.
+        assertThat(
+                mModel.get(POSITION2).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.CARD_RESTORE));
+        assertThat(mModel.get(POSITION2).model.get(CARD_ALPHA), equalTo(1f));
+    }
+
+    @Test
     public void onReleaseTab_NoMergeCollaboration() {
         // Dragged object is a collaboration.
         when(mTabGroupColorViewProvider.hasCollaborationId()).thenReturn(true);

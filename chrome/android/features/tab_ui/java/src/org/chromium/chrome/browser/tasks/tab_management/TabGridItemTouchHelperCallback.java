@@ -155,8 +155,9 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
     /** Resets the state of any selected and highlighted cards. */
     public void clearCardState() {
         if (mSelectedTabIndex != TabModel.INVALID_TAB_INDEX) {
-            mModel.updateSelectedCardForSelection(mSelectedTabIndex, false);
+            deselectSelectedCard();
             mSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
+            mSelectedTabId = Tab.INVALID_TAB_ID;
         }
         if (mHoveredTabIndex != TabModel.INVALID_TAB_INDEX) {
             mModel.updateHoveredCardForHover(mHoveredTabIndex, false);
@@ -263,6 +264,10 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
         if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
             assumeNonNull(viewHolder);
             mSelectedTabIndex = viewHolder.getBindingAdapterPosition();
+            if (mSelectedTabIndex != TabModel.INVALID_TAB_INDEX
+                    && mSelectedTabIndex < mModel.size()) {
+                mSelectedTabId = TabProperties.getTabId(mModel.get(mSelectedTabIndex).model);
+            }
             mModel.updateSelectedCardForSelection(mSelectedTabIndex, true);
             onDragStateChanged();
             RecordUserAction.record("TabGrid.Drag.Start." + mComponentName);
@@ -297,7 +302,7 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
                 }
                 mActionAttempted = true;
             } else {
-                mModel.updateSelectedCardForSelection(mSelectedTabIndex, false);
+                deselectSelectedCard();
             }
             if (mHoveredTabIndex != TabModel.INVALID_TAB_INDEX && shouldUpdate) {
                 mModel.updateHoveredCardForHover(
@@ -368,6 +373,7 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
             }
             mHoveredTabIndex = TabModel.INVALID_TAB_INDEX;
             mSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
+            mSelectedTabId = Tab.INVALID_TAB_ID;
             mUnGroupTabIndex = TabModel.INVALID_TAB_INDEX;
             if (mTabGridDialogHandler != null) {
                 mTabGridDialogHandler.updateUngroupBarStatus(
@@ -705,6 +711,13 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
         }
 
         return true;
+    }
+
+    private void deselectSelectedCard() {
+        int deselectIndex = getSelectedCardIndexForDeselect();
+        if (deselectIndex != TabModel.INVALID_TAB_INDEX && deselectIndex < mModel.size()) {
+            mModel.updateSelectedCardForSelection(deselectIndex, false);
+        }
     }
 
     void setHoveredTabIndexForTesting(int index) {
