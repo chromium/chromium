@@ -47,7 +47,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "services/viz/privileged/mojom/gl/info_collection_gpu_service.mojom.h"
-#include "services/webnn/public/mojom/ep_package_info.mojom.h"
+#include "services/webnn/public/mojom/ep_device_info.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "ui/gfx/mojom/dxgi_info.mojom.h"
 #endif
@@ -129,6 +129,11 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
             compiler_context_receiver,
         mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote,
         RequestWebNNCompilerContextResultCallback callback);
+#endif
+#if BUILDFLAG(IS_APPLE)
+    virtual void CopyWebNNCompiledModel(
+        const base::FilePath& compiler_model_path,
+        CopyWebNNCompiledModelCallback callback);
 #endif
 
    protected:
@@ -322,6 +327,10 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
           compiler_context_receiver,
       mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote,
       RequestWebNNCompilerContextCallback callback) override;
+#endif
+#if BUILDFLAG(IS_APPLE)
+  void CopyWebNNCompiledModel(const base::FilePath& compiler_model_path,
+                              CopyWebNNCompiledModelCallback callback) override;
 #endif
   void CreateWebNNWeightsFile(CreateWebNNWeightsFileCallback cb) override;
 

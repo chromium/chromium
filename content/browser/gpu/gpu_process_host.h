@@ -220,6 +220,11 @@ class GpuProcessHost final : public BrowserChildProcessHostDelegate,
       mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote,
       RequestWebNNCompilerContextResultCallback callback) override;
 #endif
+#if BUILDFLAG(IS_APPLE)
+  void CopyWebNNCompiledModel(
+      const base::FilePath& compiler_model_path,
+      viz::mojom::GpuHost::CopyWebNNCompiledModelCallback callback) override;
+#endif
 
   bool LaunchGpuProcess();
 

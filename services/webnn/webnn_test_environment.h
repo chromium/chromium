@@ -69,6 +69,10 @@ class FakeGpuHostForTesting : public viz::mojom::GpuHost {
       mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote,
       RequestWebNNCompilerContextCallback callback) override;
 #endif
+#if BUILDFLAG(IS_APPLE)
+  void CopyWebNNCompiledModel(const base::FilePath& compiler_model_path,
+                              CopyWebNNCompiledModelCallback callback) override;
+#endif
   void CreateWebNNWeightsFile(CreateWebNNWeightsFileCallback callback) override;
 
  private:

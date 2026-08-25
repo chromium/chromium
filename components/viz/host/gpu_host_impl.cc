@@ -872,6 +872,20 @@ void GpuHostImpl::RequestWebNNCompilerContext(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_APPLE)
+void GpuHostImpl::Delegate::CopyWebNNCompiledModel(
+    const base::FilePath& compiler_model_path,
+    CopyWebNNCompiledModelCallback callback) {
+  std::move(callback).Run(std::nullopt);
+}
+
+void GpuHostImpl::CopyWebNNCompiledModel(
+    const base::FilePath& compiler_model_path,
+    CopyWebNNCompiledModelCallback callback) {
+  delegate_->CopyWebNNCompiledModel(compiler_model_path, std::move(callback));
+}
+#endif
+
 void GpuHostImpl::CreateWebNNWeightsFile(CreateWebNNWeightsFileCallback cb) {
   webnn::CreateWeightsFile(std::move(cb));
 }

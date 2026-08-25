@@ -190,6 +190,14 @@ void FakeGpuHostForTesting::CreateWebNNWeightsFile(
   webnn::CreateWeightsFile(std::move(callback));
 }
 
+#if BUILDFLAG(IS_APPLE)
+void FakeGpuHostForTesting::CopyWebNNCompiledModel(
+    const base::FilePath& compiler_model_path,
+    CopyWebNNCompiledModelCallback callback) {
+  std::move(callback).Run(compiler_model_path);
+}
+#endif
+
 WebNNTestEnvironment::WebNNTestEnvironment(
     WebNNContextProviderImpl::WebNNStatus status,
     WebNNContextProviderImpl::LoseAllContextsCallback

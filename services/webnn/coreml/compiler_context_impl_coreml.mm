@@ -160,20 +160,67 @@ void CompilerContextImplCoreml::CompileOnBackgroundThread(
                   return;
                 }
 
-                base::ScopedTempDir compiled_model_dir;
-                if (!compiled_model_url ||
-                    !compiled_model_dir.Set(
-                        base::apple::NSURLToFilePath(compiled_model_url))) {
+                base::FilePath raw_compiled_model_path =
+                    compiled_model_url
+                        ? base::apple::NSURLToFilePath(compiled_model_url)
+                        : base::FilePath();
+                if (raw_compiled_model_path.empty()) {
                   std::move(compile_callback)
                       .Run(base::unexpected(mojom::Error::New(
                           mojom::Error::Code::kUnknownError,
                           "Failed to get compiled model path.")));
-                } else {
-                  std::move(compile_callback)
-                      .Run(std::make_unique<CompilationResult>(
-                          std::move(compiled_model_dir), std::move(inputs_map),
-                          std::move(outputs_map)));
+                  return;
                 }
+
+                base::FilePath temp_dir;
+                if (!base::GetTempDir(&temp_dir)) {
+                  std::move(compile_callback)
+                      .Run(base::unexpected(mojom::Error::New(
+                          mojom::Error::Code::kUnknownError,
+                          "Failed to get temporary directory.")));
+                  return;
+                }
+
+                base::FilePath compiler_protected_dir =
+                    temp_dir.AppendASCII("webnn_compiler_protected");
+                if (!base::CreateDirectory(compiler_protected_dir)) {
+                  std::move(compile_callback)
+                      .Run(base::unexpected(mojom::Error::New(
+                          mojom::Error::Code::kUnknownError,
+                          "Failed to create compiler protected directory.")));
+                  return;
+                }
+
+                base::ScopedTempDir compiled_model_dir;
+                if (!compiled_model_dir.CreateUniqueTempDirUnderPath(
+                        compiler_protected_dir)) {
+                  std::move(compile_callback)
+                      .Run(base::unexpected(mojom::Error::New(
+                          mojom::Error::Code::kUnknownError,
+                          "Failed to create unique directory under compiler "
+                          "protected path.")));
+                  return;
+                }
+
+                base::FilePath dest_compiled_model_path =
+                    compiled_model_dir.GetPath().AppendASCII("model.mlmodelc");
+                if (!base::Move(raw_compiled_model_path,
+                                dest_compiled_model_path)) {
+                  LOG(ERROR) << "[WebNN] Failed to move compiled model from "
+                             << raw_compiled_model_path << " to "
+                             << dest_compiled_model_path;
+                  std::move(compile_callback)
+                      .Run(base::unexpected(mojom::Error::New(
+                          mojom::Error::Code::kUnknownError,
+                          "Failed to move compiled model to protected "
+                          "directory.")));
+                  return;
+                }
+
+                std::move(compile_callback)
+                    .Run(std::make_unique<CompilationResult>(
+                        std::move(compiled_model_dir), std::move(inputs_map),
+                        std::move(outputs_map)));
               },
               base::ElapsedTimer(), std::move(model_file_dir),
               std::move(input_name_to_coreml_name),

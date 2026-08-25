@@ -27,6 +27,9 @@ import "services/webnn/public/mojom/webnn_model_loader.mojom";
 [EnableIf=is_win]
 import "services/webnn/public/mojom/webnn_compiler_context.mojom";
 
+[EnableIf=is_apple]
+import "mojo/public/mojom/base/file_path.mojom";
+
 [EnableIf=is_win]
 import "services/webnn/public/mojom/webnn_context_properties.mojom";
 
@@ -127,4 +130,12 @@ interface GpuHost {
   // TODO(crbug.com/364445586): Once the LiteRT MLDrift delegate moves from GPU
   // to the renderer process, this interface can be removed entirely.
   CreateWebNNWeightsFile() => (mojo_base.mojom.File? file);
+
+  // Tells the GPU host to copy a compiled CoreML model directory from the
+  // Compiler process's temp directory to the GPU process's temp directory.
+  // Returns the new path in the GPU process's temp directory, or null if the
+  // copy failed.
+  [EnableIf=is_apple]
+  CopyWebNNCompiledModel(mojo_base.mojom.FilePath compiler_model_path)
+    => (mojo_base.mojom.FilePath? gpu_model_path);
 };
