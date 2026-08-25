@@ -19198,7 +19198,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <!-- Dictation strings -->
       <message name="IDS_DICTATION_ONBOARDING_BULLET_DATA_SHARING" desc="The second paragraph in the onboarding dialog describing data sharing with Google servers." translateable="false">
-        The content and URL of the page you're on will be sent to Google to generate text based on your spoken audio and the page context.
+        The content and URL of the page you're on will be sent to Google to generate text based on your spoken audio and the page context
       </message>
       <message name="IDS_DICTATION_ONBOARDING_BUTTON_ACCEPT" desc="Button label on the onboarding dialog to confirm the provided information and use the feature." translateable="false">
         Allow
