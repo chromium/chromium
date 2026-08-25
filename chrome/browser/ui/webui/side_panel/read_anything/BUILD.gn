@@ -20,6 +20,7 @@ source_set("read_anything") {
     "//chrome/browser/ui/read_anything",
     "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/browser/ui/webui/top_chrome",
+    "//chrome/browser/ui/webui/user_education:mojo_bindings",
     "//chrome/common/read_anything:mojo_bindings",
     "//components/translate/core/browser",
     "//content/public/browser",
