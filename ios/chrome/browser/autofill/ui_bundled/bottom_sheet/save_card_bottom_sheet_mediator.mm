@@ -79,7 +79,6 @@ std::pair<NSString*, NSString*> ParseExpirationDate(NSString* expirationDate) {
 
 }  // namespace
 
-// TODO(crbug.com/402511942): Implement SaveCardBottomSheetMediator.
 @implementation SaveCardBottomSheetMediator {
   // `_modelObserverBridge` holds a scoped observation of the model for the
   // mediator and must be destroyed before the `_saveCardBottomSheetModel`

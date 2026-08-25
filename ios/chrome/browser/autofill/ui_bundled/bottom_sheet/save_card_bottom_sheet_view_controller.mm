@@ -54,7 +54,6 @@ CGFloat const kChromeLogoHeight = 22;
                                                  UITextViewDelegate>
 @end
 
-// TODO(crbug.com/391366699): Implement SaveCardBottomSheetViewController.
 @implementation SaveCardBottomSheetViewController {
   NSString* _cardNameAndLastFourDigits;
   NSString* _cardExpiryDate;

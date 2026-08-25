@@ -5,8 +5,9 @@ include_rules = [
   "+ios/chrome/common/ui",
 ]
 
-# TODO(crbug.com/540389638): Remove this once AutofillLegalMessageLine is moved to
-# public/.
+# TODO(crbug.com/549289651): Remove this once dependency on
+# AutofillLegalMessageLine is resolved.
+
 specific_include_rules = {
   "wallet_reminder_notice_view_controller.mm": [
     "+ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h",

@@ -25,8 +25,6 @@ typedef NS_ENUM(NSInteger, AboveTitleImageLogoType) {
 };
 
 // Consumer interface for updating the save card bottomsheet UI.
-// TODO(crbug.com/406311602): Declare methods to set action button texts and to
-// show loading and confirmation.
 @protocol SaveCardBottomSheetConsumer <NSObject>
 
 // Sets the image to be displayed above the title of the bottomsheet.
