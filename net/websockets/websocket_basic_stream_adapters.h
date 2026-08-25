@@ -125,9 +125,17 @@ class NET_EXPORT_PRIVATE WebSocketSpdyStreamAdapter
   // Call WebSocketSpdyStreamAdapter::Delegate::OnClose().
   void CallDelegateOnClose();
 
+  // Send the zero-length final DATA frame that closes our half of the stream,
+  // if no other write is in flight, otherwise queue it.
+  void MaybeSendEndStream();
+
   // True if SpdyStream::Delegate::OnHeadersSent() has been called.
   // SpdyStream::SendData() must not be called before that.
   bool headers_sent_ = false;
+
+  // True once the final DATA frame has been sent to SendData(). This indicates
+  // that the stream should accept no more writes.
+  bool end_stream_sent_ = false;
 
   // The underlying SpdyStream.
   base::WeakPtr<SpdyStream> stream_;

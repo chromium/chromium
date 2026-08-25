@@ -110,6 +110,11 @@ int WebSocketSpdyStreamAdapter::Write(
     CompletionOnceCallback callback,
     const NetworkTrafficAnnotationTag& traffic_annotation) {
   CHECK(headers_sent_);
+
+  if (end_stream_sent_) {
+    return stream_error_;
+  }
+
   DCHECK(!write_callback_);
   DCHECK(callback);
   DCHECK_LT(0, buf_len);
@@ -156,13 +161,15 @@ void WebSocketSpdyStreamAdapter::OnHeadersReceived(
 void WebSocketSpdyStreamAdapter::OnDataReceived(
     std::unique_ptr<SpdyBuffer> buffer) {
   if (!buffer) {
-    // This is slightly wrong semantically, as it's still possible to write to
-    // the stream at this point. However, if the server closes the stream
-    // without waiting for a close frame from us, that means it is not
-    // interested in a clean shutdown. In which case we don't need to worry
-    // about sending any remaining data we might have buffered. This results in
-    // a call to OnClose() which then informs our delegate.
-    stream_->Close();
+    // The server has half-closed the stream. RFC 8441 section 5 makes HTTP/2
+    // stream closure analogous to TCP connection closure, with orderly closures
+    // "represented as END_STREAM flags", and RFC 6455 section 7.1.1 requires
+    // the transport to be closed once the closing handshake is complete. Close
+    // our half as well: simply dropping the stream locally would stop it
+    // counting against SETTINGS_MAX_CONCURRENT_STREAMS here while leaving the
+    // peer in half-closed(local) indefinitely, leaking a stream per WebSocket.
+    CHECK(headers_sent_);
+    MaybeSendEndStream();
     return;
   }
 
@@ -175,10 +182,42 @@ void WebSocketSpdyStreamAdapter::OnDataReceived(
   }
 }
 
+void WebSocketSpdyStreamAdapter::MaybeSendEndStream() {
+  if (end_stream_sent_ || !stream_) {
+    return;
+  }
+
+  // If there's an existing write pending, then re-queue to execute next time.
+  if (write_callback_) {
+    write_callback_ = base::BindOnce(
+        [](base::WeakPtr<WebSocketSpdyStreamAdapter> self,
+           CompletionOnceCallback cb, int result) {
+          if (self) {
+            self->MaybeSendEndStream();
+          }
+          std::move(cb).Run(result);
+        },
+        weak_factory_.GetWeakPtr(), std::move(write_callback_));
+    return;
+  }
+
+  // Send an empty END_STREAM. This will result in OnClose() being called which
+  // informs our delegate.
+  end_stream_sent_ = true;
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(0);
+  stream_->SendData(buffer.get(), 0, NO_MORE_DATA_TO_SEND);
+}
+
 void WebSocketSpdyStreamAdapter::OnDataSent() {
+  if (end_stream_sent_) {
+    CHECK(!write_callback_);
+    return;
+  }
+
   DCHECK(write_callback_);
 
-  std::move(write_callback_).Run(write_length_);
+  auto write_callback = std::move(write_callback_);
+  std::move(write_callback).Run(write_length_);
 }
 
 void WebSocketSpdyStreamAdapter::OnTrailers(
