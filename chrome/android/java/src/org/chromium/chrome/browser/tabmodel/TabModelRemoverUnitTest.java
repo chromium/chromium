@@ -70,9 +70,7 @@ public class TabModelRemoverUnitTest {
     private static final String COLLABORATION_ID = "collaboration";
     private static final String TAB_GROUP_TITLE = "My Title";
     private static final LocalTabGroupId TAB_GROUP_1 = new LocalTabGroupId(new Token(1L, 2L));
-    private static final int ROOT_ID_1 = 1;
     private static final LocalTabGroupId TAB_GROUP_2 = new LocalTabGroupId(new Token(2L, 3L));
-    private static final int ROOT_ID_2 = 3;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

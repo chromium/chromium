@@ -41,7 +41,6 @@ import org.chromium.ui.util.ColorUtils;
 @Config(manifest = Config.NONE, qualifiers = "sw600dp")
 public class StripLayoutTabTest {
 
-    private static final String TAG = "StripLayoutTabTest";
     private static final float DIVIDER_FOLIO_LIGHT_OPACITY = 0.2f;
     private static final float TAB_WIDTH = 150f;
 
