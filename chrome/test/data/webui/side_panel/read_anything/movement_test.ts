@@ -15,6 +15,7 @@ suite('Movement', () => {
   setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    window.scrollTo(0, 0);
 
     // Always set a large innerHeight and innerWidth to ensure elements are
     // considered visible and don't wrap unexpectedly in tests.
@@ -136,7 +137,7 @@ suite('Movement', () => {
       document.body.appendChild(container);
       // Add enough content to cause scrolling.
       const spacer = document.createElement('div');
-      spacer.style.height = '2000px';
+      spacer.style.height = '10000px';
       container.appendChild(spacer);
       // This is the target element, initially not visible.
       const targetP = document.createElement('p');
@@ -177,7 +178,7 @@ suite('Movement', () => {
       document.body.appendChild(container);
       // Add enough content to cause scrolling.
       const spacer = document.createElement('div');
-      spacer.style.height = '2000px';
+      spacer.style.height = '10000px';
       container.appendChild(spacer);
       // This is the target element, initially not visible.
       const targetP = document.createElement('p');
@@ -236,7 +237,7 @@ suite('Movement', () => {
 
       // Add content to push the next element off-screen.
       const spacer = document.createElement('div');
-      spacer.style.height = '2000px';
+      spacer.style.height = '10000px';
       container.appendChild(spacer);
 
       // Add an off-screen paragraph.
