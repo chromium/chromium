@@ -413,8 +413,6 @@ component("gl") {
       "android/scoped_java_surface_control.h",
       "android/surface_texture.cc",
       "android/surface_texture.h",
-      "android/surface_texture_listener.cc",
-      "android/surface_texture_listener.h",
       "gl_surface_egl_surface_control.cc",
       "gl_surface_egl_surface_control.h",
     ]
