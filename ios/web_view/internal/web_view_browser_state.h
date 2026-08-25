@@ -28,7 +28,8 @@ class WebViewBrowserState final : public web::BrowserState {
  public:
   explicit WebViewBrowserState(
       bool off_the_record,
-      WebViewBrowserState* recording_browser_state = nullptr);
+      WebViewBrowserState* recording_browser_state = nullptr,
+      NSString* storage_identifier = nil);
 
   WebViewBrowserState(const WebViewBrowserState&) = delete;
   WebViewBrowserState& operator=(const WebViewBrowserState&) = delete;
@@ -39,6 +40,7 @@ class WebViewBrowserState final : public web::BrowserState {
   bool IsOffTheRecord() const override;
   base::FilePath GetStatePath() const override;
   net::URLRequestContextGetter* GetRequestContext() override;
+  const base::Uuid& GetWebKitStorageID() const override;
 
   // Returns the associated PrefService.
   PrefService* GetPrefs();
@@ -59,6 +61,9 @@ class WebViewBrowserState final : public web::BrowserState {
 
   // Whether this BrowserState is incognito.
   bool off_the_record_;
+
+  // The WebKit storage identifier for this BrowserState.
+  base::Uuid webkit_storage_id_;
 
   // The request context getter for this BrowserState object.
   scoped_refptr<WebViewURLRequestContextGetter> request_context_getter_;

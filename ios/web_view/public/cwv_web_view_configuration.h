@@ -36,10 +36,36 @@ CWV_EXPORT
 // Every call returns a new instance.
 + (instancetype)nonPersistentConfiguration;
 
+/**
+ * Returns a cached persistent configuration for the given storage identifier.
+ * Configurations with the same identifier share the same
+ * data store and preferences.
+ *
+ * @param storageIdentifier A unique identifier.
+ * @return The configuration instance.
+ */
++ (instancetype)configurationWithIdentifier:(NSUUID*)storageIdentifier
+    API_AVAILABLE(ios(17.0));
+
+/**
+ * Shuts down the BrowserState and asynchronously deletes all on-disk data
+ * associated with this configuration. Should be called when the embedding
+ * application wants to remove all data for this configuration.
+ *
+ * @note This method will abort cleanup if there are active CWVWebViews using
+ * this configuration; this condition will trigger a CHECK.
+ */
+- (void)remove API_AVAILABLE(ios(17.0));
+
 - (instancetype)init NS_UNAVAILABLE;
 
 // The preferences object associated with this web view configuration.
 @property(nonatomic, readonly) CWVPreferences* preferences;
+
+// The storage identifier associated with this configuration, or nil for default
+// or non-persistent configurations.
+@property(nonatomic, readonly, copy, nullable)
+    NSUUID* storageIdentifier API_AVAILABLE(ios(17.0));
 
 // The user content controller to associate with web views created using this
 // configuration.
