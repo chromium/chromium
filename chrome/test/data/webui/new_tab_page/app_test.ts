@@ -3302,6 +3302,40 @@ suite('NewTabPageAppTest', () => {
           assertEquals('hint suggestion', actionComposebox.inputPlaceholder);
         });
 
+    test('Add tab chip click calls searchbox.handleFuseboxAction', async () => {
+      const actionChips = $$(app, 'ntp-action-chips')!;
+      let handleFuseboxActionCalled = false;
+      let passedAction: FuseboxAction|undefined;
+      const searchbox = $$(app, '#searchbox') as NtpSearchboxElement;
+      assertTrue(!!searchbox);
+      searchbox.handleFuseboxAction = (action?: FuseboxAction) => {
+        handleFuseboxActionCalled = true;
+        passedAction = action;
+        return Promise.resolve();
+      };
+
+      const fuseboxAction: FuseboxAction = {
+        preselectedTool: null,
+        preferredInventory: null,
+        preselectedModel: null,
+        queryActionOverride: null,
+        preselectedInputSource: InputSource.kInputSourceTabPicker,
+        searchboxOverride: SearchboxOverride.kRealbox,
+      };
+
+      actionChips.dispatchEvent(new CustomEvent('action-chip-click', {
+        detail: {
+          suggestion: '',
+          files: [],
+          fuseboxAction: fuseboxAction,
+        },
+      }));
+      await microtasksFinished();
+
+      assertTrue(handleFuseboxActionCalled);
+      assertDeepEquals(fuseboxAction, passedAction);
+    });
+
     test('Show background when non-GM3 theme', async () => {
       // Arrange.
       const theme = createTheme({isGm3: false});
@@ -3673,21 +3707,6 @@ suite('NewTabPageAppTest', () => {
               queryActionOverride: QueryActionOverride.kPaste,
               preselectedInputSource: null,
               searchboxOverride: SearchboxOverride.kUnspecified,
-            },
-          },
-        }));
-        await microtasksFinished();
-        actionChips.dispatchEvent(new CustomEvent('action-chip-click', {
-          detail: {
-            suggestion: 'hint suggestion',
-            files: [],
-            fuseboxAction: {
-              preselectedTool: null,
-              preferredInventory: null,
-              preselectedModel: null,
-              queryActionOverride: QueryActionOverride.kHint,
-              preselectedInputSource: null,
-              searchboxOverride: SearchboxOverride.kRealbox,
             },
           },
         }));
