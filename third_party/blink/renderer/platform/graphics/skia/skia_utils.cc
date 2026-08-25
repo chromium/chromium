@@ -32,22 +32,8 @@
 
 #include "partition_alloc/partition_alloc.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
-#include "third_party/skia/modules/skcms/skcms.h"
 
 namespace blink {
-
-bool ApproximatelyEqualSkColorSpaces(sk_sp<SkColorSpace> src_color_space,
-                                     sk_sp<SkColorSpace> dst_color_space) {
-  if ((!src_color_space && dst_color_space) ||
-      (src_color_space && !dst_color_space))
-    return false;
-  if (!src_color_space && !dst_color_space)
-    return true;
-  skcms_ICCProfile src_profile, dst_profile;
-  src_color_space->toProfile(&src_profile);
-  dst_color_space->toProfile(&dst_profile);
-  return skcms_ApproximatelyEqualProfiles(&src_profile, &dst_profile);
-}
 
 sk_sp<SkData> TryAllocateSkData(size_t size) {
   void* buffer =

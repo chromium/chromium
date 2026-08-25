@@ -43,10 +43,6 @@
 
 namespace blink {
 
-bool PLATFORM_EXPORT
-ApproximatelyEqualSkColorSpaces(sk_sp<SkColorSpace> src_color_space,
-                                sk_sp<SkColorSpace> dst_color_space);
-
 // Temporary utility while converting canvas code to use gfx::ColorSpace.
 // TODO(crbug.com/371227617): Remove this once conversion is complete.
 inline gfx::ColorSpace SkColorSpaceToGfxColorSpace(
