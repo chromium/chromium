@@ -1121,9 +1121,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
 
     public @StringRes int getAddToGroupMenuItemString(@Nullable Token currentTabGroupId) {
         TabModel tabModel = mTabModelSelector.getCurrentModel();
-        boolean checkAllWindows = ChromeFeatureList.sCrossWindowTabGroupOperations.isEnabled();
-        return TabGroupUiUtils.getAddToGroupMenuItemString(
-                tabModel, currentTabGroupId, checkAllWindows);
+        return TabGroupUiUtils.getAddToGroupMenuItemString(tabModel, currentTabGroupId);
     }
 
     /** Returns whether to show the open in app menu item. */

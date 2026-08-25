@@ -14,6 +14,10 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
+
+import androidx.test.core.app.ApplicationProvider;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -233,5 +237,33 @@ public class TabGroupUiUtilsUnitTest {
                 .moveTabsToWindowByIdChecked(
                         eq(2), eq(List.of(tab)), eq(TabList.INVALID_TAB_INDEX), eq(200), eq(true));
         verify(callback).onTabMoved();
+    }
+
+    @Test
+    public void testGetAddToGroupMenuItemTitle() {
+        Context context = ApplicationProvider.getApplicationContext();
+        assertEquals(
+                "Add tab to group", TabGroupUiUtils.getAddToGroupMenuItemTitle(context, null, 1));
+        assertEquals(
+                "Move tab to group",
+                TabGroupUiUtils.getAddToGroupMenuItemTitle(context, Token.createRandom(), 1));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testGetAddToGroupMenuItemString_crossWindow() {
+        when(mTabModel.getTabGroupCount()).thenReturn(0);
+        when(mTabModel.isIncognito()).thenReturn(false);
+
+        TabModelSelector otherSelector = mock(TabModelSelector.class);
+        TabModel otherModel = mock(TabModel.class);
+        when(otherSelector.getModel(false)).thenReturn(otherModel);
+        when(otherModel.getTabGroupCount()).thenReturn(1);
+        when(mTabWindowManager.getAllTabModelSelectors()).thenReturn(List.of(otherSelector));
+
+        assertEquals(
+                R.string.menu_add_tab_to_group,
+                TabGroupUiUtils.getAddToGroupMenuItemString(
+                        mTabModel, /* currentTabGroupId= */ null));
     }
 }
