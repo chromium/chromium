@@ -612,6 +612,9 @@ void ChromePaymentsAutofillClient::IbanUploadCompleted(bool iban_saved,
 void ChromePaymentsAutofillClient::ShowAutofillProgressDialog(
     AutofillProgressUiType autofill_progress_dialog_type,
     base::OnceClosure cancel_callback) {
+  if (!web_contents() || web_contents()->IsBeingDestroyed()) {
+    return;
+  }
   autofill_progress_dialog_controller_ =
       std::make_unique<AutofillProgressDialogControllerImpl>(
           autofill_progress_dialog_type, std::move(cancel_callback));
@@ -634,6 +637,9 @@ void ChromePaymentsAutofillClient::ShowCardUnmaskOtpInputDialog(
     CreditCard::RecordType card_type,
     const CardUnmaskChallengeOption& challenge_option,
     base::WeakPtr<OtpUnmaskDelegate> delegate) {
+  if (!web_contents() || web_contents()->IsBeingDestroyed()) {
+    return;
+  }
   card_unmask_otp_input_dialog_controller_ =
       std::make_unique<CardUnmaskOtpInputDialogControllerImpl>(
           card_type, challenge_option, delegate);
@@ -656,6 +662,9 @@ void ChromePaymentsAutofillClient::ShowUnmaskAuthenticatorSelectionDialog(
     base::OnceCallback<void(const std::string&)>
         confirm_unmask_challenge_option_callback,
     base::OnceClosure cancel_unmasking_closure) {
+  if (!web_contents() || web_contents()->IsBeingDestroyed()) {
+    return;
+  }
   card_unmask_authentication_selection_controller_ =
       std::make_unique<CardUnmaskAuthenticationSelectionDialogControllerImpl>(
           challenge_options,
@@ -706,6 +715,9 @@ ChromePaymentsAutofillClient::GetMultipleRequestPaymentsNetworkInterface() {
 
 void ChromePaymentsAutofillClient::ShowAutofillErrorDialog(
     AutofillErrorDialogContext context) {
+  if (!web_contents() || web_contents()->IsBeingDestroyed()) {
+    return;
+  }
   autofill_error_dialog_controller_ =
       std::make_unique<AutofillErrorDialogControllerImpl>(std::move(context));
   autofill_error_dialog_controller_->Show(
@@ -733,6 +745,9 @@ void ChromePaymentsAutofillClient::ShowUnmaskPrompt(
     const CreditCard& card,
     const CardUnmaskPromptOptions& card_unmask_prompt_options,
     base::WeakPtr<CardUnmaskDelegate> delegate) {
+  if (!web_contents() || web_contents()->IsBeingDestroyed()) {
+    return;
+  }
   unmask_controller_ = std::make_unique<CardUnmaskPromptControllerImpl>(
       user_prefs::UserPrefs::Get(client_->GetWebContents().GetBrowserContext()),
       card, card_unmask_prompt_options, delegate);
@@ -1169,6 +1184,9 @@ SaveAndFillManager* ChromePaymentsAutofillClient::GetSaveAndFillManager() {
 
 void ChromePaymentsAutofillClient::ShowCreditCardLocalSaveAndFillDialog(
     CardSaveAndFillDialogCallback callback) {
+  if (!web_contents() || web_contents()->IsBeingDestroyed()) {
+    return;
+  }
 #if !BUILDFLAG(IS_ANDROID)
   if (!save_and_fill_dialog_controller_) {
     save_and_fill_dialog_controller_ =
@@ -1199,6 +1217,9 @@ void ChromePaymentsAutofillClient::ShowCreditCardUploadSaveAndFillDialog(
 
 void ChromePaymentsAutofillClient::ShowCreditCardSaveAndFillPendingDialog(
     CardSaveAndFillDialogCallback callback) {
+  if (!web_contents() || web_contents()->IsBeingDestroyed()) {
+    return;
+  }
 #if !BUILDFLAG(IS_ANDROID)
   if (!save_and_fill_dialog_controller_) {
     save_and_fill_dialog_controller_ =

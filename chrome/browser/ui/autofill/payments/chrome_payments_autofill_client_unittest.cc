@@ -20,11 +20,15 @@
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -1174,5 +1178,51 @@ TEST_F(ChromePaymentsAutofillClientTest,
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+class TestPaymentsAutofillClientForWebContentsDestruction
+    : public payments::ChromePaymentsAutofillClient {
+ public:
+  explicit TestPaymentsAutofillClientForWebContentsDestruction(
+      ContentAutofillClient* client)
+      : payments::ChromePaymentsAutofillClient(client) {}
+
+  void ClearWebContentsForTesting() { Observe(nullptr); }
+};
+
+TEST_F(ChromePaymentsAutofillClientTest,
+       DialogsDoNotShowWhenWebContentsNullOrDestroyed) {
+  TestPaymentsAutofillClientForWebContentsDestruction payments_client(client());
+  // Simulate WebContents being destroyed/detached.
+  payments_client.ClearWebContentsForTesting();
+
+  // None of the following calls should crash or dereference null/dangling
+  // pointers.
+  payments_client.ShowUnmaskPrompt(
+      test::GetCreditCard(), CardUnmaskPromptOptions(),
+      /*delegate=*/base::WeakPtr<CardUnmaskDelegate>());
+
+  payments_client.ShowAutofillProgressDialog(
+      AutofillProgressUiType::kServerCardUnmaskProgressUi,
+      /*cancel_callback=*/base::DoNothing());
+
+  payments_client.ShowCardUnmaskOtpInputDialog(
+      CreditCard::RecordType::kVirtualCard, CardUnmaskChallengeOption(),
+      /*delegate=*/base::WeakPtr<OtpUnmaskDelegate>());
+
+  payments_client.ShowUnmaskAuthenticatorSelectionDialog(
+      /*challenge_options=*/{},
+      /*confirm_unmask_challenge_option_callback=*/base::DoNothing(),
+      /*cancel_unmasking_closure=*/base::DoNothing());
+
+  payments_client.ShowAutofillErrorDialog(AutofillErrorDialogContext());
+
+#if !BUILDFLAG(IS_ANDROID)
+  payments_client.ShowCreditCardLocalSaveAndFillDialog(
+      /*callback=*/base::DoNothing());
+
+  payments_client.ShowCreditCardSaveAndFillPendingDialog(
+      /*callback=*/base::DoNothing());
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
 
 }  // namespace autofill
