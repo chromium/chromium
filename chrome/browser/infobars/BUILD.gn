@@ -9,7 +9,6 @@ source_set("infobars") {
   public = [
     "confirm_infobar_creator.h",
     "infobar_features.h",
-    "infobar_responder.h",
     "infobar_spec.h",
     "simple_alert_infobar_creator.h",
   ]
@@ -17,7 +16,6 @@ source_set("infobars") {
   sources = [
     "confirm_infobar_creator.cc",
     "infobar_features.cc",
-    "infobar_responder.cc",
     "infobar_spec.cc",
     "simple_alert_infobar_creator.cc",
   ]
@@ -64,12 +62,15 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "infobar_responder.cc",
+    "infobar_responder.h",
     "test_support/infobar_observer.cc",
     "test_support/infobar_observer.h",
   ]
 
   deps = [
     "//base",
+    "//components/infobars/content",
     "//components/infobars/core",
   ]
 }
