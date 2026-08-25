@@ -7,11 +7,14 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
@@ -323,31 +326,31 @@ AbortCallback FakeProvidedFileSystem::ReadFile(
                        base::File::FILE_ERROR_INVALID_OPERATION));
   }
 
-  // Send the response byte by byte.
-  int64_t current_offset = offset;
-  int current_length = length;
-
   // Reading behind EOF is fine, it will just return 0 bytes.
-  if (current_offset >= *entry_it->second->metadata->size || !current_length) {
+  if (offset < 0 || length <= 0 ||
+      base::as_unsigned(offset) >= entry_it->second->contents.size()) {
     return PostAbortableTask(base::BindOnce(callback, /*chunk_length=*/0,
                                             /*has_more=*/false,
                                             base::File::FILE_OK));
   }
 
   const FakeEntry* const entry = entry_it->second.get();
+  const std::string_view bytes_to_read =
+      std::string_view(entry->contents).substr(offset, length);
+
+  // Simulate chunked streaming I/O by filling the buffer byte-by-byte in
+  // lockstep with asynchronous 1-byte notification tasks. This allows unit
+  // tests to verify partial reads and mid-stream aborts.
+  base::span<char> buffer_span = base::as_writable_chars(buffer->span());
   std::vector<int> task_ids;
-  while (current_offset < *entry->metadata->size && current_length) {
-    UNSAFE_TODO(buffer->data()[current_offset - offset]) =
-        entry->contents[current_offset];
-    const bool has_more =
-        (current_offset + 1 < *entry->metadata->size) && (current_length - 1);
+  for (size_t i = 0; i < bytes_to_read.size(); ++i) {
+    buffer_span[i] = bytes_to_read[i];
+    const bool has_more = (i + 1 < bytes_to_read.size());
     const int task_id = tracker_.PostTask(
         base::SingleThreadTaskRunner::GetCurrentDefault().get(), FROM_HERE,
         base::BindOnce(callback, /*chunk_length=*/1, has_more,
                        base::File::FILE_OK));
     task_ids.push_back(task_id);
-    current_offset++;
-    current_length--;
   }
 
   return base::BindOnce(&FakeProvidedFileSystem::AbortMany,
@@ -491,6 +494,12 @@ AbortCallback FakeProvidedFileSystem::WriteFile(
     return PostAbortableTask(
         base::BindOnce(std::move(callback), base::File::FILE_ERROR_NOT_FOUND));
   }
+
+  if (offset < 0 || length < 0) {
+    return PostAbortableTask(base::BindOnce(
+        std::move(callback), base::File::FILE_ERROR_INVALID_OPERATION));
+  }
+
   std::string& write_buffer =
       entry->write_buffer ? *entry->write_buffer : entry->contents;
   int64_t buffer_size = static_cast<int64_t>(write_buffer.size());
@@ -512,7 +521,9 @@ AbortCallback FakeProvidedFileSystem::WriteFile(
     write_buffer.resize(*entry->metadata->size);
   }
 
-  write_buffer.replace(offset, length, buffer->data(), length);
+  write_buffer.replace(
+      offset, length,
+      base::as_string_view(buffer->first(base::checked_cast<size_t>(length))));
 
   return PostAbortableTask(
       base::BindOnce(std::move(callback), base::File::FILE_OK));

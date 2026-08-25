@@ -70,8 +70,8 @@ class BufferingFileStreamReader : public storage::FileStreamReader {
   int64_t max_bytes_to_read_;
   int64_t bytes_read_;
   scoped_refptr<net::IOBuffer> preloading_buffer_;
-  int preloading_buffer_offset_;
-  int preloaded_bytes_;
+  size_t preloading_buffer_offset_ = 0;
+  size_t preloaded_bytes_ = 0;
 
   base::WeakPtrFactory<BufferingFileStreamReader> weak_ptr_factory_{this};
 };

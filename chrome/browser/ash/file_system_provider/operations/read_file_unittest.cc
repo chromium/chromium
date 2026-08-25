@@ -247,4 +247,40 @@ TEST_F(FileSystemProviderOperationsReadFileTest, OnSuccess_HeapOverflow) {
   EXPECT_EQ(base::File::FILE_ERROR_IO, event->result());
 }
 
+TEST_F(FileSystemProviderOperationsReadFileTest,
+       OnSuccess_NegativeOffsetOrLength) {
+  using extensions::api::file_system_provider_internal::
+      ReadFileRequestedSuccess::Params;
+
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
+  CallbackLogger callback_logger;
+
+  // Negative length should be rejected during response parsing.
+  ReadFile read_file(&dispatcher, file_system_info_, kFileHandle,
+                     io_buffer_.get(), kOffset, /*length=*/-1,
+                     base::BindRepeating(&CallbackLogger::OnReadFile,
+                                         base::Unretained(&callback_logger)));
+  EXPECT_TRUE(read_file.Execute(kRequestId));
+
+  const std::string data = "ABCDE";
+  base::ListValue list;
+  list.Append(kFileSystemId);
+  list.Append(kRequestId);
+  list.Append(base::Value(base::as_byte_span(data)));
+  list.Append(/*has_more=*/false);
+  list.Append(/*execution_time=*/0);
+
+  std::optional<Params> params = Params::Create(std::move(list));
+  ASSERT_TRUE(params.has_value());
+  RequestValue request_value =
+      RequestValue::CreateForReadFileSuccess(std::move(*params));
+
+  read_file.OnSuccess(kRequestId, std::move(request_value),
+                      /*has_more=*/false);
+
+  ASSERT_EQ(1u, callback_logger.events().size());
+  CallbackLogger::Event* event = callback_logger.events()[0].get();
+  EXPECT_EQ(base::File::FILE_ERROR_IO, event->result());
+}
+
 }  // namespace ash::file_system_provider::operations

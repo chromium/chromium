@@ -7,8 +7,9 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/file_system/file_system_backend.h"
@@ -77,17 +78,18 @@ int64_t BufferingFileStreamReader::GetLength(GetLengthCallback callback) {
 int BufferingFileStreamReader::CopyFromPreloadingBuffer(
     scoped_refptr<net::IOBuffer> buffer,
     int buffer_length) {
-  DCHECK_LE(0, buffer_length);
-  DCHECK_LE(static_cast<size_t>(buffer_length), buffer->span().size());
-  const int read_bytes = std::min(buffer_length, preloaded_bytes_);
+  const size_t buffer_length_size = base::checked_cast<size_t>(buffer_length);
+  DCHECK_LE(buffer_length_size, buffer->span().size());
+  const size_t read_bytes = std::min(buffer_length_size, preloaded_bytes_);
 
-  UNSAFE_TODO(memcpy(buffer->data(),
-                     preloading_buffer_->data() + preloading_buffer_offset_,
-                     read_bytes));
+  buffer->span()
+      .first(read_bytes)
+      .copy_prefix_from(preloading_buffer_->span().subspan(
+          preloading_buffer_offset_, read_bytes));
   preloading_buffer_offset_ += read_bytes;
   preloaded_bytes_ -= read_bytes;
 
-  return read_bytes;
+  return base::checked_cast<int>(read_bytes);
 }
 
 void BufferingFileStreamReader::Preload(net::CompletionOnceCallback callback) {
@@ -111,7 +113,7 @@ void BufferingFileStreamReader::OnPreloadCompleted(
   }
 
   preloading_buffer_offset_ = 0;
-  preloaded_bytes_ = result;
+  preloaded_bytes_ = base::checked_cast<size_t>(result);
 
   std::move(callback).Run(CopyFromPreloadingBuffer(buffer, buffer_length));
 }
