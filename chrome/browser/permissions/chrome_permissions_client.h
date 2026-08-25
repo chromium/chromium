@@ -131,8 +131,6 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
   bool IsPrivilegedInternalWebUIForUIRouting(
       content::WebContents* web_contents) override;
 
-  bool IsOmniboxEverywhere(content::WebContents* web_contents) override;
-
 #if BUILDFLAG(IS_ANDROID)
   bool IsDseOrigin(content::BrowserContext* browser_context,
                    const url::Origin& origin) override;

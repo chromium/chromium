@@ -38,18 +38,9 @@ PermissionsClient* PermissionsClient::Get() {
 }
 
 // static
-bool PermissionsClient::AllowEmbeddedPermissionPromptForSurface(
-    content::WebContents* web_contents) {
-  if (web_contents && Get() && Get()->IsOmniboxEverywhere(web_contents)) {
-    return true;
-  }
+bool PermissionsClient::AllowEmbeddedPermissionPromptForAllowlistedSurfaces() {
   return base::FeatureList::IsEnabled(
       omnibox_feature_configs::kEmbeddedPermissionEnabled);
-}
-
-bool PermissionsClient::IsOmniboxEverywhere(
-    content::WebContents* web_contents) {
-  return false;
 }
 
 double PermissionsClient::GetSiteEngagementScore(

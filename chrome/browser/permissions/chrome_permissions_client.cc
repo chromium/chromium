@@ -886,8 +886,8 @@ bool ChromePermissionsClient::IsFromNewTabPage(
   // `requesting_origin` is equal to 'Google' URL after overriding the requester
   // origin is allowed.
   if (already_overrode_requester &&
-      ChromePermissionsClient::AllowEmbeddedPermissionPromptForSurface(
-          web_contents)) {
+      ChromePermissionsClient::
+          AllowEmbeddedPermissionPromptForAllowlistedSurfaces()) {
     return requesting_origin == GetGoogleURLOrigin();
   }
   // Since the embedder is from the new tab page at this point, a page
@@ -904,18 +904,17 @@ bool ChromePermissionsClient::IsPrivilegedInternalWebUI(
   url::Origin embedding_origin = GetEmbeddingOrigin(web_contents);
   url::Origin requesting_origin = url::Origin::Create(requester);
 
-  // Check that the embedding origin is the Omnibox Popup, Contextual Tasks, or
-  // Omnibox Everywhere.
+  // Check that the embedding origin is the Omnibox Popup or Contextual Tasks.
   if (!IsPrivilegedInternalWebUIForUIRouting(embedding_origin)) {
     return false;
   }
 
-  // If the PEPC flag is enabled (or for Omnibox Everywhere, regardless of PEPC
-  // flag), then check that the final `requesting_origin` is equal to 'Google'
-  // URL after overriding the requester origin is allowed.
+  // If the PEPC flag is enabled, then checking that the final
+  // `requesting_origin` is equal to 'Google' URL after overriding the requester
+  // origin is allowed.
   if (already_overrode_requester &&
-      ChromePermissionsClient::AllowEmbeddedPermissionPromptForSurface(
-          web_contents)) {
+      ChromePermissionsClient::
+          AllowEmbeddedPermissionPromptForAllowlistedSurfaces()) {
     return requesting_origin == GetGoogleURLOrigin();
   }
   return embedding_origin == requesting_origin;
@@ -933,12 +932,6 @@ bool ChromePermissionsClient::
   return embedding_origin == GetContextualTasksOrigin() ||
          embedding_origin == GetOmniboxPopupOrigin() ||
          embedding_origin == GetOmniboxEverywhereOrigin();
-}
-
-bool ChromePermissionsClient::IsOmniboxEverywhere(
-    content::WebContents* web_contents) {
-  url::Origin embedding_origin = GetEmbeddingOrigin(web_contents);
-  return embedding_origin == GetOmniboxEverywhereOrigin();
 }
 
 #if BUILDFLAG(IS_ANDROID)

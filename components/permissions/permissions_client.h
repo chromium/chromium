@@ -68,13 +68,10 @@ class PermissionsClient {
   // Return the permissions client.
   static PermissionsClient* Get();
 
-  // Returns true if the surface is omnibox everywhere, or if the embedded
-  // permission prompt flag is enabled for allowlisted surfaces (such as
-  // contextual tasks, NTP, omnibox popup).
-  static bool AllowEmbeddedPermissionPromptForSurface(
-      content::WebContents* web_contents);
-
-  virtual bool IsOmniboxEverywhere(content::WebContents* web_contents);
+  // It returns whether the embedded permission prompt is enabled
+  // allowlisted surfaces, such as new tab page, contextual tasks, and omnibox
+  // popup.
+  static bool AllowEmbeddedPermissionPromptForAllowlistedSurfaces();
 
   // Retrieves the HostContentSettingsMap for this context. The returned pointer
   // has the same lifetime as |browser_context|.
