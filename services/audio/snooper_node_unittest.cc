@@ -55,10 +55,8 @@ class AudioParametersBuilder {
  public:
   AudioParametersBuilder() = default;
 
-  AudioParametersBuilder& WithLayout(media::ChannelLayout layout,
-                                     int channels) {
-    layout_ = layout;
-    channels_ = channels;
+  AudioParametersBuilder& WithLayout(media::ChannelLayoutConfig config) {
+    config_ = config;
     return *this;
   }
   AudioParametersBuilder& WithRate(int rate) {
@@ -71,14 +69,12 @@ class AudioParametersBuilder {
   }
 
   media::AudioParameters Build() const {
-    return media::AudioParameters(
-        media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-        media::ChannelLayoutConfig(layout_, channels_), rate_, frames_);
+    return media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                                  config_, rate_, frames_);
   }
 
  private:
-  media::ChannelLayout layout_ = media::CHANNEL_LAYOUT_STEREO;
-  int channels_ = 2;
+  media::ChannelLayoutConfig config_ = media::ChannelLayoutConfig::Stereo();
   int rate_ = 48000;
   int frames_ = 480;
 };
@@ -766,12 +762,6 @@ InputAndOutputParams MakeParams(const AudioParametersBuilder& input,
   return {input, output, std::move(name)};
 }
 
-// TODO(crbug.com/474107074): We have to temporarily split ChannelLayoutConfig
-// into a ChannelLayout and a channel count, due to the kEnableHighChannelCounts
-// feature flag being called in `GetConcurrentMaxChannels()` (we need to avoid
-// creating parameterized types that depend on feature list flags, directly or
-// indirectly). Once the flag has been removed, this will no longer be an issue
-// and this can go back to ChannelLayoutConfigs.
 INSTANTIATE_TEST_SUITE_P(
     All,
     SnooperNodeTest,
@@ -787,26 +777,34 @@ INSTANTIATE_TEST_SUITE_P(
                    BaseParams().WithRate(44100).WithFrames(441),
                    "Stereo48000_512ToStereo44100_441"),
         MakeParams(BaseParams()
-                       .WithLayout(media::CHANNEL_LAYOUT_MONO, 1)
+                       .WithLayout(media::ChannelLayoutConfig::Mono())
                        .WithRate(8000)
                        .WithFrames(64),
                    BaseParams(),
                    "Mono8kToStereo48k"),
         MakeParams(BaseParams(),
                    BaseParams()
-                       .WithLayout(media::CHANNEL_LAYOUT_MONO, 1)
+                       .WithLayout(media::ChannelLayoutConfig::Mono())
                        .WithRate(8000)
                        .WithFrames(80),
                    "Stereo48kToMono8k"),
-        MakeParams(BaseParams().WithLayout(media::CHANNEL_LAYOUT_5_1, 6),
-                   BaseParams().WithLayout(media::CHANNEL_LAYOUT_5_1, 6),
-                   "Surround5_1ToSurround5_1"),
-        MakeParams(BaseParams().WithLayout(media::CHANNEL_LAYOUT_5_1, 6),
-                   BaseParams(),
-                   "Surround5_1ToStereo"),
-        MakeParams(BaseParams().WithLayout(media::CHANNEL_LAYOUT_DISCRETE, 1),
-                   BaseParams().WithLayout(media::CHANNEL_LAYOUT_DISCRETE, 7),
-                   "Discrete1ToDiscrete7")),
+        MakeParams(
+            BaseParams().WithLayout(media::ChannelLayoutConfig::FromLayout<
+                                    media::CHANNEL_LAYOUT_5_1>()),
+            BaseParams().WithLayout(media::ChannelLayoutConfig::FromLayout<
+                                    media::CHANNEL_LAYOUT_5_1>()),
+            "Surround5_1ToSurround5_1"),
+        MakeParams(
+            BaseParams().WithLayout(media::ChannelLayoutConfig::FromLayout<
+                                    media::CHANNEL_LAYOUT_5_1>()),
+            BaseParams(),
+            "Surround5_1ToStereo"),
+        MakeParams(
+            BaseParams().WithLayout(
+                media::ChannelLayoutConfig(media::CHANNEL_LAYOUT_DISCRETE, 1)),
+            BaseParams().WithLayout(
+                media::ChannelLayoutConfig(media::CHANNEL_LAYOUT_DISCRETE, 7)),
+            "Discrete1ToDiscrete7")),
     [](const testing::TestParamInfo<InputAndOutputParams>& info) {
       return info.param.name;
     });
