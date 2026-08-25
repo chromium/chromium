@@ -857,11 +857,11 @@ void ContentSettingsRegistry::Init() {
 
 void ContentSettingsRegistry::Register(
     ContentSettingsType type,
-    const std::string& name,
+    std::string_view name,
     ContentSetting initial_default_value,
     WebsiteSettingsInfo::SyncStatus sync_status,
-    const std::vector<std::string>& allowlisted_primary_schemes,
-    const std::set<ContentSetting>& valid_settings,
+    base::span<const std::string_view> allowlisted_primary_schemes,
+    base::span<const ContentSetting> valid_settings,
     WebsiteSettingsInfo::ScopingType scoping_type,
     WebsiteSettingsRegistry::Platforms platforms,
     ContentSettingsInfo::IncognitoBehavior incognito_behavior,
@@ -874,9 +874,10 @@ void ContentSettingsRegistry::Register(
   auto delegate = std::make_unique<ContentSettingsInfo::Delegate>();
   auto* delegate_ptr = delegate.get();
   auto* permission_setting_info = permission_settings_registry_->Register(
-      type, name, initial_default_value, sync_status,
-      allowlisted_primary_schemes, scoping_type, platforms, origin_restriction,
-      std::move(delegate));
+      type, std::string(name), initial_default_value, sync_status,
+      std::vector<std::string>(allowlisted_primary_schemes.begin(),
+                               allowlisted_primary_schemes.end()),
+      scoping_type, platforms, origin_restriction, std::move(delegate));
 
   // PermissionSettingsRegistry::Register() will return nullptr if content
   // setting type is not used on the current platform and doesn't need to be
@@ -889,9 +890,11 @@ void ContentSettingsRegistry::Register(
   DCHECK(website_settings_registry_->Get(type)) << type;
 
   auto& info = content_settings_info_[type] =
-      std::make_unique<ContentSettingsInfo>(permission_setting_info,
-                                            delegate_ptr, valid_settings,
-                                            incognito_behavior);
+      std::make_unique<ContentSettingsInfo>(
+          permission_setting_info, delegate_ptr,
+          std::set<ContentSetting>(valid_settings.begin(),
+                                   valid_settings.end()),
+          incognito_behavior);
 
   if (type == ContentSettingsType::COOKIES) {
     info->set_third_party_cookie_allowed_secondary_schemes(
