@@ -294,8 +294,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   // Make sure the fullscreen control popup doesn't show up.
   ui::MouseEvent mouse_move(ui::EventType::kMouseMoved, gfx::Point(1, 1),
                             gfx::Point(), base::TimeTicks(), 0, 0);
-  auto* const fullscreen_control_host =
-      browser()->GetFeatures().fullscreen_control_host();
+  auto* const fullscreen_control_host = FullscreenControlHost::From(browser());
   ASSERT_NE(fullscreen_control_host, nullptr);
   fullscreen_control_host->OnMouseEvent(mouse_move);
   EXPECT_FALSE(fullscreen_control_host->IsVisible());
@@ -322,8 +321,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   // Make sure the fullscreen control popup doesn't show up.
   ui::MouseEvent mouse_move(ui::EventType::kMouseMoved, gfx::Point(1, 1),
                             gfx::Point(), base::TimeTicks(), 0, 0);
-  auto* const fullscreen_control_host =
-      browser()->GetFeatures().fullscreen_control_host();
+  auto* const fullscreen_control_host = FullscreenControlHost::From(browser());
   ASSERT_NE(fullscreen_control_host, nullptr);
   fullscreen_control_host->OnMouseEvent(mouse_move);
   EXPECT_FALSE(fullscreen_control_host->IsVisible());

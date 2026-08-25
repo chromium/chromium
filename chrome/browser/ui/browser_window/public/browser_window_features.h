@@ -355,10 +355,6 @@ class BrowserWindowFeatures {
 
   FindBarOwner* find_bar_owner() { return find_bar_owner_.get(); }
 
-  FullscreenControlHost* fullscreen_control_host() {
-    return fullscreen_control_host_.get();
-  }
-
   // Get the FindBarController for this browser window, creating it if it does
   // not yet exist.
   FindBarController* GetFindBarController();

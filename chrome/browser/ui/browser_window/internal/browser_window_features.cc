@@ -843,8 +843,10 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
   // Must be after exclusive_access_manager_.
   if (browser_view) {
-    fullscreen_control_host_ = std::make_unique<FullscreenControlHost>(
-        browser_view, exclusive_access_manager_.get());
+    fullscreen_control_host_ =
+        GetUserDataFactory().CreateInstance<FullscreenControlHost>(
+            *browser, browser_view, exclusive_access_manager_.get(),
+            browser->GetUnownedUserDataHost());
   }
 
   incognito_clear_browsing_data_dialog_coordinator_ =

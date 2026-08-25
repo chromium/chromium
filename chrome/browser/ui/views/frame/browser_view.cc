@@ -5465,7 +5465,7 @@ void BrowserView::PrepareFullscreen(bool fullscreen) {
     }
 
     if (auto* const fullscreen_control_host =
-            browser_->GetFeatures().fullscreen_control_host()) {
+            FullscreenControlHost::From(browser_.get())) {
       fullscreen_control_host->OnEnterFullscreen();
     }
   } else {
@@ -5474,7 +5474,7 @@ void BrowserView::PrepareFullscreen(bool fullscreen) {
     exclusive_access_context_->DestroyAnyExclusiveAccessBubble();
 
     if (auto* const fullscreen_control_host =
-            browser_->GetFeatures().fullscreen_control_host()) {
+            FullscreenControlHost::From(browser_.get())) {
       fullscreen_control_host->OnExitFullscreen();
     }
 

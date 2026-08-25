@@ -111,7 +111,7 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
 
  protected:
   FullscreenControlHost* GetFullscreenControlHost() {
-    return browser()->GetFeatures().fullscreen_control_host();
+    return FullscreenControlHost::From(browser());
   }
 
   FullscreenControlView* GetFullscreenControlView() {

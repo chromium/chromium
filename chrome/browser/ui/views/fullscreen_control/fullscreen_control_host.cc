@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
@@ -77,10 +78,20 @@ bool IsExitUiEnabled() {
 
 }  // namespace
 
+DEFINE_USER_DATA(FullscreenControlHost);
+
+// static
+FullscreenControlHost* FullscreenControlHost::From(
+    BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
 FullscreenControlHost::FullscreenControlHost(
     BrowserView* browser_view,
-    ExclusiveAccessManager* exclusive_access_manager)
-    : browser_view_(browser_view),
+    ExclusiveAccessManager* exclusive_access_manager,
+    ui::UnownedUserDataHost& host)
+    : scoped_unowned_user_data_(host, *this),
+      browser_view_(browser_view),
       exclusive_access_manager_(CHECK_DEREF(exclusive_access_manager)) {}
 
 FullscreenControlHost::~FullscreenControlHost() = default;

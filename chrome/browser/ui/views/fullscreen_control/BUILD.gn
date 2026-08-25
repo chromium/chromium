@@ -12,6 +12,7 @@ source_set("fullscreen_control") {
   public_deps = [
     "//base",
     "//components/fullscreen_control",
+    "//ui/base/unowned_user_data",
     "//ui/events",
   ]
 }
