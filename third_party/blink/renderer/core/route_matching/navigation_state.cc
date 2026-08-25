@@ -33,7 +33,7 @@ NavigationState* NavigationState::Create(Document& document,
       document, old_url, new_url, source_element);
   Supplement<Document>::ProvideTo<NavigationState>(document, navigation_state);
   if (source_element) {
-    source_element->PseudoStateChanged(CSSSelector::kPseudoNavSource);
+    source_element->PseudoStateChanged(CSSSelector::kPseudoNavigationSource);
   }
   return navigation_state;
 }
@@ -80,7 +80,7 @@ void NavigationState::AttemptFinishNavigationAndDestroy(Document* document) {
   }
 
   if (Element* source_element = navigation_state->GetSourceElement()) {
-    source_element->PseudoStateChanged(CSSSelector::kPseudoNavSource);
+    source_element->PseudoStateChanged(CSSSelector::kPseudoNavigationSource);
   }
 
   document->RemoveSupplement<NavigationState>();

@@ -4201,7 +4201,7 @@
       implied_by: ["SoftNavigationHeuristics"],
     },
     {
-      // NavigationState class and the :nav-source CSS pseudo-class.
+      // NavigationState class and the :navigation-source CSS pseudo-class.
       name: "NavigationState",
       status: "experimental",
       implied_by: ["RouteMatching"],

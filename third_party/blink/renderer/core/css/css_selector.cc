@@ -576,7 +576,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoTextField:
     case kPseudoToolFormActive:
     case kPseudoToolSubmitActive:
-    case kPseudoNavSource:
+    case kPseudoNavigationSource:
     case kPseudoUnknown:
     case kPseudoUnbounded:
     case kPseudoUnparsed:
@@ -742,7 +742,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"marker", CSSSelector::kPseudoMarker},
     {"modal", CSSSelector::kPseudoModal},
     {"muted", CSSSelector::kPseudoMuted},
-    {"nav-source", CSSSelector::kPseudoNavSource},
+    {"navigation-source", CSSSelector::kPseudoNavigationSource},
     {"no-button", CSSSelector::kPseudoNoButton},
     {"only-child", CSSSelector::kPseudoOnlyChild},
     {"only-of-type", CSSSelector::kPseudoOnlyOfType},
@@ -968,7 +968,7 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
-  if (match->type == CSSSelector::kPseudoNavSource &&
+  if (match->type == CSSSelector::kPseudoNavigationSource &&
       !RuntimeEnabledFeatures::NavigationStateEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
@@ -1187,7 +1187,7 @@ void CSSSelector::UpdatePseudoType(AtomicString value,
     case kPseudoMenulistPopoverWithMenulistAnchor:
     case kPseudoModal:
     case kPseudoMuted:
-    case kPseudoNavSource:
+    case kPseudoNavigationSource:
     case kPseudoNoButton:
     case kPseudoNot:
     case kPseudoNthChild:
@@ -2022,7 +2022,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoIsHtml:
     case kPseudoListBox:
     case kPseudoMultiSelectFocus:
-    case kPseudoNavSource:
+    case kPseudoNavigationSource:
     case kPseudoOpen:
     case kPseudoPastCue:
     case kPseudoPopoverInTopLayer:
@@ -2343,7 +2343,7 @@ bool CSSSelector::SupportsPseudoStateChange(PseudoType type) {
     case CSSSelector::kPseudoModal:
     case CSSSelector::kPseudoMultiSelectFocus:
     case CSSSelector::kPseudoMuted:
-    case CSSSelector::kPseudoNavSource:
+    case CSSSelector::kPseudoNavigationSource:
     case CSSSelector::kPseudoNthChild:
     case CSSSelector::kPseudoNthLastChild:
     case CSSSelector::kPseudoNthLastOfType:

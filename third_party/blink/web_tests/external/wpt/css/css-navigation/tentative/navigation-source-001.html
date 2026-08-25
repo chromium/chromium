@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<title>:nav-source</title>
+<title>:navigation-source</title>
 <link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
-<link rel="help" href="https://drafts.csswg.org/css-navigation-1/#nav-source-pseudo-class">
+<link rel="help" href="https://drafts.csswg.org/css-navigation-1/#navigation-source-pseudo-class">
 <style>
-  :nav-source {
+  :navigation-source {
     --trigger: matched;
   }
 </style>
@@ -47,5 +47,5 @@
     await test_navigation(t, "nav6", ()=> { form2.submit(); },              [0,0,0,0,1,0,0], [0,0,0,0,1,0,0], match_params);
     await test_navigation(t, "nav7", ()=> { form3.requestSubmit(btn3); },   [0,0,0,0,0,1,0], [0,0,0,0,0,1,0], match_params);
     await test_navigation(t, "nav8", ()=> { form4.requestSubmit(); },       [0,0,0,0,0,0,1], [0,0,0,0,0,0,1], match_params);
-  }, ":nav-source");
+  }, ":navigation-source");
 </script>
