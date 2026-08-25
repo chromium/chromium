@@ -8749,7 +8749,7 @@ TEST_P(LayerTreeHostImplTest,
                      resourceless_software_draw, false);
 
   EXPECT_EQ(1u, last_on_draw_frame_->will_draw_layers.size());
-  EXPECT_EQ(host_impl_->active_tree()->root_layer(),
+  EXPECT_EQ(host_impl_->active_tree()->root_layer()->id(),
             last_on_draw_frame_->will_draw_layers[0]);
 }
 

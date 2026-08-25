@@ -55,7 +55,10 @@ struct CC_EXPORT FrameData {
   // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
   // stacks.
   RAW_PTR_EXCLUSION const RenderSurfaceList* render_surface_list = nullptr;
-  RAW_PTR_EXCLUSION LayerImplList will_draw_layers;
+
+  // List of layer IDs for layers in the active tree that will draw in this
+  // frame.
+  std::vector<int> will_draw_layers;
   bool has_no_damage = false;
   viz::BeginFrameAck begin_frame_ack;
   // The original BeginFrameArgs that triggered the latest update from the

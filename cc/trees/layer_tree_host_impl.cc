@@ -224,12 +224,16 @@ void DidVisibilityChange(LayerTreeHostImpl* id, bool visible) {
                   /*"LayerTreeHostImpl::SetVisible"*/ visibility_track);
 }
 
-void PopulateMetadataContentColorUsage(const FrameData* frame,
+void PopulateMetadataContentColorUsage(const LayerTreeImpl* active_tree,
+                                       const FrameData* frame,
                                        viz::CompositorFrameMetadata* metadata) {
   metadata->content_color_usage = gfx::ContentColorUsage::kSRGB;
-  for (const LayerImpl* layer : frame->will_draw_layers) {
-    metadata->content_color_usage =
-        std::max(metadata->content_color_usage, layer->GetContentColorUsage());
+  for (int layer_id : frame->will_draw_layers) {
+    const LayerImpl* layer = active_tree->LayerById(layer_id);
+    if (layer) {
+      metadata->content_color_usage = std::max(metadata->content_color_usage,
+                                               layer->GetContentColorUsage());
+    }
   }
 }
 
@@ -1396,7 +1400,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
 
         // This is necessary in TreesInViz mode to trigger DidDraw() through
         // LayerTreeHostImpl::DidDrawAllLayers().
-        frame->will_draw_layers.push_back(layer);
+        frame->will_draw_layers.push_back(layer->id());
 
         layer->NotifyKnownResourceIdsBeforeAppendQuads(known_resource_ids);
         if (output_frame_data) {
@@ -3195,7 +3199,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     }
   }
 
-  PopulateMetadataContentColorUsage(frame, &metadata);
+  PopulateMetadataContentColorUsage(active_tree_.get(), frame, &metadata);
   metadata.has_shared_element_resources = frame->has_shared_element_resources;
   uint32_t frame_deadline = frame->deadline_in_frames.value_or(0u);
   // Set a higher frame deadline for ViewTransitions with `kAnimateRenderer` to
@@ -3411,8 +3415,10 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
 void LayerTreeHostImpl::DidDrawAllLayers(const FrameData& frame) {
   // TODO(lethalantidote): LayerImpl::DidDraw can be removed when
   // VideoLayerImpl is removed.
-  for (LayerImpl* layer : frame.will_draw_layers) {
-    layer->DidDraw(resource_provider_.get());
+  for (int layer_id : frame.will_draw_layers) {
+    if (LayerImpl* layer = active_tree_->LayerById(layer_id)) {
+      layer->DidDraw(resource_provider_.get());
+    }
   }
 
   for (VideoFrameController* it : video_frame_controllers_) {
