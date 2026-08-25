@@ -640,17 +640,17 @@ void ToolbarView::Init() {
     home_->SetVisible(show_home_button_.GetValue());
   }
 
+  auto* vertical_tab_strip_state_controller =
+      tabs::VerticalTabStripStateController::From(browser_view_->browser());
+  if (vertical_tab_strip_state_controller) {
+    vertical_tab_subscription_ =
+        vertical_tab_strip_state_controller->RegisterOnModeChanged(
+            base::BindRepeating(&ToolbarView::OnVerticalTabStripModeChanged,
+                                base::Unretained(this)));
+    should_display_vertical_tabs_ =
+        vertical_tab_strip_state_controller->ShouldDisplayVerticalTabs();
+  }
   if (glic::GlicEnabling::IsProfileEligible(browser_view_->GetProfile())) {
-    auto* vertical_tab_strip_state_controller =
-        tabs::VerticalTabStripStateController::From(browser_view_->browser());
-    if (vertical_tab_strip_state_controller) {
-      vertical_tab_subscription_ =
-          vertical_tab_strip_state_controller->RegisterOnModeChanged(
-              base::BindRepeating(&ToolbarView::OnVerticalTabStripModeChanged,
-                                  base::Unretained(this)));
-      should_display_vertical_tabs_ =
-          vertical_tab_strip_state_controller->ShouldDisplayVerticalTabs();
-    }
     UpdateGlicButtonVisibility();
   }
 
@@ -689,6 +689,10 @@ void ToolbarView::OnVerticalTabStripModeChanged(
   should_display_vertical_tabs_ = controller->ShouldDisplayVerticalTabs();
   UpdateGlicButtonVisibility();
   UpdateGlicActorVisibility();
+  // Invalidate the layout cache so responsive buttons (forward, home, split,
+  // etc) re-evaluate their visibility against the final toolbar width, clearing
+  // out any zeroed out state from intermediate layout passes.
+  InvalidateLayout();
 }
 
 std::unique_ptr<GlicAndActorButtonsContainer>
