@@ -23,12 +23,11 @@ public interface PdfToolbarActionsDelegate {
      */
     void changeZoomLevel(float zoomLevel);
 
-    /**
-     * Sets the edit mode of the PDF toolbar.
-     *
-     * @param editMode Whether to enable edit mode.
-     */
-    void setEditMode(boolean editMode);
+    /** Enters edit mode. */
+    void enterEditMode();
+
+    /** Exits edit mode and applies any draft edits. */
+    void exitEditMode();
 
     /**
      * Toggles between "fit to page" and "fit to page width" modes.

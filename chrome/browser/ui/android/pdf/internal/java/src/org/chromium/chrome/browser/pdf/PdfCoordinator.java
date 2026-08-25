@@ -677,6 +677,7 @@ public class PdfCoordinator
         @Override
         public void onEnterEditMode() {
             super.onEnterEditMode();
+            PdfUtils.recordEditFabAction();
             if (mDelegate != null) {
                 mDelegate.onEditModeChanged(true);
             }
@@ -1125,7 +1126,11 @@ public class PdfCoordinator
         }
 
         private void overrideClickListeners(View view) {
-            view.setOnClickListener(v -> openPdfInExternalEditor());
+            view.setOnClickListener(
+                    v -> {
+                        PdfUtils.recordEditFabAction();
+                        openPdfInExternalEditor();
+                    });
             if (view instanceof ViewGroup) {
                 ViewGroup group = (ViewGroup) view;
                 for (int i = 0; i < group.getChildCount(); i++) {
@@ -1594,23 +1599,25 @@ public class PdfCoordinator
         mChromePdfViewerFragment.zoomTo(zoomLevel);
     }
 
-    /**
-     * Sets the edit mode of the PDF toolbar.
-     *
-     * @param editMode Whether to enable edit mode.
-     */
+    /** Enters edit mode if Inline PDF V2 is enabled. */
     @Override
-    public void setEditMode(boolean editMode) {
+    public void enterEditMode() {
         if (!PdfUtils.isInlinePdfV2EditEnabled()) {
-            if (!editMode) {
-                mChromePdfViewerFragment.setEditModeEnabled(false);
-            }
             return;
         }
-        if (!editMode && mChromePdfViewerFragment.hasUnsavedChanges()) {
+        mChromePdfViewerFragment.setEditModeEnabled(true);
+    }
+
+    /** Exits edit mode and applies any draft edits. */
+    @Override
+    public void exitEditMode() {
+        if (!PdfUtils.isInlinePdfV2EditEnabled()) {
+            return;
+        }
+        if (mChromePdfViewerFragment.hasUnsavedChanges()) {
             mChromePdfViewerFragment.applyDraftEdits();
         } else {
-            mChromePdfViewerFragment.setEditModeEnabled(editMode);
+            mChromePdfViewerFragment.setEditModeEnabled(false);
         }
     }
 

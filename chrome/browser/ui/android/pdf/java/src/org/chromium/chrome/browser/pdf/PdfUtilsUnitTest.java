@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.pdf;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -39,6 +40,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
@@ -791,5 +793,12 @@ public class PdfUtilsUnitTest {
         PdfUtils.recordHyperlinkClickResult(
                 PdfUtils.PdfHyperlinkClickResult.SUCCESS_LOAD_INITIATED);
         histogramExpectation.assertExpected();
+    }
+
+    @Test
+    public void testRecordEditFabAction() {
+        UserActionTester userActionTester = new UserActionTester();
+        PdfUtils.recordEditFabAction();
+        assertTrue(userActionTester.getActions().contains("Android.Pdf.EditFab"));
     }
 }

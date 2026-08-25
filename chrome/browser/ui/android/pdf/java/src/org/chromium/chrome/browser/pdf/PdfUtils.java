@@ -23,6 +23,7 @@ import org.chromium.base.ContentUriUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -90,6 +91,7 @@ public class PdfUtils {
         PdfToolbarAction.TWO_PAGE_VIEW,
         PdfToolbarAction.SINGLE_PAGE_VIEW,
         PdfToolbarAction.DOCUMENT_PROPERTIES,
+        PdfToolbarAction.ANNOTATION,
         PdfToolbarAction.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -104,8 +106,9 @@ public class PdfUtils {
         int TWO_PAGE_VIEW = 7;
         int SINGLE_PAGE_VIEW = 8;
         int DOCUMENT_PROPERTIES = 9;
+        int ANNOTATION = 10;
 
-        int NUM_ENTRIES = 10;
+        int NUM_ENTRIES = 11;
     }
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidPdfToolbarAction)
 
@@ -601,6 +604,10 @@ public class PdfUtils {
     public static void recordToolbarAction(@PdfToolbarAction int action) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.Pdf.ToolbarAction", action, PdfToolbarAction.NUM_ENTRIES);
+    }
+
+    public static void recordEditFabAction() {
+        RecordUserAction.record("Android.Pdf.EditFab");
     }
 
     public static void recordSelectionMenuItem(@PdfSelectionMenuItem int menuItem) {

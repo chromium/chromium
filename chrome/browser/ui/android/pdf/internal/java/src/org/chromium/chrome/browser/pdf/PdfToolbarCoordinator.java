@@ -119,10 +119,11 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
             PdfUtils.recordToolbarAction(PdfUtils.PdfToolbarAction.PRINT);
             mDelegate.print();
         } else if (actionId == R.id.done_button) {
-            mDelegate.setEditMode(false);
+            mDelegate.exitEditMode();
         } else if (actionId == R.id.edit_button) {
             if (!mModel.get(PdfToolbarProperties.EDIT_MODE_ACTIVE)) {
-                mDelegate.setEditMode(true);
+                PdfUtils.recordToolbarAction(PdfUtils.PdfToolbarAction.ANNOTATION);
+                mDelegate.enterEditMode();
             }
         }
     }

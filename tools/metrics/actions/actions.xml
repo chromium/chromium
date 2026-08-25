@@ -5132,6 +5132,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.Pdf.EditFab">
+  <owner>rathomas@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User clicked the floating action button (FAB) / default edit icon to enter
+    PDF edit mode or open an external PDF editor.
+  </description>
+</action>
+
 <action name="Android.PhoneIntent">
   <owner>mpearson@chromium.org</owner>
   <description>

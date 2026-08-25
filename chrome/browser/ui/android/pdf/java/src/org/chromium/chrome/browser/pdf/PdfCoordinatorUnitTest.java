@@ -76,6 +76,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.pdf.PdfUtils.PdfHyperlinkClickResult;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -1114,9 +1115,12 @@ public class PdfCoordinatorUnitTest {
         assertNotNull("Edit button should exist", editButton);
         assertFalse("Edit button should not be selected initially", editButton.isSelected());
 
-        // Simulate fragment entering edit mode
+        UserActionTester userActionTester = new UserActionTester();
+
+        // Simulate fragment entering edit mode (from native FAB)
         mPdfCoordinator.mChromePdfViewerFragment.onEnterEditMode();
         assertTrue("Edit button should be selected after onEnterEditMode", editButton.isSelected());
+        assertTrue(userActionTester.getActions().contains("Android.Pdf.EditFab"));
 
         // Simulate fragment exiting edit mode
         mPdfCoordinator.mChromePdfViewerFragment.onExitEditMode();
@@ -1664,46 +1668,50 @@ public class PdfCoordinatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     @Config(shadows = {ShadowEditablePdfViewerFragment.class})
-    public void testSetEditMode_True() {
+    public void testEnterEditMode() {
         createPdfCoordinator();
         ShadowEditablePdfViewerFragment shadowFragment =
                 Shadow.extract(mPdfCoordinator.mChromePdfViewerFragment);
+        UserActionTester userActionTester = new UserActionTester();
 
-        mPdfCoordinator.setEditMode(true);
+        mPdfCoordinator.enterEditMode();
 
         assertTrue(shadowFragment.getEditModeEnabled());
         assertFalse(shadowFragment.wasApplyDraftEditsCalled());
+
+        mPdfCoordinator.mChromePdfViewerFragment.onEnterEditMode();
+        assertTrue(userActionTester.getActions().contains("Android.Pdf.EditFab"));
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     @Config(shadows = {ShadowEditablePdfViewerFragment.class})
-    public void testSetEditMode_EditDisabled() {
+    public void testEnterExitEditMode_EditDisabled() {
         PdfUtils.setInlinePdfV2EditEnabledForTesting(false);
         createPdfCoordinator();
         ShadowEditablePdfViewerFragment shadowFragment =
                 Shadow.extract(mPdfCoordinator.mChromePdfViewerFragment);
         shadowFragment.setHasUnsavedChanges(true);
 
-        mPdfCoordinator.setEditMode(true);
+        mPdfCoordinator.enterEditMode();
         assertNull(shadowFragment.getEditModeEnabled());
         assertFalse(shadowFragment.wasApplyDraftEditsCalled());
 
-        mPdfCoordinator.setEditMode(false);
-        assertFalse(shadowFragment.getEditModeEnabled());
+        mPdfCoordinator.exitEditMode();
+        assertNull(shadowFragment.getEditModeEnabled());
         assertFalse(shadowFragment.wasApplyDraftEditsCalled());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     @Config(shadows = {ShadowEditablePdfViewerFragment.class})
-    public void testSetEditMode_False_NoUnsavedChanges() {
+    public void testExitEditMode_NoUnsavedChanges() {
         createPdfCoordinator();
         ShadowEditablePdfViewerFragment shadowFragment =
                 Shadow.extract(mPdfCoordinator.mChromePdfViewerFragment);
         shadowFragment.setHasUnsavedChanges(false);
 
-        mPdfCoordinator.setEditMode(false);
+        mPdfCoordinator.exitEditMode();
 
         assertFalse(shadowFragment.getEditModeEnabled());
         assertFalse(shadowFragment.wasApplyDraftEditsCalled());
@@ -1712,7 +1720,7 @@ public class PdfCoordinatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     @Config(shadows = {ShadowEditablePdfViewerFragment.class})
-    public void testSetEditMode_False_WithUnsavedChanges_Flow() throws Exception {
+    public void testExitEditMode_WithUnsavedChanges_Flow() throws Exception {
         // Use a content URI to test the save flow
         ChromeFileProvider.setGeneratedUriForTesting(
                 Uri.parse("content://com.android.chrome.provider/test.pdf"));
@@ -1743,7 +1751,7 @@ public class PdfCoordinatorUnitTest {
         provider.attachInfo(mActivity, providerInfo);
         ShadowContentResolver.registerProviderInternal("com.android.chrome.provider", provider);
 
-        mPdfCoordinator.setEditMode(false);
+        mPdfCoordinator.exitEditMode();
 
         assertTrue(shadowFragment.wasApplyDraftEditsCalled());
         assertEquals(null, shadowFragment.getEditModeEnabled());
@@ -1769,7 +1777,7 @@ public class PdfCoordinatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     @Config(shadows = {ShadowEditablePdfViewerFragment.class})
-    public void testSetEditMode_False_WithUnsavedChanges_AsyncFailureFlow() throws Exception {
+    public void testExitEditMode_WithUnsavedChanges_AsyncFailureFlow() throws Exception {
         ChromeFileProvider.setGeneratedUriForTesting(
                 Uri.parse("content://com.android.chrome.provider/test.pdf"));
         createPdfCoordinator();
@@ -1798,7 +1806,7 @@ public class PdfCoordinatorUnitTest {
         provider.attachInfo(mActivity, providerInfo);
         ShadowContentResolver.registerProviderInternal("com.android.chrome.provider", provider);
 
-        mPdfCoordinator.setEditMode(false);
+        mPdfCoordinator.exitEditMode();
 
         FakePdfWriteHandle fakeHandle = new FakePdfWriteHandle();
         mPdfCoordinator.mChromePdfViewerFragment.onApplyEditsSuccess(fakeHandle);
@@ -1817,7 +1825,7 @@ public class PdfCoordinatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     @Config(shadows = {ShadowEditablePdfViewerFragment.class})
-    public void testSetEditMode_False_WithUnsavedChanges_SyncSuccessFlow() throws Exception {
+    public void testExitEditMode_WithUnsavedChanges_SyncSuccessFlow() throws Exception {
         ChromeFileProvider.setGeneratedUriForTesting(
                 Uri.parse("content://com.android.chrome.provider/test.pdf"));
         createPdfCoordinator();
@@ -1846,7 +1854,7 @@ public class PdfCoordinatorUnitTest {
         provider.attachInfo(mActivity, providerInfo);
         ShadowContentResolver.registerProviderInternal("com.android.chrome.provider", provider);
 
-        mPdfCoordinator.setEditMode(false);
+        mPdfCoordinator.exitEditMode();
 
         FakePdfWriteHandle fakeHandle = new FakePdfWriteHandle();
         // Make it return Unit.INSTANCE to simulate sync completion
@@ -2012,7 +2020,7 @@ public class PdfCoordinatorUnitTest {
         provider.attachInfo(mActivity, providerInfo);
         ShadowContentResolver.registerProviderInternal("com.android.chrome.provider", provider);
 
-        mPdfCoordinator.setEditMode(false);
+        mPdfCoordinator.exitEditMode();
 
         FakePdfWriteHandle fakeHandle = new FakePdfWriteHandle() {
             @Override
@@ -2120,6 +2128,8 @@ public class PdfCoordinatorUnitTest {
     public void testOpenPdfInExternalEditor_OnClick() {
         createPdfCoordinator();
 
+        UserActionTester userActionTester = new UserActionTester();
+
         Intent intent = new Intent(ACTION_ANNOTATE);
         intent.addCategory(Intent.CATEGORY_DEFAULT);
         intent.setDataAndType(mPdfCoordinator.getUri(), "application/pdf");
@@ -2140,12 +2150,15 @@ public class PdfCoordinatorUnitTest {
                 .commitNow();
 
         FrameLayout fragmentView = new FrameLayout(mActivity);
-        View toolBoxView = new View(mActivity);
+        FrameLayout toolBoxView = new FrameLayout(mActivity);
         toolBoxView.setId(R.id.toolBoxView);
+        View childView = new View(mActivity);
+        toolBoxView.addView(childView);
         fragmentView.addView(toolBoxView);
         fragment.onViewCreated(fragmentView, null);
 
-        toolBoxView.performClick();
+        childView.performClick();
+        assertTrue(userActionTester.getActions().contains("Android.Pdf.EditFab"));
 
         Intent startedIntent = org.robolectric.Shadows.shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(startedIntent);
@@ -2254,7 +2267,7 @@ public class PdfCoordinatorUnitTest {
         ShadowContentResolver.registerProviderInternal("com.android.chrome.provider", provider);
 
         // Exit edit mode, which calls applyDraftEdits
-        mPdfCoordinator.setEditMode(false);
+        mPdfCoordinator.exitEditMode();
 
         FakePdfWriteHandle fakeHandle = new FakePdfWriteHandle();
 

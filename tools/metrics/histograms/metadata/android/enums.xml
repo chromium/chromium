@@ -353,6 +353,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Two-page view"/>
   <int value="8" label="Single page view"/>
   <int value="9" label="Document properties"/>
+  <int value="10" label="Annotation"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/pdf/java/src/org/chromium/chrome/browser/pdf/PdfUtils.java:PdfToolbarAction) -->

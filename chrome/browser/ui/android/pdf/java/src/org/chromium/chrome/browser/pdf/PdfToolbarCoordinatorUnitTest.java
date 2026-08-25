@@ -700,17 +700,26 @@ public class PdfToolbarCoordinatorUnitTest {
         View editButton = mPdfPageView.findViewById(R.id.edit_button);
         assertNotNull("Edit button should not be null", editButton);
 
+        var histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Pdf.ToolbarAction", PdfToolbarAction.ANNOTATION);
+
         // Initial state: EDIT_MODE_ACTIVE is false (default)
-        // Click should enter edit mode, calling setEditMode(true)
+        // Click should enter edit mode, calling enterEditMode()
         editButton.performClick();
-        verify(mDelegate).setEditMode(true);
+        verify(mDelegate).enterEditMode();
+        histogramExpectation.assertExpected();
 
         // Now set the model to active (simulating delegate callback -> coordinator -> model update)
         mPdfToolbarCoordinator.setEditModeActive(true);
 
-        // Click again while already in edit mode: should NOT exit edit mode or call setEditMode(false)
+        histogramExpectation =
+                HistogramWatcher.newBuilder().expectNoRecords("Android.Pdf.ToolbarAction").build();
+
+        // Click again while already in edit mode: should NOT exit edit mode or call exitEditMode()
         editButton.performClick();
-        verify(mDelegate, never()).setEditMode(false);
+        verify(mDelegate, never()).exitEditMode();
+        histogramExpectation.assertExpected();
     }
 
     @Test
@@ -760,9 +769,9 @@ public class PdfToolbarCoordinatorUnitTest {
         assertEquals(View.GONE, editButton.getVisibility());
         assertEquals(View.VISIBLE, doneButton.getVisibility());
 
-        // 4. Click Done button -> should call setEditMode(false)
+        // 4. Click Done button -> should call exitEditMode()
         doneButton.performClick();
-        verify(mDelegate).setEditMode(false);
+        verify(mDelegate).exitEditMode();
 
         // 5. Narrow screen, Edit mode inactive -> Done button GONE
         mPdfToolbarCoordinator.setEditModeActive(false);
