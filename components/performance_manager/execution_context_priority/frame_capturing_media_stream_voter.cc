@@ -13,11 +13,6 @@ namespace performance_manager::execution_context_priority {
 
 namespace {
 
-const execution_context::ExecutionContext* GetExecutionContext(
-    const FrameNode* frame_node) {
-  return execution_context::ExecutionContext::From(frame_node);
-}
-
 // Returns a vote with the appropriate priority depending on if the frame is
 // capturing media.
 Vote GetVote(bool is_capturing_media_stream) {
@@ -63,7 +58,7 @@ void FrameCapturingMediaStreamVoter::OnBeforeFrameNodeAdded(
 
 void FrameCapturingMediaStreamVoter::OnBeforeFrameNodeRemoved(
     const FrameNode* frame_node) {
-  voting_channel_.SetVote(GetExecutionContext(frame_node), std::nullopt);
+  voting_channel_.SetVote(frame_node, std::nullopt);
 }
 
 void FrameCapturingMediaStreamVoter::OnIsCapturingMediaStreamChanged(
@@ -74,7 +69,7 @@ void FrameCapturingMediaStreamVoter::OnIsCapturingMediaStreamChanged(
 void FrameCapturingMediaStreamVoter::SetVoteForFrame(
     const FrameNode* frame_node) {
   const Vote vote = GetVote(frame_node->IsCapturingMediaStream());
-  voting_channel_.SetVote(GetExecutionContext(frame_node), vote);
+  voting_channel_.SetVote(frame_node, vote);
 }
 
 }  // namespace performance_manager::execution_context_priority

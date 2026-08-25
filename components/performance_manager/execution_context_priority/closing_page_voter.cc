@@ -7,21 +7,10 @@
 #include <utility>
 
 #include "base/not_fatal_until.h"
-#include "components/performance_manager/public/execution_context/execution_context_registry.h"
+#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 
 namespace performance_manager::execution_context_priority {
-
-namespace {
-
-const execution_context::ExecutionContext* GetExecutionContext(
-    const FrameNode* frame_node) {
-  return execution_context::ExecutionContextRegistry::GetFromGraph(
-             frame_node->GetGraph())
-      ->GetExecutionContextForFrameNode(frame_node);
-}
-
-}  // namespace
 
 // static
 const char ClosingPageVoter::kPageIsClosingReason[] = "Page is closing.";
@@ -82,20 +71,20 @@ void ClosingPageVoter::OnBeforeFrameNodeAdded(
     const FrameNode* pending_parent_or_outer_document_or_embedder) {
   if (closing_pages_.contains(pending_page_node)) {
     voting_channel_.SetVote(
-        GetExecutionContext(frame_node),
+        frame_node,
         Vote(base::Process::Priority::kUserBlocking, kPageIsClosingReason));
   }
 }
 
 void ClosingPageVoter::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
   if (closing_pages_.contains(frame_node->GetPageNode())) {
-    voting_channel_.SetVote(GetExecutionContext(frame_node), std::nullopt);
+    voting_channel_.SetVote(frame_node, std::nullopt);
   }
 }
 
 void ClosingPageVoter::SetVoteForSubtree(const FrameNode* frame_node,
                                          const std::optional<Vote>& vote) {
-  voting_channel_.SetVote(GetExecutionContext(frame_node), vote);
+  voting_channel_.SetVote(frame_node, vote);
 
   // Recurse through subtree.
   for (const FrameNode* child_frame_node : frame_node->GetChildFrameNodes()) {

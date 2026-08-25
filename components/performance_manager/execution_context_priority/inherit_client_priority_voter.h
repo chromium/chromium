@@ -59,12 +59,6 @@ class InheritClientPriorityVoter : public PriorityVoter,
   VoterId voter_id() const { return voter_id_; }
 
  private:
-  void OnExecutionContextAdded(const ExecutionContext* execution_context);
-  void OnBeforeExecutionContextRemoved(
-      const ExecutionContext* execution_context);
-  void OnPriorityAndReasonChanged(const ExecutionContext* execution_context,
-                                  const PriorityAndReason& previous_value);
-
   // Aggregates the votes from multiple clients of the same child worker.
   MaxVoteAggregator max_vote_aggregator_;
 

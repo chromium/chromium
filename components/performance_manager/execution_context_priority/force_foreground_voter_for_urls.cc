@@ -134,34 +134,26 @@ void ForceForegroundVoterForUrls::OnFinalResponseURLDetermined(
 
 void ForceForegroundVoterForUrls::RequestForeground(
     const FrameNode* frame_node) {
-  RequestForeground(execution_context::ExecutionContext::From(frame_node));
-}
-
-void ForceForegroundVoterForUrls::RequestForeground(
-    const WorkerNode* worker_node) {
-  RequestForeground(execution_context::ExecutionContext::From(worker_node));
-}
-
-void ForceForegroundVoterForUrls::ReleaseForeground(
-    const FrameNode* frame_node) {
-  ReleaseForeground(execution_context::ExecutionContext::From(frame_node));
-}
-
-void ForceForegroundVoterForUrls::ReleaseForeground(
-    const WorkerNode* worker_node) {
-  ReleaseForeground(execution_context::ExecutionContext::From(worker_node));
-}
-
-void ForceForegroundVoterForUrls::RequestForeground(
-    const execution_context::ExecutionContext* execution_context) {
   voting_channel_.SetVote(
-      execution_context,
+      frame_node,
+      Vote(base::Process::Priority::kUserBlocking, kForceForegroundReason));
+}
+
+void ForceForegroundVoterForUrls::RequestForeground(
+    const WorkerNode* worker_node) {
+  voting_channel_.SetVote(
+      worker_node,
       Vote(base::Process::Priority::kUserBlocking, kForceForegroundReason));
 }
 
 void ForceForegroundVoterForUrls::ReleaseForeground(
-    const execution_context::ExecutionContext* execution_context) {
-  voting_channel_.SetVote(execution_context, std::nullopt);
+    const FrameNode* frame_node) {
+  voting_channel_.SetVote(frame_node, std::nullopt);
+}
+
+void ForceForegroundVoterForUrls::ReleaseForeground(
+    const WorkerNode* worker_node) {
+  voting_channel_.SetVote(worker_node, std::nullopt);
 }
 
 bool ForceForegroundVoterForUrls::ShouldBoost(

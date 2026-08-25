@@ -6,20 +6,13 @@
 
 #include <utility>
 
-#include "components/performance_manager/public/execution_context/execution_context_registry.h"
+#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 
 namespace performance_manager {
 namespace execution_context_priority {
 
 namespace {
-
-const execution_context::ExecutionContext* GetExecutionContext(
-    const FrameNode* frame_node) {
-  return execution_context::ExecutionContextRegistry::GetFromGraph(
-             frame_node->GetGraph())
-      ->GetExecutionContextForFrameNode(frame_node);
-}
 
 // Returns a vote with the appropriate priority depending on if the frame is
 // audible.
@@ -62,7 +55,7 @@ void FrameAudibleVoter::OnBeforeFrameNodeAdded(
 }
 
 void FrameAudibleVoter::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
-  voting_channel_.SetVote(GetExecutionContext(frame_node), std::nullopt);
+  voting_channel_.SetVote(frame_node, std::nullopt);
 }
 
 void FrameAudibleVoter::OnIsAudibleChanged(const FrameNode* frame_node) {
@@ -71,7 +64,7 @@ void FrameAudibleVoter::OnIsAudibleChanged(const FrameNode* frame_node) {
 
 void FrameAudibleVoter::SetVoteForFrame(const FrameNode* frame_node) {
   const Vote vote = GetVote(frame_node->IsAudible());
-  voting_channel_.SetVote(GetExecutionContext(frame_node), vote);
+  voting_channel_.SetVote(frame_node, vote);
 }
 
 }  // namespace execution_context_priority

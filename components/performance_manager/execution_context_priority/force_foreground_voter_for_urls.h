@@ -77,11 +77,6 @@ class ForceForegroundVoterForUrls
   void ReleaseForeground(const FrameNode* frame_node);
   void ReleaseForeground(const WorkerNode* worker_node);
 
-  void RequestForeground(
-      const execution_context::ExecutionContext* execution_context);
-  void ReleaseForeground(
-      const execution_context::ExecutionContext* execution_context);
-
   bool ShouldBoost(const base::UnguessableToken& browser_context_id,
                    const GURL& url) const;
 

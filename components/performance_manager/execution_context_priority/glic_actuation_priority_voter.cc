@@ -6,21 +6,10 @@
 
 #include <utility>
 
-#include "components/performance_manager/public/execution_context/execution_context_registry.h"
+#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 
 namespace performance_manager::execution_context_priority {
-
-namespace {
-
-const execution_context::ExecutionContext* GetExecutionContext(
-    const FrameNode* frame_node) {
-  return execution_context::ExecutionContextRegistry::GetFromGraph(
-             frame_node->GetGraph())
-      ->GetExecutionContextForFrameNode(frame_node);
-}
-
-}  // namespace
 
 // static
 const char GlicActuationPriorityVoter::kGlicActuationReason[] =
@@ -52,8 +41,7 @@ void GlicActuationPriorityVoter::OnGlicActuationStateChanged(
 
   if (state == GlicActuationState::kNone) {
     for (const FrameNode* main_frame_node : page_node->GetMainFrameNodes()) {
-      voting_channel_.SetVote(GetExecutionContext(main_frame_node),
-                              std::nullopt);
+      voting_channel_.SetVote(main_frame_node, std::nullopt);
     }
     return;
   }
@@ -100,15 +88,14 @@ void GlicActuationPriorityVoter::OnBeforeFrameNodeAdded(
 
 void GlicActuationPriorityVoter::OnBeforeFrameNodeRemoved(
     const FrameNode* frame_node) {
-  voting_channel_.SetVote(GetExecutionContext(frame_node), std::nullopt);
+  voting_channel_.SetVote(frame_node, std::nullopt);
 }
 
 void GlicActuationPriorityVoter::OnCurrentFrameChanged(
     const FrameNode* previous_frame_node,
     const FrameNode* current_frame_node) {
   if (previous_frame_node) {
-    voting_channel_.SetVote(GetExecutionContext(previous_frame_node),
-                            std::nullopt);
+    voting_channel_.SetVote(previous_frame_node, std::nullopt);
   }
 
   if (!current_frame_node || current_frame_node->GetParentOrOuterDocument()) {
@@ -131,7 +118,7 @@ void GlicActuationPriorityVoter::UpdateFrameNodeVote(
   }
 
   if (state == GlicActuationState::kNone) {
-    voting_channel_.SetVote(GetExecutionContext(frame_node), std::nullopt);
+    voting_channel_.SetVote(frame_node, std::nullopt);
     return;
   }
 
@@ -140,8 +127,7 @@ void GlicActuationPriorityVoter::UpdateFrameNodeVote(
           ? base::Process::Priority::kUserBlocking
           : base::Process::Priority::kUserVisible;
 
-  voting_channel_.SetVote(GetExecutionContext(frame_node),
-                          Vote(priority, kGlicActuationReason));
+  voting_channel_.SetVote(frame_node, Vote(priority, kGlicActuationReason));
 }
 
 }  // namespace performance_manager::execution_context_priority

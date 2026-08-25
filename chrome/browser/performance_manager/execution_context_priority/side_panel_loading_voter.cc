@@ -5,24 +5,12 @@
 #include "chrome/browser/performance_manager/execution_context_priority/side_panel_loading_voter.h"
 
 #include "chrome/common/webui_url_constants.h"
-#include "components/performance_manager/public/execution_context/execution_context_registry.h"
+#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "url/gurl.h"
 
 namespace performance_manager::execution_context_priority {
-
-namespace {
-
-const execution_context::ExecutionContext* GetExecutionContext(
-    const FrameNode* frame_node) {
-  auto* registry = execution_context::ExecutionContextRegistry::GetFromGraph(
-      frame_node->GetGraph());
-  CHECK(registry);
-  return registry->GetExecutionContextForFrameNode(frame_node);
-}
-
-}  // namespace
 
 // static
 const char SidePanelLoadingVoter::kSidePanelLoadingReason[] =
@@ -95,7 +83,7 @@ void SidePanelLoadingVoter::OnMainFrameDocumentChanged(
 
 void SidePanelLoadingVoter::OnBeforeFrameNodeRemoved(
     const FrameNode* frame_node) {
-  voting_channel_.SetVote(GetExecutionContext(frame_node), std::nullopt);
+  voting_channel_.SetVote(frame_node, std::nullopt);
 }
 
 void SidePanelLoadingVoter::OnFrameVisibilityChanged(
@@ -103,7 +91,7 @@ void SidePanelLoadingVoter::OnFrameVisibilityChanged(
     FrameNode::Visibility previous_value) {
   // When the frame becomes visible, no longer need to increase priority.
   if (frame_node->GetVisibility() != FrameNode::Visibility::kNotVisible) {
-    voting_channel_.SetVote(GetExecutionContext(frame_node), std::nullopt);
+    voting_channel_.SetVote(frame_node, std::nullopt);
   }
 }
 
@@ -117,7 +105,7 @@ void SidePanelLoadingVoter::SetVoteForPage(const PageNode* page_node) {
   CHECK(frame_node);
 
   voting_channel_.SetVote(
-      GetExecutionContext(frame_node),
+      frame_node,
       Vote(base::Process::Priority::kUserBlocking, kSidePanelLoadingReason));
 }
 

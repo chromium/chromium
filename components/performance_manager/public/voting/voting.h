@@ -34,6 +34,7 @@
 // None of these objects are thread-safe, and they should all be used from a
 // single sequence. In practice this will be the PM sequence.
 
+#include <concepts>
 #include <cstring>
 #include <optional>
 #include <utility>
@@ -48,6 +49,13 @@
 #include "base/types/pass_key.h"
 
 namespace performance_manager::voting {
+
+// Concept for types that can be converted to a `Context` pointer via a static
+// `Context::From(const T*)` method.
+template <typename T, typename Context>
+concept ConvertibleToContext = requires(const T* obj) {
+  { Context::From(obj) } -> std::convertible_to<const Context*>;
+};
 
 // Contains a single vote. Specifically allows copying, etc, so as to be STL
 // container friendly.
@@ -120,6 +128,19 @@ class VotingChannel {
   // this VotingChannel is valid. Passing std::nullopt removes an existing vote.
   void SetVote(const ContextType* context, const VoteImpl& vote);
   void SetVote(const ContextType* context, const std::optional<VoteImpl>& vote);
+
+  // Overloads that allow voting directly on underlying objects (e.g. FrameNode,
+  // WorkerNode) that can be converted to `ContextType` via
+  // `ContextType::From(obj)`.
+  template <ConvertibleToContext<ContextType> T>
+  void SetVote(const T* obj, const VoteImpl& vote) {
+    SetVote(ContextType::From(obj), vote);
+  }
+
+  template <ConvertibleToContext<ContextType> T>
+  void SetVote(const T* obj, const std::optional<VoteImpl>& vote) {
+    SetVote(ContextType::From(obj), vote);
+  }
 
   // Legacy aliases for SetVote, kept for backwards compatibility with existing
   // voters.

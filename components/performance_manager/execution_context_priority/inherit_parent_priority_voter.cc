@@ -7,20 +7,12 @@
 #include <optional>
 #include <utility>
 
-#include "base/task/task_traits.h"
-#include "components/performance_manager/public/execution_context/execution_context_registry.h"
+#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 
 namespace performance_manager::execution_context_priority {
 
 namespace {
-
-const execution_context::ExecutionContext* GetExecutionContext(
-    const FrameNode* frame_node) {
-  return execution_context::ExecutionContextRegistry::GetFromGraph(
-             frame_node->GetGraph())
-      ->GetExecutionContextForFrameNode(frame_node);
-}
 
 // Returns the priority that should be used to cast a vote for `frame_node`,
 // which is basically the parent's priority. Returns std::nullopt when no vote
@@ -94,20 +86,19 @@ void InheritParentPriorityVoter::OnBeforeFrameNodeAdded(
     const PageNode* pending_page_node,
     const ProcessNode* pending_process_node,
     const FrameNode* pending_parent_or_outer_document_or_embedder) {
-  voting_channel_.SetVote(GetExecutionContext(frame_node),
+  voting_channel_.SetVote(frame_node,
                           GetVote(frame_node, pending_parent_frame_node));
 }
 
 void InheritParentPriorityVoter::OnBeforeFrameNodeRemoved(
     const FrameNode* frame_node) {
-  voting_channel_.SetVote(GetExecutionContext(frame_node), std::nullopt);
+  voting_channel_.SetVote(frame_node, std::nullopt);
 }
 
 void InheritParentPriorityVoter::OnIsAdFrameChanged(
     const FrameNode* frame_node) {
   voting_channel_.SetVote(
-      GetExecutionContext(frame_node),
-      GetVote(frame_node, frame_node->GetParentFrameNode()));
+      frame_node, GetVote(frame_node, frame_node->GetParentFrameNode()));
 }
 
 void InheritParentPriorityVoter::OnPriorityAndReasonChanged(
@@ -121,7 +112,7 @@ void InheritParentPriorityVoter::OnPriorityAndReasonChanged(
 
   // Maybe change the vote for every children.
   for (const FrameNode* child_frame_node : frame_node->GetChildFrameNodes()) {
-    voting_channel_.SetVote(GetExecutionContext(child_frame_node),
+    voting_channel_.SetVote(child_frame_node,
                             GetVote(child_frame_node, frame_node));
   }
 }

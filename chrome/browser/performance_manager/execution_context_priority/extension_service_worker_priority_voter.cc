@@ -5,7 +5,6 @@
 #include "chrome/browser/performance_manager/execution_context_priority/extension_service_worker_priority_voter.h"
 
 #include "components/performance_manager/public/execution_context/execution_context.h"
-#include "components/performance_manager/public/execution_context/execution_context_registry.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
@@ -21,13 +20,6 @@
 namespace performance_manager::execution_context_priority {
 
 namespace {
-
-const execution_context::ExecutionContext* GetExecutionContext(
-    const WorkerNode* worker_node) {
-  return execution_context::ExecutionContextRegistry::GetFromGraph(
-             worker_node->GetGraph())
-      ->GetExecutionContextForWorkerNode(worker_node);
-}
 
 // Returns true if `worker_node` is the service worker of an extension that
 // holds the `webRequestBlocking` permission.
@@ -108,13 +100,12 @@ void ExtensionServiceWorkerPriorityVoter::OnBeforeWorkerNodeAdded(
       IsBlockingExtensionServiceWorker(worker_node, pending_process_node)
           ? base::Process::Priority::kUserBlocking
           : base::Process::Priority::kMinValue;
-  voting_channel_.SetVote(GetExecutionContext(worker_node),
-                          Vote(priority, kPriorityReason));
+  voting_channel_.SetVote(worker_node, Vote(priority, kPriorityReason));
 }
 
 void ExtensionServiceWorkerPriorityVoter::OnBeforeWorkerNodeRemoved(
     const WorkerNode* worker_node) {
-  voting_channel_.SetVote(GetExecutionContext(worker_node), std::nullopt);
+  voting_channel_.SetVote(worker_node, std::nullopt);
 }
 
 }  // namespace performance_manager::execution_context_priority

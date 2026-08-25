@@ -7,19 +7,12 @@
 #include <utility>
 
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
-#include "components/performance_manager/public/execution_context/execution_context_registry.h"
+#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 
 namespace performance_manager::execution_context_priority {
 
 namespace {
-
-const execution_context::ExecutionContext* GetExecutionContext(
-    const FrameNode* frame_node) {
-  return execution_context::ExecutionContextRegistry::GetFromGraph(
-             frame_node->GetGraph())
-      ->GetExecutionContextForFrameNode(frame_node);
-}
 
 // Returns true if `loading_state` represent an actively loading state.
 bool IsLoading(PageNode::LoadingState loading_state) {
@@ -119,9 +112,8 @@ void LoadingPageVoter::OnBeforeFrameNodeAdded(
   }
 
   voting_channel_.SetVote(
-      GetExecutionContext(frame_node),
-      Vote(GetPriority(IsRootPageActiveTab(pending_page_node)),
-           kPageIsLoadingReason));
+      frame_node, Vote(GetPriority(IsRootPageActiveTab(pending_page_node)),
+                       kPageIsLoadingReason));
 }
 
 void LoadingPageVoter::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
@@ -129,7 +121,7 @@ void LoadingPageVoter::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
   if (!IsLoading(page_node->GetLoadingState())) {
     return;
   }
-  voting_channel_.SetVote(GetExecutionContext(frame_node), std::nullopt);
+  voting_channel_.SetVote(frame_node, std::nullopt);
 }
 
 bool LoadingPageVoter::IsPageActiveTab(const PageNode* page_node) const {
@@ -173,7 +165,7 @@ void LoadingPageVoter::ChangeVotesForPageAndSubpages(
 
 void LoadingPageVoter::SetVoteForSubtree(const FrameNode* frame_node,
                                          const std::optional<Vote>& vote) {
-  voting_channel_.SetVote(GetExecutionContext(frame_node), vote);
+  voting_channel_.SetVote(frame_node, vote);
 
   // Recurse through subtree.
   for (const FrameNode* child_frame_node : frame_node->GetChildFrameNodes()) {
@@ -187,7 +179,7 @@ void LoadingPageVoter::ChangeVotesForFrameSubtree(
   const PageNode* page_node = frame_node->GetPageNode();
   if (IsLoading(page_node->GetLoadingState())) {
     voting_channel_.SetVote(
-        GetExecutionContext(frame_node),
+        frame_node,
         Vote(GetPriority(is_root_page_active_tab), kPageIsLoadingReason));
   }
 

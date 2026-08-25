@@ -50,11 +50,6 @@ class ForceForegroundVoter : public PriorityVoter,
   VoterId voter_id() const { return voting_channel_.voter_id(); }
 
  private:
-  void AddVoteForExecutionContext(
-      const execution_context::ExecutionContext* execution_context);
-  void RemoveVoteForExecutionContext(
-      const execution_context::ExecutionContext* execution_context);
-
   VotingChannel voting_channel_;
 };
 

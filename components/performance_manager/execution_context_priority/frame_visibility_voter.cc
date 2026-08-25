@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "components/performance_manager/public/execution_context/execution_context_registry.h"
+#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "url/gurl.h"
@@ -15,13 +15,6 @@ namespace performance_manager {
 namespace execution_context_priority {
 
 namespace {
-
-const execution_context::ExecutionContext* GetExecutionContext(
-    const FrameNode* frame_node) {
-  return execution_context::ExecutionContextRegistry::GetFromGraph(
-             frame_node->GetGraph())
-      ->GetExecutionContextForFrameNode(frame_node);
-}
 
 // Returns a vote with the appropriate priority depending on the frame's
 // |visibility|.
@@ -86,7 +79,7 @@ void FrameVisibilityVoter::OnBeforeFrameNodeRemoved(
     return;
   }
 
-  voting_channel_.SetVote(GetExecutionContext(frame_node), std::nullopt);
+  voting_channel_.SetVote(frame_node, std::nullopt);
 }
 
 void FrameVisibilityVoter::OnFrameVisibilityChanged(
@@ -106,7 +99,7 @@ void FrameVisibilityVoter::SetVoteForFrame(const FrameNode* frame_node) {
 
   const Vote vote =
       GetVote(frame_node->GetVisibility(), frame_node->IsImportant());
-  voting_channel_.SetVote(GetExecutionContext(frame_node), vote);
+  voting_channel_.SetVote(frame_node, vote);
 }
 
 }  // namespace execution_context_priority
