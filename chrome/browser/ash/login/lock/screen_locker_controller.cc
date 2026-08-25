@@ -90,7 +90,7 @@ void ScreenLockerController::HandleShowLockScreenRequest() {
     const user_manager::User& active_user =
         CHECK_DEREF(user_manager_->FindUser(active_session.account_id()));
     if (active_user.CanLock()) {
-      ScreenLocker::Show();
+      ShowLockScreen();
       return;
     }
   }

@@ -31,7 +31,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/helper.h"
-#include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "chrome/browser/ash/login/lock/screen_locker_controller.h"
 #include "chrome/browser/ash/login/lock_screen_utils.h"
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_utils.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
@@ -767,7 +767,9 @@ void UserSelectionScreen::EnableInput() {
 
 void UserSelectionScreen::Unlock(const AccountId& account_id) {
   DCHECK_EQ(GetScreenType(), LOCK_SCREEN);
-  ScreenLocker::Hide();
+
+  // TODO(crbug.com/539761804): Avoid circular dependency.
+  ScreenLockerController::Get().HideLockScreen();
 }
 
 void UserSelectionScreen::OnSessionStateChanged() {

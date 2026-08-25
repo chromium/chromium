@@ -24,7 +24,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
-#include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "chrome/browser/ash/login/lock/screen_locker_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
@@ -442,7 +442,7 @@ void SecurityTokenSessionController::TriggerAction() {
     case Behavior::kIgnore:
       return;
     case Behavior::kLock:
-      ScreenLocker::Show();
+      ScreenLockerController::Get().ShowLockScreen();
       AddLockNotification();
       return;
     case Behavior::kLogout:

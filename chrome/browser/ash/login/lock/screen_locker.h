@@ -111,16 +111,6 @@ class ScreenLocker
   // `users()`.
   user_manager::UserList GetUsersToShow() const;
 
-  // Show the screen locker.
-  // DEPRECATED: Use ScreenLockerController::Get().ShowLockScreen() instead.
-  // TODO(crbug.com/539761804): Replace callers and remove this.
-  static void Show();
-
-  // Hide the screen locker.
-  // DEPRECATED: Use ScreenLockerController::Get().HideLockScreen() instead.
-  // TODO(crbug.com/539761804): Replace callers and remove this.
-  static void Hide();
-
   // Returns true if authentication is enabled on the lock screen for the given
   // user.
   bool IsAuthTemporarilyDisabledForUser(const AccountId& account_id);

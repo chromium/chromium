@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "chrome/browser/ash/login/lock/screen_locker_controller.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -180,12 +181,12 @@ IN_PROC_BROWSER_TEST_F(ScreenLockerTest, TestShowTwice) {
   tester.Lock();
 
   // Calling Show again simply send LockCompleted signal.
-  ScreenLocker::Show();
+  ScreenLockerController::Get().ShowLockScreen();
   EXPECT_TRUE(tester.IsLocked());
   EXPECT_EQ(2, session_manager_client()->notify_lock_screen_shown_call_count());
 
   // Close the locker to match expectations.
-  ScreenLocker::Hide();
+  ScreenLockerController::Get().HideLockScreen();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(tester.IsLocked());
   EXPECT_EQ(

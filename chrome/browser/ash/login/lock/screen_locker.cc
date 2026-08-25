@@ -272,7 +272,8 @@ void ScreenLocker::OnAuthSuccess(const UserContext& user_context) {
   weak_factory_.InvalidateWeakPtrs();
 
   VLOG(1) << "Hiding the lock screen.";
-  ScreenLocker::Hide();
+  // TODO(crbug.com/539761804): Avoid circular dependency.
+  ScreenLockerController::Get().HideLockScreen();
 }
 
 void ScreenLocker::ReenableAuthForUser(const AccountId& account_id) {
@@ -471,19 +472,6 @@ user_manager::UserList ScreenLocker::GetUsersToShow() const {
                                 user_manager::UserType::kPublicAccount;
                        });
   return users_to_show;
-}
-
-// static
-void ScreenLocker::Show() {
-  VLOG(1) << "ScreenLocker::Show()";
-  CHECK(base::CurrentUIThread::IsSet());
-  ScreenLockerController::Get().ShowLockScreen();
-}
-
-// static
-void ScreenLocker::Hide() {
-  CHECK(base::CurrentUIThread::IsSet());
-  ScreenLockerController::Get().HideLockScreen();
 }
 
 void ScreenLocker::ResetToLockedState() {
