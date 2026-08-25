@@ -2586,14 +2586,22 @@ inline LayoutStateScenePassKey PassKey() {
     return;
   }
 
-  if (_geminiContainerCoordinator) {
-    __weak __typeof(self) weakSelf = self;
-    [_geminiContainerCoordinator dismissWithCompletion:^{
-      [weakSelf geminiContainerCoordinatorDidDismiss];
-      if (completion) {
-        completion();
-      }
-    }];
+  if (IsIOSGeminiBottomSheetMigrationEnabled()) {
+    if (_geminiContainerCoordinator) {
+      __weak __typeof(self) weakSelf = self;
+      [_geminiContainerCoordinator dismissWithCompletion:^{
+        [weakSelf geminiContainerCoordinatorDidDismiss];
+        if (completion) {
+          completion();
+        }
+      }];
+      return;
+    }
+    // If feature flag is enabled but container is not present then just run the
+    // completion block.
+    if (completion) {
+      completion();
+    }
     return;
   }
 
