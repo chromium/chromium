@@ -49,6 +49,11 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
   const LayoutResult* Layout();
 
+  GridLineResolver BuildGridLineResolver(
+      const GridArea& subgrid_area,
+      const GridLineResolver* parent_line_resolver,
+      bool can_inherit_line_names_from_parent = true) const;
+
   // Computes the containing block rect for out-of-flow items placed
   // within the grid-lanes.
   static LogicalRect ComputeOutOfFlowItemContainingRect(

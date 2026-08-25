@@ -469,7 +469,7 @@ void ComputeBaselineAlignmentForEachSubgrid(
 // Validates the min/max sizes cache for subgrids in the sizing tree. A
 // subgrid might need to invalidate the cache if it inherited a different track
 // collection in its subgridded axis. Returns true if invalidation was needed.
-bool ValidateMinMaxSizesCache(const BlockNode& grid_node,
+bool ValidateMinMaxSizesCache(const BlockNode& node,
                               const GridSizingSubtree& sizing_subtree,
                               GridTrackSizingDirection track_direction);
 

@@ -1681,7 +1681,20 @@ TEST_F(GridLanesLayoutAlgorithmTest, AppendSubgriddedGridLanesItems) {
 
   GridLanesNode node(GetLayoutBoxByElementId("grid-lanes"));
   GridLanesNode subgrid_node(GetLayoutBoxByElementId("subgrid"));
+  // TODO(yanlingwang): Use `BuildGridSizingTree` once `GridItemData` recognizes
+  // grid-lanes subgrids, removing this manual algorithm setup.
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(200), kIndefiniteSize),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+  const auto fragment_geometry = CalculateInitialFragmentGeometry(
+      space, subgrid_node, /*break_token=*/nullptr);
+  const GridLanesLayoutAlgorithm subgrid_algorithm(
+      {subgrid_node, fragment_geometry, space});
 
+  // TODO(yanlingwang): Create and pass the line resolver through the normal
+  // sizing-tree path once `GridItemData` recognizes grid-lanes subgrids.
   const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
   bool must_invalidate_placement_cache = false;
   auto* grid_items =
@@ -1696,13 +1709,15 @@ TEST_F(GridLanesLayoutAlgorithmTest, AppendSubgriddedGridLanesItems) {
   subgrid_item.must_consider_grid_items_for_column_sizing = true;
   subgrid_item.MaybeTranslateSpan(/*start_offset=*/0, kForColumns);
 
-  const GridLineResolver subgrid_line_resolver(subgrid_node.Style(),
-                                               /*auto_repetitions=*/0);
+  const auto subgrid_line_resolver = subgrid_algorithm.BuildGridLineResolver(
+      subgrid_item.resolved_position, &line_resolver);
+  EXPECT_EQ(subgrid_line_resolver.SubgridSpanSize(kForColumns), 2u);
+  EXPECT_FALSE(subgrid_line_resolver.HasStandaloneAxis(kForColumns));
   To<LayoutGridLanes>(subgrid_node.GetLayoutBox())
       ->SetCachedPlacementData(GridPlacementData(subgrid_line_resolver));
 
-  // TODO(yanlingwang): Use `BuildGridSizingTree` once sizing-tree recursion
-  // supports `GridLanesLayoutAlgorithm` and grid-lanes subgrid recognition.
+  // TODO(yanlingwang): Replace this manual append with `BuildGridSizingTree`
+  // once `GridItemData` recognizes grid lanes subgrids.
   AppendSubgriddedItems(node, grid_items);
 
   wtf_size_t total_count = 0;

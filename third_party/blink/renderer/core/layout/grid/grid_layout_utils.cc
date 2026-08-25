@@ -877,10 +877,6 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
     const auto fragment_geometry =
         CalculateInitialFragmentGeometryForSubgrid(grid_item, space);
 
-    // TODO(almaher): Use the grid lanes algorithm if the subgrid requires it.
-    const GridLayoutAlgorithm subgrid_algorithm(
-        {grid_item.node, fragment_geometry, space});
-
     // An auto-placed subgrid of a grid-lanes container does not inherit line
     // names from that container. Line-name inheritance maps the parent's named
     // lines onto the subgrid using the subgrid's resolved area in the parent,
@@ -890,19 +886,31 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
     const bool can_inherit_line_names_from_parent =
         !(style.IsDisplayGridLanes() && grid_item.is_auto_placed);
 
-    // TODO(almaher): Grid lanes will need to do the same thing once we support
-    // grid lanes subgrids.
-    const auto subgrid_line_resolver = subgrid_algorithm.BuildGridLineResolver(
-        SubgriddedAreaInParent(subgridded_item), &line_resolver,
-        can_inherit_line_names_from_parent);
+    auto build_subgrid_sizing_tree = [&](const auto& subgrid_algorithm) {
+      // TODO(yanlingwang): Store the filtered line resolver for grid-lanes
+      // subgrids without caching incomplete placement data, so their inherited
+      // line names remain available after sizing-tree construction.
+      const auto subgrid_line_resolver =
+          subgrid_algorithm.BuildGridLineResolver(
+              SubgriddedAreaInParent(subgridded_item), &line_resolver,
+              can_inherit_line_names_from_parent);
 
-    // TODO(almaher): Use the grid lanes algorithm if the subgrid requires it.
-    BuildGridSizingSubtree<GridLayoutAlgorithm>(
-        subgrid_algorithm, subgrid_line_resolver, sizing_tree,
-        /*opt_oof_children=*/nullptr,
-        SubgriddedItemData(grid_item, layout_data, writing_mode),
-        &line_resolver, SizingConstraint::kLayout,
-        must_invalidate_placement_cache);
+      BuildGridSizingSubtree(
+          subgrid_algorithm, subgrid_line_resolver, sizing_tree,
+          /*opt_oof_children=*/nullptr,
+          SubgriddedItemData(grid_item, layout_data, writing_mode),
+          &line_resolver, SizingConstraint::kLayout,
+          must_invalidate_placement_cache);
+    };
+
+    if (grid_item.node.IsGridLanes()) {
+      build_subgrid_sizing_tree(
+          GridLanesLayoutAlgorithm({grid_item.node, fragment_geometry, space}));
+    } else {
+      CHECK(grid_item.node.IsGrid());
+      build_subgrid_sizing_tree(
+          GridLayoutAlgorithm({grid_item.node, fragment_geometry, space}));
+    }
 
     // After we accommodate subgridded items in their respective sizing track
     // collections, their placement indices might be incorrect, so we want to
@@ -1019,7 +1027,7 @@ FragmentGeometry CalculateInitialFragmentGeometryForSubgrid(
     const GridSizingSubtree& sizing_subtree) {
   DCHECK(subgrid_data.IsSubgrid());
 
-  const auto& node = To<GridNode>(subgrid_data.node);
+  const auto& node = subgrid_data.node;
   {
     const bool subgrid_has_standalone_columns =
         subgrid_data.is_parallel_with_root_grid
@@ -1030,11 +1038,17 @@ FragmentGeometry CalculateInitialFragmentGeometryForSubgrid(
     // tracks are subgridded, i.e., their sizes can't be resolved by the subgrid
     // itself, or if `sizing_subtree` is not provided, i.e., the grid sizing
     // tree it's not completed at this step of the sizing algorithm.
-    if (subgrid_has_standalone_columns && sizing_subtree) {
+    // When needed to resolve initial inline geometry, regular grid subgrids
+    // with standalone columns obtain min/max sizes from the available sizing
+    // subtree. A grid-lanes subgrid has only an inherited grid track axis; its
+    // other axis is a stacking axis whose intrinsic size is resolved during
+    // placement, so there is no standalone column track cache to use here.
+    if (node.IsGrid() && subgrid_has_standalone_columns && sizing_subtree) {
+      const auto& grid_node = To<GridNode>(node);
       return CalculateInitialFragmentGeometry(
-          space, node, /* break_token */ nullptr,
+          space, grid_node, /* break_token */ nullptr,
           [&](SizeType) -> MinMaxSizesResult {
-            return node.ComputeSubgridMinMaxSizes(sizing_subtree, space);
+            return grid_node.ComputeSubgridMinMaxSizes(sizing_subtree, space);
           });
     }
   }
@@ -1156,10 +1170,10 @@ bool HasBlockSizeDependentGridItem(const GridItems& grid_items) {
   return false;
 }
 
-bool ValidateMinMaxSizesCache(const BlockNode& grid_node,
+bool ValidateMinMaxSizesCache(const BlockNode& node,
                               const GridSizingSubtree& sizing_subtree,
                               GridTrackSizingDirection track_direction) {
-  DCHECK(sizing_subtree.HasValidRootFor(grid_node));
+  DCHECK(sizing_subtree.HasValidRootFor(node));
 
   bool should_invalidate_min_max_sizes_cache = false;
 
@@ -1172,7 +1186,7 @@ bool ValidateMinMaxSizesCache(const BlockNode& grid_node,
 
       DCHECK(next_subgrid_subtree);
       should_invalidate_min_max_sizes_cache |= ValidateMinMaxSizesCache(
-          To<GridNode>(grid_item.node), next_subgrid_subtree,
+          grid_item.node, next_subgrid_subtree,
           grid_item.RelativeDirectionInSubgrid(track_direction));
       next_subgrid_subtree = next_subgrid_subtree.NextSibling();
     }
@@ -1180,16 +1194,19 @@ bool ValidateMinMaxSizesCache(const BlockNode& grid_node,
 
   const auto& layout_data = sizing_subtree.LayoutData();
   if (layout_data.IsSubgridWithStandaloneAxis(track_direction)) {
+    // A grid-lanes subgrid has only one track axis, which is subgridded, so
+    // this state only applies to regular grid subgrids.
+    CHECK(node.IsGrid());
+    const auto& grid_node = To<GridNode>(node);
     // If no nested subgrid marked this subtree to be invalidated already, check
     // that the cached intrinsic sizes are reusable by the current sizing tree.
     if (!should_invalidate_min_max_sizes_cache) {
       should_invalidate_min_max_sizes_cache =
-          To<GridNode>(grid_node).ShouldInvalidateSubgridMinMaxSizesCacheFor(
-              layout_data);
+          grid_node.ShouldInvalidateSubgridMinMaxSizesCacheFor(layout_data);
     }
 
     if (should_invalidate_min_max_sizes_cache) {
-      To<GridNode>(grid_node).InvalidateSubgridMinMaxSizesCache();
+      grid_node.InvalidateSubgridMinMaxSizesCache();
     }
   }
   return should_invalidate_min_max_sizes_cache;
