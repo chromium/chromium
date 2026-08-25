@@ -414,4 +414,57 @@ public class BottomSheetView extends FrameLayout {
     ImageView getHandlebarForTesting() {
         return mHandlebar;
     }
+
+    /**
+     * Sets the content view inside the bottom sheet content container.
+     *
+     * @param view The content view to display, or null to clear.
+     */
+    public void setContentView(@Nullable View view) {
+        if (mBottomSheetContentContainer == null) return;
+        if (mBottomSheetContentContainer.getChildCount() == 1
+                && mBottomSheetContentContainer.getChildAt(0) == view) {
+            return;
+        }
+        mBottomSheetContentContainer.removeAllViews();
+        if (view != null) {
+            if (view.getParent() instanceof ViewGroup parent) {
+                parent.removeView(view);
+            }
+            mBottomSheetContentContainer.addView(view);
+        }
+    }
+
+    /**
+     * Sets the toolbar view inside the toolbar holder container.
+     *
+     * @param view The toolbar view to display, or null to clear.
+     */
+    public void setToolbarView(@Nullable View view) {
+        if (mToolbarHolder == null) return;
+        if (mToolbarHolder.getChildCount() == 1 && mToolbarHolder.getChildAt(0) == view) {
+            return;
+        }
+        mToolbarHolder.removeAllViews();
+        if (view != null) {
+            if (view.getParent() instanceof ViewGroup parent) {
+                parent.removeView(view);
+            }
+            mToolbarHolder.addView(view);
+        }
+    }
+
+    /**
+     * Sets the height of the content container.
+     *
+     * @param height The target height in pixels.
+     */
+    public void setContainerHeight(@Px int height) {
+        if (mBottomSheetContentContainer == null) return;
+        ViewGroup.LayoutParams params = mBottomSheetContentContainer.getLayoutParams();
+        if (params != null && params.height != height) {
+            params.height = height;
+            mBottomSheetContentContainer.setLayoutParams(params);
+        }
+    }
 }

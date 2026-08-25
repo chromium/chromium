@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import android.graphics.Color;
+import android.view.View;
 import android.view.View.OnClickListener;
 
 import org.junit.Before;
@@ -88,5 +89,37 @@ public class BottomSheetViewBinderUnitTest {
     public void testFallbackShadowVisibility() {
         mModel.set(BottomSheetProperties.FALLBACK_SHADOW_VISIBILITY, true);
         verify(mView).setFallbackShadowVisible(true);
+    }
+
+    @Test
+    public void testContentView() {
+        View contentView = mock(View.class);
+        mModel.set(BottomSheetProperties.CONTENT_VIEW, contentView);
+        verify(mView).setContentView(contentView);
+    }
+
+    @Test
+    public void testToolbarView() {
+        View toolbarView = mock(View.class);
+        mModel.set(BottomSheetProperties.TOOLBAR_VIEW, toolbarView);
+        verify(mView).setToolbarView(toolbarView);
+    }
+
+    @Test
+    public void testKeyboardCurtainHeight() {
+        mModel.set(BottomSheetProperties.KEYBOARD_CURTAIN_HEIGHT, 200);
+        verify(mView).setKeyboardCurtainHeight(200);
+    }
+
+    @Test
+    public void testContainerHeight() {
+        mModel.set(BottomSheetProperties.CONTAINER_HEIGHT, 400);
+        verify(mView).setContainerHeight(400);
+    }
+
+    @Test
+    public void testSheetWidth() {
+        mModel.set(BottomSheetProperties.SHEET_WIDTH_PX, 500);
+        verify(mView).setSheetWidth(500);
     }
 }

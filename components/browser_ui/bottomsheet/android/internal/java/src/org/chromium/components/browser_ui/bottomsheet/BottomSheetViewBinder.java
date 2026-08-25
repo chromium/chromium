@@ -37,6 +37,16 @@ public class BottomSheetViewBinder {
         } else if (BottomSheetProperties.FALLBACK_SHADOW_VISIBILITY == propertyKey) {
             view.setFallbackShadowVisible(
                     model.get(BottomSheetProperties.FALLBACK_SHADOW_VISIBILITY));
+        } else if (BottomSheetProperties.CONTENT_VIEW == propertyKey) {
+            view.setContentView(model.get(BottomSheetProperties.CONTENT_VIEW));
+        } else if (BottomSheetProperties.TOOLBAR_VIEW == propertyKey) {
+            view.setToolbarView(model.get(BottomSheetProperties.TOOLBAR_VIEW));
+        } else if (BottomSheetProperties.KEYBOARD_CURTAIN_HEIGHT == propertyKey) {
+            view.setKeyboardCurtainHeight(model.get(BottomSheetProperties.KEYBOARD_CURTAIN_HEIGHT));
+        } else if (BottomSheetProperties.CONTAINER_HEIGHT == propertyKey) {
+            view.setContainerHeight(model.get(BottomSheetProperties.CONTAINER_HEIGHT));
+        } else if (BottomSheetProperties.SHEET_WIDTH_PX == propertyKey) {
+            view.setSheetWidth(model.get(BottomSheetProperties.SHEET_WIDTH_PX));
         }
     }
 

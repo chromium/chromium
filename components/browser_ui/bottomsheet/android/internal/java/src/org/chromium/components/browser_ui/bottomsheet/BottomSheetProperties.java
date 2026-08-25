@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.bottomsheet;
 
+import android.view.View;
 import android.view.View.OnClickListener;
 
 import org.chromium.build.annotations.NullMarked;
@@ -32,6 +33,15 @@ public class BottomSheetProperties {
     public static final WritableBooleanPropertyKey FALLBACK_SHADOW_VISIBILITY =
             new WritableBooleanPropertyKey();
 
+    public static final WritableObjectPropertyKey<@Nullable View> CONTENT_VIEW =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<@Nullable View> TOOLBAR_VIEW =
+            new WritableObjectPropertyKey<>();
+    public static final WritableIntPropertyKey KEYBOARD_CURTAIN_HEIGHT =
+            new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey CONTAINER_HEIGHT = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey SHEET_WIDTH_PX = new WritableIntPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 SHEET_LAYOUT_MODE,
@@ -41,7 +51,12 @@ public class BottomSheetProperties {
                 CLOSE_BUTTON_VISIBILITY,
                 CLOSE_BUTTON_CLICK_LISTENER,
                 CONTAINER_TOUCH_ENABLED,
-                FALLBACK_SHADOW_VISIBILITY
+                FALLBACK_SHADOW_VISIBILITY,
+                CONTENT_VIEW,
+                TOOLBAR_VIEW,
+                KEYBOARD_CURTAIN_HEIGHT,
+                CONTAINER_HEIGHT,
+                SHEET_WIDTH_PX
             };
 
     private BottomSheetProperties() {}

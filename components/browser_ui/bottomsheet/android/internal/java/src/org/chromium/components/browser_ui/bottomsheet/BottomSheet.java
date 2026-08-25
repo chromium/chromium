@@ -744,34 +744,19 @@ class BottomSheet extends BottomSheetView
             mSheetContainer.removeView(this);
         }
 
-        swapViews(
-                content != null ? content.getContentView() : null,
-                mSheetContent != null ? mSheetContent.getContentView() : null,
-                mBottomSheetContentContainer);
-
-        View newToolbar = content != null ? content.getToolbarView() : null;
-        swapViews(
-                newToolbar,
-                mSheetContent != null ? mSheetContent.getToolbarView() : null,
-                mToolbarHolder);
+        mModel.set(
+                BottomSheetProperties.CONTENT_VIEW,
+                content != null ? content.getContentView() : null);
+        mModel.set(
+                BottomSheetProperties.TOOLBAR_VIEW,
+                content != null ? content.getToolbarView() : null);
 
         onSheetContentChanged(content);
     }
 
     /**
-     * Removes the oldView (or sets it to invisible) and adds the new view to the specified parent.
-     * @param newView The new view to transition to.
-     * @param oldView The old view to transition from.
-     * @param parent The parent for newView and oldView.
-     */
-    private void swapViews(
-            final @Nullable View newView, final @Nullable View oldView, final ViewGroup parent) {
-        if (oldView != null && oldView.getParent() != null) parent.removeView(oldView);
-        if (newView != null && parent != newView.getParent()) parent.addView(newView);
-    }
-
-    /**
      * A notification that the sheet is exiting the peek state into one that shows content.
+     *
      * @param reason The reason the sheet was opened, if any.
      */
     private void onSheetOpened(@StateChangeReason int reason) {
@@ -1689,19 +1674,13 @@ class BottomSheet extends BottomSheetView
             @Px float minContentHeight = getSheetHeightForState(SheetState.HALF);
             @Px int newHeight = (int) Math.max(minContentHeight, mCurrentOffsetPx);
             newHeight = Math.min(mVisibleViewportRect.height(), newHeight);
-            if (params.height != newHeight) {
-                params.height = newHeight;
-                mBottomSheetContentContainer.setLayoutParams(params);
-            }
+            mModel.set(BottomSheetProperties.CONTAINER_HEIGHT, newHeight);
         } else {
             int targetHeight =
                     isLargeFormFactorUiEnabled()
                             ? (int) getSheetHeightForState(SheetState.FULL)
                             : ViewGroup.LayoutParams.MATCH_PARENT;
-            if (params.height != targetHeight) {
-                params.height = targetHeight;
-                mBottomSheetContentContainer.setLayoutParams(params);
-            }
+            mModel.set(BottomSheetProperties.CONTAINER_HEIGHT, targetHeight);
 
             @Px int viewportBottomInset = getViewportBottomInset();
             if (mBottomSheetContentContainer.getPaddingBottom() != viewportBottomInset) {
@@ -1815,12 +1794,9 @@ class BottomSheet extends BottomSheetView
     private void updateCurtainHeight() {
         assert mWindow != null;
         @Px int maxWindowHeight = mWindow.getDecorView().getHeight();
-        FrameLayout.LayoutParams params =
-                (FrameLayout.LayoutParams) mKeyboardCurtain.getLayoutParams();
-        if (params.height != maxWindowHeight) {
-            params.height = maxWindowHeight;
+        mModel.set(BottomSheetProperties.KEYBOARD_CURTAIN_HEIGHT, maxWindowHeight);
+        if (mKeyboardCurtain != null) {
             mKeyboardCurtain.setTranslationY(maxWindowHeight);
-            mKeyboardCurtain.setLayoutParams(params);
         }
     }
 
