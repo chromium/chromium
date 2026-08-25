@@ -42,7 +42,6 @@ public class AdsBlockedDialogTest {
 
     @Mock private Handler mDialogHandler;
 
-    private long mNativeDialog;
     private AdsBlockedDialog mDialog;
     private PropertyModel mModalDialogModel;
     private ClickableSpan mClickableSpan;

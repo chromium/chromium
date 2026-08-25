@@ -4,7 +4,6 @@
 
 package org.chromium.components.webapps.pwa_universal_install;
 
-import android.app.Activity;
 import android.content.Context;
 
 import androidx.test.filters.MediumTest;
@@ -25,7 +24,6 @@ import org.chromium.components.webapps.R;
 @RunWith(BaseRobolectricTestRunner.class)
 public final class PwaUniversalInstallBottomSheetContentTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private Activity mActivity;
 
     @Test
     @MediumTest

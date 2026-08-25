@@ -186,7 +186,6 @@ public class LocationBarMediatorUnitTest {
     private static final String TEST_URL = "http://www.example.org";
     private static final String TEST_USER_TEXT = "user query";
     private static final String TEST_INITIAL_USER_TEXT = "inital text";
-    private static final String TEST_PREVIEW_TEXT = "user query preview";
 
     private static int sGeoHeaderPrimeCount;
     private static int sGeoHeaderStopCount;

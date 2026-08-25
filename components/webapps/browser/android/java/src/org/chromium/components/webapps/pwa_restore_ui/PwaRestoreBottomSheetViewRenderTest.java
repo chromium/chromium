@@ -86,7 +86,6 @@ public class PwaRestoreBottomSheetViewRenderTest {
     }
 
     private PwaRestoreBottomSheetCoordinator mCoordinator;
-    private PropertyModel mModel;
 
     private final boolean mNightModeEnabled;
 
