@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/form_import/payments/payments_form_data_importer.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -15,11 +16,13 @@
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
+#include "components/autofill/core/browser/metrics/payments/wallet_reminder_notice_metrics.h"
 #include "components/autofill/core/browser/payments/test/mock_virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/wallet_reminder_notice_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/sync/test/test_sync_service.h"
@@ -1915,11 +1918,17 @@ TEST_F(
   EXPECT_CALL(wallet_reminder_notice_manager(), ShowWalletReminderNotice)
       .Times(0);
 
+  base::HistogramTester histogram_tester;
   EXPECT_TRUE(
       test_api(payments_form_data_importer())
           .ProcessExtractedCreditCard(*form_structure, card,
                                       /*is_credit_card_upstream_enabled=*/true,
                                       ukm_source_id()));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WalletReminderNotice.ShowResult",
+      autofill_metrics::WalletReminderNoticeShowResult::
+          kNotShownDueToMandatoryReauth,
+      1);
 }
 
 // Test that when a virtual card is extracted and mandatory re-auth is not
@@ -1968,11 +1977,14 @@ TEST_F(
   EXPECT_CALL(wallet_reminder_notice_manager(), ShowWalletReminderNotice)
       .Times(0);
 
+  base::HistogramTester histogram_tester;
   EXPECT_FALSE(
       test_api(payments_form_data_importer())
           .ProcessExtractedCreditCard(*form_structure, card,
                                       /*is_credit_card_upstream_enabled=*/true,
                                       ukm_source_id()));
+  histogram_tester.ExpectTotalCount("Autofill.WalletReminderNotice.ShowResult",
+                                    0);
 }
 
 // Test that the Wallet reminder notice is shown on Google domains if eligible.
@@ -2015,11 +2027,89 @@ TEST_F(
   EXPECT_CALL(wallet_reminder_notice_manager(), ShowWalletReminderNotice)
       .Times(0);
 
+  base::HistogramTester histogram_tester;
   EXPECT_FALSE(
       test_api(payments_form_data_importer())
           .ProcessExtractedCreditCard(*form_structure, card,
                                       /*is_credit_card_upstream_enabled=*/true,
                                       ukm_source_id()));
+  histogram_tester.ExpectTotalCount("Autofill.WalletReminderNotice.ShowResult",
+                                    0);
+}
+
+// Test that if virtual card enrollment is offered, the Wallet reminder notice
+// is not shown.
+TEST_F(
+    PaymentsFormDataImporterTest,
+    ProcessExtractedCreditCard_VcnEnrollment_DoesNotShowWalletReminderNotice) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillEnableWalletReminderNotice);
+
+  CreditCard card = test::GetMaskedServerCard();
+  card.SetNetworkForMaskedCard(kAmericanExpressCard);
+  card.set_instrument_id(1111);
+  card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultCreditCardFormStructure();
+
+  test_api(payments_form_data_importer())
+      .set_credit_card_import_type(
+          PaymentsFormDataImporter::CreditCardImportType::kServerCard);
+  payments_form_data_importer()
+      .fetched_payments_data_context()
+      .fetched_card_instrument_id = 1111;
+
+  EXPECT_CALL(virtual_card_enrollment_manager(),
+              InitVirtualCardEnroll(_, VirtualCardEnrollmentSource::kDownstream,
+                                    _, _, _, _));
+  EXPECT_CALL(wallet_reminder_notice_manager(), ShowWalletReminderNotice)
+      .Times(0);
+
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(
+      test_api(payments_form_data_importer())
+          .ProcessExtractedCreditCard(*form_structure, card,
+                                      /*is_credit_card_upstream_enabled=*/true,
+                                      ukm_source_id()));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WalletReminderNotice.ShowResult",
+      autofill_metrics::WalletReminderNoticeShowResult::
+          kNotShownDueToVcnEnrollment,
+      1);
+}
+
+// Test that if card or CVC save is offered, the Wallet reminder notice is not
+// shown.
+TEST_F(
+    PaymentsFormDataImporterTest,
+    ProcessExtractedCreditCard_CardOrCvcSave_DoesNotShowWalletReminderNotice) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillEnableWalletReminderNotice);
+
+  CreditCard card = test::GetMaskedServerCard();
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultCreditCardFormStructure();
+  test_api(payments_form_data_importer())
+      .set_credit_card_import_type(
+          PaymentsFormDataImporter::CreditCardImportType::kServerCard);
+
+  EXPECT_CALL(credit_card_save_manager(), ProceedWithSavingIfApplicable)
+      .WillOnce(Return(true));
+  EXPECT_CALL(wallet_reminder_notice_manager(), ShowWalletReminderNotice)
+      .Times(0);
+
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(
+      test_api(payments_form_data_importer())
+          .ProcessExtractedCreditCard(*form_structure, card,
+                                      /*is_credit_card_upstream_enabled=*/false,
+                                      ukm_source_id()));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WalletReminderNotice.ShowResult",
+      autofill_metrics::WalletReminderNoticeShowResult::
+          kNotShownDueToCardOrCvcSave,
+      1);
 }
 
 // Test that the Wallet reminder notice is shown as the last step when eligible.
@@ -2063,11 +2153,14 @@ TEST_F(PaymentsFormDataImporterTest,
   EXPECT_CALL(wallet_reminder_notice_manager(), ShowWalletReminderNotice)
       .Times(0);
 
+  base::HistogramTester histogram_tester;
   EXPECT_FALSE(
       test_api(payments_form_data_importer())
           .ProcessExtractedCreditCard(*form_structure, card,
                                       /*is_credit_card_upstream_enabled=*/false,
                                       ukm_source_id()));
+  histogram_tester.ExpectTotalCount("Autofill.WalletReminderNotice.ShowResult",
+                                    0);
 }
 
 // Test that in the case where the MandatoryReauthManager denotes we should

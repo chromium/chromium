@@ -43,10 +43,22 @@ TEST(WalletReminderNoticeMetricsTest, LogWalletReminderNoticeShowResult) {
       WalletReminderNoticeShowResult::kShown, 1);
 
   LogWalletReminderNoticeShowResult(
-      WalletReminderNoticeShowResult::kNotShownAlreadyAcknowledged);
+      WalletReminderNoticeShowResult::
+          kNotShownAlreadyAcknowledgedAccordingToServer);
   histogram_tester.ExpectBucketCount(
       "Autofill.WalletReminderNotice.ShowResult",
-      WalletReminderNoticeShowResult::kNotShownAlreadyAcknowledged, 1);
+      WalletReminderNoticeShowResult::
+          kNotShownAlreadyAcknowledgedAccordingToServer,
+      1);
+
+  LogWalletReminderNoticeShowResult(
+      WalletReminderNoticeShowResult::
+          kNotShownAlreadyAcknowledgedAccordingToPref);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.WalletReminderNotice.ShowResult",
+      WalletReminderNoticeShowResult::
+          kNotShownAlreadyAcknowledgedAccordingToPref,
+      1);
 
   LogWalletReminderNoticeShowResult(
       WalletReminderNoticeShowResult::kNotShownNetworkOrServerError);
@@ -73,7 +85,7 @@ TEST(WalletReminderNoticeMetricsTest, LogWalletReminderNoticeShowResult) {
       WalletReminderNoticeShowResult::kNotShownDueToCardOrCvcSave, 1);
 
   histogram_tester.ExpectTotalCount("Autofill.WalletReminderNotice.ShowResult",
-                                    6);
+                                    7);
 }
 
 }  // namespace autofill::autofill_metrics

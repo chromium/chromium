@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/metrics/payments/wallet_reminder_notice_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
@@ -40,6 +41,9 @@ bool WalletReminderNoticeManager::IsWalletReminderNoticeEligible(
     return false;
   }
   if (prefs::HasShownWalletReminderNotice(client_->GetPrefs())) {
+    autofill_metrics::LogWalletReminderNoticeShowResult(
+        autofill_metrics::WalletReminderNoticeShowResult::
+            kNotShownAlreadyAcknowledgedAccordingToPref);
     return false;
   }
   return true;
@@ -64,11 +68,15 @@ void WalletReminderNoticeManager::OnGetWalletReminderNoticeResponse(
     PaymentsAutofillClient::PaymentsRpcResult result,
     const GetWalletReminderNoticeResponseDetails& response_details) {
   if (result != PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
-    // TODO(crbug.com/549251808): Log network or server error as a reason why
-    // the reminder notice wasn't shown.
+    autofill_metrics::LogWalletReminderNoticeShowResult(
+        autofill_metrics::WalletReminderNoticeShowResult::
+            kNotShownNetworkOrServerError);
     return;
   }
   if (response_details.has_user_been_shown_reminder) {
+    autofill_metrics::LogWalletReminderNoticeShowResult(
+        autofill_metrics::WalletReminderNoticeShowResult::
+            kNotShownAlreadyAcknowledgedAccordingToServer);
     return;
   }
 
@@ -76,6 +84,8 @@ void WalletReminderNoticeManager::OnGetWalletReminderNoticeResponse(
   CHECK(!response_details.acknowledgement_token.empty());
   CHECK_DEREF(GetPaymentsAutofillClient().GetWalletReminderNoticeUiDelegate())
       .ShowWalletReminderNotice(response_details.legal_message_lines);
+  autofill_metrics::LogWalletReminderNoticeShowResult(
+      autofill_metrics::WalletReminderNoticeShowResult::kShown);
 
   // Notify the Google Payments server that the user has been shown the Wallet
   // reminder notice.

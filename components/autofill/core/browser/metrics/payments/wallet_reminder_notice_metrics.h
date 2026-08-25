@@ -33,16 +33,20 @@ enum class WalletReminderNoticeInteraction {
 enum class WalletReminderNoticeShowResult {
   // Notice was successfully displayed to the user.
   kShown = 0,
-  // Not shown because the user already acknowledged the notice.
-  kNotShownAlreadyAcknowledged = 1,
+  // Not shown because the user already acknowledged the notice according to the
+  // server.
+  kNotShownAlreadyAcknowledgedAccordingToServer = 1,
+  // Not shown because the user already acknowledged the notice according to the
+  // pref, meaning a server call was not made.
+  kNotShownAlreadyAcknowledgedAccordingToPref = 2,
   // Not shown due to network or server error.
-  kNotShownNetworkOrServerError = 2,
+  kNotShownNetworkOrServerError = 3,
   // Not shown due to Mandatory Reauth.
-  kNotShownDueToMandatoryReauth = 3,
+  kNotShownDueToMandatoryReauth = 4,
   // Not shown due to VCN Enrollment.
-  kNotShownDueToVcnEnrollment = 4,
+  kNotShownDueToVcnEnrollment = 5,
   // Not shown due to card or CVC save.
-  kNotShownDueToCardOrCvcSave = 5,
+  kNotShownDueToCardOrCvcSave = 6,
   kMaxValue = kNotShownDueToCardOrCvcSave,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillWalletReminderNoticeShowResult)

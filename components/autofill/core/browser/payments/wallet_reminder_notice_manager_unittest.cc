@@ -13,11 +13,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/metrics/payments/wallet_reminder_notice_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
@@ -143,11 +145,17 @@ TEST_F(WalletReminderNoticeManagerTest,
 
 TEST_F(WalletReminderNoticeManagerTest,
        IsWalletReminderNoticeEligible_AlreadyShown_NotEligible) {
+  base::HistogramTester histogram_tester;
   autofill_client_.identity_test_environment().MakePrimaryAccountAvailable(
       "user@gmail.com", signin::ConsentLevel::kSignin);
   prefs::SetHasShownWalletReminderNotice(autofill_client_.GetPrefs());
   EXPECT_FALSE(
       manager_->IsWalletReminderNoticeEligible(test::GetMaskedServerCard()));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WalletReminderNotice.ShowResult",
+      autofill_metrics::WalletReminderNoticeShowResult::
+          kNotShownAlreadyAcknowledgedAccordingToPref,
+      1);
 }
 
 TEST_F(WalletReminderNoticeManagerTest,
@@ -170,6 +178,7 @@ TEST_F(WalletReminderNoticeManagerTest, ShowWalletReminderNotice) {
 
 TEST_F(WalletReminderNoticeManagerTest,
        OnGetWalletReminderNoticeResponse_RpcFailure) {
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(*ui_delegate_, ShowWalletReminderNotice(_)).Times(0);
   EXPECT_CALL(*payments_network_interface_,
               RecordLegalReminderAcknowledgment(_, _))
@@ -187,11 +196,17 @@ TEST_F(WalletReminderNoticeManagerTest,
 
   EXPECT_FALSE(
       prefs::HasShownWalletReminderNotice(autofill_client_.GetPrefs()));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WalletReminderNotice.ShowResult",
+      autofill_metrics::WalletReminderNoticeShowResult::
+          kNotShownNetworkOrServerError,
+      1);
 }
 
 TEST_F(
     WalletReminderNoticeManagerTest,
     OnGetWalletReminderNoticeResponse_ServerDenotesUserHasBeenShownReminder) {
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(*ui_delegate_, ShowWalletReminderNotice(_)).Times(0);
   EXPECT_CALL(*payments_network_interface_,
               RecordLegalReminderAcknowledgment(_, _))
@@ -205,10 +220,16 @@ TEST_F(
 
   manager_->OnGetWalletReminderNoticeResponse(
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess, response_details);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WalletReminderNotice.ShowResult",
+      autofill_metrics::WalletReminderNoticeShowResult::
+          kNotShownAlreadyAcknowledgedAccordingToServer,
+      1);
 }
 
 TEST_F(WalletReminderNoticeManagerTest,
        OnGetWalletReminderNoticeResponse_RpcSuccess) {
+  base::HistogramTester histogram_tester;
   LegalMessageLines legal_message_lines;
   legal_message_lines.push_back(TestLegalMessageLine("Legal message line"));
 
@@ -231,6 +252,9 @@ TEST_F(WalletReminderNoticeManagerTest,
 
   manager_->OnGetWalletReminderNoticeResponse(
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess, response_details);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WalletReminderNotice.ShowResult",
+      autofill_metrics::WalletReminderNoticeShowResult::kShown, 1);
 }
 
 TEST_F(WalletReminderNoticeManagerTest,
