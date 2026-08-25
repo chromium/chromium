@@ -38,6 +38,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -58,6 +59,7 @@ import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
@@ -270,18 +272,26 @@ public class WebAppHeaderLayoutCoordinator
         onAndroidControlsVisibilityChanged(
                 mBrowserControlsStateProvider.getAndroidControlsVisibility());
 
-        if (mIsTWA && mClientPackageName != null) {
-            // Show origin only for TWA Installer installed apps.
-            // TODO: WebappsUtils.isTwaInstallerPackage is an async call, so if navigation finishes
-            // before this completes, we might miss showing the origin on the first navigation
-            WebappsUtils.isTwaInstallerPackage(
-                    mClientPackageName,
-                    (isTwaInstallerPackage) -> {
-                        if (isTwaInstallerPackage) {
-                            assert mView != null;
-                            mAppOriginView = (TextView) mView.findViewById(R.id.origin);
-                        }
-                    });
+        if (mIsTWA) {
+            // Show origin for Android large form factors for TWAs.
+            if (ChromeFeatureList.sDesktopAndroidTWADisclosures.isEnabled()
+                    && DeviceFormFactor.isWindowOnTablet(mActivityWindowAndroid)) {
+                mAppOriginView = (TextView) mView.findViewById(R.id.origin);
+            } else if (mClientPackageName != null) {
+                // Show origin only for TWA Installer installed apps.
+                // TODO(crbug.com/545324369): Remove this code once the
+                // DESKTOP_ANDROID_TWA_DISCLOSURES feature flag is enabled by default,
+                // in which case, we will no longer have to worry about the
+                // installer package check.
+                WebappsUtils.isTwaInstallerPackage(
+                        mClientPackageName,
+                        (isTwaInstallerPackage) -> {
+                            if (isTwaInstallerPackage) {
+                                assert mView != null;
+                                mAppOriginView = (TextView) mView.findViewById(R.id.origin);
+                            }
+                        });
+            }
         }
 
         mMediator

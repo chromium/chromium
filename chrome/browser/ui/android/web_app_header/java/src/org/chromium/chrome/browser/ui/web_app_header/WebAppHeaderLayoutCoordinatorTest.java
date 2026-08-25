@@ -47,6 +47,8 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -54,6 +56,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -136,6 +139,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
         mActivityScenarioRule.getScenario().onActivity(testActivity -> mActivity = testActivity);
         doReturn(mWindowAndroid).when(mTab).getWindowAndroid();
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(mActivity));
         mContentView = new FrameLayout(mActivity);
         mViewStub = new ViewStub(mActivity);
         mViewStub.setLayoutResource(R.layout.web_app_header_layout);
@@ -831,6 +835,97 @@ public class WebAppHeaderLayoutCoordinatorTest {
                 "Origin TextView should show the correct domain",
                 UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(testUrl),
                 originTextView.getText().toString());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_TWA_DISCLOSURES)
+    public void
+            testOriginTextViewShowsCorrectDomain_withDisclosuresFlagEnabled_noTwaInstaller_onTablet() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.MINIMAL_UI);
+        // Explicitly set TWA Installer to false
+        WebappsUtils.setIsTwaInstallerPackageForTesting(false);
+
+        GURL testUrl = new GURL("https://www.example.com/path/to/page");
+        when(mIntentDataProvider.getUrlToLoad()).thenReturn(testUrl.getSpec());
+        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+        when(mIntentDataProvider.getAllTrustedWebActivityOrigins())
+                .thenReturn(Collections.singleton(Origin.create(testUrl.getOrigin().getSpec())));
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
+
+        createCoordinator();
+        mShadowLooper.idle();
+
+        NavigationHandle navigationHandle = mock(NavigationHandle.class);
+        when(navigationHandle.getUrl()).thenReturn(testUrl);
+        // Simulate finished navigation.
+        mCoordinator.onDidFinishNavigationInPrimaryMainFrame(mTab, navigationHandle);
+
+        TextView originTextView = mActivity.findViewById(R.id.origin);
+        assertNotNull("Origin TextView should not be null", originTextView);
+        assertEquals(
+                "Origin TextView should show the correct domain",
+                UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(testUrl),
+                originTextView.getText().toString());
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    @EnableFeatures(ChromeFeatureList.DESKTOP_ANDROID_TWA_DISCLOSURES)
+    public void testOriginTextViewIsGone_withDisclosuresFlagEnabled_noTwaInstaller_onNonTablet() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.MINIMAL_UI);
+        // Explicitly set TWA Installer to false
+        WebappsUtils.setIsTwaInstallerPackageForTesting(false);
+
+        GURL testUrl = new GURL("https://www.example.com/path/to/page");
+        when(mIntentDataProvider.getUrlToLoad()).thenReturn(testUrl.getSpec());
+        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+        when(mIntentDataProvider.getAllTrustedWebActivityOrigins())
+                .thenReturn(Collections.singleton(Origin.create(testUrl.getOrigin().getSpec())));
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
+
+        createCoordinator();
+        mShadowLooper.idle();
+
+        NavigationHandle navigationHandle = mock(NavigationHandle.class);
+        when(navigationHandle.getUrl()).thenReturn(testUrl);
+        // Simulate finished navigation.
+        mCoordinator.onDidFinishNavigationInPrimaryMainFrame(mTab, navigationHandle);
+
+        TextView originTextView = mActivity.findViewById(R.id.origin);
+        assertNotNull("Origin TextView should not be null", originTextView);
+        assertEquals(View.GONE, originTextView.getVisibility());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @DisableFeatures(ChromeFeatureList.DESKTOP_ANDROID_TWA_DISCLOSURES)
+    public void testOriginTextViewIsGone_withDisclosuresFlagDisabled_noTwaInstaller() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.MINIMAL_UI);
+        // Explicitly set TWA Installer to false
+        WebappsUtils.setIsTwaInstallerPackageForTesting(false);
+
+        GURL testUrl = new GURL("https://www.example.com/path/to/page");
+        when(mIntentDataProvider.getUrlToLoad()).thenReturn(testUrl.getSpec());
+        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+        when(mIntentDataProvider.getAllTrustedWebActivityOrigins())
+                .thenReturn(Collections.singleton(Origin.create(testUrl.getOrigin().getSpec())));
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
+
+        createCoordinator();
+        mShadowLooper.idle();
+
+        NavigationHandle navigationHandle = mock(NavigationHandle.class);
+        when(navigationHandle.getUrl()).thenReturn(testUrl);
+        // Simulate finished navigation.
+        mCoordinator.onDidFinishNavigationInPrimaryMainFrame(mTab, navigationHandle);
+
+        TextView originTextView = mActivity.findViewById(R.id.origin);
+        assertNotNull("Origin TextView should not be null", originTextView);
+        assertEquals(View.GONE, originTextView.getVisibility());
     }
 
     @Test
