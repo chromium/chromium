@@ -17,6 +17,8 @@ source_set("ui") {
     "actuation_task_button.mm",
     "actuation_task_card_view.h",
     "actuation_task_card_view.mm",
+    "actuation_worklog_accessory_view.h",
+    "actuation_worklog_accessory_view.mm",
     "actuation_worklog_compact_view.h",
     "actuation_worklog_compact_view.mm",
     "actuation_worklog_constants.h",
