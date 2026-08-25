@@ -19,6 +19,7 @@
 #include "cc/metrics/compositor_frame_reporter.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/frame_sequence_metrics.h"
+#include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/metrics/frame_sorter.h"
 #include "cc/metrics/predictor_jank_tracker.h"
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
@@ -112,16 +113,14 @@ class CC_EXPORT CompositorFrameReportingController {
     if (global_trackers_.frame_sorter) {
       global_trackers_.frame_sorter->AddObserver(frame_sequence_trackers);
     }
-    global_trackers_.frame_sequence_trackers = frame_sequence_trackers;
+    frame_sequence_trackers_ = frame_sequence_trackers;
   }
 
   void ClearFrameSequenceTrackerCollection() {
-    if (global_trackers_.frame_sorter &&
-        global_trackers_.frame_sequence_trackers) {
-      global_trackers_.frame_sorter->RemoveObserver(
-          global_trackers_.frame_sequence_trackers);
+    if (global_trackers_.frame_sorter && frame_sequence_trackers_) {
+      global_trackers_.frame_sorter->RemoveObserver(frame_sequence_trackers_);
     }
-    global_trackers_.frame_sequence_trackers = nullptr;
+    frame_sequence_trackers_ = nullptr;
   }
 
   void set_event_latency_tracker(EventLatencyTracker* event_latency_tracker) {
@@ -209,6 +208,7 @@ class CC_EXPORT CompositorFrameReportingController {
   // have reporters), since destroying the reporters can flush frames to
   // `global_trackers_`.
   GlobalMetricsTrackers global_trackers_;
+  raw_ptr<FrameSequenceTrackerCollection> frame_sequence_trackers_ = nullptr;
 
   std::unique_ptr<PredictorJankTracker> predictor_jank_tracker_;
   std::unique_ptr<ScrollJankDroppedFrameTracker>

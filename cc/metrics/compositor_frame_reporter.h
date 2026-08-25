@@ -25,7 +25,6 @@
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/frame_info.h"
 #include "cc/metrics/frame_sequence_metrics.h"
-#include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/metrics/predictor_jank_tracker.h"
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
 #include "cc/metrics/scroll_jank_v4_processor.h"
@@ -44,8 +43,6 @@ class FrameSorter;
 struct GlobalMetricsTrackers {
   // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
   // stacks.
-  RAW_PTR_EXCLUSION FrameSequenceTrackerCollection* frame_sequence_trackers =
-      nullptr;
   RAW_PTR_EXCLUSION EventLatencyTracker* event_latency_tracker = nullptr;
   RAW_PTR_EXCLUSION PredictorJankTracker* predictor_jank_tracker = nullptr;
   RAW_PTR_EXCLUSION ScrollJankDroppedFrameTracker*

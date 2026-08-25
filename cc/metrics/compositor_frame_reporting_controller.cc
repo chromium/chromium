@@ -58,9 +58,8 @@ CompositorFrameReportingController::~CompositorFrameReportingController() {
   }
 
   if (global_trackers_.frame_sorter) {
-    if (global_trackers_.frame_sequence_trackers) {
-      global_trackers_.frame_sorter->RemoveObserver(
-          global_trackers_.frame_sequence_trackers);
+    if (frame_sequence_trackers_) {
+      global_trackers_.frame_sorter->RemoveObserver(frame_sequence_trackers_);
     }
   }
 }
@@ -114,15 +113,14 @@ void CompositorFrameReportingController::ProcessSkippedFramesIfNecessary(
       previous_frame.frame_id.source_id == args.frame_id.source_id) {
     CreateReportersForDroppedFrames(previous_frame, args);
   }
-  FrameSequenceTrackerCollection* trackers =
-      global_trackers_.frame_sequence_trackers;
   last_started_compositor_frame_.args = args;
-  if (trackers) {
+  if (frame_sequence_trackers_) {
     last_started_compositor_frame_.scrolling_thread =
-        trackers->GetScrollingThread();
+        frame_sequence_trackers_->GetScrollingThread();
     last_started_compositor_frame_.active_trackers =
-        trackers->GetActiveTrackers();
-    last_started_compositor_frame_.smooth_thread = trackers->GetSmoothThread();
+        frame_sequence_trackers_->GetActiveTrackers();
+    last_started_compositor_frame_.smooth_thread =
+        frame_sequence_trackers_->GetSmoothThread();
   }
 }
 
@@ -148,16 +146,15 @@ void CompositorFrameReportingController::WillBeginImplFrame(
                                Now());
     }
   }
-  FrameSequenceTrackerCollection* trackers =
-      global_trackers_.frame_sequence_trackers;
+
   ActiveTrackers active_trackers;
   FrameInfo::SmoothEffectDrivingThread scrolling_thread =
       FrameInfo::SmoothEffectDrivingThread::kUnknown;
   FrameInfo::SmoothThread smooth_thread = FrameInfo::SmoothThread::kSmoothNone;
-  if (trackers) {
-    active_trackers = trackers->GetActiveTrackers();
-    scrolling_thread = trackers->GetScrollingThread();
-    smooth_thread = trackers->GetSmoothThread();
+  if (frame_sequence_trackers_) {
+    active_trackers = frame_sequence_trackers_->GetActiveTrackers();
+    scrolling_thread = frame_sequence_trackers_->GetScrollingThread();
+    smooth_thread = frame_sequence_trackers_->GetSmoothThread();
   }
   auto reporter = std::make_unique<CompositorFrameReporter>(
       active_trackers, args, should_report_histograms_, smooth_thread,
@@ -188,8 +185,6 @@ void CompositorFrameReportingController::WillBeginMainFrame(
     // beginMain frame before next BeginImplFrame (Not reached the ImplFrame
     // deadline yet). So will start a new reporter at BeginMainFrame, and use
     // the state(s) from the ImplFrame where necessary.
-    FrameSequenceTrackerCollection* trackers =
-        global_trackers_.frame_sequence_trackers;
     ActiveTrackers active_trackers;
     FrameInfo::SmoothEffectDrivingThread scrolling_thread =
         FrameInfo::SmoothEffectDrivingThread::kUnknown;
@@ -202,10 +197,10 @@ void CompositorFrameReportingController::WillBeginMainFrame(
       scrolling_thread = last_started_compositor_frame_.scrolling_thread;
       active_trackers = last_started_compositor_frame_.active_trackers;
       smooth_thread = last_started_compositor_frame_.smooth_thread;
-    } else if (trackers) {
-      active_trackers = trackers->GetActiveTrackers();
-      scrolling_thread = trackers->GetScrollingThread();
-      smooth_thread = trackers->GetSmoothThread();
+    } else if (frame_sequence_trackers_) {
+      active_trackers = frame_sequence_trackers_->GetActiveTrackers();
+      scrolling_thread = frame_sequence_trackers_->GetScrollingThread();
+      smooth_thread = frame_sequence_trackers_->GetSmoothThread();
     }
     auto reporter = std::make_unique<CompositorFrameReporter>(
         active_trackers, args, should_report_histograms_, smooth_thread,
@@ -885,8 +880,6 @@ void CompositorFrameReportingController::CreateReportersForDroppedFrames(
   }
 
   auto timestamp = old_args.frame_time + old_args.interval;
-  FrameSequenceTrackerCollection* trackers =
-      global_trackers_.frame_sequence_trackers;
   ActiveTrackers active_trackers;
   FrameInfo::SmoothEffectDrivingThread scrolling_thread =
       FrameInfo::SmoothEffectDrivingThread::kUnknown;
@@ -903,10 +896,12 @@ void CompositorFrameReportingController::CreateReportersForDroppedFrames(
     // Set the scrolling thread based on the global frame sequence trackers
     // rather than the `scrolling_thread_` member, because the scrolling thread
     // might have changed for a skipped or backfilled frame.
-    if (trackers) {
-      active_trackers = trackers->GetActiveTrackers();
-      scrolling_thread = trackers->GetScrollThreadAtTime(timestamp);
-      smooth_thread = trackers->GetSmoothThreadAtTime(timestamp);
+    if (frame_sequence_trackers_) {
+      active_trackers = frame_sequence_trackers_->GetActiveTrackers();
+      scrolling_thread =
+          frame_sequence_trackers_->GetScrollThreadAtTime(timestamp);
+      smooth_thread =
+          frame_sequence_trackers_->GetSmoothThreadAtTime(timestamp);
     }
     auto reporter = std::make_unique<CompositorFrameReporter>(
         active_trackers, args, should_report_histograms_, smooth_thread,
