@@ -55,6 +55,7 @@
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/webui/webui_util.h"
@@ -67,6 +68,9 @@ enum ScreenshotMenuCommand {
   kScreenshotRegion,
 };
 
+// Minimum preferred width for the screenshot Views menu, matching UX specs
+// and the previous dropdown implementation (320px).
+constexpr int kScreenshotMenuWidth = 320;
 bool IsAimEligible(Profile* profile) {
   auto* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile);
@@ -545,6 +549,9 @@ void OmniboxEverywhereUI::ShowScreenshotMenu(
       base::BindRepeating(&OmniboxEverywhereUI::OnScreenshotMenuClosed,
                           weak_factory_.GetWeakPtr()));
   std::unique_ptr<views::MenuItemView> menu = menu_model_adapter_->CreateMenu();
+  if (menu && menu->HasSubmenu()) {
+    menu->GetSubmenu()->set_minimum_preferred_width(kScreenshotMenuWidth);
+  }
 
   screenshot_menu_runner_ = std::make_unique<views::MenuRunner>(
       std::move(menu),
