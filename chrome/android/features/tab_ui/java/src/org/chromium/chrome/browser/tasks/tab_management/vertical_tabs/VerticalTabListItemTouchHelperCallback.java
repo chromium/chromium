@@ -9,6 +9,9 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.os.SystemClock;
+import android.text.format.DateUtils;
+import android.util.SparseLongArray;
 import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
@@ -81,10 +84,12 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidVerticalTabsDragDropResult)
 
     private static final long CONTEXT_MENU_ORCHESTRATOR_DELAY_MS = 10L;
+    private static final long MAX_UNGROUP_TRACKING_DURATION_MS = 3 * DateUtils.MINUTE_IN_MILLIS;
     private final int mMouseDragThresholdSquared;
     private final Set<Integer> mDraggedChildTabIds = new HashSet<>();
     private final List<Integer> mSelectedGroupTabIds = new ArrayList<>();
     private final List<RecyclerView.ViewHolder> mDraggedChildViewHolders = new ArrayList<>();
+    private final SparseLongArray mGroupedTabTimestamps = new SparseLongArray();
     private final @Nullable UndoBarThrottle mUndoBarThrottle;
     // State snapshot captured at drag start to diff against the final state on drop.
     private int mDragStartTabId = Tab.INVALID_TAB_ID;
@@ -854,6 +859,24 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             @DragDropResult int dragResult = computeDragDropResult(viewHolder);
             RecordHistogram.recordEnumeratedHistogram(
                     "Android.VerticalTabs.DragDropResult", dragResult, DragDropResult.COUNT);
+            long now = SystemClock.elapsedRealtime();
+            pruneExpiredGroupTimestamps(now);
+            if (dragResult == DragDropResult.GROUPED) {
+                mGroupedTabTimestamps.put(mDragStartTabId, now);
+                for (int childTabId : mDraggedChildTabIds) {
+                    mGroupedTabTimestamps.put(childTabId, now);
+                }
+            } else if (dragResult == DragDropResult.UNGROUPED) {
+                int index = mGroupedTabTimestamps.indexOfKey(mDragStartTabId);
+                if (index >= 0) {
+                    long durationMs = now - mGroupedTabTimestamps.valueAt(index);
+                    if (durationMs <= MAX_UNGROUP_TRACKING_DURATION_MS) {
+                        RecordHistogram.recordMediumTimesHistogram(
+                                "Android.VerticalTabs.DragDropTimeToUngroup", durationMs);
+                    }
+                    mGroupedTabTimestamps.removeAt(index);
+                }
+            }
             mDragStartTabId = Tab.INVALID_TAB_ID;
             mDragStartGroupId = null;
             mDragStartTabModelIndex = TabModel.INVALID_TAB_INDEX;
@@ -1553,6 +1576,14 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             return DragDropResult.REORDERED;
         }
         return DragDropResult.ABORTED_NO_CHANGE;
+    }
+
+    private void pruneExpiredGroupTimestamps(long now) {
+        for (int i = mGroupedTabTimestamps.size() - 1; i >= 0; i--) {
+            if (now - mGroupedTabTimestamps.valueAt(i) > MAX_UNGROUP_TRACKING_DURATION_MS) {
+                mGroupedTabTimestamps.removeAt(i);
+            }
+        }
     }
 
     /** Sets the tab grid item long press orchestrator for testing. */

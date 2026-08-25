@@ -6870,6 +6870,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.VerticalTabs.DragDropTimeToUngroup" units="ms"
+    expires_after="2027-07-22">
+  <owner>agazal@google.com</owner>
+  <owner>kije@chromium.org</owner>
+  <summary>
+    Records the duration (in milliseconds) between when a tab was grouped via
+    drag and drop and when it was subsequently ungrouped (dragged back out) in
+    Vertical Tabs.
+  </summary>
+</histogram>
+
 <histogram name="Android.VerticalTabs.DurationEnabled" units="ms"
     expires_after="2027-07-22">
   <owner>agazal@google.com</owner>
