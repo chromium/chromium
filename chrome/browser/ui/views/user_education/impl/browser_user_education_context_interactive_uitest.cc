@@ -19,6 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/display/screen.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/view.h"
 
 namespace {
@@ -146,6 +147,10 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
                        TwoProfilesFindsAnchor) {
+  if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
+    GTEST_SKIP() << "Flaky on Wayland; see https://crbug.com/550727809";
+  }
+
   auto ue_context = BrowserUserEducationInterface::From(browser())
                         ->GetUserEducationContextForTesting();
   auto filter = ue_context->GetDefaultElementFilter();
@@ -383,6 +388,10 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
                        PrefersAnchorInActiveBrowser) {
+  if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
+    GTEST_SKIP() << "Flaky on Wayland; see https://crbug.com/550727809";
+  }
+
   auto ue_context = BrowserUserEducationInterface::From(browser())
                         ->GetUserEducationContextForTesting();
   auto filter = ue_context->GetDefaultElementFilter();
