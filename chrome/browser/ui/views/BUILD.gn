@@ -884,3 +884,35 @@ source_set("login_handler_views") {
     "//ui/views",
   ]
 }
+
+source_set("content_setting_bubble_contents") {
+  public = [ "content_setting_bubble_contents.h" ]
+  sources = [ "content_setting_bubble_contents.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/content_settings",
+    "//content/public/browser",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+  deps = [
+    ":content_setting_site_row_view",
+    ":layout_provider",
+    ":sub_apps_permission_explanation",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/favicon",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/views/controls",
+    "//components/strings:components_strings",
+    "//components/url_formatter",
+    "//components/vector_icons",
+    "//ui/base",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/color",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
+}

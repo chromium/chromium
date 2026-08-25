@@ -3697,6 +3697,7 @@ if (!is_android) {
     }
     if (toolkit_views) {
       deps += [
+        "//chrome/browser/ui/views:content_setting_bubble_contents",
         "//chrome/browser/ui/views:external_protocol_dialog_test_support",
         "//chrome/browser/ui/views:hung_renderer_view",
         "//chrome/browser/ui/views:javascript_tab_modal_dialog_view_views",
@@ -7891,7 +7892,9 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/ui/call_to_action",
       "//chrome/browser/ui/tabs:tab_list_bridge",
+      "//chrome/browser/ui/views:content_setting_bubble_contents",
       "//chrome/browser/ui/views:task_manager_search_bar_view",
+      "//chrome/browser/ui/views/context_hub:save_to_memory_bank_bubble_view",
       "//chrome/browser/ui/views/extensions:unit_tests",
       "//chrome/browser/ui/views/frame:web_contents_close_handler",
       "//chrome/browser/ui/views/profiles:avatar_badge_view",
@@ -8678,6 +8681,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts:interactive_ui_tests",
       "//chrome/browser/ui/toolbar",
+      "//chrome/browser/ui/views:content_setting_bubble_contents",
       "//chrome/browser/ui/views/accessibility:dump_accessibility_events_views_browsertest_base",
       "//chrome/browser/ui/views/accessibility:interactive_ui_tests",
       "//chrome/browser/ui/views/autofill:edit_address_profile_view",

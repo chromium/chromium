@@ -241,6 +241,7 @@ if (toolkit_views) {
         "//chrome/browser/permissions",
         "//chrome/browser/policy:test_support",
         "//chrome/browser/ui/browser_web_contents_delegate",
+        "//chrome/browser/ui/views:content_setting_bubble_contents",
         "//chrome/browser/ui/views/infobars",
         "//chrome/browser/ui/views/page_info",
         "//chrome/browser/ui/views/permissions/chip",

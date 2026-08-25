@@ -42,7 +42,13 @@ source_set("settings_overridden_dialog_view_utils") {
 
 source_set("security_dialog_tracker") {
   public = [ "security_dialog_tracker.h" ]
+  sources = [ "security_dialog_tracker.cc" ]
   public_deps = [ "//base" ]
+  deps = [
+    "//chrome/browser/ui/views/interaction",
+    "//ui/base",
+    "//ui/views",
+  ]
 }
 
 source_set("windows_utils_views") {
