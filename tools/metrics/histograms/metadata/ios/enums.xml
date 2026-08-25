@@ -463,6 +463,19 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Background prevented impression"/>
 </enum>
 
+<!-- LINT.IfChange(IOSDefaultBrowserPromoOverflowMenuAction) -->
+
+<enum name="IOSDefaultBrowserPromoOverflowMenuAction">
+  <summary>
+    The action taken by the user on the Default Browser Overflow Menu Promo.
+  </summary>
+  <int value="0" label="No Action"/>
+  <int value="1" label="Hidden"/>
+  <int value="2" label="Tapped"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/default_browser/model/utils.h:IOSDefaultBrowserPromoOverflowMenuAction) -->
+
 <enum name="IOSDefaultBrowserPromoType">
   <int value="0" label="General"/>
   <int value="1" label="Made for iOS"/>

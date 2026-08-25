@@ -1500,6 +1500,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.DefaultBrowserPromo.OverflowMenu"
+    enum="IOSDefaultBrowserPromoOverflowMenuAction" expires_after="2027-02-14">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the action taken by the user on the Default Browser Overflow Menu
+    Promo (No Action, Hidden, or Tapped).
+  </summary>
+</histogram>
+
 <histogram name="IOS.DefaultBrowserPromo.SetUpList.Action"
     enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2026-12-16">
   <owner>pabouchard@google.com</owner>

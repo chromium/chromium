@@ -443,6 +443,12 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_iOSPromoNonModalUrlPasteDefaultBrowser"
       summary="showing the non-modal Default Browser Promo from omnibox paste
                on iOS"/>
+  <variant name="IPH_iOSPromoOverflowMenuDestinationDefaultBrowser"
+      summary="showing the Overflow Menu Destination Default Browser Promo on
+               iOS"/>
+  <variant name="IPH_iOSPromoOverflowMenuShortcutsDefaultBrowser"
+      summary="showing the Overflow Menu Shortcuts Default Browser Promo on
+               iOS"/>
   <variant name="IPH_iOSPromoPasswordManagerWidget"
       summary="showing the Password Manager widget promo on iOS"/>
   <variant name="IPH_iOSPromoPostRestore"

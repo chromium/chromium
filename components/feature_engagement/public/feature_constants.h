@@ -369,6 +369,10 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(
     kIPHiOSPromoSettingsCardDefaultBrowserFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(
     kIPHiOSPromoSettingsCellDefaultBrowserFeature);
+FEATURE_CONSTANTS_DECLARE_FEATURE(
+    kIPHiOSPromoOverflowMenuDestinationDefaultBrowserFeature);
+FEATURE_CONSTANTS_DECLARE_FEATURE(
+    kIPHiOSPromoOverflowMenuShortcutsDefaultBrowserFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSOverflowMenuCustomizationFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSPageInfoRevampFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(

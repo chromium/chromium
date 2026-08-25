@@ -217,6 +217,8 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSPromoNonModalSigninBookmarkFeature,
     &kIPHiOSPromoNonModalSigninPasswordFeature,
     &kIPHiOSPromoNonModalUrlPasteDefaultBrowserFeature,
+    &kIPHiOSPromoOverflowMenuDestinationDefaultBrowserFeature,
+    &kIPHiOSPromoOverflowMenuShortcutsDefaultBrowserFeature,
     &kIPHiOSPromoPasswordManagerWidgetFeature,
     &kIPHiOSPromoPostRestoreDefaultBrowserFeature,
     &kIPHiOSPromoPostRestoreFeature,

@@ -462,6 +462,16 @@ const FeatureEntry::FeatureVariation
          nullptr},
 };
 
+const FeatureEntry::FeatureParam kDefaultBrowserPromoDestinationParam[] = {
+    {kDefaultBrowserPromoOverflowMenuTypeParam, "0"}};
+const FeatureEntry::FeatureParam kDefaultBrowserPromoShortcutsParam[] = {
+    {kDefaultBrowserPromoOverflowMenuTypeParam, "1"}};
+const FeatureEntry::FeatureVariation
+    kDefaultBrowserPromoOverflowMenuVariations[] = {
+        {"Destination", kDefaultBrowserPromoDestinationParam, nullptr},
+        {"Shortcuts", kDefaultBrowserPromoShortcutsParam, nullptr},
+};
+
 // Uses int values from Lens filters ablation mode enum.
 const FeatureEntry::FeatureParam kLensFiltersAblationModeDisabled[] = {
     {kLensFiltersAblationMode, "0"}};
@@ -2166,6 +2176,13 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSSettingsDefaultBrowserPromoV2,
                                     kIOSSettingsDefaultBrowserPromoV2Variations,
                                     "IOSSettingsDefaultBrowserPromoV2")},
+    {"default-browser-promo-overflow-menu",
+     flag_descriptions::kDefaultBrowserPromoOverflowMenuName,
+     flag_descriptions::kDefaultBrowserPromoOverflowMenuDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kDefaultBrowserPromoOverflowMenu,
+                                    kDefaultBrowserPromoOverflowMenuVariations,
+                                    "DefaultBrowserPromoOverflowMenu")},
     {"shopping-alternate-server",
      commerce::flag_descriptions::kShoppingAlternateServerName,
      commerce::flag_descriptions::kShoppingAlternateServerDescription,

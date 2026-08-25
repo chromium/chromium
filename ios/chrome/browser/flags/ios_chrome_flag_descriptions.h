@@ -592,6 +592,11 @@ inline constexpr char kDefaultBrowserPromoIpadInstructionsDescription[] =
     "When enabled, displays default browser promo instructions specifically "
     "adapted for iPad.";
 
+inline constexpr char kDefaultBrowserPromoOverflowMenuName[] =
+    "Default Browser Promo in Overflow Menu";
+inline constexpr char kDefaultBrowserPromoOverflowMenuDescription[] =
+    "When enabled, shows the Default Browser Promo in the Overflow Menu.";
+
 inline constexpr char kDefaultBrowserPromoPropensityModelName[] =
     "Default Browser promo propensity model";
 inline constexpr char kDefaultBrowserPromoPropensityModelDescription[] =

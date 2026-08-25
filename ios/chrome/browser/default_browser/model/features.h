@@ -33,6 +33,26 @@ bool IsIOSSettingsDefaultBrowserPromoV2Enabled();
 // parameters.
 SettingsDefaultBrowserPromoType CurrentSettingsDefaultBrowserPromoType();
 
+// Feature to enable the Default Browser Promo in the Overflow Menu.
+BASE_DECLARE_FEATURE(kDefaultBrowserPromoOverflowMenu);
+
+// Parameter name for the Default Browser Promo Overflow Menu type.
+extern const char kDefaultBrowserPromoOverflowMenuTypeParam[];
+
+// Enum defining the available overflow menu default browser promo types.
+enum class DefaultBrowserPromoOverflowMenuType {
+  kDestination = 0,
+  kShortcuts = 1,
+};
+
+// Returns whether `kDefaultBrowserPromoOverflowMenu` is enabled.
+bool IsDefaultBrowserPromoOverflowMenuEnabled();
+
+// Returns the current `DefaultBrowserPromoOverflowMenuType` based on feature
+// parameters.
+DefaultBrowserPromoOverflowMenuType
+CurrentDefaultBrowserPromoOverflowMenuType();
+
 // Feature to enable the Omnibox Paste Flow copy experiments.
 BASE_DECLARE_FEATURE(kOmniboxPastePromoExperiment);
 

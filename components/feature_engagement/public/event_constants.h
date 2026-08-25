@@ -448,6 +448,14 @@ extern const char kDefaultBrowserSettingsCardPromoUsed[];
 // Event fired when the Settings default browser cell promo is dismissed.
 extern const char kDefaultBrowserSettingsCellPromoUsed[];
 
+// Event fired when the Default Browser promo destination in the Overflow Menu
+// is used.
+extern const char kDefaultBrowserPromoOverflowMenuDestinationUsed[];
+
+// Event fired when the Default Browser promo shortcut in the Overflow Menu is
+// used.
+extern const char kDefaultBrowserPromoOverflowMenuShortcutsUsed[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

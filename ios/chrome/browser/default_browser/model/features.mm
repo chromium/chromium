@@ -32,8 +32,50 @@ bool IsIOSSettingsDefaultBrowserPromoV2Enabled() {
 
 SettingsDefaultBrowserPromoType CurrentSettingsDefaultBrowserPromoType() {
   CHECK(IsIOSSettingsDefaultBrowserPromoV2Enabled());
-  return static_cast<SettingsDefaultBrowserPromoType>(
-      kIOSSettingsDefaultBrowserPromoTypeFeatureParam.Get());
+  SettingsDefaultBrowserPromoType value =
+      static_cast<SettingsDefaultBrowserPromoType>(
+          kIOSSettingsDefaultBrowserPromoTypeFeatureParam.Get());
+  switch (value) {
+    case SettingsDefaultBrowserPromoType::kSettingsDefaultBrowserCard:
+    case SettingsDefaultBrowserPromoType::kSettingsDefaultBrowserCell:
+      return value;
+  }
+
+  // Handle situation where a different int is sent.
+  return SettingsDefaultBrowserPromoType::kSettingsDefaultBrowserCard;
+}
+
+BASE_FEATURE(kDefaultBrowserPromoOverflowMenu,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kDefaultBrowserPromoOverflowMenuTypeParam[] =
+    "DefaultBrowserPromoOverflowMenuType";
+
+BASE_FEATURE_PARAM(
+    int,
+    kDefaultBrowserPromoOverflowMenuTypeFeatureParam,
+    &kDefaultBrowserPromoOverflowMenu,
+    kDefaultBrowserPromoOverflowMenuTypeParam,
+    static_cast<int>(DefaultBrowserPromoOverflowMenuType::kDestination));
+
+bool IsDefaultBrowserPromoOverflowMenuEnabled() {
+  return base::FeatureList::IsEnabled(kDefaultBrowserPromoOverflowMenu);
+}
+
+DefaultBrowserPromoOverflowMenuType
+CurrentDefaultBrowserPromoOverflowMenuType() {
+  CHECK(IsDefaultBrowserPromoOverflowMenuEnabled());
+  DefaultBrowserPromoOverflowMenuType value =
+      static_cast<DefaultBrowserPromoOverflowMenuType>(
+          kDefaultBrowserPromoOverflowMenuTypeFeatureParam.Get());
+  switch (value) {
+    case DefaultBrowserPromoOverflowMenuType::kDestination:
+    case DefaultBrowserPromoOverflowMenuType::kShortcuts:
+      return value;
+  }
+
+  // Handle situation where a different int is sent.
+  return DefaultBrowserPromoOverflowMenuType::kDestination;
 }
 
 BASE_FEATURE(kOmniboxPastePromoExperiment, base::FEATURE_DISABLED_BY_DEFAULT);

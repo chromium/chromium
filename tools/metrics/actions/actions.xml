@@ -623,6 +623,10 @@ should be able to be added at any place in this file.
   <variant name="_iOSPromoNonModalUrlPasteDefaultBrowser"
       summary="Showing the non-modal Default Browser Promo from omnibox paste
                on iOS."/>
+  <variant name="_iOSPromoOverflowMenuDestinationDefaultBrowser"
+      summary="For iOSPromoOverflowMenuDestinationDefaultBrowser feature"/>
+  <variant name="_iOSPromoOverflowMenuShortcutsDefaultBrowser"
+      summary="For iOSPromoOverflowMenuShortcutsDefaultBrowser feature"/>
   <variant name="_iOSPromoPasswordManagerWidget"
       summary="For iOSPromoPasswordManagerWidget feature"/>
   <variant name="_iOSPromoPostRestore"

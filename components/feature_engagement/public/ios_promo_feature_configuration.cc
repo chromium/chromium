@@ -709,6 +709,50 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
                     Comparator(EQUAL, 0), 7, 365));
 
     return config;
+  } else if (kIPHiOSPromoOverflowMenuDestinationDefaultBrowserFeature.name ==
+             feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+    config.storage_type = StorageType::DEVICE;
+    config.blocked_by.type = BlockedBy::Type::NONE;
+    config.blocking.type = Blocking::Type::NONE;
+
+    config.used =
+        EventConfig(feature_engagement::events::
+                        kDefaultBrowserPromoOverflowMenuDestinationUsed,
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+
+    config.trigger =
+        EventConfig("default_browser_promo_overflow_menu_destination_trigger",
+                    Comparator(ANY, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+
+    return config;
+  } else if (kIPHiOSPromoOverflowMenuShortcutsDefaultBrowserFeature.name ==
+             feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+    config.storage_type = StorageType::DEVICE;
+    config.blocked_by.type = BlockedBy::Type::NONE;
+    config.blocking.type = Blocking::Type::NONE;
+
+    config.used =
+        EventConfig(feature_engagement::events::
+                        kDefaultBrowserPromoOverflowMenuShortcutsUsed,
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+
+    config.trigger =
+        EventConfig("default_browser_promo_overflow_menu_shortcuts_trigger",
+                    Comparator(ANY, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+
+    return config;
   } else {
     return std::nullopt;
   }

@@ -228,6 +228,10 @@ const char kDefaultBrowserSettingsCardPromoUsed[] =
     "default_browser_settings_card_promo_used";
 const char kDefaultBrowserSettingsCellPromoUsed[] =
     "default_browser_settings_cell_promo_used";
+const char kDefaultBrowserPromoOverflowMenuDestinationUsed[] =
+    "default_browser_promo_overflow_menu_destination_used";
+const char kDefaultBrowserPromoOverflowMenuShortcutsUsed[] =
+    "default_browser_promo_overflow_menu_shortcuts_used";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

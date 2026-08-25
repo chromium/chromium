@@ -856,6 +856,12 @@ BASE_FEATURE(kIPHiOSPromoSettingsCardDefaultBrowserFeature,
 BASE_FEATURE(kIPHiOSPromoSettingsCellDefaultBrowserFeature,
              "IPH_iOSPromoSettingsCellDefaultBrowser",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSPromoOverflowMenuDestinationDefaultBrowserFeature,
+             "IPH_iOSPromoOverflowMenuDestinationDefaultBrowser",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSPromoOverflowMenuShortcutsDefaultBrowserFeature,
+             "IPH_iOSPromoOverflowMenuShortcutsDefaultBrowser",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSOverflowMenuCustomizationFeature,
              "IPH_iOSOverflowMenuCustomization",
              base::FEATURE_ENABLED_BY_DEFAULT);

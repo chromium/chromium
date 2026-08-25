@@ -57,6 +57,18 @@ enum class IOSDefaultBrowserVideoPromoAction {
   kMaxValue = kTertiaryActionTapped,
 };
 
+// Enum actions for the IOS.DefaultBrowserPromo.OverflowMenu UMA metrics.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(IOSDefaultBrowserPromoOverflowMenuAction)
+enum class IOSDefaultBrowserPromoOverflowMenuAction {
+  kNoAction = 0,
+  kHidden = 1,
+  kTapped = 2,
+  kMaxValue = kTapped,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSDefaultBrowserPromoOverflowMenuAction)
+
 // Enum actions for the IOS.DefaultBrowserBannerPromo.PromoSessionEnded UMA
 // metrics.
 // LINT.IfChange(IOSDefaultBrowserBannerPromoPromoSessionEndedReason)

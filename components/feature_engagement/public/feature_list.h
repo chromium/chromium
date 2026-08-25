@@ -345,6 +345,10 @@ DEFINE_VARIATION_PARAM(kIPHiOSPromoSettingsCardDefaultBrowserFeature,
                        "IPH_iOSPromoSettingsCardDefaultBrowser");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoSettingsCellDefaultBrowserFeature,
                        "IPH_iOSPromoSettingsCellDefaultBrowser");
+DEFINE_VARIATION_PARAM(kIPHiOSPromoOverflowMenuDestinationDefaultBrowserFeature,
+                       "IPH_iOSPromoOverflowMenuDestinationDefaultBrowser");
+DEFINE_VARIATION_PARAM(kIPHiOSPromoOverflowMenuShortcutsDefaultBrowserFeature,
+                       "IPH_iOSPromoOverflowMenuShortcutsDefaultBrowser");
 DEFINE_VARIATION_PARAM(kIPHiOSOverflowMenuCustomizationFeature,
                        "IPH_iOSOverflowMenuCustomization");
 DEFINE_VARIATION_PARAM(kIPHiOSPageInfoRevampFeature, "IPH_iOSPageInfoRevamp");
@@ -838,6 +842,9 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSPromoNonModalSigninBookmarkFeature),
         VARIATION_ENTRY(kIPHiOSPromoNonModalSigninPasswordFeature),
         VARIATION_ENTRY(kIPHiOSPromoNonModalUrlPasteDefaultBrowserFeature),
+        VARIATION_ENTRY(
+            kIPHiOSPromoOverflowMenuDestinationDefaultBrowserFeature),
+        VARIATION_ENTRY(kIPHiOSPromoOverflowMenuShortcutsDefaultBrowserFeature),
         VARIATION_ENTRY(kIPHiOSPromoPasswordManagerWidgetFeature),
         VARIATION_ENTRY(kIPHiOSPromoPostRestoreDefaultBrowserFeature),
         VARIATION_ENTRY(kIPHiOSPromoPostRestoreFeature),
