@@ -247,6 +247,8 @@ export class MostVisitedElement extends MostVisitedElementBase {
   private prefetchTimer_: null|ReturnType<typeof setTimeout> = null;
   private preconnectTimer_: null|ReturnType<typeof setTimeout> = null;
   private dragImage_: HTMLImageElement;
+  private mostVisitedHighDpiFaviconsEnabled_: boolean =
+      loadTimeData.getBoolean('mostVisitedHighDpiFaviconsEnabled');
 
   private accessor info_: MostVisitedInfo|null = null;
 
@@ -741,7 +743,10 @@ export class MostVisitedElement extends MostVisitedElementBase {
   protected getFaviconUrl_(url: Url): string {
     const faviconUrl = new URL('chrome://favicon2/');
     faviconUrl.searchParams.set('size', '24');
-    faviconUrl.searchParams.set('scaleFactor', '1x');
+    const scaleFactor = this.mostVisitedHighDpiFaviconsEnabled_ ?
+        `${window.devicePixelRatio || 1}x` :
+        '1x';
+    faviconUrl.searchParams.set('scaleFactor', scaleFactor);
     faviconUrl.searchParams.set('showFallbackMonogram', '');
     faviconUrl.searchParams.set('pageUrl', url);
     return faviconUrl.href;

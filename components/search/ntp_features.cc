@@ -217,6 +217,9 @@ BASE_FEATURE(kNtpSharepointModule,
 // This is a kill switch. Keep indefinitely.
 BASE_FEATURE(kNtpShortcuts, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, high-DPI favicons are fetched for Most Visited tiles.
+BASE_FEATURE(kNtpMostVisitedHighDpiFavicons, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the Tab Resumption module will be shown.
 BASE_FEATURE(kNtpMostRelevantTabResumptionModule,
 #if BUILDFLAG(IS_ANDROID)

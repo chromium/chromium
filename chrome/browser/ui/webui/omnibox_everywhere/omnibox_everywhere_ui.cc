@@ -119,6 +119,7 @@ void AddMostVisitedSourceStrings(content::WebUIDataSource* source) {
   source->AddInteger("prefetchStartTimeThreshold", 0);
   source->AddBoolean("prefetchTriggerEnabled", false);
   source->AddBoolean("prerenderOnPressEnabled", false);
+  source->AddBoolean("mostVisitedHighDpiFaviconsEnabled", true);
 }
 
 }  // namespace
