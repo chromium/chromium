@@ -6,8 +6,6 @@
 
 #include <math.h>
 
-#include <algorithm>
-
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/media_controls.h"
@@ -97,26 +95,23 @@ PhysicalSize VttCueLayoutAlgorithm::FirstInlineBoxSize(
   cursor.MoveToFirstLine();
   if (cursor.IsNull())
     return {};
-  const PhysicalSize line_size = cursor.CurrentItem()->Size();
-  // The kBox item for VTTCueBackgroundBox may be taller than the line box,
-  // e.g. if an author style sheet adds padding to the cue background. Use the
-  // larger of the two so that stepping by `step_` always advances by at least
-  // a whole cue box; a step smaller than the cue box height would make
-  // adjacent cues overlap and trigger the overlap-avoidance loop.
+  // The snap-to-lines step is the first line box size, per spec step 2:
+  // https://w3c.github.io/webvtt/#apply-webvtt-cue-settings
   //
-  // The kBox item is absent when VTTCueBackgroundBox is a culled inline box
-  // (e.g. author styles removed the default cue background and it has no
-  // other box decorations), in which case the line box size is used as-is.
-  cursor.MoveToNext();
-  if (cursor.IsNull())
-    return line_size;
-  const FragmentItem& first_item = *cursor.CurrentItem();
-  DCHECK(first_item.GetLayoutObject());
-  if (!IsA<VTTCueBackgroundBox>(first_item.GetLayoutObject()->GetNode()))
-    return line_size;
-  const PhysicalSize box_size = first_item.Size();
-  return {std::max(line_size.width, box_size.width),
-          std::max(line_size.height, box_size.height)};
+  // This equals the VTTCueBox border-box height (a block container whose
+  // height is the sum of its line boxes), so stepping by this value places
+  // adjacent cues exactly touching - which PhysicalRect::Intersects() treats
+  // as non-overlapping (it requires a non-zero intersection area). N cues of
+  // line-height H therefore pack into exactly H*N pixels without gaps or
+  // false overlaps.
+  //
+  // The VTTCueBackgroundBox kBox fragment may be taller than the line box on
+  // some platforms (e.g. font-metrics ink overflow on Linux), but it is an
+  // inline element whose block-axis contribution to the line box is its
+  // line-height, not its border-box height. Using the kBox size as the step
+  // would leave gaps between cues and prevent the maximum number of cues from
+  // fitting in the rendering area.
+  return cursor.CurrentItem()->Size();
 }
 
 LayoutUnit VttCueLayoutAlgorithm::ComputeInitialPositionAdjustment(
