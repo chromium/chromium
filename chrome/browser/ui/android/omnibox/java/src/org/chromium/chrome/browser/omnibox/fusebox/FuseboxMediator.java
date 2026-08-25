@@ -814,6 +814,7 @@ import java.util.function.Supplier;
     private void addTabAttachment(Tab tab, @FuseboxAttachmentButtonType int source) {
         if (!isInInputSession()) return;
         mMetrics.notifyAttachmentButtonUsed(source);
+        mPopupItemSelected = true;
         maybeActivateAiMode(AiModeActivationSource.IMPLICIT);
 
         if (!FuseboxTabUtils.isTabActive(tab)) {
@@ -930,6 +931,7 @@ import java.util.function.Supplier;
         // tabIds will be null when the activity finishes with cancel using the back button.
         if (tabIds == null) return;
         updateCurrentlyAttachedTabs(new HashSet<>(tabIds));
+        mPopupItemSelected = true;
         if (mModelList.size() != 0) {
             maybeActivateAiMode(AiModeActivationSource.IMPLICIT);
         }

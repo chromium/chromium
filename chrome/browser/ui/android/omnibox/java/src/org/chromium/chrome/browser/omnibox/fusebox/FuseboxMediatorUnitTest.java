@@ -1054,7 +1054,9 @@ public class FuseboxMediatorUnitTest {
 
         doReturn(BITMAP).when(mTabFaviconFactory).apply(any());
         doReturn("token").when(mComposeboxQueryControllerBridge).addTabContext(mTab1, false);
+        assertFalse(mMediator.wasPopupItemSelected());
         mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_CLICKED).run();
+        assertTrue(mMediator.wasPopupItemSelected());
         verify(mComposeboxQueryControllerBridge).addTabContext(mTab1, false);
         assertEquals(BITMAP, ((BitmapDrawable) mAttachments.get(0).thumbnail).getBitmap());
 
@@ -1938,8 +1940,10 @@ public class FuseboxMediatorUnitTest {
         ArrayList<Integer> selectedTabIds = new ArrayList<>(Arrays.asList(101, 102));
         Intent resultIntent = createTabPickerResultIntent(selectedTabIds);
 
+        assertFalse(mMediator.wasPopupItemSelected());
         // Add tabs as attachments
         mMediator.onTabPickerResult(Activity.RESULT_OK, resultIntent);
+        assertTrue(mMediator.wasPopupItemSelected());
         RobolectricUtil.runAllBackgroundAndUi();
         assertThat(mAttachments.getAttachedTabIds()).containsExactlyElementsIn(selectedTabIds);
 
@@ -2608,7 +2612,9 @@ public class FuseboxMediatorUnitTest {
                         "Omnibox.MobileFusebox.AttachmentButtonUsed",
                         FuseboxAttachmentButtonType.RECENT_TAB);
 
+        assertFalse(mMediator.wasPopupItemSelected());
         recentTabs.get(0).onClicked.run();
+        assertTrue(mMediator.wasPopupItemSelected());
         assertEquals(1, mAttachments.size());
         assertEquals(4, mAttachments.get(0).getTabId());
         histogramWatcher.assertExpected();
@@ -3256,5 +3262,73 @@ public class FuseboxMediatorUnitTest {
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         verify(mPropertyObserver, never())
                 .onPropertyChanged(eq(mModel), eq(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT));
+    }
+
+    @Test
+    public void testPopupItemSelected_recentTab_setsPopupItemSelected() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        recreateMediator();
+        when(mWebContents.getRenderWidgetHostView()).thenReturn(mRenderWidgetHostView);
+
+        Tab tab1 = mockTab(1, JUnitTestGURLs.GOOGLE_URL);
+        when(mTabModelSelector.getCurrentTab()).thenReturn(tab1);
+        Tab tab2 = mockTab(2, JUnitTestGURLs.URL_1);
+
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
+
+        assertFalse(mMediator.wasPopupItemSelected());
+        List<PopupButtonData> recentTabs =
+                mModel.get(FuseboxProperties.POPUP_RECENT_TABS_BUTTON_DATA_LIST);
+        recentTabs.get(0).onClicked.run();
+
+        assertTrue(mMediator.wasPopupItemSelected());
+    }
+
+    @Test
+    public void testPopupItemSelected_currentTab_setsPopupItemSelected() {
+        OmniboxFeatures.sAllowCurrentTab.setForTesting(true);
+        doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
+        doReturn("Title1").when(mTab1).getTitle();
+        doReturn(new GURL("https://www.google.com")).when(mTab1).getUrl();
+        doReturn(true).when(mTab1).isInitialized();
+        doReturn(100L).when(mTab1).getTimestampMillis();
+        doReturn(mWebContents).when(mTab1).getWebContents();
+        doReturn(false).when(mWebContents).isLoading();
+        doReturn(mRenderWidgetHostView).when(mWebContents).getRenderWidgetHostView();
+        doReturn(BITMAP).when(mTabFaviconFactory).apply(any());
+        doReturn("token").when(mComposeboxQueryControllerBridge).addTabContext(mTab1, false);
+
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
+
+        assertFalse(mMediator.wasPopupItemSelected());
+        mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_CLICKED).run();
+
+        assertTrue(mMediator.wasPopupItemSelected());
+    }
+
+    @Test
+    public void testPopupItemSelected_tabPickerResult_setsPopupItemSelected() {
+        assertFalse(mMediator.wasPopupItemSelected());
+
+        mockTab(101, /* webContentsReady= */ true);
+        ArrayList<Integer> selectedTabIds = new ArrayList<>(Arrays.asList(101));
+        Intent resultIntent = createTabPickerResultIntent(selectedTabIds);
+
+        mMediator.onTabPickerResult(Activity.RESULT_OK, resultIntent);
+
+        assertTrue(mMediator.wasPopupItemSelected());
+    }
+
+    @Test
+    public void testPopupItemSelected_beginInput_resetsPopupItemSelected() {
+        mockTab(101, /* webContentsReady= */ true);
+        ArrayList<Integer> selectedTabIds = new ArrayList<>(Arrays.asList(101));
+        Intent resultIntent = createTabPickerResultIntent(selectedTabIds);
+        mMediator.onTabPickerResult(Activity.RESULT_OK, resultIntent);
+        assertTrue(mMediator.wasPopupItemSelected());
+
+        // Beginning a new input session resets it.
+        mMediator.beginInput(createSession());
+        assertFalse(mMediator.wasPopupItemSelected());
     }
 }
