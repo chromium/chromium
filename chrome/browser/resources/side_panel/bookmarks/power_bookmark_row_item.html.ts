@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {PowerBookmarkRowItemElement} from './power_bookmark_row_item.ts';
 
@@ -12,6 +12,8 @@ return html`<!--_html_template_start_-->
 <cr-url-list-item id="crUrlListItem"
     role="treeitem"
     aria-level="${this.depth + 1}"
+    aria-label="${this.getBookmarkA11yLabel_()}"
+    aria-description="${this.getBookmarkA11yDescription_() || nothing}"
     .size="${this.listItemSize}"
     .url="${this.getUrl_()}"
     .imageUrls="${this.getBookmarkImageUrls_()}"

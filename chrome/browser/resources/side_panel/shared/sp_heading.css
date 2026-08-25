@@ -33,6 +33,22 @@
   --cr-icon-button-fill-color: var(--cr-primary-text-color);
   margin: 0;
   margin-inline-start: -4px;
+  width: 24px;
+  opacity: 1;
+  visibility: visible;
+  overflow: hidden;
+  transition: opacity 200ms ease, visibility 0s ease;
+}
+
+:host([hide-back-button]) #backButton {
+  width: 0;
+  opacity: 0;
+  visibility: hidden;
+  margin-inline-start: 0;
+  transition: opacity 200ms ease,
+      visibility 0s ease 200ms,
+      width 0s ease 200ms,
+      margin-inline-start 0s ease 200ms;
 }
 
 ::slotted(cr-icon-button[slot=buttons]) {

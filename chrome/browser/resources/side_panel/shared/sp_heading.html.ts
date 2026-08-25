@@ -9,7 +9,7 @@ import type {SpHeadingElement} from './sp_heading.js';
 export function getHtml(this: SpHeadingElement) {
   return html`<!--_html_template_start_-->
 <cr-icon-button id="backButton" iron-icon="cr:arrow-back"
-    ?hidden="${this.hideBackButton}" ?disabled="${this.disableBackButton}"
+    ?disabled="${this.disableBackButton}"
     @click="${this.onBackButtonClick_}" aria-label="${this.backButtonAriaLabel}"
     title="${this.backButtonTitle}">
 </cr-icon-button>

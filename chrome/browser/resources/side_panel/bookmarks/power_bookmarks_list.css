@@ -24,14 +24,169 @@
 }
 
 sp-empty-state {
+  box-sizing: border-box;
+  /* Keep in sync with FOLDER_EMPTY_STATE_HEIGHT in
+   * power_bookmarks_list.ts */
+  height: 300px;
   padding-top: 40px;
-}
-
-#folderEmptyState {
   padding-bottom: 40px;
 }
 
 #scroller {
   height: 100%;
   overflow-y: auto;
+}
+
+#list-container {
+  display: grid;
+  grid-template-areas: 'only-area';
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  min-width: 0;
+  transition: height 200ms ease-out;
+}
+
+.list-wrapper {
+  grid-area: only-area;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  align-self: start;
+}
+
+.list-wrapper:not(.active):not(.transitioning) {
+  display: none;
+}
+
+#list-container .list-wrapper.active {
+  z-index: 1;
+}
+
+#list-container .list-wrapper.transitioning {
+  z-index: 2;
+}
+
+/* List Card Page Transitions:
+ * Double-buffered list pages (#list-a and #list-b) are positioned in
+ * the same grid area. The incoming page (.transitioning) is rendered
+ * on top (z-index: 2) of the outgoing page (.active, z-index: 1)
+ * during animations.
+ *
+ * Animation directions:
+ * - Forward (entering a subfolder): Outgoing list fades out, incoming
+ *   list slides in from the right.
+ * - Backward (returning to parent): Outgoing list fades out, incoming
+ *   list slides in from the left. */
+.animation-fade-in {
+  animation: fade-in 200ms ease-out forwards;
+}
+
+.animation-fade-out {
+  animation: fade-out 200ms ease-out forwards;
+}
+
+.animation-slide-in-from-right {
+  animation: slide-in-from-right 200ms ease-out forwards;
+}
+
+.animation-slide-out-to-right {
+  animation: slide-out-to-right 200ms ease-out forwards;
+}
+
+.animation-slide-in-from-left {
+  animation: slide-in-from-left 200ms ease-out forwards;
+}
+
+/*
+ * RTL (Right-to-Left) Mirrors:
+ * For RTL layouts, we mirror the horizontal transition translations
+ * (e.g. forward slides in from the left, backward slides in from the right).
+ */
+:host-context([dir=rtl]) .animation-slide-in-from-right {
+  animation: slide-in-from-right-rtl 200ms ease-out forwards;
+}
+
+:host-context([dir=rtl]) .animation-slide-out-to-right {
+  animation: slide-out-to-right-rtl 200ms ease-out forwards;
+}
+
+:host-context([dir=rtl]) .animation-slide-in-from-left {
+  animation: slide-in-from-left-rtl 200ms ease-out forwards;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes slide-in-from-right {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-out-to-right {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+@keyframes slide-in-from-right-rtl {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-out-to-right-rtl {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes slide-in-from-left {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-from-left-rtl {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }

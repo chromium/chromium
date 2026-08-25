@@ -11,12 +11,12 @@ export function getHtml(this: CrUrlListItemElement) {
   return html`
 <a id="anchor" .href="${this.url || nothing}" ?hidden="${!this.asAnchor}"
     target="${this.asAnchorTarget}"
-    aria-label="${this.getItemAriaLabel_()}"
-    aria-description="${this.getItemAriaDescription_() || nothing}">
+    aria-label="${this.getAnchorAriaLabel_() || nothing}"
+    aria-description="${this.getAnchorAriaDescription_() || nothing}">
 </a>
 <button id="button" ?hidden="${this.asAnchor}"
-    aria-label="${this.getItemAriaLabel_()}"
-    aria-description="${this.getItemAriaDescription_() || nothing}">
+    aria-label="${this.getButtonAriaLabel_() || nothing}"
+    aria-description="${this.getButtonAriaDescription_() || nothing}">
 </button>
 
 <div id="item">

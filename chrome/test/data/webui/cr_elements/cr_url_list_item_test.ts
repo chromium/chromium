@@ -219,16 +219,30 @@ suite('CrUrlListItemTest', () => {
     element.title = 'My title';
     element.description = 'My description';
     await element.updateComplete;
-    assertEquals('My title', element.$.anchor.ariaLabel);
-    assertEquals('My description', element.$.anchor.ariaDescription);
+    assertEquals(null, element.$.anchor.ariaLabel);
+    assertEquals(null, element.$.anchor.ariaDescription);
     assertEquals('My title', element.$.button.ariaLabel);
     assertEquals('My description', element.$.button.ariaDescription);
+
+    element.asAnchor = true;
+    await element.updateComplete;
+    assertEquals('My title', element.$.anchor.ariaLabel);
+    assertEquals('My description', element.$.anchor.ariaDescription);
+    assertEquals(null, element.$.button.ariaLabel);
+    assertEquals(null, element.$.button.ariaDescription);
 
     element.itemAriaLabel = 'My aria label';
     element.itemAriaDescription = 'My aria description';
     await element.updateComplete;
     assertEquals('My aria label', element.$.anchor.ariaLabel);
     assertEquals('My aria description', element.$.anchor.ariaDescription);
+    assertEquals(null, element.$.button.ariaLabel);
+    assertEquals(null, element.$.button.ariaDescription);
+
+    element.asAnchor = false;
+    await element.updateComplete;
+    assertEquals(null, element.$.anchor.ariaLabel);
+    assertEquals(null, element.$.anchor.ariaDescription);
     assertEquals('My aria label', element.$.button.ariaLabel);
     assertEquals('My aria description', element.$.button.ariaDescription);
   });

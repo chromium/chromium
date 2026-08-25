@@ -431,7 +431,7 @@ suite('TreeView', () => {
     await microtasksFinished();
 
     // Verify nested bookmarks are no longer in display list
-    const items = powerBookmarksApp.$.bookmarksList.$.list.items;
+    const items = powerBookmarksApp.$.bookmarksList.list.items;
     assertFalse(items.some(item => item.bookmark.id === '6'));
 
     // And verify visual hidden state in DOM
@@ -481,7 +481,7 @@ suite('TreeView', () => {
     await microtasksFinished();
     assertFalse(
         folderRow.toggleExpand, 'Folder should be collapsed after ArrowLeft');
-    const items = powerBookmarksApp.$.bookmarksList.$.list.items;
+    const items = powerBookmarksApp.$.bookmarksList.list.items;
     assertFalse(
         items.some(item => item.bookmark.id === '6'),
         'Child bookmark should not be in display list');
@@ -644,7 +644,7 @@ suite('TreeView', () => {
         'Bookmark 22 should initially be in folder 5');
 
     // Validate index order before move in flat display list
-    const list = powerBookmarksApp.$.bookmarksList.$.list;
+    const list = powerBookmarksApp.$.bookmarksList.list;
     let items = list.items;
     const indexOf5 = items.findIndex(item => item.bookmark.id === '5');
     let indexOf6 = items.findIndex(item => item.bookmark.id === '6');

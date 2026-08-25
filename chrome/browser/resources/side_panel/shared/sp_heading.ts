@@ -40,7 +40,10 @@ export class SpHeadingElement extends CrLitElement {
 
       backButtonAriaLabel: {type: String},
       backButtonTitle: {type: String},
-      hideBackButton: {type: Boolean},
+      hideBackButton: {
+        type: Boolean,
+        reflect: true,
+      },
       disableBackButton: {type: Boolean},
     };
   }
