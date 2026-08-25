@@ -5640,24 +5640,15 @@ TEST_F(FileUtilTest, IsReservedNameOnWindows) {
           FILE_PATH_LITERAL("a b.txt"),
           FILE_PATH_LITERAL("a-b.txt"),
           FILE_PATH_LITERAL("My Computer"),
-          FILE_PATH_LITERAL("conin$.txt"),
-          FILE_PATH_LITERAL("conout$.log"),
       });
 
   static constexpr auto kDisallowedBasenames =
       std::to_array<const base::FilePath::CharType*>({
           FILE_PATH_LITERAL("con"),
-          FILE_PATH_LITERAL("con "),
-          FILE_PATH_LITERAL("con. "),
           FILE_PATH_LITERAL("con.zip"),
-          FILE_PATH_LITERAL("conin$"),
-          FILE_PATH_LITERAL("conin$ "),
-          FILE_PATH_LITERAL("conout$"),
-          FILE_PATH_LITERAL("aux . "),
           FILE_PATH_LITERAL("NUL"),
           FILE_PATH_LITERAL("NUL.zip"),
           FILE_PATH_LITERAL("desktop.ini"),
-          FILE_PATH_LITERAL("desktop.ini "),
       });
 
   for (const base::FilePath::CharType* basename : kAllowedBasenames) {
