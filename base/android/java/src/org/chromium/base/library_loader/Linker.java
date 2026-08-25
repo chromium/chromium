@@ -657,7 +657,16 @@ class Linker {
             mRelroStart = info.relroStart;
             mRelroSize = info.relroSize;
             if (info.fd != null) {
-                mRelroFd = info.fd.detachFd();
+                try {
+                    ParcelFileDescriptor fd = info.fd.dup();
+                    // If CreateSharedRelro fails, the OS file descriptor will be -1 and |fd| will
+                    // be null.
+                    if (fd != null) {
+                        mRelroFd = fd.detachFd();
+                    }
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to create LibInfo from aidl.", e);
+                }
             } else {
                 mRelroFd = -1;
             }
