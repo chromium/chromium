@@ -112,11 +112,6 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="1" label="New Mexico"/>
 </enum>
 
-<enum name="AmbientUiMode">
-  <int value="0" label="Lock Screen"/>
-  <int value="1" label="In Session Idle"/>
-</enum>
-
 <enum name="AmbientVideoSessionStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Failed"/>

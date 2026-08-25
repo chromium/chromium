@@ -22,11 +22,6 @@ AmbientSessionMetricsRecorder::AmbientSessionMetricsRecorder(
     : delegate_(std::move(delegate)),
       session_start_time_(base::TimeTicks::Now()) {
   CHECK(delegate_);
-  // Don't record this metric for `kPreview` mode.
-  if (AmbientUiModel::Get()->ui_visibility() ==
-      AmbientUiVisibility::kShouldShow) {
-    delegate_->RecordActivation();
-  }
 }
 
 AmbientSessionMetricsRecorder::~AmbientSessionMetricsRecorder() {
@@ -45,8 +40,6 @@ AmbientSessionMetricsRecorder::~AmbientSessionMetricsRecorder() {
       delegate_->RecordInitStatus(false);
     }
   }
-
-  delegate_->RecordScreenCount(num_registered_screens_);
 }
 
 void AmbientSessionMetricsRecorder::SetInitStatus(bool init_status) {

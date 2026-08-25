@@ -12,18 +12,13 @@
 #include "ash/public/cpp/ambient/ambient_mode_photo_source.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/functional/callback.h"
-#include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
-#include "ui/views/view.h"
-#include "ui/views/view_observer.h"
 
 namespace ash {
 
 struct AmbientSettings;
 class AmbientUiSettings;
 class AshWebView;
-enum class AmbientUiMode;
 
 namespace ambient {
 
@@ -62,13 +57,8 @@ inline constexpr char kAmbientVideoDlcBackgroundLabel[] = "Background";
 ASH_EXPORT AmbientModePhotoSource
 AmbientSettingsToPhotoSource(const AmbientSettings& settings);
 
-ASH_EXPORT void RecordAmbientModeActivation(AmbientUiMode ui_mode,
-                                            bool tablet_mode);
-
-ASH_EXPORT void RecordAmbientModeTimeElapsed(
-    base::TimeDelta time_delta,
-    bool tablet_mode,
-    const AmbientUiSettings& ui_settings);
+ASH_EXPORT void RecordAmbientModeTimeElapsed(base::TimeDelta time_delta,
+                                             bool tablet_mode);
 
 ASH_EXPORT void RecordAmbientModeTopicSource(
     ash::personalization_app::mojom::TopicSource topic_source);
@@ -96,34 +86,6 @@ ASH_EXPORT void RecordAmbientModeVideoSessionStatus(
 ASH_EXPORT void RecordAmbientModeVideoSmoothness(
     AshWebView* web_view,
     const AmbientUiSettings& ui_settings);
-
-// Records metrics that track the total usage of each orientation in ambient
-// mode.
-class ASH_EXPORT AmbientOrientationMetricsRecorder
-    : public views::ViewObserver {
- public:
-  AmbientOrientationMetricsRecorder(views::View* root_rendering_view,
-                                    const AmbientUiSettings& ui_settings);
-  AmbientOrientationMetricsRecorder(const AmbientOrientationMetricsRecorder&) =
-      delete;
-  AmbientOrientationMetricsRecorder& operator=(
-      const AmbientOrientationMetricsRecorder&) = delete;
-  ~AmbientOrientationMetricsRecorder() override;
-
- private:
-  void OnViewBoundsChanged(views::View* observed_view) override;
-  void SaveCurrentOrientationDuration();
-
-  const std::string settings_;
-  base::ScopedObservation<views::View, ViewObserver>
-      root_rendering_view_observer_{this};
-  // Null until a non-empty view boundary is provided (i.e. the initial view
-  // layout occurs).
-  std::optional<bool> current_orientation_is_portrait_;
-  std::optional<base::ElapsedTimer> current_orientation_timer_;
-  base::TimeDelta total_portrait_duration_;
-  base::TimeDelta total_landscape_duration_;
-};
 
 }  // namespace ambient
 }  // namespace ash

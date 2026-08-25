@@ -24,11 +24,9 @@ class ASH_EXPORT AmbientConsumerSessionMetricsDelegate
   ~AmbientConsumerSessionMetricsDelegate() override;
 
   // AmbientSessionMetricsRecorder::Delegate:
-  void RecordActivation() override;
   void RecordInitStatus(bool success) override;
   void RecordStartupTime(base::TimeDelta startup_time) override;
   void RecordEngagementTime(base::TimeDelta engagement_time) override;
-  void RecordScreenCount(int num_screens) override;
 
  private:
   const AmbientUiSettings ui_settings_;

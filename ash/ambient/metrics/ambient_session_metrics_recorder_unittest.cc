@@ -17,7 +17,6 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/strings/strcat.h"
-
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -44,10 +43,6 @@ class AmbientSessionMetricsRecorderTest
     AshTestBase::SetUp();
     // Simulate the screensaver being launched in all tests.
     AmbientUiModel::Get()->SetUiVisibility(AmbientUiVisibility::kShouldShow);
-  }
-
-  std::string GetMetricNameForTheme(std::string_view prefix) {
-    return base::StrCat({prefix, GetParam().ToString()});
   }
 
   std::unique_ptr<AmbientSessionMetricsRecorder::Delegate> CreateDelegate() {
@@ -81,9 +76,6 @@ TEST_P(AmbientSessionMetricsRecorderTest, MetricsEngagementTime) {
   histogram_tester.ExpectTimeBucketCount(
       "Ash.AmbientMode.EngagementTime.ClamshellMode", kExpectedEngagementTime,
       1);
-  histogram_tester.ExpectTimeBucketCount(
-      base::StrCat({"Ash.AmbientMode.EngagementTime.", GetParam().ToString()}),
-      kExpectedEngagementTime, 1);
 
   // Now do the same sequence in tablet mode.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
@@ -96,9 +88,6 @@ TEST_P(AmbientSessionMetricsRecorderTest, MetricsEngagementTime) {
 
   histogram_tester.ExpectTimeBucketCount(
       "Ash.AmbientMode.EngagementTime.TabletMode", kExpectedEngagementTime, 1);
-  histogram_tester.ExpectTimeBucketCount(
-      base::StrCat({"Ash.AmbientMode.EngagementTime.", GetParam().ToString()}),
-      kExpectedEngagementTime, 2);
 }
 
 TEST_P(AmbientSessionMetricsRecorderTest, MetricsStartupTime) {
@@ -151,27 +140,6 @@ TEST_P(AmbientSessionMetricsRecorderTest, InitStatusFailed) {
   histogram_tester.ExpectUniqueSample(
       base::StrCat({"Ash.AmbientMode.Init.", GetParam().ToString()}),
       /*sample=*/0, /*expected_count=*/1);
-}
-
-TEST_P(AmbientSessionMetricsRecorderTest, RecordsScreenCount) {
-  base::HistogramTester histogram_tester;
-  {
-    AmbientSessionMetricsRecorder recorder(CreateDelegate());
-    recorder.SetInitStatus(true);
-    recorder.RegisterScreen();
-  }
-  histogram_tester.ExpectUniqueSample(
-      GetMetricNameForTheme("Ash.AmbientMode.ScreenCount."), /*sample=*/1,
-      /*expected_bucket_count=*/1);
-  {
-    AmbientSessionMetricsRecorder recorder(CreateDelegate());
-    recorder.SetInitStatus(true);
-    recorder.RegisterScreen();
-    recorder.RegisterScreen();
-  }
-  histogram_tester.ExpectBucketCount(
-      GetMetricNameForTheme("Ash.AmbientMode.ScreenCount."), /*sample=*/2,
-      /*expected_count=*/1);
 }
 
 }  // namespace ash

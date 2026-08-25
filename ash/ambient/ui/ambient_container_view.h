@@ -14,10 +14,6 @@ namespace ash {
 
 class AmbientUiSettings;
 
-namespace ambient {
-class AmbientOrientationMetricsRecorder;
-}  // namespace ambient
-
 // Container view to display all Ambient Mode related views, i.e. photo frame,
 // weather info.
 class ASH_EXPORT AmbientContainerView : public views::View {
@@ -35,9 +31,6 @@ class ASH_EXPORT AmbientContainerView : public views::View {
   friend class AmbientAshTestBase;
 
   void InitializeCommonSettings();
-
-  std::unique_ptr<ambient::AmbientOrientationMetricsRecorder>
-      orientation_metrics_recorder_;
 };
 
 }  // namespace ash

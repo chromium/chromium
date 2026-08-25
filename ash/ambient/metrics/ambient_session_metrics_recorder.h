@@ -34,8 +34,6 @@ class ASH_EXPORT AmbientSessionMetricsRecorder {
    public:
     virtual ~Delegate() = default;
 
-    // Session has started.
-    virtual void RecordActivation() {}
     // Session has finished initialization and will start rendering if
     // successful.
     virtual void RecordInitStatus(bool success) {}
@@ -44,10 +42,6 @@ class ASH_EXPORT AmbientSessionMetricsRecorder {
     // Total duration of the session (initialization + rendering) before it
     // was closed.
     virtual void RecordEngagementTime(base::TimeDelta engagement_time) {}
-    // Total number of screens that were rendering the UI during this session.
-    // Note this may be 0 if the session never started rendering (initialization
-    // was pending or failed when the session closed).
-    virtual void RecordScreenCount(int num_screens) {}
   };
 
   explicit AmbientSessionMetricsRecorder(std::unique_ptr<Delegate> delegate);

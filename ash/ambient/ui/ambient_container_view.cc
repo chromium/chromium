@@ -26,10 +26,6 @@ AmbientContainerView::AmbientContainerView(
     std::unique_ptr<views::View> main_rendering_view) {
   CHECK(main_rendering_view);
   InitializeCommonSettings();
-  // Set up metrics common to all ambient UIs.
-  orientation_metrics_recorder_ =
-      std::make_unique<ambient::AmbientOrientationMetricsRecorder>(
-          main_rendering_view.get(), std::move(ui_settings));
   AddChildView(std::move(main_rendering_view));
 }
 

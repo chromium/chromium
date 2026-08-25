@@ -69,20 +69,6 @@ std::string GetHistogramName(const char* prefix, bool tablet_mode) {
   return histogram;
 }
 
-void RecordEngagementTime(const std::string& histogram_name,
-                          base::TimeDelta engagement_time) {
-  base::UmaHistogramCustomTimes(
-      histogram_name,
-      /*sample=*/engagement_time,
-      // There is no value in bucketing engagement times that are on the order
-      // of milliseconds. A 1 second minimum is imposed here but not in the
-      // metric above for legacy reasons (the metric above was already pushed
-      // to the field and established before this change was made).
-      /*min=*/base::Seconds(1),
-      /*max=*/base::Hours(24),
-      /*buckets=*/kAmbientModeElapsedTimeHistogramBuckets);
-}
-
 // Retrieves the the JSON dictionary in the `web_view`'s URL fragment.
 void GetAmbientVideoPlaybackMetrics(
     AshWebView* web_view,
@@ -217,24 +203,14 @@ AmbientModePhotoSource AmbientSettingsToPhotoSource(
   return AmbientModePhotoSource::kGooglePhotosPersonalAlbum;
 }
 
-void RecordAmbientModeActivation(AmbientUiMode ui_mode, bool tablet_mode) {
-  base::UmaHistogramEnumeration(
-      GetHistogramName("Ash.AmbientMode.Activation", tablet_mode), ui_mode);
-}
-
 void RecordAmbientModeTimeElapsed(base::TimeDelta time_delta,
-                                  bool tablet_mode,
-                                  const AmbientUiSettings& ui_settings) {
+                                  bool tablet_mode) {
   base::UmaHistogramCustomTimes(
       /*name=*/GetHistogramName("Ash.AmbientMode.EngagementTime", tablet_mode),
       /*sample=*/time_delta,
       /*min=*/base::Hours(0),
       /*max=*/base::Hours(24),
       /*buckets=*/kAmbientModeElapsedTimeHistogramBuckets);
-
-  RecordEngagementTime(
-      base::StrCat({"Ash.AmbientMode.EngagementTime.", ui_settings.ToString()}),
-      time_delta);
 }
 
 void RecordAmbientModeTopicSource(
@@ -298,67 +274,6 @@ void RecordAmbientModeVideoSmoothness(AshWebView* web_view,
   GetAmbientVideoPlaybackMetrics(
       web_view,
       base::BindOnce(&RecordAmbientModeVideoSmoothnessInternal, ui_settings));
-}
-
-AmbientOrientationMetricsRecorder::AmbientOrientationMetricsRecorder(
-    views::View* root_rendering_view,
-    const AmbientUiSettings& ui_settings)
-    : settings_(ui_settings.ToString()) {
-  root_rendering_view_observer_.Observe(root_rendering_view);
-  // Capture initial orientation with manual call.
-  OnViewBoundsChanged(root_rendering_view);
-}
-
-AmbientOrientationMetricsRecorder::~AmbientOrientationMetricsRecorder() {
-  SaveCurrentOrientationDuration();
-  if (!total_portrait_duration_.is_zero()) {
-    RecordEngagementTime(
-        base::StringPrintf("Ash.AmbientMode.EngagementTime.%s.Portrait",
-                           settings_.data()),
-        total_portrait_duration_);
-  }
-  if (!total_landscape_duration_.is_zero()) {
-    RecordEngagementTime(
-        base::StringPrintf("Ash.AmbientMode.EngagementTime.%s.Landscape",
-                           settings_.data()),
-        total_landscape_duration_);
-  }
-}
-
-void AmbientOrientationMetricsRecorder::OnViewBoundsChanged(
-    views::View* observed_view) {
-  DCHECK(observed_view);
-  gfx::Rect content_bounds = observed_view->GetContentsBounds();
-  if (content_bounds.IsEmpty()) {
-    DVLOG(4) << "Initial view layout has not occurred yet. Ignoring empty view "
-                "bounds";
-    return;
-  }
-
-  bool new_orientation_is_portrait =
-      content_bounds.width() < content_bounds.height();
-  if (current_orientation_is_portrait_.has_value() &&
-      *current_orientation_is_portrait_ == new_orientation_is_portrait) {
-    return;
-  }
-
-  SaveCurrentOrientationDuration();
-  current_orientation_is_portrait_.emplace(new_orientation_is_portrait);
-  // Effectively stops the existing timer and starts new one.
-  current_orientation_timer_.emplace();
-}
-
-void AmbientOrientationMetricsRecorder::SaveCurrentOrientationDuration() {
-  if (!current_orientation_is_portrait_.has_value() ||
-      !current_orientation_timer_.has_value()) {
-    return;
-  }
-
-  if (*current_orientation_is_portrait_) {
-    total_portrait_duration_ += current_orientation_timer_->Elapsed();
-  } else {
-    total_landscape_duration_ += current_orientation_timer_->Elapsed();
-  }
 }
 
 }  // namespace ambient

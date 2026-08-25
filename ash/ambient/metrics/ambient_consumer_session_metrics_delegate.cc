@@ -7,9 +7,6 @@
 #include <utility>
 
 #include "ash/ambient/metrics/ambient_metrics.h"
-#include "ash/login/ui/lock_screen.h"
-#include "ash/public/cpp/ambient/ambient_ui_model.h"
-#include "ash/shell.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -25,13 +22,6 @@ AmbientConsumerSessionMetricsDelegate::AmbientConsumerSessionMetricsDelegate(
 AmbientConsumerSessionMetricsDelegate::
     ~AmbientConsumerSessionMetricsDelegate() = default;
 
-void AmbientConsumerSessionMetricsDelegate::RecordActivation() {
-  ambient::RecordAmbientModeActivation(
-      /*ui_mode=*/LockScreen::HasInstance() ? AmbientUiMode::kLockScreenUi
-                                            : AmbientUiMode::kInSessionUi,
-      /*tablet_mode=*/display::Screen::Get()->InTabletMode());
-}
-
 void AmbientConsumerSessionMetricsDelegate::RecordInitStatus(bool success) {
   base::UmaHistogramBoolean(
       base::StrCat({"Ash.AmbientMode.Init.", ui_settings_.ToString()}),
@@ -45,14 +35,8 @@ void AmbientConsumerSessionMetricsDelegate::RecordStartupTime(
 
 void AmbientConsumerSessionMetricsDelegate::RecordEngagementTime(
     base::TimeDelta engagement_time) {
-  ambient::RecordAmbientModeTimeElapsed(
-      engagement_time, display::Screen::Get()->InTabletMode(), ui_settings_);
-}
-
-void AmbientConsumerSessionMetricsDelegate::RecordScreenCount(int num_screens) {
-  base::UmaHistogramCounts100(
-      base::StrCat({"Ash.AmbientMode.ScreenCount.", ui_settings_.ToString()}),
-      num_screens);
+  ambient::RecordAmbientModeTimeElapsed(engagement_time,
+                                        display::Screen::Get()->InTabletMode());
 }
 
 }  // namespace ash

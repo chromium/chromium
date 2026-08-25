@@ -570,17 +570,6 @@ chromium-metrics-reviews@google.com.
   <summary>Captures usage of Alt+[ and Alt+].</summary>
 </histogram>
 
-<histogram name="Ash.AmbientMode.Activation.{TabletOrClamshellMode}"
-    enum="AmbientUiMode" expires_after="2025-06-30">
-  <owner>cowmoo@google.com</owner>
-  <owner>cros-p13n-eng@chromium.org</owner>
-  <summary>
-    Recorded whenever Ambient mode is entered from {TabletOrClamshellMode}.
-    AmbientUiMode indicates whether the user entered Ambient mode from the lock
-    screen or from screen idle.
-  </summary>
-</histogram>
-
 <histogram name="Ash.AmbientMode.AnimationSmoothness.PhotoTransition" units="%"
     expires_after="2026-09-06">
   <owner>cowmoo@google.com</owner>
@@ -603,37 +592,6 @@ chromium-metrics-reviews@google.com.
     profile type, whether the user is primary, if the user has a supported
     email, etc.
   </summary>
-</histogram>
-
-<histogram name="Ash.AmbientMode.EngagementTime.{Settings}" units="ms"
-    expires_after="2025-06-30">
-  <owner>cowmoo@google.com</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Among eligible users with ambient mode enabled, records the length of each
-    session for {Settings}. The metric is emitted when ambient mode is ended.
-  </summary>
-  <token key="Settings" variants="AmbientUiSettings"/>
-</histogram>
-
-<histogram name="Ash.AmbientMode.EngagementTime.{Settings}.{Orientation}"
-    units="ms" expires_after="2025-06-30">
-  <owner>cowmoo@google.com</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Among eligible users with ambient mode enabled, records the accumulated
-    duration spent in {Orientation} mode during a single ambient mode session
-    rendering the {Settings} UI. For example, say ambient mode starts in
-    landscape for A ms, switches to portrait for B ms, then back to landscape
-    for C ms before ambient mode ends. A + C will be emitted for landscape mode,
-    and B will be emitted for portrait mode. Emitted once per observed
-    orientation each time the user exits ambient mode.
-  </summary>
-  <token key="Orientation">
-    <variant name="Landscape" summary="landscape"/>
-    <variant name="Portrait" summary="portrait"/>
-  </token>
-  <token key="Settings" variants="AmbientUiSettings"/>
 </histogram>
 
 <histogram name="Ash.AmbientMode.EngagementTime.{TabletOrClamshellMode}"
@@ -681,18 +639,6 @@ chromium-metrics-reviews@google.com.
     Among eligible users with ambient mode enabled, records the source of
     ambient mode photos. Recorded once for every UMA upload.
   </summary>
-</histogram>
-
-<histogram name="Ash.AmbientMode.ScreenCount.{Settings}" units="int"
-    expires_after="2025-06-30">
-  <owner>cowmoo@google.com</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Among eligible users with ambient mode enabled, records the number of
-    screens present during a {Settings} ambient mode session. Emitted each time
-    ambient mode exits.
-  </summary>
-  <token key="Settings" variants="AmbientUiSettings"/>
 </histogram>
 
 <histogram name="Ash.AmbientMode.SelectedNumberOfAlbums" units="int"
