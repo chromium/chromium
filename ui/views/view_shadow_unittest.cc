@@ -89,7 +89,7 @@ TEST_F(ViewShadowTest, ShadowKeepsLayerType) {
   view.SetBoundsRect(gfx::Rect(10, 20, 30, 40));
   ViewShadow shadow(&view, 1);
   EXPECT_TRUE(view.layer());
-  EXPECT_EQ(ui::LAYER_SOLID_COLOR, view.layer()->type());
+  EXPECT_TRUE(view.layer()->AsSolidColor());
 }
 
 // Tests the shadow layer will not shift when the view's layer is reparented to

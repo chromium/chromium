@@ -2722,7 +2722,7 @@ void View::AddLayerToRegionImpl(
 
   CreateOrDestroyLayer();
 
-  if (layer()->type() != ui::LAYER_SOLID_COLOR) {
+  if (!layer()->AsSolidColor()) {
     layer()->SetFillsBoundsOpaquely(false);
   }
 }

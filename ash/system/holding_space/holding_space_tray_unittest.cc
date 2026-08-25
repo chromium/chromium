@@ -2032,7 +2032,7 @@ TEST_F(HoldingSpaceTrayTest, HasExpectedBubbleTreatment) {
   // Background.
   auto* background = bubble->GetBackground();
   ASSERT_FALSE(background);
-  EXPECT_EQ(bubble->layer()->type(), ui::LAYER_NOT_DRAWN);
+  EXPECT_TRUE(bubble->layer()->AsNotDrawn());
   EXPECT_EQ(bubble->layer()->background_blur(), 0.f);
 
   // Border.

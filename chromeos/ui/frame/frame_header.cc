@@ -112,7 +112,7 @@ void FrameHeader::FrameAnimatorView::StartAnimation(base::TimeDelta duration) {
   old_layer->SetTransform(gfx::Transform());
   // Layer in maximized / fullscreen / snapped state is set to
   // opaque, which can prevent resterizing the new layer immediately.
-  if (old_layer->type() != ui::LAYER_SOLID_COLOR) {
+  if (!old_layer->AsSolidColor()) {
     old_layer->SetFillsBoundsOpaquely(false);
   }
 

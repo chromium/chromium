@@ -59,7 +59,7 @@ void AppListBubbleSearchPage::AnimateShowPage() {
   SetVisible(true);
 
   ui::Layer* layer = search_view_->GetPageAnimationLayer();
-  DCHECK_EQ(layer->type(), ui::LAYER_TEXTURED);
+  DCHECK(layer->AsTextured());
 
   views::AnimationBuilder()
       .SetPreemptionStrategy(
@@ -91,7 +91,7 @@ void AppListBubbleSearchPage::AnimateHidePage() {
       weak_factory_.GetWeakPtr());
 
   ui::Layer* layer = search_view_->GetPageAnimationLayer();
-  DCHECK_EQ(layer->type(), ui::LAYER_TEXTURED);
+  DCHECK(layer->AsTextured());
 
   gfx::Transform translate_up;
   translate_up.Translate(0, kHideAnimationVerticalOffset);

@@ -107,6 +107,8 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   const LayerSurface* AsSurface() const;
   LayerWithExternalTexture* AsWithExternalTexture();
   const LayerWithExternalTexture* AsWithExternalTexture() const;
+  LayerNotDrawn* AsNotDrawn();
+  const LayerNotDrawn* AsNotDrawn() const;
 
   Layer(const Layer&) = delete;
   Layer& operator=(const Layer&) = delete;

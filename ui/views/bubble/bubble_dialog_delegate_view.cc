@@ -1275,7 +1275,7 @@ void BubbleDialogDelegate::UpdateFrameColor() {
   // contents are doing.
   const bool contents_layer_opaque =
       layer_type() != ui::LAYER_NOT_DRAWN && contents_view->layer() &&
-      contents_view->layer()->type() != ui::LAYER_NOT_DRAWN &&
+      !contents_view->layer()->AsNotDrawn() &&
       contents_view->layer()->fills_bounds_opaquely();
   if (contents_layer_opaque) {
     CHECK(contents_view->background())

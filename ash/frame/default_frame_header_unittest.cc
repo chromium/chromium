@@ -259,7 +259,7 @@ TEST_F(DefaultFrameHeaderTest, DeleteDuringAnimation) {
             2u);
   auto* animating_layer =
       animating_layer_holding_view->layer()->parent()->children()[0].get();
-  EXPECT_EQ(ui::LAYER_TEXTURED, animating_layer->type());
+  EXPECT_TRUE(animating_layer->AsTextured());
   EXPECT_TRUE(animating_layer->name().contains(":Old"));
   EXPECT_TRUE(animating_layer->GetAnimator()->is_animating());
 

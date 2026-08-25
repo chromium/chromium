@@ -122,7 +122,7 @@ class LayerBasedSolidBackground : public Background {
 
   void OnViewThemeChanged(View* view) override {
     if (auto* layer = view->layer()) {
-      CHECK_EQ(layer->type(), ui::LAYER_SOLID_COLOR);
+      CHECK(layer->AsSolidColor());
     } else {
       view->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     }

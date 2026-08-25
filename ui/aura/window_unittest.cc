@@ -3142,7 +3142,7 @@ TEST_F(WindowTest, RecreateLayer) {
 
   std::unique_ptr<ui::Layer> old_layer(w.RecreateLayer());
   layer = w.layer();
-  EXPECT_EQ(ui::LAYER_SOLID_COLOR, layer->type());
+  EXPECT_TRUE(layer->AsSolidColor());
   EXPECT_FALSE(layer->visible());
   EXPECT_EQ(1u, layer->children().size());
   EXPECT_TRUE(layer->GetMasksToBounds());

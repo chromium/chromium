@@ -1224,7 +1224,7 @@ void ShellSurfaceBase::OnSetFrame(SurfaceFrameType frame_type) {
   // not specified, the widget's layer is set to 'NOT_DRAWN' and the frame can't
   // be drawn. `ClientControlledShellSurface` is not affected.
   if (frame_type_changed && widget_ &&
-      widget_->GetNativeWindow()->layer()->type() == ui::LAYER_NOT_DRAWN) {
+      widget_->GetNativeWindow()->layer()->AsNotDrawn()) {
     if (frame_type != SurfaceFrameType::NONE &&
         frame_type != SurfaceFrameType::SHADOW) {
       DLOG(FATAL)
@@ -2166,7 +2166,7 @@ void ShellSurfaceBase::UpdateShadow() {
     UpdateShadowRoundedCorners();
   }
 
-  if (window->layer()->type() == ui::LAYER_NOT_DRAWN) {
+  if (window->layer()->AsNotDrawn()) {
     DCHECK(!window->GetProperty(chromeos::kWindowManagerManagesOpacityKey));
 
     // Snapped window should not be opaque because it can be drag-resized, in

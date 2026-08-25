@@ -578,10 +578,7 @@ bool WindowOcclusionTracker::VisibleWindowCanOccludeOtherWindows(
 }
 
 bool WindowOcclusionTracker::WindowHasContent(const Window* window) const {
-  if (window->layer()->type() != ui::LAYER_NOT_DRAWN)
-    return true;
-
-  return false;
+  return !window->layer()->AsNotDrawn();
 }
 
 void WindowOcclusionTracker::CleanupAnimatedWindows() {

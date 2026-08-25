@@ -214,7 +214,7 @@ void AppListBubbleAppsCollectionsPage::AnimateShowPage() {
 
   ui::Layer* scroll_view_layer = scroll_view_->layer();
   DCHECK(scroll_view_layer);
-  DCHECK_EQ(scroll_view_layer->type(), ui::LAYER_TEXTURED);
+  DCHECK(scroll_view_layer->AsTextured());
 
   gfx::Transform translate_down;
   translate_down.Translate(0, kShowPageAnimationVerticalOffset);
@@ -249,7 +249,7 @@ void AppListBubbleAppsCollectionsPage::AnimateHidePage() {
 
   ui::Layer* scroll_view_layer = scroll_view_->layer();
   DCHECK(scroll_view_layer);
-  DCHECK_EQ(scroll_view_layer->type(), ui::LAYER_TEXTURED);
+  DCHECK(scroll_view_layer->AsTextured());
 
   // The animation spec says 40 dips down over 250ms, but the opacity animation
   // renders the view invisible after 50ms, so animate the visible fraction.

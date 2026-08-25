@@ -266,8 +266,7 @@ class ScrollView::Viewport : public View {
         !this->children().empty() ? this->children()[0] : nullptr;
 
     auto has_textured_layer{[](const View* contents) {
-      return contents->layer() &&
-             contents->layer()->type() == ui::LAYER_TEXTURED;
+      return contents->layer() && contents->layer()->AsTextured();
     }};
 
     if (!contents || has_textured_layer(contents)) {

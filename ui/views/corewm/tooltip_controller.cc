@@ -365,7 +365,7 @@ void TooltipController::OnCursorVisibilityChanged(bool is_visible) {
 void TooltipController::OnWindowVisibilityChanged(aura::Window* window,
                                                   bool visible) {
   // If window is not drawn, skip modifying tooltip.
-  if (!visible && window->layer()->type() != ui::LAYER_NOT_DRAWN) {
+  if (!visible && !window->layer()->AsNotDrawn()) {
     HideAndReset();
   }
 }

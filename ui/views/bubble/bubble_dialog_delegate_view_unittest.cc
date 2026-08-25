@@ -1228,7 +1228,7 @@ TEST_F(BubbleDialogDelegateViewTest, ClientViewIsPaintedToLayer) {
 
   auto* client_view_layer = bubble_widget->client_view()->layer();
   EXPECT_TRUE(client_view_layer);
-  EXPECT_EQ(client_view_layer->type(), ui::LAYER_TEXTURED);
+  EXPECT_TRUE(client_view_layer->AsTextured());
 }
 
 TEST_F(BubbleDialogDelegateViewTest, AlertAccessibleEvent) {

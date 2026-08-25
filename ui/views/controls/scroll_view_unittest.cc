@@ -1544,13 +1544,13 @@ TEST_F(ScrollViewTest, ContentsViewportLayerUsed_ScrollWithLayersDisabled) {
   child->SetPaintToLayer();
 
   // When contents does not have a layer, contents_viewport is TEXTURED layer.
-  EXPECT_EQ(test_api.contents_viewport()->layer()->type(), ui::LAYER_TEXTURED);
+  EXPECT_TRUE(test_api.contents_viewport()->layer()->AsTextured());
   contents->SetPaintToLayer();
   // When contents is a TEXTURED layer.
-  EXPECT_EQ(test_api.contents_viewport()->layer()->type(), ui::LAYER_NOT_DRAWN);
+  EXPECT_TRUE(test_api.contents_viewport()->layer()->AsNotDrawn());
   contents->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   // When contents is a NOT_DRAWN layer.
-  EXPECT_EQ(test_api.contents_viewport()->layer()->type(), ui::LAYER_TEXTURED);
+  EXPECT_TRUE(test_api.contents_viewport()->layer()->AsTextured());
 }
 
 // Validates the layer of contents_viewport_, when contents_ does not have a
@@ -1572,7 +1572,7 @@ TEST_F(
   child->SetPaintToLayer();
   // TEXTURED layer needed for contents_viewport since a descendant view has a
   // layer.
-  EXPECT_EQ(test_api.contents_viewport()->layer()->type(), ui::LAYER_TEXTURED);
+  EXPECT_TRUE(test_api.contents_viewport()->layer()->AsTextured());
 }
 
 // Validates if scroll_with_layers is enabled, we disallow to change the layer
@@ -1618,7 +1618,7 @@ TEST_F(
   child->SetPaintToLayer();
 
   scroll_view.SetContents(std::move(a_view));
-  EXPECT_EQ(test_api.contents_viewport()->layer()->type(), ui::LAYER_TEXTURED);
+  EXPECT_TRUE(test_api.contents_viewport()->layer()->AsTextured());
 }
 
 // Validates correct behavior of layers used for contents_viewport used when
@@ -1630,16 +1630,16 @@ TEST_F(ScrollViewTest, ContentsViewportLayerUsed_ScrollWithLayersEnabled) {
   // scroll_with_layer feature ensures that contents_viewport always have a
   // layer.
   ASSERT_TRUE(test_api.contents_viewport()->layer());
-  EXPECT_EQ(test_api.contents_viewport()->layer()->type(), ui::LAYER_NOT_DRAWN);
+  EXPECT_TRUE(test_api.contents_viewport()->layer()->AsNotDrawn());
   // scroll_with_layer feature enables a layer on content before adding to
   // contents_viewport_.
   View* contents = scroll_view.SetContents(std::make_unique<View>());
-  EXPECT_EQ(test_api.contents_viewport()->layer()->type(), ui::LAYER_NOT_DRAWN);
+  EXPECT_TRUE(test_api.contents_viewport()->layer()->AsNotDrawn());
 
   View* child = contents->AddChildView(std::make_unique<View>());
   child->SetPaintToLayer();
 
-  EXPECT_EQ(test_api.contents_viewport()->layer()->type(), ui::LAYER_NOT_DRAWN);
+  EXPECT_TRUE(test_api.contents_viewport()->layer()->AsNotDrawn());
 }
 
 // Validates if correct layers are used for contents_viewport used when
@@ -1654,18 +1654,18 @@ TEST_F(
   // scroll_with_layer feature ensures that contents_viewport always have a
   // layer.
   ASSERT_TRUE(test_api.contents_viewport()->layer());
-  EXPECT_EQ(test_api.contents_viewport()->layer()->type(), ui::LAYER_NOT_DRAWN);
+  EXPECT_TRUE(test_api.contents_viewport()->layer()->AsNotDrawn());
 
   // changing the layer type that the scrollview enables on contents.
   scroll_view.SetContentsLayerType(ui::LAYER_NOT_DRAWN);
 
   View* contents = scroll_view.SetContents(std::make_unique<View>());
-  EXPECT_EQ(test_api.contents_viewport()->layer()->type(), ui::LAYER_TEXTURED);
+  EXPECT_TRUE(test_api.contents_viewport()->layer()->AsTextured());
 
   View* child = contents->AddChildView(std::make_unique<View>());
   child->SetPaintToLayer();
 
-  EXPECT_EQ(test_api.contents_viewport()->layer()->type(), ui::LAYER_TEXTURED);
+  EXPECT_TRUE(test_api.contents_viewport()->layer()->AsTextured());
 }
 
 TEST_F(ScrollViewTest,

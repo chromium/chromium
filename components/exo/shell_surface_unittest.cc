@@ -5052,9 +5052,9 @@ TEST_F(ShellSurfaceTest, DisplayScaleChangeSendsMinimalOcclusionUpdates) {
 
   // xdg-shell without a frame type will use NOT_DRAWN layer type and
   // should control the opacity by themselves.
-  EXPECT_EQ(ui::LAYER_NOT_DRAWN, window1->layer()->type());
+  EXPECT_TRUE(window1->layer()->AsNotDrawn());
   EXPECT_FALSE(window1->GetProperty(chromeos::kWindowManagerManagesOpacityKey));
-  EXPECT_EQ(ui::LAYER_NOT_DRAWN, window2->layer()->type());
+  EXPECT_TRUE(window2->layer()->AsNotDrawn());
   EXPECT_FALSE(window2->GetProperty(chromeos::kWindowManagerManagesOpacityKey));
 
   const std::vector<gfx::Rect> kNormalOpaqueRegion{gfx::Rect(256, 256)};
@@ -5233,7 +5233,7 @@ TEST_F(ShellSurfaceTest, TinyOpaqueMaximizedSurfaceFalselyOccludesUnderlying) {
           .BuildShellSurface();
   aura::Window* attacker_widget = attacker->GetWidget()->GetNativeWindow();
 
-  ASSERT_EQ(ui::LAYER_NOT_DRAWN, attacker_widget->layer()->type());
+  ASSERT_TRUE(attacker_widget->layer()->AsNotDrawn());
   ASSERT_TRUE(attacker->root_surface()->FillsBoundsOpaquely());
 
   // The client maximizes the window but never resizes its buffer.

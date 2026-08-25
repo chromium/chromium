@@ -3528,12 +3528,10 @@ TEST_P(WallpaperControllerTest, WallpaperBlurDuringLockScreenTransition) {
 
   // There are three layers: underlay, original and old layers.
   ASSERT_EQ(3u, wallpaper_view()->layer()->parent()->children().size());
-  EXPECT_EQ(ui::LAYER_SOLID_COLOR,
-            wallpaper_view()->layer()->parent()->children()[0]->type());
-  EXPECT_EQ(ui::LAYER_TEXTURED,
-            wallpaper_view()->layer()->parent()->children()[1]->type());
-  EXPECT_EQ(ui::LAYER_TEXTURED,
-            wallpaper_view()->layer()->parent()->children()[2]->type());
+  EXPECT_TRUE(
+      wallpaper_view()->layer()->parent()->children()[0]->AsSolidColor());
+  EXPECT_TRUE(wallpaper_view()->layer()->parent()->children()[1]->AsTextured());
+  EXPECT_TRUE(wallpaper_view()->layer()->parent()->children()[2]->AsTextured());
 
   // Simulate lock and unlock sequence.
   controller_->UpdateWallpaperBlurForLockState(true);
@@ -3545,14 +3543,12 @@ TEST_P(WallpaperControllerTest, WallpaperBlurDuringLockScreenTransition) {
 
   // There are four layers: shield, underlay, original and old layers.
   ASSERT_EQ(4u, wallpaper_view()->layer()->parent()->children().size());
-  EXPECT_EQ(ui::LAYER_SOLID_COLOR,
-            wallpaper_view()->layer()->parent()->children()[0]->type());
-  EXPECT_EQ(ui::LAYER_SOLID_COLOR,
-            wallpaper_view()->layer()->parent()->children()[1]->type());
-  EXPECT_EQ(ui::LAYER_TEXTURED,
-            wallpaper_view()->layer()->parent()->children()[2]->type());
-  EXPECT_EQ(ui::LAYER_TEXTURED,
-            wallpaper_view()->layer()->parent()->children()[3]->type());
+  EXPECT_TRUE(
+      wallpaper_view()->layer()->parent()->children()[0]->AsSolidColor());
+  EXPECT_TRUE(
+      wallpaper_view()->layer()->parent()->children()[1]->AsSolidColor());
+  EXPECT_TRUE(wallpaper_view()->layer()->parent()->children()[2]->AsTextured());
+  EXPECT_TRUE(wallpaper_view()->layer()->parent()->children()[3]->AsTextured());
 
   // Change of state to ACTIVE triggers post lock animation and
   // UpdateWallpaperBlur(false)
@@ -3562,12 +3558,10 @@ TEST_P(WallpaperControllerTest, WallpaperBlurDuringLockScreenTransition) {
 
   // There are three layers: underlay, original and old layers.
   ASSERT_EQ(3u, wallpaper_view()->layer()->parent()->children().size());
-  EXPECT_EQ(ui::LAYER_SOLID_COLOR,
-            wallpaper_view()->layer()->parent()->children()[0]->type());
-  EXPECT_EQ(ui::LAYER_TEXTURED,
-            wallpaper_view()->layer()->parent()->children()[1]->type());
-  EXPECT_EQ(ui::LAYER_TEXTURED,
-            wallpaper_view()->layer()->parent()->children()[2]->type());
+  EXPECT_TRUE(
+      wallpaper_view()->layer()->parent()->children()[0]->AsSolidColor());
+  EXPECT_TRUE(wallpaper_view()->layer()->parent()->children()[1]->AsTextured());
+  EXPECT_TRUE(wallpaper_view()->layer()->parent()->children()[2]->AsTextured());
 }
 
 TEST_P(WallpaperControllerTest, LockDuringOverview) {

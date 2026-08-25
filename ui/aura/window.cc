@@ -393,7 +393,7 @@ void Window::SetTransparent(bool transparent) {
     return;
   transparent_ = transparent;
 
-  if (layer()->type() != ui::LAYER_SOLID_COLOR) {
+  if (!layer()->AsSolidColor()) {
     layer()->SetFillsBoundsOpaquely(!transparent_);
   }
   TriggerChangedCallback(&transparent_);
@@ -1796,7 +1796,7 @@ void Window::SetOpaqueRegionsForOcclusion(
   // Opaque regions for occlusion do not apply to opaque windows, so only
   // allow opaque regions for occlusion to be set for them if they are the
   // same as the window bounds size.
-  DCHECK(GetTransparent() || layer()->type() == ui::LAYER_NOT_DRAWN ||
+  DCHECK(GetTransparent() || layer()->AsNotDrawn() ||
          opaque_regions_for_occlusion.empty() ||
          (opaque_regions_for_occlusion.size() == 1 &&
           opaque_regions_for_occlusion[0] == gfx::Rect(bounds().size())));
@@ -1891,7 +1891,7 @@ void Window::OnLayerFillsBoundsOpaquelyChanged(
 
   // Non-transparent windows should not have opaque regions for occlusion set.
 #if DCHECK_IS_ON()
-  if (!GetTransparent() && layer()->type() != ui::LAYER_NOT_DRAWN) {
+  if (!GetTransparent() && !layer()->AsNotDrawn()) {
     DCHECK(opaque_regions_for_occlusion_.empty());
   }
 #endif

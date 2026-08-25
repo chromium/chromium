@@ -218,6 +218,14 @@ const LayerWithExternalTexture* Layer::AsWithExternalTexture() const {
   return As<LayerWithExternalTexture>();
 }
 
+LayerNotDrawn* Layer::AsNotDrawn() {
+  return As<LayerNotDrawn>();
+}
+
+const LayerNotDrawn* Layer::AsNotDrawn() const {
+  return As<LayerNotDrawn>();
+}
+
 Layer::Layer(LayerType type)
     : type_(type),
       subpixel_position_offset_(
@@ -297,7 +305,7 @@ std::unique_ptr<Layer> Layer::Clone() const {
   clone->SetName(name_);
 
   // TODO(crbug.com/522627357): Move to LayerSolidColor.
-  if (type() != LAYER_SOLID_COLOR) {
+  if (!AsSolidColor()) {
     clone->SetFillsBoundsOpaquely(fills_bounds_opaquely_);
   }
 
@@ -653,7 +661,7 @@ void Layer::SetMaskLayer(Layer* layer_mask) {
   DCHECK(!layer_mask ||
          (!layer_mask->layer_mask_layer() && layer_mask->children().empty()));
   DCHECK(!layer_mask_back_link_);
-  DCHECK(!layer_mask || layer_mask->type() == LAYER_TEXTURED);
+  DCHECK(!layer_mask || layer_mask->AsTextured());
   // Masks must be backed by a PictureLayer.
   DCHECK(!layer_mask || layer_mask->AsTextured()->content_layer());
   // We need to de-reference the currently linked object so that no problem
