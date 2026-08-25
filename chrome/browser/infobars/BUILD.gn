@@ -62,10 +62,10 @@ source_set("test_support") {
   testonly = true
 
   sources = [
-    "infobar_responder.cc",
-    "infobar_responder.h",
     "test_support/infobar_observer.cc",
     "test_support/infobar_observer.h",
+    "test_support/infobar_responder.cc",
+    "test_support/infobar_responder.h",
   ]
 
   deps = [
