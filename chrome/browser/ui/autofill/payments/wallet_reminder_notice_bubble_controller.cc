@@ -8,6 +8,7 @@
 
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
+#include "chrome/browser/ui/autofill/payments/wallet_reminder_notice_page_action_controller.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/strings/grit/components_strings.h"
@@ -81,13 +82,11 @@ WalletReminderNoticeBubbleController::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-BubbleType WalletReminderNoticeBubbleController::GetBubbleType() const {
-  return BubbleType::kWalletReminderNotice;
-}
-
-base::WeakPtr<BubbleControllerBase>
-WalletReminderNoticeBubbleController::GetBubbleControllerBaseWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
+void WalletReminderNoticeBubbleController::OnAcceptButton() {
+  if (WalletReminderNoticePageActionController* page_action_controller =
+          WalletReminderNoticePageActionController::From(*tab_interface_)) {
+    page_action_controller->Hide();
+  }
 }
 
 void WalletReminderNoticeBubbleController::OnBubbleClosed() {
@@ -95,6 +94,15 @@ void WalletReminderNoticeBubbleController::OnBubbleClosed() {
     action_item->SetIsShowingBubble(false);
   }
   ResetBubbleViewAndInformBubbleManager();
+}
+
+BubbleType WalletReminderNoticeBubbleController::GetBubbleType() const {
+  return BubbleType::kWalletReminderNotice;
+}
+
+base::WeakPtr<BubbleControllerBase>
+WalletReminderNoticeBubbleController::GetBubbleControllerBaseWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void WalletReminderNoticeBubbleController::DoShowBubble() {

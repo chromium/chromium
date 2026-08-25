@@ -37,6 +37,8 @@ WalletReminderNoticeBubbleView::WalletReminderNoticeBubbleView(
                  l10n_util::GetStringUTF16(
                      IDS_AUTOFILL_WALLET_REMINDER_NOTICE_CONFIRM_BUTTON_LABEL));
   SetShowCloseButton(false);
+  SetAcceptCallback(base::BindOnce(
+      &WalletReminderNoticeBubbleController::OnAcceptButton, controller_));
 
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
@@ -79,6 +81,7 @@ std::u16string WalletReminderNoticeBubbleView::GetWindowTitle() const {
 void WalletReminderNoticeBubbleView::WindowClosing() {
   if (controller_) {
     controller_->OnBubbleClosed();
+    controller_ = nullptr;
   }
 }
 

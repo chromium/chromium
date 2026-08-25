@@ -56,12 +56,13 @@ class WalletReminderNoticeBubbleController
   AutofillBubbleBase* GetBubbleView() const;
   base::WeakPtr<WalletReminderNoticeBubbleController> GetWeakPtr();
 
+  void OnAcceptButton();
+  void OnBubbleClosed();
+
   // BubbleControllerBase:
   void OnBubbleDiscarded() override {}
   BubbleType GetBubbleType() const override;
   base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
-
-  void OnBubbleClosed();
 
  protected:
   void DoShowBubble() override;
