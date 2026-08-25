@@ -2687,8 +2687,6 @@ static_library("ui") {
       "views/frame/vertical_tab_strip_background_blur_backdrop.h",
       "views/frame/vertical_tab_strip_region_view.cc",
       "views/frame/vertical_tab_strip_region_view.h",
-      "views/frame/web_contents_close_handler.cc",
-      "views/frame/web_contents_close_handler.h",
       "views/global_error_bubble_view.cc",
       "views/global_error_bubble_view.h",
       "views/idle_bubble.cc",
@@ -2969,6 +2967,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:opaque_browser_frame_view_layout_delegate",
       "//chrome/browser/ui/views/frame:scrim_view",
       "//chrome/browser/ui/views/frame:shadow",
+      "//chrome/browser/ui/views/frame:web_contents_close_handler",
       "//chrome/browser/ui/views/frame:web_contents_close_handler_delegate",
       "//chrome/browser/ui/views/frame:windows_icon_painter",
       "//chrome/browser/ui/views/fullscreen_control",
@@ -3412,11 +3411,11 @@ static_library("ui") {
     }
 
     if (is_win || is_linux || is_chromeos) {
-      sources += [
-        "views/native_widget_factory.cc",
-        "views/native_widget_factory.h",
-      ]
       deps += [ "//chrome/browser/ui/views:bluetooth_dialogs" ]
+    }
+
+    if (use_aura && !is_chromeos) {
+      deps += [ "//chrome/browser/ui/views:native_widget_factory" ]
     }
 
     if (is_mac) {
@@ -3465,9 +3464,9 @@ static_library("ui") {
         "views/frame/opaque_browser_frame_view.h",
         "views/frame/opaque_browser_frame_view_layout.cc",
         "views/frame/opaque_browser_frame_view_layout.h",
-        "views/screen_capture_notification_ui_views.cc",
       ]
       deps += [
+        "//chrome/browser/ui/views:screen_capture_notification_ui_views",
         "//chrome/browser/ui/views/policy:enterprise_startup_dialog",
         "//chrome/browser/ui/views/policy:idle_dialog",
         "//chrome/browser/ui/views/shortcuts",

@@ -788,3 +788,31 @@ source_set("simple_web_view_dialog") {
     "//ui/display",
   ]
 }
+source_set("screen_capture_notification_ui_views") {
+  sources = [ "screen_capture_notification_ui_views.cc" ]
+  deps = [
+    ":screen_sharing_util",
+    ":views",
+    "//base",
+    "//chrome/browser/ui:browser_init_state",
+    "//chrome/browser/ui:screen_capture_notification_ui",
+    "//chrome/browser/ui/browser_window",
+    "//ui/views",
+  ]
+  if (is_chromeos) {
+    deps += [ "//ash" ]
+  }
+}
+
+if (use_aura && !is_chromeos) {
+  source_set("native_widget_factory") {
+    public = [ "native_widget_factory.h" ]
+    sources = [ "native_widget_factory.cc" ]
+    public_deps = [ "//ui/views" ]
+    deps = [
+      ":theme_profile_key",
+      "//chrome/browser/profiles:profile",
+      "//ui/aura",
+    ]
+  }
+}

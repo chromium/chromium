@@ -298,6 +298,9 @@ source_set("browser_tests") {
       "//ui/views",
       "//ui/views:test_support",
     ]
+    if (use_aura && !is_chromeos) {
+      deps += [ "//chrome/browser/ui/views:native_widget_factory" ]
+    }
   }
 
   if (!is_android && !is_chromeos) {

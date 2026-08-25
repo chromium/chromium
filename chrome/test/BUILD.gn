@@ -7886,6 +7886,7 @@ test("unit_tests") {
       "//chrome/browser/ui/tabs:tab_list_bridge",
       "//chrome/browser/ui/views:task_manager_search_bar_view",
       "//chrome/browser/ui/views/extensions:unit_tests",
+      "//chrome/browser/ui/views/frame:web_contents_close_handler",
       "//chrome/browser/ui/views/profiles:avatar_badge_view",
       "//chrome/browser/ui/views/relaunch_notification:unit_tests",
     ]
@@ -9239,6 +9240,9 @@ if (!is_android && !is_chromeos_device) {
         sources +=
             [ "../browser/ui/views/tooltip/tooltip_interactive_uitest.cc" ]
         deps += [ "//ui/wm/public" ]
+      }
+      if (use_aura && !is_chromeos) {
+        deps += [ "//chrome/browser/ui/views:native_widget_factory" ]
       }
       if (use_aura || is_mac) {
         deps += [ "//ui/touch_selection" ]

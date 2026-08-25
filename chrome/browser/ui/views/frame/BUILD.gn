@@ -255,6 +255,15 @@ source_set("web_contents_close_handler_delegate") {
   public = [ "web_contents_close_handler_delegate.h" ]
 }
 
+source_set("web_contents_close_handler") {
+  public = [ "web_contents_close_handler.h" ]
+  sources = [ "web_contents_close_handler.cc" ]
+  public_deps = [
+    ":web_contents_close_handler_delegate",
+    "//base",
+  ]
+}
+
 source_set("browser_native_widget") {
   public = [ "browser_native_widget.h" ]
   public_deps = [
