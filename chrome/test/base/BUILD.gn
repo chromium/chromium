@@ -802,6 +802,8 @@ if (!is_android) {
     if (toolkit_views) {
       sources += [ "interactive_test_utils_views.cc" ]
       deps += [
+        "//chrome/browser/ui/location_bar",
+        "//chrome/browser/ui/omnibox",
         "//ui/base:buildflags",
         "//ui/compositor",
       ]
