@@ -4009,9 +4009,29 @@ class FakeDesktopCapturer : public webrtc::DesktopCapturer {
 class MockScreenshareDelegate
     : public ContextualSearchboxHandler::ScreenshareDelegate {
  public:
+  MOCK_METHOD(void,
+              ShowScreenshotMenu,
+              (const gfx::Rect&, base::WeakPtr<ContextualSearchboxHandler>),
+              (override));
   MOCK_METHOD(void, OnScreensharePickerOpened, (), (override));
   MOCK_METHOD(void, OnScreensharePickerClosed, (), (override));
 };
+
+TEST_F(ContextualSearchboxHandlerTest, ShowScreenshotMenu_ForwardsToDelegate) {
+  MockScreenshareDelegate delegate;
+  EXPECT_CALL(delegate, ShowScreenshotMenu(gfx::Rect(1, 2, 3, 4), testing::_));
+  handler().set_screenshare_delegate(&delegate);
+
+  handler().ShowScreenshotMenu(gfx::Rect(1, 2, 3, 4));
+}
+
+TEST_F(ContextualSearchboxHandlerTest,
+       ShowScreenshotMenu_NoDelegate_NotifiesClosed) {
+  handler().set_screenshare_delegate(nullptr);
+  EXPECT_CALL(mock_searchbox_page_, OnScreenshotMenuClosed());
+  handler().ShowScreenshotMenu(gfx::Rect(1, 2, 3, 4));
+  mock_searchbox_page_.FlushForTesting();
+}
 
 TEST_F(ContextualSearchboxHandlerTest, StartScreenshare_Success) {
   SetupScreenshotUploadConfig();

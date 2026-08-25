@@ -489,6 +489,35 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     assertTrue(!!profileIcon);
     assertEquals('12px', window.getComputedStyle(profileIcon).top);
   });
+
+  test(
+      'clicking lens button calls showScreenshotMenu and sets ' +
+          'isScreenshotMenuOpen',
+      async () => {
+        const lensButton =
+            omnibox.shadowRoot.querySelector<HTMLElement>('#lensSearchButton');
+        assertTrue(!!lensButton);
+        assertFalse(omnibox.isScreenshotMenuOpen);
+
+        lensButton.click();
+        await microtasksFinished();
+
+        assertTrue(omnibox.isScreenshotMenuOpen);
+        const lensContainer = omnibox.shadowRoot.querySelector(
+            '.searchbox-icon-button-container.lens');
+        assertTrue(
+            !!lensContainer && lensContainer.classList.contains('menu-open'));
+
+        assertEquals(1, testProxy.handler.getCallCount('showScreenshotMenu'));
+        const args = testProxy.handler.getArgs('showScreenshotMenu')[0];
+        assertTrue(args !== undefined);
+
+        testProxy.page.onScreenshotMenuClosed();
+        await microtasksFinished();
+
+        assertFalse(omnibox.isScreenshotMenuOpen);
+        assertFalse(lensContainer.classList.contains('menu-open'));
+      });
 });
 
 
@@ -821,6 +850,35 @@ suite('OmniboxEverywhereComposeboxTest', () => {
     composebox.contextMenuEnabled = false;
     assertEquals(null, composebox.getFileInputsElement());
   });
+
+  test(
+      'clicking lens button in composebox calls showScreenshotMenu and sets ' +
+          'isScreenshotMenuOpen',
+      async () => {
+        const lensButton = composebox.shadowRoot.querySelector<HTMLElement>(
+            '#lensSearchButton');
+        assertTrue(!!lensButton);
+        assertFalse(composebox.isScreenshotMenuOpen);
+
+        lensButton.click();
+        await microtasksFinished();
+
+        assertTrue(composebox.isScreenshotMenuOpen);
+        const lensContainer = composebox.shadowRoot.querySelector(
+            '.searchbox-icon-button-container.lens');
+        assertTrue(
+            !!lensContainer && lensContainer.classList.contains('menu-open'));
+
+        assertEquals(1, testProxy.handler.getCallCount('showScreenshotMenu'));
+        const args = testProxy.handler.getArgs('showScreenshotMenu')[0];
+        assertTrue(args !== undefined);
+
+        testProxy.page.onScreenshotMenuClosed();
+        await microtasksFinished();
+
+        assertFalse(composebox.isScreenshotMenuOpen);
+        assertFalse(lensContainer.classList.contains('menu-open'));
+      });
 });
 
 suite('UnboundedUtilsTest', () => {

@@ -157,6 +157,10 @@ class ContextualSearchboxHandler
    public:
     virtual ~ScreenshareDelegate() = default;
 
+    virtual void ShowScreenshotMenu(
+        const gfx::Rect& anchor_rect,
+        base::WeakPtr<ContextualSearchboxHandler> handler) {}
+
     // Invoked when the screenshare picker is opened or closed.
     virtual void OnScreensharePickerOpened() {}
     virtual void OnScreensharePickerClosed() {}
@@ -201,6 +205,7 @@ class ContextualSearchboxHandler
                      searchbox::mojom::TabAttachmentSource source,
                      AddTabContextCallback callback) override;
   void OnDriveUploadClicked(OnDriveUploadClickedCallback callback) override;
+
   void DeleteContext(const base::UnguessableToken& file_token,
                      bool from_automatic_chip) override;
   void DeleteTabContext(int32_t tab_id) override;
@@ -235,6 +240,7 @@ class ContextualSearchboxHandler
                         StartScreenshareCallback callback) override;
   void CaptureRegionScreenshot(
       CaptureRegionScreenshotCallback callback) override;
+  void ShowScreenshotMenu(const gfx::Rect& anchor_rect) override;
 #if !BUILDFLAG(IS_ANDROID)
   bool has_drive_picker_deactivation_blocker_for_testing() const {
     return drive_picker_deactivation_blocker_ != nullptr;

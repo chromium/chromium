@@ -156,7 +156,8 @@ export function getHtml(this: OmniboxEverywhereComposeboxElement) {
                   </button>
                 </div>
                 ` : ''}
-                <div class="searchbox-icon-button-container lens">
+                <div class="searchbox-icon-button-container lens ${
+                    this.isScreenshotMenuOpen ? 'menu-open' : ''}">
                   <button id="lensSearchButton" class="searchbox-icon-button"
                       @click="${this.onLensSearchClick_}"
                       title="${this.i18n('lensSearchButtonLabel')}">
@@ -179,25 +180,6 @@ export function getHtml(this: OmniboxEverywhereComposeboxElement) {
           </cr-composebox-file-inputs>
         </div>
     </div>
-    <cr-action-menu id="screenshotMenu" role-description="menu"
-        @close="${this.onScreenshotMenuClose_}">
-      <div class="menu-title">${this.i18n('shareScreenshotLabel')}</div>
-      <button class="dropdown-item" id="screenshotFullscreen"
-          @click="${this.onScreenshotEntireScreenClick_}">
-        <div class="icon entire-screen"></div>
-        ${this.i18n('screenshotEntireScreenLabel')}
-      </button>
-      <button class="dropdown-item" id="screenshotWindow"
-          @click="${this.onScreenshotWindowClick_}">
-        <div class="icon window"></div>
-        ${this.i18n('screenshotWindowLabel')}
-      </button>
-      <button class="dropdown-item" id="screenshotRegion"
-          @click="${this.onScreenshotRegionClick_}">
-        <div class="icon region"></div>
-        ${this.i18n('screenshotRegionLabel')}
-      </button>
-    </cr-action-menu>
 <!--_html_template_end_-->`;
   // clang-format on
 }

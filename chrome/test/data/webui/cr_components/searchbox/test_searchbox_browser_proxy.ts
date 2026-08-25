@@ -64,6 +64,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'setSmartComposeStats',
       'setSmartTabSharingActive',
       'showContextMenu',
+      'showScreenshotMenu',
       'startScreenshare',
       'captureRegionScreenshot',
       'stopAutocomplete',
@@ -100,6 +101,10 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
     this.methodCalled('showContextMenu', {point});
   }
 
+  showScreenshotMenu(
+      anchorRect: {x: number, y: number, width: number, height: number}) {
+    this.methodCalled('showScreenshotMenu', {anchorRect});
+  }
   executeAction(
       line: number, actionIndex: number, url: Url,
       matchSelectionTimestamp: TimeTicks, mouseButton: number, altKey: boolean,

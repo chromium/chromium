@@ -2494,6 +2494,16 @@ ContextualSearchboxHandler::GetDriveDisclaimerController() {
 // TODO(crbug.com/549716561): Refactor screensharing and screenshot capture
 // logic out of ContextualSearchboxHandler into a dedicated controller (similar
 // to DrivePickerHostController).
+void ContextualSearchboxHandler::ShowScreenshotMenu(
+    const gfx::Rect& anchor_rect) {
+  if (screenshare_delegate_) {
+    screenshare_delegate_->ShowScreenshotMenu(anchor_rect,
+                                              weak_ptr_factory_.GetWeakPtr());
+  } else {
+    OnScreenshotMenuClosed();
+  }
+}
+
 void ContextualSearchboxHandler::StartScreenshare(
     bool prefer_entire_screen,
     StartScreenshareCallback callback) {

@@ -199,6 +199,8 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   void OnDriveDisclaimerAccepted() override;
   void OnDriveUploadClicked(OnDriveUploadClickedCallback callback) override;
   void OpenProfilePicker() override {}
+  void ShowScreenshotMenu(const gfx::Rect& anchor_rect) override {}
+  virtual void OnScreenshotMenuClosed();
   void GetPageClassification(GetPageClassificationCallback callback) override;
   void StartScreenshare(bool prefer_entire_screen,
                         StartScreenshareCallback callback) override;

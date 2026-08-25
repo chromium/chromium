@@ -1103,6 +1103,10 @@ void SearchboxHandler::OnContextualInputStatusChanged(
   page_->OnContextualInputStatusChanged(token, status, error_type);
 }
 
+void SearchboxHandler::OnScreenshotMenuClosed() {
+  page_->OnScreenshotMenuClosed();
+}
+
 void SearchboxHandler::OnFocusChanged(bool focused) {
   if (base::FeatureList::IsEnabled(
           omnibox::kWebUISearchboxWithoutModelController)) {

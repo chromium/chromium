@@ -41,7 +41,8 @@
   z-index: 100;
 }
 
-.searchbox-icon-button-container:hover {
+.searchbox-icon-button-container:hover,
+.searchbox-icon-button-container.menu-open {
   background-color: var(--color-new-tab-page-realbox-next-icon-hover);
 }
 

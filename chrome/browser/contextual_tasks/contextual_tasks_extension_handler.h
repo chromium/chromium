@@ -195,6 +195,7 @@ class ContextualTasksExtensionHandler
   void OnDriveDisclaimerAccepted() override;
   void OnDriveUploadClicked(OnDriveUploadClickedCallback callback) override;
   void OpenProfilePicker() override;
+  void ShowScreenshotMenu(const gfx::Rect& anchor_rect) override;
   void GetPageClassification(GetPageClassificationCallback callback) override;
   void OnThumbnailRemoved() override;
   void StartScreenshare(bool prefer_entire_screen,

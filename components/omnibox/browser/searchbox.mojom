@@ -560,6 +560,13 @@ interface PageHandler {
   // Opens the profile picker for switching profiles.
   OpenProfilePicker();
 
+  // Shows the native screenshot/screensharing menu anchored to `anchor_rect`.
+  // `anchor_rect` is the bounding box of the anchor element (e.g. the Lens /
+  // screenshot button) in WebContents viewport-relative DIPs. Passing a rect
+  // rather than a point allows the native menu runner to position and flip the
+  // menu without occluding the anchor element.
+  ShowScreenshotMenu(gfx.mojom.Rect anchor_rect);
+
   // Triggers screensharing (window or entire screen picker).
   // `prefer_entire_screen` is a hint indicating whether the screen picker
   // should default to selecting the entire screen (true) or a window
@@ -685,4 +692,7 @@ interface Page {
 
   // Sets the TabInfo for the attachments restored from the AIM thread history.
   SetAimThreadRestoredTabs(array<TabInfo> tabs);
+
+  // Notifies that a native screenshot menu has closed.
+  OnScreenshotMenuClosed();
 };
