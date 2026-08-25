@@ -5,12 +5,11 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_SERVICES_CSV_PASSWORD_PUBLIC_MOJOM_CSV_PASSWORD_PARSER_MOJOM_TRAITS_H_
 #define COMPONENTS_PASSWORD_MANAGER_SERVICES_CSV_PASSWORD_PUBLIC_MOJOM_CSV_PASSWORD_PARSER_MOJOM_TRAITS_H_
 
-#include <optional>
+#include <string>
 
-#include "base/types/expected.h"
-#include "base/types/expected_macros.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
 #include "components/password_manager/services/csv_password/public/mojom/csv_password_parser.mojom.h"
+#include "mojo/public/cpp/bindings/optional_as_pointer.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
@@ -34,10 +33,11 @@ struct StructTraits<password_manager::mojom::CSVPasswordDataView,
   static const GURL url(const password_manager::CSVPassword& r) {
     return r.GetURL().value_or(GURL());
   }
-  static std::optional<std::string> invalid_url(
+  static mojo::OptionalAsPointer<const std::string> invalid_url(
       const password_manager::CSVPassword& r) {
-    RETURN_IF_ERROR(r.GetURL());
-    return std::nullopt;
+    return r.GetURL().has_value()
+               ? nullptr
+               : mojo::OptionalAsPointer(&r.GetURL().error());
   }
   static const std::string& username(const password_manager::CSVPassword& r) {
     return r.GetUsername();
