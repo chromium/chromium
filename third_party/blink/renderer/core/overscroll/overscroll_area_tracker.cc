@@ -32,14 +32,12 @@ PaintLayerScrollableArea* GetScrollableAreaFor(Element* overscroll_area) {
 }
 
 void ScrollTo(PaintLayerScrollableArea* scrollable_area, ScrollOffset offset) {
-  ScrollOffset old_offset = scrollable_area->GetScrollOffset();
-  bool x_changed = offset.x() != old_offset.x();
-  bool y_changed = offset.y() != old_offset.y();
-
+  // Snap on both axes to ensure target snap area element IDs are updated on
+  // both axes even for single-axis scrolls or no-op offsets.
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForEndPosition(
-          scrollable_area->ScrollOffsetToPosition(offset), x_changed,
-          y_changed);
+          scrollable_area->ScrollOffsetToPosition(offset),
+          /*scrolled_x=*/true, /*scrolled_y=*/true);
   std::optional<gfx::PointF> snap_point =
       scrollable_area->GetSnapPositionAndSetTarget(*strategy);
   if (snap_point.has_value()) {

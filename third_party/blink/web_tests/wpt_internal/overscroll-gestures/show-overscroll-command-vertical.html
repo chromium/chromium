@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+  #container {
+    width: 200px;
+    height: 200px;
+    overflow: auto;
+  }
+  #menu {
+    width: 100%;
+    height: 50px;
+    bottom: 100%; /* Overscrolls above the container. */
+  }
+  #content {
+    width: 600px;
+  }
+</style>
+
+<div id="container" overscrollcontainer>
+  <div id="menu" overscrollarea></div>
+  <div id="content"></div>
+</div>
+<button id=show_btn command="show-overscroll" commandfor="menu"></button>
+<button id=hide_btn command="hide-overscroll" commandfor="menu"></button>
+
+<script>
+test(() => {
+  // Initially the menu is offscreen above the container.
+  assert_equals(menu.getBoundingClientRect().bottom, 0, "initially bottom aligned");
+  assert_less_than(menu.getBoundingClientRect().top, 0, "initially top not aligned");
+
+  // 1. Hide when already hidden -> remains hidden.
+  hide_btn.click();
+  assert_equals(menu.getBoundingClientRect().bottom, 0, "still bottom aligned after hide");
+
+  // 2. Show -> brings menu into view.
+  show_btn.click();
+  assert_equals(menu.getBoundingClientRect().top, 0, "top edge aligned after show");
+
+  // 3. Show again -> remains in view.
+  show_btn.click();
+  assert_equals(menu.getBoundingClientRect().top, 0, "top edge still aligned after show again");
+
+  // 4. Hide -> closes menu.
+  hide_btn.click();
+  assert_equals(menu.getBoundingClientRect().bottom, 0, "bottom aligned after hide");
+
+  // 5. Hide again -> remains closed.
+  hide_btn.click();
+  assert_equals(menu.getBoundingClientRect().bottom, 0, "bottom still aligned after second hide");
+}, "Show and hide vertical overscroll commands work and do not toggle");
+</script>

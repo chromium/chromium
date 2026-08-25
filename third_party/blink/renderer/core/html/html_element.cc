@@ -3235,7 +3235,7 @@ bool HTMLElement::IsValidBuiltinCommand(HTMLElement& invoker,
     CHECK(RuntimeEnabledFeatures::HTMLCommandForScrollCommandsEnabled());
     return true;
   }
-  if (command == CommandEventType::kToggleOverscroll) {
+  if (Element::IsOverscrollCommand(command)) {
     CHECK(RuntimeEnabledFeatures::OverscrollGesturesEnabled());
     return true;
   }
@@ -3256,6 +3256,26 @@ bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
     if (Element* container = GetOverscrollContainer()) {
       if (auto* tracker = container->GetOverscrollAreaTracker()) {
         tracker->ToggleArea(this);
+      }
+    }
+    return true;
+  }
+
+  if (command == CommandEventType::kShowOverscroll) {
+    CHECK(RuntimeEnabledFeatures::OverscrollGesturesEnabled());
+    if (Element* container = GetOverscrollContainer()) {
+      if (auto* tracker = container->GetOverscrollAreaTracker()) {
+        tracker->OpenArea(this);
+      }
+    }
+    return true;
+  }
+
+  if (command == CommandEventType::kHideOverscroll) {
+    CHECK(RuntimeEnabledFeatures::OverscrollGesturesEnabled());
+    if (Element* container = GetOverscrollContainer()) {
+      if (auto* tracker = container->GetOverscrollAreaTracker()) {
+        tracker->CloseArea(this);
       }
     }
     return true;
@@ -3468,9 +3488,16 @@ CommandEventType HTMLElement::GetCommandEventType(
   }
 
   // Overscroll gestures.
-  if (RuntimeEnabledFeatures::OverscrollGesturesEnabled() &&
-      EqualIgnoringAsciiCase(action, keywords::kToggleOverscroll)) {
-    return CommandEventType::kToggleOverscroll;
+  if (RuntimeEnabledFeatures::OverscrollGesturesEnabled()) {
+    if (EqualIgnoringAsciiCase(action, keywords::kToggleOverscroll)) {
+      return CommandEventType::kToggleOverscroll;
+    }
+    if (EqualIgnoringAsciiCase(action, keywords::kShowOverscroll)) {
+      return CommandEventType::kShowOverscroll;
+    }
+    if (EqualIgnoringAsciiCase(action, keywords::kHideOverscroll)) {
+      return CommandEventType::kHideOverscroll;
+    }
   }
 
   // V2 commands go below this point

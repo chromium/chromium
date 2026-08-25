@@ -239,6 +239,18 @@ TEST_F(OverscrollAreaTrackerTest, DynamicCommandAttributeChange) {
 
   EXPECT_EQ(area_tracker->DOMSortedElements().size(), 1u);
   EXPECT_EQ(area_tracker->DOMSortedElements()[0], menu);
+
+  btn->setAttribute(html_names::kCommandAttr, AtomicString("show-overscroll"));
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(area_tracker->DOMSortedElements().size(), 1u);
+  EXPECT_EQ(area_tracker->DOMSortedElements()[0], menu);
+
+  btn->setAttribute(html_names::kCommandAttr, AtomicString("hide-overscroll"));
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(area_tracker->DOMSortedElements().size(), 1u);
+  EXPECT_EQ(area_tracker->DOMSortedElements()[0], menu);
 }
 
 TEST_F(OverscrollAreaTrackerTest, DynamicCommandForAttributeChange) {

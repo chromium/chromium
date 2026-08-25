@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+  #container {
+    width: 200px;
+    height: 200px;
+    overflow: auto;
+  }
+  #menu {
+    width: 100%;
+    height: 100%;
+    right: 100%; /* Overscrolls to the left of the container. */
+  }
+  #content {
+    height: 600px;
+  }
+</style>
+
+<div id="container" overscrollcontainer>
+  <div id="menu" overscrollarea></div>
+  <div id="content"></div>
+</div>
+<button id=show_button command="show-overscroll" commandfor="menu"></button>
+<button id=hide_button command="hide-overscroll" commandfor="menu"></button>
+
+<script>
+test(() => {
+  // The container is only vertically scrollable
+  assert_equals(container.scrollWidth, container.clientWidth);
+  assert_greater_than(container.scrollHeight, container.clientHeight);
+
+  // Initially the menu is offscreen to the left (and abspos).
+  assert_equals(menu.getBoundingClientRect().right, 0);
+  assert_not_equals(menu.getBoundingClientRect().left, 0);
+  assert_equals(getComputedStyle(menu).position, "absolute");
+  assert_not_equals(getComputedStyle(content).position, "absolute");
+
+  // Click the hide button when already hidden: should remain hidden, NOT toggle open.
+  hide_button.click();
+  assert_equals(menu.getBoundingClientRect().right, 0, "menu remains hidden after hide on closed menu");
+  assert_equals(container.offsetLeft, 0, "container not scrolled");
+
+  // Open the menu using show_button.
+  show_button.click();
+  assert_equals(menu.getBoundingClientRect().left, 0, "menu is now open");
+
+  // Click the hide button to close the menu.
+  hide_button.click();
+  assert_equals(menu.getBoundingClientRect().right, 0, "menu is hidden after clicking hide-overscroll");
+  assert_equals(container.offsetLeft, 0, "container not scrolled");
+
+  // Click the hide button again: hiding when already hidden should not toggle/open.
+  hide_button.click();
+  assert_equals(menu.getBoundingClientRect().right, 0, "menu is still hidden after second hide click");
+  assert_equals(container.offsetLeft, 0, "container still not scrolled");
+}, "Activating hide-overscroll hides the menu and clicking again does not toggle it");
+</script>
