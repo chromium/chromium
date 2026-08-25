@@ -863,7 +863,7 @@ void SQLitePersistentReportingAndNelStore::Backend::DoCommit() {
 
 bool SQLitePersistentReportingAndNelStore::Backend::CommitNelPolicyOperation(
     PendingOperation<NelPolicyInfo>* op) {
-  DCHECK_EQ(1, db()->transaction_nesting());
+  DCHECK(db()->HasActiveTransactions());
 
   sql::Statement add_statement(db()->GetCachedStatement(
       SQL_FROM_HERE,
@@ -953,7 +953,7 @@ bool SQLitePersistentReportingAndNelStore::Backend::CommitNelPolicyOperation(
 bool SQLitePersistentReportingAndNelStore::Backend::
     CommitReportingEndpointOperation(
         PendingOperation<ReportingEndpointInfo>* op) {
-  DCHECK_EQ(1, db()->transaction_nesting());
+  DCHECK(db()->HasActiveTransactions());
 
   sql::Statement add_statement(db()->GetCachedStatement(
       SQL_FROM_HERE,
@@ -1047,7 +1047,7 @@ bool SQLitePersistentReportingAndNelStore::Backend::
 bool SQLitePersistentReportingAndNelStore::Backend::
     CommitReportingEndpointGroupOperation(
         PendingOperation<ReportingEndpointGroupInfo>* op) {
-  DCHECK_EQ(1, db()->transaction_nesting());
+  DCHECK(db()->HasActiveTransactions());
 
   sql::Statement add_statement(db()->GetCachedStatement(
       SQL_FROM_HERE,
