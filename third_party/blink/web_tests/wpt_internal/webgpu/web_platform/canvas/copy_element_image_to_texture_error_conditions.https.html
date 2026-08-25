@@ -55,10 +55,10 @@
         // Helper to generate a source dict.
         function makeSource(src, sx, sy, swidth, sheight) {
           const source = { source: src };
-          if (sx !== undefined) source.sx = sx;
-          if (sy !== undefined) source.sy = sy;
-          if (swidth !== undefined) source.swidth = swidth;
-          if (sheight !== undefined) source.sheight = sheight;
+          if (sx !== undefined) source.sourceX = sx;
+          if (sy !== undefined) source.sourceY = sy;
+          if (swidth !== undefined) source.sourceWidth = swidth;
+          if (sheight !== undefined) source.sourceHeight = sheight;
           return source;
         }
 

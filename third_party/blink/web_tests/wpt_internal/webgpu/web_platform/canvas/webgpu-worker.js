@@ -38,17 +38,17 @@ self.onmessage = async function(e) {
       const destDict = { destination: destination };
 
       if (args.length === 6) {
-        sourceDict.sx = args[0];
-        sourceDict.sy = args[1];
-        sourceDict.swidth = args[2];
-        sourceDict.sheight = args[3];
+        sourceDict.sourceX = args[0];
+        sourceDict.sourceY = args[1];
+        sourceDict.sourceWidth = args[2];
+        sourceDict.sourceHeight = args[3];
         destDict.width = args[4];
         destDict.height = args[5];
       } else if (args.length === 4) {
-        sourceDict.sx = args[0];
-        sourceDict.sy = args[1];
-        sourceDict.swidth = args[2];
-        sourceDict.sheight = args[3];
+        sourceDict.sourceX = args[0];
+        sourceDict.sourceY = args[1];
+        sourceDict.sourceWidth = args[2];
+        sourceDict.sourceHeight = args[3];
       } else if (args.length === 2) {
         destDict.width = args[0];
         destDict.height = args[1];

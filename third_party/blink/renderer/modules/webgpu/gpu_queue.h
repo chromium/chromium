@@ -23,6 +23,7 @@ class GPUBuffer;
 class GPUCommandBuffer;
 class GPUCopyElementImageDestination;
 class GPUCopyElementImageSource;
+class GPUDrawElementImageSource;
 class GPUImageCopyExternalImage;
 class GPUImageCopyTextureTagged;
 class GPUTexelCopyBufferLayout;
@@ -90,7 +91,7 @@ class GPUQueue : public DawnObject<wgpu::Queue> {
   void copyElementImageToTexture(GPUCopyElementImageSource* source,
                                  GPUCopyElementImageDestination* destination,
                                  ExceptionState& exception_state);
-  void drawElementImageToTexture(GPUCopyElementImageSource* source,
+  void drawElementImageToTexture(GPUDrawElementImageSource* source,
                                  GPUCopyElementImageDestination* destination,
                                  ExceptionState& exception_state);
   // }}} End of WebIDL binding implementation.
