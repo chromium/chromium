@@ -536,4 +536,83 @@ TEST_F(GlicActorTaskIconManagerTest,
   manager()->UpdateTaskIconComponents(task_id);
 }
 
+TEST_F(GlicActorTaskIconManagerTest, ShowsStartNotificationOnFirstActing) {
+  TaskId task_id =
+      actor_service()->CreateExperimentalTriggeringTaskForTesting();
+  actor::ActorTask* task = actor_service()->GetTask(task_id);
+
+  // In kCreated state, task is updated before acting. No notification should
+  // fire.
+  EXPECT_CALL(mock_bubble_subscriber_, OnStateChanged(testing::_)).Times(0);
+  manager()->UpdateTaskIconComponents(task_id);
+  testing::Mock::VerifyAndClearExpectations(&mock_bubble_subscriber_);
+  EXPECT_FALSE(manager()->tasks_notified_of_start().contains(task_id));
+
+  // Transition to kActing: start notification should fire.
+  task->SetState(actor::ActorTask::State::kActing);
+  EXPECT_CALL(mock_bubble_subscriber_, OnStateChanged(true)).Times(1);
+  manager()->UpdateTaskIconComponents(task_id);
+  EXPECT_TRUE(manager()->actor_task_list_bubble_rows().at(task_id));
+  EXPECT_TRUE(manager()->tasks_notified_of_start().contains(task_id));
+}
+
+TEST_F(GlicActorTaskIconManagerTest,
+       StartNotificationNotRepeatedAfterRowClicked) {
+  TaskId task_id =
+      actor_service()->CreateExperimentalTriggeringTaskForTesting();
+  actor::ActorTask* task = actor_service()->GetTask(task_id);
+  task->SetState(actor::ActorTask::State::kActing);
+  EXPECT_CALL(mock_bubble_subscriber_, OnStateChanged(true)).Times(1);
+  manager()->UpdateTaskIconComponents(task_id);
+  testing::Mock::VerifyAndClearExpectations(&mock_bubble_subscriber_);
+  EXPECT_TRUE(manager()->actor_task_list_bubble_rows().at(task_id));
+  EXPECT_TRUE(manager()->tasks_notified_of_start().contains(task_id));
+
+  // Process/click the row in the task list bubble (resets requires_processing).
+  manager()->ProcessRowInTaskListBubble(task_id);
+  EXPECT_FALSE(manager()->actor_task_list_bubble_rows().at(task_id));
+
+  // Transition to kReflecting: start notification should not repeat, and
+  // requires_processing should be refreshed to true.
+  EXPECT_CALL(mock_bubble_subscriber_, OnStateChanged(testing::_)).Times(0);
+  task->SetState(actor::ActorTask::State::kReflecting);
+  manager()->UpdateTaskIconComponents(task_id);
+  EXPECT_TRUE(manager()->actor_task_list_bubble_rows().at(task_id));
+  EXPECT_TRUE(manager()->tasks_notified_of_start().contains(task_id));
+
+  // Transition back to kActing: start notification should still not repeat.
+  task->SetState(actor::ActorTask::State::kActing);
+  manager()->UpdateTaskIconComponents(task_id);
+  EXPECT_TRUE(manager()->actor_task_list_bubble_rows().at(task_id));
+}
+
+TEST_F(GlicActorTaskIconManagerTest,
+       CancelledTaskClearsStartNotificationTracking) {
+  TaskId task_id =
+      actor_service()->CreateExperimentalTriggeringTaskForTesting();
+  actor::ActorTask* task = actor_service()->GetTask(task_id);
+  task->SetState(actor::ActorTask::State::kActing);
+  EXPECT_CALL(mock_bubble_subscriber_, OnStateChanged(true)).Times(1);
+  manager()->UpdateTaskIconComponents(task_id);
+  testing::Mock::VerifyAndClearExpectations(&mock_bubble_subscriber_);
+  EXPECT_TRUE(manager()->tasks_notified_of_start().contains(task_id));
+
+  // Cancel the task. Both row tracking and start notification tracking
+  // should be erased.
+  actor_service()->StopTaskForTesting(
+      task_id, actor::ActorTask::StoppedReason::kStoppedByUser);
+  manager()->UpdateTaskIconComponents(task_id);
+  EXPECT_FALSE(manager()->actor_task_list_bubble_rows().contains(task_id));
+  EXPECT_FALSE(manager()->tasks_notified_of_start().contains(task_id));
+
+  // A new active task will trigger its start notification.
+  TaskId task_id_2 =
+      actor_service()->CreateExperimentalTriggeringTaskForTesting();
+  actor::ActorTask* task_2 = actor_service()->GetTask(task_id_2);
+  task_2->SetState(actor::ActorTask::State::kActing);
+  EXPECT_CALL(mock_bubble_subscriber_, OnStateChanged(true)).Times(1);
+  manager()->UpdateTaskIconComponents(task_id_2);
+  EXPECT_TRUE(manager()->tasks_notified_of_start().contains(task_id_2));
+}
+
 }  // namespace glic
