@@ -47,15 +47,24 @@ function loadImagePathForNonServiceWorker(path, callback, failureCallback) {
     failureCallback(message);
   };
   img.onload = function() {
-    var canvas = document.createElement('canvas');
-    canvas.width = img.width;
-    canvas.height = img.height
-    var canvasContext = canvas.getContext('2d');
-    canvasContext.clearRect(0, 0, canvas.width, canvas.height);
-    canvasContext.drawImage(img, 0, 0, canvas.width, canvas.height);
-    var imageData = canvasContext.getImageData(0, 0, canvas.width,
-                                               canvas.height);
-    callback(imageData);
+    const drawAndCallback = function(imageSource) {
+      const canvas = document.createElement('canvas');
+      canvas.width = imageSource.width;
+      canvas.height = imageSource.height;
+      const canvasContext = canvas.getContext('2d');
+      canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+      canvasContext.drawImage(imageSource, 0, 0, canvas.width, canvas.height);
+      const imageData =
+          canvasContext.getImageData(0, 0, canvas.width, canvas.height);
+      callback(imageData);
+    };
+    if (typeof createImageBitmap === 'function') {
+      $Promise.then($Promise.catch(createImageBitmap(img), function() {
+        return img;
+      }), drawAndCallback);
+    } else {
+      drawAndCallback(img);
+    }
   };
   img.src = path;
 }

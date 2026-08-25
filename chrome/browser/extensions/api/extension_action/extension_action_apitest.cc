@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/run_until.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
@@ -918,8 +919,7 @@ class MultiActionAPICanvasTest : public MultiActionAPITest {
 };
 
 // Tests setting the icon dynamically from the background page.
-// TODO(crbug.com/40230315): flaky.
-IN_PROC_BROWSER_TEST_P(MultiActionAPICanvasTest, DISABLED_DynamicSetIcon) {
+IN_PROC_BROWSER_TEST_P(MultiActionAPICanvasTest, DynamicSetIcon) {
   constexpr char kManifestTemplate[] =
       R"({
            "name": "Test Clicking",
@@ -965,17 +965,24 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPICanvasTest, DISABLED_DynamicSetIcon) {
   ASSERT_EQ(1, toolbar_helper->NumberOfBrowserActions());
   EXPECT_TRUE(toolbar_helper->HasAction(extension->id()));
 
-  gfx::Image default_icon = toolbar_helper->GetIcon(extension->id());
-  EXPECT_FALSE(default_icon.IsEmpty());
+  gfx::Image default_icon;
+  int mid_x = 0;
+  int mid_y = 0;
 
   // Check the midpoint. All these icons are solid, but the rendered icon
   // includes padding.
-  const int mid_x = default_icon.Width() / 2;
-  const int mid_y = default_icon.Height() / 2;
   // Note: We only validate the color here as a quick-and-easy way of validating
   // the icon is what we expect. Other tests do much more rigorous testing of
   // the icon's rendering.
-  EXPECT_EQ(SK_ColorRED, default_icon.AsBitmap().getColor(mid_x, mid_y));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    default_icon = toolbar_helper->GetIcon(extension->id());
+    if (default_icon.IsEmpty()) {
+      return false;
+    }
+    mid_x = default_icon.Width() / 2;
+    mid_y = default_icon.Height() / 2;
+    return default_icon.AsBitmap().getColor(mid_x, mid_y) == SK_ColorRED;
+  }));
 
   // Open a tab to run the extension commands in.
   NavigateToURLInNewTab(extension->GetResourceURL("page.html"));
@@ -990,9 +997,12 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPICanvasTest, DISABLED_DynamicSetIcon) {
   EnsureActionIsEnabledOnActiveTab(action);
 
   // The new tab should still have the same icon (the default).
-  gfx::Image new_tab_icon = toolbar_helper->GetIcon(extension->id());
-  EXPECT_FALSE(default_icon.IsEmpty());
-  EXPECT_EQ(SK_ColorRED, default_icon.AsBitmap().getColor(mid_x, mid_y));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    gfx::Image icon = toolbar_helper->GetIcon(extension->id());
+    return !icon.IsEmpty() &&
+           icon.AsBitmap().getColor(mid_x, mid_y) == SK_ColorRED;
+  }));
+  gfx::Image new_tab_icon;
 
   // Set the icon for the new tab to a different icon in the extension package.
   RunTestAndWaitForSuccess(
@@ -1000,9 +1010,11 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPICanvasTest, DISABLED_DynamicSetIcon) {
       base::StringPrintf("setIcon({tabId: %d, path: 'blue_icon.png'});",
                          new_tab_id));
 
-  new_tab_icon = toolbar_helper->GetIcon(extension->id());
-  EXPECT_FALSE(new_tab_icon.IsEmpty());
-  EXPECT_EQ(SK_ColorBLUE, new_tab_icon.AsBitmap().getColor(mid_x, mid_y));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    new_tab_icon = toolbar_helper->GetIcon(extension->id());
+    return !new_tab_icon.IsEmpty() &&
+           new_tab_icon.AsBitmap().getColor(mid_x, mid_y) == SK_ColorBLUE;
+  }));
 
   // Next, set the icon to a dynamically-generated one (from canvas image data).
   constexpr char kSetIconFromImageData[] =
@@ -1020,9 +1032,11 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPICanvasTest, DISABLED_DynamicSetIcon) {
   RunTestAndWaitForSuccess(
       web_contents, base::StringPrintf(kSetIconFromImageData, new_tab_id));
 
-  new_tab_icon = toolbar_helper->GetIcon(extension->id());
-  EXPECT_FALSE(new_tab_icon.IsEmpty());
-  EXPECT_EQ(SK_ColorGREEN, new_tab_icon.AsBitmap().getColor(mid_x, mid_y));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    new_tab_icon = toolbar_helper->GetIcon(extension->id());
+    return !new_tab_icon.IsEmpty() &&
+           new_tab_icon.AsBitmap().getColor(mid_x, mid_y) == SK_ColorGREEN;
+  }));
 
   // Manifest V3 extensions using the action API should also be able to use a
   // promise version of setIcon.
@@ -1032,17 +1046,21 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPICanvasTest, DISABLED_DynamicSetIcon) {
     RunTestAndWaitForSuccess(
         web_contents, base::StringPrintf(kSetIconPromiseScript, new_tab_id));
 
-    new_tab_icon = toolbar_helper->GetIcon(extension->id());
-    EXPECT_FALSE(new_tab_icon.IsEmpty());
-    EXPECT_EQ(SK_ColorBLUE, new_tab_icon.AsBitmap().getColor(mid_x, mid_y));
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      new_tab_icon = toolbar_helper->GetIcon(extension->id());
+      return !new_tab_icon.IsEmpty() &&
+             new_tab_icon.AsBitmap().getColor(mid_x, mid_y) == SK_ColorBLUE;
+    }));
   }
 
   // Switch back to the first tab. The icon should still be red, since the other
   // changes were for specific tabs.
-  browser()->GetTabStripModel()->ActivateTabAt(0);
-  gfx::Image first_tab_icon = toolbar_helper->GetIcon(extension->id());
-  EXPECT_FALSE(first_tab_icon.IsEmpty());
-  EXPECT_EQ(SK_ColorRED, first_tab_icon.AsBitmap().getColor(mid_x, mid_y));
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    gfx::Image first_tab_icon = toolbar_helper->GetIcon(extension->id());
+    return !first_tab_icon.IsEmpty() &&
+           SK_ColorRED == first_tab_icon.AsBitmap().getColor(mid_x, mid_y);
+  }));
 
   // TODO(devlin): Add tests for setting icons as a dictionary of
   // { size -> image_data }.
