@@ -13,6 +13,8 @@ buildflag_header("buildflags") {
   flags = [
     "ENABLE_LENS_DESKTOP=$enable_lens_desktop",
     "ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES=$enable_lens_desktop_google_branded_features",
+    "ENABLE_ANDROID_LENS_OVERLAY=$enable_android_lens_overlay",
+    "ENABLE_LENS_OVERLAY_BACKEND=$enable_lens_overlay_backend",
   ]
 }
 

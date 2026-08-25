@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//build/config/ui.gni")
 
 # iOS cannot depend on files in //chrome
@@ -13,6 +14,12 @@ declare_args() {
   # Includes Lens features in the build. toolkit_views is used to ensure Lens
   # features are only included on Desktop devices running Chromium
   enable_lens_desktop = toolkit_views
+
+  # Controls whether the Lens Overlay feature is enabled on Android. Enabling
+  # this would incur binary increase of > 47 KiB.
+  # TODO(crbug.com/546302191): Assess whether this should be enabled for
+  # Desktop Android.
+  enable_android_lens_overlay = false
 }
 
 declare_args() {
@@ -23,4 +30,9 @@ declare_args() {
   #  - PDF Support
   enable_lens_desktop_google_branded_features =
       enable_lens_desktop && is_chrome_branded
+
+  # Controls the inclusion of the Lens Overlay C++ backend.
+  # This prevents many callsites from needing blocks checking both flags.
+  enable_lens_overlay_backend =
+      enable_lens_desktop || enable_android_lens_overlay
 }

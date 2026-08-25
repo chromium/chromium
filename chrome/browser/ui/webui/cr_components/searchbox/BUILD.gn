@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/lens/features.gni")
 import("//components/signin/features.gni")
 import("//ui/webui/webui_features.gni")
 
@@ -82,7 +83,6 @@ source_set("searchbox_impl") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/contextual_search",
-    "//chrome/browser/ui/lens:backend_logic_public",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/views/permissions:permission_prompt_observer",
     "//chrome/browser/ui/webui",
@@ -95,6 +95,7 @@ source_set("searchbox_impl") {
     "//components/favicon/content",
     "//components/favicon/core",
     "//components/google/core/common",
+    "//components/lens:buildflags",
     "//components/omnibox/browser:fusebox_action_mojo_utils",
     "//components/omnibox/browser:vector_icons",
     "//components/omnibox/common:features",
@@ -102,6 +103,9 @@ source_set("searchbox_impl") {
     "//components/sessions",
     "//components/vector_icons",
   ]
+  if (enable_lens_overlay_backend) {
+    deps += [ "//chrome/browser/ui/lens:backend_logic_public" ]
+  }
   if (!is_android) {
     deps += [
       "//chrome/browser/new_tab_page",
