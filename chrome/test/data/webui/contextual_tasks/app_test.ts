@@ -1348,7 +1348,9 @@ suite('ContextualTasksAppTest', function() {
         lensSearchTooltipSessionImpressionCap: 10,
       });
 
-      const result = await createContextualTasksAppElement(/*url=*/ fixtureUrl);
+      const result = await createContextualTasksAppElement(
+          /*url=*/ fixtureUrl, /*setupProxy=*/ undefined,
+          /*waitForInitialLoadStart=*/ false);
       appElement = result.appElement;
 
       mockCrComposebox = {
@@ -1375,6 +1377,34 @@ suite('ContextualTasksAppTest', function() {
         assertFalse(onboardingTooltip.shouldShow);
       }
     });
+
+    test('AskG shows when eligible in tab mode', async () => {
+      appElement.entryPoint_ = 'omnibox_tab_search';
+      appElement.isShownInTab_ = true;
+
+      appElement.updateTooltipVisibilityForTesting();
+      await microtasksFinished();
+
+      assertTrue(appElement.askGTooltipTarget_ !== null);
+
+      const onboardingTooltip =
+          appElement.shadowRoot.querySelector('#onboardingTooltip');
+      if (onboardingTooltip) {
+        assertFalse(onboardingTooltip.shouldShow);
+      }
+    });
+
+    test(
+        'AskG does not show in tab mode for ineligible entry point',
+        async () => {
+          appElement.entryPoint_ = 'omnibox_action';
+          appElement.isShownInTab_ = true;
+
+          appElement.updateTooltipVisibilityForTesting();
+          await microtasksFinished();
+
+          assertEquals(null, appElement.askGTooltipTarget_);
+        });
 
     test('AskG does not show when feature disabled', async () => {
       loadTimeData.overrideValues({

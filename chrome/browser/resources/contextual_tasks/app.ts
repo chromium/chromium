@@ -885,10 +885,12 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   // </if>
 
   private get isAskGEntryPointEligible_(): boolean {
-    return !this.isShownInTab_ &&
-        (this.entryPoint_ === 'omnibox_tab_search' ||
-         this.entryPoint_ === 'omnibox_action' ||
-         this.entryPoint_ === 'omnibox_contextual_suggestion');
+    if (this.isShownInTab_) {
+      return this.entryPoint_ === 'omnibox_tab_search';
+    }
+    return this.entryPoint_ === 'omnibox_tab_search' ||
+        this.entryPoint_ === 'omnibox_action' ||
+        this.entryPoint_ === 'omnibox_contextual_suggestion';
   }
 
   // <if expr="not is_android">
