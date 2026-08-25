@@ -582,7 +582,18 @@ class ApiGuardDelegateShimlessRMAAppTest : public ApiGuardDelegateTest {
   void OnUserProfileCreated(const std::string& email,
                             Profile* profile) override {}
 
-  // Standalone dialogs in Shimless RMA do not require a desktop `Browser`.
+  // Standalone dialogs in Shimless RMA run without a desktop `Browser`.
+  // Returning `nullptr` prevents `BrowserWithTestWindowTest::SetUp()` from
+  // allocating an unmanaged `TestBrowserWindow` on the heap when no `Browser`
+  // is instantiated.
+  std::unique_ptr<BrowserWindow> CreateBrowserWindow() override {
+    return nullptr;
+  }
+
+  // Returning `nullptr` prevents `BrowserWithTestWindowTest::SetUp()` from
+  // creating a desktop `Browser` for `ShimlessRmaAppProfile`. This profile does
+  // not instantiate regular user services like `WaapUIMetricsService`, which
+  // `BrowserWindowFeatures` expects for normal browser windows.
   std::unique_ptr<Browser> CreateBrowser(
       Profile* profile,
       Browser::Type browser_type,
@@ -596,13 +607,7 @@ class ApiGuardDelegateShimlessRMAAppTest : public ApiGuardDelegateTest {
       chromeos_system_extension_info_;
 };
 
-// TODO(crbug.com/549798858): Re-enable this test.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_IwaNotOpen DISABLED_IwaNotOpen
-#else
-#define MAYBE_IwaNotOpen IwaNotOpen
-#endif
-TEST_P(ApiGuardDelegateShimlessRMAAppTest, MAYBE_IwaNotOpen) {
+TEST_P(ApiGuardDelegateShimlessRMAAppTest, IwaNotOpen) {
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
   base::test::TestFuture<std::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
@@ -614,13 +619,7 @@ TEST_P(ApiGuardDelegateShimlessRMAAppTest, MAYBE_IwaNotOpen) {
   EXPECT_EQ("Companion app UI is not open or not secure", error.value());
 }
 
-// TODO(crbug.com/549798858): Re-enable this test.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ManufacturerNotAllowed DISABLED_ManufacturerNotAllowed
-#else
-#define MAYBE_ManufacturerNotAllowed ManufacturerNotAllowed
-#endif
-TEST_P(ApiGuardDelegateShimlessRMAAppTest, MAYBE_ManufacturerNotAllowed) {
+TEST_P(ApiGuardDelegateShimlessRMAAppTest, ManufacturerNotAllowed) {
   OpenShimlessRmaAppDialog();
 
   // Make sure device manufacturer is not allowed.
@@ -638,13 +637,7 @@ TEST_P(ApiGuardDelegateShimlessRMAAppTest, MAYBE_ManufacturerNotAllowed) {
             error.value());
 }
 
-// TODO(crbug.com/549798858): Re-enable this test.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_NoError DISABLED_NoError
-#else
-#define MAYBE_NoError NoError
-#endif
-TEST_P(ApiGuardDelegateShimlessRMAAppTest, MAYBE_NoError) {
+TEST_P(ApiGuardDelegateShimlessRMAAppTest, NoError) {
   OpenShimlessRmaAppDialog();
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
