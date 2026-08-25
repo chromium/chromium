@@ -18,7 +18,10 @@ import androidx.xr.scenecore.SurfaceEntity.StereoMode;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.xr.scenecore.custom_mesh.XrCurvedMeshGenerator;
+import org.chromium.chrome.browser.xr.scenecore.custom_mesh.XrCurvedMeshHolder;
 import org.chromium.chrome.browser.xr.scenecore.custom_mesh.XrCustomMeshHolder;
+import org.chromium.chrome.browser.xr.scenecore.custom_mesh.XrSeamlessSphereMeshGenerator;
 import org.chromium.ui.xr.scenecore.XrCurvedSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrFloatSize3d;
 import org.chromium.ui.xr.scenecore.XrMeshData;
@@ -200,6 +203,23 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
             case XrSurfaceEntityShape.HEMISPHERE:
                 mEntity.setShape(new Shape.Hemisphere(1f));
                 break;
+            case XrSurfaceEntityShape.SEAMLESS_SPHERE:
+                var sphereConfig =
+                        new XrCurvedMeshGenerator.Config(
+                                getSurfaceStereoMode(),
+                                mCurrentSurfaceDimensions.getWidth(),
+                                mCurrentSurfaceDimensions.getHeight());
+                var sphereGenerator = new XrSeamlessSphereMeshGenerator(sphereConfig);
+                var sphereHolder =
+                        new XrCurvedMeshHolder(
+                                mXrSession,
+                                mEntity,
+                                mInteractableComponent,
+                                XrSurfaceEntityShape.SEAMLESS_SPHERE,
+                                sphereGenerator);
+                sphereHolder.updateMesh();
+                mCustomMeshHolder = sphereHolder;
+                break;
             default:
                 throw new IllegalArgumentException("Invalid surface shape: " + shape);
         }
@@ -277,10 +297,13 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
     @Override
     public float getEntityRadius() {
         assertDisposed();
-        if (mEntity.getShape() instanceof Shape.Sphere) {
-            return ((Shape.Sphere) mEntity.getShape()).getRadius();
-        } else if (mEntity.getShape() instanceof Shape.Hemisphere) {
-            return ((Shape.Hemisphere) mEntity.getShape()).getRadius();
+        Shape shape = mEntity.getShape();
+        if (shape instanceof Shape.Sphere) {
+            return ((Shape.Sphere) shape).getRadius();
+        } else if (shape instanceof Shape.Hemisphere) {
+            return ((Shape.Hemisphere) shape).getRadius();
+        } else if (mCustomMeshHolder instanceof XrCurvedMeshHolder) {
+            return ((XrCurvedMeshHolder) mCustomMeshHolder).getRadius();
         }
         return 0f;
     }
@@ -289,10 +312,14 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
     public void setEntityRadius(float radius) {
         assertDisposed();
         if (radius <= 0f) return;
-        if (mEntity.getShape() instanceof Shape.Sphere) {
+        Shape shape = mEntity.getShape();
+        if (shape instanceof Shape.Sphere) {
             mEntity.setShape(new Shape.Sphere(radius));
-        } else if (mEntity.getShape() instanceof Shape.Hemisphere) {
+        } else if (shape instanceof Shape.Hemisphere) {
             mEntity.setShape(new Shape.Hemisphere(radius));
+        } else if (mCustomMeshHolder instanceof XrCurvedMeshHolder) {
+            ((XrCurvedMeshHolder) mCustomMeshHolder).setRadius(radius);
+            return;
         }
     }
 

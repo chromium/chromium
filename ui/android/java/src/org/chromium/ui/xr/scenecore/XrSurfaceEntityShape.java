@@ -16,7 +16,8 @@ import java.lang.annotation.RetentionPolicy;
     XrSurfaceEntityShape.QUAD,
     XrSurfaceEntityShape.SPHERE,
     XrSurfaceEntityShape.HEMISPHERE,
-    XrSurfaceEntityShape.CUSTOM
+    XrSurfaceEntityShape.CUSTOM,
+    XrSurfaceEntityShape.SEAMLESS_SPHERE
 })
 @Retention(RetentionPolicy.SOURCE)
 @NullMarked
@@ -32,4 +33,22 @@ public @interface XrSurfaceEntityShape {
 
     /** A custom mesh surface. */
     int CUSTOM = 3;
+
+    /**
+     * A custom sphere mesh surface with seamless UV mapping for 360° immersive video.
+     *
+     * <p>Includes inward texture coordinate padding to prevent bilinear filtering seam artifacts
+     * along texture edges.
+     */
+    int SEAMLESS_SPHERE = 4;
+
+    /** Helper utilities for {@link XrSurfaceEntityShape}. */
+    final class Utils {
+        private Utils() {}
+
+        /** Returns true if the shape is curved. */
+        public static boolean isCurved(@XrSurfaceEntityShape int shape) {
+            return shape == SPHERE || shape == HEMISPHERE || shape == SEAMLESS_SPHERE;
+        }
+    }
 }

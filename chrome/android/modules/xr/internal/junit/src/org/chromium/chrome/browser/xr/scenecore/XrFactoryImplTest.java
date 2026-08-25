@@ -110,8 +110,24 @@ public class XrFactoryImplTest {
 
     @Test
     public void testCreateSurfaceEntity() {
-        XrSurfaceEntityHolder holder =
+        XrSurfaceEntityHolder quadHolder =
                 mFactory.createSurfaceEntity(mSession, XrSurfaceEntityShape.QUAD);
-        assertNotNull(holder);
+        assertNotNull(quadHolder);
+        assertEquals(XrSurfaceEntityShape.QUAD, quadHolder.getSurfaceShape());
+
+        XrSurfaceEntityHolder sphereHolder =
+                mFactory.createSurfaceEntity(mSession, XrSurfaceEntityShape.SPHERE);
+        assertNotNull(sphereHolder);
+        assertEquals(XrSurfaceEntityShape.SPHERE, sphereHolder.getSurfaceShape());
+
+        XrSurfaceEntityHolder hemiHolder =
+                mFactory.createSurfaceEntity(mSession, XrSurfaceEntityShape.HEMISPHERE);
+        assertNotNull(hemiHolder);
+        assertEquals(XrSurfaceEntityShape.HEMISPHERE, hemiHolder.getSurfaceShape());
+
+        XrSurfaceEntityHolder seamlessSphereHolder =
+                mFactory.createSurfaceEntity(mSession, XrSurfaceEntityShape.SEAMLESS_SPHERE);
+        assertNotNull(seamlessSphereHolder);
+        assertEquals(XrSurfaceEntityShape.SEAMLESS_SPHERE, seamlessSphereHolder.getSurfaceShape());
     }
 }

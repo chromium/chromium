@@ -186,6 +186,19 @@ public class XrSceneCoreSessionManagerImplTest {
     }
 
     @Test
+    public void testCreateSurfaceEntity_SeamlessSphere() {
+        XrSurfaceEntityHolder holder =
+                mManager.createSurfaceEntity(XrSurfaceEntityShape.SEAMLESS_SPHERE);
+        assertNotNull(holder);
+        assertTrue(holder instanceof XrCurvedSurfaceEntityHolder);
+
+        SurfaceEntity surfaceEntity = (SurfaceEntity) holder.getEntity();
+        assertEquals(StereoMode.MONO, surfaceEntity.getStereoMode());
+        assertTrue(surfaceEntity.getShape() instanceof Shape.CustomMesh);
+        assertEquals(XrSurfaceEntityShape.SEAMLESS_SPHERE, holder.getSurfaceShape());
+    }
+
+    @Test
     public void testCreatePanelEntity() {
         XrPanelEntityHolder holder = mManager.createPanelEntity(mView, "test-panel");
         assertNotNull(holder);
