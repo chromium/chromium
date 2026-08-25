@@ -104,8 +104,20 @@ PA_NOINLINE PA_MALLOC_FN void* PartitionRoot::AllocInternalForTesting(
 }
 
 PA_ALWAYS_INLINE size_t
-PartitionRoot::GetSlotUsableSize(const SlotSpanMetadata* slot_span) {
+PartitionRoot::GetSlotUsableSize(const SlotSpanMetadata* slot_span) const {
   return AdjustSizeForExtrasSubtract(slot_span->GetUtilizedSlotSize());
+}
+
+PA_ALWAYS_INLINE size_t PartitionRoot::GetSlotUsableSize(
+    const internal::BucketSizeDetails& size_details,
+    SlotSpanMetadata* slot_span) const {
+  if (size_details.slot_size <= kThreadCacheLargeSizeThreshold) [[likely]] {
+    PA_DCHECK(!slot_span->CanStoreRawSize());
+    auto usable_size = AdjustSizeForExtrasSubtract(size_details.slot_size);
+    PA_DCHECK(usable_size == GetSlotUsableSize(slot_span));
+    return usable_size;
+  }
+  return GetSlotUsableSize(slot_span);
 }
 
 PA_ALWAYS_INLINE PartitionRoot::BucketDistribution
@@ -1123,18 +1135,6 @@ bool PartitionRoot::TryRecommitSystemPagesForDataLocked(
     bool request_tagging) {
   return TryRecommitSystemPagesForDataInternal<true>(
       address, length, accessibility_disposition, request_tagging);
-}
-
-PA_ALWAYS_INLINE size_t PartitionRoot::GetSlotUsableSize(
-    const internal::BucketSizeDetails& size_details,
-    SlotSpanMetadata* slot_span) {
-  if (size_details.slot_size <= kThreadCacheLargeSizeThreshold) [[likely]] {
-    PA_DCHECK(!slot_span->CanStoreRawSize());
-    auto usable_size = AdjustSizeForExtrasSubtract(size_details.slot_size);
-    PA_DCHECK(usable_size == GetSlotUsableSize(slot_span));
-    return usable_size;
-  }
-  return GetSlotUsableSize(slot_span);
 }
 
 // Returns the page configuration to use when mapping slot spans for a given

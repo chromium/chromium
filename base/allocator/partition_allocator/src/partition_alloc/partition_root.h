@@ -563,14 +563,15 @@ class alignas(internal::kPartitionCachelineSize)
       size_t slot_size);
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
-  PA_ALWAYS_INLINE size_t GetSlotUsableSize(const SlotSpanMetadata* slot_span);
+  PA_ALWAYS_INLINE size_t
+  GetSlotUsableSize(const SlotSpanMetadata* slot_span) const;
 
   // This function attempts to compute the slot_span's usable size without
   // touching `slot_span`, but if it fails it will fall back on
   // GetSlotUsableSize(slot_span).
   PA_ALWAYS_INLINE size_t
   GetSlotUsableSize(const internal::BucketSizeDetails& size_details,
-                    SlotSpanMetadata* slot_span);
+                    SlotSpanMetadata* slot_span) const;
 
   PA_NOINLINE static size_t GetUsableSize(const void* ptr);
 
