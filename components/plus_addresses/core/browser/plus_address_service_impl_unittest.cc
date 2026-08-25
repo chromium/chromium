@@ -947,7 +947,7 @@ TEST_F(PlusAddressServiceSignoutTest,
 
   // The PlusAddressService isn't disabled for secondary account auth errors.
   identity_env().UpdatePersistentErrorOfRefreshTokenForAccount(
-      secondary_account().account_id,
+      secondary_account().GetAccountId(),
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   EXPECT_TRUE(service().IsEnabled());

@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -647,11 +648,11 @@ class IdentityManager : public KeyedService,
       const CoreAccountId& account_id,
       std::string_view email,
       const GaiaId& gaia,
-      const std::string& hosted_domain,
-      const std::string& full_name,
-      const std::string& given_name,
-      const std::string& locale,
-      const std::string& picture_url);
+      std::string_view hosted_domain,
+      std::string_view full_name,
+      std::string_view given_name,
+      std::string_view locale,
+      std::string_view picture_url);
 
 #if BUILDFLAG(IS_CHROMEOS)
   friend account_manager::AccountManagerFacade* GetAccountManagerFacade(

@@ -765,11 +765,11 @@ void IdentityTestEnvironment::SimulateSuccessfulFetchOfAccountInfo(
     const CoreAccountId& account_id,
     std::string_view email,
     const GaiaId& gaia,
-    const std::string& hosted_domain,
-    const std::string& full_name,
-    const std::string& given_name,
-    const std::string& locale,
-    const std::string& picture_url) {
+    std::string_view hosted_domain,
+    std::string_view full_name,
+    std::string_view given_name,
+    std::string_view locale,
+    std::string_view picture_url) {
   signin::SimulateSuccessfulFetchOfAccountInfo(
       identity_manager(), account_id, email, gaia, hosted_domain, full_name,
       given_name, locale, picture_url);

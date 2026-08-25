@@ -75,8 +75,9 @@ class ProvisioningDomainFetcherTest : public testing::Test {
     AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
         email, signin::ConsentLevel::kSignin);
     identity_test_env_.SimulateSuccessfulFetchOfAccountInfo(
-        account_info.account_id, account_info.email, account_info.gaia,
-        "managed.com", "Full Name", "Given Name", "en-US", "picture_url");
+        account_info.GetAccountId(), account_info.GetEmail(),
+        account_info.GetGaiaId(), "managed.com", "Full Name", "Given Name",
+        "en-US", "picture_url");
   }
 
   // Synchronously executes fetch when no HTTP network call is expected (e.g.

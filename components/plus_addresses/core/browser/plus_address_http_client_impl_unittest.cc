@@ -689,7 +689,7 @@ TEST_F(PlusAddressAuthToken, AuthErrorWithMultipleAccounts) {
   AccountInfo secondary =
       identity_env().MakeAccountAvailable("secondary@foo.com");
   identity_env().UpdatePersistentErrorOfRefreshTokenForAccount(
-      secondary.account_id,
+      secondary.GetAccountId(),
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   InitClient();
@@ -697,7 +697,7 @@ TEST_F(PlusAddressAuthToken, AuthErrorWithMultipleAccounts) {
   base::test::TestFuture<std::optional<std::string>> callback;
   test_api(client()).GetAuthToken(callback.GetCallback());
   identity_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      primary.account_id, kTestToken, base::Time::Max());
+      primary.GetAccountId(), kTestToken, base::Time::Max());
   EXPECT_EQ(callback.Get(), kTestToken);
 }
 

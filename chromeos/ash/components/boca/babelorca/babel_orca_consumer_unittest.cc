@@ -64,7 +64,7 @@ class BabelOrcaConsumerTest : public testing::Test {
   void SetUp() override {
     RegisterPrefsForTesting(&pref_service_);
     account_info_ = identity_test_env_.MakeAccountAvailable("test@school.edu");
-    identity_test_env_.SetPrimaryAccount(account_info_.email,
+    identity_test_env_.SetPrimaryAccount(account_info_.GetEmail(),
                                          signin::ConsentLevel::kSync);
   }
 

@@ -8,6 +8,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -43,11 +44,11 @@ void SimulateSuccessfulFetchOfAccountInfo(IdentityManager*,
                                           const CoreAccountId&,
                                           std::string_view,
                                           const GaiaId&,
-                                          const std::string&,
-                                          const std::string&,
-                                          const std::string&,
-                                          const std::string&,
-                                          const std::string&);
+                                          std::string_view,
+                                          std::string_view,
+                                          std::string_view,
+                                          std::string_view,
+                                          std::string_view);
 void SimulateAccountImageFetch(signin::IdentityManager*,
                                const CoreAccountId&,
                                const std::string& image_url_with_size,
@@ -183,11 +184,11 @@ class AccountTrackerService {
       const CoreAccountId&,
       std::string_view,
       const GaiaId&,
-      const std::string&,
-      const std::string&,
-      const std::string&,
-      const std::string&,
-      const std::string&);
+      std::string_view,
+      std::string_view,
+      std::string_view,
+      std::string_view,
+      std::string_view);
   friend void signin::SimulateAccountImageFetch(signin::IdentityManager*,
                                                 const CoreAccountId&,
                                                 const std::string&,

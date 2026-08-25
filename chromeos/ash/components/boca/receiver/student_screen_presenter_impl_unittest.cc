@@ -58,7 +58,7 @@ class StudentScreenPresenterImplTest : public testing::Test {
     student_identity_.set_full_name("Student Name");
     student_identity_.set_gaia_id("student-gaia-id");
     account_info_ = identity_test_env_.MakeAccountAvailable("test@school.edu");
-    identity_test_env_.SetPrimaryAccount(account_info_.email,
+    identity_test_env_.SetPrimaryAccount(account_info_.GetEmail(),
                                          signin::ConsentLevel::kSync);
     identity_test_env_.SetAutomaticIssueOfAccessTokens(/*grant=*/true);
   }

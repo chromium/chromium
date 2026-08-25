@@ -57,7 +57,7 @@ class BabelOrcaManagerTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     account_info_ = identity_test_env_.MakeAccountAvailable("test@school.edu");
-    identity_test_env_.SetPrimaryAccount(account_info_.email,
+    identity_test_env_.SetPrimaryAccount(account_info_.GetEmail(),
                                          signin::ConsentLevel::kSignin);
     pref_service_.registry()->RegisterStringPref(
         babelorca::prefs::kTachyonClientUuid, "");

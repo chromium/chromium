@@ -41,8 +41,9 @@ class EnterpriseNetworkAuthServiceTest : public testing::Test {
     AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
         email, signin::ConsentLevel::kSignin);
     identity_test_env_.SimulateSuccessfulFetchOfAccountInfo(
-        account_info.account_id, account_info.email, account_info.gaia,
-        "managed.com", "Full Name", "Given Name", "en-US", "picture_url");
+        account_info.GetAccountId(), account_info.GetEmail(),
+        account_info.GetGaiaId(), "managed.com", "Full Name", "Given Name",
+        "en-US", "picture_url");
   }
 
   // Synchronously fetches an access token for immediate precondition checks
@@ -317,8 +318,9 @@ TEST_F(EnterpriseNetworkAuthServiceTest,
 
   // Simulate extended account info update confirming managed status.
   identity_test_env_.SimulateSuccessfulFetchOfAccountInfo(
-      account_info.account_id, account_info.email, account_info.gaia,
-      "custom-domain.com", "Full Name", "Given Name", "en-US", "picture_url");
+      account_info.GetAccountId(), account_info.GetEmail(),
+      account_info.GetGaiaId(), "custom-domain.com", "Full Name", "Given Name",
+      "en-US", "picture_url");
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       kTestOAuthToken, base::Time::Max());
@@ -395,7 +397,7 @@ TEST_F(EnterpriseNetworkAuthServiceTest, ObserverNotifiedOnAccountChanges) {
 
   // Set persistent auth error on primary account.
   identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
-      account_info.account_id,
+      account_info.GetAccountId(),
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_SERVER));
@@ -403,7 +405,7 @@ TEST_F(EnterpriseNetworkAuthServiceTest, ObserverNotifiedOnAccountChanges) {
   // Error state resolved for primary account should notify.
   EXPECT_CALL(observer, OnAccountStateChanged()).Times(1);
   identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
-      account_info.account_id, GoogleServiceAuthError::AuthErrorNone());
+      account_info.GetAccountId(), GoogleServiceAuthError::AuthErrorNone());
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   // Secondary account actions should NOT notify.
@@ -416,7 +418,7 @@ TEST_F(EnterpriseNetworkAuthServiceTest, ObserverNotifiedOnAccountChanges) {
 
   // After removing observer, subsequent token updates should NOT notify.
   EXPECT_CALL(observer, OnAccountStateChanged()).Times(0);
-  identity_test_env_.SetRefreshTokenForAccount(account_info.account_id);
+  identity_test_env_.SetRefreshTokenForAccount(account_info.GetAccountId());
 }
 
 }  // namespace
