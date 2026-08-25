@@ -210,7 +210,9 @@ message TriggeredRuleInfo {
     WARN = 2;
     BLOCK = 3;
     FORCE_SAVE_TO_CLOUD = 4;
-    KEEP_IN_MANAGED_CHROME = 5;
+    // TODO(b/325455508): Add JUSTIFICATION_REQUIRED Implementation.
+    JUSTIFICATION_REQUIRED = 5;
+    KEEP_IN_MANAGED_CHROME = 6;
   }
 
   Action action = 5;

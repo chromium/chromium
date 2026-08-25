@@ -393,6 +393,11 @@ CreateDlpSensitiveDataEvent(
         triggered_rule->set_action(chrome::cros::reporting::proto::
                                        TriggeredRuleInfo::FORCE_SAVE_TO_CLOUD);
         break;
+      case enterprise_connectors::TriggeredRule::JUSTIFICATION_REQUIRED:
+        triggered_rule->set_action(
+            chrome::cros::reporting::proto::TriggeredRuleInfo::
+                JUSTIFICATION_REQUIRED);
+        break;
       case enterprise_connectors::TriggeredRule::KEEP_IN_MANAGED_CHROME:
         triggered_rule->set_action(
             chrome::cros::reporting::proto::TriggeredRuleInfo::
