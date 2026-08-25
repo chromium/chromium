@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_section_action_item.h"
 #include "chrome/browser/ui/views/app_menu/bookmarks_dynamic_menu.h"
-#include "chrome/browser/ui/views/toolbar/recent_tabs_dynamic_menu.h"
+#include "chrome/browser/ui/views/app_menu/recent_tabs_dynamic_menu.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"

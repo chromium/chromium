@@ -50,6 +50,9 @@ class BrowserElements;
 class BrowserFocusController;
 class BrowserInstantController;
 class BrowserLiveTabContext;
+namespace sessions {
+class LiveTabContext;
+}
 class BrowserLocationBarModelDelegate;
 class BrowserSelectFileDialogController;
 class BrowserSyncedWindowDelegate;
@@ -384,7 +387,7 @@ class BrowserWindowFeatures {
     return lens_region_search_controller_.get();
   }
 
-  BrowserLiveTabContext* live_tab_context() { return live_tab_context_.get(); }
+  sessions::LiveTabContext* live_tab_context();
 
   // Returns the LocationBar for this browser window. Currently delegates to
   // BrowserWindow::GetLocationBar() via downcast, but should eventually become

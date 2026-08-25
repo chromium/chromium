@@ -2824,7 +2824,7 @@ void TabRestorer::DoRestoreTab(Profile* profile, SessionID session_id) {
     return;
   BrowserWindowInterface* browser =
       ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser();
-  BrowserLiveTabContext* context =
+  sessions::LiveTabContext* context =
       browser ? browser->GetFeatures().live_tab_context() : nullptr;
   if (session_id.is_valid()) {
     service->RestoreEntryById(context, session_id,

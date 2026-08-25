@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/toolbar/recent_tabs_dynamic_menu.h"
+#include "chrome/browser/ui/views/app_menu/recent_tabs_dynamic_menu.h"
 
 #include <algorithm>
 #include <memory>
@@ -15,15 +15,11 @@
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
-#include "chrome/browser/ui/browser_actions.h"
-#include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/recent_tabs_builder.h"
 #include "chrome/browser/ui/tabs/recent_tabs_sub_menu_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_section_action_item.h"
 #include "components/favicon/core/favicon_service.h"
@@ -33,6 +29,7 @@
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/actions/actions.h"
 
 RecentTabsDynamicMenu::RecentTabsDynamicMenu(BrowserWindowInterface* browser)
@@ -73,8 +70,7 @@ void RecentTabsDynamicMenu::ExecuteRecentTab(
                                    recent_item.session_id(), &session_tab) &&
           session_tab && !session_tab->navigations.empty()) {
         SessionRestore::RestoreForeignSessionTab(
-            browser_window_interface_->GetTabStripModel()
-                ->GetActiveWebContents(),
+            browser_window_interface_->GetActiveTabInterface()->GetContents(),
             *session_tab, disposition);
       }
     }
@@ -90,7 +86,7 @@ void RecentTabsDynamicMenu::ExecuteRestoreEntry(
   if (!service) {
     return;
   }
-  BrowserLiveTabContext* live_context =
+  sessions::LiveTabContext* live_context =
       browser_window_interface_->GetFeatures().live_tab_context();
   if (!live_context) {
     return;
