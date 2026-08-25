@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!--
+  Frame layout:
+    top (this document)
+      frame A (cross-origin, OOPIF)
+        frame B (cross-origin, OOPIF, BUT same origin as top)
+  Frame B is tapped, and synchronously removes frame A while handling the gesture.
+-->
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+  body { margin: 0; }
+  iframe { border: 0; }
+</style>
+<iframe src="http://localhost:8080/input/resources/gesture-tap-detaching-oopif-frame-a.html"
+        width="200" height="200"></iframe>
+<script>
+function removeFrameA() {
+  document.querySelector("iframe").remove();
+}
+
+async_test(t => {
+  assert_true(!!(window.chrome && chrome.gpuBenchmarking),
+              "chrome.gpuBenchmarking is required");
+
+  addEventListener("message", t.step_func(event => {
+    if (event.data === "ready") {
+      // Use double-rAF to stabilize layout before dispatching input event.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          chrome.gpuBenchmarking.tap(100, 100, t.step_func_done(), 50,
+                                    chrome.gpuBenchmarking.TOUCH_INPUT);
+        });
+      });
+    }
+  }));
+}, "Detaching a tapped OOPIF during gesture dispatch does not crash");
+</script>

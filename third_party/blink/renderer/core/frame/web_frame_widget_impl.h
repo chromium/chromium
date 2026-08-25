@@ -927,6 +927,7 @@ class CORE_EXPORT WebFrameWidgetImpl
       bool event_processed) override;
   bool SupportsBufferedTouchEvents() override { return true; }
   void DidHandleKeyEvent() override;
+  void DidHandleGestureEvent(const WebGestureEvent& event) override;
   WebTextInputType GetTextInputType() override;
   void SetCursorVisibilityState(bool is_visible) override;
   blink::FrameWidget* FrameWidget() override { return this; }
@@ -1121,9 +1122,6 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   void ApplyViewportIntersection(
       mojom::blink::ViewportIntersectionStatePtr intersection_state);
-
-  // Called when a gesture event has been processed.
-  void DidHandleGestureEvent(const WebGestureEvent& event);
 
   // Called to update if pointerrawupdate events should be sent.
   void SetHasPointerRawUpdateEventHandlers(bool);

@@ -1304,7 +1304,6 @@ WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
         }
       }
       event_result = WebInputEventResult::kHandledSystem;
-      DidHandleGestureEvent(event);
       return event_result;
     default:
       break;
@@ -1406,7 +1405,6 @@ WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
     default:
       NOTREACHED();
   }
-  DidHandleGestureEvent(event);
   return event_result;
 }
 

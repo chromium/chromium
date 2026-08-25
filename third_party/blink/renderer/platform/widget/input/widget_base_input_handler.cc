@@ -463,11 +463,27 @@ void WidgetBaseInputHandler::HandleInputEvent(
        input_event.GetType() == WebInputEvent::Type::kTouchEnd) ||
       show_virtual_keyboard_for_mouse) {
     widget_->ShowVirtualKeyboard();
+    if (!weak_self) {
+      return;
+    }
   }
 
   if (!prevent_default &&
-      WebInputEvent::IsKeyboardEventType(input_event.GetType()))
+      WebInputEvent::IsGestureEventType(input_event.GetType())) {
+    widget_->client()->DidHandleGestureEvent(
+        static_cast<const WebGestureEvent&>(input_event));
+    if (!weak_self) {
+      return;
+    }
+  }
+
+  if (!prevent_default &&
+      WebInputEvent::IsKeyboardEventType(input_event.GetType())) {
     widget_->client()->DidHandleKeyEvent();
+    if (!weak_self) {
+      return;
+    }
+  }
 
 // TODO(rouslan): Fix ChromeOS and Windows 8 behavior of autofill popup with
 // virtual keyboard.

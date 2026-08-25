@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<style>
+  html, body { height: 100%; margin: 0; }
+</style>
+<body>
+tap target
+<script>
+document.addEventListener("click", () => {
+  window.top.removeFrameA();
+});
+window.top.postMessage("ready", "*");
+</script>
