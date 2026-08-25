@@ -18,14 +18,6 @@ namespace blink {
 
 namespace {
 
-// Returns true if the code cache for `request` should be serviced from the
-// webui bundled code cache.
-bool ShouldFetchWebUIBundledCodeCache(const network::ResourceRequest& request) {
-  return SchemeRegistry::SchemeSupportsWebUIBundledBytecode(
-             String(request.url.GetScheme())) &&
-         Platform::Current()->GetWebUIBundledCodeCacheResourceId(request.url);
-}
-
 bool ShouldFetchCodeCache(const network::ResourceRequest& request) {
   // Since code cache requests use a per-frame interface, don't fetch cached
   // code for keep-alive requests. These are only used for beaconing and we
@@ -90,6 +82,14 @@ mojom::blink::CodeCacheType GetCodeCacheType(
 }
 
 }  // namespace
+
+// static
+bool CodeCacheFetcher::ShouldFetchWebUIBundledCodeCache(
+    const network::ResourceRequest& request) {
+  return SchemeRegistry::SchemeSupportsWebUIBundledBytecode(
+             String(request.url.GetScheme())) &&
+         Platform::Current()->GetWebUIBundledCodeCacheResourceId(request.url);
+}
 
 // static
 scoped_refptr<CodeCacheFetcher> CodeCacheFetcher::TryCreateAndStart(

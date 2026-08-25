@@ -36,6 +36,11 @@ class BLINK_PLATFORM_EXPORT CodeCacheFetcher
       scoped_refptr<base::SequencedTaskRunner> host_task_runner,
       base::OnceClosure done_closure);
 
+  // Returns true if the code cache for `request` would be serviced from the
+  // WebUI bundled code cache.
+  static bool ShouldFetchWebUIBundledCodeCache(
+      const network::ResourceRequest& request);
+
   // Called when the request associated with the fetcher responds with code
   // cache metadata.
   virtual void DidReceiveCachedMetadataFromUrlLoader() = 0;

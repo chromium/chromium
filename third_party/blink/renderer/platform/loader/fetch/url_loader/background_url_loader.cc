@@ -20,6 +20,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/background_resource_fetch_histograms.h"
 #include "third_party/blink/public/common/loader/mime_sniffing_throttle.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
@@ -36,10 +37,12 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_response_processor.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/code_cache_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_sender.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_mojo.h"
@@ -76,12 +79,40 @@ BackgroundResourceFetchSupportStatus CanHandleRequestInternal(
     return BackgroundResourceFetchSupportStatus::kUnsupportedNonGetRequest;
   }
 
-  // Currently, only supports HTTP family and blob URL because:
+  // Currently, only supports HTTP family and blob URLs, plus WebUI URLs
+  // (trusted chrome:// as well as untrusted chrome-untrusted://) when the
+  // `BackgroundResourceFetchSupportsWebUI` feature param is enabled.
   // - PDF plugin is using the mechanism of subresource overrides with
   //   "chrome-extension://" urls. But ChildURLLoaderFactoryBundle::Clone()
   //   can't clone `subresource_overrides_`. So BackgroundURLLoader can't handle
   //   requests from the PDF plugin.
-  if (!request.url.SchemeIsHTTPOrHTTPS() && !request.url.SchemeIsBlob()) {
+  // chrome-untrusted:// is matched explicitly because SchemeRegistry's
+  // IsWebUIScheme() only covers trusted WebUI schemes (and is used for
+  // security/navigation decisions elsewhere).
+  //
+  // 1. Check schemes (short-circuit for HTTP/HTTPS/Blob).
+  const bool is_http_or_blob =
+      request.url.SchemeIsHTTPOrHTTPS() || request.url.SchemeIsBlob();
+  bool is_webui = false;
+
+  // Only check for WebUI schemes if it's not HTTP(S)/Blob to avoid unnecessary
+  // String allocations.
+  if (!is_http_or_blob &&
+      features::kBackgroundResourceFetchSupportsWebUI.Get()) {
+    is_webui = request.url.SchemeIs("chrome-untrusted") ||
+               SchemeRegistry::IsWebUIScheme(String(request.url.GetScheme()));
+  }
+
+  if (!is_http_or_blob && !is_webui) {
+    return BackgroundResourceFetchSupportStatus::kUnsupportedNonHttpUrlRequest;
+  }
+
+  // 2. WebUI specific checks.
+  // Don't support WebUI resources served from the WebUI bundled code cache
+  // (build-time V8 bytecode). It's consumed on the main thread via
+  // WebUIBundledCachedMetadataHandler, which the background loader path
+  // bypasses.
+  if (is_webui && CodeCacheFetcher::ShouldFetchWebUIBundledCodeCache(request)) {
     return BackgroundResourceFetchSupportStatus::kUnsupportedNonHttpUrlRequest;
   }
 

@@ -511,9 +511,17 @@ void SchemeRegistry::RegisterURLSchemeAsWebUIBundledBytecode(
   GetMutableURLSchemesRegistry().webui_bundled_bytecode_schemes.insert(scheme);
 }
 
+void SchemeRegistry::RegisterURLSchemeAsWebUIBundledBytecodeForTest(
+    const String& scheme) {
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
+  GetMutableURLSchemesRegistryForTest().webui_bundled_bytecode_schemes.insert(
+      scheme);
+}
+
 void SchemeRegistry::RemoveURLSchemeAsWebUIBundledBytecodeForTest(
     const String& scheme) {
-  GetMutableURLSchemesRegistry().webui_bundled_bytecode_schemes.erase(scheme);
+  GetMutableURLSchemesRegistryForTest().webui_bundled_bytecode_schemes.erase(
+      scheme);
 }
 
 bool SchemeRegistry::SchemeSupportsWebUIBundledBytecode(const String& scheme) {

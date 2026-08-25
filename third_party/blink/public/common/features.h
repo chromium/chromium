@@ -159,6 +159,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kBackgroundCodeCacheDecoderStart);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kBackgroundResourceFetchSupportsWebUI);
 
 // A kill switch to background fetch from the service worker environment. If
 // enabled, `backgroundFetch.fetch()` from the service worker will throw an
