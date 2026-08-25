@@ -4027,6 +4027,11 @@ public class ChromeContextMenuPopulatorTest {
                                 context, mProfile, ChromeContextMenuItem.Item.SAVE_IMAGE, false)
                         .toString());
         assertEquals(
+                context.getString(R.string.contextmenu_save_page_as),
+                ChromeContextMenuItem.getTitle(
+                                context, mProfile, ChromeContextMenuItem.Item.SAVE_PAGE, false)
+                        .toString());
+        assertEquals(
                 context.getString(R.string.contextmenu_save_link_as),
                 ChromeContextMenuItem.getTitle(
                                 context, mProfile, ChromeContextMenuItem.Item.SAVE_LINK_AS, false)
@@ -4043,6 +4048,34 @@ public class ChromeContextMenuPopulatorTest {
                                 mProfile,
                                 ChromeContextMenuItem.Item.DOWNLOAD_VIDEO_FRAME,
                                 false)
+                        .toString());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU)
+    public void testSaveAsContextMenuStrings_Disabled() {
+        Context context = ContextUtils.getApplicationContext();
+
+        assertEquals(
+                context.getString(R.string.contextmenu_save_image),
+                ChromeContextMenuItem.getTitle(
+                                context, mProfile, ChromeContextMenuItem.Item.SAVE_IMAGE, false)
+                        .toString());
+        assertEquals(
+                context.getString(R.string.contextmenu_save_page),
+                ChromeContextMenuItem.getTitle(
+                                context, mProfile, ChromeContextMenuItem.Item.SAVE_PAGE, false)
+                        .toString());
+        assertEquals(
+                context.getString(R.string.contextmenu_save_link),
+                ChromeContextMenuItem.getTitle(
+                                context, mProfile, ChromeContextMenuItem.Item.SAVE_LINK_AS, false)
+                        .toString());
+        assertEquals(
+                context.getString(R.string.contextmenu_save_video),
+                ChromeContextMenuItem.getTitle(
+                                context, mProfile, ChromeContextMenuItem.Item.SAVE_VIDEO, false)
                         .toString());
     }
 

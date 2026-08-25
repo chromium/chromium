@@ -70,6 +70,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
+import org.chromium.chrome.browser.app.appmenu.AppMenuItemTheme;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.MenuGroup;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
@@ -4330,6 +4331,68 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         R.id.bookmark_folder_menu_id,
                         item(R.id.bookmark_menu_id),
                         item(R.id.bookmark_menu_id)));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU)
+    public void testDownloadActionModel_SaveAsDisabled() {
+        setUpMocksForPageMenu();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ListItem iconRow = findItemById(modelList, R.id.icon_row_menu_id);
+        ListItem item =
+                findItemById(
+                        iconRow.model.get(AppMenuItemProperties.ADDITIONAL_ICONS),
+                        R.id.offline_page_id);
+        assertEquals(
+                ContextUtils.getApplicationContext().getString(R.string.download_page),
+                item.model.get(AppMenuItemProperties.TITLE));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU)
+    public void testDownloadActionModel_SaveAsEnabled() {
+        setUpMocksForPageMenu();
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        ListItem iconRow = findItemById(modelList, R.id.icon_row_menu_id);
+        ListItem item =
+                findItemById(
+                        iconRow.model.get(AppMenuItemProperties.ADDITIONAL_ICONS),
+                        R.id.offline_page_id);
+        assertEquals(
+                ContextUtils.getApplicationContext().getString(R.string.menu_save_page_as),
+                item.model.get(AppMenuItemProperties.TITLE));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU)
+    public void testDownloadPageItemTitle_SaveAsDisabled() {
+        SaveAndShareItemBuilder builder =
+                new SaveAndShareItemBuilder(
+                        ContextUtils.getApplicationContext(),
+                        new AppMenuItemTheme(
+                                ContextUtils.getApplicationContext(), mTabModelSelector),
+                        /* isMenuIconAtStart= */ false,
+                        mTabModelSelector);
+        ListItem item = builder.buildDownloadPageItem(/* showIcon= */ true);
+        assertEquals(
+                ContextUtils.getApplicationContext().getString(R.string.menu_download_page),
+                item.model.get(AppMenuItemProperties.TITLE));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU)
+    public void testDownloadPageItemTitle_SaveAsEnabled() {
+        SaveAndShareItemBuilder builder =
+                new SaveAndShareItemBuilder(
+                        ContextUtils.getApplicationContext(),
+                        new AppMenuItemTheme(
+                                ContextUtils.getApplicationContext(), mTabModelSelector),
+                        /* isMenuIconAtStart= */ false,
+                        mTabModelSelector);
+        ListItem item = builder.buildDownloadPageItem(/* showIcon= */ true);
+        assertEquals(
+                ContextUtils.getApplicationContext().getString(R.string.menu_save_page_as),
+                item.model.get(AppMenuItemProperties.TITLE));
     }
 
     private MenuItem getExpectedBookmarksParentMenuTitle() {

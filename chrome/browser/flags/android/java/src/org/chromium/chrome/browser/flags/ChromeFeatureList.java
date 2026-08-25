@@ -876,6 +876,7 @@ public abstract class ChromeFeatureList {
     public static final String XSURFACE_METRICS_REPORTING = "XsurfaceMetricsReporting";
     public static final String YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID =
             "YourSavedInfoSettingsPageAndroid";
+
     // keep-sorted end
     // LINT.ThenChange(//chrome/browser/flags/android/chrome_feature_list.cc:FeaturesExposedToJava)
 
@@ -891,7 +892,8 @@ public abstract class ChromeFeatureList {
                     : Map.ofEntries(
                             Map.entry(ACCOUNT_FOR_SUPPRESSED_KEYBOARD_INSETS, true),
                             Map.entry(ANDROID_THEME_MODULE, true),
-                            Map.entry(ANDROID_THEME_RESOURCE_PROVIDER, false));
+                            Map.entry(ANDROID_THEME_RESOURCE_PROVIDER, false),
+                            Map.entry(ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU, false));
 
     // keep-sorted start group_prefixes=["public static final CachedFlag"]
     public static final CachedFlag sAccountPickerDialog =

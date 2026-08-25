@@ -319,6 +319,11 @@ class ChromeContextMenuItem {
     public static CharSequence getTitle(
             Context context, Profile profile, @Item int item, boolean showInProductHelp) {
         switch (item) {
+            case Item.SAVE_PAGE:
+                if (isSaveAsEnabled()) {
+                    return context.getString(R.string.contextmenu_save_page_as);
+                }
+                break;
             case Item.SAVE_LINK_AS:
                 if (isSaveAsEnabled()) {
                     return context.getString(R.string.contextmenu_save_link_as);
