@@ -15,14 +15,6 @@ found in the LICENSE file.
     android:paddingHorizontal="16dp"
     android:background="@drawable/bottom_sheet_background">
 
-    <ImageView
-        android:id="@+id/drag_handle"
-        android:layout_width="32dp"
-        android:layout_height="4dp"
-        android:layout_marginTop="8dp"
-        android:layout_gravity="center_horizontal"
-        android:importantForAccessibility="no"
-        app:srcCompat="@drawable/drag_handlebar" />
 
     <TextView
         android:id="@+id/title"

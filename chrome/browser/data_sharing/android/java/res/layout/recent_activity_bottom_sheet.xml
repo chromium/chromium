@@ -12,7 +12,6 @@ found in the LICENSE file.
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-    <include layout="@layout/bottom_sheet_handlebar"/>
 
     <LinearLayout
     android:layout_width="match_parent"

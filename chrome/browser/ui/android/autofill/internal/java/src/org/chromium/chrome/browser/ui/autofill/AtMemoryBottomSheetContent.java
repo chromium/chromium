@@ -58,6 +58,11 @@ class AtMemoryBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
+    public boolean showHandlebar() {
+        return true;
+    }
+
+    @Override
     public boolean swipeToDismissEnabled() {
         return true;
     }

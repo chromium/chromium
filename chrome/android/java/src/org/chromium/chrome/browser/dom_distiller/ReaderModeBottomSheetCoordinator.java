@@ -204,6 +204,11 @@ public class ReaderModeBottomSheetCoordinator {
         }
 
         @Override
+        public boolean showHandlebar() {
+            return true;
+        }
+
+        @Override
         public boolean canBeSuppressed(BottomSheetContent nextContent) {
             return nextContent.getPriority() <= ContentPriority.HIGH;
         }

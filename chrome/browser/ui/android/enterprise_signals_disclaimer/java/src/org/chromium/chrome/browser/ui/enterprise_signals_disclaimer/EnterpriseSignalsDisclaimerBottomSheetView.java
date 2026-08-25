@@ -70,6 +70,11 @@ class EnterpriseSignalsDisclaimerBottomSheetView extends EnterpriseSignalsDiscla
     }
 
     @Override
+    public boolean showHandlebar() {
+        return true;
+    }
+
+    @Override
     public float getFullHeightRatio() {
         return BottomSheetContent.HeightMode.WRAP_CONTENT;
     }

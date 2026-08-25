@@ -8,7 +8,6 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.button.MaterialButton;
@@ -65,9 +64,7 @@ public class ReaderModeBottomSheetViewBinder {
             fontSizeLabelEnd.setTextColor(color);
         } else if (key == ReaderModeBottomSheetProperties.ICON_TINT) {
             ColorStateList colorStateList = model.get(ReaderModeBottomSheetProperties.ICON_TINT);
-            ImageView dragHandle = view.findViewById(R.id.drag_handle);
             TextView title = view.findViewById(R.id.title);
-            dragHandle.setImageTintList(colorStateList);
             title.setCompoundDrawableTintList(colorStateList);
 
             // Only non-null when the ReaderModeToggleLinks is enabled.

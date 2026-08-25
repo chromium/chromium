@@ -21,10 +21,6 @@ found in the LICENSE file.
         android:paddingTop="0dp"
         android:paddingBottom="16dp">
 
-    <include
-        android:id="@+id/bottom_sheet_handlebar"
-        layout="@layout/bottom_sheet_handlebar"/>
-
     <ImageView
         android:id="@+id/disclaimer_logo"
         android:layout_width=

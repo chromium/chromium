@@ -17,10 +17,8 @@ found in the LICENSE file.
     android:paddingBottom="@dimen/price_insights_bottom_padding"
     android:paddingStart="@dimen/price_insights_general_padding"
     android:paddingEnd="@dimen/price_insights_general_padding"
-    android:background="@drawable/price_insights_sheet_background">
-
-    <!-- The handle bar section -->
-    <include layout="@layout/bottom_sheet_handlebar"/>
+    android:background="@drawable/price_insights_sheet_background"
+    tools:ignore="UselessParent">
 
     <!-- The scroll view wrapper -->
     <ScrollView

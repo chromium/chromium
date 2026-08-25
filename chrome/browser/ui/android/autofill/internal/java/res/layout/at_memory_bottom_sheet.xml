@@ -6,11 +6,11 @@ found in the LICENSE file.
 -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
-
-    <include layout="@layout/bottom_sheet_handlebar" />
+    android:orientation="vertical"
+    tools:ignore="UselessParent">
 
     <ViewFlipper
         android:id="@+id/at_memory_view_flipper"

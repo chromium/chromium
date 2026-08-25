@@ -8,14 +8,13 @@ found in the LICENSE file.
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="wrap_content"
-    android:layout_width="match_parent">
-
-    <include layout="@layout/bottom_sheet_handlebar"/>
+    android:layout_width="match_parent"
+    tools:ignore="UselessParent">
 
     <ScrollView
         android:id="@+id/scroll_view"
-        android:layout_below="@id/handlebar"
         android:layout_height="wrap_content"
         android:layout_width="match_parent">
 

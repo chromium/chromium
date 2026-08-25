@@ -123,6 +123,11 @@ class AuthenticatorIncognitoConfirmationBottomsheet {
                 public @StringRes int getSheetClosedAccessibilityStringId() {
                     return R.string.webauthn_incognito_confirmation_sheet_closed;
                 }
+
+                @Override
+                public boolean showHandlebar() {
+                    return true;
+                }
             };
 
     public AuthenticatorIncognitoConfirmationBottomsheet(WebContents webContents) {

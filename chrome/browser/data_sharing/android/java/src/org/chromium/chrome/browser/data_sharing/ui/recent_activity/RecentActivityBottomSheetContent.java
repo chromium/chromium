@@ -92,4 +92,9 @@ class RecentActivityBottomSheetContent implements BottomSheetContent {
     public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.data_sharing_recent_activity_bottom_sheet_accessibility_closed;
     }
+
+    @Override
+    public boolean showHandlebar() {
+        return true;
+    }
 }

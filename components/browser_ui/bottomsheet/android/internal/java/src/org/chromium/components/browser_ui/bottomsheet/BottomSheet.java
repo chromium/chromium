@@ -1001,6 +1001,9 @@ class BottomSheet extends BottomSheetView
                     : "The peek mode can't wrap content.";
             int peekHeight = mSheetContent.getPeekHeight();
             assert peekHeight > 0 : "Custom peek height must be positive.";
+            if (mSheetContent.showHandlebar()) {
+                peekHeight += getHandlebarHeight();
+            }
             // If the max sheet height is smaller than the custom peek height (e.g. when entering
             // Picture-in-Picture mode where the window shrinks dynamically, or LFF desktop modes
             // where top gaps exist), we cap the peek height to the max sheet height instead of
@@ -1042,6 +1045,9 @@ class BottomSheet extends BottomSheetView
                     }
                 }
             }
+        }
+        if (mSheetContent != null && mSheetContent.showHandlebar()) {
+            toolbarHeight += getHandlebarHeight();
         }
         return toolbarHeight;
     }
@@ -1345,10 +1351,12 @@ class BottomSheet extends BottomSheetView
 
     /**
      * Gets the height of the bottom sheet based on a provided state.
+     *
      * @param state The state to get the height from.
      * @return The height of the sheet at the provided state.
      */
-    private float getSheetHeightForState(@SheetState int state) {
+    @VisibleForTesting
+    float getSheetHeightForState(@SheetState int state) {
         if (isFullHeightWrapContent() && state == SheetState.FULL) {
             ensureContentDesiredHeightIsComputed();
         }
@@ -1448,6 +1456,21 @@ class BottomSheet extends BottomSheetView
                         MeasureSpec.makeMeasureSpec(getMaxSheetWidth(), MeasureSpec.EXACTLY),
                         MeasureSpec.makeMeasureSpec(getMaxSheetHeight(), MeasureSpec.AT_MOST));
         mContentDesiredHeight = mSheetContent.getContentView().getMeasuredHeight();
+        if (mSheetContent.showHandlebar() && mHandlebar != null) {
+            mContentDesiredHeight += getHandlebarHeight();
+        }
+    }
+
+    private int getHandlebarHeight() {
+        if (mHandlebar == null || mSheetContent == null || !mSheetContent.showHandlebar()) {
+            return 0;
+        }
+        if (mHandlebar.getMeasuredHeight() == 0) {
+            mHandlebar.measure(
+                    MeasureSpec.makeMeasureSpec(getMaxSheetWidth(), MeasureSpec.AT_MOST),
+                    MeasureSpec.makeMeasureSpec(getMaxSheetHeight(), MeasureSpec.AT_MOST));
+        }
+        return mHandlebar.getMeasuredHeight();
     }
 
     private float getRatioForState(int state) {
@@ -1655,6 +1678,7 @@ class BottomSheet extends BottomSheetView
             mHandlebar.setPointerIcon(
                     PointerIcon.getSystemIcon(getContext(), PointerIcon.TYPE_HAND));
         }
+        updateContentContainerHeight();
         updateBackgroundColor();
         mModel.set(BottomSheetProperties.SHEET_LAYOUT_MODE, mode);
         mModel.set(BottomSheetProperties.GLOW_SPEC, getGlowSpecOrDefault());
@@ -1665,10 +1689,17 @@ class BottomSheet extends BottomSheetView
     }
 
     private void updateContentContainerHeight() {
-        ViewGroup.LayoutParams params = mBottomSheetContentContainer.getLayoutParams();
+        MarginLayoutParams params =
+                (MarginLayoutParams) mBottomSheetContentContainer.getLayoutParams();
         if (params == null) return;
 
         updateViewport();
+
+        int topMargin = getHandlebarHeight();
+        if (params.topMargin != topMargin) {
+            params.topMargin = topMargin;
+            mBottomSheetContentContainer.setLayoutParams(params);
+        }
 
         if (isFullHeightResizeContent()) {
             @Px float minContentHeight = getSheetHeightForState(SheetState.HALF);
@@ -1678,7 +1709,7 @@ class BottomSheet extends BottomSheetView
         } else {
             int targetHeight =
                     isLargeFormFactorUiEnabled()
-                            ? (int) getSheetHeightForState(SheetState.FULL)
+                            ? (int) getSheetHeightForState(SheetState.FULL) - topMargin
                             : ViewGroup.LayoutParams.MATCH_PARENT;
             mModel.set(BottomSheetProperties.CONTAINER_HEIGHT, targetHeight);
 
@@ -1693,7 +1724,9 @@ class BottomSheet extends BottomSheetView
         }
 
         int targetBgHeight =
-                isLargeFormFactorUiEnabled() ? params.height : ViewGroup.LayoutParams.MATCH_PARENT;
+                isLargeFormFactorUiEnabled()
+                        ? (int) getSheetHeightForState(SheetState.FULL)
+                        : ViewGroup.LayoutParams.MATCH_PARENT;
         ViewGroup.LayoutParams bgParams = mSheetBackground.getLayoutParams();
         if (bgParams != null && bgParams.height != targetBgHeight) {
             bgParams.height = targetBgHeight;

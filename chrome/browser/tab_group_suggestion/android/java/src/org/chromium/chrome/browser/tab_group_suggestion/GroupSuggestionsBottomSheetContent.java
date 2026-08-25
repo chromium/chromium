@@ -95,4 +95,9 @@ public class GroupSuggestionsBottomSheetContent implements BottomSheetContent {
         // string later.
         return R.string.commerce_bottom_sheet_content_closed;
     }
+
+    @Override
+    public boolean showHandlebar() {
+        return true;
+    }
 }

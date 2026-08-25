@@ -54,10 +54,6 @@ class EnterpriseSignalsDisclaimerView extends FrameLayout {
         LayoutInflater.from(context)
                 .inflate(R.layout.enterprise_signals_disclaimer_layout, this, true);
 
-        // The handlebar should only be displayed for the bottom sheet version.
-        View handlebar = findViewById(R.id.bottom_sheet_handlebar);
-        handlebar.setVisibility(isDialog ? View.GONE : View.VISIBLE);
-
         mScrollView = findViewById(R.id.disclaimer_scroll_view);
         mDisclaimerLogo = findViewById(R.id.disclaimer_logo);
         mTitleView = findViewById(R.id.disclaimer_title);

@@ -46,6 +46,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -1343,6 +1344,10 @@ public class BottomSheetUnitTest {
         assertNotNull(
                 "Handlebar should have TYPE_HAND hover pointer icon configured on desktop",
                 handlebar.getPointerIcon());
+        TouchRestrictingFrameLayout contentContainer =
+                sheet.findViewById(R.id.bottom_sheet_content);
+        MarginLayoutParams params = (MarginLayoutParams) contentContainer.getLayoutParams();
+        assertEquals(handlebar.getMeasuredHeight(), params.topMargin);
 
         // Setup Sheet Content that does not request a handlebar
         BottomSheetContent contentWithoutHandlebar = mock(BottomSheetContent.class);
@@ -1352,6 +1357,91 @@ public class BottomSheetUnitTest {
 
         sheet.showContent(contentWithoutHandlebar);
         assertEquals(View.GONE, handlebar.getVisibility());
+        params = (MarginLayoutParams) contentContainer.getLayoutParams();
+        assertEquals(0, params.topMargin);
+    }
+
+    @Test
+    public void testWrapContentHeightIncludesHandlebarHeight() {
+        BottomSheet sheet =
+                (BottomSheet)
+                        LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_desktop, null);
+        mSheetContainer.removeAllViews();
+        mSheetContainer.addView(sheet);
+        mSheetContainer.layout(0, 0, 1000, 800);
+        sheet.setSheetContainerForTesting(mSheetContainer);
+        sheet.setShadowLayerForTesting(mShadowLayerView);
+        sheet.setBottomSheetContentContainerForTesting(
+                sheet.findViewById(R.id.bottom_sheet_content));
+
+        sheet.init(
+                mActivity.getWindow(),
+                /* keyboardDelegate= */ mKeyboardDelegate,
+                /* alwaysFullWidth= */ false,
+                /* edgeToEdgeBottomInsetSupplier= */ () -> 0,
+                /* appHeaderHeight= */ 0,
+                /* bottomMargin= */ 0,
+                mInsetObserver,
+                /* isLargeFormFactor= */ true);
+
+        View contentView =
+                new View(mActivity) {
+                    @Override
+                    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                        setMeasuredDimension(
+                                getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec), 200);
+                    }
+                };
+
+        BottomSheetContent contentWithHandlebar = mock(BottomSheetContent.class);
+        doReturn(true).when(contentWithHandlebar).supportsLargeFormFactor();
+        doReturn(true).when(contentWithHandlebar).showHandlebar();
+        doReturn((float) HeightMode.WRAP_CONTENT).when(contentWithHandlebar).getFullHeightRatio();
+        doReturn(contentView).when(contentWithHandlebar).getContentView();
+
+        sheet.showContent(contentWithHandlebar);
+        ImageView handlebar = sheet.getHandlebarForTesting();
+        int expectedHeight = 200 + handlebar.getMeasuredHeight();
+        assertEquals(
+                expectedHeight, sheet.getSheetHeightForState(SheetState.FULL), MathUtils.EPSILON);
+        TouchRestrictingFrameLayout contentContainer =
+                sheet.findViewById(R.id.bottom_sheet_content);
+        MarginLayoutParams params = (MarginLayoutParams) contentContainer.getLayoutParams();
+        assertEquals(handlebar.getMeasuredHeight(), params.topMargin);
+    }
+
+    @Test
+    public void testPeekHeightIncludesHandlebarHeight() {
+        BottomSheet sheet =
+                (BottomSheet)
+                        LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_desktop, null);
+        mSheetContainer.removeAllViews();
+        mSheetContainer.addView(sheet);
+        sheet.setSheetContainerForTesting(mSheetContainer);
+        sheet.setShadowLayerForTesting(mShadowLayerView);
+        sheet.setBottomSheetContentContainerForTesting(
+                sheet.findViewById(R.id.bottom_sheet_content));
+
+        sheet.init(
+                mActivity.getWindow(),
+                /* keyboardDelegate= */ mKeyboardDelegate,
+                /* alwaysFullWidth= */ false,
+                /* edgeToEdgeBottomInsetSupplier= */ () -> 0,
+                /* appHeaderHeight= */ 0,
+                /* bottomMargin= */ 0,
+                mInsetObserver,
+                /* isLargeFormFactor= */ true);
+
+        BottomSheetContent contentWithHandlebar = mock(BottomSheetContent.class);
+        doReturn(true).when(contentWithHandlebar).supportsLargeFormFactor();
+        doReturn(true).when(contentWithHandlebar).showHandlebar();
+        doReturn(50).when(contentWithHandlebar).getPeekHeight();
+        doReturn(new View(mActivity)).when(contentWithHandlebar).getContentView();
+
+        sheet.showContent(contentWithHandlebar);
+        ImageView handlebar = sheet.getHandlebarForTesting();
+        int expectedPeekHeight = 50 + handlebar.getMeasuredHeight();
+        assertEquals(expectedPeekHeight, sheet.getPeekHeightPx());
     }
 
     @Test
