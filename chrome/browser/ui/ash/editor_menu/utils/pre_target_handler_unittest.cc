@@ -66,8 +66,9 @@ enum class ContextMenuSelectedState {
   kMaxValue = kOther,
 };
 
-ContextMenuSelectedState GetContextMenuSelectedState() {
-  auto* active_menu = views::MenuController::GetActiveInstance();
+ContextMenuSelectedState GetContextMenuSelectedState(
+    views::Widget* menu_owner) {
+  auto* active_menu = views::MenuController::GetForOwnerWidget(menu_owner);
   CHECK(active_menu);
 
   auto* const selected_item = active_menu->GetSelectedMenuItem();
@@ -200,7 +201,7 @@ TEST_P(PreTargetHandlerTest, KeyUpWhenNoItemSelected) {
   ui::test::EventGenerator event_generator(
       views::GetRootWindow(test_widget_.get()));
 
-  EXPECT_EQ(GetContextMenuSelectedState(),
+  EXPECT_EQ(GetContextMenuSelectedState(test_widget_.get()),
             ContextMenuSelectedState::kNoItemSelected);
 
   event_generator.PressAndReleaseKey(ui::VKEY_UP);
@@ -222,7 +223,7 @@ TEST_P(PreTargetHandlerTest, FirstItemSelected) {
       views::GetRootWindow(test_widget_.get()));
   event_generator.PressAndReleaseKey(ui::VKEY_DOWN);
 
-  ASSERT_EQ(GetContextMenuSelectedState(),
+  ASSERT_EQ(GetContextMenuSelectedState(test_widget_.get()),
             ContextMenuSelectedState::kFirstItemSelected);
 
   // Going up. The last traversable view should be focus if it is a `kDefault`
@@ -233,7 +234,7 @@ TEST_P(PreTargetHandlerTest, FirstItemSelected) {
             delegate.GetTraversableViewByIndex(kTraversableViewsNumber - 1)
                 ->HasFocus());
   EXPECT_EQ(card_type != CardType::kDefault,
-            GetContextMenuSelectedState() ==
+            GetContextMenuSelectedState(test_widget_.get()) ==
                 ContextMenuSelectedState::kLastItemSelected);
 }
 
@@ -248,7 +249,7 @@ TEST_P(PreTargetHandlerTest, LastItemSelected) {
   event_generator.PressAndReleaseKey(ui::VKEY_DOWN);
   event_generator.PressAndReleaseKey(ui::VKEY_DOWN);
 
-  ASSERT_EQ(GetContextMenuSelectedState(),
+  ASSERT_EQ(GetContextMenuSelectedState(test_widget_.get()),
             ContextMenuSelectedState::kLastItemSelected);
 
   // At the last menu item, going down should focus the first traversable view
@@ -259,7 +260,7 @@ TEST_P(PreTargetHandlerTest, LastItemSelected) {
   EXPECT_EQ(card_type == CardType::kDefault,
             delegate.GetTraversableViewByIndex(0)->HasFocus());
   EXPECT_EQ(card_type != CardType::kDefault,
-            GetContextMenuSelectedState() ==
+            GetContextMenuSelectedState(test_widget_.get()) ==
                 ContextMenuSelectedState::kFirstItemSelected);
 }
 
@@ -287,7 +288,7 @@ TEST_P(PreTargetHandlerTest, ViewFocusedKeyDown) {
   // the first menu item.
   event_generator.PressAndReleaseKey(ui::VKEY_DOWN);
 
-  EXPECT_EQ(GetContextMenuSelectedState(),
+  EXPECT_EQ(GetContextMenuSelectedState(test_widget_.get()),
             ContextMenuSelectedState::kFirstItemSelected);
 
   // Going up will take focus back to the last traversable view.
@@ -315,7 +316,7 @@ TEST_P(PreTargetHandlerTest, ViewFocusedKeyUp) {
   // last menu item.
   event_generator.PressAndReleaseKey(ui::VKEY_UP);
 
-  EXPECT_EQ(GetContextMenuSelectedState(),
+  EXPECT_EQ(GetContextMenuSelectedState(test_widget_.get()),
             ContextMenuSelectedState::kLastItemSelected);
 
   // Going down will take focus back to the first focusable view.
