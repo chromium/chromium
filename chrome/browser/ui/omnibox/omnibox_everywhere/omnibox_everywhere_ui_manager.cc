@@ -662,7 +662,11 @@ void OmniboxEverywhereUIManager::OnWidgetUserDragEnded(views::Widget* widget) {
 }
 
 void OmniboxEverywhereUIManager::CloseUI() {
-  Close();
+  if (prefs::IsEphemeralModelEnabled()) {
+    Close();
+  } else {
+    Demote();
+  }
 }
 
 void OmniboxEverywhereUIManager::ShowUI() {

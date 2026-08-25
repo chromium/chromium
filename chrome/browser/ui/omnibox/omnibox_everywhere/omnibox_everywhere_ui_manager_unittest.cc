@@ -578,6 +578,57 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   ui_manager->Close();
 }
 
+// Tests that CloseUI() demotes the widget in persistent mode.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CloseUIInPersistentModeDemotesWidget \
+  CloseUIInPersistentModeDemotesWidget
+#else
+#define MAYBE_CloseUIInPersistentModeDemotesWidget \
+  DISABLED_CloseUIInPersistentModeDemotesWidget
+#endif
+TEST_F(OmniboxEverywhereUIManagerTest,
+       MAYBE_CloseUIInPersistentModeDemotesWidget) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+  views::test::WaitForWidgetActive(widget, true);
+  EXPECT_TRUE(ui_manager->IsActive());
+  EXPECT_EQ(widget->GetZOrderLevel(), ui::ZOrderLevel::kNormal);
+
+  // CloseUI() in persistent mode should demote (deactivate and keep visible).
+  ui_manager->CloseUI();
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_FALSE(ui_manager->IsActive());
+  EXPECT_EQ(widget->GetZOrderLevel(), ui::ZOrderLevel::kNormal);
+
+  ui_manager->Close();
+}
+
+// Tests that CloseUI() closes and hides the widget in ephemeral mode.
+TEST_F(OmniboxEverywhereUIManagerTest, CloseUIInEphemeralModeClosesWidget) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+  }
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+
+  // CloseUI() in ephemeral mode should close/hide the widget.
+  ui_manager->CloseUI();
+  EXPECT_FALSE(ui_manager->IsVisible());
+}
+
 TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringFileChooser) {
   if (g_browser_process && g_browser_process->local_state()) {
     g_browser_process->local_state()->SetBoolean(
