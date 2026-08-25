@@ -17,6 +17,7 @@
 #include "ios/chrome/browser/level_up/model/task_types.h"
 
 class BrowserList;
+class IOSChromePasswordCheckManager;
 class PrefService;
 class SessionRestorationService;
 
@@ -27,7 +28,8 @@ class LevelUpService : public KeyedService {
   LevelUpService(
       PrefService* pref_service,
       BrowserList* browser_list = nullptr,
-      SessionRestorationService* session_restoration_service = nullptr);
+      SessionRestorationService* session_restoration_service = nullptr,
+      IOSChromePasswordCheckManager* password_check_manager = nullptr);
   ~LevelUpService() override;
 
   // Returns true if the user has enabled the feature UI.
@@ -73,6 +75,7 @@ class LevelUpService : public KeyedService {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
  private:
+  class LevelUpPasswordCheckObserver;
   class LevelUpTabGroupObserver;
 
   // Populates the map of available tasks.
@@ -99,6 +102,7 @@ class LevelUpService : public KeyedService {
   int CalculateLevel(size_t completed_count) const;
 
   raw_ptr<PrefService> pref_service_;
+  std::unique_ptr<LevelUpPasswordCheckObserver> password_check_observer_;
   std::unique_ptr<LevelUpTabGroupObserver> tab_group_observer_;
   std::map<TaskType, std::unique_ptr<TaskInfo>> tasks_;
   std::map<std::string, LevelUpTaskStatType> stat_trigger_user_actions_;

@@ -11,6 +11,8 @@
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/level_up/model/level_up_service_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -183,6 +185,28 @@ TEST_F(LevelUpServiceTest, TestTabGroupObserverDecluttering) {
 
   // Stat count should increment to 2.
   EXPECT_EQ(2, service_->GetStatValue(LevelUpTaskStatType::kTabsDecluttered));
+}
+
+// Tests that LevelUpPasswordCheckObserver updates kPasswordsVerified stat when
+// a password check finishes (transitions from kRunning to kIdle).
+TEST_F(LevelUpServiceTest, TestPasswordCheckObserver) {
+  EXPECT_EQ(0, service_->GetStatValue(LevelUpTaskStatType::kPasswordsVerified));
+
+  scoped_refptr<IOSChromePasswordCheckManager> check_manager =
+      IOSChromePasswordCheckManagerFactory::GetForProfile(profile_.get());
+  ASSERT_TRUE(check_manager);
+
+  auto service_with_manager = std::make_unique<LevelUpService>(
+      profile_->GetPrefs(), nullptr, nullptr, check_manager.get());
+
+  // Start and stop password check.
+  check_manager->StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kEditCheck);
+  check_manager->StopPasswordCheck();
+
+  // Verify kPasswordsVerified stat (0 if no saved passwords in test store).
+  EXPECT_EQ(0, service_with_manager->GetStatValue(
+                   LevelUpTaskStatType::kPasswordsVerified));
 }
 
 }  // namespace

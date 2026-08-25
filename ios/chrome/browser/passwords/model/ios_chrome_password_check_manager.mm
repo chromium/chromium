@@ -221,6 +221,11 @@ void IOSChromePasswordCheckManager::OnStateChanged(State state) {
         base::Time::Now().InSecondsFSinceUnixEpoch());
 
     LogInsecureCredentialsCountMetrics();
+
+    size_t count = saved_passwords_presenter_->GetSavedPasswords().size();
+    for (auto& observer : observers_) {
+      observer.PasswordCheckFinished(count);
+    }
   }
   if (state != State::kRunning) {
     // If check was running

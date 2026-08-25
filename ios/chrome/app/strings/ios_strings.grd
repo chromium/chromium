@@ -4628,8 +4628,8 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       </message>
       <message name="IDS_IOS_LEVEL_UP_STAT_PASSWORDS_VERIFIED" desc="Title for the passwords verified statistic card. [iOS only]">
         {count, plural,
-          =1 {1 password instantly verified}
-          other {# passwords instantly verified}}
+          =1 {You checked 1 password}
+          other {You checked # passwords}}
       </message>
       <message name="IDS_IOS_LEVEL_UP_STAT_PHOTO_SEARCHES_PERFORMED" desc="Title for the manual searches skipped statistic card. [iOS only]">
         {count, plural,
@@ -4637,7 +4637,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
           other {You used # photos to search}}
       </message>
       <message name="IDS_IOS_LEVEL_UP_STAT_SUBTITLE_PASSWORDS_VERIFIED" desc="Statistic card subtitle displaying the source task for passwords verified. [iOS only]">
-        since using Password checkup
+        since completing "Check your passwords"
       </message>
       <message name="IDS_IOS_LEVEL_UP_STAT_SUBTITLE_PHOTO_SEARCHES_PERFORMED" desc="Statistic card subtitle displaying the source task for manual searches skipped. [iOS only]">
         since completing "Use a photo to search with Google Lens"

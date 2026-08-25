@@ -32,6 +32,18 @@ void PasswordCheckObserverBridge::PasswordCheckStatusChanged(
   });
 }
 
+void PasswordCheckObserverBridge::PasswordCheckFinished(
+    size_t passwords_checked) {
+  __weak id<PasswordCheckObserver> weakDelegate = delegate_;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if ([weakDelegate
+            respondsToSelector:@selector(passwordCheckDidFinishWithCount:)]) {
+      [weakDelegate passwordCheckDidFinishWithCount:static_cast<NSInteger>(
+                                                        passwords_checked)];
+    }
+  });
+}
+
 void PasswordCheckObserverBridge::InsecureCredentialsChanged() {
   [delegate_ insecureCredentialsDidChange];
 }

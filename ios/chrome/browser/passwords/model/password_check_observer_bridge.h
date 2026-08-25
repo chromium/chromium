@@ -28,6 +28,13 @@
 // when this happens.
 - (void)passwordCheckManagerWillShutdown;
 
+@optional
+
+// Notifies delegate about a finished password check with count of checked
+// passwords. Mirroring
+// IOSChromePasswordCheckManager::Observer::PasswordCheckFinished.
+- (void)passwordCheckDidFinishWithCount:(NSInteger)count;
+
 @end
 
 // Simple observer bridge that forwards all events to its delegate observer.
@@ -39,6 +46,7 @@ class PasswordCheckObserverBridge
   ~PasswordCheckObserverBridge() override;
 
   void PasswordCheckStatusChanged(PasswordCheckState state) override;
+  void PasswordCheckFinished(size_t passwords_checked) override;
   void InsecureCredentialsChanged() override;
   void ManagerWillShutdown(
       IOSChromePasswordCheckManager* password_check_manager) override;

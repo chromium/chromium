@@ -76,6 +76,7 @@ struct MockPasswordCheckManagerObserver
               PasswordCheckStatusChanged,
               (PasswordCheckState),
               (override));
+  MOCK_METHOD(void, PasswordCheckFinished, (size_t), (override));
   MOCK_METHOD(void,
               ManagerWillShutdown,
               (IOSChromePasswordCheckManager*),
@@ -356,6 +357,7 @@ TEST_F(IOSChromePasswordCheckManagerTest, CheckFinishedWithDelay) {
   EXPECT_CALL(observer, InsecureCredentialsChanged).Times(2);
   EXPECT_CALL(observer, PasswordCheckStatusChanged(PasswordCheckState::kIdle))
       .Times(2);
+  EXPECT_CALL(observer, PasswordCheckFinished(1));
   manager().StartPasswordCheck(
       password_manager::LeakDetectionInitiator::kIosProactivePasswordCheckup);
   RunUntilIdle();
@@ -372,6 +374,33 @@ TEST_F(IOSChromePasswordCheckManagerTest, CheckFinishedWithDelay) {
   // Advance the clock 1 more second simulating that 3 seconds have passed so
   // the check status update should have been received.
   FastForwardBy(base::Seconds(1));
+
+  manager().RemoveObserver(&observer);
+}
+
+// Tests PasswordCheckFinished is notified with password count on completion.
+TEST_F(IOSChromePasswordCheckManagerTest,
+       PasswordCheckFinishedNotifiesObservers) {
+  store().AddLogin(MakeSavedPassword(kExampleCom1, kUsername116));
+  store().AddLogin(MakeSavedPassword(kExampleCom2, kUsername216));
+  RunUntilIdle();
+
+  StrictMock<MockPasswordCheckManagerObserver> observer;
+  manager().AddObserver(&observer);
+
+  EXPECT_CALL(observer, InsecureCredentialsChanged).Times(2);
+  EXPECT_CALL(observer, PasswordCheckStatusChanged(PasswordCheckState::kIdle))
+      .Times(2);
+  EXPECT_CALL(observer, PasswordCheckFinished(2));
+  manager().StartPasswordCheck(
+      password_manager::LeakDetectionInitiator::kIosProactivePasswordCheckup);
+  RunUntilIdle();
+
+  static_cast<BulkLeakCheckServiceInterface::Observer*>(&manager())
+      ->OnStateChanged(BulkLeakCheckServiceInterface::State::kIdle);
+
+  EXPECT_CALL(observer, PasswordCheckStatusChanged(PasswordCheckState::kIdle));
+  FastForwardBy(base::Seconds(3));
 
   manager().RemoveObserver(&observer);
 }
