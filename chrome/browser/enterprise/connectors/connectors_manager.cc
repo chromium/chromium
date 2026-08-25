@@ -152,9 +152,6 @@ void ConnectorsManager::OnAnalysisPrefChanged(AnalysisConnector connector) {
 }
 
 DataRegion ConnectorsManager::GetDataRegion(AnalysisConnector connector) const {
-#if BUILDFLAG(IS_ANDROID)
-  return DataRegion::NO_PREFERENCE;
-#else
   // Connector's policy scope determines the DRZ policy scope to use.
   policy::PolicyScope scope = static_cast<policy::PolicyScope>(
       prefs()->GetInteger(AnalysisConnectorScopePref(connector)));
@@ -171,7 +168,6 @@ DataRegion ConnectorsManager::GetDataRegion(AnalysisConnector connector) const {
 
   return ChromeDataRegionSettingToEnum(
       pref_service->GetInteger(prefs::kChromeDataRegionSetting));
-#endif
 }
 
 std::unique_ptr<AnalysisServiceSettingsBase>

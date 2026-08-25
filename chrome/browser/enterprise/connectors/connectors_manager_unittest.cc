@@ -45,10 +45,16 @@ namespace enterprise_connectors {
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID)
 constexpr AnalysisConnector kAllAnalysisConnectors[] = {
-    AnalysisConnector::FILE_DOWNLOADED, AnalysisConnector::FILE_ATTACHED,
-    AnalysisConnector::BULK_DATA_ENTRY, AnalysisConnector::PRINT};
+#if BUILDFLAG(IS_ANDROID)
+    AnalysisConnector::FILE_DOWNLOADED,
+#else
+    AnalysisConnector::FILE_DOWNLOADED,
+    AnalysisConnector::FILE_ATTACHED,
+    AnalysisConnector::BULK_DATA_ENTRY,
+    AnalysisConnector::PRINT,
+#endif
+};
 
 constexpr DataRegion kAllDataRegions[] = {
     DataRegion::NO_PREFERENCE, DataRegion::UNITED_STATES, DataRegion::EUROPE};
@@ -91,7 +97,6 @@ constexpr char kDlpAndMalwareUrl[] = "https://foo.com";
 constexpr char kOnlyDlpUrl[] = "https://no.malware.com";
 constexpr char kOnlyMalwareUrl[] = "https://no.dlp.com";
 constexpr char kNoTagsUrl[] = "https://no.dlp.or.malware.ca";
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -203,7 +208,6 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Bool()));
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 class ConnectorsManagerConnectorPoliciesTest
     : public ConnectorsManagerTest,
       public testing::WithParamInterface<
@@ -316,7 +320,6 @@ INSTANTIATE_TEST_SUITE_P(
                                      kNoTagsUrl),
                      testing::Values(kNormalCloudAnalysisSettingsPref,
                                      kNormalLocalAnalysisSettingsPref)));
-#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 using VolumeInfo = SourceDestinationTestingHelper::VolumeInfo;
@@ -665,7 +668,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 class ConnectorsManagerAnalysisConnectorsTest
     : public ConnectorsManagerTest,
       public testing::WithParamInterface<
@@ -746,7 +748,6 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::ValuesIn(kAllAnalysisConnectors),
                      testing::Values(kNormalCloudAnalysisSettingsPref,
                                      kNormalLocalAnalysisSettingsPref)));
-#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 
@@ -926,7 +927,6 @@ INSTANTIATE_TEST_SUITE_P(ConnectorsManagerLocalAnalysisConnectorTest,
                          testing::ValuesIn(kAllAnalysisConnectors));
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
-#if !BUILDFLAG(IS_ANDROID)
 class ConnectorsManagerDataRegionTest
     : public ConnectorsManagerTest,
       public testing::WithParamInterface<std::tuple<AnalysisConnector,
@@ -993,5 +993,5 @@ INSTANTIATE_TEST_SUITE_P(
         testing::ValuesIn(kAllDataRegions),
         testing::Values(policy::PolicyScope::POLICY_SCOPE_USER,
                         policy::PolicyScope::POLICY_SCOPE_MACHINE)));
-#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace enterprise_connectors
