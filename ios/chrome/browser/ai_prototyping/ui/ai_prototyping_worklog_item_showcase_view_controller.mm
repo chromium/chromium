@@ -27,12 +27,27 @@ struct ShowcaseItemConfig {
 // Helper to create and configure an ActuationWorklogItemView from a config.
 ActuationWorklogItemView* CreateWorklogItemView(
     const ShowcaseItemConfig& config) {
-  ActuationWorklogItem* item = [[ActuationWorklogItem alloc]
-      initWithTitle:config.title
-           subtitle:config.subtitle
-               icon:SymbolWithPointSize(SymbolPersonBadgeKeyFill, kSymbolSize)
-              style:config.style
-             active:config.active];
+  UIImage* icon = SymbolWithPointSize(SymbolPersonBadgeKeyFill, kSymbolSize);
+  ActuationWorklogItem* item;
+  switch (config.style) {
+    case ActuationWorklogItemStyle::kSimple:
+      item = [ActuationWorklogItem simpleItemWithTitle:config.title
+                                                active:config.active];
+      break;
+    case ActuationWorklogItemStyle::kLabeled:
+      item = [ActuationWorklogItem labeledItemWithTitle:config.title
+                                               subtitle:config.subtitle
+                                                   icon:icon
+                                                 active:config.active];
+      break;
+    case ActuationWorklogItemStyle::kCard:
+      item = [ActuationWorklogItem cardItemWithTitle:config.title
+                                            subtitle:config.subtitle
+                                                icon:icon
+                                              active:config.active];
+      break;
+  }
+
   ActuationWorklogItemView* view = [[ActuationWorklogItemView alloc] init];
   [view configureWithItem:item];
   view.connectorVisibility = config.visibility;
@@ -40,6 +55,10 @@ ActuationWorklogItemView* CreateWorklogItemView(
 }
 
 }  // namespace
+
+@interface AIPrototypingWorklogItemShowcaseViewController () <
+    ActuationWorklogItemViewDelegate>
+@end
 
 @implementation AIPrototypingWorklogItemShowcaseViewController {
   UIScrollView* _scrollView;
@@ -65,6 +84,7 @@ ActuationWorklogItemView* CreateWorklogItemView(
 
   [self setupConstraints];
   [self addTimelineSequenceSection];
+  [self addCardAccessoryShowcaseSection];
   [self addConnectorVisibilitiesSection];
 }
 
@@ -117,6 +137,62 @@ ActuationWorklogItemView* CreateWorklogItemView(
   }
 }
 
+// Builds the card layout sub-card accessories showcase section.
+- (void)addCardAccessoryShowcaseSection {
+  [self addHeaderTitle:@"Card Sub-Card Accessories"];
+
+  // 1. Account / Credential Accessory Card.
+  ActuationWorklogAccessoryItem* credentialAccessory =
+      [[ActuationWorklogAccessoryItem alloc]
+          initWithIcon:SymbolWithPointSize(SymbolPersonCropCircle, 24.0)
+                 title:@"Elisa Beckett"
+              subtitle:@"elisa.beckett@nipon.com"
+            detailText:nil
+            hasChevron:YES];
+
+  ActuationWorklogItem* credentialCardItem = [ActuationWorklogItem
+      cardItemWithTitle:@"Sign in to amctheatres.com"
+               subtitle:@"We can use your saved info in Waffle to sign in "
+                        @"for you."
+                   icon:SymbolWithPointSize(SymbolPersonBadgeKeyFill,
+                                            kSymbolSize)
+                 active:YES
+          accessoryItem:credentialAccessory];
+
+  ActuationWorklogItemView* credentialView =
+      [[ActuationWorklogItemView alloc] init];
+  credentialView.delegate = self;
+  [credentialView configureWithItem:credentialCardItem];
+  credentialView.connectorVisibility =
+      ActuationWorklogConnectorVisibility::kNone;
+  [_mainStackView addArrangedSubview:credentialView];
+
+  // 2. Payment Info Accessory Card.
+  ActuationWorklogAccessoryItem* paymentAccessory =
+      [[ActuationWorklogAccessoryItem alloc]
+          initWithIcon:SymbolWithPointSize(SymbolCreditCard, 24.0)
+                 title:@"Niponcarte"
+              subtitle:@"••••3222"
+            detailText:@"05/28"
+            hasChevron:YES];
+
+  ActuationWorklogItem* paymentCardItem = [ActuationWorklogItem
+      cardItemWithTitle:@"Filling payment info"
+               subtitle:
+                   @"To continue the task, Interthings can ask Waffle Ballet "
+                   @"to fill out your credit card info."
+                   icon:SymbolWithPointSize(SymbolCreditCard, kSymbolSize)
+                 active:YES
+          accessoryItem:paymentAccessory];
+
+  ActuationWorklogItemView* paymentView =
+      [[ActuationWorklogItemView alloc] init];
+  paymentView.delegate = self;
+  [paymentView configureWithItem:paymentCardItem];
+  paymentView.connectorVisibility = ActuationWorklogConnectorVisibility::kNone;
+  [_mainStackView addArrangedSubview:paymentView];
+}
+
 // Builds the individual connector visibilities showcase section.
 - (void)addConnectorVisibilitiesSection {
   [self addHeaderTitle:@"Individual Connector Visibilities"];
@@ -147,6 +223,26 @@ ActuationWorklogItemView* CreateWorklogItemView(
   header.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
   header.textColor = [UIColor colorNamed:kTextPrimaryColor];
   [_mainStackView addArrangedSubview:header];
+}
+
+#pragma mark - ActuationWorklogItemViewDelegate
+
+- (void)worklogItemViewDidTapItem:(ActuationWorklogItemView*)itemView {
+  // Showcase item tap demo handler.
+}
+
+- (void)worklogItemView:(ActuationWorklogItemView*)itemView
+    didTapAccessoryItem:(ActuationWorklogAccessoryItem*)accessoryItem {
+  NSString* message = [NSString
+      stringWithFormat:@"Tapped accessory item: %@", accessoryItem.title];
+  UIAlertController* alert =
+      [UIAlertController alertControllerWithTitle:@"Accessory Card Tapped"
+                                          message:message
+                                   preferredStyle:UIAlertControllerStyleAlert];
+  [alert addAction:[UIAlertAction actionWithTitle:@"OK"
+                                            style:UIAlertActionStyleDefault
+                                          handler:nil]];
+  [self presentViewController:alert animated:YES completion:nil];
 }
 
 @end
