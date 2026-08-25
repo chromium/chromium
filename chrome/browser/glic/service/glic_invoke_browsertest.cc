@@ -1143,6 +1143,29 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
     CloseBrowserSynchronously(fallback_browser);
   }
 
+  // 3. TabHandle targeting app_browser's tab is rejected (resolves to nullptr).
+  {
+    tabs::TabInterface* app_tab =
+        TabListInterface::From(app_browser)
+            ->OpenTab(GURL("about:blank"), -1, /*foreground=*/true);
+    ASSERT_TRUE(app_tab);
+    Target target;
+    target.surface = app_tab->GetHandle();
+    auto resolved =
+        GlicInvokeHandler::ResolveTargetSurface(GetProfile(), target);
+    ASSERT_TRUE(
+        std::holds_alternative<GlicInvokeHandler::TabSurface>(resolved));
+    auto tab_surface = std::get<GlicInvokeHandler::TabSurface>(resolved);
+    EXPECT_EQ(tab_surface.tab, nullptr);
+
+    base::test::TestFuture<GlicInvokeError> error_future;
+    GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+    options.target = std::move(target);
+    options.on_error = error_future.GetCallback();
+    coordinator().Invoke(std::move(options));
+    EXPECT_EQ(error_future.Get(), GlicInvokeError::kInvalidTab);
+  }
+
   CloseBrowserSynchronously(app_browser);
 }
 

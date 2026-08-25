@@ -657,9 +657,16 @@ base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
             std::get_if<GlicInvokeHandler::TabSurface>(&resolved_target)) {
       tab = tab_surface->tab;
       if (!tab || !GlicInstanceHelper::From(tab)) {
-        metrics->RecordError(GlicInvokeError::kTabClosed);
+        GlicInvokeError error = GlicInvokeError::kTabClosed;
+        if (const auto* tab_handle =
+                std::get_if<tabs::TabHandle>(&options.target.surface)) {
+          if (tab_handle->Get()) {
+            error = GlicInvokeError::kInvalidTab;
+          }
+        }
+        metrics->RecordError(error);
         if (options.on_error) {
-          std::move(options.on_error).Run(GlicInvokeError::kTabClosed);
+          std::move(options.on_error).Run(error);
         }
         // TODO(crbug.com/483387751): Show default toast here once implemented.
         return false;
