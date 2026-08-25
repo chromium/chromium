@@ -26,11 +26,6 @@ SafeBrowsingDatabaseManager::Client::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-// TODO(crbug.com/362791941): Remove default once all clients override this.
-base::WeakPtr<V5GetHashProtocolManager>
-SafeBrowsingDatabaseManager::Client::GetV5GetHashProtocolManager() {
-  return nullptr;
-}
 
 base::PassKey<SafeBrowsingDatabaseManager::Client>
 SafeBrowsingDatabaseManager::Client::GetPassKeyForTesting() {

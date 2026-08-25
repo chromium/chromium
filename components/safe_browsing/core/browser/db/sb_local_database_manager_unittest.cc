@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_view_util.h"
@@ -442,6 +443,11 @@ class TestAllowlistClient : public SafeBrowsingDatabaseManager::Client {
 
   bool callback_called() { return callback_called_; }
 
+  base::WeakPtr<V5GetHashProtocolManager> GetV5GetHashProtocolManager()
+      override {
+    NOTREACHED();
+  }
+
  private:
   const SBThreatType expected_sb_threat_type_;
   const bool match_expected_;
@@ -462,6 +468,11 @@ class TestExtensionClient : public SafeBrowsingDatabaseManager::Client {
 
   bool on_check_extensions_result_called() {
     return on_check_extensions_result_called_;
+  }
+
+  base::WeakPtr<V5GetHashProtocolManager> GetV5GetHashProtocolManager()
+      override {
+    NOTREACHED();
   }
 
  private:
@@ -2454,6 +2465,11 @@ class MultipleArtificialMatchesTestClient
   }
 
   bool called() const { return called_; }
+
+  base::WeakPtr<V5GetHashProtocolManager> GetV5GetHashProtocolManager()
+      override {
+    NOTREACHED();
+  }
 
  private:
   GURL expected_url_;
