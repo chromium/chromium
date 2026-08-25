@@ -924,8 +924,10 @@ DevToolsURLLoaderInterceptor::DevToolsURLLoaderInterceptor(
       weak_factory_(this) {}
 
 DevToolsURLLoaderInterceptor::~DevToolsURLLoaderInterceptor() {
-  for (auto const& entry : jobs_)
+  auto jobs = std::move(jobs_);
+  for (auto const& entry : jobs) {
     entry.second->Detach();
+  }
 }
 
 void DevToolsURLLoaderInterceptor::SetPatterns(
