@@ -1557,4 +1557,48 @@ public class SelectionPopupControllerTest {
         assertEquals("Extension", items.get(1).model.get(TITLE));
         assertEquals("Inspect", items.get(2).model.get(TITLE));
     }
+
+    @Test
+    @SmallTest
+    @Feature("ExtensionContextMenuItems")
+    public void testIntersperseMenuItems_sanitizesConsecutiveAndEdgeDividers() {
+        ModelList items = new ModelList();
+        // Leading divider.
+        items.add(new ListItem(ListItemType.DIVIDER, new PropertyModel(new PropertyKey[] {})));
+        items.add(
+                new ListItem(
+                        ListItemType.MENU_ITEM,
+                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                                .with(ListMenuItemProperties.ORDER, 100)
+                                .with(TITLE, "Item 1")
+                                .build()));
+
+        // Duplicate dividers.
+        items.add(new ListItem(ListItemType.DIVIDER, new PropertyModel(new PropertyKey[] {})));
+        items.add(new ListItem(ListItemType.DIVIDER, new PropertyModel(new PropertyKey[] {})));
+
+        List<ListItem> extraItems = new ArrayList<>();
+        extraItems.add(
+                new ListItem(
+                        ListItemType.MENU_ITEM,
+                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                                .with(ListMenuItemProperties.ORDER, 300000)
+                                .with(TITLE, "Item 2")
+                                .build()));
+        // Trailing divider.
+        extraItems.add(
+                new ListItem(
+                        ListItemType.DIVIDER,
+                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                                .with(ListMenuItemProperties.ORDER, 400000)
+                                .build()));
+
+        SelectionPopupControllerImpl.intersperseMenuItems(items, extraItems);
+
+        // Leading, duplicate, and trailing dividers are stripped.
+        assertEquals(3, items.size());
+        assertEquals("Item 1", items.get(0).model.get(TITLE));
+        assertEquals(ListItemType.DIVIDER, items.get(1).type);
+        assertEquals("Item 2", items.get(2).model.get(TITLE));
+    }
 }
