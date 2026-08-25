@@ -1,5 +1,11 @@
-bkassenov@google.com
-ioanap@chromium.org
-koerber@google.com
-salmaabdelaziz@google.com
-trangm@google.com
+# Unless you want a specific reviewer's expertise, send to the email below.
+passwordmanager-reviews@google.com
+
+# Note: When adding owners here, remember to also update the gwsq config for
+# passwordmanager-reviews@google.com
+
+bkassenov@google.com        #{LAST_RESORT_SUGGESTION}
+ioanap@chromium.org         #{LAST_RESORT_SUGGESTION}
+koerber@google.com          #{LAST_RESORT_SUGGESTION}
+trangm@google.com           #{LAST_RESORT_SUGGESTION}
+salmaabdelaziz@google.com   #{LAST_RESORT_SUGGESTION}
