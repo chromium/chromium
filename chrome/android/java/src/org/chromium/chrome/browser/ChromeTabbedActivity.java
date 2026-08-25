@@ -1936,7 +1936,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             intent, IntentHandler.EXTRA_OPEN_REGULAR_OVERVIEW_MODE, false);
             if (shouldShowRegularOverviewMode && IntentHandler.wasIntentSenderChrome(intent)) {
                 mTabModelSelector.selectModel(/* incognito= */ false);
-                mLayoutManager.showLayout(LayoutType.HUB, /* animate= */ false);
+                // On Desktop Android, selecting the regular model displays the desktop tab strip
+                // and active tab in LayoutType.BROWSING; opening LayoutType.HUB is suppressed.
+                if (!TabSwitcherUtils.isGridTabSwitcherDisabled()) {
+                    mLayoutManager.showLayout(LayoutType.HUB, /* animate= */ false);
+                }
             }
             // Launch history on an already running instance of Chrome.
             maybeLaunchHistory();

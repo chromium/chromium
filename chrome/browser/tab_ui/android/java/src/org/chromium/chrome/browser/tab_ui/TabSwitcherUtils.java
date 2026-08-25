@@ -44,7 +44,7 @@ public class TabSwitcherUtils {
      */
     public static void navigateToTabSwitcher(
             LayoutManager layoutManager, boolean animate, @Nullable Runnable onNavigationFinished) {
-        if (layoutManager.isLayoutVisible(LayoutType.HUB)) {
+        if (isGridTabSwitcherDisabled() || layoutManager.isLayoutVisible(LayoutType.HUB)) {
             if (onNavigationFinished != null) {
                 onNavigationFinished.run();
             }
@@ -94,6 +94,13 @@ public class TabSwitcherUtils {
 
         int tabId = tabModel.getGroupLastShownTabId(syncGroup.localId.tabGroupId);
         if (tabId == Tab.INVALID_TAB_ID) return;
+        if (isGridTabSwitcherDisabled()) {
+            Tab tab = tabModel.getTabById(tabId);
+            if (tab != null) {
+                tabModel.setIndex(tabModel.indexOf(tab), TabSelectionType.FROM_USER);
+            }
+            return;
+        }
         requestOpenTabGroupDialog.onResult(tabId);
     }
 
