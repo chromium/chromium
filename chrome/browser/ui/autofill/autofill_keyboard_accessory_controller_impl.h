@@ -96,6 +96,8 @@ class AutofillKeyboardAccessoryControllerImpl
       int index,
       RemovalConfirmationText* removal_text) override;
   void OpenSettingsForEntityType(int32_t entity_type) override;
+  void SelectSuggestion(int index) override;
+  void UnselectSuggestion() override;
 
   base::WeakPtr<AutofillKeyboardAccessoryControllerImpl> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

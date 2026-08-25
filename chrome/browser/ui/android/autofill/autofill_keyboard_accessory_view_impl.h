@@ -53,6 +53,11 @@ class AutofillKeyboardAccessoryViewImpl : public AutofillKeyboardAccessoryView {
   // Called when an autofill item was accepted.
   void SuggestionAccepted(JNIEnv* env, int32_t list_index);
 
+  // Called when an autofill item's selection state changes.
+  void SuggestionSelectionStateChanged(JNIEnv* env,
+                                       int32_t list_index,
+                                       bool is_selected);
+
   // Called when the deletion of an autofill item was requested.
   void DeletionRequested(JNIEnv* env, int32_t list_index);
 

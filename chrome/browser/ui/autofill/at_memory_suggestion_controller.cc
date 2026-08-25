@@ -97,6 +97,14 @@ void AtMemorySuggestionController::AcceptSuggestion(
   }
 }
 
+void AtMemorySuggestionController::SelectSuggestion(int index) {
+  NOTREACHED();
+}
+
+void AtMemorySuggestionController::UnselectSuggestion() {
+  NOTREACHED();
+}
+
 bool AtMemorySuggestionController::RemoveSuggestion(
     int index,
     AutofillMetrics::SingleEntryRemovalMethod removal_method) {

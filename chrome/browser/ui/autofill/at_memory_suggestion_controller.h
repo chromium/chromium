@@ -53,6 +53,8 @@ class AtMemorySuggestionController : public AutofillSuggestionController {
   void AcceptSuggestion(
       int index,
       AutofillMetrics::SuggestionAcceptedMethod accept_method) override;
+  void SelectSuggestion(int index) override;
+  void UnselectSuggestion() override;
   bool RemoveSuggestion(
       int index,
       AutofillMetrics::SingleEntryRemovalMethod removal_method) override;

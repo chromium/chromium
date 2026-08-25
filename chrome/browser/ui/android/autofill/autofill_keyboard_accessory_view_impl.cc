@@ -264,6 +264,20 @@ void AutofillKeyboardAccessoryViewImpl::SuggestionAccepted(JNIEnv* env,
   }
 }
 
+void AutofillKeyboardAccessoryViewImpl::SuggestionSelectionStateChanged(
+    JNIEnv* env,
+    int32_t list_index,
+    bool is_selected) {
+  if (!controller_) {
+    return;
+  }
+  if (is_selected) {
+    controller_->SelectSuggestion(list_index);
+  } else {
+    controller_->UnselectSuggestion();
+  }
+}
+
 void AutofillKeyboardAccessoryViewImpl::DeletionRequested(JNIEnv* env,
                                                           int32_t list_index) {
   if (controller_) {

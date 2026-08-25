@@ -775,6 +775,47 @@ void AutofillKeyboardAccessoryControllerImpl::OpenSettingsForEntityType(
   }
 }
 
+void AutofillKeyboardAccessoryControllerImpl::SelectSuggestion(int index) {
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAndroidKeyboardAccessoryHoverPreview)) {
+    return;
+  }
+
+  if (!delegate_) {
+    return;
+  }
+
+  if (base::checked_cast<size_t>(index) >= suggestions_.size()) {
+    return;
+  }
+
+  // If the mouse pointer is locked by the webpage, hide the suggestions to
+  // prevent unexpected or untrusted interactions.
+  if (IsPointerLocked(web_contents_.get())) {
+    Hide(SuggestionHidingReason::kMouseLocked);
+    return;
+  }
+
+  const Suggestion& suggestion = GetSuggestionAt(index);
+
+  if (suggestion.IsSelectable()) {
+    delegate_->DidSelectSuggestion(suggestion);
+  } else {
+    delegate_->ClearPreviewedForm();
+  }
+}
+
+void AutofillKeyboardAccessoryControllerImpl::UnselectSuggestion() {
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAndroidKeyboardAccessoryHoverPreview)) {
+    return;
+  }
+
+  if (delegate_) {
+    delegate_->ClearPreviewedForm();
+  }
+}
+
 void AutofillKeyboardAccessoryControllerImpl::
     OrderSuggestionsAndCreateLabels() {
   // If there is an Undo suggestion, move it to the front.

@@ -51,4 +51,12 @@ public interface AutofillDelegate {
      * @param entityType The entity type for which to open settings.
      */
     default void openSettingsForEntityType(@EntityTypeName int entityType) {}
+
+    /**
+     * Handles the selection state change of an Autofill suggestion.
+     *
+     * @param listIndex The index of the Autofill suggestion.
+     * @param isSelected True if the suggestion is selected, false otherwise.
+     */
+    default void suggestionSelectionStateChanged(int listIndex, boolean isSelected) {}
 }

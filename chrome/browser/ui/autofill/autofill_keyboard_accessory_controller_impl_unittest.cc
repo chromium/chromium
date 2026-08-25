@@ -8,6 +8,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
@@ -96,6 +97,10 @@ class AutofillKeyboardAccessoryControllerImplTest
                         Suggestion::Guid(local_card.guid()))});
     return local_card;
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillAndroidKeyboardAccessoryHoverPreview};
 };
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
@@ -681,6 +686,115 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.ProfileDeleted.Any.LocalOrSyncable", 0, 1);
 }
+
+// Tests that calling `SelectSuggestion()` notifies the delegate to preview the
+// suggestion.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest, SelectSuggestion) {
+  ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
+                                 SuggestionType::kAddressEntry, u"Address")});
+
+  EXPECT_CALL(manager().external_delegate(), DidSelectSuggestion);
+  client().suggestion_controller(manager()).SelectSuggestion(0);
+}
+
+// Tests that calling `SelectSuggestion()` with an out-of-bounds index safely
+// returns without crashing or notifying the delegate.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       SelectSuggestionOutOfBoundsDoesNotCrash) {
+  ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
+                                 SuggestionType::kAddressEntry, u"Address")});
+
+  EXPECT_CALL(manager().external_delegate(), DidSelectSuggestion).Times(0);
+  // This index is out of bounds but should return early instead of crashing:
+  client().suggestion_controller(manager()).SelectSuggestion(1);
+}
+
+// Tests that calling `UnselectSuggestion()` notifies the delegate to clear
+// the previewed form.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest, UnselectSuggestion) {
+  ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
+                                 SuggestionType::kAddressEntry, u"Address")});
+
+  EXPECT_CALL(manager().external_delegate(), ClearPreviewedForm);
+  client().suggestion_controller(manager()).UnselectSuggestion();
+}
+
+// Tests that calling `SelectSuggestion()` does not notify the delegate when
+// the hover preview feature is disabled.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       SelectSuggestionDisabledWithoutFlag) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillAndroidKeyboardAccessoryHoverPreview);
+  ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
+                                 SuggestionType::kAddressEntry, u"Address")});
+
+  EXPECT_CALL(manager().external_delegate(), DidSelectSuggestion).Times(0);
+  client().suggestion_controller(manager()).SelectSuggestion(0);
+}
+
+// Tests that calling `UnselectSuggestion()` does not notify the delegate when
+// the hover preview feature is disabled.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       UnselectSuggestionDisabledWithoutFlag) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillAndroidKeyboardAccessoryHoverPreview);
+  ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
+                                 SuggestionType::kAddressEntry, u"Address")});
+
+  EXPECT_CALL(manager().external_delegate(), ClearPreviewedForm).Times(0);
+  client().suggestion_controller(manager()).UnselectSuggestion();
+}
+
+// Tests that selecting an unselectable suggestion clears any active form
+// preview instead of selecting the suggestion.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       SelectUnselectableSuggestionClearsPreview) {
+  Suggestion unselectable_suggestion =
+      test::CreateAutofillSuggestion(SuggestionType::kAddressEntry, u"Address");
+  unselectable_suggestion.acceptability =
+      Suggestion::Acceptability::kUnselectableAndUnacceptable;
+
+  ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
+                                  SuggestionType::kAddressEntry, u"Address"),
+                              unselectable_suggestion});
+
+  EXPECT_CALL(manager().external_delegate(), DidSelectSuggestion);
+  EXPECT_CALL(manager().external_delegate(), ClearPreviewedForm);
+  client().suggestion_controller(manager()).SelectSuggestion(0);
+  client().suggestion_controller(manager()).SelectSuggestion(1);
+}
+
+// Tests that selecting an unacceptable but selectable suggestion notifies the
+// delegate to preview the suggestion.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       SelectUnacceptableButSelectableSuggestionPreviews) {
+  Suggestion suggestion =
+      test::CreateAutofillSuggestion(SuggestionType::kAddressEntry, u"Address");
+  suggestion.acceptability =
+      Suggestion::Acceptability::kSelectableButUnacceptable;
+
+  ShowSuggestions(manager(), {suggestion});
+
+  EXPECT_CALL(manager().external_delegate(), DidSelectSuggestion);
+  client().suggestion_controller(manager()).SelectSuggestion(0);
+}
+
+// Tests that hiding the keyboard accessory clears any active form preview.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest, HidingClearsPreview) {
+  ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
+                                 SuggestionType::kAddressEntry, u"Address")});
+
+  EXPECT_CALL(manager().external_delegate(), DidSelectSuggestion);
+  EXPECT_CALL(manager().external_delegate(), ClearPreviewedForm);
+  EXPECT_CALL(manager().external_delegate(), OnSuggestionsHidden);
+  client().suggestion_controller(manager()).SelectSuggestion(0);
+  client().suggestion_controller(manager()).Hide(
+      SuggestionHidingReason::kUserAborted);
+}
+
+// TODO(crbug.com/542535472): Add renderer test for preview on Android.
 
 }  // namespace
 }  // namespace autofill

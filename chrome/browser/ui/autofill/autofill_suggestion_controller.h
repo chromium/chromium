@@ -58,6 +58,13 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
       int index,
       AutofillMetrics::SuggestionAcceptedMethod accept_method) = 0;
 
+  // Selects the suggestion with `index`. For fillable items, this will trigger
+  // preview. For other items, it does not do anything.
+  virtual void SelectSuggestion(int index) = 0;
+
+  // Unselect currently selected suggestion, noop if nothing is selected.
+  virtual void UnselectSuggestion() = 0;
+
   // Removes the suggestion at the given `index`. `removal_method`specifies the
   // UI entry point for removal, e.g. clicking on a delete button.
   virtual bool RemoveSuggestion(
