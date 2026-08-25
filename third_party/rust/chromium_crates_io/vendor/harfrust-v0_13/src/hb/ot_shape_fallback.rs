@@ -122,8 +122,8 @@ fn zero_mark_advances(
     {
         if info.general_category() == GeneralCategory::NON_SPACING_MARK {
             if adjust_offsets_when_zeroing {
-                pos.x_offset -= pos.x_advance;
-                pos.y_offset -= pos.y_advance;
+                pos.x_offset = pos.x_offset.saturating_sub(pos.x_advance);
+                pos.y_offset = pos.y_offset.saturating_sub(pos.y_advance);
             }
             pos.x_advance = 0;
             pos.y_advance = 0;
@@ -256,7 +256,7 @@ fn position_mark(
 
             // Don't shift down "above" marks too much.
             if (y_gap > 0) != (pos.y_offset > 0) {
-                let correction = -pos.y_offset / 2;
+                let correction = -(pos.y_offset / 2);
                 base_extents.y_bearing = base_extents.y_bearing.saturating_add(correction);
                 base_extents.height = base_extents.height.saturating_sub(correction);
                 pos.y_offset = pos.y_offset.saturating_add(correction);
@@ -284,7 +284,7 @@ fn position_around_base(ctx: &mut FallbackShapeContext, base: usize, end: usize)
         return;
     };
 
-    base_extents.y_bearing += base_pos.y_offset;
+    base_extents.y_bearing = base_extents.y_bearing.saturating_add(base_pos.y_offset);
     base_extents.x_bearing = 0;
 
     // Use horizontal advance for horizontal positioning.
@@ -298,8 +298,8 @@ fn position_around_base(ctx: &mut FallbackShapeContext, base: usize, end: usize)
     let mut x_offset = 0;
     let mut y_offset = 0;
     if ctx.buffer.direction.is_forward() {
-        x_offset -= base_pos.x_advance;
-        y_offset -= base_pos.y_advance;
+        x_offset = base_pos.x_advance.saturating_neg();
+        y_offset = base_pos.y_advance.saturating_neg();
     }
 
     let mut last_lig_component: i32 = -1;
@@ -340,12 +340,16 @@ fn position_around_base(ctx: &mut FallbackShapeContext, base: usize, end: usize)
                         };
                     }
 
-                    component_extents.x_bearing += (if horizontal_dir == Direction::LeftToRight {
+                    let component = if horizontal_dir == Direction::LeftToRight {
                         this_lig_component
                     } else {
                         num_lig_components - 1 - this_lig_component
-                    } * component_extents.width)
-                        / num_lig_components;
+                    };
+                    component_extents.x_bearing = super::clamp_i64_to_i32(
+                        i64::from(component_extents.x_bearing)
+                            + i64::from(component) * i64::from(component_extents.width)
+                                / i64::from(num_lig_components),
+                    );
 
                     component_extents.width /= num_lig_components;
                 }
@@ -369,15 +373,15 @@ fn position_around_base(ctx: &mut FallbackShapeContext, base: usize, end: usize)
 
             pos.x_advance = 0;
             pos.y_advance = 0;
-            pos.x_offset += x_offset;
-            pos.y_offset += y_offset;
+            pos.x_offset = pos.x_offset.saturating_add(x_offset);
+            pos.y_offset = pos.y_offset.saturating_add(y_offset);
         } else {
             if direction.is_forward() {
-                x_offset -= pos.x_advance;
-                y_offset -= pos.y_advance;
+                x_offset = x_offset.saturating_sub(pos.x_advance);
+                y_offset = y_offset.saturating_sub(pos.y_advance);
             } else {
-                x_offset += pos.x_advance;
-                y_offset += pos.y_advance;
+                x_offset = x_offset.saturating_add(pos.x_advance);
+                y_offset = y_offset.saturating_add(pos.y_advance);
             }
         }
     }
@@ -478,7 +482,7 @@ pub fn _hb_ot_shape_fallback_spaces<'a, 'x>(
                     if horizontal {
                         pos.x_advance = scale.scale_x(length);
                     } else {
-                        pos.y_advance = -scale.scale_y(length);
+                        pos.y_advance = scale.scale_y(length).saturating_neg();
                     }
                 }
 
@@ -487,7 +491,7 @@ pub fn _hb_ot_shape_fallback_spaces<'a, 'x>(
                     if horizontal {
                         pos.x_advance = scale.scale_x(length);
                     } else {
-                        pos.y_advance = -scale.scale_y(length);
+                        pos.y_advance = scale.scale_y(length).saturating_neg();
                     }
                 }
 

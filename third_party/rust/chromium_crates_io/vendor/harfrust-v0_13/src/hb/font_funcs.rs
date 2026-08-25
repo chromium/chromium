@@ -106,6 +106,102 @@ impl<'a> IntoIterator for AdvanceWidthBatch<'a> {
     }
 }
 
+/// Raw C-style view over a batch of codepoints and output glyph ids.
+#[derive(Clone, Copy, Debug)]
+pub struct RawNominalGlyphBatch {
+    /// Number of batch entries.
+    pub len: usize,
+    /// Pointer to codepoints (read-only).
+    pub codepoints: *const u32,
+    /// Pointer to output glyph ids (writable).
+    pub glyphs: *mut u32,
+    /// Byte stride between successive codepoints.
+    pub codepoint_stride: isize,
+    /// Byte stride between successive glyphs.
+    pub glyph_stride: isize,
+}
+
+/// Safe batch view for codepoint to nominal-glyph mapping.
+///
+/// Glyph ids must be written for consecutive codepoints starting at the
+/// first entry; mapping stops at the first codepoint the font has no
+/// glyph for, and the number of glyphs written is returned from
+/// [FontFuncs::populate_nominal_glyphs].
+pub struct NominalGlyphBatch<'a> {
+    infos: &'a mut [GlyphInfo],
+}
+
+impl<'a> NominalGlyphBatch<'a> {
+    /// Byte offset of the output glyph id within a batch entry.
+    const GLYPH_OFFSET: usize = core::mem::offset_of!(GlyphInfo, vars)
+        + (GlyphInfo::NORMALIZER_GLYPH_INDEX_VAR.var_index as usize - 1) * size_of::<u32>();
+
+    pub(crate) fn new(infos: &'a mut [GlyphInfo]) -> Self {
+        Self { infos }
+    }
+
+    /// Returns the number of entries in the batch.
+    pub fn len(&self) -> usize {
+        self.infos.len()
+    }
+
+    /// Returns true if the batch is empty.
+    pub fn is_empty(&self) -> bool {
+        self.infos.is_empty()
+    }
+
+    /// Returns a raw C-style view over this batch.
+    pub fn into_raw(self) -> RawNominalGlyphBatch {
+        if self.infos.is_empty() {
+            return RawNominalGlyphBatch {
+                len: 0,
+                codepoints: ptr::null(),
+                glyphs: ptr::null_mut(),
+                codepoint_stride: size_of::<GlyphInfo>() as isize,
+                glyph_stride: size_of::<GlyphInfo>() as isize,
+            };
+        }
+
+        let base = self.infos.as_mut_ptr();
+        RawNominalGlyphBatch {
+            len: self.infos.len(),
+            // `glyph_id` is the first field in `GlyphInfo` and holds the
+            // codepoint before mapping.
+            codepoints: base.cast::<u32>().cast_const(),
+            // The normalizer glyph-index var.
+            glyphs: base.wrapping_byte_add(Self::GLYPH_OFFSET).cast::<u32>(),
+            codepoint_stride: size_of::<GlyphInfo>() as isize,
+            glyph_stride: size_of::<GlyphInfo>() as isize,
+        }
+    }
+}
+
+pub struct NominalGlyphBatchIter<'a> {
+    infos: slice::IterMut<'a, GlyphInfo>,
+}
+
+impl<'a> Iterator for NominalGlyphBatchIter<'a> {
+    type Item = (u32, &'a mut GlyphId);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let info = self.infos.next()?;
+        let codepoint = info.glyph_id;
+        let var_index = GlyphInfo::NORMALIZER_GLYPH_INDEX_VAR.var_index as usize - 1;
+        Some((codepoint, bytemuck::cast_mut(&mut info.vars[var_index])))
+    }
+}
+
+impl<'a> IntoIterator for NominalGlyphBatch<'a> {
+    type Item = (u32, &'a mut GlyphId);
+    type IntoIter = NominalGlyphBatchIter<'a>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        NominalGlyphBatchIter {
+            infos: self.infos.iter_mut(),
+        }
+    }
+}
+
 /// Default implementations backed by font tables.
 pub struct BuiltinFontFuncs<'a> {
     face: &'a hb_font_t<'a>,
@@ -161,10 +257,10 @@ impl<'a> BuiltinFontFuncs<'a> {
 
     /// Returns the vertical advance for a glyph.
     pub fn advance_height(&self, glyph: GlyphId) -> i32 {
-        -self
-            .glyph_metrics()
+        self.glyph_metrics()
             .advance_height(glyph, self.coords())
             .unwrap_or(self.face.units_per_em as i32)
+            .saturating_neg()
     }
 
     /// Returns the vertical origin for a glyph.
@@ -186,6 +282,21 @@ impl<'a> BuiltinFontFuncs<'a> {
         for (glyph, advance) in batch {
             *advance = self.advance_width(glyph);
         }
+    }
+
+    /// Maps a run of codepoints to nominal glyphs, stopping at the first
+    /// codepoint the font has no glyph for. Returns the number of
+    /// consecutive codepoints mapped.
+    pub fn populate_nominal_glyphs(&self, batch: NominalGlyphBatch<'_>) -> usize {
+        let mut done = 0;
+        for (codepoint, glyph) in batch {
+            match self.nominal_glyph(codepoint) {
+                Some(gid) => *glyph = gid,
+                None => break,
+            }
+            done += 1;
+        }
+        done
     }
 }
 
@@ -232,6 +343,27 @@ pub trait FontFuncs {
         for (glyph, advance) in batch {
             *advance = self.advance_width(builtin, glyph);
         }
+    }
+
+    /// Batch nominal character-to-glyph mapping callback.
+    ///
+    /// Maps a run of codepoints to glyphs, stopping at the first
+    /// codepoint the font has no glyph for. Returns the number of
+    /// consecutive codepoints mapped.
+    fn populate_nominal_glyphs(
+        &mut self,
+        builtin: &BuiltinFontFuncs,
+        batch: NominalGlyphBatch<'_>,
+    ) -> usize {
+        let mut done = 0;
+        for (codepoint, glyph) in batch {
+            match self.nominal_glyph(builtin, codepoint) {
+                Some(gid) => *glyph = gid,
+                None => break,
+            }
+            done += 1;
+        }
+        done
     }
 
     /// Vertical advance callback.
@@ -322,6 +454,28 @@ impl<'a, 'u> FontFuncsDispatch<'a, 'u> {
             Some(gid)
         } else {
             None
+        }
+    }
+
+    #[inline(always)]
+    pub(crate) fn populate_nominal_glyphs(&mut self, batch: NominalGlyphBatch<'_>) -> usize {
+        if let Some(funcs) = &mut self.funcs {
+            funcs.populate_nominal_glyphs(&self.builtin, batch)
+        } else {
+            let mut done = 0;
+            for (codepoint, glyph) in batch {
+                let gid = if let Some(gid) = self.builtin.face.cmap_cache.get(codepoint) {
+                    GlyphId::new(gid)
+                } else if let Some(gid) = self.builtin.nominal_glyph(codepoint) {
+                    self.builtin.face.cmap_cache.set(codepoint, gid.to_u32());
+                    gid
+                } else {
+                    break;
+                };
+                *glyph = gid;
+                done += 1;
+            }
+            done
         }
     }
 

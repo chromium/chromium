@@ -7,8 +7,10 @@ use crate::hb::hb_mask_t;
 use crate::hb::ot_layout_gsubgpos::MappingCache;
 use crate::hb::ot_shape_plan::hb_ot_shape_plan_t;
 use crate::U32Set;
+use alloc::vec::Vec;
 use read_fonts::tables::aat::*;
 use read_fonts::types::{FixedSize, GlyphId};
+use read_fonts::FontData;
 
 pub const HB_BUFFER_SCRATCH_FLAG_AAT_HAS_DELETED: u32 = HB_BUFFER_SCRATCH_FLAG_SHAPER0;
 
@@ -50,6 +52,7 @@ pub struct AatApplyContext<'a> {
     pub(crate) second_set: Option<&'a U32Set>,
     pub(crate) machine_class_cache: Option<&'a ClassCache>,
     pub(crate) start_end_safe_to_break: u64,
+    pub(crate) safe_to_break: SafeToBreak<'a>,
 }
 
 impl<'a> AatApplyContext<'a> {
@@ -73,6 +76,7 @@ impl<'a> AatApplyContext<'a> {
             second_set: None,
             machine_class_cache: None,
             start_end_safe_to_break: 0,
+            safe_to_break: SafeToBreak::default(),
         }
     }
 
@@ -192,6 +196,248 @@ impl<'a> AatApplyContext<'a> {
         }
         if self.has_glyph_classes {
             self.buffer.info[i].set_glyph_props(self.face.ot_tables.glyph_props(glyph.into()));
+        }
+    }
+}
+
+/// Per-face acceleration for the drive loops' safe-to-break computation.
+///
+/// The data for every AAT state-machine subtable is stored in two packed
+/// vectors. Each top-level subtable cache carries a compact descriptor for
+/// its ranges. This avoids two `Vec` allocations in every subtable cache
+/// while retaining O(classes) + O(states) storage.
+#[derive(Default)]
+pub(crate) struct SafeToBreakAccel {
+    wouldbe: Vec<u16>,
+    eot_tail: Vec<u64>,
+}
+
+#[derive(Clone, Copy, Default)]
+pub(crate) struct SafeToBreakSubtable {
+    wouldbe_start: u32,
+    wouldbe_end: u32,
+    eot_tail_start: u32,
+    eot_tail_end: u32,
+}
+
+/// The slice of [`SafeToBreakAccel`] belonging to the active subtable.
+#[derive(Clone, Copy, Default)]
+pub(crate) struct SafeToBreak<'a> {
+    n_classes: u32,
+    /// Per class: `entry(START_OF_TEXT, class)` packed as 15 bits of
+    /// new state with the advance bit on top when present and
+    /// non-actionable, `!0` otherwise — so condition 2c is a single
+    /// compare. Real machines' state counts fit 15 bits.
+    wouldbe: &'a [u16],
+    /// Condition-3 bits for states 64 and up; states below 64 keep
+    /// using the `start_end_safe_to_break` word. Empty for machines
+    /// with at most 64 states.
+    eot_tail: &'a [u64],
+}
+
+pub(crate) const WOULDBE_NONE: u16 = !0;
+
+#[inline(always)]
+pub(crate) fn pack_wouldbe(new_state: u16, advance: bool) -> u16 {
+    // States fit 15 bits in any real font. A pathological new state
+    // that doesn't can alias the sentinel and misreport condition 2c,
+    // which only perturbs unsafe-to-break flags -- not worth runtime
+    // checks on this path.
+    new_state | ((advance as u16) << 15)
+}
+
+impl SafeToBreak<'_> {
+    /// Condition 2c: would starting from the start state on this class
+    /// take a non-actionable transition to the same state, advancing
+    /// the same way?
+    #[inline(always)]
+    pub(crate) fn wouldbe_matches(&self, class: u16, next_state: u16, advance: bool) -> bool {
+        let mut class = class as usize;
+        if class >= self.n_classes as usize {
+            class = class::OUT_OF_BOUNDS as usize;
+        }
+        self.wouldbe.get(class).copied() == Some(pack_wouldbe(next_state, advance))
+    }
+
+    /// Condition 3 for states 64 and up: no end-of-text action can fire
+    /// out of this state.
+    #[inline(always)]
+    pub(crate) fn eot_safe_high(&self, state: u16) -> bool {
+        let ix = (state - 64) as usize;
+        self.eot_tail
+            .get(ix / 64)
+            .is_some_and(|word| word & (1 << (ix % 64)) != 0)
+    }
+}
+
+impl SafeToBreakAccel {
+    /// Returns a view of the acceleration data described by a top-level
+    /// subtable cache.
+    pub(crate) fn subtable(&self, subtable: SafeToBreakSubtable) -> Option<SafeToBreak<'_>> {
+        let wouldbe_start = subtable.wouldbe_start as usize;
+        let wouldbe_end = subtable.wouldbe_end as usize;
+        let eot_tail_start = subtable.eot_tail_start as usize;
+        let eot_tail_end = subtable.eot_tail_end as usize;
+
+        Some(SafeToBreak {
+            n_classes: subtable.wouldbe_end - subtable.wouldbe_start,
+            wouldbe: self.wouldbe.get(wouldbe_start..wouldbe_end)?,
+            eot_tail: self.eot_tail.get(eot_tail_start..eot_tail_end)?,
+        })
+    }
+
+    /// Describes a subtable that does not contain a state machine.
+    pub(crate) fn empty_subtable(&self) -> SafeToBreakSubtable {
+        SafeToBreakSubtable {
+            wouldbe_start: self.wouldbe.len() as u32,
+            wouldbe_end: self.wouldbe.len() as u32,
+            eot_tail_start: self.eot_tail.len() as u32,
+            eot_tail_end: self.eot_tail.len() as u32,
+        }
+    }
+
+    /// Appends the data for an extended state table whose machine
+    /// starts at the beginning of `data`. The predicates mirror the
+    /// subtable kind's notion of actionable/advancing entries.
+    #[inline(never)]
+    pub(crate) fn build_extended<T: bytemuck::AnyBitPattern + FixedSize>(
+        &mut self,
+        machine: &ExtendedStateTable<T>,
+        data: &[u8],
+        is_actionable: &dyn Fn(&StateEntry<T>) -> bool,
+        can_advance: &dyn Fn(&StateEntry<T>) -> bool,
+    ) -> SafeToBreakSubtable {
+        let n_classes = machine.n_classes;
+        let wouldbe_start = self.wouldbe.len();
+        let eot_tail_start = self.eot_tail.len();
+
+        // Cover the OUT_OF_BOUNDS column the runtime clamp can select
+        // even on degenerate machines; entry() applies the same clamp
+        // internally, so the aliasing matches.
+        // Classes are u16 values, so columns past 0x10000 are
+        // unreachable and need no slots.
+        let wouldbe_len = n_classes
+            .max(class::OUT_OF_BOUNDS as usize + 1)
+            .min(1 << 16);
+        self.wouldbe.reserve(wouldbe_len);
+        for class in 0..wouldbe_len {
+            self.wouldbe
+                .push(match machine.entry(START_OF_TEXT, class as u16) {
+                    Ok(entry) if !is_actionable(&entry) => {
+                        pack_wouldbe(entry.new_state, can_advance(&entry))
+                    }
+                    _ => WOULDBE_NONE,
+                });
+        }
+
+        // The state array runs from its offset to the end of the
+        // subtable, matching how the table reader slices it; states
+        // beyond it fail entry() and stay unsafe, like the probes they
+        // replace.
+        if n_classes > 0 {
+            if let Ok(parts) = StateTableParts::read(FontData::new(data)) {
+                let n_cells = data.len().saturating_sub(parts.state_array_offset as usize)
+                    / u16::RAW_BYTE_LEN;
+                let n_rows = n_cells.div_ceil(n_classes).min(u16::MAX as usize + 1);
+                if n_rows > 64 {
+                    let eot_tail_start = self.eot_tail.len();
+                    self.eot_tail
+                        .resize(eot_tail_start + (n_rows - 64).div_ceil(64), 0);
+                    for state in 64..n_rows {
+                        if let Ok(entry) =
+                            machine.entry(state as u16, u16::from(class::END_OF_TEXT))
+                        {
+                            if !is_actionable(&entry) {
+                                let ix = state - 64;
+                                self.eot_tail[eot_tail_start + ix / 64] |= 1 << (ix % 64);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        SafeToBreakSubtable::new(
+            n_classes,
+            wouldbe_start,
+            self.wouldbe.len(),
+            eot_tail_start,
+            self.eot_tail.len(),
+        )
+    }
+
+    /// The legacy (`kern` Format1) counterpart of [`Self::build_extended`]:
+    /// one-byte state cells and u8 classes.
+    #[inline(never)]
+    pub(crate) fn build_legacy(
+        &mut self,
+        machine: &StateTable,
+        is_actionable: &dyn Fn(&StateEntry) -> bool,
+        can_advance: &dyn Fn(&StateEntry) -> bool,
+    ) -> SafeToBreakSubtable {
+        let n_classes = machine.header.state_size() as usize;
+        let wouldbe_start = self.wouldbe.len();
+        let eot_tail_start = self.eot_tail.len();
+
+        let wouldbe_len = n_classes.max(class::OUT_OF_BOUNDS as usize + 1).min(1 << 8);
+        self.wouldbe.reserve(wouldbe_len);
+        for class in 0..wouldbe_len {
+            self.wouldbe
+                .push(match machine.entry(START_OF_TEXT, class as u8) {
+                    Ok(entry) if !is_actionable(&entry) => {
+                        pack_wouldbe(entry.new_state, can_advance(&entry))
+                    }
+                    _ => WOULDBE_NONE,
+                });
+        }
+
+        if n_classes > 0 {
+            if let Ok(state_array) = machine.header.state_array() {
+                let n_cells = state_array.data().len();
+                let n_rows = n_cells.div_ceil(n_classes).min(u16::MAX as usize + 1);
+                if n_rows > 64 {
+                    let eot_tail_start = self.eot_tail.len();
+                    self.eot_tail
+                        .resize(eot_tail_start + (n_rows - 64).div_ceil(64), 0);
+                    for state in 64..n_rows {
+                        if let Ok(entry) = machine.entry(state as u16, class::END_OF_TEXT) {
+                            if !is_actionable(&entry) {
+                                let ix = state - 64;
+                                self.eot_tail[eot_tail_start + ix / 64] |= 1 << (ix % 64);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        SafeToBreakSubtable::new(
+            n_classes,
+            wouldbe_start,
+            self.wouldbe.len(),
+            eot_tail_start,
+            self.eot_tail.len(),
+        )
+    }
+}
+
+impl SafeToBreakSubtable {
+    fn new(
+        n_classes: usize,
+        wouldbe_start: usize,
+        wouldbe_end: usize,
+        eot_tail_start: usize,
+        eot_tail_end: usize,
+    ) -> Self {
+        let wouldbe_len = n_classes
+            .max(class::OUT_OF_BOUNDS as usize + 1)
+            .min(1 << 16);
+        debug_assert_eq!(wouldbe_end - wouldbe_start, wouldbe_len);
+        Self {
+            wouldbe_start: wouldbe_start as u32,
+            wouldbe_end: wouldbe_end as u32,
+            eot_tail_start: eot_tail_start as u32,
+            eot_tail_end: eot_tail_end as u32,
         }
     }
 }
@@ -449,6 +695,43 @@ impl CollectGlyphs for Lookup10<'_> {
 mod tests {
     use super::*;
     use crate::{Direction, FontRef, ShapePlan, ShaperData, UnicodeBuffer};
+    use core::mem::size_of;
+
+    #[test]
+    fn safe_to_break_subtable_views_are_packed_and_bounded() {
+        assert_eq!(size_of::<SafeToBreakSubtable>(), 16);
+
+        let mut wouldbe = alloc::vec![WOULDBE_NONE; 8];
+        wouldbe[class::OUT_OF_BOUNDS as usize] = pack_wouldbe(7, true);
+        wouldbe[4 + class::OUT_OF_BOUNDS as usize] = pack_wouldbe(9, false);
+        let first_subtable = SafeToBreakSubtable::new(4, 0, 4, 0, 1);
+        let empty_subtable = SafeToBreakSubtable {
+            wouldbe_start: 4,
+            wouldbe_end: 4,
+            eot_tail_start: 1,
+            eot_tail_end: 1,
+        };
+        let last_subtable = SafeToBreakSubtable::new(4, 4, 8, 1, 2);
+        let accel = SafeToBreakAccel {
+            wouldbe,
+            eot_tail: alloc::vec![1, 2],
+        };
+
+        let first = accel.subtable(first_subtable).unwrap();
+        assert!(first.wouldbe_matches(99, 7, true));
+        assert!(first.eot_safe_high(64));
+        assert!(!first.eot_safe_high(65));
+        assert!(!first.eot_safe_high(128));
+
+        let empty = accel.subtable(empty_subtable).unwrap();
+        assert!(empty.wouldbe.is_empty());
+        assert!(empty.eot_tail.is_empty());
+
+        let last = accel.subtable(last_subtable).unwrap();
+        assert!(last.wouldbe_matches(99, 9, false));
+        assert!(!last.eot_safe_high(64));
+        assert!(last.eot_safe_high(65));
+    }
 
     #[test]
     fn output_deleted_glyph_at_end_of_text_marks_output() {

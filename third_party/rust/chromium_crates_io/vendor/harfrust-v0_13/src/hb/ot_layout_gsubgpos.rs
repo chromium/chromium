@@ -952,8 +952,13 @@ pub mod OT {
             let saved_props = self.lookup_props;
             let saved_index = self.lookup_index;
 
-            self.match_positions.resize(self.match_positions_len, 0);
-            let saved_match_positions = self.match_positions.clone();
+            // The nested lookup never reads our match positions, so save by
+            // moving them out rather than cloning. The replacement must keep
+            // the len >= 1 invariant (match_input's count == 1 fast path
+            // writes match_positions[0] without resizing); it stays inline in
+            // the SmallVec, so no allocation happens here.
+            let saved_match_positions =
+                core::mem::replace(&mut self.match_positions, MatchPositions::from_elem(0, 1));
             let saved_match_positions_len = self.match_positions_len;
 
             self.lookup_index = sub_lookup_index;

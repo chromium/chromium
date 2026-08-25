@@ -32,21 +32,21 @@ fn apply_value(
         }};
     }
     if format.contains(ValueFormat::X_PLACEMENT) {
-        pos.x_offset += scale.scale_x(read_value!());
+        pos.x_offset = pos.x_offset.saturating_add(scale.scale_x(read_value!()));
     }
     if format.contains(ValueFormat::Y_PLACEMENT) {
-        pos.y_offset += scale.scale_y(read_value!());
+        pos.y_offset = pos.y_offset.saturating_add(scale.scale_y(read_value!()));
     }
     if format.contains(ValueFormat::X_ADVANCE) {
         if is_horizontal {
-            pos.x_advance += scale.scale_x(read_value!());
+            pos.x_advance = pos.x_advance.saturating_add(scale.scale_x(read_value!()));
         } else {
             offset += 2;
         }
     }
     if format.contains(ValueFormat::Y_ADVANCE) {
         if !is_horizontal {
-            pos.y_advance -= scale.scale_y(read_value!());
+            pos.y_advance = pos.y_advance.saturating_sub(scale.scale_y(read_value!()));
         } else {
             offset += 2;
         }
@@ -84,21 +84,21 @@ fn apply_value(
             }};
         }
         if format.contains(ValueFormat::X_PLACEMENT_DEVICE) {
-            pos.x_offset += scale.scale_x_f(read_delta!());
+            pos.x_offset = pos.x_offset.saturating_add(scale.scale_x_f(read_delta!()));
         }
         if format.contains(ValueFormat::Y_PLACEMENT_DEVICE) {
-            pos.y_offset += scale.scale_y_f(read_delta!());
+            pos.y_offset = pos.y_offset.saturating_add(scale.scale_y_f(read_delta!()));
         }
         if format.contains(ValueFormat::X_ADVANCE_DEVICE) {
             if is_horizontal {
-                pos.x_advance += scale.scale_x_f(read_delta!());
+                pos.x_advance = pos.x_advance.saturating_add(scale.scale_x_f(read_delta!()));
             } else {
                 offset += 2;
             }
         }
         if format.contains(ValueFormat::Y_ADVANCE_DEVICE) {
             if !is_horizontal {
-                pos.y_advance -= scale.scale_y_f(read_delta!());
+                pos.y_advance = pos.y_advance.saturating_sub(scale.scale_y_f(read_delta!()));
             } else {
                 offset += 2;
             }

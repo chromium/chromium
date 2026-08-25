@@ -52,27 +52,27 @@ impl Apply for CursivePosFormat1<'_> {
         let pos = &mut ctx.buffer.pos;
         match direction {
             Direction::LeftToRight => {
-                pos[i].x_advance = exit_x + pos[i].x_offset;
-                let d = entry_x + pos[j].x_offset;
-                pos[j].x_advance -= d;
-                pos[j].x_offset -= d;
+                pos[i].x_advance = exit_x.saturating_add(pos[i].x_offset);
+                let d = entry_x.saturating_add(pos[j].x_offset);
+                pos[j].x_advance = pos[j].x_advance.saturating_sub(d);
+                pos[j].x_offset = pos[j].x_offset.saturating_sub(d);
             }
             Direction::RightToLeft => {
-                let d = exit_x + pos[i].x_offset;
-                pos[i].x_advance -= d;
-                pos[i].x_offset -= d;
-                pos[j].x_advance = entry_x + pos[j].x_offset;
+                let d = exit_x.saturating_add(pos[i].x_offset);
+                pos[i].x_advance = pos[i].x_advance.saturating_sub(d);
+                pos[i].x_offset = pos[i].x_offset.saturating_sub(d);
+                pos[j].x_advance = entry_x.saturating_add(pos[j].x_offset);
             }
             Direction::TopToBottom => {
-                pos[i].y_advance = exit_y + pos[i].y_offset;
-                let d = entry_y + pos[j].y_offset;
-                pos[j].y_advance -= d;
-                pos[j].y_offset -= d;
+                pos[i].y_advance = exit_y.saturating_add(pos[i].y_offset);
+                let d = entry_y.saturating_add(pos[j].y_offset);
+                pos[j].y_advance = pos[j].y_advance.saturating_sub(d);
+                pos[j].y_offset = pos[j].y_offset.saturating_sub(d);
             }
             Direction::BottomToTop => {
-                let d = exit_y + pos[i].y_offset;
-                pos[i].y_advance -= d;
-                pos[i].y_offset -= d;
+                let d = exit_y.saturating_add(pos[i].y_offset);
+                pos[i].y_advance = pos[i].y_advance.saturating_sub(d);
+                pos[i].y_offset = pos[i].y_offset.saturating_sub(d);
                 pos[j].y_advance = entry_y;
             }
             Direction::Invalid => {}
@@ -88,14 +88,14 @@ impl Apply for CursivePosFormat1<'_> {
         // Arabic.
         let mut child = i;
         let mut parent = j;
-        let mut x_offset = entry_x - exit_x;
-        let mut y_offset = entry_y - exit_y;
+        let mut x_offset = entry_x.saturating_sub(exit_x);
+        let mut y_offset = entry_y.saturating_sub(exit_y);
 
         // Low bits are lookup flags, so we want to truncate.
         if ctx.lookup_props as u16 & lookup_flags::RIGHT_TO_LEFT == 0 {
             core::mem::swap(&mut child, &mut parent);
-            x_offset = -x_offset;
-            y_offset = -y_offset;
+            x_offset = x_offset.saturating_neg();
+            y_offset = y_offset.saturating_neg();
         }
 
         // If child was already connected to someone else, walk through its old
@@ -169,9 +169,9 @@ fn reverse_cursive_minor_offset(
     reverse_cursive_minor_offset(pos, j, direction, new_parent);
 
     if direction.is_horizontal() {
-        pos[j].y_offset = -pos[i].y_offset;
+        pos[j].y_offset = pos[i].y_offset.saturating_neg();
     } else {
-        pos[j].x_offset = -pos[i].x_offset;
+        pos[j].x_offset = pos[i].x_offset.saturating_neg();
     }
 
     pos[j].set_attach_chain(-chain);
@@ -195,5 +195,17 @@ mod tests {
 
         // The out-of-range link is cleared and no other glyph is touched.
         assert_eq!(pos[0].attach_chain(), 0);
+    }
+
+    #[test]
+    fn reverse_cursive_minor_offset_saturates_negation() {
+        let mut pos = vec![GlyphPosition::default(); 2];
+        pos[0].set_attach_type(attach_type::CURSIVE);
+        pos[0].set_attach_chain(1);
+        pos[0].y_offset = i32::MIN;
+
+        reverse_cursive_minor_offset(&mut pos, 0, Direction::LeftToRight, usize::MAX);
+
+        assert_eq!(pos[1].y_offset, i32::MAX);
     }
 }

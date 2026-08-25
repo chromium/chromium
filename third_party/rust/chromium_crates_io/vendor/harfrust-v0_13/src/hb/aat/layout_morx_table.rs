@@ -1,7 +1,8 @@
 use super::layout::*;
 use super::map::{AatMap, AatMapBuilder, RangeFlags};
 use crate::hb::aat::layout_common::{
-    get_class, AatApplyContext, ClassCache, TypedCollectGlyphs, START_OF_TEXT,
+    get_class, AatApplyContext, ClassCache, SafeToBreakAccel, SafeToBreakSubtable,
+    TypedCollectGlyphs, START_OF_TEXT,
 };
 use crate::hb::ot_layout::MAX_CONTEXT_LENGTH;
 use crate::hb::{hb_font_t, GlyphInfo};
@@ -11,9 +12,10 @@ use read_fonts::tables::aat;
 use read_fonts::tables::aat::{ExtendedStateTable, NoPayload, StateEntry};
 use read_fonts::tables::morx::{
     ContextualEntryData, ContextualSubtable, InsertionEntryData, LigatureSubtable, Subtable,
-    SubtableKind,
+    SubtableKind, SubtableParts,
 };
 use read_fonts::types::{BigEndian, FixedSize, GlyphId16};
+use read_fonts::FontData;
 
 // Chain::compile_flags in harfbuzz
 pub fn compile_flags(face: &hb_font_t, builder: &AatMapBuilder, map: &mut AatMap) -> Option<()> {
@@ -78,95 +80,76 @@ pub fn apply<'a>(c: &mut AatApplyContext<'a>, map: &'a AatMap) -> Option<()> {
 
     c.setup_buffer_glyph_set();
 
-    let (morx, subtable_caches) = c.face.aat_tables.morx.as_ref()?;
+    let (morx, subtable_caches, descriptors) = c.face.aat_tables.morx.as_ref()?;
+    let safe_to_break = c.face.aat_tables.safe_to_break?;
+    let morx_bytes = morx.offset_data().as_bytes();
 
-    let chains = morx.chains();
+    let mut last_chain_index = u32::MAX;
+    let mut chain_flags = None;
 
-    let mut subtable_idx = 0;
-
-    'outer: for (chain, chain_flags) in chains.iter().zip(map.chain_flags.iter()) {
-        let Ok(chain) = chain else {
+    for (subtable_idx, desc) in descriptors.iter().enumerate() {
+        if desc.chain_index != last_chain_index {
+            // Chain boundary: restore buffer order, load this chain's flags.
+            if c.buffer_is_reversed {
+                c.reverse_buffer();
+            }
+            last_chain_index = desc.chain_index;
+            chain_flags = map.chain_flags.get(desc.chain_index as usize);
+        }
+        let Some(chain_flags) = chain_flags else {
             continue;
         };
         c.range_flags = Some(chain_flags.as_slice());
-        for subtable in chain.subtables().iter() {
-            let Ok(subtable) = subtable else {
-                continue;
-            };
 
-            let subtable_cache = subtable_caches.get(subtable_idx);
-            let Some(subtable_cache) = subtable_cache.as_ref() else {
-                break 'outer;
-            };
-            subtable_idx += 1;
-
-            if let Some(range_flags) = c.range_flags.as_ref() {
-                if range_flags.len() == 1
-                    && (subtable.sub_feature_flags() & range_flags[0].flags == 0)
-                {
-                    continue;
-                }
-            }
-
-            if !subtable.is_all_directions()
-                && c.buffer.direction.is_vertical() != subtable.is_vertical()
-            {
-                continue;
-            }
-
-            c.subtable_flags = subtable.sub_feature_flags();
-            c.first_set = Some(&subtable_cache.glyph_set);
-            c.machine_class_cache = Some(&subtable_cache.class_cache);
-            c.start_end_safe_to_break = subtable_cache.start_end_safe_to_break;
-
-            if !c.buffer_intersects_machine() {
-                continue;
-            }
-
-            // Buffer contents is always in logical direction.  Determine if
-            // we need to reverse before applying this subtable.  We reverse
-            // back after if we did reverse indeed.
-            //
-            // Quoting the spec:
-            // """
-            // Bits 28 and 30 of the coverage field control the order in which
-            // glyphs are processed when the subtable is run by the layout engine.
-            // Bit 28 is used to indicate if the glyph processing direction is
-            // the same as logical order or layout order. Bit 30 is used to
-            // indicate whether glyphs are processed forwards or backwards within
-            // that order.
-            //
-            // Bit 30   Bit 28   Interpretation for Horizontal Text
-            //      0        0   The subtable is processed in layout order
-            //                   (the same order as the glyphs, which is
-            //                   always left-to-right).
-            //      1        0   The subtable is processed in reverse layout order
-            //                   (the order opposite that of the glyphs, which is
-            //                   always right-to-left).
-            //      0        1   The subtable is processed in logical order
-            //                   (the same order as the characters, which may be
-            //                   left-to-right or right-to-left).
-            //      1        1   The subtable is processed in reverse logical order
-            //                   (the order opposite that of the characters, which
-            //                   may be right-to-left or left-to-right).
-
-            let reverse = if subtable.is_logical() {
-                subtable.is_backwards()
-            } else {
-                subtable.is_backwards() != c.buffer.direction.is_backward()
-            };
-
-            if reverse != c.buffer_is_reversed {
-                c.reverse_buffer();
-            }
-
-            if let Ok(kind) = subtable.kind() {
-                apply_subtable(kind, c);
-            }
+        if chain_flags.len() == 1 && (desc.sub_feature_flags & chain_flags[0].flags == 0) {
+            continue;
         }
-        if c.buffer_is_reversed {
+
+        let coverage = desc.coverage;
+        let is_all_directions = coverage & 0x2000_0000 != 0;
+        let is_vertical = coverage & 0x8000_0000 != 0;
+        if !is_all_directions && c.buffer.direction.is_vertical() != is_vertical {
+            continue;
+        }
+
+        let subtable_cache = &subtable_caches[subtable_idx];
+        c.subtable_flags = desc.sub_feature_flags;
+        c.first_set = Some(&subtable_cache.glyph_set);
+        c.machine_class_cache = Some(&subtable_cache.class_cache);
+        c.start_end_safe_to_break = subtable_cache.start_end_safe_to_break;
+        c.safe_to_break = safe_to_break.subtable(subtable_cache.safe_to_break)?;
+
+        if !c.buffer_intersects_machine() {
+            continue;
+        }
+
+        // Buffer contents is always in logical direction.  Determine if
+        // we need to reverse before applying this subtable.  We reverse
+        // back after if we did reverse indeed.
+        //
+        // See the coverage bits table in the `morx` spec for the meaning
+        // of is_logical/is_backwards here.
+        let is_logical = coverage & 0x1000_0000 != 0;
+        let is_backwards = coverage & 0x4000_0000 != 0;
+        let reverse = if is_logical {
+            is_backwards
+        } else {
+            is_backwards != c.buffer.direction.is_backward()
+        };
+
+        if reverse != c.buffer_is_reversed {
             c.reverse_buffer();
         }
+
+        let Some(data) = morx_bytes.get(desc.data_start as usize..desc.data_end as usize) else {
+            continue;
+        };
+        if let Ok(kind) = SubtableKind::from_parts(FontData::new(data), &subtable_cache.parts) {
+            apply_subtable(kind, c);
+        }
+    }
+    if c.buffer_is_reversed {
+        c.reverse_buffer();
     }
 
     Some(())
@@ -249,8 +232,11 @@ fn drive<T: bytemuck::AnyBitPattern + FixedSize + core::fmt::Debug, Ctx: DriverC
             None
         }
     });
+    // Condition 3 below, precomputed for the start-of-text state: no
+    // end-of-text action can fire if we stop while in the start state.
+    let start_state_safe_to_break_eot = (ac.start_end_safe_to_break & (1 << START_OF_TEXT)) != 0;
     ac.buffer.idx = 0;
-    loop {
+    'drive: loop {
         // This block copied from NoncontextualSubtable::apply. Keep in sync.
         if let Some(range_flags) = ac.range_flags.as_ref() {
             if let Some(last_range) = last_range.as_mut() {
@@ -297,6 +283,43 @@ fn drive<T: bytemuck::AnyBitPattern + FixedSize + core::fmt::Debug, Ctx: DriverC
 
         let next_state = entry.new_state;
 
+        // Fast path for when transitioning from start-state to start-state with
+        // no action and advancing. Do so as long as the class remains the same.
+        // This is common with runs of non-actionable glyphs.
+        if last_range.is_none()
+            && state == START_OF_TEXT
+            && next_state == START_OF_TEXT
+            && start_state_safe_to_break_eot
+            && !Ctx::is_actionable(&entry)
+            && Ctx::can_advance(&entry)
+        {
+            let old_class = class;
+            loop {
+                c.transition(&entry, ac);
+                if ac.buffer.idx >= ac.buffer.len || !ac.buffer.successful {
+                    break 'drive;
+                }
+                ac.buffer.next_glyph();
+
+                let new_class = if ac.buffer.idx < ac.buffer.len {
+                    get_class(
+                        machine,
+                        ac.buffer.cur(0).as_glyph(),
+                        ac.machine_class_cache.unwrap(),
+                    )
+                } else {
+                    u16::from(aat::class::END_OF_TEXT)
+                };
+                if new_class != old_class {
+                    break;
+                }
+            }
+            if ac.buffer.idx >= ac.buffer.len || !ac.buffer.successful {
+                break 'drive;
+            }
+            continue 'drive;
+        }
+
         // Conditions under which it's guaranteed safe-to-break before current glyph:
         //
         // 1. There was no action in this transition; and
@@ -333,22 +356,8 @@ fn drive<T: bytemuck::AnyBitPattern + FixedSize + core::fmt::Debug, Ctx: DriverC
             (
                 state == START_OF_TEXT
                 || (!Ctx::can_advance(&entry) && next_state == START_OF_TEXT)
-                ||
-                {
-                    // 2c
-                    if let Ok(wouldbe_entry) = machine.entry(START_OF_TEXT, class) {
-                        // 2c'
-                        !Ctx::is_actionable(&wouldbe_entry) &&
-
-                        // 2c"
-                        (
-                            next_state == wouldbe_entry.new_state &&
-                            Ctx::can_advance(&entry) == Ctx::can_advance(&wouldbe_entry)
-                        )
-                    } else {
-                        false
-                    }
-                }
+                // 2c, 2c', 2c"
+                || ac.safe_to_break.wouldbe_matches(class, next_state, Ctx::can_advance(&entry))
             ) &&
 
             // 3
@@ -356,11 +365,7 @@ fn drive<T: bytemuck::AnyBitPattern + FixedSize + core::fmt::Debug, Ctx: DriverC
                 if state < 64 {
                     (ac.start_end_safe_to_break & (1 << state)) != 0
                 } else {
-                    if let Ok(end_entry) = machine.entry(state, u16::from(aat::class::END_OF_TEXT)) {
-                        !Ctx::is_actionable(&end_entry)
-                    } else {
-                        false
-                    }
+                    ac.safe_to_break.eot_safe_high(state)
                 }
             )
         ;
@@ -965,21 +970,67 @@ impl DriverContext<BigEndian<u16>> for LigatureCtx<'_> {
     }
 }
 
+/// Flat, packed per-subtable filter state: everything the per-buffer walk
+/// needs to decide whether a subtable applies, in one small contiguous
+/// array that stays cache-resident. The heavy state (glyph set, class
+/// cache, parts) lives in [MorxSubtableCache] and is only touched once a
+/// subtable passes these filters.
+pub(crate) struct MorxSubtableDescriptor {
+    pub(crate) chain_index: u32,
+    pub(crate) coverage: u32,
+    pub(crate) sub_feature_flags: u32,
+    pub(crate) data_start: u32,
+    pub(crate) data_end: u32,
+}
+
 pub(crate) struct MorxSubtableCache {
     start_end_safe_to_break: u64,
+    safe_to_break: SafeToBreakSubtable,
     glyph_set: U32Set,
     class_cache: ClassCache,
+    /// Pre-resolved subtable layout, so per-application dispatch rebuilds
+    /// the kind without re-reading headers. An unreadable subtable stores
+    /// an invalid format, which makes from_parts fail like the full read
+    /// did.
+    parts: SubtableParts,
 }
 
 impl MorxSubtableCache {
-    pub(crate) fn new(subtable: &Subtable, num_glyphs: u32) -> Self {
+    pub(crate) fn descriptor(
+        chain_index: usize,
+        subtable: &Subtable,
+        morx_base: usize,
+    ) -> MorxSubtableDescriptor {
+        let data = subtable.data();
+        let start = data.as_ptr() as usize - morx_base;
+        MorxSubtableDescriptor {
+            chain_index: chain_index as u32,
+            coverage: subtable.coverage(),
+            sub_feature_flags: subtable.sub_feature_flags(),
+            data_start: start as u32,
+            data_end: (start + data.len()) as u32,
+        }
+    }
+
+    pub(crate) fn new(
+        subtable: &Subtable,
+        num_glyphs: u32,
+        safe_to_break: &mut SafeToBreakAccel,
+    ) -> Self {
         let mut start_end_safe_to_break = 0u64;
+        let mut safe_to_break_subtable = safe_to_break.empty_subtable();
         let mut glyph_set = U32Set::default();
         if let Ok(kind) = subtable.kind() {
             match &kind {
                 SubtableKind::Rearrangement(table) => {
                     start_end_safe_to_break =
                         collect_start_end_safe_to_break::<_, RearrangementCtx>(table);
+                    safe_to_break_subtable = safe_to_break.build_extended(
+                        table,
+                        subtable.data(),
+                        &RearrangementCtx::is_actionable,
+                        &RearrangementCtx::can_advance,
+                    );
                     collect_initial_glyphs::<_, RearrangementCtx>(
                         table,
                         &mut glyph_set,
@@ -989,6 +1040,12 @@ impl MorxSubtableCache {
                 SubtableKind::Contextual(table) => {
                     start_end_safe_to_break =
                         collect_start_end_safe_to_break::<_, ContextualCtx>(&table.state_table);
+                    safe_to_break_subtable = safe_to_break.build_extended(
+                        &table.state_table,
+                        subtable.data(),
+                        &ContextualCtx::is_actionable,
+                        &ContextualCtx::can_advance,
+                    );
                     collect_initial_glyphs::<_, ContextualCtx>(
                         &table.state_table,
                         &mut glyph_set,
@@ -998,6 +1055,12 @@ impl MorxSubtableCache {
                 SubtableKind::Ligature(table) => {
                     start_end_safe_to_break =
                         collect_start_end_safe_to_break::<_, LigatureCtx>(&table.state_table);
+                    safe_to_break_subtable = safe_to_break.build_extended(
+                        &table.state_table,
+                        subtable.data(),
+                        &LigatureCtx::is_actionable,
+                        &LigatureCtx::can_advance,
+                    );
                     collect_initial_glyphs::<_, LigatureCtx>(
                         &table.state_table,
                         &mut glyph_set,
@@ -1010,6 +1073,12 @@ impl MorxSubtableCache {
                 SubtableKind::Insertion(table) => {
                     start_end_safe_to_break =
                         collect_start_end_safe_to_break::<_, InsertionCtx>(&table.state_table);
+                    safe_to_break_subtable = safe_to_break.build_extended(
+                        &table.state_table,
+                        subtable.data(),
+                        &InsertionCtx::is_actionable,
+                        &InsertionCtx::can_advance,
+                    );
                     collect_initial_glyphs::<_, InsertionCtx>(
                         &table.state_table,
                         &mut glyph_set,
@@ -1018,10 +1087,17 @@ impl MorxSubtableCache {
                 }
             }
         }
+        let parts = SubtableKind::parts(FontData::new(subtable.data()), subtable.coverage())
+            .unwrap_or(SubtableParts {
+                format: 0xFF,
+                ..Default::default()
+            });
         MorxSubtableCache {
             start_end_safe_to_break,
+            safe_to_break: safe_to_break_subtable,
             glyph_set,
             class_cache: ClassCache::new(),
+            parts,
         }
     }
 }

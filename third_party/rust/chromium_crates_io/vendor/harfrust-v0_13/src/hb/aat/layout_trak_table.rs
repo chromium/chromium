@@ -34,9 +34,11 @@ pub fn apply(
 
     foreach_grapheme!(buffer, start, end, {
         if buffer.direction.is_horizontal() {
-            buffer.pos[start].x_advance += advance_to_add;
+            buffer.pos[start].x_advance =
+                buffer.pos[start].x_advance.saturating_add(advance_to_add);
         } else {
-            buffer.pos[start].y_advance += advance_to_add;
+            buffer.pos[start].y_advance =
+                buffer.pos[start].y_advance.saturating_add(advance_to_add);
         }
     });
 

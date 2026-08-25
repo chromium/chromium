@@ -643,15 +643,19 @@ mod icu {
             BidiMirroringGlyph, CanonicalCombiningClass as IcuCanonicalCombiningClass,
             GeneralCategory as IcuGeneralCategory, Script as IcuScript,
         },
-        CodePointMapData,
+        CodePointMapData, PropertyNamesShort,
     };
 
     pub(crate) fn script_for(c: u32) -> Script {
-        let icu_script = CodePointMapData::<IcuScript>::new().get32(c);
-        SCRIPT_MAP
-            .get(icu_script.to_icu4c_value() as usize)
-            .copied()
-            .unwrap_or(crate::script::UNKNOWN)
+        let Some(icu_script) = PropertyNamesShort::new()
+            .get_locale_script(CodePointMapData::<IcuScript>::new().get32(c))
+        else {
+            return crate::script::UNKNOWN;
+        };
+        // As this is the script of some Unicode code point, correctly cased, we don't need to apply
+        // any of the checks and conversion from Script::from_iso15924. Furthermore, both the
+        // `from_bytes` and the `into_raw` calls are free, as the representation of both types is [u8; 4].
+        Script::from_bytes(&icu_script.into_raw())
     }
 
     pub(crate) fn general_category_for(c: u32) -> GeneralCategory {
@@ -725,221 +729,6 @@ mod icu {
             }
         }
     }
-
-    pub(crate) static SCRIPT_MAP: [Script; 212] = [
-        crate::script::COMMON,                 // 0
-        crate::script::INHERITED,              // 1
-        crate::script::ARABIC,                 // 2
-        crate::script::ARMENIAN,               // 3
-        crate::script::BENGALI,                // 4
-        crate::script::BOPOMOFO,               // 5
-        crate::script::CHEROKEE,               // 6
-        crate::script::COPTIC,                 // 7
-        crate::script::CYRILLIC,               // 8
-        crate::script::DESERET,                // 9
-        crate::script::DEVANAGARI,             // 10
-        crate::script::ETHIOPIC,               // 11
-        crate::script::GEORGIAN,               // 12
-        crate::script::GOTHIC,                 // 13
-        crate::script::GREEK,                  // 14
-        crate::script::GUJARATI,               // 15
-        crate::script::GURMUKHI,               // 16
-        crate::script::HAN,                    // 17
-        crate::script::HANGUL,                 // 18
-        crate::script::HEBREW,                 // 19
-        crate::script::HIRAGANA,               // 20
-        crate::script::KANNADA,                // 21
-        crate::script::KATAKANA,               // 22
-        crate::script::KHMER,                  // 23
-        crate::script::LAO,                    // 24
-        crate::script::LATIN,                  // 25
-        crate::script::MALAYALAM,              // 26
-        crate::script::MONGOLIAN,              // 27
-        crate::script::MYANMAR,                // 28
-        crate::script::OGHAM,                  // 29
-        crate::script::OLD_ITALIC,             // 30
-        crate::script::ORIYA,                  // 31
-        crate::script::RUNIC,                  // 32
-        crate::script::SINHALA,                // 33
-        crate::script::SYRIAC,                 // 34
-        crate::script::TAMIL,                  // 35
-        crate::script::TELUGU,                 // 36
-        crate::script::THAANA,                 // 37
-        crate::script::THAI,                   // 38
-        crate::script::TIBETAN,                // 39
-        crate::script::CANADIAN_SYLLABICS,     // 40
-        crate::script::YI,                     // 41
-        crate::script::TAGALOG,                // 42
-        crate::script::HANUNOO,                // 43
-        crate::script::BUHID,                  // 44
-        crate::script::TAGBANWA,               // 45
-        crate::script::BRAILLE,                // 46
-        crate::script::CYPRIOT,                // 47
-        crate::script::LIMBU,                  // 48
-        crate::script::LINEAR_B,               // 49
-        crate::script::OSMANYA,                // 50
-        crate::script::SHAVIAN,                // 51
-        crate::script::TAI_LE,                 // 52
-        crate::script::UGARITIC,               // 53
-        crate::script::UNKNOWN,                // 54
-        crate::script::BUGINESE,               // 55
-        crate::script::GLAGOLITIC,             // 56
-        crate::script::KHAROSHTHI,             // 57
-        crate::script::SYLOTI_NAGRI,           // 58
-        crate::script::NEW_TAI_LUE,            // 59
-        crate::script::TIFINAGH,               // 60
-        crate::script::OLD_PERSIAN,            // 61
-        crate::script::BALINESE,               // 62
-        crate::script::BATAK,                  // 63
-        crate::script::UNKNOWN,                // 64
-        crate::script::BRAHMI,                 // 65
-        crate::script::CHAM,                   // 66
-        crate::script::UNKNOWN,                // 67
-        crate::script::CYRILLIC,               // 68 (Cyrs)
-        crate::script::UNKNOWN,                // 69
-        crate::script::UNKNOWN,                // 70
-        crate::script::EGYPTIAN_HIEROGLYPHS,   // 71
-        crate::script::GEORGIAN,               // 72 (Geok)
-        crate::script::HAN,                    // 73 (Hans)
-        crate::script::HAN,                    // 74 (Hant)
-        crate::script::PAHAWH_HMONG,           // 75
-        crate::script::OLD_HUNGARIAN,          // 76
-        crate::script::UNKNOWN,                // 77
-        crate::script::JAVANESE,               // 78
-        crate::script::KAYAH_LI,               // 79
-        crate::script::LATIN,                  // 80 (Latf)
-        crate::script::LATIN,                  // 81 (Latg)
-        crate::script::LEPCHA,                 // 82
-        crate::script::LINEAR_A,               // 83
-        crate::script::MANDAIC,                // 84
-        crate::script::UNKNOWN,                // 85
-        crate::script::MEROITIC_HIEROGLYPHS,   // 86
-        crate::script::NKO,                    // 87
-        crate::script::OLD_TURKIC,             // 88
-        crate::script::OLD_PERMIC,             // 89
-        crate::script::PHAGS_PA,               // 90
-        crate::script::PHOENICIAN,             // 91
-        crate::script::MIAO,                   // 92
-        crate::script::UNKNOWN,                // 93
-        crate::script::UNKNOWN,                // 94
-        crate::script::SYRIAC,                 // 95 (Syre)
-        crate::script::SYRIAC,                 // 96 (Syrj)
-        crate::script::SYRIAC,                 // 97 (Syrn)
-        crate::script::UNKNOWN,                // 98
-        crate::script::VAI,                    // 99
-        crate::script::UNKNOWN,                // 100
-        crate::script::CUNEIFORM,              // 101
-        crate::script::UNKNOWN,                // 102
-        crate::script::UNKNOWN,                // 103
-        crate::script::CARIAN,                 // 104
-        crate::script::UNKNOWN,                // 105
-        crate::script::TAI_THAM,               // 106
-        crate::script::LYCIAN,                 // 107
-        crate::script::LYDIAN,                 // 108
-        crate::script::OL_CHIKI,               // 109
-        crate::script::REJANG,                 // 110
-        crate::script::SAURASHTRA,             // 111
-        crate::script::SIGNWRITING,            // 112
-        crate::script::SUNDANESE,              // 113
-        crate::script::UNKNOWN,                // 114
-        crate::script::MEETEI_MAYEK,           // 115
-        crate::script::IMPERIAL_ARAMAIC,       // 116
-        crate::script::AVESTAN,                // 117
-        crate::script::CHAKMA,                 // 118
-        crate::script::UNKNOWN,                // 119
-        crate::script::KAITHI,                 // 120
-        crate::script::MANICHAEAN,             // 121
-        crate::script::INSCRIPTIONAL_PAHLAVI,  // 122
-        crate::script::PSALTER_PAHLAVI,        // 123
-        crate::script::UNKNOWN,                // 124
-        crate::script::INSCRIPTIONAL_PARTHIAN, // 125
-        crate::script::SAMARITAN,              // 126
-        crate::script::TAI_VIET,               // 127
-        crate::script::UNKNOWN,                // 128
-        crate::script::UNKNOWN,                // 129
-        crate::script::BAMUM,                  // 130
-        crate::script::LISU,                   // 131
-        crate::script::UNKNOWN,                // 132
-        crate::script::OLD_SOUTH_ARABIAN,      // 133
-        crate::script::BASSA_VAH,              // 134
-        crate::script::DUPLOYAN,               // 135
-        crate::script::ELBASAN,                // 136
-        crate::script::GRANTHA,                // 137
-        crate::script::UNKNOWN,                // 138
-        crate::script::UNKNOWN,                // 139
-        crate::script::MENDE_KIKAKUI,          // 140
-        crate::script::MEROITIC_CURSIVE,       // 141
-        crate::script::OLD_NORTH_ARABIAN,      // 142
-        crate::script::NABATAEAN,              // 143
-        crate::script::PALMYRENE,              // 144
-        crate::script::KHUDAWADI,              // 145
-        crate::script::WARANG_CITI,            // 146
-        crate::script::UNKNOWN,                // 147
-        crate::script::UNKNOWN,                // 148
-        crate::script::MRO,                    // 149
-        crate::script::NUSHU,                  // 150
-        crate::script::SHARADA,                // 151
-        crate::script::SORA_SOMPENG,           // 152
-        crate::script::TAKRI,                  // 153
-        crate::script::TANGUT,                 // 154
-        crate::script::UNKNOWN,                // 155
-        crate::script::ANATOLIAN_HIEROGLYPHS,  // 156
-        crate::script::KHOJKI,                 // 157
-        crate::script::TIRHUTA,                // 158
-        crate::script::CAUCASIAN_ALBANIAN,     // 159
-        crate::script::MAHAJANI,               // 160
-        crate::script::AHOM,                   // 161
-        crate::script::HATRAN,                 // 162
-        crate::script::MODI,                   // 163
-        crate::script::MULTANI,                // 164
-        crate::script::PAU_CIN_HAU,            // 165
-        crate::script::SIDDHAM,                // 166
-        crate::script::ADLAM,                  // 167
-        crate::script::BHAIKSUKI,              // 168
-        crate::script::MARCHEN,                // 169
-        crate::script::NEWA,                   // 170
-        crate::script::OSAGE,                  // 171
-        crate::script::UNKNOWN,                // 172
-        crate::script::HANGUL,                 // 173 (Jamo)
-        crate::script::UNKNOWN,                // 174
-        crate::script::MASARAM_GONDI,          // 175
-        crate::script::SOYOMBO,                // 176
-        crate::script::ZANABAZAR_SQUARE,       // 177
-        crate::script::DOGRA,                  // 178
-        crate::script::GUNJALA_GONDI,          // 179
-        crate::script::MAKASAR,                // 180
-        crate::script::MEDEFAIDRIN,            // 181
-        crate::script::HANIFI_ROHINGYA,        // 182
-        crate::script::SOGDIAN,                // 183
-        crate::script::OLD_SOGDIAN,            // 184
-        crate::script::ELYMAIC,                // 185
-        crate::script::NYIAKENG_PUACHUE_HMONG, // 186
-        crate::script::NANDINAGARI,            // 187
-        crate::script::WANCHO,                 // 188
-        crate::script::CHORASMIAN,             // 189
-        crate::script::DIVES_AKURU,            // 190
-        crate::script::KHITAN_SMALL_SCRIPT,    // 191
-        crate::script::YEZIDI,                 // 192
-        crate::script::CYPRO_MINOAN,           // 193
-        crate::script::OLD_UYGHUR,             // 194
-        crate::script::TANGSA,                 // 195
-        crate::script::TOTO,                   // 196
-        crate::script::VITHKUQI,               // 197
-        crate::script::KAWI,                   // 198
-        crate::script::NAG_MUNDARI,            // 199
-        crate::script::ARABIC,                 // 200
-        crate::script::GARAY,                  // 201
-        crate::script::GURUNG_KHEMA,           // 202
-        crate::script::KIRAT_RAI,              // 203
-        crate::script::OL_ONAL,                // 204
-        crate::script::SUNUWAR,                // 205
-        crate::script::TODHRI,                 // 206
-        crate::script::TULU_TIGALARI,          // 207
-        crate::script::BERIA_ERFE,             // 208
-        crate::script::SIDETIC,                // 209
-        crate::script::TAI_YO,                 // 210
-        crate::script::TOLONG_SIKI,            // 211
-    ];
 }
 
 #[cfg(not(feature = "icu"))]
@@ -1120,53 +909,29 @@ mod tests {
     #[test]
     fn script_mapping() {
         use icu_properties::props::Script as IcuScript;
-        use icu_properties::PropertyNamesShort;
-        // These ICU script codes are aliases, placeholders, or meta scripts.
-        // No Unicode code points map directly to them via the Script property,
-        // so our direct-script table intentionally keeps them as UNKNOWN.
-        const ALLOWED_UNKNOWN_SCRIPT_VALUES: &[usize] = &[
-            54, 64, 67, 69, 70, 77, 85, 93, 94, 98, 100, 102, 105, 114, 119, 124, 128, 129, 132,
-            138, 139, 147, 148, 155, 172, 174,
-        ];
-        let short_names = PropertyNamesShort::<IcuScript>::new();
+        use icu_properties::{CodePointMapData, PropertyNamesShort};
+
         let mut mismatches = Vec::new();
-        for (icu4c_value, script) in super::icu::SCRIPT_MAP.iter().enumerate() {
-            let icu_script = IcuScript::from_icu4c_value(icu4c_value as u16);
-            match short_names.get(icu_script) {
-                Some(short_name) => {
-                    let expected = if short_name.len() == 4 {
-                        let bytes = short_name.as_bytes();
-                        let tag =
-                            crate::Tag::from_be_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]);
-                        crate::Script::from_iso15924_tag(tag).unwrap_or(crate::script::UNKNOWN)
-                    } else {
-                        crate::script::UNKNOWN
-                    };
-                    if *script == crate::script::UNKNOWN
-                        && ALLOWED_UNKNOWN_SCRIPT_VALUES.contains(&icu4c_value)
-                    {
-                        continue;
-                    }
-                    if expected != *script {
-                        let expected_tag = expected.tag().to_be_bytes();
-                        let actual_tag = script.tag().to_be_bytes();
-                        mismatches.push(format!(
-                            "value {icu4c_value}: Script::from_iso15924_tag({short_name}) -> {}, mapped tag {}",
-                            core::str::from_utf8(&expected_tag).unwrap_or("????"),
-                            core::str::from_utf8(&actual_tag).unwrap_or("????")
-                        ));
-                    }
-                }
-                None => {
-                    if *script != crate::script::UNKNOWN {
-                        mismatches.push(format!(
-                            "value {icu4c_value}: no ICU short name but mapped tag {}",
-                            core::str::from_utf8(&script.tag().to_be_bytes()).unwrap_or("????")
-                        ));
-                    }
-                }
+
+        // All ICU scripts that are returned for some code point convert to the correct crate::Script
+        for cp in 0..=char::MAX as u32 {
+            let script = super::icu::script_for(cp);
+            let short_name = PropertyNamesShort::<IcuScript>::new()
+                .get_locale_script(CodePointMapData::new().get32(cp))
+                .unwrap();
+            let tag = crate::Tag::from_be_bytes(short_name.into_raw());
+            let expected = crate::Script::from_iso15924_tag(tag).unwrap();
+            if expected != script {
+                let expected_tag = expected.tag().to_be_bytes();
+                let actual_tag = script.tag().to_be_bytes();
+                mismatches.push(format!(
+                    "Script::from_iso15924_tag({short_name}) -> {}, mapped tag {}",
+                    core::str::from_utf8(&expected_tag).unwrap_or("????"),
+                    core::str::from_utf8(&actual_tag).unwrap_or("????")
+                ));
             }
         }
+
         assert!(
             mismatches.is_empty(),
             "script mapping mismatches:\n{}",

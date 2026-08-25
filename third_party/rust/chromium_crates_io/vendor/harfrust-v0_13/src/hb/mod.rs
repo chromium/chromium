@@ -79,4 +79,9 @@ use self::face::hb_font_t;
 
 type hb_mask_t = u32;
 
+#[inline(always)]
+fn clamp_i64_to_i32(value: i64) -> i32 {
+    value.clamp(i64::from(i32::MIN), i64::from(i32::MAX)) as i32
+}
+
 use self::common::{script, Direction, Feature, Language, Script};

@@ -217,18 +217,31 @@ fn apply_forward(ctx: &mut OT::hb_ot_apply_context_t, lookup: &LookupInfo) -> bo
 
     let use_hot_subtable_cache = lookup.cache_enter(ctx);
 
+    // Loop-invariant: nested lookups save and restore lookup_props and the
+    // lookup mask (see hb_ot_apply_context_t::recurse), so these can be
+    // hoisted, letting the candidate scan below run over a slice without
+    // per-glyph bounds checks.
+    let face = ctx.face;
+    let lookup_mask = ctx.lookup_mask();
+    let lookup_props = ctx.lookup_props;
+
     while ctx.buffer.successful {
-        let mut j = ctx.buffer.idx;
-        while j < ctx.buffer.len && {
-            let info = &ctx.buffer.info[j];
-            !(lookup.digest.may_have(info.glyph_id)
-                && (info.mask & ctx.lookup_mask()) != 0
-                && check_glyph_property(ctx.face, info, ctx.lookup_props))
-        } {
+        let idx = ctx.buffer.idx;
+        let infos = &ctx.buffer.info[..ctx.buffer.len];
+        let mut j = idx;
+        while j < infos.len() {
+            let info = &infos[j];
+            if lookup.digest.may_have(info.glyph_id)
+                && (info.mask & lookup_mask) != 0
+                && check_glyph_property(face, info, lookup_props)
+            {
+                break;
+            }
             j += 1;
         }
-        if j > ctx.buffer.idx {
-            ctx.buffer.next_glyphs(j - ctx.buffer.idx);
+
+        if j > idx {
+            ctx.buffer.next_glyphs(j - idx);
         }
         if ctx.buffer.idx >= ctx.buffer.len {
             break;
@@ -256,18 +269,31 @@ fn apply_backward(ctx: &mut OT::hb_ot_apply_context_t, lookup: &LookupInfo) -> b
     let Some(table_data) = ctx.face.ot_tables.table_data(ctx.table_index) else {
         return false;
     };
-    loop {
-        let cur = ctx.buffer.cur(0);
-        ret |= lookup.digest.may_have(cur.glyph_id)
-            && (cur.mask & ctx.lookup_mask()) != 0
-            && check_glyph_property(ctx.face, cur, ctx.lookup_props)
-            && lookup.apply(ctx, table_data, false).is_some();
+    // Loop-invariant hoisting as in apply_forward; reverse lookups don't
+    // recurse, and in-place application cannot change the buffer length.
+    let face = ctx.face;
+    let lookup_mask = ctx.lookup_mask();
+    let lookup_props = ctx.lookup_props;
 
-        if ctx.buffer.idx == 0 {
+    loop {
+        let candidate = ctx.buffer.info[..=ctx.buffer.idx].iter().rposition(|info| {
+            lookup.digest.may_have(info.glyph_id)
+                && (info.mask & lookup_mask) != 0
+                && check_glyph_property(face, info, lookup_props)
+        });
+
+        let Some(idx) = candidate else {
+            ctx.buffer.idx = 0;
+            break;
+        };
+
+        ctx.buffer.idx = idx;
+        ret |= lookup.apply(ctx, table_data, false).is_some();
+
+        if idx == 0 {
             break;
         }
-
-        ctx.buffer.idx -= 1;
+        ctx.buffer.idx = idx - 1;
     }
     ret
 }

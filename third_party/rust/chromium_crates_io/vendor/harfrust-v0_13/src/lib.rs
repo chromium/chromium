@@ -32,7 +32,8 @@ pub use hb::face::shape;
 /// Font related types.
 pub mod font {
     pub use crate::hb::face::{
-        AdvanceWidthBatch, BuiltinFontFuncs, FontFuncs, RawAdvanceWidthBatch,
+        AdvanceWidthBatch, BuiltinFontFuncs, FontFuncs, NominalGlyphBatch, RawAdvanceWidthBatch,
+        RawNominalGlyphBatch,
     };
 
     // Import the whole read-fonts "model" module as our font representation.

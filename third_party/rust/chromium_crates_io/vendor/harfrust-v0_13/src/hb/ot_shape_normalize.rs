@@ -1,5 +1,5 @@
 use super::buffer::*;
-use super::font_funcs::FontFuncsDispatch;
+use super::font_funcs::{FontFuncsDispatch, NominalGlyphBatch};
 use super::hb_font_t;
 use super::ot_shape_plan::hb_ot_shape_plan_t;
 use super::ot_shaper::{ComposeFn, DecomposeFn, MAX_COMBINING_MARKS};
@@ -359,18 +359,12 @@ pub fn _hb_ot_shape_normalize<'a, 'x>(
 
             // From idx to end are simple clusters.
             if might_short_circuit {
-                let len = end - ctx.buffer.idx;
-                let mut done = 0;
-                while done < len {
-                    let codepoint = ctx.buffer.cur(done).glyph_id;
-                    let glyph_id = match ctx.nominal_glyph(codepoint) {
-                        Some(glyph_id) => u32::from(glyph_id),
-                        None => break,
-                    };
-                    let cur = ctx.buffer.cur_mut(done);
-                    cur.set_normalizer_glyph_index(glyph_id);
-                    done += 1;
-                }
+                let idx = ctx.buffer.idx;
+                let done = ctx
+                    .font_funcs
+                    .populate_nominal_glyphs(NominalGlyphBatch::new(
+                        &mut ctx.buffer.info[idx..end],
+                    ));
                 ctx.buffer.next_glyphs(done);
             }
 

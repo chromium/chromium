@@ -148,7 +148,7 @@ impl Apply for MarkBasePosFormat1<'_> {
 
         // Checking that matched glyph is actually a base glyph by GDEF is too strong; disabled
         let base_glyph = info[idx as usize].as_glyph();
-        let Some(base_index) = self.base_coverage().ok()?.get(base_glyph) else {
+        let Some(base_index) = base_coverage.get(base_glyph) else {
             ctx.buffer
                 .unsafe_to_concat_from_outbuffer(Some(idx as usize), Some(ctx.buffer.idx + 1));
             return None;

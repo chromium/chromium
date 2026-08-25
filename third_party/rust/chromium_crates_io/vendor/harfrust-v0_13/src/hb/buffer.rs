@@ -627,6 +627,70 @@ impl hb_buffer_t {
         self.out_info_mut()[i] = info;
     }
 
+    /// Below this many elements, copy inline instead of calling memmove:
+    /// AAT state machines move a couple of glyphs at a time, and the call
+    /// plus memmove's size dispatch costs more cycles than the copy.
+    const SMALL_COPY: usize = 16;
+
+    /// Block-copies `info[src..src + count]` to `out_info[dst..dst + count]`.
+    /// The caller must have made room in the out buffer already. In the
+    /// shared-array case the destination never starts past the source
+    /// (`dst <= src`), which makes the ascending inline copy overlap-safe.
+    #[inline]
+    fn copy_infos_to_out(&mut self, src: usize, dst: usize, count: usize) {
+        if self.have_separate_output {
+            let out: &mut [GlyphInfo] = bytemuck::cast_slice_mut(self.pos.as_mut_slice());
+            if count < Self::SMALL_COPY {
+                // Deliberately not copy_from_slice: avoiding the memmove
+                // call for small counts is this fast path's entire point.
+                #[allow(clippy::manual_memcpy)]
+                for i in 0..count {
+                    out[dst + i] = self.info[src + i];
+                }
+            } else {
+                out[dst..dst + count].copy_from_slice(&self.info[src..src + count]);
+            }
+        } else {
+            debug_assert!(dst <= src);
+            if count < Self::SMALL_COPY {
+                for i in 0..count {
+                    self.info[dst + i] = self.info[src + i];
+                }
+            } else {
+                self.info.copy_within(src..src + count, dst);
+            }
+        }
+    }
+
+    /// Block-copies `out_info[src..src + count]` to `info[dst..dst + count]`.
+    /// In the shared-array case the destination never starts before the
+    /// source (`dst >= src`), so the inline copy must run descending to keep
+    /// memmove semantics on overlap.
+    #[inline]
+    fn copy_out_to_infos(&mut self, src: usize, dst: usize, count: usize) {
+        if self.have_separate_output {
+            let out: &[GlyphInfo] = bytemuck::cast_slice(self.pos.as_slice());
+            if count < Self::SMALL_COPY {
+                // Deliberately not copy_from_slice; see copy_infos_to_out.
+                #[allow(clippy::manual_memcpy)]
+                for i in 0..count {
+                    self.info[dst + i] = out[src + i];
+                }
+            } else {
+                self.info[dst..dst + count].copy_from_slice(&out[src..src + count]);
+            }
+        } else {
+            debug_assert!(dst >= src);
+            if count < Self::SMALL_COPY {
+                for i in (0..count).rev() {
+                    self.info[dst + i] = self.info[src + i];
+                }
+            } else {
+                self.info.copy_within(src..src + count, dst);
+            }
+        }
+    }
+
     #[inline]
     pub fn cur(&self, i: usize) -> &GlyphInfo {
         &self.info[self.idx + i]
@@ -889,10 +953,11 @@ impl hb_buffer_t {
         self.merge_clusters(self.idx, self.idx + num_in);
 
         let orig_info = self.info[self.idx];
-        for i in 0..num_out {
-            let ii = self.out_len + i;
-            self.set_out_info(ii, orig_info);
-            self.out_info_mut()[ii].glyph_id = glyph_data[i];
+        let out_len = self.out_len;
+        let out = &mut self.out_info_mut()[out_len..out_len + num_out];
+        for (out_info, &glyph_id) in out.iter_mut().zip(&glyph_data[..num_out]) {
+            *out_info = orig_info;
+            out_info.glyph_id = glyph_id;
         }
 
         self.idx += num_in;
@@ -987,9 +1052,7 @@ impl hb_buffer_t {
                     return;
                 }
 
-                for i in 0..n {
-                    self.set_out_info(self.out_len + i, self.info[self.idx + i]);
-                }
+                self.copy_infos_to_out(self.idx, self.out_len, n);
             }
 
             self.out_len += n;
@@ -1414,9 +1477,13 @@ impl hb_buffer_t {
                 return false;
             }
 
-            for j in 0..count {
-                self.set_out_info(self.out_len + j, self.info[self.idx + j]);
+            self.max_ops -= count as i32;
+            if self.max_ops < 0 {
+                self.successful = false;
+                return false;
             }
+
+            self.copy_infos_to_out(self.idx, self.out_len, count);
 
             self.idx += count;
             self.out_len += count;
@@ -1437,12 +1504,16 @@ impl hb_buffer_t {
 
             debug_assert!(self.idx >= count);
 
+            self.max_ops -= count as i32;
+            if self.max_ops < 0 {
+                self.successful = false;
+                return false;
+            }
+
             self.idx -= count;
             self.out_len -= count;
 
-            for j in 0..count {
-                self.info[self.idx + j] = self.out_info()[self.out_len + j];
-            }
+            self.copy_out_to_infos(self.out_len, self.idx, count);
         }
 
         true
@@ -1480,9 +1551,7 @@ impl hb_buffer_t {
             debug_assert!(self.have_output);
 
             self.have_separate_output = true;
-            for i in 0..self.out_len {
-                self.set_out_info(i, self.info[i]);
-            }
+            self.copy_infos_to_out(0, 0, self.out_len);
         }
 
         true
@@ -1500,8 +1569,15 @@ impl hb_buffer_t {
             return false;
         }
 
-        for i in (0..(self.len - self.idx)).rev() {
-            self.info[self.idx + count + i] = self.info[self.idx + i];
+        // Destination starts past the source; the inline copy runs
+        // descending to keep memmove semantics on overlap.
+        let moved = self.len - self.idx;
+        if moved < Self::SMALL_COPY {
+            for i in (0..moved).rev() {
+                self.info[self.idx + count + i] = self.info[self.idx + i];
+            }
+        } else {
+            self.info.copy_within(self.idx..self.len, self.idx + count);
         }
 
         if self.idx + count > self.len {
@@ -2086,8 +2162,8 @@ impl GlyphBuffer {
 
         let info = self.glyph_infos();
         let pos = self.glyph_positions();
-        let mut x = 0;
-        let mut y = 0;
+        let mut x: i32 = 0;
+        let mut y: i32 = 0;
         let names = font.glyph_names();
         let glyph_metrics = if flags.contains(SerializeFlags::GLYPH_EXTENTS) {
             Some(font.glyph_metrics())
@@ -2111,8 +2187,10 @@ impl GlyphBuffer {
             }
 
             if !flags.contains(SerializeFlags::NO_POSITIONS) {
-                if x + pos.x_offset != 0 || y + pos.y_offset != 0 {
-                    write!(&mut s, "@{},{}", x + pos.x_offset, y + pos.y_offset)?;
+                let dx = x.saturating_add(pos.x_offset);
+                let dy = y.saturating_add(pos.y_offset);
+                if dx != 0 || dy != 0 {
+                    write!(&mut s, "@{dx},{dy}")?;
                 }
 
                 if !flags.contains(SerializeFlags::NO_ADVANCES) {
@@ -2143,8 +2221,8 @@ impl GlyphBuffer {
             }
 
             if flags.contains(SerializeFlags::NO_ADVANCES) {
-                x += pos.x_advance;
-                y += pos.y_advance;
+                x = x.saturating_add(pos.x_advance);
+                y = y.saturating_add(pos.y_advance);
             }
         }
 

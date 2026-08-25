@@ -140,12 +140,14 @@ impl<'a> GlyphMetrics<'a> {
         };
         if !coords.is_empty() {
             if let Some(hvar) = self.hvar.as_ref() {
-                advance += hvar
-                    .advance_width_delta(gid, coords)
-                    .unwrap_or_default()
-                    .to_i32();
+                advance = advance.saturating_add(
+                    hvar.advance_width_delta(gid, coords)
+                        .unwrap_or_default()
+                        .to_i32(),
+                );
             } else if let Some(deltas) = self.phantom_deltas(gid, coords) {
-                advance += deltas[1].x.to_i32() - deltas[0].x.to_i32();
+                advance = advance
+                    .saturating_add(deltas[1].x.to_i32().saturating_sub(deltas[0].x.to_i32()));
             }
         }
         Some(advance)
@@ -170,15 +172,18 @@ impl<'a> GlyphMetrics<'a> {
         if !coords.is_empty() {
             if let Some(hvar) = self.hvar.as_ref() {
                 for (info, pos) in infos.iter().zip(pos.iter_mut()) {
-                    pos.x_advance += hvar
-                        .advance_width_delta(info.as_glyph(), coords)
-                        .unwrap_or_default()
-                        .to_i32();
+                    pos.x_advance = pos.x_advance.saturating_add(
+                        hvar.advance_width_delta(info.as_glyph(), coords)
+                            .unwrap_or_default()
+                            .to_i32(),
+                    );
                 }
             } else {
                 for (info, pos) in infos.iter().zip(pos.iter_mut()) {
                     if let Some(deltas) = self.phantom_deltas(info.as_glyph(), coords) {
-                        pos.x_advance += deltas[1].x.to_i32() - deltas[0].x.to_i32();
+                        pos.x_advance = pos.x_advance.saturating_add(
+                            deltas[1].x.to_i32().saturating_sub(deltas[0].x.to_i32()),
+                        );
                     }
                 }
             }
@@ -202,9 +207,10 @@ impl<'a> GlyphMetrics<'a> {
         };
         if !coords.is_empty() {
             if let Some(hvar) = self.hvar.as_ref() {
-                bearing += hvar.lsb_delta(gid, coords).unwrap_or_default().to_i32();
+                bearing = bearing
+                    .saturating_add(hvar.lsb_delta(gid, coords).unwrap_or_default().to_i32());
             } else if let Some(deltas) = self.phantom_deltas(gid, coords) {
-                bearing += deltas[0].x.to_i32();
+                bearing = bearing.saturating_add(deltas[0].x.to_i32());
             }
         }
         Some(bearing)
@@ -226,12 +232,14 @@ impl<'a> GlyphMetrics<'a> {
         };
         if !coords.is_empty() {
             if let Some(vvar) = self.vvar.as_ref() {
-                advance += vvar
-                    .advance_height_delta(gid, coords)
-                    .unwrap_or_default()
-                    .to_i32();
+                advance = advance.saturating_add(
+                    vvar.advance_height_delta(gid, coords)
+                        .unwrap_or_default()
+                        .to_i32(),
+                );
             } else if let Some(deltas) = self.phantom_deltas(gid, coords) {
-                advance += deltas[3].y.to_i32() - deltas[2].y.to_i32();
+                advance = advance
+                    .saturating_add(deltas[3].y.to_i32().saturating_sub(deltas[2].y.to_i32()));
             }
         }
         Some(advance)
@@ -247,9 +255,10 @@ impl<'a> GlyphMetrics<'a> {
         let mut bearing = vmtx.side_bearing(gid).unwrap_or_default() as i32;
         if !coords.is_empty() {
             if let Some(vvar) = self.vvar.as_ref() {
-                bearing += vvar.tsb_delta(gid, coords).unwrap_or_default().to_i32();
+                bearing = bearing
+                    .saturating_add(vvar.tsb_delta(gid, coords).unwrap_or_default().to_i32());
             } else if let Some(deltas) = self.phantom_deltas(gid, coords) {
-                bearing += deltas[3].y.to_i32();
+                bearing = bearing.saturating_add(deltas[3].y.to_i32());
             }
         }
         Some(bearing)
@@ -261,7 +270,8 @@ impl<'a> GlyphMetrics<'a> {
             let mut origin = vorg.vertical_origin_y(gid) as i32;
             if !coords.is_empty() {
                 if let Some(vvar) = self.vvar.as_ref() {
-                    origin += vvar.v_org_delta(gid, coords).unwrap_or_default().to_i32();
+                    origin = origin
+                        .saturating_add(vvar.v_org_delta(gid, coords).unwrap_or_default().to_i32());
                 }
             }
             origin
@@ -270,16 +280,15 @@ impl<'a> GlyphMetrics<'a> {
                 let mut origin = Some(extents.y_max);
                 let tsb = self.top_side_bearing(gid, coords);
                 if let Some(tsb) = tsb {
-                    origin = Some(origin.unwrap() + tsb);
+                    origin = Some(origin.unwrap().saturating_add(tsb));
                 } else {
                     origin = None;
                 }
                 if origin.is_some() && !coords.is_empty() {
                     if let Some(vvar) = self.vvar.as_ref() {
-                        origin = Some(
-                            origin.unwrap()
-                                + vvar.v_org_delta(gid, coords).unwrap_or_default().to_i32(),
-                        );
+                        origin = Some(origin.unwrap().saturating_add(
+                            vvar.v_org_delta(gid, coords).unwrap_or_default().to_i32(),
+                        ));
                     }
                 }
                 origin
@@ -292,25 +301,30 @@ impl<'a> GlyphMetrics<'a> {
             } else {
                 let mut advance = self.ascent as i32 - self.descent as i32;
                 if let Some(mvar) = self.mvar.as_ref() {
-                    advance += mvar
-                        .metric_delta(Tag::new(b"hasc"), coords)
-                        .unwrap_or_default()
-                        .to_i32()
-                        - mvar
-                            .metric_delta(Tag::new(b"hdsc"), coords)
-                            .unwrap_or_default()
-                            .to_i32();
+                    advance = advance
+                        .saturating_add(
+                            mvar.metric_delta(Tag::new(b"hasc"), coords)
+                                .unwrap_or_default()
+                                .to_i32(),
+                        )
+                        .saturating_sub(
+                            mvar.metric_delta(Tag::new(b"hdsc"), coords)
+                                .unwrap_or_default()
+                                .to_i32(),
+                        );
                 }
-                let diff = advance - (extents.y_max - extents.y_min);
-                extents.y_max + (diff >> 1)
+                let height = extents.y_max.saturating_sub(extents.y_min);
+                let diff = advance.saturating_sub(height);
+                extents.y_max.saturating_add(diff >> 1)
             }
         } else {
             let mut ascent = self.ascent as i32;
             if let Some(mvar) = self.mvar.as_ref() {
-                ascent += mvar
-                    .metric_delta(Tag::new(b"hasc"), coords)
-                    .unwrap_or_default()
-                    .to_i32();
+                ascent = ascent.saturating_add(
+                    mvar.metric_delta(Tag::new(b"hasc"), coords)
+                        .unwrap_or_default()
+                        .to_i32(),
+                );
             }
             ascent
         };

@@ -9,6 +9,7 @@ use smallvec::SmallVec;
 use core_maths::CoreFloat as _;
 
 use super::aat::AatTables;
+use super::buffer::hb_buffer_t;
 use super::charmap::{cache_t as cmap_cache_t, Charmap};
 use super::font_funcs::FontFuncsDispatch;
 use super::glyph_metrics::GlyphMetrics;
@@ -20,7 +21,10 @@ use crate::hb::aat::AatCache;
 use crate::hb::tables::TableRanges;
 use crate::{script, Feature, GlyphBuffer, NormalizedCoord, ShapePlan, UnicodeBuffer, Variation};
 
-pub use super::font_funcs::{AdvanceWidthBatch, BuiltinFontFuncs, FontFuncs, RawAdvanceWidthBatch};
+pub use super::font_funcs::{
+    AdvanceWidthBatch, BuiltinFontFuncs, FontFuncs, NominalGlyphBatch, RawAdvanceWidthBatch,
+    RawNominalGlyphBatch,
+};
 
 /// Data required for shaping with a single font.
 pub struct ShaperData {
@@ -36,7 +40,7 @@ impl ShaperData {
     /// Creates new cached shaper data for the given font.
     pub fn new(font: &FontRef) -> Self {
         let ot_cache = OtCache::new(font);
-        let aat_cache = AatCache::new(font);
+        let aat_cache = AatCache::new(font, &ot_cache);
         let table_ranges = TableRanges::new(font);
         let cmap_cache = cmap_cache_t::new();
         let apply_trak = font.trak().is_ok() && font.stat().is_ok();
@@ -52,7 +56,7 @@ impl ShaperData {
     fn from_font(font: &crate::font::Font) -> Self {
         let tables = font.tables();
         let ot_cache = OtCache::new(&tables);
-        let aat_cache = AatCache::new(&tables);
+        let aat_cache = AatCache::new(&tables, &ot_cache);
         let table_ranges = TableRanges::from_tables(&tables);
         let cmap_cache = cmap_cache_t::new();
         let apply_trak = tables.trak_data().is_some() && tables.stat_data().is_some();
@@ -400,12 +404,16 @@ impl Scale {
     pub(crate) fn scale_extents(&self, mut extents: GlyphExtents) -> GlyphExtents {
         let x1 = extents.x_bearing as f32 * self.x_multf;
         let y1 = extents.y_bearing as f32 * self.y_multf;
-        let x2 = (extents.x_bearing + extents.width) as f32 * self.x_multf;
-        let y2 = (extents.y_bearing + extents.height) as f32 * self.y_multf;
-        extents.x_bearing = x1.floor() as i32;
-        extents.y_bearing = y1.floor() as i32;
-        extents.width = x2.ceil() as i32 - extents.x_bearing;
-        extents.height = y2.ceil() as i32 - extents.y_bearing;
+        let x2 = (i64::from(extents.x_bearing) + i64::from(extents.width)) as f32 * self.x_multf;
+        let y2 = (i64::from(extents.y_bearing) + i64::from(extents.height)) as f32 * self.y_multf;
+        let rx1 = x1.floor();
+        let ry1 = y1.floor();
+        let rx2 = x2.ceil();
+        let ry2 = y2.ceil();
+        extents.x_bearing = rx1 as i32;
+        extents.y_bearing = ry1 as i32;
+        extents.width = (f64::from(rx2) - f64::from(rx1)) as i32;
+        extents.height = (f64::from(ry2) - f64::from(ry1)) as i32;
         extents
     }
 
@@ -420,7 +428,7 @@ impl Scale {
 
     #[inline(always)]
     fn scale_by_mult(value: i32, mult: i64) -> i32 {
-        (((value as i64) * mult + 32768) >> 16) as i32
+        ((i64::from(value) * mult + 32768) >> 16) as i32
     }
 }
 
@@ -439,10 +447,12 @@ impl Scale {
 #[cfg(feature = "experimental_font_api")]
 pub fn shape(
     font: &crate::font::FontInstance,
-    mut buffer: UnicodeBuffer,
+    buffer: UnicodeBuffer,
     mut options: ShapeOptions<'_>,
 ) -> GlyphBuffer {
-    let Some(hb_font) = hb_font_t::from_font(font) else {
+    let hb_font = hb_font_t::from_font(font);
+    let Some(hb_font) = hb_font.as_ref() else {
+        let mut buffer = buffer;
         buffer.clear();
         return GlyphBuffer(buffer.0);
     };
@@ -453,7 +463,9 @@ pub fn shape(
             options = options.scale(Some((ppem * 65536.0) as i32));
         }
     }
-    hb_font.shape(buffer, options)
+    let mut buffer = buffer.0;
+    hb_font.shape_buffer(&mut buffer, options);
+    GlyphBuffer(buffer)
 }
 
 // This will go away completely when we drop the old API.
@@ -503,11 +515,15 @@ impl<'a> crate::Shaper<'a> {
             descent: data.table_ranges.descent,
         };
         let coords = font.normalized_coords();
-        let feature_variations = font.feature_variations();
-        let feature_variations = [feature_variations.gsub(), feature_variations.gpos()];
+        let feature_variations = if coords.is_empty() {
+            [None; 2]
+        } else {
+            let feature_variations = font.feature_variations();
+            [feature_variations.gsub(), feature_variations.gpos()]
+        };
         let tables = font.tables();
         let ot_tables = OtTables::from_tables(&tables, &data.ot_cache, coords, feature_variations);
-        let aat_tables = AatTables::from_tables(&tables, &ot_tables, &data.aat_cache);
+        let aat_tables = AatTables::from_tables(&tables, &data.aat_cache);
         Some(Self {
             font: FontKind::FontInstance(font, metrics),
             units_per_em: data.table_ranges.units_per_em,
@@ -542,27 +558,32 @@ impl<'a> crate::Shaper<'a> {
     /// Will panic when debugging assertions are enabled if the buffer and plan have mismatched
     /// properties.    
     pub fn shape(&self, buffer: UnicodeBuffer, options: ShapeOptions<'_>) -> GlyphBuffer {
+        let mut buffer = buffer.0;
+        self.shape_buffer(&mut buffer, options);
+        GlyphBuffer(buffer)
+    }
+
+    fn shape_buffer(&self, buffer: &mut hb_buffer_t, options: ShapeOptions<'_>) {
         if let Some(plan) = options.plan {
-            self.shape_with_plan(plan, buffer, options)
+            self.shape_with_plan(plan, buffer, options);
         } else {
             let plan = ShapePlan::new(
                 self,
-                buffer.0.direction,
-                buffer.0.script,
-                buffer.0.language.as_ref(),
+                buffer.direction,
+                buffer.script,
+                buffer.language.as_ref(),
                 options.features,
             );
-            self.shape_with_plan(&plan, buffer, options)
+            self.shape_with_plan(&plan, buffer, options);
         }
     }
 
     fn shape_with_plan(
         &self,
         plan: &ShapePlan,
-        buffer: UnicodeBuffer,
+        buffer: &mut hb_buffer_t,
         options: ShapeOptions<'_>,
-    ) -> GlyphBuffer {
-        let mut buffer = buffer.0;
+    ) {
         buffer.enter();
 
         assert_eq!(
@@ -586,7 +607,7 @@ impl<'a> crate::Shaper<'a> {
             OtShapeContext {
                 plan,
                 face: self,
-                buffer: &mut buffer,
+                buffer,
                 target_direction,
                 features: options.features,
                 point_size: options.point_size,
@@ -596,8 +617,6 @@ impl<'a> crate::Shaper<'a> {
         }
 
         buffer.leave();
-
-        GlyphBuffer(buffer)
     }
 
     pub(crate) fn glyph_names(&self) -> GlyphNames<'a> {
@@ -652,6 +671,47 @@ pub struct GlyphExtents {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::Tag;
+    use core::cell::Cell;
+    use read_fonts::{FontData, TableProvider};
+
+    struct CountingProvider<'a> {
+        font: FontRef<'a>,
+        loads: Cell<usize>,
+    }
+
+    impl<'a> TableProvider<'a> for CountingProvider<'a> {
+        fn data_for_tag(&self, tag: Tag) -> Option<FontData<'a>> {
+            self.loads.set(self.loads.get() + 1);
+            self.font.data_for_tag(tag)
+        }
+    }
+
+    #[test]
+    fn cached_table_disposition_skips_missing_tables() {
+        let font = FontRef::new(include_bytes!("../../benches/fonts/Roboto-Regular.ttf")).unwrap();
+        let provider = CountingProvider {
+            font,
+            loads: Cell::new(0),
+        };
+        let ot_cache = OtCache::new(&provider);
+        let aat_cache = AatCache::new(&provider, &ot_cache);
+
+        provider.loads.set(0);
+        let ot_tables = OtTables::from_tables(&provider, &ot_cache, &[], [None; 2]);
+        let aat_tables = AatTables::from_tables(&provider, &aat_cache);
+
+        assert!(ot_tables.gsub.is_some());
+        assert!(ot_tables.gpos.is_some());
+        assert!(ot_tables.gdef.table.is_some());
+        assert!(aat_tables.morx.is_none());
+        assert!(aat_tables.ankr.is_none());
+        assert!(aat_tables.kern.is_none());
+        assert!(aat_tables.kerx.is_none());
+        assert!(aat_tables.trak.is_none());
+        assert!(aat_tables.feat.is_none());
+        assert_eq!(provider.loads.get(), 3);
+    }
 
     #[test]
     fn extents_scale_from_corners_like_harfbuzz() {
@@ -669,5 +729,21 @@ mod tests {
         assert_eq!(scaled.y_bearing, 6);
         assert_eq!(scaled.width, 5);
         assert_eq!(scaled.height, -3);
+    }
+
+    #[test]
+    fn full_range_extents_saturate() {
+        let extents = GlyphExtents {
+            x_bearing: i32::MAX,
+            y_bearing: i32::MIN,
+            width: i32::MAX,
+            height: i32::MIN,
+        };
+
+        let scaled = Scale::default().scale_extents(extents);
+        assert_eq!(scaled.x_bearing, i32::MAX);
+        assert_eq!(scaled.y_bearing, i32::MIN);
+        assert_eq!(scaled.width, i32::MAX);
+        assert_eq!(scaled.height, i32::MIN);
     }
 }

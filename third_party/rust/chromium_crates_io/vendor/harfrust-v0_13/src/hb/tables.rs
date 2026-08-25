@@ -259,10 +259,6 @@ impl TableRange {
     pub fn resolve_table<'a, T: FontRead<'a, Args = ()>>(self, font: &FontRef<'a>) -> Option<T> {
         T::read(self.resolve_data(font)?).ok()
     }
-
-    pub fn len(self) -> u32 {
-        self.1
-    }
 }
 
 fn find_best_cmap_subtable<'a>(
