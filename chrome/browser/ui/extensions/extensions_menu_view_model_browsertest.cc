@@ -41,6 +41,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -1620,4 +1621,121 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   EXPECT_EQ(state.label.find(u'?'), std::u16string::npos);
   EXPECT_EQ(state.label.find(u'#'), std::u16string::npos);
 #endif
+}
+
+// Tests that executing an extension action when host permissions are withheld
+// grants active tab permission, clears the host access request from the model,
+// and updates the optional section.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
+                       SiteAccessToggle_RunAction) {
+  auto cooldown_reset =
+      extensions::HostAccessRequestsHelper::SetCooldownForTesting(
+          base::TimeDelta());
+
+  auto extension = AddExtensionWithHostPermission("Extension", "<all_urls>");
+  extensions::ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(true);
+
+  NavigateTo("a.com");
+  content::WebContents* web_contents = GetActiveWebContents();
+  const GURL urlA = web_contents->GetLastCommittedURL();
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+
+  // Add a site access request for the extension.
+  permissions_manager()->AddHostAccessRequest(web_contents, tab_id, *extension);
+
+  // Verify initial state:
+  // - site access setting is kCustomizeByExtension and user site access is
+  // kOnClick
+  // - host access request is present in model
+  // - optional section is kHostAccessRequests
+  EXPECT_EQ(
+      permissions_manager()->GetUserSiteSetting(url::Origin::Create(urlA)),
+      PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+  EXPECT_EQ(permissions_manager()->GetUserSiteAccess(*extension.get(), urlA),
+            PermissionsManager::UserSiteAccess::kOnClick);
+  EXPECT_THAT(menu_model()->host_access_requests(),
+              testing::ElementsAre(extension->id()));
+  EXPECT_EQ(menu_model()->GetOptionalSection(),
+            ExtensionsMenuViewModel::OptionalSection::kHostAccessRequests);
+
+  // Execute extension action.
+  extensions::PermissionsManagerWaiter waiter(permissions_manager());
+  menu_model()->ExecuteAction(extension->id());
+  waiter.WaitForActiveTabPermissionGranted(extension->id());
+
+  // After running action and granting site access:
+  // - host access requests section in model is empty
+  // - optional section type is kHostAccessRequests (and requests list is empty)
+  EXPECT_TRUE(menu_model()->host_access_requests().empty());
+  EXPECT_EQ(menu_model()->GetOptionalSection(),
+            ExtensionsMenuViewModel::OptionalSection::kHostAccessRequests);
+
+  // Navigate to another domain and then back to a.com.
+  NavigateTo("b.com");
+  NavigateTo("a.com");
+
+  // After cross-origin navigation:
+  // - user site access is back to kOnClick
+  // - host access requests section is empty
+  EXPECT_EQ(permissions_manager()->GetUserSiteAccess(*extension.get(), urlA),
+            PermissionsManager::UserSiteAccess::kOnClick);
+  EXPECT_TRUE(menu_model()->host_access_requests().empty());
+}
+
+// Verifies host access requests added/removed on an inactive tab do not alter
+// the host access requests in the active tab's view model.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
+                       HostAccessRequestsForMultipleTabs) {
+  auto cooldown_reset =
+      extensions::HostAccessRequestsHelper::SetCooldownForTesting(
+          base::TimeDelta());
+
+  auto extension_A =
+      AddExtensionWithHostPermission("Extension A", "<all_urls>");
+  auto extension_B =
+      AddExtensionWithHostPermission("Extension B", "<all_urls>");
+  extensions::ScriptingPermissionsModifier(profile(), extension_A)
+      .SetWithholdHostPermissions(true);
+  extensions::ScriptingPermissionsModifier(profile(), extension_B)
+      .SetWithholdHostPermissions(true);
+
+  NavigateTo("first.com");
+  content::WebContents* tab1_contents = GetActiveWebContents();
+  int tab1_id = extensions::ExtensionTabUtil::GetTabId(tab1_contents);
+
+  // Create a second WebContents representing an inactive tab.
+  std::unique_ptr<content::WebContents> tab2_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile()));
+  int tab2_id = extensions::ExtensionTabUtil::GetTabId(tab2_contents.get());
+
+  // Initially active tab tab1 has no host access requests.
+  EXPECT_TRUE(menu_model()->host_access_requests().empty());
+
+  // Add host access request for Extension A on tab1 (active tab).
+  permissions_manager()->AddHostAccessRequest(tab1_contents, tab1_id,
+                                              *extension_A);
+  EXPECT_THAT(menu_model()->host_access_requests(),
+              testing::ElementsAre(extension_A->id()));
+
+  // Add host access request for Extension B on tab2 (inactive tab).
+  // Model for active tab should still only contain Extension A.
+  permissions_manager()->AddHostAccessRequest(tab2_contents.get(), tab2_id,
+                                              *extension_B);
+  EXPECT_THAT(menu_model()->host_access_requests(),
+              testing::ElementsAre(extension_A->id()));
+
+  // Add host access request for Extension A on tab2 (inactive tab).
+  // Model for active tab should still only contain Extension A.
+  permissions_manager()->AddHostAccessRequest(tab2_contents.get(), tab2_id,
+                                              *extension_A);
+  EXPECT_THAT(menu_model()->host_access_requests(),
+              testing::ElementsAre(extension_A->id()));
+
+  // Remove request for Extension A on tab2 (inactive tab).
+  // Model for active tab should still retain Extension A.
+  permissions_manager()->RemoveHostAccessRequest(tab2_id, extension_A->id());
+  EXPECT_THAT(menu_model()->host_access_requests(),
+              testing::ElementsAre(extension_A->id()));
 }
