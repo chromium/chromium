@@ -753,7 +753,7 @@ void NavigateToURLBlockUntilNavigationsComplete(
   }
 
   web_contents->GetController().LoadURLWithParams(params);
-  web_contents->GetOutermostWebContents()->Focus();
+  web_contents->Focus();
 
   // Wait until the expected number of navigations finish.
   same_tab_observer.Wait();

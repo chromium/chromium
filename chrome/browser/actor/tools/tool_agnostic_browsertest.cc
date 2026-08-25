@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
   ::ui_test_utils::NavigateToURL(&params);
 
   WebContents* foreground_contents = web_contents();
-  ASSERT_NE(web_contents(), background_contents);
+  ASSERT_NE(foreground_contents, background_contents);
   ASSERT_FALSE(background_contents->GetPrimaryMainFrame()
                    ->GetRenderWidgetHost()
                    ->GetView()
