@@ -16,7 +16,8 @@ message AutoTodosRequest {
 }
 
 message AutoTodosResponse {
-  // The list of Todos to be given to the user.
+  // The list of Todos to be given to the user, consisting only of new or
+  // updated existing todos.
   repeated AutoTodoItem todos = 1;
 }
 

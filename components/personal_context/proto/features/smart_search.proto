@@ -1,0 +1,29 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2024";
+
+package personal_context.proto;
+
+import "components/personal_context/proto/features/common_data.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+message SmartSearchRequest {
+  // The natural language search string entered by the user.
+  string input_query = 1;
+}
+
+message SmartSearchResponse {
+  // The list of items to be given to the user.
+  repeated SmartSearchItem items = 1;
+}
+
+message SmartSearchItem {
+  // The description of the Item
+  string description = 1;
+
+  // The references/sources where the Item was extracted from.
+  repeated SourceReference source_references = 2;
+}
