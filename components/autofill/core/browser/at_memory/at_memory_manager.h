@@ -286,8 +286,7 @@ class AtMemoryManager {
       bool did_fetch_from_server);
 
   BrowserAutofillManager* GetBrowserAutofillManager(
-      const FormGlobalId& form_id,
-      const FieldGlobalId& field_id);
+      const FormGlobalId& form_id);
 
   // Encapsulates state for the currently visible AtMemory popup.
   struct PopupState {

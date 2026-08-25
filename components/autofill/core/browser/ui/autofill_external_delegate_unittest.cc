@@ -472,7 +472,8 @@ class AutofillExternalDelegateTest : public testing::Test,
                         kDefaultSuggestionTriggerSource,
                     FieldType trigger_field_type = NAME_FIRST,
                     const std::string& autocomplete_attribute = "given-name") {
-    FormGlobalId form_id = test::MakeFormGlobalId();
+    FormGlobalId form_id = {autofill_driver().GetFrameToken(),
+                            test::MakeFormRendererId()};
     FieldGlobalId field_id = test::MakeFieldGlobalId();
     IssueOnQuery(
         test::GetFormData({
@@ -495,7 +496,8 @@ class AutofillExternalDelegateTest : public testing::Test,
   }
 
   void IssueOnQuery(std::vector<SelectOption> datalist_options) {
-    FormGlobalId form_id = test::MakeFormGlobalId();
+    FormGlobalId form_id = {autofill_driver().GetFrameToken(),
+                            test::MakeFormRendererId()};
     FieldGlobalId field_id = test::MakeFieldGlobalId();
     IssueOnQuery(
         test::GetFormData({

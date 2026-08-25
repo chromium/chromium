@@ -405,16 +405,13 @@ AtMemoryManagerState AtMemoryManager::GetInitialStateForField(
 }
 
 BrowserAutofillManager* AtMemoryManager::GetBrowserAutofillManager(
-    const FormGlobalId& form_id,
-    const FieldGlobalId& field_id) {
+    const FormGlobalId& form_id) {
   CHECK(!client_->UsesPlatformAutofill());
   for (AutofillDriver* driver :
        client_->GetAutofillDriverFactory().GetExistingDrivers()) {
-    auto* manager =
-        static_cast<BrowserAutofillManager*>(&driver->GetAutofillManager());
-    auto [form, field] = manager->FindFormAndField(form_id, field_id);
-    if (form && field) {
-      return manager;
+    if (driver->GetFrameToken() == form_id.frame_token) {
+      return static_cast<BrowserAutofillManager*>(
+          &driver->GetAutofillManager());
     }
   }
   return nullptr;
@@ -432,8 +429,7 @@ void AtMemoryManager::OnPopupShown(
     return;
   }
   if (!parent_suggestion_metadata && !popup_state_) {
-    BrowserAutofillManager* manager =
-        GetBrowserAutofillManager(form_id, field_id);
+    BrowserAutofillManager* manager = GetBrowserAutofillManager(form_id);
     const auto [form, field] =
         manager ? manager->FindFormAndField(form_id, field_id)
                 : AutofillManager::FormAndField();
@@ -512,8 +508,7 @@ IsAsync AtMemoryManager::FillOrPreviewSearchResult(
 
   switch (action_persistence) {
     case mojom::ActionPersistence::kPreview:
-      if (BrowserAutofillManager* bam =
-              GetBrowserAutofillManager(form_id, field_id)) {
+      if (BrowserAutofillManager* bam = GetBrowserAutofillManager(form_id)) {
         bam->FillOrPreviewField(
             action_persistence,
             mojom::FieldActionType::kReplaceSelectionForAtMemory, form_id,
@@ -601,8 +596,7 @@ IsAsync AtMemoryManager::FillSearchResult(
       if (metrics) {
         metrics->MarkFilled();
       }
-      if (BrowserAutofillManager* bam =
-              GetBrowserAutofillManager(form_id, field_id)) {
+      if (BrowserAutofillManager* bam = GetBrowserAutofillManager(form_id)) {
         bam->FillOrPreviewField(
             mojom::ActionPersistence::kFill,
             mojom::FieldActionType::kReplaceSelectionForAtMemory, form_id,
@@ -618,8 +612,7 @@ IsAsync AtMemoryManager::FillSearchResult(
       if (metrics) {
         metrics->MarkFilled();
       }
-      if (BrowserAutofillManager* bam =
-              GetBrowserAutofillManager(form_id, field_id)) {
+      if (BrowserAutofillManager* bam = GetBrowserAutofillManager(form_id)) {
         bam->FillOrPreviewField(
             mojom::ActionPersistence::kFill,
             mojom::FieldActionType::kReplaceSelectionForAtMemory, form_id,
@@ -678,8 +671,7 @@ IsAsync AtMemoryManager::FillSearchResult(
       if (metrics) {
         metrics->MarkFilled();
       }
-      if (BrowserAutofillManager* bam =
-              GetBrowserAutofillManager(form_id, field_id)) {
+      if (BrowserAutofillManager* bam = GetBrowserAutofillManager(form_id)) {
         bam->FillOrPreviewField(
             mojom::ActionPersistence::kFill,
             mojom::FieldActionType::kReplaceSelectionForAtMemory, form_id,
@@ -695,8 +687,7 @@ IsAsync AtMemoryManager::FillSearchResult(
       if (metrics) {
         metrics->MarkFilled();
       }
-      if (BrowserAutofillManager* bam =
-              GetBrowserAutofillManager(form_id, field_id)) {
+      if (BrowserAutofillManager* bam = GetBrowserAutofillManager(form_id)) {
         bam->FillOrPreviewField(
             mojom::ActionPersistence::kFill,
             mojom::FieldActionType::kReplaceSelectionForAtMemory, form_id,
@@ -1130,7 +1121,7 @@ void AtMemoryManager::FillIban(
               pdm.RecordUseOfIban(mutable_iban);
             }
             if (BrowserAutofillManager* bam =
-                    manager->GetBrowserAutofillManager(form_id, field_id)) {
+                    manager->GetBrowserAutofillManager(form_id)) {
               bam->FillOrPreviewField(
                   mojom::ActionPersistence::kFill,
                   mojom::FieldActionType::kReplaceSelectionForAtMemory, form_id,
@@ -1149,8 +1140,7 @@ void AtMemoryManager::FillCreditCard(
     const Suggestion& suggestion,
     std::unique_ptr<AtMemoryMetricsRecorder> metrics) {
   CreditCardAccessManager* credit_card_access_manager = nullptr;
-  if (BrowserAutofillManager* bam =
-          GetBrowserAutofillManager(form_id, field_id)) {
+  if (BrowserAutofillManager* bam = GetBrowserAutofillManager(form_id)) {
     credit_card_access_manager = bam->GetCreditCardAccessManager();
   }
   if (!credit_card_access_manager) {
@@ -1203,7 +1193,7 @@ void AtMemoryManager::FillCreditCard(
             }
 
             if (BrowserAutofillManager* bam =
-                    manager->GetBrowserAutofillManager(form_id, field_id)) {
+                    manager->GetBrowserAutofillManager(form_id)) {
               bam->FillOrPreviewField(
                   mojom::ActionPersistence::kFill,
                   mojom::FieldActionType::kReplaceSelectionForAtMemory, form_id,
@@ -1272,8 +1262,7 @@ void AtMemoryManager::OnSensitivePersonalContextDataFetched(
     metrics->MarkFilled();
   }
 
-  if (BrowserAutofillManager* bam =
-          GetBrowserAutofillManager(form_id, field_id)) {
+  if (BrowserAutofillManager* bam = GetBrowserAutofillManager(form_id)) {
     bam->FillOrPreviewField(
         mojom::ActionPersistence::kFill,
         mojom::FieldActionType::kReplaceSelectionForAtMemory, form_id, field_id,
@@ -1331,7 +1320,7 @@ IsAsync AtMemoryManager::FillSensitiveAutofillAiData(
 
   // TODO(crbug.com/c/536814322): Show loading dialog on Android after
   // successful authentication.
-  BrowserAutofillManager* bam = GetBrowserAutofillManager(form_id, field_id);
+  BrowserAutofillManager* bam = GetBrowserAutofillManager(form_id);
   if (!bam) {
     return IsAsync(false);
   }
@@ -1366,7 +1355,7 @@ void AtMemoryManager::OnAutofillAiFetched(
 
   const EntityInstance& fetched_entity = result.value();
 
-  BrowserAutofillManager* bam = GetBrowserAutofillManager(form_id, field_id);
+  BrowserAutofillManager* bam = GetBrowserAutofillManager(form_id);
   if (!bam) {
     return;
   }

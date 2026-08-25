@@ -251,6 +251,7 @@ class AtMemoryManagerTestBase : public Test,
   // returns a pair of the form's id and its first field's id.
   std::pair<FormGlobalId, FieldGlobalId> SeeForm() {
     FormData form = test::CreateTestPersonalInformationFormData();
+    form.set_host_frame(autofill_driver().GetFrameToken());
     std::vector<FormFieldData> fields = form.ExtractFields();
     for (FormFieldData& field : fields) {
       field.set_origin(form_origin());
@@ -2572,7 +2573,8 @@ TEST_P(AtMemoryManagerTest, OnPopupShown_SubPopup_NoCrashWhenRecorderMovedOut) {
 TEST_P(AtMemoryManagerTest,
        FillSensitiveData_UncachedField_UsesTargetFieldOrigin) {
   // Form and field not added to autofill_manager() cache.
-  FormGlobalId uncached_form_id = test::MakeFormGlobalId();
+  FormGlobalId uncached_form_id = {autofill_driver().GetFrameToken(),
+                                   test::MakeFormRendererId()};
   FieldGlobalId uncached_field_id = test::MakeFieldGlobalId();
 
   manager().set_target_field_origin(form_origin());
