@@ -30,7 +30,7 @@ class LegalMessageLine;
 
 // Convert the C++ legal message lines to an NSArray of
 // AutofillLegalMessageLine objects.
-+ (NSMutableArray<AutofillLegalMessageLine*>*)convertFrom:
++ (NSArray<AutofillLegalMessageLine*>*)convertFrom:
     (const std::vector<autofill::LegalMessageLine>&)autofillLegalMessageLines;
 @end
 

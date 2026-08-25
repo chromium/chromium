@@ -86,8 +86,7 @@ constexpr char kSaveCreditCardPromptResultHistogramStringForServerSave[] =
 @property(nonatomic, copy) NSString* cardNumber;
 @property(nonatomic, copy) NSString* expirationMonth;
 @property(nonatomic, copy) NSString* expirationYear;
-@property(nonatomic, copy)
-    NSMutableArray<AutofillLegalMessageLine*>* legalMessages;
+@property(nonatomic, copy) NSArray<AutofillLegalMessageLine*>* legalMessages;
 @property(nonatomic, assign) BOOL currentCardSaveAccepted;
 @property(nonatomic, assign) BOOL supportsEditing;
 @property(nonatomic, strong) UIImage* logoIcon;

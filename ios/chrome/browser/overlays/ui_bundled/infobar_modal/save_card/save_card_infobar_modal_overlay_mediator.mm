@@ -298,7 +298,7 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
 #pragma mark - Private
 
 // Returns an array of UI AutofillLegalMessageLine model objects.
-- (NSMutableArray<AutofillLegalMessageLine*>*)legalMessages {
+- (NSArray<AutofillLegalMessageLine*>*)legalMessages {
   autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
       self.saveCardDelegate;
   // Only display legal Messages if the card is being uploaded and there are
@@ -307,7 +307,7 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
     return
         [AutofillLegalMessageLine convertFrom:delegate->legal_message_lines()];
   }
-  return [[NSMutableArray alloc] init];
+  return @[];
 }
 
 // Called when modal gets closed in confirmation state. Logs how the modal got

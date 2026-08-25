@@ -75,8 +75,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Card Security code to be displayed.
 @property(nonatomic, strong) NSString* cardCvc;
 // Card related Legal Messages to be displayed.
-@property(nonatomic, copy)
-    NSMutableArray<AutofillLegalMessageLine*>* legalMessages;
+@property(nonatomic, copy) NSArray<AutofillLegalMessageLine*>* legalMessages;
 // YES if the Card being displayed has been accepted to be saved.
 @property(nonatomic, assign) BOOL currentCardSaveAccepted;
 // Set to YES if the Modal should support editing.

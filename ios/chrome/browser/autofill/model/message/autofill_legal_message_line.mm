@@ -10,7 +10,7 @@
 
 @implementation AutofillLegalMessageLine
 
-+ (NSMutableArray<AutofillLegalMessageLine*>*)convertFrom:
++ (NSArray<AutofillLegalMessageLine*>*)convertFrom:
     (const autofill::LegalMessageLines&)autofillLegalMessageLines {
   NSMutableArray<AutofillLegalMessageLine*>* legalMessages =
       [[NSMutableArray alloc] init];

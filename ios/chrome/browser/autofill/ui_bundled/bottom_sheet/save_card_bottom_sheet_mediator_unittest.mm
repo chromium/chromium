@@ -245,7 +245,7 @@ TEST_F(SaveCardBottomSheetMediatorTest, SetConsumer) {
       [[FakeSaveCardBottomSheetConsumer alloc] init];
   mediator_.consumer = consumer;
   TestCommonAttributesOfConsumer(consumer);
-  NSMutableArray<AutofillLegalMessageLine*>* messages =
+  NSArray<AutofillLegalMessageLine*>* messages =
       [AutofillLegalMessageLine convertFrom:model_->legal_messages()];
   for (NSUInteger index = 0; index < [messages count]; index++) {
     EXPECT_NSEQ(messages[index].messageText,
@@ -1030,7 +1030,7 @@ TEST_F(SaveCardBottomSheetMediatorTestForSaveScanAndFill, SetConsumer) {
   // save_card_delegate()->is_for_upload() is false), the model's
   // is_for_upload() is true because ui_info.is_for_upload is true, so legal
   // messages must be populated.
-  NSMutableArray<AutofillLegalMessageLine*>* messages =
+  NSArray<AutofillLegalMessageLine*>* messages =
       [AutofillLegalMessageLine convertFrom:model_->legal_messages()];
   ASSERT_GT([messages count], 0u);
   for (NSUInteger index = 0; index < [messages count]; index++) {

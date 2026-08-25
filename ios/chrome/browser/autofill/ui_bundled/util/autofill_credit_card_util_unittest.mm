@@ -113,7 +113,7 @@ TEST_F(AutofillCreditCardUtilTest, CreateTextViewForLegalMessage) {
                   /*start=*/10, /*end=*/23,
                   /*url_spec=*/"https://savecard.test"),
           })});
-  NSMutableArray<AutofillLegalMessageLine*>* legal_messages =
+  NSArray<AutofillLegalMessageLine*>* legal_messages =
       [AutofillLegalMessageLine convertFrom:legal_message_lines];
 
   UITextView* text_view =
