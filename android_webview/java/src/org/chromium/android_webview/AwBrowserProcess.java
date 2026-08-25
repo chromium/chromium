@@ -29,7 +29,6 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.android_webview.accessibility.AwAccessibilityStateVisibilityManager;
 import org.chromium.android_webview.common.AwFeatureMap;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
@@ -79,7 +78,6 @@ import org.chromium.content_public.browser.BrowserStartupController.StartupCallb
 import org.chromium.content_public.browser.ChildProcessCreationParams;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.net.NetworkChangeNotifier;
-import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.display.DisplayAndroidManager;
 
 import java.io.File;
@@ -370,7 +368,6 @@ public final class AwBrowserProcess {
     public static void startForTesting() {
         runPreBrowserProcessStart();
         finishBrowserProcessStart();
-        startObservingOsAccessibilitySettingChanges();
         onStartupComplete();
     }
 
@@ -786,14 +783,6 @@ public final class AwBrowserProcess {
                 NetworkChangeNotifier.setAutoDetectConnectivityState(
                         new AwNetworkChangeNotifierRegistrationPolicy());
             }
-        }
-    }
-
-    /** Starts observing Android OS accessibility setting changes. */
-    public static void startObservingOsAccessibilitySettingChanges() {
-        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_OBSERVE_ACCESSIBILITY_STATE)) {
-            AccessibilityState.registerObservers();
-            AccessibilityState.initializeOnStartup(new AwAccessibilityStateVisibilityManager());
         }
     }
 

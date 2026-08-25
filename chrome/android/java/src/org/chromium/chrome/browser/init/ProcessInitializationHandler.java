@@ -135,7 +135,6 @@ import org.chromium.content_public.browser.SpeechRecognition;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.RegistrationPolicyApplicationStatus;
 import org.chromium.ui.accessibility.AccessibilityState;
-import org.chromium.ui.accessibility.ApplicationStatusAccessibilityStateVisibilityManager;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.SelectFileDialog;
 import org.chromium.ui.base.WindowAndroid;
@@ -707,11 +706,7 @@ public class ProcessInitializationHandler {
         tasks.add(PersistedTabData::onDeferredStartup);
 
         // Asynchronously query system accessibility state so it is ready for clients.
-        tasks.add(
-                () -> {
-                    AccessibilityState.initializeOnStartup(
-                            new ApplicationStatusAccessibilityStateVisibilityManager());
-                });
+        tasks.add(AccessibilityState::initializeOnStartup);
         tasks.add(TabPersistentStoreImpl::onDeferredStartup);
         tasks.add(
                 () -> {

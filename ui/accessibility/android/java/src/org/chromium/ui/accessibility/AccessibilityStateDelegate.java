@@ -135,7 +135,7 @@ interface AccessibilityStateDelegate {
      */
     void registerObservers();
 
-    void initializeOnStartup(AccessibilityStateVisibilityManager visibilityManager);
+    void initializeOnStartup();
 
     void updateAccessibilityServices();
 

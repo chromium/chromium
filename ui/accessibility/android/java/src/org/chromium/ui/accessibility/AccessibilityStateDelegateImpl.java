@@ -17,6 +17,7 @@ import static org.chromium.ui.accessibility.AccessibilityState.KNOWN_SCREEN_READ
 import static org.chromium.ui.accessibility.AccessibilityState.SAMSUNG_TALKBACK_PACKAGE_NAME;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.app.Activity;
 import android.app.UiModeManager;
 import android.app.UiModeManager.ContrastChangeListener;
 import android.content.ComponentName;
@@ -35,6 +36,9 @@ import android.view.autofill.AutofillManager;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -51,8 +55,7 @@ import java.util.Set;
 
 /** Implementation of {@link AccessibilityStateDelegate}. */
 @NullMarked
-class AccessibilityStateDelegateImpl
-        implements AccessibilityStateDelegate, AccessibilityStateVisibilityManager.Observer {
+class AccessibilityStateDelegateImpl implements AccessibilityStateDelegate {
     private static final String TAG = "A11yState";
 
     // Histogram strings and constants.
@@ -147,7 +150,10 @@ class AccessibilityStateDelegateImpl
     private float mAnimatorDurationScale;
 
     // Observers for various System, Activity, and Settings states relevant to accessibility.
-    private @Nullable AccessibilityStateVisibilityManager mVisibilityManager;
+    private final ApplicationStatus.ActivityStateListener mActivityStateListener =
+            this::onActivityStateChange;
+    private final ApplicationStatus.ApplicationStateListener mApplicationStateListener =
+            this::onApplicationStateChange;
     private @Nullable ServicesObserver mAccessibilityServicesObserver;
     private @Nullable ServicesObserver mAnimationDurationScaleObserver;
     private @Nullable ServicesObserver mDisplayInversionEnabledObserver;
@@ -860,9 +866,7 @@ class AccessibilityStateDelegateImpl
     }
 
     @Override
-    public void initializeOnStartup(AccessibilityStateVisibilityManager visibilityManager) {
-        mVisibilityManager = visibilityManager;
-
+    public void initializeOnStartup() {
         // This method is called as a deferred task during browser init. If no services are enabled,
         // this will ensure the state is populated for any client queries later. If a service is
         // enabled during startup, the current state may be queried before this method is called,
@@ -877,31 +881,31 @@ class AccessibilityStateDelegateImpl
         notifyExtraStateListeners();
 
         // We want to be notified whenever an Activity or Application state changes.
-        mVisibilityManager.setObserver(this);
+        ApplicationStatus.registerStateListenerForAllActivities(mActivityStateListener);
+        ApplicationStatus.registerApplicationStateListener(mApplicationStateListener);
 
         // Histograms are recorded once during startup, and any time services change afterwards.
         AccessibilityStateJni.get().recordAccessibilityServiceInfoHistograms();
         AccessibilityStateJni.get().onSamsungTalkBackStateChanged(isSamsungTalkBackEnabled());
     }
 
-    @Override
-    public void onAnyActivityMadeVisible() {
-        // AccessibilityStateDelegateImpl does not register an observer for properties such as
-        // {@link getFontWeightAdjustment()}. Recompute the properties now.
-        processServicesChange();
-        processExtraStateChange();
+    private void onActivityStateChange(Activity activity, int newState) {
+        // If Chrome is sent to the background, we will unregister observers, and re-register the
+        // observers and query state when Chrome is brought back to the foreground.
+        if (newState == ActivityState.RESUMED) {
+            processServicesChange();
+            processExtraStateChange();
+        }
     }
 
-    @Override
-    public void onApplicationBackgrounded() {
+    private void onApplicationStateChange(int newState) {
         // If Chrome is sent to the background, we will unregister observers, and re-register the
         // observers when Chrome is brought back to the foreground.
-        unregisterObservers();
-    }
-
-    @Override
-    public void onApplicationForegrounded() {
-        if (!mInitialized || !mHasRegisteredObservers) {
+        if (newState != ApplicationState.HAS_RUNNING_ACTIVITIES
+                && newState != ApplicationState.HAS_PAUSED_ACTIVITIES) {
+            unregisterObservers();
+        } else if (newState == ApplicationState.HAS_RUNNING_ACTIVITIES
+                && (!mInitialized || !mHasRegisteredObservers)) {
             registerObservers();
         }
     }
@@ -982,9 +986,8 @@ class AccessibilityStateDelegateImpl
     @Override
     public void uninitializeForTesting() {
         unregisterObservers();
-        if (mVisibilityManager != null) {
-            mVisibilityManager.setObserver(null);
-        }
+        ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
+        ApplicationStatus.unregisterApplicationStateListener(mApplicationStateListener);
         mState = null;
         mServiceProperties = null;
         mAccessibilityManager = null;
