@@ -20,7 +20,7 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.BrowserRestartActivity;
 import org.chromium.chrome.browser.lifetime.ApplicationLifetime;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.LastSessionExitType;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SessionStartupPolicy;
 import org.chromium.chrome.browser.multiwindow.TabbedStartupWindowPolicyDelegate;
 
 /**
@@ -73,8 +73,11 @@ class ChromeLifetimeController
     @Override
     public void onTerminate(boolean restart) {
         mRestartChromeOnDestroy = restart;
+        // If the app is deterministically terminating (e.g. via an explicit restart or quit
+        // request), maybe persist the session state so that it can be restored on next launch
+        // when applicable.
         TabbedStartupWindowPolicyDelegate.getInstance()
-                .maybeSaveWindowStateOnSessionTermination(LastSessionExitType.QUIT);
+                .maybeSaveSessionStateOnTermination(SessionStartupPolicy.RESTORE_ALL);
 
         // Tell all Chrome Activities to finish themselves.
         for (Activity activity : ApplicationStatus.getRunningActivities()) {

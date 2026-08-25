@@ -18,9 +18,9 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.LastSessionExitType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SessionStartupPolicy;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
@@ -88,33 +88,31 @@ public class TabbedStartupWindowPolicyDelegate {
     }
 
     /**
-     * Persists tabbed window state on session termination.
+     * Records session state on termination that determines next session startup behavior.
      *
-     * @param exitType The {@link LastSessionExitType} to write.
+     * @param startupPolicy The {@link SessionStartupPolicy} to write.
      */
-    public void maybeSaveWindowStateOnSessionTermination(@LastSessionExitType int exitType) {
+    public void maybeSaveSessionStateOnTermination(@SessionStartupPolicy int startupPolicy) {
         if (!MultiWindowUtils.isNewStartupWindowPolicyEnabled()) {
             return;
         }
 
-        // Only persist the QUIT session type to restore previous session windows if the startup
-        // preference is unset or set to LAST.
+        // Only persist the session policy to determine next session startup behavior if the
+        // startup preference is unset or set to LAST.
         int startupPref = ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue();
-        if (exitType == LastSessionExitType.QUIT
-                && startupPref != PREF_UNSET
-                && startupPref != SessionStartupPref.LAST) {
+        if (startupPref != PREF_UNSET && startupPref != SessionStartupPref.LAST) {
             return;
         }
 
         // If we are terminating the Chrome session with fewer than 2 active ChromeTabbedActivity
-        // windows, there is no need to persist the QUIT session type that is used to restore
-        // all active windows upon next launch.
-        if (exitType == LastSessionExitType.QUIT
+        // windows, there is no need to persist the RESTORE_ALL session policy that is used to
+        // restore all active windows upon next launch.
+        if (startupPolicy == SessionStartupPolicy.RESTORE_ALL
                 && MultiWindowUtils.getInstanceCount(PersistedInstanceType.ACTIVE) <= 1) {
             return;
         }
 
-        ChromeMultiInstancePersistentStore.writeLastSessionExitType(exitType);
+        ChromeMultiInstancePersistentStore.writeSessionStartupPolicy(startupPolicy);
     }
 
     /**
@@ -187,8 +185,8 @@ public class TabbedStartupWindowPolicyDelegate {
         int startupPref = ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue();
         boolean isLastSessionCleanExit =
                 isStartupPolicyEnabled
-                        && ChromeMultiInstancePersistentStore.readLastSessionExitType()
-                                == LastSessionExitType.LAST_WINDOW_CLOSED_BY_APP;
+                        && ChromeMultiInstancePersistentStore.readSessionStartupPolicy()
+                                == SessionStartupPolicy.CREATE_NEW;
         if (isLastSessionCleanExit
                 && (startupPref == PREF_UNSET || startupPref == SessionStartupPref.LAST)) {
             return true;
@@ -205,16 +203,15 @@ public class TabbedStartupWindowPolicyDelegate {
             return;
         }
 
-        int exitType = ChromeMultiInstancePersistentStore.readLastSessionExitType();
-        ChromeMultiInstancePersistentStore.clearLastSessionExitType();
+        int startupPolicy = ChromeMultiInstancePersistentStore.readSessionStartupPolicy();
+        ChromeMultiInstancePersistentStore.clearSessionStartupPolicy();
 
-        // Guard: Do not attempt to restore previous session windows onto an Incognito host
-        // activity.
+        // Do not attempt to restore previous session windows from an incognito host.
         if (activity.isIncognitoWindow()) {
             return;
         }
 
-        if (exitType == LastSessionExitType.QUIT) {
+        if (startupPolicy == SessionStartupPolicy.RESTORE_ALL) {
             maybeRestoreWindowsAfterLaunch(activity);
         }
     }

@@ -134,30 +134,35 @@ public abstract class MultiInstanceManager {
     }
 
     /**
-     * Types of app-controlled session exits that determine how windows are restored on subsequent
-     * app launch.
+     * Startup policy options determined on session termination that dictate window restoration
+     * behavior on subsequent cold start when the SessionStartupPref is set to LAST* or unset.
      */
     @IntDef({
-        LastSessionExitType.DEFAULT,
-        LastSessionExitType.LAST_WINDOW_CLOSED_BY_APP,
-        LastSessionExitType.QUIT
+        SessionStartupPolicy.DEFAULT,
+        SessionStartupPolicy.CREATE_NEW,
+        SessionStartupPolicy.RESTORE_ALL
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface LastSessionExitType {
-        /** Default session termination type. */
+    public @interface SessionStartupPolicy {
+        /**
+         * The session was terminated by an app-external trigger (e.g. system-initiated or system-UI
+         * termination triggers that do not notify the app of the explicit intent to quit). On
+         * subsequent cold start, enforce legacy behavior where Chrome opens a single window with
+         * tabs from the last accessed window if it exists.
+         */
         int DEFAULT = 0;
 
         /**
-         * The last active window was closed by an app action that triggered {@link
-         * #closeWindows(boolean)}.
+         * The last active window in the session was closed by an app action (e.g. {@link
+         * #closeWindows(boolean)}). On subsequent cold start, open a single new tab/window.
          */
-        int LAST_WINDOW_CLOSED_BY_APP = 1;
+        int CREATE_NEW = 1;
 
         /**
          * The session was terminated by an app quit or restart action (e.g. chrome://quit,
-         * chrome://restart).
+         * chrome://restart). On subsequent cold start, restore all previously active windows.
          */
-        int QUIT = 2;
+        int RESTORE_ALL = 2;
     }
 
     /** A class that holds information about an allocated instance ID. */

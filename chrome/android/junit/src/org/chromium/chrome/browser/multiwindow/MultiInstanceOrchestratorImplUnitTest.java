@@ -62,9 +62,9 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabsTask;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.LastSessionExitType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SessionStartupPolicy;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -1123,7 +1123,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
-    public void testOnInitialize_quit_restoresWindows() {
+    public void testOnInitialize_restoreAll_restoresWindows() {
         // Setup.
         ((MultiInstanceOrchestratorImpl) mMultiInstanceOrchestrator).clearAssignmentsForTesting();
         TabbedStartupWindowPolicyDelegate.setInstanceForTesting(null);
@@ -1133,7 +1133,8 @@ public class MultiInstanceOrchestratorImplUnitTest {
                 /* instanceId= */ 0, "https://www.google.com", /* tabCount= */ 1, /* taskId= */ 0);
         MultiWindowTestUtils.createInstance(
                 /* instanceId= */ 1, "https://www.google.com", /* tabCount= */ 1, /* taskId= */ 1);
-        ChromeMultiInstancePersistentStore.writeLastSessionExitType(LastSessionExitType.QUIT);
+        ChromeMultiInstancePersistentStore.writeSessionStartupPolicy(
+                SessionStartupPolicy.RESTORE_ALL);
 
         ActivityManager activityManager = mock(ActivityManager.class);
         doReturn(activityManager).when(mTabbedActivity1).getSystemService(Context.ACTIVITY_SERVICE);
@@ -1145,10 +1146,10 @@ public class MultiInstanceOrchestratorImplUnitTest {
         // Verify.
         verify(mTabbedActivity1).startActivity(any());
         assertEquals(
-                LastSessionExitType.DEFAULT,
-                ChromeMultiInstancePersistentStore.readLastSessionExitType());
+                SessionStartupPolicy.DEFAULT,
+                ChromeMultiInstancePersistentStore.readSessionStartupPolicy());
         assertFalse(
-                "isRecoverable should be cleared when restoring window on launch after quit.",
+                "isRecoverable should be cleared when restoring window on launch.",
                 ChromeMultiInstancePersistentStore.readIsRecoverable(1));
     }
 

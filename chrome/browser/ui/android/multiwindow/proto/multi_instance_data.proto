@@ -62,9 +62,10 @@ message MultiInstanceData {
   // State to track pending crash recovery.
   optional bool is_crash_recovery_pending = 13;
 
-  // The exit type of the last multi-instance session.
-  // Maps to MultiInstanceManager.LastSessionExitType.
-  optional int32 last_session_exit_type = 14;
+  // The startup policy determined upon session termination when
+  // SessionStartupPref is set to LAST. Maps to
+  // MultiInstanceManager.SessionStartupPolicy.
+  optional int32 session_startup_policy = 14;
 
   // The cached value of the RestoreOnStartup policy/preference.
   // Maps to SessionStartupPref::PrefValue.
