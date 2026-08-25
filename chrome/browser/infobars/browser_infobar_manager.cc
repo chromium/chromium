@@ -551,15 +551,6 @@ void BrowserInfoBarManager::OnManagerWillBeDestroyed(
   }
 }
 
-InfoBarDelegate::InfobarPriority BrowserInfoBarManager::GetApprovedPriority(
-    infobars::InfoBarDelegate::InfoBarIdentifier identifier) {
-  auto it = registered_specs_.find(identifier);
-  if (it != registered_specs_.end()) {
-    return it->second.priority();
-  }
-  return InfoBarDelegate::InfobarPriority::kDefault;
-}
-
 void BrowserInfoBarManager::OnActiveTabChanged(
     BrowserWindowInterface* browser) {
   tabs::TabInterface* active_tab = browser->GetActiveTabInterface();

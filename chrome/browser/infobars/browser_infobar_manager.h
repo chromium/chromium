@@ -90,10 +90,6 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
   void OnManagerWillBeDestroyed(infobars::InfoBarManager* manager) override;
 
  private:
-  // Returns the approved priority for an InfoBar.
-  InfoBarDelegate::InfobarPriority GetApprovedPriority(
-      infobars::InfoBarDelegate::InfoBarIdentifier identifier);
-
   void OnActiveTabChanged(BrowserWindowInterface* browser);
   bool IsGlobal(infobars::InfoBarDelegate::InfoBarIdentifier identifier);
   bool IsTrackedGlobalInstance(infobars::InfoBar* infobar) const;
