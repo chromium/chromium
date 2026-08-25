@@ -18669,6 +18669,21 @@
             ]
         }
     ],
+    "TabStripStopSpinnerOnLoadStop": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabStripStopSpinnerOnLoadStop"
+                    ]
+                }
+            ]
+        }
+    ],
     "TaiyakiAllUsers": [
         {
             "platforms": [
