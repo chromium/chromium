@@ -11,7 +11,7 @@
                 "sections": [
                     {
                         "begin": 0,
-                        "end": 34
+                        "end": 33
                     },
                     {
                         "begin": 42,
@@ -31,7 +31,7 @@
                         "end": 1
                     },
                     {
-                        "begin": 34,
+                        "begin": 33,
                         "end": 72
                     }
                 ],
@@ -62,7 +62,7 @@
                 "abridged": false
             },
             "system_health.memory_mobile": {
-                "end": 33,
+                "end": 30,
                 "abridged": false,
                 "pageset_repeat": 3
             },
@@ -74,8 +74,8 @@
     "3": {
         "benchmarks": {
             "system_health.memory_mobile": {
-                "begin": 33,
-                "end": 71,
+                "begin": 30,
+                "end": 65,
                 "abridged": false,
                 "pageset_repeat": 3
             },
@@ -100,7 +100,7 @@
     "4": {
         "benchmarks": {
             "system_health.memory_mobile": {
-                "begin": 71,
+                "begin": 65,
                 "abridged": false,
                 "pageset_repeat": 3
             },
@@ -131,14 +131,14 @@
     },
     "extra_infos": {
         "num_stories": 201,
-        "predicted_min_shard_time": 400,
-        "predicted_min_shard_index": 0,
-        "predicted_max_shard_time": 410,
+        "predicted_min_shard_time": 394.0,
+        "predicted_min_shard_index": 4,
+        "predicted_max_shard_time": 405.0,
         "predicted_max_shard_index": 3,
-        "shard #0": 400,
-        "shard #1": 400,
-        "shard #2": 400,
-        "shard #3": 410,
-        "shard #4": 400
+        "shard #0": 399.0,
+        "shard #1": 400.0,
+        "shard #2": 395.0,
+        "shard #3": 405.0,
+        "shard #4": 394.0
     }
 }

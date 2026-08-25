@@ -96,7 +96,7 @@
                 "abridged": false
             },
             "rendering.mobile": {
-                "end": 219,
+                "end": 198,
                 "abridged": false
             }
         },
@@ -134,7 +134,7 @@
                 "abridged": false
             },
             "rendering.mobile": {
-                "begin": 219,
+                "begin": 198,
                 "abridged": false
             },
             "rendering.mobile.notracing": {
@@ -171,13 +171,13 @@
     },
     "extra_infos": {
         "num_stories": 419,
-        "predicted_min_shard_time": 1618.0,
+        "predicted_min_shard_time": 1550.0,
         "predicted_min_shard_index": 0,
-        "predicted_max_shard_time": 7558.0,
+        "predicted_max_shard_time": 7490,
         "predicted_max_shard_index": 1,
-        "shard #0": 1618.0,
-        "shard #1": 7558.0,
-        "shard #2": 5015.0,
-        "shard #3": 5049.0
+        "shard #0": 1550.0,
+        "shard #1": 7490,
+        "shard #2": 2462.0,
+        "shard #3": 2462.0
     }
 }

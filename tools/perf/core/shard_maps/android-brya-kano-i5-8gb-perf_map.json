@@ -121,7 +121,7 @@
                 "arguments": [
                     "--web-tests-cuj",
                     "--debug",
-                    "--enable-field-trials"
+                    "--enable-field-trials=benchmarking"
                 ]
             }
         }
@@ -132,13 +132,13 @@
         "predicted_min_shard_index": 1,
         "predicted_max_shard_time": 3960,
         "predicted_max_shard_index": 6,
-        "shard #0": 3678.0,
+        "shard #0": 3686.0,
         "shard #1": 3600,
         "shard #2": 3600,
         "shard #3": 3600,
         "shard #4": 3600,
         "shard #5": 3600,
         "shard #6": 3960,
-        "shard #7": 3701.0
+        "shard #7": 3703.0
     }
 }
