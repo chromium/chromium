@@ -475,6 +475,27 @@ TEST_F(IconTableTest, AllSecurityIconsAreMapped) {
   }
 }
 
+TEST_F(IconTableTest, ExtensionIconsAreMapped) {
+  const gfx::VectorIcon* extension_icons[] = {
+      &omnibox::kExtensionFilledIcon,
+      &omnibox::kExtensionAppOldIcon,
+      &vector_icons::kExtensionFilledIcon,
+      &vector_icons::kExtensionOldIcon,
+      &vector_icons::kExtensionChromeRefreshOldIcon,
+      &vector_icons::kChromeExtensionIcon,
+      &vector_icons::kChromeExtensionCheckIcon,
+      &vector_icons::kChromeExtensionOffIcon,
+      &vector_icons::kExtensionOffOldIcon,
+      &vector_icons::kExtensionOnOldIcon,
+  };
+
+  for (const gfx::VectorIcon* icon : extension_icons) {
+    EXPECT_TRUE(icon_table_.RegisterVectorIcon(*icon).has_value())
+        << "Missing mapping for extension icon: "
+        << (icon->name ? icon->name : "(null)");
+  }
+}
+
 }  // namespace
 
 }  // namespace webui_toolbar
