@@ -321,11 +321,15 @@ void OmniboxPopupWebUIBaseContent::Detach() {
     if (auto* web_contents = GetWebContents()) {
       if (auto* rwh =
               web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost()) {
+        // Forward a mouse leave event to clear any hover states when the popup
+        // is detached so suggestions do not stay visually hovered on restore.
         blink::WebMouseEvent mouse_event(
             blink::WebInputEvent::Type::kMouseLeave,
             blink::WebInputEvent::kNoModifiers, base::TimeTicks::Now());
         rwh->ForwardMouseEvent(mouse_event);
       }
+      // For popups that don't receive focus (ex: Classic WebUI Omnibox Popup),
+      // clear any focused element so stale focus states are not retained.
       if (popup_presenter_ && !popup_presenter_->ShouldReceiveFocus()) {
         web_contents->ClearFocusedElement();
       }
