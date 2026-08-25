@@ -4,10 +4,12 @@
 
 #include "chrome/browser/safe_browsing/download_protection/download_request_maker.h"
 
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/common/chrome_paths.h"
@@ -24,11 +26,36 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/metrics/antivirus_metrics_provider_win.h"
+#include "chrome/services/util_win/public/mojom/util_win.mojom-test-utils.h"
+#endif
+
 namespace safe_browsing {
 
 using ::testing::_;
 using ::testing::Return;
 using ::testing::ReturnRefOfCopy;
+
+#if BUILDFLAG(IS_WIN)
+class FakeUtilWin : public chrome::mojom::UtilWinInterceptorForTesting {
+ public:
+  chrome::mojom::UtilWin* GetForwardingInterface() override { NOTREACHED(); }
+
+  void SetProducts(
+      std::vector<metrics::SystemProfileProto::AntiVirusProduct> products) {
+    products_ = std::move(products);
+  }
+
+  void GetAntiVirusProducts(bool report_full_names,
+                            GetAntiVirusProductsCallback callback) override {
+    std::move(callback).Run(products_);
+  }
+
+ private:
+  std::vector<metrics::SystemProfileProto::AntiVirusProduct> products_;
+};
+#endif
 
 class DownloadRequestMakerTest : public testing::Test {
  public:
@@ -47,6 +74,21 @@ class DownloadRequestMakerTest : public testing::Test {
         }));
     run_loop.Run();
   }
+
+#if BUILDFLAG(IS_WIN)
+  void PopulateAntivirusProducts(
+      std::vector<metrics::SystemProfileProto::AntiVirusProduct> products) {
+    FakeUtilWin fake_util_win;
+    fake_util_win.SetProducts(std::move(products));
+    mojo::Receiver<chrome::mojom::UtilWin> receiver{&fake_util_win};
+
+    AntiVirusMetricsProvider provider;
+    provider.SetRemoteUtilWinForTesting(receiver.BindNewPipeAndPassRemote());
+    base::RunLoop run_loop;
+    provider.AsyncInit(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+#endif
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
@@ -688,6 +730,200 @@ TEST_F(DownloadRequestMakerTest, SetsFullyExtractedArchive) {
   EXPECT_FALSE(
       DownloadItemWarningData::IsFullyExtractedArchive(&mock_download_item));
   EXPECT_EQ(details_.inspection_type, DownloadFileType::ZIP);
+}
+#endif
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(DownloadRequestMakerTest, PopulateAntivirusProducts) {
+  base::RunLoop run_loop;
+  base::FilePath tmp_path(FILE_PATH_LITERAL("temp_path"));
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{kAntivirusTelemetryForDownloads},
+      /*disabled_features=*/{});
+
+  constexpr char kAvProductName1[] = "Windows Defender";
+  constexpr char kAvProductName2[] = "McAfee";
+  constexpr uint32_t kAvProductNameHash1 = 123456;
+  constexpr uint32_t kAvProductNameHash2 = 789012;
+  constexpr char kAvProductVersion1[] = "1.1";
+  constexpr char kAvProductVersion2[] = "2.1";
+  constexpr uint32_t kAvProductVersionHash1 = 1122;
+  constexpr uint32_t kAvProductVersionHash2 = 2233;
+
+  std::vector<metrics::SystemProfileProto::AntiVirusProduct> av_products(2);
+  av_products[0].set_product_name(kAvProductName1);
+  av_products[0].set_product_name_hash(kAvProductNameHash1);
+  av_products[0].set_product_version(kAvProductVersion1);
+  av_products[0].set_product_version_hash(kAvProductVersionHash1);
+  av_products[0].set_product_state(metrics::SystemProfileProto::STATE_ON);
+  av_products[1].set_product_name(kAvProductName2);
+  av_products[1].set_product_name_hash(kAvProductNameHash2);
+  av_products[1].set_product_version(kAvProductVersion2);
+  av_products[1].set_product_version_hash(kAvProductVersionHash2);
+  av_products[1].set_product_state(metrics::SystemProfileProto::STATE_OFF);
+  PopulateAntivirusProducts(std::move(av_products));
+
+  SetSafeBrowsingState(profile_.GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+
+  DownloadRequestMaker request_maker(
+      mock_feature_extractor_, &profile_, DownloadRequestMaker::TabUrls(),
+      /*target_file_name=*/base::FilePath(), tmp_path,
+      /*source_url=*/GURL(),
+      /*sha256_hash=*/"",
+      /*length=*/0,
+      /*resources=*/std::vector<ClientDownloadRequest::Resource>(),
+      /*is_user_initiated=*/true,
+      /*referrer_chain_data=*/nullptr, /*password=*/std::nullopt,
+      /*previous_token=*/"", base::DoNothing());
+
+  EXPECT_CALL(*mock_feature_extractor_, CheckSignature(tmp_path, _))
+      .WillOnce(Return());
+  EXPECT_CALL(*mock_feature_extractor_, ExtractImageFeatures(tmp_path, _, _, _))
+      .WillRepeatedly(Return(true));
+
+  RunRequestMaker(request_maker);
+
+  ASSERT_TRUE(request_);
+  EXPECT_EQ(request_->population().user_population(),
+            ChromeUserPopulation::ENHANCED_PROTECTION);
+  EXPECT_EQ(details_.inspection_type, DownloadFileType::NONE);
+  EXPECT_EQ(request_->antivirus_products_size(), 2);
+
+  const ClientDownloadRequest::AntiVirusProduct& actual_av1 =
+      request_->antivirus_products(0);
+  EXPECT_EQ(actual_av1.product_name(), "");
+  EXPECT_EQ(actual_av1.product_name_hash(), kAvProductNameHash1);
+  EXPECT_EQ(actual_av1.product_version(), "");
+  EXPECT_EQ(actual_av1.product_version_hash(), kAvProductVersionHash1);
+  EXPECT_EQ(actual_av1.product_state(),
+            ClientDownloadRequest::AntiVirusProduct::STATE_ON);
+
+  const ClientDownloadRequest::AntiVirusProduct& actual_av2 =
+      request_->antivirus_products(1);
+  EXPECT_EQ(actual_av2.product_name(), "");
+  EXPECT_EQ(actual_av2.product_name_hash(), kAvProductNameHash2);
+  EXPECT_EQ(actual_av2.product_version(), "");
+  EXPECT_EQ(actual_av2.product_version_hash(), kAvProductVersionHash2);
+  EXPECT_EQ(actual_av2.product_state(),
+            ClientDownloadRequest::AntiVirusProduct::STATE_OFF);
+}
+
+TEST_F(DownloadRequestMakerTest, PopulateAntivirusProduct_FeatureDisabled) {
+  base::RunLoop run_loop;
+  base::FilePath tmp_path(FILE_PATH_LITERAL("temp_path"));
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{kAntivirusTelemetryForDownloads});
+
+  constexpr char kAvProductName1[] = "Windows Defender";
+  constexpr char kAvProductName2[] = "McAfee";
+  constexpr uint32_t kAvProductNameHash1 = 123456;
+  constexpr uint32_t kAvProductNameHash2 = 789012;
+  constexpr char kAvProductVersion1[] = "1.1";
+  constexpr char kAvProductVersion2[] = "2.1";
+  constexpr uint32_t kAvProductVersionHash1 = 1122;
+  constexpr uint32_t kAvProductVersionHash2 = 2233;
+
+  std::vector<metrics::SystemProfileProto::AntiVirusProduct> av_products(2);
+  av_products[0].set_product_name(kAvProductName1);
+  av_products[0].set_product_name_hash(kAvProductNameHash1);
+  av_products[0].set_product_version(kAvProductVersion1);
+  av_products[0].set_product_version_hash(kAvProductVersionHash1);
+  av_products[0].set_product_state(metrics::SystemProfileProto::STATE_ON);
+  av_products[1].set_product_name(kAvProductName2);
+  av_products[1].set_product_name_hash(kAvProductNameHash2);
+  av_products[1].set_product_version(kAvProductVersion2);
+  av_products[1].set_product_version_hash(kAvProductVersionHash2);
+  av_products[1].set_product_state(metrics::SystemProfileProto::STATE_OFF);
+  PopulateAntivirusProducts(std::move(av_products));
+
+  SetSafeBrowsingState(profile_.GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+
+  DownloadRequestMaker request_maker(
+      mock_feature_extractor_, &profile_, DownloadRequestMaker::TabUrls(),
+      /*target_file_name=*/base::FilePath(), tmp_path,
+      /*source_url=*/GURL(),
+      /*sha256_hash=*/"",
+      /*length=*/0,
+      /*resources=*/std::vector<ClientDownloadRequest::Resource>(),
+      /*is_user_initiated=*/true,
+      /*referrer_chain_data=*/nullptr, /*password=*/std::nullopt,
+      /*previous_token=*/"", base::DoNothing());
+
+  EXPECT_CALL(*mock_feature_extractor_, CheckSignature(tmp_path, _))
+      .WillOnce(Return());
+  EXPECT_CALL(*mock_feature_extractor_, ExtractImageFeatures(tmp_path, _, _, _))
+      .WillRepeatedly(Return(true));
+
+  RunRequestMaker(request_maker);
+
+  ASSERT_TRUE(request_);
+  EXPECT_EQ(request_->population().user_population(),
+            ChromeUserPopulation::ENHANCED_PROTECTION);
+  EXPECT_EQ(details_.inspection_type, DownloadFileType::NONE);
+  EXPECT_EQ(request_->antivirus_products_size(), 0);
+}
+
+TEST_F(DownloadRequestMakerTest, PopulateAntivirusProduct_StandardProtection) {
+  base::RunLoop run_loop;
+  base::FilePath tmp_path(FILE_PATH_LITERAL("temp_path"));
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{kAntivirusTelemetryForDownloads},
+      /*disabled_features=*/{});
+
+  constexpr char kAvProductName1[] = "Windows Defender";
+  constexpr char kAvProductName2[] = "McAfee";
+  constexpr uint32_t kAvProductNameHash1 = 123456;
+  constexpr uint32_t kAvProductNameHash2 = 789012;
+  constexpr char kAvProductVersion1[] = "1.1";
+  constexpr char kAvProductVersion2[] = "2.1";
+  constexpr uint32_t kAvProductVersionHash1 = 1122;
+  constexpr uint32_t kAvProductVersionHash2 = 2233;
+
+  std::vector<metrics::SystemProfileProto::AntiVirusProduct> av_products(2);
+  av_products[0].set_product_name(kAvProductName1);
+  av_products[0].set_product_name_hash(kAvProductNameHash1);
+  av_products[0].set_product_version(kAvProductVersion1);
+  av_products[0].set_product_version_hash(kAvProductVersionHash1);
+  av_products[0].set_product_state(metrics::SystemProfileProto::STATE_ON);
+  av_products[1].set_product_name(kAvProductName2);
+  av_products[1].set_product_name_hash(kAvProductNameHash2);
+  av_products[1].set_product_version(kAvProductVersion2);
+  av_products[1].set_product_version_hash(kAvProductVersionHash2);
+  av_products[1].set_product_state(metrics::SystemProfileProto::STATE_OFF);
+  PopulateAntivirusProducts(std::move(av_products));
+
+  SetSafeBrowsingState(profile_.GetPrefs(),
+                       SafeBrowsingState::STANDARD_PROTECTION);
+
+  DownloadRequestMaker request_maker(
+      mock_feature_extractor_, &profile_, DownloadRequestMaker::TabUrls(),
+      /*target_file_name=*/base::FilePath(), tmp_path,
+      /*source_url=*/GURL(),
+      /*sha256_hash=*/"",
+      /*length=*/0,
+      /*resources=*/std::vector<ClientDownloadRequest::Resource>(),
+      /*is_user_initiated=*/true,
+      /*referrer_chain_data=*/nullptr, /*password=*/std::nullopt,
+      /*previous_token=*/"", base::DoNothing());
+
+  EXPECT_CALL(*mock_feature_extractor_, CheckSignature(tmp_path, _))
+      .WillOnce(Return());
+  EXPECT_CALL(*mock_feature_extractor_, ExtractImageFeatures(tmp_path, _, _, _))
+      .WillRepeatedly(Return(true));
+
+  RunRequestMaker(request_maker);
+
+  ASSERT_TRUE(request_);
+  EXPECT_EQ(request_->population().user_population(),
+            ChromeUserPopulation::SAFE_BROWSING);
+  EXPECT_EQ(details_.inspection_type, DownloadFileType::NONE);
+  EXPECT_EQ(request_->antivirus_products_size(), 0);
 }
 #endif
 

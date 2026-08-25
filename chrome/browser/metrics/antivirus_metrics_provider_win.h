@@ -45,30 +45,12 @@ class AntiVirusMetricsProvider : public metrics::MetricsProvider {
       metrics::SystemProfileProto* system_profile_proto) override;
 
   void SetRemoteUtilWinForTesting(
-      mojo::PendingRemote<chrome::mojom::UtilWin> remote) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    remote_util_win_.Bind(std::move(remote));
-  }
+      mojo::PendingRemote<chrome::mojom::UtilWin> remote);
 
  private:
   // Called when metrics are done being gathered from the FILE thread.
-  void GotAntiVirusProducts(
+  static void GotAntiVirusProducts(
       const std::vector<metrics::SystemProfileProto::AntiVirusProduct>& result);
-
-  mojo::Remote<chrome::mojom::UtilWin> remote_util_win_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Information on installed AntiVirus gathered.
-  std::vector<metrics::SystemProfileProto::AntiVirusProduct> av_products_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  base::OnceClosure done_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
-  std::optional<base::ElapsedTimer> timer_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  base::WeakPtrFactory<AntiVirusMetricsProvider> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_METRICS_ANTIVIRUS_METRICS_PROVIDER_WIN_H_

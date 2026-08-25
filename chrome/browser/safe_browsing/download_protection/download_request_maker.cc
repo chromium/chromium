@@ -31,6 +31,11 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/metrics_proto/system_profile.pb.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/metrics/antivirus_metrics_provider_win.h"
+#endif
 
 namespace safe_browsing {
 
@@ -74,6 +79,24 @@ void SetDownloadItemWarningData(download::DownloadItem* item,
                   EncryptionInfo::kKnownIncorrect);
   }
 }
+
+#if BUILDFLAG(IS_WIN)
+ClientDownloadRequest::AntiVirusProduct::AntiVirusState MapAVState(
+    metrics::SystemProfileProto::AntiVirusState state) {
+  switch (state) {
+    case metrics::SystemProfileProto::STATE_ON:
+      return ClientDownloadRequest::AntiVirusProduct::STATE_ON;
+    case metrics::SystemProfileProto::STATE_OFF:
+      return ClientDownloadRequest::AntiVirusProduct::STATE_OFF;
+    case metrics::SystemProfileProto::STATE_SNOOZED:
+      return ClientDownloadRequest::AntiVirusProduct::STATE_SNOOZED;
+    case metrics::SystemProfileProto::STATE_EXPIRED:
+      return ClientDownloadRequest::AntiVirusProduct::STATE_EXPIRED;
+    default:
+      return ClientDownloadRequest::AntiVirusProduct::STATE_UNKNOWN;
+  }
+}
+#endif
 
 }  // namespace
 
@@ -239,10 +262,22 @@ void DownloadRequestMaker::Start(
 
   PopulateTailoredInfo();
 
-  file_analyzer_->Start(
-      target_file_name_, full_path_, password_,
-      base::BindOnce(&DownloadRequestMaker::OnFileFeatureExtractionDone,
-                     weakptr_factory_.GetWeakPtr()));
+#if BUILDFLAG(IS_WIN)
+  // Only add AV status for ESB users that have the AV download telemetry
+  // feature enabled.
+  bool is_enhanced_protection =
+      profile && IsEnhancedProtectionEnabled(*profile->GetPrefs());
+  if (base::FeatureList::IsEnabled(kAntivirusTelemetryForDownloads) &&
+      is_enhanced_protection) {
+    AntiVirusMetricsProvider provider;
+    provider.AsyncInit(
+        base::BindOnce(&DownloadRequestMaker::OnGotAntivirusProducts,
+                       weakptr_factory_.GetWeakPtr()));
+    return;
+  }
+#endif
+
+  StartFileAnalysis();
 }
 
 void DownloadRequestMaker::OnFileFeatureExtractionDone(
@@ -332,5 +367,30 @@ void DownloadRequestMaker::PopulateTailoredInfo() {
   tailored_info.set_version(version);
   *request_->mutable_tailored_info() = tailored_info;
 }
+
+void DownloadRequestMaker::StartFileAnalysis() {
+  file_analyzer_->Start(
+      target_file_name_, full_path_, password_,
+      base::BindOnce(&DownloadRequestMaker::OnFileFeatureExtractionDone,
+                     weakptr_factory_.GetWeakPtr()));
+}
+
+#if BUILDFLAG(IS_WIN)
+void DownloadRequestMaker::OnGotAntivirusProducts() {
+  AntiVirusMetricsProvider provider;
+  metrics::SystemProfileProto system_profile;
+  provider.ProvideSystemProfileMetrics(&system_profile);
+
+  for (const auto& av : system_profile.antivirus_product()) {
+    ClientDownloadRequest::AntiVirusProduct* av_product =
+        request_->add_antivirus_products();
+    av_product->set_product_name_hash(av.product_name_hash());
+    av_product->set_product_version_hash(av.product_version_hash());
+    av_product->set_product_state(MapAVState(av.product_state()));
+  }
+
+  StartFileAnalysis();
+}
+#endif
 
 }  // namespace safe_browsing
