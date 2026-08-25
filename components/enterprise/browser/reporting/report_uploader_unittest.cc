@@ -410,6 +410,32 @@ TEST_F(ReportUploaderTestWithProfileReportType, ListenerNotifiedOnRetry) {
   uploader_->RemoveListener(&listener);
 }
 
+// Tests that removing the listener while retry timer is running stops the timer
+// and does not upload after the timer fires.
+TEST_F(ReportUploaderTestWithProfileReportType, RemoveListenerStopsRetryTimer) {
+  CreateUploader(/* retry_count = */ 1);
+  MockReportUploaderListener listener;
+  uploader_->SetListener(&listener);
+
+  EXPECT_CALL(client_, UploadChromeProfileReport(/*use_cookies=*/false, _, _))
+      .WillOnce(ScheduleProfileResponse(policy::CloudPolicyClient::Result(
+          policy::DM_STATUS_TEMPORARY_UNAVAILABLE)));
+
+  EXPECT_CALL(listener, OnReportWillRetry(_)).Times(0);
+
+  UploadReportAndSetExpectation(/*number_of_request=*/1,
+                                ReportUploader::kSuccess,
+                                SecuritySignalsMode::kSignalsAttached);
+  RunNextTask();
+
+  // Upload failed and retry timer is running. Now remove listener.
+  uploader_->RemoveListener(&listener);
+
+  // Fast forward past the retry timer. Listener should not be notified and
+  // no unexpected upload or crash should occur.
+  RunNextTask();
+}
+
 // Tests that internal retries are not skipped if the feature is enabled but
 // the report has no security signals.
 TEST_F(ReportUploaderTestWithProfileReportType,

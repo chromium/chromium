@@ -245,9 +245,12 @@ void ReportUploader::SetListener(Listener* listener) {
 }
 
 void ReportUploader::RemoveListener(Listener* listener) {
-  if (listener_ == listener) {
-    listener_ = nullptr;
+  if (listener_ != listener) {
+    CHECK(!listener_);
+    return;
   }
+  listener_ = nullptr;
+  backoff_request_timer_.Stop();
 }
 
 bool ReportUploader::HasListener(Listener* listener) const {
@@ -271,7 +274,9 @@ void ReportUploader::NotifyReportWillRetry(
   if (listener_) {
     // The listener is responsible for resending the request by calling
     // `SetRequestAndUpload` again.
-    listener_->OnReportWillRetry(config);
+    Listener* listener = listener_;
+    listener_ = nullptr;
+    listener->OnReportWillRetry(config);
   }
 }
 
@@ -288,7 +293,10 @@ bool ReportUploader::HasRetriedTooOften() {
 }
 
 void ReportUploader::SendResponse(const ReportStatus status) {
-  std::move(callback_).Run(status);
+  listener_ = nullptr;
+  if (callback_) {
+    std::move(callback_).Run(status);
+  }
 }
 
 void ReportUploader::NextRequest() {
