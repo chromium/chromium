@@ -26,9 +26,11 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
+import org.chromium.chrome.browser.app.tabmodel.HeadlessTabDelegateFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -450,9 +452,10 @@ public class TabImplTest {
                             (TabImpl)
                                     new TabBuilder(profile)
                                             .setWindow(window)
-                                            .setArchived(true)
                                             .setLaunchType(TabLaunchType.FROM_RESTORE)
-                                            .setDelegateFactory(delegateFactory)
+                                            .setDelegateFactory(
+                                                    new HeadlessTabDelegateFactory(
+                                                            TabModelType.ARCHIVED))
                                             .build();
                     assertTrue(archivedTab.isArchivedForTesting());
                     assertFalse(archivedTab.loadIfNeeded(/* forceBackingSize= */ false));

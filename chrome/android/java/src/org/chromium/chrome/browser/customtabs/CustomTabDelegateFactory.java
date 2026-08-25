@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate
 import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -744,6 +745,11 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         return isWebappOrWebApk(activityType)
                 ? ChromeContextMenuPopulator.ContextMenuMode.WEB_APP
                 : ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB;
+    }
+
+    @Override
+    public @TabModelType int getTabModelType() {
+        return TabModelType.STANDARD;
     }
 
     @Override

@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.tab.Tab.SelectionStateSupplier;
 import org.chromium.chrome.browser.tab.Tab.TabLoadStatus;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -187,12 +188,6 @@ class TabImpl implements Tab, TabInternal {
 
     /** Unique id of this tab (within its container). */
     private final int mId;
-
-    /** Whether the tab is archived. */
-    private final boolean mIsArchived;
-
-    // TODO(crbug.com/466371728): For debugging only. Remove after the bug is fixed.
-    private boolean mInitializedWithWindowAndroid;
 
     /** The Profile associated with this tab. */
     private final Profile mProfile;
@@ -422,14 +417,12 @@ class TabImpl implements Tab, TabInternal {
      * @param id The id this tab should be identified with.
      * @param profile The profile associated with this Tab.
      * @param launchType Type indicating how this tab was launched.
-     * @param isArchived Whether the tab is archived.
      */
     @SuppressLint("HandlerLeak")
-    TabImpl(int id, Profile profile, @TabLaunchType int launchType, boolean isArchived) {
+    TabImpl(int id, Profile profile, @TabLaunchType int launchType) {
         mId = TabIdManager.getInstance().generateValidId(id);
         mProfile = profile;
         mRootId = mId;
-        mIsArchived = isArchived;
         mLaunchType = launchType;
 
         mAttachStateChangeListener =
@@ -750,6 +743,17 @@ class TabImpl implements Tab, TabInternal {
     }
 
     @Override
+    public @TabModelType int getTabModelType() {
+        return mDelegateFactory != null
+                ? mDelegateFactory.getTabModelType()
+                : TabModelType.STANDARD;
+    }
+
+    private boolean isDormant() {
+        return TabModel.isDormantTabModel(getTabModelType());
+    }
+
+    @Override
     public boolean isShowingErrorPage() {
         return mIsShowingErrorPage;
     }
@@ -1042,8 +1046,12 @@ class TabImpl implements Tab, TabInternal {
         if (isDestroyed()) {
             Log.e(TAG, "loadIfNeeded called on a destroyed tab");
             return false;
-        } else if (mIsArchived) {
-            Log.e(TAG, "loadIfNeeded called on an archived tab");
+        } else if (isDormant()) {
+            Log.e(
+                    TAG,
+                    "loadIfNeeded called on a dormant tab (tabModelType="
+                            + getTabModelType()
+                            + ")");
             return false;
         }
 
@@ -1054,16 +1062,14 @@ class TabImpl implements Tab, TabInternal {
                 Log.e(
                         TAG,
                         "Tab couldn't be loaded because WindowAndroid was null for native page."
-                                + " mIsArchived: %b, mInitializedWithWindowAndroid: %b",
-                        mIsArchived,
-                        mInitializedWithWindowAndroid);
+                                + " tabModelType: %d",
+                        getTabModelType());
             } else {
                 Log.e(
                         TAG,
                         "Tab couldn't be loaded because WindowAndroid had no Activity for native"
-                                + " page. mIsArchived: %b, mInitializedWithWindowAndroid: %b",
-                        mIsArchived,
-                        mInitializedWithWindowAndroid);
+                                + " page. tabModelType: %d",
+                        getTabModelType());
             }
             return false;
         }
@@ -1486,7 +1492,8 @@ class TabImpl implements Tab, TabInternal {
 
     /**
      * Initializes {@link Tab} with {@code webContents}. If {@code webContents} is {@code null} a
-     * new {@link WebContents} will be created for this {@link Tab}.
+     * new {@link WebContents} will be created for this {@link Tab} either immediately or on first
+     * show. {@link WebContents} must always be null for dormant tabs.
      *
      * @param parent The tab that caused this tab to be opened.
      * @param creationState State in which the tab is created.
@@ -1529,7 +1536,9 @@ class TabImpl implements Tab, TabInternal {
 
         // If applicable set up for a lazy background tab load.
         mPendingLoadParams = loadUrlParams;
-        if (loadUrlParams != null) {
+        boolean hasPendingLoadUrlParams = loadUrlParams != null;
+        if (hasPendingLoadUrlParams) {
+            assumeNonNull(loadUrlParams);
             mUrl = new GURL(loadUrlParams.getUrl());
             setTitle(pendingTitle != null ? pendingTitle : mUrl.getSpec());
         }
@@ -1560,37 +1569,37 @@ class TabImpl implements Tab, TabInternal {
 
         RevenueStats.getInstance().tabCreated(this);
 
-        boolean needsInitWebContents = true;
-        boolean createWebContents = webContents == null && !mIsArchived;
         // Headless and archived tabs will never load and thus don't need a WebContents. The reason
         // all tabs need a WebContents is when used in C++ via BrowserWindowInterface. Since
         // headless and archived tabs are not associated with a window they can avoid initializing
-        // tabs with WebContents.
-        mInitializedWithWindowAndroid = mWindowAndroid != null;
-        if (mIsContentViewDeferred) {
+        // tabs with WebContents. We also skip this logic if LoadAllTabsAtStartup is not enabled
+        // which controls `mIsContentViewDeferred`.
+        boolean eligibleToCreateWebContents = webContents == null && !isDormant();
+        boolean needsToCallInitWebContents = true;
+        if (mIsContentViewDeferred && !isDormant()) {
             if (mWebContentsState != null) {
                 assert webContents == null;
 
                 unfreezeContents(/* noRenderer= */ true);
                 webContents = getWebContents();
                 // unfreezeContents() already called initWebContents().
-                needsInitWebContents = false;
+                needsToCallInitWebContents = false;
                 assert webContents != null;
-            } else if (getPendingLoadParams() != null) {
+            } else if (hasPendingLoadUrlParams) {
                 assert webContents == null;
 
                 webContents =
                         WebContentsFactory.createWebContents(
                                 mProfile, isHidden(), initializeRenderer);
-            } else if (createWebContents) {
+            } else if (eligibleToCreateWebContents) {
                 webContents =
                         WebContentsFactory.createWebContents(
                                 mProfile, initiallyHidden, initializeRenderer);
             }
             assert webContents != null;
         } else if (mWebContentsState == null
-                && getPendingLoadParams() == null
-                && createWebContents) {
+                && !hasPendingLoadUrlParams
+                && eligibleToCreateWebContents) {
             // If there is a frozen WebContentsState or a pending lazy load, skip creating a new
             // WebContents. Restoring will be done when showing the tab in the foreground. It is
             // also correct to not create a WebContents if one was provided to this method.
@@ -1600,9 +1609,13 @@ class TabImpl implements Tab, TabInternal {
                             mProfile, initiallyHidden, initializeRenderer);
         }
 
-        // Initialization logic that requires a WebContents to have been created.
+        // WebContents may still be null at this point if:
+        // 1. The tab is dormant, or
+        // 2. The tab is in the content view deferred state and will be restored from either a
+        //    WebContentsState or pending LoadUrlParams.
         if (webContents != null) {
-            if (needsInitWebContents) {
+            assert !isDormant() : "Dormant tabs must never have WebContents initialized.";
+            if (needsToCallInitWebContents) {
                 initWebContents(webContents);
             }
             // Avoid an empty title by updating the title here. This could happen if restoring from
@@ -1612,7 +1625,7 @@ class TabImpl implements Tab, TabInternal {
                 updateTitle();
             }
 
-            if (!createWebContents && webContents.shouldShowLoadingUI()) {
+            if (!eligibleToCreateWebContents && webContents.shouldShowLoadingUI()) {
                 didStartPageLoad(webContents.getVisibleUrl());
             }
         }
@@ -2331,6 +2344,7 @@ class TabImpl implements Tab, TabInternal {
      * @param webContents The WebContents object that will initialize all the browser components.
      */
     private void initWebContents(WebContents webContents) {
+        assert !isDormant() : "Dormant tabs must never initialize WebContents.";
         try {
             TraceEvent.begin("ChromeTab.initWebContents");
             WebContents oldWebContents = mWebContents;
@@ -2436,10 +2450,12 @@ class TabImpl implements Tab, TabInternal {
     }
 
     private void updateWebContentsDelegate() {
+        assert mDelegateFactory != null;
+        assert !isDormant() : "Dormant tabs must never create a WebContentsDelegate.";
+
         if (mWebContentsDelegate != null) {
             mWebContentsDelegate.destroy();
         }
-        assumeNonNull(mDelegateFactory);
         TabWebContentsDelegateAndroid delegate = mDelegateFactory.createWebContentsDelegate(this);
         mWebContentsDelegate = new TabWebContentsDelegateAndroidImpl(this, delegate);
     }
@@ -3359,7 +3375,7 @@ class TabImpl implements Tab, TabInternal {
     }
 
     boolean isArchivedForTesting() {
-        return mIsArchived;
+        return getTabModelType() == TabModelType.ARCHIVED;
     }
 
     @NativeMethods

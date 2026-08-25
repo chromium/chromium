@@ -219,6 +219,14 @@ public class TabTestUtils {
     /** Mock Tab interface impl JNI for testing. */
     public static void mockTabJni() {
         TabImpl.Natives tabImplJni = Mockito.mock(TabImpl.Natives.class);
+        Mockito.doAnswer(
+                        invocation -> {
+                            TabImpl tab = invocation.getArgument(/* index= */ 0);
+                            tab.setNativePtrForTesting(/* nativePtr= */ 1L);
+                            return null;
+                        })
+                .when(tabImplJni)
+                .init(Mockito.any(), Mockito.any(), Mockito.anyInt());
         TabImplJni.setInstanceForTesting(tabImplJni);
     }
 

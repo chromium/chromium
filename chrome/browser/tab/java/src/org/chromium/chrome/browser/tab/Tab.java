@@ -20,6 +20,7 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.tabs.DetachReason;
@@ -241,6 +242,10 @@ public interface Tab extends TabLifecycle {
      * @return {@code true} if the Tab is in Incognito branded profile.
      */
     boolean isIncognitoBranded();
+
+    /** Returns the {@link TabModelType} of the tab model this tab is configured for. */
+    @TabModelType
+    int getTabModelType();
 
     /** Returns whether the {@link Tab} is currently showing an error page. */
     boolean isShowingErrorPage();

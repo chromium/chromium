@@ -57,6 +57,14 @@ public interface TabModel extends TabList {
     @TabModelType
     int getTabModelType();
 
+    /**
+     * Returns whether the given {@link TabModelType} is dormant (e.g. archived or headless, which
+     * never hold WebContents).
+     */
+    static boolean isDormantTabModel(@TabModelType int tabModelType) {
+        return tabModelType == TabModelType.ARCHIVED || tabModelType == TabModelType.HEADLESS;
+    }
+
     /** Returns the profile associated with the current model. */
     @Nullable Profile getProfile();
 

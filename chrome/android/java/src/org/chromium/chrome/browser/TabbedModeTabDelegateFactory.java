@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate
 import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
@@ -237,6 +238,11 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     /** Destroy and unhook objects at destruction. */
     public void destroy() {
         if (mNativePageFactory != null) mNativePageFactory.destroy();
+    }
+
+    @Override
+    public @TabModelType int getTabModelType() {
+        return TabModelType.STANDARD;
     }
 
     @Override

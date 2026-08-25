@@ -10,6 +10,7 @@ import org.chromium.chrome.browser.pdf.PdfInfo;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
+import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
@@ -47,6 +48,11 @@ class ActorTabDelegateFactory implements TabDelegateFactory {
     public @Nullable NativePage createNativePage(
             String url, @Nullable NativePage candidatePage, Tab tab, @Nullable PdfInfo pdfInfo) {
         return null;
+    }
+
+    @Override
+    public @TabModelType int getTabModelType() {
+        return TabModelType.STANDARD;
     }
 
     @Override

@@ -1601,6 +1601,15 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             assert tab.getWebContents() != null
                     : "WebContents must be created before adding to a standard tab model if load"
                             + " all tabs at startup is enabled.";
+        } else if (TabModel.isDormantTabModel(mTabModelType)) {
+            assert tab.getWebContents() == null
+                    : "Dormant tab models (archived or headless) must never have WebContents"
+                            + " attached.";
+            assert tab.getTabModelType() == mTabModelType
+                    : "Tab model type mismatch: tab="
+                            + tab.getTabModelType()
+                            + ", model="
+                            + mTabModelType;
         }
     }
 
