@@ -2363,9 +2363,6 @@ source_set("browser") {
     "//components/certificate_transparency",
     "//components/certificate_transparency:proto",
     "//components/collaboration/internal",
-    "//components/commerce/core:shopping_service",
-    "//components/component_updater",
-    "//components/component_updater/installer_policies",
     "//components/content_relationship_verification",
     "//components/contextual_search:impl",
     "//components/country_codes",
@@ -2374,17 +2371,10 @@ source_set("browser") {
     "//components/domain_reliability",
     "//components/download/content/factory",
     "//components/embedder_support:user_agent",
-    "//components/enterprise",
-    "//components/enterprise/content",
-    "//components/enterprise/net",
     "//components/facilitated_payments/core/features",
     "//components/feature_engagement",
-    "//components/find_in_page",
-    "//components/gcm_driver",
     "//components/history/content/browser",
     "//components/history_clusters/core",
-    "//components/invalidation",
-    "//components/javascript_dialogs",
     "//components/keyed_service/content",
     "//components/lens",
     "//components/lens:enterprise_policy",
@@ -2393,54 +2383,32 @@ source_set("browser") {
     "//components/mirroring/service:mirroring_service",
     "//components/multistep_filter/core:features",
     "//components/navigation_interception",
-    "//components/offline_pages/core/background:background_offliner",
     "//components/onc",
-    "//components/password_manager/content/browser",
-    "//components/password_manager/core/browser",
-    "//components/performance_manager",
     "//components/performance_manager/scenario_api",
-    "//components/permissions",
     "//components/policy/content:safe_sites_navigation_throttle",
     "//components/policy/content/",
-    "//components/policy/core/browser",
     "//components/policy/proto",
     "//components/pref_registry",
     "//components/prefs",
     "//components/proxy_config",
     "//components/qr_code_generator:bitmap_generator",
     "//components/reporting/client:report_queue_factory",
-    "//components/resources",
     "//components/safe_browsing/content/browser",
-    "//components/search_engines",
-    "//components/security_interstitials/content:security_interstitial_page",
-    "//components/segmentation_platform/public",
     "//components/sessions",
-    "//components/signin/public/identity_manager",
-    "//components/site_engagement/content",
     "//components/startup_metric_utils",
     "//components/storage_monitor",
     "//components/strike_database:features",
-    "//components/strings",
-    "//components/sync",
-    "//components/sync_preferences",
     "//components/tab_groups",
     "//components/tracing:background_tracing_utils",
     "//components/tracing:tracing_config",
     "//components/tracing:tracing_metrics",
     "//components/ui_devtools",
-    "//components/update_client",
-    "//components/url_formatter",
     "//components/url_matcher",
     "//components/user_manager",
     "//components/user_prefs",
     "//components/variations",
-    "//components/webapps/browser",
-    "//components/webapps/common",
     "//components/webdata/common",
-    "//components/webdata_services",
-    "//components/webrtc_logging/browser",
     "//components/webui/chrome_urls",
-    "//components/webui/flags",
     "//crypto",
     "//device/base",
     "//device/fido",
@@ -2700,18 +2668,13 @@ source_set("browser") {
       "//chrome/browser/web_applications/app_service",
       "//chrome/browser/web_applications/isolated_web_apps",
       "//components/cbor",
-      "//components/feedback/content:factory",
       "//components/manta",
       "//components/manta/proto",
       "//components/media_gallery_util",
-      "//components/media_router/browser",
       "//components/mirroring/service:mirroring_service",
-      "//components/payments/content",
-      "//components/record_replay/content/browser",
       "//components/soda",
       "//components/ukm/content",
       "//components/unexportable_keys",
-      "//components/user_education/webui",
       "//components/web_modal",
       "//components/webapps/isolated_web_apps",
       "//components/webauthn/content/browser",
@@ -3042,7 +3005,6 @@ source_set("browser") {
       "//components/pref_registry",
       "//components/prefs",
       "//components/session_manager/core",
-      "//components/signin/public/identity_manager",
       "//components/user_manager",
       "//components/user_manager:multi_user",
       "//device/fido",
@@ -3110,10 +3072,6 @@ source_set("browser") {
 
   if (enterprise_data_controls) {
     deps += [ "//chrome/browser/enterprise/data_controls" ]
-  }
-
-  if (enterprise_client_certificates) {
-    deps += [ "//components/enterprise/client_certificates/core" ]
   }
 
   if (is_linux || is_win || is_mac || is_chromeos) {
@@ -3189,10 +3147,7 @@ source_set("browser") {
   }
 
   if (is_posix && !is_mac) {
-    deps += [
-      "//components/crash/core/app",
-      "//components/version_info:generate_version_info",
-    ]
+    deps += [ "//components/crash/core/app" ]
   }
 
   if (use_aura) {
