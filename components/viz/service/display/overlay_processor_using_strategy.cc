@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -868,11 +867,13 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
   int max_overlays_without_mask_candidates =
       std::max(0, max_overlays_considered_ - candidates_with_masks_count);
 
+  CHECK_GE(candidates_with_masks_count, 0);
+  auto candidates_without_masks =
+      base::span(sorted_candidates)
+          .subspan(static_cast<size_t>(candidates_with_masks_count));
   OverlayCombinationToTest result =
       overlay_combination_cache_.GetOverlayCombinationToTest(
-          UNSAFE_TODO(base::span(first_candidate_without_masks,
-                                 sorted_candidates.end())),
-          max_overlays_without_mask_candidates);
+          candidates_without_masks, max_overlays_without_mask_candidates);
 
   std::vector<OverlayProposedCandidate> test_candidates =
       result.candidates_to_test;
@@ -941,8 +942,11 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
 
   // Only declare test candidates that do not have candidates with rounded
   // display masks.
-  overlay_combination_cache_.DeclarePromotedCandidates(UNSAFE_TODO(
-      base::span(test_candidates.begin(), begin_rounded_corner_candidate)));
+  auto distance =
+      std::distance(test_candidates.cbegin(), begin_rounded_corner_candidate);
+  CHECK_GE(distance, 0);
+  overlay_combination_cache_.DeclarePromotedCandidates(
+      base::span(test_candidates).first(static_cast<size_t>(distance)));
 
   // Update `candidates` if it was decided to composite some test_candidates in
   // `ProcessOverlayTestResults()`.
