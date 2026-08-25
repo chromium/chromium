@@ -91,7 +91,6 @@ def init(ctx):
         "rules": [],
         # Allowlist for fail-on-bad-deps feature.
         "bad_deps": {
-            "./gen/chrome/browser/resources/geic/geic_mojo_bindings_wrapper.rollup.js": "crbug.com/552110701",
             "./obj/ash/quick_pair/repository/repository/device_address_map.o": "crbug.com/546524333",
             "./obj/ash/quick_pair/repository/repository/device_image_store.o": "crbug.com/546524333",
             "./obj/chrome/browser/ash/smb_client/smb_client/smbfs_share.o": "crbug.com/548936578",
