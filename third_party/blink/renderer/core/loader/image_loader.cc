@@ -870,14 +870,13 @@ void ImageLoader::OnAttachLayoutTree() {
 }
 
 void ImageLoader::ResetAnimation(ResetTimeline timeline) {
-  if (!RuntimeEnabledFeatures::SvgImageAnimationResetEnabled()) {
+  bool is_svg = image_content_ && image_content_->HasImage() &&
+                image_content_->GetImage()->IsSVGImage();
+
+  if (!RuntimeEnabledFeatures::SvgImageAnimationResetEnabled() || !is_svg) {
     if (LayoutImageResource* image_resource = GetLayoutImageResource()) {
       image_resource->ResetAnimation(timeline);
     }
-    return;
-  }
-
-  if (!image_content_ || !image_content_->HasImage()) {
     return;
   }
 
