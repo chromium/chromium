@@ -1002,15 +1002,6 @@
     ],
     "feature_flag": "SmartCard"
   },
-  "speechRecognitionPrivate": {
-    "channel": "stable",
-    "extension_types": ["extension"],
-    "location": "component",
-    "platforms": ["chromeos"],
-    "allowlist": [
-      "371AC6869D2138CE58123741E69F67469206909F" // AccessibilityCommon extension. https://crbug.com/40186322
-    ]
-  },
   "systemLog": [{
     "channel": "stable",
     "extension_types": ["extension", "login_screen_extension", "platform_app"],

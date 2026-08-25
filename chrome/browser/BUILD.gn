@@ -1750,6 +1750,7 @@ source_set("core") {
       "//chrome/browser/ash/crostini",
       "//chrome/browser/ash/drive",
       "//chrome/browser/ash/drive/fileapi",
+      "//chrome/browser/ash/extensions:browser_api_provider",
       "//chrome/browser/ash/extensions/autotest_private",
       "//chrome/browser/ash/file_manager",
       "//chrome/browser/ash/file_suggest",

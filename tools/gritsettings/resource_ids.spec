@@ -1575,6 +1575,9 @@
     # Big alignment at start of section.
     "includes": [9010],
   },
+  "chromeos/ash/experiences/extensions/chromeos_extensions_resources.grd": {
+    "includes": [9015],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/os_feedback_ui/resources/resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [9020],

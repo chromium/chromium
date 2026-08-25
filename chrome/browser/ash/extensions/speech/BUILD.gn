@@ -25,7 +25,7 @@ static_library("speech") {
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/speech",
-    "//chrome/common",
+    "//chromeos/ash/experiences/extensions/api",
     "//components/keyed_service/core",
     "//components/language/core/browser",
     "//components/prefs",

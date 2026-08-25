@@ -3,6 +3,7 @@ include_rules = [
   "+chrome/grit",
   "+chrome/install_static",
   "+chrome/services/file_util/public",
+  "+chromeos/ash/experiences/extensions",
   "+chromeos/startup/startup.h",
   "+components/actor/public",
   "+components/actor/core",
