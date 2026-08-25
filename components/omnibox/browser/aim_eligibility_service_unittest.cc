@@ -760,8 +760,8 @@ TEST_F(AimEligibilityServiceTest, CoBrowseUserAgentSuffix) {
   EXPECT_TRUE(ua_value.has_value());
   EXPECT_EQ(*ua_value, "UA with Suffix");
 
-  // 2. Trigger a request with another source (e.g. kUser). Header SHOULD NOT be
-  // present.
+  // 2. Trigger a request with another source (e.g. kUser). Header SHOULD also
+  // be present.
   test_url_loader_factory_.pending_requests()->clear();
   aim_eligibility_service_->StartServerEligibilityRequestForDebugging();
 
@@ -769,7 +769,10 @@ TEST_F(AimEligibilityServiceTest, CoBrowseUserAgentSuffix) {
   const network::ResourceRequest& request2 =
       test_url_loader_factory_.GetPendingRequest(0)->request;
 
-  EXPECT_FALSE(request2.headers.HasHeader("User-Agent"));
+  std::optional<std::string> ua_value2 =
+      request2.headers.GetHeader("User-Agent");
+  EXPECT_TRUE(ua_value2.has_value());
+  EXPECT_EQ(*ua_value2, "UA with Suffix");
 }
 
 TEST_F(AimEligibilityServiceTest, IsFuseboxEligible_FeatureEnabled) {
