@@ -87,9 +87,9 @@ public class TabListModel extends ModelList {
             int ARCHIVED_TAB_GROUP = 3;
         }
 
-        /** This corresponds to {@link CardProperties.ModelType}*/
-        public static final PropertyModel.ReadableIntPropertyKey CARD_TYPE =
-                new PropertyModel.ReadableIntPropertyKey();
+        /** This corresponds to {@link CardProperties.ModelType} */
+        public static final PropertyModel.WritableIntDefPropertyKey<ModelType> CARD_TYPE =
+                new PropertyModel.WritableIntDefPropertyKey<>(ModelType.TAB);
 
         public static final PropertyModel.WritableFloatPropertyKey CARD_ALPHA =
                 new PropertyModel.WritableFloatPropertyKey();

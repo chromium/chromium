@@ -36,8 +36,8 @@ class MessageCardViewProperties {
     }
 
     /** This corresponds to the {@link MessageType}. */
-    public static final PropertyModel.ReadableIntPropertyKey MESSAGE_TYPE =
-            new PropertyModel.ReadableIntPropertyKey();
+    public static final PropertyModel.WritableIntDefPropertyKey<MessageType> MESSAGE_TYPE =
+            new PropertyModel.WritableIntDefPropertyKey<>(MessageType.ALL);
 
     // Identifier is the subtype of message. For example, the message with type PRICE_MESSAGE may
     // have the identifier PRICE_WELCOME or PRICE_ALERTS.
@@ -85,9 +85,9 @@ class MessageCardViewProperties {
             new PropertyModel.WritableBooleanPropertyKey();
 
     /** By default, if nothing is specified, regular is assumed. */
-    public static final PropertyModel.ReadableIntPropertyKey
+    public static final PropertyModel.WritableIntDefPropertyKey<MessageCardScope>
             MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE =
-                    new PropertyModel.ReadableIntPropertyKey();
+                    new PropertyModel.WritableIntDefPropertyKey<>(MessageCardScope.REGULAR);
 
     // TODO(crbug.com/40731056): Change to a more general property CUSTOM_INFO_OBJECT
     public static final PropertyModel.WritableObjectPropertyKey<ShoppingPersistedTabData.PriceDrop>
