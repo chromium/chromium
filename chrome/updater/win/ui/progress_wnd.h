@@ -88,6 +88,8 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, OnComplete);
   FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, LaunchCmdLine);
   FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, FlatButtonSubclass);
+  FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, SetAppLogoDynamicSizing);
+  FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, SetAppLogoThemeSwitching);
 
   enum class States {
     STATE_INIT = 0,
@@ -144,7 +146,9 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   HBRUSH OnCtlColorStatic(HDC dc, HWND ctl_hwnd);
 
   void SetControlText(int id, const std::wstring& text);
-  void SetAppLogo(HBITMAP bitmap);
+  void SetAppLogo(HBITMAP light_bitmap, HBITMAP dark_bitmap);
+  void UpdateAppLogo();
+  HBITMAP GetCurrentAppLogoBitmap() const;
 
   // Returns true if this window is closed.
   bool MaybeCloseWindow() override;
@@ -183,8 +187,10 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   base::win::ScopedGDIObject<HBITMAP> light_bg_bmp_;
   base::win::ScopedGDIObject<HBITMAP> dark_bg_bmp_;
 
-  // Cached original app logo bitmap received via WM_SET_APP_LOGO.
-  base::win::ScopedGDIObject<HBITMAP> app_logo_bmp_;
+  // Cached original app logo bitmaps for light and dark themes received via
+  // WM_SET_APP_LOGO.
+  base::win::ScopedGDIObject<HBITMAP> light_app_logo_bmp_;
+  base::win::ScopedGDIObject<HBITMAP> dark_app_logo_bmp_;
 
   // Scaled app logo bitmap dynamically sized for the window's current DPI.
   base::win::ScopedGDIObject<HBITMAP> scaled_app_logo_bmp_;

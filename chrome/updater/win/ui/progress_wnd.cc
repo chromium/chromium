@@ -144,9 +144,11 @@ void ProgressWnd::SetEventSink(ProgressWndEvents* events) {
   CompleteWnd::SetEventSink(events_sink_);
 }
 
-LRESULT ProgressWnd::OnSetAppLogo(UINT, WPARAM wparam, LPARAM) {
-  // Extract the `HBITMAP` handle passed in `WPARAM`.
-  SetAppLogo(reinterpret_cast<HBITMAP>(wparam));
+LRESULT ProgressWnd::OnSetAppLogo(UINT, WPARAM wparam, LPARAM lparam) {
+  // Extract the `HBITMAP` handles passed in `WPARAM` (light) and `LPARAM`
+  // (dark).
+  SetAppLogo(reinterpret_cast<HBITMAP>(wparam),
+             reinterpret_cast<HBITMAP>(lparam));
   return 0;
 }
 
@@ -164,12 +166,28 @@ RECT ProgressWnd::GetControlClientRect(HWND control) const {
   return rect;
 }
 
-void ProgressWnd::SetAppLogo(HBITMAP bitmap) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (app_logo_bmp_.get() != bitmap) {
-    app_logo_bmp_.reset(bitmap);
+HBITMAP ProgressWnd::GetCurrentAppLogoBitmap() const {
+  if (is_dark_mode()) {
+    return dark_app_logo_bmp_.is_valid() ? dark_app_logo_bmp_.get()
+                                         : light_app_logo_bmp_.get();
   }
+  return light_app_logo_bmp_.is_valid() ? light_app_logo_bmp_.get()
+                                        : dark_app_logo_bmp_.get();
+}
 
+void ProgressWnd::SetAppLogo(HBITMAP light_bitmap, HBITMAP dark_bitmap) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (light_app_logo_bmp_.get() != light_bitmap) {
+    light_app_logo_bmp_.reset(light_bitmap);
+  }
+  if (dark_app_logo_bmp_.get() != dark_bitmap) {
+    dark_app_logo_bmp_.reset(dark_bitmap);
+  }
+  UpdateAppLogo();
+}
+
+void ProgressWnd::UpdateAppLogo() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsWindow()) {
     return;
   }
@@ -186,14 +204,15 @@ void ProgressWnd::SetAppLogo(HBITMAP bitmap) {
     ::InvalidateRect(hwnd(), &ctl_rect, TRUE);
   };
 
-  if (!app_logo_bmp_.is_valid()) {
+  HBITMAP current_logo = GetCurrentAppLogoBitmap();
+  if (!current_logo) {
     clear_logo();
     return;
   }
 
   // Obtain the original dimensions of the cached bitmap.
   BITMAP bm = {};
-  if (::GetObject(app_logo_bmp_.get(), sizeof(bm), &bm) == 0) {
+  if (::GetObject(current_logo, sizeof(bm), &bm) == 0) {
     VLOG(1) << __func__ << " ::GetObject failed";
     clear_logo();
     return;
@@ -214,8 +233,8 @@ void ProgressWnd::SetAppLogo(HBITMAP bitmap) {
     return;
   }
 
-  HBITMAP scaled_bitmap = reinterpret_cast<HBITMAP>(::CopyImage(
-      app_logo_bmp_.get(), IMAGE_BITMAP, width_pixels, height_pixels, 0));
+  HBITMAP scaled_bitmap = reinterpret_cast<HBITMAP>(
+      ::CopyImage(current_logo, IMAGE_BITMAP, width_pixels, height_pixels, 0));
   if (!scaled_bitmap) {
     VLOG(1) << __func__ << " ::CopyImage failed to scale logo";
     clear_logo();
@@ -369,9 +388,7 @@ int ProgressWnd::GetScaledCornerRadius() const {
 void ProgressWnd::ApplyDpiScaling(int dpi) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   OmahaWnd::ApplyDpiScaling(dpi);
-  if (app_logo_bmp_.is_valid()) {
-    SetAppLogo(app_logo_bmp_.get());
-  }
+  UpdateAppLogo();
 }
 
 LRESULT ProgressWnd::OnEraseBkgnd(UINT, WPARAM wparam, LPARAM) {
@@ -506,20 +523,32 @@ LRESULT ProgressWnd::OnSettingChange(UINT, WPARAM, LPARAM lparam) {
   SetMsgHandled(FALSE);
   if (!lparam || std::wstring_view(reinterpret_cast<LPCWSTR>(lparam)) ==
                      L"ImmersiveColorSet") {
+    // Refresh theme state early so `UpdateAppLogo()` (via `is_dark_mode()`)
+    // evaluates the new theme before parent and descendant layouts repaint in
+    // `OmahaWnd`. Calling `UpdateThemeState()` here is safe and idempotent,
+    // even though `OmahaWnd` will invoke it again when the message bubbles up.
+    UpdateThemeState();
     light_bg_bmp_.reset();
     dark_bg_bmp_.reset();
+    UpdateAppLogo();
   }
   return 0;
 }
 
 LRESULT ProgressWnd::OnThemeChanged(UINT, WPARAM, LPARAM) {
   SetMsgHandled(FALSE);
+  // Refresh theme state early so `UpdateAppLogo()` (via `is_dark_mode()`)
+  // evaluates the new theme before parent and descendant layouts repaint in
+  // `OmahaWnd`. Calling `UpdateThemeState()` here is safe and idempotent,
+  // even though `OmahaWnd` will invoke it again when the message bubbles up.
+  UpdateThemeState();
   light_bg_bmp_.reset();
   dark_bg_bmp_.reset();
+  UpdateAppLogo();
   return 0;
 }
 
-HBRUSH ProgressWnd::OnCtlColorStatic(HDC dc, HWND ctl_hwnd) {
+HBRUSH ProgressWnd::OnCtlColorStatic(HDC dc, HWND) {
   if (is_high_contrast()) {
     ::SetTextColor(dc, ::GetSysColor(COLOR_WINDOWTEXT));
     ::SetBkColor(dc, ::GetSysColor(COLOR_WINDOW));
