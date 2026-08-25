@@ -257,10 +257,14 @@ TEST_F(DlpConfidentialContentsTest, CacheEvictsAfterTimeout) {
       data_controls::GetDlpHistogramPrefix() +
           data_controls::dlp::kConfidentialContentsCount,
       1, 1);
-  histogram_tester_.ExpectTotalCount(
+  histogram_tester_.ExpectBucketCount(
       data_controls::GetDlpHistogramPrefix() +
           data_controls::dlp::kConfidentialContentsCacheEvictedOnFull,
-      0);
+      false, 1);
+  histogram_tester_.ExpectBucketCount(
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kConfidentialContentsCacheEvictedOnFull,
+      true, 0);
   task_runner->FastForwardBy(DlpConfidentialContentsCache::GetCacheTimeout());
   EXPECT_FALSE(cache.Contains(content, kRestriction));
 }
@@ -292,10 +296,14 @@ TEST_F(DlpConfidentialContentsTest, CacheEvictsWhenFull) {
                     data_controls::dlp::kConfidentialContentsCount)
                 ->TotalCount(),
             100);
-  histogram_tester_.ExpectTotalCount(
+  histogram_tester_.ExpectBucketCount(
       data_controls::GetDlpHistogramPrefix() +
           data_controls::dlp::kConfidentialContentsCacheEvictedOnFull,
-      0);
+      false, 100);
+  histogram_tester_.ExpectBucketCount(
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kConfidentialContentsCacheEvictedOnFull,
+      true, 0);
 
   // Add an additional item which should lead to the first one being evicted.
   DlpConfidentialContent content101 =
@@ -317,6 +325,10 @@ TEST_F(DlpConfidentialContentsTest, CacheEvictsWhenFull) {
   histogram_tester_.ExpectBucketCount(
       data_controls::GetDlpHistogramPrefix() +
           data_controls::dlp::kConfidentialContentsCacheEvictedOnFull,
+      false, 100);
+  histogram_tester_.ExpectBucketCount(
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kConfidentialContentsCacheEvictedOnFull,
       true, 1);
 }
 
@@ -332,10 +344,14 @@ TEST_F(DlpConfidentialContentsTest, CacheRemovesDuplicates) {
       data_controls::GetDlpHistogramPrefix() +
           data_controls::dlp::kConfidentialContentsCount,
       1, 1);
-  histogram_tester_.ExpectTotalCount(
+  histogram_tester_.ExpectBucketCount(
       data_controls::GetDlpHistogramPrefix() +
           data_controls::dlp::kConfidentialContentsCacheEvictedOnFull,
-      0);
+      false, 1);
+  histogram_tester_.ExpectBucketCount(
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kConfidentialContentsCacheEvictedOnFull,
+      true, 0);
 }
 
 }  // namespace policy
