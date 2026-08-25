@@ -58,18 +58,6 @@ public class AccumulatingTabCreatorUnitTest {
     }
 
     @Test
-    public void testCreateFrozenTab_NullState() {
-        AccumulatingTabCreator tabCreator = new AccumulatingTabCreator();
-        assertNull(
-                tabCreator.createFrozenTab(null, Tab.INVALID_TAB_ID, TabModel.INVALID_TAB_INDEX));
-        assertEquals(1, tabCreator.createFrozenTabArgumentsList.size());
-        CreateFrozenTabArguments arguments = tabCreator.createFrozenTabArgumentsList.get(0);
-        assertNull(arguments.state);
-        assertEquals(Tab.INVALID_TAB_ID, arguments.id);
-        assertEquals(TabModel.INVALID_TAB_INDEX, arguments.index);
-    }
-
-    @Test
     public void testStopRecording() {
         AccumulatingTabCreator tabCreator = new AccumulatingTabCreator();
         tabCreator.stopRecording();

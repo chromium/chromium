@@ -522,17 +522,9 @@ class TabImpl implements Tab, TabInternal {
             updateWindowAndroid(window);
 
             // Reload the NativePage (if any), since the old NativePage has a reference to the old
-            // activity. If hidden, freeze the native page to avoid eager instantiation of
-            // background native pages.
+            // activity.
             if (isNativePage()) {
-                if (isHidden()) {
-                    freezeNativePage();
-                } else {
-                    maybeShowNativePage(
-                            getUrl().getSpec(),
-                            /* forceReload= */ true,
-                            PdfUtils.getPdfInfo(getNativePage()));
-                }
+                maybeShowNativePage(getUrl().getSpec(), true, PdfUtils.getPdfInfo(getNativePage()));
             }
         } else {
             updateIsDetachedFromActivity(window);

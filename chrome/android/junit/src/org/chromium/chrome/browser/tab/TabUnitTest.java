@@ -408,11 +408,6 @@ public class TabUnitTest {
                     }
 
                     @Override
-                    public boolean isHidden() {
-                        return false;
-                    }
-
-                    @Override
                     void pushNativePageStateToNavigationEntry() {}
                 };
         mTab.updateAttachment(mWindowAndroid, mDelegateFactory);

@@ -731,7 +731,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
     }
 
     @Override
-    public @Nullable Tab createFrozenTab(@Nullable TabState state, int id, int index) {
+    public @Nullable Tab createFrozenTab(TabState state, int id, int index) {
         if (mTabModel == null || mOrderController == null) return null;
         TabModelSelector selector = mTabModelSelectorSupplier.get();
         TabResolver resolver =

@@ -8,6 +8,9 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNtpUrl;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,6 +25,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController.Delegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -44,8 +48,30 @@ import java.util.Map;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabReparentingControllerTest {
+    class FakeNightModeReparentingDelegate implements Delegate {
+        TabModelSelector mTabModelSelector;
+
+        @Override
+        public TabModelSelector getTabModelSelector() {
+            if (mTabModelSelector == null) {
+                // setup
+                mTabModelSelector = Mockito.mock(TabModelSelector.class);
+
+                doReturn(mTabModel).when(mTabModelSelector).getModel(false);
+                doReturn(mIncognitoTabModel).when(mTabModelSelector).getModel(true);
+            }
+
+            return mTabModelSelector;
+        }
+
+        @Override
+        public boolean isNtpUrl(GURL url) {
+            return getOriginalNtpUrl().equals(url.getSpec())
+                    || getOriginalNativeNtpUrl().equals(url.getSpec());
+        }
+    }
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock TabModelSelector mTabModelSelector;
     @Mock ReparentingTask mTask;
     @Mock Profile mProfile;
     @Mock Profile mIncognitoProfile;
@@ -56,6 +82,7 @@ public class TabReparentingControllerTest {
     Tab mForegroundTab;
 
     TabReparentingController mController;
+    FakeNightModeReparentingDelegate mFakeDelegate;
     AsyncTabParamsManager mRealAsyncTabParamsManager;
 
     @Before
@@ -65,12 +92,9 @@ public class TabReparentingControllerTest {
         mTabModel = new MockTabModel(mProfile, null);
         mIncognitoTabModel = new MockTabModel(mIncognitoProfile, null);
 
-        doReturn(mTabModel).when(mTabModelSelector).getModel(false);
-        doReturn(mIncognitoTabModel).when(mTabModelSelector).getModel(true);
-
+        mFakeDelegate = new FakeNightModeReparentingDelegate();
         mRealAsyncTabParamsManager = AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
-        mController =
-                new TabReparentingController(() -> mTabModelSelector, mRealAsyncTabParamsManager);
+        mController = new TabReparentingController(mFakeDelegate, mRealAsyncTabParamsManager);
     }
 
     @After
@@ -97,17 +121,11 @@ public class TabReparentingControllerTest {
 
     @Test
     public void testReparenting_singleTab_NTP() {
-        mForegroundTab = createAndAddMockTab(1, /* incognito= */ false, JUnitTestGURLs.NTP_URL);
+        // New tab pages aren't reparented intentionally.
+        mForegroundTab = createAndAddMockTab(1, false, JUnitTestGURLs.NTP_URL);
         mController.prepareTabsForReparenting();
 
-        AsyncTabParams params = mRealAsyncTabParamsManager.getAsyncTabParams().get(1);
-        Assert.assertNotNull(params);
-        Assert.assertTrue(params instanceof TabReparentingParams);
-
-        TabReparentingParams trp = (TabReparentingParams) params;
-        Tab tab = trp.getTabToReparent();
-        Assert.assertNotNull(tab);
-        verify(mTask, times(1)).detach();
+        Assert.assertFalse(mRealAsyncTabParamsManager.hasParamsWithTabToReparent());
     }
 
     @Test
@@ -203,6 +221,7 @@ public class TabReparentingControllerTest {
 
     @Test
     public void testReparenting_stopLoadingIfNeeded() {
+        // New tab pages aren't reparented intentionally.
         mForegroundTab = createAndAddMockTab(1, false);
         doReturn(true).when(mForegroundTab).isLoading();
 

@@ -372,9 +372,7 @@ public class TabStoreMetricsService {
          */
         private void recordUrlMismatch(
                 @Nullable TabCreationData authData, CreateFrozenTabArguments shadowArgs) {
-            if (authData == null || shadowArgs.state == null || shadowArgs.state.url == null) {
-                return;
-            }
+            if (authData == null || shadowArgs.state.url == null) return;
 
             String authUrl = authData.url;
             String shadowUrl = shadowArgs.state.url.getSpec();
@@ -411,7 +409,7 @@ public class TabStoreMetricsService {
             Set<String> shadowUrls = new HashSet<>();
             for (CreateFrozenTabArguments arg : shadowFrozenData) {
                 shadowTabIds.add(arg.id);
-                if (arg.state != null && arg.state.url != null) {
+                if (arg.state.url != null) {
                     String spec = arg.state.url.getSpec();
                     if (spec.isEmpty()) {
                         spec = arg.state.url.getPossiblyInvalidSpec();

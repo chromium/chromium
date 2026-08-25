@@ -962,19 +962,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.metrics") {
   deps = [ ":chrome_test_java_helper" ]
 }
 
-android_library("chrome_test_java_org.chromium.chrome.browser.native_page") {
-  resources_package = "org.chromium.chrome"
-
-  sources = [ "src/org/chromium/chrome/browser/native_page/NativePageReparentingTest.java" ]
-
-  deps = [
-    ":chrome_test_java_helper",
-    "//chrome/android/feed:chrome_feed_java_resources",
-    "//chrome/browser/ui/android/night_mode:java",
-    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
-  ]
-}
-
 android_library("chrome_test_java_org.chromium.chrome.browser.notifications") {
   resources_package = "org.chromium.chrome"
 

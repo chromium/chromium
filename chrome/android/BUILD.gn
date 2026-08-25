@@ -1498,7 +1498,6 @@ if (_is_default_toolchain) {
       "javatests:chrome_test_java_org.chromium.chrome.browser.incognito",
       "javatests:chrome_test_java_org.chromium.chrome.browser.media",
       "javatests:chrome_test_java_org.chromium.chrome.browser.metrics",
-      "javatests:chrome_test_java_org.chromium.chrome.browser.native_page",
       "javatests:chrome_test_java_org.chromium.chrome.browser.notifications",
       "javatests:chrome_test_java_org.chromium.chrome.browser.ntp",
       "javatests:chrome_test_java_org.chromium.chrome.browser.offlinepages",

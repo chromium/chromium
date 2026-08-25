@@ -98,16 +98,14 @@ public class RecordingTabCreator implements TabCreator {
     }
 
     @Override
-    public @Nullable Tab createFrozenTab(@Nullable TabState state, int id, int index) {
+    public @Nullable Tab createFrozenTab(TabState state, int id, int index) {
         assertInitialized();
         if (mIsRecording && TabStateStorageFlagHelper.isTabStorageEnabled()) {
             mTabCount++;
-            String urlSpec = state != null && state.url != null ? state.url.getSpec() : null;
-            long timestampMillis = state != null ? state.timestampMillis : 0;
-            boolean isPinned = state != null && state.isPinned;
-            @Nullable Token tabGroupId = state != null ? state.tabGroupId : null;
+            String urlSpec = state.url != null ? state.url.getSpec() : null;
             mFrozenTabCreationData.add(
-                    new TabCreationData(id, urlSpec, timestampMillis, isPinned, tabGroupId));
+                    new TabCreationData(
+                            id, urlSpec, state.timestampMillis, state.isPinned, state.tabGroupId));
         }
         return mDelegate.createFrozenTab(state, id, index);
     }

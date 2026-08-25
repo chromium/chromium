@@ -143,7 +143,6 @@ public class TabPersistentStoreUnitTest {
                 assertThat(flushed.get()).isTrue();
             }
         }
-        AsyncTabParamsManagerSingleton.getInstance().getAsyncTabParams().clear();
     }
 
     @Test
@@ -385,7 +384,13 @@ public class TabPersistentStoreUnitTest {
         TabRestoreDetails emptyNtpDetails = new TabRestoreDetails(1, 0, TriState.FALSE, url, false);
         mPersistentStore.restoreTab(emptyNtpDetails, null, false);
 
-        verify(mNormalTabCreator).createFrozenTab(isNull(), eq(1), eq(0));
+        verify(mNormalTabCreator)
+                .createNewTab(
+                        argThat(new LoadUrlParamsUrlMatcher(url)),
+                        eq(TabLaunchType.FROM_RESTORE),
+                        isNull(),
+                        eq(0));
+        AsyncTabParamsManagerSingleton.getInstance().remove(1);
     }
 
     @Test

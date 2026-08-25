@@ -130,23 +130,6 @@ public class RecordingTabCreatorUnitTest {
     }
 
     @Test
-    public void testCreateFrozenTab_NullState() {
-        mRecordingTabCreator.createFrozenTab(null, 5, TabModel.INVALID_TAB_INDEX);
-
-        verify(mDelegate).createFrozenTab(null, 5, TabModel.INVALID_TAB_INDEX);
-
-        assertEquals(1, mRecordingTabCreator.getTabCount());
-        List<TabCreationData> frozenData = mRecordingTabCreator.getFrozenTabCreationData();
-        assertEquals(1, frozenData.size());
-        assertEquals(5, frozenData.get(0).id);
-        assertEquals(0, frozenData.get(0).timestampMillis);
-        assertNull(frozenData.get(0).url);
-
-        List<TabCreationData> data = mRecordingTabCreator.getNewTabCreationData();
-        assertEquals(0, data.size());
-    }
-
-    @Test
     public void testLaunchUrl() {
         mRecordingTabCreator.launchUrl(mGurl.getSpec(), TabLaunchType.FROM_LINK);
 

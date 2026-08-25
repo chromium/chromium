@@ -79,7 +79,7 @@ public interface TabCreator {
      *     problem with the data, the current model, or just because this creator implementation
      *     doesn't create tabs.
      */
-    @Nullable Tab createFrozenTab(@Nullable TabState state, int id, int index);
+    @Nullable Tab createFrozenTab(TabState state, int id, int index);
 
     /**
      * Returns true if a tab with this ID is being reparented.
