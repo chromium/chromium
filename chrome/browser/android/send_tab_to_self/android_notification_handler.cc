@@ -277,24 +277,13 @@ void AndroidNotificationHandler::CheckAndOpenPendingEntries() {
 }
 
 // static
-AutoOpenOutcome AndroidNotificationHandler::GetAutoOpenOutcome(
-    AutoOpenTrigger trigger,
-    OpenResult open_result) {
-  switch (open_result) {
-    case OpenResult::kOpenedInNativeApp:
-      switch (trigger) {
-        case AutoOpenTrigger::kImmediate:
-          return AutoOpenOutcome::kOpenedInNativeAppImmediately;
-        case AutoOpenTrigger::kOnActivation:
-          return AutoOpenOutcome::kOpenedInNativeAppUponActivation;
-      }
-    case OpenResult::kOpenedInTab:
-      switch (trigger) {
-        case AutoOpenTrigger::kImmediate:
-          return AutoOpenOutcome::kTabsOpenedImmediatelyInBackground;
-        case AutoOpenTrigger::kOnActivation:
-          return AutoOpenOutcome::kTabsOpenedInBackgroundUponActivation;
-      }
+AutoOpenOutcome AndroidNotificationHandler::GetAutoOpenOutcomeForTabsOpened(
+    AutoOpenTrigger trigger) {
+  switch (trigger) {
+    case AutoOpenTrigger::kImmediate:
+      return AutoOpenOutcome::kTabsOpenedImmediatelyInBackground;
+    case AutoOpenTrigger::kOnActivation:
+      return AutoOpenOutcome::kTabsOpenedInBackgroundUponActivation;
   }
 }
 
@@ -319,71 +308,43 @@ void AndroidNotificationHandler::OpenEntries(
 
     std::string_view last_device_name;
 
-    size_t processed_count = 0;
-    int opened_tab_count = 0;
+    const AutoOpenOutcome outcome = GetAutoOpenOutcomeForTabsOpened(trigger);
     for (const SendTabToSelfEntry* entry : entries) {
-      OpenResult open_result =
-          OpenEntry(*entry, *target_web_contents, next_tabstrip_index);
-      RecordAutoOpenOutcome(GetAutoOpenOutcome(trigger, open_result));
+      OpenEntry(*entry, *target_web_contents, next_tabstrip_index);
+      RecordAutoOpenOutcome(outcome);
 
       if (next_tabstrip_index != TabModel::kInvalidIndex) {
         ++next_tabstrip_index;
       }
 
-      processed_count++;
-
       // Dismiss any system notification associated with this entry.
       HideNotification(entry->GetGUID());
 
-      if (open_result == OpenResult::kOpenedInNativeApp) {
-        // After opening a native app, Chrome is no longer the active foreground
-        // app, so stop auto-opening subsequent entries.
-        break;
-      }
-      // Otherwise, it was opened in a tab.
-      opened_tab_count++;
       last_device_name = entry->GetDeviceName();
     }
 
     // Display an in-app banner for the most recent sender device if at least
     // one tab was opened.
     if (!last_device_name.empty()) {
-      ShowMessageBanner(last_device_name, opened_tab_count,
-                        target_web_contents);
+      ShowMessageBanner(last_device_name, entries.size(), target_web_contents);
     }
-
-    // Drop any processed entries. There may be remaining entries if a native
-    // app was opened.
-    entries = entries.subspan(processed_count);
-  }
-
-  // If Chrome is *not* in the foreground (or isn't anymore, since a native app
-  // was opened), show notifications for the remaining entries.
-  for (const SendTabToSelfEntry* entry : entries) {
-    ShowNotification(*entry);
-    switch (trigger) {
-      case AutoOpenTrigger::kImmediate:
-        RecordAutoOpenOutcome(AutoOpenOutcome::kUnopenedImmediately);
-        break;
-      case AutoOpenTrigger::kOnActivation:
-        RecordAutoOpenOutcome(AutoOpenOutcome::kUnopenedUponActivation);
-        break;
+  } else {
+    // Chrome is *not* in the foreground, so show notifications for the entries.
+    // This cannot happen in the AutoOpenTrigger::kOnActivation case, where
+    // Chrome is by definition in the foreground.
+    CHECK_EQ(trigger, AutoOpenTrigger::kImmediate);
+    for (const SendTabToSelfEntry* entry : entries) {
+      ShowNotification(*entry);
+      RecordAutoOpenOutcome(AutoOpenOutcome::kUnopenedImmediately);
     }
   }
 }
 
-AndroidNotificationHandler::OpenResult AndroidNotificationHandler::OpenEntry(
+void AndroidNotificationHandler::OpenEntry(
     const SendTabToSelfEntry& entry,
     content::WebContents& target_web_contents,
     int tabstrip_index) {
   send_tab_to_self_model_->MarkEntryOpened(entry.GetGUID());
-
-  // If there is a matching native app, open that instead of a tab.
-  // TODO(crbug.com/527276312): Finalize the UX - opening another app without
-  // user confirmation could be quite disruptive.
-  if (OpenInNativeAppIfPossible(entry.GetURL())) {
-    return OpenResult::kOpenedInNativeApp;
-  }
 
   auto nav_params = std::make_unique<NavigateParams>(
       Profile::FromBrowserContext(target_web_contents.GetBrowserContext()),
@@ -403,7 +364,6 @@ AndroidNotificationHandler::OpenResult AndroidNotificationHandler::OpenEntry(
                           weak_factory_.GetWeakPtr(), entry.GetGUID(),
                           entry.GetURL(), entry.GetDeviceName(),
                           entry.GetPageContext(), std::move(nav_params)));
-  return OpenResult::kOpenedInTab;
 }
 
 void AndroidNotificationHandler::OnNavigationStarted(
@@ -447,12 +407,6 @@ void AndroidNotificationHandler::DidAddTab(TabAndroid* tab,
     }
   }
   CheckAndOpenPendingEntries();
-}
-
-bool AndroidNotificationHandler::OpenInNativeAppIfPossible(const GURL& url) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> j_url = ConvertUTF8ToJavaString(env, url.spec());
-  return Java_NotificationManager_openInNativeAppIfPossible(env, j_url);
 }
 
 }  // namespace send_tab_to_self

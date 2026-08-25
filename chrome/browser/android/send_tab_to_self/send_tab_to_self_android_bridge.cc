@@ -309,6 +309,16 @@ static void JNI_SendTabToSelfTabCardLabelData_MarkEntryActivated(
   }
 }
 
+static void JNI_SendTabToSelfTabCardLabelData_OnTabShown(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_tab,
+    const JavaRef<jstring>& j_sender_device_name) {
+  // Forward the call from the Java SendTabToSelfTabCardLabelData to the Java
+  // SendTabToSelfAndroidBridge. It can't be done directly in Java due to build
+  // dependencies.
+  Java_SendTabToSelfAndroidBridge_onTabShown(env, j_tab, j_sender_device_name);
+}
+
 void AttachTabLabel(TabAndroid* tab,
                     std::string_view guid,
                     std::string_view device_name) {

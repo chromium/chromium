@@ -6,7 +6,11 @@ package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.text.TextUtils;
 
 import org.jni_zero.CalledByNative;
@@ -38,10 +42,12 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
+import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
+import org.chromium.components.messages.MessageScopeType;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -314,6 +320,14 @@ public class SendTabToSelfAndroidBridge {
                 .recordTargetDeviceCount(entryPoint, displayReason, deviceCount);
     }
 
+    @CalledByNative
+    public static void onTabShown(Tab tab, String senderDeviceName) {
+        if (!ChromeFeatureList.sSendTabToSelfOpenNativeApp.isEnabled()) {
+            return;
+        }
+        maybeShowOpenInAppMessageBanner(tab, senderDeviceName);
+    }
+
     /**
      * Attaches SendTabToSelfTabCardLabelData to a Tab to indicate which device sent it.
      *
@@ -399,8 +413,78 @@ public class SendTabToSelfAndroidBridge {
     }
 
     /**
+     * If there is a matching native app for the given Tab's URL, shows a message banner offering to
+     * open the URL in that app.
+     *
+     * @param tab The Tab on which to (maybe) display the message banner.
+     * @param senderDeviceName The name of the device that sent the tab.
+     */
+    static void maybeShowOpenInAppMessageBanner(Tab tab, String senderDeviceName) {
+        if (tab.getUrl().isEmpty() || !tab.getUrl().isValid()) return;
+
+        WebContents webContents = tab.getWebContents();
+        if (webContents == null || webContents.isDestroyed()) return;
+
+        WindowAndroid windowAndroid = tab.getWindowAndroid();
+        if (windowAndroid == null) return;
+
+        Context context = windowAndroid.getContext().get();
+        if (context == null) return;
+
+        Uri uri = Uri.parse(tab.getUrl().getSpec());
+
+        ResolveInfo resolveInfo = NotificationManager.getMatchingNativeAppResolveInfo(uri);
+        if (resolveInfo == null || resolveInfo.activityInfo == null) return;
+
+        MessageDispatcher messageDispatcher = MessageDispatcherProvider.from(windowAndroid);
+        if (messageDispatcher == null) return;
+
+        PackageManager pm = context.getPackageManager();
+        String packageName = resolveInfo.activityInfo.packageName;
+        var iconAndLabel = ExternalNavigationHandler.getApplicationIconAndLabel(pm, packageName);
+        if (iconAndLabel == null) return;
+
+        Drawable icon = iconAndLabel.first;
+        CharSequence appLabel = iconAndLabel.second;
+
+        Resources res = context.getResources();
+        String title = res.getString(R.string.external_navigation_continue_to_title, appLabel);
+        String description =
+                res.getString(R.string.send_tab_to_self_message_banner_subtitle, senderDeviceName);
+        String action = res.getString(R.string.send_tab_to_self_message_open);
+
+        PropertyModel.Builder messageBuilder =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(
+                                MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.SEND_TAB_TO_SELF)
+                        .with(MessageBannerProperties.TITLE, title)
+                        .with(MessageBannerProperties.DESCRIPTION, description)
+                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, action)
+                        .with(
+                                MessageBannerProperties.ON_PRIMARY_ACTION,
+                                () -> {
+                                    NotificationManager.openInNativeAppIfPossible(uri);
+                                    return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+                                });
+
+        if (icon != null) {
+            messageBuilder
+                    .with(MessageBannerProperties.ICON, icon)
+                    .with(
+                            MessageBannerProperties.ICON_TINT_COLOR,
+                            MessageBannerProperties.TINT_NONE);
+        } else {
+            messageBuilder.with(MessageBannerProperties.ICON_RESOURCE_ID, R.drawable.send_tab);
+        }
+
+        messageDispatcher.enqueueMessage(
+                messageBuilder.build(), webContents, MessageScopeType.WEB_CONTENTS, false);
+    }
+
+    /**
      * Handles the primary action click on the message banner. Selects and opens the newest received
-     * tab.
+     * tab, or opens it in a native app if available.
      *
      * @return The behavior to follow after the click (dismiss immediately).
      */
@@ -422,9 +506,11 @@ public class SendTabToSelfAndroidBridge {
         }
 
         TabModel normalTabModel = selector.getModel(/* incognito= */ false);
+
         int newestNewTabIndex = TabModel.INVALID_TAB_INDEX;
         long maxTimestamp = -1;
         SendTabToSelfTabCardLabelData newestLabelData = null;
+        GURL newestUrl = null;
 
         // Iterate through all tabs in the standard model to find all unread/new
         // Send-Tab-to-Self tabs and identify the most recently added one by checking addition
@@ -443,10 +529,12 @@ public class SendTabToSelfAndroidBridge {
                 maxTimestamp = timestamp;
                 newestNewTabIndex = i;
                 newestLabelData = data;
+                newestUrl = tab.getUrl();
             }
         }
 
-        // Highlight and focus the newly received tab by setting it as the active tab.
+        // Highlight and focus the newly received tab by setting it as the active tab, or open in
+        // native app if available.
         if (newestNewTabIndex != TabModel.INVALID_TAB_INDEX) {
             if (ChromeFeatureList.sSendTabToSelfRecordSnackbarActivation.isEnabled()) {
                 assert newestLabelData != null;
@@ -465,8 +553,11 @@ public class SendTabToSelfAndroidBridge {
                 }
             }
 
-            // Finally, activate the tab.
-            normalTabModel.setIndex(newestNewTabIndex, TabSelectionType.FROM_USER);
+            // Finally, open the matching native app if available; otherwise activate the tab.
+            assert newestUrl != null;
+            if (!NotificationManager.openInNativeAppIfPossible(Uri.parse(newestUrl.getSpec()))) {
+                normalTabModel.setIndex(newestNewTabIndex, TabSelectionType.FROM_USER);
+            }
         }
 
         return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;

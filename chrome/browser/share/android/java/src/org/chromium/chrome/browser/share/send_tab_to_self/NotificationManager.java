@@ -27,6 +27,7 @@ import org.jni_zero.JniType;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -66,12 +67,27 @@ public class NotificationManager {
     @VisibleForTesting
     public static final String NOTIFICATION_ACTION_TIMEOUT = "send_tab_to_self.timeout";
 
-    private static boolean openInNativeAppIfPossible(@Nullable Uri uri) {
-        if (uri == null) return false;
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_OPEN_NATIVE_APP)) {
-            return false;
+    private static @Nullable ResolveInfo sResolveInfoForTesting;
+
+    public static void setResolveInfoForTesting(@Nullable ResolveInfo resolveInfo) {
+        sResolveInfoForTesting = resolveInfo;
+        ResettersForTesting.register(() -> sResolveInfoForTesting = null);
+    }
+
+    /**
+     * Resolves and returns the {@link ResolveInfo} of the matching native app for the URI, or null
+     * if there is no specialized handler or the feature is disabled.
+     */
+    public static @Nullable ResolveInfo getMatchingNativeAppResolveInfo(@Nullable Uri uri) {
+        if (!ChromeFeatureList.sSendTabToSelfOpenNativeApp.isEnabled()) {
+            return null;
         }
-        Context context = ContextUtils.getApplicationContext();
+
+        if (sResolveInfoForTesting != null) {
+            return sResolveInfoForTesting;
+        }
+
+        if (uri == null) return null;
 
         // Create an implicit Intent, to be used for looking up whether a matching native app (a
         // "specialized handler") exists.
@@ -82,36 +98,37 @@ public class NotificationManager {
                 PackageManagerUtils.resolveActivity(
                         intent,
                         PackageManager.GET_RESOLVED_FILTER | PackageManager.MATCH_DEFAULT_ONLY);
-        if (resolveInfo == null) return false;
-
-        if (resolveInfo.activityInfo == null) return false;
+        if (resolveInfo == null || resolveInfo.activityInfo == null) return null;
         String packageName = resolveInfo.activityInfo.packageName;
-        if (packageName == null) return false;
+        if (packageName == null) return null;
 
         boolean isBrowser =
                 ExternalNavigationHandler.getInstalledBrowserPackages().contains(packageName);
+        if (isBrowser) return null;
 
-        if (!isBrowser) {
-            // There is a matching native app! Start the Intent to launch that app.
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            if (IntentUtils.safeStartActivity(context, intent)) {
-                return true;
-            }
-            // Else: Fall back to Chrome if something went wrong with the native app.
-        }
-        return false;
+        return resolveInfo;
+    }
+
+    @VisibleForTesting
+    public static boolean canOpenInNativeApp(@Nullable Uri uri) {
+        return getMatchingNativeAppResolveInfo(uri) != null;
     }
 
     /**
-     * Opens the URL in the matching native app, if there is one.
+     * Opens the URI in the matching native app, if there is one.
      *
-     * @param url The URL to open.
+     * @param uri The URI to open.
      * @return true if the native app was launched, false otherwise.
      */
-    @CalledByNative
-    public static boolean openInNativeAppIfPossible(String url) {
-        if (url == null) return false;
-        return openInNativeAppIfPossible(Uri.parse(url));
+    public static boolean openInNativeAppIfPossible(@Nullable Uri uri) {
+        if (!canOpenInNativeApp(uri)) {
+            return false;
+        }
+        Context context = ContextUtils.getApplicationContext();
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        ExternalNavigationHandler.sanitizeQueryIntentActivitiesIntent(intent);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        return IntentUtils.safeStartActivity(context, intent);
     }
 
     /**

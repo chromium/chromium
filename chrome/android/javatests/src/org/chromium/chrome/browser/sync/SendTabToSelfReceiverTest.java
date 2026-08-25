@@ -14,6 +14,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.chromium.chrome.browser.layouts.LayoutTestUtils.waitForLayout;
 
+import android.content.pm.ActivityInfo;
+import android.content.pm.ResolveInfo;
+
 import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
@@ -38,6 +41,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.share.send_tab_to_self.NotificationManager;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -692,5 +696,97 @@ public class SendTabToSelfReceiverTest {
 
         // Verify that the message banner is displayed.
         onView(withId(R.id.message_primary_button)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @EnableFeatures({
+        ChromeFeatureList.SEND_TAB_TO_SELF_SUPPORT_AUTO_OPEN_IN_TAB_GRID,
+        ChromeFeatureList.SEND_TAB_TO_SELF_OPEN_NATIVE_APP
+    })
+    public void testSendTabToSelfOpenNativeApp_MessageBannerShownWhenSelectedFromTabSwitcher() {
+        ResolveInfo resolveInfo = new ResolveInfo();
+        resolveInfo.activityInfo = new ActivityInfo();
+        resolveInfo.activityInfo.packageName = "com.example.app";
+        resolveInfo.activityInfo.name = "com.example.app.MainActivity";
+        NotificationManager.setResolveInfoForTesting(resolveInfo);
+
+        long now = getCurrentTimeSinceWindowsEpochMicros();
+        injectSendTabToSelfEntity(
+                "stts_test_guid", "https://www.example.com", "Example", "Example Phone", now);
+        SyncTestUtil.triggerSyncAndWaitForCompletion();
+
+        TabUiTestHelper.verifyTabModelTabCount(mSyncTestRule.getActivity(), 2, 0);
+        TabModel tabModel = mSyncTestRule.getActivity().getTabModelSelector().getModel(false);
+        Tab bgTab = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabAt(1));
+
+        // Open the Tab Switcher.
+        TabUiTestHelper.enterTabSwitcher(mSyncTestRule.getActivity());
+
+        // Verify the card label is displayed.
+        onView(withText("From Example Phone")).check(matches(isDisplayed()));
+
+        // Click on the tab card to activate it.
+        TabUiTestHelper.clickNthCardFromTabSwitcher(mSyncTestRule.getActivity(), 1);
+        waitForLayout(mSyncTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
+
+        // Verify that the data was removed after activation.
+        Assert.assertNull(
+                ThreadUtils.runOnUiThreadBlocking(() -> SendTabToSelfTabCardLabelData.get(bgTab)));
+
+        // Verify that the message banner is displayed because a matching native app exists.
+        onView(withId(R.id.message_primary_button)).check(matches(isDisplayed()));
+        onView(withText("From Example Phone")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @EnableFeatures({
+        ChromeFeatureList.SEND_TAB_TO_SELF_SUPPORT_AUTO_OPEN_IN_TAB_GRID,
+        ChromeFeatureList.SEND_TAB_TO_SELF_OPEN_NATIVE_APP
+    })
+    public void testSendTabToSelfOpenNativeApp_MessageBannerShownAfterRestartFromTabSwitcher() {
+        ResolveInfo resolveInfo = new ResolveInfo();
+        resolveInfo.activityInfo = new ActivityInfo();
+        resolveInfo.activityInfo.packageName = "com.example.app";
+        resolveInfo.activityInfo.name = "com.example.app.MainActivity";
+        NotificationManager.setResolveInfoForTesting(resolveInfo);
+
+        long now = getCurrentTimeSinceWindowsEpochMicros();
+        injectSendTabToSelfEntity(
+                "stts_test_guid", "https://www.example.com", "Example", "Example Phone", now);
+        SyncTestUtil.triggerSyncAndWaitForCompletion();
+
+        TabUiTestHelper.verifyTabModelTabCount(mSyncTestRule.getActivity(), 2, 0);
+        TabModel tabModel = mSyncTestRule.getActivity().getTabModelSelector().getModel(false);
+        Tab bgTab = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabAt(1));
+
+        // Simulate restart by evicting the Java-side in-memory data.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        bgTab.getUserDataHost()
+                                .removeUserData(SendTabToSelfTabCardLabelData.class)
+                                .destroy());
+
+        // Open the Tab Switcher. This triggers deserialization from disk.
+        TabUiTestHelper.enterTabSwitcher(mSyncTestRule.getActivity());
+
+        // Verify the card label is displayed.
+        onView(withText("From Example Phone")).check(matches(isDisplayed()));
+
+        // Click on the tab card to activate it.
+        TabUiTestHelper.clickNthCardFromTabSwitcher(mSyncTestRule.getActivity(), 1);
+        waitForLayout(mSyncTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
+
+        // Verify that the data was removed after activation upon showing the tab.
+        Assert.assertNull(
+                ThreadUtils.runOnUiThreadBlocking(() -> SendTabToSelfTabCardLabelData.get(bgTab)));
+
+        // Verify that the message banner is displayed after restart when selecting the restored
+        // tab.
+        onView(withId(R.id.message_primary_button)).check(matches(isDisplayed()));
+        onView(withText("From Example Phone")).check(matches(isDisplayed()));
     }
 }

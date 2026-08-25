@@ -104,18 +104,13 @@ enum class AutoOpenOutcome {
   // click.
   kTabOpenedViaNotification = 4,
 
-  // Tab opened in native app immediately (browser was active).
-  kOpenedInNativeAppImmediately = 5,
+  // Deprecated: kOpenedInNativeAppImmediately = 5,
+  // Deprecated: kOpenedInNativeAppUponActivation = 6,
 
-  // Tab opened in native app delayed (browser was inactive/backgrounded/closed
-  // when received).
-  kOpenedInNativeAppUponActivation = 6,
+  // Note: Not commented out because it's still needed for kMaxValue.
+  kDeprecatedUnopenedUponActivation = 7,
 
-  // Tab(s) received but could not be opened upon app activation. This happens
-  // when a previous received entry triggered a switch to another app.
-  kUnopenedUponActivation = 7,
-
-  kMaxValue = kUnopenedUponActivation,
+  kMaxValue = kDeprecatedUnopenedUponActivation,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sharing/enums.xml:SendTabToSelfAutoOpenOutcome)
 

@@ -238,6 +238,7 @@ public class NotificationManagerTest {
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_OPEN_NATIVE_APP)
     public void testOpenInNativeAppIfPossibleWithSpecializedHandler() {
         String url = "https://www.example.com/app/path";
+        Uri uri = Uri.parse(url);
 
         // Register a specialized handler.
         ShadowPackageManager shadowPackageManager =
@@ -255,11 +256,14 @@ public class NotificationManagerTest {
         resolveInfo.activityInfo.name = "com.example.app.MainActivity";
         resolveInfo.filter = filter;
 
-        Intent queryIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        Intent queryIntent = new Intent(Intent.ACTION_VIEW, uri);
         queryIntent.addCategory(Intent.CATEGORY_BROWSABLE);
         shadowPackageManager.addResolveInfoForIntent(queryIntent, resolveInfo);
 
-        boolean result = NotificationManager.openInNativeAppIfPossible(url);
+        Assert.assertNotNull(NotificationManager.getMatchingNativeAppResolveInfo(uri));
+        Assert.assertTrue(NotificationManager.canOpenInNativeApp(uri));
+
+        boolean result = NotificationManager.openInNativeAppIfPossible(uri);
         Assert.assertTrue(result);
 
         // Verify that the started intent is implicit and doesn't target Chrome.
@@ -278,9 +282,13 @@ public class NotificationManagerTest {
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_OPEN_NATIVE_APP)
     public void testOpenInNativeAppIfPossibleNoSpecializedHandler() {
         String url = "https://www.example.com/app/path";
+        Uri uri = Uri.parse(url);
         // Do not register specialized handler.
 
-        boolean result = NotificationManager.openInNativeAppIfPossible(url);
+        Assert.assertNull(NotificationManager.getMatchingNativeAppResolveInfo(uri));
+        Assert.assertFalse(NotificationManager.canOpenInNativeApp(uri));
+
+        boolean result = NotificationManager.openInNativeAppIfPossible(uri);
         Assert.assertFalse(result);
 
         Intent startedIntent =

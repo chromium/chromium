@@ -97,9 +97,10 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Tabs opened immediately in background"/>
   <int value="3" label="Tabs opened upon browser activation"/>
   <int value="4" label="Tab opened via notification click"/>
-  <int value="5" label="Opened in native app immediately"/>
-  <int value="6" label="Opened in native app upon browser activation"/>
-  <int value="7" label="Unopened upon browser activation"/>
+  <int value="5" label="(Deprecated) Opened in native app immediately"/>
+  <int value="6"
+      label="(Deprecated) Opened in native app upon browser activation"/>
+  <int value="7" label="(Deprecated) Unopened upon browser activation"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/send_tab_to_self/metrics_util.h:AutoOpenOutcome) -->

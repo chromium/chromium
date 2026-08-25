@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -145,6 +146,17 @@ public class SendTabToSelfTabCardLabelDataUnitTest {
 
         assertNull(mUserDataHost.getUserData(SendTabToSelfTabCardLabelData.class));
         verify(mTab).removeObserver(captor.getValue());
+    }
+
+    @Test
+    public void testUserData_TabShown() {
+        ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
+        createAndSetLabelData();
+        verify(mTab).addObserver(captor.capture());
+
+        captor.getValue().onShown(mTab, TabSelectionType.FROM_USER);
+
+        verify(mSendTabToSelfTabCardLabelDataNatives).onTabShown(eq(mTab), eq(DEVICE_NAME));
     }
 
     @Test

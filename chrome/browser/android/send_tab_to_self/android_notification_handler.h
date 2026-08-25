@@ -58,7 +58,6 @@ class AndroidNotificationHandler : public ReceivingUiHandler,
   virtual void ShowMessageBanner(std::string_view device_name,
                                  int opened_tab_count,
                                  content::WebContents* web_contents);
-  virtual bool OpenInNativeAppIfPossible(const GURL& url);
 
  private:
   // SendTabToSelfModelObserver implementation.
@@ -96,20 +95,14 @@ class AndroidNotificationHandler : public ReceivingUiHandler,
                    content::WebContents* target_web_contents,
                    AutoOpenTrigger trigger);
 
-  enum class OpenResult {
-    kOpenedInTab,
-    kOpenedInNativeApp,
-  };
+  static AutoOpenOutcome GetAutoOpenOutcomeForTabsOpened(
+      AutoOpenTrigger trigger);
 
-  static AutoOpenOutcome GetAutoOpenOutcome(AutoOpenTrigger trigger,
-                                            OpenResult open_result);
-
-  // Opens the given entry in the context of `target_web_contents` (either in a
-  // matching native app if available, or as a new background tab) and marks the
-  // entry as opened.
-  OpenResult OpenEntry(const SendTabToSelfEntry& entry,
-                       content::WebContents& target_web_contents,
-                       int tabstrip_index);
+  // Opens the given entry in the context of `target_web_contents` as a new
+  // background tab and marks the entry as opened.
+  void OpenEntry(const SendTabToSelfEntry& entry,
+                 content::WebContents& target_web_contents,
+                 int tabstrip_index);
 
   const raw_ptr<SendTabToSelfModel> send_tab_to_self_model_;
 
