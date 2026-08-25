@@ -10,7 +10,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/common/switches.h"  // nogncheck
 #endif
 
@@ -18,7 +18,7 @@ namespace {
 
 // True if the command line corresponds to an extension renderer process.
 bool IsExtensionRenderer(const base::CommandLine& command_line) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return command_line.HasSwitch(extensions::switches::kExtensionProcess);
 #else
   return false;

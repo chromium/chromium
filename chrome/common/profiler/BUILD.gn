@@ -56,7 +56,7 @@ source_set("profiler") {
     sources += [ "core_unwinders.cc" ]
   }
 
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     deps += [ "//extensions/common" ]
   }
 
@@ -90,7 +90,7 @@ source_set("unit_tests") {
     sources += [ "core_unwinders_android_unittest.cc" ]
   }
 
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     deps += [ "//extensions/common" ]
   }
 }

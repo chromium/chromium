@@ -11,7 +11,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/common/switches.h"  // nogncheck
 #endif
 
@@ -39,7 +39,7 @@ TEST_F(ThreadProfilerProcessTypeTest, GetProfilerProcessType_Renderer) {
             GetProfilerProcessType(command_line()));
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 TEST_F(ThreadProfilerProcessTypeTest, GetProfilerProcessType_Extension) {
   command_line().AppendSwitchASCII(switches::kProcessType,
                                    switches::kRendererProcess);
