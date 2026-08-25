@@ -572,6 +572,27 @@
             ]
         }
     ],
+    "AndroidAnimatedProgressBarInBrowser": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_JumpToCompletionWithFade_20260504",
+                    "params": {
+                        "jump_to_completion_with_fade": "true"
+                    },
+                    "enable_features": [
+                        "AndroidAnimatedProgressBarInBrowser"
+                    ],
+                    "disable_features": [
+                        "AndroidProgressBarVisualUpdate"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidAppRatingPrompt": [
         {
             "platforms": [
@@ -582,6 +603,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AndroidAppRatingPrompt"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AndroidBookmarkHistoryPane": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithHistoryPane",
+                    "enable_features": [
+                        "HistoryPaneAndroid"
                     ]
                 }
             ]
@@ -3058,6 +3094,24 @@
             ]
         }
     ],
+    "BackgroundThreadPoolPIGeneral": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260106",
+                    "params": {
+                        "config": "6"
+                    },
+                    "enable_features": [
+                        "BackgroundThreadPoolFieldTrial"
+                    ]
+                }
+            ]
+        }
+    ],
     "BaseLockTrySpin": [
         {
             "platforms": [
@@ -3528,6 +3582,33 @@
                     },
                     "enable_features": [
                         "CCTGoogleBottomBar"
+                    ]
+                }
+            ]
+        }
+    ],
+    "CCTNavigationalPrefetch": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "holdback": "false"
+                    },
+                    "enable_features": [
+                        "CCTNavigationalPrefetch"
+                    ]
+                },
+                {
+                    "name": "Holdback",
+                    "params": {
+                        "holdback": "true"
+                    },
+                    "enable_features": [
+                        "CCTNavigationalPrefetch"
                     ]
                 }
             ]
@@ -7740,6 +7821,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableForceDownloadToOneDrive"
+                    ]
+                }
+            ]
+        }
+    ],
+    "EnableFullscreenToAnyScreenAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableFullscreenToAnyScreenAndroid"
                     ]
                 }
             ]
@@ -18337,6 +18433,33 @@
             ]
         }
     ],
+    "TabGroupSuggestions": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "consecutive_computation_delay_sec": "0",
+                        "create_suggestions_promotion_ui": "false",
+                        "group_suggestion_enable_similar_source": "true",
+                        "group_suggestion_enable_switch_between": "true",
+                        "group_suggestion_enable_tab_switcher_only": "false",
+                        "group_suggestion_trigger_calculation_on_page_load": "false",
+                        "show_when_not_clicked_in_last_day": "false",
+                        "throttle_on_new_tab": "false"
+                    },
+                    "enable_features": [
+                        "ContextualPageActionTabGrouping",
+                        "GroupSuggestionService",
+                        "TabSwitcherGroupSuggestionsAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabHoverCardImagesMacArm": [
         {
             "platforms": [
@@ -18565,6 +18688,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ThrottleResizeIpc"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ToolbarCaptureFixForSPAs": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ToolbarCaptureFixForSPAs"
                     ]
                 }
             ]
