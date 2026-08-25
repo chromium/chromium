@@ -218,6 +218,11 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
  private:
   friend class RecodingTimeAfterBackForwardCacheRestoreFrameCallback;
 
+  struct PendingPaintTimingRecord {
+    HashSet<PaintEvent> paint_events;
+    base::TimeTicks rendering_update_end_time;
+  };
+
   LocalFrame* GetFrame() const;
   void NotifyPaintTimingChanged();
 
@@ -256,6 +261,22 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   void Mark(PaintEvent);
   void RegisterNotifyFirstPaintAfterBackForwardCacheRestorePresentationTime(
       wtf_size_t index);
+
+  // Flushes pending paint timing entries, e.g. LCP and ICP entries, element
+  // timings, LoAF entries, etc., after the frame has been presented. If
+  // coarsening is required, than this runs after waiting for the coarsened time
+  // to been reached. Corresponds to step 10 of
+  // https://w3c.github.io/paint-timing/#mark-paint-timing.
+  void FlushPaintTimingsOnFramePresented(
+      const PendingPaintTimingRecord&,
+      AnimationFrameTimingInfo*,
+      OptionalPaintTimingDetectorCallback<ImageRecord>
+          compute_painted_images_callback,
+      OptionalPaintTimingDetectorCallback<TextRecord>
+          compute_painted_text_callback,
+      OptionalPaintTimingCallback element_timing_painted_images_callback,
+      const base::TimeTicks& raw_presentation_timestamp,
+      const DOMPaintTimingInfo&);
 
   Vector<base::TimeTicks>
       first_paints_after_back_forward_cache_restore_presentation_;
