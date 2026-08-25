@@ -107,6 +107,15 @@ char kTSanDefaultSuppressions[] =
     // mutexes.
     "mutex:vk::OpaqueFdExternalSemaphore::\n"
 
+    // https://anglebug.com/552070343
+    // ANGLE points the Vulkan loader at the SwiftShader (or mock) ICD with
+    // setenv() on the GPU thread during eglInitialize(). With the GPU
+    // in-process, as on the TSan bots, that races with environ readers on
+    // other browser threads, e.g. base::LaunchProcess() on the process
+    // launcher thread. Test-only configuration on desktop; the fix is for
+    // ANGLE to select the ICD without modifying the environment.
+    "race:angle::vk::ScopedVkLoaderEnvironment::ScopedVkLoaderEnvironment\n"
+
     // End of suppressions.
     ;  // Please keep this semicolon.
 
