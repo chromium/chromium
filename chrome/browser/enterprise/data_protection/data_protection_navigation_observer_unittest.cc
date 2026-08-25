@@ -11,9 +11,7 @@
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/icu_test_util.h"
-#include "base/test/mock_log.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_logging_settings.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -27,8 +25,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/dom_distiller/core/url_constants.h"
-#include "components/dom_distiller/core/url_utils.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
@@ -53,7 +49,6 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/url_util.h"
 
@@ -1317,108 +1312,6 @@ TEST_P(OrderedDataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
   EXPECT_NE(user_data->settings().watermark_text.find("custom_message"),
             std::string::npos);
   run_loop.Run();
-}
-
-TEST_F(DataProtectionNavigationObserverTest,
-       TestScreenshotUpdated_DataControls_DistillerUrl_BlockScreenshot) {
-  enterprise_connectors::test::EventReportValidator validator(client_.get());
-  validator.ExpectNoReport();
-  data_controls::SetDataControls(profile()->GetPrefs(), {R"(
-        {
-          "name":"block",
-          "rule_id":"1234",
-          "sources":{"urls":["example.com"]},
-          "restrictions":[{"class": "SCREENSHOT", "level": "BLOCK"} ]
-        }
-      )"});
-
-  GURL original_url("https://example.com/article");
-  GURL distilled_url = dom_distiller::url_utils::GetDistillerViewUrlFromUrl(
-      dom_distiller::kDomDistillerScheme, original_url, "Article Title");
-
-  auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
-      distilled_url, web_contents());
-
-  base::test::TestFuture<const UrlSettings&> future;
-  FakeDataProtectionNavigationController controller(
-      web_contents(), &lookup_service_, future.GetCallback());
-
-  base::test::TestFuture<void> future_lookup_complete;
-  lookup_service_.set_is_rt_lookup_successful(false);
-  lookup_service_.set_on_start_lookup_complete(
-      future_lookup_complete.GetCallback());
-
-  simulator->Start();
-  EXPECT_TRUE(future_lookup_complete.Wait());
-  simulator->Commit();
-
-  EXPECT_FALSE(future.Get().allow_screenshots);
-  auto* user_data = DataProtectionPageUserData::GetForPage(
-      GetPageFromWebContents(web_contents()));
-  ASSERT_TRUE(user_data);
-  EXPECT_FALSE(user_data->settings().allow_screenshots);
-}
-
-TEST_F(DataProtectionNavigationObserverTest,
-       TestScreenshotUpdated_RTLookup_DistillerUrl_BlockScreenshot) {
-  GURL original_url("https://example.com/article");
-  GURL distilled_url = dom_distiller::url_utils::GetDistillerViewUrlFromUrl(
-      dom_distiller::kDomDistillerScheme, original_url, "Article Title");
-
-  lookup_service_.set_should_block_screenshot(true);
-  lookup_service_.SetShouldHaveMatchedRule(true);
-
-  auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
-      distilled_url, web_contents());
-
-  base::test::TestFuture<const UrlSettings&> future;
-  FakeDataProtectionNavigationController controller(
-      web_contents(), &lookup_service_, future.GetCallback());
-
-  base::test::TestFuture<void> future_lookup_complete;
-  lookup_service_.set_on_start_lookup_complete(
-      future_lookup_complete.GetCallback());
-
-  simulator->Start();
-  EXPECT_TRUE(future_lookup_complete.Wait());
-  simulator->Commit();
-
-  EXPECT_FALSE(future.Get().allow_screenshots);
-
-  auto* user_data = DataProtectionPageUserData::GetForPage(
-      GetPageFromWebContents(web_contents()));
-  ASSERT_TRUE(user_data);
-  EXPECT_FALSE(user_data->settings().allow_screenshots);
-}
-
-TEST_F(DataProtectionNavigationObserverTest,
-       TestScreenshotUpdated_DistillerUrl_InvalidHash) {
-  logging::ScopedVmoduleSwitches scoped_vmodule_switches;
-  scoped_vmodule_switches.InitWithSwitches(
-      "data_protection_navigation_observer=1");
-
-  base::test::MockLog mock_log;
-  EXPECT_CALL(mock_log, Log).Times(testing::AnyNumber());
-  EXPECT_CALL(mock_log,
-              Log(logging::LOGGING_VERBOSE, testing::_, testing::_, testing::_,
-                  testing::HasSubstr("GetOriginalUrl got a invalid url: ")))
-      .Times(1);
-  mock_log.StartCapturingLogs();
-
-  GURL invalid_distilled_url(
-      "chrome-distiller://invalid_hash/?url=https%3A%2F%2Fexample.com");
-
-  auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
-      invalid_distilled_url, web_contents());
-
-  base::test::TestFuture<const UrlSettings&> future;
-  FakeDataProtectionNavigationController controller(
-      web_contents(), &lookup_service_, future.GetCallback());
-
-  simulator->Start();
-  simulator->Commit();
-
-  EXPECT_TRUE(future.Get().allow_screenshots);
 }
 
 INSTANTIATE_TEST_SUITE_P(OrderedDataProtectionNavigationObserverTest,
