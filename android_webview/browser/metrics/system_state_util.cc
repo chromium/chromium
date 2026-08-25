@@ -35,8 +35,8 @@ std::optional<AgsaProcessName> GetAgsaProcessNameEnum() {
       "com.google.android.googlequicksearchbox") {
     return std::nullopt;
   }
-  std::string process_name = base::android::ConvertJavaStringToUTF8(
-      Java_SystemStateUtil_getProcessName(jni_zero::AttachCurrentThread()));
+  std::string process_name =
+      Java_SystemStateUtil_getProcessName(jni_zero::AttachCurrentThread());
   return internal::GetAgsaProcessNameEnumImpl(process_name);
 }
 

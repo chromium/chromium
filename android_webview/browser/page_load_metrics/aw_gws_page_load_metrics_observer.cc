@@ -6,8 +6,6 @@
 
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/cookie_manager.h"
-#include "base/android/jni_android.h"
-#include "base/android/jni_string.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"
 #include "url/gurl.h"
@@ -43,10 +41,7 @@ bool AwGWSPageLoadMetricsObserver::IsSignedIn(
   CookieManager* cookie_manager = aw_browser_context->GetCookieManager();
   CHECK(cookie_manager);
 
-  JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> url =
-      base::android::ConvertUTF8ToJavaString(env, kGwsOriginUrl);
-  std::string cookies = cookie_manager->GetCookie(env, url);
+  std::string cookies = cookie_manager->GetCookie(kGwsOriginUrl);
   net::cookie_util::ParsedRequestCookies parsed_cookies;
   net::cookie_util::ParseRequestCookieLine(cookies, &parsed_cookies);
   for (const auto& pair : parsed_cookies) {

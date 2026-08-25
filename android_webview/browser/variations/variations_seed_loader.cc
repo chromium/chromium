@@ -17,13 +17,10 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "third_party/jni_zero/default_conversions.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/VariationsSeedLoader_jni.h"
-
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaRef;
 
 namespace android_webview {
 
@@ -56,7 +53,6 @@ bool IsSeedValid(AwVariationsSeed* seed) {
 }  // namespace
 
 static bool JNI_VariationsSeedLoader_ParseAndSaveSeedProto(
-    JNIEnv* env,
     const std::string& seed_path) {
   // Parse the proto.
   std::unique_ptr<AwVariationsSeed> seed =
@@ -89,15 +85,17 @@ static bool JNI_VariationsSeedLoader_ParseAndSaveSeedProto(
 
 static bool JNI_VariationsSeedLoader_ParseAndSaveSeedProtoFromByteArray(
     JNIEnv* env,
-    const JavaRef<jbyteArray>& seed_as_bytes) {
+    const jni_zero::JavaRef<jbyteArray>& seed_as_bytes) {
   // Parse the proto.
   std::unique_ptr<AwVariationsSeed> seed =
       std::make_unique<AwVariationsSeed>(AwVariationsSeed::default_instance());
-  int8_t* src_bytes = env->GetByteArrayElements(seed_as_bytes.obj(), nullptr);
-  if (!seed->ParseFromArray(src_bytes,
-                            env->GetArrayLength(seed_as_bytes.obj()))) {
-    LOG(ERROR) << "Failed to parse seed file.";
-    return false;
+  {
+    jni_zero::JArrayViewCritical<int8_t> src_bytes =
+        seed_as_bytes.CreateViewCritical(env);
+    if (!seed->ParseFromArray(src_bytes.data(), src_bytes.size())) {
+      LOG(ERROR) << "Failed to parse seed file.";
+      return false;
+    }
   }
 
   if (IsSeedValid(seed.get())) {
@@ -108,7 +106,7 @@ static bool JNI_VariationsSeedLoader_ParseAndSaveSeedProtoFromByteArray(
   }
 }
 
-static int64_t JNI_VariationsSeedLoader_GetSavedSeedDate(JNIEnv* env) {
+static int64_t JNI_VariationsSeedLoader_GetSavedSeedDate() {
   return g_seed ? g_seed->date() : 0;
 }
 

@@ -558,17 +558,20 @@ public final class AwCookieManager {
 
         void setCookie(
                 long nativeCookieManager,
-                String url,
+                @JniType("std::string") String url,
                 @JniType("std::string") String value,
                 @JniType("base::OnceCallback<void(bool)>") CookieCallback callback);
 
         void setCookieSync(
-                long nativeCookieManager, String url, @JniType("std::string") String value);
+                long nativeCookieManager,
+                @JniType("std::string") String url,
+                @JniType("std::string") String value);
 
         @JniType("std::string")
-        String getCookie(long nativeCookieManager, String url);
+        String getCookie(long nativeCookieManager, @JniType("std::string") String url);
 
-        String[] getCookieInfo(long nativeCookieManager, String url);
+        @JniType("std::vector<std::string>")
+        String[] getCookieInfo(long nativeCookieManager, @JniType("std::string") String url);
 
         void removeSessionCookies(
                 long nativeCookieManager,
