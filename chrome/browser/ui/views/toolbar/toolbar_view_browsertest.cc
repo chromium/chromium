@@ -7,9 +7,11 @@
 #include "base/test/run_until.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/browser/ui/views/toolbar/home_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -23,6 +25,16 @@
 #include "ui/views/view.h"
 
 using ToolbarViewUnitTest = InProcessBrowserTest;
+
+class ToolbarViewResponsiveTest : public InProcessBrowserTest {
+ public:
+  ToolbarViewResponsiveTest() {
+    ToolbarControllerUtil::SetPreventOverflowForTesting(false);
+  }
+  ~ToolbarViewResponsiveTest() override {
+    ToolbarControllerUtil::SetPreventOverflowForTesting(true);
+  }
+};
 
 namespace {
 
@@ -199,4 +211,88 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewUnitTest, PinnedToolbarActionsInPopup) {
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(popup)
                   ->toolbar_button_provider()
                   ->GetPinnedToolbarActions());
+}
+
+IN_PROC_BROWSER_TEST_F(ToolbarViewResponsiveTest,
+                       OmniboxTwoStageFlexResizingAndButtonLifecycle) {
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowForwardButton,
+                                                  true);
+  ToolbarView* toolbar =
+      BrowserView::GetBrowserViewForBrowser(browser())->toolbar();
+  ASSERT_TRUE(toolbar);
+  views::View* location_bar = toolbar->location_bar_view();
+  views::View* forward = toolbar->forward_button();
+  views::View* home = toolbar->home_button();
+  ASSERT_TRUE(location_bar);
+  ASSERT_TRUE(forward);
+  ASSERT_TRUE(home);
+  const int preferred_width = location_bar->GetPreferredSize().width();
+  const int min_width = location_bar->GetMinimumSize().width();
+  const int toolbar_height = toolbar->GetPreferredSize().height();
+  EXPECT_GT(preferred_width, min_width);
+  EXPECT_GT(toolbar_height, 0);
+
+  const int super_wide_width = toolbar->GetPreferredSize().width() + 400;
+  const int all_fit_width = toolbar->GetPreferredSize().width();
+  const int omnibox_resizing_width = toolbar->GetMinimumSize().width() + 30;
+  const int min_width_bound = toolbar->GetMinimumSize().width();
+
+  // In a super wide toolbar, the omnibox absorbs all excess space beyond its
+  // preferred width, and all responsive buttons remain visible.
+  toolbar->SetSize(gfx::Size(super_wide_width, toolbar_height));
+  toolbar->DeprecatedLayoutImmediately();
+  EXPECT_TRUE(forward->GetVisible());
+  EXPECT_FALSE(forward->bounds().IsEmpty());
+  EXPECT_TRUE(home->GetVisible());
+  EXPECT_FALSE(home->bounds().IsEmpty());
+  EXPECT_GT(location_bar->bounds().width(), preferred_width);
+
+  // When resized down to a moderate width where all elements fit, the omnibox
+  // shrinks down towards its preferred width while buttons remain visible.
+  toolbar->SetSize(gfx::Size(all_fit_width, toolbar_height));
+  toolbar->DeprecatedLayoutImmediately();
+  EXPECT_TRUE(forward->GetVisible());
+  EXPECT_FALSE(forward->bounds().IsEmpty());
+  EXPECT_TRUE(home->GetVisible());
+  EXPECT_FALSE(home->bounds().IsEmpty());
+  EXPECT_GE(location_bar->bounds().width(), preferred_width);
+
+  // Under narrow widths where responsive buttons have dropped out, buttons are
+  // hidden and the omnibox shrinks down from its preferred width towards its
+  // minimum width.
+  toolbar->SetSize(gfx::Size(omnibox_resizing_width, toolbar_height));
+  toolbar->DeprecatedLayoutImmediately();
+  EXPECT_FALSE(forward->GetVisible());
+  EXPECT_FALSE(home->GetVisible());
+  EXPECT_LT(location_bar->bounds().width(), preferred_width);
+  EXPECT_GT(location_bar->bounds().width(), min_width);
+
+  // At absolute minimum width, all responsive buttons remain hidden and the
+  // omnibox reaches its minimum width.
+  toolbar->SetSize(gfx::Size(min_width_bound, toolbar_height));
+  toolbar->DeprecatedLayoutImmediately();
+  EXPECT_FALSE(forward->GetVisible());
+  EXPECT_FALSE(home->GetVisible());
+  EXPECT_EQ(location_bar->bounds().width(), min_width);
+
+  // When expanding to moderate width, responsive buttons reappear with
+  // non-empty bounds and the omnibox recovers its preferred width.
+  toolbar->SetSize(gfx::Size(all_fit_width, toolbar_height));
+  toolbar->DeprecatedLayoutImmediately();
+  EXPECT_TRUE(forward->GetVisible());
+  EXPECT_FALSE(forward->bounds().IsEmpty());
+  EXPECT_TRUE(home->GetVisible());
+  EXPECT_FALSE(home->bounds().IsEmpty());
+  EXPECT_GE(location_bar->bounds().width(), preferred_width);
+
+  // Expanding back to a super wide width allows the omnibox to expand into
+  // excess space again.
+  toolbar->SetSize(gfx::Size(super_wide_width, toolbar_height));
+  toolbar->DeprecatedLayoutImmediately();
+  EXPECT_TRUE(forward->GetVisible());
+  EXPECT_FALSE(forward->bounds().IsEmpty());
+  EXPECT_TRUE(home->GetVisible());
+  EXPECT_FALSE(home->bounds().IsEmpty());
+  EXPECT_GT(location_bar->bounds().width(), preferred_width);
 }

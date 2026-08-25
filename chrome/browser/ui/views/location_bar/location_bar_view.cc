@@ -690,14 +690,6 @@ gfx::Size LocationBarView::CalculatePreferredSize(
   }
 
   const int min_width = GetMinimumSize().width();
-  if (base::FeatureList::IsEnabled(features::kOmniboxResizingPrioritization)) {
-    // If space is bounded, take all available space down to the min width.
-    if (available_size.width().is_bounded()) {
-      return gfx::Size(std::max(min_width, available_size.width().value()),
-                       height);
-    }
-  }
-
   const int inset_width = GetInsets().width();
   const int padding =
       GetLayoutConstant(LayoutConstant::kLocationBarElementPadding);
