@@ -960,6 +960,7 @@
     },
 
     'no_partition_alloc_as_malloc': {
+      'mixins': ['no_brp'],
       'gn_args': 'use_partition_alloc_as_malloc=false',
     },
 

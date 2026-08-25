@@ -167,6 +167,7 @@
     "gn_args": {
       "clang_use_default_sample_profile": false,
       "debuggable_apks": false,
+      "enable_backup_ref_ptr_support": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,
       "is_official_build": true,
@@ -175,6 +176,7 @@
       "target_cpu": "arm64",
       "target_os": "android",
       "use_partition_alloc_as_malloc": false,
+      "use_raw_ptr_backup_ref_impl": false,
       "use_reclient": false,
       "use_remoteexec": true
     }
