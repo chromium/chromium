@@ -56,12 +56,10 @@ def _CheckHeaderOrdering(input_api, output_api):
                    ' '.join(target_files))
         message = ('The C++ header includes in the following file(s) ' +
                    'are not properly sorted. Please run:\n  ' + cmd_str)
-        return [
-            output_api.PresubmitPromptWarning(
-                message,
-                items=target_files,
-            )
-        ]
+        return [output_api.PresubmitError(
+            message,
+            items=target_files,
+        )]
     return []
 
 

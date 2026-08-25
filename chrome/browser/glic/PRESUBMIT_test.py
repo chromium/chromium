@@ -84,7 +84,7 @@ class CheckHeaderOrderingTest(unittest.TestCase):
             results = PRESUBMIT.CheckChangeOnUpload(mock_input_api,
                                                     mock_output_api)
             self.assertEqual(len(results), 1)
-            self.assertEqual(results[0].type, 'warning')
+            self.assertEqual(results[0].type, 'error')
             self.assertIn('not properly sorted', results[0].message)
             self.assertIn(
                 'python3 chrome/browser/glic/tools/sort_headers.py '
@@ -185,7 +185,7 @@ class CheckHeaderOrderingTest(unittest.TestCase):
             results = PRESUBMIT.CheckChangeOnUpload(mock_input_api,
                                                     mock_output_api)
             self.assertEqual(len(results), 1)
-            self.assertEqual(results[0].type, 'warning')
+            self.assertEqual(results[0].type, 'error')
             self.assertIn('not properly sorted', results[0].message)
             self.assertIn(unix_rel_path, results[0].items)
         finally:
