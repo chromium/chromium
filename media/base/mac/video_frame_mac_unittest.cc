@@ -25,13 +25,29 @@ const int kHeight = 48;
 const int kVisibleRectOffset = 8;
 const base::TimeDelta kTimestamp = base::Microseconds(1337);
 
-struct FormatPair {
-  VideoPixelFormat chrome;
-  OSType corevideo;
-};
-
 void Increment(int* i) {
   ++(*i);
+}
+
+void ExpectWrappedPixelBuffer(CVPixelBufferRef pb,
+                              const VideoFrame& frame,
+                              OSType cv_format) {
+  ASSERT_TRUE(pb) << frame.format();
+  EXPECT_EQ(cv_format, CVPixelBufferGetPixelFormatType(pb)) << frame.format();
+  EXPECT_EQ(static_cast<size_t>(frame.coded_size().width()),
+            CVPixelBufferGetWidth(pb));
+  EXPECT_EQ(static_cast<size_t>(frame.coded_size().height()),
+            CVPixelBufferGetHeight(pb));
+  EXPECT_EQ(VideoFrame::NumPlanes(frame.format()),
+            CVPixelBufferGetPlaneCount(pb));
+  for (size_t i = 0; i < VideoFrame::NumPlanes(frame.format()); ++i) {
+    EXPECT_EQ(static_cast<size_t>(frame.columns(i)),
+              CVPixelBufferGetWidthOfPlane(pb, i))
+        << frame.format() << " plane " << i;
+    EXPECT_EQ(static_cast<size_t>(frame.rows(i)),
+              CVPixelBufferGetHeightOfPlane(pb, i))
+        << frame.format() << " plane " << i;
+  }
 }
 
 }  // namespace
@@ -68,60 +84,141 @@ TEST(VideoFrameMac, CheckBasicAttributes) {
 }
 
 TEST(VideoFrameMac, CheckFormats) {
-  // CreateFrame() does not support non planar YUV, e.g. NV12.
-  const FormatPair format_pairs[] = {
-      {PIXEL_FORMAT_I420, kCVPixelFormatType_420YpCbCr8Planar},
-      {PIXEL_FORMAT_YV12, 0},
-      {PIXEL_FORMAT_I422, 0},
-      {PIXEL_FORMAT_I420A, 0},
-      {PIXEL_FORMAT_I444, 0},
+  const struct SupportedFormat {
+    VideoPixelFormat pixel_format;
+    OSType video_range;
+    OSType full_range;
+  } kSupportedCases[] = {
+      {PIXEL_FORMAT_I420, kCVPixelFormatType_420YpCbCr8Planar,
+       kCVPixelFormatType_420YpCbCr8PlanarFullRange},
+      {PIXEL_FORMAT_NV12, kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
+       kCVPixelFormatType_420YpCbCr8BiPlanarFullRange},
+      {PIXEL_FORMAT_NV16, kCVPixelFormatType_422YpCbCr8BiPlanarVideoRange,
+       kCVPixelFormatType_422YpCbCr8BiPlanarFullRange},
+      {PIXEL_FORMAT_NV24, kCVPixelFormatType_444YpCbCr8BiPlanarVideoRange,
+       kCVPixelFormatType_444YpCbCr8BiPlanarFullRange},
+      {PIXEL_FORMAT_P010LE, kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange,
+       kCVPixelFormatType_420YpCbCr10BiPlanarFullRange},
+      {PIXEL_FORMAT_P210LE, kCVPixelFormatType_422YpCbCr10BiPlanarVideoRange,
+       kCVPixelFormatType_422YpCbCr10BiPlanarFullRange},
+      {PIXEL_FORMAT_P410LE, kCVPixelFormatType_444YpCbCr10BiPlanarVideoRange,
+       kCVPixelFormatType_444YpCbCr10BiPlanarFullRange},
   };
+  constexpr VideoPixelFormat kUnsupportedCases[] = {
+      PIXEL_FORMAT_YV12, PIXEL_FORMAT_I422, PIXEL_FORMAT_I420A,
+      PIXEL_FORMAT_I444};
 
   gfx::Size size(kWidth, kHeight);
-  for (const auto& format_pair : format_pairs) {
-    auto frame = VideoFrame::CreateFrame(format_pair.chrome, size,
-                                         gfx::Rect(size), size, kTimestamp);
-    ASSERT_TRUE(frame.get());
+  for (const auto& format : kUnsupportedCases) {
+    auto frame = VideoFrame::CreateFrame(format, size, gfx::Rect(size), size,
+                                         kTimestamp);
+    ASSERT_TRUE(frame.get()) << format;
+    EXPECT_FALSE(
+        CVPixelFormatForVideoFrame(format, gfx::ColorSpace::RangeID::LIMITED)
+            .has_value())
+        << format;
+    EXPECT_FALSE(
+        CVPixelFormatForVideoFrame(format, gfx::ColorSpace::RangeID::FULL)
+            .has_value())
+        << format;
+
     auto pb = WrapVideoFrameInCVPixelBuffer(frame);
-    if (format_pair.corevideo) {
-      EXPECT_EQ(format_pair.corevideo,
-                CVPixelBufferGetPixelFormatType(pb.get()));
-    } else {
-      EXPECT_EQ(nullptr, pb.get());
-    }
+    EXPECT_EQ(nullptr, pb.get()) << format;
+  }
+
+  for (const auto& test_case : kSupportedCases) {
+    auto frame = VideoFrame::CreateFrame(test_case.pixel_format, size,
+                                         gfx::Rect(size), size, kTimestamp);
+    ASSERT_TRUE(frame.get()) << test_case.pixel_format;
+    EXPECT_EQ(test_case.video_range,
+              CVPixelFormatForVideoFrame(test_case.pixel_format,
+                                         gfx::ColorSpace::RangeID::LIMITED)
+                  .value_or(0))
+        << test_case.pixel_format;
+    EXPECT_EQ(test_case.full_range,
+              CVPixelFormatForVideoFrame(test_case.pixel_format,
+                                         gfx::ColorSpace::RangeID::FULL)
+                  .value_or(0))
+        << test_case.pixel_format;
+    auto pb = WrapVideoFrameInCVPixelBuffer(frame);
+
+    EXPECT_TRUE(IsAcceptableCvPixelFormat(test_case.pixel_format,
+                                          test_case.video_range))
+        << test_case.pixel_format;
+    EXPECT_TRUE(
+        IsAcceptableCvPixelFormat(test_case.pixel_format, test_case.full_range))
+        << test_case.pixel_format;
+
+    ExpectWrappedPixelBuffer(pb.get(), *frame, test_case.video_range);
+
+    frame->set_color_space(gfx::ColorSpace(
+        gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::BT709,
+        gfx::ColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::FULL));
+    auto full_pb = WrapVideoFrameInCVPixelBuffer(frame);
+    ExpectWrappedPixelBuffer(full_pb.get(), *frame, test_case.full_range);
   }
 }
 
-TEST(VideoFrameMac, CheckP010Format) {
+TEST(VideoFrameMac, CheckNV12AFormat) {
+  constexpr OSType kCVFormat =
+      kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar;
   gfx::Size size(kWidth, kHeight);
-  auto frame = VideoFrame::CreateFrame(PIXEL_FORMAT_P010LE, size,
+  auto frame = VideoFrame::CreateFrame(PIXEL_FORMAT_NV12A, size,
                                        gfx::Rect(size), size, kTimestamp);
   ASSERT_TRUE(frame.get());
 
+  EXPECT_EQ(kCVFormat,
+            CVPixelFormatForVideoFrame(PIXEL_FORMAT_NV12A,
+                                       gfx::ColorSpace::RangeID::LIMITED)
+                .value_or(0));
+  EXPECT_FALSE(CVPixelFormatForVideoFrame(PIXEL_FORMAT_NV12A,
+                                          gfx::ColorSpace::RangeID::FULL)
+                   .has_value());
+  EXPECT_TRUE(IsAcceptableCvPixelFormat(PIXEL_FORMAT_NV12A, kCVFormat));
+
   auto pb = WrapVideoFrameInCVPixelBuffer(frame);
-  ASSERT_TRUE(pb.get());
-  EXPECT_EQ(kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange,
-            CVPixelBufferGetPixelFormatType(pb.get()));
-  EXPECT_EQ(2u, CVPixelBufferGetPlaneCount(pb.get()));
-  EXPECT_EQ(static_cast<size_t>(kWidth),
-            CVPixelBufferGetWidthOfPlane(pb.get(), 0));
-  EXPECT_EQ(static_cast<size_t>(kWidth / 2),
-            CVPixelBufferGetWidthOfPlane(pb.get(), 1));
+  ExpectWrappedPixelBuffer(pb.get(), *frame, kCVFormat);
+
+  frame->set_color_space(gfx::ColorSpace(
+      gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::BT709,
+      gfx::ColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::FULL));
+  auto full_pb = WrapVideoFrameInCVPixelBuffer(frame);
+  ExpectWrappedPixelBuffer(full_pb.get(), *frame, kCVFormat);
 }
 
-TEST(VideoFrameMac, CheckP010FullRangeFormat) {
-  gfx::Size size(kWidth, kHeight);
-  auto frame = VideoFrame::CreateFrame(PIXEL_FORMAT_P010LE, size,
-                                       gfx::Rect(size), size, kTimestamp);
-  ASSERT_TRUE(frame.get());
-  frame->set_color_space(gfx::ColorSpace(
-      gfx::ColorSpace::PrimaryID::BT2020, gfx::ColorSpace::TransferID::PQ,
-      gfx::ColorSpace::MatrixID::BT2020_NCL, gfx::ColorSpace::RangeID::FULL));
+TEST(VideoFrameMac, AcceptsLosslessIOSurfaceFormats) {
+  const struct {
+    VideoPixelFormat pixel_format;
+    OSType lossless_cv_format;
+    gfx::ColorSpace::RangeID range;
+  } kCases[] = {
+      {PIXEL_FORMAT_NV12,
+       kCVPixelFormatType_Lossless_420YpCbCr8BiPlanarVideoRange,
+       gfx::ColorSpace::RangeID::LIMITED},
+      {PIXEL_FORMAT_NV12,
+       kCVPixelFormatType_Lossless_420YpCbCr8BiPlanarFullRange,
+       gfx::ColorSpace::RangeID::FULL},
+      {PIXEL_FORMAT_P010LE,
+       kCVPixelFormatType_Lossless_420YpCbCr10PackedBiPlanarVideoRange,
+       gfx::ColorSpace::RangeID::LIMITED},
+      {PIXEL_FORMAT_P010LE,
+       kCVPixelFormatType_Lossless_420YpCbCr10PackedBiPlanarFullRange,
+       gfx::ColorSpace::RangeID::FULL},
+      {PIXEL_FORMAT_P210LE,
+       kCVPixelFormatType_Lossless_422YpCbCr10PackedBiPlanarVideoRange,
+       gfx::ColorSpace::RangeID::LIMITED},
+  };
 
-  auto pb = WrapVideoFrameInCVPixelBuffer(frame);
-  ASSERT_TRUE(pb.get());
-  EXPECT_EQ(kCVPixelFormatType_420YpCbCr10BiPlanarFullRange,
-            CVPixelBufferGetPixelFormatType(pb.get()));
+  for (const auto& test_case : kCases) {
+    EXPECT_TRUE(IsAcceptableCvPixelFormat(test_case.pixel_format,
+                                          test_case.lossless_cv_format))
+        << test_case.pixel_format;
+    EXPECT_NE(
+        test_case.lossless_cv_format,
+        CVPixelFormatForVideoFrame(test_case.pixel_format, test_case.range)
+            .value_or(0))
+        << test_case.pixel_format;
+  }
 }
 
 TEST(VideoFrameMac, CheckLifetime) {

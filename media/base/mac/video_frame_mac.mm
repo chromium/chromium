@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "media/base/mac/video_frame_mac.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <vector>
 
 #include "base/apple/bridging.h"
@@ -32,6 +32,127 @@ namespace {
 // Maximum number of planes supported by this implementation.
 const int kMaxPlanes = 3;
 
+enum class CVPixelFormatStorage {
+  kUncompressed,
+  kCompressed,
+};
+
+struct VideoFrameCVPixelFormatInfo {
+  VideoPixelFormat video_format;
+  OSType cv_pixel_format;
+  gfx::ColorSpace::RangeID range;
+  CVPixelFormatStorage storage = CVPixelFormatStorage::kUncompressed;
+};
+
+constexpr auto kVideoFrameCVPixelFormatInfos =
+    std::to_array<VideoFrameCVPixelFormatInfo>({
+        {
+            PIXEL_FORMAT_I420,
+            kCVPixelFormatType_420YpCbCr8Planar,
+            gfx::ColorSpace::RangeID::LIMITED,
+        },
+        {
+            PIXEL_FORMAT_I420,
+            kCVPixelFormatType_420YpCbCr8PlanarFullRange,
+            gfx::ColorSpace::RangeID::FULL,
+        },
+        {
+            PIXEL_FORMAT_NV12,
+            kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
+            gfx::ColorSpace::RangeID::LIMITED,
+        },
+        {
+            PIXEL_FORMAT_NV12,
+            kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
+            gfx::ColorSpace::RangeID::FULL,
+        },
+        {
+            PIXEL_FORMAT_NV12,
+            kCVPixelFormatType_Lossless_420YpCbCr8BiPlanarVideoRange,
+            gfx::ColorSpace::RangeID::LIMITED,
+            CVPixelFormatStorage::kCompressed,
+        },
+        {
+            PIXEL_FORMAT_NV12,
+            kCVPixelFormatType_Lossless_420YpCbCr8BiPlanarFullRange,
+            gfx::ColorSpace::RangeID::FULL,
+            CVPixelFormatStorage::kCompressed,
+        },
+        {
+            PIXEL_FORMAT_NV12A,
+            kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar,
+            gfx::ColorSpace::RangeID::LIMITED,
+        },
+        {
+            PIXEL_FORMAT_NV16,
+            kCVPixelFormatType_422YpCbCr8BiPlanarVideoRange,
+            gfx::ColorSpace::RangeID::LIMITED,
+        },
+        {
+            PIXEL_FORMAT_NV16,
+            kCVPixelFormatType_422YpCbCr8BiPlanarFullRange,
+            gfx::ColorSpace::RangeID::FULL,
+        },
+        {
+            PIXEL_FORMAT_NV24,
+            kCVPixelFormatType_444YpCbCr8BiPlanarVideoRange,
+            gfx::ColorSpace::RangeID::LIMITED,
+        },
+        {
+            PIXEL_FORMAT_NV24,
+            kCVPixelFormatType_444YpCbCr8BiPlanarFullRange,
+            gfx::ColorSpace::RangeID::FULL,
+        },
+        {
+            PIXEL_FORMAT_P010LE,
+            kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange,
+            gfx::ColorSpace::RangeID::LIMITED,
+        },
+        {
+            PIXEL_FORMAT_P010LE,
+            kCVPixelFormatType_420YpCbCr10BiPlanarFullRange,
+            gfx::ColorSpace::RangeID::FULL,
+        },
+        {
+            PIXEL_FORMAT_P010LE,
+            kCVPixelFormatType_Lossless_420YpCbCr10PackedBiPlanarVideoRange,
+            gfx::ColorSpace::RangeID::LIMITED,
+            CVPixelFormatStorage::kCompressed,
+        },
+        {
+            PIXEL_FORMAT_P010LE,
+            kCVPixelFormatType_Lossless_420YpCbCr10PackedBiPlanarFullRange,
+            gfx::ColorSpace::RangeID::FULL,
+            CVPixelFormatStorage::kCompressed,
+        },
+        {
+            PIXEL_FORMAT_P210LE,
+            kCVPixelFormatType_422YpCbCr10BiPlanarVideoRange,
+            gfx::ColorSpace::RangeID::LIMITED,
+        },
+        {
+            PIXEL_FORMAT_P210LE,
+            kCVPixelFormatType_422YpCbCr10BiPlanarFullRange,
+            gfx::ColorSpace::RangeID::FULL,
+        },
+        {
+            PIXEL_FORMAT_P210LE,
+            kCVPixelFormatType_Lossless_422YpCbCr10PackedBiPlanarVideoRange,
+            gfx::ColorSpace::RangeID::LIMITED,
+            CVPixelFormatStorage::kCompressed,
+        },
+        {
+            PIXEL_FORMAT_P410LE,
+            kCVPixelFormatType_444YpCbCr10BiPlanarVideoRange,
+            gfx::ColorSpace::RangeID::LIMITED,
+        },
+        {
+            PIXEL_FORMAT_P410LE,
+            kCVPixelFormatType_444YpCbCr10BiPlanarFullRange,
+            gfx::ColorSpace::RangeID::FULL,
+        },
+    });
+
 // CVPixelBuffer release callback. See |GetCvPixelBufferRepresentation()|.
 void CvPixelBufferReleaseCallback(void* frame_ref,
                                   const void* data,
@@ -40,27 +161,6 @@ void CvPixelBufferReleaseCallback(void* frame_ref,
                                   const void* planes[]) {
   free(const_cast<void*>(data));
   reinterpret_cast<const VideoFrame*>(frame_ref)->Release();
-}
-
-// Current list of acceptable CVPixelFormat mappings. If we start supporting
-// RGB frame encoding we'll need to extend this list.
-bool IsAcceptableCvPixelFormat(VideoPixelFormat format, OSType cv_format) {
-  if (format == PIXEL_FORMAT_I420) {
-    return cv_format == kCVPixelFormatType_420YpCbCr8Planar ||
-           cv_format == kCVPixelFormatType_420YpCbCr8PlanarFullRange;
-  }
-  if (format == PIXEL_FORMAT_NV12) {
-    return cv_format == kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange ||
-           cv_format == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange;
-  }
-  if (format == PIXEL_FORMAT_NV12A) {
-    return cv_format == kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar;
-  }
-  if (format == PIXEL_FORMAT_P010LE) {
-    return cv_format == kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange ||
-           cv_format == kCVPixelFormatType_420YpCbCr10BiPlanarFullRange;
-  }
-  return false;
 }
 
 bool CvPixelBufferHasColorSpace(CVPixelBufferRef pixel_buffer) {
@@ -151,6 +251,32 @@ void ApplyCvPixelBufferCleanApertureIfNeeded(const VideoFrame& frame,
 
 }  // namespace
 
+std::optional<OSType> CVPixelFormatForVideoFrame(
+    VideoPixelFormat format,
+    gfx::ColorSpace::RangeID range) {
+  range = range == gfx::ColorSpace::RangeID::FULL
+              ? gfx::ColorSpace::RangeID::FULL
+              : gfx::ColorSpace::RangeID::LIMITED;
+  const auto found = std::ranges::find_if(
+      kVideoFrameCVPixelFormatInfos, [format, range](const auto& info) {
+        return info.video_format == format && info.range == range &&
+               info.storage == CVPixelFormatStorage::kUncompressed;
+      });
+  if (found == kVideoFrameCVPixelFormatInfos.end()) {
+    return std::nullopt;
+  }
+  return found->cv_pixel_format;
+}
+
+bool IsAcceptableCvPixelFormat(VideoPixelFormat format,
+                               OSType cv_pixel_format) {
+  return std::ranges::any_of(kVideoFrameCVPixelFormatInfos,
+                             [format, cv_pixel_format](const auto& info) {
+                               return info.video_format == format &&
+                                      info.cv_pixel_format == cv_pixel_format;
+                             });
+}
+
 base::apple::ScopedCFTypeRef<CVPixelBufferRef> WrapIOSurfaceInCVPixelBuffer(
     const VideoFrame& frame,
     IOSurfaceRef io_surface) {
@@ -205,34 +331,24 @@ base::apple::ScopedCFTypeRef<CVPixelBufferRef> WrapVideoFrameInCVPixelBuffer(
 
   // VideoFrame only supports YUV formats and most of them are 'YVU' ordered,
   // which CVPixelBuffer does not support. This means we effectively can only
-  // represent I420, NV12, NV12A, and P010 frames. In addition, VideoFrame does
-  // not carry colorimetric information, so this function assumes standard
-  // video range and ITU Rec 709 primaries.
+  // represent I420 and the biplanar NV12/NV16/NV24 and P010/P210/P410 family.
+  // In addition, VideoFrame does not carry colorimetric information, so this
+  // function assumes standard video range and ITU Rec 709 primaries.
   const VideoPixelFormat video_frame_format = frame->format();
-  const bool is_full_range =
-      frame->ColorSpace().GetRangeID() == gfx::ColorSpace::RangeID::FULL;
-  OSType cv_format;
-  if (video_frame_format == PIXEL_FORMAT_I420) {
-    cv_format = is_full_range ? kCVPixelFormatType_420YpCbCr8PlanarFullRange
-                              : kCVPixelFormatType_420YpCbCr8Planar;
-  } else if (video_frame_format == PIXEL_FORMAT_NV12) {
-    cv_format = is_full_range ? kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
-                              : kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
-  } else if (video_frame_format == PIXEL_FORMAT_NV12A) {
-    if (is_full_range) {
-      DVLOG(1) << "Full range NV12A is not supported by the OS.";
-    }
-    cv_format = kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar;
-  } else if (video_frame_format == PIXEL_FORMAT_P010LE) {
-    cv_format = is_full_range
-                    ? kCVPixelFormatType_420YpCbCr10BiPlanarFullRange
-                    : kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange;
-  } else {
+  auto range = frame->ColorSpace().GetRangeID();
+  if (video_frame_format == PIXEL_FORMAT_NV12A &&
+      range == gfx::ColorSpace::RangeID::FULL) {
+    DVLOG(1) << "Full range NV12A is not supported by the OS.";
+    range = gfx::ColorSpace::RangeID::LIMITED;
+  }
+  const std::optional<OSType> cv_format =
+      CVPixelFormatForVideoFrame(video_frame_format, range);
+  if (!cv_format) {
     DLOG(ERROR) << "Unsupported frame format: " << video_frame_format;
     return pixel_buffer;
   }
 
-  DCHECK(IsAcceptableCvPixelFormat(video_frame_format, cv_format));
+  DCHECK(IsAcceptableCvPixelFormat(video_frame_format, cv_format.value()));
 
   int num_planes = VideoFrame::NumPlanes(video_frame_format);
   DCHECK_LE(num_planes, kMaxPlanes);
@@ -259,9 +375,9 @@ base::apple::ScopedCFTypeRef<CVPixelBufferRef> WrapVideoFrameInCVPixelBuffer(
   // give it a smart pointer to the frame, so instead pass a raw pointer and
   // increment the frame's reference count manually.
   CVReturn result = CVPixelBufferCreateWithPlanarBytes(
-      kCFAllocatorDefault, coded_size.width(), coded_size.height(), cv_format,
-      descriptor, 0, num_planes, plane_ptrs.data(), plane_widths.data(),
-      plane_heights.data(), plane_bytes_per_row.data(),
+      kCFAllocatorDefault, coded_size.width(), coded_size.height(),
+      cv_format.value(), descriptor, 0, num_planes, plane_ptrs.data(),
+      plane_widths.data(), plane_heights.data(), plane_bytes_per_row.data(),
       &CvPixelBufferReleaseCallback, frame.get(), nullptr,
       pixel_buffer.InitializeInto());
   if (result != kCVReturnSuccess) {

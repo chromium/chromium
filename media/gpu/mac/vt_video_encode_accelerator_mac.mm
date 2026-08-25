@@ -7,15 +7,18 @@
 #import <Foundation/Foundation.h>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <memory>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
@@ -159,8 +162,11 @@ base::span<const VideoCodecProfile> GetSupportedVideoCodecProfiles() {
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
         if (base::FeatureList::IsEnabled(kPlatformHEVCEncoderSupport)) {
           profiles.push_back(HEVCPROFILE_MAIN);
-          if (base::FeatureList::IsEnabled(kPlatformHEVCMain10EncoderSupport)) {
+          if (base::FeatureList::IsEnabled(kPlatformHEVCHbdEncoderSupport)) {
             profiles.push_back(HEVCPROFILE_MAIN10);
+#if defined(ARCH_CPU_ARM_FAMILY)
+            profiles.push_back(HEVCPROFILE_REXT);
+#endif
           }
         }
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
@@ -256,7 +262,8 @@ bool IsManualQpSupported(VideoCodecProfile profile) {
   return IsSVCSupported(profile);
 }
 
-static CFStringRef VideoCodecProfileToVTProfile(VideoCodecProfile profile) {
+static CFStringRef VideoCodecProfileToVTProfile(VideoCodecProfile profile,
+                                                VideoPixelFormat input_format) {
   switch (profile) {
     case H264PROFILE_BASELINE:
       return kVTProfileLevel_H264_Baseline_AutoLevel;
@@ -269,10 +276,81 @@ static CFStringRef VideoCodecProfileToVTProfile(VideoCodecProfile profile) {
       return kVTProfileLevel_HEVC_Main_AutoLevel;
     case HEVCPROFILE_MAIN10:
       return kVTProfileLevel_HEVC_Main10_AutoLevel;
+    case HEVCPROFILE_REXT:
+      switch (input_format) {
+        case PIXEL_FORMAT_NV16:
+        case PIXEL_FORMAT_P210LE:
+          // 8bit 4:2:2 re-uses Main42210 profile level.
+          return kVTProfileLevel_HEVC_Main42210_AutoLevel;
+        case PIXEL_FORMAT_NV24:
+          // Not in the public SDK headers, string matches the VT constant.
+          return CFSTR("HEVC_Main444_AutoLevel");
+        case PIXEL_FORMAT_P410LE:
+          return CFSTR("HEVC_Main44410_AutoLevel");
+        default:
+          NOTREACHED();
+      }
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     default:
       NOTREACHED();
   }
+}
+
+constexpr auto kDefaultGpuInputFormats =
+    std::to_array<VideoPixelFormat>({PIXEL_FORMAT_NV12});
+
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+constexpr auto kHevcMain10InputFormats =
+    std::to_array<VideoPixelFormat>({PIXEL_FORMAT_P010LE});
+
+constexpr auto kHevcRextInputFormats = std::to_array<VideoPixelFormat>({
+    PIXEL_FORMAT_NV16,
+    PIXEL_FORMAT_NV24,
+    PIXEL_FORMAT_P210LE,
+    PIXEL_FORMAT_P410LE,
+});
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+
+base::span<const VideoPixelFormat> CandidateGpuInputFormatsForProfile(
+    VideoCodecProfile profile) {
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  if (profile == HEVCPROFILE_MAIN10) {
+    return kHevcMain10InputFormats;
+  }
+  if (profile == HEVCPROFILE_REXT) {
+    return kHevcRextInputFormats;
+  }
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  return kDefaultGpuInputFormats;
+}
+
+bool IsInputFormatSupportedForProfile(VideoCodecProfile profile,
+                                      VideoPixelFormat format) {
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  if (profile == HEVCPROFILE_MAIN10 || profile == HEVCPROFILE_REXT) {
+    return std::ranges::contains(CandidateGpuInputFormatsForProfile(profile),
+                                 format);
+  }
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  return format == PIXEL_FORMAT_I420 || format == PIXEL_FORMAT_NV12;
+}
+
+bool SetSessionProfileLevel(video_toolbox::SessionPropertySetter& setter,
+                            VideoCodecProfile profile,
+                            VideoPixelFormat input_format) {
+  if (!setter.Set(kVTCompressionPropertyKey_ProfileLevel,
+                  VideoCodecProfileToVTProfile(profile, input_format))) {
+    return false;
+  }
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  // 8-bit 4:2:2 uses Main42210, so bit depth must be set explicitly.
+  if (profile == HEVCPROFILE_REXT && input_format == PIXEL_FORMAT_NV16 &&
+      (!setter.IsSupported(kVTCompressionPropertyKey_OutputBitDepth) ||
+       !setter.Set(kVTCompressionPropertyKey_OutputBitDepth, 8))) {
+    return false;
+  }
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  return true;
 }
 
 static CMVideoCodecType VideoCodecToCMVideoCodec(VideoCodec codec) {
@@ -320,21 +398,34 @@ bool IsHardwareEncoder(VTSessionRef compression_session) {
 #endif  // SOFTWARE_ENCODING_SUPPORTED
 }
 
+// Formats whose session attributes encode full vs limited range. NV12/I420
+// keep the historical empty hint; VideoToolbox assumes 8-bit 4:2:0.
+std::optional<OSType> CVPixelFormatForSourceImageBuffer(
+    VideoPixelFormat input_format,
+    gfx::ColorSpace::RangeID source_range) {
+  switch (input_format) {
+    case PIXEL_FORMAT_NV16:
+    case PIXEL_FORMAT_NV24:
+    case PIXEL_FORMAT_P010LE:
+    case PIXEL_FORMAT_P210LE:
+    case PIXEL_FORMAT_P410LE:
+      return CVPixelFormatForVideoFrame(input_format, source_range);
+    default:
+      return std::nullopt;
+  }
+}
+
 base::apple::ScopedCFTypeRef<CFDictionaryRef> CreateSourceImageBufferAttributes(
-    VideoCodecProfile profile,
+    VideoPixelFormat input_format,
     const gfx::Size& size,
     gfx::ColorSpace::RangeID source_range = gfx::ColorSpace::RangeID::LIMITED) {
-  if (profile != HEVCPROFILE_MAIN10) {
+  std::optional<OSType> pixel_format =
+      CVPixelFormatForSourceImageBuffer(input_format, source_range);
+  if (!pixel_format) {
     return base::apple::ScopedCFTypeRef<CFDictionaryRef>();
   }
-  // VideoToolbox assumes 8-bit source buffers unless the session is told
-  // about the 10-bit source format and range.
-  const OSType pixel_format =
-      source_range == gfx::ColorSpace::RangeID::FULL
-          ? kCVPixelFormatType_420YpCbCr10BiPlanarFullRange
-          : kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange;
   NSDictionary* attrs = @{
-    CFToNSPtrCast(kCVPixelBufferPixelFormatTypeKey) : @(pixel_format),
+    CFToNSPtrCast(kCVPixelBufferPixelFormatTypeKey) : @(pixel_format.value()),
     CFToNSPtrCast(kCVPixelBufferWidthKey) : @(size.width()),
     CFToNSPtrCast(kCVPixelBufferHeightKey) : @(size.height()),
   };
@@ -412,29 +503,35 @@ CreateCompressionSession(
   return session;
 }
 
-bool CanCreateHardwareCompressionSession(VideoCodecProfile profile) {
+bool CanCreateHardwareCompressionSession(VideoCodecProfile profile,
+                                         VideoPixelFormat input_format) {
   auto session = CreateCompressionSession(
       profile, kDefaultSupportedResolution, EncoderType::kHardware,
       /*require_low_delay=*/false, /*output_callback=*/nullptr,
       /*accelerator=*/nullptr,
-      CreateSourceImageBufferAttributes(profile, kDefaultSupportedResolution)
+      CreateSourceImageBufferAttributes(input_format,
+                                        kDefaultSupportedResolution)
           .get());
-  const bool can_create_hardware_session =
-      session.has_value() &&
-      (profile != HEVCPROFILE_MAIN10 ||
-       video_toolbox::SessionPropertySetter(session.value())
-           .Set(kVTCompressionPropertyKey_ProfileLevel,
-                kVTProfileLevel_HEVC_Main10_AutoLevel));
+  bool can_create_hardware_session = session.has_value();
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  if (can_create_hardware_session &&
+      (profile == HEVCPROFILE_MAIN10 || profile == HEVCPROFILE_REXT)) {
+    video_toolbox::SessionPropertySetter setter(session.value());
+    can_create_hardware_session =
+        SetSessionProfileLevel(setter, profile, input_format);
+  }
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   DVLOG_IF(1, !can_create_hardware_session)
-      << "Hardware " << GetProfileName(profile)
+      << "Hardware " << GetProfileName(profile) << " "
+      << VideoPixelFormatToString(input_format)
       << " encode acceleration is not available on this platform.";
   return can_create_hardware_session;
 }
 
 // Returns the profile to probe when checking hardware encode for `profile`.
 // H.264 baseline/main/high share the same codec type and session parameters, so
-// one probe covers all of them. HEVC Main10 is distinct because it needs
-// 10-bit source-buffer attributes and its own profile level.
+// one probe covers all of them. Other profiles probe as themselves; RExt
+// combos are further distinguished by input format at the call site.
 VideoCodecProfile HardwareEncodeProbeProfile(VideoCodecProfile profile) {
   switch (profile) {
     case H264PROFILE_BASELINE:
@@ -447,10 +544,17 @@ VideoCodecProfile HardwareEncodeProbeProfile(VideoCodecProfile profile) {
 }
 
 std::vector<VideoPixelFormat> GpuSupportedPixelFormatsForProfile(
-    VideoCodecProfile profile) {
+    VideoCodecProfile profile,
+    VideoPixelFormat input_format = PIXEL_FORMAT_UNKNOWN) {
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   if (profile == HEVCPROFILE_MAIN10) {
     return {PIXEL_FORMAT_P010LE};
   }
+  if (profile == HEVCPROFILE_REXT) {
+    DCHECK(std::ranges::contains(kHevcRextInputFormats, input_format));
+    return {input_format};
+  }
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   return {PIXEL_FORMAT_NV12};
 }
 
@@ -531,8 +635,8 @@ VideoEncoderInfo GetVideoEncoderInfo(
 
   if (base::FeatureList::IsEnabled(
           kVTVideoEncodeAcceleratorOpaqueSharedImageEncode)) {
-    info.gpu_supported_pixel_formats =
-        GpuSupportedPixelFormatsForProfile(config.output_profile);
+    info.gpu_supported_pixel_formats = GpuSupportedPixelFormatsForProfile(
+        config.output_profile, config.input_format);
     info.supports_gpu_shared_images = true;
   }
 
@@ -746,70 +850,99 @@ VTVideoEncodeAccelerator::GetSupportedProfiles() {
       SVCScalabilityMode::kL1T1};
 
   // A cache for CanCreateHardwareCompressionSession() results, which can be
-  // costly to compute. Keyed by probe profile so H.264 baseline/main/high share
-  // one probe while HEVC Main10 stays distinct. The factory already caches the
-  // full SupportedProfiles list per GPU process.
-  base::flat_map<VideoCodecProfile, bool> can_create_hardware_session;
+  // costly to compute. Keyed by (probe profile, format) so H.264
+  // baseline/main/high share one NV12 probe, while HEVC Main10 and each RExt
+  // combo stay distinct. The factory already caches the full SupportedProfiles
+  // list per GPU process.
+  base::flat_map<std::pair<VideoCodecProfile, VideoPixelFormat>, bool>
+      can_create_hardware_session;
+  auto can_create_hardware = [&](VideoCodecProfile profile,
+                                 VideoPixelFormat input_format) {
+    const auto key =
+        std::make_pair(HardwareEncodeProbeProfile(profile), input_format);
+    if (can_create_hardware_session.find(key) ==
+        can_create_hardware_session.end()) {
+      can_create_hardware_session[key] =
+          CanCreateHardwareCompressionSession(key.first, input_format);
+    }
+    return can_create_hardware_session[key];
+  };
 
   for (const VideoCodecProfile profile : GetSupportedVideoCodecProfiles()) {
     const VideoCodec codec = VideoCodecProfileToVideoCodec(profile);
-    const VideoCodecProfile probe_profile = HardwareEncodeProbeProfile(profile);
-    if (can_create_hardware_session.find(probe_profile) ==
-        can_create_hardware_session.end()) {
-      can_create_hardware_session[probe_profile] =
-          CanCreateHardwareCompressionSession(probe_profile);
-    }
+    const bool is_rext = profile == HEVCPROFILE_REXT;
 
     supported_profile.profile = profile;
     supported_profile.max_resolution = GetMaxResolution(codec);
 
-    for (const auto& min_resolution : GetMinResolutions(codec)) {
-      supported_profile.min_resolution = min_resolution;
-      supported_profile.is_software_codec = false;
-      supported_profile.scalability_modes = always_supported_scalability_modes;
-      supported_profile.rate_control_modes =
-          always_supported_rate_control_modes;
-      if (IsSVCSupported(profile)) {
-        supported_profile.scalability_modes.push_back(
-            SVCScalabilityMode::kL1T2);
+    for (const VideoPixelFormat input_format :
+         CandidateGpuInputFormatsForProfile(profile)) {
+      if (is_rext) {
+        supported_profile.chroma_sampling =
+            VideoPixelFormatToChromaSampling(input_format);
+        supported_profile.bit_depth =
+            base::checked_cast<uint8_t>(BitDepth(input_format));
+      } else {
+        supported_profile.chroma_sampling.reset();
+        supported_profile.bit_depth.reset();
       }
-      if (IsManualQpSupported(profile)) {
-        supported_profile.rate_control_modes |=
-            VideoEncodeAccelerator::kExternalMode;
-      }
-      if (base::FeatureList::IsEnabled(
-              kVTVideoEncodeAcceleratorOpaqueSharedImageEncode)) {
-        supported_profile.gpu_supported_pixel_formats =
-            GpuSupportedPixelFormatsForProfile(profile);
-        supported_profile.supports_gpu_shared_images = true;
-      }
-      if (can_create_hardware_session[probe_profile]) {
+
+      for (const auto& min_resolution : GetMinResolutions(codec)) {
+        supported_profile.min_resolution = min_resolution;
+        supported_profile.is_software_codec = false;
+        supported_profile.scalability_modes =
+            always_supported_scalability_modes;
+        supported_profile.rate_control_modes =
+            always_supported_rate_control_modes;
+        if (IsSVCSupported(profile)) {
+          supported_profile.scalability_modes.push_back(
+              SVCScalabilityMode::kL1T2);
+        }
+        if (IsManualQpSupported(profile)) {
+          supported_profile.rate_control_modes |=
+              VideoEncodeAccelerator::kExternalMode;
+        }
+        if (base::FeatureList::IsEnabled(
+                kVTVideoEncodeAcceleratorOpaqueSharedImageEncode)) {
+          supported_profile.gpu_supported_pixel_formats =
+              GpuSupportedPixelFormatsForProfile(profile, input_format);
+          supported_profile.supports_gpu_shared_images = true;
+        }
+        if (can_create_hardware(profile, input_format)) {
+          supported_profiles.push_back(supported_profile);
+
+          SupportedProfile portrait_profile(supported_profile);
+          portrait_profile.max_resolution.Transpose();
+          supported_profiles.push_back(portrait_profile);
+        }
+
+#if SOFTWARE_ENCODING_SUPPORTED
+        // HEVC rext 8bit and 10bit 4:2:2/4:4:4 don't have a software encoder
+        // currently.
+        if (is_rext) {
+          continue;
+        }
+        // macOS doesn't provide a way to enumerate codec details, so just
+        // assume software codec support is the same as hardware.
+        //
+        // NOTE: Although SW encoder always has lower supported min resolutions
+        // compared with HW encoder, but when both HW and SW encoder exist and
+        // if the resolution is not supported by hardware but supported by
+        // software, and if you set `no-preference`, VT will always emit an
+        // error. Thus, we should just re-use min resolutions of HW encoder for
+        // SW encoder.
+        supported_profile.scalability_modes =
+            always_supported_scalability_modes;
+        supported_profile.rate_control_modes =
+            always_supported_rate_control_modes;
+        supported_profile.is_software_codec = true;
         supported_profiles.push_back(supported_profile);
 
         SupportedProfile portrait_profile(supported_profile);
         portrait_profile.max_resolution.Transpose();
         supported_profiles.push_back(portrait_profile);
-      }
-
-#if SOFTWARE_ENCODING_SUPPORTED
-      // macOS doesn't provide a way to enumerate codec details, so just
-      // assume software codec support is the same as hardware.
-      //
-      // NOTE: Although SW encoder always has lower supported min resolutions
-      // compared with HW encoder, but when both HW and SW encoder exist and if
-      // the resolution is not supported by hardware but supported by software,
-      // and if you set `no-preference`, VT will always emit an error. Thus,
-      // we should just re-use min resolutions of HW encoder for SW encoder.
-      supported_profile.scalability_modes = always_supported_scalability_modes;
-      supported_profile.rate_control_modes =
-          always_supported_rate_control_modes;
-      supported_profile.is_software_codec = true;
-      supported_profiles.push_back(supported_profile);
-
-      SupportedProfile portrait_profile(supported_profile);
-      portrait_profile.max_resolution.Transpose();
-      supported_profiles.push_back(portrait_profile);
 #endif  // SOFTWARE_ENCODING_SUPPORTED
+      }
     }
   }
   return supported_profiles;
@@ -826,12 +959,8 @@ EncoderStatus VTVideoEncodeAccelerator::Initialize(
   // Clients are expected to call Flush() before reinitializing the encoder.
   DCHECK_EQ(pending_encodes_, 0);
 
-  const bool input_format_supported =
-      config.output_profile == HEVCPROFILE_MAIN10
-          ? config.input_format == PIXEL_FORMAT_P010LE
-          : (config.input_format == PIXEL_FORMAT_I420 ||
-             config.input_format == PIXEL_FORMAT_NV12);
-  if (!input_format_supported) {
+  if (!IsInputFormatSupportedForProfile(config.output_profile,
+                                        config.input_format)) {
     MEDIA_LOG(ERROR, media_log)
         << "Input format " << VideoPixelFormatToString(config.input_format)
         << " is not supported for " << GetProfileName(config.output_profile);
@@ -1076,8 +1205,13 @@ bool VTVideoEncodeAccelerator::EncodeWithPixelBuffer(
     if (frame->hdr_metadata().IsValid()) {
       frame_hdr_metadata = frame->hdr_metadata();
     }
+    // Session is created with limited-range source attributes. Recreate it
+    // before the first full-range frame whenever those attributes encode
+    // range (P010 / NV16 / NV24 / P210 / P410).
     const bool first_hbd_full_range =
-        !encoder_color_space_ && profile_ == HEVCPROFILE_MAIN10 &&
+        !encoder_color_space_ &&
+        CVPixelFormatForSourceImageBuffer(input_format_,
+                                          gfx::ColorSpace::RangeID::FULL) &&
         frame_cs.GetRangeID() == gfx::ColorSpace::RangeID::FULL;
     const bool color_space_or_hdr_metadata_changed =
         encoder_color_space_ && (frame_cs != encoder_color_space_ ||
@@ -1498,7 +1632,7 @@ bool VTVideoEncodeAccelerator::ResetCompressionSession(
   compression_session_.reset();
 
   auto source_attrs = CreateSourceImageBufferAttributes(
-      profile_, input_visible_size_, source_range);
+      input_format_, input_visible_size_, source_range);
   if (auto created = CreateCompressionSession(
           profile_, input_visible_size_, required_encoder_type_,
           require_low_delay_, &VTVideoEncodeAccelerator::CompressionCallback,
@@ -1532,8 +1666,8 @@ bool VTVideoEncodeAccelerator::ConfigureCompressionSession(VideoCodec codec) {
 
   video_toolbox::SessionPropertySetter session_property_setter(
       compression_session_);
-  if (!session_property_setter.Set(kVTCompressionPropertyKey_ProfileLevel,
-                                   VideoCodecProfileToVTProfile(profile_))) {
+  if (!SetSessionProfileLevel(session_property_setter, profile_,
+                              input_format_)) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedProfile,
                        "Unsupported profile: " + GetProfileName(profile_)});
     return false;
@@ -1814,10 +1948,11 @@ bool VTVideoEncodeAccelerator::CanEncodeOpaqueSharedImage(
           kVTVideoEncodeAcceleratorOpaqueSharedImageEncode)) {
     return false;
   }
-  // Opaque SharedImage encode is wired for NV12 and P010.
+  // Opaque SharedImage encode is wired for NV12, P010, and HEVC RExt packed
+  // YUV (NV16 / NV24 / P210 / P410).
   if (frame.format() != input_format_ ||
-      (input_format_ != PIXEL_FORMAT_NV12 &&
-       input_format_ != PIXEL_FORMAT_P010LE)) {
+      !std::ranges::contains(CandidateGpuInputFormatsForProfile(profile_),
+                             input_format_)) {
     return false;
   }
   return frame.shared_image()->usage().Has(
@@ -1836,7 +1971,9 @@ double VTVideoEncodeAccelerator::CalculatePsnr(double mse,
                                                VideoPixelFormat format) {
   DCHECK_GE(mse, 0.0);
   DCHECK(format == PIXEL_FORMAT_I420 || format == PIXEL_FORMAT_NV12 ||
-         format == PIXEL_FORMAT_P010LE);
+         format == PIXEL_FORMAT_NV16 || format == PIXEL_FORMAT_NV24 ||
+         format == PIXEL_FORMAT_P010LE || format == PIXEL_FORMAT_P210LE ||
+         format == PIXEL_FORMAT_P410LE);
   const double max_value = (1 << BitDepth(format)) - 1;
   if (mse == 0.0) {
     return 128.0;

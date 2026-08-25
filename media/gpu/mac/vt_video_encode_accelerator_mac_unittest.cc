@@ -9,9 +9,11 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_types.h"
+#include "media/media_buildflags.h"
 #include "media/video/video_encode_accelerator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -77,8 +79,15 @@ TEST(VTVideoEncodeAcceleratorTest, CalculatePsnr_CapMaxPSNR) {
 
 TEST(VTVideoEncodeAcceleratorTest, SupportedProfilesAdvertiseGpuFormats) {
   base::test::ScopedFeatureList scoped_feature_list;
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  scoped_feature_list.InitWithFeatures(
+      {kVTVideoEncodeAcceleratorOpaqueSharedImageEncode,
+       kPlatformHEVCEncoderSupport, kPlatformHEVCHbdEncoderSupport},
+      {});
+#else
   scoped_feature_list.InitAndEnableFeature(
       kVTVideoEncodeAcceleratorOpaqueSharedImageEncode);
+#endif
   base::test::TaskEnvironment task_environment;
   std::unique_ptr<VideoEncodeAccelerator> encoder(
       new VTVideoEncodeAccelerator());
@@ -93,6 +102,11 @@ TEST(VTVideoEncodeAcceleratorTest, SupportedProfilesAdvertiseGpuFormats) {
     if (profile.profile == HEVCPROFILE_MAIN10) {
       EXPECT_EQ(profile.gpu_supported_pixel_formats,
                 std::vector<VideoPixelFormat>({PIXEL_FORMAT_P010LE}));
+    } else if (profile.profile == HEVCPROFILE_REXT) {
+      ASSERT_EQ(profile.gpu_supported_pixel_formats.size(), 1u);
+      const VideoPixelFormat dest = profile.gpu_supported_pixel_formats[0];
+      EXPECT_TRUE(dest == PIXEL_FORMAT_NV16 || dest == PIXEL_FORMAT_NV24 ||
+                  dest == PIXEL_FORMAT_P210LE || dest == PIXEL_FORMAT_P410LE);
     } else {
       saw_nv12 = true;
       EXPECT_EQ(profile.gpu_supported_pixel_formats,
@@ -101,5 +115,78 @@ TEST(VTVideoEncodeAcceleratorTest, SupportedProfilesAdvertiseGpuFormats) {
   }
   EXPECT_TRUE(saw_nv12);
 }
+
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && \
+    BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+TEST(VTVideoEncodeAcceleratorTest, AdvertisesHevcRextOnlyOnAppleSilicon) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kVTVideoEncodeAcceleratorOpaqueSharedImageEncode,
+       kPlatformHEVCEncoderSupport, kPlatformHEVCHbdEncoderSupport},
+      {});
+  base::test::TaskEnvironment task_environment;
+  std::unique_ptr<VideoEncodeAccelerator> encoder(
+      new VTVideoEncodeAccelerator());
+  auto profiles = encoder->GetSupportedProfiles();
+
+  std::vector<const VideoEncodeAccelerator::SupportedProfile*> rext_hw;
+  std::vector<const VideoEncodeAccelerator::SupportedProfile*> rext_sw;
+  for (const auto& profile : profiles) {
+    if (profile.profile != HEVCPROFILE_REXT) {
+      continue;
+    }
+    if (profile.is_software_codec) {
+      rext_sw.push_back(&profile);
+    } else {
+      rext_hw.push_back(&profile);
+    }
+  }
+  EXPECT_TRUE(rext_sw.empty());
+#if defined(ARCH_CPU_X86_FAMILY)
+  // Intel VideoToolbox does not get HEVCPROFILE_REXT in the compile-time list.
+  EXPECT_TRUE(rext_hw.empty());
+#else
+  // Apple Silicon compiles RExt into GetSupportedVideoCodecProfiles(), but
+  // each combo is only advertised if CanCreateHardwareCompressionSession()
+  // succeeds. CQ/swarming Macs often cannot create those HW sessions.
+  if (rext_hw.empty()) {
+    GTEST_SKIP() << "HEVC RExt hardware encode is not available";
+  }
+  // Four combos × min-resolution variants × portrait copies. At least the four
+  // session formats must appear when hardware encode is present.
+  bool saw_nv16 = false, saw_nv24 = false, saw_p210 = false, saw_p410 = false;
+  for (const auto* profile : rext_hw) {
+    ASSERT_TRUE(profile->chroma_sampling.has_value());
+    ASSERT_TRUE(profile->bit_depth.has_value());
+    ASSERT_EQ(profile->gpu_supported_pixel_formats.size(), 1u);
+    const VideoPixelFormat dest = profile->gpu_supported_pixel_formats[0];
+    if (*profile->chroma_sampling == VideoChromaSampling::k422 &&
+        *profile->bit_depth == 8) {
+      saw_nv16 = true;
+      EXPECT_EQ(dest, PIXEL_FORMAT_NV16);
+    } else if (*profile->chroma_sampling == VideoChromaSampling::k444 &&
+               *profile->bit_depth == 8) {
+      saw_nv24 = true;
+      EXPECT_EQ(dest, PIXEL_FORMAT_NV24);
+    } else if (*profile->chroma_sampling == VideoChromaSampling::k422 &&
+               *profile->bit_depth == 10) {
+      saw_p210 = true;
+      EXPECT_EQ(dest, PIXEL_FORMAT_P210LE);
+    } else if (*profile->chroma_sampling == VideoChromaSampling::k444 &&
+               *profile->bit_depth == 10) {
+      saw_p410 = true;
+      EXPECT_EQ(dest, PIXEL_FORMAT_P410LE);
+    } else {
+      ADD_FAILURE() << "Unexpected RExt chroma/bit-depth combo";
+    }
+  }
+  EXPECT_TRUE(saw_nv16);
+  EXPECT_TRUE(saw_nv24);
+  EXPECT_TRUE(saw_p210);
+  EXPECT_TRUE(saw_p410);
+#endif  // defined(ARCH_CPU_X86_FAMILY)
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) &&
+        // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 }  // namespace media
