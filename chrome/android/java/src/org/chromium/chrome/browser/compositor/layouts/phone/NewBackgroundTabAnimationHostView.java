@@ -26,9 +26,10 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.animation.PathAnimationUtils;
+import org.chromium.ui.animation.PathAnimationUtils.ArcDirection;
 import org.chromium.ui.animation.RunOnNextLayout;
 import org.chromium.ui.animation.RunOnNextLayoutDelegate;
-import org.chromium.ui.animation.ViewCurvedMotionAnimatorFactory;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
 
@@ -231,11 +232,15 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout implements Ru
      */
     private ObjectAnimator getPathArcAnimator(
             float originX, float originY, float finalX, float finalY) {
-        boolean isClockwise = mIsTargetOnTop ? (originX >= finalX) : (originX <= finalX);
+        @ArcDirection
+        int direction =
+                (mIsTargetOnTop ? (originX >= finalX) : (originX <= finalX))
+                        ? ArcDirection.CLOCKWISE
+                        : ArcDirection.COUNTER_CLOCKWISE;
 
         ObjectAnimator animator =
-                ViewCurvedMotionAnimatorFactory.build(
-                        mLinkIcon, originX, originY, finalX, finalY, isClockwise);
+                PathAnimationUtils.createViewArcAnimator(
+                        mLinkIcon, originX, originY, finalX, finalY, direction);
         animator.setDuration(PATH_ARC_DURATION_MS);
         animator.setInterpolator(Interpolators.EMPHASIZED_DECELERATE);
 

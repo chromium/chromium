@@ -37,9 +37,10 @@ import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
 
+/** Render tests for {@link PathAnimationUtils#createViewArcAnimator}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-public class ViewCurvedMotionAnimatorFactoryRenderTest {
+public class ViewArcAnimatorRenderTest {
     private static final int ANIMATION_STEPS = 5;
 
     @ClassRule
@@ -97,14 +98,16 @@ public class ViewCurvedMotionAnimatorFactoryRenderTest {
     @Feature({"RenderTest"})
     @DisabledTest(message = "https://crbug.com/512052536")
     public void testQuadrantI_CounterClockwise() throws IOException {
-        float[] start = new float[] {800f, 1200f};
-        float[] end = new float[] {50f, 50f};
-        boolean isClockwise = false;
         ObjectAnimator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                ViewCurvedMotionAnimatorFactory.build(
-                                        mView, start, end, isClockwise));
+                                PathAnimationUtils.createViewArcAnimator(
+                                        mView,
+                                        800f,
+                                        1200f,
+                                        50f,
+                                        50f,
+                                        PathAnimationUtils.ArcDirection.COUNTER_CLOCKWISE));
 
         RenderTestAnimationUtils.stepThroughAnimation(
                 "quadrant_i_counterclockwise",
@@ -118,15 +121,16 @@ public class ViewCurvedMotionAnimatorFactoryRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testQuadrantI_Clockwise() throws IOException {
-        float[] start = new float[] {50f, 50f};
-        float[] end = new float[] {800f, 1200f};
-        boolean isClockwise = true;
-
         ObjectAnimator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                ViewCurvedMotionAnimatorFactory.build(
-                                        mView, start, end, isClockwise));
+                                PathAnimationUtils.createViewArcAnimator(
+                                        mView,
+                                        50f,
+                                        50f,
+                                        800f,
+                                        1200f,
+                                        PathAnimationUtils.ArcDirection.CLOCKWISE));
 
         RenderTestAnimationUtils.stepThroughAnimation(
                 "quadrant_i_clockwise", mRenderTestRule, mRootView, animator, ANIMATION_STEPS);
@@ -137,15 +141,16 @@ public class ViewCurvedMotionAnimatorFactoryRenderTest {
     @Feature({"RenderTest"})
     @DisabledTest(message = "https://crbug.com/512270063")
     public void testQuadrantII_CounterClockwise() throws IOException {
-        float[] start = new float[] {800f, 50f};
-        float[] end = new float[] {50f, 1200f};
-        boolean isClockwise = false;
-
         ObjectAnimator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                ViewCurvedMotionAnimatorFactory.build(
-                                        mView, start, end, isClockwise));
+                                PathAnimationUtils.createViewArcAnimator(
+                                        mView,
+                                        800f,
+                                        50f,
+                                        50f,
+                                        1200f,
+                                        PathAnimationUtils.ArcDirection.COUNTER_CLOCKWISE));
 
         RenderTestAnimationUtils.stepThroughAnimation(
                 "quadrant_ii_counterclockwise",
@@ -159,15 +164,16 @@ public class ViewCurvedMotionAnimatorFactoryRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testQuadrantII_Clockwise() throws IOException {
-        float[] start = new float[] {50f, 1200f};
-        float[] end = new float[] {800f, 50f};
-        boolean isClockwise = true;
-
         ObjectAnimator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                ViewCurvedMotionAnimatorFactory.build(
-                                        mView, start, end, isClockwise));
+                                PathAnimationUtils.createViewArcAnimator(
+                                        mView,
+                                        50f,
+                                        1200f,
+                                        800f,
+                                        50f,
+                                        PathAnimationUtils.ArcDirection.CLOCKWISE));
 
         RenderTestAnimationUtils.stepThroughAnimation(
                 "quadrant_ii_clockwise", mRenderTestRule, mRootView, animator, ANIMATION_STEPS);
@@ -177,15 +183,16 @@ public class ViewCurvedMotionAnimatorFactoryRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testQuadrantIII_CounterClockwise() throws IOException {
-        float[] start = new float[] {50f, 50f};
-        float[] end = new float[] {800f, 1200f};
-        boolean isClockwise = false;
-
         ObjectAnimator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                ViewCurvedMotionAnimatorFactory.build(
-                                        mView, start, end, isClockwise));
+                                PathAnimationUtils.createViewArcAnimator(
+                                        mView,
+                                        50f,
+                                        50f,
+                                        800f,
+                                        1200f,
+                                        PathAnimationUtils.ArcDirection.COUNTER_CLOCKWISE));
 
         RenderTestAnimationUtils.stepThroughAnimation(
                 "quadrant_iii_counterclockwise",
@@ -200,15 +207,16 @@ public class ViewCurvedMotionAnimatorFactoryRenderTest {
     @Feature({"RenderTest"})
     @DisabledTest(message = "https://crbug.com/503405658")
     public void testQuadrantIII_Clockwise() throws IOException {
-        float[] start = new float[] {800f, 1200f};
-        float[] end = new float[] {50f, 50f};
-        boolean isClockwise = true;
-
         ObjectAnimator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                ViewCurvedMotionAnimatorFactory.build(
-                                        mView, start, end, isClockwise));
+                                PathAnimationUtils.createViewArcAnimator(
+                                        mView,
+                                        800f,
+                                        1200f,
+                                        50f,
+                                        50f,
+                                        PathAnimationUtils.ArcDirection.CLOCKWISE));
 
         RenderTestAnimationUtils.stepThroughAnimation(
                 "quadrant_iii_clockwise", mRenderTestRule, mRootView, animator, ANIMATION_STEPS);
@@ -218,15 +226,16 @@ public class ViewCurvedMotionAnimatorFactoryRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testQuadrantIV_CounterClockwise() throws IOException {
-        float[] start = new float[] {50f, 1200f};
-        float[] end = new float[] {800f, 50f};
-        boolean isClockwise = false;
-
         ObjectAnimator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                ViewCurvedMotionAnimatorFactory.build(
-                                        mView, start, end, isClockwise));
+                                PathAnimationUtils.createViewArcAnimator(
+                                        mView,
+                                        50f,
+                                        1200f,
+                                        800f,
+                                        50f,
+                                        PathAnimationUtils.ArcDirection.COUNTER_CLOCKWISE));
 
         RenderTestAnimationUtils.stepThroughAnimation(
                 "quadrant_iv_counterclockwise",
@@ -241,15 +250,16 @@ public class ViewCurvedMotionAnimatorFactoryRenderTest {
     @Feature({"RenderTest"})
     @DisabledTest(message = "https://crbug.com/453805640")
     public void testQuadrantIV_Clockwise() throws IOException {
-        float[] start = new float[] {800f, 50f};
-        float[] end = new float[] {50f, 1200f};
-        boolean isClockwise = true;
-
         ObjectAnimator animator =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                ViewCurvedMotionAnimatorFactory.build(
-                                        mView, start, end, isClockwise));
+                                PathAnimationUtils.createViewArcAnimator(
+                                        mView,
+                                        800f,
+                                        50f,
+                                        50f,
+                                        1200f,
+                                        PathAnimationUtils.ArcDirection.CLOCKWISE));
 
         RenderTestAnimationUtils.stepThroughAnimation(
                 "quadrant_iv_clockwise", mRenderTestRule, mRootView, animator, ANIMATION_STEPS);

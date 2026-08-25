@@ -5,230 +5,226 @@
 package org.chromium.ui.animation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.graphics.Path;
-import android.graphics.RectF;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.animation.PathAnimationUtils.ArcDirection;
 
 /** JUnit tests for {@link PathAnimationUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PathAnimationUtilsUnitTest {
     @Test
     public void testQuadrantI_CounterClockwise() {
-        float[] start = new float[] {72f, 50f};
-        float[] end = new float[] {30f, 10f};
-        boolean isClockwise = false;
-
-        RectF expectedRect = new RectF(-12f, 10f, 72f, 90f);
-        RectF actualRect = PathAnimationUtils.createRectForArcAnimation(start, end, isClockwise);
-        assertRectF(expectedRect, actualRect);
+        float startX = 72f;
+        float startY = 50f;
+        float endX = 30f;
+        float endY = 10f;
 
         int expectedAngle =
-                PathAnimationUtils.getStartAngleForArcAnimation(start, end, isClockwise);
-        assertEquals(expectedAngle, 0);
+                PathAnimationUtils.getStartAngleForArc(
+                        startX, startY, endX, endY, ArcDirection.COUNTER_CLOCKWISE);
+        assertEquals(0, expectedAngle);
 
         Path path = spy(new Path());
-        PathAnimationUtils.addArcToPathForArcAnimation(start, end, isClockwise, path);
-        verify(path, times(1)).arcTo(expectedRect, expectedAngle, -90);
+        PathAnimationUtils.addArcToPath(
+                path, startX, startY, endX, endY, ArcDirection.COUNTER_CLOCKWISE);
+        assertArcTo(path, -12f, 10f, 72f, 90f, 0, -90);
     }
 
     @Test
     public void testQuadrantI_Clockwise() {
-        float[] start = new float[] {-20f, -14f};
-        float[] end = new float[] {23f, 50f};
-        boolean isClockwise = true;
-
-        RectF expectedRect = new RectF(-63f, -14f, 23f, 114f);
-        RectF actualRect = PathAnimationUtils.createRectForArcAnimation(start, end, isClockwise);
-        assertRectF(expectedRect, actualRect);
+        float startX = -20f;
+        float startY = -14f;
+        float endX = 23f;
+        float endY = 50f;
 
         int expectedAngle =
-                PathAnimationUtils.getStartAngleForArcAnimation(start, end, isClockwise);
-        assertEquals(expectedAngle, 270);
+                PathAnimationUtils.getStartAngleForArc(
+                        startX, startY, endX, endY, ArcDirection.CLOCKWISE);
+        assertEquals(270, expectedAngle);
 
         Path path = spy(new Path());
-        PathAnimationUtils.addArcToPathForArcAnimation(start, end, isClockwise, path);
-        verify(path, times(1)).arcTo(expectedRect, expectedAngle, 90);
+        PathAnimationUtils.addArcToPath(path, startX, startY, endX, endY, ArcDirection.CLOCKWISE);
+        assertArcTo(path, -63f, -14f, 23f, 114f, 270, 90);
     }
 
     @Test
     public void testQuadrantII_CounterClockwise() {
-        float[] start = new float[] {23f, -14f};
-        float[] end = new float[] {-20f, 50f};
-        boolean isClockwise = false;
-
-        RectF expectedRect = new RectF(-20f, -14f, 66f, 114f);
-        RectF actualRect = PathAnimationUtils.createRectForArcAnimation(start, end, isClockwise);
-        assertRectF(expectedRect, actualRect);
+        float startX = 23f;
+        float startY = -14f;
+        float endX = -20f;
+        float endY = 50f;
 
         int expectedAngle =
-                PathAnimationUtils.getStartAngleForArcAnimation(start, end, isClockwise);
-        assertEquals(expectedAngle, 270);
+                PathAnimationUtils.getStartAngleForArc(
+                        startX, startY, endX, endY, ArcDirection.COUNTER_CLOCKWISE);
+        assertEquals(270, expectedAngle);
 
         Path path = spy(new Path());
-        PathAnimationUtils.addArcToPathForArcAnimation(start, end, isClockwise, path);
-        verify(path, times(1)).arcTo(expectedRect, expectedAngle, -90);
+        PathAnimationUtils.addArcToPath(
+                path, startX, startY, endX, endY, ArcDirection.COUNTER_CLOCKWISE);
+        assertArcTo(path, -20f, -14f, 66f, 114f, 270, -90);
     }
 
     @Test
     public void testQuadrantII_Clockwise() {
-        float[] start = new float[] {75f, 400f};
-        float[] end = new float[] {120f, 10f};
-        boolean isClockwise = true;
-
-        RectF expectedRect = new RectF(75f, 10f, 165f, 790f);
-        RectF actualRect = PathAnimationUtils.createRectForArcAnimation(start, end, isClockwise);
-        assertRectF(expectedRect, actualRect);
+        float startX = 75f;
+        float startY = 400f;
+        float endX = 120f;
+        float endY = 10f;
 
         int expectedAngle =
-                PathAnimationUtils.getStartAngleForArcAnimation(start, end, isClockwise);
-        assertEquals(expectedAngle, 180);
+                PathAnimationUtils.getStartAngleForArc(
+                        startX, startY, endX, endY, ArcDirection.CLOCKWISE);
+        assertEquals(180, expectedAngle);
 
         Path path = spy(new Path());
-        PathAnimationUtils.addArcToPathForArcAnimation(start, end, isClockwise, path);
-        verify(path, times(1)).arcTo(expectedRect, expectedAngle, 90);
+        PathAnimationUtils.addArcToPath(path, startX, startY, endX, endY, ArcDirection.CLOCKWISE);
+        assertArcTo(path, 75f, 10f, 165f, 790f, 180, 90);
     }
 
     @Test
     public void testQuadrantIII_CounterClockwise() {
-        float[] start = new float[] {-20f, -14f};
-        float[] end = new float[] {622f, 50f};
-        boolean isClockwise = false;
-
-        RectF expectedRect = new RectF(-20f, -78f, 1264f, 50f);
-        RectF actualRect = PathAnimationUtils.createRectForArcAnimation(start, end, isClockwise);
-        assertRectF(expectedRect, actualRect);
+        float startX = -20f;
+        float startY = -14f;
+        float endX = 622f;
+        float endY = 50f;
 
         int expectedAngle =
-                PathAnimationUtils.getStartAngleForArcAnimation(start, end, isClockwise);
-        assertEquals(expectedAngle, 180);
+                PathAnimationUtils.getStartAngleForArc(
+                        startX, startY, endX, endY, ArcDirection.COUNTER_CLOCKWISE);
+        assertEquals(180, expectedAngle);
 
         Path path = spy(new Path());
-        PathAnimationUtils.addArcToPathForArcAnimation(start, end, isClockwise, path);
-        verify(path, times(1)).arcTo(expectedRect, expectedAngle, -90);
+        PathAnimationUtils.addArcToPath(
+                path, startX, startY, endX, endY, ArcDirection.COUNTER_CLOCKWISE);
+        assertArcTo(path, -20f, -78f, 1264f, 50f, 180, -90);
     }
 
     @Test
     public void testQuadrantIII_Clockwise() {
-        float[] start = new float[] {740f, 200f};
-        float[] end = new float[] {310f, 12f};
-        boolean isClockwise = true;
-
-        RectF expectedRect = new RectF(310f, -176f, 1170f, 200f);
-        RectF actualRect = PathAnimationUtils.createRectForArcAnimation(start, end, isClockwise);
-        assertRectF(expectedRect, actualRect);
+        float startX = 740f;
+        float startY = 200f;
+        float endX = 310f;
+        float endY = 12f;
 
         int expectedAngle =
-                PathAnimationUtils.getStartAngleForArcAnimation(start, end, isClockwise);
-        assertEquals(expectedAngle, 90);
+                PathAnimationUtils.getStartAngleForArc(
+                        startX, startY, endX, endY, ArcDirection.CLOCKWISE);
+        assertEquals(90, expectedAngle);
 
         Path path = spy(new Path());
-        PathAnimationUtils.addArcToPathForArcAnimation(start, end, isClockwise, path);
-        verify(path, times(1)).arcTo(expectedRect, expectedAngle, 90);
+        PathAnimationUtils.addArcToPath(path, startX, startY, endX, endY, ArcDirection.CLOCKWISE);
+        assertArcTo(path, 310f, -176f, 1170f, 200f, 90, 90);
     }
 
     @Test
     public void testQuadrantIV_CounterClockwise() {
-        float[] start = new float[] {20f, 100f};
-        float[] end = new float[] {50f, 39f};
-        boolean isClockwise = false;
-
-        RectF expectedRect = new RectF(-10f, -22f, 50f, 100f);
-        RectF actualRect = PathAnimationUtils.createRectForArcAnimation(start, end, isClockwise);
-        assertRectF(expectedRect, actualRect);
+        float startX = 20f;
+        float startY = 100f;
+        float endX = 50f;
+        float endY = 39f;
 
         int expectedAngle =
-                PathAnimationUtils.getStartAngleForArcAnimation(start, end, isClockwise);
-        assertEquals(expectedAngle, 90);
+                PathAnimationUtils.getStartAngleForArc(
+                        startX, startY, endX, endY, ArcDirection.COUNTER_CLOCKWISE);
+        assertEquals(90, expectedAngle);
 
         Path path = spy(new Path());
-        PathAnimationUtils.addArcToPathForArcAnimation(start, end, isClockwise, path);
-        verify(path, times(1)).arcTo(expectedRect, expectedAngle, -90);
+        PathAnimationUtils.addArcToPath(
+                path, startX, startY, endX, endY, ArcDirection.COUNTER_CLOCKWISE);
+        assertArcTo(path, -10f, -22f, 50f, 100f, 90, -90);
     }
 
     @Test
     public void testQuadrantIV_Clockwise() {
-        float[] start = new float[] {56.4f, 97.4f};
-        float[] end = new float[] {-4.5f, 164f};
-        boolean isClockwise = true;
-
-        RectF expectedRect = new RectF(-65.4f, 30.8f, 56.4f, 164f);
-        RectF actualRect = PathAnimationUtils.createRectForArcAnimation(start, end, isClockwise);
-        assertRectF(expectedRect, actualRect);
+        float startX = 56.4f;
+        float startY = 97.4f;
+        float endX = -4.5f;
+        float endY = 164f;
 
         int expectedAngle =
-                PathAnimationUtils.getStartAngleForArcAnimation(start, end, isClockwise);
-        assertEquals(expectedAngle, 0);
+                PathAnimationUtils.getStartAngleForArc(
+                        startX, startY, endX, endY, ArcDirection.CLOCKWISE);
+        assertEquals(0, expectedAngle);
 
         Path path = spy(new Path());
-        PathAnimationUtils.addArcToPathForArcAnimation(start, end, isClockwise, path);
-        verify(path, times(1)).arcTo(expectedRect, expectedAngle, 90);
+        PathAnimationUtils.addArcToPath(path, startX, startY, endX, endY, ArcDirection.CLOCKWISE);
+        assertArcTo(path, -65.4f, 30.8f, 56.4f, 164f, 0, 90);
     }
 
-    @Test(expected = AssertionError.class)
-    public void testAssertPointsForArcAnimation_InvalidInput_SamePoints() {
-        float[] start = new float[] {6f, 6f};
-        float[] end = new float[] {6f, 6f};
-
-        PathAnimationUtils.assertPointsForArcAnimation(start, end);
+    @Test
+    public void testCreateArcPath_CollinearPoints_SameX() {
+        Path path =
+                PathAnimationUtils.createArcPath(
+                        10f, 20f, 10f, 50f, ArcDirection.CLOCKWISE);
+        // Should produce a valid non-empty straight line path without throwing assertion
+        assertNotNull(path);
+        assertFalse(path.isEmpty());
     }
 
-    @Test(expected = AssertionError.class)
-    public void testAssertPointsForArcAnimation_InvalidInput_SameX() {
-        float[] start = new float[] {3.5f, 12f};
-        float[] end = new float[] {3.5f, 43f};
-
-        PathAnimationUtils.assertPointsForArcAnimation(start, end);
+    @Test
+    public void testCreateArcPath_CollinearPoints_SameY() {
+        Path path =
+                PathAnimationUtils.createArcPath(
+                        10f, 20f, 40f, 20f, ArcDirection.COUNTER_CLOCKWISE);
+        // Should produce a valid non-empty straight line path without throwing assertion
+        assertNotNull(path);
+        assertFalse(path.isEmpty());
     }
 
-    @Test(expected = AssertionError.class)
-    public void testAssertPointsForArcAnimation_InvalidInput_SameY() {
-        float[] start = new float[] {12f, 3f};
-        float[] end = new float[] {43f, 3f};
-
-        PathAnimationUtils.assertPointsForArcAnimation(start, end);
+    @Test
+    public void testCreateArcPath_ArcPoints() {
+        Path path =
+                PathAnimationUtils.createArcPath(
+                        10f, 20f, 50f, 80f, ArcDirection.CLOCKWISE);
+        assertNotNull(path);
+        assertFalse(path.isEmpty());
     }
 
-    @Test(expected = AssertionError.class)
-    public void testAssertPointsForArcAnimation_InvalidInput_WrongLengthFirstPoint() {
-        float[] start = new float[] {3f};
-        float[] end = new float[] {43f, 3f};
+    private static void assertArcTo(
+            Path path,
+            float expectedLeft,
+            float expectedTop,
+            float expectedRight,
+            float expectedBottom,
+            float expectedStartAngle,
+            float expectedSweepAngle) {
+        ArgumentCaptor<Float> left = ArgumentCaptor.forClass(Float.class);
+        ArgumentCaptor<Float> top = ArgumentCaptor.forClass(Float.class);
+        ArgumentCaptor<Float> right = ArgumentCaptor.forClass(Float.class);
+        ArgumentCaptor<Float> bottom = ArgumentCaptor.forClass(Float.class);
+        ArgumentCaptor<Float> startAngle = ArgumentCaptor.forClass(Float.class);
+        ArgumentCaptor<Float> sweepAngle = ArgumentCaptor.forClass(Float.class);
+        ArgumentCaptor<Boolean> forceMoveTo = ArgumentCaptor.forClass(Boolean.class);
 
-        PathAnimationUtils.assertPointsForArcAnimation(start, end);
-    }
+        verify(path)
+                .arcTo(
+                        left.capture(),
+                        top.capture(),
+                        right.capture(),
+                        bottom.capture(),
+                        startAngle.capture(),
+                        sweepAngle.capture(),
+                        forceMoveTo.capture());
 
-    @Test(expected = AssertionError.class)
-    public void testAssertPointsForArcAnimation_InvalidInput_WrongLengthSecondPoint() {
-        float[] start = new float[] {3f, 45f};
-        float[] end = new float[] {43f, 3f, 23f};
-
-        PathAnimationUtils.assertPointsForArcAnimation(start, end);
-    }
-
-    /**
-     * Asserts {@link RectF}s are equal within a delta and updates their values to match for
-     * follow-up testing.
-     *
-     * @param expected The expected {@link RectF}.
-     * @param actual The actual {@link RectF}
-     */
-    private static void assertRectF(RectF expected, RectF actual) {
-        assertEquals(expected.left, actual.left, MathUtils.EPSILON);
-        assertEquals(expected.top, actual.top, MathUtils.EPSILON);
-        assertEquals(expected.right, actual.right, MathUtils.EPSILON);
-        assertEquals(expected.bottom, actual.bottom, MathUtils.EPSILON);
-
-        expected.left = actual.left;
-        expected.top = actual.top;
-        expected.right = actual.right;
-        expected.bottom = actual.bottom;
+        assertEquals(expectedLeft, left.getValue(), MathUtils.EPSILON);
+        assertEquals(expectedTop, top.getValue(), MathUtils.EPSILON);
+        assertEquals(expectedRight, right.getValue(), MathUtils.EPSILON);
+        assertEquals(expectedBottom, bottom.getValue(), MathUtils.EPSILON);
+        assertEquals(expectedStartAngle, startAngle.getValue(), MathUtils.EPSILON);
+        assertEquals(expectedSweepAngle, sweepAngle.getValue(), MathUtils.EPSILON);
+        assertTrue(forceMoveTo.getValue());
     }
 }
