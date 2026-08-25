@@ -33,7 +33,7 @@ dictionary DomainOptions {
 
 // Use the <code>chrome.publicSuffix</code> API to query the browser's Public
 // Suffix List (PSL).
-[nodoc] interface PublicSuffix {
+interface PublicSuffix {
   // Determines whether |hostname| is itself a known public suffix.
   [nocompile] static boolean isKnownSuffix(DOMString hostname);
 
