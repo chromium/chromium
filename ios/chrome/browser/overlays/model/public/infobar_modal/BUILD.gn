@@ -13,15 +13,8 @@ source_set("infobar_modal") {
   deps = [
     "//base",
     "//components/autofill/core/browser",
-    "//components/password_manager/core/common:features",
-    "//components/translate/core/browser",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/autofill/model/message",
-    "//ios/chrome/browser/autofill/ui_bundled:ui_type",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/common/infobars",
-    "//ios/chrome/browser/passwords/infobars/model",
-    "//ui/gfx",
   ]
 }

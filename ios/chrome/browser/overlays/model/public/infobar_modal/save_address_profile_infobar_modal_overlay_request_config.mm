@@ -11,7 +11,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/form_import/addresses/autofill_save_update_address_profile_delegate_ios.h"
 #import "components/infobars/core/infobar.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_ui_type_util.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/overlays/model/public/common/infobars/infobar_overlay_request_config.h"
 
