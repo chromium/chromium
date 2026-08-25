@@ -255,6 +255,16 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
         }
 
         /**
+         * Returns whether the child item is selectable.
+         *
+         * @param childPosition The position of the child in the group.
+         * @return Whether the child item is selectable.
+         */
+        boolean isChildSelectable(int childPosition) {
+            return true;
+        }
+
+        /**
          * Called when the context menu for the group view is being built.
          *
          * @param activity The current activity.
@@ -470,6 +480,11 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
         @Override
         boolean isCollapsed() {
             return mRecentTabsManager.isPromoCollapsed();
+        }
+
+        @Override
+        boolean isChildSelectable(int childPosition) {
+            return false;
         }
     }
 
@@ -1043,7 +1058,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
-        return true;
+        return getGroup(groupPosition).isChildSelectable(childPosition);
     }
 
     // BaseExpandableListAdapter misc. implementation

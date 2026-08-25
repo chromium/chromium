@@ -154,6 +154,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_account_child_20dp.xml",
     "java/res/drawable/ic_account_child_40dp.xml",
     "java/res/drawable/ic_cloud_upload_24dp.xml",
+    "java/res/drawable/signin_promo_button_focus_ring.xml",
     "java/res/layout/account_picker_bottom_sheet_continue_button.xml",
     "java/res/layout/account_picker_bottom_sheet_header.xml",
     "java/res/layout/account_picker_bottom_sheet_new_account_row.xml",

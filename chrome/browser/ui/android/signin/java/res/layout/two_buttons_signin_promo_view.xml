@@ -92,6 +92,7 @@ found in the LICENSE file.
             android:text="@string/sync_promo_continue_as"
             android:singleLine="true"
             android:ellipsize="end"
+            android:foreground="@drawable/signin_promo_button_focus_ring"
             app:layout_constraintTop_toBottomOf="@id/signin_promo_description_buttons_barrier"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

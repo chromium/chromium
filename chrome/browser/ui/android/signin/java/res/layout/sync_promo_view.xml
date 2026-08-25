@@ -88,6 +88,7 @@ found in the LICENSE file.
             android:ellipsize="end"
             android:maxLines="1"
             android:text="@string/sync_promo_continue_as"
+            android:foreground="@drawable/signin_promo_button_focus_ring"
             style="@style/FilledButton" />
 
         <org.chromium.ui.widget.ButtonCompat

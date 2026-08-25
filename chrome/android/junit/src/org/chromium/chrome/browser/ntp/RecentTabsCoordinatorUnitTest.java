@@ -314,4 +314,33 @@ public class RecentTabsCoordinatorUnitTest {
         mTabStripHeightSupplier.set(100);
         assertEquals(0, mCoordinator.getView().getPaddingTop());
     }
+
+    @Test
+    public void testItemsCanFocus() {
+        ExpandableListView listView = mCoordinator.getListViewForTesting();
+        assertTrue(
+                "List view should allow items to focus so child buttons are accessible.",
+                listView.getItemsCanFocus());
+    }
+
+    @Test
+    public void testIsChildSelectable_PromoGroup() {
+        List<ForeignSession> sessions = new ArrayList<>();
+        sessions.add(createForeignSession("session_1", "Device 1"));
+        when(mRecentTabsManager.getForeignSessions()).thenReturn(sessions);
+        when(mRecentTabsManager.shouldShowPromo()).thenReturn(true);
+        mUpdatedCallbackCaptor.getValue().onUpdated();
+
+        ExpandableListView listView = mCoordinator.getListViewForTesting();
+        RecentTabsRowAdapter adapter = (RecentTabsRowAdapter) listView.getExpandableListAdapter();
+
+        // Foreign session child should be selectable.
+        int foreignSessionGroupPos = adapter.getGroupPositionForForeignSession("session_1");
+        assertTrue(adapter.isChildSelectable(foreignSessionGroupPos, 0));
+
+        // Signin promo group child should NOT be selectable so focus delegates to its child
+        // buttons.
+        int promoGroupPos = adapter.getGroupCount() - 1;
+        assertFalse(adapter.isChildSelectable(promoGroupPos, 0));
+    }
 }

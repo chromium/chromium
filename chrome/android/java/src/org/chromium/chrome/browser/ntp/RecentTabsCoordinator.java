@@ -94,6 +94,7 @@ public class RecentTabsCoordinator
         mListView = mView.findViewById(R.id.odp_listview);
         mAdapter = new RecentTabsRowAdapter(activity, recentTabsManager, mContextMenuManager);
         mListView.setAdapter(mAdapter);
+        mListView.setItemsCanFocus(true);
         mListView.setOnChildClickListener(this::onChildClick);
         mListView.setGroupIndicator(null);
         mListView.setOnGroupCollapseListener(this::onGroupCollapse);

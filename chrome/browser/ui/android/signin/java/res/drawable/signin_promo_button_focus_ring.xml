@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+  <item android:state_focused="true">
+    <inset
+        android:insetLeft="2dp"
+        android:insetTop="6dp"
+        android:insetRight="2dp"
+        android:insetBottom="6dp">
+      <shape android:shape="rectangle">
+        <corners android:radius="@dimen/button_compat_corner_radius" />
+        <solid android:color="@android:color/transparent" />
+        <stroke
+            android:width="@dimen/focused_outline_stroke_width"
+            android:color="?attr/colorOnPrimary" />
+      </shape>
+    </inset>
+  </item>
+
+  <item android:drawable="@android:color/transparent" />
+</selector>
