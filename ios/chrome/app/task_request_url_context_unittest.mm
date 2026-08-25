@@ -14,15 +14,18 @@
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
+#import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -62,7 +65,7 @@ class TaskRequestForURLContextTest : public PlatformTest {
   }
 
   UIOpenURLContext* CreateMockURLContext(NSURL* url) {
-    id mockContext = OCMClassMock([UIOpenURLContext class]);
+    UIOpenURLContext* mockContext = OCMClassMock([UIOpenURLContext class]);
     OCMStub([mockContext URL]).andReturn(url);
     return mockContext;
   }
@@ -357,4 +360,67 @@ TEST_F(TaskRequestForURLContextTest, TestExternalActionMetrics) {
           user_action_tester.GetActionCount(test_case.expected_user_action), 1);
     }
   }
+}
+
+// Test double for SceneController to verify tab opening from TaskRequests.
+@interface TaskRequestURLContextTestTabOpener : SceneController <TabOpening>
+
+@property(nonatomic, assign) ApplicationModeForTabOpening targetMode;
+@property(nonatomic, assign) UrlLoadParams urlLoadParams;
+@property(nonatomic, assign) BOOL dismissOmnibox;
+@property(nonatomic, assign) TabOpeningPostOpeningAction completionAction;
+@property(nonatomic, assign) BOOL completionActionExecuted;
+
+@end
+
+@implementation TaskRequestURLContextTestTabOpener
+
+- (ProceduralBlock)completionBlockForTriggeringAction:
+    (TabOpeningPostOpeningAction)action {
+  self.completionAction = action;
+  return ^{
+    self.completionActionExecuted = YES;
+  };
+}
+
+- (void)dismissModalsAndMaybeOpenSelectedTabInMode:
+            (ApplicationModeForTabOpening)targetMode
+                                 withUrlLoadParams:(UrlLoadParams)urlLoadParams
+                                    dismissOmnibox:(BOOL)dismissOmnibox
+                                        completion:(ProceduralBlock)completion {
+  self.targetMode = targetMode;
+  self.urlLoadParams = urlLoadParams;
+  self.dismissOmnibox = dismissOmnibox;
+  if (completion) {
+    completion();
+  }
+}
+
+@end
+
+// Tests that WidgetKit URL execution correctly triggers the scene controller.
+TEST_F(TaskRequestForURLContextTest, TestWidgetURLContextExecution) {
+  NSURL* url =
+      [NSURL URLWithString:@"chromewidgetkit://quick-actions-widget/incognito"];
+  UIOpenURLContext* context = CreateMockURLContext(url);
+
+  TaskRequestForURLContext* request =
+      [TaskRequestForURLContext taskRequestWithURLContext:context
+                                               sceneState:scene_state_
+                                              isColdStart:YES];
+  EXPECT_NE(request, nil);
+
+  TaskRequestURLContextTestTabOpener* tab_opener =
+      [[TaskRequestURLContextTestTabOpener alloc]
+          initWithSceneState:scene_state_];
+  scene_state_.controller = tab_opener;
+
+  [request execute];
+
+  EXPECT_EQ(tab_opener.targetMode, ApplicationModeForTabOpening::INCOGNITO);
+  EXPECT_EQ(tab_opener.urlLoadParams.web_params.url, GURL("chrome://newtab/"));
+  EXPECT_FALSE(tab_opener.dismissOmnibox);
+  EXPECT_EQ(tab_opener.completionAction,
+            TabOpeningPostOpeningAction::FOCUS_OMNIBOX);
+  EXPECT_TRUE(tab_opener.completionActionExecuted);
 }

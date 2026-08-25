@@ -9,11 +9,20 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
+#import "base/strings/stringprintf.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
+#import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/task_request_private.h"
 #import "ios/chrome/app/task_request_url_context_private.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/app_group/widget_constants.h"
+#import "net/base/apple/url_conversions.h"
+#import "net/base/url_util.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -107,7 +116,95 @@ std::optional<WidgetKitExtensionAction> ActionForWidgetURL(NSURL* url) {
 }
 
 - (void)handleCommandWithSceneState:(SceneState*)sceneState {
-  // TODO(crbug.com/493816082): Add implementation.
+  NSURL* url = self.URLContext.URL;
+  std::optional<WidgetKitExtensionAction> actionOpt = self.action;
+  if (!actionOpt) {
+    return;
+  }
+
+  WidgetKitExtensionAction action = actionOpt.value();
+  GURL externalGURL;
+  TabOpeningPostOpeningAction postOpeningAction =
+      TabOpeningPostOpeningAction::NO_ACTION;
+  ApplicationModeForTabOpening targetMode =
+      ApplicationModeForTabOpening::NORMAL;
+
+  switch (action) {
+    case WidgetKitExtensionAction::ACTION_SEARCH_WIDGET_SEARCH:
+    case WidgetKitExtensionAction::ACTION_QUICK_ACTIONS_SEARCH:
+    case WidgetKitExtensionAction::ACTION_LOCKSCREEN_LAUNCHER_SEARCH:
+    case WidgetKitExtensionAction::ACTION_SHORTCUTS_SEARCH:
+      externalGURL = GURL(kChromeUINewTabURL);
+      postOpeningAction = TabOpeningPostOpeningAction::FOCUS_OMNIBOX;
+      break;
+
+    case WidgetKitExtensionAction::ACTION_QUICK_ACTIONS_INCOGNITO:
+    case WidgetKitExtensionAction::ACTION_LOCKSCREEN_LAUNCHER_INCOGNITO:
+      externalGURL = GURL(kChromeUINewTabURL);
+      postOpeningAction = TabOpeningPostOpeningAction::FOCUS_OMNIBOX;
+      targetMode = ApplicationModeForTabOpening::INCOGNITO;
+      break;
+
+    case WidgetKitExtensionAction::ACTION_QUICK_ACTIONS_VOICE_SEARCH:
+    case WidgetKitExtensionAction::ACTION_LOCKSCREEN_LAUNCHER_VOICE_SEARCH:
+      externalGURL = GURL(kChromeUINewTabURL);
+      postOpeningAction = TabOpeningPostOpeningAction::START_VOICE_SEARCH;
+      break;
+
+    case WidgetKitExtensionAction::ACTION_QUICK_ACTIONS_QR_READER:
+      externalGURL = GURL(kChromeUINewTabURL);
+      postOpeningAction = TabOpeningPostOpeningAction::START_QR_CODE_SCANNER;
+      break;
+
+    case WidgetKitExtensionAction::ACTION_QUICK_ACTIONS_LENS:
+      externalGURL = GURL();
+      postOpeningAction =
+          TabOpeningPostOpeningAction::START_LENS_FROM_HOME_SCREEN_WIDGET;
+      break;
+
+    case WidgetKitExtensionAction::ACTION_SHORTCUTS_OPEN: {
+      std::string URLQueryParam;
+      if (net::GetValueForKeyInQuery(net::GURLWithNSURL(url), "url",
+                                     &URLQueryParam)) {
+        externalGURL = GURL(URLQueryParam);
+      }
+      targetMode = ApplicationModeForTabOpening::UNDETERMINED;
+      break;
+    }
+
+    case WidgetKitExtensionAction::
+        ACTION_SEARCH_PASSWORDS_WIDGET_SEARCH_PASSWORDS:
+      externalGURL = GURL();
+      postOpeningAction = TabOpeningPostOpeningAction::SEARCH_PASSWORDS;
+      break;
+
+    case WidgetKitExtensionAction::ACTION_LOCKSCREEN_LAUNCHER_GAME:
+    case WidgetKitExtensionAction::ACTION_DINO_WIDGET_GAME:
+      externalGURL = GURL(
+          base::StringPrintf("%s://%s", kChromeUIScheme, kChromeUIDinoHost));
+      break;
+  }
+
+  UrlLoadParams urlLoadParams = UrlLoadParams::InNewTab(externalGURL);
+  urlLoadParams.from_widget_or_siri = YES;
+
+  const BOOL dismissOmnibox =
+      postOpeningAction != TabOpeningPostOpeningAction::FOCUS_OMNIBOX;
+
+  id<TabOpening> tabOpener = sceneState.controller;
+  __weak id<TabOpening> weakTabOpener = tabOpener;
+  ProceduralBlock completion = ^{
+    ProceduralBlock triggerBlock =
+        [weakTabOpener completionBlockForTriggeringAction:postOpeningAction];
+    if (triggerBlock) {
+      triggerBlock();
+    }
+  };
+
+  [tabOpener dismissModalsAndMaybeOpenSelectedTabInMode:targetMode
+                                      withUrlLoadParams:urlLoadParams
+                                         dismissOmnibox:dismissOmnibox
+                                             completion:completion];
 }
 
 @end
