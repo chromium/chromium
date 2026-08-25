@@ -1873,4 +1873,38 @@ TEST_P(ViewTransitionTest, AutoResizeMismatchedSizes) {
   EXPECT_EQ(GetState(transition), State::kAborted);
 }
 
+TEST_P(ViewTransitionTest, RunPostPrePaintStepsOnAbortedTransitionCrash) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      #scope {
+        width: 100px;
+        height: 100px;
+        view-transition-name: my-scope;
+      }
+    </style>
+    <div id="scope"></div>
+  )HTML");
+
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  auto* scope_element = GetDocument().getElementById(AtomicString("scope"));
+  auto* transition = ScopedViewTransition::startViewTransition(
+      script_state, *scope_element, IGNORE_EXCEPTION_FOR_TESTING);
+
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  EXPECT_EQ(GetState(transition), State::kDOMCallbackRunning);
+
+  auto* vt = transition->GetViewTransitionForTest();
+
+  // In practice, this happens when a transition is aborted mid-lifecycle due to
+  // an asynchronous viewport resize (e.g. from a virtual keyboard on ChromeOS
+  // or dynamic browser controls) triggering a skip.
+  vt->SkipTransitionSoon(ViewTransition::PromiseResponse::kRejectAbort,
+                         ViewTransitionSkipReason::kSnapshotRootChangedSize);
+  vt->NotifyDOMCallbackFinished(true);
+
+  EXPECT_EQ(GetState(transition), State::kAborted);
+}
+
 }  // namespace blink

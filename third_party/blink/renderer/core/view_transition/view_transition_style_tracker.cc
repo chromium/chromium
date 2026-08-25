@@ -545,6 +545,7 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
     InvalidateHitTestingCache();
     InvalidateStyleAndCompositing();
     view_transition_names_.clear();
+    scope_tag_ = g_null_atom;
   }
 }
 
@@ -1368,6 +1369,7 @@ void ViewTransitionStyleTracker::EndTransition() {
   pending_transition_element_names_.clear();
   set_element_sequence_id_ = 0;
   view_transition_names_.clear();
+  scope_tag_ = g_null_atom;
   is_root_transitioning_ = false;
 }
 
@@ -1482,6 +1484,8 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
 bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
   DCHECK_GE(document_->Lifecycle().GetState(),
             DocumentLifecycle::kPrePaintClean);
+  CHECK_NE(state_, State::kFinished);
+
   // Abort if the originating element is not there.
   Element* scope = OriginatingElement();
   if (!scope) {
