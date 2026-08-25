@@ -27,6 +27,7 @@
 #include "media/base/bitrate.h"
 #include "media/base/media_util.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #include "media/video/fake_video_encode_accelerator.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -1123,6 +1124,97 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, 10bAv1RejectedWithoutP010) {
                         }));
   RunUntilIdle();
   EXPECT_TRUE(done_called);
+}
+
+TEST_F(VideoEncodeAcceleratorAdapterTest,
+       MatchesChromaAndBitDepthNotFirstRextEntry) {
+  profile_ = HEVCPROFILE_REXT;
+  VideoEncodeAccelerator::SupportedProfile eight_bit_422(
+      profile_, gfx::Size(3840, 2160), 30, 1,
+      VideoEncodeAccelerator::kConstantMode |
+          VideoEncodeAccelerator::kVariableMode);
+  eight_bit_422.gpu_supported_pixel_formats = {PIXEL_FORMAT_NV16};
+  eight_bit_422.chroma_sampling = VideoChromaSampling::k422;
+  eight_bit_422.bit_depth = 8;
+
+  VideoEncodeAccelerator::SupportedProfile ten_bit_444 = eight_bit_422;
+  ten_bit_444.gpu_supported_pixel_formats = {PIXEL_FORMAT_P410LE};
+  ten_bit_444.chroma_sampling = VideoChromaSampling::k444;
+  ten_bit_444.bit_depth = 10;
+  supported_profiles_ = {eight_bit_422, ten_bit_444};
+  EXPECT_CALL(*gpu_factories_.get(),
+              GetVideoEncodeAcceleratorSupportedProfiles())
+      .WillRepeatedly(Return(supported_profiles_));
+
+  VideoEncoder::Options options;
+  options.frame_size = gfx::Size(640, 480);
+  options.subsampling = VideoChromaSampling::k444;
+  options.bit_depth = 10;
+  adapter()->SetInputBufferPreferenceForTesting(
+      VideoEncodeAcceleratorAdapter::InputBufferKind::CpuMemBuf);
+
+  int outputs_count = 0;
+  vea()->SetEncodingCallback(base::BindLambdaForTesting(
+      [&](BitstreamBuffer&, bool keyframe, scoped_refptr<VideoFrame> frame) {
+        EXPECT_EQ(frame->format(), PIXEL_FORMAT_P410LE);
+        return BitstreamBufferMetadata(1, keyframe, frame->timestamp());
+      }));
+
+  adapter()->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                        base::BindLambdaForTesting(
+                            [&](VideoEncoderOutput,
+                                std::optional<VideoEncoder::CodecDescription>) {
+                              outputs_count++;
+                            }),
+                        ValidatingStatusCB());
+
+  adapter()->Encode(
+      CreateGreenCpuFrame(options.frame_size, base::Milliseconds(1)),
+      VideoEncoder::EncodeOptions(true), ValidatingStatusCB());
+  EXPECT_TRUE(base::test::RunUntil([&]() { return outputs_count == 1; }));
+}
+
+TEST_F(VideoEncodeAcceleratorAdapterTest,
+       RextDestDoesNotNeedGpuSupportedFormats) {
+  profile_ = HEVCPROFILE_REXT;
+  VideoEncodeAccelerator::SupportedProfile rext(
+      profile_, gfx::Size(3840, 2160), 30, 1,
+      VideoEncodeAccelerator::kConstantMode |
+          VideoEncodeAccelerator::kVariableMode);
+  rext.chroma_sampling = VideoChromaSampling::k422;
+  rext.bit_depth = 8;
+  supported_profiles_ = {rext};
+  EXPECT_CALL(*gpu_factories_.get(),
+              GetVideoEncodeAcceleratorSupportedProfiles())
+      .WillRepeatedly(Return(supported_profiles_));
+
+  VideoEncoder::Options options;
+  options.frame_size = gfx::Size(640, 480);
+  options.subsampling = VideoChromaSampling::k422;
+  options.bit_depth = 8;
+
+  int outputs_count = 0;
+  vea()->SetEncodingCallback(base::BindLambdaForTesting(
+      [&](BitstreamBuffer&, bool keyframe, scoped_refptr<VideoFrame> frame) {
+        EXPECT_EQ(frame->format(), PIXEL_FORMAT_NV16);
+        return BitstreamBufferMetadata(1, keyframe, frame->timestamp());
+      }));
+
+  adapter()->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                        base::BindLambdaForTesting(
+                            [&](VideoEncoderOutput,
+                                std::optional<VideoEncoder::CodecDescription>) {
+                              outputs_count++;
+                            }),
+                        ValidatingStatusCB());
+
+  adapter()->Encode(
+      CreateGreenCpuFrame(options.frame_size, base::Milliseconds(1)),
+      VideoEncoder::EncodeOptions(true), ValidatingStatusCB());
+  adapter()->Encode(
+      CreateGreenGpuFrame(options.frame_size, base::Milliseconds(2)),
+      VideoEncoder::EncodeOptions(false), ValidatingStatusCB());
+  EXPECT_TRUE(base::test::RunUntil([&]() { return outputs_count == 2; }));
 }
 
 INSTANTIATE_TEST_SUITE_P(VideoEncodeAcceleratorAdapterTest,

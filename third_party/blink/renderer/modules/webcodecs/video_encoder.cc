@@ -195,20 +195,24 @@ media::EncoderStatus IsAcceleratedConfigurationSupported(
   // High bit depths are supported by HEVC Main10 and AV1 Main only; AV1
   // profile 1 is deliberately left out because the 4:4:4 hardware input format
   // is 8 bit AYUV, and 10b lacks hardware support for now.
-  media::VideoChromaSampling required_sampling =
-      (profile == media::AV1PROFILE_PROFILE_HIGH)
-          ? media::VideoChromaSampling::k444
-          : media::VideoChromaSampling::k420;
+  // TODO(crbug.com/537818862): Advertise chroma_sampling and bit_depth on every
+  // SupportedProfile and drop this hardcoded allowlist.
+  if (profile != media::HEVCPROFILE_REXT) {
+    media::VideoChromaSampling required_sampling =
+        (profile == media::AV1PROFILE_PROFILE_HIGH)
+            ? media::VideoChromaSampling::k444
+            : media::VideoChromaSampling::k420;
 
-  const int bit_depth = options.bit_depth.value_or(8);
-  const bool bit_depth_supported =
-      bit_depth == 8 ||
-      (bit_depth == 10 && (profile == media::HEVCPROFILE_MAIN10 ||
-                           profile == media::AV1PROFILE_PROFILE_MAIN));
-  if ((options.subsampling.has_value() &&
-       options.subsampling.value() != required_sampling) ||
-      !bit_depth_supported) {
-    return media::EncoderStatus::Codes::kEncoderUnsupportedConfig;
+    const int bit_depth = options.bit_depth.value_or(8);
+    const bool bit_depth_supported =
+        bit_depth == 8 ||
+        (bit_depth == 10 && (profile == media::HEVCPROFILE_MAIN10 ||
+                             profile == media::AV1PROFILE_PROFILE_MAIN));
+    if ((options.subsampling.has_value() &&
+         options.subsampling.value() != required_sampling) ||
+        !bit_depth_supported) {
+      return media::EncoderStatus::Codes::kEncoderUnsupportedConfig;
+    }
   }
 
   auto supported_profiles =
@@ -264,6 +268,16 @@ media::EncoderStatus IsAcceleratedConfigurationSupported(
       if (!(mode & supported_profile.rate_control_modes)) {
         continue;
       }
+    }
+
+    if (supported_profile.chroma_sampling.has_value() &&
+        supported_profile.chroma_sampling.value() !=
+            options.subsampling.value_or(media::VideoChromaSampling::k420)) {
+      continue;
+    }
+    if (supported_profile.bit_depth.has_value() &&
+        supported_profile.bit_depth.value() != options.bit_depth.value_or(8)) {
+      continue;
     }
 
     found_supported_profile = true;
@@ -481,7 +495,8 @@ bool VerifyCodecSupportStatic(VideoEncoderTraits::ParsedConfig* config,
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
     case media::VideoCodec::kHEVC:
       if (config->profile != media::VideoCodecProfile::HEVCPROFILE_MAIN &&
-          config->profile != media::VideoCodecProfile::HEVCPROFILE_MAIN10) {
+          config->profile != media::VideoCodecProfile::HEVCPROFILE_MAIN10 &&
+          config->profile != media::VideoCodecProfile::HEVCPROFILE_REXT) {
         *js_error_message = "Unsupported hevc profile.";
         return false;
       }

@@ -46,6 +46,20 @@ TEST(VideoEncodeAcceleratorSupportedProfile, RoundTrip) {
   EXPECT_EQ(input, output);
 }
 
+TEST(VideoEncodeAcceleratorSupportedProfile, RoundTripChromaAndBitDepth) {
+  ::media::VideoEncodeAccelerator::SupportedProfile input;
+  input.profile = HEVCPROFILE_REXT;
+  input.max_resolution = gfx::Size(1920, 1080);
+  input.rate_control_modes = VideoEncodeAccelerator::kConstantMode;
+  input.chroma_sampling = VideoChromaSampling::k422;
+  input.bit_depth = 10;
+
+  ::media::VideoEncodeAccelerator::SupportedProfile output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+              mojom::VideoEncodeAcceleratorSupportedProfile>(input, output));
+  EXPECT_EQ(input, output);
+}
+
 TEST(VideoEncoderInfoStructTraitTest, RoundTrip) {
   ::media::VideoEncoderInfo input;
   input.implementation_name = "FakeVideoEncodeAccelerator";

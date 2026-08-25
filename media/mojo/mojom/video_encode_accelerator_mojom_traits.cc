@@ -94,6 +94,10 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorSupportedProfileDataView,
   }
   out->gpu_supported_pixel_formats = std::move(gpu_supported_pixel_formats);
   out->supports_gpu_shared_images = data.supports_gpu_shared_images();
+  if (!data.ReadChromaSampling(&out->chroma_sampling)) {
+    return false;
+  }
+  out->bit_depth = data.bit_depth();
   return true;
 }
 

@@ -46,6 +46,7 @@
 #include "gpu/config/gpu_lists_version.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_util.h"
+#include "media/base/video_types.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "skia/ext/skia_commit_hash.h"
 #include "third_party/angle/src/common/angle_version_info.h"
@@ -535,6 +536,33 @@ const char* GetProfileName(gpu::VideoCodecProfile profile) {
   NOTREACHED();
 }
 
+std::string GetEncodeProfileLabel(
+    const gpu::VideoEncodeAcceleratorSupportedProfile& profile) {
+  std::string name = GetProfileName(profile.profile);
+  if (!profile.bit_depth.has_value() && !profile.chroma_sampling.has_value()) {
+    return name;
+  }
+
+  std::string details;
+  if (profile.bit_depth.has_value()) {
+    details = base::StringPrintf("%u-bit", profile.bit_depth.value());
+  }
+  if (profile.chroma_sampling.has_value()) {
+    const auto sampling = static_cast<media::VideoChromaSampling>(
+        profile.chroma_sampling.value());
+    if (sampling != media::VideoChromaSampling::kUnknown) {
+      if (!details.empty()) {
+        details += ", ";
+      }
+      details += media::VideoChromaSamplingToString(sampling);
+    }
+  }
+  if (details.empty()) {
+    return name;
+  }
+  return base::StringPrintf("%s (%s)", name.c_str(), details.c_str());
+}
+
 base::ListValue GetVideoAcceleratorsInfo() {
   gpu::GPUInfo gpu_info = GpuDataManagerImpl::GetInstance()->GetGPUInfo();
   base::ListValue info;
@@ -564,7 +592,7 @@ base::ListValue GetVideoAcceleratorsInfo() {
   for (const auto& profile :
        gpu_info.video_encode_accelerator_supported_profiles) {
     std::string codec_string =
-        base::StringPrintf("Encode %s", GetProfileName(profile.profile));
+        base::StringPrintf("Encode %s", GetEncodeProfileLabel(profile).c_str());
     std::string resolution_string = base::StringPrintf(
         "%s to %s pixels, and/or %.3f fps%s.",
         profile.min_resolution.ToString(), profile.max_resolution.ToString(),

@@ -5,6 +5,8 @@
 #ifndef MEDIA_MOJO_MOJOM_VIDEO_ENCODE_ACCELERATOR_MOJOM_TRAITS_H_
 #define MEDIA_MOJO_MOJOM_VIDEO_ENCODE_ACCELERATOR_MOJOM_TRAITS_H_
 
+#include <optional>
+
 #include "base/notreached.h"
 #include "media/base/bitrate.h"
 #include "media/base/ipc/media_param_traits.h"
@@ -94,6 +96,16 @@ struct StructTraits<
   static bool supports_gpu_shared_images(
       const media::VideoEncodeAccelerator::SupportedProfile& profile) {
     return profile.supports_gpu_shared_images;
+  }
+
+  static std::optional<media::VideoChromaSampling> chroma_sampling(
+      const media::VideoEncodeAccelerator::SupportedProfile& profile) {
+    return profile.chroma_sampling;
+  }
+
+  static std::optional<uint8_t> bit_depth(
+      const media::VideoEncodeAccelerator::SupportedProfile& profile) {
+    return profile.bit_depth;
   }
 
   static bool Read(

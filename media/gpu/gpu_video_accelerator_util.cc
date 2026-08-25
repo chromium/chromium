@@ -141,6 +141,11 @@ GpuVideoAcceleratorUtil::ConvertGpuToMediaEncodeProfiles(
     // If VBR is supported in the future, remove this hard-coding of CBR.
     profile.rate_control_modes = media::VideoEncodeAccelerator::kConstantMode;
     profile.is_software_codec = gpu_profile.is_software_codec;
+    if (gpu_profile.chroma_sampling.has_value()) {
+      profile.chroma_sampling =
+          static_cast<VideoChromaSampling>(gpu_profile.chroma_sampling.value());
+    }
+    profile.bit_depth = gpu_profile.bit_depth;
     profiles.push_back(profile);
   }
   return profiles;
@@ -160,6 +165,11 @@ GpuVideoAcceleratorUtil::ConvertMediaToGpuEncodeProfiles(
     profile.max_framerate_numerator = media_profile.max_framerate_numerator;
     profile.max_framerate_denominator = media_profile.max_framerate_denominator;
     profile.is_software_codec = media_profile.is_software_codec;
+    if (media_profile.chroma_sampling.has_value()) {
+      profile.chroma_sampling =
+          static_cast<uint8_t>(media_profile.chroma_sampling.value());
+    }
+    profile.bit_depth = media_profile.bit_depth;
     profiles.push_back(profile);
   }
   return profiles;

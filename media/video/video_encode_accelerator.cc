@@ -324,7 +324,8 @@ bool operator==(const VideoEncodeAccelerator::SupportedProfile& l,
          l.max_framerate_denominator == r.max_framerate_denominator &&
          l.rate_control_modes == r.rate_control_modes &&
          l.scalability_modes == r.scalability_modes &&
-         l.is_software_codec == r.is_software_codec;
+         l.is_software_codec == r.is_software_codec &&
+         l.chroma_sampling == r.chroma_sampling && l.bit_depth == r.bit_depth;
 }
 
 bool operator==(const H264Metadata& l, const H264Metadata& r) {

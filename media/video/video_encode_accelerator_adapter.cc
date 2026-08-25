@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <optional>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -24,11 +25,13 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/encoder_status.h"
+#include "media/base/format_utils.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 #include "media/formats/mp4/h264_annex_b_to_avc_bitstream_converter.h"
@@ -165,6 +168,23 @@ VideoPixelFormat InputPixelFormat(VideoCodecProfile profile,
   if (profile == HEVCPROFILE_MAIN10) {
     return PIXEL_FORMAT_P010LE;
   }
+  if (profile == HEVCPROFILE_REXT) {
+    const auto chroma = opts.subsampling.value_or(VideoChromaSampling::k420);
+    const int bit_depth = opts.bit_depth.value_or(8);
+    if (chroma == VideoChromaSampling::k422 && bit_depth == 8) {
+      return PIXEL_FORMAT_NV16;
+    }
+    if (chroma == VideoChromaSampling::k444 && bit_depth == 8) {
+      return PIXEL_FORMAT_NV24;
+    }
+    if (chroma == VideoChromaSampling::k422 && bit_depth == 10) {
+      return PIXEL_FORMAT_P210LE;
+    }
+    if (chroma == VideoChromaSampling::k444 && bit_depth == 10) {
+      return PIXEL_FORMAT_P410LE;
+    }
+    NOTREACHED();
+  }
   // AV1 profile 0 covers both 8 and 10 bit, so the requested bit depth is what
   // decides the input format, and the input format is in turn what tells the
   // platform encoder which bit depth to code at. AV1 profile 1 is excluded: its
@@ -175,19 +195,45 @@ VideoPixelFormat InputPixelFormat(VideoCodecProfile profile,
   return default_format;
 }
 
+bool ProfileMatchesOptions(
+    const VideoEncodeAccelerator::SupportedProfile& supported_profile,
+    const VideoEncoder::Options& options) {
+  if (supported_profile.chroma_sampling.has_value() &&
+      supported_profile.chroma_sampling.value() !=
+          options.subsampling.value_or(VideoChromaSampling::k420)) {
+    return false;
+  }
+  if (supported_profile.bit_depth.has_value() &&
+      supported_profile.bit_depth.value() != options.bit_depth.value_or(8)) {
+    return false;
+  }
+  return true;
+}
+
 bool IsAcceptedWithoutConversion(VideoPixelFormat input_format,
                                  VideoPixelFormat frame_format) {
   return frame_format == input_format || (input_format == PIXEL_FORMAT_NV12 &&
                                           frame_format == PIXEL_FORMAT_I420);
 }
 
+VideoPixelFormat GpuFramePixelFormat(VideoPixelFormat input_format) {
+  switch (input_format) {
+    case PIXEL_FORMAT_NV16:
+    case PIXEL_FORMAT_NV24:
+    case PIXEL_FORMAT_P010LE:
+    case PIXEL_FORMAT_P210LE:
+    case PIXEL_FORMAT_P410LE:
+      return input_format;
+    default:
+      return PIXEL_FORMAT_NV12;
+  }
+}
+
 bool CanPassthroughGpuFrameFormat(
     VideoPixelFormat input_format,
     VideoPixelFormat frame_format,
     const std::vector<VideoPixelFormat>& gpu_supported_formats) {
-  const VideoPixelFormat passthrough_format =
-      input_format == PIXEL_FORMAT_P010LE ? PIXEL_FORMAT_P010LE
-                                          : PIXEL_FORMAT_NV12;
+  const VideoPixelFormat passthrough_format = GpuFramePixelFormat(input_format);
   const bool matches_input_format = frame_format == input_format;
   const bool matches_passthrough_format = frame_format == passthrough_format;
   const bool is_gpu_supported_format =
@@ -488,7 +534,8 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
       VideoEncodeAccelerator::SupportedRateControlMode::kNoMode;
   std::vector<VideoPixelFormat> gpu_supported_pixel_formats;
   for (const auto& supported_profile : *supported_profiles) {
-    if (supported_profile.profile == profile) {
+    if (supported_profile.profile == profile &&
+        ProfileMatchesOptions(supported_profile, options)) {
       supported_rc_modes = supported_profile.rate_control_modes;
       gpu_supported_pixel_formats =
           supported_profile.gpu_supported_pixel_formats;
@@ -511,13 +558,17 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
   profile_ = profile;
   supported_rc_modes_ = supported_rc_modes;
   gpu_supported_pixel_formats_ = std::move(gpu_supported_pixel_formats);
-  if (gpu_supported_pixel_formats_.empty()) {
-    gpu_supported_pixel_formats_.push_back(kDefaultPixelFormat);
-  }
   input_pixel_format_ =
       InputPixelFormat(profile_, options, kDefaultPixelFormat);
-  if (!std::ranges::contains(gpu_supported_pixel_formats_,
-                             input_pixel_format_)) {
+  // An empty list means no GPU formats were advertised, not that CPU conversion
+  // is unsupported. Preserve the legacy fallback only when it matches
+  // `input_pixel_format_`; otherwise it could bypass the required conversion.
+  if (gpu_supported_pixel_formats_.empty()) {
+    if (input_pixel_format_ == kDefaultPixelFormat) {
+      gpu_supported_pixel_formats_.push_back(kDefaultPixelFormat);
+    }
+  } else if (!std::ranges::contains(gpu_supported_pixel_formats_,
+                                    input_pixel_format_)) {
     std::move(done_cb).Run(
         EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
                       "Unsupported input pixel format for this profile.")
@@ -1175,9 +1226,9 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
   if (!gmb_frame_pool_) {
     gmb_frame_pool_ = base::MakeRefCounted<MappableSharedImageVideoFramePool>(
         gpu_factories_, dest_coded_size,
-        input_pixel_format_ == PIXEL_FORMAT_P010LE
-            ? viz::MultiPlaneFormat::kP010
-            : viz::MultiPlaneFormat::kNV12);
+        VideoPixelFormatToSharedImageFormat(
+            GpuFramePixelFormat(input_pixel_format_))
+            .value());
   }
 
   auto color_space = VideoFrameConverter::GetDestinationColorSpace(*src_frame);

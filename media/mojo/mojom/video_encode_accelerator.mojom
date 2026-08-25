@@ -55,6 +55,8 @@ struct VideoEncodeAcceleratorSupportedProfile {
   bool is_software_codec;
   array<VideoPixelFormat> gpu_supported_pixel_formats;
   bool supports_gpu_shared_images;
+  VideoChromaSampling? chroma_sampling;
+  uint8? bit_depth;
 };
 
 // Identifies a CommandBufferStub. MediaGpuChannelManager is responsible

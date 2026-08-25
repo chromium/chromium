@@ -175,6 +175,8 @@ struct GPU_CONFIG_EXPORT VideoEncodeAcceleratorSupportedProfile {
   uint32_t max_framerate_numerator;
   uint32_t max_framerate_denominator;
   bool is_software_codec;
+  std::optional<uint8_t> chroma_sampling;
+  std::optional<uint8_t> bit_depth;
 };
 using VideoEncodeAcceleratorSupportedProfiles =
     std::vector<VideoEncodeAcceleratorSupportedProfile>;

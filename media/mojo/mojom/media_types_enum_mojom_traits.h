@@ -15,6 +15,7 @@
 #include "media/base/renderer_factory_selector.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/video_transformation.h"
+#include "media/base/video_types.h"
 #include "media/cdm/cdm_document_service.h"
 #include "media/mojo/mojom/media_types.mojom-shared.h"
 
@@ -394,6 +395,46 @@ struct EnumTraits<media::mojom::VideoRotation, ::media::VideoRotation> {
         return ::media::VideoRotation::VIDEO_ROTATION_180;
       case media::mojom::VideoRotation::kVideoRotation270:
         return ::media::VideoRotation::VIDEO_ROTATION_270;
+    }
+
+    NOTREACHED();
+  }
+};
+
+template <>
+struct EnumTraits<media::mojom::VideoChromaSampling,
+                  ::media::VideoChromaSampling> {
+  static media::mojom::VideoChromaSampling ToMojom(
+      ::media::VideoChromaSampling input) {
+    switch (input) {
+      case ::media::VideoChromaSampling::kUnknown:
+        return media::mojom::VideoChromaSampling::kUnknown;
+      case ::media::VideoChromaSampling::k420:
+        return media::mojom::VideoChromaSampling::k420;
+      case ::media::VideoChromaSampling::k422:
+        return media::mojom::VideoChromaSampling::k422;
+      case ::media::VideoChromaSampling::k444:
+        return media::mojom::VideoChromaSampling::k444;
+      case ::media::VideoChromaSampling::k400:
+        return media::mojom::VideoChromaSampling::k400;
+    }
+
+    NOTREACHED();
+  }
+
+  static ::media::VideoChromaSampling FromMojom(
+      media::mojom::VideoChromaSampling input) {
+    switch (input) {
+      case media::mojom::VideoChromaSampling::kUnknown:
+        return ::media::VideoChromaSampling::kUnknown;
+      case media::mojom::VideoChromaSampling::k420:
+        return ::media::VideoChromaSampling::k420;
+      case media::mojom::VideoChromaSampling::k422:
+        return ::media::VideoChromaSampling::k422;
+      case media::mojom::VideoChromaSampling::k444:
+        return ::media::VideoChromaSampling::k444;
+      case media::mojom::VideoChromaSampling::k400:
+        return ::media::VideoChromaSampling::k400;
     }
 
     NOTREACHED();
