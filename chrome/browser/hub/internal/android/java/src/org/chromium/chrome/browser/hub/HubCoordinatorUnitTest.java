@@ -78,7 +78,6 @@ public class HubCoordinatorUnitTest {
     public boolean mIsXrDevice;
 
     private static final int TAB_ID = 7;
-    private static final int INCOGNITO_TAB_ID = 9;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
