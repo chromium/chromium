@@ -11,7 +11,9 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/shortcut.h"
 #include "chrome/browser/shell_integration_win.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
 #include "chrome/common/chrome_paths.h"
@@ -43,6 +45,10 @@ base::FilePath GetChromeProxyPath() {
 std::wstring GetDisplayName() {
   return base::UTF16ToWide(
       l10n_util::GetStringUTF16(IDS_SETTINGS_OMNIBOX_EVERYWHERE_TITLE));
+}
+
+std::wstring GetShortcutName() {
+  return base::StrCat({GetDisplayName(), L".lnk"});
 }
 
 }  // namespace
@@ -123,6 +129,35 @@ bool OmniboxEverywhereShortcutHelperWin::EnsureIconPersisted() {
   }
 
   return IconUtil::CreateIconFileFromImageFamily(image_family, icon_path);
+}
+
+bool OmniboxEverywhereShortcutHelperWin::CreateStartMenuShortcut() {
+  EnsureIconPersisted();
+
+  base::FilePath start_menu_dir;
+  if (!base::PathService::Get(base::DIR_START_MENU, &start_menu_dir) ||
+      start_menu_dir.empty()) {
+    return false;
+  }
+
+  base::FilePath chrome_proxy_path = GetChromeProxyPath();
+  if (chrome_proxy_path.empty()) {
+    return false;
+  }
+
+  base::win::ShortcutProperties shortcut_properties;
+  shortcut_properties.set_target(chrome_proxy_path);
+  shortcut_properties.set_arguments(
+      base::StrCat({L"--", base::ASCIIToWide(switches::kOmniboxEverywhere)}));
+  shortcut_properties.set_app_id(GetAppUserModelId());
+  shortcut_properties.set_icon(GetIconFilePath(), /*icon_index_in=*/0);
+  shortcut_properties.set_description(GetDisplayName());
+
+  base::FilePath shortcut_path = start_menu_dir.Append(GetShortcutName());
+
+  return base::win::CreateOrUpdateShortcutLink(
+      shortcut_path, shortcut_properties,
+      base::win::ShortcutOperation::kCreateAlways);
 }
 
 }  // namespace omnibox_everywhere

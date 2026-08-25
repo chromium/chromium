@@ -16,8 +16,10 @@
 #include <optional>
 #include <string>
 
+#include "base/base_paths_win.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -25,7 +27,9 @@
 #include "base/test/test_future.h"
 #include "base/threading/sequence_bound.h"
 #include "base/win/scoped_propvariant.h"
+#include "base/win/shortcut.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,11 +75,54 @@ TEST_F(OmniboxEverywhereShortcutWinTest, EnsureIconPersisted) {
   EXPECT_TRUE(helper.EnsureIconPersisted());
 }
 
+TEST_F(OmniboxEverywhereShortcutWinTest, CreateStartMenuShortcut) {
+  base::ScopedTempDir user_data_dir;
+  ASSERT_TRUE(user_data_dir.CreateUniqueTempDir());
+  base::ScopedPathOverride user_data_override(chrome::DIR_USER_DATA,
+                                              user_data_dir.GetPath());
+
+  base::ScopedTempDir start_menu_dir;
+  ASSERT_TRUE(start_menu_dir.CreateUniqueTempDir());
+  base::ScopedPathOverride start_menu_override(base::DIR_START_MENU,
+                                               start_menu_dir.GetPath());
+
+  OmniboxEverywhereShortcutHelperWin helper;
+  EXPECT_TRUE(helper.CreateStartMenuShortcut());
+
+  base::FilePath shortcut_path = start_menu_dir.GetPath().Append(
+      base::StrCat({base::UTF16ToWide(l10n_util::GetStringUTF16(
+                        IDS_SETTINGS_OMNIBOX_EVERYWHERE_TITLE)),
+                    L".lnk"}));
+  EXPECT_TRUE(base::PathExists(shortcut_path));
+
+  base::win::ShortcutProperties properties;
+  EXPECT_TRUE(base::win::ResolveShortcutProperties(
+      shortcut_path,
+      base::win::ShortcutProperties::PROPERTIES_TARGET |
+          base::win::ShortcutProperties::PROPERTIES_ARGUMENTS |
+          base::win::ShortcutProperties::PROPERTIES_ICON |
+          base::win::ShortcutProperties::PROPERTIES_APP_ID,
+      &properties));
+
+  EXPECT_NE(
+      properties.target.value().find(FILE_PATH_LITERAL("chrome_proxy.exe")),
+      std::wstring::npos);
+  EXPECT_NE(properties.arguments.find(L"--omnibox-everywhere"),
+            std::wstring::npos);
+  EXPECT_EQ(properties.app_id, GetAppUserModelId());
+  EXPECT_EQ(properties.icon, GetIconFilePath());
+}
+
 TEST_F(OmniboxEverywhereShortcutWinTest, SequenceBoundHelper) {
   base::ScopedTempDir user_data_dir;
   ASSERT_TRUE(user_data_dir.CreateUniqueTempDir());
   base::ScopedPathOverride user_data_override(chrome::DIR_USER_DATA,
                                               user_data_dir.GetPath());
+
+  base::ScopedTempDir start_menu_dir;
+  ASSERT_TRUE(start_menu_dir.CreateUniqueTempDir());
+  base::ScopedPathOverride start_menu_override(base::DIR_START_MENU,
+                                               start_menu_dir.GetPath());
 
   base::SequenceBound<OmniboxEverywhereShortcutHelperWin> helper(
       base::ThreadPool::CreateCOMSTATaskRunner(
@@ -83,12 +130,15 @@ TEST_F(OmniboxEverywhereShortcutWinTest, SequenceBoundHelper) {
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}));
 
   base::test::TestFuture<bool> future;
-  helper.AsyncCall(&OmniboxEverywhereShortcutHelperWin::EnsureIconPersisted)
+  helper.AsyncCall(&OmniboxEverywhereShortcutHelperWin::CreateStartMenuShortcut)
       .Then(future.GetCallback());
   EXPECT_TRUE(future.Get());
 
-  base::FilePath icon_path = GetIconFilePath();
-  EXPECT_TRUE(base::PathExists(icon_path));
+  base::FilePath shortcut_path = start_menu_dir.GetPath().Append(
+      base::StrCat({base::UTF16ToWide(l10n_util::GetStringUTF16(
+                        IDS_SETTINGS_OMNIBOX_EVERYWHERE_TITLE)),
+                    L".lnk"}));
+  EXPECT_TRUE(base::PathExists(shortcut_path));
 }
 
 TEST_F(OmniboxEverywhereShortcutWinTest, SetWindowPropertiesNullHwndSafe) {

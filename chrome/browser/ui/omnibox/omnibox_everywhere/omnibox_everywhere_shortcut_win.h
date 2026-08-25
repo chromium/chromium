@@ -40,6 +40,11 @@ class OmniboxEverywhereShortcutHelperWin {
   // in the user data directory. If the icon already exists, this is a no-op and
   // returns true. Must be run on a thread supporting blocking file I/O.
   bool EnsureIconPersisted();
+
+  // Creates/updates the Start Menu shortcut for Omnibox Everywhere with
+  // AppUserModelId, icon, and relaunch command.
+  // Must be run on a COM STA thread supporting blocking I/O.
+  bool CreateStartMenuShortcut();
 };
 
 }  // namespace omnibox_everywhere

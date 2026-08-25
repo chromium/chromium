@@ -433,9 +433,20 @@ void OmniboxEverywhereController::ExecuteCommand(
 
 void OmniboxEverywhereController::CreateStartMenuShortcut(
     base::OnceCallback<void(bool)> callback) {
+#if BUILDFLAG(IS_WIN)
+  if (callback) {
+    shortcut_helper_
+        .AsyncCall(&OmniboxEverywhereShortcutHelperWin::CreateStartMenuShortcut)
+        .Then(std::move(callback));
+  } else {
+    shortcut_helper_.AsyncCall(base::IgnoreResult(
+        &OmniboxEverywhereShortcutHelperWin::CreateStartMenuShortcut));
+  }
+#else
   if (callback) {
     std::move(callback).Run(false);
   }
+#endif
 }
 
 void OmniboxEverywhereController::OfferPinToTaskbar(
