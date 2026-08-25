@@ -16,6 +16,7 @@
   --mwb-secondary-text-font-size: 11px;
 
   background-color: var(--toolbar-background-color);
+  box-sizing: border-box;
   color: var(--toolbar-text-color);
   display: flex;
   flex-direction: column;
