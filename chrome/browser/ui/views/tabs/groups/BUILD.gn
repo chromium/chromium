@@ -2,55 +2,221 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/args.gni")
+import("//build/config/ui.gni")
+
+assert(toolkit_views)
+
 source_set("groups") {
   public = [
     "avatar_container_view.h",
+    "color_picker_view.h",
     "manage_sharing_row.h",
+    "recent_activity_bubble_dialog_view.h",
+    "tab_group_accessibility.h",
     "tab_group_editor_bubble_tracker.h",
-  ]
-  sources = [
-    "avatar_container_view.cc",
-    "manage_sharing_row.cc",
-    "tab_group_editor_bubble_tracker.cc",
+    "tab_group_editor_bubble_view.h",
   ]
 
   public_deps = [
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//chrome/browser/ui/views/controls",
+    "//chrome/browser/ui/views/location_bar",
+    "//components/collaboration/public",
+    "//components/data_sharing/public",
+    "//components/favicon_base",
     "//components/saved_tab_groups/public",
+    "//components/sync/base",
+    "//components/tab_groups",
+    "//ui/base/interaction",
+    "//ui/base/metadata",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/base/unowned_user_data",
+    "//ui/views",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "avatar_container_view.cc",
+    "color_picker_view.cc",
+    "manage_sharing_row.cc",
+    "recent_activity_bubble_dialog_view.cc",
+    "tab_group_accessibility.cc",
+    "tab_group_editor_bubble_tracker.cc",
+    "tab_group_editor_bubble_view.cc",
   ]
 
   deps = [
+    ":groups",
+    "//base",
     "//chrome/app/vector_icons",
+    "//chrome/browser/collaboration",
+    "//chrome/browser/collaboration/messaging",
     "//chrome/browser/data_sharing",
+    "//chrome/browser/favicon",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic:impl",
+    "//chrome/browser/glic/public:features",
     "//chrome/browser/image_fetcher",
     "//chrome/browser/profiles",
+    "//chrome/browser/tab_group_sync:factories",
+    "//chrome/browser/tab_group_sync:utils",
+    "//chrome/browser/tab_list",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:chrome_pages",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/bookmarks",
     "//chrome/browser/ui/color:color_headers",
-    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:features",
+    "//chrome/browser/ui/tabs:tab_group",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs/saved_tab_groups",
+    "//chrome/browser/ui/user_education",
+    "//chrome/browser/ui/views:bubble_menu_item_factory",
     "//chrome/browser/ui/views:layout_provider",
-    "//components/data_sharing/public",
+    "//chrome/browser/ui/views/data_sharing",
+    "//chrome/browser/ui/views/global_media_controls",
+    "//chrome/browser/ui/views/toolbar",
+    "//components/bookmarks/common",
+    "//components/collaboration/public",
     "//components/image_fetcher/core",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/strings",
+    "//components/tabs:public",
+    "//components/vector_icons",
+    "//skia",
+    "//third_party/icu",
+    "//ui/accessibility:ax_enums_mojo",
+    "//ui/base",
+    "//ui/base:features",
+    "//ui/compositor",
+    "//ui/events/types:headers",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/gfx/range",
+    "//ui/native_theme",
+    "//ui/strings:ui_strings",
+    "//url",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//ash" ]
+  }
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "recent_activity_bubble_dialog_view_browsertest.cc",
+    "tab_group_editor_bubble_view_browsertest.cc",
+  ]
+  deps = [
+    ":groups",
+    "//chrome/browser/data_sharing",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/tab_group_sync:factories",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:features",
+    "//chrome/browser/ui/tabs:tab_group",
+    "//chrome/browser/ui/tabs/saved_tab_groups",
+    "//chrome/browser/ui/test:dialog",
+    "//chrome/browser/ui/views/bookmarks",
+    "//chrome/browser/ui/views/data_sharing",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/bookmarks/common",
+    "//components/collaboration/public",
+    "//components/data_sharing/public",
+    "//components/prefs",
+    "//components/saved_tab_groups/public",
     "//components/signin/public/base",
     "//components/tab_groups",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
     "//ui/base",
+    "//ui/base:test_support",
+    "//ui/base/interaction:test_support",
+    "//ui/events:test_support",
     "//ui/gfx",
     "//ui/views",
+    "//ui/views:test_support",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//ash:test_support" ]
+  }
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
 }
 
 source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "tab_group_editor_bubble_view_interactive_uitest.cc" ]
+  sources = [
+    "recent_activity_bubble_dialog_view_interactive_uitest.cc",
+    "tab_group_editor_bubble_view_interactive_uitest.cc",
+  ]
   deps = [
+    ":groups",
+    "//chrome/browser/data_sharing",
+    "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/tabs:tab_group",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views/tabs/tab",
+    "//chrome/common",
+    "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//chrome/test/interaction",
+    "//components/collaboration/public",
+    "//components/data_sharing/public",
+    "//components/saved_tab_groups/public",
+    "//components/signin/public/base",
     "//components/tab_groups",
+    "//components/tabs:public",
     "//content/test:test_support",
+    "//net",
+    "//net:test_support",
+    "//testing/gtest",
     "//ui/base:test_support",
+    "//ui/gfx",
     "//ui/views:test_support",
   ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "color_picker_view_unittest.cc" ]
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  deps = [
+    ":groups",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/tab_groups",
+    "//testing/gtest",
+    "//ui/events:test_support",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}
