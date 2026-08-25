@@ -58,6 +58,7 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -201,6 +202,8 @@ public class AutocompleteMediatorUnitTest {
     private SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier;
     private SettableNonNullObservableSupplier<@FuseboxCoordinator.FuseboxLayoutMode Integer>
             mFuseboxLayoutModeSupplier;
+    private final SettableNullableObservableSupplier<SideUiStateProvider>
+            mSideUiStateProviderSupplier = ObservableSuppliers.createNullable();
     private Context mContext;
 
     @Before
@@ -251,6 +254,11 @@ public class AutocompleteMediatorUnitTest {
                 .doReturn(mFuseboxLayoutModeSupplier)
                 .when(mFuseboxCoordinator)
                 .getFuseboxLayoutModeSupplier();
+        mSideUiStateProviderSupplier.set(mSideUiStateProvider);
+        lenient()
+                .doReturn(mSideUiStateProviderSupplier)
+                .when(mUiOverrides)
+                .getSideUiStateProviderSupplier();
         lenient().doReturn(mSideUiStateProvider).when(mUiOverrides).getSideUiStateProvider();
 
         mMediator =
@@ -3201,6 +3209,56 @@ public class AutocompleteMediatorUnitTest {
         assertEquals(true, mListModel.get(SuggestionListProperties.APPLY_MARGIN_FOR_LEFT_SIDE_BAR));
         assertEquals(
                 collapsedWidthPx, mListModel.get(SuggestionListProperties.LEFT_SIDE_BAR_MARGIN_PX));
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    public void sideUiStateProviderAvailableAfterInitialization() {
+        LocationBarEmbedderUiOverrides uiOverrides = new LocationBarEmbedderUiOverrides();
+        uiOverrides.setIsMainBrowserOmnibox();
+        // Provider is initially null when mediator is constructed (e.g. on new window startup).
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, true);
+
+        PropertyModel listModel =
+                new PropertyModel.Builder(SuggestionListProperties.ALL_KEYS)
+                        .with(SuggestionListProperties.SUGGESTION_MODELS, new ModelList())
+                        .build();
+        AutocompleteMediator mediator =
+                new AutocompleteMediator(
+                        mContext,
+                        mResourceProvider,
+                        mAutocompleteDelegate,
+                        mTextStateProvider,
+                        listModel,
+                        new Handler(),
+                        () -> mModalDialogManager,
+                        null,
+                        null,
+                        mLocationBarDataProvider,
+                        tabGroupId -> {},
+                        url -> false,
+                        mOmniboxActionDelegate,
+                        mActivityLifecycleDispatcher,
+                        mEmbedder,
+                        mWindowAndroid,
+                        mDeferredImeCallback,
+                        mFuseboxCoordinator,
+                        uiOverrides);
+
+        assertFalse(listModel.get(SuggestionListProperties.APPLY_MARGIN_FOR_LEFT_SIDE_BAR));
+        assertEquals(0, listModel.get(SuggestionListProperties.LEFT_SIDE_BAR_MARGIN_PX));
+
+        // SideUiStateProvider becomes available later.
+        int widthPx = ViewUtils.dpToPx(mContext, VerticalTabUtils.SIDE_UI_CONTAINER_WIDTH_DP);
+        when(mSideUiStateProvider.getCurrentSideUiSpecs())
+                .thenReturn(new SideUiSpecs(widthPx, /* rightContainerWidth= */ 0));
+        uiOverrides.setSideUiStateProvider(mSideUiStateProvider);
+
+        assertTrue(listModel.get(SuggestionListProperties.APPLY_MARGIN_FOR_LEFT_SIDE_BAR));
+        assertEquals(widthPx, listModel.get(SuggestionListProperties.LEFT_SIDE_BAR_MARGIN_PX));
+        mediator.destroy();
     }
 
     @Test

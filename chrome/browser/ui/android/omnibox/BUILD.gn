@@ -528,6 +528,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarBackgroundDrawableUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarDragDropHandlerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/LocationBarEmbedderUiOverridesUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarFocusScrimHandlerUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarMediatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarTabletUnitTest.java",

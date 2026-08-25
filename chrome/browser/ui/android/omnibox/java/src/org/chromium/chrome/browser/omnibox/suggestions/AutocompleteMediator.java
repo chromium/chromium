@@ -225,6 +225,8 @@ class AutocompleteMediator
     private @Nullable OmniboxSuggestionsVisualStateObserver mOmniboxSuggestionsVisualStateObserver;
     private final FuseboxCoordinator mFuseboxCoordinator;
     private @Nullable SideUiStateProvider mSideUiStateProvider;
+    private final Callback<@Nullable SideUiStateProvider> mSideUiStateProviderObserver =
+            this::setSideUiStateProvider;
     private int mLeftSideUiMarginPx = -1;
 
     AutocompleteMediator(
@@ -278,6 +280,9 @@ class AutocompleteMediator
         mActivityWindowFocused = (activity != null && activity.hasWindowFocus());
         mDeferredIMEWindowInsetApplicationCallback = deferredIMEWindowInsetApplicationCallback;
         mUiOverrides = uiOverrides;
+        mUiOverrides
+                .getSideUiStateProviderSupplier()
+                .addSyncObserverAndCallIfNonNull(mSideUiStateProviderObserver);
 
         var pm = context.getPackageManager();
         var dialIntent = new Intent(Intent.ACTION_DIAL);
@@ -324,10 +329,8 @@ class AutocompleteMediator
         mDataProvider.getToolbarPositionSupplier().removeObserver(mToolbarPositionChangedCallback);
 
         mFuseboxCoordinator.getFuseboxStateSupplier().removeObserver(mOnFuseboxStateChanged);
-        if (mSideUiStateProvider != null) {
-            mSideUiStateProvider.removeObserver(this);
-            mSideUiStateProvider = null;
-        }
+        mUiOverrides.getSideUiStateProviderSupplier().removeObserver(mSideUiStateProviderObserver);
+        setSideUiStateProvider(null);
         mHandler.removeCallbacksAndMessages(null);
         mDropdownViewInfoListBuilder.destroy();
         mDropdownViewInfoListManager.destroy();
@@ -1857,16 +1860,7 @@ class AutocompleteMediator
             // embedded omnibox is inflated via SearchActivity rather than ToolbarManager (main
             // browser). Ensure that this use case does not have a left margin.
             if (isActive) {
-                boolean applyMargin =
-                        mUiOverrides.isMainBrowserOmnibox()
-                                && VerticalTabUtils.isVerticalTabsEnabled(mContext);
-                mListPropertyModel.set(
-                        SuggestionListProperties.APPLY_MARGIN_FOR_LEFT_SIDE_BAR, applyMargin);
-                if (mSideUiStateProvider != null) {
-                    onSideUiSpecsChanged(mSideUiStateProvider.getCurrentSideUiSpecs());
-                } else {
-                    setSideUiStateProvider(mUiOverrides.getSideUiStateProvider());
-                }
+                updateLeftSideUiMargin();
             }
             mListPropertyModel.set(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE, isActive);
             mIgnoreOmniboxItemSelection |= isActive;
@@ -1876,12 +1870,26 @@ class AutocompleteMediator
         }
     }
 
-    private void setSideUiStateProvider(@Nullable SideUiStateProvider provider) {
-        if (provider == null) return;
+    private void updateLeftSideUiMargin() {
+        boolean applyMargin =
+                mUiOverrides.isMainBrowserOmnibox()
+                        && VerticalTabUtils.isVerticalTabsEnabled(mContext);
+        mListPropertyModel.set(
+                SuggestionListProperties.APPLY_MARGIN_FOR_LEFT_SIDE_BAR, applyMargin);
+        if (mSideUiStateProvider != null) {
+            onSideUiSpecsChanged(mSideUiStateProvider.getCurrentSideUiSpecs());
+        }
+    }
 
+    private void setSideUiStateProvider(@Nullable SideUiStateProvider provider) {
+        if (provider == mSideUiStateProvider) return;
+
+        if (mSideUiStateProvider != null) {
+            mSideUiStateProvider.removeObserver(this);
+        }
         mSideUiStateProvider = provider;
-        provider.addObserver(this);
-        onSideUiSpecsChanged(provider.getCurrentSideUiSpecs());
+        if (provider != null) provider.addObserver(this);
+        updateLeftSideUiMargin();
     }
 
     @Override
