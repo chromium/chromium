@@ -161,10 +161,6 @@ class ServicesCustomizationDocument : public CustomizationDocument {
   static constexpr char kManifestUrl[] =
       "https://ssl.gstatic.com/chrome/chromeos-customization/%s.json";
 
-  // Return true if the customization was applied. Customization is applied only
-  // once per machine.
-  static bool WasOOBECustomizationApplied();
-
   // If customization has not been applied, start fetching and applying.
   void EnsureCustomizationApplied();
 
@@ -230,9 +226,6 @@ class ServicesCustomizationDocument : public CustomizationDocument {
   explicit ServicesCustomizationDocument(const std::string& manifest);
 
   ~ServicesCustomizationDocument() override;
-
-  // Save applied state in machine settings.
-  static void SetApplied(bool val);
 
   // Overriden from CustomizationDocument:
   bool LoadManifestFromString(const std::string& manifest) override;

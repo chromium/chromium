@@ -13,6 +13,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -182,6 +183,17 @@ std::string ReadFileInBackground(const base::FilePath& file) {
   }
 
   return manifest;
+}
+
+// Return true if the customization was applied. Customization is applied only
+// once per machine.
+bool WasOOBECustomizationApplied(const PrefService& local_state) {
+  return local_state.GetBoolean(kServicesCustomizationAppliedPref);
+}
+
+// Save applied state in machine settings.
+void SetApplied(PrefService& local_state, bool val) {
+  local_state.SetBoolean(kServicesCustomizationAppliedPref, val);
 }
 
 }  // anonymous namespace
@@ -508,24 +520,6 @@ void ServicesCustomizationDocument::RegisterProfilePrefs(
 }
 
 // static
-bool ServicesCustomizationDocument::WasOOBECustomizationApplied() {
-  PrefService* prefs = g_browser_process->local_state();
-  // prefs can be NULL in some tests.
-  if (prefs)
-    return prefs->GetBoolean(kServicesCustomizationAppliedPref);
-  else
-    return false;
-}
-
-// static
-void ServicesCustomizationDocument::SetApplied(bool val) {
-  PrefService* prefs = g_browser_process->local_state();
-  // prefs can be NULL in some tests.
-  if (prefs)
-    prefs->SetBoolean(kServicesCustomizationAppliedPref, val);
-}
-
-// static
 base::FilePath ServicesCustomizationDocument::GetCustomizedWallpaperCacheDir() {
   base::FilePath custom_wallpaper_dir;
   if (!base::PathService::Get(ash::DIR_CUSTOM_WALLPAPERS,
@@ -547,8 +541,11 @@ ServicesCustomizationDocument::GetCustomizedWallpaperDownloadedFileName() {
 }
 
 void ServicesCustomizationDocument::EnsureCustomizationApplied() {
-  if (WasOOBECustomizationApplied())
+  // TODO(crbug.com/404131632): Avoid using g_browser_process.
+  if (WasOOBECustomizationApplied(
+          CHECK_DEREF(g_browser_process->local_state()))) {
     return;
+  }
 
   // When customization manifest is fetched, applying will start automatically.
   if (IsReady())
@@ -646,8 +643,11 @@ bool ServicesCustomizationDocument::LoadManifestFromString(
 }
 
 void ServicesCustomizationDocument::OnManifestLoaded() {
-  if (!WasOOBECustomizationApplied())
+  // TODO(crbug.com/404131632): Avoid using g_browser_process.
+  if (!WasOOBECustomizationApplied(
+          CHECK_DEREF(g_browser_process->local_state()))) {
     ApplyOOBECustomization();
+  }
 
   auto prefs = GetDefaultAppsInProviderFormat(*root_);
   for (auto& external_loader : external_loaders_) {
@@ -1030,8 +1030,10 @@ void ServicesCustomizationDocument::ApplyingTaskFinished(bool success) {
   if (apply_tasks_started_ != apply_tasks_finished_)
     return;
 
-  if (apply_tasks_success_ == apply_tasks_finished_)
-    SetApplied(true);
+  if (apply_tasks_success_ == apply_tasks_finished_) {
+    // TODO(crbug.com/404131632): Avoid using g_browser_process.
+    SetApplied(CHECK_DEREF(g_browser_process->local_state()), true);
+  }
 }
 
 }  // namespace ash
