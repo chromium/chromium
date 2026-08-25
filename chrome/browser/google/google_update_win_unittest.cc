@@ -47,7 +47,7 @@ using ::testing::IsEmpty;
 using ::testing::Return;
 using ::testing::Sequence;
 using ::testing::SetArgPointee;
-using ::testing::StrEq;
+using ::testing::StrCaseEq;
 using ::testing::StrictMock;
 using ::testing::Values;
 
@@ -429,7 +429,7 @@ class MockAppBundle : public CComObjectRootEx<CComSingleThreadModel>,
   // which time it is owned by the consumer.
   CComObject<MockApp>* MakeApp(const wchar_t* app_guid) {
     // The bundle will be called on to create the installed app.
-    EXPECT_CALL(*this, createInstalledApp(StrEq(app_guid)))
+    EXPECT_CALL(*this, createInstalledApp(StrCaseEq(app_guid)))
         .WillOnce(Return(S_OK));
 
     CComObject<MockApp>* mock_app = nullptr;
@@ -964,12 +964,12 @@ TEST_P(GoogleUpdateWinTest, RetryAfterExternalUpdaterError) {
   // The first attempt will fail in createInstalledApp indicating that an update
   // is already in progress.
   Sequence bundle_seq;
-  EXPECT_CALL(*mock_app_bundle, createInstalledApp(StrEq(kChromeGuid)))
+  EXPECT_CALL(*mock_app_bundle, createInstalledApp(StrCaseEq(kChromeGuid)))
       .InSequence(bundle_seq)
       .WillOnce(Return(GOOPDATE_E_APP_USING_EXTERNAL_UPDATER));
 
   // Expect a retry on the same instance.
-  EXPECT_CALL(*mock_app_bundle, createInstalledApp(StrEq(kChromeGuid)))
+  EXPECT_CALL(*mock_app_bundle, createInstalledApp(StrCaseEq(kChromeGuid)))
       .InSequence(bundle_seq)
       .WillOnce(Return(S_OK));
 
