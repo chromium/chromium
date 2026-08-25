@@ -256,6 +256,13 @@ public class FuseboxMediatorUnitTest {
                 .getTabAt(anyInt());
         doAnswer(i -> mTabMap.size()).when(mTabModel).getCount();
         doAnswer(i -> mTabMap.get(i.getArgument(0))).when(mTabModelSelector).getTabById(anyInt());
+        doAnswer(
+                        inv -> {
+                            mMediator.endInput();
+                            return null;
+                        })
+                .when(mOnActivationChipClickedWithQuery)
+                .run();
 
         mInput.setPageClassification(PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
         recreateMediator();

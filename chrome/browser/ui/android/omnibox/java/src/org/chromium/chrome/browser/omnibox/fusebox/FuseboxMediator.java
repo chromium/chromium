@@ -1337,6 +1337,7 @@ import java.util.function.Supplier;
             // reimplement this runnable to navigate via the current input state, instead of reading
             // from the views.
             mOnActivationChipClickedWithQuery.run();
+            return;
         }
 
         // Enable autocomplete only after updating the request type and URL text so suggestions
