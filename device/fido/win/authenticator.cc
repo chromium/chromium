@@ -364,6 +364,7 @@ void WinWebAuthnApiAuthenticator::GetPlatformCredentialInfoForRequest(
     const CtapGetAssertionRequest& request,
     const CtapGetAssertionOptions& request_options,
     GetPlatformCredentialInfoForRequestCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Handle the special case where a request has an allow list, all the
   // credential descriptors have a transport, and none of them have the
   // "internal" transport. These credentials cannot possibly be Windows Hello.
@@ -374,9 +375,30 @@ void WinWebAuthnApiAuthenticator::GetPlatformCredentialInfoForRequest(
     return;
   }
   FIDO_LOG(DEBUG) << "Silently discovering credentials for " << request.rp_id;
-  auto [success, credentials] = AuthenticatorEnumerateCredentialsBlocking(
-      win_api_, base::UTF8ToUTF16(request.rp_id),
-      request_options.is_off_the_record_context);
+  // WebAuthNGetPlatformCredentialList can display a first-use consent prompt.
+  // Run it off-sequence so the prompt cannot block the browser UI.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(
+          [](WinWebAuthnApi* api, std::u16string rp_id, bool is_incognito) {
+            return AuthenticatorEnumerateCredentialsBlocking(api, rp_id,
+                                                             is_incognito);
+          },
+          win_api_, base::UTF8ToUTF16(request.rp_id),
+          request_options.is_off_the_record_context),
+      base::BindOnce(
+          &WinWebAuthnApiAuthenticator::GetPlatformCredentialInfoForRequestDone,
+          weak_factory_.GetWeakPtr(), request.allow_list, std::move(callback)));
+}
+
+void WinWebAuthnApiAuthenticator::GetPlatformCredentialInfoForRequestDone(
+    std::vector<PublicKeyCredentialDescriptor> allow_list,
+    GetPlatformCredentialInfoForRequestCallback callback,
+    std::pair<bool, std::vector<DiscoverableCredentialMetadata>> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto& [success, credentials] = result;
   if (!success) {
     std::move(callback).Run(
         /*credentials=*/{},
@@ -394,8 +416,8 @@ void WinWebAuthnApiAuthenticator::GetPlatformCredentialInfoForRequest(
         FidoRequestHandlerBase::RecognizedCredential::kUnknown);
     return;
   }
-  if (!request.allow_list.empty()) {
-    FilterFoundCredentials(&credentials, request.allow_list);
+  if (!allow_list.empty()) {
+    FilterFoundCredentials(&credentials, allow_list);
   }
   auto recognized = credentials.empty()
                         ? FidoRequestHandlerBase::RecognizedCredential::

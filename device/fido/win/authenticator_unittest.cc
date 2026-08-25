@@ -149,6 +149,20 @@ TEST_F(WinAuthenticatorTest,
                    ->bBrowserInPrivateMode);
 }
 
+TEST_F(WinAuthenticatorTest,
+       GetCredentialInformationForRequest_IsAsynchronous) {
+  CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
+  GetCredentialFuture future;
+
+  authenticator_->GetPlatformCredentialInfoForRequest(
+      std::move(request), CtapGetAssertionOptions(), future.GetCallback());
+
+  // Credential enumeration must not complete synchronously because the
+  // Windows API can display a first-use consent prompt.
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(future.Wait());
+}
+
 // Tests a request with the off the record flag on passes the
 // bBrowserInPrivateMode option to the Windows API.
 TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_Incognito) {

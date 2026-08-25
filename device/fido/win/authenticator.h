@@ -130,6 +130,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApiAuthenticator
       GetAssertionCallback callback,
       std::pair<GetAssertionStatus,
                 std::optional<AuthenticatorGetAssertionResponse>> result);
+  void GetPlatformCredentialInfoForRequestDone(
+      std::vector<PublicKeyCredentialDescriptor> allow_list,
+      GetPlatformCredentialInfoForRequestCallback callback,
+      std::pair<bool, std::vector<DiscoverableCredentialMetadata>> result);
 
   // options_ is per-instance because the capabilities of `win_api_` can
   // change at run-time in tests.
