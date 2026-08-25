@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta name="author" content="github.com/vmpstr">
+<title>Overscroll Gestures: Inertness is used value, computed interactivity remains auto</title>
+<link rel="author" title="vmpstr" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/vmpstr/overscroll-actions">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 
 <style>
-  html, body {
-    margin: 0;
-  }
   #container {
     width: 200px;
     height: 200px;
@@ -25,34 +24,77 @@
   }
 </style>
 
+<button id="outside-btn">Outside</button>
 <div id="container" overscrollcontainer>
-  <div id="menu" overscrollarea></div>
-  <div id="content"></div>
+  <div id="menu" overscrollarea>
+    <button id="menu-btn">Menu Button</button>
+  </div>
+  <div id="content">
+    <button id="content-btn">Content Button</button>
+  </div>
 </div>
-<button id=button command="toggle-overscroll" commandfor="menu"></button>
+<button id="button" command="toggle-overscroll" commandfor="menu">Toggle</button>
 
 <script>
-function click(target) {
+function waitForRender() {
+  return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+
+async function click(target) {
   let event_received = new Promise(resolve => {
     target.addEventListener("click", resolve, { once: true });
   });
-  return Promise.all([test_driver.click(button), event_received]);
+  await Promise.all([test_driver.click(button), event_received]);
+  await waitForRender();
 }
 
 promise_test(async () => {
-  // Initially the menu is closed and should be inert.
-  assert_equals(getComputedStyle(menu).interactivity, "inert", "menu initially inert (closed)");
+  const outsideBtn = document.getElementById('outside-btn');
+  const menu = document.getElementById('menu');
+  const menuBtn = document.getElementById('menu-btn');
+  const content = document.getElementById('content');
+  const contentBtn = document.getElementById('content-btn');
 
-  // Click the button to open the menu.
+  // --- 1. Closed state ---
+  // Computed interactivity remains "auto" (inertness is a used value, not computed).
+  assert_false(menu.matches(':overscroll-open'), "Menu is closed initially");
+  assert_equals(getComputedStyle(menu).interactivity, "auto", "Menu computed interactivity is auto when closed");
+  assert_equals(getComputedStyle(content).interactivity, "auto", "Content computed interactivity is auto when closed");
+
+  // Used inertness behavior: closed menu cannot receive focus; content can.
+  outsideBtn.focus();
+  menuBtn.focus();
+  assert_equals(document.activeElement, outsideBtn, "menuBtn cannot receive programmatic focus when closed");
+
+  contentBtn.focus();
+  assert_equals(document.activeElement, contentBtn, "contentBtn can receive programmatic focus when closed");
+
+  // --- 2. Open state ---
   await click(button);
+  assert_true(menu.matches(':overscroll-open'), "Menu is open");
+  assert_equals(getComputedStyle(menu).interactivity, "auto", "Menu computed interactivity is auto when open");
+  assert_equals(getComputedStyle(content).interactivity, "auto", "Content computed interactivity is auto when open");
 
-  // The menu should now be interactive (auto).
-  assert_equals(getComputedStyle(menu).interactivity, "auto", "menu is interactive (open)");
+  // Used inertness behavior: open menu can receive focus; content is inert and cannot.
+  outsideBtn.focus();
+  menuBtn.focus();
+  assert_equals(document.activeElement, menuBtn, "menuBtn can receive programmatic focus when menu is open");
 
-  // Click the button again to close the menu.
+  outsideBtn.focus();
+  contentBtn.focus();
+  assert_equals(document.activeElement, outsideBtn, "contentBtn cannot receive programmatic focus when menu is open");
+
+  // --- 3. Re-closed state ---
   await click(button);
+  assert_false(menu.matches(':overscroll-open'), "Menu is closed again");
+  assert_equals(getComputedStyle(menu).interactivity, "auto", "Menu computed interactivity is auto when re-closed");
+  assert_equals(getComputedStyle(content).interactivity, "auto", "Content computed interactivity is auto when re-closed");
 
-  // The menu should be inert again.
-  assert_equals(getComputedStyle(menu).interactivity, "inert", "menu is inert again (closed)");
-}, "Overscroll elements become inert when closed and interactive when open");
+  outsideBtn.focus();
+  menuBtn.focus();
+  assert_equals(document.activeElement, outsideBtn, "menuBtn cannot receive focus when re-closed");
+
+  contentBtn.focus();
+  assert_equals(document.activeElement, contentBtn, "contentBtn can receive focus when re-closed");
+}, "Overscroll inertness is a used value (computed interactivity is auto); closed menu and open content are inert");
 </script>

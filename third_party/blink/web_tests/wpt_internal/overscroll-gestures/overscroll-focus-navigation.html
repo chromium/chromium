@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll Gestures: Sequential Focus Navigation</title>
+<link rel="author" title="vmpstr" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/vmpstr/overscroll-actions">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
+<style>
+  #container {
+    width: 200px;
+    height: 200px;
+    overflow: auto;
+  }
+  #menu {
+    width: 100%;
+    height: 100%;
+    right: 100%;
+  }
+  #content {
+    height: 600px;
+  }
+</style>
+
+<button id="before-btn">Before Button</button>
+<button id="invoker" command="toggle-overscroll" commandfor="menu">Toggle Menu</button>
+<div id="container" overscrollcontainer>
+  <div id="menu" overscrollarea>
+    <button id="menu-btn1">Menu Button 1</button>
+    <button id="menu-btn2">Menu Button 2</button>
+    <button id="close-btn" command="hide-overscroll" commandfor="menu">Close Menu</button>
+  </div>
+  <div id="content">
+    <button id="content-btn1">Content Button 1</button>
+    <button id="content-btn2">Content Button 2</button>
+  </div>
+</div>
+<button id="after-btn">After Button</button>
+
+<script>
+function selector(element) {
+  return `#${element.id}${element.className ? `.${element.className.replace(' ', '.')}` : ''}`;
+}
+
+async function sendTab() {
+  await new test_driver.Actions()
+    .keyDown('\uE004')
+    .keyUp('\uE004')
+    .send();
+}
+
+async function sendShiftTab() {
+  const kShift = '\uE008';
+  const kTab = '\uE004';
+  await new test_driver.Actions()
+    .keyDown(kShift)
+    .keyDown(kTab)
+    .keyUp(kTab)
+    .keyUp(kShift)
+    .send();
+}
+
+async function getTabSequenceUntil(terminatingElement) {
+  const sequence = [];
+  while (true) {
+    await sendTab();
+    assert_false(sequence.includes(selector(document.activeElement)), "Expected terminating element");
+    sequence.push(selector(document.activeElement));
+    if (document.activeElement === terminatingElement) {
+      break;
+    }
+  }
+  return sequence;
+}
+
+async function getShiftTabSequenceUntil(terminatingElement) {
+  const sequence = [];
+  while (true) {
+    await sendShiftTab();
+    assert_false(sequence.includes(selector(document.activeElement)), "Expected terminating element");
+    sequence.push(selector(document.activeElement));
+    if (document.activeElement === terminatingElement) {
+      break;
+    }
+  }
+  return sequence;
+}
+
+promise_test(async () => {
+  const beforeBtn = document.getElementById('before-btn');
+  const invoker = document.getElementById('invoker');
+  const menu = document.getElementById('menu');
+  const menuBtn1 = document.getElementById('menu-btn1');
+  const menuBtn2 = document.getElementById('menu-btn2');
+  const closeBtn = document.getElementById('close-btn');
+  const contentBtn1 = document.getElementById('content-btn1');
+  const contentBtn2 = document.getElementById('content-btn2');
+  const afterBtn = document.getElementById('after-btn');
+
+  // --- 1. Closed state ---
+  // When the menu is closed, it is inert. Tab navigation skips the menu and
+  // visits the regular content buttons inside the container.
+  assert_false(menu.matches(':overscroll-open'), "Menu is closed initially");
+
+  invoker.focus();
+  assert_equals(document.activeElement, invoker, "Focus on invoker");
+
+  assert_array_equals(
+    await getTabSequenceUntil(afterBtn),
+    ['#content-btn1', '#content-btn2', '#after-btn'],
+    "Tab order when menu is closed skips menu"
+  );
+
+  assert_array_equals(
+    await getShiftTabSequenceUntil(invoker),
+    ['#content-btn2', '#content-btn1', '#invoker'],
+    "Shift-Tab order when menu is closed skips menu in reverse"
+  );
+
+  // --- 2. Open state ---
+  // Open the menu. Activating the invoker does not move focus automatically,
+  // but the menu is next in the sequential focus order.
+  invoker.focus();
+  await test_driver.click(invoker);
+  assert_true(menu.matches(':overscroll-open'), "Menu is open");
+  assert_equals(document.activeElement, invoker, "Focus remains on invoker button after opening");
+
+  // Tab from invoker enters the opened menu, traverses menu items, skips inert content, and exits container.
+  assert_array_equals(
+    await getTabSequenceUntil(afterBtn),
+    ['#menu', '#menu-btn1', '#menu-btn2', '#close-btn', '#after-btn'],
+    "Tab order when menu is open enters menu and skips container content"
+  );
+
+  // Shift-Tab from outside container skips inert content and enters open menu in reverse.
+  assert_array_equals(
+    await getShiftTabSequenceUntil(invoker),
+    ['#close-btn', '#menu-btn2', '#menu-btn1', '#menu', '#invoker'],
+    "Shift-Tab order when menu is open enters menu and skips container content in reverse"
+  );
+
+  // --- 3. Close button activation and next focus ---
+  closeBtn.focus();
+  assert_equals(document.activeElement, closeBtn, "closeBtn is focused");
+
+  await test_driver.send_keys(closeBtn, ' ');
+  assert_false(menu.matches(':overscroll-open'), "Menu is closed after activating closeBtn");
+  assert_not_equals(document.activeElement, closeBtn, "closeBtn loses focus upon closing");
+
+  // After closing, pressing Tab continues focus into the container's content rather than starting from the top.
+  assert_array_equals(
+    await getTabSequenceUntil(afterBtn),
+    ['#content-btn1', '#content-btn2', '#after-btn'],
+    "Tab after closing menu moves into container content"
+  );
+}, "Sequential focus navigation when menu is closed (skips menu) and open (visits menu, skips content)");
+</script>

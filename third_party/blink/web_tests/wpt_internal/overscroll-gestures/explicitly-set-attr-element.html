@@ -38,19 +38,23 @@
 <button id="invoker" command="toggle-overscroll"></button>
 
 <script>
+function selector(element) {
+  return `#${element.id}${element.className ? `.${element.className.replace(' ', '.')}` : ''}`;
+}
+
 function verifyTarget(button, expectedTarget) {
   const target = document.getElementById('target');
   const target2 = document.getElementById('target2');
   const dup1 = document.querySelector('.one');
   const dup2 = document.querySelector('.two');
-  const elements = [target, target2, dup1, dup2].filter(el => !!el);
+  const elements = [target, target2, dup1, dup2];
 
   // Force layout initially
   document.body.offsetTop;
 
-  // All should be inert initially (since they all have overscrollarea and are closed)
+  // All should be closed initially
   for (const el of elements) {
-    assert_equals(getComputedStyle(el).interactivity, "inert", `${el.id || el.className} should be inert initially`);
+    assert_false(el.matches(':overscroll-open'), `${selector(el)} should be closed initially`);
   }
 
   // Click the button to toggle
@@ -59,13 +63,13 @@ function verifyTarget(button, expectedTarget) {
   // Force layout after click to ensure scroll and snap updates are processed
   document.body.offsetTop;
 
-  // The expected target should now be open (non-inert), others should stay inert
+  // The expected target should now be open, others should stay closed
   for (const el of elements) {
     const expectedOpen = (el === expectedTarget);
     if (expectedOpen) {
-      assert_not_equals(getComputedStyle(el).interactivity, "inert", `${el.id || el.className} should be open (not inert)`);
+      assert_true(el.matches(':overscroll-open'), `${selector(el)} should be open`);
     } else {
-      assert_equals(getComputedStyle(el).interactivity, "inert", `${el.id || el.className} should stay closed (inert)`);
+      assert_false(el.matches(':overscroll-open'), `${selector(el)} should stay closed`);
     }
   }
 
@@ -77,7 +81,7 @@ function verifyTarget(button, expectedTarget) {
 
   // Verify all are closed again
   for (const el of elements) {
-    assert_equals(getComputedStyle(el).interactivity, "inert", `${el.id || el.className} should be closed again`);
+    assert_false(el.matches(':overscroll-open'), `${selector(el)} should be closed again`);
   }
 }
 
@@ -86,7 +90,7 @@ function verifyNoTarget(button) {
   const target2 = document.getElementById('target2');
   const dup1 = document.querySelector('.one');
   const dup2 = document.querySelector('.two');
-  const elements = [target, target2, dup1, dup2].filter(el => !!el);
+  const elements = [target, target2, dup1, dup2];
 
   // Force layout initially
   document.body.offsetTop;
@@ -97,7 +101,7 @@ function verifyNoTarget(button) {
   document.body.offsetTop;
 
   for (const el of elements) {
-    assert_equals(getComputedStyle(el).interactivity, "inert", `${el.id || el.className} should stay closed`);
+    assert_false(el.matches(':overscroll-open'), `${selector(el)} should stay closed`);
   }
 }
 
@@ -162,7 +166,7 @@ test((t) => {
 
 test((t) => {
   const nested = document.getElementById('nested');
-  assert_not_equals(getComputedStyle(nested).interactivity, "inert", "nested element should not be inert initially");
+  assert_false(nested.matches(':overscroll-open'), "nested element should not be open initially");
 
   t.add_cleanup(() => invoker.removeAttribute('commandfor'));
   invoker.setAttribute('commandfor', 'nested');
@@ -170,6 +174,6 @@ test((t) => {
   invoker.click();
   document.body.offsetTop;
 
-  assert_not_equals(getComputedStyle(nested).interactivity, "inert", "nested element should stay non-inert after toggle");
-}, "Nested element with overscrollarea attribute is ignored and does not become inert");
+  assert_false(nested.matches(':overscroll-open'), "nested element should stay closed after toggle");
+}, "Nested element with overscrollarea attribute is ignored and does not open");
 </script>

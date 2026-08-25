@@ -634,6 +634,8 @@ crbug.com/386610909 external/wpt/svg/styling/use-element-non-rendered-sibling-se
 
 ### ====== Overscroll tests ======
 wpt_internal/overscroll-gestures/toggle-overscroll-diagonal.html [ Failure ]
+crbug.com/512162034 wpt_internal/overscroll-gestures/overscroll-focus-navigation.html [ Failure ]
+crbug.com/512162034 wpt_internal/overscroll-gestures/overscroll-inert.html [ Failure ]
 
 ### ====== Payments related tests begin =======
 
