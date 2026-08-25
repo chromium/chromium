@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] VTTCue.getCueAsHTML(), x\\0
-  assert_equals: data expected "x\\0" but got "x"
-Harness: the test ran to completion.
-

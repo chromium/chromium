@@ -31,8 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_TOKENIZER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_TOKENIZER_H_
 
-#include "third_party/blink/renderer/core/html/parser/input_stream_preprocessor.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_token.h"
+#include "third_party/blink/renderer/platform/text/segmented_string.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -47,13 +47,8 @@ class VTTTokenizer {
 
   bool NextToken(VTTToken&);
 
-  inline bool ShouldSkipNullCharacters() const { return true; }
-
  private:
   SegmentedString input_;
-
-  // ://www.whatwg.org/specs/web-apps/current-work/#preprocessing-the-input-stream
-  InputStreamPreprocessor<VTTTokenizer> input_stream_preprocessor_;
 };
 
 }  // namespace blink
