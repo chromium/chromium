@@ -705,4 +705,19 @@ suite('AppReceivesToolbarChanges', () => {
 
     assertEquals('fr', app.$.toolbar.pageLanguage);
   });
+
+  test('restoreSettingsFromPrefs updates styles', async () => {
+    visualBrowserProxy.letterSpacing = 1;  // wide
+    visualBrowserProxy.lineSpacing = 2;    // very loose
+    visualBrowserProxy.fontName = 'Serif';
+
+    visualBrowserProxy.restoreSettingsFromPrefs.callListeners();
+    await microtasksFinished();
+
+    assertEquals(
+        visualBrowserProxy.getLetterSpacingValue(1), containerLetterSpacing());
+    assertEquals(
+        visualBrowserProxy.getLineSpacingValue(2), containerLineSpacing());
+    assertFontsEqual(containerFont(), 'Serif');
+  });
 });

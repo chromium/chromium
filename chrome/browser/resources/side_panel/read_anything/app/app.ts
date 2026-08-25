@@ -290,17 +290,13 @@ export class AppElement extends AppElementBase implements SpeechListener,
         });
     this.visualBrowserProxy_.onPresentationStateReceived.addListener(
         this.onPresentationStateReceived_.bind(this));
+    this.visualBrowserProxy_.restoreSettingsFromPrefs.addListener(
+        this.restoreSettingsFromPrefs_.bind(this));
     this.audioBrowserProxy_.languageChanged.addListener(
         this.languageChanged.bind(this));
     this.audioBrowserProxy_.setPlayOnOpen.addListener(
         this.setPlayOnOpen.bind(this));
 
-    /////////////////////////////////////////////////////////////////////
-    // Called by ReadAnythingAppController via callback router. //
-    /////////////////////////////////////////////////////////////////////
-    chrome.readingMode.restoreSettingsFromPrefs = () => {
-      this.restoreSettingsFromPrefs_();
-    };
   }
 
   override disconnectedCallback() {
@@ -671,7 +667,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   private restoreSettingsFromPrefs_() {
-    this.voiceLanguageController_.restoreFromPrefs();
     this.settingsPrefs_ = {
       letterSpacing: this.visualBrowserProxy_.getLetterSpacing(),
       lineSpacing: this.visualBrowserProxy_.getLineSpacing(),
@@ -688,11 +683,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
           this.visualBrowserProxy_.getLastNonDisabledLineFocus(),
           this.visualBrowserProxy_.isLineFocusOn(), this.$.container,
           this.$.appFlexParent.clientHeight);
-      this.setLineFocusStyle_();
     }
-    // TODO: crbug.com/40927698 - Remove this call. Using this.settingsPrefs_
-    // should replace this direct call to the toolbar.
-    this.$.toolbar.restoreSettingsFromPrefs();
   }
 
   protected onLineSpacingChange_() {

@@ -7,6 +7,9 @@
 import {hasGoogleIdentifier} from './voice_language_conversions.js';
 // </if>
 // clang-format on
+
+import type {VisualBrowserProxy} from '../app/visual_browser_proxy.js';
+import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
 import type {AudioBrowserProxy} from './audio_browser_proxy.js';
 import {AudioBrowserProxyImpl} from './audio_browser_proxy.js';
 import type {SpeechBrowserProxy} from './speech_browser_proxy.js';
@@ -30,6 +33,8 @@ export class VoiceLanguageController {
   private speech_: SpeechBrowserProxy = SpeechBrowserProxyImpl.getInstance();
   private audioBrowserProxy_: AudioBrowserProxy =
       AudioBrowserProxyImpl.getInstance();
+  private visualBrowserProxy_: VisualBrowserProxy =
+      VisualBrowserProxyImpl.getInstance();
   private listeners_: VoiceLanguageListener[] = [];
 
   // The extension is responsible for installing the Natural voices. If the
@@ -48,6 +53,8 @@ export class VoiceLanguageController {
         this.onTtsEngineInstalled.bind(this));
     this.audioBrowserProxy_.languageChanged.addListener(
         this.onPageLanguageChanged.bind(this));
+    this.visualBrowserProxy_.restoreSettingsFromPrefs.addListener(
+        this.restoreFromPrefs.bind(this));
   }
 
   addListener(listener: VoiceLanguageListener) {

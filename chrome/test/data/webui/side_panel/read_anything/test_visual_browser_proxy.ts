@@ -10,6 +10,7 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
     VisualBrowserProxy {
   onPinStateReceived = new FakeChromeEvent();
   onPresentationStateReceived = new FakeChromeEvent();
+  restoreSettingsFromPrefs = new FakeChromeEvent();
 
   inSidePanelPresentationState: number = 1;
   inImmersiveOverlayPresentationState: number = 2;

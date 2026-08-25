@@ -12,6 +12,7 @@ import {EventForwarder} from '../content/read_anything_types.js';
 export interface VisualBrowserProxy {
   onPinStateReceived: ChromeEvent<(pinState: boolean) => void>;
   onPresentationStateReceived: ChromeEvent<(presentationState: number) => void>;
+  restoreSettingsFromPrefs: ChromeEvent<() => void>;
 
   getInSidePanelPresentationState(): number;
   getInImmersiveOverlayPresentationState(): number;
@@ -97,6 +98,7 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
   onPinStateReceived = new EventForwarder<(pinState: boolean) => void>();
   onPresentationStateReceived =
       new EventForwarder<(presentationState: number) => void>();
+  restoreSettingsFromPrefs = new EventForwarder<() => void>();
 
   constructor() {
     chrome.readingMode.onPinStateReceived = (pinState: boolean) => {
@@ -107,6 +109,10 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
         (presentationState: number) => {
           this.onPresentationStateReceived.forward(presentationState);
         };
+
+    chrome.readingMode.restoreSettingsFromPrefs = () => {
+      this.restoreSettingsFromPrefs.forward();
+    };
   }
 
   getInSidePanelPresentationState(): number {

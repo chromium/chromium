@@ -375,4 +375,15 @@ suite('Toolbar', () => {
       });
     });
   });
+
+  test('restoreSettingsFromPrefs event updates toolbar', async () => {
+    audioBrowserProxy.speechRate = 1.5;
+
+    visualBrowserProxy.restoreSettingsFromPrefs.callListeners();
+    await microtasksFinished();
+
+    const rateButton = shadowRoot.querySelector('#rate');
+    assertTrue(!!rateButton);
+    assertEquals('1.5', rateButton.textContent.trim());
+  });
 });

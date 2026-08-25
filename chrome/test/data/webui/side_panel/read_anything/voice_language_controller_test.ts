@@ -4,7 +4,7 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {AudioBrowserProxyImpl, AVAILABLE_GOOGLE_TTS_LOCALES, BrowserProxy, EXTENSION_RESPONSE_TIMEOUT_MS, mojoVoicePackStatusToVoicePackStatusEnum, NotificationType, PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, SpeechBrowserProxyImpl, VoiceClientSideStatusCode, VoiceLanguageController, VoiceNotificationManager, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AudioBrowserProxyImpl, AVAILABLE_GOOGLE_TTS_LOCALES, BrowserProxy, EXTENSION_RESPONSE_TIMEOUT_MS, mojoVoicePackStatusToVoicePackStatusEnum, NotificationType, PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, SpeechBrowserProxyImpl, VisualBrowserProxyImpl, VoiceClientSideStatusCode, VoiceLanguageController, VoiceNotificationManager, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {VoiceLanguageListener, VoiceNotificationListener} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
@@ -14,9 +14,11 @@ import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
+import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('VoiceLanguageController', () => {
   let audioBrowserProxy: TestAudioBrowserProxy;
+  let visualBrowserProxy: TestVisualBrowserProxy;
   let speech: TestSpeechBrowserProxy;
   let voiceLanguageController: VoiceLanguageController;
   let listener: VoiceLanguageListener;
@@ -68,6 +70,8 @@ suite('VoiceLanguageController', () => {
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     audioBrowserProxy = new TestAudioBrowserProxy();
     AudioBrowserProxyImpl.setInstance(audioBrowserProxy);
+    visualBrowserProxy = new TestVisualBrowserProxy();
+    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
     speech = new TestSpeechBrowserProxy();
     SpeechBrowserProxyImpl.setInstance(speech);
     metrics = mockMetrics();
@@ -203,6 +207,17 @@ suite('VoiceLanguageController', () => {
     setupBasicSpeech(speech);
 
     voiceLanguageController.restoreFromPrefs();
+
+    assertArrayEquals([], audioBrowserProxy.getLanguagesEnabledInPref());
+  });
+
+  test('restoreSettingsFromPrefs event triggers restoreFromPrefs', () => {
+    assertArrayEquals([], audioBrowserProxy.getLanguagesEnabledInPref());
+    const previouslyAvailableLang = 'pt-pt';
+    audioBrowserProxy.onLanguagePrefChange(previouslyAvailableLang, true);
+    setupBasicSpeech(speech);
+
+    visualBrowserProxy.restoreSettingsFromPrefs.callListeners();
 
     assertArrayEquals([], audioBrowserProxy.getLanguagesEnabledInPref());
   });

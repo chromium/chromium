@@ -308,6 +308,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
     this.loadFontsStylesheet();
     this.initializeMenuButtons_();
+    this.visualBrowserProxy_.restoreSettingsFromPrefs.addListener(
+        this.restoreSettingsFromPrefs.bind(this));
     this.isSetupComplete_ = true;
   }
 
