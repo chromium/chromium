@@ -509,7 +509,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 + (id<GREYMatcher>)navigationBarCancelButton {
   return grey_allOf(
       grey_ancestor(grey_kindOfClass([UINavigationBar class])),
-      [self cancelButton],
+      [self cancelButton], grey_userInteractionEnabled(),
       grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
 }
 
@@ -520,7 +520,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 + (id<GREYMatcher>)navigationBarSaveButton {
   return grey_allOf(
       grey_ancestor(grey_kindOfClass([UINavigationBar class])),
-      [self saveButton],
+      [self saveButton], grey_userInteractionEnabled(),
       grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
 }
 
