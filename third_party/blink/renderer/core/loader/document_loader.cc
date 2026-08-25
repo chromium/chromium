@@ -40,6 +40,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -428,7 +429,8 @@ struct SameSizeAsDocumentLoader
   Member<PrefetchedSignedExchangeManager> prefetched_signed_exchange_manager;
   ukm::SourceId ukm_source_id;
   UseCounterImpl use_counter;
-  const base::TickClock* clock;
+  raw_ptr<const base::TickClock, UnprotectedInRelease | DanglingUntriaged>
+      clock;
   const Vector<mojom::blink::OriginTrialFeature>
       initiator_origin_trial_features;
   const Vector<String> force_enabled_origin_trials;

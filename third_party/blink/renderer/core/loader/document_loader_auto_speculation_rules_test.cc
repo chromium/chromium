@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,7 +58,7 @@ class DocumentLoaderAutoSpeculationRulesTest : public ::testing::Test {
   test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   frame_test_helpers::WebViewHelper web_view_helper_;
-  WebViewImpl* web_view_impl_;
+  raw_ptr<WebViewImpl, UnprotectedInRelease | DanglingUntriaged> web_view_impl_;
 };
 
 enum class OptOutRuleSetType { kInline, kExternal };

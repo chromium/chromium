@@ -28,6 +28,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
@@ -144,7 +145,9 @@ class FontResource::BackgroundFontProcessor final
   network::mojom::URLResponseHeadPtr head_;
   std::optional<mojo_base::BigBuffer> cached_metadata_buffer_;
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
-  BackgroundResponseProcessor::Client* client_;
+  raw_ptr<BackgroundResponseProcessor::Client,
+          UnprotectedInRelease | DanglingUntriaged>
+      client_;
 
   std::unique_ptr<mojo::DataPipeDrainer> pipe_drainer_;
   SegmentedBuffer buffer_;

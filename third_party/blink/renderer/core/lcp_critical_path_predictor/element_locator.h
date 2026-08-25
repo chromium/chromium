@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/element_locator.pb.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -36,7 +37,7 @@ struct HTMLStackItem {
   // The container element's tag name.
   // Note that we only track element's local name, which means no support for
   // the XML namespaces.
-  const StringImpl* tag_name;
+  raw_ptr<const StringImpl, UnprotectedInRelease | DanglingUntriaged> tag_name;
 
   // The container element's id attribute value.
   AtomicString id_attr;

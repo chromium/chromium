@@ -36,6 +36,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "services/network/public/cpp/request_destination.h"
@@ -154,8 +155,11 @@ class WebAssociatedURLLoaderImpl::ClientAdapter final
  private:
   void NotifyError(TimerBase*);
 
-  WebAssociatedURLLoaderImpl* loader_;
-  WebAssociatedURLLoaderClient* client_;
+  raw_ptr<WebAssociatedURLLoaderImpl, UnprotectedInRelease | DanglingUntriaged>
+      loader_;
+  raw_ptr<WebAssociatedURLLoaderClient,
+          UnprotectedInRelease | DanglingUntriaged>
+      client_;
   WebAssociatedURLLoaderOptions options_;
   network::mojom::RequestMode request_mode_;
   network::mojom::CredentialsMode credentials_mode_;
@@ -338,7 +342,8 @@ class WebAssociatedURLLoaderImpl::Observer final
     ExecutionContextLifecycleObserver::Trace(visitor);
   }
 
-  WebAssociatedURLLoaderImpl* parent_;
+  raw_ptr<WebAssociatedURLLoaderImpl, UnprotectedInRelease | DanglingUntriaged>
+      parent_;
 };
 
 WebAssociatedURLLoaderImpl::WebAssociatedURLLoaderImpl(

@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_SCRIPT_RESOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_SCRIPT_RESOURCE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-shared.h"
@@ -325,7 +326,8 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   // This isolate will be null if this ScriptResource is not created on the main
   // thread. The isolate is not stored because non-main thread Isolates are
   // transient. The main thread isolate will be always outlive this object.
-  v8::Isolate* isolate_if_main_thread_;
+  raw_ptr<v8::Isolate, UnprotectedInRelease | DanglingUntriaged>
+      isolate_if_main_thread_;
   Member<ResourceScriptStreamer> streamer_;
   ScriptStreamer::NotStreamingReason no_streamer_reason_ =
       ScriptStreamer::NotStreamingReason::kInvalid;

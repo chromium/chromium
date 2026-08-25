@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_IDLENESS_DETECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_IDLENESS_DETECTOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -83,7 +84,8 @@ class CORE_EXPORT IdlenessDetector
   bool in_network_0_quiet_period_ = true;
   bool in_network_2_quiet_period_ = true;
 
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock, UnprotectedInRelease | DanglingUntriaged>
+      clock_;
 
   base::TimeDelta network_quiet_window_ = kNetworkQuietWindow;
   // Store the accumulated time of network quiet.
