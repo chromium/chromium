@@ -1,7 +1,7 @@
 Name: potential_utf
 URL: https://crates.io/crates/potential_utf
-Version: 0.1.5
-Revision: c9fac4e625ccb2c6a7aa35079fff9709db4385ac
+Version: 0.1.6
+Revision: a14f2dad852be26bad277ae704abf27a15cbfed1
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Unicode-3.0
 License File: //third_party/rust/chromium_crates_io/vendor/potential_utf-v0_1/LICENSE
