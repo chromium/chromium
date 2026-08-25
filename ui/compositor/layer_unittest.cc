@@ -1743,7 +1743,7 @@ TEST_P(LayerWithNullDelegateTest, UpdateDamageInDeferredPaint) {
 // present, even if it shouldn't send its damaged regions itself.
 TEST_P(LayerWithNullDelegateTest, AlwaysSendsMaskDamagedRects) {
   gfx::Rect bound(gfx::Rect(2, 2));
-  std::unique_ptr<Layer> mask = CreateTextureLayer(bound);
+  auto mask = CreateTextureLayer(bound);
   std::unique_ptr<Layer> root = CreateTextureRootLayer(bound);
   root->SetMaskLayer(mask.get());
 
@@ -1772,7 +1772,7 @@ TEST_P(LayerWithNullDelegateTest, ReusedMaskLayer) {
   root->Add(l2.get());
 
   {
-    std::unique_ptr<Layer> mask = CreateTextureLayer(bound);
+    auto mask = CreateTextureLayer(bound);
     // Set `mask` to `l1`, then `l2`.
     l1->SetMaskLayer(mask.get());
     EXPECT_EQ(mask.get(), l1->layer_mask_layer());

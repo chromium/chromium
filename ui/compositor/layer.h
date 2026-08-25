@@ -379,9 +379,9 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   // it have any children. The ownership of |layer_mask| will not be
   // transferred with this call.
   // Furthermore: A mask layer can only be set to one layer.
-  void SetMaskLayer(Layer* layer_mask);
-  Layer* layer_mask_layer() { return layer_mask_; }
-  const Layer* layer_mask_layer() const { return layer_mask_; }
+  void SetMaskLayer(LayerTextured* layer_mask);
+  LayerTextured* layer_mask_layer() { return layer_mask_; }
+  const LayerTextured* layer_mask_layer() const { return layer_mask_; }
 
   // Sets the visibility of the Layer. A Layer itself may be visible but not
   // fully visible in the layer tree.  This happens if any ancestor of a
@@ -746,7 +746,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   gfx::Point layer_offset_;
 
   // The associated mask layer with this layer.
-  raw_ptr<Layer> layer_mask_ = nullptr;
+  raw_ptr<LayerTextured> layer_mask_ = nullptr;
   // The back link from the mask layer to it's associated masked layer.
   // We keep this reference for the case that if the mask layer gets deleted
   // while attached to the main layer before the main layer is deleted.

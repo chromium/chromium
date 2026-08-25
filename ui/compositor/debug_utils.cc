@@ -19,6 +19,7 @@
 #include "ui/compositor/layer_nine_patch.h"
 #include "ui/compositor/layer_solid_color.h"
 #include "ui/compositor/layer_test_api.h"
+#include "ui/compositor/layer_textured.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -135,7 +136,7 @@ void PrintLayerHierarchyImp(const Layer* layer,
          << " occlusion: " << nine_patch_layer->occlusion().ToString();
   }
 
-  const ui::Layer* mask = const_cast<ui::Layer*>(layer)->layer_mask_layer();
+  const ui::Layer* mask = layer->layer_mask_layer();
 
   if (mask) {
     *out << '\n' << property_indent_str;

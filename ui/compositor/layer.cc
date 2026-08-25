@@ -654,27 +654,23 @@ void Layer::SetLayerInverted(bool inverted) {
   SetLayerFilters();
 }
 
-void Layer::SetMaskLayer(Layer* layer_mask) {
+void Layer::SetMaskLayer(LayerTextured* layer_mask) {
   if (layer_mask_ == layer_mask)
     return;
-  // The provided mask should not have a layer mask itself.
-  DCHECK(!layer_mask ||
-         (!layer_mask->layer_mask_layer() && layer_mask->children().empty()));
   DCHECK(!layer_mask_back_link_);
-  DCHECK(!layer_mask || layer_mask->AsTextured());
-  // Masks must be backed by a PictureLayer.
-  DCHECK(!layer_mask || layer_mask->AsTextured()->content_layer());
   // We need to de-reference the currently linked object so that no problem
   // arises if the mask layer gets deleted before this object.
   if (layer_mask_) {
     layer_mask_->layer_mask_back_link_ = nullptr;
   }
   layer_mask_ = layer_mask;
-  cc_layer_->SetMaskLayer(layer_mask ? layer_mask->AsTextured()->content_layer()
-                                     : nullptr);
+  cc_layer_->SetMaskLayer(layer_mask ? layer_mask->content_layer() : nullptr);
   // We need to reference the linked object so that it can properly break the
   // link to us when it gets deleted.
   if (layer_mask) {
+    // The provided mask should not have a layer mask itself.
+    DCHECK(!layer_mask->layer_mask_layer() && layer_mask->children().empty());
+    DCHECK(!layer_mask->IsPaintDeferred());
     // A `layer_mask` of this would lead to recursion.
     CHECK(layer_mask != this);
 

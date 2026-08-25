@@ -50,6 +50,10 @@ void LayerTextured::RemoveDeferredPaintRequest() {
   }
 }
 
+bool LayerTextured::IsPaintDeferred() const {
+  return deferred_paint_requests_ > 0;
+}
+
 std::unique_ptr<Layer> LayerTextured::Clone() const {
   auto clone = Layer::Clone();
   clone->AsTextured()->SetFillsBoundsCompletely(FillsBoundsCompletely());
@@ -93,7 +97,7 @@ void LayerTextured::SetFillsBoundsCompletely(bool fills_bounds_completely) {
 }
 
 void LayerTextured::OnPaintScheduled() {
-  if (deferred_paint_requests_) {
+  if (IsPaintDeferred()) {
     return;
   }
 

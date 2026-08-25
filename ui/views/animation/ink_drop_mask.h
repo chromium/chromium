@@ -25,7 +25,8 @@ class VIEWS_EXPORT InkDropMask : public ui::LayerDelegate {
 
   ~InkDropMask() override;
 
-  ui::Layer* layer() { return &layer_; }
+  ui::LayerTextured* layer() { return &layer_; }
+  const ui::LayerTextured* layer() const { return &layer_; }
 
  protected:
   explicit InkDropMask(const gfx::Size& layer_size);
