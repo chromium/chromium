@@ -136,16 +136,11 @@ async function testOnAttachedWithoutActivation() {
                          chrome.test.assertNe(secondWindowId, -1);
                          chrome.tabs.move(
                              prerenderingTabId,
-                             {windowId: secondWindowId, index: 0}, function() {
-                               chrome.test.assertEq(
-                                   chrome.runtime.lastError.message,
-                                   `No tab with id: ${prerenderingTabId}.`);
-                             });
+                             {windowId: secondWindowId, index: 0},
+                             fail('Invalid value for state'));
                        }));
         }));
       }));
-
-  chrome.test.succeed();
 }
 
 // Tests that OnAttached is aware of the newly created prerendering into a new
@@ -153,6 +148,7 @@ async function testOnAttachedWithoutActivation() {
 async function testOnAttachedAfterActivation() {
   const activationCallback = details => {
     if (details.documentLifecycle === 'prerender') {
+      chrome.webRequest.onCompleted.removeListener(activationCallback);
       chrome.tabs.executeScript(tabId, {
         code: `document.getElementById('link').click();`,
         runAt: 'document_idle',
@@ -173,14 +169,13 @@ async function testOnAttachedAfterActivation() {
                           // Ensure notification is correct.
                           assertEq(testTabId, prerenderingTabId);
                           assertEq(winId, info.newWindowId);
-                          chrome.test.succeed();
                         });
 
                     chrome.test.assertNe(windowId, -1);
                     chrome.test.assertNe(secondWindowId, -1);
                     chrome.tabs.move(
                         prerenderingTabId, {windowId: secondWindowId, index: 0},
-                        function() {});
+                        pass());
                   }));
             }));
           }));

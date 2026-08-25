@@ -4307,6 +4307,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, PDFExtensionNavigation) {
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsMoveNonExistentTab) {
+  constexpr int kNonExistentTabId = 999999;
+  auto function = base::MakeRefCounted<TabsMoveFunction>();
+  EXPECT_EQ(utils::RunFunctionAndReturnError(
+                function.get(),
+                base::StringPrintf(R"([%d, {"index": 0}])", kNonExistentTabId),
+                profile()),
+            base::StringPrintf("No tab with id: %d.", kNonExistentTabId));
+}
+
 // Test that the tabs.move() function correctly rearranges sets of tabs within a
 // single window.
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsMoveWithinWindow) {

@@ -224,6 +224,11 @@ loadScript.then(async function() {
       chrome.tabs.move([], {index: 0}, fail('No tabs given.'));
     },
 
+    // Check that attempting to move a non-existent tab returns an error.
+    function moveNonExistentTab() {
+      chrome.tabs.move(999999, {index: 0}, fail('No tab with id: 999999.'));
+    },
+
     // Move a tab to the current window.
     function moveToCurrentWindow() {
       chrome.windows.getCurrent(pass(function(win) {

@@ -416,8 +416,7 @@ int MoveTabToWindow(ExtensionFunction* function,
   if (!tabs_internal::GetTabById(tab_id, function->browser_context(),
                                  function->include_incognito_information(),
                                  &source_window, &web_contents, &source_index,
-                                 error) ||
-      !source_window) {
+                                 error)) {
     return -1;
   }
 
@@ -2990,8 +2989,12 @@ bool TabsMoveFunction::MoveTab(int tab_id,
   int tab_index = -1;
   if (!tabs_internal::GetTabById(
           tab_id, browser_context(), include_incognito_information(),
-          &source_window, &contents, &tab_index, error) ||
-      !source_window) {
+          &source_window, &contents, &tab_index, error)) {
+    return false;
+  }
+
+  if (!source_window) {
+    *error = tabs_constants::kInvalidWindowStateError;
     return false;
   }
 
