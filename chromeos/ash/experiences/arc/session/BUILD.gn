@@ -62,6 +62,7 @@ static_library("session") {
     "//chromeos/ash/components/system",
     "//chromeos/ash/experiences/arc:arc_base_utils",
     "//chromeos/ash/experiences/arc:arc_features",
+    "//chromeos/ash/experiences/arc:arc_metrics_constants",
     "//chromeos/ash/experiences/arc:prefs",
     "//chromeos/ash/experiences/arc/message_center",
     "//chromeos/ash/experiences/arc/mojom",

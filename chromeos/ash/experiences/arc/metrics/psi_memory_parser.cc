@@ -17,12 +17,12 @@ namespace arc {
 
 namespace {
 
-// Periods supported by standard Linux PSI metricvs.
-constexpr uint32_t kMinCollectionInterval = 10;
-constexpr uint32_t kMidCollectionInterval = 60;
-constexpr uint32_t kMaxCollectionInterval = 300;
+// Periods supported by standard Linux PSI metrics.
+constexpr base::TimeDelta kMinCollectionInterval = base::Seconds(10);
+constexpr base::TimeDelta kMidCollectionInterval = base::Seconds(60);
+constexpr base::TimeDelta kMaxCollectionInterval = base::Seconds(300);
 
-constexpr uint32_t kDefaultCollectionInterval = kMinCollectionInterval;
+constexpr base::TimeDelta kDefaultCollectionInterval = kMinCollectionInterval;
 
 // Name of the histogram that represents the success and various failure modes
 // for parsing PSI memory data.
@@ -37,7 +37,7 @@ const char kMetricPrefixFormat[] = "avg%d=";
 
 }  // namespace
 
-PSIMemoryParser::PSIMemoryParser(uint32_t period)
+PSIMemoryParser::PSIMemoryParser(base::TimeDelta period)
     : period_(kDefaultCollectionInterval) {
   if (period == kMinCollectionInterval || period == kMidCollectionInterval ||
       period == kMaxCollectionInterval) {
@@ -46,12 +46,13 @@ PSIMemoryParser::PSIMemoryParser(uint32_t period)
     LOG(WARNING) << "Ignoring invalid interval [" << period << "]";
   }
 
-  metric_prefix_ = base::StringPrintf(kMetricPrefixFormat, period_);
+  metric_prefix_ = base::StringPrintf(
+      kMetricPrefixFormat, static_cast<int>(period_.InSeconds()));
 }
 
 PSIMemoryParser::~PSIMemoryParser() = default;
 
-uint32_t PSIMemoryParser::GetPeriod() const {
+base::TimeDelta PSIMemoryParser::GetPeriod() const {
   return period_;
 }
 

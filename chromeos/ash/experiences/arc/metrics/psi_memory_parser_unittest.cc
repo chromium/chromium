@@ -31,11 +31,11 @@ class PSIMemoryParserTest : public testing::Test {
   PSIMemoryParserTest() = default;
   ~PSIMemoryParserTest() override = default;
 
-  void Init(uint32_t period) {
+  void Init(base::TimeDelta period) {
     cit_ = std::make_unique<PSIMemoryParser>(period);
   }
 
-  uint32_t GetPeriod() { return cit_->GetPeriod(); }
+  base::TimeDelta GetPeriod() { return cit_->GetPeriod(); }
   base::HistogramTester& Histograms() { return histogram_tester_; }
   std::unique_ptr<PSIMemoryParser>& Cit() { return cit_; }
   const std::string& GetMetricPrefix() { return cit_->metric_prefix_; }
@@ -48,22 +48,22 @@ class PSIMemoryParserTest : public testing::Test {
 };
 
 TEST_F(PSIMemoryParserTest, CustomInterval) {
-  Init(60u);
+  Init(base::Seconds(60));
 
-  EXPECT_EQ(60u, GetPeriod());
+  EXPECT_EQ(base::Seconds(60), GetPeriod());
 }
 
 TEST_F(PSIMemoryParserTest, InvalidInterval) {
-  Init(15u);
+  Init(base::Seconds(15));
 
-  EXPECT_EQ(10u, GetPeriod());
+  EXPECT_EQ(base::Seconds(10), GetPeriod());
 }
 
 TEST_F(PSIMemoryParserTest, InternalsA) {
-  Init(10u);
+  Init(base::Seconds(10));
 
   std::string testContent1 = "prefix" + GetMetricPrefix() + "9.37 suffix";
-  EXPECT_EQ(10u, GetPeriod());
+  EXPECT_EQ(base::Seconds(10), GetPeriod());
 
   size_t s = 0;
   size_t e = 0;
@@ -91,7 +91,7 @@ TEST_F(PSIMemoryParserTest, InternalsA) {
 }
 
 TEST_F(PSIMemoryParserTest, InternalsB) {
-  Init(300);
+  Init(base::Seconds(300));
 
   int msome;
   int mfull;
@@ -105,7 +105,7 @@ TEST_F(PSIMemoryParserTest, InternalsB) {
 }
 
 TEST_F(PSIMemoryParserTest, InternalsC) {
-  Init(60);
+  Init(base::Seconds(60));
 
   int msome;
   int mfull;
@@ -119,7 +119,7 @@ TEST_F(PSIMemoryParserTest, InternalsC) {
 }
 
 TEST_F(PSIMemoryParserTest, InternalsD) {
-  Init(10);
+  Init(base::Seconds(10));
 
   int msome;
   int mfull;
@@ -133,7 +133,7 @@ TEST_F(PSIMemoryParserTest, InternalsD) {
 }
 
 TEST_F(PSIMemoryParserTest, InternalsE) {
-  Init(10);
+  Init(base::Seconds(10));
 
   int msome;
   int mfull;
@@ -147,7 +147,7 @@ TEST_F(PSIMemoryParserTest, InternalsE) {
 }
 
 TEST_F(PSIMemoryParserTest, ParseResultCounter) {
-  Init(10);
+  Init(base::Seconds(10));
 
   Cit()->LogParseStatus(ParsePSIMemStatus::kSuccess);
   Cit()->LogParseStatus(ParsePSIMemStatus::kInvalidMetricFormat);

@@ -2607,32 +2607,14 @@ TEST_F(ArcVmClientAdapterTest, ArcGuestZramSizeByPercentage_CustomMem) {
   EXPECT_EQ(2048u, request.guest_zram_mib());
 }
 
-// Test that StartArcVmRequest has no matching command line flag
-// when kVmMemoryPSIReports is disabled.
-TEST_F(ArcVmClientAdapterTest, ArcVmMemoryPSIReportsDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kVmMemoryPSIReports);
+// Test that StartArcVmRequest has correct command line flag by default.
+TEST_F(ArcVmClientAdapterTest, ArcVmMemoryPSIReportsDefault) {
   StartParams start_params(GetPopulatedStartParams());
   StartMiniArcWithParams(true, std::move(start_params));
   EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
   EXPECT_FALSE(is_system_shutdown().has_value());
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_EQ(request.vm_memory_psi_period(), -1);
-}
-
-// Test that StartArcVmRequest has correct  command line flag
-// when kVmMemoryPSIReports is enabled.
-TEST_F(ArcVmClientAdapterTest, ArcVmMemoryPSIReportsEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  base::FieldTrialParams params;
-  params["period"] = "300";
-  feature_list.InitAndEnableFeatureWithParameters(kVmMemoryPSIReports, params);
-  StartParams start_params(GetPopulatedStartParams());
-  StartMiniArcWithParams(true, std::move(start_params));
-  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
-  EXPECT_FALSE(is_system_shutdown().has_value());
-  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_EQ(request.vm_memory_psi_period(), 300);
+  EXPECT_EQ(request.vm_memory_psi_period(), 10);
 }
 
 struct DalvikMemoryProfileTestParam {

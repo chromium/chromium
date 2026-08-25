@@ -5,7 +5,12 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_METRICS_ARC_METRICS_CONSTANTS_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_METRICS_ARC_METRICS_CONSTANTS_H_
 
+#include "base/time/time.h"
+
 namespace arc {
+
+// Default period for collecting VM memory PSI metrics.
+inline constexpr base::TimeDelta kVmMemoryPsiPeriod = base::Seconds(10);
 
 // Native bridge types for UMA recording (Arc.NativeBridge). These values are
 // persisted to logs, and should therefore never be renumbered nor reused.

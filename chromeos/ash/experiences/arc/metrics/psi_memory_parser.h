@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/gtest_prod_util.h"
+#include "base/time/time.h"
 
 namespace arc {
 
@@ -54,7 +55,7 @@ enum class ParsePSIMemStatus {
 // in Linux, which can be used for memory pressure metrics.
 class PSIMemoryParser {
  public:
-  explicit PSIMemoryParser(uint32_t period);
+  explicit PSIMemoryParser(base::TimeDelta period);
   ~PSIMemoryParser();
 
   // Parses PSI memory pressure from  |content|, for the currently configured
@@ -67,7 +68,7 @@ class PSIMemoryParser {
                                  int* metric_some,
                                  int* metric_full);
 
-  uint32_t GetPeriod() const;
+  base::TimeDelta GetPeriod() const;
   void LogParseStatus(ParsePSIMemStatus stat);
 
   PSIMemoryParser(const PSIMemoryParser&) = delete;
@@ -99,7 +100,7 @@ class PSIMemoryParser {
   int GetMetricValue(std::string_view content, size_t start, size_t end);
 
   std::string metric_prefix_;
-  uint32_t period_;
+  base::TimeDelta period_;
 };
 
 }  // namespace arc

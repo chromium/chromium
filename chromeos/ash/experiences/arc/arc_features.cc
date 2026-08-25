@@ -255,18 +255,6 @@ BASE_FEATURE(kVideoDecoder,
              "ArcVideoDecoder",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Feature to continuously log PSI memory pressure data to Chrome.
-BASE_FEATURE(kVmMemoryPSIReports,
-             "ArcVmMemoryPSIReports",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls how frequently memory pressure data is logged
-BASE_FEATURE_PARAM(int,
-                   kVmMemoryPSIReportsPeriod,
-                   &kVmMemoryPSIReports,
-                   "period",
-                   10);
-
 // Controls whether a custom memory size is used when creating ARCVM. When
 // enabled, ARCVM is sized with the following formula:
 //  min(max_mib, ram_percentage / 100 * RAM + shift_mib)
