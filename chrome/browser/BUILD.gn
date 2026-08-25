@@ -2441,15 +2441,10 @@ source_set("browser") {
     "//components/webrtc_logging/browser",
     "//components/webui/chrome_urls",
     "//components/webui/flags",
-    "//components/zoom",
-    "//content/public/browser",
-    "//content/public/common",
     "//crypto",
     "//device/base",
     "//device/fido",
     "//device/gamepad/public/cpp:switches",
-    "//device/vr/buildflags",
-    "//extensions/buildflags",
     "//google_apis",
     "//gpu/config",
     "//media",
@@ -2464,28 +2459,19 @@ source_set("browser") {
     "//mojo/public/cpp/bindings",
     "//net",
     "//net:extras",
-    "//printing/buildflags",
     "//rlz/buildflags",
     "//services/audio/public/cpp",
     "//services/cert_verifier:lib",
-    "//services/data_decoder/public/cpp",
     "//services/device/public/cpp:device_features",
     "//services/device/public/cpp/bluetooth",
     "//services/device/public/cpp/geolocation",
-    "//services/device/public/cpp/usb",
-    "//services/device/public/mojom",
-    "//services/device/public/mojom:usb",
-    "//services/media_session/public/mojom",
     "//services/metrics",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/network:network_service",
     "//services/network/public/cpp",
-    "//services/network/public/mojom",
     "//services/network/public/proto",
     "//services/on_device_model/public/cpp",
-    "//services/on_device_model/public/mojom",
     "//services/preferences/public/cpp",
-    "//services/preferences/public/cpp/tracked",
     "//services/preferences/public/mojom",
     "//services/preferences/tracked",
     "//services/service_manager/public/cpp",
@@ -3131,10 +3117,7 @@ source_set("browser") {
   }
 
   if (is_linux || is_win || is_mac || is_chromeos) {
-    deps += [
-      "//components/policy/proto",
-      "//services/data_decoder/public/cpp",
-    ]
+    deps += [ "//components/policy/proto" ]
   }
 
   if (enterprise_cloud_content_analysis || is_android ||
@@ -3286,7 +3269,6 @@ source_set("browser") {
       "//chrome/browser/extensions:chrome_extensions_browser_client",
       "//chrome/browser/extensions/api",
       "//chrome/browser/extensions/keyed_services:keyed_service_factories",
-      "//extensions/browser",
     ]
     deps += [
       "//chrome/browser/supervised_user",
@@ -3297,7 +3279,6 @@ source_set("browser") {
       # is modularized.
       "//extensions/browser:crx_installer",
       "//extensions/browser/updater",
-      "//extensions/strings",
     ]
   } else {
   }
@@ -3318,10 +3299,6 @@ source_set("browser") {
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/web_applications/extensions",
       "//components/drive",
-      "//extensions/common:mojom",
-      "//google_apis/calendar",
-      "//google_apis/common",
-      "//google_apis/drive",
     ]
     deps += [
       # TODO(crbug.com/41410773): mirroring shouldn't depend on
@@ -3363,7 +3340,6 @@ source_set("browser") {
   if (enable_pdf) {
     deps += [
       "//chrome/browser/pdf",
-      "//extensions/common/api",
       "//pdf:features",
     ]
   }
