@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.pdf;
 
-import android.graphics.drawable.ColorDrawable;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import android.content.Context;
 import android.view.View;
 import android.view.ViewStub;
-import android.widget.ListView;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -15,15 +16,12 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
-import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.widget.AnchoredPopupWindow;
-import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.List;
 
@@ -46,8 +44,8 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
                     0.25f, 0.33f, 0.5f, 0.67f, 0.75f, 0.8f, 0.9f, 1.0f, 1.1f, 1.25f, 1.5f, 1.75f,
                     2.0f, 2.5f, 3.0f, 4.0f, 5.0f);
     private float mDefaultZoomLevel = -1f;
-    private @Nullable AnchoredPopupWindow mMenuWindow;
     private @Nullable PdfToolbar mToolbar;
+    private @Nullable ListMenu mListMenu;
 
     public PdfToolbarCoordinator(View parentView, PdfToolbarActionsDelegate delegate) {
         mDelegate = delegate;
@@ -78,6 +76,9 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
                         .with(PdfToolbarProperties.ZOOM_CONTROLS_VISIBLE, true)
                         .with(PdfToolbarProperties.PAGE_NAV_AND_EDIT_VISIBLE, true)
                         .with(PdfToolbarProperties.DONE_BUTTON_VISIBLE, false)
+                        .with(
+                                PdfToolbarProperties.MENU_BUTTON_DELEGATE,
+                                () -> createListMenu(assumeNonNull(mToolbar).getContext()))
                         .build();
 
         toolbar.setOnWidthChangedListener(this::onWidthChanged);
@@ -114,9 +115,6 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
             mModel.set(PdfToolbarProperties.SHOW_FIT_TO_PAGE_ICON, !showFitToPage);
         } else if (actionId == R.id.download_button) {
             mDelegate.download();
-
-        } else if (actionId == R.id.more_menu_button) {
-            showMenu(view);
         } else if (actionId == R.id.print_button) {
             PdfUtils.recordToolbarAction(PdfUtils.PdfToolbarAction.PRINT);
             mDelegate.print();
@@ -160,7 +158,7 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
         mModel.set(PdfToolbarProperties.TWO_PAGES_PER_ROW_ACTIVE, false);
     }
 
-    private void showMenu(View anchorView) {
+    private ListMenu createListMenu(Context context) {
         ModelList modelList = new ModelList();
 
         if (PdfUtils.isInlinePdfV2DownloadEnabled()
@@ -171,7 +169,6 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
                             .withClickListener(
                                     v -> {
                                         mDelegate.download();
-                                        dismissMenu();
                                     })
                             .build());
         }
@@ -196,7 +193,6 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
                                         mModel.set(
                                                 PdfToolbarProperties.SHOW_FIT_TO_PAGE_ICON,
                                                 !showFitToPage);
-                                        dismissMenu();
                                     })
                             .build());
         }
@@ -210,7 +206,6 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
                         .withClickListener(
                                 v -> {
                                     toggleTwoPageView();
-                                    dismissMenu();
                                 });
         modelList.add(twoPageItem.build());
 
@@ -224,7 +219,6 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
                                         PdfUtils.recordToolbarAction(
                                                 PdfUtils.PdfToolbarAction.DOCUMENT_PROPERTIES);
                                         mDelegate.showDocumentProperties();
-                                        dismissMenu();
                                     })
                             .build());
         }
@@ -237,45 +231,8 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
                         listener.onClick(view);
                     }
                 };
-
-        BasicListMenu listMenu =
-                BrowserUiListMenuUtils.getBasicListMenu(
-                        anchorView.getContext(), modelList, delegate);
-        ListView listView = listMenu.getListView();
-        if (listView != null) {
-            listView.setItemsCanFocus(false);
-            listView.setFocusable(false);
-            listView.setFocusableInTouchMode(false);
-        }
-
-        View contentView = listMenu.getContentView();
-        int lateralPadding = contentView.getPaddingLeft() + contentView.getPaddingRight();
-        int widthPx = listMenu.getMaxItemWidth() + lateralPadding;
-
-        mMenuWindow =
-                new AnchoredPopupWindow.Builder(
-                                anchorView.getContext(),
-                                anchorView.getRootView(),
-                                new ColorDrawable(android.graphics.Color.TRANSPARENT),
-                                () -> contentView,
-                                new ViewRectProvider(anchorView))
-                        .setFocusable(true)
-                        .setTouchModal(true)
-                        .setDismissOnTouchInteraction(true)
-                        .setHorizontalOverlapAnchor(true)
-                        .setVerticalOverlapAnchor(false)
-                        .setDesiredContentWidth(widthPx)
-                        .setAllowNonTouchableSize(true)
-                        .build();
-
-        mMenuWindow.show();
-    }
-
-    private void dismissMenu() {
-        if (mMenuWindow != null) {
-            mMenuWindow.dismiss();
-            mMenuWindow = null;
-        }
+        mListMenu = BrowserUiListMenuUtils.getBasicListMenu(context, modelList, delegate);
+        return mListMenu;
     }
 
     /**
@@ -427,10 +384,13 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
     /** Destroys the coordinator and releases references held by the change processor. */
     public void destroy() {
         mPropertyModelChangeProcessor.destroy();
-        dismissMenu();
         if (mToolbar != null) {
             mToolbar.setOnWidthChangedListener(null);
         }
         mToolbar = null;
+    }
+
+    public @Nullable ListMenu getListMenuForTesting() {
+        return mListMenu;
     }
 }

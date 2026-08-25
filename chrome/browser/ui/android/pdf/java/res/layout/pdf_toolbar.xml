@@ -217,7 +217,7 @@ found in the LICENSE file.
                 android:src="@drawable/ic_print_24dp"
                 app:tint="@color/default_icon_color_tint_list" />
 
-            <org.chromium.ui.widget.ChromeImageButton
+            <org.chromium.ui.listmenu.ListMenuButton
                 android:id="@+id/more_menu_button"
                 style="@style/ToolbarButton"
                 android:layout_width="wrap_content"

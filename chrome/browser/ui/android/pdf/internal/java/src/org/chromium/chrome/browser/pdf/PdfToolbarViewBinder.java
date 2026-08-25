@@ -13,6 +13,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.KeyNavigationUtil;
+import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -133,6 +134,11 @@ class PdfToolbarViewBinder {
         } else if (PdfToolbarProperties.EDIT_MODE_ACTIVE == key) {
             View editButton = view.findViewById(R.id.edit_button);
             editButton.setSelected(model.get(PdfToolbarProperties.EDIT_MODE_ACTIVE));
+        } else if (PdfToolbarProperties.MENU_BUTTON_DELEGATE == key) {
+            ListMenuButton moreMenuButton = view.findViewById(R.id.more_menu_button);
+            moreMenuButton.setDelegate(
+                    model.get(PdfToolbarProperties.MENU_BUTTON_DELEGATE),
+                    /* overrideOnClickListener= */ true);
         }
     }
 }
