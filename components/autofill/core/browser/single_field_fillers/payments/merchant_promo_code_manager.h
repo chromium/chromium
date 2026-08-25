@@ -6,6 +6,8 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FILLERS_PAYMENTS_MERCHANT_PROMO_CODE_MANAGER_H_
 
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -18,14 +20,20 @@ class AutofillClient;
 // related functionality such as retrieving promo code offer data, managing
 // promo code suggestions, filling promo code fields, and handling form
 // submission data when there is a merchant promo code field present.
-class MerchantPromoCodeManager {
+class MerchantPromoCodeManager : public AutofillManager::Observer {
  public:
-  MerchantPromoCodeManager();
+  explicit MerchantPromoCodeManager(AutofillClient* autofill_client);
 
   MerchantPromoCodeManager(const MerchantPromoCodeManager&) = delete;
   MerchantPromoCodeManager& operator=(const MerchantPromoCodeManager&) = delete;
 
-  virtual ~MerchantPromoCodeManager();
+  ~MerchantPromoCodeManager() override;
+
+  // AutofillManager::Observer:
+  void OnFieldTypesDetermined(AutofillManager& manager,
+                              FormGlobalId form,
+                              AutofillManager::Observer::FieldTypeSource source,
+                              bool small_forms_were_parsed) override;
 
   // May generate promo code suggestions for the given `autofill_field` which
   // belongs to the `form_structure`.
@@ -42,6 +50,9 @@ class MerchantPromoCodeManager {
           on_suggestions_returned);
 
   virtual void OnSingleFieldSuggestionSelected(const Suggestion& suggestion) {}
+
+ private:
+  ScopedAutofillManagersObservation autofill_managers_observation_{this};
 };
 
 }  // namespace autofill

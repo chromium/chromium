@@ -350,7 +350,12 @@ MockIbanAccessManager* TestPaymentsAutofillClient::GetIbanAccessManager() {
 
 MockMerchantPromoCodeManager*
 TestPaymentsAutofillClient::GetMerchantPromoCodeManager() {
-  return &mock_merchant_promo_code_manager_;
+  if (!mock_merchant_promo_code_manager_) {
+    mock_merchant_promo_code_manager_ =
+        std::make_unique<testing::NiceMock<MockMerchantPromoCodeManager>>(
+            &client_.get());
+  }
+  return mock_merchant_promo_code_manager_.get();
 }
 
 void TestPaymentsAutofillClient::OpenPromoCodeOfferDetailsURL(const GURL& url) {

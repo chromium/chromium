@@ -246,9 +246,14 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   std::vector<const AutofillOfferData*> GetAutofillOffers() const;
 
   // Returns autofill offer data, but only promo code offers that are not
-  // expired and that are for the given |origin|.
+  // expired and that are for the given `origin`.
   std::vector<const AutofillOfferData*>
   GetActiveAutofillPromoCodeOffersForOrigin(GURL origin) const;
+
+  // Returns direct offers from Google Wallet that are active and for the given
+  // `origin`.
+  virtual std::vector<const AutofillOfferData*>
+  GetActiveAutofillWalletDirectOffersForOrigin(GURL origin) const;
 
   AutofillImageFetcherBase* GetImageFetcher() { return image_fetcher_; }
 

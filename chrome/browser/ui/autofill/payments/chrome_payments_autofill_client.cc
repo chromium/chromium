@@ -138,7 +138,7 @@ ChromePaymentsAutofillClient::ChromePaymentsAutofillClient(
     : content::WebContentsObserver(&client->GetWebContents()),
       client_(CHECK_DEREF(client)),
       merchant_promo_code_manager_(
-          std::make_unique<MerchantPromoCodeManager>()),
+          std::make_unique<MerchantPromoCodeManager>(&client_.get())),
       save_and_fill_manager_(
           std::make_unique<SaveAndFillManagerImpl>(&client_.get())),
       payments_churned_users_manager_(

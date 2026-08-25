@@ -10,9 +10,11 @@
 
 namespace autofill {
 
+class AutofillClient;
+
 class MockMerchantPromoCodeManager : public MerchantPromoCodeManager {
  public:
-  MockMerchantPromoCodeManager();
+  explicit MockMerchantPromoCodeManager(AutofillClient* autofill_client);
   ~MockMerchantPromoCodeManager() override;
 
   MOCK_METHOD(bool,

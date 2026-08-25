@@ -39,6 +39,7 @@ class SingleFieldFillRouterTest : public testing::Test {
  protected:
   SingleFieldFillRouterTest()
       : iban_manager_(&personal_data_manager().payments_data_manager()),
+        merchant_promo_code_manager_(&autofill_client_),
         single_field_fill_router_(&history_manager(),
                                   &iban_manager(),
                                   &promo_code_manager()) {

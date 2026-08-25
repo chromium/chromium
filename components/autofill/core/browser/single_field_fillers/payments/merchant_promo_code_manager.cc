@@ -4,22 +4,79 @@
 
 #include "components/autofill/core/browser/single_field_fillers/payments/merchant_promo_code_manager.h"
 
+#include <algorithm>
 #include <functional>
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #include "components/autofill/core/browser/suggestions/payments/merchant_promo_code_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace autofill {
 
-MerchantPromoCodeManager::MerchantPromoCodeManager() = default;
+MerchantPromoCodeManager::MerchantPromoCodeManager(
+    AutofillClient* autofill_client) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableWalletDirectOffers)) {
+    autofill_managers_observation_.Observe(
+        autofill_client, ScopedAutofillManagersObservation::
+                             InitializationPolicy::kObservePreexistingManagers);
+  }
+}
 
 MerchantPromoCodeManager::~MerchantPromoCodeManager() = default;
+
+void MerchantPromoCodeManager::OnFieldTypesDetermined(
+    AutofillManager& manager,
+    FormGlobalId form,
+    AutofillManager::Observer::FieldTypeSource source,
+    bool small_forms_were_parsed) {
+  const FormStructure* form_structure = manager.FindCachedFormById(form);
+  if (!form_structure) {
+    return;
+  }
+
+  auto promo_code_field = std::ranges::find_if(
+      form_structure->fields(),
+      [](const std::unique_ptr<AutofillField>& field) {
+        return field->Type().GetTypes().contains(MERCHANT_PROMO_CODE) &&
+               field->is_visible();
+      });
+  if (promo_code_field == form_structure->fields().end()) {
+    return;
+  }
+
+  if (!manager.client().GetPaymentsAutofillClient()) {
+    return;
+  }
+
+  std::vector<const AutofillOfferData*> promo_code_offers =
+      manager.client()
+          .GetPaymentsAutofillClient()
+          ->GetPaymentsDataManager()
+          .GetActiveAutofillWalletDirectOffersForOrigin(
+              manager.client()
+                  .GetLastCommittedPrimaryMainFrameOrigin()
+                  .GetURL());
+  if (promo_code_offers.empty()) {
+    return;
+  }
+
+  manager.client().ShowAutofillFieldIphForFeature(
+      **promo_code_field, AutofillClient::IphFeature::kWalletDirectOffers);
+}
 
 bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
     const FormStructure& form_structure,

@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
@@ -258,6 +259,11 @@ const base::Feature& GetFeature(AutofillClient::IphFeature iph_feature) {
   switch (iph_feature) {
     case AutofillClient::IphFeature::kAutofillAi:
       return feature_engagement::kIPHAutofillAiOptInFeature;
+    case AutofillClient::IphFeature::kWalletDirectOffers:
+      // TODO(crbug.com/546252995): Implement IPH bubble for Wallet Direct
+      // Offers.
+      NOTIMPLEMENTED();
+      return feature_engagement::kIPHAutofillAiOptInFeature;
   }
   NOTREACHED();
 }
@@ -265,6 +271,11 @@ const base::Feature& GetFeature(AutofillClient::IphFeature iph_feature) {
 ui::ElementIdentifier GetElementId(AutofillClient::IphFeature iph_feature) {
   switch (iph_feature) {
     case AutofillClient::IphFeature::kAutofillAi:
+      return PopupViewViews::kAutofillAiOptInIphElementId;
+    case AutofillClient::IphFeature::kWalletDirectOffers:
+      // TODO(crbug.com/546252995): Implement IPH bubble for Wallet Direct
+      // Offers.
+      NOTIMPLEMENTED();
       return PopupViewViews::kAutofillAiOptInIphElementId;
   }
   NOTREACHED();

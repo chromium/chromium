@@ -377,6 +377,13 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
     autofill_offer_manager_ = std::move(autofill_offer_manager);
   }
 
+  void set_merchant_promo_code_manager(
+      std::unique_ptr<MockMerchantPromoCodeManager>
+          mock_merchant_promo_code_manager) {
+    mock_merchant_promo_code_manager_ =
+        std::move(mock_merchant_promo_code_manager);
+  }
+
   bool unmask_authenticator_selection_dialog_shown() const {
     return unmask_authenticator_selection_dialog_shown_;
   }
@@ -479,7 +486,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   bool credit_card_name_fix_flow_bubble_was_shown_ = false;
 #endif
 
-  testing::NiceMock<MockMerchantPromoCodeManager>
+  std::unique_ptr<MockMerchantPromoCodeManager>
       mock_merchant_promo_code_manager_;
   std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
   std::unique_ptr<MockMandatoryReauthManager>

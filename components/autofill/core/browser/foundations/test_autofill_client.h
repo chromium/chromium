@@ -451,6 +451,11 @@ class TestAutofillClientTemplate : public T {
     return autofill_iph_showing_ == AutofillClient::IphFeature::kAutofillAi;
   }
 
+  bool IsShowingWalletDirectOffersIph() {
+    return autofill_iph_showing_ ==
+           AutofillClient::IphFeature::kWalletDirectOffers;
+  }
+
   void NotifyIphFeatureUsed(AutofillClient::IphFeature feature) override {
     if (notify_iph_feature_used_mock_callback_) {
       notify_iph_feature_used_mock_callback_->Run(feature);
