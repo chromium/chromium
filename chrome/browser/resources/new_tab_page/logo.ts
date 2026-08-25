@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import './iframe.js';
 import './doodle_share_dialog.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
