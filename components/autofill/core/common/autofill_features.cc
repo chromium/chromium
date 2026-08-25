@@ -832,6 +832,9 @@ BASE_FEATURE(kAutofillFixRewriterRules, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillFixStateCountryMisclassification,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables retrieval and filling of one-time passwords (OTPs) received in Gmail.
+BASE_FEATURE(kAutofillGmailOtp, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Greek regexes are used for parsing in branded builds.
 BASE_FEATURE(kAutofillGreekRegexes, base::FEATURE_ENABLED_BY_DEFAULT);
 

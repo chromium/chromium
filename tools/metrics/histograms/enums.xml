@@ -11626,6 +11626,7 @@ from previous Chrome versions.
   <int value="-961427615" label="WebviewTagMPArchBehavior:enabled"/>
   <int value="-960851702" label="EcheSWADisableStunServer:disabled"/>
   <int value="-960745328" label="EnableBubbleCornerRadiusUpdate:enabled"/>
+  <int value="-960528306" label="AutofillGmailOtp:disabled"/>
   <int value="-960077963" label="EnableAuraTooltipsOnWindows:enabled"/>
   <int value="-960031496"
       label="AutofillAndroidDesktopKeyboardAccessoryRevamp:enabled"/>
@@ -15112,6 +15113,7 @@ from previous Chrome versions.
       label="DataRetentionPoliciesDisableSyncTypesNeeded:disabled"/>
   <int value="129246815" label="AudioSettingsPage:disabled"/>
   <int value="129458360" label="LiteVideo:disabled"/>
+  <int value="130006085" label="AutofillGmailOtp:enabled"/>
   <int value="130059719" label="ThreadedPreloadScanner:disabled"/>
   <int value="130939792" label="FilesJsModules:disabled"/>
   <int value="131042807" label="IsolatedWebAppManagedAllowlist:enabled"/>

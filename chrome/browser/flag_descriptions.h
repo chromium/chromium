@@ -1096,6 +1096,11 @@ inline constexpr char kAutofillEnableGradientGoogleLogosName[] =
 inline constexpr char kAutofillEnableGradientGoogleLogosDescription[] =
     "When enabled, gradient-style GPay and Wallet branding logos will be used.";
 
+inline constexpr char kAutofillGmailOtpName[] = "Enable Gmail OTP Autofill";
+inline constexpr char kAutofillGmailOtpDescription[] =
+    "Enables retrieval and filling of one-time passwords (OTPs) received in "
+    "Gmail.";
+
 inline constexpr char kAutofillEnableNewAmexNetworkArtName[] =
     "Enable new American Express network art";
 inline constexpr char kAutofillEnableNewAmexNetworkArtDescription[] =
