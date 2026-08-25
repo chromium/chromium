@@ -272,6 +272,7 @@ import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -3754,7 +3755,7 @@ public class ToolbarManager
         if (!mIsTablet) return;
         if (!UrlUtilities.isNtpUrl(mLocationBarModel.getCurrentGurl())) return;
 
-        if (mActivity.getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {
+        if (DeviceInput.supportsAlphabeticKeyboard()) {
             mLocationBar.showUrlBarCursorWithoutFocusAnimations();
         }
     }
