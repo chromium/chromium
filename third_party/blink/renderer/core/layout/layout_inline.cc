@@ -431,11 +431,23 @@ void LayoutInline::QuadsForSelfInternal(Vector<gfx::QuadF>& quads,
                                         bool map_to_ancestor,
                                         BoxQuadType box_type) const {
   NOT_DESTROYED();
+  // Lazily allocated when the first quad is pushed.
   std::optional<gfx::Transform> mapping_to_ancestor;
   auto PushAncestorQuad = [&mapping_to_ancestor, &quads, ancestor, mode,
                            this](const PhysicalRect& rect) {
     if (!mapping_to_ancestor) {
-      mapping_to_ancestor.emplace(LocalToAncestorTransform(ancestor, mode));
+      gfx::Transform transform = LocalToAncestorTransform(ancestor, mode);
+      if (CanvasForDrawingLayoutObject()) {
+        // LocalToAncestorTransform maps from this inline's local coordinates
+        // (where (0, 0) is the top-left of PhysicalLinesBoundingBox), but
+        // InlineCursor produces fragment rects in the containing block's
+        // coordinate space. Adjust the transform so it maps directly from
+        // the containing block space to ancestor space.
+        PhysicalOffset inline_origin = PhysicalLinesBoundingBox().offset;
+        transform.Translate(-inline_origin.left.ToFloat(),
+                            -inline_origin.top.ToFloat());
+      }
+      mapping_to_ancestor.emplace(transform);
     }
     quads.push_back(mapping_to_ancestor->MapQuad(gfx::QuadF(gfx::RectF(rect))));
   };
@@ -771,6 +783,19 @@ bool LayoutInline::MapToVisualRectInAncestorSpaceInternal(
   NOT_DESTROYED();
   if (ancestor == this)
     return true;
+
+  if (LayoutObject* canvas_layout_object = CanvasForDrawingLayoutObject()) {
+    const bool preserve3d = StyleRef().Preserves3D();
+    if (ShouldUseTransformFromContainer(canvas_layout_object)) {
+      gfx::Transform t;
+      GetTransformFromContainer(canvas_layout_object, PhysicalOffset(), t);
+      transform_state.ApplyTransform(
+          t, preserve3d ? TransformState::kAccumulateTransform
+                        : TransformState::kFlattenTransform);
+    }
+    return canvas_layout_object->MapToVisualRectInAncestorSpaceInternal(
+        ancestor, transform_state, visual_rect_flags);
+  }
 
   LayoutObject* container = Container();
   DCHECK_EQ(container, Parent());

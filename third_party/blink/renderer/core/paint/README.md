@@ -551,13 +551,17 @@ like layout, hit testing, accessibility, etc. See the
 
 ### Stacking and layout
 *   **Layout subtree**: Specifying the `layoutsubtree` attribute on a `<canvas>`
-    element opts in its descendants to layout. This forces direct children of
-    the canvas to establish a stacking context and participate in layout, via
-    `ForceStackingAndContainingBlockForCanvasLayoutSubtree` in
-    `style_adjuster.cc`.
+    element opts in its descendants to layout. Direct children of the canvas
+    are blockified and given static position in
+    `StyleAdjuster::AdjustStyleForDisplay`. Descendants with the `drawable`
+    attribute (and direct children during migration) imply `isolation: isolate`
+    in `StyleAdjuster::AdjustComputedStyle`, and establish a containing block for
+    fixed and absolute positioned descendants via
+    `LayoutObject::ComputeIsFixedContainer`.
 *   **Element helpers**: The DOM `Element` class provides helpers
     `IsCanvasOrInCanvasSubtree()` and `IsInCanvasSubtree()` to easily identify
-    elements participating in this feature.
+    elements participating in this feature, as well as `CanvasForDrawing()` to
+    retrieve the associated canvas for drawable elements.
 
 ### Canvas Transform
 *   **Canvas transform**: `getCanvasTransform()` and `setCanvasTransform()` on
@@ -588,7 +592,7 @@ like layout, hit testing, accessibility, etc. See the
     intervening clips won't prevent the hit test from reaching the descendant.
 
 ### Compositing and layerization
-*   **Child direct compositing reason**: Direct children of a `layoutsubtree`
+*   **Child direct compositing reason**: Drawable elements in a `layoutsubtree`
     canvas are given the direct compositing reason
     `CompositingReason::kCanvasChild` in
     `CompositingReasonFinder::DirectReasonsForPaintProperties`. This forces the
@@ -598,7 +602,7 @@ like layout, hit testing, accessibility, etc. See the
     cc::Layer has `DrawsContent()` set to false so that it participates in hit
     testing but does not render.
 *   **Compositing disabled for other descendants**: Composited layers are
-    disabled for all content *below* the direct children of the canvas (with the
+    disabled for content *below* drawable elements in the canvas (with the
     exception of direct children of nested `layoutsubtree` canvases; see below).
     This ensures the full content is available in the canvas child's
     `cc::Layer`, which is used via

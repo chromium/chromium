@@ -591,7 +591,7 @@ static bool NeedsAnchorPositionScrollTranslation(const LayoutObject& object) {
 
 static bool NeedsElementCanvasTransform(const LayoutObject& object) {
   // TODO(crbug.com/532229486): Support element canvas transform for SVG.
-  if (object.IsText() || object.IsSVGChild() || !object.IsBox()) {
+  if (object.IsText() || object.IsSVGChild() || !object.IsBoxModelObject()) {
     return false;
   }
   const auto* element = DynamicTo<Element>(object.GetNode());
@@ -2018,14 +2018,18 @@ static void PopulateCanvasChildState(
     const LayoutObject& object,
     EffectPaintPropertyNode::State& state,
     const TransformPaintPropertyNodeOrAlias& current_transform) {
-  CHECK(IsA<LayoutBox>(object));
+  CHECK(IsA<LayoutBoxModelObject>(object));
   CHECK(object.GetNode());
   HTMLCanvasElement* canvas = To<Element>(object.GetNode())->CanvasForDrawing();
   CHECK(canvas && canvas->GetLayoutObject());
 
   auto& canvas_fragment = canvas->GetLayoutObject()->FirstFragment();
 
-  gfx::RectF reference_box(To<LayoutBox>(object).PhysicalBorderBoxRect());
+  PaintLayer* layer = To<LayoutBoxModelObject>(object).Layer();
+  CHECK(layer);
+  gfx::RectF reference_box = layer->BackdropFilterReferenceBox();
+  gfx::SizeF box_size = reference_box.size();
+  gfx::Vector2dF reference_box_offset = reference_box.OffsetFromOrigin();
   gfx::Point3F transform_origin(
       FloatValueForLength(object.StyleRef().GetTransformOrigin().X(),
                           reference_box.width()),
@@ -2039,8 +2043,9 @@ static void PopulateCanvasChildState(
       object.StyleRef().EffectiveZoom();
   state.canvas_child_state->paint_state.transform_origin = gfx::ScalePoint(
       transform_origin, 1.0f / object.StyleRef().EffectiveZoom());
-  state.canvas_child_state->paint_state.box_size =
-      gfx::SizeF(To<LayoutBox>(object).StitchedSize());
+  state.canvas_child_state->paint_state.box_size = box_size;
+  state.canvas_child_state->paint_state.reference_box_offset =
+      reference_box_offset;
   PopulateCanvasChildPaintState(canvas, To<Element>(object.GetNode()),
                                 state.canvas_child_state->paint_state);
   state.canvas_child_state->content_effect = canvas_fragment.ContentsEffect();
@@ -4048,7 +4053,7 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
     // clip-path on LayoutInline.
     if (object_.IsLayoutInline() &&
         object_.ShouldCheckLayoutForPaintInvalidation() &&
-        object_.HasClipPath()) {
+        (object_.HasClipPath() || object_.CanvasForDrawingLayoutObject())) {
       object_.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
     }
 
@@ -4105,7 +4110,9 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
       // CSS mask and clip-path comes with an implicit clip to the border box.
       box.HasMask() || box.HasClipPath() ||
       // Backdrop-filter's bounds use the border box rect.
-      !box.StyleRef().BackdropFilter().IsEmpty()) {
+      !box.StyleRef().BackdropFilter().IsEmpty() ||
+      // Canvas drawable elements cache box size and transform origin.
+      box.CanvasForDrawingLayoutObject()) {
     box.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
   }
 

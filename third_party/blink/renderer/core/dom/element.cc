@@ -3866,6 +3866,8 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
                           StyleChangeReasonForTracing::FromAttribute(name));
     }
   } else if (name == html_names::kDrawableAttr) {
+    SetNeedsStyleRecalc(kLocalStyleChange,
+                        StyleChangeReasonForTracing::FromAttribute(name));
     if (auto* layout_object = GetLayoutObject()) {
       layout_object->SetNeedsPaintPropertyUpdate();
     }

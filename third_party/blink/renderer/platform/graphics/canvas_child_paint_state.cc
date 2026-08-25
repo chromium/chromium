@@ -14,6 +14,7 @@ bool CanvasChildPaintState::operator==(
   return effective_zoom == other.effective_zoom &&
          transform_origin == other.transform_origin &&
          box_size == other.box_size &&
+         reference_box_offset == other.reference_box_offset &&
          canvas_content_size == other.canvas_content_size &&
          canvas_device_pixel_content_box ==
              other.canvas_device_pixel_content_box &&

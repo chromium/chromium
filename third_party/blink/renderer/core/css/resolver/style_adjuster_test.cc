@@ -419,7 +419,7 @@ TEST_F(StyleAdjusterTest, AdjustForCanvasDrawableDescendant) {
   UpdateAllLifecyclePhasesForTest();
   // TODO(paint-dev): Uncomment this check when we stop treating direct children
   // of a canvas as implicitly `drawable`.
-  // EXPECT_FALSE(GetLayoutObjectByElementId("a")->IsStackingContenxt());
+  // EXPECT_FALSE(GetLayoutObjectByElementId("a")->IsStackingContext());
   EXPECT_TRUE(GetLayoutObjectByElementId("aa")->IsStackingContext());
   EXPECT_FALSE(GetLayoutObjectByElementId("aaa")->IsStackingContext());
   EXPECT_TRUE(GetLayoutObjectByElementId("aab")->IsStackingContext());
@@ -432,9 +432,50 @@ TEST_F(StyleAdjusterTest, AdjustForCanvasDrawableDescendant) {
             GetLayoutObjectByElementId("immediate_span")->StyleRef().Display());
   EXPECT_TRUE(
       GetLayoutObjectByElementId("immediate_span")->IsStackingContext());
-  EXPECT_EQ(EDisplay::kInlineBlock,
+  EXPECT_TRUE(GetLayoutObjectByElementId("immediate_span")
+                  ->CanContainFixedPositionObjects());
+  EXPECT_EQ(EDisplay::kInline,
             GetLayoutObjectByElementId("nested_span")->StyleRef().Display());
   EXPECT_TRUE(GetLayoutObjectByElementId("nested_span")->IsStackingContext());
+  EXPECT_TRUE(GetLayoutObjectByElementId("nested_span")
+                  ->CanContainFixedPositionObjects());
+  EXPECT_TRUE(
+      GetLayoutObjectByElementId("aa")->CanContainFixedPositionObjects());
+  EXPECT_FALSE(
+      GetLayoutObjectByElementId("aaa")->CanContainFixedPositionObjects());
+
+  // TODO(paint-dev): Update this to kAuto when direct children are no longer
+  // implicitly drawable.
+  EXPECT_EQ(EIsolation::kIsolate,
+            GetLayoutObjectByElementId("a")->StyleRef().Isolation());
+  EXPECT_EQ(EIsolation::kIsolate,
+            GetLayoutObjectByElementId("aa")->StyleRef().Isolation());
+  EXPECT_EQ(EIsolation::kAuto,
+            GetLayoutObjectByElementId("aaa")->StyleRef().Isolation());
+  EXPECT_EQ(EIsolation::kIsolate,
+            GetLayoutObjectByElementId("aab")->StyleRef().Isolation());
+  EXPECT_EQ(EIsolation::kAuto,
+            GetLayoutObjectByElementId("aaba")->StyleRef().Isolation());
+  EXPECT_EQ(EIsolation::kAuto,
+            GetLayoutObjectByElementId("aac")->StyleRef().Isolation());
+  EXPECT_EQ(EIsolation::kAuto,
+            GetLayoutObjectByElementId("ab")->StyleRef().Isolation());
+  EXPECT_EQ(EIsolation::kIsolate,
+            GetLayoutObjectByElementId("b")->StyleRef().Isolation());
+  EXPECT_EQ(EIsolation::kIsolate,
+            GetLayoutObjectByElementId("ba")->StyleRef().Isolation());
+  EXPECT_EQ(
+      EIsolation::kIsolate,
+      GetLayoutObjectByElementId("immediate_span")->StyleRef().Isolation());
+  EXPECT_EQ(EIsolation::kIsolate,
+            GetLayoutObjectByElementId("nested_span")->StyleRef().Isolation());
+
+  EXPECT_EQ(kContainsNone,
+            GetLayoutObjectByElementId("aa")->StyleRef().Contain());
+  EXPECT_EQ(kContainsNone,
+            GetLayoutObjectByElementId("immediate_span")->StyleRef().Contain());
+  EXPECT_EQ(kContainsNone,
+            GetLayoutObjectByElementId("nested_span")->StyleRef().Contain());
 }
 
 }  // namespace blink

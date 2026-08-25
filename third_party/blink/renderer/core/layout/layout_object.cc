@@ -1968,6 +1968,12 @@ bool LayoutObject::ComputeIsFixedContainer(const ComputedStyle& style) const {
   if (!is_document_element && style.HasNonInitialBackdropFilter()) {
     return true;
   }
+  // https://github.com/WICG/html-in-canvas
+  if (const auto* element = DynamicTo<Element>(GetNode())) {
+    if (element->CanvasForDrawing()) {
+      return true;
+    }
+  }
   // The LayoutView is always a container of fixed positioned descendants. In
   // addition, SVG foreignObjects become such containers, so that descendants
   // of a foreignObject cannot escape it. Similarly, text controls let authors
@@ -3657,7 +3663,7 @@ gfx::QuadF LayoutObject::AncestorToLocalQuad(
 
 LayoutObject* LayoutObject::CanvasForDrawingLayoutObject() const {
   NOT_DESTROYED();
-  if (!IsBox()) {
+  if (!IsBoxModelObject()) {
     return nullptr;
   }
   if (const auto* element = DynamicTo<Element>(GetNode())) {

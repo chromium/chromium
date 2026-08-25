@@ -746,7 +746,7 @@ void StyleAdjuster::AdjustOverflow(ComputedStyleBuilder& builder,
   }
 }
 
-static bool IsCanvasWithDrawElements(const Element* element) {
+static bool IsCanvasWithLayoutSubtree(const Element* element) {
   if (!element || !element->IsCanvasOrInCanvasSubtree() ||
       !RuntimeEnabledFeatures::CanvasDrawElementEnabled(
           element->GetExecutionContext())) {
@@ -760,17 +760,26 @@ static bool IsCanvasWithDrawElements(const Element* element) {
   return false;
 }
 
+// Direct children of a <canvas layoutsubtree> element have their style adjusted
+// to be blockified and have static position.
+// See: https://github.com/WICG/html-in-canvas
+static bool IsLayoutSubtreeCanvasChild(const Element* element) {
+  if (!element || !element->IsInCanvasSubtree() ||
+      !RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+          element->GetExecutionContext())) {
+    return false;
+  }
+  const auto* parent_canvas = DynamicTo<HTMLCanvasElement>(
+      FlatTreeTraversal::ParentElementSkippingSlots(*element));
+  return parent_canvas && parent_canvas->layoutSubtree();
+}
+
 void StyleAdjuster::AdjustStyleForDisplay(
     ComputedStyleBuilder& builder,
     const ComputedStyle& layout_parent_style,
     const Element* element,
     Document* document) {
-  HTMLCanvasElement* canvas_for_drawing =
-      element ? element->CanvasForDrawing() : nullptr;
-  bool is_drawable_canvas_descendant = canvas_for_drawing;
-  bool is_immediate_canvas_child =
-      canvas_for_drawing && FlatTreeTraversal::ParentElementSkippingSlots(
-                                *element) == canvas_for_drawing;
+  bool is_immediate_canvas_child = IsLayoutSubtreeCanvasChild(element);
 
   if ((layout_parent_style.BlockifiesChildren() && !HostIsInputFile(element)) ||
       is_immediate_canvas_child) {
@@ -794,16 +803,9 @@ void StyleAdjuster::AdjustStyleForDisplay(
     }
   }
 
-  if (is_drawable_canvas_descendant) {
-    if (!is_immediate_canvas_child && builder.Display() == EDisplay::kInline) {
-      builder.SetDisplay(EDisplay::kInlineBlock);
-    }
-    builder.SetContain(builder.Contain() | kContainsPaint);
-  }
-
   if (layout_parent_style.InlinifiesChildren() &&
       !builder.HasOutOfFlowPosition() && ShouldBeInlinified(element) &&
-      !is_drawable_canvas_descendant) {
+      !is_immediate_canvas_child) {
     if (builder.IsFloating()) {
       builder.SetFloating(EFloat::kNone);
       if (document) {
@@ -1251,15 +1253,15 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   // https://github.com/WICG/html-in-canvas
   // The `layoutsubtree` attribute ... causes descendants of the <canvas> with
-  // the `drawable` attribute to have a stacking context and become a containing
-  // block for all descendants.
-  bool is_drawable_canvas_descendant = element && element->CanvasForDrawing();
+  // the `drawable` attribute to imply `isolation: isolate`.
+  if (element && element->CanvasForDrawing()) {
+    builder.SetIsolation(EIsolation::kIsolate);
+  }
 
   // z-index is only applicable if positioned, or if a flex/grid/etc item.
   if (builder.GetPosition() != EPosition::kStatic ||
       LayoutParentStyleForcesZIndexToCreateStackingContext(
-          layout_parent_style) ||
-      is_drawable_canvas_descendant) {
+          layout_parent_style)) {
     builder.SetAllowsZIndex(true);
     if (!builder.HasAutoZIndex()) {
       builder.SetForcesStackingContext(true);
@@ -1276,7 +1278,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       (element && IsA<SVGForeignObjectElement>(*element)) || is_in_top_layer ||
       builder.StyleType() == kPseudoIdBackdrop ||
       builder.StyleType() == kPseudoIdViewTransition ||
-      IsCanvasWithDrawElements(element) || is_drawable_canvas_descendant) {
+      IsCanvasWithLayoutSubtree(element)) {
     builder.SetForcesStackingContext(true);
   }
 

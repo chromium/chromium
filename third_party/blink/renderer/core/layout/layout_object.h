@@ -1605,7 +1605,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // canvas transform in a canvas subtree.
   bool HasTransform() const {
     NOT_DESTROYED();
-    if (IsInCanvasSubtree() && IsBox()) [[unlikely]] {
+    if (IsInCanvasSubtree() && IsBoxModelObject()) [[unlikely]] {
       if (const auto* element = DynamicTo<Element>(GetNode())) {
         if (element->GetUsedCanvasTransform()) {
           return true;

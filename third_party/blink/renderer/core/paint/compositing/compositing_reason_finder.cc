@@ -393,7 +393,7 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
           object.GetDocument().GetExecutionContext()) &&
       element->IsInCanvasSubtree() &&
       !object.StyleRef().IsRenderedInTopLayer(*element)) [[unlikely]] {
-    if (IsA<LayoutBox>(object)) {
+    if (IsA<LayoutBoxModelObject>(object)) {
       if (auto* canvas = element->CanvasForDrawing()) {
         if (auto* canvas_layout_object = canvas->GetLayoutObject()) {
           if (canvas_layout_object->IsCanvas()) {
@@ -403,8 +403,8 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
       }
     }
     if (!reasons.Has(CompositingReason::kCanvasChild)) {
-      // Disable compositing for elements in canvas subtrees other than the
-      // direct children of canvas elements.
+      // Disable compositing for elements in canvas subtrees other than
+      // drawable elements.
       return {};
     }
   }

@@ -26,6 +26,7 @@ struct PLATFORM_EXPORT CanvasChildPaintState {
   float effective_zoom = 1.f;
   gfx::Point3F transform_origin;
   gfx::SizeF box_size;
+  gfx::Vector2dF reference_box_offset;
 
   // Canvas state.
   gfx::SizeF canvas_content_size;

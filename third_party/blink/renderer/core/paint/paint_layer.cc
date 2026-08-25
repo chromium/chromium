@@ -301,19 +301,21 @@ void PaintLayer::UpdateTransform() {
   } else {
     transform_->MakeIdentity();
   }
-  const LayoutBox* box = GetLayoutBox();
-  DCHECK(box);
-  if (const auto* element = DynamicTo<Element>(box->GetNode())) {
+  const auto& box_model = To<LayoutBoxModelObject>(GetLayoutObject());
+  if (const auto* element = DynamicTo<Element>(box_model.GetNode())) {
     if (const auto* canvas_transform = element->GetUsedCanvasTransform()) {
       transform_->PreConcat(*canvas_transform);
     }
   }
-  const PhysicalRect reference_box = ComputeReferenceBox(*box);
-  box->StyleRef().ApplyTransform(
-      *transform_, box, reference_box,
-      ComputedStyle::kIncludeTransformOperations,
-      ComputedStyle::kIncludeTransformOrigin, ComputedStyle::kIncludeMotionPath,
-      ComputedStyle::kIncludeIndependentTransformProperties);
+  if (const auto* box = DynamicTo<LayoutBox>(&box_model)) {
+    const PhysicalRect reference_box = ComputeReferenceBox(*box);
+    box->StyleRef().ApplyTransform(
+        *transform_, box, reference_box,
+        ComputedStyle::kIncludeTransformOperations,
+        ComputedStyle::kIncludeTransformOrigin,
+        ComputedStyle::kIncludeMotionPath,
+        ComputedStyle::kIncludeIndependentTransformProperties);
+  }
 }
 
 void PaintLayer::UpdateTransformAfterStyleChange(
@@ -1388,8 +1390,9 @@ PaintLayer* PaintLayer::HitTestLayer(
     if (const auto* properties =
             layout_object.FirstFragment().PaintProperties()) {
       if (properties->HasCSSTransformPropertyNode() ||
-          properties->Perspective())
+          properties->Perspective() || properties->ElementCanvasTransform()) {
         use_transform = true;
+      }
     }
   }
 
