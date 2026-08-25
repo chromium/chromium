@@ -33,6 +33,17 @@ found in the LICENSE file.
     <dimen name="web_signin_loading_dialog_margin">12dp</dimen>
     <dimen name="web_signin_loading_dialog_spinner_size">24dp</dimen>
 
+    <!-- Account picker dialog & bottom sheet dimensions -->
+    <dimen name="account_picker_dialog_padding_top">20dp</dimen>
+    <dimen name="account_picker_dialog_padding_bottom">16dp</dimen>
+    <dimen name="account_picker_dialog_close_button_margin_end">12dp</dimen>
+    <dimen name="account_picker_bottom_sheet_padding_bottom">16dp</dimen>
+    <dimen name="account_picker_bottom_sheet_drag_handle_margin_top">8dp</dimen>
+    <dimen name="account_picker_bottom_sheet_drag_handle_margin_bottom">12dp</dimen>
+
+    <!-- Account picker button IDs -->
+    <item type="id" name="confirm_management_cancel_button" />
+
     <!-- Defaults for fullscreen promo dialog mode values. -->
     <item type="dimen" name="dialog_fixed_width_major">100%</item>
     <item type="dimen" name="dialog_fixed_width_minor">100%</item>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<ViewFlipper
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/account_picker_state_view_flipper"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:measureAllChildren="false" >
+
+    <include
+        android:id="@+id/account_picker_state_no_account"
+        layout="@layout/account_picker_state_no_account" />
+    <include
+        android:id="@+id/account_picker_state_collapsed"
+        layout="@layout/account_picker_state_collapsed" />
+    <include
+        android:id="@+id/account_picker_state_expanded"
+        layout="@layout/account_picker_state_expanded" />
+    <include
+        android:id="@+id/account_picker_state_signin_in_progress"
+        layout="@layout/account_picker_state_signin_in_progress" />
+    <include
+        android:id="@+id/account_picker_state_general_error"
+        layout="@layout/account_picker_state_general_error" />
+    <include
+        android:id="@+id/account_picker_state_auth_error"
+        layout="@layout/account_picker_state_auth_error" />
+    <include
+        android:id="@+id/account_picker_state_confirm_management"
+        layout="@layout/account_picker_state_confirm_management" />
+</ViewFlipper>

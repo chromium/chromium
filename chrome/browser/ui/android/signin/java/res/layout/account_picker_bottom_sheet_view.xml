@@ -15,44 +15,17 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingBottom="16dp">
+        android:paddingBottom="@dimen/account_picker_bottom_sheet_padding_bottom">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="12dp"
+            android:layout_marginTop="@dimen/account_picker_bottom_sheet_drag_handle_margin_top"
+            android:layout_marginBottom="@dimen/account_picker_bottom_sheet_drag_handle_margin_bottom"
             android:importantForAccessibility="no"
             app:srcCompat="@drawable/drag_handlebar" />
 
-        <ViewFlipper
-            android:id="@+id/account_picker_state_view_flipper"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:measureAllChildren="false" >
-
-            <include
-                android:id="@+id/account_picker_state_no_account"
-                layout="@layout/account_picker_state_no_account" />
-            <include
-                android:id="@+id/account_picker_state_collapsed"
-                layout="@layout/account_picker_state_collapsed" />
-            <include
-                android:id="@+id/account_picker_state_expanded"
-                layout="@layout/account_picker_state_expanded" />
-            <include
-                android:id="@+id/account_picker_state_signin_in_progress"
-                layout="@layout/account_picker_state_signin_in_progress" />
-            <include
-                android:id="@+id/account_picker_state_general_error"
-                layout="@layout/account_picker_state_general_error" />
-            <include
-                android:id="@+id/account_picker_state_auth_error"
-                layout="@layout/account_picker_state_auth_error" />
-            <include
-                android:id="@+id/account_picker_state_confirm_management"
-                layout="@layout/account_picker_state_confirm_management" />
-        </ViewFlipper>
+        <include layout="@layout/account_picker_state_view_flipper" />
     </LinearLayout>
 </ScrollView>

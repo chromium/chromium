@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/account_picker_dialog_padding_top"
+        android:paddingBottom="@dimen/account_picker_dialog_padding_bottom"
+        android:clipToPadding="false">
+
+        <include layout="@layout/account_picker_state_view_flipper" />
+    </ScrollView>
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/account_picker_dialog_close_button"
+        android:layout_width="@dimen/min_touch_target_size"
+        android:layout_height="@dimen/min_touch_target_size"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/account_picker_dialog_padding_top"
+        android:layout_marginEnd="@dimen/account_picker_dialog_close_button_margin_end"
+        android:background="@drawable/default_icon_background"
+        android:src="@drawable/btn_close"
+        android:contentDescription="@string/close" />
+</RelativeLayout>
