@@ -17,6 +17,10 @@ GlicCueActionData::GlicCueActionData(GlicCueActionData&&) = default;
 GlicCueActionData& GlicCueActionData::operator=(const GlicCueActionData&) =
     default;
 
+bool CueTarget::SupportsEditPrompt() const {
+  return false;
+}
+
 const char* GetName(CueTargetType type) {
   switch (type) {
     case CueTargetType::kGlic:

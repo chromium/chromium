@@ -44,6 +44,7 @@ class GlicCueTarget : public contextual_cueing::CueTarget {
       const page_content_annotations::PageContentAnnotationsResult& result,
       content::WebContents* active_web_contents) const override;
   void OnClick(contextual_cueing::CueActionData data) override;
+  bool SupportsEditPrompt() const override;
   void OnEditPrompt(contextual_cueing::CueActionData data) override;
   ui::ImageModel GetAnchoredMessageIcon() const override;
   ui::ImageModel GetOmniboxChipIcon() const override;

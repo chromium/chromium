@@ -1040,7 +1040,7 @@ void ContextualCueingController::ShowCue(
   auto menu_model = std::make_unique<ContextualCueingMenuModel>(
       tab_->GetProfile(), weak_ptr_factory_.GetWeakPtr(), cue_type, cue,
       tabs_to_show, background_tabs, cue.suggested_cuj(),
-      std::move(action_data), cue_id);
+      std::move(action_data), cue_id, target.SupportsEditPrompt());
   page_action_controller->SetAnchoredMessageAction(
       kActionAnchoredContextualCue,
       page_actions::AnchoredMessageActionIconType::kMenu,

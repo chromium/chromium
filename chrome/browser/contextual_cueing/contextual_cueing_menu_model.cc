@@ -7,8 +7,6 @@
 #include <optional>
 
 #include "chrome/browser/contextual_cueing/contextual_cueing_controller.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "components/contextual_cueing/contextual_cueing_enums.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -54,7 +52,8 @@ ContextualCueingMenuModel::ContextualCueingMenuModel(
     std::vector<optimization_guide::proto::Tab> background_tabs,
     std::string cuj,
     CueActionData data,
-    std::string cue_id)
+    std::string cue_id,
+    bool supports_edit_prompt)
     : ui::SimpleMenuModel(this),
       profile_(profile),
       controller_(controller),
@@ -65,9 +64,6 @@ ContextualCueingMenuModel::ContextualCueingMenuModel(
       cuj_(std::move(cuj)),
       data_(std::move(data)),
       cue_id_(std::move(cue_id)) {
-  contextual_cueing_service_ =
-      ContextualCueingServiceFactory::GetForProfile(profile_);
-
   // Add menu items.
   AddItemWithStringIdAndIcon(
       kContextualCueingDismissCommand, IDS_CONTEXTUAL_CUEING_MENU_DISMISS,
@@ -75,13 +71,15 @@ ContextualCueingMenuModel::ContextualCueingMenuModel(
                                          ? vector_icons::kCloseIcon
                                          : vector_icons::kCloseOldIcon,
                                      ui::kColorMenuIcon, 16));
-  AddItemWithStringIdAndIcon(
-      kContextualCueingEditPromptCommand,
-      IDS_CONTEXTUAL_CUEING_MENU_EDIT_PROMPT,
-      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                         ? vector_icons::kEditSquareIcon
-                                         : vector_icons::kEditSquareOldIcon,
-                                     ui::kColorMenuIcon, 16));
+  if (supports_edit_prompt) {
+    AddItemWithStringIdAndIcon(
+        kContextualCueingEditPromptCommand,
+        IDS_CONTEXTUAL_CUEING_MENU_EDIT_PROMPT,
+        ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                           ? vector_icons::kEditSquareIcon
+                                           : vector_icons::kEditSquareOldIcon,
+                                       ui::kColorMenuIcon, 16));
+  }
   AddSeparator(ui::NORMAL_SEPARATOR);
   AddItemWithStringIdAndIcon(
       kContextualCueingOpenSettingsCommand, IDS_CONTEXTUAL_CUEING_MENU_SETTINGS,

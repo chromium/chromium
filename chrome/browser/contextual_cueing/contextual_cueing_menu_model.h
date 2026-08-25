@@ -31,7 +31,8 @@ class ContextualCueingMenuModel : public ui::SimpleMenuModel,
       std::vector<optimization_guide::proto::Tab> background_tabs,
       std::string cuj,
       CueActionData data,
-      std::string cue_id);
+      std::string cue_id,
+      bool supports_edit_prompt);
   ContextualCueingMenuModel(const ContextualCueingMenuModel&) = delete;
   ContextualCueingMenuModel& operator=(const ContextualCueingMenuModel&) =
       delete;
@@ -42,7 +43,6 @@ class ContextualCueingMenuModel : public ui::SimpleMenuModel,
 
  private:
   raw_ptr<Profile> profile_;
-  raw_ptr<ContextualCueingService> contextual_cueing_service_;
   base::WeakPtr<ContextualCueingController> controller_;
   CueTargetType cue_type_;
   optimization_guide::proto::ContextualCue cue_;

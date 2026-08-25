@@ -162,6 +162,10 @@ void GlicCueTarget::OnClick(contextual_cueing::CueActionData data) {
                                   features::kGlicContextualCueingV2AutoSubmit));
 }
 
+bool GlicCueTarget::SupportsEditPrompt() const {
+  return true;
+}
+
 void GlicCueTarget::OnEditPrompt(contextual_cueing::CueActionData data) {
   InvokeGlic(std::move(data), /*should_autosubmit=*/false);
 }

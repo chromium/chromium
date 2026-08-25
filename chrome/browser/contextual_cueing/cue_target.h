@@ -128,6 +128,9 @@ class CueTarget {
   // Called when the user clicks the cue's action button.
   virtual void OnClick(CueActionData data) = 0;
 
+  // Whether this target supports editing prompt via the menu.
+  virtual bool SupportsEditPrompt() const;
+
   // Called when the user clicks the "edit prompt" menu item.
   virtual void OnEditPrompt(CueActionData data) = 0;
 
