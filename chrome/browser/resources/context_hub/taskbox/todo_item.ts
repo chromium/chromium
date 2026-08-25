@@ -31,12 +31,6 @@ export enum TodoItemVariant {
   TAB = 'tab',
 }
 
-export interface TodoItemElement {
-  $: {
-    menu?: CrActionMenuElement,
-  };
-}
-
 export class TodoItemElement extends CrLitElement {
   static get is() {
     return 'todo-item';
@@ -192,13 +186,14 @@ export class TodoItemElement extends CrLitElement {
 
   protected async onDismissClick_(e: Event) {
     e.stopPropagation();
-    this.$.menu?.close();
+    this.shadowRoot.querySelector<CrActionMenuElement>('#menu')?.close();
     await this.updateStatus_(AutoTodoStatus.kDismissed);
   }
 
   protected onMoreClick_(e: Event) {
     e.stopPropagation();
-    this.$.menu?.showAt(e.currentTarget as HTMLElement);
+    this.shadowRoot.querySelector<CrActionMenuElement>('#menu')?.showAt(
+        e.currentTarget as HTMLElement);
   }
 
   protected onOpenTabClick_(e: Event) {
@@ -217,7 +212,7 @@ export class TodoItemElement extends CrLitElement {
 
   protected onCloseTabClick_(e: Event) {
     e.stopPropagation();
-    this.$.menu?.close();
+    this.shadowRoot.querySelector<CrActionMenuElement>('#menu')?.close();
     if (this.tabId !== null) {
       browserProxyFactory.getInstance().handler.closeTab(this.tabId);
     }
@@ -253,7 +248,7 @@ export class TodoItemElement extends CrLitElement {
 
   protected async onSaveClick_(e: Event) {
     e.stopPropagation();
-    this.$.menu?.close();
+    this.shadowRoot.querySelector<CrActionMenuElement>('#menu')?.close();
     await this.addToReadingList_();
   }
 

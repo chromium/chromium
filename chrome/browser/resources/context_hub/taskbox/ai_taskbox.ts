@@ -11,6 +11,7 @@ import '//resources/cr_elements/icons.html.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
 import {AutoTodoGroup, AutoTodoStatus, browserProxyFactory} from '../context_hub.mojom-webui.js';
 import type {AutoTodoItem} from '../context_hub.mojom-webui.js';
@@ -19,6 +20,11 @@ import {getCss} from './ai_taskbox.css.js';
 import {getHtml} from './ai_taskbox.html.js';
 
 const GENERAL_FEEDBACK_FORM_URL = 'https://forms.gle/sfEC2J7QBuz6zmbD7';
+
+function convertMojoTimeToDate(mojoTime: Time): Date {
+  const unixEpochUs = mojoTime.internalValue - 11644473600000000n;
+  return new Date(Number(unixEpochUs / 1000n));
+}
 
 function getTabTodoPriority(item: AutoTodoItem): number {
   const group = item.data.thirdParty?.groupType;
@@ -66,6 +72,7 @@ export class AiTaskboxElement extends CrLitElement {
       hasGmailGenerationError_: {type: Boolean},
       hasGeneratedGmail_: {type: Boolean},
       isCompletedExpanded_: {type: Boolean},
+      lastGmailGenerationTime_: {type: Object},
       // Tab-based todo properties.
       tabTodos: {type: Array},
       completedTabTodos: {type: Array},
@@ -73,6 +80,7 @@ export class AiTaskboxElement extends CrLitElement {
       hasTabGenerationError_: {type: Boolean},
       hasGeneratedTab_: {type: Boolean},
       isCompletedTabExpanded_: {type: Boolean},
+      lastTabGenerationTime_: {type: Object},
       // Reading list properties.
       readingListTodos: {type: Array},
       feedbacks_: {type: Object},
@@ -94,18 +102,24 @@ export class AiTaskboxElement extends CrLitElement {
   protected accessor hasGmailGenerationError_: boolean = false;
   protected accessor hasGeneratedGmail_: boolean = false;
   protected accessor isCompletedExpanded_: boolean = false;
+  protected accessor lastGmailGenerationTime_: Date|null = null;
 
   // Tab-based property accessors.
   protected accessor isGeneratingTabTodos_: boolean = false;
   protected accessor hasTabGenerationError_: boolean = false;
   protected accessor hasGeneratedTab_: boolean = false;
   protected accessor isCompletedTabExpanded_: boolean = false;
+  protected accessor lastTabGenerationTime_: Date|null = null;
 
   private listenerIds_: number[] = [];
+  private updateTimerId_: number|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
     if (this.autoTodosEnabled_) {
+      // Update the "Last updated" status every minute.
+      this.updateTimerId_ =
+          window.setInterval(() => this.requestUpdate(), 60000);
       this.listenerIds_.push(
           browserProxyFactory.getInstance()
               .callbackRouter.onAutoTodosChanged.addListener(
@@ -152,12 +166,18 @@ export class AiTaskboxElement extends CrLitElement {
               .callbackRouter.onFirstPartyAutoTodosGenerationStateChanged
               .addListener((isGenerating: boolean) => {
                 this.isGeneratingGmailTodos_ = isGenerating;
+                if (!isGenerating) {
+                  this.lastGmailGenerationTime_ = new Date();
+                }
               }));
       this.listenerIds_.push(
           browserProxyFactory.getInstance()
               .callbackRouter.onThirdPartyAutoTodosGenerationStateChanged
               .addListener((isGenerating: boolean) => {
                 this.isGeneratingTabTodos_ = isGenerating;
+                if (!isGenerating) {
+                  this.lastTabGenerationTime_ = new Date();
+                }
               }));
       this.fetchAutoTodos_();
     }
@@ -165,11 +185,29 @@ export class AiTaskboxElement extends CrLitElement {
 
   private async fetchAutoTodos_() {
     try {
-      const [{firstPartyTodos, thirdPartyTodos}, {feedbacks}] =
+      const [
+        {
+          firstPartyTodos,
+          thirdPartyTodos,
+          lastFirstPartyGenerationTime,
+          lastThirdPartyGenerationTime,
+        },
+        {feedbacks},
+      ] =
           await Promise.all([
             browserProxyFactory.getInstance().handler.getAutoTodos(),
             browserProxyFactory.getInstance().handler.getTodoFeedbacks(),
           ]);
+      if (lastFirstPartyGenerationTime &&
+          lastFirstPartyGenerationTime.internalValue > 0n) {
+        this.lastGmailGenerationTime_ =
+            convertMojoTimeToDate(lastFirstPartyGenerationTime);
+      }
+      if (lastThirdPartyGenerationTime &&
+          lastThirdPartyGenerationTime.internalValue > 0n) {
+        this.lastTabGenerationTime_ =
+            convertMojoTimeToDate(lastThirdPartyGenerationTime);
+      }
       const feedbackMap = new Map<string, boolean>();
       for (const feedback of feedbacks) {
         feedbackMap.set(feedback.todoId, feedback.liked);
@@ -227,6 +265,10 @@ export class AiTaskboxElement extends CrLitElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    if (this.updateTimerId_ !== null) {
+      window.clearInterval(this.updateTimerId_);
+      this.updateTimerId_ = null;
+    }
     this.listenerIds_.forEach(
         id => browserProxyFactory.getInstance().callbackRouter.removeListener(
             id));
@@ -288,6 +330,7 @@ export class AiTaskboxElement extends CrLitElement {
       this.hasGmailGenerationError_ = !success;
       if (success) {
         this.hasGeneratedGmail_ = true;
+        this.lastGmailGenerationTime_ = new Date();
       }
     } catch (e) {
       console.error('Failed to generate Gmail auto todos:', e);
@@ -309,6 +352,7 @@ export class AiTaskboxElement extends CrLitElement {
       this.hasTabGenerationError_ = !success;
       if (success) {
         this.hasGeneratedTab_ = true;
+        this.lastTabGenerationTime_ = new Date();
       }
     } catch (e) {
       console.error('Failed to generate tab-based todos:', e);
@@ -316,6 +360,32 @@ export class AiTaskboxElement extends CrLitElement {
     } finally {
       this.isGeneratingTabTodos_ = false;
     }
+  }
+
+  protected getFormattedTimeAgo_(date: Date|null): string {
+    if (!date) {
+      return 'Click the refresh icon to generate';
+    }
+    const now = Date.now();
+    const diffMs = Math.max(0, now - date.getTime());
+    const diffSec = Math.floor(diffMs / 1000);
+    const diffMin = Math.floor(diffSec / 60);
+    const diffHours = Math.floor(diffMin / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMin < 1) {
+      return 'Last updated just now';
+    }
+    if (diffHours < 1) {
+      return diffMin === 1 ? 'Last updated 1 minute ago' :
+                             `Last updated ${diffMin} minutes ago`;
+    }
+    if (diffDays < 1) {
+      return diffHours === 1 ? 'Last updated 1 hour ago' :
+                               `Last updated ${diffHours} hours ago`;
+    }
+    return diffDays === 1 ? 'Last updated 1 day ago' :
+                            `Last updated ${diffDays} days ago`;
   }
 }
 

@@ -194,10 +194,13 @@ interface PageHandler {
   GenerateFirstPartyAutoTodos() => (bool success);
 
   // Returns stored Auto Todos from the cache, differentiated by whether they
-  // are first party or third party.
+  // are first party or third party, along with the timestamps when they were
+  // last generated.
   [RuntimeFeature=kAutoTodos]
   GetAutoTodos() => (array<AutoTodoItem> first_party_todos,
-                     array<AutoTodoItem> third_party_todos);
+                     array<AutoTodoItem> third_party_todos,
+                     mojo_base.mojom.Time last_first_party_generation_time,
+                     mojo_base.mojom.Time last_third_party_generation_time);
 
   // Updates an existing Auto Todo item in the cache, returns true if
   // successful.

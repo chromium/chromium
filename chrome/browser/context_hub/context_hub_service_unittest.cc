@@ -215,6 +215,9 @@ class ContextHubServiceTest : public testing::Test {
 };
 
 TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ServiceSuccess) {
+  // No previous generation time.
+  EXPECT_TRUE(service_.GetLastFirstPartyGenerationTime().is_null());
+
   personal_context::proto::AutoTodosResponse expected_response;
   auto* todo = expected_response.add_todos();
   todo->set_title("Test Todo");
@@ -248,6 +251,7 @@ TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ServiceSuccess) {
   service_.GenerateFirstPartyAutoTodos(future.GetCallback());
 
   EXPECT_TRUE(future.Get());
+  EXPECT_EQ(service_.GetLastFirstPartyGenerationTime(), base::Time::Now());
 }
 
 TEST_F(ContextHubServiceTest,
@@ -432,6 +436,7 @@ TEST_F(ContextHubServiceTest,
   base::test::TestFuture<bool> future;
   service_.GenerateFirstPartyAutoTodos(future.GetCallback());
   EXPECT_TRUE(future.Get());
+  EXPECT_EQ(service_.GetLastFirstPartyGenerationTime(), base::Time::Now());
 
   // Verify the cache contains both the updated 1p todo (including the
   // updated source references) and unchanged 3p todo.
@@ -504,6 +509,7 @@ TEST_F(ContextHubServiceTest,
   base::test::TestFuture<bool> future;
   service_.GenerateFirstPartyAutoTodos(future.GetCallback());
   EXPECT_TRUE(future.Get());
+  EXPECT_EQ(service_.GetLastFirstPartyGenerationTime(), base::Time::Now());
 
   // Verify that the new todo is in the cache, along with the existing todo.
   base::test::TestFuture<std::vector<AutoTodoEntry>> get_future;
@@ -538,6 +544,7 @@ TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ServiceError) {
   service_.GenerateFirstPartyAutoTodos(future.GetCallback());
 
   EXPECT_FALSE(future.Get());
+  EXPECT_TRUE(service_.GetLastFirstPartyGenerationTime().is_null());
 }
 
 TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ParseError) {
@@ -564,6 +571,7 @@ TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ParseError) {
   service_.GenerateFirstPartyAutoTodos(future.GetCallback());
 
   EXPECT_FALSE(future.Get());
+  EXPECT_TRUE(service_.GetLastFirstPartyGenerationTime().is_null());
 }
 
 TEST_F(ContextHubServiceTest, IsGeneratingStateAccessors) {
@@ -613,6 +621,7 @@ TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_NoEligibleTabs) {
                                  future.GetCallback());
 
   EXPECT_TRUE(future.Get());
+  EXPECT_EQ(service_.GetLastThirdPartyGenerationTime(), base::Time::Now());
 }
 
 TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_VisibleTabNotEligible) {
@@ -732,6 +741,8 @@ TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_NullWebContents) {
 
 TEST_F(ContextHubServiceTest,
        GenerateTabBasedTodos_SuccessfulGenerationSavesTodo) {
+  EXPECT_TRUE(service_.GetLastThirdPartyGenerationTime().is_null());
+
   auto web_contents = CreateEligibleTabWithMockExtraction(
       GURL("https://example.com/item"), "Item Details");
 
@@ -773,6 +784,7 @@ TEST_F(ContextHubServiceTest,
   service_.GenerateTabBasedTodos({web_contents->GetWeakPtr()},
                                  future.GetCallback());
   EXPECT_TRUE(future.Get());
+  EXPECT_EQ(service_.GetLastThirdPartyGenerationTime(), base::Time::Now());
 }
 
 TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_MissingPageContentSkipped) {

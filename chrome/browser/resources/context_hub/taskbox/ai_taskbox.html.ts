@@ -67,14 +67,22 @@ export function getHtml(this: AiTaskboxElement) {
             <section class="todo-column">
                 <div class="column-header">
                     <h2>Workspace Todos</h2>
-                    <cr-button class="tonal-button"
-                        ?disabled="${
-      !this.autoTodosEnabled_ || this.isGeneratingGmailTodos_}"
-                        @click="${this.onGenerateGmailTodosClick_}">
-                      ${
-      this.isGeneratingGmailTodos_ ? 'Generating...' :
-                                     'Generate Workspace Todos'}
-                    </cr-button>
+                    <div class="refresh-container">
+                      <span class="last-updated-text">
+                        ${
+          this.isGeneratingGmailTodos_ ?
+              'Generating...' :
+              this.getFormattedTimeAgo_(this.lastGmailGenerationTime_)}
+                      </span>
+                      <cr-icon-button
+                          iron-icon="cr:sync"
+                          title="Refresh"
+                          aria-label="Refresh Workspace Todos"
+                          ?disabled="${
+          !this.autoTodosEnabled_ || this.isGeneratingGmailTodos_}"
+                          @click="${this.onGenerateGmailTodosClick_}">
+                      </cr-icon-button>
+                    </div>
                 </div>
 
                 <div class="todo-list">
@@ -153,13 +161,22 @@ export function getHtml(this: AiTaskboxElement) {
             <section class="todo-column">
                 <div class="column-header">
                     <h2>Browser Todos</h2>
-                    <cr-button class="tonal-button"
-                        ?disabled="${
-      !this.autoTodosEnabled_ || this.isGeneratingTabTodos_}"
-                        @click="${this.onGenerateTabTodosClick_}">
-                      ${
-      this.isGeneratingTabTodos_ ? 'Generating...' : 'Generate Browser Todos'}
-                    </cr-button>
+                    <div class="refresh-container">
+                      <span class="last-updated-text">
+                        ${
+          this.isGeneratingTabTodos_ ?
+              'Generating...' :
+              this.getFormattedTimeAgo_(this.lastTabGenerationTime_)}
+                      </span>
+                      <cr-icon-button
+                          iron-icon="cr:sync"
+                          title="Refresh"
+                          aria-label="Refresh Browser Todos"
+                          ?disabled="${
+          !this.autoTodosEnabled_ || this.isGeneratingTabTodos_}"
+                          @click="${this.onGenerateTabTodosClick_}">
+                      </cr-icon-button>
+                    </div>
                 </div>
 
                 ${this.getUnfinishedTabTodos_().length > 0 || this.getStaleTabTodos_().length > 0 ? html`

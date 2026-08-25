@@ -415,6 +415,14 @@ bool ContextHubService::IsGeneratingFirstPartyAutoTodos() const {
   return is_generating_first_party_auto_todos_;
 }
 
+base::Time ContextHubService::GetLastFirstPartyGenerationTime() const {
+  return last_first_party_generation_time_;
+}
+
+base::Time ContextHubService::GetLastThirdPartyGenerationTime() const {
+  return last_third_party_generation_time_;
+}
+
 void ContextHubService::GenerateTabBasedTodos(
     std::vector<base::WeakPtr<content::WebContents>> tabs,
     AutoTodosStore::OperationCallback callback) {
@@ -477,6 +485,7 @@ void ContextHubService::OnAllAutoTodosFetchedForTabBasedTodos(
   }
 
   if (eligible_tabs.empty()) {
+    last_third_party_generation_time_ = base::Time::Now();
     if (callback) {
       // Return early if there are no eligible tabs to process. Return true to
       // indicate that the operation was successful, just with no results.
@@ -631,6 +640,10 @@ void ContextHubService::FinishTabBasedTodosGeneration(bool success) {
   active_tab_todos_requests_ = 0;
   pending_tab_todos_requests_ = {};
   generated_tab_todos_.clear();
+
+  if (success) {
+    last_third_party_generation_time_ = base::Time::Now();
+  }
 
   observers_.Notify(&Observer::OnThirdPartyAutoTodosGenerationStateChanged,
                     false);

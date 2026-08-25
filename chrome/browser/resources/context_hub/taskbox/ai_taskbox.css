@@ -65,6 +65,24 @@ h1 {
   margin-bottom: 20px;
 }
 
+.refresh-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.refresh-container cr-icon-button {
+  --cr-icon-button-margin-start: 0;
+  --cr-icon-button-margin-end: 0;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+}
+
+.last-updated-text {
+  color: var(--cr-secondary-text-color);
+  font-size: 13px;
+}
+
 h2 {
   color: var(--cr-primary-text-color);
   font-size: 20px;
