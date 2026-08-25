@@ -6,13 +6,19 @@ found in the LICENSE file.
 -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
   <item android:state_focused="true">
-    <shape android:shape="rectangle">
-      <corners android:radius="@dimen/vertical_tab_item_corner_radius" />
-      <stroke
-          android:width="@dimen/focused_outline_stroke_width"
-          android:color="@macro/default_control_color_active" />
-      <solid android:color="@android:color/transparent" />
-    </shape>
+    <inset
+        android:insetLeft="@dimen/vertical_tab_focus_ring_inset"
+        android:insetTop="@dimen/vertical_tab_focus_ring_inset"
+        android:insetRight="@dimen/vertical_tab_focus_ring_inset"
+        android:insetBottom="@dimen/vertical_tab_focus_ring_inset">
+      <shape android:shape="rectangle">
+        <corners android:radius="@dimen/vertical_tab_item_corner_radius" />
+        <stroke
+            android:width="@dimen/focused_outline_stroke_width"
+            android:color="@macro/default_control_color_active" />
+        <solid android:color="@android:color/transparent" />
+      </shape>
+    </inset>
   </item>
   <item android:drawable="@android:color/transparent" />
 </selector>

@@ -1199,6 +1199,8 @@ public class TabVerticalViewBinderUnitTest {
         assertNotNull(menuButton);
         assertEquals(expectedForegroundColor, menuButton.getImageTintList().getDefaultColor());
         assertEquals(View.GONE, menuButton.getVisibility());
+        assertNotNull(headerView.getForegroundTintList());
+        assertEquals(expectedForegroundColor, headerView.getForegroundTintList().getDefaultColor());
     }
 
     @Test
@@ -1272,6 +1274,8 @@ public class TabVerticalViewBinderUnitTest {
         assertEquals(expectedForegroundColor, expandChevron.getImageTintList().getDefaultColor());
         assertEquals(expectedForegroundColor, menuButton.getImageTintList().getDefaultColor());
         assertEquals(View.GONE, menuButton.getVisibility());
+        assertNotNull(headerView.getForegroundTintList());
+        assertEquals(expectedForegroundColor, headerView.getForegroundTintList().getDefaultColor());
     }
 
     @Test

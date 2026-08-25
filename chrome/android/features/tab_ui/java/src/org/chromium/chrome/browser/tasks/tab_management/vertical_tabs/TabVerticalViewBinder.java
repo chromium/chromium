@@ -765,6 +765,8 @@ class TabVerticalViewBinder {
         if (menuButton != null) {
             ImageViewCompat.setImageTintList(menuButton, ColorStateList.valueOf(foregroundColor));
         }
+
+        view.setForegroundTintList(ColorStateList.valueOf(foregroundColor));
     }
 
     private static void updateTabItemSize(

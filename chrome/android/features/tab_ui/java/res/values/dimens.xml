@@ -215,6 +215,7 @@ found in the LICENSE file.
     <dimen name="vertical_tab_item_actuation_icon_size">20dp</dimen>
     <dimen name="vertical_tab_item_actuation_icon_padding">3dp</dimen>
     <dimen name="vertical_tab_item_corner_radius">8dp</dimen>
+    <dimen name="vertical_tab_focus_ring_inset">2dp</dimen>
     <dimen name="vertical_tab_item_margin_bottom">4dp</dimen>
     <dimen name="vertical_tab_item_collapsed_size">32dp</dimen>
     <dimen name="vertical_tab_action_button_touch_target_size">24dp</dimen>
