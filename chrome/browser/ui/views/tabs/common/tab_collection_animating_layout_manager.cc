@@ -275,6 +275,10 @@ void TabCollectionAnimatingLayoutManager::SetStartingLayout(
   start_view_layout_map_ = ChildViewLayoutMap(std::move(start_bounds_pairs));
 
   starting_layout_ = starting_layout;
+
+  if (animation_axis_ == AnimationAxis::kHorizontal) {
+    closing_views_target_x_ = std::nullopt;
+  }
 }
 
 void TabCollectionAnimatingLayoutManager::SetTargetLayout(
@@ -289,6 +293,10 @@ void TabCollectionAnimatingLayoutManager::SetTargetLayout(
   target_view_layout_map_ = ChildViewLayoutMap(std::move(target_bounds_pairs));
 
   target_layout_ = target_layout;
+
+  if (animation_axis_ == AnimationAxis::kHorizontal) {
+    closing_views_target_x_ = std::nullopt;
+  }
 }
 
 void TabCollectionAnimatingLayoutManager::UpdateCurrentLayout() {
@@ -462,6 +470,11 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
     return IsVerticalOrWrappingVertically() ? bounds.bottom() : bounds.right();
   };
 
+  if (animation_axis_ == AnimationAxis::kHorizontal &&
+      !closing_views_target_x_.has_value()) {
+    CalculateClosingViewsTargetX();
+  }
+
   for (views::View* child_view : host_view()->children()) {
     auto target_it = target_view_layout_map_.find(child_view);
     if (target_it != target_view_layout_map_.end()) {
@@ -546,6 +559,10 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
       } else {
         target_bounds.set_width(0);
       }
+      if (animation_axis_ == AnimationAxis::kHorizontal &&
+          closing_views_target_x_->contains(child_view)) {
+        target_bounds.set_x(closing_views_target_x_->at(child_view));
+      }
       interpolated_child.bounds = gfx::Tween::RectValueBetween(
           value, start_it->second.bounds, target_bounds);
       if (child_view->layer()) {
@@ -625,6 +642,48 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
   }
 
   return result;
+}
+
+void TabCollectionAnimatingLayoutManager::CalculateClosingViewsTargetX() const {
+  closing_views_target_x_ = ChildViewTargetXMap();
+  // For each contiguous range of closing views, set the target x of those
+  // closing views based on the bounds of the surrounding non-closing views, if
+  // they exist.
+  std::optional<int> prev_target_bounds_right = std::nullopt;
+  std::vector<std::pair<views::View*, int>> closing_views_x;
+  auto assign_closing_views_target_x = [this, &closing_views_x](int target_x) {
+    for (auto [closing_view, _] : closing_views_x) {
+      closing_views_target_x_->insert_or_assign(closing_view, target_x);
+    }
+    closing_views_x.clear();
+  };
+  for (auto start_layout : starting_layout_.child_layouts) {
+    views::View* curr_view = start_layout.child_view;
+    if (target_view_layout_map_.contains(curr_view)) {
+      const int curr_target_bounds_x =
+          target_view_layout_map_.at(curr_view).bounds.x();
+      // When there is a next view in the target layout, target the x of the
+      // next view. If there is also a previous view, target the midpoint
+      // between the x of the next view and the right of the previous view.
+      assign_closing_views_target_x(
+          prev_target_bounds_right.has_value()
+              ? (prev_target_bounds_right.value() + curr_target_bounds_x) / 2
+              : curr_target_bounds_x);
+
+      prev_target_bounds_right =
+          target_view_layout_map_.at(curr_view).bounds.right();
+    } else {
+      closing_views_x.emplace_back(curr_view, start_layout.bounds.x());
+    }
+  }
+  if (!closing_views_x.empty()) {
+    // When there is no next view in the target layout, target the x of the
+    // first closing view. If there is a previous view, target the previous
+    // view's right.
+    const auto [_, first_closing_view_x] = closing_views_x[0];
+    assign_closing_views_target_x(
+        prev_target_bounds_right.value_or(first_closing_view_x));
+  }
 }
 
 void TabCollectionAnimatingLayoutManager::

@@ -157,7 +157,15 @@ class TabCollectionAnimatingLayoutManager
 
   // Interpolates between `starting_layout_` and `target_layout_` based on
   // current `animation_` value.
+  // TODO(crbug.com/552080931): Reconsider how this function works, so that
+  // `current_layout_content_size_` and `closing_views_target_x_` don't have to
+  // be mutable.
   views::ProposedLayout InterpolateLayout(double value) const;
+
+  // For horizontal tabs, the positions of closing views shift based on the
+  // surrounding views. Precompute the target x-position for those views. Needs
+  // to be called after the starting or target layouts change.
+  void CalculateClosingViewsTargetX() const;
 
   // Returns true if the animation axis is vertical or wraps vertically.
   bool IsVerticalOrWrappingVertically() const;
@@ -193,6 +201,13 @@ class TabCollectionAnimatingLayoutManager
       base::flat_map<raw_ptr<const views::View>, views::ChildLayout>;
   ChildViewLayoutMap start_view_layout_map_;
   ChildViewLayoutMap target_view_layout_map_;
+
+  // Precomputed target x values for closing tabs. When this is std::nullopt, it
+  // represents an invalidated cache that needs to be recomputed. Only used when
+  // `animation_axis_` is `kHorizontal`.
+  using ChildViewTargetXMap = base::flat_map<raw_ptr<const views::View>, int>;
+  mutable std::optional<ChildViewTargetXMap> closing_views_target_x_ =
+      std::nullopt;
 
   // Where in the animation the last layout recalculation happened.
   double starting_offset_ = 0.0;

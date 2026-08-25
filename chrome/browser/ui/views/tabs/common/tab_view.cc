@@ -961,6 +961,8 @@ void TabView::ResetCollectionNode() {
   // Update the callbacks for the buttons so that we don't call anything that
   // needs the node.
   close_button_->SetCallback(base::RepeatingClosure(base::DoNothing()));
+
+  static_cast<TabView::LayoutManager*>(GetLayoutManager())->OnTabClosing();
 }
 
 void TabView::UpdateAccessibleName() {

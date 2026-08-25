@@ -70,6 +70,9 @@ class TabView : public views::View,
   ~TabView() override;
 
   class LayoutManager : public views::LayoutManagerBase {
+   public:
+    virtual void OnTabClosing() {}
+
    protected:
     // views::LayoutManagerBase:
     void OnInstalled(views::View* host) override;

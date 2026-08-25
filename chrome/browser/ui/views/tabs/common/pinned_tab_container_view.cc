@@ -145,6 +145,10 @@ bool PinnedTabContainerView::IsViewDragging(
 
 bool PinnedTabContainerView::ShouldAnimateOpacityForAddAndRemove(
     const views::View& child_view) const {
+  if (collection_node_ &&
+      collection_node_->orientation() == TabStripOrientation::kHorizontal) {
+    return false;
+  }
   // Only animate opacity for tab views.
   return views::IsViewClass<TabView>(&child_view);
 }

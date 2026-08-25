@@ -52,6 +52,13 @@ int Center(int size, int item_size) {
 TabViewHorizontalLayout::TabViewHorizontalLayout() = default;
 TabViewHorizontalLayout::~TabViewHorizontalLayout() = default;
 
+void TabViewHorizontalLayout::OnTabClosing() {
+  center_icon_override_ =
+      CalculateChildVisibilities(TabView().width(),
+                                 TabView().GetContentsBounds().width())
+          .center_icon;
+}
+
 views::ProposedLayout TabViewHorizontalLayout::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
   int width;
@@ -67,8 +74,9 @@ views::ProposedLayout TabViewHorizontalLayout::CalculateProposedLayout(
             ? TabView().tab_styling()->tab_style()->GetMinimumActiveWidth(
                   TabView().split())
             : TabView().tab_styling()->tab_style()->GetMinimumInactiveWidth();
-    width = std::clamp(size_bounds.width().value_or(preferred_width),
-                       minimum_width, preferred_width);
+    width =
+        std::clamp(size_bounds.width().value_or(preferred_width),
+                   TabView().IsClosing() ? 0 : minimum_width, preferred_width);
   }
   const int height = TabView().tab_styling()->tab_style()->GetStandardHeight();
 
@@ -77,9 +85,9 @@ views::ProposedLayout TabViewHorizontalLayout::CalculateProposedLayout(
   gfx::Rect contents_rect = gfx::Rect(layouts.host_size);
   contents_rect.Inset(TabView().GetInsets());
 
-  auto [showing_icon, showing_alert_indicator, showing_close_button,
+  auto [showing_icon, showing_alert_indicator, showing_close_button, show_title,
         center_icon, extra_alert_indicator_padding] =
-      CalculateChildVisibilities(contents_rect.width());
+      CalculateChildVisibilities(width, contents_rect.width());
 
   const int start = contents_rect.x();
 
@@ -183,12 +191,6 @@ views::ProposedLayout TabViewHorizontalLayout::CalculateProposedLayout(
                                      alert_indicator_bounds);
 
   // Size the title to fill the remaining width and use all available height.
-  bool show_title = !TabView().pinned_;
-
-  if (features::IsTabStripDeclutterEnabled() && center_icon) {
-    show_title = false;
-  }
-
   gfx::Rect title_bounds;
   if (show_title) {
     int title_left = start;
@@ -223,10 +225,20 @@ views::ProposedLayout TabViewHorizontalLayout::CalculateProposedLayout(
 }
 
 TabViewHorizontalLayout::ChildVisibilities
-TabViewHorizontalLayout::CalculateChildVisibilities(int width) const {
+TabViewHorizontalLayout::CalculateChildVisibilities(int width,
+                                                    int available_width) const {
   ChildVisibilities icon_visibilities;
   auto& [showing_icon, showing_alert_indicator, showing_close_button,
-         center_icon, extra_alert_indicator_padding] = icon_visibilities;
+         show_title, center_icon, extra_alert_indicator_padding] =
+      icon_visibilities;
+
+  // When a tab is less than its minimum inactive width it's implied that it's
+  // closing, but some favicon functionality can escape the bounds of the tab
+  // causing artifacts. Fix this by explicitly disabling the visibility of the
+  // views in the tab if the width is such that it is collapsed.
+  if (width < TabView().tab_styling()->tab_style()->GetMinimumInactiveWidth()) {
+    return icon_visibilities;
+  }
 
   const bool has_favicon = TabView().data().should_display_favicon;
   bool has_alert_icon =
@@ -249,6 +261,7 @@ TabViewHorizontalLayout::CalculateChildVisibilities(int width) const {
     showing_icon = has_favicon && !has_alert_icon;
     showing_close_button = false;
 
+    show_title = false;
     center_icon = true;
 
     // While animating to or from the pinned state, pinned tabs are rendered as
@@ -257,8 +270,6 @@ TabViewHorizontalLayout::CalculateChildVisibilities(int width) const {
     extra_alert_indicator_padding = true;
     return icon_visibilities;
   }
-
-  int available_width = width;
 
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
   const int favicon_width = gfx::kFaviconSize;
@@ -367,6 +378,12 @@ TabViewHorizontalLayout::CalculateChildVisibilities(int width) const {
   extra_alert_indicator_padding = showing_alert_indicator &&
                                   showing_close_button &&
                                   large_enough_for_close_button;
+
+  if (center_icon_override_.has_value()) {
+    center_icon = center_icon_override_.value();
+  }
+
+  show_title = !(features::IsTabStripDeclutterEnabled() && center_icon);
 
   return icon_visibilities;
 }
