@@ -4741,7 +4741,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             if (fromMenu) {
                 RecordUserAction.record("MobileMenuToggleTabLayout");
                 boolean isEnabling = !VerticalTabUtils.isVerticalTabsEnabled(this);
-                VerticalTabUtils.recordLayoutToggle(LayoutSwitchEntryPoint.APP_MENU, isEnabling);
+                VerticalTabUtils.recordLayoutToggle(
+                        this, LayoutSwitchEntryPoint.APP_MENU, isEnabling);
             }
             ((TabbedRootUiCoordinator) mRootUiCoordinator).toggleTabStrip();
         } else {

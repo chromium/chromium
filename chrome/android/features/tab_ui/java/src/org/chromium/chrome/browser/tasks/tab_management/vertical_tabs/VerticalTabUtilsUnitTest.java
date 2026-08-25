@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -28,12 +29,16 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.LayoutSwitchEntryPoint;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.LayoutToggleSourceAndDirection;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.WindowWidthBoundary;
 
 /** Unit tests for {@link VerticalTabUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class VerticalTabUtilsUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private Context mMockContext;
 
     private Context mContext;
 
@@ -189,68 +194,93 @@ public class VerticalTabUtilsUnitTest {
     @SmallTest
     public void testRecordLayoutToggle_Enable_AppMenu() {
         assertLayoutToggleHistogram(
-                VerticalTabUtils.LayoutSwitchEntryPoint.APP_MENU,
+                LayoutSwitchEntryPoint.APP_MENU,
                 /* isEnabling= */ true,
-                VerticalTabUtils.LayoutToggleSourceAndDirection.ENABLE_APP_MENU);
+                LayoutToggleSourceAndDirection.ENABLE_APP_MENU);
     }
 
     @Test
     @SmallTest
     public void testRecordLayoutToggle_Enable_TabContextMenu() {
         assertLayoutToggleHistogram(
-                VerticalTabUtils.LayoutSwitchEntryPoint.TAB_CONTEXT_MENU,
+                LayoutSwitchEntryPoint.TAB_CONTEXT_MENU,
                 /* isEnabling= */ true,
-                VerticalTabUtils.LayoutToggleSourceAndDirection.ENABLE_TAB_CONTEXT_MENU);
+                LayoutToggleSourceAndDirection.ENABLE_TAB_CONTEXT_MENU);
     }
 
     @Test
     @SmallTest
     public void testRecordLayoutToggle_Enable_TabStripContextMenu() {
         assertLayoutToggleHistogram(
-                VerticalTabUtils.LayoutSwitchEntryPoint.TAB_STRIP_CONTEXT_MENU,
+                LayoutSwitchEntryPoint.TAB_STRIP_CONTEXT_MENU,
                 /* isEnabling= */ true,
-                VerticalTabUtils.LayoutToggleSourceAndDirection.ENABLE_TAB_STRIP_CONTEXT_MENU);
+                LayoutToggleSourceAndDirection.ENABLE_TAB_STRIP_CONTEXT_MENU);
     }
 
     @Test
     @SmallTest
     public void testRecordLayoutToggle_Disable_AppMenu() {
         assertLayoutToggleHistogram(
-                VerticalTabUtils.LayoutSwitchEntryPoint.APP_MENU,
+                LayoutSwitchEntryPoint.APP_MENU,
                 /* isEnabling= */ false,
-                VerticalTabUtils.LayoutToggleSourceAndDirection.DISABLE_APP_MENU);
+                LayoutToggleSourceAndDirection.DISABLE_APP_MENU);
     }
 
     @Test
     @SmallTest
     public void testRecordLayoutToggle_Disable_TabContextMenu() {
         assertLayoutToggleHistogram(
-                VerticalTabUtils.LayoutSwitchEntryPoint.TAB_CONTEXT_MENU,
+                LayoutSwitchEntryPoint.TAB_CONTEXT_MENU,
                 /* isEnabling= */ false,
-                VerticalTabUtils.LayoutToggleSourceAndDirection.DISABLE_TAB_CONTEXT_MENU);
+                LayoutToggleSourceAndDirection.DISABLE_TAB_CONTEXT_MENU);
     }
 
     @Test
     @SmallTest
     public void testRecordLayoutToggle_Disable_TabStripContextMenu() {
         assertLayoutToggleHistogram(
-                VerticalTabUtils.LayoutSwitchEntryPoint.TAB_STRIP_CONTEXT_MENU,
+                LayoutSwitchEntryPoint.TAB_STRIP_CONTEXT_MENU,
                 /* isEnabling= */ false,
-                VerticalTabUtils.LayoutToggleSourceAndDirection.DISABLE_TAB_STRIP_CONTEXT_MENU);
+                LayoutToggleSourceAndDirection.DISABLE_TAB_STRIP_CONTEXT_MENU);
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordLayoutToggle_NullResources_DoesNotCrash() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.VerticalTabs.LayoutToggleSourceAndDirection",
+                                LayoutToggleSourceAndDirection.ENABLE_APP_MENU)
+                        .expectNoRecords("Android.VerticalTabs.WindowWidthBoundaryOnToggle.Enable")
+                        .build();
+
+        VerticalTabUtils.recordLayoutToggle(
+                mMockContext, LayoutSwitchEntryPoint.APP_MENU, /* isEnabling= */ true);
+
+        histogramWatcher.assertExpected();
     }
 
     private void assertLayoutToggleHistogram(
-            @VerticalTabUtils.LayoutSwitchEntryPoint int entryPoint,
+            @LayoutSwitchEntryPoint int entryPoint,
             boolean isEnabling,
-            @VerticalTabUtils.LayoutToggleSourceAndDirection int expectedEnumVal) {
+            @LayoutToggleSourceAndDirection int expectedEnumVal) {
+        String expectedHistogram =
+                isEnabling
+                        ? "Android.VerticalTabs.WindowWidthBoundaryOnToggle.Enable"
+                        : "Android.VerticalTabs.WindowWidthBoundaryOnToggle.Disable";
+        int widthDp = mContext.getResources().getConfiguration().screenWidthDp;
+        @WindowWidthBoundary
+        int expectedBoundary = VerticalTabUtils.getWindowWidthBoundary(widthDp);
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Android.VerticalTabs.LayoutToggleSourceAndDirection",
                                 expectedEnumVal)
+                        .expectIntRecord(expectedHistogram, expectedBoundary)
                         .build();
 
-        VerticalTabUtils.recordLayoutToggle(entryPoint, isEnabling);
+        VerticalTabUtils.recordLayoutToggle(mContext, entryPoint, isEnabling);
 
         histogramWatcher.assertExpected();
     }

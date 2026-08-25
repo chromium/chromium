@@ -3058,6 +3058,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         Activity.class,
                         Mockito.withSettings()
                                 .extraInterfaces(MenuOrKeyboardActionController.class));
+        when(mockMenuActivity.getResources()).thenReturn(mActivity.getResources());
 
         // Pass the mock activity controller here.
         mOnItemClickedCallback =

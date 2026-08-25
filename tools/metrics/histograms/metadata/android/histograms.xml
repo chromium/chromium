@@ -6926,6 +6926,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.VerticalTabs.WindowWidthBoundaryOnToggle.{Direction}"
+    enum="AndroidVerticalTabsWindowWidthBoundary" expires_after="2027-07-22">
+  <owner>agazal@google.com</owner>
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>eleanorlee@google.com</owner>
+  <owner>spdonghao@google.com</owner>
+  <summary>
+    Records the window width boundary category when a user toggles Vertical Tabs
+    {Direction}.
+  </summary>
+  <token key="Direction">
+    <variant name="Disable" summary="off (reverting to horizontal tabs)"/>
+    <variant name="Enable" summary="on (switching to vertical tabs)"/>
+  </token>
+</histogram>
+
 <histogram name="Android.Wallet.BoardingPass.Detected" enum="BooleanDetected"
     expires_after="2024-12-31">
   <owner>hanfeng@google.com</owner>

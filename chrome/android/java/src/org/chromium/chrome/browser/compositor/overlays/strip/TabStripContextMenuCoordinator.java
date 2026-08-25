@@ -353,7 +353,9 @@ public class TabStripContextMenuCoordinator {
                         StripMenuAction.TOGGLE_TAB_LAYOUT, mTabStripLayout);
                 boolean isEnablingVerticalTabs = mTabStripLayout == TabStripLayoutType.HORIZONTAL;
                 VerticalTabUtils.recordLayoutToggle(
-                        LayoutSwitchEntryPoint.TAB_STRIP_CONTEXT_MENU, isEnablingVerticalTabs);
+                        mContext,
+                        LayoutSwitchEntryPoint.TAB_STRIP_CONTEXT_MENU,
+                        isEnablingVerticalTabs);
                 if (mContext instanceof MenuOrKeyboardActionController controller) {
                     controller.onMenuOrKeyboardAction(
                             R.id.toggle_tab_layout_menu_id, /* fromMenu= */ false);

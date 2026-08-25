@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.ui.vertical_tabs;
 
 import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.SuperscriptSpan;
@@ -94,6 +96,7 @@ public class VerticalTabUtils {
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidVerticalTabsLayoutToggleSourceAndDirection)
 
+    // LINT.IfChange(AndroidVerticalTabsWindowWidthBoundary)
     @IntDef({
         WindowWidthBoundary.NOT_SHOWABLE,
         WindowWidthBoundary.FORCED_COLLAPSED,
@@ -123,7 +126,12 @@ public class VerticalTabUtils {
          * #SIDE_UI_CONTAINER_WIDTH_DP}.
          */
         int FULLY_EXPANDABLE = 3;
+
+        /** Total number of window width boundary categories for histograms. */
+        int COUNT = 4;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidVerticalTabsWindowWidthBoundary)
 
     /** Feature parameter name for enabling auto-resize. */
     public static final String AUTO_RESIZE_PARAM = "auto_resize";
@@ -209,17 +217,37 @@ public class VerticalTabUtils {
     }
 
     /**
-     * Records the layout switch entry point and direction when toggling Vertical Tabs.
+     * Records the layout switch entry point, direction, and window width boundary when toggling
+     * Vertical Tabs.
      *
+     * @param context The Context used to retrieve the screen width in dp.
      * @param entryPoint The entry point from which the layout toggle was triggered.
      * @param isEnabling Whether the user is enabling Vertical Tabs (true) or horizontal (false).
      */
     public static void recordLayoutToggle(
-            @LayoutSwitchEntryPoint int entryPoint, boolean isEnabling) {
+            Context context, @LayoutSwitchEntryPoint int entryPoint, boolean isEnabling) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.VerticalTabs.LayoutToggleSourceAndDirection",
                 getLayoutToggleSourceAndDirection(entryPoint, isEnabling),
                 LayoutToggleSourceAndDirection.COUNT);
+
+        Resources resources = context.getResources();
+        Configuration config = resources != null ? resources.getConfiguration() : null;
+        if (config != null) {
+            int widthDp = config.screenWidthDp;
+            @WindowWidthBoundary int boundary = getWindowWidthBoundary(widthDp);
+            if (isEnabling) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Android.VerticalTabs.WindowWidthBoundaryOnToggle.Enable",
+                        boundary,
+                        WindowWidthBoundary.COUNT);
+            } else {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Android.VerticalTabs.WindowWidthBoundaryOnToggle.Disable",
+                        boundary,
+                        WindowWidthBoundary.COUNT);
+            }
+        }
     }
 
     /** Loads a float resource value (e.g. for alpha) from the given dimen resource id. */
