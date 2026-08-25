@@ -88,8 +88,6 @@ gpu::ContextResult WebGPUCommandBufferStub::Initialize(
   }
 
   share_group_ = manager->share_group();
-  use_virtualized_gl_context_ = false;
-
   memory_tracker_ = CreateMemoryTracker();
 
   webgpu::DawnCacheOptions dawn_cache_options = {

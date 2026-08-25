@@ -248,7 +248,6 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   std::string context_label_;
 
   bool initialized_;
-  bool use_virtualized_gl_context_;
 
   std::unique_ptr<CommandBufferService> command_buffer_;
 

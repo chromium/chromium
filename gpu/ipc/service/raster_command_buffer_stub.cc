@@ -75,8 +75,6 @@ gpu::ContextResult RasterCommandBufferStub::Initialize(
 
   surface_ = shared_context_state->surface();
   share_group_ = shared_context_state->share_group();
-  use_virtualized_gl_context_ =
-      shared_context_state->use_virtualized_gl_contexts();
 
   memory_tracker_ = CreateMemoryTracker();
 
@@ -92,10 +90,6 @@ gpu::ContextResult RasterCommandBufferStub::Initialize(
   scoped_sync_point_client_state_ =
       channel_->scheduler()->CreateSyncPointClientState(
           sequence_id_, CommandBufferNamespace::GPU_IO, command_buffer_id_);
-
-  // TODO(sunnyps): Should this use ScopedCrashKey instead?
-  crash_keys::gpu_gl_context_is_virtual.Set(use_virtualized_gl_context_ ? "1"
-                                                                        : "0");
 
   scoped_refptr<gl::GLContext> context = shared_context_state->context();
   if (!shared_context_state->MakeCurrent(nullptr, false /* needs_gl */)) {

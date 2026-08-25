@@ -39,8 +39,6 @@ extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<64> gpu_gl_version;
 extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<256> gpu_vendor;
 extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<128> gpu_renderer;
 #endif
-extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<4>
-    gpu_gl_context_is_virtual;
 extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<20>
     available_physical_memory_in_mb;
 extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<1024> current_shader_0;

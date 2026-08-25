@@ -121,16 +121,18 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
     }
   }
 
+  bool use_virtualized_gl_context = false;
+
 #if BUILDFLAG(IS_MAC)
   // Virtualize GpuPreference::kLowPower contexts by default on OS X to prevent
   // performance regressions when enabling FCM.
   // http://crbug.com/180463
   if (attribs.gpu_preference == gl::GpuPreference::kLowPower) {
-    use_virtualized_gl_context_ = true;
+    use_virtualized_gl_context = true;
   }
 #endif
 
-  use_virtualized_gl_context_ |=
+  use_virtualized_gl_context |=
       context_group_->feature_info()->workarounds().use_virtualized_gl_contexts;
 
   command_buffer_ =
@@ -200,7 +202,7 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
   if (context_group_->use_passthrough_cmd_decoder()) {
     // Virtualized contexts don't work with passthrough command decoder.
     // See https://crbug.com/914976
-    use_virtualized_gl_context_ = false;
+    use_virtualized_gl_context = false;
     // When using the passthrough command decoder, only share with other
     // contexts in the explicitly requested share group
     share_group_ = base::MakeRefCounted<gl::GLShareGroup>();
@@ -210,12 +212,8 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
     share_group_ = channel_->share_group();
   }
 
-  // TODO(sunnyps): Should this use ScopedCrashKey instead?
-  crash_keys::gpu_gl_context_is_virtual.Set(use_virtualized_gl_context_ ? "1"
-                                                                        : "0");
-
   scoped_refptr<gl::GLContext> context;
-  if (use_virtualized_gl_context_ && share_group_) {
+  if (use_virtualized_gl_context && share_group_) {
     context = share_group_->shared_context();
     if (context && (!context->MakeCurrent(surface_.get()) ||
                     context->CheckStickyGraphicsResetStatus() != GL_NO_ERROR)) {
@@ -331,7 +329,7 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
     manager->delegate()->DidCreateOffscreenContext(active_url_.url());
   }
 
-  if (use_virtualized_gl_context_) {
+  if (use_virtualized_gl_context) {
     // If virtualized GL contexts are in use, then real GL context state
     // is in an indeterminate state, since the GLStateRestorer was not
     // initialized at the time the GLContextVirtual was made current. In
