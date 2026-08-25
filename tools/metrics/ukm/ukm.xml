@@ -15453,7 +15453,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="MultistepFilter.ApplicationSession">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Recorded when a Multistep Filter suggestion application session is
@@ -15524,7 +15524,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="MultistepFilter.UiSession">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Recorded when a Multistep Filter suggestion UI session is flushed

@@ -404,7 +404,7 @@ void MaybeRegisterChromeFeaturePromos(
                 }
                 return elements[0];
               }))
-          .SetMetadata(151, "adigupt@google.com",
+          .SetMetadata(151, "jihadghanna@google.com",
                        "Triggered on first time feature usage to educate users "
                        "about Multistep Filter.")));
 

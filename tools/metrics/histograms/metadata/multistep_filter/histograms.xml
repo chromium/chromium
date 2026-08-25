@@ -60,7 +60,7 @@ found in the LICENSE file.
 
 <histogram name="MultistepFilter.Acceptance" enum="SuggestionUserDecision"
     expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Records the overall user acceptance outcome (from Cue or Omnibox) for
@@ -72,7 +72,7 @@ found in the LICENSE file.
 
 <histogram name="MultistepFilter.Acceptance.ByRetention.{RetentionSlice}"
     enum="SuggestionUserDecision" expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Records the overall user acceptance outcome for a Multistep Filter
@@ -85,7 +85,7 @@ found in the LICENSE file.
 
 <histogram name="MultistepFilter.Acceptance.ByTask.{TaskType}"
     enum="SuggestionUserDecision" expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Records the overall user acceptance outcome (from Cue or Omnibox) for
@@ -99,7 +99,7 @@ found in the LICENSE file.
 
 <histogram name="MultistepFilter.Acceptance.InitialCue"
     enum="SuggestionUserDecision" expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Records the user acceptance outcome on the initial cue for Multistep Filter
@@ -112,7 +112,7 @@ found in the LICENSE file.
 <histogram
     name="MultistepFilter.Acceptance.InitialCue.ByRetention.{RetentionSlice}"
     enum="SuggestionUserDecision" expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Records the user acceptance outcome on the initial cue bubble, sliced by
@@ -125,7 +125,7 @@ found in the LICENSE file.
 
 <histogram name="MultistepFilter.Acceptance.InitialCue.ByTask.{TaskType}"
     enum="SuggestionUserDecision" expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Records the user acceptance outcome on the initial cue for Multistep Filter
@@ -138,7 +138,7 @@ found in the LICENSE file.
 
 <histogram name="MultistepFilter.Acceptance.ReopenedCue"
     enum="SuggestionUserDecision" expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Records user acceptance outcome with the Multistep Filter suggestion cue
@@ -152,7 +152,7 @@ found in the LICENSE file.
 <histogram
     name="MultistepFilter.Acceptance.ReopenedCue.ByRetention.{RetentionSlice}"
     enum="SuggestionUserDecision" expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Records the user acceptance outcome with the Multistep Filter suggestion cue
@@ -166,7 +166,7 @@ found in the LICENSE file.
 
 <histogram name="MultistepFilter.Acceptance.ReopenedCue.ByTask.{TaskType}"
     enum="SuggestionUserDecision" expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Records user acceptance outcome with the Multistep Filter suggestion cue
@@ -180,7 +180,7 @@ found in the LICENSE file.
 
 <histogram name="MultistepFilter.ApplicationOutcome"
     enum="SuggestionApplicationResult" expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Records the overall technical filter application outcome after a user
@@ -205,7 +205,7 @@ found in the LICENSE file.
 <histogram
     name="MultistepFilter.ApplicationOutcome.ByRetention.{RetentionSlice}"
     enum="SuggestionApplicationResult" expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Records the overall technical filter application outcome after a user
@@ -231,7 +231,7 @@ found in the LICENSE file.
 
 <histogram name="MultistepFilter.ApplicationOutcome.ByTask.{TaskType}"
     enum="SuggestionApplicationResult" expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Records the overall technical filter application outcome after a user
@@ -257,7 +257,7 @@ found in the LICENSE file.
 <histogram
     name="MultistepFilter.ApplicationOutcome.ByTask.{TaskType}.ByFacet.{FacetType}"
     enum="BooleanSuccess" expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Records the application outcome (success or failure) for the {FacetType}
@@ -277,7 +277,7 @@ found in the LICENSE file.
 
 <histogram name="MultistepFilter.NumberOfFacetsShown" units="count"
     expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Records the number of filter facets (attributes) contained within a
@@ -289,7 +289,7 @@ found in the LICENSE file.
 
 <histogram name="MultistepFilter.NumberOfFacetsShown.ByTask.{TaskType}"
     units="count" expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Records the number of filter facets (attributes) contained within a
@@ -302,7 +302,7 @@ found in the LICENSE file.
 
 <histogram name="MultistepFilter.NumberOfFacetsSuccessfullyApplied"
     units="count" expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Records the number of filter facets (attributes) that were successfully
@@ -319,7 +319,7 @@ found in the LICENSE file.
 <histogram
     name="MultistepFilter.NumberOfFacetsSuccessfullyApplied.ByTask.{TaskType}"
     units="count" expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Records the number of filter facets (attributes) that were successfully
@@ -338,7 +338,7 @@ found in the LICENSE file.
 <histogram name="MultistepFilter.PostSuggestionApplication.UserEngagement"
     enum="MultistepFilterPostSuggestionApplicationUserEngagement"
     expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Records the user's post-acceptance engagement behavior (tab close,
@@ -375,7 +375,7 @@ found in the LICENSE file.
 
 <histogram name="MultistepFilter.SuggestionAge.Accepted" units="minutes"
     expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Measures the time elapsed (in minutes) from when a possible Multistep Filter
@@ -386,7 +386,7 @@ found in the LICENSE file.
 
 <histogram name="MultistepFilter.SuggestionAge.AcceptedOnSameDomain"
     units="minutes" expires_after="2026-12-15">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Measures the time elapsed (in minutes) from when a possible Multistep Filter
@@ -398,7 +398,7 @@ found in the LICENSE file.
 
 <histogram name="MultistepFilter.SuggestionAge.Shown" units="minutes"
     expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Measures the time elapsed (in minutes) from when a possible Multistep Filter
@@ -409,7 +409,7 @@ found in the LICENSE file.
 
 <histogram name="MultistepFilter.SuggestionAge.ShownOnSameDomain"
     units="minutes" expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Measures the time elapsed (in minutes) from when a possible Multistep Filter
@@ -421,7 +421,7 @@ found in the LICENSE file.
 
 <histogram name="MultistepFilter.Time.NavigationToSuggestionAccepted"
     units="ms" expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Measures the time elapsed (in milliseconds) from the end of the navigation
@@ -432,7 +432,7 @@ found in the LICENSE file.
 
 <histogram name="MultistepFilter.Time.NavigationToSuggestionShown" units="ms"
     expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Measures the time elapsed (in milliseconds) from the end of the navigation
@@ -443,7 +443,7 @@ found in the LICENSE file.
 
 <histogram name="MultistepFilter.Time.SuggestionAcceptanceToApplied" units="ms"
     expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Measures the time elapsed (in milliseconds) from when the user accepts a
@@ -455,7 +455,7 @@ found in the LICENSE file.
 
 <histogram name="MultistepFilter.Time.SuggestionShownToAccepted" units="ms"
     expires_after="2027-02-14">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Measures the time elapsed (in milliseconds) from when the Multistep Filter
@@ -466,7 +466,7 @@ found in the LICENSE file.
 
 <histogram name="MultistepFilter.UserBehaviorAfterIgnore"
     enum="MultistepFilterUserBehaviorAfterIgnore" expires_after="2026-12-15">
-  <owner>adigupt@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Records user manual filtering behavior on the same site after they ignored

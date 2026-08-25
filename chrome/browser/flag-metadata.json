@@ -7166,7 +7166,7 @@
   },
   {
     "name": "multistep-filter",
-    "owners": [ "adigupt@chromium.org" ],
+    "owners": [ "jihadghanna@google.com" ],
     "expiry_milestone": 160
   },
   {
