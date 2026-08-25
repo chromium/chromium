@@ -2698,7 +2698,6 @@ source_set("browser_tests") {
   if (enable_extensions) {
     sources += [
       # TODO(crbug.com/469417243): Move to BUILD.gn files closer to sources.
-      "//chrome/browser/page_load_metrics/observers/serp_page_load_metrics_observer_browsertest.cc",
       "//chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_browsertest.cc",
       "//chrome/browser/ui/views/autofill/popup/custom_cursor_suppressor_browsertest.cc",
       "//chrome/browser/ui/views/user_education/recent_session_observer_impl_browsertest.cc",

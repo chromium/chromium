@@ -380,6 +380,17 @@ if (!is_android) {
         "//chrome/browser/ash/app_restore:test_support",
       ]
     }
+
+    if (enable_extensions) {
+      sources += [ "observers/serp_page_load_metrics_observer_browsertest.cc" ]
+      deps += [
+        "//base/test:test_support",
+        "//chrome/browser/safe_browsing",
+        "//components/search_engines",
+        "//net:test_support",
+        "//testing/gmock",
+      ]
+    }
   }
 }
 
