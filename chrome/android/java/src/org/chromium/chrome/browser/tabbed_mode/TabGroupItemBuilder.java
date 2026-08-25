@@ -151,14 +151,7 @@ import java.util.function.Supplier;
         @Nullable TabGroupSyncService syncService = mTabGroupSyncServiceSupplier.get();
         if (syncService != null && !tabModel.isIncognito()) {
             GroupWindowChecker windowChecker = new GroupWindowChecker(syncService, tabModel);
-            List<SavedTabGroup> sortedGroups = windowChecker.getDefaultSortedGroupList();
-            for (SavedTabGroup tabGroup : sortedGroups) {
-                if (tabGroup.localId != null
-                        && !Objects.equals(currentGroupId, tabGroup.localId.tabGroupId)) {
-                    return true;
-                }
-            }
-            return false;
+            return windowChecker.hasOtherGroups(currentGroupId);
         }
 
         Set<Token> groupIds = tabModel.getAllTabGroupIds();

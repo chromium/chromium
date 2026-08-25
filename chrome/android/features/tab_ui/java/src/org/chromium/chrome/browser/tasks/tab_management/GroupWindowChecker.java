@@ -21,27 +21,13 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 /** For tab group lists to interact with {@link TabGroupSyncService} and multiple windows. */
 @NullMarked
 public class GroupWindowChecker {
     public static final Comparator<SavedTabGroup> UPDATE_TIME_COMPARATOR =
             (a, b) -> Long.compare(b.updateTimeMs, a.updateTimeMs);
-
-    /**
-     * Whether a tab group should be shown based on its {@link GroupWindowState}.
-     *
-     * @param state The {@link GroupWindowState} of the group.
-     */
-    public static boolean shouldShowGroupByState(@GroupWindowState int state) {
-        if (state == GroupWindowState.IN_CURRENT_CLOSING || state == GroupWindowState.HIDDEN) {
-            return false;
-        }
-        if (state == GroupWindowState.IN_ANOTHER) {
-            return ChromeFeatureList.sCrossWindowTabGroupOperations.isEnabled();
-        }
-        return true;
-    }
 
     /** Used to filter tab groups while processing tab groups. */
     @FunctionalInterface
@@ -99,6 +85,37 @@ public class GroupWindowChecker {
         }
         groupList.sort(comparator);
         return groupList;
+    }
+
+    /**
+     * Returns whether there is any tab group other than the given group ID.
+     *
+     * @param currentGroupId The tab group ID to exclude, or null if checking for any tab group.
+     * @return True if another tab group exists, false otherwise.
+     */
+    public boolean hasOtherGroups(@Nullable Token currentGroupId) {
+        for (SavedTabGroup group : getDefaultSortedGroupList()) {
+            if (group.localId != null
+                    && !Objects.equals(currentGroupId, group.localId.tabGroupId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Whether a tab group should be shown based on its {@link GroupWindowState}.
+     *
+     * @param state The {@link GroupWindowState} of the group.
+     */
+    public static boolean shouldShowGroupByState(@GroupWindowState int state) {
+        if (state == GroupWindowState.IN_CURRENT_CLOSING || state == GroupWindowState.HIDDEN) {
+            return false;
+        }
+        if (state == GroupWindowState.IN_ANOTHER) {
+            return ChromeFeatureList.sCrossWindowTabGroupOperations.isEnabled();
+        }
+        return true;
     }
 
     /** Returns the {@link GroupWindowState} of the given {@link SavedTabGroup}. */
