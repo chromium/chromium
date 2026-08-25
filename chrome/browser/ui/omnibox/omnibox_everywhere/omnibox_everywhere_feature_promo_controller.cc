@@ -5,12 +5,16 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_feature_promo_controller.h"
 
 #include "base/notreached.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 
@@ -38,6 +42,12 @@ class OmniboxEverywhereOpenAndActivePrecondition
   user_education::FeaturePromoResult CheckPrecondition(
       user_education::UnownedTypedDataCollection& data) const override {
     if (!service_ || !service_->IsPopupVisibleForProfile()) {
+      return user_education::FeaturePromoResult::kBlockedByUi;
+    }
+    if (service_->profile() &&
+        base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhereFre) &&
+        !service_->profile()->GetPrefs()->GetBoolean(
+            omnibox_everywhere::prefs::kFreDismissed)) {
       return user_education::FeaturePromoResult::kBlockedByUi;
     }
     return user_education::FeaturePromoResult::Success();

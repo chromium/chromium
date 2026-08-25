@@ -1916,6 +1916,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
       registry);
   wallet::prefs::RegisterProfilePrefs(registry);
   omnibox::RegisterProfilePrefs(registry);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  omnibox_everywhere::prefs::RegisterProfilePrefs(registry);
+#endif
   ZeroSuggestProvider::RegisterProfilePrefs(registry);
   NtpCustomBackgroundService::RegisterProfilePrefs(registry);
 

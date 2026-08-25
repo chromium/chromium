@@ -9,6 +9,10 @@ class PrefRegistrySimple;
 class PrefService;
 class Profile;
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}
+
 namespace ui {
 class Accelerator;
 }
@@ -65,8 +69,24 @@ inline constexpr char kOmniboxEverywhereEphemeralModel[] =
 inline constexpr char kLastTargetProfileDir[] =
     "omnibox_everywhere.last_target_profile_dir";
 
+// Boolean preference specifying whether the First Run Experience (FRE)
+// modal for Omnibox Everywhere has been dismissed or completed.
+inline constexpr char kFreDismissed[] = "omnibox_everywhere.fre_dismissed";
+
+// Integer preference storing the number of times the First Run Experience (FRE)
+// modal has been shown to the user.
+inline constexpr char kFreImpressionCount[] =
+    "omnibox_everywhere.fre_impression_count";
+
+// Maximum number of impressions the FRE modal will be shown before
+// auto-dismissing.
+inline constexpr int kMaxFreImpressions = 3;
+
 // Registers Local State preferences for Omnibox Everywhere.
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
+// Registers Profile preferences for Omnibox Everywhere.
+void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 // Returns the default global hotkey accelerator for Omnibox Everywhere.
 ui::Accelerator GetDefaultOmniboxEverywhereHotkey();
