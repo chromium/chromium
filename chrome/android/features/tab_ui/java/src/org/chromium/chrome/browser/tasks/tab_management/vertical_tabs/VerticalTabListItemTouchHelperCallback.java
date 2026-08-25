@@ -32,6 +32,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_management.NestedTabReorderUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListItemTouchHelperCallback;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
@@ -425,7 +426,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
 
         if (!isStandaloneTab && !isGroup) {
             // This is a non-solitary child tab.
-            if (VerticalTabReorderUtils.tryUngroupChildTab(
+            if (NestedTabReorderUtils.tryUngroupChildTab(
                     tabModel,
                     currentTabId,
                     currentGroupId,
@@ -439,7 +440,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         if (isStandaloneTab) {
             // Intercept swaps between a standalone tab and a tab group.
             PropertyModel destModel = ((ViewHolder) toViewHolder).model;
-            if (VerticalTabReorderUtils.tryMergeStandaloneTab(
+            if (NestedTabReorderUtils.tryMergeStandaloneTab(
                     tabModel,
                     currentTabId,
                     destinationTabId,
@@ -452,7 +453,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         }
 
         int destinationIndex =
-                VerticalTabReorderUtils.calculateDestinationIndex(
+                NestedTabReorderUtils.calculateDestinationIndex(
                         tabModel,
                         currentTabId,
                         destinationTabId,
@@ -467,7 +468,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         mSelectedTabIndex = toViewHolder.getBindingAdapterPosition();
 
         // Perform basic list reordering by updating the TabModel immediately.
-        VerticalTabReorderUtils.moveTabOrGroup(tabModel, currentTabId, destinationIndex, isGroup);
+        NestedTabReorderUtils.moveTabOrGroup(tabModel, currentTabId, destinationIndex, isGroup);
         return true;
     }
 

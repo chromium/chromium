@@ -15,6 +15,11 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import android.util.Pair;
+import android.view.View;
+
+import androidx.test.core.app.ApplicationProvider;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,6 +39,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridDialogHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
+import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -485,6 +491,24 @@ public class FlatLayoutDelegateUnitTest {
     @Test
     public void testAreTabsInSameGroup_ReturnsFalse() {
         assertFalse(mDelegate.areTabsInSameGroup(TAB1_ID, mTab2));
+    }
+
+    @Test
+    public void testPerformReorderAction() {
+        addTabsToModelList(TAB1_ID, TAB2_ID);
+
+        View view = new View(ApplicationProvider.getApplicationContext());
+        TabListMediator.TabGridAccessibilityHelper helper =
+                org.mockito.Mockito.mock(TabListMediator.TabGridAccessibilityHelper.class);
+        when(helper.getPositionsOfReorderAction(view, R.id.move_tab_up))
+                .thenReturn(new Pair<>(1, 0));
+
+        var userActionTester = new UserActionTester();
+        assertTrue(mDelegate.performReorderAction(view, R.id.move_tab_up, helper));
+        assertEquals(TAB2_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+        assertEquals(TAB1_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
+        assertTrue(
+                userActionTester.getActions().contains("TabGrid.AccessibilityDelegate.Reordered"));
     }
 
     private void addTabsToModelList(int... tabIds) {

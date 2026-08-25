@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.tasks.tab_management.NestedTabReorderUtils;
 import org.chromium.chrome.browser.tasks.tab_management.StaticPinnedTabsMediator;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
@@ -1907,7 +1908,7 @@ public class VerticalTabListCoordinator {
                             mWindowAndroid,
                             mDataSharingTabManager,
                             /* reorderFunction= */ (groupId, toPrevious) ->
-                                    VerticalTabReorderUtils.reorderTabGroup(
+                                    NestedTabReorderUtils.reorderTabGroup(
                                             mTabModelSelector.getCurrentModel(),
                                             groupId,
                                             toPrevious),
@@ -1949,7 +1950,7 @@ public class VerticalTabListCoordinator {
                             activity,
                             /* tabBookmarkerSupplier= */ null,
                             /* reorderFunction= */ (info, toPrevious) ->
-                                    VerticalTabReorderUtils.reorderTabById(
+                                    NestedTabReorderUtils.reorderTabById(
                                             mTabModelSelector.getCurrentModel(),
                                             mPinnedTabsModelList,
                                             mModelList,

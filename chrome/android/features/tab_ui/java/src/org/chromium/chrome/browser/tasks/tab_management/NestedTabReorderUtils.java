@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
+package org.chromium.chrome.browser.tasks.tab_management;
 
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
@@ -12,18 +12,16 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
-import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 import java.util.Objects;
 
-/** Helper utilities for reordering tabs and tab groups in vertical tab list layout. */
+/** Helper utilities for reordering tabs and tab groups in nested tab list layout. */
 @NullMarked
-public class VerticalTabReorderUtils {
-    private VerticalTabReorderUtils() {}
+public class NestedTabReorderUtils {
+    private NestedTabReorderUtils() {}
 
     /**
      * Attempts to ungroup a non-solitary child tab when moving across group boundaries or onto its

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
+package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -31,16 +31,14 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
-import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
-import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
-/** Unit tests for {@link VerticalTabReorderUtils}. */
+/** Unit tests for {@link NestedTabReorderUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class VerticalTabReorderUtilsUnitTest {
+public class NestedTabReorderUtilsUnitTest {
     private static final int TAB_ID_1 = 101;
     private static final int TAB_ID_2 = 102;
     private static final int TAB_ID_3 = 103;
@@ -101,7 +99,7 @@ public class VerticalTabReorderUtilsUnitTest {
         when(mTabModel.getRelatedTabList(TAB_ID_2)).thenReturn(List.of(mTab2));
 
         assertTrue(
-                VerticalTabReorderUtils.reorderItem(
+                NestedTabReorderUtils.reorderItem(
                         mTabModel, mModelList, /* fromIndex= */ 0, /* toIndex= */ 1));
         verify(mTabModel).moveRelatedTabs(TAB_ID_1, 1);
     }
@@ -132,7 +130,7 @@ public class VerticalTabReorderUtilsUnitTest {
         when(mTabModel.getRelatedTabList(TAB_ID_1)).thenReturn(List.of(mTab1, mTab2));
 
         assertTrue(
-                VerticalTabReorderUtils.reorderItem(
+                NestedTabReorderUtils.reorderItem(
                         mTabModel, mModelList, /* fromIndex= */ 1, /* toIndex= */ 0));
         verify(mTabUngrouper).ungroupTabs(List.of(mTab1), /* trailing= */ false, false);
     }
@@ -168,7 +166,7 @@ public class VerticalTabReorderUtilsUnitTest {
         when(mTabModel.getRelatedTabList(TAB_ID_2)).thenReturn(List.of(mTab1, mTab2));
 
         assertTrue(
-                VerticalTabReorderUtils.reorderItem(
+                NestedTabReorderUtils.reorderItem(
                         mTabModel, mModelList, /* fromIndex= */ 2, /* toIndex= */ 3));
         verify(mTabUngrouper).ungroupTabs(List.of(mTab2), /* trailing= */ true, false);
     }
@@ -200,7 +198,7 @@ public class VerticalTabReorderUtilsUnitTest {
         when(mTabModel.getRelatedTabList(TAB_ID_2)).thenReturn(List.of(mTab1, mTab2));
 
         assertTrue(
-                VerticalTabReorderUtils.reorderItem(
+                NestedTabReorderUtils.reorderItem(
                         mTabModel, mModelList, /* fromIndex= */ 1, /* toIndex= */ 2));
         verify(mTabModel).moveTab(TAB_ID_1, 1);
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean());
@@ -230,7 +228,7 @@ public class VerticalTabReorderUtilsUnitTest {
         mModelList.add(new ListItem(TabProperties.UiType.TAB, childModel));
 
         assertTrue(
-                VerticalTabReorderUtils.reorderItem(
+                NestedTabReorderUtils.reorderItem(
                         mTabModel, mModelList, /* fromIndex= */ 0, /* toIndex= */ 1));
         verify(mTabModel)
                 .mergeListOfTabsToGroup(
@@ -266,7 +264,7 @@ public class VerticalTabReorderUtilsUnitTest {
         when(mTabModel.getRelatedTabList(TAB_ID_1)).thenReturn(List.of(mTab1));
 
         assertTrue(
-                VerticalTabReorderUtils.reorderItem(
+                NestedTabReorderUtils.reorderItem(
                         mTabModel, mModelList, /* fromIndex= */ 2, /* toIndex= */ 1));
         verify(mTabModel)
                 .mergeListOfTabsToGroup(
@@ -296,7 +294,7 @@ public class VerticalTabReorderUtilsUnitTest {
         when(mTabModel.getRelatedTabList(TAB_ID_2)).thenReturn(List.of(mTab2, mTab3));
 
         assertTrue(
-                VerticalTabReorderUtils.reorderItem(
+                NestedTabReorderUtils.reorderItem(
                         mTabModel, mModelList, /* fromIndex= */ 0, /* toIndex= */ 1));
         verify(mTabModel).moveTab(TAB_ID_1, 2);
     }
@@ -321,7 +319,7 @@ public class VerticalTabReorderUtilsUnitTest {
         when(mTabModel.getRelatedTabList(TAB_ID_1)).thenReturn(List.of(mTab1, mTab2));
 
         assertTrue(
-                VerticalTabReorderUtils.reorderItem(
+                NestedTabReorderUtils.reorderItem(
                         mTabModel, mModelList, /* fromIndex= */ 1, /* toIndex= */ 0));
         verify(mTabModel).moveTab(TAB_ID_3, 0);
     }
@@ -342,7 +340,7 @@ public class VerticalTabReorderUtilsUnitTest {
         mModelList.add(new ListItem(TabProperties.UiType.TAB, model2));
 
         assertTrue(
-                VerticalTabReorderUtils.reorderItem(
+                NestedTabReorderUtils.reorderItem(
                         mTabModel, mModelList, /* fromIndex= */ 0, /* toIndex= */ 1));
         verify(mTabModel).moveTab(TAB_ID_1, 1);
     }
@@ -351,10 +349,10 @@ public class VerticalTabReorderUtilsUnitTest {
     @SmallTest
     public void testReorderItem_InvalidIndices_ReturnsFalse() {
         assertFalse(
-                VerticalTabReorderUtils.reorderItem(
+                NestedTabReorderUtils.reorderItem(
                         mTabModel, mModelList, /* fromIndex= */ -1, /* toIndex= */ 0));
         assertFalse(
-                VerticalTabReorderUtils.reorderItem(
+                NestedTabReorderUtils.reorderItem(
                         mTabModel, mModelList, /* fromIndex= */ 0, /* toIndex= */ 0));
         verify(mTabModel, never()).moveTab(anyInt(), anyInt());
     }
@@ -375,21 +373,21 @@ public class VerticalTabReorderUtilsUnitTest {
         mModelList.add(new ListItem(TabProperties.UiType.TAB, model2));
 
         assertTrue(
-                VerticalTabReorderUtils.reorderItemInDirection(
+                NestedTabReorderUtils.reorderItemInDirection(
                         mTabModel, mModelList, /* pos= */ 0, /* toPrevious= */ false));
         verify(mTabModel).moveTab(TAB_ID_1, 1);
 
         assertTrue(
-                VerticalTabReorderUtils.reorderItemInDirection(
+                NestedTabReorderUtils.reorderItemInDirection(
                         mTabModel, mModelList, /* pos= */ 1, /* toPrevious= */ true));
         verify(mTabModel).moveTab(TAB_ID_2, 0);
 
         // Boundary checks
         assertFalse(
-                VerticalTabReorderUtils.reorderItemInDirection(
+                NestedTabReorderUtils.reorderItemInDirection(
                         mTabModel, mModelList, /* pos= */ 0, /* toPrevious= */ true));
         assertFalse(
-                VerticalTabReorderUtils.reorderItemInDirection(
+                NestedTabReorderUtils.reorderItemInDirection(
                         mTabModel, mModelList, /* pos= */ 1, /* toPrevious= */ false));
     }
 
@@ -418,7 +416,7 @@ public class VerticalTabReorderUtilsUnitTest {
 
         // Child 2 is at pos 2 (the very end of modelList). Moving down should ungroup it trailing.
         assertTrue(
-                VerticalTabReorderUtils.reorderItemInDirection(
+                NestedTabReorderUtils.reorderItemInDirection(
                         mTabModel, mModelList, /* pos= */ 2, /* toPrevious= */ false));
         verify(mTabUngrouper).ungroupTabs(List.of(mTab2), /* trailing= */ true, false);
     }
@@ -443,7 +441,7 @@ public class VerticalTabReorderUtilsUnitTest {
         // Child 1 moving up onto the header (which lacks TAB_ID) should resolve representative tab
         // ID and ungroup
         assertTrue(
-                VerticalTabReorderUtils.reorderItem(
+                NestedTabReorderUtils.reorderItem(
                         mTabModel, mModelList, /* fromIndex= */ 1, /* toIndex= */ 0));
         verify(mTabUngrouper).ungroupTabs(List.of(mTab1), /* trailing= */ false, false);
     }
@@ -475,7 +473,7 @@ public class VerticalTabReorderUtilsUnitTest {
         when(mTabModel.getRelatedTabList(TAB_ID_1)).thenReturn(List.of(mTab1, mTab2));
 
         assertTrue(
-                VerticalTabReorderUtils.reorderItemInDirection(
+                NestedTabReorderUtils.reorderItemInDirection(
                         mTabModel, mModelList, /* pos= */ 1, /* toPrevious= */ true));
         verify(mTabUngrouper).ungroupTabs(List.of(mTab1), /* trailing= */ false, false);
     }
@@ -510,7 +508,7 @@ public class VerticalTabReorderUtilsUnitTest {
         // Solitary child tab at pos 2 moving up should move the entire group above standalone tab
         // at index 0.
         assertTrue(
-                VerticalTabReorderUtils.reorderItemInDirection(
+                NestedTabReorderUtils.reorderItemInDirection(
                         mTabModel, mModelList, /* pos= */ 2, /* toPrevious= */ true));
         verify(mTabModel).moveRelatedTabs(TAB_ID_1, 0);
     }
@@ -525,15 +523,14 @@ public class VerticalTabReorderUtilsUnitTest {
         when(mTabModel.getTabAt(2)).thenReturn(mTab3);
 
         assertTrue(
-                VerticalTabReorderUtils.reorderTabGroup(
+                NestedTabReorderUtils.reorderTabGroup(
                         mTabModel, GROUP_ID, /* toPrevious= */ false));
         verify(mTabModel).moveRelatedTabs(TAB_ID_1, 2);
 
         // Null model or unknown group returns false
+        assertFalse(NestedTabReorderUtils.reorderTabGroup(null, GROUP_ID, /* toPrevious= */ false));
         assertFalse(
-                VerticalTabReorderUtils.reorderTabGroup(null, GROUP_ID, /* toPrevious= */ false));
-        assertFalse(
-                VerticalTabReorderUtils.reorderTabGroup(
+                NestedTabReorderUtils.reorderTabGroup(
                         mTabModel, new Token(99L, 99L), /* toPrevious= */ false));
     }
 
@@ -548,8 +545,7 @@ public class VerticalTabReorderUtilsUnitTest {
         when(mTabModel.getRelatedTabList(TAB_ID_1)).thenReturn(List.of(mTab1, mTab2));
 
         assertFalse(
-                VerticalTabReorderUtils.reorderTabGroup(
-                        mTabModel, GROUP_ID, /* toPrevious= */ true));
+                NestedTabReorderUtils.reorderTabGroup(mTabModel, GROUP_ID, /* toPrevious= */ true));
         verify(mTabModel, never()).moveRelatedTabs(anyInt(), anyInt());
     }
 
@@ -576,23 +572,23 @@ public class VerticalTabReorderUtilsUnitTest {
 
         // Reordering pinned tab
         assertTrue(
-                VerticalTabReorderUtils.reorderTabById(
+                NestedTabReorderUtils.reorderTabById(
                         mTabModel, pinnedModelList, mModelList, TAB_ID_1, /* toPrevious= */ false));
         verify(mTabModel).moveTab(TAB_ID_1, 1);
 
         // Reordering unpinned tab at index 0 up is at boundary -> returns false
         assertFalse(
-                VerticalTabReorderUtils.reorderTabById(
+                NestedTabReorderUtils.reorderTabById(
                         mTabModel, pinnedModelList, mModelList, TAB_ID_3, /* toPrevious= */ true));
 
         // Unknown tab returns false
         assertFalse(
-                VerticalTabReorderUtils.reorderTabById(
+                NestedTabReorderUtils.reorderTabById(
                         mTabModel, pinnedModelList, mModelList, 9999, /* toPrevious= */ false));
 
         // Null model returns false
         assertFalse(
-                VerticalTabReorderUtils.reorderTabById(
+                NestedTabReorderUtils.reorderTabById(
                         null, pinnedModelList, mModelList, TAB_ID_1, /* toPrevious= */ false));
     }
 }

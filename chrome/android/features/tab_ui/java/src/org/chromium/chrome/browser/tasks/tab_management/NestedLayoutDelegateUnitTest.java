@@ -21,6 +21,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB_GROUP;
 
+import android.util.Pair;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -837,6 +838,25 @@ public class NestedLayoutDelegateUnitTest {
     @Test
     public void testAreTabsInSameGroup_ReturnsFalse() {
         assertFalse(mDelegate.areTabsInSameGroup(TAB1_ID, mTab2));
+    }
+
+    @Test
+    public void testPerformReorderAction_CallsSuperFallback() {
+        addTabToModelList(TAB1_ID, null);
+        addTabToModelList(TAB2_ID, null);
+
+        View view = new View(ApplicationProvider.getApplicationContext());
+        TabListMediator.TabGridAccessibilityHelper helper =
+                org.mockito.Mockito.mock(TabListMediator.TabGridAccessibilityHelper.class);
+        when(helper.getPositionsOfReorderAction(view, R.id.move_tab_up))
+                .thenReturn(new Pair<>(1, 0));
+
+        var userActionTester = new UserActionTester();
+        assertTrue(mDelegate.performReorderAction(view, R.id.move_tab_up, helper));
+        assertEquals(TAB2_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+        assertEquals(TAB1_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
+        assertTrue(
+                userActionTester.getActions().contains("TabGrid.AccessibilityDelegate.Reordered"));
     }
 
     private PropertyModel addTabToModelList(int tabId, @Nullable Token tabGroupId) {

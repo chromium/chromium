@@ -20,6 +20,9 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
 
 import android.util.Pair;
+import android.view.View;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -41,6 +44,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -891,6 +895,25 @@ public class GroupedLayoutDelegateUnitTest {
 
         when(mTabModel.getTabById(TAB1_ID)).thenReturn(null);
         assertFalse(mDelegate.areTabsInSameGroup(TAB1_ID, mTab2));
+    }
+
+    @Test
+    public void testPerformReorderAction() {
+        createAndAddPropertyModel(TAB1_ID);
+        createAndAddPropertyModel(TAB2_ID);
+
+        View view = new View(ApplicationProvider.getApplicationContext());
+        TabListMediator.TabGridAccessibilityHelper helper =
+                org.mockito.Mockito.mock(TabListMediator.TabGridAccessibilityHelper.class);
+        when(helper.getPositionsOfReorderAction(view, R.id.move_tab_up))
+                .thenReturn(new Pair<>(1, 0));
+
+        var userActionTester = new UserActionTester();
+        assertTrue(mDelegate.performReorderAction(view, R.id.move_tab_up, helper));
+        assertEquals(TAB2_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+        assertEquals(TAB1_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
+        assertTrue(
+                userActionTester.getActions().contains("TabGrid.AccessibilityDelegate.Reordered"));
     }
 
     private PropertyModel createAndAddPropertyModel(int tabId) {

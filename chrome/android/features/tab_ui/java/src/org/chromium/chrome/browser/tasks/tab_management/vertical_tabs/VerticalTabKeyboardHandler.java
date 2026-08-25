@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.NestedTabReorderUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabKeyEventHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 
@@ -108,6 +109,6 @@ class VerticalTabKeyboardHandler implements VerticalTabRailLayout.KeyEventListen
         if (pos == RecyclerView.NO_POSITION || pos >= modelList.size()) return false;
         if (toPrevious && pos == 0) return false;
 
-        return VerticalTabReorderUtils.reorderItemInDirection(tabModel, modelList, pos, toPrevious);
+        return NestedTabReorderUtils.reorderItemInDirection(tabModel, modelList, pos, toPrevious);
     }
 }

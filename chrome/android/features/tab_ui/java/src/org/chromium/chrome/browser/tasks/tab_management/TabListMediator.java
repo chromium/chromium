@@ -1732,17 +1732,8 @@ public class TabListMediator implements TabListNotificationHandler {
                         }
 
                         if (helper.isReorderAction(action)) {
-                            Pair<Integer, Integer> positions =
-                                    helper.getPositionsOfReorderAction(host, action);
-                            int currentPosition = positions.first;
-                            int targetPosition = positions.second;
-                            if (!mModelList.isValidIndex(currentPosition)
-                                    || !mModelList.isValidIndex(targetPosition)) {
-                                return false;
-                            }
-                            mModelList.move(currentPosition, targetPosition);
-                            RecordUserAction.record("TabGrid.AccessibilityDelegate.Reordered");
-                            return true;
+                            return mTabListLayoutDelegate.performReorderAction(
+                                    host, action, helper);
                         }
 
                         if (action == R.id.tab_context_menu

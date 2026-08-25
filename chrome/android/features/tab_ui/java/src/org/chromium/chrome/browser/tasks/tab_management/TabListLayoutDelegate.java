@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessag
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 
@@ -25,6 +26,7 @@ import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridAccessibilityHelper;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -407,5 +409,25 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
     boolean performAccessibilityAction(
             View host, int action, @Nullable Bundle args, @Nullable PropertyModel model) {
         return false;
+    }
+
+    /**
+     * Handles accessibility reorder actions for this layout type.
+     *
+     * @param host The host view executing the action.
+     * @param action The accessibility reorder action ID.
+     * @param helper The {@link TabGridAccessibilityHelper} to resolve positions.
+     * @return True if the reorder action was handled, false otherwise.
+     */
+    boolean performReorderAction(View host, int action, TabGridAccessibilityHelper helper) {
+        Pair<Integer, Integer> positions = helper.getPositionsOfReorderAction(host, action);
+        int currentPosition = positions.first;
+        int targetPosition = positions.second;
+        if (!mModelList.isValidIndex(currentPosition) || !mModelList.isValidIndex(targetPosition)) {
+            return false;
+        }
+        mModelList.move(currentPosition, targetPosition);
+        RecordUserAction.record("TabGrid.AccessibilityDelegate.Reordered");
+        return true;
     }
 }

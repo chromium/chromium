@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridAccessibilityHelper;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
@@ -523,5 +524,12 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
             return true;
         }
         return false;
+    }
+
+    @Override
+    boolean performReorderAction(View host, int action, TabGridAccessibilityHelper helper) {
+        // TODO(crbug.com/40946404): Use NestedTabReorderUtils to handle nested tab and group
+        // reordering.
+        return super.performReorderAction(host, action, helper);
     }
 }
