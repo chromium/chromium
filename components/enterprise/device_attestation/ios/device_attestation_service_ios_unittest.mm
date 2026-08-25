@@ -56,6 +56,55 @@ class MockAttestationServiceIOS : public AttestationServiceIOS {
   ContentBinding last_content_binding_;
 };
 
+class ErrorAttestationServiceIOS : public AttestationServiceIOS {
+ public:
+  explicit ErrorAttestationServiceIOS(AttestationError error) : error_(error) {}
+  ~ErrorAttestationServiceIOS() override = default;
+
+  base::CallbackListSubscription Initialize(
+      InitializeCallback callback) override {
+    return base::CallbackListSubscription();
+  }
+
+  bool IsReady() override { return true; }
+
+  base::CallbackListSubscription GetSnapshot(
+      const ContentBinding& content_binding,
+      SnapshotCallback callback) override {
+    std::move(callback).Run(base::unexpected(error_));
+    return base::CallbackListSubscription();
+  }
+
+ private:
+  AttestationError error_;
+};
+
+struct AttestationErrorTestCase {
+  AttestationServiceIOS::AttestationError error;
+  const char* expected_message;
+};
+
+constexpr AttestationErrorTestCase kAttestationErrorTestCases[] = {
+    {AttestationServiceIOS::AttestationError::kServiceUnavailable,
+     "Attestation service unavailable"},
+    {AttestationServiceIOS::AttestationError::kNetworkError,
+     "Attestation challenge fetch network error"},
+    {AttestationServiceIOS::AttestationError::kTimeout,
+     "Attestation challenge fetch timed out"},
+    {AttestationServiceIOS::AttestationError::kClientError,
+     "Attestation challenge fetch client error"},
+    {AttestationServiceIOS::AttestationError::kServerError,
+     "Attestation challenge fetch server error"},
+    {AttestationServiceIOS::AttestationError::kResponseParsingFailed,
+     "Attestation challenge response parsing failed"},
+    {AttestationServiceIOS::AttestationError::kNotInitialized,
+     "Attestation service not initialized"},
+    {AttestationServiceIOS::AttestationError::kSnapshotGenerationFailed,
+     "Attestation snapshot generation failed"},
+    {AttestationServiceIOS::AttestationError::kUnknown,
+     "Unknown attestation error"},
+};
+
 }  // namespace
 
 class DeviceAttestationServiceIOSTest : public PlatformTest {
@@ -164,25 +213,11 @@ TEST_F(DeviceAttestationServiceIOSTest, NullServiceReturnsError) {
 }
 
 TEST_F(DeviceAttestationServiceIOSTest, SnapshotGenerationFailureReturnsError) {
-  class FailingAttestationServiceIOS : public AttestationServiceIOS {
-   public:
-    base::CallbackListSubscription Initialize(
-        InitializeCallback callback) override {
-      return base::CallbackListSubscription();
-    }
-    bool IsReady() override { return true; }
-    base::CallbackListSubscription GetSnapshot(
-        const ContentBinding& content_binding,
-        SnapshotCallback callback) override {
-      std::move(callback).Run(
-          base::unexpected(AttestationError::kSnapshotGenerationFailed));
-      return base::CallbackListSubscription();
-    }
-  };
-
   std::unique_ptr<DeviceAttestationServiceIOS> failing_service =
       std::make_unique<DeviceAttestationServiceIOS>(
-          std::make_unique<FailingAttestationServiceIOS>());
+          std::make_unique<ErrorAttestationServiceIOS>(
+              AttestationServiceIOS::AttestationError::
+                  kSnapshotGenerationFailed));
   enterprise_management::ChromeProfileReportRequest report;
 
   base::test::TestFuture<const AttestationResult&> future;
@@ -195,6 +230,31 @@ TEST_F(DeviceAttestationServiceIOSTest, SnapshotGenerationFailureReturnsError) {
   EXPECT_EQ(result.blob_generation_result.error_message,
             "Attestation snapshot generation failed");
 }
+
+class DeviceAttestationServiceIOSErrorTest
+    : public DeviceAttestationServiceIOSTest,
+      public testing::WithParamInterface<AttestationErrorTestCase> {};
+
+TEST_P(DeviceAttestationServiceIOSErrorTest,
+       AttestationErrorsReturnExpectedMessages) {
+  const AttestationErrorTestCase& test_case = GetParam();
+  auto service = std::make_unique<DeviceAttestationServiceIOS>(
+      std::make_unique<ErrorAttestationServiceIOS>(test_case.error));
+  enterprise_management::ChromeProfileReportRequest report;
+  base::test::TestFuture<const AttestationResult&> future;
+  service->GetAttestationResponse("flow_name", report,
+                                  /*legacy_request_payload=*/"", "1700000000",
+                                  "nonce", future.GetCallback());
+  const AttestationResult& result = future.Get();
+  EXPECT_TRUE(result.blob_generation_result.attestation_blob.empty());
+  EXPECT_EQ(result.blob_generation_result.error_message,
+            test_case.expected_message);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DeviceAttestationServiceIOSErrorTest,
+    testing::ValuesIn(kAttestationErrorTestCases));
 
 TEST_F(DeviceAttestationServiceIOSTest,
        SynchronousSnapshotWithSubscriptionDoesNotLeak) {

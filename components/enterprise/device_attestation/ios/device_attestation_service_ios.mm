@@ -22,8 +22,20 @@ constexpr int kDefaultContentBindingVersion = 0;
 std::string_view AttestationErrorToString(
     AttestationServiceIOS::AttestationError error) {
   switch (error) {
-    case AttestationServiceIOS::AttestationError::kInitializationFailed:
-      return "Attestation service initialization failed";
+    case AttestationServiceIOS::AttestationError::kServiceUnavailable:
+      return "Attestation service unavailable";
+    case AttestationServiceIOS::AttestationError::kNetworkError:
+      return "Attestation challenge fetch network error";
+    case AttestationServiceIOS::AttestationError::kTimeout:
+      return "Attestation challenge fetch timed out";
+    case AttestationServiceIOS::AttestationError::kClientError:
+      return "Attestation challenge fetch client error";
+    case AttestationServiceIOS::AttestationError::kServerError:
+      return "Attestation challenge fetch server error";
+    case AttestationServiceIOS::AttestationError::kResponseParsingFailed:
+      return "Attestation challenge response parsing failed";
+    case AttestationServiceIOS::AttestationError::kNotInitialized:
+      return "Attestation service not initialized";
     case AttestationServiceIOS::AttestationError::kSnapshotGenerationFailed:
       return "Attestation snapshot generation failed";
     case AttestationServiceIOS::AttestationError::kUnknown:

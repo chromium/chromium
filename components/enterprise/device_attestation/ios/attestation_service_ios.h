@@ -19,8 +19,27 @@ namespace enterprise {
 class AttestationServiceIOS {
  public:
   enum class AttestationError {
+    // Uncategorized error.
     kUnknown,
-    kInitializationFailed,
+    // The attestation service or underlying SDK is unavailable, unsupported, or
+    // could not be created/instantiated.
+    kServiceUnavailable,
+    // Network connection failure (e.g. offline, connection reset). Retryable.
+    kNetworkError,
+    // Request to fetch the challenge timed out. Retryable.
+    kTimeout,
+    // Server returned a client error (e.g. HTTP 400, 401, 403: invalid request
+    // key or unauthorized). Non-retryable.
+    kClientError,
+    // Server returned a server error (e.g. HTTP 5xx, 429 rate limit).
+    // Retryable.
+    kServerError,
+    // Failed to parse the challenge response proto from the server.
+    kResponseParsingFailed,
+    // Snapshot requested before the initialization lifecycle has completed or
+    // while the service is not in a ready state (`IsReady()` is false).
+    kNotInitialized,
+    // Snapshot generation produced empty or invalid payload.
     kSnapshotGenerationFailed,
   };
 
