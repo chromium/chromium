@@ -12,7 +12,9 @@ import android.os.Handler;
 import android.os.LocaleList;
 import android.os.Looper;
 import android.view.View;
+import android.view.ViewGroup;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApkInfo;
@@ -307,15 +309,19 @@ public class BookmarkUtils {
         ShoppingService shoppingService = ShoppingServiceFactory.getForProfile(profile);
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_POPUP)) {
-            View anchor = activity.findViewById(R.id.bookmark_button);
+            View decorView =
+                    activity.getWindow() != null
+                            ? activity.getWindow().getDecorView()
+                            : activity.findViewById(android.R.id.content);
+            View anchor = findFirstShownView(decorView, R.id.bookmark_button);
 
             // When the bookmark button isn't visible, fallback to the 3-dot menu.
-            if (anchor == null || !anchor.isShown()) {
-                anchor = activity.findViewById(R.id.menu_button_wrapper);
+            if (anchor == null) {
+                anchor = findFirstShownView(decorView, R.id.menu_button_wrapper);
             }
 
             // As a last resort, anchor to the content view. This should be rare/never happen.
-            if (anchor == null || !anchor.isShown()) {
+            if (anchor == null) {
                 anchor = activity.findViewById(android.R.id.content);
             }
             assert anchor != null && anchor.isShown() : "Unable to find anchor for bookmark popup.";
@@ -975,5 +981,27 @@ public class BookmarkUtils {
     public static int getChildNonFolderBookmarkCountForFolder(
             BookmarkModel bookmarkModel, BookmarkId folderId) {
         return getNonFolderBookmarkCount(bookmarkModel, bookmarkModel.getChildIds(folderId));
+    }
+
+    /**
+     * Finds the first view with the given resource ID that is currently shown in the view
+     * hierarchy. Prunes non-visible subtrees for efficiency.
+     */
+    private static @Nullable View findFirstShownView(@Nullable View root, @IdRes int id) {
+        if (root == null || root.getVisibility() != View.VISIBLE) {
+            return null;
+        }
+        if (root.getId() == id && root.isShown()) {
+            return root;
+        }
+        if (root instanceof ViewGroup viewGroup) {
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                View found = findFirstShownView(viewGroup.getChildAt(i), id);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
     }
 }
