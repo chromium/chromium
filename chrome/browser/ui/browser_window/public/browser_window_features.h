@@ -165,7 +165,6 @@ namespace content_settings {
 class CookieControlsController;
 }  // namespace content_settings
 
-
 namespace contextual_tasks {
 class ContextualTasksBrowserController;
 }  // namespace contextual_tasks
@@ -427,12 +426,6 @@ class BrowserWindowFeatures {
   omnibox::OmniboxPopupCloser* omnibox_popup_closer() {
     return omnibox_popup_closer_.get();
   }
-
-#if defined(USE_AURA)
-  OverscrollPrefManager* overscroll_pref_manager() {
-    return overscroll_pref_manager_.get();
-  }
-#endif  // defined(USE_AURA)
 
   PinnedToolbarActions* pinned_toolbar_actions() {
     return pinned_toolbar_actions_;

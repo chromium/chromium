@@ -4194,7 +4194,10 @@ if (use_aura) {
       "overscroll_pref_manager.cc",
       "overscroll_pref_manager.h",
     ]
-    deps = [ "//base" ]
+    deps = [
+      "//base",
+      "//chrome/browser/ui/browser_window",
+    ]
     public_deps = [
       "//chrome/browser:browser_process",
       "//chrome/browser/ui/tabs",
@@ -4202,6 +4205,7 @@ if (use_aura) {
       "//chrome/common",
       "//components/prefs",
       "//content/public/browser",
+      "//ui/base/unowned_user_data",
     ]
   }
 }

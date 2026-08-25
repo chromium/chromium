@@ -393,9 +393,7 @@ void BrowserWebContentsDelegate::SetTopControlsGestureScrollInProgress(
 
 bool BrowserWebContentsDelegate::CanOverscrollContent() {
 #if defined(USE_AURA)
-  return browser_->GetFeatures()
-      .overscroll_pref_manager()
-      ->CanOverscrollContent();
+  return OverscrollPrefManager::From(&browser_.get())->CanOverscrollContent();
 #else
   return false;
 #endif

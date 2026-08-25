@@ -6,15 +6,27 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 
+DEFINE_USER_DATA(OverscrollPrefManager);
+
+// static
+OverscrollPrefManager* OverscrollPrefManager::From(
+    BrowserWindowInterface* browser_window) {
+  return Get(browser_window->GetUnownedUserDataHost());
+}
+
 OverscrollPrefManager::OverscrollPrefManager(TabStripModel* tab_strip_model,
-                                             bool is_type_devtools)
-    : tab_strip_model_(tab_strip_model), is_type_devtools_(is_type_devtools) {
+                                             bool is_type_devtools,
+                                             ui::UnownedUserDataHost& host)
+    : tab_strip_model_(tab_strip_model),
+      scoped_unowned_user_data_(host, *this),
+      is_type_devtools_(is_type_devtools) {
   PrefService* local_state = g_browser_process->local_state();
   if (local_state) {
     overscroll_history_navigation_enabled_ =
