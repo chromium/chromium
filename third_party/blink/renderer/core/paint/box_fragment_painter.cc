@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/border_shape_utils.h"
 #include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
-#include "third_party/blink/renderer/core/paint/box_border_painter.h"
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
@@ -909,12 +908,6 @@ void BoxFragmentPainter::PaintObject(const PaintInfo& paint_info,
       (!fragment.Children().empty() || fragment.HasItems() ||
        inline_box_cursor_) &&
       !paint_info.DescendantPaintingBlocked()) {
-    if (paint_phase == PaintPhase::kDescendantBlockBackgroundsOnly &&
-        is_visible && fragment.IsCSSBox() && style.HasColumnRule())
-        [[unlikely]] {
-      PaintColumnRules(paint_info, paint_offset);
-    }
-
     if (paint_phase != PaintPhase::kFloat) {
       if (inline_box_cursor_) [[unlikely]] {
         // Use the descendants cursor for this painter if it is given.
@@ -1436,8 +1429,7 @@ void BoxFragmentPainter::PaintBoxDecorationBackground(
   }
 
   if (!suppress_box_decoration_background && box_fragment_.GetGapGeometry() &&
-      !paint_info.ShouldSkipGapDecorations() &&
-      RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
+      !paint_info.ShouldSkipGapDecorations()) {
     // TODO(crbug.com/357648037): Currently painting gap decorations after
     // the background and borders. This is likely to change following the
     // resolution of the paint order issue for gap decorations.
@@ -1636,17 +1628,11 @@ void BoxFragmentPainter::PaintGapDecorations(
   // rows, or the rows over the columns. The default is to paint the rows over
   // the columns.
   if (paint_order == ERuleOverlap::kColumnOverRow) {
-    if (RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
-      GapDecorationsPainter(box_fragment_)
-          .Paint(kForRows, *final_paint_info, paint_rect, *gap_geometry);
-      GapDecorationsPainter(box_fragment_)
-          .Paint(kForColumns, *final_paint_info, paint_rect, *gap_geometry);
-    }
-
-    return;
-  }
-
-  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
+    GapDecorationsPainter(box_fragment_)
+        .Paint(kForRows, *final_paint_info, paint_rect, *gap_geometry);
+    GapDecorationsPainter(box_fragment_)
+        .Paint(kForColumns, *final_paint_info, paint_rect, *gap_geometry);
+  } else {
     GapDecorationsPainter(box_fragment_)
         .Paint(kForColumns, *final_paint_info, paint_rect, *gap_geometry);
     GapDecorationsPainter(box_fragment_)
@@ -1777,148 +1763,6 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundForBlockInInline(
       }
     }
     children->MoveToNext();
-  }
-}
-
-// TODO(javiercon): Remove this method once `BoxFragmentPainter::PaintGaps`
-// is implemented for multi-column.
-void BoxFragmentPainter::PaintColumnRules(const PaintInfo& paint_info,
-                                          const PhysicalOffset& paint_offset) {
-  if (box_fragment_.GetGapGeometry() ||
-      RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
-    return;
-  }
-
-  const ComputedStyle& style = box_fragment_.Style();
-  DCHECK(box_fragment_.IsCSSBox());
-  DCHECK(style.HasColumnRule());
-
-  // https://www.w3.org/TR/css-multicol-1/#propdef-column-rule-style
-  // interpret column-rule-style as in the collapsing border model
-  EBorderStyle rule_style = ComputedStyle::CollapsedBorderStyle(
-      style.ColumnRuleStyle().GetLegacyValue());
-
-  if (DrawingRecorder::UseCachedDrawingIfPossible(paint_info.context,
-                                                  GetDisplayItemClient(),
-                                                  DisplayItem::kColumnRules))
-    return;
-
-  DrawingRecorder recorder(paint_info.context, GetDisplayItemClient(),
-                           DisplayItem::kColumnRules, gfx::Rect());
-
-  const Color& rule_color =
-      LayoutObject::ResolveColor(style, GetCSSPropertyColumnRuleColor());
-  LayoutUnit rule_thickness(style.ColumnRuleWidth().GetLegacyValue());
-
-  WritingModeConverter converter(style.GetWritingDirection(),
-                                 box_fragment_.Size());
-  std::optional<LayoutUnit> current_row_block_offset;
-  // Count spanners and additional rows. Spanners and row wrapping may result in
-  // more than one row.
-  int items_until_last_row = 0;
-  for (const PhysicalFragmentLink& child : box_fragment_.Children()) {
-    if (child->IsColumnBox()) {
-      LogicalRect current_rect =
-          converter.ToLogical(PhysicalRect(child.offset, child->Size()));
-      LayoutUnit column_block_offset = current_rect.offset.block_offset;
-      if (!current_row_block_offset) {
-        // No directly preceding row, either because it's the first row
-        // altogether, or because we're after a spanner.
-        current_row_block_offset.emplace(column_block_offset);
-      } else if (*current_row_block_offset != column_block_offset) {
-        // Wrapped to a new row.
-        *current_row_block_offset = column_block_offset;
-        items_until_last_row++;
-      }
-    } else {
-      // Assuming this is a spanner.
-      items_until_last_row++;
-      current_row_block_offset.reset();
-    }
-  }
-
-  LayoutUnit rule_block_start_offset;
-  LayoutUnit rule_block_end_offset;
-  LayoutUnit previous_column_inline_end;
-  LayoutUnit previous_column_block_end;
-  AutoDarkMode auto_dark_mode(
-      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
-  current_row_block_offset.reset();
-  for (const PhysicalFragmentLink& child : box_fragment_.Children()) {
-    if (!child->IsColumnBox()) {
-      // Column spanner. Continue in the next row, if there are 2 columns or
-      // more there.
-      items_until_last_row--;
-      CHECK_GE(items_until_last_row, 0);
-      current_row_block_offset.reset();
-      continue;
-    }
-
-    LogicalRect current_rect =
-        converter.ToLogical(PhysicalRect(child.offset, child->Size()));
-    LayoutUnit column_block_offset = current_rect.BlockStartOffset();
-    if (!current_row_block_offset) {
-      // No directly preceding row, either because it's the first row
-      // altogether, or because we're after a spanner.
-      current_row_block_offset.emplace(column_block_offset);
-
-      rule_block_start_offset = current_rect.BlockStartOffset();
-      rule_block_end_offset = current_rect.BlockEndOffset();
-      // Rules are painted *between* columns. Need to see if we have a second
-      // one before painting anything.
-    } else if (*current_row_block_offset != column_block_offset) {
-      // Wrapped to a new row.
-      *current_row_block_offset = column_block_offset;
-      items_until_last_row--;
-      CHECK_GE(items_until_last_row, 0);
-
-      // Paint rules in the preceding row-gap as well. Note that this isn't
-      // ideal for styles like dotted or dashed, since dot or dash painting will
-      // restart at this offset. Instead they ought to be painted as one
-      // operation, from the first row to the last.
-      rule_block_start_offset = previous_column_block_end;
-      rule_block_end_offset = current_rect.BlockEndOffset();
-    } else {
-      LayoutUnit center =
-          (current_rect.InlineStartOffset() + previous_column_inline_end) / 2;
-
-      LayoutUnit rule_length = rule_block_end_offset - rule_block_start_offset;
-      // Paint column rules as tall as the entire multicol container, but only
-      // when at the last row.
-      if (!items_until_last_row) {
-        BoxStrut scrollbars =
-            box_fragment_.OwnerLayoutBox()->ComputeLogicalScrollbars();
-        LayoutUnit multicol_block_end_offset =
-            converter.ToLogical(box_fragment_.ContentRect()).BlockEndOffset() -
-            scrollbars.block_end;
-        LayoutUnit stretched_rule_length =
-            multicol_block_end_offset - rule_block_start_offset;
-        // TODO(layout-dev): Get rid of this clamping, and fix any underlying
-        // issues
-        rule_length = std::max(rule_length, stretched_rule_length);
-      }
-
-      LogicalRect logical_rule(center - rule_thickness / 2,
-                               rule_block_start_offset, rule_thickness,
-                               rule_length);
-      PhysicalRect rule = converter.ToPhysical(logical_rule);
-      rule.Move(paint_offset);
-
-      // Which of the inline edges we pick here doesn't matter (as long as it
-      // *is* an inline edge), since the rule style types where this matters
-      // (inset / outset) have been converted to a style where it doesn't
-      // matter. See ComputedStyle::CollapsedBorderStyle(().
-      BoxSide box_side =
-          style.IsHorizontalWritingMode() ? BoxSide::kLeft : BoxSide::kTop;
-
-      gfx::Rect snapped_rule = ToPixelSnappedRect(rule);
-      BoxBorderPainter::DrawBoxSide(paint_info.context, snapped_rule, box_side,
-                                    rule_color, rule_style, auto_dark_mode);
-      recorder.UniteVisualRect(snapped_rule);
-    }
-
-    previous_column_inline_end = current_rect.InlineEndOffset();
-    previous_column_block_end = current_rect.BlockEndOffset();
   }
 }
 

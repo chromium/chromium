@@ -2561,7 +2561,6 @@ Color ComputedStyle::VisitedDependentColor(const blink::Color& unvisited_color,
 blink::Color ComputedStyle::VisitedDependentGapColor(
     const StyleColor& gap_color,
     bool is_column_rule) const {
-  CHECK(RuntimeEnabledFeatures::CSSGapDecorationEnabled());
   blink::Color unvisited_gap_color;
 
   // `StyleColor::IsCurrentColor()` is used down the pipeline to determine if
@@ -2638,14 +2637,6 @@ blink::Color ComputedStyle::ResolvedColor(const StyleColor& color,
   blink::Color current_color =
       visited_link ? GetInternalVisitedCurrentColor() : GetCurrentColor();
   return color.Resolve(current_color, UsedColorScheme(), is_current_color);
-}
-
-bool ComputedStyle::ColumnRuleEquivalent(
-    const ComputedStyle& other_style) const {
-  return ColumnRuleStyle() == other_style.ColumnRuleStyle() &&
-         ColumnRuleWidth() == other_style.ColumnRuleWidth() &&
-         VisitedDependentColor(GetCSSPropertyColumnRuleColor()) ==
-             other_style.VisitedDependentColor(GetCSSPropertyColumnRuleColor());
 }
 
 TextEmphasisMark ComputedStyle::GetTextEmphasisMark() const {

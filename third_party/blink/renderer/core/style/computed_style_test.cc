@@ -1259,10 +1259,7 @@ TEST_F(ComputedStyleTest, BorderWidthZoom) {
       AtomicString prop_name = longhand.GetCSSPropertyName().ToAtomicString();
       ASSERT_TRUE(computed_value) << prop_name;
       const CSSNumericLiteralValue* numeric_value = nullptr;
-      // With CSSGapDecorations, ColumnRuleWidth is a list of values. Thus,
-      // for this case we must get the first value before we attempt to cast.
-      if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
-          property == &GetCSSPropertyColumnRuleWidth()) {
+      if (property == &GetCSSPropertyColumnRuleWidth()) {
         auto* list = DynamicTo<CSSValueList>(computed_value);
         ASSERT_TRUE(list);
         ASSERT_EQ(list->length(), 1);
@@ -1343,10 +1340,7 @@ TEST_F(ComputedStyleTest, BorderWidthConversion) {
           false /* allow_visited_style */, CSSValuePhase::kComputedValue);
       ASSERT_NE(computed_value, nullptr);
       const CSSNumericLiteralValue* numeric_value = nullptr;
-      // With CSSGapDecorations, ColumnRuleWidth is a list of values. Thus,
-      // for this case we must get the first value before we attempt to cast.
-      if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
-          longhand == &GetCSSPropertyColumnRuleWidth()) {
+      if (longhand == &GetCSSPropertyColumnRuleWidth()) {
         auto* list = DynamicTo<CSSValueList>(computed_value);
         ASSERT_TRUE(list);
         ASSERT_EQ(list->length(), 1);
@@ -2430,7 +2424,6 @@ TEST_F(ComputedStyleTest, CursorInheritance) {
 }
 
 TEST_F(ComputedStyleTest, HasGapRule) {
-  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   Document& document = GetDocument();
   document.body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>

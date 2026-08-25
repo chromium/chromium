@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_running_positions.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -2827,7 +2826,6 @@ TEST_F(GridLanesLayoutAlgorithmTest, ResolvedGridAxisFlipMarksPlacementDirty) {
 }
 
 TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryColumn) {
-  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid-lanes {
@@ -2882,7 +2880,6 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryColumn) {
 }
 
 TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryRow) {
-  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid-lanes {
@@ -2935,7 +2932,6 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryRow) {
 }
 
 TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryEmptyExplicitTracks) {
-  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid-lanes {
@@ -2971,7 +2967,6 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryEmptyExplicitTracks) {
 }
 
 TEST_F(GridLanesLayoutAlgorithmTest, GapGeometrySingleTrack) {
-  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid-lanes {
@@ -3002,7 +2997,6 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometrySingleTrack) {
 }
 
 TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryRequiresGapRule) {
-  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid-lanes {
@@ -3032,7 +3026,6 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryRequiresGapRule) {
 }
 
 TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryCollapsedAutoFitTracks) {
-  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid-lanes {
@@ -3079,7 +3072,6 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryCollapsedAutoFitTracks) {
 }
 
 TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryGridAxisAlignment) {
-  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid-lanes {
@@ -3128,7 +3120,6 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryGridAxisAlignment) {
 
 // Main-gap geometry includes block-end overflow from placed items.
 TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryColumnStackingAxisOverflow) {
-  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid-lanes {
@@ -3175,7 +3166,6 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryColumnStackingAxisOverflow) {
 
 // Main-gap geometry includes inline-end overflow from placed items.
 TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryRowStackingAxisOverflow) {
-  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid-lanes {

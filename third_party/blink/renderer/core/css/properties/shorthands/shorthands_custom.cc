@@ -1151,13 +1151,6 @@ bool ColumnRule::ParseShorthand(
     CSSParserLocalContext& local_context,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(columnRuleShorthand().length(), 3u);
-  // If the CSSGapDecorations feature is not enabled, consume greedily since
-  // only single values are supported by 'column-rule' today.
-  if (!RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
-    return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
-        columnRuleShorthand(), important, context, stream, properties);
-  }
-
   CSSValueList* rule_widths = nullptr;
   CSSValueList* rule_styles = nullptr;
   CSSValueList* rule_colors = nullptr;

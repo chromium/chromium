@@ -1375,8 +1375,7 @@
     ],
     "args": [
       "--force-high-contrast",
-      "--enable-blink-features=ForcedColors",
-      "--enable-blink-features=CSSGapDecoration"
+      "--enable-blink-features=ForcedColors"
     ],
     "expires": "Jul 1, 2027"
   },

@@ -209,24 +209,13 @@ const InterpolationTypes* InterpolationTypesMap::Get(
         break;
       case CSSPropertyID::kColumnRuleColor:
       case CSSPropertyID::kRowRuleColor:
-        if (RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
-          applicable_types->push_back(
-              MakeGarbageCollected<CSSGapColorListInterpolationType>(property));
-          break;
-        }
         applicable_types->push_back(
-            MakeGarbageCollected<CSSColorInterpolationType>(property));
+            MakeGarbageCollected<CSSGapColorListInterpolationType>(property));
         break;
       case CSSPropertyID::kColumnRuleWidth:
       case CSSPropertyID::kRowRuleWidth:
-        if (RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
-          applicable_types->push_back(
-              MakeGarbageCollected<CSSGapLengthListInterpolationType>(
-                  property));
-        } else {
-          applicable_types->push_back(
-              MakeGarbageCollected<CSSLengthInterpolationType>(property));
-        }
+        applicable_types->push_back(
+            MakeGarbageCollected<CSSGapLengthListInterpolationType>(property));
         break;
       case CSSPropertyID::kContainIntrinsicWidth:
       case CSSPropertyID::kContainIntrinsicHeight:

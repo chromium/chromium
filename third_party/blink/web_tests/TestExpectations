@@ -5864,7 +5864,7 @@ crbug.com/402429384 virtual/select-parsing-filtering-disabled/external/wpt/html/
 crbug.com/440471997 [ Mac ] wpt_internal/html/semantics/forms/the-select-element/select-multiple-popup-auto-appearance.html [ Failure ]
 crbug.com/440471997 [ Mac ] wpt_internal/html/semantics/forms/the-select-element/select-multiple-popup-auto-appearance-dark-mode.html [ Failure ]
 
-### [css-gaps] Tests failing with CSSGapDecorations Enabled:
+### [css-gaps] Gap decoration test failures:
 # These tests are failing for multicol OOF items.
 crbug.com/429365670 external/wpt/css/css-break/out-of-flow-in-multicolumn-097.html [ Failure ]
 crbug.com/429365670 external/wpt/css/css-break/out-of-flow-in-multicolumn-098.html [ Failure ]
@@ -5885,7 +5885,7 @@ crbug.com/343257585 external/wpt/css/css-gaps/grid-lanes/row-gap-decorations-lis
 # Grid-lanes crossing gap width does not account for overlapping gutters.
 crbug.com/343257585 external/wpt/css/css-gaps/grid-lanes/column-gap-decorations-inset-overlapping-gutters-percentage.html [ Failure ]
 
-### End of tests failing with CSSGapDecorations Enabled
+### End of gap decoration test failures
 
 # I think these are just test issues, but at least the scrollbars are related:
 crbug.com/362536387 external/wpt/html/semantics/forms/the-select-element/select-many-options.tentative.html [ Failure ]

@@ -3816,16 +3816,6 @@ const CSSValue* ValueForGapDecorationPropertyDataList(
     const GapDataList<T>& gap_color_list,
     const ComputedStyle& style,
     CSSValuePhase value_phase) {
-  // The CSS Gap Decorations API [1] can take more than one value. When
-  // that feature is enabled, create a space separated list to hold the
-  // values. Otherwise, return a single value, as is supported in
-  // the legacy `column-rule-*` property.
-  // [1]: https://chromestatus.com/feature/5157805733183488
-  if (!RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
-    return GetGapDecorationPropertyValue(gap_color_list.GetLegacyValue(), style,
-                                         value_phase);
-  }
-
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
 
   for (const auto& gap_data : gap_color_list.GetGapDataList()) {
@@ -4259,23 +4249,6 @@ CSSValueList* ComputedStyleUtils::ValueForGapDecorationRuleShorthand(
     bool allow_visited_style,
     CSSValuePhase value_phase,
     CSSGapDecorationPropertyDirection direction) {
-  // If the CSSGapDecorations feature is not enabled, fallback to legacy
-  // behavior of handling the shorthand since values are stored as single
-  // values and not lists.
-  if (!RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
-    const CSSValue* width_value =
-        shorthand.properties()[0]->CSSValueFromComputedStyle(
-            style, layout_object, allow_visited_style, value_phase);
-    const CSSValue* style_value =
-        shorthand.properties()[1]->CSSValueFromComputedStyle(
-            style, layout_object, allow_visited_style, value_phase);
-    const CSSValue* color_value =
-        shorthand.properties()[2]->CSSValueFromComputedStyle(
-            style, layout_object, allow_visited_style, value_phase);
-
-    return GetValueListForGapRule(*width_value, *style_value, *color_value);
-  }
-
   CHECK_EQ(shorthand.length(), 3u);
   CHECK(shorthand.properties()[0]->IDEquals(
       CSSGapDecorationUtils::GetLonghandProperty(

@@ -1759,9 +1759,7 @@ void GridLayoutAlgorithm::PlaceGridItems(
   // TODO(samomekarajr): This can be optimized to avoid building gap geometry
   // fully for different scenarios (e.g. if there are no gaps but there are
   // decorations).
-  if ((RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
-       Style().HasGapRule()) ||
-      out_unfragmented_gap_geometry) {
+  if (Style().HasGapRule() || out_unfragmented_gap_geometry) {
     gap_accumulator = GapAccumulator();
     gap_accumulator->BuildGapGeometry(*layout_data);
 
@@ -2471,10 +2469,8 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     MainGaps fragment_main_gaps = PlaceMainGaps();
 
     // Create gap geometry for this fragmentainer if we have gaps.
-    if ((RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
-         Style().HasGapRule()) &&
-        (!fragment_main_gaps.empty() ||
-         !full_gap_geometry->GetCrossGaps().empty())) {
+    if (Style().HasGapRule() && (!fragment_main_gaps.empty() ||
+                                 !full_gap_geometry->GetCrossGaps().empty())) {
       // Update content block offsets for this fragmentainer.
       // - Block start: Use the original gap geometry's start for the first
       // fragment and zero for subsequent fragments.

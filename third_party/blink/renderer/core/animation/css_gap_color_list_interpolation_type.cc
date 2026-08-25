@@ -338,11 +338,9 @@ InterpolationValue CSSGapColorListInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
-  // When CSSGapDecorations feature is enabled, the `color` property might still
-  // be represented as a single CSSValue instead of a CSSValueList. This can
-  // happen when the properties are parsed via the fast parsing path rather than
-  // the standard `ParseSingleValue()` method. In such cases, wrap the single
-  // value in a list to ensure consistent handling.
+  // The `color` property might still be represented as a single CSSValue when
+  // parsed via the fast path rather than the standard `ParseSingleValue()`
+  // method. Wrap single values for consistent handling.
   auto getValueAsList = [&](const CSSValue* value) -> const CSSValueList* {
     if (const CSSValueList* value_list = DynamicTo<CSSValueList>(value)) {
       return value_list;

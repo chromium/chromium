@@ -148,8 +148,6 @@ class CORE_EXPORT BoxFragmentPainter : public BoxPainterBase {
       const PaintInfo&,
       const PhysicalOffset& paint_offset);
 
-  void PaintColumnRules(const PaintInfo&, const PhysicalOffset& paint_offset);
-
   void PaintInternal(const PaintInfo&);
   void PaintAllPhasesAtomically(const PaintInfo&);
   void PaintCurrentPageContainer(const PaintInfo&);

@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/text/writing_mode_utils.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -1295,8 +1294,7 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
   }
 
   std::optional<FlexGapAccumulator> gap_accumulator = std::nullopt;
-  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
-      Style().HasGapRule() && !flex_lines.empty()) {
+  if (Style().HasGapRule() && !flex_lines.empty()) {
     std::optional<GapGeometry::FlexGapPlacementReversal> gap_placement_reversal;
     if (is_wrap_reverse_ || is_reverse_direction_) {
       gap_placement_reversal.emplace(is_wrap_reverse_, is_reverse_direction_);

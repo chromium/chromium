@@ -69,7 +69,6 @@ TEST_F(FlexLayoutAlgorithmTest, ReplacedAspectRatioPrecision) {
 }
 
 TEST_F(FlexLayoutAlgorithmTest, GapDecorationsOneLine) {
-  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
     body {
@@ -142,7 +141,6 @@ TEST_F(FlexLayoutAlgorithmTest, GapDecorationsOneLine) {
 }
 
 TEST_F(FlexLayoutAlgorithmTest, GapDecorationsBasic) {
-  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
     body {
@@ -219,7 +217,6 @@ TEST_F(FlexLayoutAlgorithmTest, GapDecorationsBasic) {
 
 TEST_F(FlexLayoutAlgorithmTest,
        GapDecorationsContentEndPastContainer) {
-  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
     body {
@@ -285,7 +282,6 @@ TEST_F(FlexLayoutAlgorithmTest,
 }
 
 TEST_F(FlexLayoutAlgorithmTest, GapDecorationsNonAlignedColumn) {
-  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
 body {
@@ -371,7 +367,6 @@ body {
 }
 
 TEST_F(FlexLayoutAlgorithmTest, GapDecorationsNonAlignedColumn2) {
-  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
 body {
@@ -456,7 +451,6 @@ body {
 
 TEST_F(FlexLayoutAlgorithmTest,
        GapDecorationsVerticalFlexAlignedCenter) {
-  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
 body {
@@ -542,7 +536,6 @@ body {
 
 TEST_F(FlexLayoutAlgorithmTest,
        GapDecorationsVerticalFlexAlignedStart) {
-  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
 body {
@@ -628,7 +621,6 @@ body {
 
 TEST_F(FlexLayoutAlgorithmTest,
        GapDecorationsVerticalFlexAlignedStretch) {
-  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
 body {
@@ -713,7 +705,6 @@ body {
 }
 
 TEST_F(FlexLayoutAlgorithmTest, GapDecorationsColumnFlexDirection) {
-  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
     body {
@@ -796,7 +787,6 @@ TEST_F(FlexLayoutAlgorithmTest, GapDecorationsColumnFlexDirection) {
 }
 
 TEST_F(FlexLayoutAlgorithmTest, GapDecorationsContentDistributionGaps) {
-  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
     body {
@@ -885,7 +875,6 @@ TEST_F(FlexLayoutAlgorithmTest, GapDecorationsContentDistributionGaps) {
 
 TEST_F(FlexLayoutAlgorithmTest,
        GapDecorationsContentDistributionGapsBetweenLines) {
-  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
     body {

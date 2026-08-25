@@ -2640,17 +2640,10 @@ const CSSValue* ColumnRuleColor::CSSValueFromComputedStyleInternal(
   // For 'column-rule-color' we only apply :visited styles when one color is
   // supplied by the author rather than a list of colors.
   if (allow_visited_style && style.ColumnRuleColor().HasSingleValue()) {
-    // With GapDecorations enabled, `ColumnRuleColor` is a list. We need to make
-    // sure that when `allow_visited_style` is true, we return a list like we do
-    // when `allow_visited_style` is false.
-    if (RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
-      CSSValueList* wrapper_list = CSSValueList::CreateCommaSeparated();
-      wrapper_list->Append(
-          *cssvalue::CSSColor::Create(style.VisitedDependentColor(*this)));
-      return wrapper_list;
-    }
-
-    return cssvalue::CSSColor::Create(style.VisitedDependentColor(*this));
+    CSSValueList* wrapper_list = CSSValueList::CreateCommaSeparated();
+    wrapper_list->Append(
+        *cssvalue::CSSColor::Create(style.VisitedDependentColor(*this)));
+    return wrapper_list;
   }
 
   return ComputedStyleUtils::ValueForGapDecorationColorDataList(

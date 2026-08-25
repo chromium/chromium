@@ -1168,15 +1168,7 @@ void LayoutBox::UpdateAfterLayout() {
   if (IsPositioned())
     GetFrame()->GetInputMethodController().DidLayoutSubtree(*this);
 
-  if (StyleRef().HasColumnRule() && IsFragmentationContextRoot() &&
-      !RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
-    // Issue full invalidation, in case the number of column rules have changed.
-    // When CSSGapDecoration is enabled, gap decoration invalidation is handled
-    // by BoxPaintInvalidator.
-    ClearNeedsLayoutWithFullPaintInvalidation();
-  } else {
-    ClearNeedsLayout();
-  }
+  ClearNeedsLayout();
 
   // We should notify the display lock that we've done layout on self, and if
   // it's not blocked, on children.

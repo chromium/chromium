@@ -1006,7 +1006,6 @@ class ComputedStyle final : public ComputedStyleBase {
   bool ColumnRuleIsTransparent() const {
     return GapRuleColorIsTransparent(ColumnRuleColor());
   }
-  bool ColumnRuleEquivalent(const ComputedStyle& other_style) const;
   bool HasColumnRule() const {
     if (!IsGapDecorationsContainer()) [[likely]] {
       return false;

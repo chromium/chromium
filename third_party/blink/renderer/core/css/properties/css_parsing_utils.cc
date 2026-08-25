@@ -5943,13 +5943,6 @@ CSSValue* ConsumeGapDecorationPropertyList(
     const CSSParserContext& context,
     CSSParserLocalContext& local_context,
     const CSSGapDecorationPropertyType property_type) {
-  // Consume single value if the Gap decoration feature flag is not
-  // enabled.
-  if (!RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
-    return ConsumeGapDecorationPropertyValue(stream, context, local_context,
-                                             property_type);
-  }
-
   if (stream.AtEnd()) {
     return nullptr;
   }
@@ -8082,8 +8075,6 @@ bool ConsumeGapDecorationsRuleInsetCapJunctionShorthand(
     CSSParserTokenStream& stream,
     CSSValue*& rule_start_inset,
     CSSValue*& rule_end_inset) {
-  CHECK(RuntimeEnabledFeatures::CSSGapDecorationEnabled());
-
   rule_start_inset = nullptr;
   rule_end_inset = nullptr;
 
@@ -8113,8 +8104,6 @@ bool ConsumeGapDecorationsRuleInsetStartEndShorthand(
     CSSParserLocalContext& local_context,
     CSSParserTokenStream& stream,
     CSSValue*& rule_inset_value) {
-  CHECK(RuntimeEnabledFeatures::CSSGapDecorationEnabled());
-
   if (stream.Peek().Id() == CSSValueID::kOverlapJoin) {
     rule_inset_value = ConsumeIdent(stream);
     return true;
@@ -8138,8 +8127,6 @@ bool ConsumeGapDecorationsRuleInsetShorthand(
     CSSValue*& rule_inset_cap_end,
     CSSValue*& rule_inset_junction_start,
     CSSValue*& rule_inset_junction_end) {
-  CHECK(RuntimeEnabledFeatures::CSSGapDecorationEnabled());
-
   rule_inset_cap_start = nullptr;
   rule_inset_cap_end = nullptr;
   rule_inset_junction_start = nullptr;
@@ -8226,8 +8213,6 @@ bool ConsumeGapDecorationsRuleShorthand(bool important,
                                         CSSValueList*& rule_widths,
                                         CSSValueList*& rule_styles,
                                         CSSValueList*& rule_colors) {
-  CHECK(RuntimeEnabledFeatures::CSSGapDecorationEnabled());
-
   rule_widths = CSSValueList::CreateCommaSeparated();
   rule_styles = CSSValueList::CreateCommaSeparated();
   rule_colors = CSSValueList::CreateCommaSeparated();

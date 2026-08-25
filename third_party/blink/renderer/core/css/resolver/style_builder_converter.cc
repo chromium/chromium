@@ -2615,17 +2615,13 @@ template <typename T>
 GapDataList<T> ConvertGapDecorationDataList(const StyleResolverState& state,
                                             const CSSValue& value,
                                             bool for_visited_link = false) {
-  // The `value` will not be a list in two scenarios:
-  // 1. When using the legacy 'column-rule-*' properties.
-  // 2. When the fast parse path is taken (see
-  // CSSParserFastPaths::MaybeParseValue). In these cases, construct a
-  // GapDataList with a single Value.
+  // Single CSSValue inputs remain possible for compatibility and when the fast
+  // parse path is taken (see CSSParserFastPaths::MaybeParseValue). In these
+  // cases, construct a GapDataList with a single value.
   if (!IsA<CSSValueList>(value)) {
     return GapDataList<T>(
         ConvertGapDecorationPropertyValue<T>(state, value, for_visited_link));
   }
-  CHECK(RuntimeEnabledFeatures::CSSGapDecorationEnabled());
-
   // The CSS Gap Decorations API accepts a space separated list of values.
   // These values can be an auto repeater, an integer repeater, or a single
   // value.
