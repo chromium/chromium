@@ -7,18 +7,18 @@
 
 #include <ostream>
 #include <string>
+#include <string_view>
 
 namespace extensions {
 
 // A struct to describe a non-fatal issue discovered in the installation of an
 // extension.
 struct InstallWarning {
-  explicit InstallWarning(const std::string& message);
-  InstallWarning(const std::string& message,
-                 const std::string& key);
-  InstallWarning(const std::string& message,
-                 const std::string& key,
-                 const std::string& specific);
+  explicit InstallWarning(std::string_view message);
+  InstallWarning(std::string_view message, std::string_view key);
+  InstallWarning(std::string_view message,
+                 std::string_view key,
+                 std::string_view specific);
   InstallWarning(const InstallWarning&) = delete;
   InstallWarning(InstallWarning&& other);
   InstallWarning& operator=(InstallWarning&& other);

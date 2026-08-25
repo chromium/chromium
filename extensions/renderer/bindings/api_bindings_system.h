@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/values.h"
@@ -58,10 +59,9 @@ class APIBindingsSystem {
   ~APIBindingsSystem();
 
   // Returns a new v8::Object representing the api specified by `api_name`.
-  v8::Local<v8::Object> CreateAPIInstance(
-      const std::string& api_name,
-      v8::Local<v8::Context> context,
-      APIBindingHooks** hooks_out);
+  v8::Local<v8::Object> CreateAPIInstance(std::string_view api_name,
+                                          v8::Local<v8::Context> context,
+                                          APIBindingHooks** hooks_out);
 
   // Responds to the request with the given `request_id`, calling the callback
   // with `response`. If `error` is non-empty, sets the last error.
@@ -137,7 +137,7 @@ class APIBindingsSystem {
 
   // A map from api_name -> APIBinding for constructed APIs. APIBindings are
   // created lazily.
-  std::map<std::string, std::unique_ptr<APIBinding>> api_bindings_;
+  std::map<std::string, std::unique_ptr<APIBinding>, std::less<>> api_bindings_;
 
   // A map from api_name -> APIBindingHooks for registering custom hooks.
   // TODO(devlin): This map is pretty pointer-y. Is that going to be a

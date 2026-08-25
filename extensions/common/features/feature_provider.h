@@ -32,7 +32,7 @@ class FeatureProvider {
   virtual ~FeatureProvider();
 
   // Gets a FeatureProvider for a specific type, like "permission".
-  static const FeatureProvider* GetByName(const std::string& name);
+  static const FeatureProvider* GetByName(std::string_view name);
 
   // Directly access the common FeatureProvider types.
   // Each is equivalent to GetByName('featuretype').
@@ -45,10 +45,10 @@ class FeatureProvider {
   // Each is equivalent to GetByName('featuretype')->GetFeature(name).
   // NOTE: These functions may return `nullptr` in case corresponding JSON file
   // got corrupted.
-  static const Feature* GetAPIFeature(const std::string& name);
-  static const Feature* GetManifestFeature(const std::string& name);
-  static const Feature* GetPermissionFeature(const std::string& name);
-  static const Feature* GetBehaviorFeature(const std::string& name);
+  static const Feature* GetAPIFeature(std::string_view name);
+  static const Feature* GetManifestFeature(std::string_view name);
+  static const Feature* GetPermissionFeature(std::string_view name);
+  static const Feature* GetBehaviorFeature(std::string_view name);
 
   // Returns the feature with the specified name.
   const Feature* GetFeature(std::string_view name) const;

@@ -8,6 +8,9 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <string>
+#include <string_view>
+
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "v8/include/v8-context.h"
@@ -28,9 +31,21 @@ inline bool ToV8String(v8::Isolate* isolate,
 }
 
 inline bool ToV8String(v8::Isolate* isolate,
+                       std::string_view str,
+                       v8::Local<v8::String>* out) {
+  if (str.size() > static_cast<size_t>(v8::String::kMaxLength)) {
+    return false;
+  }
+  return v8::String::NewFromUtf8(isolate, str.empty() ? "" : str.data(),
+                                 v8::NewStringType::kNormal,
+                                 static_cast<int>(str.size()))
+      .ToLocal(out);
+}
+
+inline bool ToV8String(v8::Isolate* isolate,
                        const std::string& str,
                        v8::Local<v8::String>* out) {
-  return ToV8String(isolate, str.c_str(), out);
+  return ToV8String(isolate, std::string_view(str), out);
 }
 
 // Converts `str` to a V8 string.

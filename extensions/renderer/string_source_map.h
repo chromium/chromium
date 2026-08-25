@@ -7,6 +7,7 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 
 #include "extensions/renderer/source_map.h"
 #include "v8/include/v8-forward.h"
@@ -31,11 +32,11 @@ class StringSourceMap : public SourceMap {
 
   // SourceMap:
   v8::Local<v8::String> GetSource(v8::Isolate* isolate,
-                                  const std::string& name) const override;
-  bool Contains(const std::string& name) const override;
+                                  std::string_view name) const override;
+  bool Contains(std::string_view name) const override;
 
  private:
-  std::map<std::string, std::string> sources_;
+  std::map<std::string, std::string, std::less<>> sources_;
 };
 
 }  // namespace extensions

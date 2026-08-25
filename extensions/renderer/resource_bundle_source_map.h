@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -32,12 +33,13 @@ class ResourceBundleSourceMap : public SourceMap {
   ~ResourceBundleSourceMap() override;
 
   v8::Local<v8::String> GetSource(v8::Isolate* isolate,
-                                  const std::string& name) const override;
-  bool Contains(const std::string& name) const override;
+                                  std::string_view name) const override;
+  bool Contains(std::string_view name) const override;
 
   // `name` must outlive `this`. Preferably, the name string has static storage
   // duration.
-  void RegisterSource(std::string_view name, int resource_id);
+  void RegisterSource(std::string_view name LIFETIME_CAPTURE_BY_THIS,
+                      int resource_id);
 
  private:
   struct ResourceInfo {

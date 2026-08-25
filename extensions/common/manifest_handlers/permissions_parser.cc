@@ -269,7 +269,7 @@ bool ParseHelper(Extension* extension,
       // unrecognized permissions. This may happen legitimately if the
       // extensions requests platform- or channel-specific permissions.
       extension->AddInstallWarning(
-          InstallWarning(availability.message(), std::string(feature->name())));
+          InstallWarning(availability.message(), feature->name()));
       to_remove.push_back(iter->id());
       continue;
     }

@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -85,7 +86,7 @@ class ModuleSystem : public ObjectBackedNativeHandler {
 
   // Require the specified module. This is the equivalent of calling
   // require('module_name') from the loaded JS files.
-  v8::MaybeLocal<v8::Object> Require(const std::string& module_name);
+  v8::MaybeLocal<v8::Object> Require(std::string_view module_name);
 
   // Calls the specified method exported by the specified module. This is
   // equivalent to calling require('module_name').method_name() from JS. Note:
@@ -127,7 +128,7 @@ class ModuleSystem : public ObjectBackedNativeHandler {
   // code to set up various hooks.
   // TODO(devlin): We can get rid of this once we convert all our custom
   // bindings.
-  void OnNativeBindingCreated(const std::string& api_name,
+  void OnNativeBindingCreated(std::string_view api_name,
                               v8::Local<v8::Value> api_bridge_value);
 
   void SetGetInternalAPIHook(v8::Local<v8::FunctionTemplate> get_internal_api);
@@ -199,9 +200,9 @@ class ModuleSystem : public ObjectBackedNativeHandler {
   void Private(const v8::FunctionCallbackInfo<v8::Value>& args);
 
   // Loads and runs a Javascript module.
-  v8::Local<v8::Value> LoadModule(const std::string& module_name);
+  v8::Local<v8::Value> LoadModule(std::string_view module_name);
   v8::Local<v8::Value> LoadModuleWithNativeAPIBridge(
-      const std::string& module_name,
+      std::string_view module_name,
       v8::Local<v8::Value> api_object);
 
   // Marks any existing NativeHandler named `name` as clobbered.

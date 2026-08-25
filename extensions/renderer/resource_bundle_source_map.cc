@@ -53,7 +53,7 @@ void ResourceBundleSourceMap::RegisterSource(std::string_view name,
 
 v8::Local<v8::String> ResourceBundleSourceMap::GetSource(
     v8::Isolate* isolate,
-    const std::string& name) const {
+    std::string_view name) const {
   base::AutoLock lock(lock_);
   auto resource_iter = resource_map_.find(name);
   if (resource_iter == resource_map_.end()) {
@@ -90,7 +90,7 @@ v8::Local<v8::String> ResourceBundleSourceMap::GetSource(
   return ConvertString(isolate, resource);
 }
 
-bool ResourceBundleSourceMap::Contains(const std::string& name) const {
+bool ResourceBundleSourceMap::Contains(std::string_view name) const {
   base::AutoLock lock(lock_);
   return resource_map_.contains(name);
 }

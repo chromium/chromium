@@ -6,19 +6,15 @@
 
 namespace extensions {
 
-InstallWarning::InstallWarning(const std::string& message) : message(message) {
-}
+InstallWarning::InstallWarning(std::string_view message) : message(message) {}
 
-InstallWarning::InstallWarning(const std::string& message,
-                               const std::string& key)
-    : message(message), key(key) {
-}
+InstallWarning::InstallWarning(std::string_view message, std::string_view key)
+    : message(message), key(key) {}
 
-InstallWarning::InstallWarning(const std::string& message,
-                               const std::string& key,
-                               const std::string& specific)
-    : message(message), key(key), specific(specific) {
-}
+InstallWarning::InstallWarning(std::string_view message,
+                               std::string_view key,
+                               std::string_view specific)
+    : message(message), key(key), specific(specific) {}
 
 InstallWarning::InstallWarning(InstallWarning&& other) = default;
 

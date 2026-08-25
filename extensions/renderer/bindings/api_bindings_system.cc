@@ -53,12 +53,16 @@ APIBindingsSystem::APIBindingsSystem(
 APIBindingsSystem::~APIBindingsSystem() = default;
 
 v8::Local<v8::Object> APIBindingsSystem::CreateAPIInstance(
-    const std::string& api_name,
+    std::string_view api_name,
     v8::Local<v8::Context> context,
     APIBindingHooks** hooks_out) {
-  std::unique_ptr<APIBinding>& binding = api_bindings_[api_name];
+  auto iter = api_bindings_.find(api_name);
+  if (iter == api_bindings_.end()) {
+    iter = api_bindings_.try_emplace(std::string(api_name), nullptr).first;
+  }
+  std::unique_ptr<APIBinding>& binding = iter->second;
   if (!binding)
-    binding = CreateNewAPIBinding(api_name);
+    binding = CreateNewAPIBinding(iter->first);
   if (hooks_out)
     *hooks_out = binding->hooks();
   return binding->CreateInstance(context);

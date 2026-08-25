@@ -4,8 +4,12 @@
 
 #include "extensions/renderer/bindings/api_bindings_system_unittest.h"
 
+#include <string>
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
@@ -332,6 +336,20 @@ TEST_F(APIBindingsSystemTest, TestInitializationAndCallbacks) {
     ValidateLastRequest("beta.simpleFunc", "[2]");
     reset_last_request();
   }
+}
+
+TEST_F(APIBindingsSystemTest, AcceptsNonNullTerminatedAPIName) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  const std::string api_name_with_suffix =
+      base::StrCat({kAlphaAPIName, ".suffix"});
+  const std::string_view api_name(api_name_with_suffix.data(),
+                                  std::string_view(kAlphaAPIName).size());
+  v8::Local<v8::Object> api =
+      bindings_system()->CreateAPIInstance(api_name, context, nullptr);
+
+  EXPECT_FALSE(api.IsEmpty());
 }
 
 // Tests adding a custom hook to an API.

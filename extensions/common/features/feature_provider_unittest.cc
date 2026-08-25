@@ -52,6 +52,23 @@ TEST(FeatureProviderTest, ManifestFeatureTypes) {
                                   Manifest::Type::kChromeOSSystemExtension));
 }
 
+TEST(FeatureProviderTest, GetManifestFeatureWithNonNullTerminatedStringView) {
+  const std::string name_with_suffix = "description!";
+  const std::string_view name(name_with_suffix.data(),
+                              name_with_suffix.size() - 1);
+
+  EXPECT_TRUE(FeatureProvider::GetManifestFeature(name));
+}
+
+TEST(FeatureProviderTest, GetByNameWithNonNullTerminatedStringView) {
+  const std::string name_with_suffix = "manifest!";
+  const std::string_view name(name_with_suffix.data(),
+                              name_with_suffix.size() - 1);
+
+  EXPECT_EQ(FeatureProvider::GetManifestFeatures(),
+            FeatureProvider::GetByName(name));
+}
+
 // Tests that real manifest features have the correct availability for an
 // extension.
 TEST(FeatureProviderTest, ManifestFeatureAvailability) {

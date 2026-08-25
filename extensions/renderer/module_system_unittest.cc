@@ -7,10 +7,14 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/renderer/module_system_test.h"
+#include "gin/converter.h"
 
 namespace extensions {
 
@@ -55,6 +59,25 @@ class TestExceptionHandler : public ModuleSystem::ExceptionHandler {
   bool handled_exception_;
 };
 
+class ResourceNameExceptionHandler : public ModuleSystem::ExceptionHandler {
+ public:
+  explicit ResourceNameExceptionHandler(v8::Isolate* isolate)
+      : ModuleSystem::ExceptionHandler(nullptr), isolate_(isolate) {}
+
+  void HandleUncaughtException(const v8::TryCatch& try_catch) override {
+    v8::Local<v8::Message> message = try_catch.Message();
+    ASSERT_FALSE(message.IsEmpty());
+    resource_name_ =
+        gin::V8ToString(isolate_, message->GetScriptOrigin().ResourceName());
+  }
+
+  const std::string& resource_name() const { return resource_name_; }
+
+ private:
+  raw_ptr<v8::Isolate> isolate_;
+  std::string resource_name_;
+};
+
 TEST_F(ModuleSystemTest, TestExceptionHandling) {
   ModuleSystem::NativesEnabledScope natives_enabled_scope(
       env()->module_system());
@@ -67,6 +90,34 @@ TEST_F(ModuleSystemTest, TestExceptionHandling) {
   env()->module_system()->Require("test");
   ASSERT_TRUE(handler->handled_exception());
 
+  ExpectNoAssertionsMade();
+}
+
+TEST_F(ModuleSystemTest, OnNativeBindingCreatedAcceptsNonNullTerminatedName) {
+  const std::string name_with_suffix = "custom.suffix";
+  const std::string_view name(name_with_suffix.data(),
+                              std::string_view("custom").size());
+  env()->RegisterModule("custom", "throw new Error('expected');");
+
+  auto handler =
+      std::make_unique<ResourceNameExceptionHandler>(env()->isolate());
+  ResourceNameExceptionHandler* handler_ptr = handler.get();
+  env()->module_system()->SetExceptionHandlerForTest(std::move(handler));
+
+  env()->module_system()->OnNativeBindingCreated(
+      name, v8::Undefined(env()->isolate()));
+
+  EXPECT_EQ("extensions::custom", handler_ptr->resource_name());
+  ExpectNoAssertionsMade();
+}
+
+TEST_F(ModuleSystemTest, RequireAcceptsNonNullTerminatedName) {
+  const std::string name_with_suffix = "test.suffix";
+  const std::string_view name(name_with_suffix.data(),
+                              std::string_view("test").size());
+  env()->RegisterModule("test", "");
+
+  EXPECT_FALSE(env()->module_system()->Require(name).IsEmpty());
   ExpectNoAssertionsMade();
 }
 

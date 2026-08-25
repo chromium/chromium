@@ -159,8 +159,9 @@ std::string_view GetDisplayName(mojom::FeatureSessionType session_type) {
 
 // Gets a human-readable list of the display names (pluralized, comma separated
 // with the "and" in the correct place) for each of |enum_types|.
-template <typename EnumType>
-std::string ListDisplayNames(const std::vector<EnumType>& enum_types) {
+template <typename EnumType, size_t Extent, typename InternalPtrType>
+std::string ListDisplayNames(
+    base::span<const EnumType, Extent, InternalPtrType> enum_types) {
   std::string display_name_list;
   for (size_t i = 0; i < enum_types.size(); ++i) {
     // Pluralize type name.
@@ -371,16 +372,12 @@ std::string SimpleFeature::GetAvailabilityMessage(
     case AvailabilityResult::kInvalidType:
       return base::StringPrintf(
           "'%s' is only allowed for %s, but this is a %s.", name(),
-          ListDisplayNames(std::vector<Manifest::Type>(extension_types_.begin(),
-                                                       extension_types_.end())),
-          GetDisplayName(type));
+          ListDisplayNames(extension_types_), GetDisplayName(type));
     case AvailabilityResult::kInvalidContext:
       DCHECK(contexts_);
       return base::StringPrintf(
           "'%s' is only allowed to run in %s, but this is a %s", name(),
-          ListDisplayNames(std::vector<mojom::ContextType>(contexts_->begin(),
-                                                           contexts_->end())),
-          GetDisplayName(context));
+          ListDisplayNames(*contexts_), GetDisplayName(context));
     case AvailabilityResult::kInvalidLocation:
       return base::StringPrintf(
           "'%s' is not allowed for specified install location.", name());
@@ -400,9 +397,7 @@ std::string SimpleFeature::GetAvailabilityMessage(
     case AvailabilityResult::kInvalidSessionType:
       return base::StringPrintf(
           "'%s' is only allowed to run in %s sessions, but this is %s session.",
-          name(),
-          ListDisplayNames(std::vector<mojom::FeatureSessionType>(
-              session_types_.begin(), session_types_.end())),
+          name(), ListDisplayNames(session_types_),
           GetDisplayName(session_type));
     case AvailabilityResult::kNotPresent:
       return base::StringPrintf(

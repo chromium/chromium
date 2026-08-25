@@ -4,6 +4,7 @@
 
 #include "extensions/common/features/feature_provider.h"
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <string_view>
@@ -61,16 +62,18 @@ class FeatureProviderStatic {
   FeatureProviderStatic(const FeatureProviderStatic&) = delete;
   FeatureProviderStatic& operator=(const FeatureProviderStatic&) = delete;
 
-  const FeatureProvider* GetFeatures(const std::string& name) const {
+  const FeatureProvider* GetFeatures(std::string_view name) const {
     auto* provider = base::FindPtrOrNull(feature_providers_, name);
     if (!provider) {
-      CRASH_WITH_MINIDUMP("FeatureProvider \"" + name + "\" not found");
+      CRASH_WITH_MINIDUMP(
+          base::StrCat({"FeatureProvider \"", name, "\" not found"}));
     }
     return provider;
   }
 
  private:
-  std::map<std::string, std::unique_ptr<FeatureProvider>> feature_providers_;
+  std::map<std::string, std::unique_ptr<FeatureProvider>, std::less<>>
+      feature_providers_;
 };
 
 const FeatureProviderStatic& GetFeatureProviderStatic() {
@@ -78,8 +81,8 @@ const FeatureProviderStatic& GetFeatureProviderStatic() {
   return *instance;
 }
 
-const Feature* GetFeatureFromProviderByName(const std::string& provider_name,
-                                            const std::string& feature_name) {
+const Feature* GetFeatureFromProviderByName(std::string_view provider_name,
+                                            std::string_view feature_name) {
   const Feature* feature =
       FeatureProvider::GetByName(provider_name)->GetFeature(feature_name);
   // We should always refer to existing features, but we can't CHECK here
@@ -95,7 +98,7 @@ FeatureProvider::FeatureProvider() = default;
 FeatureProvider::~FeatureProvider() = default;
 
 // static
-const FeatureProvider* FeatureProvider::GetByName(const std::string& name) {
+const FeatureProvider* FeatureProvider::GetByName(std::string_view name) {
   return GetFeatureProviderStatic().GetFeatures(name);
 }
 
@@ -120,22 +123,22 @@ const FeatureProvider* FeatureProvider::GetBehaviorFeatures() {
 }
 
 // static
-const Feature* FeatureProvider::GetAPIFeature(const std::string& name) {
+const Feature* FeatureProvider::GetAPIFeature(std::string_view name) {
   return GetFeatureFromProviderByName("api", name);
 }
 
 // static
-const Feature* FeatureProvider::GetManifestFeature(const std::string& name) {
+const Feature* FeatureProvider::GetManifestFeature(std::string_view name) {
   return GetFeatureFromProviderByName("manifest", name);
 }
 
 // static
-const Feature* FeatureProvider::GetPermissionFeature(const std::string& name) {
+const Feature* FeatureProvider::GetPermissionFeature(std::string_view name) {
   return GetFeatureFromProviderByName("permission", name);
 }
 
 // static
-const Feature* FeatureProvider::GetBehaviorFeature(const std::string& name) {
+const Feature* FeatureProvider::GetBehaviorFeature(std::string_view name) {
   return GetFeatureFromProviderByName("behavior", name);
 }
 
