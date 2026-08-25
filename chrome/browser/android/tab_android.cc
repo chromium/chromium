@@ -167,9 +167,6 @@ TabAndroid::TabAndroid(JNIEnv* env,
                        int tab_id)
     : tab_id_(tab_id),
       session_window_id_(SessionID::InvalidValue()),
-      content_layer_(cc::slim::Layer::Create()),
-      synced_tab_delegate_(
-          std::make_unique<browser_sync::SyncedTabDelegateAndroid>(this)),
       profile_(profile->GetWeakPtr()) {
   Java_TabImpl_setNativePtr(env, obj, reinterpret_cast<intptr_t>(this));
 }
@@ -178,7 +175,9 @@ TabAndroid::~TabAndroid() {
   CHECK(!parent_collection_)
       << "TabAndroid destroyed while still in a TabCollection!";
   JNIEnv* env = AttachCurrentThread();
-  GetContentLayer()->RemoveAllChildren();
+  if (content_layer_) {
+    content_layer_->RemoveAllChildren();
+  }
   const jni_zero::JavaRef<jobject>& obj = GetJavaObject(env);
   if (obj) {
     Java_TabImpl_clearNativePtr(env, obj);
@@ -190,7 +189,10 @@ std::unique_ptr<TabAndroid> TabAndroid::CreateForTesting(
     Profile* profile,
     int tab_id,
     std::unique_ptr<content::WebContents> web_contents) {
-  night_mode::WebContentsThemeClient::CreateForWebContents(web_contents.get());
+  if (web_contents) {
+    night_mode::WebContentsThemeClient::CreateForWebContents(
+        web_contents.get());
+  }
   auto tab = base::WrapUnique(new TabAndroid(profile, tab_id));
   tab->web_contents_ = std::move(web_contents);
   if (tab->web_contents_) {
@@ -233,7 +235,14 @@ base::android::ScopedJavaLocalRef<jobject> TabAndroid::GetJavaObject() const {
   return GetJavaObject(AttachCurrentThread());
 }
 
-scoped_refptr<cc::slim::Layer> TabAndroid::GetContentLayer() const {
+scoped_refptr<cc::slim::Layer> TabAndroid::GetContentLayer() {
+  if (!content_layer_) {
+    content_layer_ = cc::slim::Layer::Create();
+    if (web_contents_) {
+      content_layer_->InsertChild(web_contents_->GetNativeView()->GetLayer(),
+                                  0);
+    }
+  }
   return content_layer_;
 }
 
@@ -267,7 +276,14 @@ bool TabAndroid::IsOffscreenRendering() const {
   return Java_TabImpl_isOffscreenRendering(env, GetJavaObject(env));
 }
 
-sync_sessions::SyncedTabDelegate* TabAndroid::GetSyncedTabDelegate() const {
+sync_sessions::SyncedTabDelegate* TabAndroid::GetSyncedTabDelegate() {
+  if (!synced_tab_delegate_) {
+    synced_tab_delegate_ =
+        std::make_unique<browser_sync::SyncedTabDelegateAndroid>(this);
+    if (web_contents_) {
+      synced_tab_delegate_->SetWebContents(web_contents_.get());
+    }
+  }
   return synced_tab_delegate_.get();
 }
 
@@ -351,6 +367,7 @@ void TabAndroid::Destroy() {
 void TabAndroid::AttachWebContentsToContentLayer(
     JNIEnv* env,
     content::WebContents* web_contents) {
+  CHECK(web_contents);
   GetContentLayer()->InsertChild(web_contents->GetNativeView()->GetLayer(), 0);
 }
 
@@ -411,7 +428,9 @@ void TabAndroid::InitWebContents(
   ContextMenuHelper::FromWebContents(web_contents())
       ->SetPopulatorFactory(jcontext_menu_populator_factory);
 
-  synced_tab_delegate_->SetWebContents(web_contents());
+  if (synced_tab_delegate_) {
+    synced_tab_delegate_->SetWebContents(web_contents());
+  }
 
   // Verify that the WebContents this tab represents matches the expected
   // off the record state.
@@ -420,7 +439,9 @@ void TabAndroid::InitWebContents(
   if (is_background_tab) {
     BackgroundTabManager::CreateForWebContents(web_contents(), profile());
   }
-  content_layer_->InsertChild(web_contents_->GetNativeView()->GetLayer(), 0);
+  if (content_layer_) {
+    content_layer_->InsertChild(web_contents_->GetNativeView()->GetLayer(), 0);
+  }
 
   // Shows a warning notification for dangerous flags in about:flags.
   ShowBadFlagsPrompt(web_contents());
@@ -544,11 +565,11 @@ void TabAndroid::SendWillDetachUpdate(JNIEnv* env, int32_t detach_reason) {
 namespace {
 void WillRemoveWebContentsFromTab(content::WebContents* contents,
                                   bool clear_delegate) {
-  DCHECK(contents);
-
-  if (contents->GetNativeView()) {
-    contents->GetNativeView()->GetLayer()->RemoveFromParent();
+  if (!contents) {
+    return;
   }
+
+  contents->GetNativeView()->GetLayer()->RemoveFromParent();
 
   if (clear_delegate) {
     contents->SetDelegate(nullptr);
@@ -716,7 +737,10 @@ tabs::TabDestroyStatus TabAndroid::DestroyWebContents() {
   tab_alert_controller_.reset();
   tab_features_.reset();
   web_contents_.reset();
-  synced_tab_delegate_->ResetWebContents();
+  if (synced_tab_delegate_) {
+    synced_tab_delegate_->ResetWebContents();
+  }
+  content_layer_.reset();
 
   return tabs::TabDestroyStatus::FAST_SHUTDOWN;
 }
@@ -740,6 +764,12 @@ void TabAndroid::ReleaseWebContents() {
       .release();
 }
 
+std::unique_ptr<content::WebContents>
+TabAndroid::ReleaseWebContentsForTesting() {
+  return ReleaseWebContentsInternal(/*keep_session_id=*/false,
+                                    /*clear_delegate=*/true);
+}
+
 std::unique_ptr<content::WebContents> TabAndroid::ReleaseWebContentsInternal(
     bool keep_session_id,
     bool clear_delegate) {
@@ -761,7 +791,10 @@ std::unique_ptr<content::WebContents> TabAndroid::ReleaseWebContentsInternal(
     ClearSessionId();
   }
 
-  synced_tab_delegate_->ResetWebContents();
+  if (synced_tab_delegate_) {
+    synced_tab_delegate_->ResetWebContents();
+  }
+  content_layer_.reset();
   return released_contents;
 }
 
@@ -1109,9 +1142,6 @@ const ui::UnownedUserDataHost& TabAndroid::GetUnownedUserDataHost() const {
 TabAndroid::TabAndroid(Profile* profile, int tab_id)
     : tab_id_(tab_id),
       session_window_id_(SessionID::InvalidValue()),
-      content_layer_(cc::slim::Layer::Create()),
-      synced_tab_delegate_(
-          std::make_unique<browser_sync::SyncedTabDelegateAndroid>(this)),
       profile_(profile->GetWeakPtr()) {
   CHECK_IS_TEST();
 }

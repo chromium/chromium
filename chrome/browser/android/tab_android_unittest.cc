@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "cc/slim/layer.h"
 #include "chrome/android/chrome_jni_headers/TabAndroidTestHelper_jni.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -32,6 +33,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/actor/core/actor_features.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
+#include "components/sync_sessions/synced_tab_delegate.h"
 #include "components/tabs/public/pinned_tab_collection.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
@@ -46,6 +48,7 @@
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/android/view_android.h"
 
 namespace {
 constexpr int kTabId = 1;
@@ -102,6 +105,7 @@ class TabAndroidTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
 
   raw_ptr<JNIEnv> env_ = nullptr;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
@@ -237,8 +241,6 @@ class GlicTabAndroidTest : public TabAndroidTest {
 };
 
 TEST_F(GlicTabAndroidTest, IsWebContentsCreationOverridden_GlicSandboxCheck) {
-  content::RenderViewHostTestEnabler rvh_test_enabler;
-
   // Create a WebContents.
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(
@@ -317,8 +319,138 @@ TEST_F(TabAndroidTest, Getters) {
   EXPECT_LT(base::Time::UnixEpoch(), last_active_time);
 }
 
+TEST_F(TabAndroidTest, LazyInitialization) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile_.get()));
+  content::WebContents* raw_web_contents = web_contents.get();
+  std::unique_ptr<TabAndroid> tab = TabAndroid::CreateForTesting(
+      profile_.get(), kTabId + 1, std::move(web_contents));
+
+  // SyncedTabDelegate is lazily initialized on first access.
+  sync_sessions::SyncedTabDelegate* synced_tab_delegate =
+      tab->GetSyncedTabDelegate();
+  ASSERT_NE(nullptr, synced_tab_delegate);
+  EXPECT_EQ(synced_tab_delegate, tab->GetSyncedTabDelegate());
+  EXPECT_FALSE(synced_tab_delegate->IsPlaceholderTab());
+
+  // ContentLayer is lazily initialized on first access and parents the
+  // WebContents native view layer.
+  scoped_refptr<cc::slim::Layer> content_layer = tab->GetContentLayer();
+  ASSERT_NE(nullptr, content_layer);
+  EXPECT_EQ(content_layer, tab->GetContentLayer());
+  ASSERT_EQ(1u, content_layer->children().size());
+  EXPECT_EQ(raw_web_contents->GetNativeView()->GetLayer(),
+            content_layer->children()[0]);
+
+  // Releasing web contents resets content_layer_ and delegate.
+  std::unique_ptr<content::WebContents> released_contents =
+      tab->ReleaseWebContentsForTesting();
+
+  // Next call to GetContentLayer lazily recreates the layer with no children.
+  scoped_refptr<cc::slim::Layer> new_content_layer = tab->GetContentLayer();
+  ASSERT_NE(nullptr, new_content_layer);
+  EXPECT_NE(content_layer, new_content_layer);
+  EXPECT_TRUE(new_content_layer->children().empty());
+
+  // SyncedTabDelegate remains functional with null WebContents and becomes
+  // a placeholder tab.
+  EXPECT_NE(nullptr, tab->GetSyncedTabDelegate());
+  EXPECT_TRUE(tab->GetSyncedTabDelegate()->IsPlaceholderTab());
+}
+
+TEST_F(TabAndroidTest, DestroyWebContentsResetsContentLayerAndPlaceholder) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile_.get()));
+  content::WebContents* raw_web_contents = web_contents.get();
+  std::unique_ptr<TabAndroid> tab = TabAndroid::CreateForTesting(
+      profile_.get(), kTabId + 1, std::move(web_contents));
+
+  sync_sessions::SyncedTabDelegate* synced_tab_delegate =
+      tab->GetSyncedTabDelegate();
+  ASSERT_NE(nullptr, synced_tab_delegate);
+  EXPECT_FALSE(synced_tab_delegate->IsPlaceholderTab());
+
+  scoped_refptr<cc::slim::Layer> content_layer = tab->GetContentLayer();
+  ASSERT_NE(nullptr, content_layer);
+  ASSERT_EQ(1u, content_layer->children().size());
+  EXPECT_EQ(raw_web_contents->GetNativeView()->GetLayer(),
+            content_layer->children()[0]);
+
+  // Destroying WebContents resets content_layer_ and resets WebContents on
+  // SyncedTabDelegate.
+  tab->DestroyWebContents();
+
+  // SyncedTabDelegate now reports as a placeholder tab.
+  EXPECT_TRUE(synced_tab_delegate->IsPlaceholderTab());
+
+  // Next call to GetContentLayer creates an empty layer.
+  scoped_refptr<cc::slim::Layer> new_content_layer = tab->GetContentLayer();
+  ASSERT_NE(nullptr, new_content_layer);
+  EXPECT_NE(content_layer, new_content_layer);
+  EXPECT_TRUE(new_content_layer->children().empty());
+}
+
+TEST_F(TabAndroidTest, ReverseInitializationOrder) {
+  // 1. Create tab without WebContents.
+  std::unique_ptr<TabAndroid> tab =
+      TabAndroid::CreateForTesting(profile_.get(), kTabId + 2, nullptr);
+
+  // 2. SyncedTabDelegate is lazily created and reports as a placeholder tab.
+  sync_sessions::SyncedTabDelegate* sync_delegate = tab->GetSyncedTabDelegate();
+  ASSERT_NE(nullptr, sync_delegate);
+  EXPECT_TRUE(sync_delegate->IsPlaceholderTab());
+
+  // 3. ContentLayer is lazily created and has no child layers.
+  scoped_refptr<cc::slim::Layer> content_layer = tab->GetContentLayer();
+  ASSERT_NE(nullptr, content_layer);
+  EXPECT_TRUE(content_layer->children().empty());
+
+  // 4. Attach a WebContents layer and verify layer hierarchy parenting.
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile_.get()));
+  content::WebContents* raw_web_contents = web_contents.get();
+  tab->AttachWebContentsToContentLayer(nullptr, raw_web_contents);
+
+  ASSERT_EQ(1u, content_layer->children().size());
+  EXPECT_EQ(raw_web_contents->GetNativeView()->GetLayer(),
+            content_layer->children()[0]);
+
+  // 5. Test idempotency of AttachWebContentsToContentLayer.
+  tab->AttachWebContentsToContentLayer(nullptr, raw_web_contents);
+  ASSERT_EQ(1u, content_layer->children().size());
+  EXPECT_EQ(raw_web_contents->GetNativeView()->GetLayer(),
+            content_layer->children()[0]);
+
+  // 6. Test placeholder transition and layer reset on destruction/release
+  // with a tab holding WebContents.
+  std::unique_ptr<content::WebContents> web_contents2 =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile_.get()));
+  content::WebContents* raw_web_contents2 = web_contents2.get();
+  std::unique_ptr<TabAndroid> tab_with_contents = TabAndroid::CreateForTesting(
+      profile_.get(), kTabId + 3, std::move(web_contents2));
+
+  EXPECT_FALSE(tab_with_contents->GetSyncedTabDelegate()->IsPlaceholderTab());
+  scoped_refptr<cc::slim::Layer> layer2 = tab_with_contents->GetContentLayer();
+  ASSERT_NE(nullptr, layer2);
+  ASSERT_EQ(1u, layer2->children().size());
+  EXPECT_EQ(raw_web_contents2->GetNativeView()->GetLayer(),
+            layer2->children()[0]);
+
+  std::unique_ptr<content::WebContents> released_contents =
+      tab_with_contents->ReleaseWebContentsForTesting();
+  EXPECT_TRUE(tab_with_contents->GetSyncedTabDelegate()->IsPlaceholderTab());
+  scoped_refptr<cc::slim::Layer> reset_layer =
+      tab_with_contents->GetContentLayer();
+  ASSERT_NE(nullptr, reset_layer);
+  EXPECT_NE(layer2, reset_layer);
+  EXPECT_TRUE(reset_layer->children().empty());
+}
+
 TEST_F(TabAndroidTest, DestroyWebContentsWithOpenDialog_GracefulShutdown) {
-  content::RenderViewHostTestEnabler rvh_test_enabler;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       chrome::android::kTabAndroidGracefulShutdown);
@@ -355,7 +487,6 @@ TEST_F(TabAndroidTest, DestroyWebContentsWithOpenDialog_GracefulShutdown) {
 }
 
 TEST_F(TabAndroidTest, DestroyWebContentsSlowShutdown_StopsNavigations) {
-  content::RenderViewHostTestEnabler rvh_test_enabler;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       chrome::android::kTabAndroidGracefulShutdown);
@@ -393,7 +524,6 @@ class ObserverUAFTestObserver : public content::WebContentsObserver {
 }  // namespace
 
 TEST_F(TabAndroidTest, GracefulShutdownNavigationObserverSafety) {
-  content::RenderViewHostTestEnabler rvh_test_enabler;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       chrome::android::kTabAndroidGracefulShutdown);
@@ -420,7 +550,6 @@ TEST_F(TabAndroidTest, GracefulShutdownNavigationObserverSafety) {
 
 TEST_F(TabAndroidTest,
        DestroyWebContentsSlowShutdown_ImmediateDestructionOnProfileShutdown) {
-  content::RenderViewHostTestEnabler rvh_test_enabler;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       chrome::android::kTabAndroidGracefulShutdown);

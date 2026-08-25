@@ -6209,6 +6209,7 @@ test("unit_tests") {
     deps += [
       ":test_support_java",
       ":test_support_jni_headers",
+      "//cc/slim",
       "//chrome:chrome_android_core",
       "//chrome/android:chrome_apk_paks",
       "//chrome/android:chrome_java",

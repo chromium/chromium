@@ -133,7 +133,7 @@ class TabAndroid : public tabs::TabInterface,
   content::WebContents* web_contents() const { return web_contents_.get(); }
 
   // Return the cc::slim::Layer that represents the content for this TabAndroid.
-  scoped_refptr<cc::slim::Layer> GetContentLayer() const;
+  scoped_refptr<cc::slim::Layer> GetContentLayer();
 
   // Return the Profile* associated with this TabAndroid instance, or null, if
   // the profile no longer exists.
@@ -153,7 +153,7 @@ class TabAndroid : public tabs::TabInterface,
   // Return whether the tab is currently being used for offscreen rendering.
   bool IsOffscreenRendering() const;
 
-  sync_sessions::SyncedTabDelegate* GetSyncedTabDelegate() const;
+  sync_sessions::SyncedTabDelegate* GetSyncedTabDelegate();
 
   // Whether this tab is an incognito tab. Prefer
   // `profile()->IsOffTheRecord()` unless `web_contents()` is nullptr.
@@ -218,6 +218,7 @@ class TabAndroid : public tabs::TabInterface,
   tabs::TabDestroyStatus DestroyWebContents();
   tabs::TabDestroyStatus DestroyWebContentsSlowShutdownForTesting();
   void ReleaseWebContents();
+  std::unique_ptr<content::WebContents> ReleaseWebContentsForTesting();
 
   // Properly releases the WebContents from both native and Java sides. Should
   // be called only when the tab has been removed from the tab model.
