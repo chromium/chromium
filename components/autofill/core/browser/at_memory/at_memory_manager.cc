@@ -437,9 +437,7 @@ void AtMemoryManager::OnPopupShown(
         form ? form->form_signature() : FormSignature(0);
     const FieldSignature field_signature =
         field ? field->GetFieldSignature() : FieldSignature(0);
-    if (field) {
-      target_field_origin_ = field->origin();
-    }
+    target_field_origin_ = field ? field->origin() : url::Origin();
     popup_state_.emplace();
     popup_state_->trigger_source = trigger_source;
     popup_state_->update_callback = std::move(update_callback);

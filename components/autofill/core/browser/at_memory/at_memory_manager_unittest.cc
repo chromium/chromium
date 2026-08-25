@@ -2568,8 +2568,8 @@ TEST_P(AtMemoryManagerTest, OnPopupShown_SubPopup_NoCrashWhenRecorderMovedOut) {
   EXPECT_EQ(test_api(manager()).at_memory_metrics_recorder(), nullptr);
 }
 
-// Tests that when a field is not in the cache, the target field origin
-// is used when filling sensitive data.
+// Tests that when a field is not in the cache, the target field origin is
+// reset and filling sensitive data falls back to the primary main frame origin.
 TEST_P(AtMemoryManagerTest,
        FillSensitiveData_UncachedField_UsesTargetFieldOrigin) {
   // Form and field not added to autofill_manager() cache.
@@ -2605,7 +2605,9 @@ TEST_P(AtMemoryManagerTest,
   EXPECT_CALL(
       mock_query_service(),
       AuthenticateAndFetchPiiEntity(
-          Ref(autofill_client()), GetAuthenticationMessage(form_origin()),
+          Ref(autofill_client()),
+          GetAuthenticationMessage(
+              autofill_client().GetLastCommittedPrimaryMainFrameOrigin()),
           std::u16string_view(u"1234"), MemoryDataType::kPassportNumber, _, _))
       .WillOnce(RunOnceCallback<5>(u"1234"));
 
