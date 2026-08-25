@@ -802,21 +802,20 @@ BASE_FEATURE(kForestFeature, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the new backend (uses `viz::ClientResourceProvider` +
 // `cc::ResourcePool`) for FrameSinkHost.
-BASE_FEATURE(kFrameSinkHostNewBackend, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFrameSinkHostNewBackend, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the new backend for `ViewTreeHostRootView` backend.
-BASE_FEATURE(kViewTreeHostRootViewNewBackend,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kViewTreeHostRootViewNewBackend, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the new backend for `FastInkHost` backend.
-BASE_FEATURE(kFastInkHostNewBackend, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFastInkHostNewBackend, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables low priority hint instead of overlay candidate override in
 // `FastInkHost`.
 BASE_FEATURE(kFastInkHostLowPriorityHint, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the new backend for `RoundedDisplayHost` backend.
-BASE_FEATURE(kRoundedDisplayHostNewBackend, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kRoundedDisplayHostNewBackend, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, there will be an alert bubble showing up when the device
 // returns from low brightness (e.g., sleep, closed cover) without a lock screen
