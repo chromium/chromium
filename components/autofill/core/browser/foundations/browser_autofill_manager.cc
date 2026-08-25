@@ -1060,7 +1060,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   auto [form_structure, autofill_field] =
       FindMutableFormAndField(form.global_id(), field_id);
 
-  if (password_request.has_value()) {
+  if (password_request.has_value() &&
+      !IsAtMemoryTriggerSource(trigger_source)) {
     if (PasswordManagerDelegate* password_delegate =
             client().GetPasswordManagerDelegate(field_id)) {
       // This block implements the following behavior: For an <input
