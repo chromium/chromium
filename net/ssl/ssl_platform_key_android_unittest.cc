@@ -69,6 +69,12 @@ const TestKey kTestKeys[] = {
     {"ECDSA_P256", "client_p256.pem", "client_p256.pk8", EVP_PKEY_EC, "EC"},
     {"ECDSA_P384", "client_p384.pem", "client_p384.pk8", EVP_PKEY_EC, "EC"},
     {"ECDSA_P521", "client_p521.pem", "client_p521.pk8", EVP_PKEY_EC, "EC"},
+    {"MLDSA44", "client_mldsa44.pem", "client_mldsa44.pk8", EVP_PKEY_ML_DSA_44,
+     "ML-DSA-44"},
+    {"MLDSA65", "client_mldsa65.pem", "client_mldsa65.pk8", EVP_PKEY_ML_DSA_65,
+     "ML-DSA-65"},
+    {"MLDSA87", "client_mldsa87.pem", "client_mldsa87.pk8", EVP_PKEY_ML_DSA_87,
+     "ML-DSA-87"},
 };
 
 std::string TestKeyToString(const testing::TestParamInfo<TestKey>& params) {
@@ -82,6 +88,17 @@ class SSLPlatformKeyAndroidTest : public testing::TestWithParam<TestKey>,
 
 TEST_P(SSLPlatformKeyAndroidTest, Matches) {
   const TestKey& test_key = GetParam();
+  if (base::android::android_info::sdk_int_full() <
+          base::android::android_info::SDK_VERSION_FULL_BAKLAVA_1 &&
+      (test_key.type == EVP_PKEY_ML_DSA_65 ||
+       test_key.type == EVP_PKEY_ML_DSA_87)) {
+    GTEST_SKIP() << "Android added ML-DSA-65 in API level 36.1";
+  }
+  // TODO(crbug.com/536164653): When ML-DSA-44 is shipped, add the appropriate
+  // SDK check here. For now, we just skip the test.
+  if (test_key.type == EVP_PKEY_ML_DSA_44) {
+    GTEST_SKIP() << "Android has not yet added ML-DSA-44 in a release";
+  }
 
   scoped_refptr<X509Certificate> cert =
       ImportCertFromFile(GetTestCertsDirectory(), test_key.cert_file);
@@ -110,6 +127,17 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(SSLPlatformKeyAndroidTest, MatchesPublicKey) {
   const TestKey& test_key = GetParam();
+  if (base::android::android_info::sdk_int_full() <
+          base::android::android_info::SDK_VERSION_FULL_BAKLAVA_1 &&
+      (test_key.type == EVP_PKEY_ML_DSA_65 ||
+       test_key.type == EVP_PKEY_ML_DSA_87)) {
+    GTEST_SKIP() << "Android added ML-DSA-65 in API level 36.1";
+  }
+  // TODO(crbug.com/536164653): When ML-DSA-44 is shipped, add the appropriate
+  // SDK check here. For now, we just skip the test.
+  if (test_key.type == EVP_PKEY_ML_DSA_44) {
+    GTEST_SKIP() << "Android has not yet added ML-DSA-44 in a release";
+  }
 
   scoped_refptr<X509Certificate> cert =
       ImportCertFromFile(GetTestCertsDirectory(), test_key.cert_file);
