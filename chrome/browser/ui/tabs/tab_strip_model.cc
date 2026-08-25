@@ -4829,6 +4829,18 @@ std::unique_ptr<tabs::TabModel> TabStripModel::RemoveTabFromIndexImpl(
     tab_to_remove->DestroyTabFeatures();
   }
 
+  // If a tab is removed that does not belong to the focused group (and is not
+  // a pinned tab allowed in focus mode), drop focus mode.
+  std::optional<tab_groups::TabGroupId> focused_group = GetFocusedGroup();
+  if (focused_group.has_value() &&
+      !tabs::TabStripModelSelectionState::IsTabValidInFocusedGroup(
+          tab_to_remove, focused_group)) {
+    base::UmaHistogramEnumeration(
+        "TabGroups.Focus.ExitReason",
+        TabGroupFocusExitReason::kTabOutsideGroupClosed);
+    SetFocusedGroup(std::nullopt);
+  }
+
   std::optional<tab_groups::TabGroupId> old_focused_group =
       selection_model_.focused_group();
 

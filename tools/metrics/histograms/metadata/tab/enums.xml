@@ -439,6 +439,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Active tab unpinned"/>
   <int value="6" label="Tab group header dragged into window"/>
   <int value="7" label="Active tab group changed or ungrouped"/>
+  <int value="8" label="Tab outside focused group closed"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/tab_enums.h:TabGroupFocusExitReason) -->
