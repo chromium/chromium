@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 chrome.runtime.sendNativeMessage(
-    'org.chromium.chrome.tests.support', {text: 'hello'}, (response) => {
+    {application: 'org.chromium.chrome.tests.support'}, {text: 'hello'},
+    (response) => {
       if (chrome.runtime.lastError) {
         chrome.test.sendMessage(`error: ${chrome.runtime.lastError.message}`);
       } else if (response && response.echo && response.echo.text === 'hello') {

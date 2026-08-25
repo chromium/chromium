@@ -10,6 +10,8 @@
 #include "base/containers/span.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/expected.h"
+#include "build/build_config.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/api/messaging/message.h"
@@ -221,6 +223,44 @@ mojom::SerializationFormat GetSerializationFormat(
                                                 channel_type);
 }
 
+base::expected<std::string, std::string> GetNativeApplicationName(
+    ScriptContext* script_context,
+    v8::Local<v8::Value> target_arg) {
+  v8::Isolate* isolate = script_context->isolate();
+
+  if (target_arg->IsString()) {
+#if BUILDFLAG(IS_ANDROID)
+    const Extension* extension = script_context->extension();
+    CHECK(extension);
+
+    if (!Manifest::IsUnpackedLocation(extension->location())) {
+      return base::unexpected(
+          "Native messaging on Android requires packed extensions to specify a "
+          "NativeMessageTarget object.");
+    }
+#endif
+    return base::ok(gin::V8ToString(isolate, target_arg));
+  }
+
+  if (target_arg->IsObject()) {
+    // TODO(crbug.com/515159909): Extract 'androidCertificates' and verify they
+    // are non-empty for packed extensions on Android.
+    v8::Local<v8::Context> v8_context = script_context->v8_context();
+    v8::Local<v8::Object> target_object = target_arg.As<v8::Object>();
+    v8::Local<v8::Value> application_val;
+    if (!target_object->Get(v8_context, gin::StringToV8(isolate, "application"))
+             .ToLocal(&application_val) ||
+        !application_val->IsString()) {
+      return base::unexpected(
+          "Native messaging requires a valid 'application' string in the "
+          "target object.");
+    }
+    return base::ok(gin::V8ToString(isolate, application_val));
+  }
+
+  return base::unexpected("Invalid native messaging target.");
+}
+
 }  // namespace
 
 RuntimeHooksDelegate::RuntimeHooksDelegate(
@@ -427,14 +467,19 @@ RequestResult RuntimeHooksDelegate::HandleSendNativeMessage(
   const v8::LocalVector<v8::Value>& arguments = *parse_result.arguments;
   DCHECK_EQ(3u, arguments.size());
 
-  std::string application_name =
-      gin::V8ToString(script_context->isolate(), arguments[0]);
+  base::expected<std::string, std::string> application_name =
+      GetNativeApplicationName(script_context, arguments[0]);
+  if (!application_name.has_value()) {
+    RequestResult result(RequestResult::INVALID_INVOCATION);
+    result.error = std::move(application_name.error());
+    return result;
+  }
 
   v8::Local<v8::Value> v8_message = arguments[1];
   DCHECK(!v8_message.IsEmpty());
-  std::string error;
 
   mojom::ChannelType channel_type = mojom::ChannelType::kNative;
+  std::string error;
   std::optional<Message> message = messaging_util::MessageFromV8(
       script_context->v8_context(), v8_message,
       messaging_util::GetSerializationFormat(script_context->extension(),
@@ -451,7 +496,7 @@ RequestResult RuntimeHooksDelegate::HandleSendNativeMessage(
     response_callback = arguments[2].As<v8::Function>();
 
   v8::Local<v8::Promise> promise = messaging_service_->SendOneTimeMessage(
-      script_context, MessageTarget::ForNativeApp(application_name),
+      script_context, MessageTarget::ForNativeApp(*application_name),
       channel_type, std::move(*message), parse_result.async_type,
       response_callback);
   DCHECK_EQ(parse_result.async_type == binding::AsyncResponseType::kPromise,
@@ -509,14 +554,18 @@ RequestResult RuntimeHooksDelegate::HandleConnectNative(
     const APISignature::V8ParseResult& parse_result) {
   const v8::LocalVector<v8::Value>& arguments = *parse_result.arguments;
   DCHECK_EQ(1u, arguments.size());
-  DCHECK(arguments[0]->IsString());
   DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
 
-  std::string application_name =
-      gin::V8ToString(script_context->isolate(), arguments[0]);
+  base::expected<std::string, std::string> application_name =
+      GetNativeApplicationName(script_context, arguments[0]);
+  if (!application_name.has_value()) {
+    RequestResult result(RequestResult::INVALID_INVOCATION);
+    result.error = std::move(application_name.error());
+    return result;
+  }
 
   GinPort* port = messaging_service_->Connect(
-      script_context, MessageTarget::ForNativeApp(application_name),
+      script_context, MessageTarget::ForNativeApp(*application_name),
       std::string(),
       messaging_util::GetSerializationFormat(script_context->extension(),
                                              mojom::ChannelType::kNative));

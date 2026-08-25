@@ -82,7 +82,8 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingAndroidApiTest,
         const expectedError =
             'Unable to connect to org.chromium.chrome.tests.support.';
 
-        chrome.runtime.sendNativeMessage(APP_NAME, {text: 'hello'},
+        chrome.runtime.sendNativeMessage(
+            APP_NAME, {text: 'hello'},
             chrome.test.callbackFail(expectedError, function(response) {
               chrome.test.assertEq(undefined, response);
             }));

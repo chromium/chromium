@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -418,12 +419,17 @@ TEST_F(RuntimeHooksDelegateNativeMessagingTest, ConnectNative) {
   };
 
   run_connect_native("'native_app'", "native_app");
-  run_connect_native("'some_other_native_app'", "some_other_native_app");
+  run_connect_native("{application: 'com.example.app'}", "com.example.app");
+  run_connect_native(
+      "{application: 'com.example.app', androidCertificates: ['cert1']}",
+      "com.example.app");
 
   auto connect_native_error = [context](std::string_view args) {
     CallAPIAndExpectError(context, "connectNative", args);
   };
   connect_native_error("'native_app', {name: 'name'}");
+  connect_native_error("{androidCertificates: ['cert1']}");
+  connect_native_error("{application: 123}");
 }
 
 TEST_F(RuntimeHooksDelegateNativeMessagingTest, SendNativeMessage) {
@@ -438,6 +444,12 @@ TEST_F(RuntimeHooksDelegateNativeMessagingTest, SendNativeMessage) {
   tester.TestSendNativeMessage(
       "'another_native_app', {alpha: 2}, function() {}", R"({"alpha":2})",
       "another_native_app");
+  tester.TestSendNativeMessage("{application: 'com.example.app'}, {hi:'bye'}",
+                               R"({"hi":"bye"})", "com.example.app");
+  tester.TestSendNativeMessage(
+      "{application: 'com.example.app', androidCertificates: ['cert1']}, "
+      "{hi:'bye'}",
+      R"({"hi":"bye"})", "com.example.app");
 
   auto send_native_message_error = [context](std::string_view args) {
     CallAPIAndExpectError(context, "sendNativeMessage", args);
@@ -446,6 +458,8 @@ TEST_F(RuntimeHooksDelegateNativeMessagingTest, SendNativeMessage) {
   send_native_message_error("{data: 'hi'}, function() {}");
   send_native_message_error(
       "'native_app', 'some message', {includeTlsChannelId: true}");
+  send_native_message_error("{androidCertificates: ['cert1']}, {data: 'hi'}");
+  send_native_message_error("{application: 123}, {data: 'hi'}");
 }
 
 class RuntimeHooksDelegateMV3Test : public RuntimeHooksDelegateTest {
@@ -611,8 +625,8 @@ TEST_F(RuntimeHooksDelegateNativeMessagingMV3Test, SendNativeMessage) {
                            "runtime");
 
   {
-    // Calling sendNativeMessage without the callback should result in a promise
-    // returned.
+    // Calling sendNativeMessage with string target and without callback should
+    // result in a promise returned.
     v8::Local<v8::Value> result = tester.TestSendNativeMessage(
         "'native_app', {hi:'bye'}", R"({"hi":"bye"})", "native_app");
     v8::Local<v8::Promise> promise;
@@ -621,11 +635,32 @@ TEST_F(RuntimeHooksDelegateNativeMessagingMV3Test, SendNativeMessage) {
   }
 
   {
-    // Calling sendNativeMessage with a callback should result in no value
-    // returned.
+    // Calling sendNativeMessage with string target and callback should result
+    // in no value returned.
     v8::Local<v8::Value> result = tester.TestSendNativeMessage(
         "'another_native_app', {alpha: 2}, function() {}", R"({"alpha":2})",
         "another_native_app");
+    EXPECT_TRUE(result->IsUndefined());
+  }
+
+  {
+    // Calling sendNativeMessage with object target and without callback should
+    // result in a promise returned.
+    v8::Local<v8::Value> result = tester.TestSendNativeMessage(
+        "{application: 'com.example.app'}, {hi:'bye'}", R"({"hi":"bye"})",
+        "com.example.app");
+    v8::Local<v8::Promise> promise;
+    ASSERT_TRUE(GetValueAs(result, &promise));
+    EXPECT_EQ(v8::Promise::kPending, promise->State());
+  }
+
+  {
+    // Calling sendNativeMessage with object target and callback should result
+    // in no value returned.
+    v8::Local<v8::Value> result = tester.TestSendNativeMessage(
+        "{application: 'another_app', androidCertificates: ['cert1']}, "
+        "{alpha: 2}, function() {}",
+        R"({"alpha":2})", "another_app");
     EXPECT_TRUE(result->IsUndefined());
   }
 
@@ -637,6 +672,47 @@ TEST_F(RuntimeHooksDelegateNativeMessagingMV3Test, SendNativeMessage) {
   send_native_message_error("{data: 'hi'}, function() {}");
   send_native_message_error(
       "'native_app', 'some message', {includeTlsChannelId: true}");
+  send_native_message_error("{androidCertificates: ['cert1']}, {data: 'hi'}");
+  send_native_message_error("{application: 123}, {data: 'hi'}");
+}
+
+class RuntimeHooksDelegatePackedNativeMessagingMV3Test
+    : public RuntimeHooksDelegateNativeMessagingMV3Test {
+ public:
+  scoped_refptr<const Extension> BuildExtension() override {
+    return ExtensionBuilder("foo")
+        .SetLocation(mojom::ManifestLocation::kInternal)
+        .SetManifestKey("manifest_version", 3)
+        .AddAPIPermission("nativeMessaging")
+        .Build();
+  }
+};
+
+TEST_F(RuntimeHooksDelegatePackedNativeMessagingMV3Test, SendNativeMessage) {
+  v8::HandleScope handle_scope(isolate());
+  SendMessageTester tester(ipc_message_sender(), script_context(), 0,
+                           "runtime");
+
+#if BUILDFLAG(IS_ANDROID)
+  // Packed extensions on Android must use the object target format.
+  CallAPIAndExpectError(MainContext(), "sendNativeMessage",
+                        "'native_app', {hi:'bye'}");
+
+  // Calling with an object should succeed on Android.
+  v8::Local<v8::Value> result = tester.TestSendNativeMessage(
+      "{application: 'com.example.app'}, {hi:'bye'}", R"({"hi":"bye"})",
+      "com.example.app");
+  v8::Local<v8::Promise> promise;
+  ASSERT_TRUE(GetValueAs(result, &promise));
+  EXPECT_EQ(v8::Promise::kPending, promise->State());
+#else
+  // On desktop, packed extensions can use string or object.
+  v8::Local<v8::Value> result = tester.TestSendNativeMessage(
+      "'native_app', {hi:'bye'}", R"({"hi":"bye"})", "native_app");
+  v8::Local<v8::Promise> promise;
+  ASSERT_TRUE(GetValueAs(result, &promise));
+  EXPECT_EQ(v8::Promise::kPending, promise->State());
+#endif
 }
 
 }  // namespace extensions

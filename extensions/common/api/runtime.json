@@ -76,6 +76,25 @@
         }
       },
       {
+        "id": "NativeMessageTarget",
+        "type": "object",
+        "nocompile": true,
+        "nodoc": true,
+        "description": "Specifies an external application target for extension messages.",
+        "properties": {
+          "application": {
+            "type": "string",
+            "description": "The name of the native messaging host, or external Android app's package name."
+          },
+          "androidCertificates": {
+            "type": "array",
+            "items": { "type": "string" },
+            "optional": true,
+            "description": "List of expected signing certificates for the external Android app specified as SHA-256 fingerprints. If non-empty, the connection is established if the app is signed by at least one of the certificates provided. Must be non-empty for packed extensions on Android. Ignored for other platforms."
+          }
+        }
+      },
+      {
         "id": "PlatformOs",
         "type": "string",
         "description": "The operating system Chrome is running on.",
@@ -475,9 +494,18 @@
         "description": "Connects to a native application in the host machine. This method requires the <code>\"nativeMessaging\"</code> permission. See <a href=\"develop/concepts/native-messaging\">Native Messaging</a> for more information.",
         "parameters": [
           {
-            "type": "string",
             "name": "application",
-            "description": "The name of the registered application to connect to."
+            "description": "The name of the registered application to connect to, or target details.",
+            "choices": [
+              {
+                "type": "string",
+                "description": "The name of the registered application to connect to, or external Android app's package name. Packed extensions on Android must specify a $(ref:runtime.NativeMessageTarget)."
+              },
+              {
+                "$ref": "NativeMessageTarget",
+                "nodoc": true
+              }
+            ]
           }
         ],
         "returns": {
@@ -523,8 +551,17 @@
         "parameters": [
           {
             "name": "application",
-            "description": "The name of the native messaging host.",
-            "type": "string"
+            "description": "The name of the native messaging host, or target details.",
+            "choices": [
+              {
+                "type": "string",
+                "description": "The name of the native messaging host, or external Android app's package name. Packed extensions on Android must specify a $(ref:runtime.NativeMessageTarget)."
+              },
+              {
+                "$ref": "NativeMessageTarget",
+                "nodoc": true
+              }
+            ]
           },
           {
             "name": "message",

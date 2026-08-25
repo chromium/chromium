@@ -84,6 +84,16 @@ chrome.runtime.Port.prototype.sender;
 chrome.runtime.MessageSender;
 
 /**
+ * Specifies an external application target for extension messages.
+ * @typedef {{
+ *   application: string,
+ *   androidCertificates: (!Array<string>|undefined)
+ * }}
+ * @see https://developer.chrome.com/extensions/runtime#type-NativeMessageTarget
+ */
+chrome.runtime.NativeMessageTarget;
+
+/**
  * @enum {string}
  * @see https://developer.chrome.com/extensions/runtime#type-PlatformOs
  */
@@ -239,7 +249,7 @@ chrome.runtime.id;
  * inside the current extension/app. If the background page is an event page,
  * the system will ensure it is loaded before calling the callback. If there is
  * no background page, an error is set.
- * @param {function((Window|undefined)): void} callback
+ * @param {function((Window|undefined)): void=} callback
  * @deprecated Background pages do not exist in MV3 extensions.
  * @see https://developer.chrome.com/extensions/runtime#method-getBackgroundPage
  */
@@ -317,7 +327,7 @@ chrome.runtime.reload = function() {};
  * @param {function({
  *   status: !chrome.runtime.RequestUpdateCheckStatus,
  *   version: (string|undefined)
- * }): void} callback
+ * }): void=} callback
  * @see https://developer.chrome.com/extensions/runtime#method-requestUpdateCheck
  */
 chrome.runtime.requestUpdateCheck = function(callback) {};
@@ -372,8 +382,8 @@ chrome.runtime.connect = function(extensionId, connectInfo) {};
  * the <code>"nativeMessaging"</code> permission. See <a
  * href="develop/concepts/native-messaging">Native Messaging</a> for more
  * information.
- * @param {string} application The name of the registered application to connect
- *     to.
+ * @param {(string|!chrome.runtime.NativeMessageTarget)} application The name of
+ *     the registered application to connect to, or target details.
  * @return {!chrome.runtime.Port} Port through which messages can be sent and
  *     received with the application
  * @see https://developer.chrome.com/extensions/runtime#method-connectNative
@@ -409,7 +419,8 @@ chrome.runtime.sendMessage = function(extensionId, message, options, callback) {
 /**
  * Send a single message to a native application. This method requires the
  * <code>"nativeMessaging"</code> permission.
- * @param {string} application The name of the native messaging host.
+ * @param {(string|!chrome.runtime.NativeMessageTarget)} application The name of
+ *     the native messaging host, or target details.
  * @param {Object} message The message that will be passed to the native
  *     messaging host.
  * @param {function(*): void=} callback
@@ -419,7 +430,7 @@ chrome.runtime.sendNativeMessage = function(application, message, callback) {};
 
 /**
  * Returns information about the current platform.
- * @param {function(!chrome.runtime.PlatformInfo): void} callback Promise that
+ * @param {function(!chrome.runtime.PlatformInfo): void=} callback Promise that
  *     resolves with information about the current platform.
  * @see https://developer.chrome.com/extensions/runtime#method-getPlatformInfo
  */
@@ -427,7 +438,7 @@ chrome.runtime.getPlatformInfo = function(callback) {};
 
 /**
  * Returns a DirectoryEntry for the package directory.
- * @param {function(DirectoryEntry): void} callback
+ * @param {function(DirectoryEntry): void=} callback
  * @see https://developer.chrome.com/extensions/runtime#method-getPackageDirectoryEntry
  */
 chrome.runtime.getPackageDirectoryEntry = function(callback) {};
@@ -437,7 +448,7 @@ chrome.runtime.getPackageDirectoryEntry = function(callback) {};
  * @param {!chrome.runtime.ContextFilter} filter A filter to find matching
  *     contexts. A context matches if it matches all specified fields in the
  *     filter. Any unspecified field in the filter matches all contexts.
- * @param {function(!Array<!chrome.runtime.ExtensionContext>): void} callback
+ * @param {function(!Array<!chrome.runtime.ExtensionContext>): void=} callback
  *     Promise that resolves with the matching contexts, if any.
  * @see https://developer.chrome.com/extensions/runtime#method-getContexts
  */
