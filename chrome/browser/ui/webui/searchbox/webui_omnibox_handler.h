@@ -93,13 +93,11 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
       bool meta_key,
       bool shift_key,
       bool via_keyboard) override;
-  std::optional<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatch(
-      const AutocompleteMatch& match,
-      size_t line,
-      bookmarks::BookmarkModel* bookmark_model,
-      const omnibox::GroupConfigMap& suggestion_groups_map,
-      const TemplateURLService* turl_service) const override;
   bool ShouldShowFirstContextualDescription() const override;
+  bool SupportsKeywordMode() const override;
+  void OverrideIconPaths(
+      const AutocompleteMatch& match,
+      searchbox::mojom::AutocompleteMatch* mojom_match) const override;
   void OnFocusChanged(bool focused) override;
 
   // AutocompleteController::Observer:

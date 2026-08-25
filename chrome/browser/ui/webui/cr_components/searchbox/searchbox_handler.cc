@@ -871,6 +871,27 @@ bool SearchboxHandler::ShouldShowFirstContextualDescription() const {
   return false;
 }
 
+bool SearchboxHandler::SupportsKeywordMode() const {
+  return false;
+}
+
+void SearchboxHandler::OverrideIconPaths(
+    const AutocompleteMatch& match,
+    searchbox::mojom::AutocompleteMatch* mojom_match) const {
+  // For enterprise search aggregator people suggestions, use branded icon if
+  // branded build.
+  if (match.enterprise_search_aggregator_type ==
+      AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE) {
+    mojom_match->is_enterprise_search_aggregator_people_type = true;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    mojom_match->icon_path =
+        base::FeatureList::IsEnabled(omnibox::kUseAgentspace25Logo)
+            ? kGoogleAgentspace25IconResourceName
+            : kGoogleAgentspaceIconResourceName;
+#endif
+  }
+}
+
 std::optional<searchbox::mojom::AutocompleteMatchPtr>
 SearchboxHandler::CreateAutocompleteMatch(
     const AutocompleteMatch& match,
@@ -928,18 +949,7 @@ SearchboxHandler::CreateAutocompleteMatch(
           : turl_service->GetTemplateURLForKeyword(match.associated_keyword);
   mojom_match->icon_path = AutocompleteIconToResourceName(
       match.GetVectorIcon(is_bookmarked, associated_keyword_turl));
-  // For enterprise search aggregator people suggestions, use branded icon if
-  // branded build.
-  if (match.enterprise_search_aggregator_type ==
-      AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE) {
-    mojom_match->is_enterprise_search_aggregator_people_type = true;
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    mojom_match->icon_path =
-        base::FeatureList::IsEnabled(omnibox::kUseAgentspace25Logo)
-            ? kGoogleAgentspace25IconResourceName
-            : kGoogleAgentspaceIconResourceName;
-#endif
-  }
+  OverrideIconPaths(match, mojom_match.get());
   mojom_match->icon_url = match.icon_url;
   // For featured enterprise search suggestions, use template url to generate
   // the proper icon url.
@@ -1016,6 +1026,42 @@ SearchboxHandler::CreateAutocompleteMatch(
   if (match.suggest_template && match.suggest_template->has_fusebox_action()) {
     mojom_match->fusebox_action = fusebox_action::SyncFuseboxActionProtoToMojo(
         match.suggest_template->fusebox_action());
+  }
+
+  if (SupportsKeywordMode()) {
+    KeywordState keyword_state;
+    std::u16string keyword;
+    std::u16string keyword_placeholder;
+    match.GetKeywordUiState(turl_service,
+                            client() && client()->IsHistoryEmbeddingsEnabled(),
+                            &keyword_state, &keyword, &keyword_placeholder);
+
+    searchbox::mojom::KeywordType keyword_type;
+    bool has_keyword = false;
+    if (keyword_state == KeywordState::kKeyword) {
+      keyword_type = searchbox::mojom::KeywordType::kInKeyword;
+      has_keyword = true;
+    } else if (match.HasInstantKeyword(turl_service)) {
+      keyword_type = searchbox::mojom::KeywordType::kInstant;
+      has_keyword = true;
+    } else if (keyword_state == KeywordState::kHint ||
+               !match.associated_keyword.empty()) {
+      keyword_type = searchbox::mojom::KeywordType::kChip;
+      has_keyword = true;
+    }
+
+    // Populate `keyword_model`.
+    if (has_keyword) {
+      auto keyword_model = searchbox::mojom::MatchKeywordModel::New();
+      keyword_model->type = keyword_type;
+      keyword_model->keyword = base::UTF16ToUTF8(keyword);
+      keyword_model->placeholder = base::UTF16ToUTF8(keyword_placeholder);
+      const auto names = searchbox::GetKeywordLabelNames(keyword, turl_service);
+      keyword_model->chip_hint = base::UTF16ToUTF8(names.full_name);
+      keyword_model->chip_a11y =
+          l10n_util::GetStringFUTF8(IDS_ACC_KEYWORD_MODE, names.short_name);
+      mojom_match->keyword_model = std::move(keyword_model);
+    }
   }
 
   return mojom_match;

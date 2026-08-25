@@ -406,65 +406,6 @@ WindowOpenDisposition WebuiOmniboxHandler::ComputeWindowOpenDisposition(
                    meta_key, shift_key);
 }
 
-std::optional<searchbox::mojom::AutocompleteMatchPtr>
-WebuiOmniboxHandler::CreateAutocompleteMatch(
-    const AutocompleteMatch& match,
-    size_t line,
-    bookmarks::BookmarkModel* bookmark_model,
-    const omnibox::GroupConfigMap& suggestion_groups_map,
-    const TemplateURLService* turl_service) const {
-  auto mojom_match = SearchboxHandler::CreateAutocompleteMatch(
-      match, line, bookmark_model, suggestion_groups_map, turl_service);
-
-  // Override contextual search spark loupe icon for GROUP_CONTEXTUAL_SEARCH.
-  // Results on the omnibox webui will use an arrow icon instead.
-  if (mojom_match &&
-      match.suggestion_group_id == omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH) {
-    mojom_match.value()->icon_path =
-        omnibox::kAskGSwapSuggestionIcon.Get()
-            ? searchbox_internal::kSearchSparkIconResourceName
-            : searchbox_internal::kReplyRotated180IconResourceName;
-  }
-
-  // TODO(crbug.com/550402735): Combine into SearchboxHandler for clean reuse.
-  if (mojom_match) {
-    KeywordState keyword_state;
-    std::u16string keyword;
-    std::u16string keyword_placeholder;
-    match.GetKeywordUiState(turl_service,
-                            controller_->client()->IsHistoryEmbeddingsEnabled(),
-                            &keyword_state, &keyword, &keyword_placeholder);
-
-    searchbox::mojom::KeywordType keyword_type;
-    bool has_keyword = false;
-    if (keyword_state == KeywordState::kKeyword) {
-      keyword_type = searchbox::mojom::KeywordType::kInKeyword;
-      has_keyword = true;
-    } else if (match.HasInstantKeyword(turl_service)) {
-      keyword_type = searchbox::mojom::KeywordType::kInstant;
-      has_keyword = true;
-    } else if (keyword_state == KeywordState::kHint ||
-               !match.associated_keyword.empty()) {
-      keyword_type = searchbox::mojom::KeywordType::kChip;
-      has_keyword = true;
-    }
-
-    // Populate `keyword_model`.
-    if (has_keyword) {
-      auto keyword_model = searchbox::mojom::MatchKeywordModel::New();
-      keyword_model->type = keyword_type;
-      keyword_model->keyword = base::UTF16ToUTF8(keyword);
-      keyword_model->placeholder = base::UTF16ToUTF8(keyword_placeholder);
-      const auto names = searchbox::GetKeywordLabelNames(keyword, turl_service);
-      keyword_model->chip_hint = base::UTF16ToUTF8(names.full_name);
-      keyword_model->chip_a11y =
-          l10n_util::GetStringFUTF8(IDS_ACC_KEYWORD_MODE, names.short_name);
-      mojom_match.value()->keyword_model = std::move(keyword_model);
-    }
-  }
-
-  return mojom_match;
-}
 
 bool WebuiOmniboxHandler::ShouldShowFirstContextualDescription() const {
   return omnibox::kAskGShowFirstDescription.Get() &&
@@ -473,6 +414,24 @@ bool WebuiOmniboxHandler::ShouldShowFirstContextualDescription() const {
              ->GetSuggestionGroupHeaderText(
                  omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH)
              .empty();
+}
+
+bool WebuiOmniboxHandler::SupportsKeywordMode() const {
+  return true;
+}
+
+void WebuiOmniboxHandler::OverrideIconPaths(
+    const AutocompleteMatch& match,
+    searchbox::mojom::AutocompleteMatch* mojom_match) const {
+  // Override contextual search spark loupe icon for GROUP_CONTEXTUAL_SEARCH.
+  // Results on the omnibox webui will use an arrow icon instead.
+  if (match.suggestion_group_id == omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH) {
+    mojom_match->icon_path =
+        omnibox::kAskGSwapSuggestionIcon.Get()
+            ? searchbox_internal::kSearchSparkIconResourceName
+            : searchbox_internal::kReplyRotated180IconResourceName;
+  }
+  SearchboxHandler::OverrideIconPaths(match, mojom_match);
 }
 
 void WebuiOmniboxHandler::OnFocusChanged(bool focused) {

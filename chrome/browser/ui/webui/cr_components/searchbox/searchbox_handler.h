@@ -294,12 +294,16 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
       const omnibox::GroupConfigMap& suggestion_groups_map,
       const TemplateURLService* turl_service) const;
   virtual bool ShouldShowFirstContextualDescription() const;
-  virtual std::optional<searchbox::mojom::AutocompleteMatchPtr>
-  CreateAutocompleteMatch(const AutocompleteMatch& match,
-                          size_t line,
-                          bookmarks::BookmarkModel* bookmark_model,
-                          const omnibox::GroupConfigMap& suggestion_groups_map,
-                          const TemplateURLService* turl_service) const;
+  virtual bool SupportsKeywordMode() const;
+  virtual void OverrideIconPaths(
+      const AutocompleteMatch& match,
+      searchbox::mojom::AutocompleteMatch* mojom_match) const;
+  std::optional<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatch(
+      const AutocompleteMatch& match,
+      size_t line,
+      bookmarks::BookmarkModel* bookmark_model,
+      const omnibox::GroupConfigMap& suggestion_groups_map,
+      const TemplateURLService* turl_service) const;
   virtual WindowOpenDisposition ComputeWindowOpenDisposition(
       uint8_t mouse_button,
       bool alt_key,

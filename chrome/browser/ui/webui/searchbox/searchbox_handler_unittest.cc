@@ -1065,6 +1065,7 @@ class WebuiOmniboxHandlerPublic : public WebuiOmniboxHandler {
   using SearchboxHandler::autocomplete_controller;
   using SearchboxHandler::autocomplete_controller_observation_;
   using SearchboxHandler::client;
+  using SearchboxHandler::CreateAutocompleteMatch;
   using SearchboxHandler::omnibox_controller;
   using SearchboxHandler::OpenMatch;
   using SearchboxHandler::SetAutocompleteControllerForTesting;

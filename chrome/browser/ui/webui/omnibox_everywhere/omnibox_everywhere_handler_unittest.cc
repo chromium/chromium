@@ -54,6 +54,12 @@ class MockOmniboxEverywhereService : public OmniboxEverywhereService {
   MOCK_METHOD(void, OnDrivePickerClosed, (), (override));
 };
 
+class OmniboxEverywhereHandlerPublic : public OmniboxEverywhereHandler {
+ public:
+  using OmniboxEverywhereHandler::OmniboxEverywhereHandler;
+  using SearchboxHandler::CreateAutocompleteMatch;
+};
+
 class OmniboxEverywhereHandlerTest
     : public ContextualSearchboxHandlerTestHarness {
  public:
@@ -77,7 +83,7 @@ class OmniboxEverywhereHandlerTest
     web_ui_.set_web_contents(web_contents());
     mock_service_ = std::make_unique<MockOmniboxEverywhereService>(profile());
 
-    handler_ = std::make_unique<OmniboxEverywhereHandler>(
+    handler_ = std::make_unique<OmniboxEverywhereHandlerPublic>(
         handler_remote_.BindNewPipeAndPassReceiver(), page_.BindAndGetRemote(),
         /*metrics_reporter=*/nullptr, &web_ui_, mock_service_.get(),
         base::BindRepeating(
@@ -98,7 +104,7 @@ class OmniboxEverywhereHandlerTest
   std::unique_ptr<MockOmniboxEverywhereService> mock_service_;
   testing::NiceMock<MockSearchboxPage> page_;
   mojo::Remote<searchbox::mojom::PageHandler> handler_remote_;
-  std::unique_ptr<OmniboxEverywhereHandler> handler_;
+  std::unique_ptr<OmniboxEverywhereHandlerPublic> handler_;
 };
 
 TEST_F(OmniboxEverywhereHandlerTest,
