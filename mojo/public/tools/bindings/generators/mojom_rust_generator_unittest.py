@@ -101,7 +101,7 @@ class TestGetQualifiedName(unittest.TestCase):
     name = mojom_rust_generator._GetQualifiedName(
       ty, self.mod_a, self.source_to_target_map
     )
-    self.assertEqual(name, 'b::b::MyStruct')
+    self.assertEqual(name, 'b_b::b::MyStruct')
 
   def test_nested_different_target(self):
     parent = MockKind('MyStruct', self.mod_b)
@@ -109,7 +109,7 @@ class TestGetQualifiedName(unittest.TestCase):
     name = mojom_rust_generator._GetQualifiedName(
       ty, self.mod_a, self.source_to_target_map
     )
-    self.assertEqual(name, 'b::b::MyStruct_MyEnum')
+    self.assertEqual(name, 'b_b::b::MyStruct_MyEnum')
 
 
 if __name__ == '__main__':

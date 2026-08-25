@@ -17,7 +17,7 @@ chromium::import! {
     "//mojo/public/rust/bindings";
     "//mojo/public/rust/system";
 {% for imprt in imports %}
-    "{{imprt}}";
+    "{{imprt.target}}" as {{imprt.alias}};
 {%- endfor %}
 }
 
