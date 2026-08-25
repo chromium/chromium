@@ -356,6 +356,9 @@ class CORE_EXPORT HTMLMediaElement
   // Notifies the media element that the media controls became visible, so
   // that text track layout may be updated to avoid overlapping them.
   void MediaControlsDidBecomeVisible();
+  // Notifies the media element that the media controls became hidden, so
+  // that text track layout may be updated to reclaim the freed space.
+  void MediaControlsDidBecomeHidden();
 
   void SourceWasRemoved(HTMLSourceElement*);
   void SourceWasAdded(HTMLSourceElement*);

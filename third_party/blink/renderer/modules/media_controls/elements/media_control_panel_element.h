@@ -47,10 +47,14 @@ class MODULES_EXPORT MediaControlPanelElement final
   bool KeepEventInNode(const Event&) const override;
 
   void DidBecomeVisible();
+  void DidBecomeHidden();
   void HandleTransitionEndEvent();
 
   bool is_displayed_ = false;
   bool opaque_ = true;
+  // True while a MediaControlsDidBecomeVisible() notification has been sent
+  // without a matching MediaControlsDidBecomeHidden().
+  bool did_send_visible_ = false;
   bool keep_displayed_for_accessibility_ = false;
 
   Member<MediaControlsSharedHelpers::TransitionEventListener> event_listener_;

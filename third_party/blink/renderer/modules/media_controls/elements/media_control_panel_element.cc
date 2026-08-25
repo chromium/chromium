@@ -31,8 +31,14 @@ void MediaControlPanelElement::SetIsDisplayed(bool is_displayed) {
     return;
 
   is_displayed_ = is_displayed;
-  if (is_displayed_ && opaque_)
+  if (is_displayed_ && opaque_) {
     DidBecomeVisible();
+  } else if (did_send_visible_) {
+    // The panel may have faded (MakeTransparent()) after the visible
+    // notification was sent. Balance that notification regardless of the
+    // fade state.
+    DidBecomeHidden();
+  }
 }
 
 bool MediaControlPanelElement::IsOpaque() const {
@@ -119,7 +125,14 @@ bool MediaControlPanelElement::KeepEventInNode(const Event& event) const {
 
 void MediaControlPanelElement::DidBecomeVisible() {
   DCHECK(is_displayed_ && opaque_);
+  did_send_visible_ = true;
   MediaElement().MediaControlsDidBecomeVisible();
+}
+
+void MediaControlPanelElement::DidBecomeHidden() {
+  DCHECK(!is_displayed_ || !opaque_);
+  did_send_visible_ = false;
+  MediaElement().MediaControlsDidBecomeHidden();
 }
 
 void MediaControlPanelElement::HandleTransitionEndEvent() {

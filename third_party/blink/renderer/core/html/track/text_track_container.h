@@ -47,10 +47,12 @@ class TextTrackContainer final : public HTMLDivElement {
 
   // Runs the "rules for updating the text track rendering". The
   // ExposingControls enum is used in the WebVTT processing model to reset the
-  // layout when the media controls become visible, to avoid overlapping them.
+  // layout when the media controls visibility changes, to avoid overlapping
+  // them or reclaim space when they are hidden.
   enum ExposingControls {
     kDidNotStartExposingControls,
-    kDidStartExposingControls
+    kDidStartExposingControls,
+    kDidStopExposingControls
   };
   void UpdateDisplay(HTMLMediaElement&, ExposingControls);
   void UpdateDefaultFontSize(LayoutObject*);

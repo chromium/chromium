@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<style>
+::cue { font-size: 24px; }
+</style>
+<video src="../content/test.ogv" width="640"></video>
+<script>
+
+function animationFrame() {
+  return new Promise(resolve => { requestAnimationFrame(resolve); });
+}
+
+function hideControlsTimerFired(video) {
+  return new Promise(resolve => {
+    runAfterHideMediaControlsTimerFired(resolve, video);
+  });
+}
+
+promise_test(async () => {
+  let v = document.querySelector('video');
+  v.loop = true;
+  let track = v.addTextTrack('subtitles', 'label', 'en');
+  track.mode = 'showing';
+  track.addCue(new VTTCue(0, 60, 'The first subtitle'));
+  await v.play();
+  await animationFrame();
+  await animationFrame();
+  let topNoControls = textTrackCueElementByIndex(v, 0).offsetTop;
+
+  v.controls = true;
+  await animationFrame();
+  await animationFrame();
+  assert_not_equals(topNoControls, textTrackCueElementByIndex(v, 0).offsetTop,
+                    '[after showing controls]');
+
+  // Let the controls fade out on inactivity, then remove them while they
+  // are transparent. The panel must actually have faded, or this test
+  // degrades into the plain hide case.
+  await hideControlsTimerFired(v);
+  assert_equals(getComputedStyle(mediaControlsButton(v, 'panel')).opacity, '0',
+                '[panel faded]');
+
+  v.controls = false;
+  await animationFrame();
+  await animationFrame();
+  assert_equals(textTrackCueElementByIndex(v, 0).offsetTop, topNoControls,
+                '[after removing faded controls]');
+}, 'Removing media controls that have faded out repositions cues');
+</script>

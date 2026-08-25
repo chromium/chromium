@@ -181,7 +181,10 @@ void TextTrackContainer::UpdateDisplay(HTMLMediaElement& media_element,
   // 5. If the last time these rules were run, the user agent was not exposing
   // a user interface for video, but now it is, optionally let reset be true.
   // Otherwise, let reset be false.
-  bool reset = exposing_controls == kDidStartExposingControls;
+  //
+  // We also reset when controls stop being exposed (kDidStopExposingControls)
+  // so that cue positions are recalculated to use the reclaimed space.
+  bool reset = exposing_controls != kDidNotStartExposingControls;
 
   // 6. Let tracks be the subset of video's list of text tracks that have as
   // their rules for updating the text track rendering these rules for
