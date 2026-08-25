@@ -1,3 +1,4 @@
 file://chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/OWNERS
 per-file TabContextMenuCoordinatorUnitTest*=agazal@google.com,eleanorlee@google.com
 per-file TabStripContextMenuCoordinatorUnitTest*=agazal@google.com,eleanorlee@google.com
+per-file TabGroupContextMenuCoordinatorUnitTest*=agazal@google.com,eleanorlee@google.com
