@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/modules/mediastream/sub_capture_target.h"
@@ -47,11 +48,13 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_messaging_proxy.h"
 #include "third_party/blink/renderer/modules/webaudio/delay_node.h"
 #include "third_party/blink/renderer/modules/webaudio/media_stream_audio_destination_node.h"
+#include "third_party/blink/renderer/modules/webaudio/offline_audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/realtime_audio_destination_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/realtime_audio_destination_node.h"
 #include "third_party/blink/renderer/modules/webaudio/testing/fake_audio_thread.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -1493,6 +1496,64 @@ TEST_F(AudioContextTest, AudioWorkletTerminatedOnClose) {
 
   // Wait for worker thread to shut down to avoid race on g_platform.
   proxy->GetBackingWorkerThread()->WaitForShutdownForTesting();
+}
+
+// Test that an active AudioWorklet shared MessagePort keeps neither its
+// associated AudioWorklet nor the BaseAudioContext alive, and that the port is
+// collected after its peer disconnects without an explicit close() call.
+TEST_F(AudioContextTest, AudioWorkletSharedPortGCWithoutExplicitClose) {
+  ScopedAudioWorkletSharedPortForTest scoped_feature(true);
+  WeakPersistent<OfflineAudioContext> weak_context;
+  WeakPersistent<AudioWorklet> weak_worklet;
+  WeakPersistent<MessagePort> weak_port;
+
+  {
+    auto* context = OfflineAudioContext::Create(
+        GetFrame().DomWindow(), /*number_of_channels=*/1,
+        /*number_of_frames=*/128, /*sample_rate=*/44100.0f,
+        ASSERT_NO_EXCEPTION);
+    ASSERT_TRUE(context);
+
+    auto* worklet = context->audioWorklet();
+    ASSERT_TRUE(worklet);
+
+    MessagePort* port = worklet->port();
+    ASSERT_TRUE(port);
+
+    EXPECT_FALSE(port->Started());
+    EXPECT_FALSE(port->HasPendingActivity());
+
+    port->start();
+    EXPECT_TRUE(port->Started());
+    EXPECT_TRUE(port->HasPendingActivity());
+
+    weak_context = context;
+    weak_worklet = worklet;
+    weak_port = port;
+
+    EXPECT_NE(weak_context.Get(), nullptr);
+    EXPECT_NE(weak_worklet.Get(), nullptr);
+    EXPECT_NE(weak_port.Get(), nullptr);
+  }
+
+  WebHeap::CollectAllGarbageForTesting();
+
+  EXPECT_EQ(weak_context.Get(), nullptr);
+  EXPECT_EQ(weak_worklet.Get(), nullptr);
+
+  // ActiveScriptWrappableManager keeps the port alive while its
+  // ExecutionContext is live and the port has pending activity.
+  Persistent<MessagePort> port = weak_port.Get();
+  ASSERT_TRUE(port);
+  EXPECT_TRUE(port->HasPendingActivity());
+
+  // Process the asynchronous connection error, which closes the port.
+  test::RunPendingTasks();
+  EXPECT_FALSE(port->HasPendingActivity());
+
+  port.Clear();
+  WebHeap::CollectAllGarbageForTesting();
+  EXPECT_EQ(weak_port.Get(), nullptr);
 }
 
 TEST_F(AudioContextTest, ChannelCountRunning) {

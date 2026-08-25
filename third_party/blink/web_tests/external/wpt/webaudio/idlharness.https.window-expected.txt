@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] AudioContext interface: operation createMediaStreamTrackSource(MediaStreamTrack)
   assert_own_property: interface prototype object missing non-static operation expected property "createMediaStreamTrackSource" missing
 [FAIL] AudioContext interface: context must inherit property "createMediaStreamTrackSource(MediaStreamTrack)" with the proper type
@@ -18,9 +18,5 @@ Found 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: self does not have own property "MediaStreamTrackAudioSourceNode" expected property "MediaStreamTrackAudioSourceNode" missing
 [FAIL] MediaStreamTrackAudioSourceNode interface: existence and properties of interface prototype object's @@unscopables property
   assert_own_property: self does not have own property "MediaStreamTrackAudioSourceNode" expected property "MediaStreamTrackAudioSourceNode" missing
-[FAIL] AudioWorklet interface: attribute port
-  assert_true: The prototype object must have a property "port" expected true got false
-[FAIL] AudioWorklet interface: context.audioWorklet must inherit property "port" with the proper type
-  assert_inherits: property "port" not found in prototype chain
 Harness: the test ran to completion.
 

@@ -24,6 +24,7 @@ class AudioWorkletProcessor;
 class AudioWorkletProcessorDefinition;
 class CrossThreadAudioWorkletProcessorInfo;
 class ExceptionState;
+class MessagePort;
 class MessagePortChannel;
 class SerializedScriptValue;
 class V8BlinkAudioWorkletProcessorConstructor;
@@ -97,8 +98,11 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
   // IDL
   uint64_t currentFrame() const { return current_frame_; }
   double currentTime() const;
+  MessagePort* port() const { return port_.Get(); }
   float sampleRate() const { return sample_rate_; }
   uint32_t renderQuantumSize() const { return render_quantum_size_; }
+
+  void SetPort(MessagePort*);
 
   void Trace(Visitor*) const override;
 
@@ -129,6 +133,7 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
   std::unique_ptr<ProcessorCreationParams> processor_creation_params_;
 
   size_t current_frame_ = 0;
+  Member<MessagePort> port_;
   float sample_rate_ = 0.0f;
   uint32_t render_quantum_size_ = 128;
 

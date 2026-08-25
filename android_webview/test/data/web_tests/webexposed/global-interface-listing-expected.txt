@@ -339,6 +339,7 @@ interface AudioTrackList : EventTarget
     setter onremovetrack
 interface AudioWorklet : Worklet
     attribute @@toStringTag
+    getter port
     method constructor
 interface AudioWorkletNode : AudioNode
     attribute @@toStringTag

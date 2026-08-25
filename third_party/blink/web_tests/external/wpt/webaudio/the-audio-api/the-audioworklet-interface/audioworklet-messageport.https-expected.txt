@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] AudioWorkletGlobalScope: message via shared port
-  promise_test: Unhandled rejection with value: object "TypeError: Cannot set properties of undefined (setting 'onmessage')"
-Harness: the test ran to completion.
-

@@ -743,6 +743,12 @@
       status: "experimental",
     },
     {
+      // Shared MessagePort between AudioWorklet and AudioWorkletGlobalScope.
+      // https://chromestatus.com/feature/5079784523694080
+      name: "AudioWorkletSharedPort",
+      status: "experimental",
+    },
+    {
       // https://drafts.csswg.org/css-scroll-snap
       name: "AuthorSpecifiedLayoutScrollSnapBehavior",
       status: "stable",
