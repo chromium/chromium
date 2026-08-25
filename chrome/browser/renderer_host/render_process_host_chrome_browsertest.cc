@@ -361,7 +361,10 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest, DISABLED_ProcessPerTab) {
 class ChromeRenderProcessHostBackgroundingTest
     : public ChromeRenderProcessHostTest {
  public:
-  ChromeRenderProcessHostBackgroundingTest() = default;
+  ChromeRenderProcessHostBackgroundingTest() {
+    feature_list_.InitAndDisableFeature(
+        performance_manager::features::kPMLoadingPageVoter);
+  }
 
   ChromeRenderProcessHostBackgroundingTest(
       const ChromeRenderProcessHostBackgroundingTest&) = delete;
@@ -405,6 +408,8 @@ class ChromeRenderProcessHostBackgroundingTest
       EXPECT_EQ(expected_is_backgrounded, IsProcessBackgrounded(p));
     }
   }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 #define EXPECT_PROCESS_IS_BACKGROUNDED(process_or_tab)                       \

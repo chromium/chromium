@@ -14406,6 +14406,25 @@
             ]
         }
     ],
+    "PMLoadingPageVoter": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PMLoadingPageVoter"
+                    ]
+                }
+            ]
+        }
+    ],
     "PMProcessPriorityPolicy": [
         {
             "platforms": [
