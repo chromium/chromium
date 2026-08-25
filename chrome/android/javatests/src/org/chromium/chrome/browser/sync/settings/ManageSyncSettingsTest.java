@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.sync.settings;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressKey;
-import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
@@ -18,7 +17,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasFocus;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
@@ -30,7 +28,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils.isHighlighted;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import static java.util.Map.entry;
@@ -97,7 +94,6 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
-import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivityInterface;
 import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
@@ -203,18 +199,13 @@ public class ManageSyncSettingsTest {
     private final SettingsTestRule<ManageSyncSettings> mSettingsTestRule =
             new SettingsTestRule<>(ManageSyncSettings.class);
 
-    private final SettingsTestRule<MainSettings> mSettingsSearchTestRule =
-            new SettingsTestRule<>(null);
-
     // SettingsActivity needs to be initialized and destroyed with the mock
     // signin environment setup in SyncTestRule
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public final RuleChain mRuleChain =
-            RuleChain.outerRule(mSyncTestRule)
-                    .around(mSettingsTestRule)
-                    .around(mSettingsSearchTestRule);
+            RuleChain.outerRule(mSyncTestRule).around(mSettingsTestRule);
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -1650,64 +1641,6 @@ public class ManageSyncSettingsTest {
                         IntentMatchers.hasExtra(
                                 IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)));
         Intents.release();
-    }
-
-    @Test
-    @SmallTest
-    public void testSearchEncryption_signedIn() {
-        mSettingsSearchTestRule.startSettingsActivity();
-        mSyncTestRule.setUpAccountAndSignInForTesting();
-
-        onView(withId(R.id.search_box)).perform(click());
-        onView(withId(R.id.search_query)).perform(replaceText("encryption"));
-
-        onViewWaiting(allOf(withId(android.R.id.title), withText(R.string.sync_encryption)))
-                .perform(click());
-
-        onView(
-                        allOf(
-                                withText(R.string.account_settings_title),
-                                withParent(withId(R.id.action_bar))))
-                .check(matches(isDisplayed()));
-
-        onView(highlighted(withText(R.string.sync_encryption))).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
-    public void testSearchPersonalizationAndLinking_signedIn() {
-        mSettingsSearchTestRule.startSettingsActivity();
-        mSyncTestRule.setUpAccountAndSignInForTesting();
-
-        onView(withId(R.id.search_box)).perform(click());
-        onView(withId(R.id.search_query)).perform(replaceText("personalization"));
-
-        onViewWaiting(withText(R.string.sign_in_personalize_google_services_title))
-                .perform(click());
-
-        onView(
-                        allOf(
-                                withText(R.string.account_settings_title),
-                                withParent(withId(R.id.action_bar))))
-                .check(matches(isDisplayed()));
-
-        onView(highlighted(withText(R.string.sign_in_personalize_google_services_title)))
-                .check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
-    public void testSearchPersonalizationAndLinking_signedOut() {
-        mSettingsSearchTestRule.startSettingsActivity();
-
-        onView(withId(R.id.search_box)).perform(click());
-        onView(withId(R.id.search_query)).perform(replaceText("personalization"));
-
-        onViewWaiting(withText(R.string.search_in_settings_no_match)).check(matches(isDisplayed()));
-    }
-
-    private static Matcher<View> highlighted(Matcher<View> childMatcher) {
-        return allOf(hasDescendant(childMatcher), isHighlighted());
     }
 
     private void assertOpensIncognitoSession(
