@@ -323,15 +323,10 @@ class PeerSessionImpl : public PeerSession,
   // Used to enable/disable clipboard sync and to restrict payload size.
   protocol::ClipboardFilter host_clipboard_filter_;
   protocol::ClipboardFilter client_clipboard_filter_;
-
   // Factory for weak pointers to the client clipboard stub.
   // This must appear after `clipboard_echo_filter_`, so that it won't outlive
   // it.
   base::WeakPtrFactory<protocol::ClipboardStub> client_clipboard_factory_;
-
-  // A timer that triggers a disconnect when the maximum session duration
-  // is reached.
-  base::OneShotTimer max_duration_timer_;
 
   // Objects responsible for sending video, audio.
   std::map<webrtc::ScreenId, std::unique_ptr<protocol::VideoStream>>

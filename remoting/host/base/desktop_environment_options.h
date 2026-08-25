@@ -81,6 +81,9 @@ class DesktopEnvironmentOptions final {
   // Reads configurations from a SessionOptions instance.
   void ApplySessionOptions(const SessionOptions& options);
 
+  // Reads configurations from a SessionPolicies instance.
+  void ApplySessionPolicies(const SessionPolicies& policies);
+
  private:
   // Sets default values for default constructor and CreateDefault() function.
   void Initialize();

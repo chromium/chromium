@@ -387,35 +387,6 @@ void PeerSessionImplTest::SetupSingleDisplay() {
   NotifyDesktopDisplaySize(std::move(displays));
 }
 
-TEST_F(PeerSessionImplTest, DisconnectsAfterMaxSessionDurationIsReached) {
-  SessionPolicies policies;
-  policies.maximum_session_duration = base::Hours(10);
-  ConnectPeerSession(policies);
-
-  EXPECT_TRUE(is_connected());
-  // Calling FastForwardBy() would result in a livelock, so we just advance the
-  // clock and run all the scheduled tasks, which includes the max duration
-  // timer.
-  task_environment_.AdvanceClock(*policies.maximum_session_duration +
-                                 base::Minutes(1));
-  EXPECT_TRUE(base::test::RunUntil([this] { return !is_connected(); }));
-}
-
-TEST_F(PeerSessionImplTest, MaximumSessionDurationIsClampedTo30Minutes) {
-  SessionPolicies policies;
-  policies.maximum_session_duration = base::Minutes(10);
-  ConnectPeerSession(policies);
-
-  EXPECT_TRUE(is_connected());
-  // Advancing by 20 minutes should not disconnect the session since 10 minutes
-  // is clamped to the minimum duration of 30 minutes.
-  task_environment_.AdvanceClock(base::Minutes(20));
-  EXPECT_TRUE(is_connected());
-
-  task_environment_.AdvanceClock(base::Minutes(11));
-  EXPECT_TRUE(base::test::RunUntil([this] { return !is_connected(); }));
-}
-
 // TODO(lambroslambrou): Re-implement the deleted MultiMonMouseMove
 // and MultiMonMouseMove_SameSize tests in a way that makes sense for
 // multi-stream mode.

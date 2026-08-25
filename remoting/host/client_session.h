@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/timer/timer.h"
 #include "remoting/base/errors.h"
 #include "remoting/base/local_session_policies_provider.h"
 #include "remoting/base/session_policies.h"
@@ -165,6 +166,8 @@ class ClientSession : public protocol::Session::EventHandler,
 
   std::vector<mojo::PendingReceiver<mojom::ChromotingSessionServices>>
       pending_session_services_receivers_;
+
+  base::OneShotTimer max_duration_timer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

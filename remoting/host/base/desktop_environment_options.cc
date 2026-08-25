@@ -170,4 +170,20 @@ void DesktopEnvironmentOptions::ApplySessionOptions(
 #endif  // defined(WEBRTC_USE_PIPEWIRE)
 }
 
+void DesktopEnvironmentOptions::ApplySessionPolicies(
+    const SessionPolicies& policies) {
+  if (policies.curtain_required.has_value()) {
+    set_enable_curtaining(*policies.curtain_required);
+  }
+  // `allow_webauthn_forwarding` should not override the existing value for
+  // `enable_remote_webauthn` if it was not enabled for this connection mode.
+  if (enable_remote_webauthn() &&
+      policies.allow_webauthn_forwarding.has_value()) {
+    set_enable_remote_webauthn(*policies.allow_webauthn_forwarding);
+  }
+  if (enable_security_key() && policies.allow_gnubby_forwarding.has_value()) {
+    set_enable_security_key(*policies.allow_gnubby_forwarding);
+  }
+}
+
 }  // namespace remoting
