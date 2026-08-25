@@ -204,6 +204,10 @@ class ContextualSearchMetricsRecorder {
   // Records the model mode (i.e. Gemini Pro, Gemini Pro Autoroute, etc.).
   virtual void RecordModelMode(omnibox::ModelMode model_mode);
 
+  void RecordToolChangedByAIM(omnibox::ToolMode tool_mode);
+
+  void RecordModelChangedByAIM(omnibox::ModelMode model_mode);
+
   // Records the count of attachments of a specific button type when picked.
   virtual void RecordFilePickedCount(
       ContextualSearchAttachmentButtonType button_type,

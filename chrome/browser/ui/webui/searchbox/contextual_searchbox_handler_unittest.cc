@@ -652,6 +652,70 @@ TEST_F(ContextualSearchboxHandlerTest, AddFile_Image) {
             image_upload.image_compression_quality());
 }
 
+TEST_F(ContextualSearchboxHandlerTest, SetActiveToolModeHistogram) {
+  base::HistogramTester histogram_tester;
+  handler().SetActiveToolMode(omnibox::TOOL_MODE_CANVAS,
+                              /*is_set_by_aim=*/false);
+  handler().SetActiveToolMode(omnibox::TOOL_MODE_DEEP_SEARCH,
+                              /*is_set_by_aim=*/false);
+  handler().SetActiveToolMode(omnibox::TOOL_MODE_CANVAS,
+                              /*is_set_by_aim=*/false);
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualSearch.Tools.ChangedByAIM.NewTabPage", 0);
+}
+
+TEST_F(ContextualSearchboxHandlerTest, SetActiveModelModeHistogram) {
+  base::HistogramTester histogram_tester;
+  handler().SetActiveModelMode(omnibox::MODEL_MODE_GEMINI_PRO,
+                               /*is_set_by_aim=*/false);
+  handler().SetActiveModelMode(omnibox::MODEL_MODE_GEMINI_REGULAR,
+                               /*is_set_by_aim=*/false);
+  handler().SetActiveModelMode(omnibox::MODEL_MODE_GEMINI_PRO,
+                               /*is_set_by_aim=*/false);
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualSearch.Models.ChangedByAIM.NewTabPage", 0);
+}
+
+TEST_F(ContextualSearchboxHandlerTest, SetActiveToolModeSetByServerHistogram) {
+  base::HistogramTester histogram_tester;
+  handler().SetActiveToolMode(omnibox::TOOL_MODE_CANVAS,
+                              /*is_set_by_aim=*/true);
+  handler().SetActiveToolMode(omnibox::TOOL_MODE_DEEP_SEARCH,
+                              /*is_set_by_aim=*/true);
+  handler().SetActiveToolMode(omnibox::TOOL_MODE_CANVAS,
+                              /*is_set_by_aim=*/true);
+
+  histogram_tester.ExpectBucketCount(
+      "ContextualSearch.Tools.ChangedByAIM.NewTabPage",
+      omnibox::TOOL_MODE_CANVAS, 2);
+  histogram_tester.ExpectBucketCount(
+      "ContextualSearch.Tools.ChangedByAIM.NewTabPage",
+      omnibox::TOOL_MODE_DEEP_SEARCH, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualSearch.Tools.ChangedByAIM.NewTabPage", 3);
+}
+
+TEST_F(ContextualSearchboxHandlerTest, SetActiveModelModeSetByServerHistogram) {
+  base::HistogramTester histogram_tester;
+  handler().SetActiveModelMode(omnibox::MODEL_MODE_GEMINI_PRO,
+                               /*is_set_by_aim=*/true);
+  handler().SetActiveModelMode(omnibox::MODEL_MODE_GEMINI_REGULAR,
+                               /*is_set_by_aim=*/true);
+  handler().SetActiveModelMode(omnibox::MODEL_MODE_GEMINI_PRO,
+                               /*is_set_by_aim=*/true);
+
+  histogram_tester.ExpectBucketCount(
+      "ContextualSearch.Models.ChangedByAIM.NewTabPage",
+      omnibox::MODEL_MODE_GEMINI_PRO, 2);
+  histogram_tester.ExpectBucketCount(
+      "ContextualSearch.Models.ChangedByAIM.NewTabPage",
+      omnibox::MODEL_MODE_GEMINI_REGULAR, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualSearch.Models.ChangedByAIM.NewTabPage", 3);
+}
+
 TEST_F(ContextualSearchboxHandlerTest, ClearFiles) {
   searchbox::mojom::SelectedFileInfoPtr file_info =
       searchbox::mojom::SelectedFileInfo::New();
@@ -1717,7 +1781,7 @@ TEST_F(ContextualSearchboxHandlerTest, OnInputStateChanged) {
           &MockContextualSearchMetricsRecorder::RecordToolModeBase));
 
   handler_->SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_CANVAS,
-                              /*is_set_by_server=*/false);
+                              /*is_set_by_aim=*/false);
   handler_->RecordToolSelectionAction(omnibox::ToolMode::TOOL_MODE_CANVAS);
   mock_searchbox_page_.FlushForTesting();
   EXPECT_EQ(received_state_1.active_tool, omnibox::ToolMode::TOOL_MODE_CANVAS);
@@ -3859,7 +3923,7 @@ TEST_F(ContextualSearchboxHandlerTest,
   EXPECT_CALL(mock_searchbox_page_, UpdateSmartTabSharingActive(false))
       .Times(1);
   handler().SetActiveToolMode(omnibox::TOOL_MODE_CANVAS,
-                              /*is_set_by_server=*/false);
+                              /*is_set_by_aim=*/false);
   mock_searchbox_page_.FlushForTesting();
 
   // STS should now be effectively inactive.
@@ -3868,7 +3932,7 @@ TEST_F(ContextualSearchboxHandlerTest,
   // Select Unspecified again.
   EXPECT_CALL(mock_searchbox_page_, UpdateSmartTabSharingActive(true)).Times(1);
   handler().SetActiveToolMode(omnibox::TOOL_MODE_UNSPECIFIED,
-                              /*is_set_by_server=*/false);
+                              /*is_set_by_aim=*/false);
   mock_searchbox_page_.FlushForTesting();
 
   // STS should be active again.

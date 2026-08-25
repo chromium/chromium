@@ -654,6 +654,20 @@ void ContextualSearchMetricsRecorder::RecordModelMode(
       model_mode, static_cast<omnibox::ModelMode>(omnibox::ModelMode_MAX + 1));
 }
 
+void ContextualSearchMetricsRecorder::RecordToolChangedByAIM(
+    omnibox::ToolMode tool_mode) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"ContextualSearch.Tools.ChangedByAIM.", metrics_suffix_}),
+      tool_mode, static_cast<omnibox::ToolMode>(omnibox::ToolMode_MAX + 1));
+}
+
+void ContextualSearchMetricsRecorder::RecordModelChangedByAIM(
+    omnibox::ModelMode model_mode) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"ContextualSearch.Models.ChangedByAIM.", metrics_suffix_}),
+      model_mode, static_cast<omnibox::ModelMode>(omnibox::ModelMode_MAX + 1));
+}
+
 void ContextualSearchMetricsRecorder::RecordToolModeShown(
     omnibox::ToolMode tool_mode) {
   base::UmaHistogramEnumeration(

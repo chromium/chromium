@@ -1446,7 +1446,12 @@ void ContextualSearchboxHandler::UploadSnapshotTabContextIfPresent() {
 }
 
 void ContextualSearchboxHandler::SetActiveToolMode(omnibox::ToolMode tool,
-                                                   bool is_set_by_server) {
+                                                   bool is_set_by_aim) {
+  if (auto* metrics_recorder = GetMetricsRecorder()) {
+    if (is_set_by_aim) {
+      metrics_recorder->RecordToolChangedByAIM(tool);
+    }
+  }
   if (!input_state_model_) {
     return;
   }
@@ -1469,6 +1474,11 @@ void ContextualSearchboxHandler::RecordModelSelectionAction(
 
 void ContextualSearchboxHandler::SetActiveModelMode(omnibox::ModelMode model,
                                                     bool is_set_by_aim) {
+  if (auto* metrics_recorder = GetMetricsRecorder()) {
+    if (is_set_by_aim) {
+      metrics_recorder->RecordModelChangedByAIM(model);
+    }
+  }
   if (!input_state_model_) {
     return;
   }

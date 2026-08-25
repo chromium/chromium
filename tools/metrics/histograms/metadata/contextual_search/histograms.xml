@@ -395,6 +395,16 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
+<histogram name="ContextualSearch.Models.ChangedByAIM.{ContextualSearchSource}"
+    enum="OmniboxModelMode" expires_after="2027-08-11">
+  <owner>jamesleung@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Tracks model mode changes triggered by AIM webpage via SILK.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
 <histogram
     name="ContextualSearch.Models.ModeOnSubmission.{ContextualSearchSource}"
     enum="OmniboxModelMode" expires_after="2027-02-14">
@@ -1011,6 +1021,17 @@ chromium-metrics-reviews@google.com.
     Tracks the total number of times a tab with a duplicate title is clicked
     through the composebox context menu. This metric is recorded regardless of
     whether or not a query was issued with the tab.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram name="ContextualSearch.Tools.ChangedByAIM.{ContextualSearchSource}"
+    enum="OmniboxToolMode" expires_after="2027-08-11">
+  <owner>jamesleung@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Tracks tool mode changes triggered by AIM webpage via SILK, such as when the
+    user sends a message to AIM that triggers Canvas mode automatically.
   </summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
