@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sync/cross_device_theme_tracker_factory.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -15,6 +16,7 @@
 #include "components/sync/model/data_type_store_service.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/themes/cross_device/cross_device_theme_sync_bridge.h"
+#include "components/themes/cross_device/features.h"
 #include "components/themes/cross_device/theme_translation.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -88,6 +90,10 @@ CrossDeviceThemeTrackerFactory::~CrossDeviceThemeTrackerFactory() = default;
 std::unique_ptr<KeyedService>
 CrossDeviceThemeTrackerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  if (!base::FeatureList::IsEnabled(themes::kCrossDeviceThemeTracker)) {
+    return nullptr;
+  }
+
   Profile* profile = Profile::FromBrowserContext(context);
 
   syncer::DeviceInfoSyncService* device_info_sync_service =

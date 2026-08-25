@@ -346,6 +346,7 @@ source_set("unit_tests") {
     "//components/sync_device_info:test_support",
     "//components/tabs:public",
     "//components/tabs:test_support",
+    "//components/themes/cross_device",
     "//components/variations",
     "//components/variations:test_support",
     "//content/test:test_support",

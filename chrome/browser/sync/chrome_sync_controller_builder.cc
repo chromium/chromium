@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(crbug.com/549792645): Remove VLOG level override once Synced Setup
+// launches.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 #include "chrome/browser/sync/chrome_sync_controller_builder.h"
 
 #include <memory>
@@ -32,6 +37,8 @@
 #include "components/sync/model/forwarding_data_type_controller_delegate.h"
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/syncable_service_based_data_type_controller.h"
+#include "components/sync_preferences/features.h"
+#include "components/themes/cross_device/features.h"
 #include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -493,52 +500,38 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    if (auto tracker = cross_device_theme_tracker_.value()) {
-      if (base::FeatureList::IsEnabled(
-              syncer::kNewTabPageCustomizationThemeSync)) {
-#if BUILDFLAG(IS_ANDROID)
-        // On Android, track THEMES (Desktop).
-        syncer::DataTypeControllerDelegate* desktop_delegate =
-            tracker->GetSyncDelegateForType(syncer::THEMES).get();
-        if (desktop_delegate) {
+    if (auto tracker = cross_device_theme_tracker_.value();
+        tracker &&
+        base::FeatureList::IsEnabled(themes::kCrossDeviceThemeTracker)) {
+      // TODO(crbug.com/549792645): Remove debug logs once Synced Setup
+      // launches.
+      VLOG_IF(1,
+              base::FeatureList::IsEnabled(
+                  sync_preferences::features::kCrossDevicePrefTrackerExtraLogs))
+          << "XplatSyncedSetup, " << __func__ << ": tracker present";
+      // CrossDeviceThemeTracker tracks remote themes across devices (e.g.
+      // Desktop and iOS themes on Android, or Android and iOS themes on
+      // Desktop) for Synced Set Up import. Continuous 2-way sync for Android's
+      // own NTP customizations (syncer::THEMES_ANDROID) is managed separately
+      // above by NtpAndroidCustomBackgroundService (guarded by
+      // syncer::kNewTabPageCustomizationThemeSync).
+      for (syncer::DataType type :
+           {syncer::THEMES, syncer::THEMES_ANDROID, syncer::THEMES_IOS}) {
+        if (auto* delegate = tracker->GetSyncDelegateForType(type).get()) {
+          VLOG_IF(
+              1,
+              base::FeatureList::IsEnabled(
+                  sync_preferences::features::kCrossDevicePrefTrackerExtraLogs))
+              << "XplatSyncedSetup, " << __func__ << ": "
+              << syncer::DataTypeToDebugString(type) << " delegate present";
           controllers.push_back(std::make_unique<syncer::DataTypeController>(
-              syncer::THEMES,
+              type,
               /*delegate_for_full_sync_mode=*/
               std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-                  desktop_delegate),
+                  delegate),
               /*delegate_for_transport_mode=*/
               std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-                  desktop_delegate)));
-        }
-#else
-        // On Desktop, track THEMES_ANDROID.
-        syncer::DataTypeControllerDelegate* android_delegate =
-            tracker->GetSyncDelegateForType(syncer::THEMES_ANDROID).get();
-        if (android_delegate) {
-          controllers.push_back(std::make_unique<syncer::DataTypeController>(
-              syncer::THEMES_ANDROID,
-              /*delegate_for_full_sync_mode=*/
-              std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-                  android_delegate),
-              /*delegate_for_transport_mode=*/
-              std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-                  android_delegate)));
-        }
-#endif  // BUILDFLAG(IS_ANDROID)
-      }
-
-      if (base::FeatureList::IsEnabled(syncer::kSyncThemesIos)) {
-        syncer::DataTypeControllerDelegate* ios_delegate =
-            tracker->GetSyncDelegateForType(syncer::THEMES_IOS).get();
-        if (ios_delegate) {
-          controllers.push_back(std::make_unique<syncer::DataTypeController>(
-              syncer::THEMES_IOS,
-              /*delegate_for_full_sync_mode=*/
-              std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-                  ios_delegate),
-              /*delegate_for_transport_mode=*/
-              std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-                  ios_delegate)));
+                  delegate)));
         }
       }
     }
