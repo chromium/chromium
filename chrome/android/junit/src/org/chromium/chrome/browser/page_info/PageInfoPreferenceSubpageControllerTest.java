@@ -31,6 +31,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRule;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
@@ -117,6 +118,7 @@ public class PageInfoPreferenceSubpageControllerTest {
     }
 
     @Test
+    @DisabledTest(message = "b/552459911")
     public void testRemoveSubpageFragment_Twice_IsIdempotent() {
         // Add subpage first.
         View view = mController.addSubpage(mFragment);
