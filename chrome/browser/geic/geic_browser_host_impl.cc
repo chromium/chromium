@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/content_extraction/content/browser/inner_text.h"
@@ -81,7 +80,12 @@ bool IsTabValidForSharing(content::WebContents* wc) {
   return wc->GetLastCommittedURL().SchemeIsHTTPOrHTTPS();
 }
 
-GeicBrowserHostImpl::GeicBrowserHostImpl(Profile* profile) : profile_(profile) {
+GeicBrowserHostImpl::GeicBrowserHostImpl(tabs::TabInterface* tab)
+    : tab_(tab), profile_(tab ? tab->GetProfile() : nullptr) {
+  if (tab_) {
+    will_detach_subscription_ = tab_->RegisterWillDetach(base::BindRepeating(
+        &GeicBrowserHostImpl::OnTabWillDetach, base::Unretained(this)));
+  }
   tab_strip_tracker_ = std::make_unique<BrowserTabStripTracker>(this, this);
   tab_strip_tracker_->Init();
 }
@@ -90,8 +94,17 @@ GeicBrowserHostImpl::~GeicBrowserHostImpl() {
   tab_strip_tracker_.reset();
 }
 
+void GeicBrowserHostImpl::OnTabWillDetach(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
+  if (reason == tabs::TabInterface::DetachReason::kDelete) {
+    tab_ = nullptr;
+    will_detach_subscription_ = {};
+  }
+}
+
 bool GeicBrowserHostImpl::ShouldTrackBrowser(BrowserWindowInterface* browser) {
-  return browser && browser->GetProfile() == profile_ &&
+  return browser && profile_ && browser->GetProfile() == profile_ &&
          !browser->GetProfile()->IsOffTheRecord();
 }
 
@@ -122,20 +135,21 @@ void GeicBrowserHostImpl::NotifyFocusedTabChanged(
 
 GeicBrowserHostImpl::ValidatedActiveTab
 GeicBrowserHostImpl::GetValidatedActiveTab() {
-  if (!profile_ || profile_->IsOffTheRecord()) {
+  if (!tab_) {
+    DVLOG(1) << "[geic] reject: tab is null";
+    return {.rejection = RejectionKind::kNoActiveTab};
+  }
+  BrowserWindowInterface* browser_window = tab_->GetBrowserWindowInterface();
+  if (!browser_window) {
+    DVLOG(1) << "[geic] reject: tab is not attached to a browser window";
+    return {.rejection = RejectionKind::kNoBrowser};
+  }
+  Profile* profile = browser_window->GetProfile();
+  if (!profile || profile->IsOffTheRecord()) {
     DVLOG(1) << "[geic] reject: profile null or off-the-record";
     return {.rejection = RejectionKind::kProfileInvalid};
   }
-  BrowserWindowInterface* browser =
-      active_browser_for_testing_
-          ? active_browser_for_testing_.get()
-          : GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
-  if (!browser || browser->GetProfile() != profile_) {
-    DVLOG(1) << "[geic] reject: browser=" << browser << " profile_match="
-             << (browser && browser->GetProfile() == profile_);
-    return {.rejection = RejectionKind::kNoBrowser};
-  }
-  tabs::TabInterface* active_tab = browser->GetActiveTabInterface();
+  tabs::TabInterface* active_tab = browser_window->GetActiveTabInterface();
   if (!active_tab) {
     DVLOG(1) << "[geic] reject: no active tab in browser";
     return {.rejection = RejectionKind::kNoActiveTab};
@@ -153,7 +167,7 @@ GeicBrowserHostImpl::GetValidatedActiveTab() {
   auto metadata = mojom::TabMetadata::New();
   metadata->tab_id =
       active_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId().value();
-  metadata->window_id = browser->GetSessionID().id();
+  metadata->window_id = browser_window->GetSessionID().id();
   metadata->url = active_contents->GetLastCommittedURL();
   metadata->title = active_contents->GetTitle();
   metadata->is_active_in_window = true;
@@ -361,7 +375,7 @@ void GeicBrowserHostImpl::DidCaptureScreenshot(
 
 void GeicBrowserHostImpl::ClosePanel() {
   BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
+      tab_ ? tab_->GetBrowserWindowInterface() : nullptr;
   if (browser && browser->GetFeatures().side_panel_ui()) {
     browser->GetFeatures().side_panel_ui()->Close();
   }
@@ -371,6 +385,12 @@ void GeicBrowserHostImpl::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
+  BrowserWindowInterface* current_browser =
+      tab_ ? tab_->GetBrowserWindowInterface() : nullptr;
+  if (!current_browser ||
+      current_browser->GetTabStripModel() != tab_strip_model) {
+    return;
+  }
   if (selection.active_tab_changed() && client_remote_.is_bound()) {
     DVLOG(1) << "[geic] OnTabStripModelChanged active tab changed";
     client_remote_->OnFocusedTabChanged(GetCurrentFocusedTabData());
@@ -379,6 +399,11 @@ void GeicBrowserHostImpl::OnTabStripModelChanged(
 
 void GeicBrowserHostImpl::OnTabChangedAt(tabs::TabInterface* tab,
                                          TabChangeType change_type) {
+  BrowserWindowInterface* current_browser =
+      tab_ ? tab_->GetBrowserWindowInterface() : nullptr;
+  if (!current_browser || tab->GetBrowserWindowInterface() != current_browser) {
+    return;
+  }
   if (change_type == TabChangeType::kAll && client_remote_.is_bound()) {
     DVLOG(1) << "[geic] OnTabChangedAt";
     client_remote_->OnFocusedTabChanged(GetCurrentFocusedTabData());

@@ -107,7 +107,7 @@ content::WebContents* GeicPwcManager::GetOrCreateWebContentsForTab(
     return nullptr;
   }
 
-  auto browser_host = std::make_unique<GeicBrowserHostImpl>(profile_);
+  auto browser_host = std::make_unique<GeicBrowserHostImpl>(tab);
   auto entry = std::make_unique<TabEntry>(this, tab, std::move(pwc),
                                           std::move(browser_host));
 

@@ -9,12 +9,14 @@
 #include <string>
 #include <string_view>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/geic/geic.mojom.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/content_extraction/content/browser/inner_text.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -77,7 +79,7 @@ class GeicBrowserHostImpl : public mojom::GeicBrowserHost,
     RejectionKind rejection = RejectionKind::kNone;
   };
 
-  explicit GeicBrowserHostImpl(Profile* profile);
+  explicit GeicBrowserHostImpl(tabs::TabInterface* tab);
   GeicBrowserHostImpl(const GeicBrowserHostImpl&) = delete;
   GeicBrowserHostImpl& operator=(const GeicBrowserHostImpl&) = delete;
   ~GeicBrowserHostImpl() override;
@@ -114,11 +116,10 @@ class GeicBrowserHostImpl : public mojom::GeicBrowserHost,
   // NoFocusedTabData with reason).
   mojom::FocusedTabDataPtr GetCurrentFocusedTabData();
 
-  void SetActiveBrowserForTesting(BrowserWindowInterface* browser) {
-    active_browser_for_testing_ = browser;
-  }
-
  private:
+  void OnTabWillDetach(tabs::TabInterface* tab,
+                       tabs::TabInterface::DetachReason reason);
+
   void GetInnerText(content::RenderFrameHost* primary_main_frame,
                     uint32_t inner_text_bytes_limit,
                     bool capture_screenshot,
@@ -142,8 +143,9 @@ class GeicBrowserHostImpl : public mojom::GeicBrowserHost,
                             GetContextFromFocusedTabCallback callback,
                             const content::CopyFromSurfaceResult& result);
 
-  const raw_ptr<Profile, DisableDanglingPtrDetection> profile_;
-  raw_ptr<BrowserWindowInterface> active_browser_for_testing_ = nullptr;
+  raw_ptr<tabs::TabInterface> tab_ = nullptr;
+  const raw_ptr<Profile> profile_ = nullptr;
+  base::CallbackListSubscription will_detach_subscription_;
   std::unique_ptr<BrowserTabStripTracker> tab_strip_tracker_;
   mojo::Receiver<mojom::GeicBrowserHost> receiver_{this};
   mojo::Remote<mojom::GeicClient> client_remote_;
