@@ -5635,7 +5635,7 @@
 <translation id="532247166573571973">無法連上伺服器，請稍後再試。</translation>
 <translation id="5324300749339591280">應用程式清單</translation>
 <translation id="5324780743567488672">自動使用您的位置資訊設定時區</translation>
-<translation id="5327248766486351172">名稱</translation>
+<translation id="5327248766486351172">姓名</translation>
 <translation id="5327912693242073631">需要傳送通知的功能將無法運作</translation>
 <translation id="5328551442597731838">查看其他裝置的分頁</translation>
 <translation id="5329858601952122676">刪除(&amp;D)</translation>
@@ -6243,7 +6243,7 @@
 <translation id="5829544019044013776">Google 錢包中的付款方式</translation>
 <translation id="5830512293931520102">你的密碼已經過加密處理，任何人都不會看到</translation>
 <translation id="5830720307094128296">另存網頁(&amp;A)...</translation>
-<translation id="5831217499016131155">Google 電子錢包</translation>
+<translation id="5831217499016131155">Google 錢包</translation>
 <translation id="583179300286794292">目前登入的帳戶是 <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">要對 <ph name="SITE_NAME" />、其下所有網站，以及其安裝的應用程式刪除網站資料和權限嗎？</translation>
 <translation id="5832813618714645810">設定檔</translation>
@@ -9545,6 +9545,7 @@
 <translation id="8377625247046155446">這個密碼金鑰只會儲存在這部裝置中。關閉所有無痕視窗後，密碼金鑰會保存在這部裝置上。</translation>
 <translation id="837790003026572432">這部裝置不支援分頁音訊投放功能</translation>
 <translation id="8378714024927312812">由貴機構管理</translation>
+<translation id="8378855320830505539">區域</translation>
 <translation id="8379988659465232385">名稱不得留空</translation>
 <translation id="8379991678458444070">將此分頁加入書籤，日後便能快速開啟這個頁面</translation>
 <translation id="8380266723152870797">視窗名稱</translation>

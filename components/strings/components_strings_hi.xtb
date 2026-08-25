@@ -70,6 +70,7 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> के लिए अनुमति चुनें</translation>
 <translation id="1113000785583998331">क्या आपको IBAN सेव करना है?</translation>
 <translation id="1113869188872983271">&amp;पुन: क्रमित करना वापस लाएं</translation>
+<translation id="1117709830616495622">यह सुविधा Gemini के पर्सनल इंटेलिजेंस की मदद से काम करती है.</translation>
 <translation id="111897705806685148">किसी दूसरे डिवाइस की पासकी इस्तेमाल करें</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, यह मैनेज करें कि आपके Google खाते में, Chrome के इस्तेमाल से जुड़ी कौनसी जानकारी सेव की जाएगी. इसके लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="1121990216147052230">मेरे लिए कामों की एक सूची बनाओ</translation>
@@ -1171,6 +1172,7 @@
 <translation id="3005723025932146533">सेव की गई कॉपी दिखाएं</translation>
 <translation id="300580149047131921">इस सुविधा का हाल ही में इस्तेमाल किया गया है</translation>
 <translation id="3006864083554020786">घर का पता</translation>
+<translation id="3008410317623852235">अब Gmail वगैरह में मौजूद जानकारी खोजकर भरी जा सकती है.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, उपलब्ध कार्रवाइयों को ब्राउज़ करने के लिए Tab दबाएं और फिर चुनी गई कार्रवाई करने के लिए, Enter दबाएं.</translation>
 <translation id="3010991137650052245">इस साइट पर <ph name="PERMISSION" /> का इस्तेमाल करने के लिए, आपको <ph name="SHORT_PRODUCT_NAME" /> को इसका ऐक्सेस देना होगा</translation>
 <translation id="3014726756341138577">प्रिंटर की बेहतर सुविधाएं</translation>
@@ -2319,6 +2321,7 @@
 <translation id="4941627891654116707">फ़ॉन्ट साइज़</translation>
 <translation id="4943620199112228840">आपके माइक्रोफ़ोन का ऐक्सेस</translation>
 <translation id="4943872375798546930">कोई परिणाम नहीं</translation>
+<translation id="494701040141924538">ठीक है, सूचना बंद करें</translation>
 <translation id="495170559598752135">क्रियाएं</translation>
 <translation id="4953689047182316270">सुलभता इवेंट का जवाब दें</translation>
 <translation id="4954505713046251871">सुझाव देने और इस सुविधा को बेहतर बनाने के लिए, पेज का यूआरएल और कॉन्टेंट Google के साथ शेयर किया जाता है</translation>
@@ -4296,6 +4299,7 @@
 <translation id="8350416046273606058">शॉर्टकट में स्पेस का इस्तेमाल नहीं किया जा सकता: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">नोट बनाएं</translation>
 <translation id="8352849934814541340">इस डिवाइस के एडमिन ने अन्य फ़ंक्शन के लिए ऐप्लिकेशन इंस्टॉल किए हैं. ऐप्लिकेशन आपका कुछ डेटा ऐक्सेस कर सकते हैं.</translation>
+<translation id="8353273112634584260">यह सुविधा Gemini के पर्सनल इंटेलिजेंस की मदद से काम करती है. बेहतर ऑटोफ़िल की सुविधा को और बेहतर बनाने के लिए, आपके अनुरोधों, पेज के टाइटल, और यूआरएल की समीक्षा की जा सकती है.</translation>
 <translation id="8355270400102541638">स्थानीय खराबी रिपोर्ट से जुड़ी जानकारी:</translation>
 <translation id="8362914115861174987">इस भाषा में अनुवाद पाएं</translation>
 <translation id="8363502534493474904">हवाई जहाज़ मोड बंद करें</translation>

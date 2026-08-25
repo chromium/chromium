@@ -4234,9 +4234,9 @@ dùng tuỳ chọn sử dụng khoá "keyEncipherment". Nếu không chắc ch�
 <translation id="366494444808132420">Cho phép tích hợp Gemini.</translation>
 <translation id="3665437376055221832">Chỉ nhắc người dùng khi không có chứng chỉ nào khớp với chính sách tự động chọn.</translation>
 <translation id="3671773704245936868">Tắt tính năng làm nổi bật tiêu điểm bằng bàn phím</translation>
-<translation id="367258298235646178">Cho phép quản trị viên tuỳ chỉnh hình thức của hình mờ được áp dụng theo quy tắc của quy trình Ngăn chặn mất dữ liệu (DLP). Phạm vi tuỳ chỉnh bao gồm cài đặt độ mờ của phần tô/viền, xác định cỡ chữ và cài đặt múi giờ của dấu thời gian.
-Nếu bạn không đặt chính sách này hoặc một số giá trị, Chrome sẽ sử dụng chế độ mặc định của hình mờ.
-Giá trị mặc định trên máy tính: độ mờ của phần tô là 4, độ mờ của viền là 6, cỡ chữ là 24. Giá trị mặc định trên iOS: độ mờ của phần tô là 10, độ mờ của viền là 15, cỡ chữ là 16. Trên tất cả các nền tảng, múi giờ của dấu thời gian mặc định là "user_device" (múi giờ trên thiết bị của người dùng).
+<translation id="367258298235646178">Cho phép quản trị viên tuỳ chỉnh giao diện của hình mờ được áp dụng theo các quy tắc Ngăn chặn mất dữ liệu (DLP). Phạm vi tuỳ chỉnh bao gồm đặt độ mờ của phần tô/viền, xác định cỡ chữ và đặt múi giờ của dấu thời gian.
+Nếu bạn không đặt chính sách này hoặc một số giá trị, Chrome sẽ sử dụng hành vi mặc định của chính nó về hình mờ.
+Giá trị mặc định trên máy tính: độ mờ của phần tô là 4, độ mờ của viền là 6, cỡ chữ là 24. Giá trị mặc định trên iOS: độ mờ của phần tô là 10, độ mờ của viền là 15, cỡ chữ là 16. Trên tất cả các nền tảng, múi giờ của dấu thời gian sẽ mặc định là "user_device" (múi giờ địa phương trên thiết bị của người dùng).
 
 "Độ mờ phần tô" là tỷ lệ phần trăm từ 0 (trong suốt hoàn toàn) đến 100 (mờ hoàn toàn).
 "Độ mờ viền" là tỷ lệ phần trăm từ 0 (trong suốt hoàn toàn) đến 100 (mờ hoàn toàn).

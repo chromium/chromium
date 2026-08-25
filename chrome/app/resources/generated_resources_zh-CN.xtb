@@ -9351,7 +9351,7 @@
 <translation id="8231438895476693774">向新的拆分视图中添加标签页</translation>
 <translation id="823226567613548870">删除<ph name="BRAND" />数据</translation>
 <translation id="8233028084277069927">立即打开</translation>
-<translation id="8234795456569844941">请告诉我们在您收到个人资料错误消息之前发生的情况，以帮助我们的工程师解决此问题：</translation>
+<translation id="8234795456569844941">请告诉我们在您收到个人资料出错提示之前发生的情况，以帮助我们的工程师解决此问题：</translation>
 <translation id="8236802542508794819">此标签页与其他标签页共享资源，这可能会干扰调试。</translation>
 <translation id="8236911020904880539">退出</translation>
 <translation id="8236917170563564587">改为共享此标签页</translation>
@@ -9550,6 +9550,7 @@
 <translation id="8377625247046155446">这个通行密钥只会保存在此设备上。在您关闭所有无痕式窗口后，这个通行密钥会保留在此设备上。</translation>
 <translation id="837790003026572432">此设备不支持投放标签页中的音频</translation>
 <translation id="8378714024927312812">由您的组织管理</translation>
+<translation id="8378855320830505539">区域</translation>
 <translation id="8379988659465232385">名称不能为空</translation>
 <translation id="8379991678458444070">只需为此标签页添加书签，便可在需要时快速返回到此处</translation>
 <translation id="8380266723152870797">窗口名称</translation>
