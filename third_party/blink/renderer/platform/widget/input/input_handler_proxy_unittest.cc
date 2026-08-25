@@ -2942,6 +2942,7 @@ TEST_P(InputHandlerProxyEventQueueTest, VSyncAlignedCoalesceScrollAndPinch) {
   // Since we queue two complete gestures, we expect two of each of these calls.
   EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
       .Times(2)
+      .WillOnce(testing::Return(kImplThreadScrollState))
       .WillOnce(testing::Return(kImplThreadScrollState));
   EXPECT_CALL(
       mock_input_handler_,
