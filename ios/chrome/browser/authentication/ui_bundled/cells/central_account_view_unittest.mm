@@ -45,8 +45,8 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabels) {
                                 useLargeMargins:YES];
 
   EXPECT_NSEQ(accountView.avatarImage, image);
-  EXPECT_NSEQ(accountView.name, mainText);
-  EXPECT_NSEQ(accountView.email, detailText);
+  EXPECT_NSEQ(accountView.title, mainText);
+  EXPECT_NSEQ(accountView.subtitle, detailText);
   EXPECT_EQ(accountView.managed, false);
   EXPECT_NSEQ([accountView managementDescription], nil);
 }
@@ -72,8 +72,8 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithoutGivenName) {
                                 useLargeMargins:YES];
 
   EXPECT_NSEQ(accountView.avatarImage, image);
-  EXPECT_NSEQ(accountView.name, mainText);
-  EXPECT_NSEQ(accountView.email, nil);
+  EXPECT_NSEQ(accountView.title, mainText);
+  EXPECT_NSEQ(accountView.subtitle, nil);
   EXPECT_EQ(accountView.managed, false);
   EXPECT_NSEQ([accountView managementDescription], nil);
 }
@@ -102,8 +102,8 @@ TEST_F(CentralAccountViewTest,
                                 useLargeMargins:YES];
 
   EXPECT_NSEQ(accountView.avatarImage, image);
-  EXPECT_NSEQ(accountView.name, mainText);
-  EXPECT_NSEQ(accountView.email, detailText);
+  EXPECT_NSEQ(accountView.title, mainText);
+  EXPECT_NSEQ(accountView.subtitle, detailText);
   EXPECT_EQ(accountView.managed, true);
   EXPECT_NSEQ([accountView managementDescription], managementDescription);
 }
@@ -131,8 +131,8 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithMissingGivenName) {
                                 useLargeMargins:YES];
 
   EXPECT_NSEQ(accountView.avatarImage, image);
-  EXPECT_NSEQ(accountView.name, identity.userFullName);
-  EXPECT_NSEQ(accountView.email, identity.userEmail);
+  EXPECT_NSEQ(accountView.title, identity.userFullName);
+  EXPECT_NSEQ(accountView.subtitle, identity.userEmail);
   EXPECT_EQ(accountView.managed, false);
 }
 
@@ -159,8 +159,8 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithMissingNames) {
                                 useLargeMargins:YES];
 
   EXPECT_NSEQ(accountView.avatarImage, image);
-  EXPECT_NSEQ(accountView.name, identity.userEmail);
-  EXPECT_NSEQ(accountView.email, nil);
+  EXPECT_NSEQ(accountView.title, identity.userEmail);
+  EXPECT_NSEQ(accountView.subtitle, nil);
   EXPECT_EQ(accountView.managed, false);
 }
 
@@ -207,8 +207,8 @@ TEST_F(CentralAccountViewTest, ImageViewAndTextLabelsWithAITierRing) {
   EXPECT_TRUE(foundPremiumRing);
 
   EXPECT_NSEQ(accountView.avatarImage, image);
-  EXPECT_NSEQ(accountView.name, mainText);
-  EXPECT_NSEQ(accountView.email, detailText);
+  EXPECT_NSEQ(accountView.title, mainText);
+  EXPECT_NSEQ(accountView.subtitle, detailText);
   EXPECT_EQ(accountView.managed, false);
 }
 

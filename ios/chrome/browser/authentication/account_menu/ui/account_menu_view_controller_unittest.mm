@@ -282,8 +282,8 @@ TEST_F(AccountMenuViewControllerTest, TestDefaultSetting) {
   CentralAccountView* table_header_view =
       static_cast<CentralAccountView*>(table_header_view_);
   EXPECT_EQ(table_header_view.avatarImage, kPrimaryAccountAvatar);
-  EXPECT_EQ(table_header_view.name, kPrimaryIdentity.userFullName);
-  EXPECT_EQ(table_header_view.email, kPrimaryIdentity.userEmail);
+  EXPECT_EQ(table_header_view.title, kPrimaryIdentity.userFullName);
+  EXPECT_EQ(table_header_view.subtitle, kPrimaryIdentity.userEmail);
   EXPECT_EQ(table_header_view.managed, true);
 }
 
@@ -440,8 +440,8 @@ TEST_F(AccountMenuViewControllerTest, TestMissingGivenName) {
   EXPECT_TRUE([header isKindOfClass:[CentralAccountView class]]);
   CentralAccountView* centralAccountView =
       static_cast<CentralAccountView*>(header);
-  EXPECT_NSEQ(centralAccountView.name, identity.userFullName);
-  EXPECT_NSEQ(centralAccountView.email, identity.userEmail);
+  EXPECT_NSEQ(centralAccountView.title, identity.userFullName);
+  EXPECT_NSEQ(centralAccountView.subtitle, identity.userEmail);
 }
 
 // Test the account menu with an identity with missing names.
@@ -464,8 +464,8 @@ TEST_F(AccountMenuViewControllerTest, TestMissingNames) {
   EXPECT_TRUE([header isKindOfClass:[CentralAccountView class]]);
   CentralAccountView* centralAccountView =
       static_cast<CentralAccountView*>(header);
-  EXPECT_NSEQ(centralAccountView.name, identity.userEmail);
-  EXPECT_NSEQ(centralAccountView.email, nil);
+  EXPECT_NSEQ(centralAccountView.title, identity.userEmail);
+  EXPECT_NSEQ(centralAccountView.subtitle, nil);
 }
 
 // Tests that calling `-[AccountMenuViewController updateErrorSection:nil]`

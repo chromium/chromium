@@ -48,11 +48,11 @@
 // Returns the avatar view container.
 - (UIView*)avatarView;
 
-// The name of the view. The name if it’s set otherwise the email.
-- (NSString*)name;
+// The title of the view. The name if it’s set otherwise the email.
+- (NSString*)title;
 
-// The email of the view. The email if the name is set, otherwise nil.
-- (NSString*)email;
+// The subtitle of the view. The email if the name is set, otherwise nil.
+- (NSString*)subtitle;
 
 // The full name of the AI tier. May be nil.
 - (NSString*)aiTierFullName;
