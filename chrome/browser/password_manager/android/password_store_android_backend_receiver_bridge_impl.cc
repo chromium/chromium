@@ -11,10 +11,10 @@
 #include "base/android/jni_android.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/password_manager/android/protos/list_affiliated_passwords_result.pb.h"
+#include "chrome/browser/password_manager/android/protos/list_passwords_result.pb.h"
+#include "chrome/browser/password_manager/android/protos/password_with_local_data.pb.h"
 #include "chrome/browser/password_manager/android/unified_password_manager_proto_utils.h"
-#include "chrome/browser/password_manager/protos/list_affiliated_passwords_result.pb.h"
-#include "chrome/browser/password_manager/protos/list_passwords_result.pb.h"
-#include "chrome/browser/password_manager/protos/password_with_local_data.pb.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
 
