@@ -15,6 +15,7 @@ BASE_DECLARE_FEATURE(kPrettyPrintDrmModesetConfigLogs);
 BASE_DECLARE_FEATURE(kUseDynamicCursorSize);
 BASE_DECLARE_FEATURE(kDispatchPointerEventsOnFrameEvent);
 BASE_DECLARE_FEATURE(kDispatchTouchEventsOnFrameEvent);
+BASE_DECLARE_FEATURE(kWaylandUnscaledTouchpadScrolling);
 
 bool IsWaylandOverlayDelegationEnabled();
 bool IsWaylandFractionalScaleV1Enabled();
@@ -23,6 +24,7 @@ bool IsPrettyPrintDrmModesetConfigLogsEnabled();
 bool IsUseDynamicCursorSizeEnabled();
 bool IsDispatchPointerEventsOnFrameEventEnabled();
 bool IsDispatchTouchEventsOnFrameEventEnabled();
+bool IsWaylandUnscaledTouchpadScrollingEnabled();
 
 }  // namespace ui
 

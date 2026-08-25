@@ -181,14 +181,17 @@ void WaylandPointer::OnAxis(void* data,
                             uint32_t time,
                             uint32_t axis,
                             wl_fixed_t value) {
-  // Wayland compositors send axis events with values in the surface coordinate
-  // space. They send a value of 10 per mouse wheel click by convention, so
-  // clients (e.g. GTK+) typically scale down by this amount to convert to
-  // discrete step coordinates. wl_pointer version 5 improves the situation by
-  // adding axis sources and discrete axis events.
-  const double kAxisValueScale = 10.0;
-  const double delta = -wl_fixed_to_double(value) / kAxisValueScale *
-                       MouseWheelEvent::kWheelDelta;
+  double delta = -wl_fixed_to_double(value);
+  if (!IsWaylandUnscaledTouchpadScrollingEnabled()) {
+    // Wayland compositors send axis events with values in the surface
+    // coordinate
+    // space. They send a value of 10 per mouse wheel click by convention, so
+    // clients (e.g. GTK+) typically scale down by this amount to convert to
+    // discrete step coordinates. wl_pointer version 5 improves the situation by
+    // adding axis sources and discrete axis events.
+    constexpr double kAxisValueScale = 10.0;
+    delta = delta / kAxisValueScale * MouseWheelEvent::kWheelDelta;
+  }
   const auto timestamp = wl::EventMillisecondsToTimeTicks(time);
   auto* self = static_cast<WaylandPointer*>(data);
   self->OnAxisImpl(delta, axis, timestamp, /*is_high_resolution=*/false);

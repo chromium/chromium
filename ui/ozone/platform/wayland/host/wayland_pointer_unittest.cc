@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -17,6 +18,7 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event.h"
 #include "ui/ozone/common/bitmap_cursor_factory.h"
+#include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
@@ -339,6 +341,113 @@ TEST_F(WaylandPointerTest, Axis) {
                 mouse_wheel_event->offset());
       EXPECT_EQ(gfx::PointF(), mouse_wheel_event->location_f());
       EXPECT_EQ(gfx::PointF(), mouse_wheel_event->root_location_f());
+    }
+  }
+}
+
+TEST_F(WaylandPointerTest, AxisFingerAndContinuous) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ui::kWaylandUnscaledTouchpadScrolling);
+
+  SendEnter();
+
+  for (uint32_t axis :
+       {WL_POINTER_AXIS_VERTICAL_SCROLL, WL_POINTER_AXIS_HORIZONTAL_SCROLL}) {
+    for (uint32_t source :
+         {WL_POINTER_AXIS_SOURCE_FINGER, WL_POINTER_AXIS_SOURCE_CONTINUOUS}) {
+      std::unique_ptr<Event> event;
+      EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(CloneEvent(&event));
+
+      PostToServerAndWait([axis, source](wl::TestWaylandServerThread* server) {
+        auto* const pointer = server->seat()->pointer()->resource();
+
+        wl_pointer_send_axis_source(pointer, source);
+        wl_pointer_send_axis(pointer, 1003, axis, wl_fixed_from_int(10));
+        wl_pointer_send_frame(pointer);
+      });
+
+      ASSERT_TRUE(event);
+      ASSERT_TRUE(event->IsScrollEvent());
+      auto* scroll_event = event->AsScrollEvent();
+      EXPECT_EQ(EventType::kScroll, scroll_event->type());
+      EXPECT_EQ(axis == WL_POINTER_AXIS_VERTICAL_SCROLL ? 0.0f : -10.0f,
+                scroll_event->x_offset());
+      EXPECT_EQ(axis == WL_POINTER_AXIS_VERTICAL_SCROLL ? -10.0f : 0.0f,
+                scroll_event->y_offset());
+    }
+  }
+}
+
+TEST_F(WaylandPointerTest, Axis120) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ui::kWaylandUnscaledTouchpadScrolling);
+
+  SendEnter();
+
+  for (uint32_t axis :
+       {WL_POINTER_AXIS_VERTICAL_SCROLL, WL_POINTER_AXIS_HORIZONTAL_SCROLL}) {
+    for (bool send_axis_source : {false, true}) {
+      std::unique_ptr<Event> event;
+      EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(CloneEvent(&event));
+
+      PostToServerAndWait([axis, send_axis_source](
+                              wl::TestWaylandServerThread* server) {
+        auto* const pointer = server->seat()->pointer()->resource();
+
+        if (send_axis_source) {
+          wl_pointer_send_axis_source(pointer, WL_POINTER_AXIS_SOURCE_WHEEL);
+        }
+
+        wl_pointer_send_axis(pointer, 1003, axis, wl_fixed_from_int(10));
+        if (wl_resource_get_version(pointer) >=
+            WL_POINTER_AXIS_VALUE120_SINCE_VERSION) {
+          wl_pointer_send_axis_value120(pointer, axis, 120);
+        }
+        wl_pointer_send_frame(pointer);
+      });
+
+      ASSERT_TRUE(event);
+      ASSERT_TRUE(event->IsMouseWheelEvent());
+      auto* mouse_wheel_event = event->AsMouseWheelEvent();
+      EXPECT_EQ(axis == WL_POINTER_AXIS_VERTICAL_SCROLL
+                    ? gfx::Vector2d(0, -MouseWheelEvent::kWheelDelta)
+                    : gfx::Vector2d(-MouseWheelEvent::kWheelDelta, 0),
+                mouse_wheel_event->offset());
+      EXPECT_EQ(gfx::PointF(), mouse_wheel_event->location_f());
+      EXPECT_EQ(gfx::PointF(), mouse_wheel_event->root_location_f());
+    }
+  }
+}
+
+TEST_F(WaylandPointerTest, AxisLegacyFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(ui::kWaylandUnscaledTouchpadScrolling);
+
+  SendEnter();
+
+  for (uint32_t axis :
+       {WL_POINTER_AXIS_VERTICAL_SCROLL, WL_POINTER_AXIS_HORIZONTAL_SCROLL}) {
+    for (uint32_t source :
+         {WL_POINTER_AXIS_SOURCE_FINGER, WL_POINTER_AXIS_SOURCE_CONTINUOUS}) {
+      std::unique_ptr<Event> event;
+      EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(CloneEvent(&event));
+
+      PostToServerAndWait([axis, source](wl::TestWaylandServerThread* server) {
+        auto* const pointer = server->seat()->pointer()->resource();
+
+        wl_pointer_send_axis_source(pointer, source);
+        wl_pointer_send_axis(pointer, 1003, axis, wl_fixed_from_int(10));
+        wl_pointer_send_frame(pointer);
+      });
+
+      ASSERT_TRUE(event);
+      ASSERT_TRUE(event->IsScrollEvent());
+      auto* scroll_event = event->AsScrollEvent();
+      EXPECT_EQ(EventType::kScroll, scroll_event->type());
+      EXPECT_EQ(axis == WL_POINTER_AXIS_VERTICAL_SCROLL ? 0.0f : -120.0f,
+                scroll_event->x_offset());
+      EXPECT_EQ(axis == WL_POINTER_AXIS_VERTICAL_SCROLL ? -120.0f : 0.0f,
+                scroll_event->y_offset());
     }
   }
 }
