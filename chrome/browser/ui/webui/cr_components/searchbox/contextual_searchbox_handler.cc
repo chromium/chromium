@@ -706,6 +706,11 @@ ContextualSearchboxHandler::~ContextualSearchboxHandler() {
     std::move(drive_upload_click_callback_)
         .Run(searchbox::mojom::DriveUploadResponse::New());
   }
+#if !BUILDFLAG(IS_ANDROID)
+  if (is_capturing_ || screenshare_picker_controller_) {
+    NotifyScreensharePickerClosed();
+  }
+#endif
   // Ensure any selected tabs are cleared when shutting down.
   if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
     if (auto* active_task_context_provider = GetActiveTaskContextProvider()) {
@@ -2552,6 +2557,25 @@ void ContextualSearchboxHandler::StartScreenshare(
           BindToUIThread(
               &ContextualSearchboxHandler::FallbackToChromeDefaultPicker,
               prefer_entire_screen, std::move(fallback_callback))));
+#else
+  std::move(callback).Run(std::nullopt);
+#endif
+}
+
+void ContextualSearchboxHandler::CaptureRegionScreenshot(
+    CaptureRegionScreenshotCallback callback) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (screenshare_picker_controller_ || is_capturing_) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  NotifyScreensharePickerOpened();
+  // Captures the full virtual desktop across all connected monitors
+  // (webrtc::kFullDesktopScreenId = -1).
+  constexpr content::DesktopMediaID::Id kFullDesktopScreenId = -1;
+  content::DesktopMediaID source(content::DesktopMediaID::TYPE_SCREEN,
+                                 kFullDesktopScreenId);
+  CaptureAndUploadScreenshot(source, std::move(callback));
 #else
   std::move(callback).Run(std::nullopt);
 #endif

@@ -1805,6 +1805,16 @@ void SearchboxHandler::GetSmartTabSharingActive(
 }
 #endif
 
+void SearchboxHandler::StartScreenshare(bool prefer_entire_screen,
+                                        StartScreenshareCallback callback) {
+  NOTREACHED();
+}
+
+void SearchboxHandler::CaptureRegionScreenshot(
+    CaptureRegionScreenshotCallback callback) {
+  NOTREACHED();
+}
+
 OmniboxController* SearchboxHandler::Delegate::GetOmniboxController() {
   return nullptr;
 }

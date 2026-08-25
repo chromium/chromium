@@ -199,6 +199,8 @@ class ContextualTasksExtensionHandler
   void OnThumbnailRemoved() override;
   void StartScreenshare(bool prefer_entire_screen,
                         StartScreenshareCallback callback) override;
+  void CaptureRegionScreenshot(
+      CaptureRegionScreenshotCallback callback) override;
 
  private:
   friend class content::DocumentUserData<ContextualTasksExtensionHandler>;

@@ -364,11 +364,13 @@ export class OmniboxEverywhereOmniboxElement extends
                        '#screenshotMenu')!.close();
   }
 
-  protected onScreenshotRegionClick_() {
-    // TODO(crbug.com/532198850): Hook up screenshot/screenshare capture
-    // trigger.
+  protected async onScreenshotRegionClick_() {
     this.shadowRoot.querySelector<CrActionMenuElement>(
                        '#screenshotMenu')!.close();
+    const {token} = await this.pageHandler().captureRegionScreenshot();
+    if (token) {
+      this.openComposebox_();
+    }
   }
 
   protected async onOpenDriveUpload_() {

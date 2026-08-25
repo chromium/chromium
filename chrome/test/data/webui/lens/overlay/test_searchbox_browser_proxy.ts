@@ -63,6 +63,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'setSmartTabSharingActive',
       'showContextMenu',
       'startScreenshare',
+      'captureRegionScreenshot',
       'stopAutocomplete',
       'submitQuery',
       'toggleSuggestionGroupIdVisibility',
@@ -302,6 +303,11 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
 
   startScreenshare(preferEntireScreen: boolean) {
     this.methodCalled('startScreenshare', {preferEntireScreen});
+    return Promise.resolve({token: null});
+  }
+
+  captureRegionScreenshot() {
+    this.methodCalled('captureRegionScreenshot');
     return Promise.resolve({token: null});
   }
 }

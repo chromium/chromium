@@ -501,5 +501,10 @@ ContextualTasksExtensionHandler::GetOrCreateInputStateModel() {
 void ContextualTasksExtensionHandler::StartScreenshare(
     bool prefer_entire_screen,
     StartScreenshareCallback callback) {
-  std::move(callback).Run(std::nullopt);
+  NOTREACHED();
+}
+
+void ContextualTasksExtensionHandler::CaptureRegionScreenshot(
+    CaptureRegionScreenshotCallback callback) {
+  NOTREACHED();
 }

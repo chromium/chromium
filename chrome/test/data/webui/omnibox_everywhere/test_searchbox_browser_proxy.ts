@@ -49,6 +49,8 @@ export class TestSearchboxBrowserProxy {
         'getPageClassification', {metricSource: 'OMNIBOX_EVERYWHERE'});
     this.handler.setPromiseResolveFor<'startScreenshare'>(
         'startScreenshare', {token: null});
+    this.handler.setPromiseResolveFor<'captureRegionScreenshot'>(
+        'captureRegionScreenshot', {token: null});
   }
 
   initVisibilityPrefs() {

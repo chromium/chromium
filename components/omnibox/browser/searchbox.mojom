@@ -573,6 +573,12 @@ interface PageHandler {
   StartScreenshare(bool prefer_entire_screen)
       => (mojo_base.mojom.UnguessableToken? token);
 
+  // Triggers interactive region selection screenshot capture.
+  // Returns a token on success, or null if the selection was cancelled, failed
+  // to start, or if there is already an active capture session.
+  CaptureRegionScreenshot()
+      => (mojo_base.mojom.UnguessableToken? token);
+
   // Gets the page classification for the current context.
   GetPageClassification() => (string metricSource);
 

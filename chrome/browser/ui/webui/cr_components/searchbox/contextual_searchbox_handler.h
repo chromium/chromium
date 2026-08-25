@@ -229,6 +229,8 @@ class ContextualSearchboxHandler
   void OnDriveDisclaimerAccepted() override;
   void StartScreenshare(bool prefer_entire_screen,
                         StartScreenshareCallback callback) override;
+  void CaptureRegionScreenshot(
+      CaptureRegionScreenshotCallback callback) override;
 #if !BUILDFLAG(IS_ANDROID)
   bool has_drive_picker_deactivation_blocker_for_testing() const {
     return drive_picker_deactivation_blocker_ != nullptr;

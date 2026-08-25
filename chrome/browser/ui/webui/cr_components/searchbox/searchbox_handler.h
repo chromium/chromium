@@ -201,7 +201,9 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   void OpenProfilePicker() override {}
   void GetPageClassification(GetPageClassificationCallback callback) override;
   void StartScreenshare(bool prefer_entire_screen,
-                        StartScreenshareCallback callback) override {}
+                        StartScreenshareCallback callback) override;
+  void CaptureRegionScreenshot(
+      CaptureRegionScreenshotCallback callback) override;
 #if !BUILDFLAG(IS_ANDROID)
   void SetSmartTabSharingActive(bool active) override;
   void GetSmartTabSharingActive(

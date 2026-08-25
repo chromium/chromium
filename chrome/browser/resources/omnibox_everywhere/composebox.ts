@@ -137,10 +137,9 @@ export class OmniboxEverywhereComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   protected onScreenshotRegionClick_() {
-    // TODO(crbug.com/532198850): Hook up screenshot/screenshare capture
-    // trigger.
     this.shadowRoot.querySelector<CrActionMenuElement>(
                        '#screenshotMenu')!.close();
+    this.searchboxHandler_.captureRegionScreenshot();
   }
   private webuiOmniboxSimplificationEnabled_: boolean =
       getLoadTimeBoolean('webuiOmniboxSimplificationEnabled', false);

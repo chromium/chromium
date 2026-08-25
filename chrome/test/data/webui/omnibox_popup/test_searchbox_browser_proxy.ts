@@ -45,6 +45,10 @@ export class TestSearchboxBrowserProxy {
     });
     this.handler.setPromiseResolveFor<'getSmartTabSharingActive'>(
         'getSmartTabSharingActive', {active: false});
+    this.handler.setPromiseResolveFor<'startScreenshare'>(
+        'startScreenshare', {token: null});
+    this.handler.setPromiseResolveFor<'captureRegionScreenshot'>(
+        'captureRegionScreenshot', {token: null});
   }
 
   initVisibilityPrefs() {
