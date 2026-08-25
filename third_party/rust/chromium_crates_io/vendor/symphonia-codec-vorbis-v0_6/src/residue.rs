@@ -81,6 +81,10 @@ impl Residue {
         let residue_classifications = bs.read_bits_leq32(6)? as u8 + 1;
         let residue_classbook = bs.read_bits_leq32(8)? as u8;
 
+        if residue_classbook >= max_codebook {
+            return decode_error("vorbis: invalid codebook for residue classbook");
+        }
+
         if residue_end < residue_begin {
             return decode_error("vorbis: invalid residue begin and end");
         }
@@ -178,8 +182,8 @@ impl Residue {
                     let mut iter = residue_channels.iter();
 
                     // Get indicies of first two channels in the residue.
-                    let ch0 = iter.next().unwrap();
-                    let ch1 = iter.next().unwrap();
+                    let ch0 = iter.next().expect("residue_channels.count() == 2");
+                    let ch1 = iter.next().expect("residue_channels.count() == 2");
 
                     // Get references to the channels.
                     let (a, b) = channels.split_at_mut(ch0).1.split_at_mut(ch1);
@@ -506,7 +510,7 @@ fn read_residue_partition_format1(
                 let vq = codebook.read_vq(bs)?;
 
                 // Amortize the cost of the bounds check.
-                let v: [f32; 2] = vq.try_into().unwrap();
+                let v: [f32; 2] = vq.try_into().expect("vq has exactly dim=2 elements");
 
                 out[0] += v[0];
                 out[1] += v[1];
@@ -516,7 +520,7 @@ fn read_residue_partition_format1(
             for out in out.chunks_exact_mut(4) {
                 let vq = codebook.read_vq(bs)?;
 
-                let v: [f32; 4] = vq.try_into().unwrap();
+                let v: [f32; 4] = vq.try_into().expect("vq has exactly dim=4 elements");
 
                 out[0] += v[0];
                 out[1] += v[1];

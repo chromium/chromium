@@ -306,13 +306,12 @@ impl VorbisDecoder {
 
         // Render all the audio channels.
         for (i, channel) in self.dsp.channels.iter_mut().enumerate() {
-            channel.synth(
-                mode.block_flag,
-                prev_block_flag,
-                &self.dsp.windows,
-                imdct,
-                self.buf.plane_mut(map_vorbis_channel(self.ident.n_channels, i)).unwrap(),
-            );
+            let ch_idx = map_vorbis_channel(self.ident.n_channels, i);
+            let plane = match self.buf.plane_mut(ch_idx) {
+                Some(p) => p,
+                None => return decode_error("vorbis: missing audio plane"),
+            };
+            channel.synth(mode.block_flag, prev_block_flag, &self.dsp.windows, imdct, plane);
         }
 
         // Trim gaps.
@@ -340,7 +339,7 @@ impl AudioDecoder for VorbisDecoder {
 
     fn codec_info(&self) -> &CodecInfo {
         // Only one codec is supported.
-        &Self::supported_codecs().first().unwrap().info
+        &Self::supported_codecs().first().expect("at least one codec registered").info
     }
 
     fn codec_params(&self) -> &AudioCodecParameters {

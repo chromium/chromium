@@ -32,13 +32,17 @@ fn float32_unpack(x: u32) -> f32 {
 /// return value to the power of `dimensions` is less than or equal to `entries`.
 #[inline(always)]
 fn lookup1_values(entries: u32, dimensions: u16) -> u32 {
+    // Prevent division by 0.
+    if dimensions == 0 {
+        return 0;
+    }
+
     // (value ^ dimensions) <= entries
     // [(value ^ dimensions) ^ (1 / dimensions)] = lower[entries ^ (1 / dimensions)]
     // value = lower[entries ^ (1 / dimensions)]
     let value = (entries as f32).powf(1.0f32 / f32::from(dimensions)).floor() as u32;
 
     assert!(value.pow(u32::from(dimensions)) <= entries);
-    assert!((value + 1).pow(u32::from(dimensions)) > entries);
 
     value
 }
@@ -223,6 +227,21 @@ impl VorbisCodebook {
         // Read codebook number of dimensions and entries.
         let codebook_dimensions = bs.read_bits_leq32(16)? as u16;
         let codebook_entries = bs.read_bits_leq32(24)?;
+
+        // The codebook dimensions cannot be 0 for VQ codebooks.
+        if codebook_dimensions == 0 {
+            return decode_error("vorbis: codebook dimenion cannot be 0");
+        }
+
+        // Limit the size of codebooks to something reasonable. This limits should never be seen in
+        // any real bitstream. These limits, together, limit the in-memory size of a VQ codebook to
+        // 16MB. A scalar codebook is limited to 512kB.
+        if codebook_dimensions > 32 {
+            return decode_error("vorbis: codebook dimension is too large (report this)");
+        }
+        if codebook_entries > 128 * 1024 {
+            return decode_error("vorbis: codebook entries too large (report this)");
+        }
 
         // Ordered flag.
         let is_length_ordered = bs.read_bool()?;
@@ -412,20 +431,41 @@ mod tests {
 
     fn naive_lookup1_values(entries: u32, dimensions: u16) -> u32 {
         let mut x = 1u32;
-        loop {
-            let xpow = x.pow(u32::from(dimensions));
-            if xpow > entries {
-                break;
+
+        // If dimensions is 0, then the only acceptable value for entries is 0 because 0 ^ 0 = 1.
+        if dimensions > 0 {
+            loop {
+                // Since entries is 24-bit, an overflow of u32 will by definition exceed the number
+                // of entries.
+                let Some(x_pow) = x.checked_pow(u32::from(dimensions))
+                else {
+                    break;
+                };
+
+                if x_pow > entries {
+                    break;
+                }
+                x += 1;
             }
-            x += 1;
         }
+
         x - 1
     }
 
     #[test]
     fn verify_lookup1_values() {
+        assert_eq!(lookup1_values(0, 0), naive_lookup1_values(0, 1));
+        assert_eq!(lookup1_values(1, 0), naive_lookup1_values(1, 0));
+        assert_eq!(lookup1_values(0, 1), naive_lookup1_values(0, 1));
         assert_eq!(lookup1_values(1, 1), naive_lookup1_values(1, 1));
         assert_eq!(lookup1_values(361, 2), naive_lookup1_values(361, 2));
+        assert_eq!(lookup1_values(361, 2), naive_lookup1_values(361, 2));
+        assert_eq!(lookup1_values(560, 3), naive_lookup1_values(560, 3));
+        assert_eq!(lookup1_values(3, 950), naive_lookup1_values(3, 950));
+        assert_eq!(lookup1_values(0xffff, 0xff), naive_lookup1_values(0xffff, 0xff));
+        assert_eq!(lookup1_values(0, u16::MAX), naive_lookup1_values(0, u16::MAX));
+        assert_eq!(lookup1_values(1, u16::MAX), naive_lookup1_values(1, u16::MAX));
+        assert_eq!(lookup1_values(0xff_ffff, u16::MAX), naive_lookup1_values(0xff_ffff, u16::MAX));
     }
 
     #[test]
