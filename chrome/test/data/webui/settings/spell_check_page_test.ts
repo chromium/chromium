@@ -7,13 +7,13 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {LanguageHelper, SettingsSpellCheckPageElement} from 'chrome://settings/lazy_load.js';
 import {LanguagesBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
-// <if expr="not is_macosx">
 import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+// <if expr="not is_macosx">
 import {loadTimeData} from 'chrome://settings/settings.js';
-import {assertEquals, assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 // </if>
 
-import {assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // <if expr="_google_chrome">
 import {assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -74,9 +74,25 @@ suite('SpellCheck', function() {
   suite('AllBuilds', function() {
     // <if expr="is_macosx">
     test('structure', function() {
+      const spellCheckLanguagesList =
+          spellcheckPage.shadowRoot!.querySelector('#spellCheckLanguagesList');
+      assertFalse(!!spellCheckLanguagesList);
+
+      const editDictionaryTrigger =
+          spellcheckPage.shadowRoot!.querySelector('#spellCheckSubpageTrigger');
+      assertFalse(!!editDictionaryTrigger);
+
+      // <if expr="not _google_chrome">
       const spellCheckCollapse =
           spellcheckPage.shadowRoot!.querySelector('#spellCheckCollapse');
       assertFalse(!!spellCheckCollapse);
+      // </if>
+
+      const toggle =
+          spellcheckPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+              '#enableSpellcheckingToggle');
+      assertTrue(!!toggle);
+      assertTrue(toggle.checked);
     });
     // </if>
 
@@ -228,6 +244,32 @@ suite('SpellCheck', function() {
           PrefService.getInstance()
               .getPref<string[]>('spellcheck.dictionaries')
               .value);
+
+      // When a single language has a dictionary download error, the list should
+      // not be hidden so the user can see the error and retry.
+      const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();
+      (languageSettingsPrivate.onSpellcheckDictionariesChanged as
+       FakeChromeEvent)
+          .callListeners([
+            {languageCode: 'en-US', isReady: false, downloadFailed: true},
+          ]);
+      await flushTasks();
+      assertFalse(list.hidden);
+
+      // When the dictionary download succeeds, the list is hidden again.
+      (languageSettingsPrivate.onSpellcheckDictionariesChanged as
+       FakeChromeEvent)
+          .callListeners([
+            {languageCode: 'en-US', isReady: true, downloadFailed: false},
+          ]);
+      await flushTasks();
+      assertTrue(list.hidden);
+
+      // When a single language is managed by policy, the list is not hidden.
+      PrefService.getInstance().setPrefValue(
+          'spellcheck.forced_dictionaries', ['en-US']);
+      await flushTasks();
+      assertFalse(list.hidden);
     });
 
     test('no supported languages', () => {
