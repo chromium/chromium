@@ -185,6 +185,7 @@ declare_args() {
   # the codebase which have been made manifestly safe.
   clang_unsafe_buffers_paths = ""
   clang_warning_suppression_file = ""
+  clang_raw_ptr_plugin_config_file = ""
   rust_clippy_conf_file = ""
 }
 
@@ -651,6 +652,9 @@ foreach(_target_type,
       if (_uses_cflags && clang_unsafe_buffers_paths != "") {
         inputs += [ clang_unsafe_buffers_paths ]
       }
+      if (_uses_cflags && clang_raw_ptr_plugin_config_file != "") {
+        inputs += [ clang_raw_ptr_plugin_config_file ]
+      }
     }
   }
 }
@@ -702,6 +706,9 @@ foreach(_target_type,
       }
       if (_uses_cflags && clang_unsafe_buffers_paths != "") {
         inputs += [ clang_unsafe_buffers_paths ]
+      }
+      if (_uses_cflags && clang_raw_ptr_plugin_config_file != "") {
+        inputs += [ clang_raw_ptr_plugin_config_file ]
       }
 
       if (!defined(deps)) {

@@ -73,6 +73,8 @@ declare_args() {
       ((is_linux && !is_castos) || (is_android && !is_cast_android) || is_win ||
        is_mac || is_ios || is_chromeos)
 
+  enable_check_container_fields = true
+
   # Use this instead of clang_use_chrome_plugins to enable just the unsafe
   # buffers functionality of the plugin
   clang_use_unsafe_buffers_plugin =
@@ -115,6 +117,11 @@ if (defined(clang_warning_suppression_file) &&
     "$clang_warning_suppression_file" != "") {
   rbe_bug_326584510_missing_input_list +=
       [ rebase_path(clang_warning_suppression_file, rbe_exec_root) ]
+}
+if (clang_use_raw_ptr_plugin && defined(clang_raw_ptr_plugin_config_file) &&
+    "$clang_raw_ptr_plugin_config_file" != "") {
+  rbe_bug_326584510_missing_input_list +=
+      [ rebase_path(clang_raw_ptr_plugin_config_file, rbe_exec_root) ]
 }
 
 # The leading space is important, if the string is non-empty.

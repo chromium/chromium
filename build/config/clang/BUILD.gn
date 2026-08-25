@@ -53,6 +53,9 @@ clang_plugin("raw_ptr_check") {
     # The plugin is built directly into clang, so there's no need to load it
     # dynamically.
     plugin = "raw-ptr-plugin"
+    if (clang_raw_ptr_plugin_config_file != "") {
+      inputs = [ clang_raw_ptr_plugin_config_file ]
+    }
     plugin_arguments = [
       "check-raw-ptr-to-stack-allocated",
       "disable-check-raw-ptr-to-stack-allocated-error",
@@ -77,6 +80,14 @@ clang_plugin("raw_ptr_check") {
 
     if (enable_check_raw_ref_fields) {
       plugin_arguments += [ "check-raw-ref-fields" ]
+    }
+
+    if (enable_check_container_fields) {
+      if (clang_raw_ptr_plugin_config_file != "") {
+        plugin_arguments +=
+            [ "config-path=" +
+              rebase_path(clang_raw_ptr_plugin_config_file, root_build_dir) ]
+      }
     }
 
     # TODO(crbug.com/330759291): once this has landed and simmered for
