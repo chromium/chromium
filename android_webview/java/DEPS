@@ -16,4 +16,6 @@ include_rules = [
   "+media/base/android/java",
 
   "+mojo/public/java",
+
+  "+ui/accessibility/android/java",
 ]

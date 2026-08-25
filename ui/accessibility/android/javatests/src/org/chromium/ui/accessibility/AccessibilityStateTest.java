@@ -500,7 +500,8 @@ public class AccessibilityStateTest {
         // App starts out in foreground.
         simulateActivityStateChange(
                 mockActivity, ActivityState.STARTED, ApplicationState.HAS_RUNNING_ACTIVITIES);
-        AccessibilityState.initializeOnStartup();
+        AccessibilityState.initializeOnStartup(
+                new ApplicationStatusAccessibilityStateVisibilityManager());
         AccessibilityState.registerObservers();
 
         // Verify initial call from initializeOnStartup().
@@ -554,7 +555,8 @@ public class AccessibilityStateTest {
         config.updateFrom(configDelta);
         mDelegate.updateAccessibilityServices();
 
-        AccessibilityState.initializeOnStartup();
+        AccessibilityState.initializeOnStartup(
+                new ApplicationStatusAccessibilityStateVisibilityManager());
         AccessibilityState.registerObservers();
         simulateActivityStateChange(
                 mockActivity, ActivityState.STARTED, ApplicationState.HAS_RUNNING_ACTIVITIES);
@@ -584,7 +586,8 @@ public class AccessibilityStateTest {
         Activity mockActivity = Robolectric.buildActivity(Activity.class).setup().get();
 
         // Initialize and register observers.
-        AccessibilityState.initializeOnStartup();
+        AccessibilityState.initializeOnStartup(
+                new ApplicationStatusAccessibilityStateVisibilityManager());
         AccessibilityState.registerObservers();
 
         // Verify initial call from initializeOnStartup().

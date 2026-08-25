@@ -550,6 +550,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/android_webview/WebResponseCallback.java",
       "java/src/org/chromium/android_webview/WebViewChromiumRunQueue.java",
       "java/src/org/chromium/android_webview/WebviewErrorCode.java",
+      "java/src/org/chromium/android_webview/accessibility/AwAccessibilityStateVisibilityManager.java",
       "java/src/org/chromium/android_webview/autofill/AndroidAutofillSafeModeAction.java",
       "java/src/org/chromium/android_webview/client_hints/AwUserAgentMetadata.java",
       "java/src/org/chromium/android_webview/contextmenu/AwContextMenuCoordinator.java",
@@ -676,6 +677,7 @@ if (_is_default_toolchain) {
       "//third_party/blink/public/mojom:mojom_platform_java",
       "//third_party/jni_zero:jni_zero_java",
       "//third_party/metrics_proto:metrics_proto_java",
+      "//ui/accessibility:ax_base_java",
       "//ui/android:ui_no_recycler_view_java",
       "//url:gurl_java",
     ]

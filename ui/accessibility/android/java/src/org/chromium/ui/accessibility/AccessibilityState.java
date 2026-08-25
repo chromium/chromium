@@ -351,8 +351,8 @@ public class AccessibilityState {
         getDelegate().registerObservers();
     }
 
-    public static void initializeOnStartup() {
-        getDelegate().initializeOnStartup();
+    public static void initializeOnStartup(AccessibilityStateVisibilityManager visibilityManager) {
+        getDelegate().initializeOnStartup(visibilityManager);
     }
 
     @NativeMethods

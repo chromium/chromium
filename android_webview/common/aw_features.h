@@ -47,6 +47,7 @@ extern const base::FeatureParam<bool> kWebViewEnableDnsPlatformNoSystem;
 BASE_DECLARE_FEATURE(kWebViewFasterGetDefaultUserAgent);
 BASE_DECLARE_FEATURE(kWebViewFileSystemAccess);
 BASE_DECLARE_FEATURE(kWebViewForceWebAuthn);
+BASE_DECLARE_FEATURE(kWebViewObserveAccessibilityState);
 BASE_DECLARE_FEATURE(kWebViewPurgeMemoryInBackground);
 extern const base::FeatureParam<base::TimeDelta>
     kWebViewPurgeMemoryInBackgroundDelay;
