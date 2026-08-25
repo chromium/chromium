@@ -14376,6 +14376,29 @@
             ]
         }
     ],
+    "OutOfProcessPrintDriversPrint": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230912",
+                    "params": {
+                        "EarlyStart": "false",
+                        "JobPrint": "true",
+                        "Sandbox": "false"
+                    },
+                    "enable_features": [
+                        "EnableOopPrintDrivers"
+                    ]
+                }
+            ]
+        }
+    ],
     "PMLoadingPageVoter": [
         {
             "platforms": [
