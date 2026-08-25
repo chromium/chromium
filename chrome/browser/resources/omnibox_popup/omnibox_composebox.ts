@@ -14,7 +14,7 @@ import '//resources/cr_components/localized_link/localized_link.js';
 import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_components/composebox/composebox_lens_search.js';
-import {ComposeboxFile, getLoadTimeBoolean, hasOnlyAutoAddedTabAttachments, mapMojoSourceToOrigin, mapUploadErrorToProcessFilesError, ProcessFilesError} from '//resources/cr_components/composebox/common.js';
+import {ComposeboxFile, getLoadTimeBoolean, hasOnlyAutoAddedTabs, hasOnlyAutoAddedTabAttachments, mapMojoSourceToOrigin, mapUploadErrorToProcessFilesError, ProcessFilesError} from '//resources/cr_components/composebox/common.js';
 import type {TabUpload} from '//resources/cr_components/composebox/common.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
@@ -78,6 +78,7 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
       isLensSearchChipShown_: {type: Boolean},
       isContentSharingEnabled_: {type: Boolean},
       isLensSearchEligible_: {type: Boolean},
+      askGComposeboxPlaceholderEnabled_: {type: Boolean},
     };
   }
 
@@ -92,6 +93,8 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
   protected accessor isLensSearchChipShown_: boolean = false;
   protected accessor isContentSharingEnabled_: boolean = false;
   protected accessor isLensSearchEligible_: boolean = false;
+  protected accessor askGComposeboxPlaceholderEnabled_: boolean =
+      getLoadTimeBoolean('askGComposeboxPlaceholderEnabled', false);
 
   protected onLensSearchClick_(e: Event) {
     e.stopPropagation();
@@ -123,6 +126,7 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
   override connectedCallback() {
     super.connectedCallback();
     this.animationState = GlowAnimationState.EXPANDING;
+    this.updateInputPlaceholder();
 
     this.listenerIds_ = [
       this.searchboxCallbackRouter_.updateContentSharingPolicy.addListener(
@@ -170,6 +174,23 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
           this.isContentSharingEnabled_ && this.isLensSearchEligible_ &&
           !this.hasContent(/* ignoreAutoAddedTabs= */ true);
     }
+
+    if (changedPrivateProperties.has('files') ||
+        changedPrivateProperties.has('inputState') ||
+        changedPrivateProperties.has('askGComposeboxPlaceholderEnabled_')) {
+      this.updateInputPlaceholder();
+    }
+  }
+
+  override updateInputPlaceholder() {
+    const hasAutoAddedTab = hasOnlyAutoAddedTabs(this.files);
+    if (this.askGComposeboxPlaceholderEnabled_ && hasAutoAddedTab &&
+        (!this.inputState ||
+         this.inputState.activeTool === ToolMode.kUnspecified)) {
+      this.inputPlaceholder = this.i18n('askAboutTab');
+      return;
+    }
+    super.updateInputPlaceholder();
   }
 
   override firstUpdated(changedProperties: PropertyValues<this>) {

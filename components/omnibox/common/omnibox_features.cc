@@ -609,6 +609,8 @@ const base::FeatureParam<bool> kAskGComposeboxLensChip{
 const base::FeatureParam<bool> kAskGBlockAutoTabZeroStateSuggestions{
     &kWebUIOmniboxAskGAboutThisPage,
     "Omnibox_AskGBlockAutoTabZeroStateSuggestions", false};
+const base::FeatureParam<bool> kAskGComposeboxPlaceholder{
+    &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGComposeboxPlaceholder", false};
 const base::FeatureParam<bool> kAskGBypassPrivacyNotice{
     &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGBypassPrivacyNotice", false};
 

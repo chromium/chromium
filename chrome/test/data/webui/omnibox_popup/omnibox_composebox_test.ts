@@ -2759,4 +2759,113 @@ suite('OmniboxComposeboxTest', () => {
       });
     });
   });
+
+  suite('AskGComposeboxPlaceholder', () => {
+    setup(async () => {
+      loadTimeData.overrideValues({
+        askGComposeboxPlaceholderEnabled: true,
+        askAboutTab: 'Ask about this page',
+        searchboxComposePlaceholder: 'Ask AI Mode',
+        composeDeepSearchPlaceholder: 'Ask Deep Search',
+      });
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      omniboxComposebox = document.createElement('cr-omnibox-composebox');
+      document.body.appendChild(omniboxComposebox);
+      await microtasksFinished();
+    });
+
+    const addTabWithSource = async (source: TabAttachmentSource) => {
+      const mockToken = 'mock-tab-token';
+      testProxy.handler.setPromiseResolveFor('addTabContext', mockToken);
+      const context = {
+        input: '',
+        attachments: [{
+          tabAttachment: {
+            tabId: 42,
+            title: 'Google Search',
+            url: 'https://google.com',
+            source,
+          },
+        }],
+        toolMode: 0,
+      };
+      omniboxComposebox.addSearchContext(context as unknown as SearchContext);
+      await microtasksFinished();
+      await testProxy.handler.whenCalled('addTabContext');
+      await microtasksFinished();
+      return mockToken;
+    };
+
+    const addAutoAddedTab = () =>
+        addTabWithSource(TabAttachmentSource.kAutoAdded);
+
+    test('placeholder is default when flag enabled but no tab attached', () => {
+      assertEquals('Ask AI Mode', omniboxComposebox.inputPlaceholder);
+    });
+
+    test('placeholder is default when tab is manually added', async () => {
+      await addTabWithSource(TabAttachmentSource.kContextMenu);
+      assertEquals('Ask AI Mode', omniboxComposebox.inputPlaceholder);
+    });
+
+    test('placeholder becomes "Ask about this page" when auto-added tab is present', async () => {
+      await addAutoAddedTab();
+      assertEquals('Ask about this page', omniboxComposebox.inputPlaceholder);
+    });
+
+    test('placeholder stays "Ask about this page" after inputState update with auto-added tab', async () => {
+      await addAutoAddedTab();
+
+      const inputState = createDefaultInputState();
+      inputState.hintText = 'Ask anything';
+      omniboxComposebox.inputState = inputState;
+      await microtasksFinished();
+
+      assertEquals('Ask about this page', omniboxComposebox.inputPlaceholder);
+    });
+
+    test('placeholder resets to default when auto-added tab is deleted', async () => {
+      const token = await addAutoAddedTab();
+      assertEquals('Ask about this page', omniboxComposebox.inputPlaceholder);
+
+      omniboxComposebox.deleteFile(token);
+      await microtasksFinished();
+
+      assertEquals('Ask AI Mode', omniboxComposebox.inputPlaceholder);
+    });
+
+    test('tool mode overrides the placeholder when active even with auto-added tab', async () => {
+      await addAutoAddedTab();
+
+      const inputState = createDefaultInputState();
+      inputState.activeTool = ToolMode.kDeepSearch;
+      inputState.toolConfigs = [{
+        tool: ToolMode.kDeepSearch,
+        hintText: 'Ask Deep Search',
+        menuLabel: 'Deep Search',
+        chipLabel: '',
+        disableActiveModelSelection: false,
+        aimUrlParams: [],
+        menuTooltip: '',
+      }];
+      omniboxComposebox.inputState = inputState;
+      await microtasksFinished();
+
+      assertEquals('Ask Deep Search', omniboxComposebox.inputPlaceholder);
+    });
+
+    test('uses default placeholder when flag is disabled even with auto-added tab', async () => {
+      loadTimeData.overrideValues({
+        askGComposeboxPlaceholderEnabled: false,
+      });
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      omniboxComposebox = document.createElement('cr-omnibox-composebox');
+      document.body.appendChild(omniboxComposebox);
+      await microtasksFinished();
+
+      await addAutoAddedTab();
+
+      assertEquals('Ask AI Mode', omniboxComposebox.inputPlaceholder);
+    });
+  });
 });
