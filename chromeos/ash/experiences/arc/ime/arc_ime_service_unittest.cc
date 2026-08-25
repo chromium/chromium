@@ -177,11 +177,12 @@ class FakeArcWindowDelegate : public ArcImeService::ArcWindowDelegate {
     return window ? test_input_method_.get() : nullptr;
   }
 
-  std::unique_ptr<aura::Window> CreateFakeArcWindow() {
+  std::unique_ptr<aura::Window> CreateFakeArcWindow(
+      aura::Window* parent = nullptr) {
     const int id = next_id_++;
     arc_window_id_.insert(id);
     return aura::test::CreateTestWindow(
-        {.delegate = &dummy_delegate_, .window_id = id});
+        {.delegate = &dummy_delegate_, .parent = parent, .window_id = id});
   }
 
   std::unique_ptr<aura::Window> CreateFakeNonArcWindow() {
@@ -751,6 +752,31 @@ TEST_F(ArcImeServiceTest, SendKeyEvent) {
     // And the callback is called with true.
     EXPECT_TRUE(handled.value());
   }
+}
+
+TEST_F(ArcImeServiceTest, ToplevelObserverRemovedOnChildDetach) {
+  std::unique_ptr<aura::Window> toplevel_win =
+      fake_window_delegate_->CreateFakeArcWindow();
+  std::unique_ptr<aura::Window> child_win =
+      fake_window_delegate_->CreateFakeArcWindow(toplevel_win.get());
+
+  // Focus the child window. Both the child window and toplevel window should be
+  // observed by ArcImeService.
+  instance_->OnWindowFocused(child_win.get(), nullptr);
+  EXPECT_TRUE(child_win->HasObserver(instance_.get()));
+  EXPECT_TRUE(toplevel_win->HasObserver(instance_.get()));
+
+  // Remove the child window from its parent.
+  // OnWindowHierarchyChanging should remove the observer from the toplevel
+  // window.
+  toplevel_win->RemoveChild(child_win.get());
+  EXPECT_FALSE(toplevel_win->HasObserver(instance_.get()));
+
+  // Simulating focus loss as a result of detachment removes the observer from
+  // the child window as well.
+  instance_->OnWindowFocused(nullptr, child_win.get());
+  EXPECT_FALSE(child_win->HasObserver(instance_.get()));
+  EXPECT_FALSE(toplevel_win->HasObserver(instance_.get()));
 }
 
 }  // namespace arc
