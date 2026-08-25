@@ -507,22 +507,22 @@ ci.thin_tester(
         ],
         per_test_modifications = {
             "context_lost_passthrough_ganesh_tests": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+                reason = "TODO(crbug.com/496616828): Swap out the default passthrough tests for this once Graphite is supported on Pixel 10 devices",
             ),
             "context_lost_passthrough_graphite_tests": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+                reason = "TODO(crbug.com/496616828): Graphite is currently explicitly blocked on Pixel 10 devices",
             ),
             "context_lost_validating_tests": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+                reason = "Passthrough is already shipped everywhere but Webview",
             ),
             "expected_color_pixel_passthrough_ganesh_test": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+                reason = "TODO(crbug.com/496616828): Swap out the default passthrough tests for this once Graphite is supported on Pixel 10 devices",
             ),
             "expected_color_pixel_passthrough_graphite_test": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+                reason = "TODO(crbug.com/496616828): Graphite is currently explicitly blocked on Pixel 10 devices",
             ),
             "expected_color_pixel_validating_test": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+                reason = "Passthrough is already shipped everywhere but Webview",
             ),
             "gl_tests_passthrough": targets.mixin(
                 args = [
@@ -535,25 +535,25 @@ ci.thin_tester(
                 ],
             ),
             "pixel_skia_gold_passthrough_ganesh_test": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+                reason = "TODO(crbug.com/496616828): Swap out the default passthrough tests for this once Graphite is supported on Pixel 10 devices",
             ),
             "pixel_skia_gold_passthrough_graphite_test": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+                reason = "TODO(crbug.com/496616828): Graphite is currently explicitly blocked on Pixel 10 devices",
             ),
             "pixel_skia_gold_validating_test": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+                reason = "Passthrough is already shipped everywhere but Webview",
             ),
             "screenshot_sync_passthrough_ganesh_tests": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+                reason = "TODO(crbug.com/496616828): Swap out the default passthrough tests for this once Graphite is supported on Pixel 10 devices",
             ),
             "screenshot_sync_passthrough_graphite_tests": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+                reason = "TODO(crbug.com/496616828): Graphite is currently explicitly blocked on Pixel 10 devices",
             ),
             "screenshot_sync_validating_tests": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+                reason = "Passthrough is already shipped everywhere but Webview",
             ),
             "webcodecs_graphite_tests": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+                reason = "TODO(crbug.com/496616828): Graphite is currently explicitly blocked on Pixel 10 devices",
             ),
             "webcodecs_validating_ganesh_tests": targets.per_test_modification(
                 mixins = targets.mixin(
@@ -574,22 +574,22 @@ ci.thin_tester(
                 ),
             ),
             "webgl2_conformance_validating_tests": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+                reason = "Passthrough is already shipped everywhere but Webview",
             ),
             "webgl_conformance_gles_passthrough_ganesh_tests": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+                reason = "TODO(crbug.com/496616828): Swap out the default passthrough tests for this once Graphite is supported on Pixel 10 devices",
             ),
             "webgl_conformance_gles_passthrough_graphite_tests": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+                reason = "TODO(crbug.com/496616828): Graphite is currently explicitly blocked on Pixel 10 devices",
             ),
             "webgl_conformance_validating_ganesh_tests": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+                reason = "Passthrough is already shipped everywhere but Webview",
             ),
             "webgl_conformance_validating_graphite_tests": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+                reason = "TODO(crbug.com/496616828): Graphite is currently explicitly blocked on Pixel 10 devices",
             ),
             "webrtc_graphite_tests": targets.remove(
-                reason = "TODO(crbug.com/541312843): Determine if we want to run this suite after standardizing test bundles",
+                reason = "TODO(crbug.com/496616828): Graphite is currently explicitly blocked on Pixel 10 devices",
             ),
             "webrtc_validating_ganesh_tests": targets.per_test_modification(
                 replacements = targets.replacements(
