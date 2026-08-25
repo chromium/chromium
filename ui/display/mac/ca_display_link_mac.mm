@@ -4,8 +4,7 @@
 
 #include "ui/display/mac/ca_display_link_mac.h"
 
-#import <AppKit/AppKit.h>
-#import <QuartzCore/CADisplayLink.h>
+#import <QuartzCore/QuartzCore.h>
 
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -17,6 +16,20 @@
 #include "base/trace_event/trace_event.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/display/mac/screen_utils_mac.h"
+
+extern "C" {
+// SLSGetDisplayLink() is an undocumented private function (SPI) in the
+// SkyLight framework that creates a CADisplayLink directly from a
+// CGDirectDisplayID without requiring NSApplication or AppKit objects
+// (e.g., NSScreen, NSWindow, or NSView).
+//
+// `framework_dirs = [ "$mac_sdk_path/System/Library/PrivateFrameworks" ]` is
+// added to //ui/display/BUILD.gn to link SkyLight.framework. Remove this
+// private framework dependency after Apple provides a public API for this.
+CADisplayLink* SLSGetDisplayLink(CGDirectDisplayID display_id,
+                                 id target,
+                                 SEL action) API_AVAILABLE(macos(14.0));
+}
 
 API_AVAILABLE(macos(14.0))
 @interface CADisplayLinkTarget : NSObject {
@@ -167,8 +180,8 @@ scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplay(
     }
 
     objc_state->target = [[CADisplayLinkTarget alloc] init];
-    objc_state->display_link = [screen displayLinkWithTarget:objc_state->target
-                                                    selector:@selector(step:)];
+    objc_state->display_link =
+        SLSGetDisplayLink(display_id, objc_state->target, @selector(step:));
 
     if (!objc_state->display_link) {
       TryRecordDisplayLinkCreation(display_id, /*success=*/false,
