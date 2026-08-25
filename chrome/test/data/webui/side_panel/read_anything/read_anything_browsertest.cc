@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
@@ -46,7 +47,13 @@ class ReadAnythingMochaBrowserTest : public WebUIMochaBrowserTest {
 
 using ReadAnythingMochaTest = ReadAnythingMochaBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Speech) {
+// TODO(crbug.com/550813339): Flaky on Linux, ChromeOS, and Windows.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#define MAYBE_Speech DISABLED_Speech
+#else
+#define MAYBE_Speech Speech
+#endif
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, MAYBE_Speech) {
   RunSidePanelTest("side_panel/read_anything/speech_test.js", "mocha.run()");
 }
 
@@ -251,7 +258,14 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Toolbar) {
   RunSidePanelTest("side_panel/read_anything/toolbar_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, AppReceivesToolbarChanges) {
+// TODO(crbug.com/550834958): Flaky on Linux, ChromeOS, and Windows.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#define MAYBE_AppReceivesToolbarChanges DISABLED_AppReceivesToolbarChanges
+#else
+#define MAYBE_AppReceivesToolbarChanges AppReceivesToolbarChanges
+#endif
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest,
+                       MAYBE_AppReceivesToolbarChanges) {
   RunSidePanelTest(
       "side_panel/read_anything/app_receives_toolbar_changes_test.js",
       "mocha.run()");
@@ -282,7 +296,13 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechUsesMaxTextLength) {
       "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ReadAloudHighlight) {
+// TODO(crbug.com/550882557): Flaky on Linux, ChromeOS, and Windows.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#define MAYBE_ReadAloudHighlight DISABLED_ReadAloudHighlight
+#else
+#define MAYBE_ReadAloudHighlight ReadAloudHighlight
+#endif
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, MAYBE_ReadAloudHighlight) {
   RunSidePanelTest("side_panel/read_anything/read_aloud_highlighting_test.js",
                    "mocha.run()");
 }
@@ -348,7 +368,13 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SettingsMenu) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ToolbarSettingsMenu) {
+// TODO(crbug.com/549300296): Flaky on Linux, ChromeOS, and Windows.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#define MAYBE_ToolbarSettingsMenu DISABLED_ToolbarSettingsMenu
+#else
+#define MAYBE_ToolbarSettingsMenu ToolbarSettingsMenu
+#endif
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, MAYBE_ToolbarSettingsMenu) {
   RunSidePanelTest("side_panel/read_anything/toolbar_settings_menu_test.js",
                    "mocha.run()");
 }
