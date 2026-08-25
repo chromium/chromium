@@ -502,7 +502,7 @@ static CSSValueID DetermineTextDirection(DocumentFragment* vtt_root) {
 }
 
 double VTTCue::CalculateComputedTextPosition() const {
-  // http://dev.w3.org/html5/webvtt/#dfn-cue-computed-position
+  // https://w3c.github.io/webvtt/#cue-computed-position
 
   // 1. If the position is numeric, then return the value of the position and
   // abort these steps. (Otherwise, the position is the special value auto.)
@@ -557,7 +557,7 @@ PositionAlignSetting VTTCue::CalculateComputedPositionAlignment(
     case AlignSetting::kEnd:
       return is_ltr ? PositionAlignSetting::kLineRight
                     : PositionAlignSetting::kLineLeft;
-    default:
+    case AlignSetting::kCenter:
       return PositionAlignSetting::kCenter;
   }
 }
