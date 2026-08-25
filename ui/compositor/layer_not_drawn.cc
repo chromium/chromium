@@ -5,6 +5,7 @@
 #include "ui/compositor/layer_not_drawn.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/paint/display_item_list.h"
 
@@ -37,6 +38,10 @@ bool LayerNotDrawn::FillsBoundsCompletely() const {
 void LayerNotDrawn::Reset() {
   content_layer_->ClearClient();
   content_layer_ = nullptr;
+}
+
+void LayerNotDrawn::OnPaintScheduled() {
+  NOTREACHED();
 }
 
 }  // namespace ui

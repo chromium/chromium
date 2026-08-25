@@ -91,6 +91,7 @@ class COMPOSITOR_EXPORT LayerSurface : public Layer {
   // Layer:
   void RecomputeDrawsContentAndUVRect() override;
   void Reset() override;
+  void OnPaintScheduled() override;
 
  private:
   gfx::Size frame_size_in_dip_;

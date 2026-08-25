@@ -127,13 +127,8 @@ bool LayerWithExternalTexture::ShouldSchedulePaint() const {
 }
 
 void LayerWithExternalTexture::OnPaintScheduled() {
+  CHECK(HasTransferableResource());
   ScheduleDraw();
-}
-
-bool LayerWithExternalTexture::ShouldCommitDamage() const {
-  // A layer with an external texture needs to commit damage when it has a
-  // transferable resource to display.
-  return HasTransferableResource();
 }
 
 bool LayerWithExternalTexture::PrepareTransferableResource(

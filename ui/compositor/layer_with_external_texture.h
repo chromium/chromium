@@ -68,7 +68,6 @@ class COMPOSITOR_EXPORT LayerWithExternalTexture
       const LayerMirrorSettings& settings) override;
   void Reset() override;
   void OnPaintScheduled() override;
-  bool ShouldCommitDamage() const override;
 
  private:
   friend class LayerTestApi;

@@ -62,8 +62,7 @@ class COMPOSITOR_EXPORT LayerTextured : public Layer,
  protected:
   // Layer:
   void OnPaintScheduled() override;
-  bool ShouldCommitDamage() const override;
-  void CommitDamage(const cc::Region& damage) override;
+  void CommitDamage() override;
   void Reset() override;
 
  private:

@@ -42,6 +42,7 @@ class COMPOSITOR_EXPORT LayerNotDrawn : public Layer,
  private:
   // Layer:
   void Reset() override;
+  void OnPaintScheduled() override;
 
   scoped_refptr<cc::PictureLayer> content_layer_;
 };

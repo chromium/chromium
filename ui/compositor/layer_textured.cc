@@ -100,19 +100,17 @@ void LayerTextured::OnPaintScheduled() {
   ScheduleDraw();
 }
 
-bool LayerTextured::ShouldCommitDamage() const {
-  // If painting is deferred, we don't commit the accumulated damage yet.
-  if (deferred_paint_requests_) {
-    return false;
+void LayerTextured::CommitDamage() {
+  // If painting is deferred, or if there is no delegate to paint our contents,
+  // do not commit the accumulated damage yet.
+  if (deferred_paint_requests_ || !delegate_) {
+    return;
   }
 
-  // Otherwise, we commit damage if we have a delegate to paint our contents.
-  return delegate_ != nullptr;
-}
-
-void LayerTextured::CommitDamage(const cc::Region& damage) {
-  Layer::CommitDamage(damage);
-  paint_region_.Union(damage);
+  // Record the accumulated damage in `paint_region_` to be used when the
+  // compositor is ready to paint the content in PaintContentsToDisplayList().
+  paint_region_.Union(damaged_region_);
+  Layer::CommitDamage();
 }
 
 void LayerTextured::Reset() {

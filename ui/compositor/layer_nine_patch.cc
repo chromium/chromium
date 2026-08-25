@@ -4,6 +4,7 @@
 
 #include "ui/compositor/layer_nine_patch.h"
 
+#include "base/notreached.h"
 #include "cc/layers/nine_patch_layer.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -76,6 +77,10 @@ void LayerNinePatch::HandleDeviceScaleFactorChange() {
 
 void LayerNinePatch::Reset() {
   nine_patch_layer_ = nullptr;
+}
+
+void LayerNinePatch::OnPaintScheduled() {
+  NOTREACHED();
 }
 
 }  // namespace ui

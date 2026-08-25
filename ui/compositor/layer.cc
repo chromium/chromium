@@ -1079,22 +1079,19 @@ void Layer::SendDamagedRects() {
   if (delegate_)
     delegate_->UpdateVisualState();
 
-  if (!ShouldCommitDamage()) {
+  CommitDamage();
+}
+
+void Layer::CommitDamage() {
+  if (damaged_region_.IsEmpty()) {
     return;
   }
 
-  CommitDamage(damaged_region_);
-  damaged_region_.Clear();
-}
-
-void Layer::CommitDamage(const cc::Region& damage) {
-  for (gfx::Rect damaged_rect : damage) {
+  for (gfx::Rect damaged_rect : damaged_region_) {
     cc_layer_->SetNeedsDisplayRect(damaged_rect);
   }
-}
 
-bool Layer::ShouldCommitDamage() const {
-  return !damaged_region_.IsEmpty();
+  damaged_region_.Clear();
 }
 
 void Layer::CompleteAllAnimations() {

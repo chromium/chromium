@@ -49,11 +49,6 @@ void LayerSolidColor::OnPaintScheduled() {
   NOTREACHED();
 }
 
-bool LayerSolidColor::ShouldCommitDamage() const {
-  CHECK(damaged_region_.IsEmpty());
-  return false;
-}
-
 void LayerSolidColor::SetShowReflectedLayerSubtree(
     Layer* subtree_reflected_layer) {
   DCHECK(subtree_reflected_layer);

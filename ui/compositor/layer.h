@@ -473,8 +473,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   // SchedulePaint() for that.
   void ScheduleDraw();
 
-  // Uses damaged rectangles recorded in |damaged_region_| to invalidate the
-  // |cc_layer_|.
+  // Commits damaged rectangles to the |cc_layer_| and updates visual state.
   void SendDamagedRects();
 
   void CompleteAllAnimations();
@@ -542,14 +541,12 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   virtual void HandleDeviceScaleFactorChange();
 
   // Called when a paint is scheduled (from Layer::SchedulePaint()).
-  virtual void OnPaintScheduled() {}
+  virtual void OnPaintScheduled() = 0;
 
-  // Returns true if the accumulated damage should be committed to the
-  // cc::Layer.
-  virtual bool ShouldCommitDamage() const;
-
-  // Commits the damage to the cc::Layer.
-  virtual void CommitDamage(const cc::Region& damage);
+  // Commits the damage recorded in `damaged_region_` to the cc::Layer. Damage
+  // is accumulated by calls to SchedulePaint() and is only accumulated for
+  // LayerTextured and LayerWithExternalTexture layers.
+  virtual void CommitDamage();
 
   void Destroy();
   virtual void Reset() = 0;
@@ -725,7 +722,8 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   bool fills_bounds_opaquely_ = true;
 
   // Union of damaged rects, in layer space, that SetNeedsDisplayRect should
-  // be called on.
+  // be called on. Damage is accumulated by calls to SchedulePaint() and is only
+  // accumulated for LayerTextured and LayerWithExternalTexture layers.
   cc::Region damaged_region_;
 
   float background_blur_sigma_ = 0.0f;

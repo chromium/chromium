@@ -60,7 +60,6 @@ class COMPOSITOR_EXPORT LayerSolidColor : public Layer {
   // Layer:
   void Reset() override;
   void OnPaintScheduled() override;
-  bool ShouldCommitDamage() const override;
 
  private:
   friend class LayerTestApi;

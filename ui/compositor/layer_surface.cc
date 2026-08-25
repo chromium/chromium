@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/notreached.h"
 #include "cc/layers/surface_layer.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "ui/compositor/layer_mirror.h"
@@ -158,6 +159,10 @@ void LayerSurface::RecomputeDrawsContentAndUVRect() {
 
 void LayerSurface::Reset() {
   surface_layer_ = nullptr;
+}
+
+void LayerSurface::OnPaintScheduled() {
+  NOTREACHED();
 }
 
 }  // namespace ui

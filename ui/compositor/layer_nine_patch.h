@@ -52,6 +52,7 @@ class COMPOSITOR_EXPORT LayerNinePatch : public Layer {
   // Layer:
   void HandleDeviceScaleFactorChange() override;
   void Reset() override;
+  void OnPaintScheduled() override;
 
   // A cached copy of the nine patch layer's image and aperture.
   // These are required for device scale factor change.
