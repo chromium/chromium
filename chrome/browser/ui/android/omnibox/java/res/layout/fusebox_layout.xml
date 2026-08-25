@@ -87,6 +87,7 @@ found in the LICENSE file.
         style="@style/AiModeChip"
         android:id="@+id/fusebox_activation_chip"
         android:visibility="gone"
+        android:tooltipText="@string/ntp_compose_entrypoint_a11y_label"
         android:foreground="@drawable/activation_chip_focus_ring"
         app:verticalInset="8dp"
         app:horizontalInset="5dp"
