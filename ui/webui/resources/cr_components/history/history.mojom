@@ -136,6 +136,19 @@ struct HistoryEntry {
   array<CriticalAction> critical_actions;
 };
 
+// LINT.IfChange(CriticalActionType)
+enum CriticalActionType {
+  kUnknown = 0,
+  kFormFill = 1,
+  kDownload = 2,
+  kSettingChange = 3,
+  kCredentialAccess = 4,
+  kGooglePasswordManager = 5,
+  kFederatedLogin = 6,
+  kCredentialsOtp = 7,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_actions/enums.xml:CriticalActionType)
+
 // Represents a critical action performed on a visit.
 struct CriticalAction {
   // Unique identifier for the action.
@@ -149,6 +162,9 @@ struct CriticalAction {
 
   // Destination management URL for the action.
   string linkout_url;
+
+  // Category type of the critical action.
+  CriticalActionType action_type;
 };
 
 

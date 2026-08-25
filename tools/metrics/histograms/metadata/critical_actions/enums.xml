@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="CredentialsOtp"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_types.h:CriticalActionType) -->
+<!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_types.h:CriticalActionType, //ui/webui/resources/cr_components/history/history.mojom:CriticalActionType) -->
 
 <!-- LINT.IfChange(CriticalActionVisitIdResolutionOutcome) -->
 

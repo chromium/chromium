@@ -617,6 +617,9 @@ TEST_F(BrowsingHistoryHandlerTest, CriticalActionsPopulatedForActorVisits) {
       l10n_util::GetStringUTF8(IDS_HISTORY_CRITICAL_ACTION_PASSWORD_TOOLTIP));
   EXPECT_EQ(results->value[0]->critical_actions[0]->linkout_url,
             "chrome://password-manager/passwords/actor-example.com");
+  EXPECT_EQ(
+      results->value[0]->critical_actions[0]->action_type,
+      history::mojom::CriticalActionType::kCredentialAccess);
 }
 
 TEST_F(BrowsingHistoryHandlerTest,

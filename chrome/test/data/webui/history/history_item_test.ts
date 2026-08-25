@@ -5,7 +5,7 @@
 import 'chrome://history/history.js';
 
 import type {CriticalAction, HistoryEntry, HistoryItemElement, HistoryListElement} from 'chrome://history/history.js';
-import {BrowserProxyImpl} from 'chrome://history/history.js';
+import {BrowserProxyImpl, CriticalActionType} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -100,10 +100,11 @@ suite('<history-item> unit test', function() {
 
 suite('<history-item> integration test', function() {
   let element: HistoryListElement;
+  let testProxy: TestHistoryBrowserProxy;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const testProxy = new TestHistoryBrowserProxy();
+    testProxy = new TestHistoryBrowserProxy();
     BrowserProxyImpl.setInstance(testProxy);
     // Force a super tall body so that cr-lazy-list renders all items.
     document.body.style.height = '1000px';
@@ -231,18 +232,21 @@ suite('<history-item> integration test', function() {
         label: 'Phone number filled',
         tooltip: 'Contact info',
         linkoutUrl: 'chrome://settings/addresses',
+        actionType: CriticalActionType.kFormFill,
       },
       {
         id: 'email',
         label: 'Email filled',
         tooltip: 'Contact info',
         linkoutUrl: 'chrome://settings/addresses',
+        actionType: CriticalActionType.kFormFill,
       },
       {
         id: 'payment',
         label: 'Payment method filled',
         tooltip: 'Payment methods',
         linkoutUrl: 'chrome://settings/payments',
+        actionType: CriticalActionType.kFormFill,
       },
     ];
 
@@ -282,6 +286,7 @@ suite('<history-item> integration test', function() {
     assertEquals(
         'cr:keyboard-arrow-up', actorExpandBtn!.getAttribute('iron-icon'));
     assertTrue(collapse.hasAttribute('opened'));
+    assertEquals(1, testProxy.actionMap['HistoryPage_CriticalActionsExpanded']);
 
     const criticalActionsTitle =
         items[1]!.shadowRoot.querySelector<HTMLElement>(
@@ -327,9 +332,18 @@ suite('<history-item> integration test', function() {
       };
       actionRows[0]!.click();
       assertEquals(expectedCriticalActions[0]!.linkoutUrl, openedUrl);
+      assertEquals(
+          1,
+          testProxy.histogramMap['HistoryPage.CriticalAction.Click']!
+              [CriticalActionType.kFormFill]);
     } finally {
       window.open = originalOpen;
     }
+
+    actorExpandBtn!.click();
+    await microtasksFinished();
+    assertEquals(
+        1, testProxy.actionMap['HistoryPage_CriticalActionsCollapsed']);
   });
 
   test(

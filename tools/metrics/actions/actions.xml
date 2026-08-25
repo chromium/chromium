@@ -17196,6 +17196,24 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="HistoryPage_CriticalActionsCollapsed">
+  <owner>kalinino@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <description>
+    Triggered when the user collapses the critical actions section on an actor
+    visit item on chrome://history.
+  </description>
+</action>
+
+<action name="HistoryPage_CriticalActionsExpanded">
+  <owner>kalinino@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <description>
+    Triggered when the user expands the critical actions section on an actor
+    visit item on chrome://history.
+  </description>
+</action>
+
 <action name="HistoryPage_EntryLinkClick">
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>

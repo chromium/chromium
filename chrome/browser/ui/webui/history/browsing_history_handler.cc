@@ -370,6 +370,8 @@ history::mojom::CriticalActionPtr CriticalActionToMojom(
       critical_actions::GetCriticalActionLinkoutUrl(action);
   action_mojom->label = action.GetLabel();
   action_mojom->tooltip = action.GetTooltip();
+  action_mojom->action_type =
+      static_cast<history::mojom::CriticalActionType>(action.action_type);
   return action_mojom;
 }
 

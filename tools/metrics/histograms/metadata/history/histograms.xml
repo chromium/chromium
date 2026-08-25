@@ -2873,6 +2873,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HistoryPage.CriticalAction.Click" enum="CriticalActionType"
+    expires_after="2026-11-01">
+  <owner>kalinino@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    Records the ActionType category (e.g. form fill, password manager login,
+    federated login, download, OTP) of a critical action when the user clicks on
+    its linkout row on the chrome://history page to navigate to the external
+    management surface. Recorded in WebUI whenever the user clicks an action
+    linkout.
+  </summary>
+</histogram>
+
 <histogram name="HistoryPage.NonActorContextMenuActions"
     enum="VisitContextMenuAction" expires_after="2027-01-31">
   <owner>zalmashni@google.com</owner>

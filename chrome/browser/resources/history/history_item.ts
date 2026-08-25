@@ -15,6 +15,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 
 import {HistoryResultType} from 'chrome://resources/cr_components/history/constants.js';
+import {CriticalActionType} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import type {CriticalAction, HistoryEntry} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -278,6 +279,9 @@ export class HistoryItemElement extends HistoryItemElementBase {
   protected onExpandClick_(e: Event) {
     e.stopPropagation();
     this.isExpanded_ = !this.isExpanded_;
+    BrowserProxyImpl.getInstance().recordAction(
+        this.isExpanded_ ? 'HistoryPage_CriticalActionsExpanded' :
+                           'HistoryPage_CriticalActionsCollapsed');
     this.fire('iron-resize');
   }
 
@@ -290,6 +294,11 @@ export class HistoryItemElement extends HistoryItemElementBase {
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
     const action = this.getCriticalActions_()[index];
     if (action?.linkoutUrl) {
+      if (action.actionType !== undefined) {
+        BrowserProxyImpl.getInstance().recordHistogram(
+            'HistoryPage.CriticalAction.Click', action.actionType,
+            CriticalActionType.MAX_VALUE + 1);
+      }
       window.open(action.linkoutUrl, '_blank', 'noopener,noreferrer');
     }
   }
