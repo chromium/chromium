@@ -2,5 +2,8 @@ julietlevesque@google.com
 kiehl@google.com
 adamyao@google.com
 
+# For merges only
+jdonnelly@chromium.org
+
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
