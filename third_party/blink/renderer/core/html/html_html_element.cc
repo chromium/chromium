@@ -86,20 +86,19 @@ bool NeedsLayoutStylePropagation(const ComputedStyle& layout_style,
          layout_style.Direction() != propagated_style.Direction();
 }
 
-const ComputedStyle* CreateLayoutStyle(const ComputedStyle& style,
+const ComputedStyle& CreateLayoutStyle(const ComputedStyle& style,
                                        const ComputedStyle& propagated_style) {
   ComputedStyleBuilder builder(style);
   builder.SetDirection(propagated_style.Direction());
   builder.SetWritingMode(propagated_style.GetWritingMode());
   builder.UpdateFontOrientation();
-  return builder.TakeStyle();
+  return *builder.TakeStyle();
 }
 
 }  // namespace
 
-const ComputedStyle* HTMLHtmlElement::LayoutStyleForElement(
-    const ComputedStyle* style) {
-  DCHECK(style);
+const ComputedStyle& HTMLHtmlElement::LayoutStyleForElement(
+    const ComputedStyle& style) {
   DCHECK(GetDocument().InStyleRecalc());
   DCHECK(GetLayoutObject());
   StyleResolver& resolver = GetDocument().GetStyleResolver();
@@ -109,8 +108,9 @@ const ComputedStyle* HTMLHtmlElement::LayoutStyleForElement(
     if (resolver.ShouldStopBodyPropagation(*body_element))
       return style;
     if (const ComputedStyle* body_style = body_element->GetComputedStyle()) {
-      if (NeedsLayoutStylePropagation(*style, *body_style))
-        return CreateLayoutStyle(*style, *body_style);
+      if (NeedsLayoutStylePropagation(style, *body_style)) {
+        return CreateLayoutStyle(style, *body_style);
+      }
     }
   }
   return style;
@@ -133,15 +133,16 @@ void HTMLHtmlElement::PropagateWritingModeAndDirectionFromBody() {
   if (!layout_object)
     return;
 
-  const ComputedStyle* const old_style = layout_object->Style();
-  const ComputedStyle* new_style =
-      LayoutStyleForElement(layout_object->Style());
+  const ComputedStyle& old_style = layout_object->StyleRef();
+  const ComputedStyle& new_style =
+      LayoutStyleForElement(layout_object->StyleRef());
 
-  if (old_style == new_style)
+  if (&old_style == &new_style) {
     return;
+  }
 
-  const bool is_orthogonal = old_style->IsHorizontalWritingMode() !=
-                             new_style->IsHorizontalWritingMode();
+  const bool is_orthogonal = old_style.IsHorizontalWritingMode() !=
+                             new_style.IsHorizontalWritingMode();
 
   // We need to propagate the style to text children because the used
   // writing-mode and direction affects text children. Child elements,
@@ -162,16 +163,16 @@ void HTMLHtmlElement::PropagateWritingModeAndDirectionFromBody() {
     auto* const text_combine =
         DynamicTo<LayoutTextCombine>(layout_text->Parent());
     if (text_combine) [[unlikely]] {
-      layout_text->SetStyle(text_combine->Style());
+      layout_text->SetStyle(&text_combine->StyleRef());
       continue;
     }
-    layout_text->SetStyle(new_style);
+    layout_text->SetStyle(&new_style);
   }
 
   // Note: We should not call |Node::SetComputedStyle()| because computed
   // style keeps original style instead.
   // See wm-propagation-body-computed-root.html
-  layout_object->SetStyle(new_style);
+  layout_object->SetStyle(&new_style);
 
   // TODO(crbug.com/371033184): We should propagate `writing-mode` and
   // `direction` to ComputedStyles of pseudo-elements of `this`.

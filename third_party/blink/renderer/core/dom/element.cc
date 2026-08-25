@@ -6002,7 +6002,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
       }
     } else if (auto* html_element = DynamicTo<HTMLHtmlElement>(this)) {
       if (this == GetDocument().documentElement()) {
-        layout_style = html_element->LayoutStyleForElement(layout_style);
+        layout_style = &html_element->LayoutStyleForElement(*layout_style);
         // Always apply changes for html root, even if the ComputedStyle may be
         // the same, propagation changes picked up from body style, or
         // previously propagated styles from a removed body element, may still
