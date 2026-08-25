@@ -19,6 +19,7 @@
 #include "chrome/browser/metrics/chrome_browser_sampling_trials.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/feed/feed_feature_list.h"
@@ -56,7 +57,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/common/channel_info.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/first_run_field_trial.h"
 #endif
 
@@ -110,6 +110,12 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
 void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
     base::FeatureList* feature_list) {
   variations::FeatureOverrides feature_overrides(*feature_list);
+
+  // TODO(crbug.com/552456654): Remove when rollout is complete to stable.
+  if (chrome::GetChannel() != version_info::Channel::STABLE) {
+    feature_overrides.EnableFeature(
+        blink::features::kSingleAxisScrollContainers);
+  }
 
 #if BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
