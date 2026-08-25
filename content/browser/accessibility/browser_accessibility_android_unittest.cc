@@ -18,6 +18,7 @@
 #include "content/public/test/test_content_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/android/accessibility_state.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
@@ -1774,6 +1775,72 @@ TEST_F(BrowserAccessibilityAndroidTest,
 
   EXPECT_EQ(u"Label Text", node->GetAndroidSupplementalDescription());
   EXPECT_TRUE(node->GetTextContentUTF16().empty());
+}
+
+TEST_F(BrowserAccessibilityAndroidTest,
+       RelatedElementMapsToTextWhenSamsungTalkBackEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAccessibilityPopulateSupplementalDescriptionApi},
+      /*disabled_features=*/{features::kAccessibilityLabeledBy});
+
+  ui::ScopedSamsungTalkBackForTesting scoped_samsung_talkback(true);
+
+  ui::AXTreeUpdate tree;
+  tree.root_id = 1;
+  tree.nodes.resize(2);
+
+  tree.nodes[0].id = 1;
+  tree.nodes[0].child_ids = {2};
+
+  tree.nodes[1].id = 2;
+  tree.nodes[1].role = ax::mojom::Role::kButton;
+  tree.nodes[1].SetName("Label Text");
+  tree.nodes[1].SetNameFrom(ax::mojom::NameFrom::kRelatedElement);
+  tree.nodes[1].AddIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds,
+                                    {99});
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibilityAndroid* node = static_cast<BrowserAccessibilityAndroid*>(
+      manager->GetBrowserAccessibilityRoot()->PlatformGetChild(0));
+
+  EXPECT_EQ(u"", node->GetAndroidSupplementalDescription());
+  EXPECT_EQ(u"Label Text", node->GetTextContentUTF16());
+}
+
+TEST_F(BrowserAccessibilityAndroidTest,
+       AttributeNameMapsToTextWhenSamsungTalkBackEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAccessibilityPopulateSupplementalDescriptionApi);
+
+  ui::ScopedSamsungTalkBackForTesting scoped_samsung_talkback(true);
+
+  ui::AXTreeUpdate tree;
+  tree.root_id = 1;
+  tree.nodes.resize(2);
+
+  tree.nodes[0].id = 1;
+  tree.nodes[0].child_ids = {2};
+
+  tree.nodes[1].id = 2;
+  tree.nodes[1].role = ax::mojom::Role::kGenericContainer;
+  tree.nodes[1].SetName("Attribute Name");
+  tree.nodes[1].SetNameFrom(ax::mojom::NameFrom::kAttribute);
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibilityAndroid* node = static_cast<BrowserAccessibilityAndroid*>(
+      manager->GetBrowserAccessibilityRoot()->PlatformGetChild(0));
+
+  EXPECT_EQ(u"", node->GetAndroidSupplementalDescription());
+  EXPECT_EQ(u"Attribute Name", node->GetTextContentUTF16());
 }
 
 TEST_F(BrowserAccessibilityAndroidTest, CaptionMapsToLabeledBy) {

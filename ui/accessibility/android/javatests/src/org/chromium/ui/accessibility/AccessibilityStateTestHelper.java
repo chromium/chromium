@@ -60,6 +60,12 @@ public class AccessibilityStateTestHelper {
         delegate.notifyStateChange();
     }
 
+    public static void setIsSamsungTalkBackEnabledForTesting(boolean enabled) {
+        FakeAccessibilityStateDelegate delegate = getOrCreateDelegateForTesting();
+        delegate.setIsSamsungTalkBackEnabled(enabled);
+        delegate.notifyStateChange();
+    }
+
     public static void setEventMaskForTesting(int eventMask) {
         FakeAccessibilityStateDelegate delegate = getOrCreateDelegateForTesting();
         delegate.setEventMask(eventMask);

@@ -37,6 +37,9 @@ public class AccessibilityState {
     public static final String KNOWN_SCREEN_READER_SERVICE_IDS =
             "com.google.android.marvin.talkback/.TalkBackService";
 
+    public static final String SAMSUNG_TALKBACK_PACKAGE_NAME =
+            "com.samsung.android.accessibility.talkback";
+
     /** Interface for the observers of the system's accessibility state. */
     public interface Listener {
         /**
@@ -99,6 +102,9 @@ public class AccessibilityState {
         // True when a known screen reader is enabled, based on service IDs. False otherwise.
         public final boolean isKnownScreenReaderEnabled;
 
+        // True when Samsung TalkBack is enabled, based on service IDs. False otherwise.
+        public final boolean isSamsungTalkBackEnabled;
+
         public State(
                 boolean isComplexUserInteractionServiceEnabled,
                 boolean isTouchExplorationEnabled,
@@ -108,7 +114,8 @@ public class AccessibilityState {
                 boolean isTextShowPasswordEnabled,
                 boolean isOnlyAutofillRunning,
                 boolean isOnlyPasswordManagersEnabled,
-                boolean isKnownScreenReaderEnabled) {
+                boolean isKnownScreenReaderEnabled,
+                boolean isSamsungTalkBackEnabled) {
             this.isComplexUserInteractionServiceEnabled = isComplexUserInteractionServiceEnabled;
             this.isTouchExplorationEnabled = isTouchExplorationEnabled;
             this.isPerformGesturesEnabled = isPerformGesturesEnabled;
@@ -118,6 +125,7 @@ public class AccessibilityState {
             this.isOnlyAutofillRunning = isOnlyAutofillRunning;
             this.isOnlyPasswordManagersEnabled = isOnlyPasswordManagersEnabled;
             this.isKnownScreenReaderEnabled = isKnownScreenReaderEnabled;
+            this.isSamsungTalkBackEnabled = isSamsungTalkBackEnabled;
         }
 
         @Override
@@ -141,6 +149,8 @@ public class AccessibilityState {
                     + isOnlyPasswordManagersEnabled
                     + ", isKnownScreenReaderEnabled="
                     + isKnownScreenReaderEnabled
+                    + ", isSamsungTalkBackEnabled="
+                    + isSamsungTalkBackEnabled
                     + '}';
         }
 
@@ -158,7 +168,8 @@ public class AccessibilityState {
                     && isTextShowPasswordEnabled == other.isTextShowPasswordEnabled
                     && isOnlyAutofillRunning == other.isOnlyAutofillRunning
                     && isOnlyPasswordManagersEnabled == other.isOnlyPasswordManagersEnabled
-                    && isKnownScreenReaderEnabled == other.isKnownScreenReaderEnabled;
+                    && isKnownScreenReaderEnabled == other.isKnownScreenReaderEnabled
+                    && isSamsungTalkBackEnabled == other.isSamsungTalkBackEnabled;
         }
     }
 
@@ -228,6 +239,10 @@ public class AccessibilityState {
 
     public static boolean isKnownScreenReaderEnabled() {
         return getDelegate().isKnownScreenReaderEnabled();
+    }
+
+    public static boolean isSamsungTalkBackEnabled() {
+        return getDelegate().isSamsungTalkBackEnabled();
     }
 
     public static boolean isDisplayInversionEnabled() {
@@ -349,6 +364,8 @@ public class AccessibilityState {
         void onContrastLevelChanged(boolean highContrastEnabled);
 
         void onTextCursorBlinkIntervalChanged(int textCursorBlinkInterval);
+
+        void onSamsungTalkBackStateChanged(boolean enabled);
 
         void recordAccessibilityServiceInfoHistograms();
     }

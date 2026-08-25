@@ -14,6 +14,7 @@ import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_TEXT;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.ui.accessibility.AccessibilityState.AUTOFILL_COMPAT_ACCESSIBILITY_SERVICE_ID;
 import static org.chromium.ui.accessibility.AccessibilityState.KNOWN_SCREEN_READER_SERVICE_IDS;
+import static org.chromium.ui.accessibility.AccessibilityState.SAMSUNG_TALKBACK_PACKAGE_NAME;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.Activity;
@@ -279,6 +280,12 @@ class AccessibilityStateDelegateImpl implements AccessibilityStateDelegate {
     }
 
     @Override
+    public boolean isSamsungTalkBackEnabled() {
+        if (!mInitialized) updateAccessibilityServices();
+        return assumeNonNull(mState).isSamsungTalkBackEnabled;
+    }
+
+    @Override
     public boolean isDisplayInversionEnabled() {
         if (!mExtraStateInitialized) updateExtraState();
         return mDisplayInversionEnabled;
@@ -431,6 +438,16 @@ class AccessibilityStateDelegateImpl implements AccessibilityStateDelegate {
         }
     }
 
+    public static boolean isSamsungTalkBack(@Nullable String serviceId) {
+        if (serviceId == null || serviceId.isEmpty()) return false;
+        ComponentName componentName = ComponentName.unflattenFromString(serviceId);
+        if (componentName != null) {
+            return SAMSUNG_TALKBACK_PACKAGE_NAME.equals(componentName.getPackageName());
+        }
+        return serviceId.startsWith(SAMSUNG_TALKBACK_PACKAGE_NAME + "/")
+                || serviceId.equals(SAMSUNG_TALKBACK_PACKAGE_NAME);
+    }
+
     protected void calculateHeuristicState(AccessibilityServiceInfo service) {
         // Only check the event, feedback, flag, and capability types for the password manager
         // heuristic if the running service is not the AutofillCompatAccessibilityService. The
@@ -471,8 +488,9 @@ class AccessibilityStateDelegateImpl implements AccessibilityStateDelegate {
 
     private void updateAccessibilityServices(boolean recordHistograms) {
         long now = SystemClock.elapsedRealtimeNanos() / 1000;
-        if (!mInitialized) {
-            mState = new State(false, false, false, false, false, false, false, false, false);
+        if (mState == null) {
+            mState =
+                    new State(false, false, false, false, false, false, false, false, false, false);
             fetchAccessibilityManager();
         }
         mInitialized = true;
@@ -607,13 +625,18 @@ class AccessibilityStateDelegateImpl implements AccessibilityStateDelegate {
         // Calculate heuristic state value derivations.
         boolean isComplexUserInteractionServiceEnabled =
                 (0 != (mEventTypeMaskHeuristic & COMPLEX_USER_INTERACTION_SERVICE_EVENT_TYPE_MASK));
-        boolean isKnownScreenReaderEnabled = false;
+        boolean isGoogleTalkBackEnabled = false;
+        boolean isSamsungTalkBackEnabled = false;
         for (ServiceProperties service : mServiceProperties) {
             if (KNOWN_SCREEN_READER_SERVICE_IDS.equals(service.id)) {
-                isKnownScreenReaderEnabled = true;
-                break;
+                isGoogleTalkBackEnabled = true;
+            }
+            if (isSamsungTalkBack(service.id)) {
+                isSamsungTalkBackEnabled = true;
             }
         }
+        boolean isKnownScreenReaderEnabled =
+                isGoogleTalkBackEnabled || isSamsungTalkBackEnabled;
 
         boolean isOnlyAutofillRunning = false;
         try {
@@ -675,7 +698,6 @@ class AccessibilityStateDelegateImpl implements AccessibilityStateDelegate {
 
         // Update all listeners that there was a state change and pass whether or not the
         // new state includes a screen reader.
-        Log.i(TAG, "Informing listeners of changes.");
         updateAndNotifyStateChange(
                 new State(
                         isComplexUserInteractionServiceEnabled,
@@ -686,9 +708,11 @@ class AccessibilityStateDelegateImpl implements AccessibilityStateDelegate {
                         isTextShowPasswordEnabled,
                         isOnlyAutofillRunning,
                         isOnlyPasswordManagersEnabled,
-                        isKnownScreenReaderEnabled));
+                        isKnownScreenReaderEnabled,
+                        isSamsungTalkBackEnabled));
         if (recordHistograms) {
             AccessibilityStateJni.get().recordAccessibilityServiceInfoHistograms();
+            AccessibilityStateJni.get().onSamsungTalkBackStateChanged(isSamsungTalkBackEnabled);
         }
     }
 
@@ -862,6 +886,7 @@ class AccessibilityStateDelegateImpl implements AccessibilityStateDelegate {
 
         // Histograms are recorded once during startup, and any time services change afterwards.
         AccessibilityStateJni.get().recordAccessibilityServiceInfoHistograms();
+        AccessibilityStateJni.get().onSamsungTalkBackStateChanged(isSamsungTalkBackEnabled());
     }
 
     private void onActivityStateChange(Activity activity, int newState) {

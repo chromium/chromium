@@ -163,7 +163,16 @@ public class SettingsSearchCoordinatorUnitTest {
 
         var state =
                 new AccessibilityState.State(
-                        false, false, false, false, false, false, false, false, false);
+                        /* isComplexUserInteractionServiceEnabled= */ false,
+                        /* isTouchExplorationEnabled= */ false,
+                        /* isPerformGesturesEnabled= */ false,
+                        /* isAnyAccessibilityServiceEnabled= */ false,
+                        /* isAccessibilityToolPresent= */ false,
+                        /* isTextShowPasswordEnabled= */ false,
+                        /* isOnlyAutofillRunning= */ false,
+                        /* isOnlyPasswordManagersEnabled= */ false,
+                        /* isKnownScreenReaderEnabled= */ false,
+                        /* isSamsungTalkBackEnabled= */ false);
 
         // This call should not crash.
         mCoordinator.onAccessibilityStateChanged(state, state);

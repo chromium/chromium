@@ -3565,6 +3565,7 @@ test("content_unittests") {
       "//gpu/command_buffer/service:android_texture_owner_test_support",
       "//third_party/blink/public/common",
       "//third_party/blink/public/common:font_unique_name_table_proto",
+      "//ui/accessibility:ax_base_android",
       "//ui/android",
       "//ui/android:test_support",
       "//ui/android:ui_java_test_support",

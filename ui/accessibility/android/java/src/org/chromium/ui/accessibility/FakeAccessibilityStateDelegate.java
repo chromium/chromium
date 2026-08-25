@@ -22,6 +22,7 @@ public class FakeAccessibilityStateDelegate implements AccessibilityStateDelegat
     private boolean mIsOnlyAutofillRunning;
     private boolean mIsOnlyPasswordManagersEnabled;
     private boolean mIsKnownScreenReaderEnabled;
+    private boolean mIsSamsungTalkBackEnabled;
 
     private int mEventTypeMask;
     private String[] mAccessibilityServiceIds = new String[0];
@@ -29,7 +30,7 @@ public class FakeAccessibilityStateDelegate implements AccessibilityStateDelegat
 
     private AccessibilityState.State mLastNotifiedState =
             new AccessibilityState.State(
-                    false, false, false, false, false, false, false, false, false);
+                    false, false, false, false, false, false, false, false, false, false);
 
     private final ListenerCallback mListenerCallback;
 
@@ -51,7 +52,8 @@ public class FakeAccessibilityStateDelegate implements AccessibilityStateDelegat
                 mIsTextShowPasswordEnabled,
                 mIsOnlyAutofillRunning,
                 mIsOnlyPasswordManagersEnabled,
-                mIsKnownScreenReaderEnabled);
+                mIsKnownScreenReaderEnabled,
+                mIsSamsungTalkBackEnabled);
     }
 
     @Override
@@ -92,6 +94,11 @@ public class FakeAccessibilityStateDelegate implements AccessibilityStateDelegat
     @Override
     public boolean isKnownScreenReaderEnabled() {
         return mIsKnownScreenReaderEnabled;
+    }
+
+    @Override
+    public boolean isSamsungTalkBackEnabled() {
+        return mIsSamsungTalkBackEnabled;
     }
 
     public void notifyStateChange() {
@@ -136,6 +143,10 @@ public class FakeAccessibilityStateDelegate implements AccessibilityStateDelegat
 
     public void setIsKnownScreenReaderEnabled(boolean enabled) {
         mIsKnownScreenReaderEnabled = enabled;
+    }
+
+    public void setIsSamsungTalkBackEnabled(boolean enabled) {
+        mIsSamsungTalkBackEnabled = enabled;
     }
 
     public void setEventMask(int eventMask) {

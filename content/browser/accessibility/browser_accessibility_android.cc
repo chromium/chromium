@@ -195,6 +195,15 @@ void PopulateStyleData(const content::BrowserAccessibilityAndroid& node,
   }
 }
 
+// Returns whether supplemental descriptions should be populated via the
+// Android supplemental description API. Disabled when Samsung TalkBack is
+// running because older versions of Samsung TalkBack do not consume this API.
+bool ShouldPopulateSupplementalDescriptionApi() {
+  return base::FeatureList::IsEnabled(
+             features::kAccessibilityPopulateSupplementalDescriptionApi) &&
+         !ui::AccessibilityState::IsSamsungTalkBackEnabled();
+}
+
 }  // namespace
 
 namespace ui {
@@ -1157,8 +1166,7 @@ std::u16string BrowserAccessibilityAndroid::GetAndroidHint() const {
 
   // TODO(accessibility): Remove this path once we roll out supplemental
   // descriptions.
-  if (!base::FeatureList::IsEnabled(
-          features::kAccessibilityPopulateSupplementalDescriptionApi)) {
+  if (!ShouldPopulateSupplementalDescriptionApi()) {
     // If we're returning the value as the main text, the name needs to be
     // part of the hint.
     if (ShouldPromoteValueToTextProperty(GetValueForControl()) &&
@@ -1294,8 +1302,7 @@ std::u16string BrowserAccessibilityAndroid::GetAndroidSupplementalDescription()
   // The control's value has been promoted to the primary `text` field.
   // In this situation, the accessible name (which was originally destined
   // for `text`) should be demoted to `supplementalDescription`.
-  if (base::FeatureList::IsEnabled(
-          features::kAccessibilityPopulateSupplementalDescriptionApi) &&
+  if (ShouldPopulateSupplementalDescriptionApi() &&
       ShouldPromoteValueToTextProperty(GetValueForControl()) &&
       ComputeAndroidNameTo() == AndroidNameTo::kText) {
     return GetNameAsString16();
@@ -2734,9 +2741,7 @@ BrowserAccessibilityAndroid::ComputeAndroidNameTo() const {
         // TODO(crbug.com/438478760): Revisit kNameFromAttribute mapping to
         // contentDescription logic.
         name_to_cache_ = AndroidNameTo::kContentDescription;
-      } else if (base::FeatureList::IsEnabled(
-                     features::
-                         kAccessibilityPopulateSupplementalDescriptionApi)) {
+      } else if (ShouldPopulateSupplementalDescriptionApi()) {
         name_to_cache_ = AndroidNameTo::kSupplementalDescription;
       } else {
         // TODO(accessibility): remove this path once we roll out supplemental
@@ -2752,9 +2757,7 @@ BrowserAccessibilityAndroid::ComputeAndroidNameTo() const {
                  GetData().HasIntListAttribute(
                      ax::mojom::IntListAttribute::kLabelledbyIds)) {
         name_to_cache_ = AndroidNameTo::kLabeledBy;
-      } else if (base::FeatureList::IsEnabled(
-                     features::
-                         kAccessibilityPopulateSupplementalDescriptionApi)) {
+      } else if (ShouldPopulateSupplementalDescriptionApi()) {
         // Fallback to supplemental description when labeledBy cannot be used.
         name_to_cache_ = AndroidNameTo::kSupplementalDescription;
       } else {

@@ -90,6 +90,9 @@ class COMPONENT_EXPORT(AX_BASE_ANDROID) AccessibilityState {
   // Returns true when the user has set the OS-level setting to reduce motion.
   static bool PrefersReducedMotion();
 
+  // Returns true when Samsung TalkBack is running.
+  static bool IsSamsungTalkBackEnabled();
+
   // --------------------------------------------------------------------------
   // Methods that call into AccessibilityAutofillHelper.java via JNI
   // --------------------------------------------------------------------------
@@ -112,6 +115,21 @@ class COMPONENT_EXPORT(AX_BASE_ANDROID) AccessibilityState {
   ~AccessibilityState();
 
   base::ObserverList<AccessibilityStateObserver> observers_;
+};
+
+// RAII helper to override Samsung TalkBack enabled state in tests.
+class COMPONENT_EXPORT(AX_BASE_ANDROID) ScopedSamsungTalkBackForTesting {
+ public:
+  explicit ScopedSamsungTalkBackForTesting(bool enabled);
+  ~ScopedSamsungTalkBackForTesting();
+
+  ScopedSamsungTalkBackForTesting(const ScopedSamsungTalkBackForTesting&) =
+      delete;
+  ScopedSamsungTalkBackForTesting& operator=(
+      const ScopedSamsungTalkBackForTesting&) = delete;
+
+ private:
+  const bool previous_value_;
 };
 
 }  // namespace ui
