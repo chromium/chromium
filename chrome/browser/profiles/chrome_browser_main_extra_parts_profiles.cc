@@ -87,6 +87,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_url_lookup_service_factory.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
+#include "chrome/browser/enterprise/isolated_mode/isolated_mode_settings_service_factory.h"
 #include "chrome/browser/enterprise/net/enterprise_network_auth_service_factory.h"
 #include "chrome/browser/enterprise/net/enterprise_proxy_error_service_factory.h"
 #include "chrome/browser/enterprise/net/enterprise_proxy_service_factory.h"
@@ -1022,6 +1023,7 @@ void ChromeBrowserMainExtraPartsProfiles::
     BUILDFLAG(IS_WIN)
   enterprise_idle::IdleServiceFactory::GetInstance();
 #endif
+  enterprise_isolated_mode::IsolatedModeSettingsServiceFactory::GetInstance();
   enterprise_signals::SignalsAggregatorFactory::GetInstance();
   EnterpriseNetworkAuthServiceFactory::GetInstance();
   EnterpriseProxyErrorServiceFactory::GetInstance();

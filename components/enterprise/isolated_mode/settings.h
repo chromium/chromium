@@ -11,10 +11,7 @@ class PrefService;
 
 namespace enterprise_isolated_mode {
 
-// Returns true if Isolated Mode should replace Incognito mode.
-// First checks the command line switch (if not in Beta/Stable).
-// Otherwise, requires both the kEnableEnterpriseIsolatedMode Feature and the
-// IsolatedModeSettings policy.
+// Legacy helper for callers with only PrefService.
 bool IsolatedModeReplacesIncognito(const PrefService& pref_service,
                                    version_info::Channel channel);
 

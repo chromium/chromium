@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/isolated_mode_settings_service.h"
 #include "components/enterprise/isolated_mode/prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -30,27 +31,31 @@ class SettingsTest : public testing::Test {
 };
 
 TEST_F(SettingsTest, DisabledByDefault) {
-  EXPECT_FALSE(
-      IsolatedModeReplacesIncognito(pref_service_, version_info::Channel::DEV));
+  IsolatedModeSettingsService service(&pref_service_,
+                                      version_info::Channel::DEV);
+  EXPECT_FALSE(service.ReplacesIncognito());
 }
 
 TEST_F(SettingsTest, FeatureOnlyDoesNotEnable) {
   feature_list_.InitAndEnableFeature(kEnableEnterpriseIsolatedMode);
-  EXPECT_FALSE(
-      IsolatedModeReplacesIncognito(pref_service_, version_info::Channel::DEV));
+  IsolatedModeSettingsService service(&pref_service_,
+                                      version_info::Channel::DEV);
+  EXPECT_FALSE(service.ReplacesIncognito());
 }
 
 TEST_F(SettingsTest, PolicyOnlyDoesNotEnable) {
   pref_service_.SetInteger(kEnterpriseIsolatedModeSettings, 1);
-  EXPECT_FALSE(
-      IsolatedModeReplacesIncognito(pref_service_, version_info::Channel::DEV));
+  IsolatedModeSettingsService service(&pref_service_,
+                                      version_info::Channel::DEV);
+  EXPECT_FALSE(service.ReplacesIncognito());
 }
 
 TEST_F(SettingsTest, FeatureAndPolicyEnables) {
   feature_list_.InitAndEnableFeature(kEnableEnterpriseIsolatedMode);
   pref_service_.SetInteger(kEnterpriseIsolatedModeSettings, 1);
-  EXPECT_TRUE(
-      IsolatedModeReplacesIncognito(pref_service_, version_info::Channel::DEV));
+  IsolatedModeSettingsService service(&pref_service_,
+                                      version_info::Channel::DEV);
+  EXPECT_TRUE(service.ReplacesIncognito());
 }
 
 TEST_F(SettingsTest, CommandLineSwitchPriority) {
@@ -58,13 +63,34 @@ TEST_F(SettingsTest, CommandLineSwitchPriority) {
       switches::kForceEnterpriseIsolatedModeReplacesIncognito);
 
   // Even if feature and policy are disabled, switch should enable it.
-  EXPECT_TRUE(
-      IsolatedModeReplacesIncognito(pref_service_, version_info::Channel::DEV));
+  IsolatedModeSettingsService dev_service(&pref_service_,
+                                          version_info::Channel::DEV);
+  EXPECT_TRUE(dev_service.ReplacesIncognito());
+
   // The switch doesn't work on Beta/Stable.
-  EXPECT_FALSE(IsolatedModeReplacesIncognito(pref_service_,
-                                             version_info::Channel::BETA));
-  EXPECT_FALSE(IsolatedModeReplacesIncognito(pref_service_,
-                                             version_info::Channel::STABLE));
+  IsolatedModeSettingsService beta_service(&pref_service_,
+                                           version_info::Channel::BETA);
+  EXPECT_FALSE(beta_service.ReplacesIncognito());
+  IsolatedModeSettingsService stable_service(&pref_service_,
+                                             version_info::Channel::STABLE);
+  EXPECT_FALSE(stable_service.ReplacesIncognito());
+}
+
+TEST_F(SettingsTest, PrefChangeAfterStartupIgnoredInServiceDueToLock) {
+  feature_list_.InitAndEnableFeature(kEnableEnterpriseIsolatedMode);
+  // Initial service evaluation when policy is not set.
+  IsolatedModeSettingsService service(&pref_service_,
+                                      version_info::Channel::DEV);
+  EXPECT_FALSE(service.ReplacesIncognito());
+
+  // Dynamically modifying the pref at runtime does not alter the service state.
+  pref_service_.SetInteger(kEnterpriseIsolatedModeSettings, 1);
+  EXPECT_FALSE(service.ReplacesIncognito());
+
+  // Simulating restart/new service creation picks up the new pref value.
+  IsolatedModeSettingsService new_service(&pref_service_,
+                                          version_info::Channel::DEV);
+  EXPECT_TRUE(new_service.ReplacesIncognito());
 }
 
 }  // namespace enterprise_isolated_mode
