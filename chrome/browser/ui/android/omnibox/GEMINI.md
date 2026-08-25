@@ -57,6 +57,9 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
 - **Destruction Propagation**: A parent component `X` **must** implement a `destroy()` method if any of the subcomponents it owns implements a `destroy()` method. The parent's `destroy()` method must clean up and invoke `destroy()` on all its children.
 - **View Inflation**: Prefer using `AsyncViewInflation` where possible to keep the Main Thread free and reduce startup latency.
 - **Imports**: Use `import` statements whenever possible instead of using fully qualified class names within the code.
+- **Javadoc & Method Contracts**:
+  - Keep Javadoc comments updated to reflect code changes. Javadoc must accurately capture what the method does and its proper contract (parameters, return values, side effects, and expectations).
+  - When updating classes, always read the top-level class comment to catch any critical context, invariants, or restrictions (what is / what is not allowed).
 - **Reuse & Pre-research**: Research relevant existing libraries, utilities, and methods before implementing something new. Follow existing patterns in the codebase when applicable.
 - **Resource & Type Annotations**: Always annotate integer resource IDs and typed values with appropriate AndroidX annotations (e.g., `@ColorInt`, `@ColorRes`, `@DrawableRes`, `@StringRes`, `@Px`).
 - **Constants over Magic Numbers**: Do not create or use magic numbers directly in the code. Define and use descriptive constants instead.
@@ -83,8 +86,17 @@ When introducing or modifying Omnibox feature flags:
 ## Testing
 
 - **Test File Registration**: When creating a new unit test file (e.g. `FooUnitTest.java`), always register it in `chrome/browser/ui/android/omnibox/BUILD.gn` under the `robolectric_tests` `sources` list so `an -t` and GN correctly resolve the build target.
-- **Mocking with Annotations**: Declare mock objects (`@Mock`) and argument captors (`@Captor`) as class fields using Mockito annotations. Avoid creating inline mocks in test methods using `mock(...)` or `ArgumentCaptor.forClass(...)`.
-- **Annotation Placement**: Field-level test annotations (`@Rule`, `@Mock`, `@Spy`, `@Captor`) must precede access modifiers (e.g., `@Mock private Foo mFoo;`). `@Rule` fields must be declared `public final` (e.g., `@Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();`).
+- **Strict Mockito Stubs**: All new tests **must** (and existing tests ideally **should**) use strict Mockito stubbing to prevent aggregating dead stubbed code:
+  ```java
+  @Rule
+  public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+  ```
+- **Lenient Stubbing (`lenient()`)**:
+  - `lenient()` calls should be used in `@Before` / `@BeforeClass` (or shared setup helpers) to configure commonly used mocks.
+  - `lenient()` calls are **not allowed** inside `@Test` methods.
+  - `lenient()` should be used sparingly—only to address mock calls that are commonly executed and impact a significant number of test cases.
+- **Mocking and Spying with Annotations**: Declare mocks (`@Mock`), spies (`@Spy`), and argument captors (`@Captor`) as class fields using Mockito annotations. Calls to `mock()` and `spy()` are highly discouraged / banned unless there is no other way to get something done. `@Mock` and `@Spy` are preferred instead. Similarly, avoid calling `ArgumentCaptor.forClass(...)` inline.
+- **Annotation Placement**: Field-level test annotations (`@Rule`, `@Mock`, `@Spy`, `@Captor`) must precede access modifiers (e.g., `@Mock private Foo mFoo;`). `@Rule` fields must be declared `public final`.
 - **Naming Conventions**: To clearly distinguish unit tests from integration/instrumentation/render tests, unit test files must be named `*UnitTest.java` (e.g., AutocompleteMediatorUnitTest).
 - **Test Length**: Unit tests should be kept concise.
   - The ideal test case is **10 ± 5 lines of code**.
