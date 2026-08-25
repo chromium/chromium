@@ -1034,7 +1034,7 @@ void LocalDOMWindow::DispatchPagehideEvent(
     return;
   }
 
-  if (RuntimeEnabledFeatures::NavigationStateEnabled()) {
+  if (RuntimeEnabledFeatures::NavigationSourcePseudoClassEnabled()) {
     // In case we come back to this document later via BFCache, there must not
     // be a dangling active navigation.
     NavigationState::AttemptFinishNavigationAndDestroy(document_);
@@ -2430,7 +2430,7 @@ void LocalDOMWindow::FinishedLoading(FrameLoader::NavigationFinishState state) {
     print(nullptr);
   }
 
-  if (RuntimeEnabledFeatures::NavigationStateEnabled()) {
+  if (RuntimeEnabledFeatures::NavigationSourcePseudoClassEnabled()) {
     NavigationState::AttemptFinishNavigationAndDestroy(document_);
   }
 }

@@ -2919,7 +2919,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       DCHECK(RuntimeEnabledFeatures::RouteMatchingEnabled());
       return CheckPseudoLinkTo(context, result);
     case CSSSelector::kPseudoNavigationSource:
-      DCHECK(RuntimeEnabledFeatures::NavigationStateEnabled());
+      DCHECK(RuntimeEnabledFeatures::NavigationSourcePseudoClassEnabled());
       if (const auto* state = NavigationState::Get(&element.GetDocument())) {
         if (&element == state->GetSourceElement()) {
           return true;

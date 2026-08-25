@@ -359,7 +359,7 @@ void ViewTransitionSupplement::OnTransitionFinished(
     }
   }
 
-  if (RuntimeEnabledFeatures::NavigationStateEnabled()) {
+  if (RuntimeEnabledFeatures::NavigationSourcePseudoClassEnabled()) {
     // This view transition, which is now finished, may be the one reason why
     // there's still a "current navigation state". Therefore, attempt finish any
     // current navigation.

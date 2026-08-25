@@ -43,7 +43,7 @@ class CORE_EXPORT NavigationState final
         old_url_(old_url),
         new_url_(new_url),
         source_element_(source_element) {
-    DCHECK(RuntimeEnabledFeatures::NavigationStateEnabled());
+    DCHECK(RuntimeEnabledFeatures::NavigationSourcePseudoClassEnabled());
   }
 
   static const NavigationState* Get(const Document* document) {

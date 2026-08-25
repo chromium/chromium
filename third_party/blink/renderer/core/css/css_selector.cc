@@ -969,7 +969,7 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
   }
 
   if (match->type == CSSSelector::kPseudoNavigationSource &&
-      !RuntimeEnabledFeatures::NavigationStateEnabled()) {
+      !RuntimeEnabledFeatures::NavigationSourcePseudoClassEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 

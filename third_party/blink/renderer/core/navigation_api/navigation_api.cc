@@ -871,7 +871,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   CHECK(!ongoing_navigate_event_);
   ongoing_navigate_event_ = navigate_event;
 
-  if (RuntimeEnabledFeatures::NavigationStateEnabled()) {
+  if (RuntimeEnabledFeatures::NavigationSourcePseudoClassEnabled()) {
     auto* state = NavigationState::Create(*window_->document(), window_->Url(),
                                           params->url, params->source_element);
     if (params->frame_load_type == WebFrameLoadType::kBackForward) {
@@ -1056,7 +1056,7 @@ void NavigationApi::DidAbort(ScriptValue value) {
                          location, value, &DOMWrapperWorld::MainWorld(isolate));
   event->SetType(event_type_names::kNavigateerror);
 
-  if (RuntimeEnabledFeatures::NavigationStateEnabled()) {
+  if (RuntimeEnabledFeatures::NavigationSourcePseudoClassEnabled()) {
     NavigationState::AttemptFinishNavigationAndDestroy(window_->document());
   }
   DispatchEvent(*event);
@@ -1087,7 +1087,7 @@ void NavigationApi::DidFinishOngoingNavigation() {
     ongoing_api_method_tracker_ = nullptr;
   }
 
-  if (RuntimeEnabledFeatures::NavigationStateEnabled()) {
+  if (RuntimeEnabledFeatures::NavigationSourcePseudoClassEnabled()) {
     NavigationState::AttemptFinishNavigationAndDestroy(window_->document());
   }
   DispatchEvent(*Event::Create(event_type_names::kNavigatesuccess));
