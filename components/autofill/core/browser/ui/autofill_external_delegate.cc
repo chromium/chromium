@@ -223,8 +223,7 @@ std::optional<AutofillProfile> GetTestAddressByGUID(
 void PossiblyRemoveAutofillWarnings(std::vector<Suggestion>& suggestions) {
   auto is_warning = [](const Suggestion& suggestion) {
     const SuggestionType type = suggestion.type;
-    return type == SuggestionType::kInsecureContextPaymentDisabledMessage ||
-           type == SuggestionType::kMixedFormMessage;
+    return type == SuggestionType::kInsecureContextPaymentDisabledMessage;
   };
   if (std::ranges::find_if(suggestions, std::not_fn(is_warning)) ==
       suggestions.end()) {
@@ -302,7 +301,6 @@ bool HasAutofillSuggestionsForA11y(SuggestionType type) {
     case SuggestionType::kManageLoyaltyCard:
     case SuggestionType::kManageEnhancedAutofill:
     case SuggestionType::kMaximizeCreditCardBenefitsEntry:
-    case SuggestionType::kMixedFormMessage:
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPendingStateSignin:
@@ -410,7 +408,6 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kManageEnhancedAutofill:
     case SuggestionType::kMaximizeCreditCardBenefitsEntry:
     case SuggestionType::kMerchantPromoCodeEntry:
-    case SuggestionType::kMixedFormMessage:
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPendingStateSignin:
@@ -874,7 +871,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kManageLoyaltyCard:
     case SuggestionType::kManageEnhancedAutofill:
     case SuggestionType::kMaximizeCreditCardBenefitsEntry:
-    case SuggestionType::kMixedFormMessage:
     // So far OTP suggestions are only available on Android, so no preview
     // is needed. This needs to be changed once Desktop suggestions and UI
     // are implemented.
@@ -1073,7 +1069,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       return;
     }
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
-    case SuggestionType::kMixedFormMessage:
       // If the selected element is a warning we don't want to do anything.
       break;
     case SuggestionType::kAddressEntryOnTyping:
@@ -1375,7 +1370,6 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kManageEnhancedAutofill:
     case SuggestionType::kMaximizeCreditCardBenefitsEntry:
     case SuggestionType::kMerchantPromoCodeEntry:
-    case SuggestionType::kMixedFormMessage:
     case SuggestionType::kOneTimePasswordEntry:
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kPasswordFieldByFieldFilling:

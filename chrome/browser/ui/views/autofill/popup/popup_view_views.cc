@@ -1375,7 +1375,6 @@ void PopupViewViews::CreateSuggestionViews() {
               suggestions[current_line_number].main_text.value));
           break;
         case SuggestionType::kInsecureContextPaymentDisabledMessage:
-        case SuggestionType::kMixedFormMessage:
           body_builder.AddRow(std::make_unique<PopupWarningView>(
               suggestions[current_line_number]));
           break;

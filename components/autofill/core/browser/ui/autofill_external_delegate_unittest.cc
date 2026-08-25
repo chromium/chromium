@@ -725,9 +725,11 @@ TEST_F(AutofillExternalDelegateTest, GetMainFillingProduct) {
   EXPECT_EQ(external_delegate().GetMainFillingProduct(), FillingProduct::kNone);
 
   // Show auxiliary helper suggestion in the popup.
-  OnSuggestionsReturned(queried_field(), {CreateAutofillSuggestion(
-                                             SuggestionType::kMixedFormMessage,
-                                             u"no autofill available")});
+  OnSuggestionsReturned(
+      queried_field(),
+      {CreateAutofillSuggestion(
+          SuggestionType::kInsecureContextPaymentDisabledMessage,
+          u"no autofill available")});
   EXPECT_EQ(external_delegate().GetMainFillingProduct(), FillingProduct::kNone);
 
   // Show save and fill suggestion in the popup.

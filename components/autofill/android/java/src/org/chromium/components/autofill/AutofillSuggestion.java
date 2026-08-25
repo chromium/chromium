@@ -23,7 +23,6 @@ public class AutofillSuggestion {
             Set.of(
                     SuggestionType.SEPARATOR,
                     SuggestionType.INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE,
-                    SuggestionType.MIXED_FORM_MESSAGE,
                     SuggestionType.TITLE,
                     SuggestionType.AT_MEMORY_SOURCE_ATTRIBUTION);
     // LINT.ThenChange(/components/autofill/core/browser/suggestions/suggestion.cc:UnacceptableSuggestionTypes)

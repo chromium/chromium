@@ -150,7 +150,7 @@ enum class SuggestionType {
   kTitle = 45,
   kSeparator = 46,
   kUndo = 47,
-  kMixedFormMessage = 48,
+  // kMixedFormMessage = 48, // DEPRECATED
 
   // Top level suggestion rendered when test addresses are available. Shown only
   // when DevTools is open.

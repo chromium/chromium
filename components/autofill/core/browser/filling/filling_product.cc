@@ -113,7 +113,6 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kBnplFootnote:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kLoadingThrobber:
-    case SuggestionType::kMixedFormMessage:
     case SuggestionType::kPersonalContextNotice:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kSeparator:

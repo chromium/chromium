@@ -157,7 +157,6 @@
 #include "components/personal_context/core/mock_personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/prefs/pref_service.h"
-#include "components/security_interstitials/core/pref_names.h"
 #include "components/security_state/core/security_state.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/strings/grit/components_strings.h"
@@ -1977,77 +1976,6 @@ TEST_F(BrowserAutofillManagerTest,
             AutofillSuggestionTriggerSource::kFormControlElementClicked);
   external_delegate()->CheckSuggestions(form.fields()[0].global_id(),
                                         {suggestions[0], suggestions[1]});
-}
-
-// Test that we return a warning explaining that credit card profile suggestions
-// are unavailable when the page is secure, but the form action URL is valid but
-// not secure.
-TEST_F(BrowserAutofillManagerTest,
-       GetCreditCardSuggestions_SecureContext_FormActionNotHTTPS) {
-  // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(/*is_https=*/true, false);
-  // However we set the action (target URL) to be HTTP after all.
-  form.set_action(GURL("http://myform.com/submit.html"));
-  FormsSeen({form});
-
-  OnAskForValuesToFill(form, form.fields()[0]);
-
-  // Test that we sent the right values (only mixed form warning suggestion).
-  EXPECT_THAT(
-      external_delegate()->suggestions(),
-      ElementsAre(Field(&Suggestion::type, SuggestionType::kMixedFormMessage)));
-
-  // Clear the test credit cards and try again -- we should still show the
-  // mixed form warning.
-  personal_data().test_payments_data_manager().ClearCreditCards();
-  OnAskForValuesToFill(form, form.fields()[0]);
-  EXPECT_THAT(
-      external_delegate()->suggestions(),
-      ElementsAre(Field(&Suggestion::type, SuggestionType::kMixedFormMessage)));
-}
-
-// Test that we return credit card suggestions for secure pages that have an
-// empty form action target URL.
-TEST_F(BrowserAutofillManagerTest,
-       GetCreditCardSuggestions_SecureContext_EmptyFormAction) {
-  // Set up our form data.
-  FormData form =
-      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
-  // Clear the form action.
-  form.set_action(GURL());
-  FormsSeen({form});
-
-  OnAskForValuesToFill(form, form.fields()[1]);
-
-  // Test that we returned card suggestions (not blocked by mixed content).
-  EXPECT_THAT(
-      external_delegate()->suggestions(),
-      ElementsAre(Field(&Suggestion::type, SuggestionType::kCreditCardEntry),
-                  Field(&Suggestion::type, SuggestionType::kCreditCardEntry),
-                  Field(&Suggestion::type, SuggestionType::kSeparator),
-                  Field(&Suggestion::type, SuggestionType::kManageCreditCard)));
-}
-
-// Test that we return credit card suggestions for secure pages that have a
-// form action set to "javascript:something".
-TEST_F(BrowserAutofillManagerTest,
-       GetCreditCardSuggestions_SecureContext_JavascriptFormAction) {
-  // Set up our form data.
-  FormData form =
-      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
-  // Have the form action be a javascript function (which is a valid URL).
-  form.set_action(GURL("javascript:alert('Hello');"));
-  FormsSeen({form});
-
-  OnAskForValuesToFill(form, form.fields()[1]);
-
-  // Test that we returned card suggestions (not blocked by mixed content).
-  EXPECT_THAT(
-      external_delegate()->suggestions(),
-      ElementsAre(Field(&Suggestion::type, SuggestionType::kCreditCardEntry),
-                  Field(&Suggestion::type, SuggestionType::kCreditCardEntry),
-                  Field(&Suggestion::type, SuggestionType::kSeparator),
-                  Field(&Suggestion::type, SuggestionType::kManageCreditCard)));
 }
 
 // Test that we return profile and credit card suggestions for combined forms.
@@ -5688,65 +5616,6 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteMetrics) {
     histogram_tester.ExpectTotalCount(
         kTypeHistogram + "ServerOrHeuristics." + suffix, 4);
   }
-}
-
-// Test that if a form is mixed content we show a warning instead of any
-// suggestions.
-TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedForm) {
-  // Set up our form data.
-  FormData form =
-      test::GetFormData({.fields = {{.role = CREDIT_CARD_NAME_FULL}}});
-  form.set_action(GURL("http://myform.com/submit.html"));
-
-  OnAskForValuesToFill(form, form.fields()[0]);
-
-  // Test that we sent the right values to the external delegate.
-  external_delegate()->CheckSuggestions(
-      form.fields().back().global_id(),
-      {Suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_MIXED_FORM),
-                  u"", Suggestion::Icon::kNoIcon,
-                  SuggestionType::kMixedFormMessage)});
-}
-
-// Test that if a form is mixed content we do not show a warning if the opt out
-// policy is set.
-TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedFormOptOutPolicy) {
-  // Set pref to disabled.
-  autofill_client().GetPrefs()->SetBoolean(::prefs::kMixedFormsWarningsEnabled,
-                                           false);
-
-  // Set up our form data.
-  FormData form =
-      test::GetFormData({.fields = {{.role = CREDIT_CARD_NAME_FULL}}});
-  form.set_action(GURL("http://myform.com/submit.html"));
-  OnAskForValuesToFill(form, form.fields()[0]);
-
-  // Check there is no warning.
-  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
-}
-
-// Test that we dismiss the mixed form warning if user starts typing.
-TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedFormUserTyped) {
-  // Set up our form data.
-  FormData form =
-      test::GetFormData({.fields = {{.role = CREDIT_CARD_NAME_FULL}}});
-  form.set_action(GURL("http://myform.com/submit.html"));
-
-  OnAskForValuesToFill(form, form.fields()[0]);
-
-  // Test that we sent the right values to the external delegate.
-  external_delegate()->CheckSuggestions(
-      form.fields().back().global_id(),
-      {Suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_MIXED_FORM),
-                  u"", Suggestion::Icon::kNoIcon,
-                  SuggestionType::kMixedFormMessage)});
-
-  // Pretend user started typing and make sure we no longer set suggestions.
-  test_api(form).field(0).set_value(u"Michael");
-  test_api(form).field(0).set_properties_mask(
-      form.fields()[0].properties_mask() | kUserTyped);
-  OnAskForValuesToFill(form, form.fields()[0]);
-  external_delegate()->CheckNoSuggestions(form.fields()[0].global_id());
 }
 
 // Test that we don't treat javascript scheme target URLs as mixed forms.

@@ -691,7 +691,6 @@ bool HasGuid(const Suggestion::Payload& payload) {
       case SuggestionType::kManageEnhancedAutofill:
       case SuggestionType::kMaximizeCreditCardBenefitsEntry:
       case SuggestionType::kMerchantPromoCodeEntry:
-      case SuggestionType::kMixedFormMessage:
       case SuggestionType::kOneTimePasswordEntry:
       case SuggestionType::kPasswordEntry:
       case SuggestionType::kPasswordFieldByFieldFilling:

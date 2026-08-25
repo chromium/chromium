@@ -69,7 +69,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/prefs/testing_pref_store.h"
-#include "components/security_interstitials/core/pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
@@ -156,7 +155,6 @@ std::unique_ptr<AutofillTestingPrefService> PrefServiceForTesting() {
   personal_context::prefs::RegisterProfilePrefs(registry);
   registry->RegisterBooleanPref(
       RandomizedEncoder::kUrlKeyedAnonymizedDataCollectionEnabled, false);
-  registry->RegisterBooleanPref(::prefs::kMixedFormsWarningsEnabled, true);
   prefs::RegisterProfilePrefs(registry);
   return pref_service;
 }

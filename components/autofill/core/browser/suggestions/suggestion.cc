@@ -501,8 +501,8 @@ bool Suggestion::IsAcceptable() const {
   using enum SuggestionType;
   // LINT.IfChange(UnacceptableSuggestionTypes)
   static constexpr auto kUnacceptableItemIds =
-      DenseSet({kSeparator, kInsecureContextPaymentDisabledMessage,
-                kMixedFormMessage, kTitle, kAtMemorySourceAttribution});
+      DenseSet({kSeparator, kInsecureContextPaymentDisabledMessage, kTitle,
+                kAtMemorySourceAttribution});
   // LINT.ThenChange(/components/autofill/android/java/src/org/chromium/components/autofill/AutofillSuggestion.java:UnacceptableSuggestionTypes)
   if (kUnacceptableItemIds.contains(type)) {
     return false;

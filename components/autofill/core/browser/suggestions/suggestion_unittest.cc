@@ -21,7 +21,6 @@ TEST(SuggestionTest, IsAcceptable) {
   // Unacceptable suggestion types return false regardless of acceptability.
   EXPECT_FALSE(Suggestion(SuggestionType::kSeparator).IsAcceptable());
   EXPECT_FALSE(Suggestion(SuggestionType::kTitle).IsAcceptable());
-  EXPECT_FALSE(Suggestion(SuggestionType::kMixedFormMessage).IsAcceptable());
   EXPECT_FALSE(
       Suggestion(SuggestionType::kInsecureContextPaymentDisabledMessage)
           .IsAcceptable());

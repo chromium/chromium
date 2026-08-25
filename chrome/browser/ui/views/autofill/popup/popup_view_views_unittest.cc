@@ -3321,7 +3321,7 @@ TEST_F(PopupViewViewsTest, TabbedPane_InitialWidthMaintainedWhenSwitchingTabs) {
 
 TEST_F(PopupViewViewsTest, WarningOnShowA11yFocus) {
   views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
-  CreateAndShowView({SuggestionType::kMixedFormMessage});
+  CreateAndShowView({SuggestionType::kInsecureContextPaymentDisabledMessage});
 
   ASSERT_EQ(1u, test_api(view()).rows().size());
   auto* const* row_view =
@@ -3333,7 +3333,8 @@ TEST_F(PopupViewViewsTest, WarningOnShowA11yFocus) {
 
 TEST_F(PopupViewViewsTest, WarningOnShow_DestroyOnA11yFocus) {
   CreateView();
-  controller().set_suggestions({SuggestionType::kMixedFormMessage});
+  controller().set_suggestions(
+      {SuggestionType::kInsecureContextPaymentDisabledMessage});
   view().DestroyOnNotifyAxSelection();
 
   // This should not crash!

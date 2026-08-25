@@ -107,8 +107,6 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kSeparator";
     case SuggestionType::kUndo:
       return "kUndo";
-    case SuggestionType::kMixedFormMessage:
-      return "kMixedFormMessage";
     case SuggestionType::kDevtoolsTestAddresses:
       return "kDevtoolsTestAddresses";
     case SuggestionType::kDevtoolsTestAddressByCountry:

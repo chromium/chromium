@@ -160,7 +160,6 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/prefs/pref_service.h"
-#include "components/security_interstitials/core/pref_names.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -322,7 +321,6 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kManageLoyaltyCard:
     case SuggestionType::kManageEnhancedAutofill:
     case SuggestionType::kMaximizeCreditCardBenefitsEntry:
-    case SuggestionType::kMixedFormMessage:
     case SuggestionType::kOneTimePasswordEntry:
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kPasswordFieldByFieldFilling:
@@ -1422,27 +1420,6 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
       form, field, trigger_source, suggestion_generation_start_time,
       std::move(scoped_on_after));
 
-  // If this is a mixed content form, we show a warning message and don't offer
-  // autofill. The warning is shown even if there are no autofill suggestions
-  // available.
-  if (IsFormMixedContent(client(), form) &&
-      client().GetPrefs()->FindPreference(
-          ::prefs::kMixedFormsWarningsEnabled) &&
-      client().GetPrefs()->GetBoolean(::prefs::kMixedFormsWarningsEnabled)) {
-    LOG_AF(log_manager()) << LoggingScope::kFilling
-                          << LogMessage::kSuggestionSuppressed
-                          << " Reason: Insecure form";
-    // If the user begins typing, we interpret that as dismissing the warning.
-    // No suggestions are allowed, but the warning is no longer shown.
-    std::vector<Suggestion> suggestions;
-    if (!(field.properties_mask() & kUserTyped)) {
-      suggestions.emplace_back(
-          l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_MIXED_FORM),
-          SuggestionType::kMixedFormMessage);
-    }
-    std::move(callback).Run(/*show_suggestions=*/true, suggestions);
-    return;
-  }
   const bool do_not_generate_autofill_suggestions =
       !form_structure || !autofill_field ||
       SuppressSuggestionsForAutocompleteUnrecognizedField(

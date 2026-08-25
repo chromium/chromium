@@ -295,7 +295,6 @@ bool IsPasswordSuggestion(FormSuggestion* suggestion) {
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:
     case SuggestionType::kUndo:
-    case SuggestionType::kMixedFormMessage:
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddressEntry:

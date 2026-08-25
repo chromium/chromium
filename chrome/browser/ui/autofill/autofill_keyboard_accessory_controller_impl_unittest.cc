@@ -620,7 +620,8 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 // This is a regression test for crbug.com/41195069 to ensure that we don't
 // crash when suggestions updates race with user selections.
 TEST_F(AutofillKeyboardAccessoryControllerImplTest, SelectInvalidSuggestion) {
-  ShowSuggestions(manager(), {SuggestionType::kMixedFormMessage});
+  ShowSuggestions(manager(),
+                  {SuggestionType::kInsecureContextPaymentDisabledMessage});
   EXPECT_EQ(client().suggestion_controller(manager()).GetMainFillingProduct(),
             FillingProduct::kNone);
 
