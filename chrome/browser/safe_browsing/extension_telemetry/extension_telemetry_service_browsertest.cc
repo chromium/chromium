@@ -597,15 +597,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
   EXPECT_EQ(action_detail.redirect_url(), "http://google.com/pages/");
 }
 
-// TODO(crbug.com/444383306): Deflake this test on mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DetectsAndReportsTabsApiSignal \
-  DISABLED_DetectsAndReportsTabsApiSignal
-#else
-#define MAYBE_DetectsAndReportsTabsApiSignal DetectsAndReportsTabsApiSignal
-#endif
 IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
-                       MAYBE_DetectsAndReportsTabsApiSignal) {
+                       DetectsAndReportsTabsApiSignal) {
   SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -621,49 +614,48 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
        })";
   static constexpr char kBackground[] =
       R"(
-        var pass = chrome.test.callbackPass;
-        function waitForAllTabs(callback) {
-          // Wait for all tabs to load.
-          function waitForTabs() {
-            chrome.windows.getAll({"populate": true}, function(windows) {
-              var ready = true;
-              for (var i in windows) {
-                for (var j in windows[i].tabs) {
-                  if (windows[i].tabs[j].status != "complete") {
-                    ready = false;
-                    break;
-                  }
-                }
-                if (!ready)
-                  break;
+        function waitForTabLoad(tabId) {
+          return new Promise((resolve) => {
+            const listener = (id, changeInfo, updatedTab) => {
+              if (id === tabId && changeInfo.status === 'complete') {
+                chrome.tabs.onUpdated.removeListener(listener);
+                resolve(updatedTab);
               }
-              if (ready)
-                callback();
-              else
-                setTimeout(waitForTabs, 30);
+            };
+            chrome.tabs.onUpdated.addListener(listener);
+
+            chrome.tabs.get(tabId, (tab) => {
+              if (tab && tab.status === 'complete') {
+                chrome.tabs.onUpdated.removeListener(listener);
+                resolve(tab);
+              }
             });
-          }
-          waitForTabs();
+          });
         }
 
         chrome.test.runTests([
           async function tabOps() {
-            await chrome.tabs.create({url: 'http://www.google.com'});
-            const second_tab = await chrome.tabs.create(
-                {url: 'http://www.google.com'});
-            await chrome.tabs.update({url:'http://www.example.com'});
+            const first_tab =
+                await chrome.tabs.create({url: 'http://www.google.com'});
+            await waitForTabLoad(first_tab.id);
+
+            const second_tab =
+                await chrome.tabs.create({url: 'http://www.google.com'});
+            await waitForTabLoad(second_tab.id);
+
+            await chrome.tabs.update(second_tab.id,
+                {url: 'http://www.example.com'});
+            await waitForTabLoad(second_tab.id);
+
             await chrome.tabs.remove(second_tab.id);
             chrome.test.succeed();
           },
           async function captureVisibleTabOp() {
-            await chrome.windows.create({url: 'http://www.google.com'},
-              pass(function(newWindow) {
-                waitForAllTabs(pass(function() {
-                  chrome.tabs.captureVisibleTab(newWindow.id, function() {
-                    chrome.test.succeed();
-                  });
-                }));
-              }));
+            const newWindow =
+                await chrome.windows.create({url: 'http://www.google.com'});
+            await waitForTabLoad(newWindow.tabs[0].id);
+            await chrome.tabs.captureVisibleTab(newWindow.id);
+            chrome.test.succeed();
           },
         ]);
       )";
@@ -777,7 +769,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
     const JSCallStack& callstack = call_details.js_callstacks(0);
     ASSERT_GE(callstack.frames_size(), 1);
     EXPECT_EQ(callstack.frames(0).script_name(), "/background.js");
-    EXPECT_EQ(callstack.frames(0).function_name(), "<anonymous>");
+    EXPECT_EQ(callstack.frames(0).function_name(), "captureVisibleTabOp");
   }
 
   // Verify enterprise telemetry reporting.
