@@ -1,8 +1,16 @@
-<!-- #html_wrapper_imports_start
-import {ChromeSigninAccessPoint, PageStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
-#html_wrapper_imports_end -->
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
-  <settings-subpage page-title="$i18n{syncPageTitle}"
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import {ChromeSigninAccessPoint, PageStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+
+import type {SettingsSyncPageElement} from './sync_page.js';
+
+export function getHtml(this: SettingsSyncPageElement) {
+  return html`<!--_html_template_start_-->
+<settings-subpage page-title="$i18n{syncPageTitle}"
       learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}"
       route-path="${this.routePath}">
 <if expr="not is_chromeos">
@@ -172,3 +180,5 @@ import {ChromeSigninAccessPoint, PageStatus} from '/shared/settings/people_page/
     ` : ''}
 </if>
   </settings-subpage>
+<!--_html_template_end_-->`;
+}

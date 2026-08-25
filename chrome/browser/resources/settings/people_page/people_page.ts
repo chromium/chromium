@@ -62,8 +62,6 @@ export interface SettingsPeoplePageElement {
 const SettingsPeoplePageElementBase =
     SettingsViewMixinLit(WebUiListenerMixinLit(CrLitElement));
 
-export type PeoplePageElement = SettingsPeoplePageElement;
-
 export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   static get is() {
     return 'settings-people-page';

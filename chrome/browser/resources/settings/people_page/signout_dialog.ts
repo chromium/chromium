@@ -36,8 +36,6 @@ export interface SettingsSignoutDialogElement {
 
 const SettingsSignoutDialogElementBase = WebUiListenerMixinLit(CrLitElement);
 
-export type SignoutDialogElement = SettingsSignoutDialogElement;
-
 export class SettingsSignoutDialogElement extends
     SettingsSignoutDialogElementBase {
   static get is() {

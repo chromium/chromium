@@ -30,8 +30,6 @@ enum RadioButtonNames {
   ENCRYPT_WITH_PASSPHRASE = 'encrypt-with-passphrase',
 }
 
-export type SyncEncryptionOptionsElement = SettingsSyncEncryptionOptionsElement;
-
 export class SettingsSyncEncryptionOptionsElement extends CrLitElement {
   static get is() {
     return 'settings-sync-encryption-options';

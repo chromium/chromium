@@ -43,8 +43,6 @@ export interface SettingsManageProfileElement {
   };
 }
 
-export type ManageProfileElement = SettingsManageProfileElement;
-
 export class SettingsManageProfileElement extends
     SettingsManageProfileElementBase {
   static get is() {

@@ -1,7 +1,15 @@
-<!-- #html_wrapper_imports_start
-import {UserSelectableType} from '/shared/settings/people_page/sync_browser_proxy.js';
-#html_wrapper_imports_end -->
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import {UserSelectableType} from '/shared/settings/people_page/sync_browser_proxy.js';
+
+import type {SettingsSyncControlsElement} from './sync_controls.js';
+
+export function getHtml(this: SettingsSyncControlsElement) {
+  return html`<!--_html_template_start_-->
 <if expr="is_chromeos">
   <div ?hidden="${this.isAccountSettingsPage_}">
       <div class="settings-box first">
@@ -390,3 +398,5 @@ import {UserSelectableType} from '/shared/settings/people_page/sync_browser_prox
       </div>
 </if>
     </div>
+<!--_html_template_end_-->`;
+}

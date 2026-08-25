@@ -37,8 +37,6 @@ import {getHtml} from './account_page.html.js';
 const SettingsAccountPageElementBase =
     SettingsViewMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement)));
 
-export type AccountPageElement = SettingsAccountPageElement;
-
 export class SettingsAccountPageElement extends SettingsAccountPageElementBase {
   static get is() {
     return 'settings-account-page';

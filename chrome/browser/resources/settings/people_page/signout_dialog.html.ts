@@ -1,4 +1,14 @@
-    <cr-dialog id="dialog" ignore-enter-key close-text="$i18n{close}">
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsSignoutDialogElement} from './signout_dialog.js';
+
+export function getHtml(this: SettingsSignoutDialogElement) {
+  return html`<!--_html_template_start_-->
+<cr-dialog id="dialog" ignore-enter-key close-text="$i18n{close}">
       <div slot="title">$i18n{syncDisconnectTitle}</div>
       <div id="dialog-body" slot="body"
           .innerHTML="${this.getDisconnectExplanationHtml_()}"></div>
@@ -35,3 +45,5 @@
       </div>
 </if>
     </cr-dialog>
+<!--_html_template_end_-->`;
+}

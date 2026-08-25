@@ -1,4 +1,14 @@
-    ${!this.syncPrefs?.passphraseRequired ? html`
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsSyncEncryptionOptionsElement} from './sync_encryption_options.js';
+
+export function getHtml(this: SettingsSyncEncryptionOptionsElement) {
+  return html`<!--_html_template_start_-->
+${!this.syncPrefs?.passphraseRequired ? html`
       <div id="encryptionRadioGroupContainer" class="list-frame">
         <cr-radio-group
             id="encryptionRadioGroup"
@@ -48,3 +58,5 @@
         </cr-radio-group>
       </div>
     ` : ''}
+<!--_html_template_end_-->`;
+}

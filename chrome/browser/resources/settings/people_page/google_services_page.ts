@@ -27,8 +27,6 @@ import {getHtml} from './google_services_page.html.js';
 const SettingsGoogleServicesPageElementBase =
     SettingsViewMixinLit(WebUiListenerMixinLit(CrLitElement));
 
-export type GoogleServicesPageElement = SettingsGoogleServicesPageElement;
-
 export class SettingsGoogleServicesPageElement extends
     SettingsGoogleServicesPageElementBase {
   static get is() {

@@ -1,5 +1,14 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
-    <if expr="not is_chromeos">
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsSyncAccountControlElement} from './sync_account_control.js';
+
+export function getHtml(this: SettingsSyncAccountControlElement) {
+  return html`<!--_html_template_start_-->
+<if expr="not is_chromeos">
     <div id="banner" ?hidden="${this.shouldHideBanner_()}"
         part="banner"></div>
     <div class="cr-row first"
@@ -138,3 +147,5 @@
       ` : ''}
       </if>
     ` : ''}
+<!--_html_template_end_-->`;
+}

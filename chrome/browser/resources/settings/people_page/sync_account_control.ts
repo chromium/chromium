@@ -38,8 +38,6 @@ export interface SettingsSyncAccountControlElement {
 }
 // </if>
 
-export type SyncAccountControlElement = SettingsSyncAccountControlElement;
-
 // Helper enum to determine which promo type the app should display. Used in the
 // CSS styling, where the string literals are used for attributes matching.
 enum PromoType {

@@ -1,8 +1,16 @@
-<!-- #html_wrapper_imports_start
-import {ChromeSigninAccessPoint} from '/shared/settings/people_page/sync_browser_proxy.js';
-#html_wrapper_imports_end -->
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
-    <settings-section page-title="$i18n{peoplePageTitle}">
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import {ChromeSigninAccessPoint} from '/shared/settings/people_page/sync_browser_proxy.js';
+
+import type {SettingsPeoplePageElement} from './people_page.js';
+
+export function getHtml(this: SettingsPeoplePageElement) {
+  return html`<!--_html_template_start_-->
+<settings-section page-title="$i18n{peoplePageTitle}">
       <div>
 
 <if expr="not is_chromeos">
@@ -145,3 +153,5 @@ import {ChromeSigninAccessPoint} from '/shared/settings/people_page/sync_browser
     <cr-toast duration="3000" id="toast">
       <span>$i18n{syncSettingsSavedToast}</span>
     </cr-toast>
+<!--_html_template_end_-->`;
+}

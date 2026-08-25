@@ -42,8 +42,6 @@ export interface SettingsImportDataDialogElement {
 const SettingsImportDataDialogElementBase = WebUiListenerMixinLit(
     I18nMixinLit(PrefServiceObserverMixinLit(CrLitElement)));
 
-export type ImportDataDialogElement = SettingsImportDataDialogElement;
-
 export class SettingsImportDataDialogElement extends
     SettingsImportDataDialogElementBase {
   static get is() {

@@ -1,8 +1,16 @@
-<!-- #html_wrapper_imports_start
-import {ImportDataStatus} from './import_data_browser_proxy.js';
-#html_wrapper_imports_end -->
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
-    <cr-dialog id="dialog" close-text="$i18n{close}"
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import {ImportDataStatus} from './import_data_browser_proxy.js';
+
+import type {SettingsImportDataDialogElement} from './import_data_dialog.js';
+
+export function getHtml(this: SettingsImportDataDialogElement) {
+  return html`<!--_html_template_start_-->
+<cr-dialog id="dialog" close-text="$i18n{close}"
         ignore-popstate>
       <div slot="title">$i18n{importTitle}</div>
       <div slot="body">
@@ -87,3 +95,5 @@ import {ImportDataStatus} from './import_data_browser_proxy.js';
             @click="${this.onCloseClick_}">$i18n{done}</cr-button>
       </div>
     </cr-dialog>
+<!--_html_template_end_-->`;
+}

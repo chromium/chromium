@@ -26,8 +26,6 @@ export interface SettingsPeoplePageIndexElement {
   };
 }
 
-export type PeoplePageIndexElement = SettingsPeoplePageIndexElement;
-
 const SettingsPeoplePageIndexElementBase =
     SearchableViewContainerMixinLit(RouteObserverMixinLit(CrLitElement));
 

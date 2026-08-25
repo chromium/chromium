@@ -65,8 +65,6 @@ import {getHtml} from './sync_page.html.js';
 const SettingsSyncPageElementBase =
     SettingsViewMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement)));
 
-export type SyncPageElement = SettingsSyncPageElement;
-
 export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   static get is() {
     return 'settings-sync-page';

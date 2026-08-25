@@ -52,8 +52,6 @@ type SyncPrefsBooleanKey = keyof Omit<SyncPrefs, 'explicitPassphraseTime'>;
 const SettingsSyncControlsElementBase =
     RouteObserverMixinLit(WebUiListenerMixinLit(CrLitElement));
 
-export type SyncControlsElement = SettingsSyncControlsElement;
-
 export class SettingsSyncControlsElement extends
     SettingsSyncControlsElementBase {
   static get is() {
