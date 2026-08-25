@@ -67,7 +67,6 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -1322,10 +1321,9 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/512114495")
     @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testStartSigninFlow_afterAnotherSigninFlow_didShowSigninStepIsReset() {
-        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         mBaseActivityTestRule.startOnBlankPage();
         createSigninCoordinator();
 
