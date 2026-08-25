@@ -108,6 +108,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.handoff.HandoffController;
 import org.chromium.chrome.browser.host_zoom.HostZoomListenerFactory;
+import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthControllerImpl;
@@ -2276,7 +2277,8 @@ public class RootUiCoordinator
                             mCountrySupplier,
                             (preventClose, invocationSource) ->
                                     toggleGlic(preventClose, invocationSource),
-                            shouldSuppressTabStripAtStart());
+                            shouldSuppressTabStripAtStart(),
+                            getHubManagerSupplier());
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }
@@ -3044,6 +3046,14 @@ public class RootUiCoordinator
      * the current activity does not support Side Panel.
      */
     protected @Nullable OneshotSupplier<SideUiStateProvider> getSideUiStateProviderSupplier() {
+        return null;
+    }
+
+    /**
+     * Returns the {@link OneshotSupplier} for {@link HubManager}, if supported by the current
+     * activity.
+     */
+    protected @Nullable OneshotSupplier<HubManager> getHubManagerSupplier() {
         return null;
     }
 }

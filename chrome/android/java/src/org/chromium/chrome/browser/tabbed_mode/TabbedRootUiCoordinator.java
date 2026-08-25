@@ -3228,6 +3228,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         return mSideUiStateProviderSupplier;
     }
 
+    @Override
+    protected @Nullable OneshotSupplier<HubManager> getHubManagerSupplier() {
+        return mHubManagerSupplier;
+    }
+
     /**
      * Returns a {@link BooleanSupplier} that indicates whether tab layout toggle menu can be
      * activated.

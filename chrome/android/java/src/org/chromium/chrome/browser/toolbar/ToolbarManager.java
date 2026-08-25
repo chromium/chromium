@@ -105,6 +105,8 @@ import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepageManager.HomepageStateListener;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
+import org.chromium.chrome.browser.hub.HubExitNavigationHelper;
+import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -508,6 +510,7 @@ public class ToolbarManager
     private @Nullable UndoBarThrottle mUndoBarThrottle;
     private final @Nullable BottomBarHostManager mBottomBarHostManager;
     private final @Nullable OneshotSupplier<String> mCountrySupplier;
+    private final @Nullable OneshotSupplier<HubManager> mHubManagerSupplier;
 
     private OverridableTabCount mOverridableTabCount;
     private int mIncognitoNtpViewIdForA11y = View.NO_ID;
@@ -517,6 +520,7 @@ public class ToolbarManager
     private final NonNullObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
     private final SettableNonNullObservableSupplier<Float>
             mNtpSearchBoxTransitionPercentageSupplier = ObservableSuppliers.createNonNull(0f);
+    private @Nullable HubExitNavigationHelper mHubExitNavigationHelper;
 
     private static class TabObscuringCallback implements Callback<Boolean> {
         private final TabObscuringHandler mTabObscuringHandler;
@@ -838,7 +842,8 @@ public class ToolbarManager
             @Nullable ActionRegistry actionRegistry,
             @Nullable OneshotSupplier<String> countrySupplier,
             GlicButtonDelegate toggleGlicCallback,
-            boolean suppressTabStripAtStart) {
+            boolean suppressTabStripAtStart,
+            @Nullable OneshotSupplier<HubManager> hubManagerSupplier) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActionRegistry = actionRegistry;
         mCountrySupplier = countrySupplier;
@@ -883,6 +888,7 @@ public class ToolbarManager
         mProfileSupplier = profileSupplier;
         mChromeAndroidTaskSupplier = chromeAndroidTaskSupplier;
         mBottomBarHostManager = bottomBarHostManager;
+        mHubManagerSupplier = hubManagerSupplier;
 
         mToolbarLayout = mActivity.findViewById(R.id.toolbar);
         NewTabPageDelegate ntpDelegate = createNewTabPageDelegate();
@@ -1124,7 +1130,7 @@ public class ToolbarManager
                                     if (tabBottomSheetManager != null) {
                                         tabBottomSheetManager.setSheetExpanded(false);
                                     }
-                                    mToolbarTabController.openHomepage();
+                                    runOrDeferAfterHubExit(mToolbarTabController::openHomepage);
                                 }
 
                                 Tracker tracker =
@@ -1994,6 +2000,29 @@ public class ToolbarManager
         } else {
             final boolean isSuccess = mToolbarTabController.back();
             if (isSuccess) RecordUserAction.record("MobileToolbarBack");
+        }
+    }
+
+    private void runOrDeferAfterHubExit(Runnable action) {
+        Tab currentTab = mLocationBarModel.getTab();
+        HubManager hubManager = mHubManagerSupplier != null ? mHubManagerSupplier.get() : null;
+        if (mLayoutStateProvider != null
+                && mLayoutStateProvider.isLayoutVisible(LayoutType.HUB)
+                && hubManager != null) {
+            boolean isIncognito =
+                    mIncognitoStateProvider != null
+                            && mIncognitoStateProvider.isIncognitoSelected();
+            if (currentTab == null || currentTab.isClosing() || currentTab.isDestroyed()) {
+                HomepageManager.getInstance().openHomepage(null, mTabCreatorManager, isIncognito);
+                return;
+            }
+            if (mHubExitNavigationHelper == null) {
+                mHubExitNavigationHelper =
+                        new HubExitNavigationHelper(mLayoutStateProvider, hubManager);
+            }
+            mHubExitNavigationHelper.runOrDefer(currentTab, action);
+        } else {
+            action.run();
         }
     }
 
@@ -2958,6 +2987,10 @@ public class ToolbarManager
         if (mTemplateUrlObserver != null) {
             mTemplateUrlService.removeObserver(mTemplateUrlObserver);
             mTemplateUrlObserver = null;
+        }
+        if (mHubExitNavigationHelper != null) {
+            mHubExitNavigationHelper.destroy();
+            mHubExitNavigationHelper = null;
         }
         if (mLayoutStateProvider != null) {
             mLayoutStateProvider.removeObserver(mLayoutStateObserver);
@@ -4046,5 +4079,9 @@ public class ToolbarManager
                 profile,
                 mTabModelSelectorSupplier,
                 TabWindowManagerSingleton.getInstance());
+    }
+
+    @Nullable HubExitNavigationHelper getHubExitNavigationHelperForTesting() {
+        return mHubExitNavigationHelper;
     }
 }
