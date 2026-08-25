@@ -626,9 +626,8 @@ TEST_F(
       blink::mojom::WindowFeatures()));
 }
 
-TEST_F(
-    ContextualTasksUiServiceTest,
-    HandleNavigation_AiPage_CobrowseIneligible_WithAttachedTab_NotIntercepted) {
+TEST_F(ContextualTasksUiServiceTest,
+       HandleNavigation_AiPage_CobrowseIneligible_WithAttachedTab_Intercepted) {
   base::test::ScopedFeatureList scoped_feature_list(kContextualTasksSidePanel);
   GURL ai_url(kAiPageUrl);
   ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
@@ -658,14 +657,17 @@ TEST_F(
   helper->SetTaskSession(std::nullopt, std::move(mock_session),
                          /*input_state_model=*/nullptr);
 
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
-      .Times(0);
+  base::RunLoop run_loop;
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
 
-  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
       blink::mojom::WindowFeatures()));
+
+  run_loop.Run();
 }
 
 TEST_F(
