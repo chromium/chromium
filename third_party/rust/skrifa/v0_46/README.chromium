@@ -1,7 +1,7 @@
 Name: skrifa
 URL: https://crates.io/crates/skrifa
-Version: 0.46.0
-Revision: 74915340ab076dd6edf11c5ddfd285d20459fc78
+Version: 0.46.2
+Revision: f886c9069b08eaddcb1caced3a44b0d8291a159a
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/skrifa-v0_46/LICENSE-APACHE

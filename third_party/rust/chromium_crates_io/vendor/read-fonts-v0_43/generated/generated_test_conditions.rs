@@ -118,10 +118,10 @@ impl<'a> SomeTable<'a> for MajorMinorVersion<'a> {
             0usize => Some(Field::new("version", self.version())),
             1usize => Some(Field::new("always_present", self.always_present())),
             2usize if self.version().compatible((1u16, 1u16)) => {
-                Some(Field::new("if_11", self.if_11().unwrap()))
+                Some(Field::new("if_11", self.if_11()?))
             }
             3usize if self.version().compatible((2u16, 0u16)) => {
-                Some(Field::new("if_20", self.if_20().unwrap()))
+                Some(Field::new("if_20", self.if_20()?))
             }
             _ => None,
         }
@@ -551,12 +551,8 @@ impl<'a> SomeTable<'a> for FlagDay<'a> {
         match idx {
             0usize => Some(Field::new("volume", self.volume())),
             1usize => Some(Field::new("flags", self.flags())),
-            2usize if self.flags().contains(GotFlags::FOO) => {
-                Some(Field::new("foo", self.foo().unwrap()))
-            }
-            3usize if self.flags().contains(GotFlags::BAR) => {
-                Some(Field::new("bar", self.bar().unwrap()))
-            }
+            2usize if self.flags().contains(GotFlags::FOO) => Some(Field::new("foo", self.foo()?)),
+            3usize if self.flags().contains(GotFlags::BAR) => Some(Field::new("bar", self.bar()?)),
             _ => None,
         }
     }

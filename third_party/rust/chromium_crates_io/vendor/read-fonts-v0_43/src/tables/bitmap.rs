@@ -1,5 +1,7 @@
 //! Common bitmap (EBLC/EBDT/CBLC/CBDT) types.
 
+use crate::{array, offset::CheckedOffset};
+
 include!("../../generated/generated_bitmap.rs");
 
 impl BitmapSize {
@@ -34,16 +36,11 @@ impl BitmapSize {
             match &subtable {
                 IndexSubtable::Format1(st) => {
                     location.format = st.image_format();
-                    let start = st.image_data_offset() as usize
-                        + st.sbit_offsets()
-                            .get(glyph_ix)
-                            .ok_or(ReadError::OutOfBounds)?
-                            .get() as usize;
-                    let end = st.image_data_offset() as usize
-                        + st.sbit_offsets()
-                            .get(glyph_ix + 1)
-                            .ok_or(ReadError::OutOfBounds)?
-                            .get() as usize;
+                    let [first_offset, second_offset] =
+                        array::get_pair(st.sbit_offsets(), glyph_ix)?.map(|o| o.get() as usize);
+                    let base = CheckedOffset::new(st.image_data_offset() as usize);
+                    let start = base.add(first_offset).ok_or_oob()?;
+                    let end = base.add(second_offset).ok_or_oob()?;
                     location.data_offset = start;
                     if end < start {
                         return Err(ReadError::OutOfBounds);
@@ -54,22 +51,20 @@ impl BitmapSize {
                     location.format = st.image_format();
                     let data_size = st.image_size() as usize;
                     location.data_size = data_size;
-                    location.data_offset = st.image_data_offset() as usize + glyph_ix * data_size;
+                    location.data_offset = CheckedOffset::new(glyph_ix)
+                        .mul(data_size)
+                        .add(st.image_data_offset() as usize)
+                        .ok_or_oob()?;
                     location.metrics =
                         Some(*st.big_metrics().first().ok_or(ReadError::OutOfBounds)?);
                 }
                 IndexSubtable::Format3(st) => {
                     location.format = st.image_format();
-                    let start = st.image_data_offset() as usize
-                        + st.sbit_offsets()
-                            .get(glyph_ix)
-                            .ok_or(ReadError::OutOfBounds)?
-                            .get() as usize;
-                    let end = st.image_data_offset() as usize
-                        + st.sbit_offsets()
-                            .get(glyph_ix + 1)
-                            .ok_or(ReadError::OutOfBounds)?
-                            .get() as usize;
+                    let [first_offset, second_offset] =
+                        array::get_pair(st.sbit_offsets(), glyph_ix)?.map(|o| o.get() as usize);
+                    let base = CheckedOffset::new(st.image_data_offset() as usize);
+                    let start = base.add(first_offset).ok_or_oob()?;
+                    let end = base.add(second_offset).ok_or_oob()?;
                     location.data_offset = start;
                     if end < start {
                         return Err(ReadError::OutOfBounds);
@@ -85,13 +80,11 @@ impl BitmapSize {
                         Ok(ix) => ix,
                         _ => return Err(ReadError::InvalidCollectionIndex(glyph_id.to_u32())),
                     };
-                    let start =
-                        st.image_data_offset() as usize + array[array_ix].sbit_offset() as usize;
-                    let end = st.image_data_offset() as usize
-                        + array
-                            .get(array_ix + 1)
-                            .ok_or(ReadError::OutOfBounds)?
-                            .sbit_offset() as usize;
+                    let [first_offset, second_offset] =
+                        array::get_pair(array, array_ix)?.map(|p| p.sbit_offset() as usize);
+                    let base = CheckedOffset::new(st.image_data_offset() as usize);
+                    let start = base.add(first_offset).ok_or_oob()?;
+                    let end = base.add(second_offset).ok_or_oob()?;
                     location.data_offset = start;
                     if end < start {
                         return Err(ReadError::OutOfBounds);
@@ -109,7 +102,10 @@ impl BitmapSize {
                     };
                     let data_size = st.image_size() as usize;
                     location.data_size = data_size;
-                    location.data_offset = st.image_data_offset() as usize + array_ix * data_size;
+                    location.data_offset = CheckedOffset::new(array_ix)
+                        .mul(data_size)
+                        .add(st.image_data_offset() as usize)
+                        .ok_or_oob()?;
                     location.metrics =
                         Some(*st.big_metrics().first().ok_or(ReadError::OutOfBounds)?);
                 }
@@ -195,8 +191,12 @@ pub(crate) fn bitmap_data<'a>(
     location: &BitmapLocation,
     is_color: bool,
 ) -> Result<BitmapData<'a>, ReadError> {
+    let start = location.data_offset;
+    let end = CheckedOffset::new(start)
+        .add(location.data_size)
+        .ok_or_oob()?;
     let mut image_data = offset_data
-        .slice(location.data_offset..location.data_offset + location.data_size)
+        .slice(start..end)
         .ok_or(ReadError::OutOfBounds)?
         .cursor();
     match location.format {

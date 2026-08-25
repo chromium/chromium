@@ -382,13 +382,13 @@ impl<'a> SomeTable<'a> for TTCHeader<'a> {
                 self.table_directory_offsets(),
             )),
             4usize if self.version().compatible((2u16, 0u16)) => {
-                Some(Field::new("dsig_tag", self.dsig_tag().unwrap()))
+                Some(Field::new("dsig_tag", self.dsig_tag()?))
             }
             5usize if self.version().compatible((2u16, 0u16)) => {
-                Some(Field::new("dsig_length", self.dsig_length().unwrap()))
+                Some(Field::new("dsig_length", self.dsig_length()?))
             }
             6usize if self.version().compatible((2u16, 0u16)) => {
-                Some(Field::new("dsig_offset", self.dsig_offset().unwrap()))
+                Some(Field::new("dsig_offset", self.dsig_offset()?))
             }
             _ => None,
         }

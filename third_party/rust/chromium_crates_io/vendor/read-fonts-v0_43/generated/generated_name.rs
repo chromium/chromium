@@ -162,13 +162,13 @@ impl<'a> SomeTable<'a> for Name<'a> {
                 ),
             )),
             4usize if self.version().compatible(1u16) => {
-                Some(Field::new("lang_tag_count", self.lang_tag_count().unwrap()))
+                Some(Field::new("lang_tag_count", self.lang_tag_count()?))
             }
             5usize if self.version().compatible(1u16) => Some(Field::new(
                 "lang_tag_record",
                 traversal::FieldType::array_of_records(
                     stringify!(LangTagRecord),
-                    self.lang_tag_record().unwrap(),
+                    self.lang_tag_record()?,
                     self.string_data(),
                 ),
             )),

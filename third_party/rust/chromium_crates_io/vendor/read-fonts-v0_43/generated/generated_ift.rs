@@ -581,7 +581,7 @@ impl<'a> SomeTable<'a> for IftPatchMap<'a> {
             {
                 Some(Field::new(
                     "cff_charstrings_offset",
-                    self.cff_charstrings_offset().unwrap(),
+                    self.cff_charstrings_offset()?,
                 ))
             }
             10usize
@@ -591,7 +591,7 @@ impl<'a> SomeTable<'a> for IftPatchMap<'a> {
             {
                 Some(Field::new(
                     "cff2_charstrings_offset",
-                    self.cff2_charstrings_offset().unwrap(),
+                    self.cff2_charstrings_offset()?,
                 ))
             }
             _ => None,
@@ -888,24 +888,21 @@ impl<'a> SomeTable<'a> for EntryData<'a> {
                     .format_flags()
                     .contains(EntryFormatFlags::FEATURES_AND_DESIGN_SPACE) =>
             {
-                Some(Field::new("feature_count", self.feature_count().unwrap()))
+                Some(Field::new("feature_count", self.feature_count()?))
             }
             2usize
                 if self
                     .format_flags()
                     .contains(EntryFormatFlags::FEATURES_AND_DESIGN_SPACE) =>
             {
-                Some(Field::new("feature_tags", self.feature_tags().unwrap()))
+                Some(Field::new("feature_tags", self.feature_tags()?))
             }
             3usize
                 if self
                     .format_flags()
                     .contains(EntryFormatFlags::FEATURES_AND_DESIGN_SPACE) =>
             {
-                Some(Field::new(
-                    "design_space_count",
-                    self.design_space_count().unwrap(),
-                ))
+                Some(Field::new("design_space_count", self.design_space_count()?))
             }
             4usize
                 if self
@@ -916,7 +913,7 @@ impl<'a> SomeTable<'a> for EntryData<'a> {
                     "design_space_segments",
                     traversal::FieldType::array_of_records(
                         stringify!(DesignSpaceSegment),
-                        self.design_space_segments().unwrap(),
+                        self.design_space_segments()?,
                         self.offset_data(),
                     ),
                 ))
@@ -936,7 +933,7 @@ impl<'a> SomeTable<'a> for EntryData<'a> {
                     .format_flags()
                     .contains(EntryFormatFlags::CHILD_INDICES) =>
             {
-                Some(Field::new("child_indices", self.child_indices().unwrap()))
+                Some(Field::new("child_indices", self.child_indices()?))
             }
             _ => None,
         }

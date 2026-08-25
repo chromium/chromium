@@ -1063,35 +1063,34 @@ impl<'a> SomeTable<'a> for Os2<'a> {
             29usize => Some(Field::new("us_win_descent", self.us_win_descent())),
             30usize if self.version().compatible(1u16) => Some(Field::new(
                 "ul_code_page_range_1",
-                self.ul_code_page_range_1().unwrap(),
+                self.ul_code_page_range_1()?,
             )),
             31usize if self.version().compatible(1u16) => Some(Field::new(
                 "ul_code_page_range_2",
-                self.ul_code_page_range_2().unwrap(),
+                self.ul_code_page_range_2()?,
             )),
             32usize if self.version().compatible(2u16) => {
-                Some(Field::new("sx_height", self.sx_height().unwrap()))
+                Some(Field::new("sx_height", self.sx_height()?))
             }
             33usize if self.version().compatible(2u16) => {
-                Some(Field::new("s_cap_height", self.s_cap_height().unwrap()))
+                Some(Field::new("s_cap_height", self.s_cap_height()?))
             }
-            34usize if self.version().compatible(2u16) => Some(Field::new(
-                "us_default_char",
-                self.us_default_char().unwrap(),
-            )),
+            34usize if self.version().compatible(2u16) => {
+                Some(Field::new("us_default_char", self.us_default_char()?))
+            }
             35usize if self.version().compatible(2u16) => {
-                Some(Field::new("us_break_char", self.us_break_char().unwrap()))
+                Some(Field::new("us_break_char", self.us_break_char()?))
             }
             36usize if self.version().compatible(2u16) => {
-                Some(Field::new("us_max_context", self.us_max_context().unwrap()))
+                Some(Field::new("us_max_context", self.us_max_context()?))
             }
             37usize if self.version().compatible(5u16) => Some(Field::new(
                 "us_lower_optical_point_size",
-                self.us_lower_optical_point_size().unwrap(),
+                self.us_lower_optical_point_size()?,
             )),
             38usize if self.version().compatible(5u16) => Some(Field::new(
                 "us_upper_optical_point_size",
-                self.us_upper_optical_point_size().unwrap(),
+                self.us_upper_optical_point_size()?,
             )),
             _ => None,
         }

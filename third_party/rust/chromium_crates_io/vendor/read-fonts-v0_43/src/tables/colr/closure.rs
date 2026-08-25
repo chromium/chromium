@@ -239,8 +239,9 @@ impl<'a> Colrv1ClosureContext<'a> {
         if num_vars == 0 || var_index_base == NO_VARIATION_INDEX {
             return;
         }
-
-        let last_var_index = var_index_base + num_vars as u32 - 1;
+        let Some(last_var_index) = compute_inclusive_end(var_index_base, num_vars as u32) else {
+            return;
+        };
         self.variation_indices
             .insert_range(var_index_base..=last_var_index);
     }
@@ -328,8 +329,12 @@ impl PaintColrLayers<'_> {
         let Some(Ok(layer_list)) = c.colr.layer_list() else {
             return;
         };
+
         let first_layer_index = self.first_layer_index();
-        let last_layer_index = first_layer_index + num_layers as u32 - 1;
+        let Some(last_layer_index) = compute_inclusive_end(first_layer_index, num_layers as u32)
+        else {
+            return;
+        };
 
         let offset_data = layer_list.offset_data();
         let paint_offsets = layer_list.paint_offsets();
@@ -653,6 +658,15 @@ impl ClipBoxFormat2<'_> {
     }
 }
 
+/// Helper to compute the inclusive end of a range given a start and length,
+/// returning None if len == 0 or the computation would overflow.
+fn compute_inclusive_end(start: u32, len: u32) -> Option<u32> {
+    if len == 0 {
+        return None;
+    }
+    start.checked_add(len).and_then(|v| v.checked_sub(1))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -786,5 +800,18 @@ mod tests {
         assert!(variation_indices.contains(54));
         assert!(variation_indices.contains(55));
         assert!(variation_indices.contains(56));
+    }
+
+    #[test]
+    fn test_compute_inclusive_end() {
+        assert_eq!(compute_inclusive_end(0, 0), None);
+        assert_eq!(compute_inclusive_end(0, 1), Some(0));
+        assert_eq!(compute_inclusive_end(0, 2), Some(1));
+        assert_eq!(compute_inclusive_end(1, 1), Some(1));
+        assert_eq!(compute_inclusive_end(1, 2), Some(2));
+        assert_eq!(compute_inclusive_end(u32::MAX, 0), None);
+        assert_eq!(compute_inclusive_end(u32::MAX, 1), None);
+        assert_eq!(compute_inclusive_end(u32::MAX - 1, 1), Some(u32::MAX - 1));
+        assert_eq!(compute_inclusive_end(u32::MAX - 1, 3), None);
     }
 }

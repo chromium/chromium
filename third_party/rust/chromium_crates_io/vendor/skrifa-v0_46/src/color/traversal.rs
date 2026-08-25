@@ -53,10 +53,11 @@ const MAX_TRAVERSAL_DEPTH: usize = 64;
 
 /// Maximum number of nodes visited during a single traversal.
 ///
-/// Prevents excessive execution time on graphs with high fan-out. Set to 4096
-/// as a middle ground between HarfBuzz's limit of 2048 (<https://github.com/harfbuzz/harfbuzz/blob/9f2f03173b7fee860cc00d999857d09fa4a362e2/src/hb-limits.hh#L96>)
-/// and the 16384 cap recommended by security analysis.
-const MAX_NODES: u32 = 4096;
+/// Prevents excessive execution time on graphs with high fan-out. Set to the 16384 cap recommended
+/// by security analysis. Above HarfBuzz's limit of 2048
+/// (<https://github.com/harfbuzz/harfbuzz/blob/9f2f03173b7fee860cc00d999857d09fa4a362e2/src/hb-limits.hh#L96>)
+/// since we have seen some glyphs (Noto Emoji Color flags) use about ~6700 in practice.
+const MAX_NODES: u32 = 16384;
 
 pub(crate) fn get_clipbox_font_units(
     colr_instance: &ColrInstance,

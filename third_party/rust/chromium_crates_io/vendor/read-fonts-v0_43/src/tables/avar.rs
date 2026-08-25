@@ -103,9 +103,9 @@ impl SegmentMaps<'_> {
             k += 1;
         }
 
-        if k == 0 {
+        if k == start {
             // Before all segments: shift by first mapping delta
-            return coord - from(&maps[0]) + to_(&maps[0]);
+            return coord - from(&maps[start]) + to_(&maps[start]);
         }
         if k == end {
             // After all segments: shift by last mapping delta
@@ -291,5 +291,39 @@ mod tests {
             axis_value_maps: &maps,
         };
         assert_eq!(segment_map.apply(Fixed::ZERO), Fixed::from_f64(0.25));
+    }
+
+    #[test]
+    fn piecewise_linear_before_start_after_leading_duplicate_cap() {
+        let maps = [
+            AxisValueMap {
+                from_coordinate: F2Dot14::NEG_ONE.into(),
+                to_coordinate: F2Dot14::NEG_ONE.into(),
+            },
+            AxisValueMap {
+                from_coordinate: F2Dot14::NEG_ONE.into(),
+                to_coordinate: F2Dot14::NEG_ONE.into(),
+            },
+            AxisValueMap {
+                from_coordinate: F2Dot14::from_f32(-0.5).into(),
+                to_coordinate: F2Dot14::from_f32(-0.5).into(),
+            },
+            AxisValueMap {
+                from_coordinate: F2Dot14::ZERO.into(),
+                to_coordinate: F2Dot14::ZERO.into(),
+            },
+            AxisValueMap {
+                from_coordinate: F2Dot14::ONE.into(),
+                to_coordinate: F2Dot14::ONE.into(),
+            },
+        ];
+        let segment_map = SegmentMaps {
+            position_map_count: (maps.len() as u16).into(),
+            axis_value_maps: &maps,
+        };
+        assert_eq!(
+            segment_map.apply(Fixed::from_f64(-2.0)),
+            Fixed::from_f64(-2.0)
+        );
     }
 }

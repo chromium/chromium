@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.85"
 name = "read-fonts"
-version = "0.43.0"
+version = "0.43.2"
 build = false
 autolib = false
 autobins = false
@@ -95,7 +95,7 @@ version = "0.1"
 optional = true
 
 [dependencies.font-types]
-version = "0.12.3"
+version = "0.12.4"
 features = ["bytemuck"]
 
 [dependencies.once_cell]

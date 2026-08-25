@@ -573,10 +573,10 @@ mod tests {
         MetadataProvider,
     };
 
-    use raw::tables::cpal;
+    use raw::{tables::cpal, TableProvider};
     use read_fonts::{types::BoundingBox, FontRef};
 
-    use super::{Brush, ColorPainter, CompositeMode, GlyphId, Transform};
+    use super::{Brush, ColorGlyphFormat, ColorPainter, CompositeMode, GlyphId, Transform};
     use crate::color::traversal_tests::test_glyph_defs::{COLORED_CIRCLES_V0, COLORED_CIRCLES_V1};
 
     #[test]
@@ -725,5 +725,32 @@ mod tests {
         );
 
         assert!(palettes.get(3).is_none());
+    }
+
+    /// The Ecuador 🇪🇨 (U+1F1EA U+1F1E8) and El Salvador 🇸🇻 (U+1F1F8 U+1F1FB) flags have the most
+    /// complex COLRv1 paint graphs in Noto Color Emoji, requiring traversal of ~6700 paint
+    /// nodes. This exceeds the original traversal budget of 4096 nodes, so rendering them validates
+    /// that the increased budget is sufficient.
+    #[test]
+    fn paint_flags_requiring_increased_node_budget() {
+        let font = FontRef::new(font_test_data::NOTO_COLOR_EMOJI_FLAGS).unwrap();
+        let glyph_ids = font
+            .colr()
+            .unwrap()
+            .base_glyph_list()
+            .unwrap()
+            .unwrap()
+            .base_glyph_paint_records()
+            .iter()
+            .map(|record| GlyphId::from(record.glyph_id()))
+            .collect::<Vec<_>>();
+        assert!(!glyph_ids.is_empty());
+        for gid in glyph_ids {
+            font.color_glyphs()
+                .get_with_format(gid, ColorGlyphFormat::ColrV1)
+                .unwrap_or_else(|| panic!("no COLRv1 glyph for {gid}"))
+                .paint(LocationRef::default(), &mut DummyColorPainter::default())
+                .unwrap_or_else(|e| panic!("failed to paint {gid}: {e}"));
+        }
     }
 }

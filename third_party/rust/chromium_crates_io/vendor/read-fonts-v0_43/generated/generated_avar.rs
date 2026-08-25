@@ -174,11 +174,11 @@ impl<'a> SomeTable<'a> for Avar<'a> {
             )),
             3usize if self.version().compatible((2u16, 0u16)) => Some(Field::new(
                 "axis_index_map_offset",
-                FieldType::offset(self.axis_index_map_offset().unwrap(), self.axis_index_map()),
+                FieldType::offset(self.axis_index_map_offset()?, self.axis_index_map()),
             )),
             4usize if self.version().compatible((2u16, 0u16)) => Some(Field::new(
                 "var_store_offset",
-                FieldType::offset(self.var_store_offset().unwrap(), self.var_store()),
+                FieldType::offset(self.var_store_offset()?, self.var_store()),
             )),
             _ => None,
         }

@@ -328,52 +328,50 @@ impl<'a> SomeTable<'a> for Maxp<'a> {
             0usize => Some(Field::new("version", self.version())),
             1usize => Some(Field::new("num_glyphs", self.num_glyphs())),
             2usize if self.version().compatible((1u16, 0u16)) => {
-                Some(Field::new("max_points", self.max_points().unwrap()))
+                Some(Field::new("max_points", self.max_points()?))
             }
             3usize if self.version().compatible((1u16, 0u16)) => {
-                Some(Field::new("max_contours", self.max_contours().unwrap()))
+                Some(Field::new("max_contours", self.max_contours()?))
             }
             4usize if self.version().compatible((1u16, 0u16)) => Some(Field::new(
                 "max_composite_points",
-                self.max_composite_points().unwrap(),
+                self.max_composite_points()?,
             )),
             5usize if self.version().compatible((1u16, 0u16)) => Some(Field::new(
                 "max_composite_contours",
-                self.max_composite_contours().unwrap(),
+                self.max_composite_contours()?,
             )),
             6usize if self.version().compatible((1u16, 0u16)) => {
-                Some(Field::new("max_zones", self.max_zones().unwrap()))
+                Some(Field::new("max_zones", self.max_zones()?))
             }
             7usize if self.version().compatible((1u16, 0u16)) => Some(Field::new(
                 "max_twilight_points",
-                self.max_twilight_points().unwrap(),
+                self.max_twilight_points()?,
             )),
             8usize if self.version().compatible((1u16, 0u16)) => {
-                Some(Field::new("max_storage", self.max_storage().unwrap()))
+                Some(Field::new("max_storage", self.max_storage()?))
             }
-            9usize if self.version().compatible((1u16, 0u16)) => Some(Field::new(
-                "max_function_defs",
-                self.max_function_defs().unwrap(),
-            )),
+            9usize if self.version().compatible((1u16, 0u16)) => {
+                Some(Field::new("max_function_defs", self.max_function_defs()?))
+            }
             10usize if self.version().compatible((1u16, 0u16)) => Some(Field::new(
                 "max_instruction_defs",
-                self.max_instruction_defs().unwrap(),
+                self.max_instruction_defs()?,
             )),
-            11usize if self.version().compatible((1u16, 0u16)) => Some(Field::new(
-                "max_stack_elements",
-                self.max_stack_elements().unwrap(),
-            )),
+            11usize if self.version().compatible((1u16, 0u16)) => {
+                Some(Field::new("max_stack_elements", self.max_stack_elements()?))
+            }
             12usize if self.version().compatible((1u16, 0u16)) => Some(Field::new(
                 "max_size_of_instructions",
-                self.max_size_of_instructions().unwrap(),
+                self.max_size_of_instructions()?,
             )),
             13usize if self.version().compatible((1u16, 0u16)) => Some(Field::new(
                 "max_component_elements",
-                self.max_component_elements().unwrap(),
+                self.max_component_elements()?,
             )),
             14usize if self.version().compatible((1u16, 0u16)) => Some(Field::new(
                 "max_component_depth",
-                self.max_component_depth().unwrap(),
+                self.max_component_depth()?,
             )),
             _ => None,
         }

@@ -172,10 +172,7 @@ impl<'a> SomeTable<'a> for Gsub<'a> {
             )),
             4usize if self.version().compatible((1u16, 1u16)) => Some(Field::new(
                 "feature_variations_offset",
-                FieldType::offset(
-                    self.feature_variations_offset().unwrap(),
-                    self.feature_variations(),
-                ),
+                FieldType::offset(self.feature_variations_offset()?, self.feature_variations()),
             )),
             _ => None,
         }

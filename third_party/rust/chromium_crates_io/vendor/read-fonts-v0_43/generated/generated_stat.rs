@@ -206,7 +206,7 @@ impl<'a> SomeTable<'a> for Stat<'a> {
             )),
             6usize if self.version().compatible((1u16, 1u16)) => Some(Field::new(
                 "elided_fallback_name_id",
-                self.elided_fallback_name_id().unwrap(),
+                self.elided_fallback_name_id()?,
             )),
             _ => None,
         }

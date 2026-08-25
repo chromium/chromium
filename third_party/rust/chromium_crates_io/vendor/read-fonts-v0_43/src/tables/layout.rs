@@ -908,13 +908,13 @@ fn iter_packed_values(raw: u16, format: DeltaFormat, n: usize) -> impl Iterator<
     let max_per_word = 16 / bits;
     #[allow(clippy::needless_range_loop)] // enumerate() feels weird here
     for i in 0..n.min(max_per_word) {
-        let mask = mask << ((16 - bits) - i * bits);
-        let val = (raw & mask) >> ((16 - bits) - i * bits);
-        let sign = val & sign_mask != 0;
-
-        let val = if sign {
-            // it is 2023 and I am googling to remember how twos compliment works
-            -((((!val) & mask) + 1) as i8)
+        let shift = (16 - bits) - i * bits;
+        // pull the n-bit field down to the low bits before decoding, so the
+        // sign handling below always works on a low-aligned value
+        let val = (raw >> shift) & mask;
+        let val = if val & sign_mask != 0 {
+            // sign extend the n-bit value to a full i8
+            (val | !mask) as i8
         } else {
             val as i8
         };
@@ -1068,6 +1068,32 @@ mod tests {
         assert_eq!(
             iter_packed_values(0x5540, DeltaFormat::Local2BitDeltas, 5).collect::<Vec<_>>(),
             &[1, 1, 1, 1, 1]
+        );
+    }
+
+    #[test]
+    fn delta_decode_negative_not_in_last_slot() {
+        // A negative delta must decode correctly regardless of its position
+        // within the word, not only in the least significant slot.
+        // 8-bit: bytes 0xf4, 0x01 -> -12, 1
+        assert_eq!(
+            iter_packed_values(0xf401, DeltaFormat::Local8BitDeltas, 2).collect::<Vec<_>>(),
+            &[-12, 1]
+        );
+        // 4-bit: nibbles 0x8, 0x1, 0x2, 0x3 -> -8, 1, 2, 3
+        assert_eq!(
+            iter_packed_values(0x8123, DeltaFormat::Local4BitDeltas, 4).collect::<Vec<_>>(),
+            &[-8, 1, 2, 3]
+        );
+        // 2-bit: 10 01 01 01 -> -2, 1, 1, 1
+        assert_eq!(
+            iter_packed_values(0x9540, DeltaFormat::Local2BitDeltas, 4).collect::<Vec<_>>(),
+            &[-2, 1, 1, 1]
+        );
+        // the smallest 8-bit value in a leading slot must not overflow
+        assert_eq!(
+            iter_packed_values(0x8000, DeltaFormat::Local8BitDeltas, 2).collect::<Vec<_>>(),
+            &[-128, 0]
         );
     }
 

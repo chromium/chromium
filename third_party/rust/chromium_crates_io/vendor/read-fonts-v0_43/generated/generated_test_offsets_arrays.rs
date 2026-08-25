@@ -260,7 +260,7 @@ impl<'a> SomeTable<'a> for KindsOfOffsets<'a> {
             6usize if self.version().compatible((1u16, 1u16)) => Some(Field::new(
                 "versioned_nullable_record_array_offset",
                 traversal::FieldType::offset_to_array_of_records(
-                    self.versioned_nullable_record_array_offset().unwrap(),
+                    self.versioned_nullable_record_array_offset()?,
                     self.versioned_nullable_record_array(),
                     stringify!(Shmecord),
                     self.offset_data(),
@@ -269,16 +269,13 @@ impl<'a> SomeTable<'a> for KindsOfOffsets<'a> {
             7usize if self.version().compatible((1u16, 1u16)) => Some(Field::new(
                 "versioned_nonnullable_offset",
                 FieldType::offset(
-                    self.versioned_nonnullable_offset().unwrap(),
-                    self.versioned_nonnullable().unwrap(),
+                    self.versioned_nonnullable_offset()?,
+                    self.versioned_nonnullable()?,
                 ),
             )),
             8usize if self.version().compatible((1u16, 1u16)) => Some(Field::new(
                 "versioned_nullable_offset",
-                FieldType::offset(
-                    self.versioned_nullable_offset().unwrap(),
-                    self.versioned_nullable(),
-                ),
+                FieldType::offset(self.versioned_nullable_offset()?, self.versioned_nullable()),
             )),
             _ => None,
         }
@@ -475,11 +472,11 @@ impl<'a> SomeTable<'a> for KindsOfArraysOfOffsets<'a> {
             )),
             4usize if self.version().compatible((1u16, 1u16)) => Some(Field::new(
                 "versioned_nonnullable_offsets",
-                FieldType::from(self.versioned_nonnullables().unwrap()),
+                FieldType::from(self.versioned_nonnullables()?),
             )),
             5usize if self.version().compatible((1u16, 1u16)) => Some(Field::new(
                 "versioned_nullable_offsets",
-                FieldType::from(self.versioned_nullables().unwrap()),
+                FieldType::from(self.versioned_nullables()?),
             )),
             _ => None,
         }
@@ -644,15 +641,14 @@ impl<'a> SomeTable<'a> for KindsOfArrays<'a> {
                     self.offset_data(),
                 ),
             )),
-            4usize if self.version().compatible(1u16) => Some(Field::new(
-                "versioned_scalars",
-                self.versioned_scalars().unwrap(),
-            )),
+            4usize if self.version().compatible(1u16) => {
+                Some(Field::new("versioned_scalars", self.versioned_scalars()?))
+            }
             5usize if self.version().compatible(1u16) => Some(Field::new(
                 "versioned_records",
                 traversal::FieldType::array_of_records(
                     stringify!(Shmecord),
-                    self.versioned_records().unwrap(),
+                    self.versioned_records()?,
                     self.offset_data(),
                 ),
             )),

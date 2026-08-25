@@ -1,6 +1,6 @@
 //! The [morx (Extended Glyph Metamorphosis)](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6morx.html) table.
 
-use super::aat::{safe_read_array_to_end, ExtendedStateTable, LookupU16};
+use super::aat::{safe_read_array_to_end, ExtendedStateTable, LookupU16, StateTableParts};
 
 include!("../../generated/generated_morx.rs");
 
@@ -88,6 +88,88 @@ impl<'a> FontRead<'a> for SubtableKind<'a> {
             4 => Ok(Self::NonContextual(LookupU16::read(data)?)),
             5 => Ok(Self::Insertion(InsertionSubtable::read(data)?)),
             _ => Err(ReadError::InvalidFormat(format as _)),
+        }
+    }
+}
+
+/// Pre-resolved, lifetime-free description of a `morx` subtable's layout,
+/// captured once with [SubtableKind::parts] and replayed cheaply with
+/// [SubtableKind::from_parts] to avoid re-reading headers on every
+/// application.
+#[derive(Clone, Copy, Debug, Default)]
+pub struct SubtableParts {
+    /// Low byte of coverage: the subtable format (0/1/2/4/5).
+    pub format: u8,
+    pub state: StateTableParts,
+    /// Format-dependent extra offsets read after the state table header:
+    /// contextual: [lookups_offset, 0, 0]; ligature: [lig_action, component,
+    /// ligature]; insertion: [glyphs_offset, 0, 0]; others unused.
+    pub extra: [u32; 3],
+}
+
+impl<'a> SubtableKind<'a> {
+    /// Captures the offsets needed to rebuild this subtable kind from the
+    /// same data with [SubtableKind::from_parts].
+    pub fn parts(data: FontData<'a>, coverage: u32) -> Result<SubtableParts, ReadError> {
+        let format = (coverage & 0xFF) as u8;
+        let mut parts = SubtableParts {
+            format,
+            ..Default::default()
+        };
+        if format == 4 {
+            // Non-contextual: a bare lookup table, no state header.
+            return Ok(parts);
+        }
+        parts.state = StateTableParts::read(data)?;
+        let mut cursor = data.cursor();
+        cursor.advance_by(ExtendedStateTable::<()>::HEADER_LEN);
+        match format {
+            1 | 5 => {
+                parts.extra[0] = cursor.read::<u32>()?;
+            }
+            2 => {
+                parts.extra[0] = cursor.read::<u32>()?;
+                parts.extra[1] = cursor.read::<u32>()?;
+                parts.extra[2] = cursor.read::<u32>()?;
+            }
+            _ => {}
+        }
+        Ok(parts)
+    }
+
+    /// Rebuilds the subtable kind from `data` and offsets previously
+    /// captured with [SubtableKind::parts] on the same data.
+    #[inline]
+    pub fn from_parts(data: FontData<'a>, parts: &SubtableParts) -> Result<Self, ReadError> {
+        match parts.format {
+            0 => Ok(Self::Rearrangement(ExtendedStateTable::from_parts(
+                data,
+                &parts.state,
+            )?)),
+            1 => {
+                let state_table = ExtendedStateTable::from_parts(data, &parts.state)?;
+                let offset = parts.extra[0] as usize;
+                let end = data.len();
+                let offsets_data = FontData::new(data.read_array(offset..end)?);
+                let raw_offsets: &[BigEndian<Offset32>] = safe_read_array_to_end(&offsets_data, 0)?;
+                let lookups = ArrayOfOffsets::new(raw_offsets, offsets_data, ());
+                Ok(Self::Contextual(ContextualSubtable {
+                    state_table,
+                    lookups,
+                }))
+            }
+            2 => Ok(Self::Ligature(LigatureSubtable {
+                state_table: ExtendedStateTable::from_parts(data, &parts.state)?,
+                ligature_actions: safe_read_array_to_end(&data, parts.extra[0] as usize)?,
+                components: safe_read_array_to_end(&data, parts.extra[1] as usize)?,
+                ligatures: safe_read_array_to_end(&data, parts.extra[2] as usize)?,
+            })),
+            4 => Ok(Self::NonContextual(LookupU16::read(data)?)),
+            5 => Ok(Self::Insertion(InsertionSubtable {
+                state_table: ExtendedStateTable::from_parts(data, &parts.state)?,
+                glyphs: safe_read_array_to_end(&data, parts.extra[0] as usize)?,
+            })),
+            _ => Err(ReadError::InvalidFormat(parts.format as _)),
         }
     }
 }

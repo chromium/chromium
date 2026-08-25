@@ -132,7 +132,11 @@ impl<'a> Charmap<'a> {
     /// Returns an iterator over all mappings of character and variation
     /// selector to nominal glyph identifier in the character map.
     pub fn variant_mappings(&self) -> VariantMappings<'a> {
-        VariantMappings(self.variant_subtable.clone().map(|cmap14| cmap14.iter()))
+        VariantMappings(
+            self.variant_subtable
+                .clone()
+                .map(|cmap14| cmap14.iter_with_limits(self.cmap_limits)),
+        )
     }
 }
 

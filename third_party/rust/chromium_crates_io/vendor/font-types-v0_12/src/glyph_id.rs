@@ -8,7 +8,10 @@ use crate::Uint24;
 /// A 16-bit glyph identifier.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-#[cfg_attr(feature = "bytemuck", derive(bytemuck::AnyBitPattern))]
+#[cfg_attr(
+    feature = "bytemuck",
+    derive(bytemuck::AnyBitPattern, bytemuck::NoUninit)
+)]
 #[repr(transparent)]
 pub struct GlyphId16(u16);
 
@@ -71,7 +74,10 @@ crate::newtype_scalar!(GlyphId16, [u8; 2]);
 /// A 24-bit glyph identifier.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-#[cfg_attr(feature = "bytemuck", derive(bytemuck::AnyBitPattern))]
+#[cfg_attr(
+    feature = "bytemuck",
+    derive(bytemuck::AnyBitPattern, bytemuck::NoUninit)
+)]
 #[repr(transparent)]
 pub struct GlyphId24(Uint24);
 
@@ -135,7 +141,10 @@ crate::newtype_scalar!(GlyphId24, [u8; 3]);
 /// A 32-bit glyph identifier.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-#[cfg_attr(feature = "bytemuck", derive(bytemuck::AnyBitPattern))]
+#[cfg_attr(
+    feature = "bytemuck",
+    derive(bytemuck::AnyBitPattern, bytemuck::NoUninit)
+)]
 #[repr(transparent)]
 pub struct GlyphId(u32);
 

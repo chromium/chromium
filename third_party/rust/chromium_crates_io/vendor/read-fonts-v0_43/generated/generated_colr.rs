@@ -289,27 +289,24 @@ impl<'a> SomeTable<'a> for Colr<'a> {
             4usize => Some(Field::new("num_layer_records", self.num_layer_records())),
             5usize if self.version().compatible(1u16) => Some(Field::new(
                 "base_glyph_list_offset",
-                FieldType::offset(
-                    self.base_glyph_list_offset().unwrap(),
-                    self.base_glyph_list(),
-                ),
+                FieldType::offset(self.base_glyph_list_offset()?, self.base_glyph_list()),
             )),
             6usize if self.version().compatible(1u16) => Some(Field::new(
                 "layer_list_offset",
-                FieldType::offset(self.layer_list_offset().unwrap(), self.layer_list()),
+                FieldType::offset(self.layer_list_offset()?, self.layer_list()),
             )),
             7usize if self.version().compatible(1u16) => Some(Field::new(
                 "clip_list_offset",
-                FieldType::offset(self.clip_list_offset().unwrap(), self.clip_list()),
+                FieldType::offset(self.clip_list_offset()?, self.clip_list()),
             )),
             8usize if self.version().compatible(1u16) => Some(Field::new(
                 "var_index_map_offset",
-                FieldType::offset(self.var_index_map_offset().unwrap(), self.var_index_map()),
+                FieldType::offset(self.var_index_map_offset()?, self.var_index_map()),
             )),
             9usize if self.version().compatible(1u16) => Some(Field::new(
                 "item_variation_store_offset",
                 FieldType::offset(
-                    self.item_variation_store_offset().unwrap(),
+                    self.item_variation_store_offset()?,
                     self.item_variation_store(),
                 ),
             )),

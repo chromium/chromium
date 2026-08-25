@@ -268,12 +268,11 @@ impl<'a> SomeTable<'a> for Post<'a> {
             7usize => Some(Field::new("min_mem_type1", self.min_mem_type1())),
             8usize => Some(Field::new("max_mem_type1", self.max_mem_type1())),
             9usize if self.version().compatible((2u16, 0u16)) => {
-                Some(Field::new("num_glyphs", self.num_glyphs().unwrap()))
+                Some(Field::new("num_glyphs", self.num_glyphs()?))
             }
-            10usize if self.version().compatible((2u16, 0u16)) => Some(Field::new(
-                "glyph_name_index",
-                self.glyph_name_index().unwrap(),
-            )),
+            10usize if self.version().compatible((2u16, 0u16)) => {
+                Some(Field::new("glyph_name_index", self.glyph_name_index()?))
+            }
             11usize if self.version().compatible((2u16, 0u16)) => {
                 Some(Field::new("string_data", self.traverse_string_data()))
             }

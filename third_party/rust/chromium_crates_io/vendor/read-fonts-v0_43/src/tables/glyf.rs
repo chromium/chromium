@@ -356,7 +356,7 @@ struct PointIter<'a> {
     flags: Cursor<'a>,
     x_coords: Cursor<'a>,
     y_coords: Cursor<'a>,
-    flag_repeats: u8,
+    flag_repeats: u16,
     cur_flags: SimpleGlyphFlags,
     cur_x: i16,
     cur_y: i16,
@@ -391,9 +391,9 @@ impl<'a> PointIter<'a> {
             self.flag_repeats = self
                 .cur_flags
                 .contains(SimpleGlyphFlags::REPEAT_FLAG)
-                .then(|| self.flags.read().ok())
+                .then(|| self.flags.read::<u8>().ok())
                 .flatten()
-                .unwrap_or(0)
+                .unwrap_or(0) as u16
                 + 1;
         }
         self.flag_repeats -= 1;
@@ -1128,6 +1128,16 @@ mod tests {
         let actual: Vec<_> = points.iter().map(|p| (p.x, p.y)).collect();
 
         assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn point_iter_repeat_count_255_does_not_overflow() {
+        // repeat byte 0xFF means the same flag applies to 256 points total
+        let flags = [SimpleGlyphFlags::REPEAT_FLAG.bits(), 0xFF];
+        // 256 coords of 2 bytes each
+        let coords = [0u8; 256 * 2];
+        let iter = PointIter::new(&flags, &coords, &coords);
+        assert_eq!(iter.count(), 256);
     }
 
     #[test]

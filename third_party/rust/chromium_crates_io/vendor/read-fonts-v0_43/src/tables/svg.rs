@@ -23,12 +23,10 @@ impl<'a> Svg<'a> {
             .and_then(|index| document_list.document_records().get(index))
             .and_then(|r| {
                 let all_data = document_list.data.as_bytes();
-                all_data.get(
-                    r.svg_doc_offset.get() as usize
-                        ..(r.svg_doc_offset.get() + r.svg_doc_length.get()) as usize,
-                )
+                let start = r.svg_doc_offset();
+                let end = start.checked_add(r.svg_doc_length())?;
+                all_data.get(start as usize..end as usize)
             });
-
         Ok(svg_document)
     }
 }
@@ -106,5 +104,27 @@ mod tests {
             Some(first_document)
         );
         assert_eq!(table.glyph_data(GlyphId::new(10)).unwrap(), None);
+    }
+
+    #[test]
+    fn test_svg_glyph_data_overflow_guard() {
+        let data: [u16; 12] = [
+            0, // Version
+            0, 10, // SVGDocumentListOffset
+            0, 0, // Reserved
+            // SVGDocumentList
+            1, // numEntries
+            // documentRecords
+            // Record 1
+            1, // startGlyphID
+            3, // endGlyphID
+            0xFFFF, 0xFFFF, // svgDocOffset
+            0, 10, // svgDocLength
+        ];
+        let mut buf = BeBuffer::new();
+        buf = buf.extend(data);
+        let table = Svg::read(buf.data().into()).unwrap();
+        // Just don't panic with overflow
+        let _ = table.glyph_data(GlyphId::new(1));
     }
 }

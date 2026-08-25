@@ -147,7 +147,7 @@ impl<'a> SomeTable<'a> for Base<'a> {
             )),
             3usize if self.version().compatible((1u16, 1u16)) => Some(Field::new(
                 "item_var_store_offset",
-                FieldType::offset(self.item_var_store_offset().unwrap(), self.item_var_store()),
+                FieldType::offset(self.item_var_store_offset()?, self.item_var_store()),
             )),
             _ => None,
         }

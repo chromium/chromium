@@ -88,3 +88,37 @@ impl<O: Offset> ResolveOffset for O {
             .and_then(|data| T::read_with_args(data, args))
     }
 }
+
+/// Helper for performing checked sequences of arithmetic operations on
+/// offsets.
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
+#[repr(transparent)]
+pub(crate) struct CheckedOffset(Option<usize>);
+
+impl CheckedOffset {
+    pub(crate) fn new(offset: usize) -> Self {
+        Self(Some(offset))
+    }
+
+    #[must_use]
+    pub(crate) fn add(self, x: usize) -> Self {
+        Self(self.0.and_then(|o| o.checked_add(x)))
+    }
+
+    #[must_use]
+    pub(crate) fn mul(self, x: usize) -> Self {
+        Self(self.0.and_then(|o| o.checked_mul(x)))
+    }
+
+    pub(crate) fn get(&self) -> Option<usize> {
+        self.0
+    }
+
+    pub(crate) fn ok_or<E>(&self, err: E) -> Result<usize, E> {
+        self.get().ok_or(err)
+    }
+
+    pub(crate) fn ok_or_oob(&self) -> Result<usize, ReadError> {
+        self.ok_or(ReadError::OutOfBounds)
+    }
+}

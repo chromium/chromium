@@ -1050,10 +1050,7 @@ impl<'a, T: FontRead<'a, Args = ()> + SomeTable<'a> + 'a> SomeTable<'a> for Look
                     .lookup_flag()
                     .contains(LookupFlag::USE_MARK_FILTERING_SET) =>
             {
-                Some(Field::new(
-                    "mark_filtering_set",
-                    self.mark_filtering_set().unwrap(),
-                ))
+                Some(Field::new("mark_filtering_set", self.mark_filtering_set()?))
             }
             _ => None,
         }
