@@ -688,6 +688,54 @@ TEST_P(WaylandEventSourceTest, TabletToolButtonEvents) {
   }
 }
 
+// Check that if an event dispatched by OnTouchCancelEvent causes another window
+// to be destroyed, we don't cause iterator invalidation or a UAF.
+TEST_P(WaylandEventSourceTest, TouchCancelDestroyWindowMidDispatch) {
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    wl_seat_send_capabilities(server->seat()->resource(),
+                              WL_SEAT_CAPABILITY_TOUCH);
+  });
+  ASSERT_TRUE(connection_->seat()->touch());
+
+  MockWaylandPlatformWindowDelegate delegate1(connection_.get());
+  auto window1 = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
+                                               kDefaultBounds, &delegate1);
+
+  MockWaylandPlatformWindowDelegate delegate2(connection_.get());
+  auto window2 = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
+                                               kDefaultBounds, &delegate2);
+
+  PostToServerAndWait([surface1_id = window1->root_surface()->get_surface_id(),
+                       surface2_id = window2->root_surface()->get_surface_id()](
+                          wl::TestWaylandServerThread* server) {
+    auto* const touch = server->seat()->touch()->resource();
+    auto* const surface1 =
+        server->GetObject<wl::MockSurface>(surface1_id)->resource();
+    auto* const surface2 =
+        server->GetObject<wl::MockSurface>(surface2_id)->resource();
+
+    wl_touch_send_down(touch, server->GetNextSerial(), server->GetNextTime(),
+                       surface1, /*id=*/0, 0, 0);
+    wl_touch_send_down(touch, server->GetNextSerial(), server->GetNextTime(),
+                       surface2, /*id=*/1, 0, 0);
+    wl_touch_send_frame(touch);
+  });
+
+  // Destroy window2 when window1 receives kTouchCancelled.
+  EXPECT_CALL(delegate1, DispatchEvent(::testing::_))
+      .WillOnce([&](Event* event) {
+        EXPECT_EQ(event->type(), EventType::kTouchCancelled);
+        window2.reset();
+      });
+  EXPECT_CALL(delegate2, DispatchEvent(::testing::_))
+      .Times(::testing::AnyNumber());
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* const touch = server->seat()->touch()->resource();
+    wl_touch_send_cancel(touch);
+  });
+}
+
 INSTANTIATE_TEST_SUITE_P(
     EventsDispatchPolicyTest,
     WaylandEventSourceTest,

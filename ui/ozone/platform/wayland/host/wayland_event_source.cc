@@ -848,12 +848,23 @@ void WaylandEventSource::OnTouchCancelEvent() {
 
   gfx::PointF location;
   base::TimeTicks timestamp = base::TimeTicks::Now();
-  for (auto& touch_point : touch_points_) {
-    PointerId id = touch_point.first;
+  std::vector<PointerId> ids;
+  ids.reserve(touch_points_.size());
+  for (const auto& touch_point : touch_points_) {
+    ids.push_back(touch_point.first);
+  }
+  for (PointerId id : ids) {
+    auto it = touch_points_.find(id);
+    if (it == touch_points_.end()) {
+      continue;
+    }
+    base::WeakPtr<WaylandWindow> window = it->second->window->AsWeakPtr();
     TouchEvent event(EventType::kTouchCancelled, location, location, timestamp,
                      PointerDetails(EventPointerType::kTouch, id));
     SetTouchTargetAndDispatchTouchEvent(&event);
-    HandleTouchFocusChange(touch_point.second->window, false);
+    if (window) {
+      HandleTouchFocusChange(window.get(), false);
+    }
   }
   touch_points_.clear();
 }
