@@ -39,6 +39,9 @@ class OmniboxRowGroupedViewBrowserTest : public OmniboxPopupViewViewsTest {
 
   void SetUpOnMainThread() override {
     OmniboxPopupViewViewsTest::SetUpOnMainThread();
+    if (IsSkipped()) {
+      return;
+    }
     provider_ = new FakeAutocompleteProvider(AutocompleteProvider::TYPE_SEARCH);
     controller()->autocomplete_controller()->providers_.push_back(provider_);
   }

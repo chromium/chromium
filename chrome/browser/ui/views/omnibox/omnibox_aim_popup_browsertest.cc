@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
@@ -85,7 +86,7 @@ class OmniboxAimPopupBrowserTest : public InProcessBrowserTest {
   OmniboxAimPopupBrowserTest() {
     feature_list_.InitWithFeatures({omnibox::internal::kWebUIOmniboxAimPopup,
                                     omnibox::internal::kWebUIOmniboxPopup},
-                                   {});
+                                   {features::kWebUILocationBar});
   }
 
   void TriggerMenuClosed(OmniboxPopupWebUIBaseContent* content) {
