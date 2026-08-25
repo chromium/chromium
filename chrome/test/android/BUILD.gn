@@ -209,7 +209,6 @@ android_library("chrome_java_transit") {
     "javatests/src/org/chromium/chrome/test/transit/omnibox/OmniboxDraftingFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/omnibox/OmniboxEnteredTextFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/omnibox/OmniboxFacility.java",
-    "javatests/src/org/chromium/chrome/test/transit/omnibox/OmniboxSuggestionsFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/page/BasePageStation.java",
     "javatests/src/org/chromium/chrome/test/transit/page/CctPageStation.java",
     "javatests/src/org/chromium/chrome/test/transit/page/CtaPageStation.java",

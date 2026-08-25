@@ -4,24 +4,12 @@
 
 package org.chromium.chrome.test.transit.omnibox;
 
-import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
-import static org.hamcrest.CoreMatchers.allOf;
-
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
-
-import android.view.View;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
-import org.chromium.base.test.transit.ViewSpec;
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 
@@ -34,16 +22,6 @@ import org.chromium.components.omnibox.OmniboxCapabilities;
 public class OmniboxEnteredTextFacility extends Facility<Station<?>> {
     private final OmniboxFacility mOmniboxFacility;
     private final String mText;
-
-    public static final ViewSpec<LocationBarLayout> LOCATION_BAR_POPPED_OUT =
-            viewSpec(
-                    LocationBarLayout.class,
-                    allOf(
-                            withId(R.id.location_bar),
-                            isDescendantOfA(withId(R.id.omnibox_suggestions_container))));
-
-    public static final ViewSpec<View> SUGGESTIONS_DROPDOWN =
-            viewSpec(allOf(withId(R.id.omnibox_suggestions_dropdown), isDisplayed()));
 
     public OmniboxEnteredTextFacility(OmniboxFacility omniboxFacility, String text) {
         mOmniboxFacility = omniboxFacility;
@@ -84,7 +62,7 @@ public class OmniboxEnteredTextFacility extends Facility<Station<?>> {
     }
 
     /** Simulate autocomplete suggestion received from the server. */
-    public OmniboxSuggestionsFacility simulateAutocomplete(String autocompleted) {
+    public OmniboxEnteredTextFacility simulateAutocomplete(String autocompleted) {
         return runTo(
                         () -> {
                             Profile profile =
@@ -95,7 +73,7 @@ public class OmniboxEnteredTextFacility extends Facility<Station<?>> {
                         })
                 .exitFacilityAnd()
                 .enterFacility(
-                        new OmniboxSuggestionsFacility(mOmniboxFacility, mText + autocompleted));
+                        new OmniboxEnteredTextFacility(mOmniboxFacility, mText + autocompleted));
     }
 
     /** Clear text in the omnibox. */

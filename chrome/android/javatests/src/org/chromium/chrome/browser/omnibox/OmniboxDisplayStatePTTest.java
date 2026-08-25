@@ -23,7 +23,6 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.omnibox.FakeOmniboxSuggestions;
 import org.chromium.chrome.test.transit.omnibox.OmniboxDraftingFacility;
 import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
-import org.chromium.chrome.test.transit.omnibox.OmniboxSuggestionsFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 
 /** Public transit integration tests for Omnibox visual display state transitions. */
@@ -61,18 +60,6 @@ public class OmniboxDisplayStatePTTest {
 
         OmniboxDraftingFacility drafting = omnibox.typeText("test");
         drafting.pressBackToExit();
-
-        TransitAsserts.assertFinalDestination(mBlankPage);
-    }
-
-    @Test
-    @MediumTest
-    public void testVisualTransitions_suggestions() {
-        OmniboxFacility omnibox = mBlankPage.openOmnibox(sFakeSuggestions);
-
-        OmniboxDraftingFacility drafting = omnibox.typeText("test");
-        OmniboxSuggestionsFacility suggestions = drafting.simulateAutocomplete("ing");
-        suggestions.pressBackToExit();
 
         TransitAsserts.assertFinalDestination(mBlankPage);
     }

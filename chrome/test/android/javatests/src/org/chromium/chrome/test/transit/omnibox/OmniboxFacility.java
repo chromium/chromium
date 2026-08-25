@@ -12,7 +12,6 @@ import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.view.View;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.OptionalViewElement;
 import org.chromium.base.test.transit.ViewElement;
@@ -23,7 +22,6 @@ import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.widget.scrim.ScrimView;
-import org.chromium.components.omnibox.OmniboxCapabilities;
 
 /** Represents the Omnibox focused state showing the URL bar and accepting keyboard input. */
 public class OmniboxFacility extends Facility<CtaPageStation> {
@@ -40,11 +38,8 @@ public class OmniboxFacility extends Facility<CtaPageStation> {
     public OptionalViewElement<View> statusIconElement;
     public OptionalViewElement<View> micButtonElement;
     public OptionalViewElement<View> deleteButtonElement;
-    final boolean mIsDesktopPlatform;
 
     public OmniboxFacility(boolean incognito, @Nullable FakeOmniboxSuggestions fakeSuggestions) {
-        mIsDesktopPlatform =
-                ThreadUtils.runOnUiThreadBlocking(OmniboxCapabilities::isDesktopPlatform);
         mIncognito = incognito;
         mFakeSuggestions = fakeSuggestions;
 
