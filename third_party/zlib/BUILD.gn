@@ -164,6 +164,15 @@ if (use_arm_neon_optimizations) {
   }
 }
 
+# Enables 64-bit word-at-a-time compare256() in deflate's longest_match() on
+# 64-bit little-endian architectures (x64 and arm64). Follows the same pattern
+# as INFLATE_CHUNK_READ_64LE and DEFLATE_CHUNK_WRITE_64LE below.
+config("zlib_compare256_config") {
+  if (current_cpu == "x64" || current_cpu == "arm64") {
+    defines = [ "DEFLATE_COMPARE256_64LE" ]
+  }
+}
+
 config("zlib_data_chunk_simd_config") {
   if (use_x86_x64_optimizations) {
     defines = [ "INFLATE_CHUNK_SIMD_SSE2" ]
@@ -285,6 +294,7 @@ component("zlib") {
   sources = [
     "adler32.c",
     "chromeconf.h",
+    "compare256.h",
     "compress.c",
     "contrib/optimizations/insert_string.h",
     "cpu_features.c",
@@ -359,6 +369,7 @@ component("zlib") {
   public_configs = [ ":zlib_config" ]
 
   configs += [
+    ":zlib_compare256_config",
     ":zlib_internal_config",
 
     # Must be after no_chromium_code for warning flags to be ordered correctly.
