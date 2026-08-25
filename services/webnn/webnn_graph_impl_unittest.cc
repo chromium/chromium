@@ -7426,24 +7426,22 @@ TEST_F(WebNNGraphImplTest, WhereTest) {
 
 TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
   auto context_properties = GetContextPropertiesForTesting();
-  // TODO(crbug.com/325598628): De-dup these data type constants.
-  const OperandDataType kMojoDataType = OperandDataType::kUint8;
   const OperandDataType kDataType = OperandDataType::kUint8;
   const std::vector<uint32_t> kShape = {3, 5};
   // Build the graph with mojo type.
   mojo::Remote<mojom::WebNNGraphBuilder> remote = BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
   const OperandId lhs_operand_id =
-      builder.BuildInput("lhs", kShape, kMojoDataType);
+      builder.BuildInput("lhs", kShape, kDataType);
   const OperandId rhs_operand_id =
-      builder.BuildInput("rhs", kShape, kMojoDataType);
+      builder.BuildInput("rhs", kShape, kDataType);
   const OperandId output_1_operand_id =
-      builder.BuildOutput("output1", kShape, kMojoDataType);
+      builder.BuildOutput("output1", kShape, kDataType);
   builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kAdd,
                                  lhs_operand_id, rhs_operand_id,
                                  output_1_operand_id);
   const OperandId output_2_operand_id =
-      builder.BuildOutput("output2", kShape, kMojoDataType);
+      builder.BuildOutput("output2", kShape, kDataType);
   builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kAdd,
                                  lhs_operand_id, rhs_operand_id,
                                  output_2_operand_id);
