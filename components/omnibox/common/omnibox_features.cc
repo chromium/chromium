@@ -217,7 +217,8 @@ BASE_FEATURE(kOmniboxWebUIDeferShowUntilVisualStateReady, DISABLED);
 // When enabled, the Omnibox Full WebUI popup will defer showing until the
 // WebUI has painted a clean frame, avoiding the issue of the popup being shown
 // with a stale frame.
-BASE_FEATURE(kOmniboxFullWebUIDeferShowUntilVisualStateReady, ENABLED);
+// TODO(b/549125538): Figure out why timeout is consistently being hit.
+BASE_FEATURE(kOmniboxFullWebUIDeferShowUntilVisualStateReady, DISABLED);
 // If enabled, stabilizes the popup showing behavior on startup by forcing
 // layout with a 1px height and hiding it initially to avoid visual artifacts.
 BASE_FEATURE(kOmniboxWebUIPopupStabilizeStartupShow, ENABLED);
