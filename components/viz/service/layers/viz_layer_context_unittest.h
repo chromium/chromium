@@ -57,6 +57,8 @@ class FakeLayerContext : public mojom::LayerContext {
   base::OnceClosure on_update_display_tree_;
   mojom::TilingPtr last_tiling_;
   base::OnceClosure on_update_display_tiling_;
+  LocalSurfaceId last_target_local_surface_id_;
+  base::OnceClosure on_set_target_local_surface_id_;
 
   mojo::AssociatedRemote<mojom::LayerContextClient> client_;
 

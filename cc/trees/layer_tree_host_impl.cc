@@ -1876,7 +1876,7 @@ void LayerTreeHostImpl::DidModifyTilePriorities(bool pending_update_tiles) {
 void LayerTreeHostImpl::SetTargetLocalSurfaceId(
     const viz::LocalSurfaceId& target_local_surface_id) {
   target_local_surface_id_ = target_local_surface_id;
-  if (layer_context_) {
+  if (layer_context_ && target_local_surface_id.is_valid()) {
     layer_context_->SetTargetLocalSurfaceId(target_local_surface_id);
   }
 }

@@ -854,7 +854,9 @@ void LayerTreeHost::OnCommitRequested() {
 void LayerTreeHost::SetTargetLocalSurfaceId(
     const viz::LocalSurfaceId& target_local_surface_id) {
   DCHECK(IsMainThread());
-  proxy_->SetTargetLocalSurfaceId(target_local_surface_id);
+  if (target_local_surface_id.is_valid()) {
+    proxy_->SetTargetLocalSurfaceId(target_local_surface_id);
+  }
 }
 
 bool LayerTreeHost::RequestedMainFramePending() const {
@@ -1513,7 +1515,8 @@ void LayerTreeHost::SetViewportRectAndScale(
 
   // If a new viz::LocalSurfaceId has been provided, and the viewport has
   // changed, we need not begin new frames until it has activated.
-  if (previous_local_surface_id != local_surface_id_from_parent &&
+  if (local_surface_id_from_parent.is_valid() &&
+      previous_local_surface_id != local_surface_id_from_parent &&
       device_viewport_rect_changed) {
     SetTargetLocalSurfaceId(local_surface_id_from_parent);
   }

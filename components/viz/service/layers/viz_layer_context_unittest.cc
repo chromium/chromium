@@ -49,7 +49,12 @@ void FakeLayerContext::UpdateDisplayTiling(mojom::TilingPtr tiling) {
 }
 
 void FakeLayerContext::SetTargetLocalSurfaceId(
-    const LocalSurfaceId& target_local_surface_id) {}
+    const LocalSurfaceId& target_local_surface_id) {
+  last_target_local_surface_id_ = target_local_surface_id;
+  if (on_set_target_local_surface_id_) {
+    std::move(on_set_target_local_surface_id_).Run();
+  }
+}
 
 void FakeLayerContext::SetUnboundedFrameSinkId(
     const FrameSinkId& frame_sink_id,
@@ -336,6 +341,36 @@ TEST_F(VizLayerContextTest, NoRecoveryFromNormalMojoDisconnect) {
   // host_impl_->DidLoseLayerTreeFrameSink() should NOT have been called.
   EXPECT_FALSE(
       host_impl_->delegate()->did_lose_layer_tree_frame_sink_on_impl_thread());
+}
+
+TEST_F(VizLayerContextTest, SetTargetLocalSurfaceId) {
+  const LocalSurfaceId target_local_surface_id(
+      1, base::UnguessableToken::Create());
+
+  viz_layer_context_->SetTargetLocalSurfaceId(target_local_surface_id);
+
+  base::RunLoop run_loop;
+  fake_layer_context_.on_set_target_local_surface_id_ = run_loop.QuitClosure();
+  run_loop.Run();
+
+  EXPECT_EQ(fake_layer_context_.last_target_local_surface_id_,
+            target_local_surface_id);
+}
+
+// Tests that an invalid LocalSurfaceId is not sent across Mojo.
+// See https://crbug.com/521326793.
+TEST_F(VizLayerContextTest, SetTargetLocalSurfaceIdInvalid) {
+  const LocalSurfaceId initial_local_surface_id(
+      1, base::UnguessableToken::Create());
+  fake_layer_context_.last_target_local_surface_id_ = initial_local_surface_id;
+
+  viz_layer_context_->SetTargetLocalSurfaceId(LocalSurfaceId());
+
+  // Flush any pending Mojo messages. The invalid ID should not be sent.
+  viz_layer_context_->FlushReceiverForTesting();
+
+  EXPECT_EQ(fake_layer_context_.last_target_local_surface_id_,
+            initial_local_surface_id);
 }
 
 }  // namespace viz

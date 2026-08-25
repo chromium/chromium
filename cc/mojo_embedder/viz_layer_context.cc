@@ -1464,7 +1464,11 @@ void VizLayerContext::SetVisible(bool visible) {
 
 void VizLayerContext::SetTargetLocalSurfaceId(
     const viz::LocalSurfaceId& target_local_surface_id) {
-  service_->SetTargetLocalSurfaceId(target_local_surface_id);
+  // An invalid LocalSurfaceId cannot be serialized over Mojo.
+  // See https://crbug.com/521326793.
+  if (target_local_surface_id.is_valid()) {
+    service_->SetTargetLocalSurfaceId(target_local_surface_id);
+  }
 }
 
 base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
