@@ -9,7 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/glic_warming_checks.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
@@ -105,14 +105,13 @@ IN_PROC_BROWSER_TEST_F(GlicWarmingPoolBrowserTest, MAYBE_BackfillWarming) {
 class GlicWarmingCellularBrowserTest : public GlicWarmingPoolBrowserTest {
  public:
   void SetUp() override {
-    GlicProfileManager::ForceConnectionTypeForTesting(
-        net::NetworkChangeNotifier::CONNECTION_3G);
+    ForceConnectionTypeForTesting(net::NetworkChangeNotifier::CONNECTION_3G);
     GlicWarmingPoolBrowserTest::SetUp();
   }
 
   void TearDown() override {
     GlicWarmingPoolBrowserTest::TearDown();
-    GlicProfileManager::ForceConnectionTypeForTesting(std::nullopt);
+    ForceConnectionTypeForTesting(std::nullopt);
   }
 };
 
@@ -188,8 +187,7 @@ IN_PROC_BROWSER_TEST_F(GlicWarmingPoolBrowserTest, IncognitoCheck) {
   Profile* incognito =
       GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   base::test::TestFuture<GlicPrewarmingChecksResult> future;
-  GlicProfileManager::GetInstance()->ShouldPreloadForProfile(
-      incognito, future.GetCallback());
+  ShouldPreloadForProfile(incognito, future.GetCallback());
   EXPECT_EQ(future.Get(), GlicPrewarmingChecksResult::kProfileNotEligible);
 }
 

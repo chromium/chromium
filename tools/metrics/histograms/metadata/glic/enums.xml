@@ -779,7 +779,7 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Device low memory"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/glic/glic_profile_manager.h:GlicPrewarmingChecksResult) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_warming_checks.h:GlicPrewarmingChecksResult) -->
 
 <!-- LINT.IfChange(GlicPrewarmingFreSource) -->
 

@@ -35,6 +35,7 @@
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/glic_warming_checks.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/context/glic_share_image_handler.h"
@@ -459,15 +460,13 @@ void GlicKeyedService::AddPreloadCallback(base::OnceCallback<void()> callback) {
 }
 
 void GlicKeyedService::TryPreload() {
-  GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
-  CHECK(glic_profile_manager);
   base::TimeDelta delay = GetWarmingDelay();
 
   // TODO(b/411100559): Ideally we'd use post delayed task in all cases,
   // but this requires a refactor of tests that are currently brittle. For now,
   // just synchronously call ShouldPreloadForProfile if there is no delay.
   if (delay.is_zero()) {
-    glic_profile_manager->ShouldPreloadForProfile(
+    ShouldPreloadForProfile(
         profile_,
         base::BindOnce(&GlicKeyedService::FinishPreload, GetWeakPtr()));
   } else {
@@ -481,12 +480,8 @@ void GlicKeyedService::TryPreload() {
 }
 
 void GlicKeyedService::TryPreloadAfterDelay() {
-  GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
-  if (glic_profile_manager) {
-    glic_profile_manager->ShouldPreloadForProfile(
-        profile_,
-        base::BindOnce(&GlicKeyedService::FinishPreload, GetWeakPtr()));
-  }
+  ShouldPreloadForProfile(
+      profile_, base::BindOnce(&GlicKeyedService::FinishPreload, GetWeakPtr()));
 }
 
 void GlicKeyedService::Reload(content::RenderFrameHost* render_frame_host) {

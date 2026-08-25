@@ -32,6 +32,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_user_status_code.h"
+#include "chrome/browser/glic/glic_warming_checks.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/context/glic_tab_favicon_observer.h"
@@ -672,7 +673,7 @@ class GlicOnboardingApiTest : public GlicApiTest {
   }
 
   void TearDownOnMainThread() override {
-    GlicProfileManager::ForceConnectionTypeForTesting(std::nullopt);
+    ForceConnectionTypeForTesting(std::nullopt);
     GlicApiTest::TearDownOnMainThread();
   }
 };

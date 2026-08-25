@@ -4,12 +4,10 @@
 
 #include "chrome/browser/glic/glic_profile_manager.h"
 
-#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
-#include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -20,7 +18,6 @@
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/termination_notification.h"
-#include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection.h"
@@ -30,7 +27,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/network_service_instance.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -40,11 +36,7 @@
 #endif
 
 namespace {
-bool g_prewarming_enabled_for_testing_ = true;
 std::optional<Profile*> g_forced_profile_for_launch_;
-std::optional<net::NetworkChangeNotifier::ConnectionType>
-    g_forced_connection_type_;
-
 }  // namespace
 
 namespace glic {
@@ -149,45 +141,6 @@ void GlicProfileManager::Shutdown() {
   g_browser_process->profile_manager()->RemoveObserver(this);
 }
 
-void GlicProfileManager::ShouldPreloadForProfile(
-    Profile* profile,
-    ShouldPreloadCallback callback) {
-  if (!base::FeatureList::IsEnabled(features::kGlicWarming)) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       GlicPrewarmingChecksResult::kWarmingDisabled));
-    return;
-  }
-  GlicPrewarmingChecksResult result;
-  switch (GlicEnabling::GetProfileReadyState(profile)) {
-    case mojom::ProfileReadyState::kReady:
-      CanPreloadForProfile(profile, std::move(callback));
-      return;
-    case mojom::ProfileReadyState::kUnknownError:
-      result = GlicPrewarmingChecksResult::kProfileNotReadyUnknown;
-      break;
-    case mojom::ProfileReadyState::kSignInRequired:
-      result = GlicPrewarmingChecksResult::kProfileRequiresSignIn;
-      break;
-    case mojom::ProfileReadyState::kIneligible:
-      result = GlicPrewarmingChecksResult::kProfileNotEligible;
-      break;
-    case mojom::ProfileReadyState::kDisabledByAdmin:
-      result = GlicPrewarmingChecksResult::kProfileDisallowedByAdmin;
-      break;
-    case mojom::ProfileReadyState::kLocationMismatch:
-      result = GlicPrewarmingChecksResult::kProfileNotEligibleLocationMismatch;
-      break;
-    case mojom::ProfileReadyState::kIneligibleAccount:
-      result =
-          GlicPrewarmingChecksResult::kProfileNotEligibleAccountCapabilities;
-      break;
-  }
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), result));
-}
-
 void GlicProfileManager::MaybeAutoOpenGlicPanel() {
   if (did_auto_open_ || !base::CommandLine::ForCurrentProcess()->HasSwitch(
                             ::switches::kGlicOpenOnStartup)) {
@@ -261,91 +214,9 @@ void GlicProfileManager::OnProfileWillBeDestroyed(Profile* profile) {
 }
 
 // static
-void GlicProfileManager::SetPrewarmingEnabledForTesting(bool enabled) {
-  g_prewarming_enabled_for_testing_ = enabled;
-}
-
-// static
 void GlicProfileManager::ForceProfileForLaunchForTesting(
     std::optional<Profile*> profile) {
   g_forced_profile_for_launch_ = profile;
-}
-
-// static
-void GlicProfileManager::ForceConnectionTypeForTesting(
-    std::optional<net::NetworkChangeNotifier::ConnectionType> connection_type) {
-  g_forced_connection_type_ = connection_type;
-}
-
-
-void GlicProfileManager::CanPreloadForProfile(Profile* profile,
-                                              ShouldPreloadCallback callback) {
-  auto produce_result = [&callback](GlicPrewarmingChecksResult result,
-                                    base::Location from_here =
-                                        base::Location::Current()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        from_here, base::BindOnce(std::move(callback), result));
-  };
-  if (!profile || IsProfileDirectoryMarkedForDeletion(profile->GetPath())) {
-    return produce_result(GlicPrewarmingChecksResult::kProfileGone);
-  }
-  if (profile->ShutdownStarted()) {
-    return produce_result(GlicPrewarmingChecksResult::kBrowserShuttingDown);
-  }
-  auto enablement = GlicEnabling::EnablementForProfile(profile);
-  if (!enablement.IsProfileEligible()) {
-    return produce_result(GlicPrewarmingChecksResult::kProfileNotEligible);
-  }
-  if (enablement.DisallowedByAdmin()) {
-    return produce_result(
-        GlicPrewarmingChecksResult::kProfileDisallowedByAdmin);
-  }
-  if (!enablement.IsEnabled()) {
-    return produce_result(GlicPrewarmingChecksResult::kProfileNotEnabledOther);
-  }
-
-  if (!profile->GetPrefs()->GetBoolean(prefs::kGlicPinnedToTabstrip)) {
-    return produce_result(GlicPrewarmingChecksResult::kNotPinnedToTabstrip);
-  }
-
-  if (base::SysInfo::AmountOfTotalPhysicalMemory() <
-      base::MiB(features::kGlicWarmingMinRequiredRamMb.Get())) {
-    return produce_result(GlicPrewarmingChecksResult::kDeviceLowMemory);
-  }
-  if (!g_prewarming_enabled_for_testing_) {
-    return produce_result(
-        GlicPrewarmingChecksResult::kPrewarmingDisabledForTesting);
-  }
-
-  auto on_got_connection_type =
-      [](ShouldPreloadCallback callback,
-         net::NetworkChangeNotifier::ConnectionType type) {
-        std::move(callback).Run(
-            network::NetworkConnectionTracker::IsConnectionCellular(type)
-                ? GlicPrewarmingChecksResult::kCellularConnection
-                : GlicPrewarmingChecksResult::kSuccess);
-      };
-  auto callbacks = base::SplitOnceCallback(std::move(callback));
-
-  // Attempt to synchronously query the connection type.
-  net::NetworkChangeNotifier::ConnectionType connection_type;
-  bool synchronously_got_connection_type = false;
-  if (g_forced_connection_type_) {
-    synchronously_got_connection_type = true;
-    connection_type = *g_forced_connection_type_;
-  } else {
-    synchronously_got_connection_type =
-        content::GetNetworkConnectionTracker()->GetConnectionType(
-            &connection_type,
-            base::BindOnce(on_got_connection_type, std::move(callbacks.first)));
-  }
-
-  if (synchronously_got_connection_type) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(on_got_connection_type, std::move(callbacks.second),
-                       connection_type));
-  }
 }
 
 base::WeakPtr<GlicProfileManager> GlicProfileManager::GetWeakPtr() {

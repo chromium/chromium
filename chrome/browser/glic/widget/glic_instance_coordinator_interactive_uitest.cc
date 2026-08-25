@@ -16,6 +16,7 @@
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/glic_warming_checks.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
@@ -697,19 +698,18 @@ class GlicInstanceCoordinatorWithDelayedPreloadingUiTest
     // This will temporarily disable preloading to ensure that we don't load the
     // web client before we've initialized the embedded test server and can set
     // the correct URL.
-    GlicProfileManager::SetPrewarmingEnabledForTesting(false);
+    SetPrewarmingEnabledForTesting(false);
     GlicInstanceCoordinatorUiTest::SetUp();
   }
 
   void TearDown() override {
     GlicInstanceCoordinatorUiTest::TearDown();
-    GlicProfileManager::SetPrewarmingEnabledForTesting(true);
+    SetPrewarmingEnabledForTesting(true);
   }
 
  protected:
   auto ResetPreloading() {
-    return Do(
-        []() { GlicProfileManager::SetPrewarmingEnabledForTesting(true); });
+    return Do([]() { SetPrewarmingEnabledForTesting(true); });
   }
 
   auto TryPreload() {

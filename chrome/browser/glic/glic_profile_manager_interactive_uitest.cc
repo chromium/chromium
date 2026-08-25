@@ -7,6 +7,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/glic_warming_checks.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -42,16 +43,16 @@ class DISABLED_GlicProfileManagerUiTest : public test::InteractiveGlicTest {
     // This will temporarily disable preloading to ensure that we don't load the
     // web client before we've initialized the embedded test server and can set
     // the correct URL.
-    GlicProfileManager::SetPrewarmingEnabledForTesting(false);
-    GlicProfileManager::ForceConnectionTypeForTesting(
+    SetPrewarmingEnabledForTesting(false);
+    ForceConnectionTypeForTesting(
         net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
     test::InteractiveGlicTest::SetUp();
   }
 
   void TearDown() override {
     test::InteractiveGlicTest::TearDown();
-    GlicProfileManager::SetPrewarmingEnabledForTesting(true);
-    GlicProfileManager::ForceConnectionTypeForTesting(std::nullopt);
+    SetPrewarmingEnabledForTesting(true);
+    ForceConnectionTypeForTesting(std::nullopt);
   }
 
   void SetUpOnMainThread() override {
@@ -125,8 +126,7 @@ class DISABLED_GlicProfileManagerUiTest : public test::InteractiveGlicTest {
   }
 
   auto ResetPreloading() {
-    return Do(
-        []() { GlicProfileManager::SetPrewarmingEnabledForTesting(true); });
+    return Do([]() { SetPrewarmingEnabledForTesting(true); });
   }
 
   auto CacheClientContents(bool) {

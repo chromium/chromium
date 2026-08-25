@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/glic_warming_checks.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
@@ -69,14 +70,14 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
 
   void SetUp() override {
     // This will temporarily disable preloading.
-    glic::GlicProfileManager::SetPrewarmingEnabledForTesting(false);
+    glic::SetPrewarmingEnabledForTesting(false);
 
     InProcessBrowserTest::SetUp();
   }
 
   void TearDown() override {
     InProcessBrowserTest::TearDown();
-    glic::GlicProfileManager::SetPrewarmingEnabledForTesting(true);
+    glic::SetPrewarmingEnabledForTesting(true);
   }
 
   void SetUpOnMainThread() override {
@@ -153,9 +154,7 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
     }
   }
 
-  void ResetPrewarming() {
-    glic::GlicProfileManager::SetPrewarmingEnabledForTesting(true);
-  }
+  void ResetPrewarming() { glic::SetPrewarmingEnabledForTesting(true); }
 
   void ResetAnimation(int value) {
     if (tab_strip_action_container()->animation_session_for_testing()) {
