@@ -374,9 +374,9 @@ void OmniboxPopupViewFullWebUI::OnFocus(bool query_zps) {
     SyncNativeStateToWebUI(query_zps);
   } else if (auto* popup_handler = GetPopupHandler()) {
     // If the popup was already open (`!changed`), explicitly send
-    // `SetFocus(true, query_zps)` via IPC to ensure WebUI DOM input element
-    // focus and suggestions are restored.
-    popup_handler->SetFocus(true, query_zps);
+    // `SetFocus(true)` via IPC to ensure WebUI DOM input element focus is
+    // restored if it was lost.
+    popup_handler->SetFocus(true);
   }
 }
 
