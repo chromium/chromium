@@ -2092,7 +2092,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Extensions.ExplicitSigninFromAnyAccessPoint"
-    enum="BooleanIsNewOptIn" expires_after="2026-12-21">
+    enum="BooleanIsNewOptIn" expires_after="2027-02-21">
   <owner>amelies@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

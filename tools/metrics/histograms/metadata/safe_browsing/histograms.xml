@@ -2650,7 +2650,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.Pref.JsOptimizerSetting"
-    enum="SafeBrowsingJsOptimizerSetting" expires_after="2026-12-20">
+    enum="SafeBrowsingJsOptimizerSetting" expires_after="2027-02-21">
   <owner>tiffanysong@google.com</owner>
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -3339,7 +3339,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.SiteFamiliarity.Verdict{FrameType}"
-    enum="SiteFamiliarity" expires_after="2026-12-20">
+    enum="SiteFamiliarity" expires_after="2027-02-21">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

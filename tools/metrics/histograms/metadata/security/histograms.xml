@@ -582,7 +582,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.iOS.KeychainMigration.Result"
-    enum="IOSKeychainMigrationResult" expires_after="2026-12-20">
+    enum="IOSKeychainMigrationResult" expires_after="2027-02-21">
   <owner>marq@chromium.org</owner>
   <owner>bling-flags@google.com</owner>
   <summary>
@@ -1252,7 +1252,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.ProxyCount" units="proxies"
-    expires_after="2026-12-20">
+    expires_after="2027-02-21">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
