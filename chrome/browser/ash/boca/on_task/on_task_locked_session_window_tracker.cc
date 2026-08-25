@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_window_observer.h"
 #include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
@@ -111,6 +112,9 @@ void LockedSessionWindowTracker::RefreshUrlBlocklist() {
 void LockedSessionWindowTracker::set_oauth_in_progress(
     bool in_progress,
     ash::BrowserDelegate* browser) {
+  if (in_progress && !oauth_in_progress_) {
+    ash::boca::RecordOnTaskOAuthTriggered();
+  }
   oauth_in_progress_ = in_progress;
   if (in_progress && browser &&
       browser->GetType() == ash::BrowserType::kAppPopup) {

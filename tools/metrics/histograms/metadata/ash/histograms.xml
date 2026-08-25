@@ -1238,6 +1238,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Boca.OnTask.OAuthTriggered" enum="Boolean"
+    expires_after="2027-07-20">
+  <owner>aprilzhou@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records when an OAuth flow is triggered during the OnTask session.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Boca.OnTask.{State}SessionDurationPercentage"
     units="% of session" expires_after="2027-07-20">
   <owner>aprilzhou@google.com</owner>

@@ -38,6 +38,8 @@ inline constexpr char kBocaOnTaskUnlockedSessionDurationPercentage[] =
     "Ash.Boca.OnTask.UnlockedSessionDurationPercentage";
 inline constexpr char kBocaOnTaskNumOfTabsWhenSessionEnded[] =
     "Ash.Boca.OnTask.NumberOfTabsWhenSessionEnded";
+inline constexpr char kBocaOnTaskOAuthTriggered[] =
+    "Ash.Boca.OnTask.OAuthTriggered";
 inline constexpr char kBocaOnTaskMaxNumOfTabsDuringSession[] =
     "Ash.Boca.OnTask.MaxNumberOfTabsDuringSession";
 inline constexpr char kBocaSpotlightGoogleApiCallErrorCodeTemplate[] =
@@ -135,6 +137,9 @@ void RecordNumOfActiveStudentsWhenSessionEnded(int num_of_active_students);
 
 // Records the number of tabs sent by the provider when a session ends.
 void RecordOnTaskNumOfTabsWhenSessionEnded(int num_of_tabs);
+
+// Records when an OAuth flow is triggered during the OnTask session.
+void RecordOnTaskOAuthTriggered();
 
 // Records the max number of tabs sent by the provider in a session.
 void RecordOnTaskMaxNumOfTabsDuringSession(int max_num_of_tabs);
