@@ -101,7 +101,9 @@ public class ClipboardImpl extends Clipboard
     }
 
     @Override
-    protected @Nullable String getCoercedText() {
+    public @Nullable String getCoercedText() {
+        if (!hasCoercedText()) return null;
+
         // getPrimaryClip() has been observed to throw unexpected exceptions for some devices (see
         // crbug.com/654802 and b/31501780)
         try {

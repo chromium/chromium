@@ -122,24 +122,21 @@ public class Clipboard {
     }
 
     /**
-     * Emulates the behavior of the now-deprecated
-     * {@link android.text.ClipboardManager#getText()} by invoking
-     * {@link android.content.ClipData.Item#coerceToText(Context)} on the first
-     * item in the clipboard (if any) and returning the result as a string.
-     * <p>
-     * This is quite different than simply calling {@link Object#toString()} on
-     * the clip; consumers of this API should familiarize themselves with the
-     * process described in
-     * {@link android.content.ClipData.Item#coerceToText(Context)} before using
-     * this method.
+     * Emulates the behavior of the now-deprecated {@link android.text.ClipboardManager#getText()}
+     * by invoking {@link android.content.ClipData.Item#coerceToText(Context)} on the first item in
+     * the clipboard (if any) and returning the result as a string.
      *
-     * @return a string representation of the first item on the clipboard, if
-     *         the clipboard currently has an item and coercion of the item into
-     *         a string is possible; otherwise, <code>null</code>
+     * <p>This is quite different than simply calling {@link Object#toString()} on the clip;
+     * consumers of this API should familiarize themselves with the process described in {@link
+     * android.content.ClipData.Item#coerceToText(Context)} before using this method.
+     *
+     * @return a string representation of the first item on the clipboard, if the clipboard
+     *     currently has an item and coercion of the item into a string is possible; otherwise,
+     *     <code>null</code>
      */
     @SuppressWarnings("javadoc")
     @CalledByNative
-    protected @Nullable String getCoercedText() {
+    public @Nullable String getCoercedText() {
         return null;
     }
 

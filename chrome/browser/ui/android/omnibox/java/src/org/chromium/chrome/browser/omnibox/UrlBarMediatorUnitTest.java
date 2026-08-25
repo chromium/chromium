@@ -16,8 +16,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.text.Selection;
@@ -30,7 +28,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
@@ -48,6 +45,7 @@ import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisColorSpan;
 import org.chromium.components.omnibox.TextSelection;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
 import org.chromium.url.GURL;
@@ -57,18 +55,20 @@ import org.chromium.url.GURL;
 @Config(manifest = Config.NONE)
 public class UrlBarMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private Clipboard mClipboard;
     @Mock private PropertyObserver mPropertyObserver;
     @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private UrlBarDelegate mUrlBarDelegate;
-    Context mContext;
-    PropertyModel mModel;
-    UrlBarMediator mMediator;
-    UrlBarDelegate mDelegate;
+    private Context mContext;
+    private PropertyModel mModel;
+    private UrlBarMediator mMediator;
+    private UrlBarDelegate mDelegate;
 
     @Before
     public void setUp() {
         OmniboxResourceProvider.setUrlBarPrimaryTextColorForTesting(Color.LTGRAY);
         OmniboxResourceProvider.setUrlBarHintTextColorForTesting(Color.LTGRAY);
+        Clipboard.setInstanceForTesting(mClipboard);
         mContext = ContextUtils.getApplicationContext();
         mModel = new PropertyModel(UrlBarProperties.ALL_KEYS);
         mMediator =
@@ -325,19 +325,16 @@ public class UrlBarMediatorUnitTest {
 
     @Test
     public void pasteTextValidation() {
-        ClipboardManager clipboard =
-                (ClipboardManager)
-                        RuntimeEnvironment.application.getSystemService(Context.CLIPBOARD_SERVICE);
-        clipboard.setPrimaryClip(null);
+        doReturn(null).when(mClipboard).getCoercedText();
         assertNull(mMediator.getTextToPaste());
 
-        clipboard.setPrimaryClip(ClipData.newPlainText("", ""));
+        doReturn("").when(mClipboard).getCoercedText();
         assertEquals("", mMediator.getTextToPaste());
 
-        clipboard.setPrimaryClip(ClipData.newPlainText("", "test"));
+        doReturn("test").when(mClipboard).getCoercedText();
         assertEquals("test", mMediator.getTextToPaste());
 
-        clipboard.setPrimaryClip(ClipData.newPlainText("", "    test     "));
+        doReturn("    test     ").when(mClipboard).getCoercedText();
         assertEquals("test", mMediator.getTextToPaste());
     }
 

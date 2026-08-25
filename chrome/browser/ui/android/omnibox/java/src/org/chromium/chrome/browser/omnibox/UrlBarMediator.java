@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -16,7 +14,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -35,6 +32,7 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisSpan;
 import org.chromium.components.omnibox.TextSelection;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -430,20 +428,8 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
 
     @Override
     public @Nullable String getTextToPaste() {
-        Context context = ContextUtils.getApplicationContext();
-
-        ClipboardManager clipboard =
-                (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clipData = clipboard.getPrimaryClip();
-        if (clipData == null) return null;
-
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < clipData.getItemCount(); i++) {
-            builder.append(clipData.getItemAt(i).coerceToText(context));
-        }
-
-        String stringToPaste = sanitizeTextForPaste(builder.toString());
-        return stringToPaste;
+        String text = Clipboard.getInstance().getCoercedText();
+        return text != null ? sanitizeTextForPaste(text) : null;
     }
 
     /**
