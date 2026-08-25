@@ -1,0 +1,20 @@
+This is a testharness.js-based test.
+Found 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] random(e-s) in typed result, same function in different properties
+  assert_false: Random values should not be equal expected false got true
+[FAIL] random(e-s) in typed result, same function at different indexes
+  assert_false: Random values should not be equal expected false got true
+[FAIL] random(e-s) in typed result, different functions in different properties
+  assert_false: Random values should not be equal expected false got true
+[FAIL] random(e-s) in typed result, different functions at different indexes
+  assert_false: Random values should not be equal expected false got true
+[FAIL] random(e-s) in typed arg defaults, same function in different properties
+  assert_false: Random values should not be equal expected false got true
+[FAIL] random(e-s) in typed arg defaults, same function at different indexes
+  assert_false: Random values should not be equal expected false got true
+[FAIL] random(e-s) in typed arg and set in body, same function in different properties
+  assert_false: Random values should not be equal expected false got true
+[FAIL] random(e-s) in typed arg and set in body, same function at different indexes
+  assert_false: Random values should not be equal expected false got true
+Harness: the test ran to completion.
+
