@@ -20,17 +20,9 @@ namespace {
 
 PeripheralNotificationManager* g_instance = nullptr;
 
-const int kBillboardDeviceClassCode = 17;
-constexpr char thunderbolt_file_path[] = "/sys/bus/thunderbolt/devices/0-0";
-
 void RecordConnectivityMetric(
     PeripheralNotificationManager::PeripheralConnectivityResults results) {
   base::UmaHistogramEnumeration("Ash.Peripheral.ConnectivityResults", results);
-}
-
-// Checks if the board supports Thunderbolt.
-bool CheckIfThunderboltFilepathExists(std::string root_prefix) {
-  return base::PathExists(base::FilePath(root_prefix + thunderbolt_file_path));
 }
 
 }  // namespace
@@ -78,16 +70,6 @@ void PeripheralNotificationManager::NotifyGuestModeNotificationReceived(
 void PeripheralNotificationManager::NotifyPeripheralBlockedReceived() {
   for (auto& observer : observer_list_)
     observer.OnPeripheralBlockedReceived();
-}
-
-void PeripheralNotificationManager::OnBillboardDeviceConnected(
-    bool billboard_is_supported) {
-  if (!billboard_is_supported) {
-    for (auto& observer : observer_list_)
-      observer.OnBillboardDeviceConnected();
-
-    RecordConnectivityMetric(PeripheralConnectivityResults::kBillboardDevice);
-  }
 }
 
 void PeripheralNotificationManager::OnThunderboltDeviceConnected(
@@ -197,26 +179,11 @@ void PeripheralNotificationManager::NotifyUsbDeviceOrEndpointLimit() {
 }
 
 void PeripheralNotificationManager::OnDeviceConnected(
-    device::mojom::UsbDeviceInfo* device) {
-  if (device->class_code == kBillboardDeviceClassCode) {
-    // PathExist is a blocking call. PostTask it and wait on the result.
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(&CheckIfThunderboltFilepathExists, root_prefix_),
-        base::BindOnce(
-            &PeripheralNotificationManager::OnBillboardDeviceConnected,
-            weak_ptr_factory_.GetWeakPtr()));
-  }
-}
+    device::mojom::UsbDeviceInfo* device) {}
 
 void PeripheralNotificationManager::SetPcieTunnelingAllowedState(
     bool is_pcie_tunneling_allowed) {
   is_pcie_tunneling_allowed_ = is_pcie_tunneling_allowed;
-}
-
-void PeripheralNotificationManager::SetRootPrefixForTesting(
-    const std::string& prefix) {
-  root_prefix_ = prefix;
 }
 
 // static

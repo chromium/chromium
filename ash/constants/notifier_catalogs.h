@@ -73,7 +73,7 @@ enum class NotificationCatalogName {
   kSessionLengthTimeout = 53,
   kLocaleUpdate = 54,
   kTracing = 55,
-  kPcieBillboardDevice = 56,
+  // [Deprecated] kPcieBillboardDevice = 56,
   kPcieLimitedPerformance = 57,
   kPcieGuestMode = 58,
   kPciePeripheralBlocked = 59,
