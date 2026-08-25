@@ -1110,11 +1110,12 @@ class SiteSettingsHelperChooserExceptionTest : public testing::Test {
       "ajnpiorf3kprxsslcme5f2rkwfoxx24orkkudpf6roqxssxnjx7y4aacai/"};
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  Profile* profile() { return &profile_; }
+  Profile* profile() { return profile_.get(); }
 
   void SetUp() override {
     TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
         /*profile_manager=*/false);
+    profile_ = std::make_unique<TestingProfile>();
     SetUpUsbChooserContext();
 #if BUILDFLAG(IS_CHROMEOS)
     SetUpSmartCardPermissionContext();
@@ -1122,6 +1123,7 @@ class SiteSettingsHelperChooserExceptionTest : public testing::Test {
   }
 
   void TearDown() override {
+    profile_.reset();
     TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
@@ -1185,7 +1187,7 @@ class SiteSettingsHelperChooserExceptionTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
 #if BUILDFLAG(IS_CHROMEOS)
   base::test::ScopedFeatureList feature_list_{blink::features::kSmartCard};
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -1551,10 +1553,13 @@ class SiteSettingsHelperIsolatedWebAppTest : public testing::Test {
   void SetUp() override {
     TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
         /*profile_manager=*/false);
-    web_app::test::AwaitStartWebAppProviderAndSubsystems(&testing_profile_);
+    testing_profile_ = std::make_unique<TestingProfile>();
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(
+        testing_profile_.get());
   }
 
   void TearDown() override {
+    testing_profile_.reset();
     TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
@@ -1568,14 +1573,14 @@ class SiteSettingsHelperIsolatedWebAppTest : public testing::Test {
     return bundle->InstallChecked(profile());
   }
 
-  Profile* profile() { return &testing_profile_; }
+  Profile* profile() { return testing_profile_.get(); }
 
   const std::string kAppName = "test IWA Name";
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-  TestingProfile testing_profile_;
+  std::unique_ptr<TestingProfile> testing_profile_;
 };
 
 TEST_F(SiteSettingsHelperIsolatedWebAppTest,
