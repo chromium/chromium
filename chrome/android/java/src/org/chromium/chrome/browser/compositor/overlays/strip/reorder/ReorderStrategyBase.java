@@ -97,7 +97,7 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
             StripLayoutGroupTitle[] groupTitles,
             StripLayoutTab[] stripTabs,
             StripLayoutView reorderingView,
-            boolean toRight) {
+            boolean toLeft) {
         // Default implementation is intentionally no-op.
     }
 

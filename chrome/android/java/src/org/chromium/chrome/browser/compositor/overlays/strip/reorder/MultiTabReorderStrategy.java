@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.getEffectiveTabWidth;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

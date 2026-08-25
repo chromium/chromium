@@ -309,7 +309,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
                 StripLayoutGroupTitle[] groupTitles,
                 StripLayoutTab[] stripTabs,
                 StripLayoutView reorderingView,
-                boolean toRight) {
+                boolean toLeft) {
             // Intentionally no-op.
         }
 

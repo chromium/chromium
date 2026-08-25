@@ -534,21 +534,22 @@ public class ReorderDelegate {
             StripLayoutTab[] stripTabs,
             StripLayoutView reorderingView,
             boolean toLeft) {
-        if (reorderingView instanceof StripLayoutTab) {
-            if (mModel.isTabMultiSelected(((StripLayoutTab) reorderingView).getTabId())
-                    && mModel.getMultiSelectedTabsCount() > 1) {
-                mMultiTabStrategy.reorderViewInDirection(
-                        tabDelegate, stripViews, groupTitles, stripTabs, reorderingView, toLeft);
-            } else {
-                mTabStrategy.reorderViewInDirection(
-                        tabDelegate, stripViews, groupTitles, stripTabs, reorderingView, toLeft);
-            }
-        } else if (reorderingView instanceof StripLayoutGroupTitle) {
-            mGroupStrategy.reorderViewInDirection(
-                    tabDelegate, stripViews, groupTitles, stripTabs, reorderingView, toLeft);
-        } else {
-            assert false : "Attempted to reorder an invalid view type.";
+        // Interrupt the current reorder, if any.
+        if (mActiveStrategy != null && getInReorderMode()) {
+            stopReorderMode(stripViews, groupTitles, /* isDragCancelled= */ false);
         }
+
+        // Set reorder state, then trigger reorder. Intentionally does not use #startReorderMode.
+        mInReorderModeSupplier.set(true);
+        mActiveStrategy = getReorderStrategy(reorderingView, ReorderType.DRAG_WITHIN_STRIP);
+        mActiveStrategy.reorderViewInDirection(
+                tabDelegate, stripViews, groupTitles, stripTabs, reorderingView, toLeft);
+
+        // Reset state. Intentionally does not use #stopReorderMode, as it would cancel the
+        // animations that we triggered for the #reorderViewInDirection call above.
+        // TODO(crbug.com/552569691): Unify with drag reorder methods if possible.
+        mActiveStrategy = null;
+        mInReorderModeSupplier.set(false);
     }
 
     // ============================================================================================
