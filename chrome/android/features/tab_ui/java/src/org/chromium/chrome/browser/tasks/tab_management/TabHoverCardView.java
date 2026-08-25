@@ -225,7 +225,7 @@ public class TabHoverCardView extends FrameLayout {
      * Callback<TabModel>} to tab model supplier to update the view when a tab model is selected.
      *
      * @param tabModelSelector The {@link TabModelSelector} to observe.
-     * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
+     * @param tabContentManagerSupplier Supplier of the manager providing tab thumbnail snapshots.
      */
     public void initialize(
             TabModelSelector tabModelSelector,

@@ -106,7 +106,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
      * @param context Context to get resources.
      * @param stripLayoutHelperSupplier Supplier for StripLayoutHelper to perform strip actions.
      * @param stripLayoutVisibilitySupplier Supplier for if the given tab strip is visible.
-     * @param tabContentManagerSupplier Supplier for the TabContentManager.
+     * @param tabContentManagerSupplier Supplier of the manager providing tab thumbnail snapshots.
      * @param layerTitleCacheSupplier Supplier for the LayerTitleCache.
      * @param multiInstanceManager MultiInstanceManager to perform move action when drop completes.
      * @param dragAndDropDelegate DragAndDropDelegate to initiate tab drag and drop.

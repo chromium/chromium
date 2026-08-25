@@ -42,7 +42,7 @@ public class SingleTabModuleBuilder implements ModuleProviderBuilder {
     /**
      * @param activity The instance of {@link Activity}.
      * @param tabModelSelectorSupplier The supplier of the {@link TabModelSelector}.
-     * @param tabContentManagerSupplier The supplier of the {@link TabContentManager}.
+     * @param tabContentManagerSupplier Supplier of the manager providing tab thumbnail snapshots.
      * @param useManualRankSupplier The supplier of whether to use a manual rank.
      */
     public SingleTabModuleBuilder(

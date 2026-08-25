@@ -85,7 +85,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * @param tabSwitcherSupplier Supplier for an interface to talk to the Grid Tab Switcher.
      * @param tabModelSelectorSupplier Supplier for an interface to talk to the Tab Model Selector.
      * @param browserControlsStateProvider The BrowserControlsStateProvider for top controls.
-     * @param tabContentManagerSupplier Supplier of the TabContentManager instance.
+     * @param tabContentManagerSupplier Supplier of the manager providing tab thumbnail snapshots.
      * @param toolbarThemeColorProvider ThemeColorProvider for the toolbar.
      * @param tabModelStartupInfoSupplier Supplier for the {@link TabModelStartupInfo} on startup.
      * @param lifecycleDispatcher ActivityLifecycleDispatcher to be passed to TabStrip helper.

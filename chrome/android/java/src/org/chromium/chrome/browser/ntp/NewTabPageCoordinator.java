@@ -264,7 +264,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
      * @param isLff {@code true} if the NTP surface is on a large form factor (LFF) device.
      * @param tabStripHeightSupplier Supplier of the tab strip height.
      * @param sideUiStateProviderSupplier Supplier for the {@link SideUiStateProvider}.
-     * @param homeSurfaceTracker Used to decide whether we are the home surface.
+     * @param homeSurfaceTracker Tracker recording whether this NTP acts as the home surface.
      * @param backPressManager Manages back press dispatching.
      */
     public NewTabPageCoordinator(
@@ -368,6 +368,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
      * @param uiConfig UiConfig that will provide the preferred display style for NTP based on the
      *     available space.
      * @param lifecycleDispatcher Activity lifecycle dispatcher.
+     * @param composeplateUrlSupplier Supplier providing the composeplate URL.
      */
     @Initializer
     public void initialize(

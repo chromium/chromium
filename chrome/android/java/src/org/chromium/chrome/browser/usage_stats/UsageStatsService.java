@@ -65,7 +65,7 @@ public class UsageStatsService implements Destroyable {
      *     created {@link PageViewObserver} when the activity is destroyed.
      * @param profile The {@link Profile} associated with the activity.
      * @param activityTabProvider The provider of the active tab for the activity.
-     * @param tabContentManagerSupplier Supplier of the current {@link TabContentManager}.
+     * @param tabContentManagerSupplier Supplier of the manager providing tab thumbnail snapshots.
      */
     public static void createPageViewObserverIfEnabled(
             Activity activity,
@@ -119,7 +119,8 @@ public class UsageStatsService implements Destroyable {
      * @param activity The activity in which page view events are occurring.
      * @param lifecycleDispatcher The lifecycle dispatcher for {@code activity}.
      * @param activityTabProvider The provider of the active tab for the activity.
-     * @param tabContentManagerSupplier Supplier of the current {@link TabContentManager}.
+     * @param tabContentManagerSupplier Supplier of the manager providing tab thumbnail snapshots.
+     * @return The created PageViewObserver instance.
      */
     private PageViewObserver createPageViewObserver(
             Activity activity,

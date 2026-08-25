@@ -141,7 +141,7 @@ public class StripDragShadowView extends FrameLayout {
      *
      * @param browserControlsStateProvider Provider for top browser controls state.
      * @param multiThumbnailCardProvider Provider for group thumbnails.
-     * @param tabContentManagerSupplier Supplier for the {@link TabContentManager}.
+     * @param tabContentManager Manager providing tab thumbnail snapshots.
      * @param layerTitleCacheSupplier Supplier for the {@link LayerTitleCache}.
      * @param tabModelSelector The {@link TabModelSelector} to use.
      * @param shadowUpdateHost The host to push updates to.

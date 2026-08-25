@@ -53,7 +53,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
      *     to create overviewLayout if it has value, otherwise will use the accessibility overview
      *     layout.
      * @param tabModelSelectorSupplier Supplier for an interface to talk to the Tab Model Selector.
-     * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
+     * @param tabContentManagerSupplier Supplier of the manager providing tab thumbnail snapshots.
      * @param toolbarThemeColorProvider {@link ThemeColorProvider} for the toolbar.
      * @param hubLayoutDependencyHolder The dependency holder for creating {@link HubLayout}.
      * @param compositorViewHolderSupplier Supplier of the {@link CompositorViewHolder} instance.

@@ -98,7 +98,7 @@ public class VerticalTabHoverCardController {
      * @param tabHoverCardViewStub The view stub for inflating the tab hover card.
      * @param tabGroupHoverCardViewStub The view stub for inflating the tab group hover card.
      * @param tabModelSelector The {@link TabModelSelector} for accessing tabs and selection state.
-     * @param tabContentManagerSupplier Supplier for the {@link TabContentManager}.
+     * @param tabContentManagerSupplier Supplier of the manager providing tab thumbnail snapshots.
      * @param isContextMenuShowingSupplier Supplier returning whether any context menu is open.
      */
     VerticalTabHoverCardController(
