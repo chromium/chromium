@@ -290,13 +290,8 @@ gfx::ColorSpace ForcedColorProfileStringToColorSpace(const std::string& value) {
                            gfx::ColorSpace::TransferID::GAMMA18);
   }
   if (value == "color-spin-gamma24") {
-    // Run this color profile through an ICC profile. The resulting color space
-    // is slightly different from the input color space, and removing the ICC
-    // profile would require rebaselining many layout tests.
-    gfx::ColorSpace color_space(
-        gfx::ColorSpace::PrimaryID::WIDE_GAMUT_COLOR_SPIN,
-        gfx::ColorSpace::TransferID::GAMMA24);
-    return gfx::ICCProfile::FromColorSpace(color_space).GetColorSpace();
+    return gfx::ColorSpace(gfx::ColorSpace::PrimaryID::WIDE_GAMUT_COLOR_SPIN,
+                           gfx::ColorSpace::TransferID::GAMMA24);
   }
   LOG(ERROR) << "Invalid forced color profile: \"" << value << "\"";
   return gfx::ColorSpace::CreateSRGB();
