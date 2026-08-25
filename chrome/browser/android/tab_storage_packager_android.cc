@@ -36,11 +36,6 @@
 #include "chrome/android/chrome_jni_headers/TabStoragePackager_jni.h"
 
 namespace tabs {
-// TODO(crbug.com/430996004): Reference a shared constant for the web content
-// state.
-// Version 3: Introduce TabState#url.
-static const int kTabStoragePackagerAndroidVersion = 3;
-
 // A payload of data representing TabStripCollection.
 class TabStripCollectionStorageData : public Payload {
  public:
@@ -160,6 +155,7 @@ long TabStoragePackagerAndroid::ConsolidateTabData(
     JNIEnv* env,
     int64_t timestamp_millis,
     const jni_zero::JavaRef<jobject>& web_contents_state_buffer,
+    int32_t web_contents_state_version,
     std::optional<std::string> opener_app_id,
     int32_t theme_color,
     int64_t last_navigation_committed_timestamp_millis,
@@ -184,8 +180,8 @@ long TabStoragePackagerAndroid::ConsolidateTabData(
   }
 
   AndroidTabPackage android_package(
-      kTabStoragePackagerAndroidVersion, tab->GetAndroidId(),
-      tab->GetParentId(), timestamp_millis, std::move(web_contents_state_bytes),
+      web_contents_state_version, tab->GetAndroidId(), tab->GetParentId(),
+      timestamp_millis, std::move(web_contents_state_bytes),
       std::move(opener_app_id), theme_color,
       last_navigation_committed_timestamp_millis, tab_has_sensitive_content,
       tab->GetTabLaunchTypeAtCreation(), std::move(url_spec));

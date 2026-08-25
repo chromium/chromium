@@ -60,6 +60,7 @@ class TabStoragePackagerAndroid : public TabStoragePackager {
       JNIEnv* env,
       int64_t timestamp_millis,
       const jni_zero::JavaRef<jobject>& web_contents_state_buffer,
+      int32_t web_contents_state_version,
       std::optional<std::string> opener_app_id,
       int32_t theme_color,
       int64_t last_navigation_committed_timestamp_millis,

@@ -123,11 +123,14 @@ public class TabStoragePackager {
     @CalledByNative
     public long packageTab(@JniType("const TabAndroid*") Tab tab) {
         WebContentsState state = TabStateExtractor.getWebContentsState(tab);
+        int webContentsStateVersion =
+                state == null ? WebContentsState.INVALID_BUFFER_VERSION : state.version();
         return TabStoragePackagerJni.get()
                 .consolidateTabData(
                         mNativeTabStoragePackager,
                         tab.getTimestampMillis(),
                         state == null ? null : state.buffer(),
+                        webContentsStateVersion,
                         assumeNonNull(TabAssociatedApp.getAppId(tab)),
                         tab.getThemeColor(),
                         tab.getLastNavigationCommittedTimestampMillis(),
@@ -277,6 +280,7 @@ public class TabStoragePackager {
                 long nativeTabStoragePackagerAndroid,
                 long timestampMillis,
                 @Nullable ByteBuffer webContentsStateBuffer,
+                int webContentsStateVersion,
                 @Nullable @JniType("std::optional<std::string>") String openerAppId,
                 int themeColor,
                 long lastNavigationCommittedTimestampMillis,
