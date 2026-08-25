@@ -24,31 +24,34 @@ namespace {
 
 const uint32_t kBufferId = 0;
 
-std::optional<fuchsia::media::AudioRenderUsage> GetStreamUsage(
+fuchsia::media::AudioRenderUsage2 GetStreamUsage(
     const AudioParameters& parameters) {
-  int usage = parameters.effects() & AudioParameters::FUCHSIA_RENDER_USAGE_MASK;
+  using AudioRenderUsage2 = fuchsia::media::AudioRenderUsage2;
+
+  const int usage =
+      parameters.effects() & AudioParameters::FUCHSIA_RENDER_USAGE_MASK;
   switch (usage) {
     case AudioParameters::FUCHSIA_RENDER_USAGE_BACKGROUND:
-      return fuchsia::media::AudioRenderUsage::BACKGROUND;
+      return AudioRenderUsage2::BACKGROUND;
     case AudioParameters::FUCHSIA_RENDER_USAGE_MEDIA:
-      return fuchsia::media::AudioRenderUsage::MEDIA;
+      return AudioRenderUsage2::MEDIA;
     case AudioParameters::FUCHSIA_RENDER_USAGE_INTERRUPTION:
-      return fuchsia::media::AudioRenderUsage::INTERRUPTION;
+      return AudioRenderUsage2::INTERRUPTION;
     case AudioParameters::FUCHSIA_RENDER_USAGE_SYSTEM_AGENT:
-      return fuchsia::media::AudioRenderUsage::SYSTEM_AGENT;
+      return AudioRenderUsage2::SYSTEM_AGENT;
     case AudioParameters::FUCHSIA_RENDER_USAGE_COMMUNICATION:
-      return fuchsia::media::AudioRenderUsage::COMMUNICATION;
-    case 0:
+      return AudioRenderUsage2::COMMUNICATION;
+    case AudioParameters::FUCHSIA_RENDER_USAGE_ACCESSIBILITY:
+      return AudioRenderUsage2::ACCESSIBILITY;
+    case AudioParameters::FUCHSIA_RENDER_USAGE_UNKNOWN:
       // If the usage flags are not set then use COMMUNICATION for WebRTC and
       // MEDIA for everything else.
-      if (parameters.latency_tag() == AudioLatency::Type::kRtc) {
-        return fuchsia::media::AudioRenderUsage::COMMUNICATION;
-      }
-      return fuchsia::media::AudioRenderUsage::MEDIA;
+      return (parameters.latency_tag() == AudioLatency::Type::kRtc)
+                 ? AudioRenderUsage2::COMMUNICATION
+                 : AudioRenderUsage2::MEDIA;
     default:
-      DLOG(FATAL) << "Invalid FUCHSIA_RENDER_USAGE value: "
-                  << (usage >> AudioParameters::FUCHSIA_RENDER_USAGE_SHIFT);
-      return std::nullopt;
+      NOTREACHED() << "Invalid FUCHSIA_RENDER_USAGE value: "
+                   << (usage >> AudioParameters::FUCHSIA_RENDER_USAGE_SHIFT);
   }
 }
 
@@ -78,10 +81,7 @@ bool AudioOutputStreamFuchsia::Open() {
   audio_renderer_.set_error_handler(
       fit::bind_member(this, &AudioOutputStreamFuchsia::OnRendererError));
 
-  auto usage = GetStreamUsage(parameters_);
-  if (!usage)
-    return false;
-  audio_renderer_->SetUsage(usage.value());
+  audio_renderer_->SetUsage2(GetStreamUsage(parameters_));
 
   // Inform the |audio_renderer_| of the format required by the caller.
   fuchsia::media::AudioStreamType format;

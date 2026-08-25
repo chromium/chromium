@@ -131,8 +131,9 @@ void PendingCastComponent::OnApplicationConfigReceived(
   if (params_.application_config.has_audio_renderer_usage()) {
     DCHECK(!params_.media_settings);
     params_.media_settings = fuchsia::web::FrameMediaSettings{};
-    params_.media_settings->set_renderer_usage(
-        params_.application_config.audio_renderer_usage());
+    params_.media_settings->set_renderer_usage2(
+        fuchsia::media::AudioRenderUsage2(static_cast<uint32_t>(
+            params_.application_config.audio_renderer_usage())));
   } else {
     // If `audio_renderer_usage` is not specified then `AudioConsumer` is used
     // for that app. We need to fetch `session_id` in that case.

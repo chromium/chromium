@@ -378,7 +378,7 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
   // Parameters applied to popups created by content running in this Frame.
   const fuchsia::web::CreateFrameParams params_for_popups_;
 
-  base::RepeatingCallback<void(fuchsia::media::AudioRenderUsage output_usage)>
+  base::RepeatingCallback<void(fuchsia::media::AudioRenderUsage2 output_usage)>
       set_audio_output_usage_callback_;
 
   std::unique_ptr<FrameWindowTreeHost> window_tree_host_;

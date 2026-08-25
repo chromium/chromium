@@ -423,12 +423,12 @@ class FakeAudioRenderer
     binding_.AddBinding(this, std::move(request));
   }
 
-  const std::optional<fuchsia::media::AudioRenderUsage>& usage() const {
+  const std::optional<fuchsia::media::AudioRenderUsage2>& usage() const {
     return usage_;
   }
 
   // AudioRenderer_TestBase overrides.
-  void SetUsage(fuchsia::media::AudioRenderUsage usage) override {
+  void SetUsage2(fuchsia::media::AudioRenderUsage2 usage) override {
     usage_ = usage;
     if (on_set_usage_callback_)
       std::move(on_set_usage_callback_).Run();
@@ -438,7 +438,7 @@ class FakeAudioRenderer
  private:
   fidl::BindingSet<fuchsia::media::AudioRenderer> binding_;
   base::OnceClosure on_set_usage_callback_;
-  std::optional<fuchsia::media::AudioRenderUsage> usage_;
+  std::optional<fuchsia::media::AudioRenderUsage2> usage_;
 };
 
 class FakeAudio : public fuchsia::media::testing::Audio_TestBase {
@@ -538,10 +538,10 @@ TEST_F(WebEngineIntegrationMediaTest, PlayAudioToAudioRendererWithUsage) {
   fake_audio_.emplace();
   fake_audio_->renderer().set_on_set_usage_callback(run_loop.QuitClosure());
 
-  static const fuchsia::media::AudioRenderUsage kTestRenderUsage =
-      fuchsia::media::AudioRenderUsage::SYSTEM_AGENT;
+  static const fuchsia::media::AudioRenderUsage2 kTestRenderUsage =
+      fuchsia::media::AudioRenderUsage2::SYSTEM_AGENT;
   fuchsia::web::FrameMediaSettings media_settings;
-  media_settings.set_renderer_usage(kTestRenderUsage);
+  media_settings.set_renderer_usage2(kTestRenderUsage);
   frame_->SetMediaSettings(std::move(media_settings));
 
   ASSERT_NO_FATAL_FAILURE(

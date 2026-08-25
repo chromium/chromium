@@ -202,11 +202,29 @@ TEST(AudioParameters, EffectsMaskToStringFuchsiaUsage) {
   // range of bits, so verify that the to-string helper correctly decodes the
   // integer to a single item, given that bit values overlap.
   EXPECT_EQ(AudioParameters::EffectsMaskToString(
-                AudioParameters::FUCHSIA_RENDER_USAGE_COMMUNICATION),
-            "FUCHSIA_RENDER_USAGE_COMMUNICATION");
+                AudioParameters::FUCHSIA_RENDER_USAGE_UNKNOWN),
+            "NONE");
+  EXPECT_EQ(AudioParameters::EffectsMaskToString(
+                AudioParameters::FUCHSIA_RENDER_USAGE_BACKGROUND),
+            "FUCHSIA_RENDER_USAGE_BACKGROUND");
+  EXPECT_EQ(AudioParameters::EffectsMaskToString(
+                AudioParameters::FUCHSIA_RENDER_USAGE_MEDIA),
+            "FUCHSIA_RENDER_USAGE_MEDIA");
   EXPECT_EQ(AudioParameters::EffectsMaskToString(
                 AudioParameters::FUCHSIA_RENDER_USAGE_INTERRUPTION),
             "FUCHSIA_RENDER_USAGE_INTERRUPTION");
+  EXPECT_EQ(AudioParameters::EffectsMaskToString(
+                AudioParameters::FUCHSIA_RENDER_USAGE_SYSTEM_AGENT),
+            "FUCHSIA_RENDER_USAGE_SYSTEM_AGENT");
+  EXPECT_EQ(AudioParameters::EffectsMaskToString(
+                AudioParameters::FUCHSIA_RENDER_USAGE_COMMUNICATION),
+            "FUCHSIA_RENDER_USAGE_COMMUNICATION");
+  EXPECT_EQ(AudioParameters::EffectsMaskToString(
+                AudioParameters::FUCHSIA_RENDER_USAGE_ACCESSIBILITY),
+            "FUCHSIA_RENDER_USAGE_ACCESSIBILITY");
+  EXPECT_EQ(AudioParameters::EffectsMaskToString(
+                7 << AudioParameters::FUCHSIA_RENDER_USAGE_SHIFT),
+            "FUCHSIA_RENDER_USAGE_INVALID");
 }
 
 TEST(AudioOutputBufferParametersHelperTest, LoadAndWriteGlitchInfo) {
