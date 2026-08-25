@@ -576,6 +576,19 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered after autofill popup appears for a card "
                        "enrolled in card info retrieval.")));
 
+  // kIPHAutofillWalletDirectOffersFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHAutofillWalletDirectOffersFeature,
+          autofill::PopupViewViews::kAutofillWalletDirectOffersIphElementId,
+          IDS_AUTOFILL_WALLET_DIRECT_OFFERS_IPH_BUBBLE_LABEL,
+          IDS_AUTOFILL_WALLET_DIRECT_OFFERS_IPH_BUBBLE_LABEL_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+          .SetMetadata(156, "wilsonlow@google.com",
+                       "Triggered when a merchant promo code field is visible "
+                       "and direct offers from Google Wallet are available.")));
+
   // kIPHAutofillDisabledVirtualCardSuggestionFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(

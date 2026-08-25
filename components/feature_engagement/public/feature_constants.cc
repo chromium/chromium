@@ -1037,6 +1037,9 @@ BASE_FEATURE(kIPHAutofillEnableLoyaltyCardsFeature,
 BASE_FEATURE(kIPHAutofillOmniboxPaymentChipFeature,
              "IPH_AutofillOmniboxPaymentChip",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHAutofillWalletDirectOffersFeature,
+             "IPH_AutofillWalletDirectOffers",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) ||
         // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)

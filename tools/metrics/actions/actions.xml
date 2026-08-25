@@ -304,6 +304,8 @@ should be able to be added at any place in this file.
       summary="For autofill suggestion of virtual cards."/>
   <variant name="_AutofillVirtualCardSuggestion"
       summary="For AutofillVirtualCardSuggestion feature."/>
+  <variant name="_AutofillWalletDirectOffers"
+      summary="For AutofillWalletDirectOffers feature."/>
   <variant name="_BackNavigationMenu"
       summary="For BackNavigationMenu feature."/>
   <variant name="_BadgedReaderMode"

@@ -135,6 +135,9 @@ chromium-metrics-reviews@google.com.
       summary="message shown along with the virtual card suggestion option in
                the Autofill dropdown to educate users virtual cards come with
                better security"/>
+  <variant name="IPH_AutofillWalletDirectOffers"
+      summary="message shown when direct offers from Google Wallet are
+               available for a merchant promo code field"/>
   <variant name="IPH_BackNavigationMenu"
       summary="educating users about the back navigation menu to navigate
                back more than one page at a time."/>

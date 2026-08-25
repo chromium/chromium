@@ -260,10 +260,7 @@ const base::Feature& GetFeature(AutofillClient::IphFeature iph_feature) {
     case AutofillClient::IphFeature::kAutofillAi:
       return feature_engagement::kIPHAutofillAiOptInFeature;
     case AutofillClient::IphFeature::kWalletDirectOffers:
-      // TODO(crbug.com/546252995): Implement IPH bubble for Wallet Direct
-      // Offers.
-      NOTIMPLEMENTED();
-      return feature_engagement::kIPHAutofillAiOptInFeature;
+      return feature_engagement::kIPHAutofillWalletDirectOffersFeature;
   }
   NOTREACHED();
 }
@@ -273,10 +270,7 @@ ui::ElementIdentifier GetElementId(AutofillClient::IphFeature iph_feature) {
     case AutofillClient::IphFeature::kAutofillAi:
       return PopupViewViews::kAutofillAiOptInIphElementId;
     case AutofillClient::IphFeature::kWalletDirectOffers:
-      // TODO(crbug.com/546252995): Implement IPH bubble for Wallet Direct
-      // Offers.
-      NOTIMPLEMENTED();
-      return PopupViewViews::kAutofillAiOptInIphElementId;
+      return PopupViewViews::kAutofillWalletDirectOffersIphElementId;
   }
   NOTREACHED();
 }

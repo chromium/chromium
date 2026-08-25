@@ -615,6 +615,20 @@ TEST_F(ChromeAutofillClientTest, AutofillImprovedPredictionsIPH_IsShown) {
       FormFieldData{}, AutofillClient::IphFeature::kAutofillAi));
 }
 
+TEST_F(ChromeAutofillClientTest, AutofillWalletDirectOffersFieldIPH_IsShown) {
+  SetUpIphForTesting(feature_engagement::kIPHAutofillWalletDirectOffersFeature);
+
+  InSequence sequence;
+  EXPECT_CALL(*autofill_field_promo_controller(), IsMaybeShowing)
+      .WillOnce(Return(false));
+  EXPECT_CALL(*autofill_field_promo_controller(), Show);
+  EXPECT_CALL(*autofill_field_promo_controller(), IsMaybeShowing)
+      .WillOnce(Return(true));
+
+  EXPECT_TRUE(client()->ShowAutofillFieldIphForFeature(
+      FormFieldData{}, AutofillClient::IphFeature::kWalletDirectOffers));
+}
+
 TEST_F(ChromeAutofillClientTest,
        AutofillFieldIPH_HideOnShowAutofillSuggestions) {
   SetUpIphForTesting(feature_engagement::kIPHAutofillAiOptInFeature);
@@ -826,6 +840,20 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
                   Ref(feature_engagement::kIPHAutofillAiOptInFeature),
                   FeaturePromoFeatureUsedAction::kClosePromoIfPresent));
   client()->NotifyIphFeatureUsed(AutofillClient::IphFeature::kAutofillAi);
+}
+
+TEST_F(ChromeAutofillClientTestWithMockWindow,
+       AutofillWalletDirectOffersFieldIPH_NotifyFeatureUsed) {
+  MockBrowserUserEducationInterface mock_user_education(
+      &mock_browser_window_interface());
+
+  EXPECT_CALL(
+      mock_user_education,
+      NotifyFeaturePromoFeatureUsed(
+          Ref(feature_engagement::kIPHAutofillWalletDirectOffersFeature),
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent));
+  client()->NotifyIphFeatureUsed(
+      AutofillClient::IphFeature::kWalletDirectOffers);
 }
 
 // Tests that `OpenGeminiInSidebar` invokes Glic with the correct options and
