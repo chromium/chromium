@@ -43,6 +43,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -354,7 +355,11 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
 
         onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
-        onView(withText(R.string.sign_out)).perform(click());
+        if (DeviceInfo.isDesktop()) {
+            onView(withText(R.string.manage_sync_settings_sign_out_of_chrome)).perform(click());
+        } else {
+            onView(withText(R.string.sign_out)).perform(click());
+        }
 
         onView(withText(R.string.sign_out_unsaved_data_title))
                 .inRoot(isDialog())

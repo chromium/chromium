@@ -414,6 +414,9 @@ public class ManageSyncSettingsTest {
 
         onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
         onView(withId(R.id.sign_out_button)).perform(click());
+        if (DeviceInfo.isDesktop()) {
+            onView(withText(R.string.sign_out)).inRoot(isDialog()).perform(click());
+        }
         Assert.assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
     }
 

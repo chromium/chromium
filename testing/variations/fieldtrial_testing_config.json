@@ -17484,6 +17484,36 @@
             ]
         }
     ],
+    "SignOutDeletesBrowsingData": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SignOutDeletesBrowsingData"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SignOutOfChrome": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SignOutOfChrome"
+                    ]
+                }
+            ]
+        }
+    ],
     "SigninPromoLimitsExperiment": [
         {
             "platforms": [

@@ -11,6 +11,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
 import static androidx.test.espresso.matcher.PreferenceMatchers.withKey;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -344,7 +345,12 @@ public class MainSettingsFragmentTest {
 
         onView(withText(accountInfo.getEmail())).perform(click());
         onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
-        onView(withText(R.string.sign_out)).perform(click());
+        if (DeviceInfo.isDesktop()) {
+            onView(withText(R.string.manage_sync_settings_sign_out_of_chrome)).perform(click());
+            onView(withText(R.string.sign_out)).inRoot(isDialog()).perform(click());
+        } else {
+            onView(withText(R.string.sign_out)).perform(click());
+        }
         Assert.assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
 
         Activity activity = mSettingsTestRule.getActivity();
@@ -374,7 +380,12 @@ public class MainSettingsFragmentTest {
 
         onView(withText(accountInfo.getEmail())).perform(click());
         onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
-        onView(withText(R.string.sign_out)).perform(click());
+        if (DeviceInfo.isDesktop()) {
+            onView(withText(R.string.manage_sync_settings_sign_out_of_chrome)).perform(click());
+            onView(withText(R.string.sign_out)).inRoot(isDialog()).perform(click());
+        } else {
+            onView(withText(R.string.sign_out)).perform(click());
+        }
         Assert.assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
 
         Activity activity = mSettingsTestRule.getActivity();
