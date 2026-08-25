@@ -29,8 +29,8 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_preload_test_response_utils.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/streaming_search_prefetch_url_loader.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
-#include "chrome/browser/preloading/prerender/search_prewarm_progress_service.h"
-#include "chrome/browser/preloading/prerender/search_prewarm_progress_service_factory.h"
+#include "chrome/browser/preloading/prerender/search_preload_progress_service.h"
+#include "chrome/browser/preloading/prerender/search_preload_progress_service_factory.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/preloading/search_preload/search_preload_features.h"
 #include "chrome/browser/profiles/profile.h"
@@ -2497,7 +2497,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchThrottleBrowserTest,
 
   // Start Prewarm.
   EXPECT_TRUE(prerender_manager()->MaybeStartPrewarmSearchResult());
-  auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(
+  auto* service = SearchPreloadProgressServiceFactory::GetForProfile(
       Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
   EXPECT_TRUE(service && service->HasOnGoingSearchPrewarm());
 

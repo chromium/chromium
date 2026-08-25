@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PRELOADING_PRERENDER_SEARCH_PREWARM_PROGRESS_SERVICE_H_
-#define CHROME_BROWSER_PRELOADING_PRERENDER_SEARCH_PREWARM_PROGRESS_SERVICE_H_
+#ifndef CHROME_BROWSER_PRELOADING_PRERENDER_SEARCH_PRELOAD_PROGRESS_SERVICE_H_
+#define CHROME_BROWSER_PRELOADING_PRERENDER_SEARCH_PRELOAD_PROGRESS_SERVICE_H_
 
 #include "base/callback_list.h"
 #include "base/containers/flat_set.h"
@@ -14,14 +14,14 @@
 #include "content/public/browser/prerender_handle.h"
 #include "content/public/browser/prerender_host_id.h"
 
-// SearchPrewarmProgressService is a keyed service that tracks the progress of
-// the ongoing search prewarms. It can be used by throttles or other systems to
+// SearchPreloadProgressService is a keyed service that tracks the progress of
+// ongoing search preloads. It can be used by throttles or other systems to
 // pause requests that may interfere with the prewarm page until the prewarm
 // headers are received.
-class SearchPrewarmProgressService : public KeyedService {
+class SearchPreloadProgressService : public KeyedService {
  public:
-  SearchPrewarmProgressService();
-  ~SearchPrewarmProgressService() override;
+  SearchPreloadProgressService();
+  ~SearchPreloadProgressService() override;
 
   // Returns true if there is any ongoing search prewarm that hasn't received
   // its response headers.
@@ -39,7 +39,7 @@ class SearchPrewarmProgressService : public KeyedService {
   base::CallbackListSubscription RegisterSearchPrewarmFinishedCallback(
       base::RepeatingClosure callback);
 
-  base::WeakPtr<SearchPrewarmProgressService> GetWeakPtr();
+  base::WeakPtr<SearchPreloadProgressService> GetWeakPtr();
 
   // Called when a search prewarm request starts.
   void OnSearchPrewarmStarted(content::PrerenderHostId host_id);
@@ -62,7 +62,7 @@ class SearchPrewarmProgressService : public KeyedService {
 
   base::TimeTicks disabled_until_;
 
-  base::WeakPtrFactory<SearchPrewarmProgressService> weak_factory_{this};
+  base::WeakPtrFactory<SearchPreloadProgressService> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_PRELOADING_PRERENDER_SEARCH_PREWARM_PROGRESS_SERVICE_H_
+#endif  // CHROME_BROWSER_PRELOADING_PRERENDER_SEARCH_PRELOAD_PROGRESS_SERVICE_H_

@@ -7,7 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/preloading/prerender/search_prewarm_progress_service.h"
+#include "chrome/browser/preloading/prerender/search_preload_progress_service.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "url/gurl.h"
 
@@ -44,7 +44,7 @@ class DSEPrewarmNavigationThrottle : public content::NavigationThrottle {
 
   // Prewarm page loading status tracker to throttle the concurrent requests to
   // search.
-  base::WeakPtr<SearchPrewarmProgressService> prewarm_progress_service_;
+  base::WeakPtr<SearchPreloadProgressService> prewarm_progress_service_;
 
   base::CallbackListSubscription prewarm_finished_subscription_;
 

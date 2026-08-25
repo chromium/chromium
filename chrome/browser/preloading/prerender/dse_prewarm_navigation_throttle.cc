@@ -7,8 +7,8 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/preloading/preloading_features.h"
-#include "chrome/browser/preloading/prerender/search_prewarm_progress_service.h"
-#include "chrome/browser/preloading/prerender/search_prewarm_progress_service_factory.h"
+#include "chrome/browser/preloading/prerender/search_preload_progress_service.h"
+#include "chrome/browser/preloading/prerender/search_preload_progress_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/search_engines/template_url_service.h"
@@ -26,7 +26,7 @@ void DSEPrewarmNavigationThrottle::MaybeCreateAndAdd(
   auto* profile = Profile::FromBrowserContext(
       registry.GetNavigationHandle().GetWebContents()->GetBrowserContext());
   auto* prewarm_progress_service =
-      SearchPrewarmProgressServiceFactory::GetForProfile(profile);
+      SearchPreloadProgressServiceFactory::GetForProfile(profile);
   if (!prewarm_progress_service) {
     return;
   }
@@ -44,7 +44,7 @@ DSEPrewarmNavigationThrottle::DSEPrewarmNavigationThrottle(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
   auto* prewarm_progress_service =
-      SearchPrewarmProgressServiceFactory::GetForProfile(profile);
+      SearchPreloadProgressServiceFactory::GetForProfile(profile);
   CHECK(prewarm_progress_service);
   prewarm_progress_service_ = prewarm_progress_service->GetWeakPtr();
   prewarm_finished_subscription_ =

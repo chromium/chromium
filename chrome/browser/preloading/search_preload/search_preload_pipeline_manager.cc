@@ -8,8 +8,8 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
-#include "chrome/browser/preloading/prerender/search_prewarm_progress_service.h"
-#include "chrome/browser/preloading/prerender/search_prewarm_progress_service_factory.h"
+#include "chrome/browser/preloading/prerender/search_preload_progress_service.h"
+#include "chrome/browser/preloading/prerender/search_preload_progress_service_factory.h"
 #include "chrome/browser/preloading/search_preload/search_preload_features.h"
 #include "chrome/browser/preloading/search_preload/search_preload_pipeline.h"
 #include "chrome/browser/preloading/search_preload/search_preload_signal_result.h"
@@ -93,7 +93,7 @@ SearchPreloadPipelineManager::SearchPreloadPipelineManager(
   CHECK(browser_context);
   auto* profile = Profile::FromBrowserContext(browser_context);
   CHECK(profile);
-  auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(profile);
+  auto* service = SearchPreloadProgressServiceFactory::GetForProfile(profile);
   if (!service) {
     return;
   }
@@ -387,7 +387,7 @@ bool SearchPreloadPipelineManager::OnNavigationLikely(
 
     // Do not trigger the preload if there is on-going prewarm.
     auto* service =
-        SearchPrewarmProgressServiceFactory::GetForProfile(&profile);
+        SearchPreloadProgressServiceFactory::GetForProfile(&profile);
     if (service && service->ShouldThrottleSearchPreloads()) {
       return SearchPreloadSignalResult::kNotTriggeredThrottledByPrewarm;
     }

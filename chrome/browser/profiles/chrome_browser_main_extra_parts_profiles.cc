@@ -195,7 +195,7 @@
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_link_manager_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
-#include "chrome/browser/preloading/prerender/search_prewarm_progress_service_factory.h"
+#include "chrome/browser/preloading/prerender/search_preload_progress_service_factory.h"
 #include "chrome/browser/preloading/search_preload/search_preload_service_factory.h"
 #include "chrome/browser/privacy/privacy_metrics_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
@@ -1464,7 +1464,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   SearchPermissionsService::Factory::GetInstance();
 #endif
   SearchPrefetchServiceFactory::GetInstance();
-  SearchPrewarmProgressServiceFactory::GetInstance();
+  SearchPreloadProgressServiceFactory::GetInstance();
   if (SearchEnginePreconnector::ShouldBeEnabledAsKeyedService()) {
     SearchEnginePreconnectorKeyedServiceFactory::GetInstance();
   }

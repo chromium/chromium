@@ -10,7 +10,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_url_loader.h"
-#include "chrome/browser/preloading/prerender/search_prewarm_progress_service.h"
+#include "chrome/browser/preloading/prerender/search_preload_progress_service.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
 
@@ -225,7 +225,7 @@ class SearchPrefetchRequest {
 
   // Prewarm page loading status tracker to throttle the concurrent requests to
   // search.
-  base::WeakPtr<SearchPrewarmProgressService> prewarm_progress_service_;
+  base::WeakPtr<SearchPreloadProgressService> prewarm_progress_service_;
 
   base::CallbackListSubscription prewarm_finished_subscription_;
 

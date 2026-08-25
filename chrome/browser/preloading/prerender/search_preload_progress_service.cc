@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/preloading/prerender/search_prewarm_progress_service.h"
+#include "chrome/browser/preloading/prerender/search_preload_progress_service.h"
 
 #include <utility>
 
@@ -11,20 +11,20 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/preloading/preloading_features.h"
 
-SearchPrewarmProgressService::SearchPrewarmProgressService() = default;
+SearchPreloadProgressService::SearchPreloadProgressService() = default;
 
-SearchPrewarmProgressService::~SearchPrewarmProgressService() = default;
+SearchPreloadProgressService::~SearchPreloadProgressService() = default;
 
-bool SearchPrewarmProgressService::HasOnGoingSearchPrewarm() const {
+bool SearchPreloadProgressService::HasOnGoingSearchPrewarm() const {
   return !ongoing_prewarms_.empty();
 }
 
-bool SearchPrewarmProgressService::IsOnGoingSearchPrewarm(
+bool SearchPreloadProgressService::IsOnGoingSearchPrewarm(
     content::PrerenderHostId host_id) const {
   return ongoing_prewarms_.contains(host_id);
 }
 
-bool SearchPrewarmProgressService::ShouldThrottleSearchPreloads() const {
+bool SearchPreloadProgressService::ShouldThrottleSearchPreloads() const {
   if (!base::FeatureList::IsEnabled(features::kPrewarm)) {
     return false;
   }
@@ -35,22 +35,22 @@ bool SearchPrewarmProgressService::ShouldThrottleSearchPreloads() const {
 }
 
 base::CallbackListSubscription
-SearchPrewarmProgressService::RegisterSearchPrewarmFinishedCallback(
+SearchPreloadProgressService::RegisterSearchPrewarmFinishedCallback(
     base::RepeatingClosure callback) {
   return callbacks_.Add(std::move(callback));
 }
 
-base::WeakPtr<SearchPrewarmProgressService>
-SearchPrewarmProgressService::GetWeakPtr() {
+base::WeakPtr<SearchPreloadProgressService>
+SearchPreloadProgressService::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void SearchPrewarmProgressService::OnSearchPrewarmStarted(
+void SearchPreloadProgressService::OnSearchPrewarmStarted(
     content::PrerenderHostId host_id) {
   ongoing_prewarms_.insert(host_id);
 }
 
-void SearchPrewarmProgressService::OnSearchPrewarmFinished(
+void SearchPreloadProgressService::OnSearchPrewarmFinished(
     content::PrerenderHostId host_id,
     content::PrerenderLifecycleStatus status) {
   CHECK(IsOnGoingSearchPrewarm(host_id));
@@ -67,11 +67,11 @@ void SearchPrewarmProgressService::OnSearchPrewarmFinished(
   callbacks_.Notify();
 }
 
-void SearchPrewarmProgressService::EnterBlackoutPeriod() {
+void SearchPreloadProgressService::EnterBlackoutPeriod() {
   disabled_until_ = base::TimeTicks::Now() +
                     base::Seconds(features::kMaxBlackoutDurationSeconds.Get());
 }
 
-bool SearchPrewarmProgressService::ShouldBlockPrewarm() const {
+bool SearchPreloadProgressService::ShouldBlockPrewarm() const {
   return base::TimeTicks::Now() < disabled_until_;
 }

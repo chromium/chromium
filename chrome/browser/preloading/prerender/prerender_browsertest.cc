@@ -18,9 +18,9 @@
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
-#include "chrome/browser/preloading/prerender/search_prewarm_progress_service.h"
-#include "chrome/browser/preloading/prerender/search_prewarm_progress_service_factory.h"
-#include "chrome/browser/preloading/prerender/search_prewarm_progress_test_utils.h"
+#include "chrome/browser/preloading/prerender/search_preload_progress_service.h"
+#include "chrome/browser/preloading/prerender/search_preload_progress_service_factory.h"
+#include "chrome/browser/preloading/prerender/search_preload_progress_test_utils.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -1249,18 +1249,18 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   prerender_helper().WaitForPrerenderLoadCompletion(prerender_host_id);
 }
 
-// Tests that the SearchPrewarmProgressService correctly tracks the prewarm
+// Tests that the SearchPreloadProgressService correctly tracks the prewarm
 // status when prewarming the default search engine, and resets when the
 // prewarm is stopped.
 IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
-                       SearchPrewarmProgressService) {
+                       SearchPreloadProgressService) {
   // Navigate to an initial page.
   GURL url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
 
   auto* profile =
       Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext());
-  auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(profile);
+  auto* service = SearchPreloadProgressServiceFactory::GetForProfile(profile);
   ASSERT_TRUE(service);
   EXPECT_FALSE(service->HasOnGoingSearchPrewarm());
 
@@ -1276,7 +1276,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   ASSERT_TRUE(host_id);
   EXPECT_TRUE(service->IsOnGoingSearchPrewarm(host_id));
 
-  SearchPrewarmProgressTestObserver observer(service);
+  SearchPreloadProgressTestObserver observer(service);
   EXPECT_FALSE(observer.was_notified());
 
   // Resume the navigation.
@@ -1297,7 +1297,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
 
   auto* profile =
       Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext());
-  auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(profile);
+  auto* service = SearchPreloadProgressServiceFactory::GetForProfile(profile);
   ASSERT_TRUE(service);
   EXPECT_FALSE(service->ShouldBlockPrewarm());
 
@@ -1310,7 +1310,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
                                                 "/non-existent.html");
   prerender_manager->SetPrewarmUrlForTesting(url_404);
 
-  SearchPrewarmProgressTestObserver observer(service);
+  SearchPreloadProgressTestObserver observer(service);
 
   // Start prewarm.
   EXPECT_TRUE(prerender_manager->MaybeStartPrewarmSearchResult());
@@ -1325,16 +1325,16 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
 
 // Tests that if the `PrerenderManager` is destroyed (by closing the tab) while
 // a search prewarm is ongoing, the registered callbacks on
-// `SearchPrewarmProgressService` will be correctly triggered.
+// `SearchPreloadProgressService` will be correctly triggered.
 IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
-                       SearchPrewarmProgressPrerenderManagerDestroyed) {
+                       SearchPreloadProgressPrerenderManagerDestroyed) {
   // Navigate to an initial page.
   GURL url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
 
   auto* profile =
       Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext());
-  auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(profile);
+  auto* service = SearchPreloadProgressServiceFactory::GetForProfile(profile);
   ASSERT_TRUE(service);
   EXPECT_FALSE(service->HasOnGoingSearchPrewarm());
 
@@ -1355,7 +1355,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   auto host_id = prerender_helper().GetPrewarmSearchResultHost(prewarm_url_);
   ASSERT_TRUE(host_id);
   EXPECT_TRUE(service->IsOnGoingSearchPrewarm(host_id));
-  SearchPrewarmProgressTestObserver observer(service);
+  SearchPreloadProgressTestObserver observer(service);
   EXPECT_FALSE(observer.was_notified());
 
   // Destroy the tab.
@@ -1367,18 +1367,18 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   EXPECT_FALSE(service->IsOnGoingSearchPrewarm(host_id));
 }
 
-// Tests that `SearchPrewarmProgressService` handles multiple prewarms happening
+// Tests that `SearchPreloadProgressService` handles multiple prewarms happening
 // concurrently in different `WebContents` and the callback is triggered only
 // after all prewarms finish.
 IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
-                       SearchPrewarmProgressServiceMultipleWebContents) {
+                       SearchPreloadProgressServiceMultipleWebContents) {
   // Navigate to an initial page.
   GURL url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
 
   auto* profile =
       Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext());
-  auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(profile);
+  auto* service = SearchPreloadProgressServiceFactory::GetForProfile(profile);
   ASSERT_TRUE(service);
   EXPECT_FALSE(service->HasOnGoingSearchPrewarm());
 
@@ -1414,7 +1414,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   ASSERT_TRUE(host_id2);
   EXPECT_TRUE(service->IsOnGoingSearchPrewarm(host_id2));
 
-  SearchPrewarmProgressTestObserver observer(service);
+  SearchPreloadProgressTestObserver observer(service);
   EXPECT_FALSE(observer.was_notified());
 
   // Resume the navigation in the first tab.

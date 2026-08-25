@@ -8,7 +8,7 @@
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/preloading/prerender/search_prewarm_progress_service.h"
+#include "chrome/browser/preloading/prerender/search_preload_progress_service.h"
 #include "chrome/browser/preloading/search_preload/search_preload_pipeline.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -139,7 +139,7 @@ class SearchPreloadPipelineManager
 
   // Prewarm page loading status tracker to throttle the concurrent requests to
   // search.
-  base::WeakPtr<SearchPrewarmProgressService> prewarm_progress_service_;
+  base::WeakPtr<SearchPreloadProgressService> prewarm_progress_service_;
 
   base::CallbackListSubscription prewarm_finished_subscription_;
 
