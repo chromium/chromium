@@ -56,7 +56,6 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
 public class SaveUpdateAddressProfilePromptTest {
     private static final long NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER = 100L;
-    private static final boolean NO_MIGRATION = false;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private SaveUpdateAddressProfilePromptController.Natives mPromptControllerJni;

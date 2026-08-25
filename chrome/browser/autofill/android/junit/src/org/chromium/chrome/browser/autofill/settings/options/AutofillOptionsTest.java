@@ -110,9 +110,6 @@ import org.chromium.ui.text.SpanApplier;
     ChromeFeatureList.AUTOFILL_AI_USE_PRIVATE_AI
 })
 public class AutofillOptionsTest {
-    private static final String SKIP_ALL_CHECKS_PARAM_VALUE = "skip_all_checks";
-    private static final String ONLY_SKIP_AWG_CHECK_PARAM_VALUE = "only_skip_awg_check";
-
     private static final ComponentName AWG_PACKAGE =
             new ComponentName(
                     "com.google.android.gms",
