@@ -14,6 +14,7 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
   onMainFrameSameDocumentNavigation = new FakeChromeEvent();
   onRenderedTextMappingReady = new FakeChromeEvent();
   showEmpty = new FakeChromeEvent();
+  showLoading = new FakeChromeEvent();
   updateImages = new FakeChromeEvent();
   updateLinks = new FakeChromeEvent();
   updateSelection = new FakeChromeEvent();

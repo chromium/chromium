@@ -12,6 +12,7 @@ export class TestAudioBrowserProxy extends TestBrowserProxy implements
   onTabMuteStateChange = new FakeChromeEvent();
   onTtsEngineInstalled = new FakeChromeEvent();
   readingModeWillClose = new FakeChromeEvent();
+  setPlayOnOpen = new FakeChromeEvent();
   updateVoicePackStatus = new FakeChromeEvent();
 
   speechRate: number = 1.0;

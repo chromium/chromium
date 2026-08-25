@@ -2,10 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
+
+import {EventForwarder} from '../content/read_anything_types.js';
+
 // Interface for accessing and updating visual presentation, layout, and theme
 // settings (such as fonts, line and letter spacing, color themes, line focus,
 // and presentation states) in Read Anything.
 export interface VisualBrowserProxy {
+  onPinStateReceived: ChromeEvent<(pinState: boolean) => void>;
+  onPresentationStateReceived: ChromeEvent<(presentationState: number) => void>;
+
   getInSidePanelPresentationState(): number;
   getInImmersiveOverlayPresentationState(): number;
   getInHiddenPresentationState(): number;
@@ -87,6 +94,21 @@ export interface VisualBrowserProxy {
 }
 
 export class VisualBrowserProxyImpl implements VisualBrowserProxy {
+  onPinStateReceived = new EventForwarder<(pinState: boolean) => void>();
+  onPresentationStateReceived =
+      new EventForwarder<(presentationState: number) => void>();
+
+  constructor() {
+    chrome.readingMode.onPinStateReceived = (pinState: boolean) => {
+      this.onPinStateReceived.forward(pinState);
+    };
+
+    chrome.readingMode.onPresentationStateReceived =
+        (presentationState: number) => {
+          this.onPresentationStateReceived.forward(presentationState);
+        };
+  }
+
   getInSidePanelPresentationState(): number {
     return chrome.readingMode.inSidePanelPresentationState;
   }

@@ -375,6 +375,16 @@ suite('AppContent', () => {
     assertStringContains(emptyState.imagePath, spinner);
   });
 
+  test('showLoading event triggers showLoading', async () => {
+    const spinner = 'throbber';
+
+    contentBrowserProxy.showLoading.callListeners();
+    await microtasksFinished();
+
+    assertStringContains(emptyState.darkImagePath, spinner);
+    assertStringContains(emptyState.imagePath, spinner);
+  });
+
   test('showLoading marks line focus showing if enabled', async () => {
     visualBrowserProxy.lineFocusEnabled = true;
     emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
@@ -1185,7 +1195,7 @@ suite('AppContent', () => {
       setup(() => {
         scroller = app.$.containerScroller;
         assertTrue(!!scroller);
-        chrome.readingMode.onPresentationStateReceived(
+        visualBrowserProxy.onPresentationStateReceived.callListeners(
             visualBrowserProxy.inImmersiveOverlayPresentationState);
       });
 
@@ -1227,7 +1237,7 @@ suite('AppContent', () => {
       });
 
       test('mousemove does nothing if not in full page immersive mode', () => {
-        chrome.readingMode.onPresentationStateReceived(
+        visualBrowserProxy.onPresentationStateReceived.callListeners(
             visualBrowserProxy.inSidePanelPresentationState);
         scroller.getBoundingClientRect = () => {
           return {

@@ -33,6 +33,7 @@ export interface ContentBrowserProxy {
   onRenderedTextMappingReady: ChromeEvent<() => void>;
 
   showEmpty: ChromeEvent<() => void>;
+  showLoading: ChromeEvent<() => void>;
   updateImages: ChromeEvent<() => void>;
   updateLinks: ChromeEvent<() => void>;
   updateSelection: ChromeEvent<() => void>;
@@ -100,6 +101,7 @@ export class ContentBrowserProxyImpl implements ContentBrowserProxy {
       new EventForwarder<(url: string) => void>();
   onRenderedTextMappingReady = new EventForwarder<() => void>();
   showEmpty = new EventForwarder<() => void>();
+  showLoading = new EventForwarder<() => void>();
   updateImages = new EventForwarder<() => void>();
   updateLinks = new EventForwarder<() => void>();
   updateSelection = new EventForwarder<() => void>();
@@ -127,6 +129,10 @@ export class ContentBrowserProxyImpl implements ContentBrowserProxy {
 
     chrome.readingMode.showEmpty = () => {
       this.showEmpty.forward();
+    };
+
+    chrome.readingMode.showLoading = () => {
+      this.showLoading.forward();
     };
 
     chrome.readingMode.updateImages = () => {

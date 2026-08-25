@@ -98,6 +98,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       lineFocusMovement_: {type: Number},
       isDocsLoadMoreButtonVisible_: {type: Boolean},
       hasValidSelection_: {type: Boolean},
+      isReadAnythingPinned_: {type: Boolean},
     };
   }
 
@@ -110,6 +111,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   protected accessor isDocsLoadMoreButtonVisible_: boolean = false;
   protected accessor hasValidSelection_: boolean = false;
+  protected accessor isReadAnythingPinned_: boolean = false;
   protected isImmersiveEnabled_: boolean = false;
   protected isReadAnythingImprovedUiEnabled_: boolean = false;
 
@@ -281,6 +283,16 @@ export class AppElement extends AppElementBase implements SpeechListener,
       this.selectionController_.updateSelection(
           this.getSelection(), this.$.container);
     });
+    this.contentBrowserProxy_.showLoading.addListener(
+        this.showLoading.bind(this));
+    this.visualBrowserProxy_.onPinStateReceived.addListener(
+        (pinState: boolean) => {
+          this.isReadAnythingPinned_ = pinState;
+        });
+    this.visualBrowserProxy_.onPresentationStateReceived.addListener(
+        this.onPresentationStateReceived_.bind(this));
+    this.audioBrowserProxy_.setPlayOnOpen.addListener(
+        this.setPlayOnOpen.bind(this));
 
     /////////////////////////////////////////////////////////////////////
     // Called by ReadAnythingAppController via callback router. //
@@ -289,34 +301,12 @@ export class AppElement extends AppElementBase implements SpeechListener,
       this.updateContent();
     };
 
-    chrome.readingMode.showLoading = () => {
-      this.showLoading();
-    };
-
     chrome.readingMode.restoreSettingsFromPrefs = () => {
       this.restoreSettingsFromPrefs_();
     };
 
     chrome.readingMode.languageChanged = () => {
       this.languageChanged();
-    };
-
-    chrome.readingMode.onPresentationStateReceived =
-        (presentationState: number) => {
-          // TODO (crbug.com/450950100): The Read Anything app should determine
-          // which content to display based on the presentation state.
-          this.presentationState_ = presentationState;
-          this.logger_.setHidden(
-              presentationState ===
-              this.visualBrowserProxy_.getInHiddenPresentationState());
-        };
-
-    chrome.readingMode.onPinStateReceived = (pinState: boolean) => {
-      this.$.toolbar.isReadAnythingPinned = pinState;
-    };
-
-    chrome.readingMode.setPlayOnOpen = (playOnOpen: boolean) => {
-      this.setPlayOnOpen(playOnOpen);
     };
   }
 
@@ -462,6 +452,13 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   private onRenderedTextBlocksAvailable_() {
     this.contentController_.onRenderedTextBlocksAvailable(this.$.container);
+  }
+
+  private onPresentationStateReceived_(presentationState: number) {
+    this.presentationState_ = presentationState;
+    this.logger_.setHidden(
+        presentationState ===
+        this.visualBrowserProxy_.getInHiddenPresentationState());
   }
 
   protected onDocsLoadMoreButtonClick_() {

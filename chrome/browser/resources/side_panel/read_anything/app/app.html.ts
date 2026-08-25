@@ -21,6 +21,7 @@ export function getHtml(this: AppElement) {
   </div>
   <div id="toolbar-container">
     <read-anything-toolbar
+        .isReadAnythingPinned="${this.isReadAnythingPinned_}"
         .presentationState="${this.presentationState_}"
         .isSpeechActive="${this.isSpeechActive_}"
         .isAudioCurrentlyPlaying="${this.isAudioCurrentlyPlaying_}"
