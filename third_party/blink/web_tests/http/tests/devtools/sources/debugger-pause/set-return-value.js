@@ -12,14 +12,15 @@ import {TestRunner} from 'test_runner';
   TestRunner.addResult('Check that return value can be changed.');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
+    var resolvePromise;
+    var promiseResult = new Promise(r => resolvePromise = r);
     function testFunction() {
-      Promise.resolve(42).then(x => x).then(console.log);
+      Promise.resolve(42).then(x => x).then(val => { resolvePromise(val); });
     }
     //# sourceURL=test.js
   `);
   await SourcesTestRunner.startDebuggerTestPromise();
-  await TestRunner.DebuggerAgent.invoke_setBreakpointByUrl(
-      {lineNumber: 15, url: 'test.js', columnNumber: 37});
+  await TestRunner.DebuggerAgent.invoke_setBreakpointByUrl({lineNumber: 17, url: 'test.js', columnNumber: 37});
   let sidebarUpdated = TestRunner.addSnifferPromise(
         SourcesModule.ScopeChainSidebarPane.ScopeChainSidebarPane.prototype, 'sidebarPaneUpdatedForTest');
   await Promise.all([SourcesTestRunner.runTestFunctionAndWaitUntilPausedPromise(), sidebarUpdated]);
@@ -56,9 +57,9 @@ import {TestRunner} from 'test_runner';
   SourcesTestRunner.dumpScopeVariablesSidebarPane();
 
   SourcesTestRunner.resumeExecution();
-  await ConsoleTestRunner.waitUntilMessageReceivedPromise();
+  const actualValue = await TestRunner.evaluateInPageAsync('promiseResult');
   TestRunner.addResult('Actual return value:');
-  await ConsoleTestRunner.dumpConsoleMessagesIgnoreErrorStackFrames();
+  TestRunner.addResult(actualValue);
 
   SourcesTestRunner.completeDebuggerTest();
 })();
