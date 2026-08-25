@@ -376,6 +376,49 @@ history::mojom::CriticalActionPtr CriticalActionToMojom(
   return action_mojom;
 }
 
+struct ActionGroupKey {
+  std::string_view conversation_id;
+  std::string_view actor_task_id;
+  int64_t visit_id;
+  critical_actions::ActionType action_type;
+  auto operator<=>(const ActionGroupKey&) const = default;
+};
+
+std::vector<critical_actions::CriticalActionEntry> DeduplicateCriticalActions(
+    const std::vector<critical_actions::CriticalActionEntry>& raw_actions,
+    base::TimeDelta time_tolerance) {
+  if (raw_actions.empty()) {
+    return {};
+  }
+
+  base::flat_map<ActionGroupKey, base::Time> group_latest_times;
+  std::vector<critical_actions::CriticalActionEntry> deduped_results;
+  deduped_results.reserve(raw_actions.size());
+
+  for (const auto& action : raw_actions) {
+    ActionGroupKey key{.conversation_id = action.conversation_id,
+                       .actor_task_id = action.actor_task_id,
+                       .visit_id = action.visit_id,
+                       .action_type = action.action_type};
+
+    auto it = group_latest_times.find(key);
+
+    // The database returns actions sorted by timestamp DESC (latest first).
+    // A subsequent action falls into the tolerance window of the previous
+    // action if its timestamp is greater than or equal to the
+    // (last_accepted_timestamp - time_tolerance).
+    if (it != group_latest_times.end() &&
+        action.timestamp >= (it->second - time_tolerance)) {
+      continue;  // It's a duplicate, skip it.
+    }
+
+    group_latest_times[key] = action.timestamp;
+    deduped_results.push_back(action);
+  }
+
+  return deduped_results;
+}
+
 }  // namespace
 
 BrowsingHistoryHandler::BrowsingHistoryHandler(
@@ -818,11 +861,22 @@ void BrowsingHistoryHandler::HandleQueryResults(
   absl::flat_hash_map<history::VisitID,
                       std::vector<history::mojom::CriticalActionPtr>>
       actions_by_visit_id;
-  for (const auto& action : critical_actions) {
-    if (action.visit_id != history::kInvalidVisitID) {
-      actions_by_visit_id[action.visit_id].push_back(
-          CriticalActionToMojom(action));
+
+  // Deduplicate actions belonging to the same task and visit.
+  // 5 seconds is chosen as a safe heuristic upper bound to accommodate
+  // potential latency delays between the Actor and Chrome side logs
+  // of the same event, while being small enough to avoid merging separate
+  // events.
+  std::vector<critical_actions::CriticalActionEntry> processed_actions =
+      DeduplicateCriticalActions(critical_actions, base::Seconds(5));
+
+  for (const auto& action : processed_actions) {
+    if (action.visit_id == history::kInvalidVisitID ||
+        action.action_type == critical_actions::ActionType::kUnknown) {
+      continue;
     }
+    actions_by_visit_id[action.visit_id].push_back(
+        CriticalActionToMojom(action));
   }
 
   std::vector<history::mojom::HistoryEntryPtr> results_mojom;
