@@ -372,6 +372,63 @@ class AvdInstallCreateUninstallTest(unittest.TestCase):
 
 
 # pylint: disable=protected-access
+class AvdEnsureSystemSettingsTest(unittest.TestCase):
+    class _FakeDevice:
+        build_version_sdk = avd.version_codes.MARSHMALLOW
+        is_desktop = False
+
+        def __init__(self, timezone, timezone_property):
+            self._timezone = timezone
+            self._timezone_property = timezone_property
+            self.commands = []
+
+        @staticmethod
+        def IsUserBuild():
+            return False
+
+        def GetProp(self, property_name, cache=False):
+            assert not cache
+            assert property_name == 'persist.sys.timezone'
+            return self._timezone_property
+
+        def RunShellCommand(self, command, **kwargs):
+            self.commands.append((command, kwargs))
+            if command == ['settings', 'get', 'secure', 'long_press_timeout']:
+                return avd._LONG_PRESS_TIMEOUT
+            if command == ['date', '+"%Z"']:
+                return self._timezone
+            return ''
+
+    def testEnsureSystemSettingsSetsUnquotedUtcTimezone(self):
+        device = self._FakeDevice('PST', 'US/Pacific')
+
+        avd._EnsureSystemSettings(device)
+
+        commands = [command for command, _kwargs in device.commands]
+        self.assertIn(['setprop', 'persist.sys.timezone', 'Etc/UTC'], commands)
+        self.assertNotIn(
+            ['setprop', 'persist.sys.timezone', '"Etc/UTC"'], commands
+        )
+
+    def testEnsureSystemSettingsRepairsQuotedUtcTimezone(self):
+        device = self._FakeDevice('UTC', '"Etc/UTC"')
+
+        avd._EnsureSystemSettings(device)
+
+        commands = [command for command, _kwargs in device.commands]
+        self.assertIn(['setprop', 'persist.sys.timezone', 'Etc/UTC'], commands)
+
+    def testEnsureSystemSettingsKeepsValidUtcTimezone(self):
+        device = self._FakeDevice('UTC', 'Etc/UTC')
+
+        avd._EnsureSystemSettings(device)
+
+        commands = [command for command, _kwargs in device.commands]
+        self.assertNotIn(
+            ['setprop', 'persist.sys.timezone', 'Etc/UTC'], commands
+        )
+
+
 class AvdProcessRawSystemImageTest(unittest.TestCase):
     _CONFIG_RAW_SYS_IMG = """
   emulator_package {

@@ -1749,9 +1749,10 @@ def _EnsureSystemSettings(device):
     timezone = device.RunShellCommand(
         ['date', '+"%Z"'], single_line=True, check_return=True
     )
-    if timezone != 'UTC':
+    timezone_property = device.GetProp('persist.sys.timezone', cache=False)
+    if timezone != 'UTC' or timezone_property != 'Etc/UTC':
         device.RunShellCommand(
-            ['setprop', 'persist.sys.timezone', '"Etc/UTC"'],
+            ['setprop', 'persist.sys.timezone', 'Etc/UTC'],
             check_return=True,
             as_root=True,
         )
