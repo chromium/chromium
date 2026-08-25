@@ -7,6 +7,7 @@
 
 class PrefRegistrySimple;
 class PrefService;
+class Profile;
 
 namespace ui {
 class Accelerator;
@@ -26,12 +27,14 @@ inline constexpr char kHotkeyEnabled[] = "omnibox_everywhere.hotkey_enabled";
 // Everywhere.
 inline constexpr char kOmniboxEverywhereHotkey[] = "omnibox_everywhere.hotkey";
 
+// LINT.IfChange(ShowShortcutsPrefValue)
 // Tri-state value specifying whether shortcuts are shown in Omnibox Everywhere.
 enum class ShowShortcutsPrefValue {
   kUnset = 0,     // Fallback to Customize Chrome / NTP setting.
   kDisabled = 1,  // Explicitly disabled in Omnibox Everywhere.
   kEnabled = 2,   // Explicitly enabled in Omnibox Everywhere.
 };
+// LINT.ThenChange(//chrome/browser/resources/settings/search_page/omnibox_everywhere_section.ts:ShowShortcutsPrefValue)
 
 // Integer preference specifying whether shortcuts are shown in Omnibox
 // Everywhere. See ShowShortcutsPrefValue for values.
@@ -66,6 +69,12 @@ ui::Accelerator GetDefaultOmniboxEverywhereHotkey();
 // Returns the configured global hotkey accelerator for Omnibox Everywhere from
 // local state, falling back to the default accelerator if unset or invalid.
 ui::Accelerator GetOmniboxEverywhereHotkey(PrefService* local_state);
+
+// Returns whether shortcuts should be shown in Omnibox Everywhere for the given
+// profile and local state, falling back to Customize Chrome / NTP settings
+// (kNtpShortcutsVisible) if the Omnibox Everywhere preference is unset.
+bool IsOmniboxEverywhereShortcutsVisible(Profile* profile,
+                                         PrefService* local_state);
 
 }  // namespace prefs
 }  // namespace omnibox_everywhere

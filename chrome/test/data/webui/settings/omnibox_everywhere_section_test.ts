@@ -5,7 +5,7 @@
 import 'chrome://settings/settings.js';
 
 import type {CrCollapseElement} from 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
-import type {SettingsOmniboxEverywhereSectionElement} from 'chrome://settings/settings.js';
+import type {SettingsOmniboxEverywhereSectionElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {OmniboxEverywhereBrowserProxyImpl, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -36,6 +36,11 @@ suite('OmniboxEverywhereSectionTest', function() {
       },
       {
         key: 'omnibox_everywhere.show_shortcuts',
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: 0,
+      },
+      {
+        key: 'ntp.shortcust_visible',
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: true,
       },
@@ -57,7 +62,8 @@ suite('OmniboxEverywhereSectionTest', function() {
         section.shadowRoot.querySelector<CrCollapseElement>('#expandedContent');
     const shortcutInput = section.shadowRoot.querySelector('#shortcutInput');
     const showShortcutsToggle =
-        section.shadowRoot.querySelector('#showShortcutsToggle');
+        section.shadowRoot.querySelector<SettingsToggleButtonElement>(
+            '#showShortcutsToggle');
 
     assertTrue(isVisible(mainToggle));
     assertTrue(!!collapse);
@@ -67,8 +73,26 @@ suite('OmniboxEverywhereSectionTest', function() {
 
     assertFalse(
         prefService.getPref<boolean>('omnibox_everywhere.enabled').value);
-    assertTrue(prefService.getPref<boolean>('omnibox_everywhere.show_shortcuts')
-                   .value);
+    assertEquals(
+        0,
+        prefService.getPref<number>('omnibox_everywhere.show_shortcuts').value);
+    assertTrue(showShortcutsToggle.checked);
+  });
+
+  test('NtpShortcutsPrefChangeWhenUnset', async function() {
+    const showShortcutsToggle =
+        section.shadowRoot.querySelector<SettingsToggleButtonElement>(
+            '#showShortcutsToggle');
+    assertTrue(!!showShortcutsToggle);
+    assertTrue(showShortcutsToggle.checked);
+
+    await prefService.setPrefValue('ntp.shortcust_visible', false);
+    await microtasksFinished();
+    assertFalse(showShortcutsToggle.checked);
+
+    await prefService.setPrefValue('ntp.shortcust_visible', true);
+    await microtasksFinished();
+    assertTrue(showShortcutsToggle.checked);
   });
 
   test('MainToggleChange', async function() {
@@ -90,15 +114,102 @@ suite('OmniboxEverywhereSectionTest', function() {
 
   test('ShowShortcutsToggleChange', async function() {
     const showShortcutsToggle =
-        section.shadowRoot.querySelector<HTMLElement>('#showShortcutsToggle');
+        section.shadowRoot.querySelector<SettingsToggleButtonElement>(
+            '#showShortcutsToggle');
     assertTrue(!!showShortcutsToggle);
+    assertTrue(showShortcutsToggle.checked);
 
     showShortcutsToggle.click();
     await microtasksFinished();
 
-    assertFalse(
-        prefService.getPref<boolean>('omnibox_everywhere.show_shortcuts')
-            .value);
+    assertEquals(
+        1,
+        prefService.getPref<number>('omnibox_everywhere.show_shortcuts').value);
+    assertFalse(showShortcutsToggle.checked);
+    assertTrue(prefService.getPref<boolean>('ntp.shortcust_visible').value);
+
+    await prefService.setPrefValue('ntp.shortcust_visible', false);
+    await microtasksFinished();
+    assertFalse(showShortcutsToggle.checked);
+
+    showShortcutsToggle.click();
+    await microtasksFinished();
+
+    assertEquals(
+        2,
+        prefService.getPref<number>('omnibox_everywhere.show_shortcuts').value);
+    assertTrue(showShortcutsToggle.checked);
+  });
+
+  test('ShowShortcutsPrefUpdatedExternally', async function() {
+    const showShortcutsToggle =
+        section.shadowRoot.querySelector<SettingsToggleButtonElement>(
+            '#showShortcutsToggle');
+    assertTrue(!!showShortcutsToggle);
+    assertTrue(showShortcutsToggle.checked);
+
+    await prefService.setPrefValue('omnibox_everywhere.show_shortcuts', 1);
+    await microtasksFinished();
+    assertFalse(showShortcutsToggle.checked);
+
+    await prefService.setPrefValue('omnibox_everywhere.show_shortcuts', 2);
+    await microtasksFinished();
+    assertTrue(showShortcutsToggle.checked);
+
+    await prefService.setPrefValue('omnibox_everywhere.show_shortcuts', 0);
+    await microtasksFinished();
+    assertTrue(showShortcutsToggle.checked);
+  });
+
+  test('InitialState_UnsetWithNtpDisabled', async function() {
+    section.remove();
+    await prefService.setPrefValue('omnibox_everywhere.show_shortcuts', 0);
+    await prefService.setPrefValue('ntp.shortcust_visible', false);
+    await microtasksFinished();
+
+    section = document.createElement('settings-omnibox-everywhere-section');
+    document.body.appendChild(section);
+    await microtasksFinished();
+
+    const showShortcutsToggle =
+        section.shadowRoot.querySelector<SettingsToggleButtonElement>(
+            '#showShortcutsToggle');
+    assertTrue(!!showShortcutsToggle);
+    assertFalse(showShortcutsToggle.checked);
+  });
+
+  test('InitialState_ExplicitlyDisabled', async function() {
+    section.remove();
+    await prefService.setPrefValue('omnibox_everywhere.show_shortcuts', 1);
+    await prefService.setPrefValue('ntp.shortcust_visible', true);
+    await microtasksFinished();
+
+    section = document.createElement('settings-omnibox-everywhere-section');
+    document.body.appendChild(section);
+    await microtasksFinished();
+
+    const showShortcutsToggle =
+        section.shadowRoot.querySelector<SettingsToggleButtonElement>(
+            '#showShortcutsToggle');
+    assertTrue(!!showShortcutsToggle);
+    assertFalse(showShortcutsToggle.checked);
+  });
+
+  test('InitialState_ExplicitlyEnabled', async function() {
+    section.remove();
+    await prefService.setPrefValue('omnibox_everywhere.show_shortcuts', 2);
+    await prefService.setPrefValue('ntp.shortcust_visible', false);
+    await microtasksFinished();
+
+    section = document.createElement('settings-omnibox-everywhere-section');
+    document.body.appendChild(section);
+    await microtasksFinished();
+
+    const showShortcutsToggle =
+        section.shadowRoot.querySelector<SettingsToggleButtonElement>(
+            '#showShortcutsToggle');
+    assertTrue(!!showShortcutsToggle);
+    assertTrue(showShortcutsToggle.checked);
   });
 
   test('ShortcutUpdated', async function() {

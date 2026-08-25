@@ -25,6 +25,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/metrics/profile_pref_names.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
+#include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
 #include "chrome/browser/password_manager/generated_password_leak_detection_pref.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
@@ -583,6 +584,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kString;
   (*s_allowlist)[omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts] =
       settings_api::PrefType::kNumber;
+  (*s_allowlist)[ntp_prefs::kNtpShortcutsVisible] =
+      settings_api::PrefType::kBoolean;
 
   // Site Settings prefs.
   (*s_allowlist)[::content_settings::kGeneratedNotificationPref] =

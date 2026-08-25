@@ -934,6 +934,7 @@ source_set("extensions") {
       "//chrome/browser/importer",
       "//chrome/browser/language",
       "//chrome/browser/lifetime:termination_notification",
+      "//chrome/browser/new_tab_page/prefs",
       "//chrome/browser/picture_in_picture",
       "//chrome/browser/prefs",
       "//chrome/browser/prefs:util",

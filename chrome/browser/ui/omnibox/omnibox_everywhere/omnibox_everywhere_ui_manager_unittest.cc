@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -1446,6 +1447,30 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   profile_.GetPrefs()->SetBoolean(ntp_prefs::kNtpCustomLinksVisible, false);
   EXPECT_TRUE(ui_manager->widget());
   EXPECT_TRUE(ui_manager->widget()->IsVisible());
+
+  ui_manager->Shutdown();
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       CleanUpWidgetOnOmniboxEverywhereShowShortcutsPrefChangeWhenHidden) {
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+  EXPECT_TRUE(ui_manager->widget()->IsVisible());
+
+  // Hide the widget.
+  ui_manager->Close();
+  EXPECT_FALSE(ui_manager->widget()->IsVisible());
+  EXPECT_TRUE(ui_manager->widget());
+
+  // Changing local state show shortcuts pref while hidden should clean up the
+  // old widget.
+  TestingBrowserProcess::GetGlobal()->local_state()->SetInteger(
+      omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts,
+      std::to_underlying(
+          omnibox_everywhere::prefs::ShowShortcutsPrefValue::kDisabled));
+  EXPECT_FALSE(ui_manager->widget());
 
   ui_manager->Shutdown();
 }

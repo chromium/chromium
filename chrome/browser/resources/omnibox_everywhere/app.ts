@@ -81,6 +81,7 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       voiceQueryLengthLimit_: {type: Number},
       callbackRouter_: {type: Object},
       mostVisitedEnabled_: {type: Boolean},
+      showShortcuts_: {type: Boolean},
     };
   }
 
@@ -111,6 +112,8 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       SearchboxBrowserProxy.getInstance().callbackRouter;
   protected accessor mostVisitedEnabled_: boolean =
       loadTimeData.getBoolean('omniboxEverywhereMostVisitedEnabled');
+  protected accessor showShortcuts_: boolean =
+      loadTimeData.getBoolean('omniboxEverywhereShowShortcuts');
 
   private eventTracker_ = new EventTracker();
 

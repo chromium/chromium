@@ -12,6 +12,8 @@ source_set("prefs") {
   public_deps = [ "//base" ]
   deps = [
     "//chrome/browser:browser_process",
+    "//chrome/browser/new_tab_page/prefs",
+    "//chrome/browser/profiles:profile",
     "//components/prefs",
     "//ui/base",
   ]
@@ -116,6 +118,7 @@ if (is_mac || is_win) {
     sources = [
       "//chrome/browser/background/omnibox_everywhere/omnibox_everywhere_background_mode_manager_unittest.cc",
       "omnibox_everywhere_controller_unittest.cc",
+      "omnibox_everywhere_prefs_unittest.cc",
       "omnibox_everywhere_ui_manager_unittest.cc",
     ]
     if (use_aura) {

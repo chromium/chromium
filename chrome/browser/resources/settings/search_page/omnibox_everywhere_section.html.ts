@@ -45,7 +45,9 @@ export function getHtml(this: SettingsOmniboxEverywhereSectionElement) {
     </div>
 
     <settings-toggle-button id="showShortcutsToggle"
-        pref-key="omnibox_everywhere.show_shortcuts"
+        no-set-pref
+        .checked="${this.isShortcutsShowing_}"
+        @change="${this.onShowShortcutsToggleChange_}"
         label="$i18n{omniboxEverywhereShowShortcutsTitle}"
         sub-label="$i18n{omniboxEverywhereShowShortcutsSublabel}">
     </settings-toggle-button>

@@ -169,6 +169,11 @@ OmniboxEverywhereUIManager::OmniboxEverywhereUIManager(
         base::BindRepeating(
             &OmniboxEverywhereUIManager::OnEphemeralModelPrefChanged,
             base::Unretained(this)));
+    local_state_pref_change_registrar_.Add(
+        prefs::kOmniboxEverywhereShowShortcuts,
+        base::BindRepeating(
+            &OmniboxEverywhereUIManager::OnMostVisitedPrefChanged,
+            base::Unretained(this)));
   }
 }
 

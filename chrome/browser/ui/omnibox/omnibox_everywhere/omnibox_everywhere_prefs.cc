@@ -4,9 +4,13 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 
+#include <utility>
+
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -34,7 +38,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kOmniboxEverywhereHotkey, "");
   registry->RegisterIntegerPref(
       kOmniboxEverywhereShowShortcuts,
-      static_cast<int>(ShowShortcutsPrefValue::kUnset));
+      std::to_underlying(ShowShortcutsPrefValue::kUnset));
   registry->RegisterBooleanPref(kOmniboxEverywhereEnabled, true);
   registry->RegisterBooleanPref(kOmniboxEverywhereBackgroundMode, false);
 #if BUILDFLAG(IS_MAC)
@@ -67,6 +71,24 @@ ui::Accelerator GetOmniboxEverywhereHotkey(PrefService* local_state) {
   }
 
   return GetDefaultOmniboxEverywhereHotkey();
+}
+
+bool IsOmniboxEverywhereShortcutsVisible(Profile* profile,
+                                         PrefService* local_state) {
+  if (local_state) {
+    const auto pref_value = static_cast<ShowShortcutsPrefValue>(
+        local_state->GetInteger(kOmniboxEverywhereShowShortcuts));
+    if (pref_value == ShowShortcutsPrefValue::kEnabled) {
+      return true;
+    }
+    if (pref_value == ShowShortcutsPrefValue::kDisabled) {
+      return false;
+    }
+  }
+
+  // Fallback to Customize Chrome / NTP setting.
+  return profile && profile->GetPrefs() &&
+         profile->GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible);
 }
 
 }  // namespace prefs

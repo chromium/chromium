@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -65,9 +66,14 @@ bool IsFuseboxEligible(Profile* profile) {
              ->IsFuseboxEligible();
 }
 
-void AddMostVisitedSourceStrings(content::WebUIDataSource* source) {
+void AddMostVisitedSourceStrings(content::WebUIDataSource* source,
+                                 Profile* profile) {
   source->AddBoolean("omniboxEverywhereMostVisitedEnabled",
                      omnibox::kOmniboxEverywhereMostVisitedParam.Get());
+  source->AddBoolean(
+      "omniboxEverywhereShowShortcuts",
+      omnibox_everywhere::prefs::IsOmniboxEverywhereShortcutsVisible(
+          profile, g_browser_process->local_state()));
 
   static constexpr webui::LocalizedString kMostVisitedStrings[] = {
       {"addLinkTitle", IDS_NTP_CUSTOM_LINKS_ADD_SHORTCUT_TITLE},
@@ -266,7 +272,7 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxShowImageSuggest",
                      omnibox::kShowComposeboxImageSuggestions.Get());
 
-  AddMostVisitedSourceStrings(source);
+  AddMostVisitedSourceStrings(source, profile_);
 
   source->AddBoolean(
       "searchboxShowComposeEntrypoint",
