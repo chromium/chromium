@@ -16,13 +16,13 @@ AutoPlacementType AutoPlacement(const GridArea& position,
                                 GridTrackSizingDirection major_direction) {
   const GridTrackSizingDirection minor_direction =
       (major_direction == kForColumns) ? kForRows : kForColumns;
-  DCHECK(!position.Span(major_direction).IsUntranslatedDefinite() &&
-         !position.Span(minor_direction).IsUntranslatedDefinite());
+  const GridSpan& major_span = position.Span(major_direction);
+  const GridSpan& minor_span = position.Span(minor_direction);
+  CHECK(!major_span.IsUntranslatedDefinite() &&
+        !minor_span.IsUntranslatedDefinite());
 
-  const bool is_major_indefinite =
-      position.Span(major_direction).IsIndefinite();
-  const bool is_minor_indefinite =
-      position.Span(minor_direction).IsIndefinite();
+  const bool is_major_indefinite = major_span.IsIndefinite();
+  const bool is_minor_indefinite = minor_span.IsIndefinite();
 
   if (is_minor_indefinite && is_major_indefinite)
     return AutoPlacementType::kBoth;
@@ -91,6 +91,7 @@ GridPlacementData GridPlacement::RunAutoPlacementAlgorithm(
   ClampGridItemsToFitSubgridArea(kForRows);
 
   // Step 4. Position remaining grid items.
+  const bool has_dense_packing = !HasSparsePacking();
   AutoPlacementCursor placement_cursor(placed_items.FirstPlacedItem());
   for (auto* position : positions_not_locked_to_major_axis) {
     switch (AutoPlacement(*position, major_direction_)) {
@@ -105,7 +106,7 @@ GridPlacementData GridPlacement::RunAutoPlacementAlgorithm(
         NOTREACHED() << "Placement of non-auto placed items and items locked "
                         "to a major axis should've already occurred.";
     }
-    if (!HasSparsePacking()) {
+    if (has_dense_packing) {
       // For dense packing, set the cursor’s major and minor positions to the
       // start-most row and column lines in the implicit grid.
       placement_cursor = AutoPlacementCursor(placed_items.FirstPlacedItem());
@@ -158,6 +159,8 @@ bool GridPlacement::PlaceNonAutoGridItems(
   }
 
   minor_max_end_line_ = IntrinsicEndLine(minor_direction_);
+  const bool subgrid_in_minor_axis =
+      !placement_data_.HasStandaloneAxis(minor_direction_);
 
   placed_items->needs_to_sort_item_vector = false;
   auto& non_auto_placed_items = placed_items->item_vector;
@@ -189,11 +192,6 @@ bool GridPlacement::PlaceNonAutoGridItems(
                                  ? item_minor_span.IndefiniteSpanSize()
                                  : item_minor_span.EndLine());
 
-    // Prevent intrinsic tracks from overflowing the subgrid.
-    if (!placement_data_.HasStandaloneAxis(minor_direction_)) {
-      ClampMinorMaxToSubgridArea();
-    }
-
     if (!has_indefinite_major_span && !has_indefinite_minor_span) {
       auto placed_item = std::make_unique<PlacedGridItem>(
           position, major_direction_, minor_direction_);
@@ -212,6 +210,10 @@ bool GridPlacement::PlaceNonAutoGridItems(
         positions_locked_to_major_axis->emplace_back(&position);
     }
   }
+  // Prevent intrinsic tracks from overflowing the subgrid.
+  if (subgrid_in_minor_axis) {
+    ClampMinorMaxToSubgridArea();
+  }
   return !positions_not_locked_to_major_axis->empty() ||
          !positions_locked_to_major_axis->empty();
 }
@@ -220,6 +222,10 @@ void GridPlacement::PlaceGridItemsLockedToMajorAxis(
     const PositionVector& positions_locked_to_major_axis,
     PlacedGridItemsList* placed_items) {
   DCHECK(placed_items);
+
+  const bool has_sparse_packing = HasSparsePacking();
+  const bool subgrid_in_minor_axis =
+      !placement_data_.HasStandaloneAxis(minor_direction_);
 
   // Mapping between the major axis tracks and the last auto-placed item's end
   // line inserted on that track. This is needed to implement "sparse" packing
@@ -241,7 +247,7 @@ void GridPlacement::PlaceGridItemsLockedToMajorAxis(
 
     AutoPlacementCursor placement_cursor(placed_items->FirstPlacedItem());
     placement_cursor.MoveToMajorLine(major_start_line);
-    if (HasSparsePacking()) {
+    if (has_sparse_packing) {
       if (auto it = minor_cursors.find(major_start_line);
           it != minor_cursors.end()) {
         placement_cursor.MoveToMinorLine(it->value);
@@ -253,12 +259,13 @@ void GridPlacement::PlaceGridItemsLockedToMajorAxis(
         minor_max_end_line_, CursorMovementBehavior::kForceMajorLine);
 
     wtf_size_t minor_end_line = placement_cursor.MinorLine() + minor_span_size;
-    if (HasSparsePacking())
+    if (has_sparse_packing) {
       minor_cursors.Set(major_start_line, minor_end_line);
+    }
     minor_max_end_line_ = std::max(minor_max_end_line_, minor_end_line);
 
     // Prevent intrinsic tracks from overflowing the subgrid.
-    if (!placement_data_.HasStandaloneAxis(minor_direction_)) {
+    if (subgrid_in_minor_axis) {
       ClampMinorMaxToSubgridArea();
     }
 
