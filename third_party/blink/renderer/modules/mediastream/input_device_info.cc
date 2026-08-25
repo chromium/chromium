@@ -85,6 +85,8 @@ void InputDeviceInfo::SetAudioInputCapabilities(
         GetSupportedEchoCancellationModes(
             audio_input_capabilities->parameters.effects(),
             mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE);
+    platform_capabilities_.voice_isolation = GetSupportedVoiceIsolationValues(
+        audio_input_capabilities->parameters.effects());
   }
 }
 
@@ -118,7 +120,12 @@ MediaTrackCapabilities* InputDeviceInfo::getCapabilities() const {
     capabilities->setEchoCancellation(std::move(echo_cancellation));
     capabilities->setAutoGainControl({true, false});
     capabilities->setNoiseSuppression({true, false});
-    capabilities->setVoiceIsolation({true, false});
+    if (platform_capabilities_.voice_isolation.empty()) {
+      capabilities->setVoiceIsolation(GetSupportedVoiceIsolationValues(
+          media::AudioParameters::PlatformEffectsMask::NO_EFFECTS));
+    } else {
+      capabilities->setVoiceIsolation(platform_capabilities_.voice_isolation);
+    }
     // Sample size.
     LongRange* sample_size = LongRange::Create();
     sample_size->setMin(

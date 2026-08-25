@@ -792,19 +792,8 @@ class ProcessingBasedContainer {
       }
     }
     echo_cancellation_modes.push_back(EchoCancellationMode::kDisabled);
-    BoolSet voice_isolation_set;
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-    // The device lacks voice isolation support if the ML model for voice
-    // isolation is not available.
-    if (!(device_parameters.effects() &
-          media::AudioParameters::VOICE_ISOLATION_SUPPORTED)) {
-      voice_isolation_set = BoolSet({false});
-    }
-#else
-    if (!IsVoiceIsolationSupported()) {
-      voice_isolation_set = BoolSet({false});
-    }
-#endif
+    BoolSet voice_isolation_set(
+        GetSupportedVoiceIsolationValues(device_parameters.effects()));
 
     // Apply specific source/track restriction if we haven't already
     // disabled it due to lack of system support.
@@ -1512,6 +1501,14 @@ Vector<EchoCancellationMode> GetSupportedEchoCancellationModes(
     }
   }
   return result;
+}
+
+Vector<bool> GetSupportedVoiceIsolationValues(int platform_effects) {
+  if (IsVoiceIsolationSupported() &&
+      (platform_effects & media::AudioParameters::VOICE_ISOLATION_SUPPORTED)) {
+    return {true, false};
+  }
+  return {false};
 }
 
 bool IsVoiceIsolationSupported() {

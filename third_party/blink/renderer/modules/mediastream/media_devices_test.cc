@@ -9,13 +9,16 @@
 #include <utility>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "media/base/media_permission.h"
+#include "media/base/media_switches.h"
 #include "media/base/output_device_info.h"
 #include "media/base/video_types.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "media/capture/video_capture_types.h"
+#include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -60,6 +63,7 @@
 #include "third_party/blink/renderer/modules/mediastream/input_device_info.h"
 #include "third_party/blink/renderer/modules/mediastream/media_device_info.h"
 #include "third_party/blink/renderer/modules/mediastream/media_permission_testing_platform.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_audio.h"
 #include "third_party/blink/renderer/modules/mediastream/restriction_target.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -172,6 +176,8 @@ class MockMediaDevicesDispatcherHost final
     audio_capabilities->group_id = String(enumeration_[0][1].group_id);
     audio_capabilities->parameters =
         media::AudioParameters::UnavailableDeviceParams();
+    audio_capabilities->parameters.set_effects(
+        media::AudioParameters::PlatformEffectsMask::VOICE_ISOLATION_SUPPORTED);
     audio_capabilities->is_valid = true;
     audio_input_capabilities_.push_back(std::move(audio_capabilities));
 
@@ -567,6 +573,16 @@ void VerifyAudioInputCapabilities(
       EXPECT_TRUE(
           std::ranges::contains(echo_cancellation, EchoCancellationMode::kAll));
     }
+    EXPECT_TRUE(capabilities->hasVoiceIsolation());
+    Vector<bool> voice_isolation = capabilities->voiceIsolation();
+    if (IsVoiceIsolationSupported() &&
+        (effects & media::AudioParameters::VOICE_ISOLATION_SUPPORTED)) {
+      EXPECT_TRUE(std::ranges::contains(voice_isolation, true));
+      EXPECT_TRUE(std::ranges::contains(voice_isolation, false));
+    } else {
+      EXPECT_FALSE(std::ranges::contains(voice_isolation, true));
+      EXPECT_TRUE(std::ranges::contains(voice_isolation, false));
+    }
   }
 }
 
@@ -715,6 +731,8 @@ class MediaDevicesTest : public PageTestBase {
     platform()->RunUntilIdle();
   }
 
+  void RunEnumerateDevicesTest();
+
   void ExpectEnumerateDevicesHistogramReport(
       EnumerateDevicesResult expected_result) {
     histogram_tester_.ExpectTotalCount(
@@ -785,7 +803,7 @@ TEST_F(MediaDevicesTest, GetUserMediaCanBeCalled) {
   VLOG(1) << "Exception message is" << scope.GetExceptionState().Message();
 }
 
-TEST_F(MediaDevicesTest, EnumerateDevices) {
+void MediaDevicesTest::RunEnumerateDevicesTest() {
   V8TestingScope scope;
   auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
   ScriptPromiseTester tester(
@@ -832,6 +850,23 @@ TEST_F(MediaDevicesTest, EnumerateDevices) {
     }
   }
 }
+
+TEST_F(MediaDevicesTest, EnumerateDevices) {
+  RunEnumerateDevicesTest();
+}
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+// Verifies that when voice isolation is supported by the browser (via
+// `kWebRtcVoiceIsolationDenoiser`), `VerifyAudioInputCapabilities()` checks
+// that audio input devices reporting `VOICE_ISOLATION_SUPPORTED` in their
+// platform effects expose `capabilities.voiceIsolation = {true, false}`, while
+// devices without the effect only expose `{false}`.
+TEST_F(MediaDevicesTest, EnumerateDevicesWithVoiceIsolation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebRtcVoiceIsolationDenoiser);
+  RunEnumerateDevicesTest();
+}
+#endif
 
 TEST_F(MediaDevicesTest, EnumerateDevicesAfterConnectionError) {
   V8TestingScope scope;

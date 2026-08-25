@@ -1847,7 +1847,8 @@ MediaStreamSource* UserMediaProcessor::InitializeAudioSourceObject(
       device_parameters.effects(), device.type);
   capabilities.auto_gain_control = {true, false};
   capabilities.noise_suppression = {true, false};
-  capabilities.voice_isolation = {true, false};
+  capabilities.voice_isolation =
+      GetSupportedVoiceIsolationValues(device_parameters.effects());
 
   if (RuntimeEnabledFeatures::RestrictOwnAudioEnabled()) {
     if (device.type == mojom::blink::MediaStreamType::DISPLAY_AUDIO_CAPTURE) {
