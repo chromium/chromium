@@ -51,7 +51,7 @@ class FaviconDatabase {
   // Transactions on the database.
   void BeginTransaction();
   void CommitTransaction();
-  int transaction_nesting() const { return db_.transaction_nesting(); }
+  bool HasActiveTransactions() const { return db_.HasActiveTransactions(); }
   void RollbackTransaction();
 
   // Vacuums the database. This will cause sqlite to defragment and collect

@@ -295,7 +295,7 @@ void FaviconDatabase::RollbackTransaction() {
 }
 
 void FaviconDatabase::Vacuum() {
-  DCHECK(db_.transaction_nesting() == 0)
+  DCHECK(!db_.HasActiveTransactions())
       << "Can not have a transaction when vacuuming.";
   std::ignore = db_.Execute("VACUUM");
 }

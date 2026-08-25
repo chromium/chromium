@@ -85,8 +85,7 @@ FaviconBackend::~FaviconBackend() {
 
 void FaviconBackend::Commit() {
   db_->CommitTransaction();
-  DCHECK_EQ(db_->transaction_nesting(), 0)
-      << "Somebody left a transaction open";
+  DCHECK(!db_->HasActiveTransactions()) << "Somebody left a transaction open";
   db_->BeginTransaction();
 }
 
@@ -884,8 +883,8 @@ bool FaviconBackend::ClearAllExcept(const std::vector<GURL>& kept_page_urls) {
   // Vacuum to remove all the pages associated with the dropped tables. There
   // must be no transaction open on the table when we do this. We assume that
   // our long-running transaction is open, so we complete it and start it again.
-  DCHECK_EQ(db_->transaction_nesting(), 1);
   db_->CommitTransaction();
+  DCHECK(!db_->HasActiveTransactions());
   db_->Vacuum();
   db_->BeginTransaction();
   return true;
