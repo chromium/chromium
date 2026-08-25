@@ -57,6 +57,8 @@ import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsAnimationListener;
 import org.chromium.ui.interpolators.Interpolators;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.TokenHolder;
 
@@ -157,6 +159,9 @@ class BottomSheet extends BottomSheetView
 
     /** For detecting scroll and fling events on the bottom sheet. */
     private final BottomSheetSwipeDetector mGestureDetector;
+
+    /** PropertyModel for MVC presentation layer. */
+    private final PropertyModel mModel;
 
     /** The animator used to move the sheet to a fixed state when released by the user. */
     private @Nullable ValueAnimator mSettleAnimator;
@@ -277,6 +282,9 @@ class BottomSheet extends BottomSheetView
         mGestureDetector = new BottomSheetSwipeDetector(context, this);
         mIsTouchEnabled = true;
         setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
+
+        mModel = new PropertyModel.Builder(BottomSheetProperties.ALL_KEYS).build();
+        PropertyModelChangeProcessor.create(mModel, this, BottomSheetViewBinder::bind);
     }
 
     /** @param reporter A means of reporting an exception without crashing. */
@@ -1316,7 +1324,7 @@ class BottomSheet extends BottomSheetView
                 state == SheetState.SCROLLING
                         ? mCurrentState != SheetState.SCROLLING ? mCurrentState : SheetState.NONE
                         : SheetState.NONE; // Not scrolling anymore.
-        setContainerTouchEnabled(state != SheetState.SCROLLING);
+        mModel.set(BottomSheetProperties.CONTAINER_TOUCH_ENABLED, state != SheetState.SCROLLING);
         mCurrentState = state;
 
         if (mCurrentState == SheetState.HALF || mCurrentState == SheetState.FULL) {
@@ -1665,8 +1673,8 @@ class BottomSheet extends BottomSheetView
                     PointerIcon.getSystemIcon(getContext(), PointerIcon.TYPE_HAND));
         }
         updateBackgroundColor();
-        setSheetLayoutMode(mode);
-        setGlowSpec(getGlowSpecOrDefault());
+        mModel.set(BottomSheetProperties.SHEET_LAYOUT_MODE, mode);
+        mModel.set(BottomSheetProperties.GLOW_SPEC, getGlowSpecOrDefault());
         for (BottomSheetObserver o : mObservers) {
             o.onSheetContentChanged(content);
         }
@@ -1946,12 +1954,12 @@ class BottomSheet extends BottomSheetView
     private void updateSheetBgColorTint(@ColorInt int newColor) {
         if (mSheetBgColor == newColor) return;
         mSheetBgColor = newColor;
-        setSheetBackgroundColor(mSheetBgColor);
+        mModel.set(BottomSheetProperties.BACKGROUND_COLOR, mSheetBgColor);
     }
 
     @VisibleForTesting
     void updateBackgroundGlow() {
-        setGlowSpec(getGlowSpecOrDefault());
+        mModel.set(BottomSheetProperties.GLOW_SPEC, getGlowSpecOrDefault());
     }
 
     private void ensureContentIsWrapped(boolean animate) {
