@@ -30,6 +30,8 @@
 enum class IOSGeminiInvocationPageType;
 @protocol LocationBarBadgeCommands;
 
+@class ZeroStateSuggestion;
+
 namespace gemini {
 enum class FloatyUpdateSource;
 }
@@ -74,8 +76,14 @@ class GeminiTabHelper : public web::WebStateObserver,
   // Cancels any ongoing page context generation.
   void CancelPageContextGeneration();
 
-  // Executes the zero-state suggestions flow.
-  void ExecuteZeroStateSuggestions(
+  // Fetches zero-state suggestions for the current WebState returning
+  // ZeroStateSuggestion objects.
+  void FetchZeroStateSuggestions(
+      base::OnceCallback<void(NSArray<ZeroStateSuggestion*>* suggestions)>
+          callback);
+
+  // Fetches zero-state suggestions for the current WebState returning strings.
+  void FetchZeroStateSuggestionsAsStrings(
       base::OnceCallback<void(NSArray<NSString*>* suggestions)> callback);
 
   // Deactivates the Gemini associated to this WebState.

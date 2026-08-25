@@ -93,7 +93,7 @@ TEST_F(ZeroStateSuggestionsServiceTest, TestClearCachedSuggestions) {
   base::test::TestFuture<NSArray<ZeroStateSuggestion*>*> future;
   service_->FetchZeroStateSuggestions(future.GetCallback());
 
-  EXPECT_NSEQ(nil, future.Get());
+  EXPECT_NSEQ(@[], future.Get());
 }
 
 // Tests that populated cache correctly returns suggestions.
