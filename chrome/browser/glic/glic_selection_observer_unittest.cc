@@ -120,6 +120,7 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
 
   // Expose methods for testing.
   using GlicSelectionObserver::OnInputEvent;
+  using GlicSelectionObserver::OnPageContextEligibilityChanged;
   using GlicSelectionObserver::RenderFrameCreated;
   using GlicSelectionObserver::RenderFrameDeleted;
 
@@ -1077,6 +1078,103 @@ TEST_F(GlicSelectionObserverTest, DynamicEligibilityChangeClearsContext) {
 
   EXPECT_TRUE(observer->send_context_called());
   EXPECT_EQ(u"", *observer->last_sent_context());
+}
+
+TEST_F(GlicSelectionObserverTest,
+       EligibilityChangePushesContextWhenPanelShowing) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicSelectionPrompt);
+
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  tabs::MockTabInterface mock_tab;
+  MockBrowserWindowInterface mock_bwi;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillRepeatedly(testing::Return(&mock_bwi));
+
+  // Selection happens while ineligible and panel is showing.
+  SetMockEligibility(false);
+  observer->set_call_base_update_selection_state(true);
+  observer->set_mock_panel_showing(true);
+
+  observer->OnTextSelectionChanged(nullptr, u"Selected Text");
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+
+  EXPECT_FALSE(observer->send_context_called());
+
+  // Eligibility changes to eligible with panel open: context is sent.
+  SetMockEligibility(true);
+  observer->OnPageContextEligibilityChanged(
+      optimization_guide::PageContextEligibilityStatus::kEligible);
+
+  EXPECT_TRUE(observer->send_context_called());
+  EXPECT_EQ(u"Selected Text", *observer->last_sent_context());
+}
+
+TEST_F(GlicSelectionObserverTest,
+       EligibilityChangeDoesNotPushContextWhenPanelClosed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicSelectionPrompt);
+
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  tabs::MockTabInterface mock_tab;
+  MockBrowserWindowInterface mock_bwi;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillRepeatedly(testing::Return(&mock_bwi));
+
+  // Selection happens while ineligible and panel is closed.
+  SetMockEligibility(false);
+  observer->set_call_base_update_selection_state(true);
+  observer->set_mock_panel_showing(false);
+
+  observer->OnTextSelectionChanged(nullptr, u"Selected Text");
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+
+  EXPECT_FALSE(observer->send_context_called());
+
+  // Eligibility changes to eligible with panel closed: context is NOT sent.
+  SetMockEligibility(true);
+  observer->OnPageContextEligibilityChanged(
+      optimization_guide::PageContextEligibilityStatus::kEligible);
+
+  EXPECT_FALSE(observer->send_context_called());
+}
+
+TEST_F(GlicSelectionObserverTest,
+       EligibilityChangeDoesNotPushContextWhenNullBrowserWindow) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicSelectionPrompt);
+
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  tabs::MockTabInterface mock_tab;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillRepeatedly(testing::Return(nullptr));
+
+  SetMockEligibility(false);
+  observer->set_call_base_update_selection_state(true);
+  observer->set_mock_panel_showing(true);
+
+  observer->OnTextSelectionChanged(nullptr, u"Selected Text");
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+
+  EXPECT_FALSE(observer->send_context_called());
+
+  SetMockEligibility(true);
+  observer->OnPageContextEligibilityChanged(
+      optimization_guide::PageContextEligibilityStatus::kEligible);
+
+  EXPECT_FALSE(observer->send_context_called());
 }
 
 TEST_F(GlicSelectionObserverTest, IdentityManagerIntegration) {

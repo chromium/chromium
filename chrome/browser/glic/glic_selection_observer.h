@@ -108,6 +108,11 @@ class GlicSelectionObserver
   // Virtual for testing.
   virtual bool IsShakeTriggerEnabled() const;
 
+  // Called when the page context eligibility changes.
+  // Virtual for testing.
+  virtual void OnPageContextEligibilityChanged(
+      optimization_guide::PageContextEligibilityStatus status);
+
   // content::WebContentsObserver:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
@@ -171,9 +176,6 @@ class GlicSelectionObserver
       shared_highlighting::LinkGenerationReadyStatus ready_status);
 
   void RequestLinkGeneration(content::RenderFrameHost* rfh);
-
-  void OnPageContextEligibilityChanged(
-      optimization_guide::PageContextEligibilityStatus status);
   void CreatePageContextEligibilityAPI(std::string account);
   void OnPageContextEligibilityAPILoaded(
       std::string account,

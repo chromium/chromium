@@ -1021,6 +1021,19 @@ void GlicSelectionObserver::OnPageContextEligibilityChanged(
       SendAdditionalContextToPanel(tab_interface, std::u16string());
       has_sent_selection_context_ = false;
     }
+  } else if (status ==
+                 optimization_guide::PageContextEligibilityStatus::kEligible &&
+             !last_selected_text_.empty()) {
+    auto* tab_interface =
+        tabs::TabInterface::MaybeGetFromContents(web_contents());
+    if (!tab_interface) {
+      return;
+    }
+    BrowserWindowInterface* bwi = tab_interface->GetBrowserWindowInterface();
+    if (bwi && IsPanelShowing(tab_interface, bwi)) {
+      SendAdditionalContextToPanel(tab_interface, last_selected_text_);
+      has_sent_selection_context_ = true;
+    }
   }
 }
 

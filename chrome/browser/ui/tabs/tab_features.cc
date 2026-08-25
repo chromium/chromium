@@ -303,6 +303,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
             tab, *page_action_controller_);
   }
 
+  page_context_eligibility_helper_ =
+      GetUserDataFactory().CreateInstance<tabs::PageContextEligibilityHelper>(
+          tab, tab);
+
   // Features that are only enabled for normal browser windows. By default most
   // features should be instantiated in this block.
   if (tab.IsInNormalWindow()) {
@@ -663,10 +667,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     back_to_opener_controller_ =
         std::make_unique<back_to_opener::BackToOpenerController>(tab);
   }
-
-  page_context_eligibility_helper_ =
-      GetUserDataFactory().CreateInstance<tabs::PageContextEligibilityHelper>(
-          tab, tab);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
