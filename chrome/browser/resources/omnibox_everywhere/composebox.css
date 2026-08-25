@@ -28,13 +28,22 @@
   --text-input-inline-start-spacing: 24px;
   --cr-searchbox-match-padding-inline-start: 24px;
   --text-input-max-height: 190px;
-  --fade-duration: 100ms;
-  --color-composebox-type-ahead: var(--color-omnibox-foreground-disabled);
+  --color-composebox-type-ahead: var(
+      --color-searchbox-placeholder,
+      var(--color-omnibox-foreground-disabled, #5f6368));
   --color-composebox-type-ahead-chip: var(
-      --color-omnibox-composebox-chip-background);
-  --color-composebox-font-light: var(--color-omnibox-text);
+      --color-omnibox-composebox-chip-background,
+      rgba(26, 115, 232, 0.1));
+  --color-composebox-font-light: var(
+      --color-searchbox-foreground,
+      var(--color-omnibox-text, #1f1f1f));
+  --color-composebox-font: var(--color-composebox-font-light);
+  --color-composebox-input-icon: var(--color-composebox-type-ahead);
+  --color-searchbox-results-foreground: var(--color-composebox-font-light);
+  --color-searchbox-results-icon: var(--color-composebox-input-icon);
   --color-composebox-submit-button-background: var(
-      --color-omnibox-composebox-submit-button-background);
+      --color-omnibox-composebox-submit-button-background,
+      #1a73e8);
 }
 
 #composebox {

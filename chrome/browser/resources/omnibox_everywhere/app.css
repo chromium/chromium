@@ -13,7 +13,8 @@
   width: 100%;
 }
 
-omnibox-everywhere-omnibox {
+omnibox-everywhere-omnibox,
+omnibox-everywhere-composebox {
   --cr-searchbox-height: 48px;
   --cr-searchbox-icon-left-position: 16px;
   --cr-searchbox-icon-top-position: 0;
