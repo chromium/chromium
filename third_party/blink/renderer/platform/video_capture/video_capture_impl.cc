@@ -595,7 +595,9 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
 #endif
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     // These SharedImages may be used for zero-copy of VideoFrames into WebGPU.
-    usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
+    if (video_frame_init_data.is_webgpu_compatible) {
+      usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
+    }
 #endif
 
     shared_image = sii->CreateSharedImage(
@@ -638,7 +640,7 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
   frame->set_metadata(video_frame_init_data.ready_buffer->info->metadata);
   frame->metadata().read_lock_fences_enabled = true;
   frame->metadata().is_webgpu_compatible =
-      video_frame_init_data.is_webgpu_compatible;
+      shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ);
   video_frame_init_data.frame = frame;
   return true;
 }
