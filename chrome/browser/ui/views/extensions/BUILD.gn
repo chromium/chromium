@@ -457,6 +457,7 @@ if (is_chromeos) {
       "//base",
       "//chrome/browser/media_galleries",
       "//ui/base/metadata",
+      "//ui/base/mojom:ui_base_types",
       "//ui/views",
     ]
     deps = [
@@ -466,9 +467,10 @@ if (is_chromeos) {
       "//chrome/browser/ui/views:layout_provider",
       "//components/constrained_window",
       "//components/web_modal",
+      "//content/public/browser",
       "//ui/base",
-      "//ui/base/mojom:ui_base_types",
       "//ui/gfx",
+      "//ui/gfx/geometry",
       "//ui/native_theme",
     ]
   }
