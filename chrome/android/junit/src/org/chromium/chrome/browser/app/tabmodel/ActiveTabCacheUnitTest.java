@@ -24,6 +24,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.android.util.concurrent.PausedExecutorService;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -31,6 +33,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.WebContentsState;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 import java.io.File;
@@ -52,7 +55,11 @@ public class ActiveTabCacheUnitTest {
     private static final String INCOGNITO_SUFFIX = "_incognito";
 
     @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabModel mTabModel;
     @Mock private CipherFactory mCipherFactory;
+
+    private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
+            ObservableSuppliers.createNullable();
 
     private final PausedExecutorService mExecutor = new PausedExecutorService();
     private ActiveTabCache mActiveTabCache;
@@ -259,6 +266,29 @@ public class ActiveTabCacheUnitTest {
                 Tab.INVALID_TAB_ID, getSharedPreferences().getInt(fileName, Tab.INVALID_TAB_ID));
         mExecutor.runAll();
         assertFalse(getCacheFile(true).exists());
+    }
+
+    @Test
+    public void testStartTracking_NullCurrentTab_PreservesCachedActiveTab() {
+        initActiveTabCache(/* hasCipherFactory= */ false);
+
+        Tab tab = mock(Tab.class);
+        when(tab.getId()).thenReturn(1);
+        when(tab.isOffTheRecord()).thenReturn(false);
+        TabState tabState = createMockTabState();
+        TabStateExtractor.setTabStateForTesting(1, tabState);
+
+        mActiveTabCache.saveActiveTab(tab);
+        mExecutor.runAll();
+        assertTrue(getCacheFile(false).exists());
+
+        when(mTabModel.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+
+        mActiveTabCache.startTracking(/* incognito= */ false);
+        mExecutor.runAll();
+
+        assertTrue(getCacheFile(false).exists());
     }
 
     private void initActiveTabCache(boolean hasCipherFactory) {

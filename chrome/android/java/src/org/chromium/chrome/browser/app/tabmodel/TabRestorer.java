@@ -572,9 +572,6 @@ class TabRestorer {
         LoadedTabState[] loadedTabStates = mData.getLoadedTabStates();
         if (loadedTabStates.length == 0) return;
 
-        int activeTabIndex = mData.getActiveTabIndex();
-        if (activeTabIndex < 0 || activeTabIndex >= loadedTabStates.length) return;
-
         for (LoadedTabState loadedTabState : loadedTabStates) {
             if (loadedTabState.tabId != mCachedRestoredActiveTabId) continue;
             loadedTabState.destroy();

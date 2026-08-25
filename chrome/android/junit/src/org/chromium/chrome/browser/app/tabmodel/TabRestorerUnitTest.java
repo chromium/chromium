@@ -433,6 +433,33 @@ public class TabRestorerUnitTest {
         verify(mDelegate, never()).onActiveTabRestored(anyBoolean());
     }
 
+    @Test
+    public void testRestoreTab_CachedActiveTabWithNegativeActiveTabIndex() {
+        LoadedTabState cachedState = createLoadedTabState(1, UrlConstants.GOOGLE_URL);
+        mRestorer.onCachedActiveTabLoaded(cachedState);
+
+        LoadedTabState dbState1 = createLoadedTabState(1, UrlConstants.GOOGLE_URL);
+        LoadedTabState dbState2 = createLoadedTabState(2, UrlConstants.GOOGLE_URL);
+        when(mStorageLoadedData.getLoadedTabStates())
+                .thenReturn(new LoadedTabState[] {dbState1, dbState2});
+        when(mStorageLoadedData.getActiveTabIndex()).thenReturn(-1);
+
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getId()).thenReturn(2);
+        when(tab2.getUrl()).thenReturn(new GURL(UrlConstants.GOOGLE_URL));
+        when(mTabCreator.createFrozenTab(any(), eq(2), eq(1))).thenReturn(tab2);
+
+        mRestorer.onDataLoaded(mStorageLoadedData);
+        mRestorer.start(/* restoreActiveTabImmediately= */ false);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertTrue(cachedState.isClaimedOrDestroyed());
+        assertTrue(dbState1.isClaimedOrDestroyed());
+        assertTrue(dbState2.isClaimedOrDestroyed());
+        verify(mDelegate).onFinished(eq(false));
+    }
+
     private LoadedTabState createLoadedTabState(int id, String url) {
         TabState tabState = new TabState();
         tabState.url = new GURL(url);

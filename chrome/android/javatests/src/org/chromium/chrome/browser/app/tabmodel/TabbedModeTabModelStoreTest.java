@@ -683,6 +683,61 @@ public class TabbedModeTabModelStoreTest {
     @EnableFeatures(
             ChromeFeatureList.TAB_STORAGE_SQLITE_PROTOTYPE
                     + ":phase/"
+                    + TabStateStorageFlagHelper.PHASE_AUTHORITATIVE_READ_SOURCE)
+    public void testAuthoritativeStoreActivityRecreationCrash() throws Exception {
+        setupActivityStore(StoreType.TAB_STATE_STORE);
+
+        TabModelOrchestrator orchestrator =
+                mActivityTestRule.getActivity().getTabModelOrchestratorSupplier().get();
+        assertEquals(
+                Integer.valueOf(StoreType.TAB_STATE_STORE),
+                runOnUiThreadBlocking(orchestrator::getAuthoritativeStoreType));
+        assertTrue(orchestrator.getTabPersistentStore() instanceof TabStateStore);
+
+        // Load a new tab to create tabs in the model.
+        mActivityTestRule.loadUrlInNewTab(
+                mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
+        @TabId int newTabId = getActiveTabId();
+
+        // Save active tab in ActiveTabCache and persist state in TabStateStore.
+        runOnUiThreadBlocking(
+                () -> {
+                    ActiveTabCache cache =
+                            new ActiveTabCache(
+                                    WINDOW_TAG,
+                                    mActivityTestRule.getActivity().getTabModelSelector(),
+                                    null);
+                    cache.saveActiveTab(mActivityTestRule.getActivity().getActivityTab());
+                    orchestrator.saveState();
+                });
+
+        // Recreate activity to trigger restoration from ActiveTabCache + authoritative
+        // TabStateStore.
+        mActivityTestRule.recreateActivity();
+
+        ChromeTabbedActivity newActivity = mActivityTestRule.getActivity();
+        TabModelSelector newSelector = newActivity.getTabModelSelector();
+
+        CriteriaHelper.pollUiThread(
+                newSelector::isTabStateInitialized,
+                "Recreated activity tab state never initialized");
+
+        TabModel newModel = runOnUiThreadBlocking(() -> newSelector.getModel(false));
+        CriteriaHelper.pollUiThread(
+                () -> runOnUiThreadBlocking(() -> newModel.getCount() >= 2),
+                "Tabs were not properly restored on app load");
+
+        // Verify restored tab state.
+        assertNotNull(
+                "Newly added tab should be restored after activity restart",
+                runOnUiThreadBlocking(() -> newModel.getTabById(newTabId)));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(
+            ChromeFeatureList.TAB_STORAGE_SQLITE_PROTOTYPE
+                    + ":phase/"
                     + TabStateStorageFlagHelper.PHASE_ONLY_SHADOW)
     public void testNonAuthoritativeStoreAppLoadAndRestart() throws Exception {
         setupActivityStore(StoreType.LEGACY);

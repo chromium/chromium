@@ -113,7 +113,6 @@ public class ActiveTabCache {
         Callback<@Nullable Tab> onActiveTabChanged = getActiveTabChangedCallback(incognito);
 
         currentTabSupplier.addSyncObserverAndCallIfNonNull(onActiveTabChanged);
-        onActiveTabChanged.onResult(currentTabSupplier.get());
     }
 
     public void stopTracking(boolean incognito) {
