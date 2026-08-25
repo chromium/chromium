@@ -410,7 +410,9 @@ class GlicButton : public GlicBaseShim<T>,
     T::AddedToWidget();
     // Button starts in WidthState::kNormal. Measure that state's width and set
     // `start_width_` and `end_width_` for CalculatePreferredSize().
-    normal_width_ = PreferredSize().width();
+    if (!normal_width_) {
+      normal_width_ = PreferredSize().width();
+    }
     start_width_ = normal_width_;
     end_width_ = normal_width_;
 
