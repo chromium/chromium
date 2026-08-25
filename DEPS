@@ -906,6 +906,20 @@ deps = {
       },
     ],
   },
+  # Pull NPM dependencies for chromium-bidi.
+  'src/third_party/chromium-bidi/node_modules': {
+    'dep_type': 'gcs',
+    'bucket': 'chromium-nodejs',
+    'objects': [
+      {
+        'object_name': 'chromium-bidi/e7aab7e5ac29d62f5c023d7e8ba5eedc09a11945a88b0e174fc42f64c0820071',
+        'sha256sum': 'e7aab7e5ac29d62f5c023d7e8ba5eedc09a11945a88b0e174fc42f64c0820071',
+        'size_bytes': 20034775,
+        'generation': 1787231196468746,
+        'output_file': 'node_modules.tar.gz',
+      },
+    ],
+  },
   'src/third_party/llvm-build/Release+Asserts': {
     'dep_type': 'gcs',
     'bucket': 'chromium-browser-clang',

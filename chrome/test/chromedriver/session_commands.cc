@@ -429,7 +429,7 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
     base::FilePath bidi_mapper_path =
         cmd_line->GetSwitchValuePath("bidi-mapper-path");
 
-    std::string mapper_script = kMapperScript;
+    std::string mapper_script = kMappertabScript;
 
     if (!bidi_mapper_path.empty()) {
       VLOG(0) << "Custom BiDi mapper path specified: " << bidi_mapper_path;
