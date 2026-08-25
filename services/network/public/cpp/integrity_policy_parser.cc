@@ -4,7 +4,13 @@
 
 #include "services/network/public/cpp/integrity_policy_parser.h"
 
-#include "base/strings/cstring_view.h"
+#include <optional>
+#include <string>
+#include <string_view>
+#include <utility>
+
+#include "base/check.h"
+#include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
@@ -14,23 +20,22 @@
 namespace network {
 namespace {
 
-void HandleKeyValue(base::cstring_view key,
-                    const net::structured_headers::ParameterizedMember& value,
-                    base::cstring_view header_name,
+void HandleKeyValue(const std::string_view key,
+                    net::structured_headers::ParameterizedMember&& value,
+                    const std::string_view header_name,
                     IntegrityPolicy& policy) {
   if (!value.member_is_inner_list) {
     policy.parsing_errors.emplace_back(
-        base::StringPrintf("The %s value is not a list.", header_name.c_str()));
+        base::StringPrintf("The %s value is not a list.", header_name));
     return;
   }
-  for (const auto& parameter : value.member) {
-    const std::string* parameter_value = parameter.item.GetIfToken();
+  for (auto& parameter : value.member) {
+    std::string* parameter_value = parameter.item.GetIfToken();
     if (!parameter_value) {
       std::string serialized =
           net::structured_headers::SerializeItem(parameter.item).value_or("");
-      policy.parsing_errors.emplace_back(
-          base::StringPrintf("The %s item '%s' is not a token.",
-                             header_name.c_str(), serialized.c_str()));
+      policy.parsing_errors.emplace_back(base::StringPrintf(
+          "The %s item '%s' is not a token.", header_name, serialized));
       continue;
     }
     if (key == "blocked-destinations") {
@@ -40,7 +45,7 @@ void HandleKeyValue(base::cstring_view key,
       } else {
         policy.parsing_errors.emplace_back(
             base::StringPrintf("The %s destination '%s' is not supported.",
-                               header_name.c_str(), parameter_value->c_str()));
+                               header_name, *parameter_value));
       }
     } else if (key == "sources") {
       if (*parameter_value == "inline") {
@@ -48,13 +53,13 @@ void HandleKeyValue(base::cstring_view key,
       } else {
         policy.parsing_errors.emplace_back(
             base::StringPrintf("The %s source '%s' is not supported.",
-                               header_name.c_str(), parameter_value->c_str()));
+                               header_name, *parameter_value));
       }
     } else if (key == "endpoints") {
-      policy.endpoints.emplace_back(*parameter_value);
+      policy.endpoints.emplace_back(std::move(*parameter_value));
     } else {
       policy.parsing_errors.emplace_back(base::StringPrintf(
-          "Unrecognized %s in %s header.", key.c_str(), header_name.c_str()));
+          "Unrecognized %s in %s header.", key, header_name));
     }
   }
 }
@@ -67,9 +72,10 @@ IntegrityPolicy ParseIntegrityPolicyFromHeaders(
   CHECK(
       base::FeatureList::IsEnabled(network::features::kIntegrityPolicyScript));
   IntegrityPolicy parsed_policy;
-  const std::string header_name = (type == IntegrityPolicyHeaderType::kEnforce)
-                                      ? "Integrity-Policy"
-                                      : "Integrity-Policy-Report-Only";
+  const std::string_view header_name =
+      type == IntegrityPolicyHeaderType::kEnforce
+          ? "Integrity-Policy"
+          : "Integrity-Policy-Report-Only";
 
   const std::string integrity_policy_header =
       headers.GetNormalizedHeader(header_name).value_or("");
@@ -81,9 +87,9 @@ IntegrityPolicy ParseIntegrityPolicyFromHeaders(
       integrity_policy_dictionary =
           net::structured_headers::ParseDictionary(integrity_policy_header);
   if (!integrity_policy_dictionary) {
-    parsed_policy.parsing_errors.emplace_back(base::StringPrintf(
-        "The %s value \"%s\" is not a dictionary.", header_name.c_str(),
-        integrity_policy_header.c_str()));
+    parsed_policy.parsing_errors.emplace_back(
+        base::StringPrintf("The %s value \"%s\" is not a dictionary.",
+                           header_name, integrity_policy_header));
     return parsed_policy;
   }
 
@@ -91,13 +97,11 @@ IntegrityPolicy ParseIntegrityPolicyFromHeaders(
   // Loop through the policy dictionary
   //
   // https://datatracker.ietf.org/doc/html/rfc9421#section-4-4
-  for (const net::structured_headers::DictionaryMember& policy_entry :
-       integrity_policy_dictionary.value()) {
-    if (policy_entry.first == "sources") {
+  for (auto& [key, value] : integrity_policy_dictionary.value()) {
+    if (key == "sources") {
       has_sources_key = true;
     }
-    HandleKeyValue(policy_entry.first, policy_entry.second, header_name,
-                   parsed_policy);
+    HandleKeyValue(key, std::move(value), header_name, parsed_policy);
   }
   if (!has_sources_key) {
     // If the `sources` key is missing from the header, add "inline" as the
