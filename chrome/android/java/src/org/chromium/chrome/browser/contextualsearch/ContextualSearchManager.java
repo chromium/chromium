@@ -1803,10 +1803,11 @@ public class ContextualSearchManager
                 mInternalStateController.notifyStartingWorkOn(InternalState.RESOLVING);
 
                 String selection = mSelectionController.getSelectedText();
-                assert !TextUtils.isEmpty(selection);
-
                 WebContents baseWebContents = getBaseWebContents();
-                if (baseWebContents != null && mContext != null && mContext.canResolve()) {
+                if (!TextUtils.isEmpty(selection)
+                        && baseWebContents != null
+                        && mContext != null
+                        && mContext.canResolve()) {
                     issueResolveRequest();
                 } else {
                     // Something went wrong and we couldn't resolve.
@@ -1814,7 +1815,7 @@ public class ContextualSearchManager
                     return;
                 }
 
-                // If the we were unable to start the resolve, we've hidden the UI and set the
+                // If we were unable to start the resolve, we've hidden the UI and set the
                 // context to null.
                 if (mContext == null || mSearchPanel == null) return;
 

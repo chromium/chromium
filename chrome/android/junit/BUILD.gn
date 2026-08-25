@@ -709,6 +709,7 @@ if (is_android) {
     sources = [
       "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchContextTest.java",
       "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchInternalStateTest.java",
+      "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchManagerUnitTest.java",
       "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchPolicyUnitTest.java",
       "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchSelectionControllerTest.java",
       "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchTabHelperTest.java",
