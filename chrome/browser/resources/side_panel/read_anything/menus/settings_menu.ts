@@ -47,6 +47,12 @@ const MENU_ITEM_DATA: Record<SettingsOption, SettingsItem> = {
     title: 'appearanceTitle',
     itemType: SettingsItemType.MENU,
   },
+  [SettingsOption.AUDIO]: {
+    id: SettingsOption.AUDIO,
+    icon: 'read-anything:volume-up',
+    title: 'audioTitle',
+    itemType: SettingsItemType.MENU,
+  },
   [SettingsOption.COLOR]: {
     id: SettingsOption.COLOR,
     icon: loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
@@ -291,8 +297,8 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       SettingsOption.APPEARANCE,
       SettingsOption.MEDIA,
       SettingsOption.TEXT,
+      SettingsOption.AUDIO,
       SettingsOption.VOICE_SELECTION,
-      SettingsOption.VOICE_HIGHLIGHT,
     ];
 
     if (this.visualBrowserProxy_.isReadAnythingTranslateEntryPointEnabled()) {

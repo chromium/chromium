@@ -6,6 +6,7 @@ import './icons.html.js';
 import '../read_aloud/voice_selection_menu.js';
 import '../menus/simple_action_menu.js';
 import '../menus/appearance_menu.js';
+import '../menus/audio_menu.js';
 import '../menus/media_menu.js';
 import '../menus/color_menu.js';
 import '../menus/font_menu.js';
@@ -39,6 +40,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {LineFocusMovement, LineFocusStyle, SettingsPrefs} from '../content/read_anything_types.js';
 import {DEFAULT_SETTINGS, SettingsOption, ToolbarEvent} from '../content/read_anything_types.js';
 import type {AppearanceMenuElement} from '../menus/appearance_menu.js';
+import type {AudioMenuElement} from '../menus/audio_menu.js';
 import type {ColorMenuElement} from '../menus/color_menu.js';
 import type {FontMenuElement} from '../menus/font_menu.js';
 import type {HighlightMenuElement} from '../menus/highlight_menu.js';
@@ -69,6 +71,7 @@ export interface ReadAnythingToolbarElement {
   $: {
     rateMenu: RateMenuElement,
     appearanceMenu: AppearanceMenuElement,
+    audioMenu: AudioMenuElement,
     mediaMenu: MediaMenuElement,
     colorMenu: ColorMenuElement,
     lineSpacingMenu: LineSpacingMenuElement,
@@ -940,6 +943,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   get settingsMenu_(): Partial<Record<SettingsOption, ToolbarMenu>> {
     return {
       [SettingsOption.APPEARANCE]: this.$.appearanceMenu,
+      [SettingsOption.AUDIO]: this.$.audioMenu,
       [SettingsOption.MEDIA]: this.$.mediaMenu,
       [SettingsOption.COLOR]: this.$.colorMenu,
       [SettingsOption.VOICE_HIGHLIGHT]: this.$.highlightMenu,

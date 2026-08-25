@@ -300,6 +300,13 @@ export function getHtml(this: ReadAnythingToolbarElement) {
       .presentationState="${this.presentationState}"
       @close-all-menus="${this.onCloseAllMenus_}">
   </appearance-menu>
+  <audio-menu
+      id="audioMenu"
+      class="settings-submenu"
+      non-modal
+      .settingsPrefs="${this.settingsPrefs}"
+      @close-all-menus="${this.onCloseAllMenus_}">
+  </audio-menu>
   <text-menu
       id="textMenu"
       class="settings-submenu"

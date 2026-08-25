@@ -31,6 +31,7 @@ export {removeExtraneousElementsFrom} from './content/readability_content_proces
 export {ReadabilityImageClassifier} from './content/readability_image_classifier.js';
 export {SelectionController} from './content/selection_controller.js';
 export type {AppearanceMenuElement} from './menus/appearance_menu.js';
+export type {AudioMenuElement} from './menus/audio_menu.js';
 export type {ColorMenuElement} from './menus/color_menu.js';
 export type {FontMenuElement} from './menus/font_menu.js';
 export type {GroupedActionMenuElement} from './menus/grouped_action_menu.js';

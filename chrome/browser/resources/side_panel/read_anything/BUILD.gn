@@ -34,6 +34,8 @@ build_webui("build") {
     "content/selection_controller.ts",
     "menus/appearance_menu.html.ts",
     "menus/appearance_menu.ts",
+    "menus/audio_menu.html.ts",
+    "menus/audio_menu.ts",
     "menus/color_menu.html.ts",
     "menus/color_menu.ts",
     "menus/font_menu.html.ts",

@@ -83,6 +83,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechControllerContent) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, AudioMenu) {
+  RunSidePanelTest("side_panel/read_anything/audio_menu_test.js",
+                   "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, HighlightMenu) {
   RunSidePanelTest("side_panel/read_anything/highlight_menu_test.js",
                    "mocha.run()");

@@ -60,6 +60,7 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"lineSpacingTitle", IDS_READING_MODE_LINE_SPACING_COMBOBOX_LABEL},
       {"fontNameTitle", IDS_READING_MODE_FONT_NAME_COMBOBOX_LABEL},
       {"appearanceTitle", IDS_READING_MODE_APPEARANCE_LABEL},
+      {"audioTitle", IDS_READING_MODE_AUDIO_LABEL},
       {"textSettingsTitle", IDS_READING_MODE_TEXT_STYLE_LABEL},
       {"mediaTitle", IDS_READING_MODE_MEDIA_LABEL},
       {"themeTitle", IDS_READING_MODE_COLORS_COMBOBOX_LABEL},
