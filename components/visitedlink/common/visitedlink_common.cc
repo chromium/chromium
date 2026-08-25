@@ -87,12 +87,10 @@ bool VisitedLinkCommon::IsVisited(Fingerprint fingerprint) const {
     // Search for fingerprint match.
     if (cur_fingerprint == kNullFingerprint || cur_fingerprint == fingerprint) {
       // Log the number of collisions encountered during the search for
-      // matches in the case of pseudo-partitioned usage.
-      if (is_pseudo_partitioned_) {
-        UMA_HISTOGRAM_COUNTS_100(
-            "History.VisitedLinks.WebView.LookupCollisionCount",
-            collision_count);
-      }
+      // matches.
+      UMA_HISTOGRAM_COUNTS_100(
+          "History.VisitedLinks.WebView.LookupCollisionCount2",
+          collision_count);
       return cur_fingerprint == fingerprint;  // Match or end of sequence found.
     }
 

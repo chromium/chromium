@@ -644,6 +644,45 @@ TEST_F(VisitedLinkTest, ResizeErrorHandling) {
   ASSERT_TRUE(writer_->IsVisited(url));
 }
 
+TEST_F(VisitedLinkTest, WebViewUnpartitionedHistogramLogging) {
+  ASSERT_TRUE(InitVisited(0, true, true));
+
+  VisitedLinkReader reader;
+  reader.UpdateVisitedLinks(writer_->mapped_table_memory().region.Duplicate());
+  g_readers.push_back(&reader);
+
+  base::HistogramTester histogram_tester;
+
+  GURL url("https://example.com");
+
+  // Before lookup, histogram should be empty.
+  histogram_tester.ExpectTotalCount(
+      "History.VisitedLinks.WebView.LookupCollisionCount2", 0);
+
+  // Lookup in reader (which is NOT pseudo-partitioned).
+  // Since DB is empty, this should be a fail lookup.
+  // It should log 0 collisions because the slot it checks will be empty.
+  EXPECT_FALSE(reader.IsVisited(url));
+
+  histogram_tester.ExpectUniqueSample(
+      "History.VisitedLinks.WebView.LookupCollisionCount2", 0, 1);
+
+  // Add the link.
+  writer_->AddURL(url);
+
+  // Lookup again. This should be a success lookup.
+  // It should log 0 collisions because it should find it on the first try.
+  EXPECT_TRUE(reader.IsVisited(url));
+
+  // We expect two samples now, both should be 0.
+  histogram_tester.ExpectBucketCount(
+      "History.VisitedLinks.WebView.LookupCollisionCount2", 0, 2);
+  histogram_tester.ExpectTotalCount(
+      "History.VisitedLinks.WebView.LookupCollisionCount2", 2);
+
+  g_readers.clear();
+}
+
 class PartitionedVisitedLinkTest : public testing::Test {
  public:
   PartitionedVisitedLinkTest() {
@@ -1359,7 +1398,7 @@ TEST_F(PseudoPartitionedVisitedLinkTest, HistogramLogging) {
 
   // Before lookup, histogram should be empty.
   histogram_tester.ExpectTotalCount(
-      "History.VisitedLinks.WebView.LookupCollisionCount", 0);
+      "History.VisitedLinks.WebView.LookupCollisionCount2", 0);
 
   // Lookup in reader (which is pseudo-partitioned).
   // Since DB is empty, this should be a fail lookup.
@@ -1367,7 +1406,7 @@ TEST_F(PseudoPartitionedVisitedLinkTest, HistogramLogging) {
   EXPECT_FALSE(reader.IsVisited(url));
 
   histogram_tester.ExpectUniqueSample(
-      "History.VisitedLinks.WebView.LookupCollisionCount", 0, 1);
+      "History.VisitedLinks.WebView.LookupCollisionCount2", 0, 1);
 
   // Add the link.
   partitioned_writer_->AddPseudoPartitionedVisitedLink(url);
@@ -1379,9 +1418,9 @@ TEST_F(PseudoPartitionedVisitedLinkTest, HistogramLogging) {
 
   // We expect two samples now, both should be 0.
   histogram_tester.ExpectBucketCount(
-      "History.VisitedLinks.WebView.LookupCollisionCount", 0, 2);
+      "History.VisitedLinks.WebView.LookupCollisionCount2", 0, 2);
   histogram_tester.ExpectTotalCount(
-      "History.VisitedLinks.WebView.LookupCollisionCount", 2);
+      "History.VisitedLinks.WebView.LookupCollisionCount2", 2);
 }
 
 class VisitCountingContext : public mojom::VisitedLinkNotificationSink {
