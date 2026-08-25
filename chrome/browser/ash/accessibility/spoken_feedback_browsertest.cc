@@ -76,6 +76,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/pref_names.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
@@ -95,6 +96,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ime/candidate_window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/dialog_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
@@ -104,6 +106,8 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/widget/widget.h"
 
 using KeyEvent = ::extensions::api::braille_display_private::KeyEvent;
@@ -3278,6 +3282,34 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackWithMagnifierTest,
     WaitForMagnifierViewportOnBounds(focus_bounds);
   });
 
+  sm()->Replay();
+}
+
+IN_PROC_BROWSER_TEST_P(LoggedInSpokenFeedbackTest,
+                       BubbleDialogSingleTitleAnnouncement) {
+  chromevox_test_utils()->EnableChromeVox();
+  sm()->Call([this]() {
+    auto dialog_model =
+        ui::DialogModel::Builder()
+            .SetTitle(u"Sample Notification")
+            .AddOkButton(base::DoNothing(),
+                         ui::DialogModel::Button::Params().SetLabel(u"OK"))
+            .Build();
+    constrained_window::ShowBrowserModal(
+        std::move(dialog_model), browser()->GetWindow()->GetNativeWindow());
+  });
+  sm()->ExpectSpeech("Sample Notification");
+  sm()->ExpectSpeech("Dialog");
+  sm()->ExpectNextSpeechIsNotPattern("*window*");
+  sm()->ExpectSpeech("OK");
+  sm()->ExpectSpeech("Button");
+  sm()->Call([this]() { SendKeyPressWithSearch(ui::VKEY_LEFT); });
+  sm()->ExpectSpeech("Sample Notification");
+  sm()->ExpectSpeech("Heading");
+  sm()->Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm()->ExpectSpeech("OK");
+  sm()->ExpectSpeech("Button");
+  sm()->ExpectHadNoRepeatedSpeech();
   sm()->Replay();
 }
 

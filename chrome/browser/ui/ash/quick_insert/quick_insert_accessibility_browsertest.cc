@@ -962,7 +962,6 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   });
 
   sm()->ExpectSpeechPattern("Quick Insert");
-  sm()->ExpectSpeechPattern(", window");
   sm()->ExpectSpeechPattern("Quick Insert");
   sm()->ExpectSpeechPattern("Status");
   sm()->ExpectSpeechPattern("Inserting selected result");

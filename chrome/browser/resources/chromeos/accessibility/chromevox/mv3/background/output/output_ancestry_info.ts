@@ -131,6 +131,16 @@ export class OutputAncestryInfo {
         contextFirst = [];
         rest = [];
       }
+      if (node.role === RoleType.WINDOW) {
+        const child = ancestors[i + 1];
+        if (child &&
+            (child.role === RoleType.DIALOG ||
+             child.role === RoleType.ALERT_DIALOG) &&
+            (!node.name || child.name === node.name)) {
+          continue;
+        }
+      }
+
       // TODO(b/314203187): Not null asserted, check that this is correct.
       if ((OutputRoleInfo[node.role!] || {}).contextOrder ===
           OutputContextOrder.FIRST) {

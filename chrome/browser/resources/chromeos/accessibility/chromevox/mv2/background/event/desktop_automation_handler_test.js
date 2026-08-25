@@ -507,7 +507,7 @@ TEST_F(
             .call(() => {
               EventGenerator.sendKeyPress(KeyCode.ESCAPE, {search: true});
             })
-            .expectSpeech('Task Manager, window')
+            .expectSpeech('Task Manager', 'Dialog')
             // The Task Manager Refresh has a TabbedPane UI which splits system
             // processes and user-facing processes (tabs & extensions). Expect
             // that the selected tab is focused when the window is open.
