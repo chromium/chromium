@@ -9,7 +9,7 @@ import type {LocationIconElement} from './location_icon.js';
 export function getHtml(this: LocationIconElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<button id="container" type="button"
+<button id="button" type="button"
     title="${this.state.tooltip}"
     aria-label="${this.state.accessibilityState.label}"
     aria-description="${this.state.accessibilityState.description}"
@@ -27,7 +27,7 @@ export function getHtml(this: LocationIconElement) {
     <icon-from-table .iconHandle="${this.state.icon}">
     </icon-from-table>
   `}
-  ${this.state.text ? html`<span id="text">${this.state.text}</span>` : ''}
+  ${html`<span id="text">${this.displayText}</span>`}
 </button>
 <!--_html_template_end_-->`;
   // clang-format on

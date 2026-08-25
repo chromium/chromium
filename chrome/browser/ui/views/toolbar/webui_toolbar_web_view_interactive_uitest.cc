@@ -114,10 +114,10 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
                }),
       InstrumentNonTabWebView(kWebUIToolbarWebViewId, kInstrumentedWebViewId,
                               /*wait_for_ready=*/true),
-      ExecuteJsAt(kWebUIToolbarWebViewId,
-                  DeepQuery{"toolbar-app", "location-bar", "location-icon",
-                            "#container"},
-                  "el => el.click()"),
+      ExecuteJsAt(
+          kWebUIToolbarWebViewId,
+          DeepQuery{"toolbar-app", "location-bar", "location-icon", "#button"},
+          "el => el.click()"),
       WaitForShow(PageInfoBubbleViewBase::kPageInfoBubbleElementIdentifier));
 }
 

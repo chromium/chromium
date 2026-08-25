@@ -23,7 +23,7 @@ import {TimerHelper} from './timer_helper.js';
 
 export interface LocationIconElement {
   $: {
-    container: HTMLButtonElement,
+    button: HTMLButtonElement,
   };
 }
 
@@ -70,6 +70,7 @@ export class LocationIconElement extends LocationIconElementBase {
         reflect: true,
         attribute: 'glow-up-active',
       },
+      displayText: {type: String},
     };
   }
 
@@ -104,6 +105,7 @@ export class LocationIconElement extends LocationIconElementBase {
 
   accessor glowUpEnabled: boolean = loadTimeData.getBoolean('enableGlowUp');
   accessor glowUpActive: boolean = false;
+  accessor displayText: string = '';
 
   private dragStartX_: number = 0;
   private dragStartY_: number = 0;
@@ -116,7 +118,7 @@ export class LocationIconElement extends LocationIconElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.registerHelpBubble('kLocationIconElementId', this.$.container, {
+    this.registerHelpBubble('kLocationIconElementId', this.$.button, {
       onHighlightChanged: (highlighted: boolean) => {
         // Manually toggle the DOM attribute to bypass Lit's asynchronous
         // update batching, ensuring the style updates synchronously without
@@ -146,6 +148,16 @@ export class LocationIconElement extends LocationIconElementBase {
       const iconInfo = IconTable.getInstance().getIconInfo(this.state.icon);
       this.isSecureIcon_ =
           iconInfo?.urlOrName === 'webui-toolbar:page_info_custom';
+
+      if (this.state.text) {
+        // Intentionally do not clear displayText when state.text becomes empty.
+        // Caching the previous text allows the CSS has-text closing animation
+        // to linearly squish and interpolate the old DOM width down to 0,
+        // rather than abruptly snapping when the inner string is deleted.
+        // The text remains hidden since opacity drops to 0 when hasText is
+        // false.
+        this.displayText = this.state.text;
+      }
     }
 
     this.glowUpActive = this.computeGlowUpActive_(changedProperties);
@@ -219,18 +231,18 @@ export class LocationIconElement extends LocationIconElementBase {
       this.activePointerId_ = e.pointerId;
 
       PointerProxyImpl.getInstance().setPointerCapture(
-          this.$.container, e.pointerId);
+          this.$.button, e.pointerId);
 
       this.eventTracker_.add(
-          this.$.container, 'pointermove',
+          this.$.button, 'pointermove',
           (e: PointerEvent) => this.onContainerPointerMove_(e));
       this.eventTracker_.add(
-          this.$.container, 'pointerup', () => this.onContainerPointerUp_());
+          this.$.button, 'pointerup', () => this.onContainerPointerUp_());
       this.eventTracker_.add(
-          this.$.container, 'pointercancel',
+          this.$.button, 'pointercancel',
           () => this.onContainerPointerCancel_());
       this.eventTracker_.add(
-          this.$.container, 'lostpointercapture',
+          this.$.button, 'lostpointercapture',
           () => this.onContainerLostPointerCapture_());
     }
   }
@@ -267,7 +279,7 @@ export class LocationIconElement extends LocationIconElementBase {
   private finishDrag_() {
     if (this.activePointerId_ !== null) {
       PointerProxyImpl.getInstance().releasePointerCapture(
-          this.$.container, this.activePointerId_);
+          this.$.button, this.activePointerId_);
       this.activePointerId_ = null;
     }
     this.eventTracker_.removeAll();
