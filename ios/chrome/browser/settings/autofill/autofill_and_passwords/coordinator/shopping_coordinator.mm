@@ -5,12 +5,15 @@
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/shopping_coordinator.h"
 
 #import "base/check_op.h"
+#import "base/metrics/user_metrics.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_coordinator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/shopping_mediator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/shopping_table_view_controller.h"
+#import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/coordinator/suggestions_from_gemini_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -18,7 +21,8 @@
 
 @interface ShoppingCoordinator () <AutofillAIEntityEditCoordinatorDelegate,
                                    AutofillAIBaseMediatorDelegate,
-                                   ShoppingTableViewControllerDelegate>
+                                   ShoppingTableViewControllerDelegate,
+                                   SuggestionsFromGeminiCoordinatorDelegate>
 @end
 
 @implementation ShoppingCoordinator {
@@ -33,6 +37,9 @@
 
   // Coordinator for displaying a selected shopping entity (read-only).
   AutofillAIEntityEditCoordinator* _entityEditCoordinator;
+
+  // Coordinator for Suggestions from Gemini.
+  SuggestionsFromGeminiCoordinator* _suggestionsFromGeminiCoordinator;
 }
 
 - (instancetype)initWithBaseNavigationController:
@@ -63,6 +70,9 @@
   _mediator = [[ShoppingMediator alloc]
       initWithEntityDataManager:entityDataManager
                     prefService:self.browser->GetProfile()->GetPrefs()];
+  _mediator.shouldShowSuggestionsFromGemini =
+      autofill::ShouldShowPersonalContextAutofillSetting(
+          self.browser->GetProfile());
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
   _viewController.mutator = _mediator;
@@ -72,6 +82,7 @@
 
 - (void)stop {
   [self stopEntityEditCoordinator];
+  [self stopSuggestionsFromGeminiCoordinator];
 
   [_mediator disconnect];
   _mediator = nil;
@@ -86,6 +97,14 @@
     (ShoppingTableViewController*)controller {
   CHECK_EQ(_viewController, controller);
   [self.delegate shoppingCoordinatorDidRemove:self];
+}
+
+- (void)shoppingTableViewControllerDidSelectSuggestionsFromGemini:
+    (ShoppingTableViewController*)controller {
+  CHECK_EQ(_viewController, controller);
+  base::RecordAction(base::UserMetricsAction(
+      "PersonalContext.Settings.EntryPoint.ShoppingSettings"));
+  [self startSuggestionsFromGeminiCoordinator];
 }
 
 #pragma mark - AutofillAIBaseMediatorDelegate
@@ -107,7 +126,32 @@
   [self stopEntityEditCoordinator];
 }
 
+#pragma mark - SuggestionsFromGeminiCoordinatorDelegate
+
+- (void)suggestionsFromGeminiCoordinatorDidRemove:
+    (SuggestionsFromGeminiCoordinator*)coordinator {
+  CHECK_EQ(_suggestionsFromGeminiCoordinator, coordinator);
+  [self stopSuggestionsFromGeminiCoordinator];
+}
+
 #pragma mark - Private
+
+// Starts the Suggestions from Gemini sub-coordinator.
+- (void)startSuggestionsFromGeminiCoordinator {
+  [self stopSuggestionsFromGeminiCoordinator];
+  _suggestionsFromGeminiCoordinator = [[SuggestionsFromGeminiCoordinator alloc]
+      initWithBaseNavigationController:_baseNavigationController
+                               browser:self.browser];
+  _suggestionsFromGeminiCoordinator.delegate = self;
+  [_suggestionsFromGeminiCoordinator start];
+}
+
+// Stops and disconnects the Suggestions from Gemini sub-coordinator.
+- (void)stopSuggestionsFromGeminiCoordinator {
+  [_suggestionsFromGeminiCoordinator stop];
+  _suggestionsFromGeminiCoordinator.delegate = nil;
+  _suggestionsFromGeminiCoordinator = nil;
+}
 
 // Starts the coordinator responsible for displaying the shopping entity
 // with the specified ID.

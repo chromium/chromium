@@ -22,6 +22,10 @@
                        enabled:(BOOL)enabled
                        managed:(BOOL)managed;
 
+// Sets whether Suggestions from Gemini is shown and enabled.
+- (void)setShouldShowSuggestionsFromGemini:(BOOL)shouldShow
+                                   enabled:(BOOL)enabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_AUTOFILL_AND_PASSWORDS_UI_SHOPPING_CONSUMER_H_

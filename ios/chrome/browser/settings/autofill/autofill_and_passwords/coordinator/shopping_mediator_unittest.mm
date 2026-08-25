@@ -14,6 +14,7 @@
 #import "components/autofill/core/common/dense_set.h"
 #import "components/optimization_guide/core/feature_registry/feature_registration.h"
 #import "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#import "components/personal_context/core/personal_context_prefs.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
@@ -68,6 +69,7 @@ class ShoppingMediatorTest : public PlatformTest {
 // Tests that setting the consumer does not crash.
 TEST_F(ShoppingMediatorTest, SetsConsumerValuesSafe) {
   OCMExpect([consumer_ setShoppingToggleState:YES enabled:YES managed:NO]);
+  OCMExpect([consumer_ setShouldShowSuggestionsFromGemini:NO enabled:YES]);
   mediator_.consumer = consumer_;
   [consumer_ verify];
 }
@@ -206,4 +208,31 @@ TEST_F(ShoppingMediatorTest, AutofillSettingsPageMappingIsSynced) {
       EXPECT_NE(page, AutofillSettingsPage::kShopping);
     }
   }
+}
+
+// Tests that a preference change for personal context updates the consumer.
+TEST_F(ShoppingMediatorTest, PersonalContextPrefChangeUpdatesConsumer) {
+  profile_->GetPrefs()->SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      false);
+  OCMExpect([consumer_ setShoppingToggleState:YES enabled:YES managed:NO]);
+  OCMExpect([consumer_ setShouldShowSuggestionsFromGemini:NO enabled:NO]);
+  mediator_.consumer = consumer_;
+  [consumer_ verify];
+
+  OCMExpect([consumer_ setShouldShowSuggestionsFromGemini:NO enabled:YES]);
+  profile_->GetPrefs()->SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      true);
+  [consumer_ verify];
+}
+
+// Tests that setting suggestions show state updates the consumer.
+TEST_F(ShoppingMediatorTest, SuggestionsFromGeminiShowUpdatesConsumer) {
+  OCMExpect([consumer_ setShoppingToggleState:YES enabled:YES managed:NO]);
+  OCMExpect([consumer_ setShouldShowSuggestionsFromGemini:YES enabled:YES]);
+
+  mediator_.shouldShowSuggestionsFromGemini = YES;
+  mediator_.consumer = consumer_;
+  [consumer_ verify];
 }
