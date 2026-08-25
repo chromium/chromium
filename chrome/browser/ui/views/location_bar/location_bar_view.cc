@@ -176,6 +176,13 @@ int IncrementalMinimumWidth(const views::View* view) {
 // The padding between the content setting icons and other trailing decorations.
 constexpr int kContentSettingIntraItemPadding = 8;
 
+// Capsule dimensions and padding for the elevated page action toolbar.
+constexpr int kPageActionCapsuleEdgePadding = 2;
+constexpr int kPageActionCapsuleVerticalPadding = 2;
+
+// Default margins for standard page actions when capsule is inactive.
+constexpr int kPageActionDefaultChipEdgePadding = 5;
+constexpr int kPageActionDefaultIconEdgePadding = 4;
 }  // namespace
 
 using content::WebContents;
@@ -835,16 +842,35 @@ void LocationBarView::Layout(PassKey) {
     }
   };
 
-  // When the AIM page action is shown as the right-most page action in the
-  // location bar, it should be positioned flush against the right edge of the
-  // location bar.
-  constexpr int kTrailingEdgePaddingForAim = 5;
-  add_trailing_decoration(page_action_container_,
-                          /*intra_item_padding=*/0,
-                          /*edge_padding=*/
-                          GetPageActionInfo().is_aim_last_visible_page_action
-                              ? kTrailingEdgePaddingForAim
-                              : trailing_decorations_edge_padding);
+  if (features::IsPageActionsElevatedToolbarEnabled()) {
+    if (page_action_container_ && page_action_container_->GetVisible()) {
+      const bool is_capsule_active = page_action_container_->IsCapsuleActive();
+      const int capsule_height =
+          page_actions::PageActionContainerView::GetCapsuleHeight();
+      const int edge_padding =
+          is_capsule_active ? kPageActionCapsuleEdgePadding
+                            : (page_action_container_->IsFirstVisibleViewChip()
+                                   ? kPageActionDefaultChipEdgePadding
+                                   : kPageActionDefaultIconEdgePadding);
+      trailing_decorations.AddDecoration(
+          is_capsule_active ? kPageActionCapsuleVerticalPadding
+                            : vertical_padding,
+          is_capsule_active ? capsule_height : location_height,
+          /*auto_collapse=*/false, /*max_fraction=*/0,
+          /*intra_item_padding=*/0, edge_padding, page_action_container_);
+    }
+  } else {
+    // When the AIM page action is shown as the right-most page action in the
+    // location bar, it should be positioned flush against the right edge of the
+    // location bar.
+    constexpr int kTrailingEdgePaddingForAim = 5;
+    add_trailing_decoration(page_action_container_,
+                            /*intra_item_padding=*/0,
+                            /*edge_padding=*/
+                            GetPageActionInfo().is_aim_last_visible_page_action
+                                ? kTrailingEdgePaddingForAim
+                                : trailing_decorations_edge_padding);
+  }
   add_trailing_decoration(ai_mode_hint_label_, /*intra_item_padding=*/0,
                           /*edge_padding=*/trailing_decorations_edge_padding);
   for (ContentSettingImageView* view :

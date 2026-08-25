@@ -790,3 +790,88 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest,
                            ->GetActiveWebContents()
                            ->GetLastCommittedURL());
 }
+
+class LocationBarViewElevatedToolbarBrowserTest
+    : public LocationBarViewBrowserTest {
+ public:
+  LocationBarViewElevatedToolbarBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kPageActionsElevatedToolbar);
+  }
+
+  ~LocationBarViewElevatedToolbarBrowserTest() override = default;
+
+ protected:
+  LocationBarView* GetLocationBarView() {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->GetLocationBarView();
+  }
+
+  void EnsureLayout() { views::test::RunScheduledLayout(GetLocationBarView()); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(LocationBarViewElevatedToolbarBrowserTest,
+                       LayoutWithElevatedToolbarActiveAndInactive) {
+  LocationBarView* location_bar = GetLocationBarView();
+  ASSERT_TRUE(location_bar);
+
+  auto* tab_features = browser()->GetActiveTabInterface()->GetTabFeatures();
+  ASSERT_TRUE(tab_features);
+  auto* controller = tab_features->page_action_controller();
+  ASSERT_TRUE(controller);
+
+  // Hide any default actions to test clean transitions.
+  for (views::View* child : location_bar->page_action_container()->children()) {
+    if (auto* page_action_view =
+            views::AsViewClass<page_actions::PageActionView>(child)) {
+      controller->Hide(page_action_view->GetActionId());
+    }
+  }
+  EnsureLayout();
+
+  // Layout when no page actions are visible.
+  EXPECT_FALSE(location_bar->page_action_container()->IsCapsuleActive());
+  EnsureLayout();
+
+  // Make Zoom page action visible (capsule inactive, not a chip).
+  auto* zoom_action =
+      actions::ActionManager::Get().FindAction(kActionShowZoomBubble);
+  ASSERT_TRUE(zoom_action);
+  zoom_action->SetVisible(true);
+  zoom_action->SetEnabled(true);
+  controller->Show(kActionShowZoomBubble);
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents);
+  ASSERT_TRUE(zoom_controller);
+  zoom_controller->SetZoomLevel(
+      blink::ZoomFactorToZoomLevel(/*zoom_factor=*/1.5));
+
+  EnsureLayout();
+  EXPECT_TRUE(location_bar->page_action_container()->GetVisible());
+  EXPECT_FALSE(location_bar->page_action_container()->IsCapsuleActive());
+  EXPECT_FALSE(location_bar->page_action_container()->IsFirstVisibleViewChip());
+
+  // Make a second action visible (capsule active).
+  auto* cookie_action =
+      actions::ActionManager::Get().FindAction(kActionShowCookieControls);
+  if (cookie_action) {
+    cookie_action->SetVisible(true);
+    cookie_action->SetEnabled(true);
+    controller->Show(kActionShowCookieControls);
+    EnsureLayout();
+    EXPECT_TRUE(location_bar->page_action_container()->IsCapsuleActive());
+  }
+
+  // Test suggestion chip branch when capsule is inactive.
+  if (cookie_action) {
+    controller->Hide(kActionShowCookieControls);
+  }
+  controller->ShowSuggestionChip(kActionShowZoomBubble);
+  EnsureLayout();
+  EXPECT_TRUE(location_bar->page_action_container()->IsFirstVisibleViewChip());
+  EXPECT_FALSE(location_bar->page_action_container()->IsCapsuleActive());
+}
