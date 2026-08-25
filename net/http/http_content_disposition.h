@@ -54,14 +54,6 @@ class NET_EXPORT HttpContentDisposition {
     HAS_SINGLE_QUOTED_FILENAME = 1 << 7,
   };
 
-  // NOTE: Until features::kOnlyParseFirstContentDisposition is removed, new
-  // consumers should use EnumerateHeader() to get the first Content-Disposition
-  // header and then pass it to the constructor that takes a std::string_view.
-  // Once that's removed, however, this constructor should be used. This comment
-  // should be removed when that happens.
-  // TODO(crbug.com/519218483): Remove this comment in late Q3/Q4 2026, when
-  // the feature is removed.
-  //
   // Preferred constructor. Uses the first Content-Disposition header in the
   // response (retrieved using `HttpResponseHeaders::EnumerateHeader`). Only
   // looks at the first Content-Disposition header. The HTTP code guarantees

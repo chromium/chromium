@@ -8,8 +8,6 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
-#include "net/base/features.h"
 #include "net/http/http_response_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -593,25 +591,6 @@ TEST_P(HttpContentDispositionTest, MultipleContentDisposition) {
     EXPECT_EQ(HttpContentDisposition::INLINE, content_disposition.type());
     EXPECT_EQ("abc.pdf", content_disposition.filename());
   }
-}
-
-// Tests that disabling `kOnlyParseFirstContentDisposition` correctly
-// reintroduces a bug, in case we have to shut it off temporarily due to
-// breakage.
-TEST_P(HttpContentDispositionTest, OnlyParseFirstContentDispositionDisabled) {
-  std::string content_disposition_string = "attachment, attachment";
-  HttpContentDisposition content_disposition =
-      CreateContentDisposition(content_disposition_string, "utf-8");
-  EXPECT_TRUE(content_disposition.is_attachment());
-  EXPECT_EQ("", content_disposition.filename());
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kOnlyParseFirstContentDisposition);
-  HttpContentDisposition content_disposition2 =
-      CreateContentDisposition(content_disposition_string, "utf-8");
-  EXPECT_FALSE(content_disposition2.is_attachment());
-  EXPECT_EQ("", content_disposition2.filename());
 }
 
 }  // namespace net
