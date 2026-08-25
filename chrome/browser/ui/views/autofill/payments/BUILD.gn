@@ -455,3 +455,20 @@ source_set("virtual_card_enroll_bubble_views") {
     "//url",
   ]
 }
+
+source_set("save_and_fill_view_desktop") {
+  public = [ "save_and_fill_view_desktop.h" ]
+  sources = [ "save_and_fill_view_desktop.cc" ]
+  public_deps = [
+    ":save_and_fill_dialog",
+    "//base",
+    "//components/autofill/core/browser",
+    "//ui/views",
+  ]
+  deps = [
+    "//chrome/browser/ui/autofill/payments",
+    "//chrome/browser/ui/tabs:tabs_public",
+    "//components/tabs:public",
+    "//content/public/browser",
+  ]
+}

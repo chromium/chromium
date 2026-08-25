@@ -90,6 +90,19 @@ source_set("bubble_anchor_util_views") {
   ]
 }
 
+source_set("dotted_icon") {
+  public = [ "dotted_icon.h" ]
+  sources = [ "dotted_icon.cc" ]
+  public_deps = [ "//skia" ]
+  deps = [
+    "//cc/paint",
+    "//ui/gfx",
+    "//ui/gfx/animation",
+    "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
+  ]
+}
+
 source_set("layout_provider") {
   sources = [
     "chrome_layout_provider.h",

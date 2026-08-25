@@ -102,6 +102,7 @@ source_set("browser_tests") {
   deps = [
     ":progress_delay",
     ":web_app_blocked_migration_infobar_delegate",
+    ":web_app_install_progress_view",
     ":web_app_update_identity_view",
     "//base",
     "//chrome/browser/picture_in_picture",
@@ -201,5 +202,17 @@ source_set("web_app_icon_name_and_origin_view") {
     "//third_party/abseil-cpp:absl",
     "//ui/base",
     "//ui/gfx",
+  ]
+}
+
+source_set("web_app_install_progress_view") {
+  public = [ "web_app_install_progress_view.h" ]
+  sources = [ "web_app_install_progress_view.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/views/web_apps/isolated_web_apps:installer_base",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/views",
   ]
 }
