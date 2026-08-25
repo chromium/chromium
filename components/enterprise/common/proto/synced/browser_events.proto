@@ -210,7 +210,6 @@ message TriggeredRuleInfo {
     WARN = 2;
     BLOCK = 3;
     FORCE_SAVE_TO_CLOUD = 4;
-    // TODO(b/325455508): Add JUSTIFICATION_REQUIRED Implementation.
     JUSTIFICATION_REQUIRED = 5;
     KEEP_IN_MANAGED_CHROME = 6;
   }
@@ -682,7 +681,7 @@ message SafeBrowsingInterstitialEvent {
   // the event.
   repeated UrlInfo referrers = 21;
 
-    // The title of the tab when the interstitial event is logged.
+  // The title of the tab when the interstitial event is logged.
   string tab_title = 22
       // copybara:datapol_begin
       // [
@@ -690,7 +689,6 @@ message SafeBrowsingInterstitialEvent {
       // ]
       // copybara:datapol_end
       ;
-
 }
 
 // A DLP (Data Loss Prevention) event where sensitive data may have leaked.
