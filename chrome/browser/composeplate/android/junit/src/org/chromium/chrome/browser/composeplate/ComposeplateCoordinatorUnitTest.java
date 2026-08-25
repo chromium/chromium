@@ -33,7 +33,9 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
@@ -68,6 +70,7 @@ public class ComposeplateCoordinatorUnitTest {
         when(mParentView.findViewById(R.id.composeplate_view)).thenReturn(mComposeplateView);
         when(mParentView.getResources()).thenReturn(mContext.getResources());
         when(mComposeplateView.getContext()).thenReturn(mContext);
+        when(mComposeplateView.getResources()).thenReturn(mContext.getResources());
         when(mComposeplateView.findViewById(R.id.incognito_button)).thenReturn(mIncognitoButton);
         when(mComposeplateView.findViewById(R.id.composeplate_button))
                 .thenReturn(mComposeplateButton);
@@ -162,6 +165,33 @@ public class ComposeplateCoordinatorUnitTest {
         assertEquals(colorStateList, mPropertyModel.get(ComposeplateProperties.COLOR_STATE_LIST));
         assertEquals(textStyleResId, mPropertyModel.get(ComposeplateProperties.TEXT_STYLE_RES_ID));
         verify(mComposeplateView).applyWhiteBackground(eq(false));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NTP_AURORA + ":change_button_color/true")
+    public void testSetLayoutWidth_buttonColorEnabled_phone() {
+        verifyComposeplateWidth(
+                /* lateralMargin= */ mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.composeplate_view_lateral_margin));
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.NTP_AURORA + ":change_button_color/true")
+    public void testSetLayoutWidth_buttonColorEnabled_tablet() {
+        verifyComposeplateWidth(
+                /* lateralMargin= */ mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.composeplate_view_lateral_margin));
+    }
+
+    private void verifyComposeplateWidth(int lateralMargin) {
+        ViewGroup.MarginLayoutParams layoutParams = new ViewGroup.MarginLayoutParams(100, 100);
+        when(mComposeplateView.getLayoutParams()).thenReturn(layoutParams);
+
+        int searchBoxWidth = 400;
+        mCoordinator.setLayoutWidth(searchBoxWidth);
+
+        assertEquals(searchBoxWidth - 2 * lateralMargin, layoutParams.width);
     }
 
     private View.OnClickListener getCapturedOnClickListener(View button) {

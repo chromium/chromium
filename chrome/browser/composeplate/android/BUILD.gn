@@ -50,6 +50,7 @@ android_resources("java_resources") {
     "java/res/drawable/composeplate_button_background.xml",
     "java/res/drawable/composeplate_button_foreground.xml",
     "java/res/layout/composeplate_view_layout.xml",
+    "java/res/values-sw600dp/dimens.xml",
     "java/res/values/dimens.xml",
     "java/res/values/styles.xml",
   ]
