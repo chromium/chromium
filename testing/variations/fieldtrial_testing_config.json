@@ -20953,6 +20953,24 @@
             ]
         }
     ],
+    "WebUIInProcessResourceLoadingV2": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebUIInProcessResourceLoadingV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebUIReloadButtonStudy": [
         {
             "platforms": [
@@ -20982,7 +21000,6 @@
                         "SendGPUChannelEarly",
                         "SkipIPCChannelPausingForNonGuests",
                         "WebUIBundledCodeCache",
-                        "WebUIInProcessResourceLoadingV2",
                         "WebUIReloadButton",
                         "WebUIToolbarFrameEvictionOptOut",
                         "WebiumMetricsMapping"
