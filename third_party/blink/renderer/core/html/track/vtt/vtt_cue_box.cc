@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -119,23 +118,14 @@ void VTTCueBox::ApplyCSSProperties(
   SetInlineStyleProperty(CSSPropertyID::kTextAlign,
                          display_parameters.text_align);
 
-  // TODO(foolip): The position adjustment for non-snap-to-lines cues has
-  // been removed from the spec:
+  // For non-snap-to-lines cues, the top/left CSS properties already position
+  // the cue box's alignment edge at the computed line/position percentage
+  // (see CalculateDisplayParameters). No transform is needed; the old
+  // translate(-x%, -y%) adjustment was removed from the spec:
   // https://www.w3.org/Bugs/Public/show_bug.cgi?id=19178
   if (std::isnan(display_parameters.snap_to_lines_position)) {
-    // 10.13.1 Set up x and y:
-    // Note: x and y are set through the CSS left and top above.
-    // 10.13.2 Position the boxes in boxes such that the point x% along the
-    // width of the bounding box of the boxes in boxes is x% of the way
-    // across the width of the video's rendering area, and the point y%
-    // along the height of the bounding box of the boxes in boxes is y%
-    // of the way across the height of the video's rendering area, while
-    // maintaining the relative positions of the boxes in boxes to each
-    // other.
-    SetInlineStyleProperty(
-        CSSPropertyID::kTransform,
-        Format("translate(-{:.2f}%, -{:.2f}%)", position.x(), position.y()));
-    // Longhands of `white-space: pre`.
+    // Longhands of `white-space: pre` (prevents unwanted wrapping for
+    // percentage-positioned cues).
     SetInlineStyleProperty(CSSPropertyID::kWhiteSpaceCollapse,
                            CSSValueID::kPreserve);
     SetInlineStyleProperty(CSSPropertyID::kTextWrapMode, CSSValueID::kNowrap);

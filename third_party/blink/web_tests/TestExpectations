@@ -1854,9 +1854,6 @@ crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/selectors/cue/vertical_ruby-position.html [ Failure ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/bidi/vertical_lr.html [ Failure ]
 
-# snap-to-line.html: headless shell renders this flakily until the non-snap
-# positioning fix later in this series, which removes the line again.
-crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/snap-to-line.html [ Failure Pass ]
 # Cross-product delta: these pass on content_shell but fail on headless shell
 # (cue rendering differs). TODO(crbug.com/1012242): file dedicated headless bug.
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/align_center_position_gt_50_size_gt_maximum_size.html [ Failure Pass ]
