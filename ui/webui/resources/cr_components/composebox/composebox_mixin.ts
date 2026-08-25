@@ -1336,6 +1336,9 @@ export const ComposeboxEmbedderMixin =
               ...this.addedTabsIds.entries(),
               [tabUpload.tabId, attachment.uuid],
             ]);
+            if (!tabUpload.delayUpload) {
+              this.addToPendingUploads(attachment.uuid);
+            }
             this.focusInput();
             return attachment;
           } catch (e) {
