@@ -69,7 +69,7 @@ struct COMPONENT_EXPORT(IME_SHARED_MOJOM_TRAITS)
   static bool interim_char_selection(const ui::ImeTextSpan& c) {
     return c.interim_char_selection;
   }
-  static std::vector<std::string> suggestions(const ui::ImeTextSpan& c) {
+  static const std::vector<std::string>& suggestions(const ui::ImeTextSpan& c) {
     return c.suggestions;
   }
   static bool should_hide_suggestion_menu(const ui::ImeTextSpan& c) {
