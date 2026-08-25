@@ -5,12 +5,15 @@
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/travel_info_coordinator.h"
 
 #import "base/check_op.h"
+#import "base/metrics/user_metrics.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_coordinator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/travel_info_mediator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/travel_info_table_view_controller.h"
+#import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/coordinator/suggestions_from_gemini_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -20,7 +23,8 @@
 
 @interface TravelInfoCoordinator () <AutofillAIBaseMediatorDelegate,
                                      AutofillAIEntityEditCoordinatorDelegate,
-                                     TravelInfoTableViewControllerDelegate>
+                                     TravelInfoTableViewControllerDelegate,
+                                     SuggestionsFromGeminiCoordinatorDelegate>
 @end
 
 @implementation TravelInfoCoordinator {
@@ -32,6 +36,9 @@
 
   // Coordinator for displaying and editing a selected travel info entity.
   AutofillAIEntityEditCoordinator* _entityEditCoordinator;
+
+  // Coordinator for Suggestions from Gemini.
+  SuggestionsFromGeminiCoordinator* _suggestionsFromGeminiCoordinator;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -64,6 +71,9 @@
   _mediator = [[TravelInfoMediator alloc]
       initWithEntityDataManager:entityDataManager
                     prefService:self.browser->GetProfile()->GetPrefs()];
+  _mediator.shouldShowSuggestionsFromGemini =
+      autofill::ShouldShowPersonalContextAutofillSetting(
+          self.browser->GetProfile());
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
   _viewController.mutator = _mediator;
@@ -74,6 +84,7 @@
 
 - (void)stop {
   [self stopEntityEditCoordinator];
+  [self stopSuggestionsFromGeminiCoordinator];
 
   [_mediator disconnect];
   _mediator = nil;
@@ -88,6 +99,27 @@
     (TravelInfoTableViewController*)controller {
   CHECK_EQ(_viewController, controller);
   [self.delegate travelInfoCoordinatorDidRemove:self];
+}
+
+- (void)travelInfoTableViewControllerDidSelectSuggestionsFromGemini:
+    (TravelInfoTableViewController*)controller {
+  CHECK_EQ(_viewController, controller);
+  base::RecordAction(base::UserMetricsAction(
+      "PersonalContext.Settings.EntryPoint.TravelSettings"));
+  [self stopSuggestionsFromGeminiCoordinator];
+  _suggestionsFromGeminiCoordinator = [[SuggestionsFromGeminiCoordinator alloc]
+      initWithBaseNavigationController:self.baseNavigationController
+                               browser:self.browser];
+  _suggestionsFromGeminiCoordinator.delegate = self;
+  [_suggestionsFromGeminiCoordinator start];
+}
+
+#pragma mark - SuggestionsFromGeminiCoordinatorDelegate
+
+- (void)suggestionsFromGeminiCoordinatorDidRemove:
+    (SuggestionsFromGeminiCoordinator*)coordinator {
+  CHECK_EQ(_suggestionsFromGeminiCoordinator, coordinator);
+  [self stopSuggestionsFromGeminiCoordinator];
 }
 
 #pragma mark - AutofillAIBaseMediatorDelegate
@@ -141,6 +173,13 @@
   [_entityEditCoordinator stop];
   _entityEditCoordinator.delegate = nil;
   _entityEditCoordinator = nil;
+}
+
+// Stops and disconnects the active Suggestions from Gemini coordinator.
+- (void)stopSuggestionsFromGeminiCoordinator {
+  [_suggestionsFromGeminiCoordinator stop];
+  _suggestionsFromGeminiCoordinator.delegate = nil;
+  _suggestionsFromGeminiCoordinator = nil;
 }
 
 @end

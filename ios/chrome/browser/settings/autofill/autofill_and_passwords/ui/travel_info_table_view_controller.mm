@@ -17,10 +17,12 @@
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_ai_base_item_type.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/travel_info_mutator.h"
 #import "ios/chrome/browser/settings/autofill/utils/autofill_settings_ui_util.h"
+#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller+toolbar_add.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -32,6 +34,7 @@
 namespace {
 enum class SectionIdentifier {
   kToggleSection = kSectionIdentifierEnumZero,
+  kSuggestionsFromGeminiSection,
   kFlightReservationsSection,
   kKnownTravelerNumbersSection,
   kRedressNumbersSection,
@@ -41,6 +44,8 @@ enum class SectionIdentifier {
 enum class ItemType {
   kToggleItem = kAutofillAIBaseItemTypeEntity + 1,
   kFooterItem,
+  kSuggestionsFromGeminiItem,
+  kSuggestionsFromGeminiFooterItem,
 };
 }  // namespace
 
@@ -61,6 +66,8 @@ enum class ItemType {
   BOOL _travelInfoEnabled;
   BOOL _travelInfoToggleEnabled;
   BOOL _travelInfoToggleManaged;
+  BOOL _shouldShowSuggestionsFromGemini;
+  BOOL _suggestionsFromGeminiEnabled;
 }
 
 - (instancetype)init {
@@ -128,6 +135,20 @@ enum class ItemType {
   [model setFooter:footer
       forSectionWithIdentifier:static_cast<NSInteger>(
                                    SectionIdentifier::kToggleSection)];
+
+  if (_shouldShowSuggestionsFromGemini) {
+    [model addSectionWithIdentifier:
+               static_cast<NSInteger>(
+                   SectionIdentifier::kSuggestionsFromGeminiSection)];
+    [model addItem:[self suggestionsFromGeminiItem]
+        toSectionWithIdentifier:
+            static_cast<NSInteger>(
+                SectionIdentifier::kSuggestionsFromGeminiSection)];
+    [model setFooter:[self suggestionsFromGeminiFooter]
+        forSectionWithIdentifier:
+            static_cast<NSInteger>(
+                SectionIdentifier::kSuggestionsFromGeminiSection)];
+  }
 
   if (_flightReservations.count > 0) {
     [model addSectionWithIdentifier:
@@ -229,6 +250,42 @@ enum class ItemType {
     }
     [self updateUIForEditState];
     [self reloadData];
+  }
+}
+
+- (void)setShouldShowSuggestionsFromGemini:(BOOL)shouldShow
+                                   enabled:(BOOL)enabled {
+  BOOL reload = NO;
+  if (_shouldShowSuggestionsFromGemini != shouldShow) {
+    _shouldShowSuggestionsFromGemini = shouldShow;
+    reload = YES;
+  }
+
+  BOOL suggestionsFromGeminiEnabledChanged =
+      (_suggestionsFromGeminiEnabled != enabled);
+  _suggestionsFromGeminiEnabled = enabled;
+
+  if (reload) {
+    if (self.viewLoaded) {
+      [self reloadData];
+    }
+  } else if (suggestionsFromGeminiEnabledChanged && self.viewLoaded &&
+             _shouldShowSuggestionsFromGemini) {
+    TableViewModel* model = self.tableViewModel;
+    NSIndexPath* suggestionsFromGeminiPath =
+        [model indexPathForItemType:static_cast<NSInteger>(
+                                        ItemType::kSuggestionsFromGeminiItem)
+                  sectionIdentifier:
+                      static_cast<NSInteger>(
+                          SectionIdentifier::kSuggestionsFromGeminiSection)];
+    if (suggestionsFromGeminiPath) {
+      TableViewMultiDetailTextItem* suggestionsFromGeminiItem =
+          base::apple::ObjCCastStrict<TableViewMultiDetailTextItem>(
+              [model itemAtIndexPath:suggestionsFromGeminiPath]);
+      suggestionsFromGeminiItem.trailingDetailText = l10n_util::GetNSString(
+          enabled ? IDS_IOS_SETTING_ON : IDS_IOS_SETTING_OFF);
+      [self reconfigureCellsForItems:@[ suggestionsFromGeminiItem ]];
+    }
   }
 }
 
@@ -488,6 +545,12 @@ enum class ItemType {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+  if (item.type ==
+      static_cast<NSInteger>(ItemType::kSuggestionsFromGeminiItem)) {
+    [self.delegate
+        travelInfoTableViewControllerDidSelectSuggestionsFromGemini:self];
+    return;
+  }
   [self.mutator didSelectEntityItem:item];
 }
 
@@ -541,6 +604,34 @@ enum class ItemType {
 }
 
 #pragma mark - Private
+
+// Returns the table view item for the Suggestions from Gemini section.
+- (TableViewItem*)suggestionsFromGeminiItem {
+  TableViewMultiDetailTextItem* suggestionsFromGeminiItem =
+      [[TableViewMultiDetailTextItem alloc]
+          initWithType:static_cast<NSInteger>(
+                           ItemType::kSuggestionsFromGeminiItem)];
+  suggestionsFromGeminiItem.text =
+      l10n_util::GetNSString(IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_TITLE);
+  suggestionsFromGeminiItem.trailingDetailText = l10n_util::GetNSString(
+      _suggestionsFromGeminiEnabled ? IDS_IOS_SETTING_ON : IDS_IOS_SETTING_OFF);
+  suggestionsFromGeminiItem.accessoryType =
+      UITableViewCellAccessoryDisclosureIndicator;
+  suggestionsFromGeminiItem.accessibilityTraits |= UIAccessibilityTraitButton;
+  suggestionsFromGeminiItem.accessibilityIdentifier =
+      kSuggestionsFromGeminiTableViewId;
+  return suggestionsFromGeminiItem;
+}
+
+// Returns the footer for the Suggestions from Gemini section.
+- (TableViewHeaderFooterItem*)suggestionsFromGeminiFooter {
+  TableViewLinkHeaderFooterItem* footer = [[TableViewLinkHeaderFooterItem alloc]
+      initWithType:static_cast<NSInteger>(
+                       ItemType::kSuggestionsFromGeminiFooterItem)];
+  footer.text = l10n_util::GetNSString(
+      IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SUBPAGE_SUMMARY);
+  return footer;
+}
 
 // Confirms the deletion of the given `items` by resetting the swipe-to-delete
 // state if needed and informing the mutator.

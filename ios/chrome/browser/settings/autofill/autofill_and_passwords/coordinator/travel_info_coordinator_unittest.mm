@@ -4,17 +4,19 @@
 
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/travel_info_coordinator.h"
 
-#import <UIKit/UIKit.h>
-
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/sync/test/test_sync_service.h"
+#import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_ai_base_mediator.h"
+#import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/travel_info_table_view_controller.h"
+#import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/coordinator/suggestions_from_gemini_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -101,4 +103,24 @@ TEST_F(TravelInfoCoordinatorTest, StartsEntityEditCoordinator) {
   EXPECT_GT(navigation_controller_.viewControllers.count, initialCount);
 
   [coordinator_ stop];
+}
+
+// Tests that selecting Suggestions from Gemini registers the user action.
+TEST_F(TravelInfoCoordinatorTest, SuggestionsFromGeminiActionRecorded) {
+  [coordinator_ start];
+
+  base::UserActionTester user_action_tester;
+
+  TravelInfoTableViewController* viewController =
+      static_cast<TravelInfoTableViewController*>(
+          navigation_controller_.topViewController);
+  ASSERT_NE(nil, viewController);
+
+  id<TravelInfoTableViewControllerDelegate> delegate =
+      static_cast<id<TravelInfoTableViewControllerDelegate>>(coordinator_);
+  [delegate travelInfoTableViewControllerDidSelectSuggestionsFromGemini:
+                viewController];
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "PersonalContext.Settings.EntryPoint.TravelSettings"));
 }

@@ -19,6 +19,10 @@
 - (void)travelInfoTableViewControllerDidRemove:
     (TravelInfoTableViewController*)controller;
 
+// Called when the Suggestions from Gemini entry point is tapped.
+- (void)travelInfoTableViewControllerDidSelectSuggestionsFromGemini:
+    (TravelInfoTableViewController*)controller;
+
 @end
 
 // The TableView for Travel Info settings page.
