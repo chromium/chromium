@@ -1565,7 +1565,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
   AccountInfo account = signin::MakePrimaryAccountAvailable(
       identity_test_env()->identity_manager(), "example@google.com",
       signin::ConsentLevel::kSignin);
-  identity_test_env()->SetInvalidRefreshTokenForAccount(account.account_id);
+  identity_test_env()->SetInvalidRefreshTokenForAccount(account.GetAccountId());
 
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       undo_controller(),
@@ -1593,7 +1593,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
   AccountInfo account = signin::MakePrimaryAccountAvailable(
       identity_test_env()->identity_manager(), "example@google.com",
       signin::ConsentLevel::kSignin);
-  identity_test_env()->SetInvalidRefreshTokenForAccount(account.account_id);
+  identity_test_env()->SetInvalidRefreshTokenForAccount(account.GetAccountId());
 
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       undo_controller(), password_form_fill_data(), favicon(),
@@ -1626,7 +1626,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
   AccountInfo account = signin::MakePrimaryAccountAvailable(
       identity_test_env()->identity_manager(), "example@google.com",
       signin::ConsentLevel::kSignin);
-  identity_test_env()->SetInvalidRefreshTokenForAccount(account.account_id);
+  identity_test_env()->SetInvalidRefreshTokenForAccount(account.GetAccountId());
 
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       undo_controller(),
@@ -1648,7 +1648,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
   AccountInfo account = signin::MakePrimaryAccountAvailable(
       identity_test_env()->identity_manager(), "example@google.com",
       signin::ConsentLevel::kSignin);
-  identity_test_env()->SetInvalidRefreshTokenForAccount(account.account_id);
+  identity_test_env()->SetInvalidRefreshTokenForAccount(account.GetAccountId());
 
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       undo_controller(), password_form_fill_data(), favicon(),
@@ -1678,7 +1678,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
   AccountInfo account = signin::MakePrimaryAccountAvailable(
       identity_test_env()->identity_manager(), "example@google.com",
       signin::ConsentLevel::kSignin);
-  identity_test_env()->SetInvalidRefreshTokenForAccount(account.account_id);
+  identity_test_env()->SetInvalidRefreshTokenForAccount(account.GetAccountId());
 
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       undo_controller(),
@@ -1701,7 +1701,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
   AccountInfo account = signin::MakePrimaryAccountAvailable(
       identity_test_env()->identity_manager(), "example@google.com",
       signin::ConsentLevel::kSignin);
-  identity_test_env()->SetInvalidRefreshTokenForAccount(account.account_id);
+  identity_test_env()->SetInvalidRefreshTokenForAccount(account.GetAccountId());
 
   std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
       undo_controller(), password_form_fill_data(), favicon(),

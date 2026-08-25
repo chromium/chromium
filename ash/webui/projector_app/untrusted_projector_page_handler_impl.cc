@@ -222,8 +222,8 @@ void UntrustedProjectorPageHandlerImpl::GetAccounts(
 
   for (const auto& info : accounts) {
     auto account = projector::mojom::Account::New();
-    account->email = info.email;
-    account->is_primary_user = info.gaia == primary_account.gaia;
+    account->email = info.GetEmail();
+    account->is_primary_user = info.GetGaiaId() == primary_account.gaia;
     mojo_accounts.push_back(std::move(account));
   }
 

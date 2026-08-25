@@ -361,14 +361,14 @@ TEST_P(AutofillAiMayPerformActionTest, SignedOut) {
 
 TEST_P(AutofillAiMayPerformActionTest, SignInPending) {
   AddEntity();
-  CoreAccountInfo account =
+  AccountInfo account =
       client().identity_test_environment().MakePrimaryAccountAvailable(
           "test@example.com", signin::ConsentLevel::kSignin);
 
   client()
       .identity_test_environment()
       .UpdatePersistentErrorOfRefreshTokenForAccount(
-          account.account_id,
+          account.GetAccountId(),
           GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
               GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 

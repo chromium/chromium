@@ -1098,7 +1098,7 @@ TEST_F(PaymentsNetworkInterfaceTest, GetUploadAccountFromSyncTest) {
 
   // Issue a token for the secondary account.
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      secondary_account_info.account_id, "secondary_account_token",
+      secondary_account_info.GetAccountId(), "secondary_account_token",
       AutofillClock::Now() + base::Days(10));
 
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK, "{}");

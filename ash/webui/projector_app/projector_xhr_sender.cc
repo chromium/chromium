@@ -413,7 +413,7 @@ bool ProjectorXhrSender::IsValidEmail(
   }
   const std::vector<AccountInfo> accounts = oauth_token_fetcher_.GetAccounts();
   for (const auto& info : accounts) {
-    if (email == info.email) {
+    if (email == info.GetEmail()) {
       return true;
     }
   }

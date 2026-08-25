@@ -70,9 +70,9 @@ void PasswordReuseManagerSigninNotifierImpl::OnExtendedAccountInfoRemoved(
   // TODO(crbug.com/40067058): Remove the not-kSync check when
   // ConsentLevel::kSync is deleted. See ConsentLevel::kSync documentation for
   // details.
-  if (info.account_id !=
+  if (info.GetAccountId() !=
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync)) {
-    NotifySignedOut(info.email, /*syncing_account=*/false);
+    NotifySignedOut(std::string(info.GetEmail()), /*syncing_account=*/false);
   }
 }
 

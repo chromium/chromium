@@ -119,7 +119,7 @@ static AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo(
       card.nickname(), card.NetworkForDisplay(), card.LastFourDigits(),
       card.ExpirationDateForDisplay());
   ui_info.displayed_target_account_email =
-      base::UTF8ToUTF16((displayed_target_account.email));
+      base::UTF8ToUTF16(displayed_target_account.GetEmail());
   ui_info.displayed_target_account_avatar =
       displayed_target_account.GetAvatarImage().value_or(gfx::Image());
   ui_info.title_text = title_text;
@@ -373,7 +373,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
           base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)
               ? IDS_AUTOFILL_SAVE_CVC_TO_WALLET_PROMPT_EXPLANATION_UPLOAD_IOS
               : IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD_IOS,
-          base::UTF8ToUTF16(displayed_target_account.email));
+          base::UTF8ToUTF16(displayed_target_account.GetEmail()));
       break;
     }
   }

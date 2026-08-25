@@ -90,7 +90,7 @@ void AccountNameEmailStore::OnExtendedAccountInfoUpdated(
       identity_manager_observer_.GetSource()->GetPrimaryAccountInfo(
           signin::ConsentLevel::kSignin);
   if (!primary_info.has_value() ||
-      (!primary_info->IsEmpty() && info.gaia != primary_info->gaia)) {
+      (!primary_info->IsEmpty() && info.GetGaiaId() != primary_info->gaia)) {
     return;
   }
   MaybeUpdateOrCreateAccountNameEmail();
