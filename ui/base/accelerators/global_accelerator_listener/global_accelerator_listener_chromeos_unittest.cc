@@ -79,15 +79,30 @@ class GlobalAcceleratorListenerChromeOSTest : public testing::Test {
   TestObserver observer_;
 };
 
-using GlobalAcceleratorListenerChromeOSDeathTest =
-    GlobalAcceleratorListenerChromeOSTest;
-
-TEST_F(GlobalAcceleratorListenerChromeOSDeathTest, WithoutDelegate) {
+TEST_F(GlobalAcceleratorListenerChromeOSTest, WithoutDelegate) {
   GlobalAcceleratorListenerChromeOS::SetDelegate(nullptr);
   auto listener = GlobalAcceleratorListenerChromeOS::Create();
   const Accelerator accelerator(VKEY_A, EF_NONE);
 
-  EXPECT_DEATH(listener->RegisterAccelerator(accelerator, &observer_), "");
+  EXPECT_FALSE(listener->RegisterAccelerator(accelerator, &observer_));
+}
+
+TEST_F(GlobalAcceleratorListenerChromeOSTest,
+       UnregisterWithoutDelegateDoesNotCrash) {
+  FakeDelegate delegate;
+  GlobalAcceleratorListenerChromeOS::SetDelegate(&delegate);
+
+  auto listener = GlobalAcceleratorListenerChromeOS::Create();
+  const Accelerator accelerator(VKEY_A, EF_NONE);
+
+  EXPECT_TRUE(listener->RegisterAccelerator(accelerator, &observer_));
+
+  // Simulate delegate teardown (e.g. Ash shutting down before browser process
+  // cleanup).
+  GlobalAcceleratorListenerChromeOS::SetDelegate(nullptr);
+
+  // Unregistering should not crash even when the delegate is null.
+  listener->UnregisterAccelerator(accelerator, &observer_);
 }
 
 TEST_F(GlobalAcceleratorListenerChromeOSTest,
