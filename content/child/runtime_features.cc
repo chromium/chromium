@@ -281,10 +281,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"AllowURNsInIframes",
            raw_ref(features::kPrivacySandboxAdsAPIsM1Override)},
           {"AttributionReporting",
-           raw_ref(features::kPrivacySandboxAdsAPIsOverride),
-           kSetOnlyIfOverridden},
-          {"AttributionReporting",
-           raw_ref(features::kPrivacySandboxAdsAPIsM1Override)},
+           raw_ref(attribution_reporting::features::kConversionMeasurement)},
           {"ApproximateGeolocationPermission",
            raw_ref(
                content_settings::features::kApproximateGeolocationPermission)},
@@ -519,18 +516,6 @@ void ResolveInvalidConfigurations() {
     WebRuntimeFeatures::EnableFeatureFromString(
         "FencedFramesLocalUnpartitionedDataAccess", false);
   }
-
-  if (!base::FeatureList::IsEnabled(
-          attribution_reporting::features::kConversionMeasurement)) {
-    LOG_IF(WARNING, WebRuntimeFeatures::IsAttributionReportingEnabled())
-        << "AttributionReporting cannot be enabled in this "
-           "configuration. Use --"
-        << switches::kEnableFeatures << "="
-        << attribution_reporting::features::kConversionMeasurement.name
-        << " in addition.";
-    WebRuntimeFeatures::EnableAttributionReporting(false);
-  }
-
 
   // UserMediaElement cannot be enabled without the support of the
   // browser process.
