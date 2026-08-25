@@ -8,9 +8,15 @@ import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy
 
 export class TestContentBrowserProxy extends TestBrowserProxy implements
     ContentBrowserProxy {
-  onImageDownloaded = new FakeChromeEvent();
+  onAnchorsReadyForReadability = new FakeChromeEvent();
   onNodeWillBeDeleted = new FakeChromeEvent();
+  onImageDownloaded = new FakeChromeEvent();
+  onMainFrameSameDocumentNavigation = new FakeChromeEvent();
+  onRenderedTextMappingReady = new FakeChromeEvent();
   showEmpty = new FakeChromeEvent();
+  updateImages = new FakeChromeEvent();
+  updateLinks = new FakeChromeEvent();
+  updateSelection = new FakeChromeEvent();
 
   startNodeId: number = -1;
   startOffset: number = -1;
@@ -90,7 +96,6 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
       'onCopy',
       'requiresDistillation',
       'onDistilled',
-      'updateSelection',
       'onLinkClicked',
       'onRenderedTextBlocksAvailable',
     ]);
@@ -262,10 +267,6 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
 
   onNoTextContent(): void {
     this.methodCalled('onNoTextContent');
-  }
-
-  updateSelection(): void {
-    this.methodCalled('updateSelection');
   }
 
   onLinkClicked(nodeId: number): void {

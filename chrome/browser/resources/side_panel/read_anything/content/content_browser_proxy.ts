@@ -26,9 +26,16 @@ export interface ContentBrowserProxy {
   //////////////////////////////////////////////////////////////////////////////
   // Incoming events (C++ -> TypeScript):
 
+  onAnchorsReadyForReadability: ChromeEvent<() => void>;
   onImageDownloaded: ChromeEvent<(nodeId: number) => void>;
   onNodeWillBeDeleted: ChromeEvent<(nodeId: number) => void>;
+  onMainFrameSameDocumentNavigation: ChromeEvent<(url: string) => void>;
+  onRenderedTextMappingReady: ChromeEvent<() => void>;
+
   showEmpty: ChromeEvent<() => void>;
+  updateImages: ChromeEvent<() => void>;
+  updateLinks: ChromeEvent<() => void>;
+  updateSelection: ChromeEvent<() => void>;
 
   //////////////////////////////////////////////////////////////////////////////
   // Outgoing calls (TypeScript -> C++):
@@ -74,7 +81,6 @@ export interface ContentBrowserProxy {
   onNoTextContent(): void;
   onCopy(): void;
   onDistilled(wordCount: number): void;
-  updateSelection(): void;
   onLinkClicked(nodeId: number): void;
   onRenderedTextBlocksAvailable(blocks: string[]): void;
   onConnected(): void;
@@ -87,11 +93,22 @@ export interface ContentBrowserProxy {
 }
 
 export class ContentBrowserProxyImpl implements ContentBrowserProxy {
+  onAnchorsReadyForReadability = new EventForwarder<() => void>();
   onImageDownloaded = new EventForwarder<(nodeId: number) => void>();
   onNodeWillBeDeleted = new EventForwarder<(nodeId: number) => void>();
+  onMainFrameSameDocumentNavigation =
+      new EventForwarder<(url: string) => void>();
+  onRenderedTextMappingReady = new EventForwarder<() => void>();
   showEmpty = new EventForwarder<() => void>();
+  updateImages = new EventForwarder<() => void>();
+  updateLinks = new EventForwarder<() => void>();
+  updateSelection = new EventForwarder<() => void>();
 
   constructor() {
+    chrome.readingMode.onAnchorsReadyForReadability = () => {
+      this.onAnchorsReadyForReadability.forward();
+    };
+
     chrome.readingMode.onImageDownloaded = (nodeId: number) => {
       this.onImageDownloaded.forward(nodeId);
     };
@@ -100,8 +117,28 @@ export class ContentBrowserProxyImpl implements ContentBrowserProxy {
       this.onNodeWillBeDeleted.forward(nodeId);
     };
 
+    chrome.readingMode.onMainFrameSameDocumentNavigation = (url: string) => {
+      this.onMainFrameSameDocumentNavigation.forward(url);
+    };
+
+    chrome.readingMode.onRenderedTextMappingReady = () => {
+      this.onRenderedTextMappingReady.forward();
+    };
+
     chrome.readingMode.showEmpty = () => {
       this.showEmpty.forward();
+    };
+
+    chrome.readingMode.updateImages = () => {
+      this.updateImages.forward();
+    };
+
+    chrome.readingMode.updateLinks = () => {
+      this.updateLinks.forward();
+    };
+
+    chrome.readingMode.updateSelection = () => {
+      this.updateSelection.forward();
     };
   }
 
@@ -182,10 +219,6 @@ export class ContentBrowserProxyImpl implements ContentBrowserProxy {
 
   onNoTextContent(): void {
     chrome.readingMode.onNoTextContent();
-  }
-
-  updateSelection(): void {
-    chrome.readingMode.updateSelection();
   }
 
   onLinkClicked(nodeId: number): void {

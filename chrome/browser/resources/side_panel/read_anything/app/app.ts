@@ -267,24 +267,26 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
     document.onkeydown = this.onKeyDown_.bind(this);
 
+    this.contentBrowserProxy_.onAnchorsReadyForReadability.addListener(
+        this.onReadabilityAnchorsReady_.bind(this));
+    this.contentBrowserProxy_.onMainFrameSameDocumentNavigation.addListener(
+        this.onMainFrameSameDocumentNavigation_.bind(this));
+    this.contentBrowserProxy_.onRenderedTextMappingReady.addListener(
+        this.onRenderedTextMappingReady_.bind(this));
+    this.contentBrowserProxy_.updateImages.addListener(
+        this.updateImages_.bind(this));
+    this.contentBrowserProxy_.updateLinks.addListener(
+        this.updateLinks_.bind(this));
+    this.contentBrowserProxy_.updateSelection.addListener(() => {
+      this.selectionController_.updateSelection(
+          this.getSelection(), this.$.container);
+    });
+
     /////////////////////////////////////////////////////////////////////
     // Called by ReadAnythingAppController via callback router. //
     /////////////////////////////////////////////////////////////////////
     chrome.readingMode.updateContent = () => {
       this.updateContent();
-    };
-
-    chrome.readingMode.updateLinks = () => {
-      this.updateLinks_();
-    };
-
-    chrome.readingMode.updateImages = () => {
-      this.updateImages_();
-    };
-
-    chrome.readingMode.updateSelection = () => {
-      this.selectionController_.updateSelection(
-          this.getSelection(), this.$.container);
     };
 
     chrome.readingMode.showLoading = () => {
@@ -299,10 +301,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
       this.languageChanged();
     };
 
-    chrome.readingMode.onAnchorsReadyForReadability = () => {
-      this.onReadabilityAnchorsReady_();
-    };
-
     chrome.readingMode.onPresentationStateReceived =
         (presentationState: number) => {
           // TODO (crbug.com/450950100): The Read Anything app should determine
@@ -315,15 +313,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
     chrome.readingMode.onPinStateReceived = (pinState: boolean) => {
       this.$.toolbar.isReadAnythingPinned = pinState;
-    };
-
-    chrome.readingMode.onRenderedTextMappingReady = () => {
-      this.contentController_.onRenderedTextMappingReady();
-    };
-
-    chrome.readingMode.onMainFrameSameDocumentNavigation = (url: string) => {
-      assert(this.shadowRoot);
-      this.contentController_.scrollToAnchor(url, this.shadowRoot);
     };
 
     chrome.readingMode.setPlayOnOpen = (playOnOpen: boolean) => {
@@ -458,6 +447,17 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   private updateImages_() {
     this.contentController_.updateImages(this.shadowRoot);
+  }
+
+  private onMainFrameSameDocumentNavigation_(url: string) {
+    assert(this.shadowRoot);
+    this.contentController_.scrollToAnchor(url, this.shadowRoot);
+  }
+
+  private onRenderedTextMappingReady_() {
+    this.contentController_.onRenderedTextMappingReady();
+    this.selectionController_.updateSelection(
+        this.getSelection(), this.$.container);
   }
 
   private onRenderedTextBlocksAvailable_() {

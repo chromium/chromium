@@ -1500,15 +1500,19 @@ suite('ContentController', () => {
       assertEquals(0, nodeStore.getAxNodeOffset(node2));
     });
 
-    test('triggers selection update after mapping', () => {
-      container.textContent = 'text';
+    test('maps text nodes to AX nodes', () => {
+      const text = 'Part1Part2Part3';
+      const textNode = document.createTextNode(text);
+      container.appendChild(textNode);
       contentController.onRenderedTextBlocksAvailable(container);
-      contentBrowserProxy.axMapping =
-          [{axNodeId: axId1, start: 0, end: 4, axNodeOffset: 0}];
+      contentBrowserProxy.axMapping = [
+        {axNodeId: axId1, start: 0, end: 5, axNodeOffset: 0},
+      ];
 
       contentController.onRenderedTextMappingReady();
 
-      assertEquals(1, contentBrowserProxy.getCallCount('updateSelection'));
+      const node1 = container.childNodes[0]!;
+      assertEquals(axId1, nodeStore.getAxId(node1));
     });
 
     test('does nothing if feature is disabled', () => {

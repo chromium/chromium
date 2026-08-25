@@ -1326,7 +1326,8 @@ suite('AppContent', () => {
 
           // Triggering the callback from C++ navigation should execute the
           // scroll.
-          chrome.readingMode.onMainFrameSameDocumentNavigation(targetUrl);
+          contentBrowserProxy.onMainFrameSameDocumentNavigation.callListeners(
+              targetUrl);
           assertTrue(scrollIntoViewCalled);
           assertTrue(!!scrollOptions);
           assertEquals('smooth', scrollOptions.behavior);
@@ -1661,7 +1662,8 @@ suite('AppContent', () => {
       };
 
       // Trigger same document navigation
-      chrome.readingMode.onMainFrameSameDocumentNavigation(targetUrl);
+      contentBrowserProxy.onMainFrameSameDocumentNavigation.callListeners(
+          targetUrl);
 
       assertTrue(scrollIntoViewCalled);
       assertTrue(!!scrollOptions);
@@ -1694,7 +1696,8 @@ suite('AppContent', () => {
           };
 
           // Trigger same document navigation back to top
-          chrome.readingMode.onMainFrameSameDocumentNavigation(targetUrl);
+          contentBrowserProxy.onMainFrameSameDocumentNavigation.callListeners(
+              targetUrl);
 
           assertTrue(scrollToCalled);
           assertTrue(!!scrollOptions);
@@ -1733,7 +1736,8 @@ suite('AppContent', () => {
           };
 
           // Trigger same document navigation for different page
-          chrome.readingMode.onMainFrameSameDocumentNavigation(targetUrl);
+          contentBrowserProxy.onMainFrameSameDocumentNavigation.callListeners(
+              targetUrl);
 
           assertFalse(scrollIntoViewCalled);
         });

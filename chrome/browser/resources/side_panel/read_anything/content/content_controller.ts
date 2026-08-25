@@ -435,10 +435,6 @@ export class ContentController {
         this.mapBlockToAxNodes_(node, segments);
       }
     }
-
-    // After populating the NodeStore, trigger a selection update to synchronize
-    // any existing selection state.
-    this.contentBrowserProxy_.updateSelection();
   }
 
   private mapBlockToAxNodes_(node: Text, segments: Array<{
