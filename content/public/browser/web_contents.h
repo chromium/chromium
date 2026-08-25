@@ -499,6 +499,16 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // See also GetVisibleURL above, which may differ from this URL. Note that
   // this might return an empty GURL if no navigation has committed in the
   // WebContents' main frame.
+  //
+  // Note: When a navigation fails and commits an error page (e.g.
+  // `chrome-error://chromewebdata/`), `GetLastCommittedURL()` continues to
+  // return the failed destination target URL rather than an error URL.
+  // Therefore, this should not be used directly for security, authorization,
+  // or permission checks without verifying that the primary main frame is not
+  // an error document (`!GetPrimaryMainFrame()->IsErrorDocument()`).
+  // Higher-level layers (such as extensions) should use their dedicated
+  // permission-check URL helper (e.g.,
+  // `extensions::util::GetURLForExtensionPermissionCheck()`).
   virtual const GURL& GetLastCommittedURL() const = 0;
 
   // Returns the primary main frame for the currently active page. Always

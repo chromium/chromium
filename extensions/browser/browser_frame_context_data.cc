@@ -10,6 +10,7 @@
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
@@ -66,7 +67,7 @@ GURL BrowserFrameContextData::GetUrl() const {
     // document's URL about:blank instead of empty in that case.
     return GURL(url::kAboutBlankURL);
   }
-  return frame_->GetLastCommittedURL();
+  return util::GetURLForExtensionPermissionCheck(frame_);
 }
 
 url::Origin BrowserFrameContextData::GetOrigin() const {

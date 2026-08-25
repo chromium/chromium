@@ -8,14 +8,21 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "build/android_buildflags.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_content_client_initializer.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
+#include "extensions/browser/extensions_test.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_paths.h"
 #include "extensions/common/extension_set.h"
+#include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/url_constants.h"
 
@@ -101,6 +108,100 @@ TEST(ExtensionUtilTest, MAYBE_ExtensionIdForSiteInstance) {
       content::SiteInstance::CreateForURL(&test_context,
                                           GURL("https://example.com"));
   EXPECT_EQ("", util::GetExtensionIdForSiteInstance(*https_site_instance));
+}
+
+// Verifies that `util::GetURLForExtensionPermissionCheck` returns an empty
+// `GURL` when passed a null `content::RenderFrameHost*`.
+TEST_F(ExtensionsTest, GetURLForExtensionPermissionCheck_Null) {
+  content::RenderFrameHost* null_rfh = nullptr;
+  EXPECT_TRUE(util::GetURLForExtensionPermissionCheck(null_rfh).is_empty());
+}
+
+// Verifies that `util::GetURLForExtensionPermissionCheck` returns an empty
+// `GURL` when passed an uncommitted initial frame.
+TEST_F(ExtensionsTest, GetURLForExtensionPermissionCheck_Uncommitted) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(browser_context(),
+                                                        /*instance=*/nullptr);
+  content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
+  EXPECT_TRUE(util::GetURLForExtensionPermissionCheck(main_rfh).is_empty());
+}
+
+// Verifies that `util::GetURLForExtensionPermissionCheck` returns the committed
+// `GURL` for a valid main frame navigation, and returns an empty `GURL` when
+// the main frame fails to navigate and commits an error document.
+TEST_F(ExtensionsTest, GetURLForExtensionPermissionCheck_MainFrame) {
+  // Create a test `content::WebContents`.
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(browser_context(),
+                                                        /*instance=*/nullptr);
+  content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
+
+  // Simulate a successful navigation to a valid webpage in the main frame.
+  const GURL kValidUrl("https://example.com/page.html");
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents.get(),
+                                                             kValidUrl);
+
+  // Verify that a committed valid navigation in the main frame returns the
+  // committed `GURL`.
+  EXPECT_EQ(kValidUrl, util::GetURLForExtensionPermissionCheck(main_rfh));
+
+  // Simulate a failed navigation in the main frame resulting in a top-level
+  // error document.
+  const GURL kFailedUrl("https://example.com/error.html");
+  content::RenderFrameHost* error_rfh =
+      content::NavigationSimulator::NavigateAndFailFromBrowser(
+          web_contents.get(), kFailedUrl, net::ERR_FAILED);
+  ASSERT_TRUE(error_rfh);
+
+  // Verify that a top-level error document returns an empty `GURL` instead of
+  // the failed destination target URL.
+  EXPECT_TRUE(util::GetURLForExtensionPermissionCheck(error_rfh).is_empty());
+}
+
+// Verifies that `util::GetURLForExtensionPermissionCheck` returns the committed
+// `GURL` for a valid child subframe, returns an empty `GURL` for an uncommitted
+// child subframe, and returns an empty `GURL` when the child subframe fails to
+// navigate and commits a subframe error document.
+TEST_F(ExtensionsTest, GetURLForExtensionPermissionCheck_Subframe) {
+  // Create a test `content::WebContents` with a committed main frame.
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(browser_context(),
+                                                        /*instance=*/nullptr);
+  const GURL kParentUrl("https://example.com/parent.html");
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents.get(),
+                                                             kParentUrl);
+  content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
+
+  // Create a child subframe inside the main frame.
+  content::RenderFrameHost* child_rfh =
+      content::RenderFrameHostTester::For(main_rfh)->AppendChild("child_frame");
+  ASSERT_TRUE(child_rfh);
+
+  // Verify that an uncommitted child subframe returns an empty `GURL`.
+  EXPECT_TRUE(util::GetURLForExtensionPermissionCheck(child_rfh).is_empty());
+
+  // Simulate a successful committed navigation in the child subframe.
+  const GURL kValidChildUrl("https://example.com/child.html");
+  content::NavigationSimulator::NavigateAndCommitFromDocument(kValidChildUrl,
+                                                              child_rfh);
+
+  // Verify that a committed valid navigation in the child subframe returns the
+  // child subframe's committed `GURL`.
+  EXPECT_EQ(kValidChildUrl, util::GetURLForExtensionPermissionCheck(child_rfh));
+
+  // Simulate a failed navigation in the child subframe resulting in a subframe
+  // error document.
+  const GURL kFailedChildUrl("https://example.com/child_error.html");
+  content::RenderFrameHost* error_child_rfh =
+      content::NavigationSimulator::NavigateAndFailFromDocument(
+          kFailedChildUrl, net::ERR_FAILED, child_rfh);
+  ASSERT_TRUE(error_child_rfh);
+
+  // Verify that a child subframe error document returns an empty `GURL` instead
+  // of the failed child navigation target URL.
+  EXPECT_TRUE(
+      util::GetURLForExtensionPermissionCheck(error_child_rfh).is_empty());
 }
 
 }  // namespace extensions

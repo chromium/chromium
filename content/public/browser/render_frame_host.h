@@ -516,6 +516,15 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // Note that this does not reflect navigations in other RenderFrameHosts,
   // frames, or pages within the same WebContents, so it may differ from
   // NavigationController::GetLastCommittedEntry().
+  //
+  // Note: When a navigation fails and commits an error page (e.g.
+  // `chrome-error://chromewebdata/`), `GetLastCommittedURL()` continues to
+  // return the failed destination target URL rather than an error URL.
+  // Therefore, this should not be used directly for security, authorization,
+  // or permission checks without verifying `!IsErrorDocument()`.
+  // Higher-level layers (such as extensions) should use their dedicated
+  // permission-check URL helper (e.g.,
+  // `extensions::util::GetURLForExtensionPermissionCheck()`).
   virtual const GURL& GetLastCommittedURL() const = 0;
 
   // Returns the last committed origin of this RenderFrameHost.

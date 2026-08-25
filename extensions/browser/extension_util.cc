@@ -16,6 +16,7 @@
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -587,6 +588,19 @@ bool IsExtensionDownload(const download::DownloadItem& download_item) {
     return true;
   }
   return false;
+}
+
+const GURL& GetURLForExtensionPermissionCheck(content::RenderFrameHost* rfh) {
+  // Avoid `CHECK_NE(lifecycle_state(), LifecycleStateImpl::kSpeculative)` in
+  // `content::RenderFrameHost::IsErrorDocument()` by checking for an empty
+  // `GURL` first.
+  if (!rfh || rfh->GetLastCommittedURL().is_empty()) {
+    return GURL::EmptyGURL();
+  }
+  if (rfh->IsErrorDocument()) {
+    return GURL::EmptyGURL();
+  }
+  return rfh->GetLastCommittedURL();
 }
 
 }  // namespace extensions::util
