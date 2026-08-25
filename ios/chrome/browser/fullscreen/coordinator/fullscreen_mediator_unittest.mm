@@ -193,9 +193,9 @@ TEST_F(FullscreenMediatorTest, EnterFullscreenWhenThresholdHit) {
       static_cast<id<CRWWebViewScrollViewProxyObserver>>(mediator_);
   [observer webViewScrollViewWillBeginDragging:scroll_view_proxy];
 
-  // Scroll down past threshold (kEnterFullscreenProgressThreshold = 0.75).
-  // Scroll distance 75 > 250 * 0.25 = 62.5.
-  scroll_view.contentOffset = CGPointMake(0, 175);
+  // Scroll down past threshold (kEnterFullscreenProgressThreshold).
+  scroll_view.contentOffset = CGPointMake(
+      0, scroll_view.contentOffset.y + kEasedTransitionScrollDistance * 0.5);
   [observer webViewScrollViewDidScroll:scroll_view_proxy];
 
   EXPECT_TRUE(agent_->is_animating());
@@ -215,12 +215,15 @@ TEST_F(FullscreenMediatorTest, IncrementalScrollBelowThreshold) {
       static_cast<id<CRWWebViewScrollViewProxyObserver>>(mediator_);
   [observer webViewScrollViewWillBeginDragging:scroll_view_proxy];
 
-  // Scroll down 25pt, which is below the threshold (25 / 250 = 0.1 delta).
-  scroll_view.contentOffset = CGPointMake(0, 125);
+  // Scroll down 10pt, which is below the threshold.
+  constexpr CGFloat kScrollDistance = 10.0;
+  scroll_view.contentOffset =
+      CGPointMake(0, scroll_view.contentOffset.y + kScrollDistance);
   [observer webViewScrollViewDidScroll:scroll_view_proxy];
 
   EXPECT_FALSE(agent_->is_animating());
-  EXPECT_EQ(agent_->top_progress(), 0.9);
+  EXPECT_EQ(agent_->top_progress(),
+            1.0 - (kScrollDistance / kEasedTransitionScrollDistance));
 }
 
 // Tests that scrolling up past the threshold triggers ExitFullscreen.
@@ -243,9 +246,9 @@ TEST_F(FullscreenMediatorTest, ExitFullscreenWhenThresholdHit) {
   scroll_view.contentOffset = CGPointMake(0, 300);
   [observer webViewScrollViewWillBeginDragging:scroll_view_proxy];
 
-  // Scroll up past threshold (kExitFullscreenProgressThreshold = 0.25).
-  // Scroll distance 75 > 250 * 0.25 = 62.5.
-  scroll_view.contentOffset = CGPointMake(0, 225);
+  // Scroll up past threshold (kExitFullscreenProgressThreshold).
+  scroll_view.contentOffset = CGPointMake(
+      0, scroll_view.contentOffset.y - kEasedTransitionScrollDistance * 0.5);
   [observer webViewScrollViewDidScroll:scroll_view_proxy];
 
   EXPECT_TRUE(agent_->is_animating());
