@@ -188,6 +188,7 @@
 #include "components/session_manager/session_manager_types.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/update_client/update_client_errors.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -4186,10 +4187,25 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWABannerObserver
     : public webapps::AppBannerManager::Observer {
  public:
   PWABannerObserver(webapps::AppBannerManager* manager,
+                    content::WebContents* web_contents,
                     base::OnceCallback<void()> callback)
       : callback_(std::move(callback)), app_banner_manager_(manager) {
     DCHECK(manager);
     observation_.Observe(manager);
+    // The manager's lifetime is tied to the tab, which can be destroyed (or
+    // its contents discarded) while this observer waits; detach then to
+    // avoid observing a destroyed manager.
+    tabs::TabInterface* tab =
+        tabs::TabInterface::MaybeGetFromContents(web_contents);
+    if (tab) {
+      tab_will_detach_subscription_ =
+          tab->RegisterWillDetach(base::BindRepeating(
+              &PWABannerObserver::OnTabWillDetach, base::Unretained(this)));
+      tab_will_discard_contents_subscription_ =
+          tab->RegisterWillDiscardContents(
+              base::BindRepeating(&PWABannerObserver::OnTabWillDiscardContents,
+                                  base::Unretained(this)));
+    }
 
     // If PWA is already loaded, call callback immediately.
     Installable installable =
@@ -4231,11 +4247,26 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWABannerObserver
  private:
   using Installable = webapps::InstallableWebAppCheckResult;
 
+  void OnTabWillDetach(tabs::TabInterface* tab,
+                       tabs::TabInterface::DetachReason reason) {
+    observation_.Reset();
+    app_banner_manager_ = nullptr;
+  }
+
+  void OnTabWillDiscardContents(tabs::TabInterface* tab,
+                                content::WebContents* old_contents,
+                                content::WebContents* new_contents) {
+    observation_.Reset();
+    app_banner_manager_ = nullptr;
+  }
+
   base::ScopedObservation<webapps::AppBannerManager,
                           webapps::AppBannerManager::Observer>
       observation_{this};
   base::OnceCallback<void()> callback_;
   raw_ptr<webapps::AppBannerManager> app_banner_manager_;
+  base::CallbackListSubscription tab_will_detach_subscription_;
+  base::CallbackListSubscription tab_will_discard_contents_subscription_;
 };
 
 // Used to notify when a PWA is installed.
@@ -4314,7 +4345,7 @@ AutotestPrivateInstallPWAForCurrentURLFunction::Run() {
   }
 
   banner_observer_ = std::make_unique<PWABannerObserver>(
-      app_banner_manager,
+      app_banner_manager, web_contents,
       base::BindOnce(&AutotestPrivateInstallPWAForCurrentURLFunction::PWALoaded,
                      this));
 

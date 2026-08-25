@@ -54,6 +54,7 @@ source_set("app_service") {
     "//chrome/browser/ui/extensions",
     "//chrome/browser/web_applications:features",
     "//components/app_constants",
+    "//components/tabs:public",
     "//components/web_package",
   ]
 

@@ -76,6 +76,7 @@ static_library("autotest_private") {
     "//chromeos/ui/wm",
     "//components/device_event_log",
     "//components/session_manager/core",
+    "//components/tabs:public",
     "//components/update_client",
     "//components/user_manager",
     "//components/variations",

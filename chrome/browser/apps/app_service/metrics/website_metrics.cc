@@ -6,6 +6,7 @@
 
 #include <random>
 
+#include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/rand_util.h"
 #include "base/time/default_tick_clock.h"
@@ -137,7 +138,24 @@ void WebsiteMetrics::ActiveTabWebContentsObserver::OnPrimaryPageChanged() {
   // In some test cases, AppBannerManager might be null.
   if (app_banner_manager) {
     app_banner_manager_observer_.Observe(app_banner_manager);
+    // The manager's lifetime is tied to the tab, which can end before this
+    // observer's WebContents. Detach when the tab goes away; the
+    // drag-to-another-window path re-attaches via OnPrimaryPageChanged.
+    tabs::TabInterface* tab =
+        tabs::TabInterface::MaybeGetFromContents(web_contents());
+    if (tab) {
+      tab_will_detach_subscription_ = tab->RegisterWillDetach(
+          base::BindRepeating(&ActiveTabWebContentsObserver::OnTabWillDetach,
+                              base::Unretained(this)));
+    }
   }
+}
+
+void WebsiteMetrics::ActiveTabWebContentsObserver::OnTabWillDetach(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
+  app_banner_manager_observer_.Reset();
+  tab_will_detach_subscription_ = {};
 }
 
 void WebsiteMetrics::ActiveTabWebContentsObserver::PrimaryPageChanged(
