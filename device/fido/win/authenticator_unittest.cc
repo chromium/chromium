@@ -170,6 +170,8 @@ TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_Incognito) {
 // does not have valid credentials on a Windows version that supports silent
 // discovery.
 TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_NoCredentials) {
+  // This allows this test to pass when run in Chrome Remote Desktop session.
+  fido::win::ScopedIsRdpSessionOverride scoped_rdp_override(false);
   CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
   GetCredentialFuture future;
   authenticator_->GetPlatformCredentialInfoForRequest(
