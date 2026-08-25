@@ -2441,6 +2441,7 @@ source_set("browser_tests") {
     "extension_keybinding_browsertest.cc",
     "extension_modules_apitest.cc",
     "extension_override_apitest.cc",
+    "extension_secure_context_browsertest.cc",
     "extension_tab_util_browsertest.cc",
     "extension_unload_browsertest.cc",
     "extension_url_loader_throttle_browsertest.cc",
