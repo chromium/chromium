@@ -3,8 +3,28 @@
 // found in the LICENSE file.
 
 import type {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 
 import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
+
+// Helper that implements ChromeEvent to manage and dispatch events from C++
+// backend callbacks (e.g. chrome.readingMode) to registered TypeScript
+// listeners.
+export class EventForwarder<T extends Function> implements ChromeEvent<T> {
+  private listeners_: T[] = [];
+
+  addListener(listener: T) {
+    this.listeners_.push(listener);
+  }
+
+  removeListener(listener: T) {
+    this.listeners_ = this.listeners_.filter(l => l !== listener);
+  }
+
+  forward(...args: unknown[]) {
+    this.listeners_.forEach(l => l(...args));
+  }
+}
 
 export enum ContentPositionSource {
   SELECTION = 0,

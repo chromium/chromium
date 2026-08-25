@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
+
+import {EventForwarder} from '../content/read_anything_types.js';
+
 // Browser proxy for C++ ReadAnythingAppController (chrome.readingMode) state,
 // preferences, and actions related to audio and speech synthesis (such as
 // speech rate, granularity, playing state, and voice packs).
@@ -9,6 +13,18 @@
 // Distinct from SpeechBrowserProxy, which proxies the Web Speech API
 // (window.speechSynthesis) for speech playback and voice management.
 export interface AudioBrowserProxy {
+  //////////////////////////////////////////////////////////////////////////////
+  // Incoming events (C++ -> TypeScript):
+
+  onLockScreen: ChromeEvent<() => void>;
+  onTabMuteStateChange: ChromeEvent<(muted: boolean) => void>;
+  onTtsEngineInstalled: ChromeEvent<() => void>;
+  readingModeWillClose: ChromeEvent<() => void>;
+  updateVoicePackStatus: ChromeEvent<(lang: string, status: string) => void>;
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Outgoing calls (TypeScript -> C++):
+
   getSpeechRate(): number;
   getHighlightGranularity(): number;
   getAutoHighlighting(): number;
@@ -43,6 +59,36 @@ export interface AudioBrowserProxy {
 }
 
 export class AudioBrowserProxyImpl implements AudioBrowserProxy {
+  onLockScreen = new EventForwarder<() => void>();
+  onTabMuteStateChange = new EventForwarder<(muted: boolean) => void>();
+  onTtsEngineInstalled = new EventForwarder<() => void>();
+  readingModeWillClose = new EventForwarder<() => void>();
+  updateVoicePackStatus =
+      new EventForwarder<(lang: string, status: string) => void>();
+
+  constructor() {
+    chrome.readingMode.onLockScreen = () => {
+      this.onLockScreen.forward();
+    };
+
+    chrome.readingMode.onTabMuteStateChange = (muted: boolean) => {
+      this.onTabMuteStateChange.forward(muted);
+    };
+
+    chrome.readingMode.onTtsEngineInstalled = () => {
+      this.onTtsEngineInstalled.forward();
+    };
+
+    chrome.readingMode.readingModeWillClose = () => {
+      this.readingModeWillClose.forward();
+    };
+
+    chrome.readingMode.updateVoicePackStatus =
+        (lang: string, status: string) => {
+          this.updateVoicePackStatus.forward(lang, status);
+        };
+  }
+
   getSpeechRate(): number {
     return chrome.readingMode.speechRate;
   }

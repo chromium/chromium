@@ -3,10 +3,17 @@
 // found in the LICENSE file.
 
 import type {AudioBrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {FakeChromeEvent} from 'chrome-untrusted://webui-test/fake_chrome_event.js';
 import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy.js';
 
 export class TestAudioBrowserProxy extends TestBrowserProxy implements
     AudioBrowserProxy {
+  onLockScreen = new FakeChromeEvent();
+  onTabMuteStateChange = new FakeChromeEvent();
+  onTtsEngineInstalled = new FakeChromeEvent();
+  readingModeWillClose = new FakeChromeEvent();
+  updateVoicePackStatus = new FakeChromeEvent();
+
   speechRate: number = 1.0;
   highlightGranularity: number = 0;
   autoHighlighting: number = 0;

@@ -79,6 +79,12 @@ export class SpeechController {
     // Send over the initial state.
     this.clearReadAloudState();
     this.isSpeechActiveChanged_(this.isSpeechActive());
+    this.audioBrowserProxy_.onLockScreen.addListener(
+        this.onLockScreen.bind(this));
+    this.audioBrowserProxy_.readingModeWillClose.addListener(
+        this.onReadingModeWillClose.bind(this));
+    this.audioBrowserProxy_.onTabMuteStateChange.addListener(
+        this.onTabMuteStateChange.bind(this));
   }
 
   resetForNewContent() {

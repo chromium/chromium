@@ -291,11 +291,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
           this.getSelection(), this.$.container);
     };
 
-    chrome.readingMode.updateVoicePackStatus =
-        (lang: string, status: string) => {
-          this.voiceLanguageController_.updateLanguageStatus(lang, status);
-        };
-
     chrome.readingMode.showLoading = () => {
       this.showLoading();
     };
@@ -312,24 +307,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
       this.languageChanged();
     };
 
-    chrome.readingMode.onLockScreen = () => {
-      this.speechController_.onLockScreen();
-    };
-
     chrome.readingMode.onAnchorsReadyForReadability = () => {
       this.onReadabilityAnchorsReady_();
-    };
-
-    chrome.readingMode.readingModeWillClose = () => {
-      this.speechController_.onReadingModeWillClose();
-    };
-
-    chrome.readingMode.onTtsEngineInstalled = () => {
-      this.voiceLanguageController_.onTtsEngineInstalled();
-    };
-
-    chrome.readingMode.onTabMuteStateChange = (muted: boolean) => {
-      this.speechController_.onTabMuteStateChange(muted);
     };
 
     chrome.readingMode.onNodeWillBeDeleted = (nodeId: number) => {

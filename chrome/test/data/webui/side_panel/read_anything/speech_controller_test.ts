@@ -1239,4 +1239,32 @@ suite('SpeechController', () => {
 
         highlighter.highlightCurrentGranularity = originalHighlight;
       });
+
+  test('onLockScreen callback triggers onLockScreen', () => {
+    onPlayPauseToggle('Oui, oui bonjour');
+    speech.reset();
+    audioBrowserProxy.reset();
+
+    audioBrowserProxy.onLockScreen.callListeners();
+
+    assertEquals(1, speech.getCallCount('cancel'));
+  });
+
+  test('readingModeWillClose callback triggers onReadingModeWillClose', () => {
+    onPlayPauseToggle('Sleepy jack the fire drill');
+    speech.reset();
+    audioBrowserProxy.reset();
+    assertTrue(speechController.isSpeechActive());
+
+    audioBrowserProxy.readingModeWillClose.callListeners();
+
+    assertEquals(1, speech.getCallCount('cancel'));
+  });
+
+  test('onTabMuteStateChange callback triggers onTabMuteStateChange', () => {
+    speechController.onTabMuteStateChange(false);
+    audioBrowserProxy.onTabMuteStateChange.callListeners(true);
+    speech.reset();
+    audioBrowserProxy.onTabMuteStateChange.callListeners(false);
+  });
 });

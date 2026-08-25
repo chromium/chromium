@@ -1437,4 +1437,21 @@ suite('VoiceLanguageController', () => {
     assertEquals(naturalVoice, voiceLanguageController.getCurrentVoice());
     assertEquals(0, metrics.getCallCount('recordVoiceLanguageChange'));
   });
+
+  test('updateVoicePackStatus triggers updateLanguageStatus', () => {
+    audioBrowserProxy.installedLangs = [lang3];
+    audioBrowserProxy.languagesEnabledInPref = new Set([lang3]);
+    speech.setVoices([naturalVoiceWithLang3]);
+
+    audioBrowserProxy.updateVoicePackStatus.callListeners(lang3, 'kInstalled');
+
+    assertTrue(voiceLanguageController.getEnabledLangs().includes(lang3));
+  });
+
+  test('onTtsEngineInstalled triggers onTtsEngineInstalled', () => {
+    const bn = 'bn-bd';
+    voiceLanguageController.enableLang(bn);
+    audioBrowserProxy.onTtsEngineInstalled.callListeners();
+    assertArrayEquals(['bn'], audioBrowserProxy.installedLangs);
+  });
 });

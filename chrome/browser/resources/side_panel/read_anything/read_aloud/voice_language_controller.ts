@@ -42,6 +42,10 @@ export class VoiceLanguageController {
     this.model_.setCurrentLanguage(
         this.audioBrowserProxy_.getBaseLanguageForSpeech());
     this.speech_.setOnVoicesChanged(this.onVoicesChanged.bind(this));
+    this.audioBrowserProxy_.updateVoicePackStatus.addListener(
+        this.updateLanguageStatus.bind(this));
+    this.audioBrowserProxy_.onTtsEngineInstalled.addListener(
+        this.onTtsEngineInstalled.bind(this));
   }
 
   addListener(listener: VoiceLanguageListener) {

@@ -120,6 +120,7 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
   ts_definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
     "app/read_anything.d.ts",
