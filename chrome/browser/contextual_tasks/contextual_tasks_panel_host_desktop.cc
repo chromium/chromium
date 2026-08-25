@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "components/contextual_tasks/public/features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/compositor/layer.h"
 
@@ -130,6 +131,11 @@ content::WebContents* ContextualTasksPanelHostDesktop::GetWebContents() {
 }
 
 content::WebContents* ContextualTasksPanelHostDesktop::GetToolbarWebContents() {
+  if (IsContextualTasksSidePanelRearchitectureEnabled()) {
+    return web_view_ && web_view_->toolbar_web_view()
+               ? web_view_->toolbar_web_view()->GetWebContents()
+               : nullptr;
+  }
   return GetWebContents();
 }
 
@@ -156,7 +162,7 @@ std::unique_ptr<views::View>
 ContextualTasksPanelHostDesktop::CreateSidePanelView(
     SidePanelEntryScope& scope) {
   std::unique_ptr<ContextualTasksWebView> web_view =
-      std::make_unique<ContextualTasksWebView>(browser_window_->GetProfile());
+      std::make_unique<ContextualTasksWebView>(browser_window_);
   web_view->SetPaintToLayer();
   web_view->layer()->SetFillsBoundsOpaquely(false);
   web_view_ = web_view->GetWeakPtr();

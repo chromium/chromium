@@ -8,12 +8,15 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/mock_side_panel_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/contextual_tasks/public/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -228,6 +231,33 @@ TEST_F(ContextualTasksPanelHostDesktopTest, IsPanelInitialized) {
   std::unique_ptr<views::View> view =
       panel_host_->CreateSidePanelView(*side_panel_registry_);
   EXPECT_TRUE(panel_host_->IsPanelInitialized());
+}
+
+TEST_F(ContextualTasksPanelHostDesktopTest,
+       GetToolbarWebContentsRearchitectureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kContextualTasksSidePanelRearchitecture);
+
+  std::unique_ptr<views::View> view =
+      panel_host_->CreateSidePanelView(*side_panel_registry_);
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_.get(),
+                                                        nullptr);
+  panel_host_->SetWebContents(web_contents.get());
+  EXPECT_EQ(panel_host_->GetToolbarWebContents(), web_contents.get());
+}
+
+TEST_F(ContextualTasksPanelHostDesktopTest,
+       GetToolbarWebContentsRearchitectureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kContextualTasksSidePanelRearchitecture);
+
+  std::unique_ptr<views::View> view =
+      panel_host_->CreateSidePanelView(*side_panel_registry_);
+  content::WebContents* toolbar_contents = panel_host_->GetToolbarWebContents();
+  ASSERT_TRUE(toolbar_contents);
+  EXPECT_EQ(webui::GetBrowserWindowInterface(toolbar_contents),
+            browser_window_.get());
 }
 
 }  // namespace contextual_tasks
