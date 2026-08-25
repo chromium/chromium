@@ -25818,6 +25818,8 @@ Called by update_net_error_codes.py.-->
   <int value="14" label="CLOSE_INTERSTITIAL_WITHOUT_UI"/>
 </enum>
 
+<!-- LINT.IfChange(SendTabToSelfDeviceCount) -->
+
 <enum name="SendTabToSelfDeviceCount">
   <int value="0" label="No target devices because signed out"/>
   <int value="1" label="0 target devices"/>
@@ -25829,6 +25831,8 @@ Called by update_net_error_codes.py.-->
   <int value="7" label="More than 5 target devices"/>
   <int value="8" label="No target devices because sign-in pending"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/send_tab_to_self/metrics_util.h:SendTabToSelfDeviceCount) -->
 
 <!-- LINT.IfChange(SendTabToSelfNotificationStatus) -->
 

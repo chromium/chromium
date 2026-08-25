@@ -90,7 +90,6 @@ SendTabToSelfEntry::SendTabToSelfEntry(
       device_name_(std::move(device_name)),
       target_device_sync_cache_guid_(std::move(target_device_sync_cache_guid)),
       shared_time_(shared_time),
-      notification_dismissed_(false),
       page_context_(page_context),
       navigation_history_(std::move(navigation_history)) {
   DCHECK(!guid_.empty());
