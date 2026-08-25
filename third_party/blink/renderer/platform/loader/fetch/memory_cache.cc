@@ -142,24 +142,6 @@ static constexpr base::TimeDelta kDefaultStrongReferencePruneDelay =
     base::Minutes(5);
 #endif
 
-// Feature to control the duration for which a strong reference may remain
-// in the MemoryCache after its last access.
-BASE_FEATURE(kMemoryCacheChangeStrongReferencePruneDelay,
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
-// Parameter defining the delay after which a strong reference is removed
-// from the MemoryCache after its last access.
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kMemoryCacheStrongReferencePruneDelay,
-                   &kMemoryCacheChangeStrongReferencePruneDelay,
-                   "strong_reference_prune_delay",
-                   kDefaultStrongReferencePruneDelay);
-
 ScopedMemoryCacheForTesting::ScopedMemoryCacheForTesting(
     Persistent<MemoryCache> cache) {
   if (!g_memory_cache) {
@@ -216,8 +198,7 @@ MemoryCache::MemoryCache(
           MemoryConsumerRegistration::CheckUnregister::kDisabled),
       strong_references_max_size_(
           features::kMemoryCacheStrongReferenceTotalSizeThresholdParam.Get()),
-      strong_references_prune_duration_(
-          kMemoryCacheStrongReferencePruneDelay.Get()),
+      strong_references_prune_duration_(kDefaultStrongReferencePruneDelay),
       task_runner_(std::move(task_runner)) {
   MemoryCacheDumpProvider::Instance()->SetMemoryCache(this);
   OnUpdateMemoryLimit();
