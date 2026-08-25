@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.view.View;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -57,6 +58,13 @@ public class BookmarkDesktopNavigationCoordinator {
                             new BookmarkDesktopNavigationMediator(
                                     mContext, bookmarkModel, mModelList, bookmarkDelegate);
                 });
+    }
+
+    /** Called when configuration changes. */
+    public void onConfigurationChanged(Configuration newConfig) {
+        if (mMediator != null) {
+            mMediator.onConfigurationChanged(newConfig);
+        }
     }
 
     /** Destroys the coordinator and its resources. */

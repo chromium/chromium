@@ -26,6 +26,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.atLeast;
@@ -2391,8 +2392,10 @@ public class BookmarkTest {
     @MediumTest
     @Restriction({DeviceFormFactor.ONLY_TABLET})
     @EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
-    @DisabledTest(message = "https://crbug.com/549299242")
     public void testDesktopLayout_InitRedirectsFromRoot() throws Exception {
+        assumeTrue(
+                mActivityTestRule.getActivity().getResources().getConfiguration().screenWidthDp
+                        >= BookmarkUtils.WIDE_DISPLAY_THRESHOLD_DP);
         DeviceInfo.setIsDesktopForTesting(true);
         try {
             openBookmarkManager();
@@ -2425,8 +2428,10 @@ public class BookmarkTest {
     @MediumTest
     @Restriction({DeviceFormFactor.ONLY_TABLET})
     @EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
-    @DisabledTest(message = "https://crbug.com/549299242")
     public void testDesktopLayout_NoBackButtonForTopLevelFolders() throws Exception {
+        assumeTrue(
+                mActivityTestRule.getActivity().getResources().getConfiguration().screenWidthDp
+                        >= BookmarkUtils.WIDE_DISPLAY_THRESHOLD_DP);
         DeviceInfo.setIsDesktopForTesting(true);
         try {
             openBookmarkManager();
@@ -2471,6 +2476,63 @@ public class BookmarkTest {
                             Criteria.checkThat(
                                     mToolbar.getNavigationButtonForTests(),
                                     is(NavigationButton.NORMAL_VIEW_BACK)));
+        } finally {
+            DeviceInfo.setIsDesktopForTesting(false);
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceFormFactor.ONLY_TABLET})
+    @EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
+    public void testDesktopLayout_BackButtonForTopLevelFolders_NarrowScreen() throws Exception {
+        assumeTrue(
+                mActivityTestRule.getActivity().getResources().getConfiguration().screenWidthDp
+                        < BookmarkUtils.WIDE_DISPLAY_THRESHOLD_DP);
+        DeviceInfo.setIsDesktopForTesting(true);
+        try {
+            openBookmarkManager();
+            BookmarkTestUtil.waitForBookmarkModelLoaded();
+
+            // Verify navigation panel is not displayed on narrow screens.
+            View navigationPane =
+                    mActivityTestRule.getActivity().findViewById(R.id.navigation_pane);
+            if (navigationPane != null) {
+                assertEquals(View.GONE, navigationPane.getVisibility());
+            }
+
+            // Navigate to Mobile Bookmarks (top-level).
+            runOnUiThreadBlocking(() -> mDelegate.openFolder(mBookmarkModel.getMobileFolderId()));
+            CriteriaHelper.pollUiThread(
+                    () -> Criteria.checkThat(mToolbar.getTitle(), equalTo("Mobile bookmarks")));
+            CriteriaHelper.pollUiThread(
+                    () ->
+                            Criteria.checkThat(
+                                    mToolbar.getNavigationButtonForTests(),
+                                    is(NavigationButton.NORMAL_VIEW_BACK)));
+
+            // Navigate to Reading List (top-level).
+            runOnUiThreadBlocking(
+                    () ->
+                            mDelegate.openFolder(
+                                    mBookmarkModel.getLocalOrSyncableReadingListFolder()));
+            CriteriaHelper.pollUiThread(
+                    () -> Criteria.checkThat(mToolbar.getTitle(), equalTo("Reading list")));
+            CriteriaHelper.pollUiThread(
+                    () ->
+                            Criteria.checkThat(
+                                    mToolbar.getNavigationButtonForTests(),
+                                    is(NavigationButton.NORMAL_VIEW_BACK)));
+
+            // Activate back navigation to root folder.
+            runOnUiThreadBlocking(() -> mToolbar.onClick(mToolbar));
+            CriteriaHelper.pollUiThread(
+                    () -> Criteria.checkThat(mToolbar.getTitle(), equalTo("Bookmarks")));
+            CriteriaHelper.pollUiThread(
+                    () ->
+                            Criteria.checkThat(
+                                    mToolbar.getNavigationButtonForTests(),
+                                    is(NavigationButton.NONE)));
         } finally {
             DeviceInfo.setIsDesktopForTesting(false);
         }

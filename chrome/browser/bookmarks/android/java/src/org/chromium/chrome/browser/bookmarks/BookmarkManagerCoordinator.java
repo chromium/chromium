@@ -418,6 +418,10 @@ public class BookmarkManagerCoordinator
                             updateDesktopSearchBoxMargins();
                             updateDesktopSearchBoxPosition(newConfig);
 
+                            if (mDesktopNavigationCoordinator != null) {
+                                mDesktopNavigationCoordinator.onConfigurationChanged(newConfig);
+                            }
+
                             mBookmarkToolbarCoordinator.onConfigurationChanged(newConfig);
                         }
                     }

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -240,6 +241,13 @@ class BookmarkDesktopNavigationMediator extends BookmarkModelObserver
         }
     }
 
+    public void onConfigurationChanged(Configuration newConfig) {
+        if (!isSmallScreen(newConfig)
+                && Objects.equals(mCurrentFolderId, mBookmarkModel.getRootFolderId())) {
+            openFirstFolder();
+        }
+    }
+
     // BookmarkModelObserver implementation
     @Override
     public void bookmarkModelChanged() {
@@ -257,7 +265,10 @@ class BookmarkDesktopNavigationMediator extends BookmarkModelObserver
     }
 
     private boolean isSmallScreen() {
-        return mContext.getResources().getConfiguration().screenWidthDp
-                < BookmarkUtils.WIDE_DISPLAY_THRESHOLD_DP;
+        return isSmallScreen(mContext.getResources().getConfiguration());
+    }
+
+    private static boolean isSmallScreen(Configuration config) {
+        return config.screenWidthDp < BookmarkUtils.WIDE_DISPLAY_THRESHOLD_DP;
     }
 }
