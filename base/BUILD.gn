@@ -4446,6 +4446,7 @@ test("base_unittests") {
       "//base/android/linker:ashmem",
       "//base/test:test_support_java",
       "//third_party/jni_zero",
+      "//third_party/jni_zero/test:jni_zero_unittests_sources",
     ]
   }
 

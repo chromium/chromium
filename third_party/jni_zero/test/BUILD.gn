@@ -9,14 +9,20 @@ import("//third_party/jni_zero/jni_zero.gni")
 # code compiles for all edgecases. jni_zero_unittests contains runnable tests.
 testonly = true
 
-# Note: jni_zero_unittests is not currently included in standard CI test suites
-# (no bot coverage) and is intended for local developer testing.
-test("jni_zero_unittests") {
+# Runnable C++ tests. Built both as a standalone binary and as part of
+# base_unittests so that CQ bots cover them.
+source_set("jni_zero_unittests_sources") {
   sources = [ "jni_unique_ptr_unittest.cc" ]
   deps = [
     "//testing/gtest",
-    "//testing/gtest:gtest_main",
     "//third_party/jni_zero",
+  ]
+}
+
+test("jni_zero_unittests") {
+  deps = [
+    ":jni_zero_unittests_sources",
+    "//testing/gtest:gtest_main",
   ]
 }
 
