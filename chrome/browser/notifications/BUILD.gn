@@ -572,6 +572,16 @@ if (!is_android) {
       ]
       deps += [ "//chrome/browser/ash/notifications" ]
     }
+
+    if (enable_extensions) {
+      sources += [ "notification_permission_context_apitest.cc" ]
+      deps += [
+        "//chrome/browser/extensions:test_support",
+        "//chrome/browser/profiles:profile",
+        "//extensions/browser",
+        "//ui/message_center/public/cpp",
+      ]
+    }
   }
 
   if (!is_chromeos_device) {
