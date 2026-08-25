@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_ui_operations_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
+#include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -415,11 +416,14 @@ END_METADATA
 
 // BookmarkBarView ------------------------------------------------------------
 
-BookmarkBarView::BookmarkBarView(BrowserWindowInterface* browser,
-                                 BrowserView* browser_view)
+BookmarkBarView::BookmarkBarView(
+    BrowserWindowInterface* browser,
+    std::unique_ptr<BookmarkBarUIController> controller,
+    BrowserView* browser_view)
     : AnimationDelegateViews(this),
       browser_(browser),
-      browser_view_(browser_view) {
+      browser_view_(browser_view),
+      controller_(std::move(controller)) {
   SetID(VIEW_ID_BOOKMARK_BAR);
   SetProperty(views::kElementIdentifierKey, kBookmarkBarElementId);
 
@@ -440,6 +444,10 @@ BookmarkBarView::BookmarkBarView(BrowserWindowInterface* browser,
       l10n_util::GetStringUTF8(IDS_ACCNAME_BOOKMARKS));
 
   Init();
+
+  if (controller_) {
+    controller_->Bind(this);
+  }
 }
 
 BookmarkBarView::~BookmarkBarView() {

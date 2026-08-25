@@ -375,6 +375,16 @@ if (!is_android) {
     ]
   }
 
+  source_set("ui_controller_factory") {
+    public = [ "ui_controller_factory.h" ]
+    sources = [ "ui_controller_factory.cc" ]
+    public_deps = [ "//ui/base/unowned_user_data" ]
+    deps = [
+      "//chrome/browser/ui/bookmarks/controllers:impl",
+      "//chrome/browser/ui/browser_window",
+    ]
+  }
+
   source_set("browser_tab_strip_tracker") {
     sources = [ "browser_tab_strip_tracker.cc" ]
     deps = [
@@ -919,6 +929,7 @@ static_library("ui") {
 
   if (!is_android) {
     deps += [
+      ":ui_controller_factory",
       "//chrome/browser/ui/browser_active_state_manager",
       "//chrome/browser/ui/infobars",
       "//chrome/browser/ui/views/frame:glass_frame_service",

@@ -1,0 +1,30 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_BOOKMARKS_CONTROLLERS_BOOKMARK_BAR_UI_CONTROLLER_IMPL_H_
+#define CHROME_BROWSER_UI_BOOKMARKS_CONTROLLERS_BOOKMARK_BAR_UI_CONTROLLER_IMPL_H_
+
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_controller.h"
+
+class BrowserWindowInterface;
+
+class BookmarkBarUIControllerImpl : public BookmarkBarUIController {
+ public:
+  explicit BookmarkBarUIControllerImpl(BrowserWindowInterface* browser);
+  BookmarkBarUIControllerImpl(const BookmarkBarUIControllerImpl&) = delete;
+  BookmarkBarUIControllerImpl& operator=(const BookmarkBarUIControllerImpl&) =
+      delete;
+  ~BookmarkBarUIControllerImpl() override;
+
+  // BookmarkBarUIController overrides:
+  void Bind(BookmarkBarUIClient* client) override;
+
+ private:
+  raw_ptr<BrowserWindowInterface> browser_;
+  raw_ptr<BookmarkBarUIClient> client_ = nullptr;
+};
+
+#endif  // CHROME_BROWSER_UI_BOOKMARKS_CONTROLLERS_BOOKMARK_BAR_UI_CONTROLLER_IMPL_H_

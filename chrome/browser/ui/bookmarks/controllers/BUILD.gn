@@ -1,0 +1,23 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("controllers") {
+  sources = [
+    "bookmark_bar_ui_client.h",
+    "bookmark_bar_ui_controller.h",
+  ]
+  public_deps = [ "//base" ]
+}
+
+source_set("impl") {
+  sources = [
+    "bookmark_bar_ui_controller_impl.cc",
+    "bookmark_bar_ui_controller_impl.h",
+  ]
+  public_deps = [ ":controllers" ]
+  deps = [
+    "//base",
+    "//chrome/browser/ui/browser_window",
+  ]
+}

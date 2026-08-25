@@ -115,6 +115,7 @@
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_service.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
+#include "chrome/browser/ui/ui_controller_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/views/animations/side_panel_animations.h"
@@ -908,6 +909,10 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   upgrade_notification_controller_ =
       std::make_unique<UpgradeNotificationController>(browser);
 
+  ui_controller_factory_ =
+      GetUserDataFactory().CreateInstance<UIControllerFactory>(*browser,
+                                                               browser);
+
   if (browser_view) {
     user_education_->Init(browser_view);
   }
@@ -1141,6 +1146,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   if (user_education_) {
     user_education_->TearDown();
   }
+  ui_controller_factory_.reset();
   upgrade_notification_controller_.reset();
   toast_service_.reset();
   synced_window_delegate_.reset();

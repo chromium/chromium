@@ -79,6 +79,7 @@
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
+#include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_active_state_manager/browser_active_state_manager.h"
@@ -134,6 +135,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
+#include "chrome/browser/ui/ui_controller_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -5311,8 +5313,10 @@ bool BrowserView::MaybeShowBookmarkBar(WebContents* contents) {
   }
 
   if (!bookmark_bar_view_) {
-    detached_bookmark_bar_view_ =
-        std::make_unique<BookmarkBarView>(browser_.get(), this);
+    auto* factory = UIControllerFactory::From(browser_.get());
+    auto controller = factory->CreateBookmarkBarController();
+    detached_bookmark_bar_view_ = std::make_unique<BookmarkBarView>(
+        browser_.get(), std::move(controller), this);
     bookmark_bar_view_ = detached_bookmark_bar_view_.get();
     bookmark_bar_view_->SetBookmarkBarState(
         bookmark_bar_state(), BookmarkBar::DONT_ANIMATE_STATE_CHANGE);

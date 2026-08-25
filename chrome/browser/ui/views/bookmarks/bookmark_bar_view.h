@@ -19,6 +19,7 @@
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_observer.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
+#include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_client.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_context_menu.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_controller_observer.h"
@@ -39,6 +40,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
+class BookmarkBarUIController;
 class BookmarkBarViewObserver;
 class BookmarkBarViewTestHelper;
 class BookmarkContextMenu;
@@ -80,6 +82,7 @@ class LabelButton;
 // waits until the HistoryService for the profile has been loaded before
 // creating the BookmarkModel.
 class BookmarkBarView : public views::AccessiblePaneView,
+                        public BookmarkBarUIClient,
                         public BookmarkMergedSurfaceServiceObserver,
                         public views::ContextMenuController,
                         public views::DragController,
@@ -92,7 +95,9 @@ class BookmarkBarView : public views::AccessiblePaneView,
   class ButtonSeparatorView;
 
   // |browser_view| can be NULL during tests.
-  BookmarkBarView(BrowserWindowInterface* browser, BrowserView* browser_view);
+  BookmarkBarView(BrowserWindowInterface* browser,
+                  std::unique_ptr<BookmarkBarUIController> controller,
+                  BrowserView* browser_view);
   BookmarkBarView(const BookmarkBarView&) = delete;
   BookmarkBarView& operator=(const BookmarkBarView&) = delete;
   ~BookmarkBarView() override;
@@ -520,6 +525,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   const raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<BrowserView> browser_view_;
+  std::unique_ptr<BookmarkBarUIController> controller_;
 
   // True if the owning browser is showing an infobar.
   bool infobar_visible_ = false;
