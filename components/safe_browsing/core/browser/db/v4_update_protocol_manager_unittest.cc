@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/escape.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -19,6 +20,7 @@
 #include "components/safe_browsing/core/browser/db/safebrowsing.pb.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
@@ -39,6 +41,11 @@ namespace safe_browsing {
 using enum ExtendedReportingLevel;
 
 class V4UpdateProtocolManagerTest : public PlatformTest {
+ public:
+  V4UpdateProtocolManagerTest() {
+    feature_list_.InitAndDisableFeature(kLocalListsUseSBv5);
+  }
+
   void SetUp() override {
     PlatformTest::SetUp();
 
@@ -152,6 +159,9 @@ class V4UpdateProtocolManagerTest : public PlatformTest {
   std::unique_ptr<StoreStateMap> store_state_map_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(V4UpdateProtocolManagerTest, TestGetUpdatesErrorHandlingNetwork) {

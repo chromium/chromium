@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -20,6 +21,7 @@
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -33,6 +35,10 @@ namespace safe_browsing {
 
 class V4GetHashProtocolManagerTest : public PlatformTest {
  public:
+  V4GetHashProtocolManagerTest() {
+    feature_list_.InitAndDisableFeature(kLocalListsUseSBv5);
+  }
+
   void SetUp() override {
     PlatformTest::SetUp();
     callback_called_ = false;
@@ -124,6 +130,7 @@ class V4GetHashProtocolManagerTest : public PlatformTest {
   void reset_callback_called() { callback_called_ = false; }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   bool callback_called_;
   base::SimpleTestClock clock_;
   network::TestURLLoaderFactory test_url_loader_factory_;

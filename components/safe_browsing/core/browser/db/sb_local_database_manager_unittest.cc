@@ -875,6 +875,16 @@ class SBLocalDatabaseManagerTest_V5 : public SBLocalDatabaseManagerTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+class SBLocalDatabaseManagerTest_V4 : public SBLocalDatabaseManagerTest {
+ public:
+  SBLocalDatabaseManagerTest_V4() {
+    feature_list_.InitAndDisableFeature(kLocalListsUseSBv5);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 TEST_F(SBLocalDatabaseManagerTest_V5,
        TestCheckBrowseUrl_V5_NullManagerReturnsSafe) {
   std::string url_bad_no_scheme("example.com/bad/");
@@ -1070,12 +1080,9 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5, TestCheckCsdAllowlistWithPrefixMatch) {
 
 // This is like CsdAllowlistWithPrefixMatch, but we also verify the
 // full-hash-match results in an appropriate callback value.
-TEST_F(SBLocalDatabaseManagerTest,
+// v4-only because v5's get full hash manager does not support CSD allowlist.
+TEST_F(SBLocalDatabaseManagerTest_V4,
        TestCheckCsdAllowlistWithPrefixTheFullMatch) {
-  // v5's get full hash manager does not support CSD allowlist.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kLocalListsUseSBv5);
-
   std::string url_safe_no_scheme("example.com/safe/");
   FullHashStr safe_full_hash(std::string(
       base::as_string_view(crypto::hash::Sha256(url_safe_no_scheme))));
@@ -1409,7 +1416,10 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5,
   EXPECT_FALSE(future2.Get<1>());
 }
 
-TEST_F(SBLocalDatabaseManagerTest, TestGetSeverestThreatTypeAndMetadata) {
+// v4-only because the database manager's `GetSeverestThreatTypeAndMetadata` is
+// not used by v5 (the severity is determined in the hash protocol manager
+// directly)
+TEST_F(SBLocalDatabaseManagerTest_V4, TestGetSeverestThreatTypeAndMetadata) {
   WaitForTasksOnTaskRunner();
 
   FullHashStr fh_malware("Malware");
@@ -1930,15 +1940,23 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5, TestSubresourceFilterCallback) {
   }
 }
 
-TEST_F(SBLocalDatabaseManagerTest,
-       TestCheckExtensionIDsNothingBlocklisted_WithNetworkCheck) {
-  // Explicitly disable the features allowing network bypass.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{kExtensionBlocklistSkipNetworkQuery,
-                             kLocalListsUseSBv5});
+class SBLocalDatabaseManagerTest_ExtensionNetworkQuery
+    : public SBLocalDatabaseManagerTest {
+ public:
+  SBLocalDatabaseManagerTest_ExtensionNetworkQuery() {
+    // Explicitly disable the features allowing network bypass.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{kExtensionBlocklistSkipNetworkQuery,
+                               kLocalListsUseSBv5});
+  }
 
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SBLocalDatabaseManagerTest_ExtensionNetworkQuery,
+       TestCheckExtensionIDsNothingBlocklisted_WithNetworkCheck) {
   // Setup to receive full-hash misses.
   ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
 
@@ -2018,15 +2036,8 @@ TEST_P(SBLocalDatabaseManagerTest_ExtensionSkipNetworkQuery,
   EXPECT_TRUE(client.on_check_extensions_result_called());
 }
 
-TEST_F(SBLocalDatabaseManagerTest,
+TEST_F(SBLocalDatabaseManagerTest_ExtensionNetworkQuery,
        TestCheckExtensionIDsOneIsBlocklisted_WithNetworkCheck) {
-  // Explicitly disable the features allowing network bypass.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{kExtensionBlocklistSkipNetworkQuery,
-                             kLocalListsUseSBv5});
-
   // bad_extension_id is in the local DB and the full hash will match.
   const FullHashStr bad_extension_id("aapbdbdomjkkjkaonfhkkikfgjllcleb"),
       good_extension_id("aapbdbdomjkkjkaonfhkkikfgjllclec");
@@ -2089,15 +2100,8 @@ TEST_P(SBLocalDatabaseManagerTest_ExtensionSkipNetworkQuery,
 // real |V4GetHashProtocolManager| instead of |FakeGetHashProtocolManager|. This
 // tests that the values passed into the protocol manager are usable.
 TEST_F(
-    SBLocalDatabaseManagerTest,
+    SBLocalDatabaseManagerTest_ExtensionNetworkQuery,
     TestCheckExtensionIDsOneIsBlocklisted_RealProtocolManager_WithNetworkCheck) {
-  // Explicitly disable the features allowing network bypass.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{kExtensionBlocklistSkipNetworkQuery,
-                             kLocalListsUseSBv5});
-
   // bad_extension_id is in the local DB and the full hash will match.
   const FullHashStr bad_extension_id("aapbdbdomjkkjkaonfhkkikfgjllcleb"),
       good_extension_id("aapbdbdomjkkjkaonfhkkikfgjllclec");
@@ -2645,14 +2649,8 @@ TEST_P(SBLocalDatabaseManagerTest_V4V5, TimeSinceLastUpdateResponseHistograms) {
       "SafeBrowsing.SBLocalDatabaseManager.TimeSinceLastUpdateResponse", 1);
 }
 
-TEST_F(SBLocalDatabaseManagerTest, V5UpdateRequestCompleted) {
+TEST_F(SBLocalDatabaseManagerTest_V5, V5UpdateRequestCompleted) {
   WaitForTasksOnTaskRunner();
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kLocalListsUseSBv5);
-
-  ResetLocalDatabaseManager();
-  WaitForTasksOnTaskRunner();
-
   ASSERT_TRUE(sb_local_database_manager_->IsDatabaseReady());
 
   std::unique_ptr<StoreStateMap> state_map =

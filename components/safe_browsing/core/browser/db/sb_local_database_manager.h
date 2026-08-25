@@ -254,7 +254,7 @@ class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
  private:
   friend class SBLocalDatabaseManagerTest;
   friend class FakeSBLocalDatabaseManager;
-  FRIEND_TEST_ALL_PREFIXES(SBLocalDatabaseManagerTest,
+  FRIEND_TEST_ALL_PREFIXES(SBLocalDatabaseManagerTest_V4,
                            TestGetSeverestThreatTypeAndMetadata);
   FRIEND_TEST_ALL_PREFIXES(SBLocalDatabaseManagerTest, NotificationOnUpdate);
   FRIEND_TEST_ALL_PREFIXES(SBLocalDatabaseManagerTest, SyncedLists);
