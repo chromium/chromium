@@ -1190,10 +1190,7 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
     base::ScopedClosureRunner scoped_on_after,
     std::vector<SuggestionGenerator::ReturnedSuggestions>
         returned_suggestions) {
-  using SuggestionDataSource = SuggestionGenerator::SuggestionDataSource;
-
-  // Suggestion generators lifespan should be limited to only when they are
-  // needed.
+  // `SuggestionGenerator`s' lifespan is limited to only when they are needed.
   suggestion_generators_.clear();
 
   // In case we cannot fetch the parsed `FormStructure` and `AutofillField`, we
@@ -1204,28 +1201,15 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
       FindMutableFormAndField(form.global_id(), field.global_id())
           .autofill_field;
 
-  base::flat_map<SuggestionDataSource, std::vector<Suggestion>> all_suggestions(
-      std::move(returned_suggestions));
-
-  // Clear some of the suggestions based on the ablation study.
-  if (autofill_field &&
-      all_suggestions.contains(SuggestionDataSource::kAddress) &&
-      !all_suggestions[SuggestionDataSource::kAddress].empty() &&
-      EvaluateAblationStudy(*autofill_field, FillingProduct::kAddress,
-                            /*has_suggestions=*/true)) {
-    all_suggestions[SuggestionDataSource::kAddress].clear();
-  }
-  if (autofill_field &&
-      all_suggestions.contains(SuggestionDataSource::kCreditCard) &&
-      !all_suggestions[SuggestionDataSource::kCreditCard].empty() &&
-      EvaluateAblationStudy(*autofill_field, FillingProduct::kCreditCard,
-                            /*has_suggestions=*/true)) {
-    all_suggestions[SuggestionDataSource::kCreditCard].clear();
-  }
-
   std::map<FillingProduct, std::vector<Suggestion>> prioritized_suggestions =
-      FilterSuggestionsByPrioritization(std::move(all_suggestions));
+      FilterSuggestionsByPrioritization(std::move(returned_suggestions));
 
+  if (autofill_field &&
+      EvaluateAblationStudy(prioritized_suggestions, *autofill_field)) {
+    prioritized_suggestions.clear();
+  }
+
+  // Handle passkeys separately, since they merge with any suggestions.
   auto passkey_suggestions =
       prioritized_suggestions.extract(FillingProduct::kPasskey);
 
@@ -1242,9 +1226,6 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
                                         std::move(scoped_on_after));
           return;
         }
-
-        // Handle passkeys separately, since they can merge with every
-        // suggestion.
         if (!passkey_suggestions.empty()) {
           MergePasskeysAndExistingSuggestions(
               suggestions, std::move(passkey_suggestions.mapped()));
@@ -3006,6 +2987,28 @@ void BrowserAutofillManager::UpdateInitialInteractionTimestamp(
       interaction_timestamp < metrics_->initial_interaction_timestamp) {
     metrics_->initial_interaction_timestamp = interaction_timestamp;
   }
+}
+
+bool BrowserAutofillManager::EvaluateAblationStudy(
+    const std::map<FillingProduct, std::vector<Suggestion>>& suggestions,
+    AutofillField& field) {
+  if (const std::vector<Suggestion>* address_suggestions =
+          base::FindOrNull(suggestions, FillingProduct::kAddress);
+      address_suggestions &&
+      EvaluateAblationStudy(field, FillingProduct::kAddress,
+                            /*has_suggestions=*/true)) {
+    CHECK(!address_suggestions->empty());
+    return true;
+  }
+  if (const std::vector<Suggestion>* credit_card_suggestions =
+          base::FindOrNull(suggestions, FillingProduct::kCreditCard);
+      credit_card_suggestions &&
+      EvaluateAblationStudy(field, FillingProduct::kCreditCard,
+                            /*has_suggestions=*/true)) {
+    CHECK(!credit_card_suggestions->empty());
+    return true;
+  }
+  return false;
 }
 
 bool BrowserAutofillManager::EvaluateAblationStudy(

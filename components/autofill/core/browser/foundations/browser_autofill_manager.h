@@ -483,6 +483,9 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Evaluates the specifics of the ablation study, and returns whether the
   // study is enabled/disabled.
+  bool EvaluateAblationStudy(
+      const std::map<FillingProduct, std::vector<Suggestion>>& suggestions,
+      AutofillField& autofill_field);
   bool EvaluateAblationStudy(AutofillField& autofill_field,
                              FillingProduct filling_product,
                              bool has_suggestions);
