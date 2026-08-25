@@ -3243,7 +3243,7 @@
       // rejected with the reason provided to the abort controller, if one was
       // provided. See crbug.com/502133195
       name: "ForwardReasonToFetchBodyAbort",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "FractionalScrollOffsets",
