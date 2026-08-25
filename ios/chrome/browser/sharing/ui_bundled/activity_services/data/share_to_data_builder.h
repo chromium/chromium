@@ -12,6 +12,10 @@ class GURL;
 @class ShareToData;
 @class URLWithTitle;
 
+namespace send_tab_to_self {
+class SendTabToSelfSyncService;
+}  // namespace send_tab_to_self
+
 namespace web {
 class WebState;
 }
@@ -29,15 +33,21 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
 
 // Returns a ShareToData object for a single `url`, and its page's `title`,
 // which is not associated to a WebState. Will also add `additional_text`, if
-// present.
-ShareToData* ShareToDataForURL(const GURL& url,
-                               NSString* title,
-                               NSString* additional_text,
-                               LPLinkMetadata* link_metadata);
+// present. `send_tab_to_self_service` determines whether this URL is eligible
+// for Send Tab to Self.
+ShareToData* ShareToDataForURL(
+    const GURL& url,
+    NSString* title,
+    NSString* additional_text,
+    LPLinkMetadata* link_metadata,
+    send_tab_to_self::SendTabToSelfSyncService* send_tab_to_self_service);
 
 // Returns a ShareToData object for a single `url_with_title`, which is not
-// associated to a WebState.
-ShareToData* ShareToDataForURLWithTitle(URLWithTitle* url_with_title);
+// associated to a WebState. `send_tab_to_self_service` determines whether this
+// URL is eligible for Send Tab to Self.
+ShareToData* ShareToDataForURLWithTitle(
+    URLWithTitle* url_with_title,
+    send_tab_to_self::SendTabToSelfSyncService* send_tab_to_self_service);
 
 }  // namespace activity_services
 

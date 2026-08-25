@@ -8,6 +8,8 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/send_tab_to_self/entry_point_display_reason.h"
+#import "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/data/share_to_data.h"
@@ -120,24 +122,80 @@ TEST_F(ShareToDataBuilderTest, TestSharePageCommandHandlingInvalidUrl) {
   EXPECT_FALSE(actual_data.isPagePrintable);
 }
 
-// Tests that the ShareToDataForURL function creates a ShareToData instance with
-// valid properties.
-TEST_F(ShareToDataBuilderTest, ShareToDataForURL) {
-  GURL testURL = GURL("http://www.testurl.com/");
-  NSString* testTitle = @"Some Title";
-  NSString* additionalText = @"Foo, Bar!";
+// Tests that `ShareToDataForURL` enables Send Tab to Self when the sync service
+// provides an entry point display reason (such as offering the feature).
+TEST_F(ShareToDataBuilderTest,
+       ShareToDataForURL_WithEntryPointReason_EnablesCanSendTabToSelf) {
+  GURL test_url = GURL("http://www.testurl.com/");
+  NSString* test_title = @"Some Title";
+  NSString* additional_text = @"Foo, Bar!";
 
-  ShareToData* data = activity_services::ShareToDataForURL(testURL, testTitle,
-                                                           additionalText, nil);
+  send_tab_to_self::StubSendTabToSelfSyncService sync_service;
+  sync_service.SetEntryPointDisplayReason(
+      send_tab_to_self::EntryPointDisplayReason::kOfferFeature);
 
-  EXPECT_EQ(testURL, data.shareURL);
-  EXPECT_EQ(testURL, data.visibleURL);
-  EXPECT_EQ(testTitle, data.title);
-  EXPECT_EQ(additionalText, data.additionalText);
+  ShareToData* data = activity_services::ShareToDataForURL(
+      test_url, test_title, additional_text, nil, &sync_service);
+
+  EXPECT_EQ(test_url, data.shareURL);
+  EXPECT_EQ(test_url, data.visibleURL);
+  EXPECT_EQ(test_title, data.title);
+  EXPECT_EQ(additional_text, data.additionalText);
   EXPECT_TRUE(data.isOriginalTitle);
   EXPECT_FALSE(data.isPagePrintable);
   EXPECT_FALSE(data.isPageSearchable);
-  EXPECT_FALSE(data.canSendTabToSelf);
+  EXPECT_TRUE(data.canSendTabToSelf);
   EXPECT_EQ(web::UserAgentType::NONE, data.userAgent);
   EXPECT_FALSE(data.thumbnailGenerator);
+}
+
+// Tests that `ShareToDataForURL` enables Send Tab to Self when the user is
+// signed out but eligible to be offered sign-in, verifying that the sign-in
+// promo entry point is preserved.
+TEST_F(ShareToDataBuilderTest,
+       ShareToDataForURL_WithOfferSignInReason_EnablesCanSendTabToSelf) {
+  GURL test_url = GURL("http://www.testurl.com/");
+  NSString* test_title = @"Some Title";
+
+  send_tab_to_self::StubSendTabToSelfSyncService sync_service;
+  // Signed-out users are offered sign-in; the entry point should remain active.
+  sync_service.SetEntryPointDisplayReason(
+      send_tab_to_self::EntryPointDisplayReason::kOfferSignIn);
+
+  ShareToData* data = activity_services::ShareToDataForURL(
+      test_url, test_title, nil, nil, &sync_service);
+
+  EXPECT_TRUE(data.canSendTabToSelf);
+}
+
+// Tests that `ShareToDataForURL` disables Send Tab to Self when the sync
+// service returns no entry point display reason (e.g. invalid URL or sync
+// disabled by policy).
+TEST_F(ShareToDataBuilderTest,
+       ShareToDataForURL_WithoutEntryPointReason_DisablesCanSendTabToSelf) {
+  GURL test_url = GURL("chrome://flags");
+  NSString* test_title = @"Flags";
+
+  send_tab_to_self::StubSendTabToSelfSyncService sync_service;
+  sync_service.SetEntryPointDisplayReason(std::nullopt);
+
+  ShareToData* data = activity_services::ShareToDataForURL(
+      test_url, test_title, nil, nil, &sync_service);
+
+  EXPECT_FALSE(data.canSendTabToSelf);
+}
+
+// Tests that `ShareToDataForURL` disables Send Tab to Self when the sync
+// service is null (such as in an Incognito session).
+TEST_F(ShareToDataBuilderTest,
+       ShareToDataForURL_NullSyncService_DisablesCanSendTabToSelf) {
+  GURL test_url = GURL("http://www.testurl.com/");
+  NSString* test_title = @"Some Title";
+
+  // When in Incognito or when the keyed service is unavailable, sync_service is
+  // null and Send Tab to Self must be disabled.
+  ShareToData* data = activity_services::ShareToDataForURL(test_url, test_title,
+                                                           nil, nil, nullptr);
+
+  EXPECT_FALSE(data.canSendTabToSelf);
 }

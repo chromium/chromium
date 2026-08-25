@@ -110,10 +110,15 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
                                   linkMetadata:metadata];
 }
 
-ShareToData* ShareToDataForURL(const GURL& url,
-                               NSString* title,
-                               NSString* additional_text,
-                               LPLinkMetadata* link_metadata) {
+ShareToData* ShareToDataForURL(
+    const GURL& url,
+    NSString* title,
+    NSString* additional_text,
+    LPLinkMetadata* link_metadata,
+    send_tab_to_self::SendTabToSelfSyncService* send_tab_to_self_service) {
+  const BOOL can_send_tab_to_self =
+      send_tab_to_self_service &&
+      send_tab_to_self_service->GetEntryPointDisplayReason(url).has_value();
   return [[ShareToData alloc] initWithShareURL:url
                                     visibleURL:url
                                          title:title
@@ -121,14 +126,17 @@ ShareToData* ShareToDataForURL(const GURL& url,
                                isOriginalTitle:YES
                                isPagePrintable:NO
                               isPageSearchable:NO
-                              canSendTabToSelf:NO
+                              canSendTabToSelf:can_send_tab_to_self
                                      userAgent:web::UserAgentType::NONE
                             thumbnailGenerator:nil
                                   linkMetadata:link_metadata];
 }
 
-ShareToData* ShareToDataForURLWithTitle(URLWithTitle* url_with_title) {
-  return ShareToDataForURL(url_with_title.URL, url_with_title.title, nil, nil);
+ShareToData* ShareToDataForURLWithTitle(
+    URLWithTitle* url_with_title,
+    send_tab_to_self::SendTabToSelfSyncService* send_tab_to_self_service) {
+  return ShareToDataForURL(url_with_title.URL, url_with_title.title, nil, nil,
+                           send_tab_to_self_service);
 }
 
 }  // namespace activity_services

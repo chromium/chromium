@@ -406,17 +406,21 @@ constexpr CGFloat kAppIconPointSize = 80;
   NSMutableArray* dataItems = [[NSMutableArray alloc] init];
   SharingParams* params = self.params;
 
+  send_tab_to_self::SendTabToSelfSyncService* sendTabToSelfService =
+      SendTabToSelfSyncServiceFactory::GetForProfile(self.profile);
+
   // If only given a single URL, include additionalText in shared payload.
   if (params.URLs.count == 1) {
     URLWithTitle* url = params.URLs[0];
     LPLinkMetadata* metadata = [self linkMetadata:url];
     ShareToData* data = activity_services::ShareToDataForURL(
-        url.URL, url.title, params.additionalText, metadata);
+        url.URL, url.title, params.additionalText, metadata,
+        sendTabToSelfService);
     [dataItems addObject:data];
   } else {
     for (URLWithTitle* urlWithTitle in params.URLs) {
-      ShareToData* data =
-          activity_services::ShareToDataForURLWithTitle(urlWithTitle);
+      ShareToData* data = activity_services::ShareToDataForURLWithTitle(
+          urlWithTitle, sendTabToSelfService);
       [dataItems addObject:data];
     }
   }
