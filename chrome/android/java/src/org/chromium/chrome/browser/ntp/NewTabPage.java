@@ -113,6 +113,7 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
@@ -311,7 +312,10 @@ public class NewTabPage
                     focusReason = OmniboxFocusReason.NTP_AI_MODE;
                 } else if (showFuseboxPopup) {
                     focusReason = OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP;
-                    autocompleteState = AutocompleteState.STANDBY_NO_FOCUS;
+                    autocompleteState =
+                            OmniboxFeatures.sFocusFuseboxFromNtpPlusButton.getValue()
+                                    ? AutocompleteState.ENABLED
+                                    : AutocompleteState.STANDBY_NO_FOCUS;
                 }
 
                 mOmniboxStub.beginInput(
