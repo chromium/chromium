@@ -152,7 +152,7 @@ void LRURendererCache::OnReleaseMemory() {
     current_max_renderers_ =
         base::ScaleByMemoryLimit(max_renderers_basis_, memory_limit());
     EvictCache();
-  } else if (memory_limit_ratio() <= base::kCriticalMemoryPressureThreshold) {
+  } else if (memory_limit() <= base::kCriticalMemoryPressureThreshold) {
     DLOG(INFO) << "Dropping prelauncher cache due to memory coordinator "
                   "notification.";
     cache_.clear();
