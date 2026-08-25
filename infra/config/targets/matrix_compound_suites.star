@@ -595,6 +595,16 @@ targets.legacy_matrix_compound_suite(
                 "CROS_LKGM",
             ],
         ),
+        "chromeos_chrome_flaky_tast_tests": targets.legacy_matrix_config(
+            mixins = [
+                # Setting smaller max_in_shard to offset tast level retries.
+                "skylab-20-tests-per-shard",
+                "skylab-rdb-tast",
+            ],
+            variants = [
+                "CROS_LKGM",
+            ],
+        ),
         "chromeos_integration_tests_suite": targets.legacy_matrix_config(
             mixins = [
                 "skylab-rdb-gtest",
@@ -620,6 +630,15 @@ targets.legacy_matrix_compound_suite(
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
             mixins = [
                 # Slower boards runs fewer tests per shard.
+                "skylab-20-tests-per-shard",
+                "skylab-rdb-tast",
+            ],
+            variants = [
+                "CROS_LKGM",
+            ],
+        ),
+        "chromeos_chrome_flaky_tast_tests": targets.legacy_matrix_config(
+            mixins = [
                 "skylab-20-tests-per-shard",
                 "skylab-rdb-tast",
             ],
@@ -654,6 +673,16 @@ targets.legacy_matrix_compound_suite(
             mixins = [
                 # Most boards run 40 tests per shard to finish within 1h.
                 "skylab-40-tests-per-shard",
+                "skylab-rdb-tast",
+            ],
+            variants = [
+                "CROS_LKGM",
+            ],
+        ),
+        "chromeos_chrome_flaky_tast_tests": targets.legacy_matrix_config(
+            mixins = [
+                # Setting smaller max_in_shard to offset tast level retries.
+                "skylab-20-tests-per-shard",
                 "skylab-rdb-tast",
             ],
             variants = [

@@ -2948,6 +2948,15 @@
           'CROS_LKGM',
         ],
       },
+      'chromeos_chrome_flaky_tast_tests': {
+        'mixins': [
+          'skylab-20-tests-per-shard',
+          'skylab-rdb-tast',
+        ],
+        'variants': [
+          'CROS_LKGM',
+        ],
+      },
       'chromeos_device_only_gtests': {
         'mixins': [
           'skylab-rdb-gtest',
@@ -2976,6 +2985,15 @@
           'CROS_LKGM',
         ],
       },
+      'chromeos_chrome_flaky_tast_tests': {
+        'mixins': [
+          'skylab-20-tests-per-shard',
+          'skylab-rdb-tast',
+        ],
+        'variants': [
+          'CROS_LKGM',
+        ],
+      },
       'chromeos_device_only_gtests': {
         'mixins': [
           'skylab-rdb-gtest',
@@ -2997,6 +3015,15 @@
 
     'chromeos_ctp_preuprev_tests_slow_boards': {
       'chromeos_chrome_all_tast_tests': {
+        'mixins': [
+          'skylab-20-tests-per-shard',
+          'skylab-rdb-tast',
+        ],
+        'variants': [
+          'CROS_LKGM',
+        ],
+      },
+      'chromeos_chrome_flaky_tast_tests': {
         'mixins': [
           'skylab-20-tests-per-shard',
           'skylab-rdb-tast',
