@@ -8941,6 +8941,24 @@
             ]
         }
     ],
+    "FontDataServiceChromeOS": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledFontations_20260819",
+                    "params": {
+                        "typeface": "Fontations"
+                    },
+                    "enable_features": [
+                        "FontDataServiceChromeOS"
+                    ]
+                }
+            ]
+        }
+    ],
     "FontDataServiceLinux": [
         {
             "platforms": [
