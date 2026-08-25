@@ -51,16 +51,14 @@ def main():
     ]
 
     # Override configurations dynamically based on GN parameters
-    root_dir_abs = os.path.abspath(
-        args.root_dir) if args.root_dir else repo_root
+    root_dir_abs = os.path.abspath(args.root_dir) if args.root_dir else repo_root
     config["compilerOptions"]["outDir"] = os.path.relpath(
-        os.path.abspath(args.output_dir), tsconfig_dir)
-    config["compilerOptions"]["rootDir"] = os.path.relpath(
-        root_dir_abs, tsconfig_dir)
+        os.path.abspath(args.output_dir), tsconfig_dir
+    )
+    config["compilerOptions"]["rootDir"] = os.path.relpath(root_dir_abs, tsconfig_dir)
     config["files"] = rel_sources
     config["compilerOptions"]["typeRoots"] = [
-        os.path.relpath(os.path.join(repo_root, "node_modules", "@types"),
-                        tsconfig_dir)
+        os.path.relpath(os.path.join(repo_root, "node_modules", "@types"), tsconfig_dir)
     ]
 
     if args.es_target:
@@ -81,9 +79,10 @@ def main():
     # Map dependencies to tsconfig project references
     if args.deps:
         if not args.no_emit:
-            config["references"] = [{
-                "path": os.path.relpath(os.path.abspath(dep), tsconfig_dir)
-            } for dep in args.deps]
+            config["references"] = [
+                {"path": os.path.relpath(os.path.abspath(dep), tsconfig_dir)}
+                for dep in args.deps
+            ]
 
     # Write target-specific generated tsconfig.json
     os.makedirs(tsconfig_dir, exist_ok=True)

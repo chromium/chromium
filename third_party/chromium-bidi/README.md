@@ -188,18 +188,31 @@ We use a suite of tools to format and lint the codebase:
 - [Prettier](https://prettier.io/) to format JavaScript, TypeScript, JSON, and Markdown files.
 - [Ruff](https://docs.astral.sh/ruff/) to lint and format Python files.
 
-To check and auto-format the entire codebase, run:
+#### Running Presubmit Checks
+
+Presubmit checks run automatically before upload/commit and can be executed manually via:
 
 ```sh
-npm run format
+git cl presubmit
 ```
 
-This command sequentially executes the following steps:
+#### Auto-formatting Code
 
-1. `keep-sorted --mode=fix`
-2. `eslint --cache --fix`
-3. `prettier --cache --write`
-4. `ruff check --fix` and `ruff format`
+To auto-format files:
+
+- **Python**: `git cl format --python` (or `ruff_chromium format <files>`)
+- **JavaScript / TypeScript / JSON / Markdown**:
+  ```sh
+  ./tools/node.py node_modules/prettier/bin/prettier.cjs --write <files>
+  ```
+- **ESLint auto-fix**:
+  ```sh
+  ./tools/node.py node_modules/eslint/bin/eslint.js --fix <files>
+  ```
+- **keep-sorted**:
+  ```sh
+  keep-sorted --mode=fix <files>
+  ```
 
 ### Starting WebDriver BiDi Server
 
