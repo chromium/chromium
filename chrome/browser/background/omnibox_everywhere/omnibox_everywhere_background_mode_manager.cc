@@ -46,6 +46,14 @@ OmniboxEverywhereBackgroundModeManager::OmniboxEverywhereBackgroundModeManager(
       base::BindRepeating(
           &OmniboxEverywhereBackgroundModeManager::OnPrefChanged,
           base::Unretained(this)));
+#if BUILDFLAG(IS_WIN)
+  launch_on_startup_pref_member_.Init(
+      prefs::kOmniboxEverywhereLaunchOnStartup,
+      g_browser_process->local_state(),
+      base::BindRepeating(
+          &OmniboxEverywhereBackgroundModeManager::OnPrefChanged,
+          base::Unretained(this)));
+#endif  // BUILDFLAG(IS_WIN)
   hotkey_string_pref_member_.Init(
       prefs::kOmniboxEverywhereHotkey, g_browser_process->local_state(),
       base::BindRepeating(
@@ -78,7 +86,19 @@ void OmniboxEverywhereBackgroundModeManager::ExitBackgroundMode() {
 }
 
 void OmniboxEverywhereBackgroundModeManager::OnPrefChanged() {
-  if (!background_mode_pref_member_.GetValue()) {
+  const bool background_mode_enabled = background_mode_pref_member_.GetValue();
+
+#if BUILDFLAG(IS_WIN)
+  const bool launch_on_startup_enabled =
+      launch_on_startup_pref_member_.GetValue();
+  const bool should_launch_on_startup =
+      background_mode_enabled && launch_on_startup_enabled;
+  // TODO(crbug.com/532190282): Load the persisted target profile on OS startup
+  // launches.
+  startup_launch_client_.SetLaunchOnStartup(should_launch_on_startup);
+#endif
+
+  if (!background_mode_enabled) {
     Reset();
     return;
   }

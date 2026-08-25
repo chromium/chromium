@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/status_icons/status_tray.h"
@@ -19,6 +20,19 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <optional>
+
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
+#include "chrome/browser/startup/startup_features.h"
+#include "chrome/browser/startup/startup_launch_manager.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/installer/util/auto_launch_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
+#endif
 
 namespace omnibox_everywhere {
 
@@ -51,6 +65,18 @@ class MockStatusTray : public StatusTray {
   }
 };
 
+#if BUILDFLAG(IS_WIN)
+class TestStartupLaunchManager : public StartupLaunchManager {
+ public:
+  explicit TestStartupLaunchManager(BrowserProcess* browser_process)
+      : StartupLaunchManager(browser_process) {}
+
+  MOCK_METHOD1(
+      UpdateLaunchOnStartup,
+      void(std::optional<auto_launch_util::StartupLaunchMode> startup_mode));
+};
+#endif
+
 }  // namespace
 
 class OmniboxEverywhereBackgroundModeManagerTest : public ChromeViewsTestBase {
@@ -72,6 +98,26 @@ class OmniboxEverywhereBackgroundModeManagerTest : public ChromeViewsTestBase {
     TestingBrowserProcess::GetGlobal()->SetStatusTray(nullptr);
     ChromeViewsTestBase::TearDown();
   }
+
+#if BUILDFLAG(IS_WIN)
+  TestStartupLaunchManager* startup_launch_manager() {
+    return static_cast<TestStartupLaunchManager*>(
+        StartupLaunchManager::From(g_browser_process));
+  }
+
+  void ExpectStartupRegistration(bool launch_enabled) {
+    std::optional<auto_launch_util::StartupLaunchMode> launch_mode;
+    if (launch_enabled) {
+      launch_mode = auto_launch_util::StartupLaunchMode::kBackground;
+    }
+    EXPECT_CALL(*startup_launch_manager(), UpdateLaunchOnStartup(launch_mode))
+        .Times(testing::AtLeast(1));
+  }
+
+  void VerifyAndClearStartupRegistrationExpectations() {
+    testing::Mock::VerifyAndClearExpectations(startup_launch_manager());
+  }
+#endif
 
  protected:
   base::test::ScopedFeatureList feature_list_{omnibox::kOmniboxEverywhere};
@@ -174,5 +220,78 @@ TEST_F(OmniboxEverywhereBackgroundModeManagerTest, ExecuteToggleCommand) {
   delegate->ExecuteCommand(IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE, 0);
   EXPECT_TRUE(callback_called);
 }
+
+TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
+       LaunchOnStartupPrefToggleWithoutStartupLaunchManagerDoesNotCrash) {
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  ASSERT_NE(local_state, nullptr);
+
+  bool callback_called = false;
+  OmniboxEverywhereBackgroundModeManager manager(base::BindRepeating(
+      [](bool* called) { *called = true; }, &callback_called));
+
+  // Toggling launch on startup pref should not crash even when
+  // StartupLaunchManager is not initialized in test environment.
+  local_state->SetBoolean(prefs::kOmniboxEverywhereLaunchOnStartup, true);
+  local_state->SetBoolean(prefs::kOmniboxEverywhereLaunchOnStartup, false);
+}
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
+       LaunchOnStartupRegistrationWithStartupLaunchManager) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {omnibox::kOmniboxEverywhere},
+      {features::kLaunchOnStartup, features::kLaunchOnStartupInfoBar});
+
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  ASSERT_NE(local_state, nullptr);
+
+  auto scoped_override =
+      GlobalFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
+          base::BindRepeating([](BrowserProcess& browser_process) {
+            return std::make_unique<TestStartupLaunchManager>(&browser_process);
+          }));
+
+  TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+      /*profile_manager=*/false);
+
+  local_state->SetBoolean(prefs::kOmniboxEverywhereBackgroundMode, true);
+  local_state->SetBoolean(prefs::kOmniboxEverywhereLaunchOnStartup, false);
+
+  // Consume any initial startup registration calls during setup.
+  EXPECT_CALL(*startup_launch_manager(), UpdateLaunchOnStartup(testing::_))
+      .Times(testing::AnyNumber());
+  startup_launch_manager()->CommitLaunchOnStartupState();
+
+  bool callback_called = false;
+  OmniboxEverywhereBackgroundModeManager manager(base::BindRepeating(
+      [](bool* called) { *called = true; }, &callback_called));
+  VerifyAndClearStartupRegistrationExpectations();
+
+  // 1. Enabling launch on startup registers background launch.
+  ExpectStartupRegistration(/*launch_enabled=*/true);
+  local_state->SetBoolean(prefs::kOmniboxEverywhereLaunchOnStartup, true);
+  VerifyAndClearStartupRegistrationExpectations();
+
+  // 2. Disabling launch on startup unregisters background launch.
+  ExpectStartupRegistration(/*launch_enabled=*/false);
+  local_state->SetBoolean(prefs::kOmniboxEverywhereLaunchOnStartup, false);
+  VerifyAndClearStartupRegistrationExpectations();
+
+  // 3. Re-enabling launch on startup registers background launch again.
+  ExpectStartupRegistration(/*launch_enabled=*/true);
+  local_state->SetBoolean(prefs::kOmniboxEverywhereLaunchOnStartup, true);
+  VerifyAndClearStartupRegistrationExpectations();
+
+  // 4. Disabling background mode unregisters startup launch even if
+  // launch_on_startup pref is true.
+  ExpectStartupRegistration(/*launch_enabled=*/false);
+  local_state->SetBoolean(prefs::kOmniboxEverywhereBackgroundMode, false);
+  VerifyAndClearStartupRegistrationExpectations();
+
+  TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
+}
+#endif
 
 }  // namespace omnibox_everywhere

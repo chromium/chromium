@@ -85,7 +85,9 @@ StartupLaunchManager::Client::Client(StartupLaunchReason launch_reason)
   // processing the final launch configuration until this client has
   // initialized.
   auto* launch_manager = StartupLaunchManager::From(g_browser_process);
-  launch_manager->AcquireSharedWriteLock();
+  if (launch_manager) {
+    launch_manager->AcquireSharedWriteLock();
+  }
 }
 
 StartupLaunchManager::Client::~Client() {
@@ -108,14 +110,16 @@ void StartupLaunchManager::Client::SetLaunchOnStartup(bool enable_launch) {
   launch_enabled_.emplace(enable_launch);
 
   auto* launch_manager = StartupLaunchManager::From(g_browser_process);
-  if (enable_launch) {
-    launch_manager->RegisterLaunchOnStartup(launch_reason_);
-  } else {
-    launch_manager->UnregisterLaunchOnStartup(launch_reason_);
-  }
+  if (launch_manager) {
+    if (enable_launch) {
+      launch_manager->RegisterLaunchOnStartup(launch_reason_);
+    } else {
+      launch_manager->UnregisterLaunchOnStartup(launch_reason_);
+    }
 
-  if (release_lock) {
-    launch_manager->ReleaseSharedWriteLock();
+    if (release_lock) {
+      launch_manager->ReleaseSharedWriteLock();
+    }
   }
 }
 

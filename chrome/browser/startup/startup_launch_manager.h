@@ -32,10 +32,11 @@ enum class StartupLaunchReason {
   kExtensions = 0,
   kGlic = 1,
   kForeground = 2,
+  kOmniboxEverywhere = 3,
 
   // Update these when adding/removing values.
   kMinValue = kExtensions,
-  kMaxValue = kForeground,
+  kMaxValue = kOmniboxEverywhere,
 };
 
 // StartupLaunchManager registers with the OS so that Chrome launches on device

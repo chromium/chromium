@@ -214,6 +214,30 @@ TEST_F(StartupLaunchManagerTest, RegisterMultipleBackgroundLaunchReasons) {
   testing::Mock::VerifyAndClearExpectations(launch_manager);
 }
 
+TEST_F(StartupLaunchManagerTest, OmniboxEverywhereBackgroundLaunchOnStartup) {
+  TestStartupLaunchManager* const launch_manager = launch_on_startup_manager();
+  StartupLaunchManager::Client omnibox_startup_launch_client =
+      StartupLaunchManager::Client(StartupLaunchReason::kOmniboxEverywhere);
+
+  EXPECT_CALL(*launch_manager,
+              UpdateLaunchOnStartup({StartupLaunchMode::kBackground}))
+      .Times(testing::Exactly(1));
+  omnibox_startup_launch_client.SetLaunchOnStartup(true);
+  testing::Mock::VerifyAndClearExpectations(launch_manager);
+
+  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup({std::nullopt}))
+      .Times(testing::Exactly(1));
+  omnibox_startup_launch_client.SetLaunchOnStartup(false);
+  testing::Mock::VerifyAndClearExpectations(launch_manager);
+}
+
+TEST(StartupLaunchManagerClientTest, NullManagerDoesNotCrash) {
+  StartupLaunchManager::Client omnibox_client(
+      StartupLaunchReason::kOmniboxEverywhere);
+  omnibox_client.SetLaunchOnStartup(true);
+  omnibox_client.SetLaunchOnStartup(false);
+}
+
 TEST_F(StartupLaunchManagerTest, WaitForAllClientsToInit) {
   TestStartupLaunchManager* const launch_manager = launch_on_startup_manager();
 

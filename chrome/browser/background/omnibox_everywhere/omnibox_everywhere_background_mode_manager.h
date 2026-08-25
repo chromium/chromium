@@ -7,11 +7,16 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/browser/status_icons/status_icon_observer.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_member.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/startup/startup_launch_manager.h"
+#endif
 
 class Profile;
 class ScopedProfileKeepAlive;
@@ -63,8 +68,15 @@ class OmniboxEverywhereBackgroundModeManager
   raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
-  raw_ptr<StatusIcon> status_icon_;
+  raw_ptr<StatusIcon> status_icon_ = nullptr;
   ShowUICallback show_ui_callback_;
+
+#if BUILDFLAG(IS_WIN)
+  // Handles interactions with StartupLaunchManager.
+  StartupLaunchManager::Client startup_launch_client_{
+      StartupLaunchReason::kOmniboxEverywhere};
+  BooleanPrefMember launch_on_startup_pref_member_;
+#endif
 };
 
 }  // namespace omnibox_everywhere
