@@ -92,6 +92,14 @@ export class InstalledAppListItemElement extends CrLitElement {
     description: '',
   };
 
+  protected isManifestApp_(): boolean {
+    return !!this.app.source.updateInfo;
+  }
+
+  protected onUpdateOptionsClick() {
+    this.fire('request-update-options', {app: this.app});
+  }
+
   protected onUpdateClick() {
     this.fire('request-update', {app: this.app});
   }
@@ -128,8 +136,7 @@ export class InstalledAppListItemElement extends CrLitElement {
       const info = this.app.source.updateInfo;
       return {
         label: 'Update manifest',
-        description:
-            `${info.updateManifestUrl} (channel: ${info.updateChannel})`,
+        description: `${info.updateManifestUrl}`,
       };
     }
     assertNotReached();

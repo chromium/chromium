@@ -49,6 +49,7 @@ ${!this.devModeEnabled_ ? html`
               .isUpdating="${this.updatingAppIds_.includes(item.appId)}"
               role="listitem"
               @request-update="${this.onRequestUpdate_}"
+              @request-update-options="${this.onRequestUpdateOptions_}"
               @request-uninstall="${this.onRequestUninstall_}">
           </installed-app-list-item>
         `)}
@@ -64,6 +65,15 @@ ${!this.devModeEnabled_ ? html`
           @request-install-from-update-manifest="${
             this.onRequestInstallFromUpdateManifest_}">
       </iwa-dev-install-dialog>
+      ${this.selectedAppForUpdateOptions_ ? html`
+        <iwa-dev-update-options-dialog id="updateOptionsDialog"
+            .app="${this.selectedAppForUpdateOptions_}"
+            @close="${this.onUpdateOptionsDialogClose_}"
+            @request-parse-update-manifest-from-url="${
+              this.onRequestParseUpdateManifestFromUrl_}"
+            @update-options-saved="${this.onUpdateOptionsSaved_}">
+        </iwa-dev-update-options-dialog>
+      ` : ''}
       <cr-toast id="toast" duration="3000">
         <div>${this.toastMessage_}</div>
       </cr-toast>

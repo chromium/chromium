@@ -5,6 +5,7 @@
 import '/strings.m.js';
 import './installed_app_list_item.js';
 import './install_dialog.js';
+import './update_options_dialog.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 
@@ -52,6 +53,7 @@ export class IwaDevAppElement extends CrLitElement {
       hasFetchedApps_: {type: Boolean, state: true},
       updatingAppIds_: {type: Array, state: true},
       toastMessage_: {type: String},
+      selectedAppForUpdateOptions_: {type: Object, state: true},
     };
   }
 
@@ -61,6 +63,8 @@ export class IwaDevAppElement extends CrLitElement {
   protected accessor hasFetchedApps_: boolean = false;
   protected accessor toastMessage_: string = '';
   protected accessor updatingAppIds_: string[] = [];
+  protected accessor selectedAppForUpdateOptions_: IwaDevModeAppInfo|null =
+      null;
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private listenerIds_: number[] = [];
 
@@ -106,6 +110,30 @@ export class IwaDevAppElement extends CrLitElement {
   protected async onRequestUninstall_(
       e: CustomEvent<{app: IwaDevModeAppInfo}>) {
     await this.browserProxy_.handler.uninstallApp(e.detail.app.appId);
+  }
+
+  protected onRequestUpdateOptions_(e: CustomEvent<{app: IwaDevModeAppInfo}>) {
+    this.selectedAppForUpdateOptions_ = e.detail.app;
+  }
+
+  protected onUpdateOptionsDialogClose_() {
+    this.selectedAppForUpdateOptions_ = null;
+  }
+
+  protected async onUpdateOptionsSaved_(e: CustomEvent<{
+    app: IwaDevModeAppInfo,
+    selectedChannel: string,
+  }>) {
+    try {
+      await this.browserProxy_.handler.setUpdateChannel(
+          e.detail.app.appId, e.detail.selectedChannel);
+      this.toastMessage_ = 'Update options saved';
+    } catch (err) {
+      const errorMsg = (err as {message?: string})?.message || String(err);
+      this.toastMessage_ = `Failed to set update channel: ${errorMsg}`;
+    } finally {
+      this.$.toast.show();
+    }
   }
 
   protected onOpenInstallDialogClick_() {

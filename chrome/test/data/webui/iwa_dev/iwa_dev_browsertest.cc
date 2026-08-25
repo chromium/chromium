@@ -29,3 +29,7 @@ IN_PROC_BROWSER_TEST_F(IwaDevBrowserTest, App) {
 IN_PROC_BROWSER_TEST_F(IwaDevBrowserTest, InstallDialog) {
   RunTest("iwa_dev/install_dialog_test.js", "mocha.run();");
 }
+
+IN_PROC_BROWSER_TEST_F(IwaDevBrowserTest, UpdateOptionsDialog) {
+  RunTest("iwa_dev/update_options_dialog_test.js", "mocha.run();");
+}

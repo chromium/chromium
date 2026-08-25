@@ -41,7 +41,7 @@ export function getHtml(this: IwaDevInstallDialogElement) {
         </iwa-dev-install-update-manifest-tab>
       ` : ''}
       ${this.installationError_ ? html`
-        <div id="error-message" aria-live="polite">
+        <div class="error-message" aria-live="polite">
           ${this.installationError_}
         </div>
       ` : ''}

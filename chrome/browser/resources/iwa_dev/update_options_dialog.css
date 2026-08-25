@@ -7,19 +7,9 @@
  * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #css_wrapper_metadata_end */
 
-.tab-content {
-  min-height: 96px;
-  padding-top: 24px;
-}
-
-.tab-content:has(iwa-dev-install-update-manifest-tab) {
-  min-height: 200px;
-}
-
-cr-tabs[inert] {
-  opacity: 0.6;
-}
-
-.error-message {
-  margin-top: 8px;
+[slot='body'] {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 160px;
 }

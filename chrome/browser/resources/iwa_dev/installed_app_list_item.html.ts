@@ -25,6 +25,11 @@ export function getHtml(this: InstalledAppListItemElement) {
   <div id="source">${this.sourceMetadata.description}</div>
 </div>
 <div id="actions">
+  ${this.isManifestApp_() ? html`
+    <cr-button id="update-options-btn" @click="${this.onUpdateOptionsClick}">
+      Update options
+    </cr-button>
+  ` : ''}
   <cr-button id="update-btn" ?disabled="${this.isUpdating}"
       @click="${this.onUpdateClick}">
     Update

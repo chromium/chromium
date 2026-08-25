@@ -9,6 +9,7 @@ import type {IwaDevAppElement} from 'chrome://iwa-dev/app.js';
 import type {InstalledAppListItemElement} from 'chrome://iwa-dev/installed_app_list_item.js';
 import type {IwaDevModeAppInfo, PageCallbackRouter, UpdateManifest} from 'chrome://iwa-dev/iwa_dev.mojom-webui.js';
 import {browserProxyFactory, PageHandlerRemote} from 'chrome://iwa-dev/iwa_dev.mojom-webui.js';
+import type {IwaDevUpdateOptionsDialogElement} from 'chrome://iwa-dev/update_options_dialog.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -591,7 +592,7 @@ suite('<iwa-dev-app>', () => {
         await microtasksFinished();
 
         const errorDiv =
-            dialog.shadowRoot.querySelector<HTMLElement>('#error-message');
+            dialog.shadowRoot.querySelector<HTMLElement>('.error-message');
         assertTrue(!!errorDiv);
         assertEquals('No file selected', errorDiv.textContent?.trim());
       });
@@ -685,4 +686,104 @@ suite('<iwa-dev-app>', () => {
         assertEquals(
             'Installation successful!', app.$.toast.textContent?.trim());
       });
+
+  test('display update options button only for manifest apps', async () => {
+    const apps = [
+      createBundleInstalledAppInfo(),
+      createProxyInstalledAppInfo(),
+      createManifestInstalledAppInfo(),
+    ];
+    handler.setResultFor('getInstalledAppsInfo', Promise.resolve({apps}));
+
+    createApp(/*devModeEnabled=*/ true);
+    await handler.whenCalled('getInstalledAppsInfo');
+    await microtasksFinished();
+
+    const items = getListItems();
+    assertEquals(3, items.length);
+
+    // Local Bundle App: no update options button
+    assertFalse(!!items[0]!.shadowRoot.querySelector('#update-options-btn'));
+
+    // Proxy App: no update options button
+    assertFalse(!!items[1]!.shadowRoot.querySelector('#update-options-btn'));
+
+    // Manifest App: update options button present
+    const optionsBtn = items[2]!.shadowRoot.querySelector<HTMLButtonElement>(
+        '#update-options-btn');
+    assertTrue(!!optionsBtn);
+  });
+
+  function getUpdateOptionsDialog(): IwaDevUpdateOptionsDialogElement|null {
+    return app.shadowRoot.querySelector<IwaDevUpdateOptionsDialogElement>(
+        '#updateOptionsDialog');
+  }
+
+  test('opens update options dialog on button click', async () => {
+    const apps = [createManifestInstalledAppInfo()];
+    handler.setResultFor('getInstalledAppsInfo', Promise.resolve({apps}));
+    handler.setResultFor(
+        'parseUpdateManifestFromUrl',
+        Promise.resolve({versions: [], channels: []}));
+
+    createApp(/*devModeEnabled=*/ true);
+    await handler.whenCalled('getInstalledAppsInfo');
+    await microtasksFinished();
+
+    const items = getListItems();
+    const optionsBtn = items[0]!.shadowRoot.querySelector<HTMLButtonElement>(
+        '#update-options-btn')!;
+    optionsBtn.click();
+    const urlArg = await handler.whenCalled('parseUpdateManifestFromUrl');
+    assertEquals('https://example.com/manifest.json', urlArg);
+    await microtasksFinished();
+
+    const dialog = getUpdateOptionsDialog()!;
+    assertTrue(!!dialog);
+    assertTrue(dialog.$.dialog.open);
+  });
+
+  async function testSetUpdateChannel(
+      mojoResult: Promise<void>, expectedToast: string) {
+    const appInfo = createManifestInstalledAppInfo();
+    handler.setResultFor(
+        'getInstalledAppsInfo', Promise.resolve({apps: [appInfo]}));
+    handler.setResultFor('setUpdateChannel', mojoResult);
+    handler.setResultFor(
+        'parseUpdateManifestFromUrl',
+        Promise.resolve({versions: [], channels: []}));
+
+    createApp(/*devModeEnabled=*/ true);
+    await handler.whenCalled('getInstalledAppsInfo');
+    await microtasksFinished();
+
+    getListItems()[0]!.dispatchEvent(new CustomEvent('request-update-options', {
+      detail: {app: appInfo},
+    }));
+    await microtasksFinished();
+
+    const dialog = getUpdateOptionsDialog()!;
+    assertTrue(!!dialog);
+    dialog.dispatchEvent(new CustomEvent('update-options-saved', {
+      detail: {app: appInfo, selectedChannel: 'beta'},
+    }));
+
+    const [appIdArg, channelArg] = await handler.whenCalled('setUpdateChannel');
+    assertEquals(appInfo.appId, appIdArg);
+    assertEquals('beta', channelArg);
+
+    await microtasksFinished();
+    assertTrue(app.$.toast.open);
+    assertEquals(expectedToast, app.$.toast.textContent?.trim());
+  }
+
+  test('calls setUpdateChannel on update-options-saved (success)', async () => {
+    await testSetUpdateChannel(Promise.resolve(), 'Update options saved');
+  });
+
+  test('shows error toast when setUpdateChannel fails', async () => {
+    await testSetUpdateChannel(
+        Promise.reject({message: 'Channel not found'}),
+        'Failed to set update channel: Channel not found');
+  });
 });

@@ -15,13 +15,15 @@ cr-input {
   --cr-input-width: 100%;
 }
 
-#error-message {
+#error-message,
+.error-message {
   color: var(--google-red-700);
   font-size: 0.85rem;
 }
 
 @media (prefers-color-scheme: dark) {
-  #error-message {
+  #error-message,
+  .error-message {
     color: var(--google-red-300);
   }
 }
