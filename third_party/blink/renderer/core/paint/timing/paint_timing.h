@@ -18,12 +18,14 @@
 #include "third_party/blink/renderer/core/paint/timing/first_meaningful_paint_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_callbacks.h"
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 struct DOMPaintTimingInfo;
+struct ElementTimingInfo;
 class LargestContentfulPaintManager;
 class ImageElementTiming;
 class LocalFrame;
@@ -270,11 +272,11 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   void FlushPaintTimingsOnFramePresented(
       const PendingPaintTimingRecord&,
       AnimationFrameTimingInfo*,
+      GCedHeapVector<Member<ElementTimingInfo>>*,
       OptionalPaintTimingDetectorCallback<ImageRecord>
           compute_painted_images_callback,
       OptionalPaintTimingDetectorCallback<TextRecord>
           compute_painted_text_callback,
-      OptionalPaintTimingCallback element_timing_painted_images_callback,
       const base::TimeTicks& raw_presentation_timestamp,
       const DOMPaintTimingInfo&);
 

@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/timing/element_timing_info.h"
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_manager.h"
@@ -241,12 +242,21 @@ void PaintTiming::MarkPaintTiming() {
 
 void PaintTiming::MarkPaintTimingInternal() {
   // 3. Let paintedImages be a new ordered set...
-  CHECK(image_element_timing_);
-  auto add_painted_images_element_timing_entries =
-      image_element_timing_->TakePaintTimingCallback();
   auto compute_painted_image_entries =
       paint_timing_detector_->GetImagePaintTimingDetector()
           .TakePaintTimingCallback();
+  CHECK(image_element_timing_);
+  GCedHeapVector<Member<ElementTimingInfo>>* image_element_timings = nullptr;
+  {
+    HeapVector<Member<ElementTimingInfo>> timings =
+        image_element_timing_->TakeElementTimingsOnPaintFinished();
+    if (!timings.empty()) {
+      image_element_timings =
+          MakeGarbageCollected<GCedHeapVector<Member<ElementTimingInfo>>>(
+              std::move(timings));
+    }
+  }
+
   // 4. Let paintedTextNodes be a new ordered set
   auto compute_painted_text_entries =
       paint_timing_detector_->GetTextPaintTimingDetector()
@@ -276,8 +286,8 @@ void PaintTiming::MarkPaintTimingInternal() {
           : nullptr;
 
   if (paint_timing_record.paint_events.empty() && !frame_timing_info &&
-      !add_painted_images_element_timing_entries &&
-      !compute_painted_text_entries && !compute_painted_image_entries) {
+      !image_element_timings && !compute_painted_text_entries &&
+      !compute_painted_image_entries) {
     return;
   }
 
@@ -285,9 +295,9 @@ void PaintTiming::MarkPaintTimingInternal() {
   PaintTimingCallback flush_paint_timings = blink::BindOnce(
       &PaintTiming::FlushPaintTimingsOnFramePresented, WrapWeakPersistent(this),
       paint_timing_record, WrapPersistent(frame_timing_info),
+      WrapPersistent(image_element_timings),
       std::move(compute_painted_image_entries),
-      std::move(compute_painted_text_entries),
-      std::move(add_painted_images_element_timing_entries));
+      std::move(compute_painted_text_entries));
 
   // 11. If the user-agent does not support implementation-defined presentation
   // times, call flushPaintTimings and return.
@@ -381,11 +391,11 @@ void PaintTiming::MarkPaintTimingInternal() {
 void PaintTiming::FlushPaintTimingsOnFramePresented(
     const PendingPaintTimingRecord& record,
     AnimationFrameTimingInfo* frame_timing_info,
+    GCedHeapVector<Member<ElementTimingInfo>>* image_element_timings,
     OptionalPaintTimingDetectorCallback<ImageRecord>
         compute_painted_images_callback,
     OptionalPaintTimingDetectorCallback<TextRecord>
         compute_painted_text_callback,
-    OptionalPaintTimingCallback element_timing_painted_images_callback,
     const base::TimeTicks& raw_presentation_timestamp,
     const DOMPaintTimingInfo& paint_timing_info) {
   // If the frame was detached between scheduling the coarsening task and
@@ -433,9 +443,9 @@ void PaintTiming::FlushPaintTimingsOnFramePresented(
 
   // 10.4 Report element timing given document, paintTimingInfo, paintedImages
   // and paintedTextNodes.
-  if (element_timing_painted_images_callback) {
-    std::move(*element_timing_painted_images_callback)
-        .Run(raw_presentation_timestamp, paint_timing_info);
+  if (image_element_timings) {
+    image_element_timing_->OnFramePresented(*image_element_timings,
+                                            paint_timing_info);
   }
   if (text_element_timing_ && !text_records.empty()) {
     text_element_timing_->OnFramePresented(text_records);

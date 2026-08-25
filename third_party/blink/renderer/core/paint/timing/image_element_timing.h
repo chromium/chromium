@@ -20,6 +20,7 @@
 
 namespace blink {
 
+struct ElementTimingInfo;
 class ImagePaintTimingDetector;
 class ImageResourceContent;
 class PropertyTreeStateOrAlias;
@@ -61,42 +62,13 @@ class CORE_EXPORT ImageElementTiming final
 
   void Trace(Visitor*) const;
 
-  OptionalPaintTimingCallback TakePaintTimingCallback();
+  HeapVector<Member<ElementTimingInfo>> TakeElementTimingsOnPaintFinished();
+
+  void OnFramePresented(const GCedHeapVector<Member<ElementTimingInfo>>&,
+                        const DOMPaintTimingInfo&);
 
  private:
   friend class ImageElementTimingTest;
-
-  // Class containing information about image element timing.
-  class ElementTimingInfo final : public GarbageCollected<ElementTimingInfo> {
-   public:
-    ElementTimingInfo(const String& url,
-                      const gfx::RectF& rect,
-                      const base::TimeTicks& response_end,
-                      const AtomicString& identifier,
-                      const gfx::Size& intrinsic_size,
-                      const AtomicString& id,
-                      Element* element)
-        : url(url),
-          rect(rect),
-          response_end(response_end),
-          identifier(identifier),
-          intrinsic_size(intrinsic_size),
-          id(id),
-          element(element) {}
-    ElementTimingInfo(const ElementTimingInfo&) = delete;
-    ElementTimingInfo& operator=(const ElementTimingInfo&) = delete;
-    ~ElementTimingInfo() = default;
-
-    void Trace(Visitor* visitor) const { visitor->Trace(element); }
-
-    String url;
-    gfx::RectF rect;
-    base::TimeTicks response_end;
-    AtomicString identifier;
-    gfx::Size intrinsic_size;
-    AtomicString id;
-    Member<Element> element;
-  };
 
   // Only valid at paint time: the answer comes from the tracker, which the
   // pre-paint walk populates.
@@ -124,7 +96,7 @@ class CORE_EXPORT ImageElementTiming final
 
   // Vector containing the element timing infos that will be reported during the
   // next presentation promise callback.
-  Member<GCedHeapVector<Member<ElementTimingInfo>>> element_timings_;
+  HeapVector<Member<ElementTimingInfo>> element_timings_;
 
   // Set of images that have already been considered for Element Timing.
   HashSet<MediaRecordIdHash> recorded_images_;
