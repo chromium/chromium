@@ -33,6 +33,7 @@ class FakeSharingDeviceRegistration : public SharingDeviceRegistration {
     return false;
   }
   bool IsGlicExperimentalTriggeringSupported() const override { return false; }
+  bool IsBrowserActuatorSupported() const override { return false; }
   void SetEnabledFeaturesForTesting(
       std::set<syncer::DeviceInfo::SharingFeature> enabled_features) override {}
 };

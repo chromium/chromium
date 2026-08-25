@@ -118,6 +118,7 @@ source_set("unit_tests") {
   sources = [
     "device_count_metrics_provider_unittest.cc",
     "device_info_prefs_unittest.cc",
+    "device_info_proto_enum_util_unittest.cc",
     "device_info_sync_bridge_unittest.cc",
     "device_info_util_unittest.cc",
     "device_name_util_unittest.cc",

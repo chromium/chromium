@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_features.h"
+#include "components/browser_actuator/public/features.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -212,6 +213,9 @@ std::set<SharingFeature> SharingDeviceRegistrationImpl::GetEnabledFeatures()
   if (IsGlicExperimentalTriggeringSupported()) {
     enabled_features.insert(SharingFeature::kGlicExperimentalTriggering);
   }
+  if (IsBrowserActuatorSupported()) {
+    enabled_features.insert(SharingFeature::kBrowserActuator);
+  }
 
   return enabled_features;
 }
@@ -247,6 +251,10 @@ bool SharingDeviceRegistrationImpl::IsOneTimeTokenBackendNotificationSupported()
 bool SharingDeviceRegistrationImpl::IsGlicExperimentalTriggeringSupported()
     const {
   return base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering);
+}
+
+bool SharingDeviceRegistrationImpl::IsBrowserActuatorSupported() const {
+  return base::FeatureList::IsEnabled(browser_actuator::kBrowserActuator);
 }
 
 void SharingDeviceRegistrationImpl::SetEnabledFeaturesForTesting(

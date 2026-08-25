@@ -65,6 +65,7 @@ class DeviceInfo {
     kOptimizationGuidePushNotification = 9,
     kOneTimeTokenBackendNotification = 10,
     kGlicExperimentalTriggering = 11,
+    kBrowserActuator = 12,
   };
   // LINT.ThenChange(/components/sync/protocol/device_info_specifics.proto:EnabledFeatures)
 

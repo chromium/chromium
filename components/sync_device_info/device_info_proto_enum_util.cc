@@ -256,6 +256,8 @@ DeviceInfo::SharingFeature ToDeviceInfoSharingFeature(
       return DeviceInfo::SharingFeature::kOneTimeTokenBackendNotification;
     case sync_pb::SharingSpecificFields::GLIC_EXPERIMENTAL_TRIGGERING:
       return DeviceInfo::SharingFeature::kGlicExperimentalTriggering;
+    case sync_pb::SharingSpecificFields::BROWSER_ACTUATOR:
+      return DeviceInfo::SharingFeature::kBrowserActuator;
     default:
       return DeviceInfo::SharingFeature::kUnknown;
   }
@@ -279,6 +281,8 @@ sync_pb::SharingSpecificFields_EnabledFeatures ToSharingFeatureProto(
           ONE_TIME_TOKEN_BACKEND_NOTIFICATION;
     case DeviceInfo::SharingFeature::kGlicExperimentalTriggering:
       return sync_pb::SharingSpecificFields::GLIC_EXPERIMENTAL_TRIGGERING;
+    case DeviceInfo::SharingFeature::kBrowserActuator:
+      return sync_pb::SharingSpecificFields::BROWSER_ACTUATOR;
   }
   NOTREACHED();
 }

@@ -60,6 +60,7 @@ class IOSSharingDeviceRegistrationImpl : public SharingDeviceRegistration {
   bool IsOptimizationGuidePushNotificationSupported() const override;
   bool IsOneTimeTokenBackendNotificationSupported() const override;
   bool IsGlicExperimentalTriggeringSupported() const override;
+  bool IsBrowserActuatorSupported() const override;
   void SetEnabledFeaturesForTesting(
       std::set<syncer::DeviceInfo::SharingFeature> enabled_features) override;
 

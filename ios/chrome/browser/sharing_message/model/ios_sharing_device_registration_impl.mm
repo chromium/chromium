@@ -231,6 +231,10 @@ bool IOSSharingDeviceRegistrationImpl::IsGlicExperimentalTriggeringSupported()
   return false;
 }
 
+bool IOSSharingDeviceRegistrationImpl::IsBrowserActuatorSupported() const {
+  return false;
+}
+
 void IOSSharingDeviceRegistrationImpl::SetEnabledFeaturesForTesting(
     std::set<syncer::DeviceInfo::SharingFeature> enabled_features) {
   enabled_features_testing_value_ = std::move(enabled_features);

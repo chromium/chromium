@@ -75,6 +75,9 @@ class SharingDeviceRegistrationImpl : public SharingDeviceRegistration {
   // Returns if device can handle receiving of glic experimental triggering.
   bool IsGlicExperimentalTriggeringSupported() const override;
 
+  // Returns if device can handle receiving of browser actuator.
+  bool IsBrowserActuatorSupported() const override;
+
   // For testing
   void SetEnabledFeaturesForTesting(
       std::set<syncer::DeviceInfo::SharingFeature> enabled_features) override;
