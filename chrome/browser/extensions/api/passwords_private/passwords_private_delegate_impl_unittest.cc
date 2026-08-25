@@ -29,6 +29,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
@@ -358,6 +359,64 @@ TEST_F(PasswordsPrivateDelegateImplTest,
       .WillOnce([&](const PasswordsPrivateDelegate::UiEntries& passwords) {
         EXPECT_EQ(api::passwords_private::PasswordStoreSet::kDeviceAndAccount,
                   passwords[0].stored_in);
+      });
+
+  delegate->GetSavedPasswordsList(callback.Get());
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest,
+       GetSavedPasswordsList_CompromisedInfo_FeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordCompromiseWarningInDetailsCard);
+
+  scoped_refptr<PasswordsPrivateDelegateImpl> delegate = CreateDelegate();
+  PasswordForm compromised_password =
+      CreateSampleForm(PasswordForm::Store::kProfileStore);
+  compromised_password
+      .password_issues[password_manager::InsecureType::kLeaked] =
+      password_manager::InsecurityMetadata(
+          base::Time::Now(), password_manager::IsMuted(true),
+          password_manager::TriggerBackendNotification(false));
+
+  SetUpPasswordStores({compromised_password});
+
+  base::MockCallback<PasswordsPrivateDelegate::UiEntriesCallback> callback;
+  EXPECT_CALL(callback, Run(SizeIs(1)))
+      .WillOnce([&](const PasswordsPrivateDelegate::UiEntries& passwords) {
+        ASSERT_TRUE(passwords[0].compromised_info.has_value());
+        EXPECT_THAT(passwords[0].compromised_info->compromise_types,
+                    testing::ElementsAre(
+                        api::passwords_private::CompromiseType::kLeaked));
+        EXPECT_TRUE(passwords[0].compromised_info->is_muted);
+        EXPECT_EQ("https://abc1.com/.well-known/change-password",
+                  passwords[0].change_password_url);
+      });
+
+  delegate->GetSavedPasswordsList(callback.Get());
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest,
+       GetSavedPasswordsList_CompromisedInfo_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kPasswordCompromiseWarningInDetailsCard);
+
+  scoped_refptr<PasswordsPrivateDelegateImpl> delegate = CreateDelegate();
+  PasswordForm compromised_password =
+      CreateSampleForm(PasswordForm::Store::kProfileStore);
+  compromised_password
+      .password_issues[password_manager::InsecureType::kLeaked] =
+      password_manager::InsecurityMetadata(
+          base::Time::Now(), password_manager::IsMuted(true),
+          password_manager::TriggerBackendNotification(false));
+
+  SetUpPasswordStores({compromised_password});
+
+  base::MockCallback<PasswordsPrivateDelegate::UiEntriesCallback> callback;
+  EXPECT_CALL(callback, Run(SizeIs(1)))
+      .WillOnce([&](const PasswordsPrivateDelegate::UiEntries& passwords) {
+        EXPECT_FALSE(passwords[0].compromised_info.has_value());
       });
 
   delegate->GetSavedPasswordsList(callback.Get());

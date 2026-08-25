@@ -27,11 +27,13 @@ import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_in
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {htmlEscape} from 'chrome://resources/js/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {PasswordsMovedEvent, ValueCopiedEvent} from '../password_manager_app.js';
 import {PasswordManagerImpl, PasswordViewPageInteractions} from '../password_manager_proxy.js';
+import {Page, Router} from '../router.js';
 import {MoveToAccountStoreTrigger, PasswordSharingActions, recordMoveToAccountStoreAccepted, recordPasswordSharingInteraction} from '../sharing/metrics_utils.js';
 import {ShowPasswordMixin} from '../show_password_mixin.js';
 import {UserUtilMixin} from '../user_utils_mixin.js';
@@ -382,6 +384,34 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
     return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
         'passwords-icon:cloud-upload' :
         'passwords-icon:upload-old';
+  }
+
+  private showCompromiseWarning_(): boolean {
+    if (!loadTimeData.getBoolean('showCompromiseWarningInDetailsCard')) {
+      return false;
+    }
+    const info = this.password.compromisedInfo;
+    if (!info || info.isMuted) {
+      return false;
+    }
+    const types = info.compromiseTypes;
+    return types.includes(chrome.passwordsPrivate.CompromiseType.LEAKED) ||
+        types.includes(chrome.passwordsPrivate.CompromiseType.PHISHED);
+  }
+
+  private onChangePasswordClicked_() {
+    assert(this.password.changePasswordUrl);
+    OpenWindowProxyImpl.getInstance().openUrl(this.password.changePasswordUrl);
+    PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
+        PasswordViewPageInteractions.CHANGE_PASSWORD_CLICKED);
+  }
+
+  private onCheckupLinkClicked_(e: Event) {
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'A') {
+      e.preventDefault();
+      Router.getInstance().navigateTo(Page.CHECKUP);
+    }
   }
 }
 

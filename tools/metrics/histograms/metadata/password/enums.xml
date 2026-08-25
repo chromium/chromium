@@ -1803,6 +1803,7 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Passkey copy display name button clicked"/>
   <int value="13" label="Passkey card delete button clicked"/>
   <int value="14" label="Passkey edit button clicked"/>
+  <int value="15" label="Change password button clicked"/>
 </enum>
 
 <enum name="PasswordVsOtpFormType">

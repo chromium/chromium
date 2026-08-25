@@ -77,6 +77,7 @@
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/time_format.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
@@ -1375,6 +1376,12 @@ PasswordsPrivateDelegateImpl::CreatePasswordUiEntryFromCredentialUiEntry(
     entry.backup_password = std::move(backup_password_info);
   }
   entry.hidden = credential.hidden;
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kPasswordCompromiseWarningInDetailsCard) &&
+      !credential.password_issues.empty()) {
+    entry.compromised_info = CreateCompromiseInfo(credential);
+  }
   entry.id = credential_id_generator_.GenerateId(std::move(credential));
   return entry;
 }

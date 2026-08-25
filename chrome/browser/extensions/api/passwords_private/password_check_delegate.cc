@@ -203,6 +203,8 @@ std::vector<api::passwords_private::CompromiseType> GetCompromiseType(
   return types;
 }
 
+}  // namespace
+
 api::passwords_private::CompromisedInfo CreateCompromiseInfo(
     const CredentialUIEntry& credential) {
   api::passwords_private::CompromisedInfo compromise_info;
@@ -218,8 +220,6 @@ api::passwords_private::CompromisedInfo CreateCompromiseInfo(
   compromise_info.compromise_types = GetCompromiseType(credential);
   return compromise_info;
 }
-
-}  // namespace
 
 PasswordCheckDelegate::PasswordCheckDelegate(
     PrefService* prefs,

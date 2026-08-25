@@ -4124,6 +4124,12 @@ inline constexpr char kPasswordChangeWithGlicName[] =
 inline constexpr char kPasswordChangeWithGlicDescription[] =
     "Triggers password change flow through Glic";
 
+inline constexpr char kPasswordCompromiseWarningInDetailsCardName[] =
+    "Password compromise warning in details card";
+inline constexpr char kPasswordCompromiseWarningInDetailsCardDescription[] =
+    "Displays a warning banner in the password details card when a "
+    "saved credential is compromised.";
+
 inline constexpr char kPasswordFormGroupedAffiliationsName[] =
     "Grouped affiliation password suggestions";
 inline constexpr char kPasswordFormGroupedAffiliationsDescription[] =

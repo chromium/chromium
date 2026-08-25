@@ -166,6 +166,12 @@ BASE_DECLARE_FEATURE(kPassDeletionOriginToAndroidBackend);
 extern const base::FeatureParam<int> kPassDeletionOriginMinGmsVersion;
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+// Enables displaying a warning banner for compromised credentials in the
+// password details card.
+BASE_DECLARE_FEATURE(kPasswordCompromiseWarningInDetailsCard);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 // Populate the `date_last_filled` timestamp for passwords.
 BASE_DECLARE_FEATURE(kPasswordDateLastFilled);
 

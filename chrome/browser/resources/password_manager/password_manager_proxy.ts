@@ -90,8 +90,9 @@ export enum PasswordViewPageInteractions {
   PASSKEY_DISPLAY_NAME_COPY_BUTTON_CLICKED = 12,
   PASSKEY_DELETE_BUTTON_CLICKED = 13,
   PASSKEY_EDIT_BUTTON_CLICKED = 14,
+  CHANGE_PASSWORD_CLICKED = 15,
   // Must be last.
-  COUNT = 15,
+  COUNT = 16,
 }
 
 /**

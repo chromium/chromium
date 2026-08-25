@@ -5,12 +5,13 @@
 import 'chrome://password-manager/password_manager.js';
 
 import type {EditPasswordDialogElement, PasswordDetailsCardElement} from 'chrome://password-manager/password_manager.js';
-import {Page, PasswordManagerImpl, PasswordViewPageInteractions, Router, SyncBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
+import {OpenWindowProxyImpl, Page, PasswordManagerImpl, PasswordViewPageInteractions, Router, SyncBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -34,12 +35,15 @@ async function createCardElement(
 }
 
 suite('PasswordDetailsCardTest', function() {
+  let openWindowProxy: TestOpenWindowProxy;
   let passwordManager: TestPasswordManagerProxy;
   let syncProxy: TestSyncBrowserProxy;
   let metrics: MetricsTracker;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
     syncProxy = new TestSyncBrowserProxy();
@@ -498,4 +502,141 @@ suite('PasswordDetailsCardTest', function() {
                 'PasswordManager.AccountStorage.' +
                 'MoveToAccountStoreFlowAccepted2'));
       });
+
+  test('compromised password banner displayed', async function() {
+    loadTimeData.overrideValues({showCompromiseWarningInDetailsCard: true});
+    const password = createPasswordEntry({
+      url: 'test.com',
+      username: 'vik',
+      password: 'password69',
+      changePasswordUrl: 'https://test.com/change-password',
+      compromisedInfo: {
+        compromiseTypes: [chrome.passwordsPrivate.CompromiseType.LEAKED],
+        compromiseTime: 1234,
+        elapsedTimeSinceCompromise: '5 minutes ago',
+        isMuted: false,
+      },
+    });
+
+    const card = await createCardElement(password);
+
+    const banner = card.shadowRoot!.querySelector('#warningContainer');
+    assertTrue(!!banner);
+    assertTrue(isVisible(banner as HTMLElement));
+
+    const warningIcon =
+        card.shadowRoot!.querySelector<HTMLElement>('#warningIcon');
+    assertTrue(!!warningIcon);
+    assertEquals('cr:error', warningIcon.getAttribute('icon'));
+
+    const warningDesc = card.shadowRoot!.querySelector('#warningDesc');
+    assertTrue(!!warningDesc);
+    assertTrue(isVisible(warningDesc as HTMLElement));
+    assertEquals(
+        loadTimeData.getString('detailsCardCompromiseWarning'),
+        warningDesc.innerHTML);
+
+    const checkupLink = warningDesc.querySelector<HTMLAnchorElement>('a');
+    assertTrue(!!checkupLink);
+    assertEquals(
+        loadTimeData.getString('checkupTitle'), checkupLink.textContent.trim());
+    checkupLink.click();
+    assertEquals(Page.CHECKUP, Router.getInstance().currentRoute.page);
+
+    const changePasswordButton =
+        card.shadowRoot!.querySelector<HTMLElement>('#changePasswordButton');
+    assertTrue(!!changePasswordButton);
+    assertTrue(isVisible(changePasswordButton));
+
+    changePasswordButton.click();
+    assertEquals(
+        'https://test.com/change-password',
+        await openWindowProxy.whenCalled('openUrl'));
+    assertEquals(
+        PasswordViewPageInteractions.CHANGE_PASSWORD_CLICKED,
+        await passwordManager.whenCalled('recordPasswordViewInteraction'));
+  });
+
+  test('compromised password banner hidden when muted', async function() {
+    loadTimeData.overrideValues({showCompromiseWarningInDetailsCard: true});
+    const password = createPasswordEntry({
+      url: 'test.com',
+      username: 'vik',
+      password: 'password69',
+      compromisedInfo: {
+        compromiseTypes: [chrome.passwordsPrivate.CompromiseType.LEAKED],
+        compromiseTime: 1234,
+        elapsedTimeSinceCompromise: '5 minutes ago',
+        isMuted: true,
+      },
+    });
+
+    const card = await createCardElement(password);
+
+    const banner = card.shadowRoot!.querySelector('#warningContainer');
+    assertFalse(!!banner);
+  });
+
+  test(
+      'compromised password banner hidden when flag disabled',
+      async function() {
+        loadTimeData.overrideValues(
+            {showCompromiseWarningInDetailsCard: false});
+        const password = createPasswordEntry({
+          url: 'test.com',
+          username: 'vik',
+          password: 'password69',
+          compromisedInfo: {
+            compromiseTypes: [chrome.passwordsPrivate.CompromiseType.LEAKED],
+            compromiseTime: 1234,
+            elapsedTimeSinceCompromise: '5 minutes ago',
+            isMuted: false,
+          },
+        });
+
+        const card = await createCardElement(password);
+
+        const banner = card.shadowRoot!.querySelector('#warningContainer');
+        assertFalse(!!banner);
+      });
+
+  test('compromised password banner hidden when only weak', async function() {
+    loadTimeData.overrideValues({showCompromiseWarningInDetailsCard: true});
+    const password = createPasswordEntry({
+      url: 'test.com',
+      username: 'vik',
+      password: 'password69',
+      compromisedInfo: {
+        compromiseTypes: [chrome.passwordsPrivate.CompromiseType.WEAK],
+        compromiseTime: 1234,
+        elapsedTimeSinceCompromise: '5 minutes ago',
+        isMuted: false,
+      },
+    });
+
+    const card = await createCardElement(password);
+
+    const banner = card.shadowRoot!.querySelector('#warningContainer');
+    assertFalse(!!banner);
+  });
+
+  test('compromised password banner hidden when only reused', async function() {
+    loadTimeData.overrideValues({showCompromiseWarningInDetailsCard: true});
+    const password = createPasswordEntry({
+      url: 'test.com',
+      username: 'vik',
+      password: 'password69',
+      compromisedInfo: {
+        compromiseTypes: [chrome.passwordsPrivate.CompromiseType.REUSED],
+        compromiseTime: 1234,
+        elapsedTimeSinceCompromise: '5 minutes ago',
+        isMuted: false,
+      },
+    });
+
+    const card = await createCardElement(password);
+
+    const banner = card.shadowRoot!.querySelector('#warningContainer');
+    assertFalse(!!banner);
+  });
 });

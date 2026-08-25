@@ -217,6 +217,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
        IDS_PASSWORD_MANAGER_UI_DELETE_DIALOG_FROM_ACCOUNT_CHECKBOX_LABEL},
       {"deletePasswordDialogTitle",
        IDS_PASSWORD_MANAGER_UI_DELETE_DIALOG_TITLE},
+      {"detailsCardCompromiseWarning",
+       IDS_PASSWORD_MANAGER_UI_DETAILS_CARD_COMPROMISE_WARNING},
       {"done", IDS_DONE},
       {"disable", IDS_DISABLE},
       {"disconnectCloudAuthenticatorButton",
@@ -715,6 +717,11 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       "enableTrustedVaultUnlock",
       base::FeatureList::IsEnabled(
           password_manager::features::kTrustedVaultDesktopUnlock));
+
+  source->AddBoolean(
+      "showCompromiseWarningInDetailsCard",
+      base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordCompromiseWarningInDetailsCard));
 
   source->AddString("webuiRefresh2026", features::IsWebuiRefresh2026Enabled()
                                             ? "webui-refresh-2026"

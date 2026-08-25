@@ -8166,6 +8166,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "password-compromise-warning-in-details-card",
+    "owners": ["desaic@google.com", "vsemeniuk@google.com", "chrome-password-manager-team@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "password-form-grouped-affiliations",
     "owners": ["atsvirchkova@google.com", "vsemeniuk@google.com", "chrome-password-manager-team@google.com"],
     "expiry_milestone": 150
