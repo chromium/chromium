@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {WebviewController, WebviewPersistentState, ZoomAction} from 'chrome://glic/glic.js';
+import {GuestPageType, WebviewController, WebviewPersistentState, ZoomAction} from 'chrome://glic/glic.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrA11yAnnouncerMessagesSentEvent} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {configureLoadTimeData, FakeApiHostEmbedder, FakeBrowserProxy, FakeWebviewDelegate} from './test_helpers.js';
-
+import {configureLoadTimeData, FakeBrowserProxy, FakeWebviewDelegate} from './test_helpers.js';
 
 suite('WebviewZoomTest', () => {
   let controller: WebviewController;
@@ -25,7 +24,6 @@ suite('WebviewZoomTest', () => {
         container,
         new FakeBrowserProxy(),
         new FakeWebviewDelegate(),
-        new FakeApiHostEmbedder(),
         new WebviewPersistentState(),
     );
   });
@@ -140,7 +138,6 @@ suite('WebviewZoomTest', () => {
         container,
         fakeProxy,
         new FakeWebviewDelegate(),
-        new FakeApiHostEmbedder(),
         new WebviewPersistentState(),
     );
 
@@ -234,7 +231,8 @@ suite('GlicThemeTest', () => {
 
 suite('WebviewLoadCommitTest', () => {
   let controller: WebviewController;
-  let lastCommittedPageType: string|undefined;
+  let lastCommittedPageType: GuestPageType|undefined;
+  let lastCommittedIsApiAllowed: boolean|undefined;
 
   setup(() => {
     configureLoadTimeData({
@@ -244,8 +242,9 @@ suite('WebviewLoadCommitTest', () => {
     });
 
     const delegate = new FakeWebviewDelegate();
-    delegate.webviewPageCommit = (pageType) => {
+    delegate.webviewPageCommit = (pageType, isApiAllowed) => {
       lastCommittedPageType = pageType;
+      lastCommittedIsApiAllowed = isApiAllowed;
     };
 
     const container = document.createElement('div');
@@ -253,38 +252,32 @@ suite('WebviewLoadCommitTest', () => {
         container,
         new FakeBrowserProxy(),
         delegate,
-        new FakeApiHostEmbedder(),
         new WebviewPersistentState(),
     );
   });
 
-  test('login page committed without host reports login not loadError', () => {
-    const loadStartEvent =
-        Object.assign(new Event('loadstart'), {isTopLevel: true}) as
-        chrome.webviewTag.LoadStartEvent;
-    controller.webview.dispatchEvent(loadStartEvent);
+  test('login page committed reports login', () => {
+    controller.onGuestNavigated(
+        'https://accounts.google.com/signin', false, GuestPageType.kLogin,
+        false);
 
-    const loadCommitEvent = Object.assign(new Event('loadcommit'), {
-      url: 'https://accounts.google.com/signin',
-      isTopLevel: true,
-    }) as chrome.webviewTag.LoadCommitEvent;
-    controller.webview.dispatchEvent(loadCommitEvent);
-
-    assertEquals('login', lastCommittedPageType);
+    assertEquals(GuestPageType.kLogin, lastCommittedPageType);
+    assertEquals(false, lastCommittedIsApiAllowed);
   });
 
-  test('unauthorized page committed without host reports loadError', () => {
-    const loadStartEvent =
-        Object.assign(new Event('loadstart'), {isTopLevel: true}) as
-        chrome.webviewTag.LoadStartEvent;
-    controller.webview.dispatchEvent(loadStartEvent);
+  test('unauthorized page committed reports loadError', () => {
+    controller.onGuestNavigated(
+        'https://unknown.com/', false, GuestPageType.kRegular, false);
 
-    const loadCommitEvent = Object.assign(new Event('loadcommit'), {
-      url: 'https://unknown.com/',
-      isTopLevel: true,
-    }) as chrome.webviewTag.LoadCommitEvent;
-    controller.webview.dispatchEvent(loadCommitEvent);
+    assertEquals(GuestPageType.kLoadError, lastCommittedPageType);
+    assertEquals(false, lastCommittedIsApiAllowed);
+  });
 
-    assertEquals('loadError', lastCommittedPageType);
+  test('authorized regular page committed reports regular', () => {
+    controller.onGuestNavigated(
+        'https://cat.fun/party', true, GuestPageType.kRegular, false);
+
+    assertEquals(GuestPageType.kRegular, lastCommittedPageType);
+    assertEquals(true, lastCommittedIsApiAllowed);
   });
 });

@@ -23,7 +23,7 @@ import {ResponseExtras} from '../transport/messaging.js';
 import type {PendingReceiver, PendingRemote, PostMessageHandler, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
 
 import {bitmapN32ToRGBAImage, captureRegionResultToClient, conversationInfoFromClient, conversionSettings, counterAbuseVerdictFromClient, focusedTabDataToClient, getPinCandidatesOptionsFromClient, hostCapabilitiesToClient, idFromClient, idToClient, imageBytesResultToClient, microphoneStatusToMojo, openPinnedTabPickerOptionsToMojo, optionalFromClient, optionalToClient, panelStateToClient, pinTabsOptionsToMojo, subscriberObservationTypeFromClient, tabContextOptionsFromClient, tabContextToClient, tabDataToClient, timeDeltaFromClient, unpinTabsOptionsToMojo, urlFromClient, urlToClient, webClientModeToMojo} from './conversions.js';
-import type {ApiHostEmbedder, GlicApiHost} from './glic_api_host.js';
+import type {GlicApiHost} from './glic_api_host.js';
 import {DetailedWebClientState} from './glic_api_host.js';
 import {WebClientImpl} from './host_to_client.js';
 import {linkPipeClosure} from './host_utils.js';
@@ -44,8 +44,7 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
 
   // Reminder: Don't add more state here! See `HostMessageHandler`'s comment.
   constructor(
-      private handler: WebClientHandlerInterface,
-      private embedder: ApiHostEmbedder, private host: GlicApiHost) {}
+      private handler: WebClientHandlerInterface, private host: GlicApiHost) {}
 
   destroy() {
     if (this.receiver) {
@@ -79,9 +78,7 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
     this.host.detailedWebClientState =
         DetailedWebClientState.WEB_CLIENT_NOT_INITIALIZED;
 
-    this.embedder.webClientWarmed();
-
-    const webClientImpl = new WebClientImpl(this.host, this.embedder);
+    const webClientImpl = new WebClientImpl(this.host);
     this.receiver = new WebClientReceiver(webClientImpl);
     const {initialState} = await this.handler.webClientCreated(
         this.receiver.$.bindNewPipeAndPassRemote());
@@ -671,9 +668,6 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
 
   setOnboardingCompleted(): void {
     this.handler.setOnboardingCompleted();
-    if (this.embedder.onboardingCompleted) {
-      this.embedder.onboardingCompleted();
-    }
   }
 
   subscribeToTabData(request: {

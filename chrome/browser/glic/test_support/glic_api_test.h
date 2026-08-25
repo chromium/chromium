@@ -346,20 +346,31 @@ class GlicApiBrowserTestMixin : public T {
       // Note: Sometimes the previous guest frame is still around, but it won't
       // have the runApiTest function. Loop until both conditions are met.
       frame = FindGlicGuestMainFrame(instance);
-      if (frame) {
+      // Note, these checks look overly cautious because calling EvalJs
+      // will sometimes crash if a frame is not in a good state.
+      content::RenderFrameHost* rfh =
+          frame ? content::RenderFrameHost::FromID(frame->GetGlobalId())
+                : nullptr;
+      content::WebContents* guest_contents =
+          rfh ? content::WebContents::FromRenderFrameHost(rfh) : nullptr;
+      if (rfh && rfh->IsRenderFrameLive() &&
+          rfh->GetLifecycleState() ==
+              content::RenderFrameHost::LifecycleState::kActive &&
+          guest_contents && !guest_contents->IsBeingDestroyed() &&
+          guest_contents->GetPrimaryMainFrame() == rfh) {
 #if !BUILDFLAG(IS_ANDROID)
-        if (frame != last_frame) {
-          frame->GetProcess()->SetPriorityOverride(
+        if (rfh != last_frame && rfh->GetProcess()) {
+          rfh->GetProcess()->SetPriorityOverride(
               base::Process::Priority::kUserVisible);
         }
 #else
         (void)last_frame;  // Unused on Android.
 #endif
-        last_frame = frame;
+        last_frame = rfh;
         auto result =
-            content::EvalJs(frame, {"typeof runApiTest !== 'undefined'"});
+            content::EvalJs(rfh, {"typeof runApiTest !== 'undefined'"});
         if (result.is_ok() && result.ExtractBool()) {
-          return base::ok(frame);
+          return base::ok(rfh);
         }
       }
       if (base::TimeTicks::Now() > next_message_time) {

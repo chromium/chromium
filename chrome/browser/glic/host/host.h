@@ -32,6 +32,7 @@ class RenderProcessHost;
 namespace glic {
 class GlicKeyedService;
 class GlicPageHandler;
+class GlicWebClientManager;
 class WebUIContentsContainer;
 class GlicInstanceMetrics;
 class GlicInstanceMetricsBackwardsCompatibility;
@@ -250,8 +251,8 @@ class Host : public GlicSharingManagerProvider {
 
   InstanceId GetInstanceId() const;
 
-  void OnGuestNavigationBlocked(
-      mojom::GuestPageType page_type = mojom::GuestPageType::kLoadError);
+  void OnGuestWebClientCleared(bool had_web_client);
+
   WebUIContentsContainer* contents_container() { return contents_.get(); }
   std::unique_ptr<content::WebContents> ReleaseWebContents();
   void ReclaimWebContents(std::unique_ptr<content::WebContents> web_contents);
@@ -276,7 +277,8 @@ class Host : public GlicSharingManagerProvider {
   GlicPageHandler* GetPrimaryPageHandlerForTesting();
 
   // TODO(b/409332639): Hide direct access to the web client.
-  GlicWebClientAccess* GetPrimaryWebClient();
+  // TODO(harringtond): Rename to GetWebClient() if we can't remove this.
+  GlicWebClientAccess* GetPrimaryWebClient() const;
 
   void CreateWebClient(
       mojo::PendingReceiver<glic::mojom::WebClientHandler> web_client_receiver);
@@ -287,10 +289,7 @@ class Host : public GlicSharingManagerProvider {
   // This transitions to false after PanelWasClosed() is called.
   bool IsPrimaryClientOpen();
 
-  mojom::WebClientState web_client_state() const {
-    return web_client_access_ ? web_client_access_->web_client_state()
-                              : mojom::WebClientState::kUninitialized;
-  }
+  mojom::WebClientState web_client_state() const;
   bool is_web_client_ready() const {
     return web_client_state() == mojom::WebClientState::kResponsive;
   }
@@ -369,7 +368,7 @@ class Host : public GlicSharingManagerProvider {
   // hasn't been created yet, apply this setting when it is created. No effect
   // if the widget doesn't exist or the feature flag is disabled.
   void EnableDragResize(bool enabled);
-
+  void HibernateImpl(bool is_destroying);
   void AttachPanel();
   void DetachPanel();
   void ClosePanel();
@@ -405,6 +404,8 @@ class Host : public GlicSharingManagerProvider {
   void WebUIPageHandlerRemoved(GlicPageHandler* page_handler);
 
  private:
+  friend class GlicWebClientManager;
+
   void UnsetWebClient();
   void InvokeInternal(mojom::InvokeOptionsPtr options,
                       base::OnceClosure callback);
@@ -440,6 +441,10 @@ class Host : public GlicSharingManagerProvider {
       content::WebContents* web_contents) const {
     return const_cast<Host*>(this)->FindInfoForWebUiContents(web_contents);
   }
+  GlicWebClientManager* web_client_manager();
+  const GlicWebClientManager* web_client_manager() const;
+  content::Visibility GetExpectedVisibility() const;
+  void UpdateVisibility();
 
   raw_ptr<Profile> profile_;
 
@@ -465,31 +470,15 @@ class Host : public GlicSharingManagerProvider {
   mojom::WebUiState primary_webui_state_ = mojom::WebUiState::kUninitialized;
   std::optional<mojom::PanelState> pending_panel_state_;
 
-  // Owns the WebUI contents. May be null for glic hosts in chrome://glic tabs.
-  // Keep profile alive as long as the glic web contents. This object should be
-  // destroyed when the profile needs to be destroyed.
   std::unique_ptr<WebUIContentsContainer> contents_;
   std::optional<PageHandlerInfo> handler_info_;
-  // Host owns at most one web client access. If a new access is created,
-  // the old one is destroyed synchronously.
-  std::unique_ptr<GlicWebClientAccess> web_client_access_;
-  // Points to `web_client_access_` once the Javascript WebUI has completed
-  // initialization and called `WebClientInitialized()`. Null before then or
-  // after the web client disconnects.
-  raw_ptr<GlicWebClientAccess> web_client_ = nullptr;
 
   raw_ptr<GlicSharingManagerProvider> sharing_manager_provider_;
 
   mojom::MicrophoneStatus microphone_status_ =
       mojom::MicrophoneStatus::kUnknown;
-
-  content::Visibility GetExpectedVisibility() const;
-  void UpdateVisibility();
-
   std::optional<content::Visibility> visibility_override_;
-
   content::Visibility web_contents_visibility_ = content::Visibility::HIDDEN;
-
   base::WeakPtrFactory<Host> weak_ptr_factory_{this};
 };
 

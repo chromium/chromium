@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/supports_user_data.h"
@@ -25,8 +26,8 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/host/glic_guest_observer.h"
-#include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/glic_ui.h"
+#include "chrome/browser/glic/host/glic_web_client_manager.h"
 #include "chrome/browser/glic/host/guest_util_internal.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
@@ -40,6 +41,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
+#include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
@@ -48,10 +50,12 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/buildflags/buildflags.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/origin_matcher/origin_matcher.h"
 #include "components/prefs/pref_service.h"
 #include "components/skills/features.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
@@ -74,6 +78,11 @@
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRegion.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/clipboard_metadata.h"
+#include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "url/gurl.h"
 
@@ -86,16 +95,6 @@
 #else
 #include "components/guest_view/browser/slim_web_view/slim_web_view_guest.h"  // nogncheck
 #endif
-
-#include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
-#include "components/optimization_guide/content/browser/page_context_eligibility.h"
-#include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/clipboard_types.h"
-#include "ui/base/clipboard/clipboard.h"
-#include "ui/base/clipboard/clipboard_format_type.h"
-#include "ui/base/clipboard/clipboard_metadata.h"
-#include "ui/base/clipboard/clipboard_monitor.h"
-#include "ui/base/clipboard/clipboard_observer.h"
 
 namespace glic {
 
@@ -516,7 +515,7 @@ content::WebContents* GetGlicGuestWebContents(
   return data ? data->guest_contents() : nullptr;
 }
 
-Host* GetGlicHostForGuest(content::WebContents* guest_contents) {
+GlicUI* GetGlicUiForGuest(content::WebContents* guest_contents) {
   if (!IsGlicGuest(guest_contents)) {
     return nullptr;
   }
@@ -525,7 +524,11 @@ Host* GetGlicHostForGuest(content::WebContents* guest_contents) {
   if (!top) {
     return nullptr;
   }
-  auto* glic_ui = GlicUI::From(top);
+  return GlicUI::From(top);
+}
+
+Host* GetGlicHostForGuest(content::WebContents* guest_contents) {
+  auto* glic_ui = GetGlicUiForGuest(guest_contents);
   return glic_ui ? glic_ui->host() : nullptr;
 }
 
@@ -596,6 +599,11 @@ bool OnGuestAdded(content::WebContents* guest_contents) {
   base::UmaHistogramEnumeration(
       "Glic.Host.WebView.AutoPlay",
       WebViewAutoPlayProgress::kWebContentsObserverRegistered);
+  if (auto* glic_ui = GlicUI::From(top)) {
+    if (glic_ui->web_client_manager()) {
+      glic_ui->web_client_manager()->AttachGuestContents(guest_contents);
+    }
+  }
   return true;
 }
 

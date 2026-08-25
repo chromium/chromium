@@ -164,13 +164,35 @@ enum ZoomAction {
 interface PreloadPage {
   // The one and only method needed to unblock the frontend.
   SetProfileReadyState(ProfileReadyState ready_state);
+
+  // Notifies the page when the guest frame starts a navigation.
+  OnGuestNavigationStarted();
+
+  // Notifies the page when the guest frame commits a navigation.
+  OnGuestNavigated(url.mojom.Url url,
+                   bool is_api_allowed,
+                   GuestPageType page_type,
+                   bool is_initial_commit);
+
+  // Notifies the page when the guest process terminates unexpectedly.
+  OnGuestProcessGone();
+
+  // Notifies the page when the web client state changes.
+  WebClientStateChanged(WebClientState state);
 };
 
 // State of the web client running inside the webview.
 enum WebClientState {
   kUninitialized,
+  // The web client has been created, but not initialized.
+  kWarmed,
+  // The web client has finished initialization, with a glic instance, and is
+  // currently responsive.
   kResponsive,
+  // The web client is not currently responsive.
   kUnresponsive,
+  // The web client has stopped working (e.g. permanently unresponsive), or
+  // failed to load.
   kError,
 };
 
@@ -196,11 +218,11 @@ interface Page {
   // Called to inform the page of the UI surface it is being rendered in.
   UpdatePageState(PanelStateKind panelStateKind);
 
+  // Notifies the page when the web client ready state changes.
+  ClientReadyStateChanged(bool ready);
+
   // Notifies the page to adjust the zoom level of its hosted webview.
   Zoom(ZoomAction action);
-
-  // Notifies the page when the web client state changes.
-  WebClientStateChanged(WebClientState state);
 };
 
 // Page handler for pre-loading tasks.
@@ -1694,8 +1716,8 @@ interface WebClientHandler {
   OnOptinImpression();
 
   // Called when the user submits input.
-  OnUserInputSubmitted(WebClientMode mode,
-                       [MinVersion=1] PromptType prompt_type);
+  OnUserInputSubmitted(
+      WebClientMode mode, [MinVersion=1] PromptType prompt_type);
 
   // Called when starting to upload context to the server.
   OnContextUploadStarted();

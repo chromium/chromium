@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ApiHostEmbedder, BrowserProxy, PageHandlerInterface, PageType, WebviewDelegate} from 'chrome://glic/glic.js';
-import {PageCallbackRouter} from 'chrome://glic/glic.js';
+import type {BrowserProxy, PageHandlerInterface, WebviewDelegate} from 'chrome://glic/glic.js';
+import {PageCallbackRouter, PreloadPageCallbackRouter} from 'chrome://glic/glic.js';
+import type {GuestPageType} from 'chrome://glic/glic.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
@@ -14,20 +15,25 @@ import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 export function configureLoadTimeData(overrides: Record<string, any> = {}) {
   loadTimeData.resetForTesting(Object.assign(
       {
-        glicAllowedOrigins: '',
-        glicApiAllowedOrigins: '',
         glicGuestURL: 'https://cat.fun/',
         devMode: false,
         chromeVersion: '123.0.0.0',
         chromeChannel: 'stable',
         glicHeaderRequestTypes: '',
         zoomLabel: 'Zoom: $1',
+        loggingEnabled: false,
+        maxInFlightRequests: 10,
+        sendResponsesForAllRequests: false,
+        glicGuestAPISource: '',
+        enableStructuredYieldMetadata: false,
+        glicPopupWindowsEnabled: false,
       },
       overrides));
 }
 
 export class FakePageHandler implements Partial<PageHandlerInterface> {
-  webviewCommitted(_url: string) {}
+  createWebClient(_receiver: any) {}
+  webviewCommitted(_url: any) {}
   onZoomLevelChange(_zoomFactor: number) {}
   prepareForClient() {
     return Promise.resolve({result: 0});
@@ -37,18 +43,14 @@ export class FakePageHandler implements Partial<PageHandlerInterface> {
 export class FakeBrowserProxy implements BrowserProxy {
   pageHandler = new FakePageHandler() as PageHandlerInterface;
   pageCallbackRouter = new PageCallbackRouter();
+  preloadPageCallbackRouter = new PreloadPageCallbackRouter();
 }
 
 export class FakeWebviewDelegate implements WebviewDelegate {
   webviewError(_reason: string) {}
   webviewUnresponsive() {}
-  webviewPageCommit(_pageType: PageType) {}
+  webviewPageCommit(_pageType?: GuestPageType, _isApiAllowed?: boolean) {}
   webviewDeniedByAdmin() {}
-}
-
-export class FakeApiHostEmbedder implements ApiHostEmbedder {
-  webClientReady() {}
-  webClientWarmed() {}
 }
 
 export function assertDeepEquals(a: unknown, b: unknown): void {

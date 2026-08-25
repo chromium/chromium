@@ -40,6 +40,7 @@
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/glic/host/glic_skills_manager.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/features.h"
@@ -115,8 +116,10 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "net/base/net_errors.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
@@ -2662,8 +2665,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testCreateTabByClickingOnLink) {
   AudioDucker* audio_ducker =
       AudioDucker::GetForPage(FindGlicGuestMainFrame()->GetPage());
   ASSERT_TRUE(audio_ducker);
-  ASSERT_EQ(audio_ducker->GetAudioDuckingState(),
-            AudioDucker::AudioDuckingState::kDucking);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return audio_ducker->GetAudioDuckingState() ==
+           AudioDucker::AudioDuckingState::kDucking;
+  }));
 #endif
 
   ContinueJsTest();
@@ -3455,10 +3460,11 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFails) {
       histogram_tester.GetAllSamplesForPrefix("Glic.Fre.PanelWebUiState"),
       UnorderedElementsAre(
           Pair("Glic.Fre.PanelWebUiState",
-               BucketsAre(
-                   Bucket(1 /*kBeginLoad*/, 1), Bucket(2 /*kShowLoading*/, 1),
-                   Bucket(4 /*kFinishLoading*/, 1), Bucket(5 /*kError*/, 1),
-                   Bucket(13 /*kGuestError*/, 1))),
+               BucketsAre(Bucket(mojom::WebUiState::kBeginLoad, 1),
+                          Bucket(mojom::WebUiState::kShowLoading, 1),
+                          Bucket(mojom::WebUiState::kFinishLoading, 1),
+                          Bucket(mojom::WebUiState::kWarmed, 1),
+                          Bucket(mojom::WebUiState::kError, 1))),
           Pair("Glic.Fre.PanelWebUiState.Error",
                BucketsAre(Bucket(6 /*CLIENT_ERROR*/, 1)))));
 
@@ -3565,6 +3571,29 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCookieSyncFails) {
 
   histogram_tester.ExpectBucketCount("Glic.PanelWebUiState.Error",
                                      2 /*COOKIE_SYNC_ERROR*/, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testUnallowedOriginNavigationBlocked) {
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance));
+
+  content::WebContents* guest_contents = instance->host().web_client_contents();
+  ASSERT_TRUE(guest_contents);
+  GURL initial_url = guest_contents->GetLastCommittedURL();
+
+  GURL unallowed_url =
+      embedded_test_server()->GetURL("b.com", "/test_data/page.html");
+
+  content::TestNavigationObserver observer(guest_contents);
+  ASSERT_TRUE(content::ExecJs(
+      guest_contents,
+      content::JsReplace("location.href = $1;", unallowed_url.spec())));
+  observer.Wait();
+
+  EXPECT_FALSE(observer.last_navigation_succeeded());
+  EXPECT_EQ(initial_url, guest_contents->GetLastCommittedURL());
+  // The client should still be connected, as no navigation took place.
+  ASSERT_OK(WaitForGlicClient(instance));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetUserProfileInfo) {

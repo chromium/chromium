@@ -948,6 +948,8 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
+  async testUnallowedOriginNavigationBlocked() {}
+
   async testGetUserProfileInfo() {
     assertDefined(this.host.getUserProfileInfo);
     assertDefined(this.host.getPlatform);
@@ -1384,7 +1386,7 @@ class ApiTests extends ApiTestFixtureBase {
   async testCreateTabByClickingOnLink() {
     assertDefined(this.host.setAudioDucking);
     // Check that audio ducking still works after clicking a link.
-    this.host.setAudioDucking(true);
+    await this.host.setAudioDucking(true);
     const link = document.createElement('a');
     link.setAttribute('href', 'https://www.chromium.org');
     link.setAttribute('target', '_blank');
@@ -1392,7 +1394,7 @@ class ApiTests extends ApiTestFixtureBase {
     link.click();
 
     await this.advanceToNextStep();
-    this.host.setAudioDucking(false);
+    await this.host.setAudioDucking(false);
   }
 
   async testCreateTabByClickingOnLinkDaisyChains() {
@@ -3230,11 +3232,21 @@ class ApiTestFailsToInitialize extends ApiTestFixtureBase {
   }
 
   async testSorryPageBeforeInitialize() {
-    this.deferredSetUpClient();
+    if (this.getTestParams().failWith ===
+        'navigateToSorryPageBeforeInitialize') {
+      this.deferredSetUpClient();
+    } else if (this.getTestParams().failWith === 'none') {
+      await super.setUpClient();
+    }
   }
 
   async testSorryPageAfterInitialize() {
-    this.deferredSetUpClient();
+    if (this.getTestParams().failWith ===
+        'navigateToSorryPageAfterInitialize') {
+      this.deferredSetUpClient();
+    } else if (this.getTestParams().failWith === 'none') {
+      await super.setUpClient();
+    }
   }
 
   async testInitializeFailsAfterReload() {

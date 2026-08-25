@@ -457,6 +457,7 @@ class GlicWebClientHandler
     web_client_.Bind(std::move(web_client));
     web_client_.set_disconnect_handler(base::BindOnce(
         &GlicWebClientHandler::OnDisconnected, base::Unretained(this)));
+    SetState(mojom::WebClientState::kWarmed);
 
     page_metadata_manager_ =
         std::make_unique<PageMetadataManager>(profile_, web_client_.get());

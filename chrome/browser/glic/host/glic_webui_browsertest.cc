@@ -27,15 +27,18 @@ class GlicWebUiBrowserTest : public glic::GlicBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     glic::GlicBrowserTest::SetUpCommandLine(command_line);
-    // Allow b.com to load in the webview, but not have Glic API access
-    command_line->AppendSwitchASCII(::switches::kGlicAllowedOrigins,
-                                    "https://gemini.google.com http://b.com");
     command_line->AppendSwitch(::switches::kGlicSkipReloadAfterNavigation);
   }
 
   void SetUpOnMainThread() override {
     glic::GlicBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("b.com", "127.0.0.1");
+    // Allow b.com (with the test server's port) to load in the webview, but
+    // not have Glic API access.
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        ::switches::kGlicAllowedOrigins,
+        "https://gemini.google.com " +
+            embedded_test_server()->GetOrigin("b.com").Serialize());
     SetFRECompletion(GetProfile(), prefs::FreStatus::kCompleted);
   }
 

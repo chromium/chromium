@@ -14,7 +14,12 @@ class WebContents;
 
 namespace glic {
 
+class GlicUI;
 class Host;
+
+// Returns the GlicUI for the given guest WebContents, or nullptr if not a Glic
+// guest.
+GlicUI* GetGlicUiForGuest(content::WebContents* guest_contents);
 
 // Returns the Glic Host for the given guest WebContents, or nullptr if not a
 // Glic guest.

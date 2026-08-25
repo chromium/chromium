@@ -87,11 +87,11 @@ class GlicPageHandler : public glic::mojom::PageHandler,
 
   void OnWebUiStateChanged(glic::mojom::WebUiState new_state) override;
 
+  // Host::Observer implementation.
+  void ClientReadyToShow(const mojom::OpenPanelInfo& open_info) override;
+
   // PanelStateObserver implementation.
   void PanelStateChanged(const glic::mojom::PanelState& panel_state) override;
-
-  // Host::Observer implementation.
-  void WebClientStateChanged(mojom::WebClientState state) override;
 
   void UpdatePageState(mojom::PanelStateKind panelStateKind);
 

@@ -41,6 +41,7 @@ import {PanelOpenState} from './types.js';
 
 export enum WebClientState {
   UNINITIALIZED,
+  WARMED,
   RESPONSIVE,
   UNRESPONSIVE,
   ERROR,  // Final state
@@ -67,17 +68,6 @@ export enum DetailedWebClientState {
   MAX_VALUE = MOJO_PIPE_CLOSED_UNEXPECTEDLY_AFTER_INITIALIZE,
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicDetailedWebClientState)
-
-// Implemented by the embedder of GlicApiHost.
-export interface ApiHostEmbedder {
-  // Called when the notifyPanelWillOpen promise resolves to open the panel
-  // when triggered from the browser.
-  webClientReady(): void;
-  webClientWarmed(): void;
-
-  // Called when the user completes the onboarding flow.
-  onboardingCompleted?(): void;
-}
 
 // Sets up communication with the client.
 // This is separate from GlicApiHost to allow us to detect the client page
@@ -130,10 +120,8 @@ export class GlicApiCommunicator {
 
   // Called when the webview page is loaded.
   contentLoaded() {
-    // Send the ping message one more time. At this point, the webview should
-    // be able to handle the message, if it hasn't already.
+    // Send the ping message one more time.
     this.bootstrapPing();
-    this.stopBootstrapPing();
   }
 
   // Intercept initial handshake on pipe 0.
@@ -179,7 +167,6 @@ export class GlicApiCommunicator {
   }
 }
 
-
 type HandlerFunction = (payload: unknown, extras: ResponseExtras) =>
     Promise<unknown>;
 
@@ -217,41 +204,43 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
   skillsHandler?: SkillsHandlerRemote;
 
   zeroStateSuggestionsHandler?: ZeroStateSuggestionsHandlerRemote;
+  private isDestroyed = false;
   private isSubscribedToZoomLevel = false;
   private zoomFactor?: number;
+
   private experimentalTriggeringUpdatesHandler =
       new Map<number, ExperimentalTriggeringUpdatesHandlerRemote>();
   private nextExperimentalTriggeringUpdateHandlerId = 0;
 
   constructor(
       private browserProxy: BrowserProxy,
-      public readonly communicator: GlicApiCommunicator,
-      embedder: ApiHostEmbedder) {
+      public readonly communicator: GlicApiCommunicator) {
     this.sender = communicator.pmRemote;
     this.handler = new WebClientHandlerRemote();
     this.handler.onConnectionError.addListener(() => {
-      if (this.webClientState.getCurrentValue() !== WebClientState.ERROR) {
-        console.warn(`Mojo connection error in glic host`);
-        this.detailedWebClientState = this.detailedWebClientState ===
-                DetailedWebClientState.BOOTSTRAP_PENDING ?
-            DetailedWebClientState
-                .MOJO_PIPE_CLOSED_UNEXPECTEDLY_BEFORE_INITIALIZE :
-            DetailedWebClientState
-                .MOJO_PIPE_CLOSED_UNEXPECTEDLY_AFTER_INITIALIZE;
-        this.webClientState.assignAndSignal(WebClientState.ERROR);
+      if (this.isDestroyed ||
+          this.webClientState.getCurrentValue() === WebClientState.ERROR) {
+        return;
       }
+      console.warn(`Mojo connection error in glic host`);
+      this.detailedWebClientState = this.detailedWebClientState ===
+              DetailedWebClientState.BOOTSTRAP_PENDING ?
+          DetailedWebClientState
+              .MOJO_PIPE_CLOSED_UNEXPECTEDLY_BEFORE_INITIALIZE :
+          DetailedWebClientState.MOJO_PIPE_CLOSED_UNEXPECTEDLY_AFTER_INITIALIZE;
+      this.webClientState.assignAndSignal(WebClientState.ERROR);
     });
     this.handler.$.close();
 
     this.browserProxy.pageHandler.createWebClient(
         this.handler.$.bindNewPipeAndPassReceiver());
-    this.hostMessageHandler =
-        new HostMessageHandler(this.handler, embedder, this);
+    this.hostMessageHandler = new HostMessageHandler(this.handler, this);
 
     communicator.setHost(this);
   }
 
   destroy() {
+    this.isDestroyed = true;
     this.webClientState = ObservableValue.withValue<WebClientState>(
         WebClientState.ERROR);  // Final state
     this.hostMessageHandler.destroy();
@@ -408,6 +397,14 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
   setInstanceIsActive(instanceIsActive: boolean) {
     this.instanceIsActive = instanceIsActive;
     this.clientActiveObs.assignAndSignal(this.isClientActive());
+  }
+
+  getInstanceIsActive(): boolean {
+    return this.instanceIsActive;
+  }
+
+  isPanelOpen(): boolean {
+    return this.panelOpenState === PanelOpenState.OPEN;
   }
 
   // Returns true if the user might be interacting with the client.

@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/glic_internals_page_handler.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
+#include "chrome/browser/glic/host/glic_web_client_manager.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
@@ -71,15 +72,20 @@ BASE_FEATURE_PARAM(int,
 BASE_FEATURE(kGlicSendResponsesForAllRequests,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-class GlicPreloadHandler : public glic::mojom::GlicPreloadHandler {
+class GlicPreloadHandler : public glic::mojom::GlicPreloadHandler,
+                           public GlicWebClientManager::Delegate {
  public:
   explicit GlicPreloadHandler(
       content::BrowserContext* browser_context,
+      GlicWebClientManager* web_client_manager,
       mojo::PendingReceiver<glic::mojom::GlicPreloadHandler> receiver,
       mojo::PendingRemote<glic::mojom::PreloadPage> page)
       : browser_context_(browser_context),
+        web_client_manager_(web_client_manager),
         receiver_(this, std::move(receiver)),
         preload_page_(std::move(page)) {
+    CHECK(web_client_manager_);
+    web_client_manager_->SetDelegate(this);
     // Immediately send the initial state to unblock the frontend.
     OnProfileReadyStateChanged();
 
@@ -90,7 +96,25 @@ class GlicPreloadHandler : public glic::mojom::GlicPreloadHandler {
                                 base::Unretained(this))));
   }
 
-  ~GlicPreloadHandler() override = default;
+  ~GlicPreloadHandler() override { web_client_manager_->SetDelegate(nullptr); }
+
+  // GlicWebClientManager::Delegate:
+  void OnGuestNavigationStarted() override {
+    preload_page_->OnGuestNavigationStarted();
+  }
+  void OnGuestNavigated(const GURL& url,
+                        bool is_api_allowed,
+                        mojom::GuestPageType page_type,
+                        bool is_initial_commit) override {
+    preload_page_->OnGuestNavigated(url, is_api_allowed, page_type,
+                                    is_initial_commit);
+  }
+  void OnGuestProcessGone(base::TerminationStatus status) override {
+    preload_page_->OnGuestProcessGone();
+  }
+  void OnWebClientStateChanged(mojom::WebClientState state) override {
+    preload_page_->WebClientStateChanged(state);
+  }
 
   void PrepareForClient(
       mojom::GlicPreloadHandler::PrepareForClientCallback callback) override {
@@ -126,6 +150,7 @@ class GlicPreloadHandler : public glic::mojom::GlicPreloadHandler {
   }
 
   raw_ptr<content::BrowserContext> browser_context_;
+  raw_ptr<GlicWebClientManager> web_client_manager_;
   mojo::Receiver<glic::mojom::GlicPreloadHandler> receiver_;
   mojo::Remote<glic::mojom::PreloadPage> preload_page_;
   std::vector<base::CallbackListSubscription> subscriptions_;
@@ -297,13 +322,6 @@ GlicUI::GlicUI(content::WebUI* web_ui)
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_GLIC_GLIC_API_IMPL_GLIC_API_INJECTED_CLIENT_ROLLUP_JS));
 
-  std::string allowed_origins =
-      glic::GetGlicAllowedOrigins(is_internal_google_account);
-
-  source->AddString("glicAllowedOrigins", allowed_origins);
-  source->AddString("glicApiAllowedOrigins",
-                    features::kGlicApiAllowedOrigins.Get());
-
   bool reload_after_navigation =
       !command_line->HasSwitch(::switches::kGlicSkipReloadAfterNavigation);
   source->AddBoolean("reloadAfterNavigation", reload_after_navigation);
@@ -343,6 +361,8 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   source->AddBoolean(
       "enableStructuredYieldMetadata",
       base::FeatureList::IsEnabled(features::kGlicStructuredYieldMetadata));
+
+  web_client_manager_ = std::make_unique<GlicWebClientManager>();
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(GlicUI)
@@ -402,6 +422,7 @@ void GlicUI::AttachToHost(Host* host) {
         std::move(pending_page_));
     std::move(pending_callback_).Run(host->GetInstanceId().value());
   }
+  web_client_manager_->AttachToHost(host);
 }
 
 void GlicUI::CreatePageHandler(
@@ -447,7 +468,8 @@ void GlicUI::CreatePreloadHandler(
     return;
   }
   preload_handler_ = std::make_unique<GlicPreloadHandler>(
-      browser_context, std::move(receiver), std::move(page));
+      browser_context, web_client_manager_.get(), std::move(receiver),
+      std::move(page));
 }
 
 bool GlicUI::IsProfileEligible() {

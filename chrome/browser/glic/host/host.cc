@@ -20,10 +20,11 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/glic_skills_manager.h"
+#include "chrome/browser/glic/host/glic_ui.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/glic_web_client_handler.h"
+#include "chrome/browser/glic/host/glic_web_client_manager.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
-#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -101,9 +102,7 @@ Host::Host(Profile* profile,
 
 Host::~Host() {
   VLOG(1) << "Glic [Host] Destructor";
-  // Destroying the web contents results in calls back to the host, so do that
-  // first.
-  Hibernate();
+  HibernateImpl(/*is_destroying=*/true);
 }
 
 void Host::SetDelegate(EmbedderDelegate* new_delegate) {
@@ -111,14 +110,19 @@ void Host::SetDelegate(EmbedderDelegate* new_delegate) {
   delegate_ = new_delegate;
 }
 
-void Host::Hibernate() {
+void Host::HibernateImpl(bool is_destroying) {
   TRACE_EVENT("glic", "Host::Hibernate");
   VLOG(1) << "Glic [Host] Hibernate";
 
-  web_client_ = nullptr;
-  web_client_access_.reset();
+  if (is_destroying) {
+    weak_ptr_factory_.InvalidateWeakPtrsAndDoom();
+  }
   handler_info_.reset();
   contents_.reset();
+}
+
+void Host::Hibernate() {
+  HibernateImpl(/*is_destroying=*/false);
 }
 
 bool Host::IsAwake() const {
@@ -229,8 +233,7 @@ void Host::PanelWillOpen(mojom::InvocationSource invocation_source,
                   std::move(options.recently_active_conversations),
                   std::move(options.conversation_info), options.fre_override)
             : mojom::PanelOpeningData::New(),
-        base::BindOnce(&Host::PanelWillOpenComplete, base::Unretained(this),
-                       client));
+        base::BindOnce(&Host::PanelWillOpenComplete, GetWeakPtr(), client));
   } else {
     pending_panel_open_options_ = std::move(options);
   }
@@ -281,7 +284,7 @@ void Host::WebUIPageHandlerAdded(GlicPageHandler* page_handler) {
     // TODO(harringtond): Web client liveness needs detangled from the page
     // handler. This is currently needed because, on reload, the web client
     // isn't cleared soon enough otherwise.
-    if (web_client_access_) {
+    if (GetPrimaryWebClient()) {
       UnsetWebClient();
     }
   }
@@ -298,7 +301,7 @@ void Host::WebUIPageHandlerRemoved(GlicPageHandler* page_handler) {
   // TODO(harringtond): Web client liveness needs detangled from the page
   // handler. This is currently needed because, on reload, the web client
   // isn't cleared soon enough otherwise.
-  if (web_client_access_) {
+  if (GetPrimaryWebClient()) {
     UnsetWebClient();
   }
 }
@@ -369,44 +372,38 @@ void Host::Zoom(mojom::ZoomAction zoom_action) {
   }
 }
 
+GlicWebClientAccess* Host::GetPrimaryWebClient() const {
+  auto* manager = web_client_manager();
+  return manager ? manager->web_client_access() : nullptr;
+}
+
 void Host::UnsetWebClient() {
-  if (!web_client_access_) {
-    return;
+  if (auto* manager = web_client_manager()) {
+    manager->UnsetWebClient();
   }
-  if (web_client_) {
-    web_client_ = nullptr;
-    if (handler_info_ && handler_info_->context_access_indicator_enabled) {
-      observers_.Notify(&Observer::ContextAccessIndicatorChanged, false);
-    }
-    instance_delegate().OnWebClientCleared();
-    observers_.Notify(&Observer::WebClientDisconnected);
-  }
-  web_client_access_.reset();
 }
 
 void Host::CreateWebClient(
     mojo::PendingReceiver<glic::mojom::WebClientHandler> web_client_receiver) {
-  if (web_client_access_) {
-    UnsetWebClient();
+  if (auto* manager = web_client_manager()) {
+    manager->CreateWebClient(std::move(web_client_receiver));
   }
-  web_client_access_ = MakeGlicWebClient(
-      this, profile_, std::move(web_client_receiver),
-      base::BindOnce(&Host::UnsetWebClient, base::Unretained(this)),
-      base::BindRepeating(&Host::OnWebClientStateChanged,
-                          base::Unretained(this)));
 }
 
 void Host::WebClientInitialized() {
-  CHECK(web_client_access_);
-  web_client_ = web_client_access_.get();
+  if (auto* manager = web_client_manager()) {
+    manager->WebClientInitialized();
+  }
+  auto* client = GetPrimaryWebClient();
+  CHECK(client);
 
   for (auto& [source, context] : pending_additional_contexts_) {
-    web_client_->NotifyAdditionalContext(std::move(context));
+    client->NotifyAdditionalContext(std::move(context));
   }
   pending_additional_contexts_.clear();
 
   if (is_manually_resizing_) {
-    web_client_->ManualResizeChanged(true);
+    client->ManualResizeChanged(true);
   }
   if (invocation_source_) {
     std::optional<std::string> prompt_suggestion;
@@ -428,10 +425,7 @@ void Host::WebClientInitialized() {
       pending_panel_open_options_.reset();
     }
 
-    // Note: we're sending the open call even if the panel as since been closed.
-    // This ensure we don't drop the invocation information. Finally, a call to
-    // PanelWasClosed() resolves the discrepancy.
-    web_client_->PanelWillOpen(
+    client->PanelWillOpen(
         mojom::PanelOpeningData::New(
             glic_instance_ ? glic_instance_->GetPanelState().Clone()
                            : mojom::PanelState::New(),
@@ -439,14 +433,9 @@ void Host::WebClientInitialized() {
             /*skill_to_invoke=*/nullptr,
             std::move(recently_active_conversations),
             std::move(conversation_info), fre_override),
-        base::BindOnce(
-            &Host::PanelWillOpenComplete,
-            // Unretained is safe because web client is owned by `contents_`.
-            base::Unretained(this),
-            // Unretained is safe because web_client is calling us.
-            base::Unretained(web_client_)));
+        base::BindOnce(&Host::PanelWillOpenComplete, GetWeakPtr(), client));
     if (!panel_open_) {
-      web_client_->PanelWasClosed(base::DoNothing());
+      client->PanelWasClosed(base::DoNothing());
     }
   }
   instance_delegate().skills_manager().UpdateSkillPreviews(std::nullopt);
@@ -470,10 +459,6 @@ void Host::SetContextAccessIndicator(bool enabled) {
 bool Host::IsContextAccessIndicatorEnabled() const {
   return handler_info_ ? handler_info_->context_access_indicator_enabled
                        : false;
-}
-
-GlicWebClientAccess* Host::GetPrimaryWebClient() {
-  return web_client_;
 }
 
 void Host::ManualResizeChanged(bool resizing) {
@@ -540,11 +525,18 @@ content::Visibility Host::GetExpectedVisibility() const {
 }
 
 content::WebContents* Host::web_client_contents() const {
-  return content::WebContents::FromRenderFrameHost(GetGuestMainFrame());
+  auto* manager = web_client_manager();
+  return manager ? manager->web_client_contents() : nullptr;
 }
 
-void Host::OnGuestNavigationBlocked(mojom::GuestPageType page_type) {
-  // TODO(harringtond): use this signal
+void Host::OnGuestWebClientCleared(bool had_web_client) {
+  if (had_web_client) {
+    if (IsContextAccessIndicatorEnabled()) {
+      observers_.Notify(&Observer::ContextAccessIndicatorChanged, false);
+    }
+    instance_delegate().OnWebClientCleared();
+  }
+  observers_.Notify(&Observer::WebClientDisconnected);
 }
 
 bool Host::IsGlicWebUiHost(content::RenderProcessHost* host) const {
@@ -559,44 +551,29 @@ bool Host::IsGlicWebUiHost(content::RenderProcessHost* host) const {
 }
 
 content::RenderFrameHost* Host::GetGuestMainFrame() const {
-  content::WebContents* contents = webui_contents();
-  if (!contents) {
-    return nullptr;
+  auto* manager = web_client_manager();
+  return manager ? manager->GetGuestMainFrame() : nullptr;
+}
+
+GlicWebClientManager* Host::web_client_manager() {
+  if (auto* glic_ui = GlicUI::From(webui_contents())) {
+    return glic_ui->web_client_manager();
   }
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  extensions::WebViewGuest* web_view_guest = nullptr;
-  content::RenderFrameHost* webui_frame = contents->GetPrimaryMainFrame();
-  if (!webui_frame) {
-    return nullptr;
+  return nullptr;
+}
+
+const GlicWebClientManager* Host::web_client_manager() const {
+  if (auto* glic_ui = GlicUI::From(webui_contents())) {
+    return glic_ui->web_client_manager();
   }
-  webui_frame->ForEachRenderFrameHostWithAction(
-      [&web_view_guest](content::RenderFrameHost* rfh) {
-        auto* web_view = extensions::WebViewGuest::FromRenderFrameHost(rfh);
-        if (web_view && web_view->attached()) {
-          web_view_guest = web_view;
-          return content::RenderFrameHost::FrameIterationAction::kStop;
-        }
-        return content::RenderFrameHost::FrameIterationAction::kContinue;
-      });
-  return web_view_guest ? web_view_guest->GetGuestMainFrame() : nullptr;
-#else
-  guest_view::SlimWebViewGuest* slim_web_view_guest = nullptr;
-  content::RenderFrameHost* webui_frame = contents->GetPrimaryMainFrame();
-  if (!webui_frame) {
-    return nullptr;
-  }
-  webui_frame->ForEachRenderFrameHostWithAction(
-      [&slim_web_view_guest](content::RenderFrameHost* rfh) {
-        auto* web_view = guest_view::SlimWebViewGuest::FromRenderFrameHost(rfh);
-        if (web_view && web_view->attached()) {
-          slim_web_view_guest = web_view;
-          return content::RenderFrameHost::FrameIterationAction::kStop;
-        }
-        return content::RenderFrameHost::FrameIterationAction::kContinue;
-      });
-  return slim_web_view_guest ? slim_web_view_guest->GetGuestMainFrame()
-                             : nullptr;
-#endif
+  return nullptr;
+}
+
+mojom::WebClientState Host::web_client_state() const {
+  auto* manager = web_client_manager();
+  return manager && manager->web_client_access()
+             ? manager->web_client_access()->web_client_state()
+             : mojom::WebClientState::kUninitialized;
 }
 
 bool Host::IsGlicWebUi(content::WebContents* contents) const {
@@ -621,7 +598,7 @@ void Host::OnWebClientStateChanged(mojom::WebClientState state) {
 void Host::PanelWillOpenComplete(GlicWebClientAccess* client,
                                  mojom::OpenPanelInfoPtr open_info) {
   CHECK(client);
-  if (web_client_ == client) {
+  if (GetPrimaryWebClient() == client) {
     if (handler_info_ && panel_open_) {
       handler_info_->open_complete = true;
     }
@@ -633,11 +610,14 @@ void Host::PanelWillOpenComplete(GlicWebClientAccess* client,
 }
 
 bool Host::IsWebClientConnected() const {
-  return web_client_ != nullptr;
+  return GetPrimaryWebClient() != nullptr;
 }
 
 void Host::WebUiStateChanged(GlicPageHandler* page_handler,
                              mojom::WebUiState new_state) {
+  if (primary_webui_state_ == new_state) {
+    return;
+  }
   base::UmaHistogramEnumeration("Glic.PanelWebUiState", new_state);
   if (!GlicEnabling::HasConsentedForProfile(profile_)) {
     base::UmaHistogramEnumeration("Glic.Fre.PanelWebUiState", new_state);

@@ -49,7 +49,14 @@ export class AppRouter {
         .addListener(
             this.setProfileReadyState_.bind(this),
         );
+    this.browserProxy.pageCallbackRouter.clientReadyStateChanged.addListener(
+        this.clientReadyStateChanged_.bind(this),
+    );
     this.switchToView(AppView.GLIC);
+  }
+
+  private clientReadyStateChanged_(ready: boolean) {
+    this.glicController?.clientReadyStateChanged(ready);
   }
 
   switchToView(view: AppView): void {

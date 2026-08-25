@@ -14,6 +14,7 @@ export interface BrowserProxy {
   pageHandler: PageHandlerInterface;
   pageCallbackRouter: PageCallbackRouter;
   glicPreloadHandler?: GlicPreloadHandlerInterface;
+  preloadPageCallbackRouter: PreloadPageCallbackRouter;
 }
 
 // Whether to enable PageHandler debug logging. Can be enabled with the

@@ -5,53 +5,15 @@
 import {assertNotReachedCase} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-// <if expr="not enable_extensions_core">
-import {OriginCheckParams} from '/shared/guest_view/request_throttlers.js';
-// </if>
-import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 
 import type {BrowserProxy} from './browser_proxy.js';
-import {WebClientState as WebClientStateMojo, ZoomAction} from './glic.mojom-webui.js';
-import type {ApiHostEmbedder} from './glic_api_impl/host/glic_api_host.js';
+import {GuestPageType, WebClientState as WebClientStateMojo, ZoomAction} from './glic.mojom-webui.js';
 import {DetailedWebClientState, GlicApiCommunicator, GlicApiHost, WebClientState} from './glic_api_impl/host/glic_api_host.js';
 import {ObservableValue} from './observable.js';
 import type {ObservableValueReadOnly} from './observable.js';
 import {GlicRequestHeaderInjector} from './shared/glic_request_headers.js';
-import {isFullWebView} from './shared/web_view_type.js';
 import type {WebViewType} from './shared/web_view_type.js';
-import {OneShotTimer} from './timer.js';
-
-// LINT.IfChange(WebviewExitReason)
-enum WebviewExitReason {
-  NORMAL = 0,
-  ABNORMAL = 1,
-  CRASHED = 2,
-  KILLED = 3,
-  OOM_KILLED = 4,
-  OOM = 5,
-  FAILED_TO_LAUNCH = 6,
-  INTEGRITY_FAILURE = 7,
-  UNKNOWN = 8,
-  COUNT = UNKNOWN + 1,
-}
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWebviewExitReason)
-
-const WEBVIEW_EXIT_REASON_MAP = {
-  'normal': WebviewExitReason.NORMAL,
-  'abnormal': WebviewExitReason.ABNORMAL,
-  'crashed': WebviewExitReason.CRASHED,
-  'killed': WebviewExitReason.KILLED,
-  'oom killed': WebviewExitReason.OOM_KILLED,
-  'oom': WebviewExitReason.OOM,
-  'failed to launch': WebviewExitReason.FAILED_TO_LAUNCH,
-  'integrity failure': WebviewExitReason.INTEGRITY_FAILURE,
-};
-
-function webviewExitReasonStringToEnum(reason: chrome.webviewTag.ExitReason):
-    WebviewExitReason {
-  return WEBVIEW_EXIT_REASON_MAP[reason] ?? WebviewExitReason.UNKNOWN;
-}
 
 // LINT.IfChange(GlicZoomFactors)
 // Any changes to the range of supported zoom factors must be mirrored in
@@ -99,34 +61,14 @@ function isZoomChangeEvent(e: Event): e is Event&ZoomChangeEventData {
   return 'newZoomFactor' in e && typeof e.newZoomFactor === 'number';
 }
 
-export type PageType =
-    // A login page.
-    'login'
-    // A page that should be displayed.
-    |'regular'
-    // A error page that should be displayed.
-    |'guestError'
-    // An error page that indicates access loss.
-    |'guestCaaError'
-    // The page could not be loaded.
-    |'loadError';
-
 // Calls from the webview to its owner.
 export interface WebviewDelegate {
   // Called when there is an error during page load.
   webviewError(reason: string): void;
-  // Called when the embedded web page is unresponsive.
-  webviewUnresponsive(): void;
   // Called when a page commits inside the webview.
-  webviewPageCommit(pageType: PageType): void;
+  webviewPageCommit(pageType: GuestPageType, isApiAllowed: boolean): void;
   // Called when the webview redirects to an access error page.
   webviewDeniedByAdmin(): void;
-}
-
-// To match needed pieces of tools/typescript/definitions/web_request.d.ts,
-// because this enum isn't actually available in this context.
-enum ResourceType {
-  MAIN_FRAME = 'main_frame',
 }
 
 // State for the WebviewController which lives as long as the WebUI content.
@@ -161,9 +103,6 @@ export class WebviewPersistentState {
   }
 }
 
-type ChromeEventFunctionType<T> =
-    T extends ChromeEvent<infer ListenerType>? ListenerType : never;
-
 // Creates and manages the <webview> element, and the GlicApiHost which
 // communicates with it.
 export class WebviewController {
@@ -173,18 +112,16 @@ export class WebviewController {
   private communicator?: GlicApiCommunicator;
   private onDestroy: Array<() => void> = [];
   private eventTracker = new EventTracker();
-  private hasPendingCrossDocumentNavigation = false;
   private webClientState =
       ObservableValue.withValue(WebClientState.UNINITIALIZED);
-  private oneMinuteTimer = new OneShotTimer(1000 * 60);
   private glicRequestHeaderInjector?: GlicRequestHeaderInjector;
   private displayScaleMultiplier = 1.0;
+  private webClientStateListenerId?: number;
 
   constructor(
       private readonly container: HTMLElement,
       private browserProxy: BrowserProxy,
       private delegate: WebviewDelegate,
-      private embedder: ApiHostEmbedder,
       private persistentState: WebviewPersistentState,
   ) {
     this.webview = document.createElement('webview');
@@ -194,74 +131,58 @@ export class WebviewController {
         loadTimeData.getString('chromeChannel'),
         loadTimeData.getString('glicHeaderRequestTypes'));
 
-    this.browserProxy.pageCallbackRouter.webClientStateChanged.addListener(
-        (state: WebClientStateMojo) => {
-          switch (state) {
-            case WebClientStateMojo.kResponsive:
-              this.persistentState.onClientReady();
-              this.webClientState.assignAndSignal(WebClientState.RESPONSIVE);
-              break;
-            case WebClientStateMojo.kUnresponsive:
-              this.webClientState.assignAndSignal(WebClientState.UNRESPONSIVE);
-              break;
-            case WebClientStateMojo.kError:
-              this.reportOnDestroy();
-              this.destroyHost(WebClientState.ERROR);
-              break;
-            case WebClientStateMojo.kUninitialized:
-              if (this.webClientState.getCurrentValue() ===
-                  WebClientState.RESPONSIVE) {
-                this.reportOnDestroy();
-                this.destroyHost(WebClientState.ERROR);
+    this.webClientStateListenerId =
+        this.browserProxy.preloadPageCallbackRouter.webClientStateChanged
+            .addListener((state: WebClientStateMojo) => {
+              switch (state) {
+                case WebClientStateMojo.kWarmed:
+                  this.webClientState.assignAndSignal(WebClientState.WARMED);
+                  break;
+                case WebClientStateMojo.kResponsive:
+                  this.persistentState.onClientReady();
+                  this.webClientState.assignAndSignal(
+                      WebClientState.RESPONSIVE);
+                  break;
+                case WebClientStateMojo.kUnresponsive:
+                  this.webClientState.assignAndSignal(
+                      WebClientState.UNRESPONSIVE);
+                  break;
+                case WebClientStateMojo.kError:
+                  this.webClientState.assignAndSignal(WebClientState.ERROR);
+                  this.destroyHost(WebClientState.ERROR);
+                  break;
+                case WebClientStateMojo.kUninitialized:
+                  break;
+                default:
+                  assertNotReachedCase(state);
               }
-              break;
-            default:
-              assertNotReachedCase(state);
-          }
-        });
-
-    if (isFullWebView(this.webview)) {
-      // Intercept all main frame requests, and block them if they are not
-      // allowed origins.
-      const onBeforeRequest = this.onBeforeRequest.bind(this);
-      this.webview.request.onBeforeRequest.addListener(
-          onBeforeRequest, {
-            types: [ResourceType.MAIN_FRAME],
-            urls: ['<all_urls>'],
-          },
-          ['blocking']);
-      this.onDestroy.push(() => {
-        // Need to check the type again as this function runs in a different
-        // scope.
-        if (isFullWebView(this.webview)) {
-          this.webview.request.onBeforeRequest.removeListener(onBeforeRequest);
-        }
-      });
-    } else {
-      // <if expr="not enable_extensions_core">
-      const allowedOriginsParams = getAllowedOriginsParams();
-      if (allowedOriginsParams !== null) {
-        this.webview.allowedOriginsParams = allowedOriginsParams;
-      }
-      // </if>
-    }
+            });
 
     this.webview.id = 'guestFrame';
     this.webview.setAttribute('partition', 'persist:glicpart');
     this.container.appendChild(this.webview);
 
-    this.eventTracker.add(
-        this.webview, 'loadcommit', this.onLoadCommit.bind(this));
-    this.eventTracker.add(
-        this.webview, 'contentload', this.contentLoaded.bind(this));
+    // Note that there is a migration underway to remove the use of webview.
+    // Some elements of the webview frame are monitored from c++,
+    // in chrome/browser/glic/host/glic_guest.cc. The elements tracked below
+    // are more difficult to move right now, and will be moved to c++ when
+    // migrating to a non-webview frame.
+
+    // Keep here: sets focus which is a UI responsibility specific to the nested
+    // frame.
     this.eventTracker.add(this.webview, 'loadstop', this.onLoadStop.bind(this));
+    // Keep here: can be migrated using WebContentsDelegate only after migrating
+    // away from webview.
     this.eventTracker.add(
         this.webview, 'newwindow', this.onNewWindow.bind(this));
+    // Keep here: can be migrated using WebContentsDelegate only after migrating
+    // away from webview.
     this.eventTracker.add(
         this.webview, 'permissionrequest', this.onPermissionRequest.bind(this));
-    this.eventTracker.add(
-        this.webview, 'unresponsive', this.onUnresponsive.bind(this));
+    // Keep here: this is for logging only.
     this.eventTracker.add(this.webview, 'exit', this.onExit.bind(this));
+    // Keep here: can be migrated using WebContentsDelegate only after migrating
+    // away from webview.
     this.eventTracker.add(this.webview, 'zoomchange', (e: Event) => {
       if (!isZoomChangeEvent(e)) {
         return;
@@ -276,21 +197,8 @@ export class WebviewController {
       }
       this.browserProxy.pageHandler.onZoomLevelChange(e.newZoomFactor);
     });
-    this.eventTracker.add(
-        this.webview, 'loadstart', this.onLoadStart.bind(this));
-    this.eventTracker.add(
-        this.webview, 'loadabort', this.onLoadAbort.bind(this));
 
     this.webview.src = this.persistentState.useLoadUrl();
-
-    this.oneMinuteTimer.start(() => {
-      if (this.host) {
-        chrome.histograms.recordEnumerationValue(
-            'Glic.Host.WebClientState.AtOneMinute',
-            this.host.getDetailedWebClientState(),
-            DetailedWebClientState.MAX_VALUE + 1);
-      }
-    });
   }
 
   getWebClientState(): ObservableValueReadOnly<WebClientState> {
@@ -302,12 +210,15 @@ export class WebviewController {
   }
 
   destroy() {
+    if (this.webClientStateListenerId !== undefined) {
+      this.browserProxy.preloadPageCallbackRouter.removeListener(
+          this.webClientStateListenerId);
+      this.webClientStateListenerId = undefined;
+    }
     if (this.glicRequestHeaderInjector !== undefined) {
       this.glicRequestHeaderInjector.destroy();
       this.glicRequestHeaderInjector = undefined;
     }
-    this.oneMinuteTimer.reset();
-    this.reportOnDestroy();
     this.destroyHost(
         this.webClientState.getCurrentValue() === WebClientState.ERROR ?
             WebClientState.ERROR :
@@ -326,21 +237,29 @@ export class WebviewController {
       return;
     }
     this.dormant = true;
-    this.reportOnDestroy();
     this.destroyHost();
   }
 
   private reportOnDestroy(): void {
     if (this.host) {
+      let state = this.host.getDetailedWebClientState();
+      if (state ===
+          DetailedWebClientState
+              .MOJO_PIPE_CLOSED_UNEXPECTEDLY_BEFORE_INITIALIZE) {
+        state = DetailedWebClientState.BOOTSTRAP_PENDING;
+      }
       chrome.histograms.recordEnumerationValue(
-          'Glic.Host.WebClientState.OnDestroy',
-          this.host.getDetailedWebClientState(),
+          'Glic.Host.WebClientState.OnDestroy', state,
           DetailedWebClientState.MAX_VALUE + 1);
     }
   }
 
-  private destroyHost(webClientState?: WebClientState) {
+  private destroyHost(
+      webClientState?: WebClientState, isNavigationCommit: boolean = false) {
     if (this.host) {
+      if (!isNavigationCommit) {
+        this.reportOnDestroy();
+      }
       this.host.destroy();
       this.host = undefined;
     }
@@ -377,38 +296,7 @@ export class WebviewController {
     return this.host?.waitingOnPanelWillOpen() ?? false;
   }
 
-  onLoadTimeOut(): void {
-    if (this.host) {
-      chrome.histograms.recordEnumerationValue(
-          'Glic.Host.WebClientState.OnLoadTimeOut',
-          this.host.getDetailedWebClientState(),
-          DetailedWebClientState.MAX_VALUE + 1);
-    }
-  }
-
-  private onLoadStart(e: chrome.webviewTag.LoadStartEvent): void {
-    // This event is only called for document navigations, not for fragment
-    // navigations.
-    if (e.isTopLevel) {
-      this.hasPendingCrossDocumentNavigation = true;
-    }
-  }
-
-  private onLoadAbort(e: chrome.webviewTag.LoadAbortEvent): void {
-    if (e.isTopLevel) {
-      this.hasPendingCrossDocumentNavigation = false;
-    }
-  }
-
-  private onLoadCommit(e: chrome.webviewTag.LoadCommitEvent): void {
-    this.loadCommit(e.url, e.isTopLevel);
-  }
-
   private onLoadStop(): void {
-    // Focus the webview only if it is visible. When it is not visible, the
-    // focus will fail to focus the client page (document.hasFocus() is false).
-    // GlicAppController.showPanel() will make a separate call to focus the
-    // webview when the panel is shown.
     if (this.webview.checkVisibility()) {
       this.webview.focus();
     }
@@ -449,98 +337,78 @@ export class WebviewController {
     e.request.deny();
   }
 
-  private onUnresponsive(): void {
-    this.delegate.webviewUnresponsive();
-  }
-
   private onExit(event: chrome.webviewTag.ExitEvent): void {
-    chrome.histograms.recordEnumerationValue(
-        'Glic.Session.WebClientCrash.ExitReason',
-        webviewExitReasonStringToEnum(event.reason),
-        WebviewExitReason.COUNT);
     if (event.reason !== 'normal') {
-      this.destroyHost(WebClientState.ERROR);
-      chrome.histograms.recordUserAction('GlicSessionWebClientCrash');
       console.warn(`webview exit. processId: ${event.processId}, reason: ${
           event.reason}`);
     }
   }
 
-  private loadCommit(url: string, isTopLevel: boolean) {
-    if (!isTopLevel) {
+  onGuestNavigationStarted(): void {}
+
+  onGuestNavigated(
+      url: string, isApiAllowed: boolean, pageType: GuestPageType,
+      _isInitialCommit: boolean): void {
+    if (this.dormant ||
+        this.getWebClientState().getCurrentValue() === WebClientState.ERROR) {
       return;
     }
 
-    const isCrossDocumentNavigation = this.hasPendingCrossDocumentNavigation;
-    this.hasPendingCrossDocumentNavigation = false;
-
-    if (!isCrossDocumentNavigation) {
-      return;
-    }
-
-    if (this.dormant) {
-      return;
-    }
+    const wasResponsive = this.getWebClientState().getCurrentValue() ===
+        WebClientState.RESPONSIVE;
 
     if (this.host) {
       chrome.histograms.recordEnumerationValue(
           'Glic.Host.WebClientState.OnCommit',
           this.host.getDetailedWebClientState(),
           DetailedWebClientState.MAX_VALUE + 1);
+      if (!wasResponsive) {
+        this.reportOnDestroy();
+      }
+      this.destroyHost(
+          /*webClientState=*/ undefined, /*isNavigationCommit=*/ true);
     }
-    const wasResponsive = this.getWebClientState().getCurrentValue() ===
-        WebClientState.RESPONSIVE;
 
-    this.destroyHost(WebClientState.UNINITIALIZED);
+    if (pageType !== GuestPageType.kRegular || !isApiAllowed) {
+      this.delegate.webviewPageCommit(
+          pageType === GuestPageType.kRegular ? GuestPageType.kLoadError :
+                                                pageType,
+          isApiAllowed);
+      return;
+    }
 
     const urlObj = URL.parse(url);
-    if (urlObj && this.webview.contentWindow &&
-        urlMatchesApiAllowedOrigin(urlObj)) {
-      this.communicator =
-          new GlicApiCommunicator(urlObj.origin, this.webview.contentWindow);
-      this.host =
-          new GlicApiHost(this.browserProxy, this.communicator, this.embedder);
-    }
+    const origin = urlObj ? urlObj.origin : '*';
+    const contentWindow =
+        this.webview.contentWindow || (window as unknown as WindowProxy);
+    this.communicator = new GlicApiCommunicator(origin, contentWindow);
+    this.host = new GlicApiHost(this.browserProxy, this.communicator);
+    this.host.getWebClientState().subscribe(state => {
+      if (state === WebClientState.ERROR) {
+        this.webClientState.assignAndSignal(WebClientState.ERROR);
+        this.destroyHost(WebClientState.ERROR);
+      }
+    });
+    this.communicator.contentLoaded();
 
     this.browserProxy.pageHandler.webviewCommitted(url);
-
-    if (url.startsWith('https://login.corp.google.com/') ||
-        url.startsWith('https://accounts.google.com/') ||
-        url.startsWith('https://accounts.googlers.com/') ||
-        url.startsWith('https://gaiastaging.corp.google.com/')) {
-      this.delegate.webviewPageCommit('login');
-      return;
-    }
-
-    if (!this.host) {
-      this.delegate.webviewPageCommit('loadError');
-      return;
-    }
-
-    if (urlObj?.pathname.startsWith('/sorry/')) {
-      this.delegate.webviewPageCommit('guestError');
-      return;
-    }
 
     if (wasResponsive) {
       this.persistentState.onCommitAfterConnect(url);
     }
 
-    if (loadTimeData.getBoolean('reloadAfterNavigation')) {
-      this.delegate.webviewPageCommit('regular');
+    if (!_isInitialCommit) {
+      this.delegate.webviewPageCommit(GuestPageType.kRegular, isApiAllowed);
     }
   }
 
-  private contentLoaded() {
-    this.communicator?.contentLoaded();
-  }
-
   private onNewWindowEvent(event: chrome.webviewTag.NewWindowEvent) {
+    event.preventDefault();
+    event.stopPropagation();
     if (!this.host) {
       return;
     }
 
-    event.preventDefault();
     if (loadTimeData.getBoolean('glicPopupWindowsEnabled') &&
         event.windowOpenDisposition === 'new_popup') {
       this.host.openLinkInPopup(
@@ -548,110 +416,9 @@ export class WebviewController {
     } else {
       this.host.openLinkInNewTab(event.targetUrl);
     }
-    event.stopPropagation();
   }
 
-  private urlMatchesAdminBlockedUrl(url: string) {
-    const adminBlockedRedirectPatterns =
-        loadTimeData.getString('adminBlockedRedirectPatterns');
-    if (!adminBlockedRedirectPatterns) {
-      return false;
-    }
-    if (adminBlockedRedirectPatterns.split(' ').some(
-            pattern => new URLPattern(pattern.trim()).test(url))) {
-      console.warn(`Admin blocked error page detected.`);
-      return true;
-    }
-    return false;
+  getApiHost(): GlicApiHost|undefined {
+    return this.host;
   }
-
-  private onBeforeRequest:
-      ChromeEventFunctionType<typeof chrome.webRequest.onBeforeRequest> =
-          (details) => {
-            // Allow subframe requests.
-            if (details.frameId !== 0) {
-              return {};
-            }
-            if (this.urlMatchesAdminBlockedUrl(details.url)) {
-              this.delegate.webviewDeniedByAdmin();
-              return {cancel: true};
-            }
-
-            return {cancel: !urlMatchesAllowedOrigin(new URL(details.url))};
-          };
-}
-
-/**
- * Returns a URLPattern given an origin pattern string that has the syntax:
- * <protocol>://<hostname>[:<port>]
- * where <protocol>, <hostname> and <port> are inserted into URLPattern.
- */
-export function matcherForOrigin(originPattern: string): URLPattern|null {
-  // This regex is overly permissive in what characters can exist in protocol
-  // or hostname. This isn't a problem because we're just passing data to
-  // URLPattern.
-  const match = originPattern.match(/([^:]+):\/\/([^:]*)(?::(\d+))?[/]?/);
-  if (!match) {
-    return null;
-  }
-
-  const [protocol, hostname, port] = [match[1], match[2], match[3] ?? '*'];
-  try {
-    return new URLPattern({protocol, hostname, port});
-  } catch (_) {
-    return null;
-  }
-}
-
-// <if expr="not enable_extensions_core">
-function getAllowedOriginsParams(): OriginCheckParams|null {
-  if (loadTimeData.getBoolean('devMode')) {
-    return null;
-  }
-  const allowedOrigins: string[] =
-      [new URL(loadTimeData.getString('glicGuestURL')).origin];
-  allowedOrigins.push(...loadTimeData.getString('glicAllowedOrigins')
-                          .split(' ')
-                          .map(origin => origin.trim()));
-  allowedOrigins.push(...loadTimeData.getString('glicApiAllowedOrigins')
-                          .split(' ')
-                          .map(origin => origin.trim()));
-  return new OriginCheckParams([ResourceType.MAIN_FRAME], allowedOrigins);
-}
-// </if>
-
-export function urlMatchesAllowedOrigin(url: URL) {
-  if (urlMatchesApiAllowedOrigin(url)) {
-    return true;
-  }
-
-  return loadTimeData.getString('glicAllowedOrigins')
-      .split(' ')
-      .some(origin => matcherForOrigin(origin.trim())?.test(url));
-}
-
-export function urlMatchesApiAllowedOrigin(url: URL): boolean {
-  if (url.origin === 'null') {
-    return false;
-  }
-
-  // For development.
-  if (loadTimeData.getBoolean('devMode')) {
-    return true;
-  }
-
-  // A URL is allowed to have API access if it either matches glicGuestURL's
-  // origin, or it matches any of the explicit API allowed origins.
-  const defaultUrl = new URL(loadTimeData.getString('glicGuestURL'));
-  if (matcherForOrigin(defaultUrl.origin)?.test(url)) {
-    return true;
-  }
-
-  const apiAllowedOrigins = loadTimeData.getString('glicApiAllowedOrigins');
-  if (!apiAllowedOrigins) {
-    return false;
-  }
-
-  return apiAllowedOrigins.split(' ').some(
-      origin => matcherForOrigin(origin.trim())?.test(url));
 }

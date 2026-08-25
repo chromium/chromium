@@ -258,7 +258,7 @@ BASE_FEATURE(kGlicNoWebview, base::FEATURE_DISABLED_BY_DEFAULT);
 // (chrome/browser/resources/glic/glic_api_impl/host). When enabled, some
 // functionality implemented by glic's webview.ts is implemented instead by c++
 // code.
-BASE_FEATURE(kGlicDisconnectedWebview, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicDisconnectedWebview, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicShakeTrigger,
              "GlicShakeTrigger",
              base::FEATURE_DISABLED_BY_DEFAULT);
