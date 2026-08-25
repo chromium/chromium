@@ -61,7 +61,7 @@ void ToolController::SetState(State state) {
       base::StateTransitions<State>({
           {State::kInit, {State::kCreating}},
           {State::kReady, {State::kCreating}},
-          {State::kCreating, {State::kValidating}},
+          {State::kCreating, {State::kValidating, State::kReady}},
           {State::kValidating, {State::kPostValidate, State::kReady}},
           {State::kPostValidate, {State::kInvokable, State::kReady}},
           {State::kInvokable, {State::kPreInvoke, State::kReady}},
@@ -119,6 +119,7 @@ void ToolController::CreateToolAndValidate(
                       .Build());
     PostResponseTask(std::move(result_callback),
                      std::move(create_result.result));
+    Cancel();
     return;
   }
 
