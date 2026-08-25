@@ -14895,6 +14895,24 @@
             ]
         }
     ],
+    "PasswordCompromiseWarningInDetailsCard": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PasswordCompromiseWarningInDetailsCard"
+                    ]
+                }
+            ]
+        }
+    ],
     "PasswordInfobarDisplayLength": [
         {
             "platforms": [
