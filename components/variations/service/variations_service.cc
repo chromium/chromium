@@ -443,7 +443,9 @@ VariationsService::VariationsService(
           std::make_unique<VariationsSeedStore>(
               local_state,
               MaybeImportFirstRunSeed(client_.get(), local_state),
-              /*signature_verification_enabled=*/true,
+              /*signature_verification_enabled_on_load=*/
+              client_->EnableSignatureVerificationOnLoad(),
+              /*signature_verification_enabled_on_receive=*/true,
               std::make_unique<VariationsSafeSeedStore>(
                   local_state,
                   client_.get()->GetVariationsSeedFileDir(),

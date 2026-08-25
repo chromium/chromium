@@ -46,7 +46,8 @@ class FakeSeedStore : public VariationsSeedStore {
   explicit FakeSeedStore(TestingPrefServiceSimple* local_state)
       : VariationsSeedStore(local_state,
                             /*initial_seed=*/nullptr,
-                            /*signature_verification_enabled=*/true,
+                            /*signature_verification_enabled_on_load=*/true,
+                            /*signature_verification_enabled_on_receive=*/true,
                             std::make_unique<VariationsSafeSeedStore>(
                                 local_state,
                                 /*seed_file_dir=*/base::FilePath(),

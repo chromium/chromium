@@ -265,7 +265,11 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   client_ = std::make_unique<AwVariationsServiceClient>();
   auto seed_store = std::make_unique<variations::VariationsSeedStore>(
       local_state_.get(), /*initial_seed=*/std::move(seed),
-      /*signature_verification_enabled=*/g_signature_verification_enabled,
+      /*signature_verification_enabled_on_load=*/
+      client_->EnableSignatureVerificationOnLoad() &&
+          g_signature_verification_enabled,
+      /*signature_verification_enabled_on_receive=*/
+      g_signature_verification_enabled,
       std::make_unique<variations::VariationsSafeSeedStore>(
           local_state_.get(), client_->GetVariationsSeedFileDir(),
           client_->GetChannelForVariations(), /*entropy_providers=*/nullptr),

@@ -127,7 +127,9 @@ void SetupFieldTrials() {
       &variations_service_client,
       std::make_unique<variations::VariationsSeedStore>(
           pref_service.get(), std::move(initial_seed),
-          /*signature_verification_enabled=*/true,
+          /*signature_verification_enabled_on_load=*/
+          variations_service_client.EnableSignatureVerificationOnLoad(),
+          /*signature_verification_enabled_on_receive=*/true,
           std::make_unique<variations::VariationsSafeSeedStore>(
               pref_service.get(),
               variations_service_client.GetVariationsSeedFileDir(),

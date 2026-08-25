@@ -94,6 +94,10 @@ class VariationsServiceClient {
   // Returns whether Chrome Enterprise Core is supported on this platform.
   virtual bool IsChromeEnterpriseCoreSupported();
 
+  // Returns whether we verify the variations seed with its signature when we
+  // load the variations seed from disk on startup.
+  virtual bool EnableSignatureVerificationOnLoad();
+
  private:
   // Gets the channel of the embedder. But all variations callers should use
   // |GetChannelForVariations()| instead.

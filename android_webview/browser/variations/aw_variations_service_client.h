@@ -28,6 +28,8 @@ class AwVariationsServiceClient : public variations::VariationsServiceClient {
 
   ~AwVariationsServiceClient() override;
 
+  bool EnableSignatureVerificationOnLoad() override;
+
  private:
   base::Version GetVersionForSimulation() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;

@@ -83,6 +83,9 @@ class TestVariationsSeedStore : public VariationsSeedStore {
       : VariationsSeedStore(
             local_state,
             std::move(initial_seed),
+            /*signature_verification_enabled_on_load=*/
+            signature_verification_needed,
+            /*signature_verification_enabled_on_receive=*/
             signature_verification_needed,
             std::make_unique<VariationsSafeSeedStore>(local_state,
                                                       seed_file_dir,

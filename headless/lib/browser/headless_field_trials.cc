@@ -100,7 +100,9 @@ void SetUpFieldTrials(PrefService* local_state,
       &variations_service_client,
       std::make_unique<variations::VariationsSeedStore>(
           local_state, /*initial_seed=*/nullptr,
-          /*signature_verification_enabled=*/true,
+          /*signature_verification_enabled_on_load=*/
+          variations_service_client.EnableSignatureVerificationOnLoad(),
+          /*signature_verification_enabled_on_receive=*/true,
           std::make_unique<variations::VariationsSafeSeedStore>(
               local_state, variations_service_client.GetVariationsSeedFileDir(),
               variations_service_client.GetChannelForVariations(),

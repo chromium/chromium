@@ -107,7 +107,8 @@ std::unique_ptr<VariationsSeedStore> CreateSeedStore(
     const base::FilePath& seed_file_dir) {
   return std::make_unique<VariationsSeedStore>(
       local_state, /*initial_seed=*/nullptr,
-      /*signature_verification_enabled=*/true,
+      /*signature_verification_enabled_on_load=*/true,
+      /*signature_verification_enabled_on_receive=*/true,
       std::make_unique<VariationsSafeSeedStore>(local_state, seed_file_dir,
                                                 version_info::Channel::UNKNOWN,
                                                 /*entropy_providers=*/nullptr),
@@ -358,7 +359,8 @@ class TestVariationsSeedStore : public VariationsSeedStore {
   explicit TestVariationsSeedStore(PrefService* local_state)
       : VariationsSeedStore(local_state,
                             /*initial_seed=*/nullptr,
-                            /*signature_verification_enabled=*/true,
+                            /*signature_verification_enabled_on_load=*/true,
+                            /*signature_verification_enabled_on_receive=*/true,
                             std::make_unique<VariationsSafeSeedStore>(
                                 local_state,
                                 /*seed_file_dir=*/base::FilePath(),
@@ -1172,7 +1174,8 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
   // the interaction between these two classes is what's being tested.
   auto seed_store = std::make_unique<VariationsSeedStore>(
       local_state(), std::move(initial_seed),
-      /*signature_verification_enabled=*/false,
+      /*signature_verification_enabled_on_load=*/false,
+      /*signature_verification_enabled_on_receive=*/false,
       std::make_unique<VariationsSafeSeedStore>(
           local_state(),
           /*seed_file_dir=*/base::FilePath(), version_info::Channel::UNKNOWN,

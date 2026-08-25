@@ -261,7 +261,8 @@ ValidatedSeed& ValidatedSeed::operator=(ValidatedSeed&& other) = default;
 VariationsSeedStore::VariationsSeedStore(
     PrefService* local_state,
     std::unique_ptr<SeedResponse> initial_seed,
-    bool signature_verification_enabled,
+    bool signature_verification_enabled_on_load,
+    bool signature_verification_enabled_on_receive,
     std::unique_ptr<VariationsSafeSeedStore> safe_seed_store,
     version_info::Channel channel,
     const base::FilePath& seed_file_dir,
@@ -269,7 +270,10 @@ VariationsSeedStore::VariationsSeedStore(
     bool use_first_run_prefs)
     : local_state_(local_state),
       safe_seed_store_(std::move(safe_seed_store)),
-      signature_verification_enabled_(signature_verification_enabled),
+      signature_verification_enabled_on_load_(
+          signature_verification_enabled_on_load),
+      signature_verification_enabled_on_receive_(
+          signature_verification_enabled_on_receive),
       use_first_run_prefs_(use_first_run_prefs),
       seed_reader_writer_(
           std::make_unique<SeedReaderWriter>(local_state,
@@ -425,7 +429,7 @@ void VariationsSeedStore::StoreSafeSeed(
   // thread.
   StoreSeedResult validation_result =
       ValidateSeedBytes(seed_data, base64_seed_signature, SeedType::SAFE,
-                        signature_verification_enabled_, &seed);
+                        signature_verification_enabled_on_receive_, &seed);
   if (validation_result != StoreSeedResult::kSuccess) {
     RecordStoreSafeSeedResult(validation_result);
     std::move(done_callback).Run(false);
@@ -716,9 +720,7 @@ LoadSeedResult VariationsSeedStore::VerifyAndParseSeedImpl(
     const std::string& seed_data,
     const std::string& base64_seed_signature,
     std::optional<VerifySignatureResult>* verify_signature_result) {
-  // TODO(crbug.com/40228403): get rid of |signature_verification_enabled_| and
-  // only support switches::kAcceptEmptySeedSignatureForTesting.
-  if (signature_verification_enabled_ &&
+  if (signature_verification_enabled_on_load_ &&
       !AcceptEmptySeedSignatureForTesting(base64_seed_signature)) {
     *verify_signature_result =
         VerifySeedSignature(seed_data, base64_seed_signature);
@@ -882,15 +884,16 @@ void VariationsSeedStore::ProcessAndStoreSeedData(
   }
   seed_data.existing_seed_bytes = std::move(read_result.seed_data);
   if (require_synchronous) {
-    SeedProcessingResult result =
-        ProcessSeedData(signature_verification_enabled_, std::move(seed_data));
+    SeedProcessingResult result = ProcessSeedData(
+        signature_verification_enabled_on_receive_, std::move(seed_data));
     OnSeedDataProcessed(std::move(done_callback), require_synchronous,
                         std::move(result));
   } else {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
         base::BindOnce(&VariationsSeedStore::ProcessSeedData,
-                       signature_verification_enabled_, std::move(seed_data)),
+                       signature_verification_enabled_on_receive_,
+                       std::move(seed_data)),
         base::BindOnce(&VariationsSeedStore::OnSeedDataProcessed,
                        weak_ptr_factory_.GetWeakPtr(), std::move(done_callback),
                        require_synchronous));

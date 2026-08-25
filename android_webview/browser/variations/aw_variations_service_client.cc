@@ -43,4 +43,10 @@ Channel AwVariationsServiceClient::GetChannel() {
   return version_info::android::GetChannel();
 }
 
+bool AwVariationsServiceClient::EnableSignatureVerificationOnLoad() {
+  // TODO(549757421): Investigate whether we can skip signature verification
+  // on WebView to improve WebView's startup performance.
+  return true;
+}
+
 }  // namespace android_webview
