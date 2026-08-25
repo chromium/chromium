@@ -155,10 +155,14 @@ public class TabGroupHoverCardViewUnitTest {
 
     @Test
     @SmallTest
-    public void testOnMeasure_hugsContentAndCapsAtMaxWidth() {
+    public void testOnMeasure_respectsMinAndMaxWidth() {
         int expectedMaxWidth = TabHoverCardView.getHoverCardWidthPx(mActivity);
+        int minContentWidth =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.tab_group_hover_card_min_width);
 
-        // Short content should hug the content (measured width <= expectedMaxWidth).
+        // Short content should hug the content while respecting minContentWidth.
         mHoverCardView.bindData(
                 "Short", List.of("• A"), /* excessCount= */ 0, /* isIncognito= */ false);
         mHoverCardView.show(/* x= */ 0f, /* y= */ 0f);
@@ -167,6 +171,9 @@ public class TabGroupHoverCardViewUnitTest {
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
         assertTrue(mHoverCardView.getMeasuredWidth() <= expectedMaxWidth);
+        assertTrue(
+                mHoverCardView.findViewById(R.id.content_view).getMeasuredWidth()
+                        >= minContentWidth);
 
         // Extremely long content should be capped at expectedMaxWidth.
         String longTitle = "A".repeat(500);

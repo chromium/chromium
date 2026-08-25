@@ -20,6 +20,7 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="@dimen/tab_group_hover_card_padding"
+        android:minWidth="@dimen/tab_group_hover_card_min_width"
         android:orientation="vertical"
         android:background="@drawable/popup_bg_shape_16dp"
         android:clipToOutline="true">

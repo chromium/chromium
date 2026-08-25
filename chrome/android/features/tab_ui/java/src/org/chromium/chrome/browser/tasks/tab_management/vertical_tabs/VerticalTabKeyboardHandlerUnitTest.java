@@ -62,6 +62,7 @@ public class VerticalTabKeyboardHandlerUnitTest {
     @Mock private Tab mTab3;
     @Mock private Tab mPinnedTab1;
     @Mock private Tab mPinnedTab2;
+    @Mock private VerticalTabHoverCardController mHoverCardController;
 
     private TabListModel mModelList;
     private TabListModel mPinnedTabsModelList;
@@ -100,7 +101,8 @@ public class VerticalTabKeyboardHandlerUnitTest {
                         mModelList,
                         mPinnedTabsModelList,
                         mRecyclerView,
-                        mPinnedTabsRecyclerView);
+                        mPinnedTabsRecyclerView,
+                        mHoverCardController);
     }
 
     @Test
@@ -439,6 +441,53 @@ public class VerticalTabKeyboardHandlerUnitTest {
                         KeyEvent.META_CTRL_ON);
         assertFalse(mHandler.onKeyEvent(pageDownEvent));
         verify(mTabModel, never()).moveTab(anyInt(), anyInt());
+    }
+
+    @Test
+    @SmallTest
+    public void testOnKeyEvent_Escape_DismissesShowingHoverCard() {
+        when(mHoverCardController.isHoverCardShowing()).thenReturn(true);
+
+        KeyEvent event = new KeyEvent(0, 0, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ESCAPE, 0, 0);
+        assertTrue(mHandler.onKeyEvent(event));
+        verify(mHoverCardController).hideHoverCard();
+    }
+
+    @Test
+    @SmallTest
+    public void testOnKeyEvent_Escape_ActionUp_ReturnsTrueWhenHoverCardShowing() {
+        when(mHoverCardController.isHoverCardShowing()).thenReturn(true);
+
+        KeyEvent event = new KeyEvent(0, 0, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ESCAPE, 0, 0);
+        assertTrue(mHandler.onKeyEvent(event));
+        verify(mHoverCardController, never()).hideHoverCard();
+    }
+
+    @Test
+    @SmallTest
+    public void testOnKeyEvent_Escape_HoverCardNotShowing_ReturnsFalse() {
+        when(mHoverCardController.isHoverCardShowing()).thenReturn(false);
+
+        KeyEvent event = new KeyEvent(0, 0, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ESCAPE, 0, 0);
+        assertFalse(mHandler.onKeyEvent(event));
+        verify(mHoverCardController, never()).hideHoverCard();
+    }
+
+    @Test
+    @SmallTest
+    public void testOnKeyEvent_EscapeWithModifier_ReturnsFalse() {
+        when(mHoverCardController.isHoverCardShowing()).thenReturn(true);
+
+        KeyEvent event =
+                new KeyEvent(
+                        0,
+                        0,
+                        KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_ESCAPE,
+                        0,
+                        KeyEvent.META_CTRL_ON);
+        assertFalse(mHandler.onKeyEvent(event));
+        verify(mHoverCardController, never()).hideHoverCard();
     }
 
     private void setupFocusedTab(

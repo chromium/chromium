@@ -363,7 +363,7 @@ public class VerticalTabHoverCardController {
                 && mIsContextMenuShowingSupplier.getAsBoolean();
     }
 
-    private boolean isHoverCardShowing() {
+    boolean isHoverCardShowing() {
         return (mTabHoverCardView != null && mTabHoverCardView.isShown())
                 || (mTabGroupHoverCardView != null && mTabGroupHoverCardView.isShown());
     }

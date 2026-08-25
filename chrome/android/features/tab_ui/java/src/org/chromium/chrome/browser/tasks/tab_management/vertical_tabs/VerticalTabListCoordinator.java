@@ -727,7 +727,8 @@ public class VerticalTabListCoordinator {
                         mModelList,
                         pinnedTabsModelList,
                         mRecyclerView,
-                        pinnedTabsRecyclerView);
+                        pinnedTabsRecyclerView,
+                        mTabHoverCardController);
         mContainerView.setKeyEventListener(mKeyboardHandler);
 
         mTabModelSelectorObserver =
