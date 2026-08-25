@@ -196,7 +196,7 @@ AwBrowserContext::AwBrowserContext(std::string name,
   }
 
   content_restriction_manager_client_ =
-      std::make_unique<AwContentRestrictionManagerClient>();
+      AwContentRestrictionManagerClient::Create();
   content_restriction_blocked_navigation_tracker_ =
       std::make_unique<AwContentRestrictionBlockedNavigationTracker>();
   cross_origin_allow_list_matcher_ =

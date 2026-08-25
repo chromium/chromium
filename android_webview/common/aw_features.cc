@@ -91,6 +91,12 @@ const base::FeatureParam<double> kWebViewCodeCacheSizeLimitMultiplier{
 BASE_FEATURE(kWebViewContentRestrictionSupport,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Timeout duration for content restriction classification requests before
+// we give up and assume the platform is non-responsive.
+const base::FeatureParam<base::TimeDelta> kWebViewContentRestrictionTimeout{
+    &kWebViewContentRestrictionSupport, "WebViewContentRestrictionTimeout",
+    base::Seconds(10)};
+
 // Enables a simpler URL fixup implementation for URLs passed to CookieManager.
 BASE_FEATURE(kWebViewCookieManagerSimplerUrlFixups,
              base::FEATURE_DISABLED_BY_DEFAULT);
