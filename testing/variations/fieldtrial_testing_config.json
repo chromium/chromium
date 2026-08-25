@@ -12879,6 +12879,21 @@
             ]
         }
     ],
+    "MetrickitDeferRegistration": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MetrickitDeferRegistration"
+                    ]
+                }
+            ]
+        }
+    ],
     "MigrateAccountManagerDelegate": [
         {
             "platforms": [
