@@ -95,6 +95,32 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
         }
     }
 
+    /**
+     * Called when the active status of this bridge is changed.
+     *
+     * <p>The active status of the bridge and its underlying native object is in sync with the
+     * corresponding {@code TabModel}.
+     *
+     * <p>The active status will change when the user switches between standard and incognito {@code
+     * TabModel}s in one {@code ChromeActivity}.
+     *
+     * <p>The active status will <i>not</i> change when another window gains focus, i.e., the bridge
+     * being active only means the corresponding {@code TabModel} is the current {@code TabModel} in
+     * the {@code ChromeActivity}.
+     *
+     * <p>This method will only be called in a multi-Profile {@code ChromeActivity}. For a
+     * single-Profile {@code ChromeActivity}, there is only one bridge and it's always active.
+     *
+     * @param active Whether this bridge is active.
+     */
+    void onActiveChanged(boolean active) {
+        log(TAG, "onActiveChanged");
+        if (mNativeSidePanelCoordinatorAndroid != 0) {
+            SidePanelCoordinatorAndroidBridgeJni.get()
+                    .onActiveChanged(mNativeSidePanelCoordinatorAndroid, active);
+        }
+    }
+
     /** Requests to close the side panel. */
     void closePanel(boolean suppressAnimations) {
         log(TAG, "closePanel");
@@ -283,6 +309,9 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
 
         /** See {@link SidePanelCoordinatorAndroidBridge#onPanelContentReplaced}. */
         void onPanelContentReplaced(long nativeSidePanelCoordinatorAndroid);
+
+        /** See {@link SidePanelCoordinatorAndroidBridge#onActiveChanged}. */
+        void onActiveChanged(long nativeSidePanelCoordinatorAndroid, boolean active);
 
         /** See {@link SidePanelCoordinatorAndroidBridge#onWillAutoClose}. */
         void onWillAutoClose(long nativeSidePanelCoordinatorAndroid);

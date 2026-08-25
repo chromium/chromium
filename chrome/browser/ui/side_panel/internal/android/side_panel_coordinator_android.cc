@@ -171,6 +171,27 @@ void SidePanelCoordinatorAndroid::OnPanelContentReplaced() {
   pending_hide_reason_ = std::nullopt;
 }
 
+void SidePanelCoordinatorAndroid::OnActiveChanged(bool active) {
+  SPLOG("OnActiveChanged - active: " << active);
+  if (!active) {
+    deferred_entry_tracker_.AddActiveEntries();
+    Close(SidePanelEntryHideReason::kBackgrounded,
+          /*suppress_animations=*/true);
+    return;
+  }
+
+  if (tabs::TabInterface* active_tab =
+          TabListInterface::From(browser())->GetActiveTab()) {
+    std::optional<UniqueKey> key_to_show =
+        deferred_entry_tracker_.GetTabOrWindowScopedEntry(
+            active_tab->GetHandle());
+    if (key_to_show) {
+      Show(*key_to_show, SidePanelOpenTrigger::kTabChanged,
+           /*suppress_animations=*/true);
+    }
+  }
+}
+
 void SidePanelCoordinatorAndroid::ShowFrom(
     SidePanelEntryKey entry_key,
     gfx::Rect starting_bounds_in_browser_coordinates) {

@@ -57,6 +57,7 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   bool HasContentToShow();
   void OnPanelContainerUpdated(int old_width, int new_width);
   void OnPanelContentReplaced();
+  void OnActiveChanged(bool active);
   void OnWillAutoClose();
   void OnWillAutoRestore();
 

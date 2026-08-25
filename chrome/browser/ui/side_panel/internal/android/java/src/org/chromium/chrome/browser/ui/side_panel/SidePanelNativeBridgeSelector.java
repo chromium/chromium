@@ -148,7 +148,24 @@ final class SidePanelNativeBridgeSelector {
             // associated with the wrong Profile (see callers of getCurrentCoordinatorBridge()).
             var nativeBridges = mNativeBridges.get(tabModel.getProfile());
             if (!active && nativeBridges != null) {
-                nativeBridges.mCoordinatorBridge.closePanel(/* suppressAnimations= */ true);
+                nativeBridges.mCoordinatorBridge.onActiveChanged(/* active= */ false);
+            }
+        }
+
+        @Override
+        public void onDidActiveStateChange(TabModel tabModel, boolean active) {
+            // Note: During a Profile switch in the mixed-Profile mode, to restore (open) the panel
+            // for the _active_ Profile, we must use onDidActiveStateChange() for two reasons:
+            //
+            // (1) onDidActiveStateChange() is invoked _after_ the current TabModel (in
+            // TabModelSelector) is changed to the active TabModel.
+            //
+            // (2) The C++ side requires all operations to be done _after_ the current
+            // TabModel (Profile) is changed. Otherwise, the Java code may call into a native object
+            // associated with the wrong Profile (see callers of getCurrentCoordinatorBridge()).
+            var nativeBridges = mNativeBridges.get(tabModel.getProfile());
+            if (active && nativeBridges != null) {
+                nativeBridges.mCoordinatorBridge.onActiveChanged(/* active= */ true);
             }
         }
     }
