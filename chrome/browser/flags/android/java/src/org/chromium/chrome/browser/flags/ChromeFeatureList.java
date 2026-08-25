@@ -900,10 +900,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAllocInstanceIdIncreasedDefaultRange =
             newCachedFlag(ALLOC_INSTANCE_ID_INCREASED_DEFAULT_RANGE, /* defaultValue= */ true);
     public static final CachedFlag sAndroidAnimatedProgressBarInBrowser =
-            newCachedFlag(
-                    ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+            newCachedFlag(ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER, false);
     public static final CachedFlag sAndroidApb144Patch1 = newCachedFlag(APB144_PATCH1, true);
     public static final CachedFlag sAndroidApb144Patch2 = newCachedFlag(APB144_PATCH2, true);
     public static final CachedFlag sAndroidApb144Patch3 = newCachedFlag(APB144_PATCH3, true);
@@ -995,10 +992,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sBackGestureReflectsDesktopBehavior =
             newCachedFlag(BACK_GESTURE_REFLECTS_DESKTOP_BEHAVIOR, /* defaultValue= */ true);
     public static final CachedFlag sBackgroundThreadPoolFieldTrial =
-            newCachedFlag(
-                    BACKGROUND_THREAD_POOL_FIELD_TRIAL,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+            newCachedFlag(BACKGROUND_THREAD_POOL_FIELD_TRIAL, false);
     public static final CachedFlag sBlockIntentsWhileLocked =
             newCachedFlag(BLOCK_INTENTS_WHILE_LOCKED, false);
     public static final CachedFlag sBookmarkPaneAndroid =
@@ -1037,10 +1031,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCctNavigationInfoScreenshot =
             newCachedFlag(CCT_NAVIGATION_INFO_SCREENSHOT, false);
     public static final CachedFlag sCctNavigationalPrefetch =
-            newCachedFlag(
-                    CCT_NAVIGATIONAL_PREFETCH,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+            newCachedFlag(CCT_NAVIGATIONAL_PREFETCH, false);
     public static final CachedFlag sCctNestedSecurityIcon =
             newCachedFlag(CCT_NESTED_SECURITY_ICON, true);
     public static final CachedFlag sCctOpenInBrowserButtonIfAllowedByEmbedder =
@@ -1087,10 +1078,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sControlsInBrowserToolbarSwipeMock =
             newCachedFlag(CONTROLS_IN_BROWSER_TOOLBAR_SWIPE_MOCK, false);
     public static final CachedFlag sCpaTabGroupingButton =
-            newCachedFlag(
-                    CONTEXTUAL_PAGE_ACTION_TAB_GROUPING,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+            newCachedFlag(CONTEXTUAL_PAGE_ACTION_TAB_GROUPING, false);
     public static final CachedFlag sCrossDeviceTabPaneAndroid =
             newCachedFlag(CROSS_DEVICE_TAB_PANE_ANDROID, false);
     public static final CachedFlag sDefaultBrowserPromoEntryPoint =
@@ -1165,7 +1153,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sEnableExclusiveAccessManager =
             newCachedFlag(ENABLE_EXCLUSIVE_ACCESS_MANAGER, true);
     public static final CachedFlag sEnableFullscreenToAnyScreenAndroid =
-            newCachedFlag(ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID, false, true);
+            newCachedFlag(ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID, false);
     public static final CachedFlag sEnableXAxisActivityTransition =
             newCachedFlag(ENABLE_X_AXIS_ACTIVITY_TRANSITION, false);
     public static final CachedFlag sFaviconDisableHostFallback =
@@ -1202,11 +1190,7 @@ public abstract class ChromeFeatureList {
                     GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ false);
-    public static final CachedFlag sHistoryPaneAndroid =
-            newCachedFlag(
-                    HISTORY_PANE_ANDROID,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+    public static final CachedFlag sHistoryPaneAndroid = newCachedFlag(HISTORY_PANE_ANDROID, false);
     public static final CachedFlag sHomeButtonRemoval =
             newCachedFlag(
                     HOME_BUTTON_REMOVAL,
@@ -1385,10 +1369,7 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sToolbarCaptureFixForSPAs =
-            newCachedFlag(
-                    TOOLBAR_CAPTURE_FIX_FOR_SPAS,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+            newCachedFlag(TOOLBAR_CAPTURE_FIX_FOR_SPAS, false);
     public static final CachedFlag sToolbarPhoneAnimationRefactor =
             newCachedFlag(
                     TOOLBAR_PHONE_ANIMATION_REFACTOR,
