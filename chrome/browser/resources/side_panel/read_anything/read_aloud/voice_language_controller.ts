@@ -46,6 +46,8 @@ export class VoiceLanguageController {
         this.updateLanguageStatus.bind(this));
     this.audioBrowserProxy_.onTtsEngineInstalled.addListener(
         this.onTtsEngineInstalled.bind(this));
+    this.audioBrowserProxy_.languageChanged.addListener(
+        this.onPageLanguageChanged.bind(this));
   }
 
   addListener(listener: VoiceLanguageListener) {

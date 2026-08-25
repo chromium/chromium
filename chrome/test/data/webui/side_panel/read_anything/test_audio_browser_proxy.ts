@@ -8,6 +8,7 @@ import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy
 
 export class TestAudioBrowserProxy extends TestBrowserProxy implements
     AudioBrowserProxy {
+  languageChanged = new FakeChromeEvent();
   onLockScreen = new FakeChromeEvent();
   onTabMuteStateChange = new FakeChromeEvent();
   onTtsEngineInstalled = new FakeChromeEvent();

@@ -7,10 +7,20 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {TextSegmenter} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AudioBrowserProxyImpl, TextSegmenter} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
+import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
+
 suite('TextSegmenter', () => {
+  let audioBrowserProxy: TestAudioBrowserProxy;
+
+  setup(() => {
+    audioBrowserProxy = new TestAudioBrowserProxy();
+    AudioBrowserProxyImpl.setInstance(audioBrowserProxy);
+    TextSegmenter.setInstance(new TextSegmenter());
+  });
+
   test('getWordCount returns expected word count', () => {
     const segmenter = TextSegmenter.getInstance();
     assertEquals(0, segmenter.getWordCount(''));
@@ -70,13 +80,34 @@ suite('TextSegmenter', () => {
     const text = 'Πού είσαι; Είμαι στο σπίτι.';
     const textSegmenter = TextSegmenter.getInstance();
 
-    textSegmenter.updateLanguage('en-us');
+    audioBrowserProxy.baseLanguageForSpeech = 'en-us';
+    textSegmenter.updateLanguage();
     assertEquals(1, textSegmenter.getSentences(text).length);
 
-    textSegmenter.updateLanguage('el');
+    audioBrowserProxy.baseLanguageForSpeech = 'el';
+    textSegmenter.updateLanguage();
     assertEquals(2, textSegmenter.getSentences(text).length);
 
-    textSegmenter.updateLanguage('fr-fr');
+    audioBrowserProxy.baseLanguageForSpeech = 'fr-fr';
+    textSegmenter.updateLanguage();
+    assertEquals(1, textSegmenter.getSentences(text).length);
+  });
+
+  test('languageChanged event triggers updateLanguage', () => {
+    // In Greek, ';' is interpreted as a question mark.
+    const text = 'Πού είσαι; Είμαι στο σπίτι.';
+    const textSegmenter = TextSegmenter.getInstance();
+
+    audioBrowserProxy.baseLanguageForSpeech = 'en-us';
+    audioBrowserProxy.languageChanged.callListeners();
+    assertEquals(1, textSegmenter.getSentences(text).length);
+
+    audioBrowserProxy.baseLanguageForSpeech = 'el';
+    audioBrowserProxy.languageChanged.callListeners();
+    assertEquals(2, textSegmenter.getSentences(text).length);
+
+    audioBrowserProxy.baseLanguageForSpeech = 'fr-fr';
+    audioBrowserProxy.languageChanged.callListeners();
     assertEquals(1, textSegmenter.getSentences(text).length);
   });
 
@@ -104,7 +135,8 @@ suite('TextSegmenter', () => {
 
   test('getSentences in scriptio continua language', () => {
     const textSegmenter = TextSegmenter.getInstance();
-    textSegmenter.updateLanguage('jp');
+    audioBrowserProxy.baseLanguageForSpeech = 'jp';
+    textSegmenter.updateLanguage();
 
     const sentence1 = '市場に行ってフルーツをたくさん買ったよ？';
     const sentence2 = 'すごく美味しいよ。';

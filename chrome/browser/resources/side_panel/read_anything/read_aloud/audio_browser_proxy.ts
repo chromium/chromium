@@ -16,6 +16,7 @@ export interface AudioBrowserProxy {
   //////////////////////////////////////////////////////////////////////////////
   // Incoming events (C++ -> TypeScript):
 
+  languageChanged: ChromeEvent<() => void>;
   onLockScreen: ChromeEvent<() => void>;
   onTabMuteStateChange: ChromeEvent<(muted: boolean) => void>;
   onTtsEngineInstalled: ChromeEvent<() => void>;
@@ -60,6 +61,7 @@ export interface AudioBrowserProxy {
 }
 
 export class AudioBrowserProxyImpl implements AudioBrowserProxy {
+  languageChanged = new EventForwarder<() => void>();
   onLockScreen = new EventForwarder<() => void>();
   onTabMuteStateChange = new EventForwarder<(muted: boolean) => void>();
   onTtsEngineInstalled = new EventForwarder<() => void>();
@@ -69,6 +71,10 @@ export class AudioBrowserProxyImpl implements AudioBrowserProxy {
       new EventForwarder<(lang: string, status: string) => void>();
 
   constructor() {
+    chrome.readingMode.languageChanged = () => {
+      this.languageChanged.forward();
+    };
+
     chrome.readingMode.onLockScreen = () => {
       this.onLockScreen.forward();
     };

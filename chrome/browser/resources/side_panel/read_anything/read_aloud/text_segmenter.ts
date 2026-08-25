@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {AudioBrowserProxy} from './audio_browser_proxy.js';
+import {AudioBrowserProxyImpl} from './audio_browser_proxy.js';
 import type {Sentence} from './read_aloud_types.js';
 import {textEndsWithOpeningPunctuation} from './speech_presentation_rules.js';
 
 // Wrapper class for Intl.Segmenter that manages Intl.Segmenter instances to
 // be used to segment text.
 export class TextSegmenter {
+  private audioBrowserProxy_: AudioBrowserProxy =
+      AudioBrowserProxyImpl.getInstance();
   private wordSegmenter_: Intl.Segmenter =
       new Intl.Segmenter(undefined, {granularity: 'word'});
   private sentenceSegmenter_: Intl.Segmenter =
@@ -17,9 +21,12 @@ export class TextSegmenter {
     // If no language code has been provided, Intl.Segmenter will use the system
     // default language.
     this.updateLanguage();
+    this.audioBrowserProxy_.languageChanged.addListener(
+        this.updateLanguage.bind(this));
   }
 
-  updateLanguage(lang?: string) {
+  updateLanguage() {
+    const lang = this.audioBrowserProxy_.getBaseLanguageForSpeech();
     // The try-catch is needed because Intl.Segmenter throws an error if the
     // language code is not well-formed.
     try {

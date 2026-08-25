@@ -696,4 +696,13 @@ suite('AppReceivesToolbarChanges', () => {
     await microtasksFinished();
     assertFalse(app.$.toolbar.isReadAnythingPinned);
   });
+
+  test('languageChanged updates page language on toolbar', async () => {
+    audioBrowserProxy.baseLanguageForSpeech = 'fr';
+
+    audioBrowserProxy.languageChanged.callListeners();
+    await microtasksFinished();
+
+    assertEquals('fr', app.$.toolbar.pageLanguage);
+  });
 });

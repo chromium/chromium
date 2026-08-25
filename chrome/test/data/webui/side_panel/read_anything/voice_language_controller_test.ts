@@ -733,6 +733,15 @@ suite('VoiceLanguageController', () => {
     assertEquals(lang, voiceLanguageController.getCurrentLanguage());
   });
 
+  test('languageChanged event triggers onPageLanguageChanged', () => {
+    const lang = 'el';
+    audioBrowserProxy.baseLanguageForSpeech = lang;
+
+    audioBrowserProxy.languageChanged.callListeners();
+
+    assertEquals(lang, voiceLanguageController.getCurrentLanguage());
+  });
+
   test(
       'onPageLanguageChanged updates current language when natural voices unavailable',
       () => {

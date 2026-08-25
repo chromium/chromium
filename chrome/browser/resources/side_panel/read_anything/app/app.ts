@@ -32,7 +32,6 @@ import type {LanguageToastElement} from '../read_aloud/language_toast.js';
 import type {Segment} from '../read_aloud/read_aloud_types.js';
 import {SpeechController} from '../read_aloud/speech_controller.js';
 import type {SpeechListener} from '../read_aloud/speech_controller.js';
-import {TextSegmenter} from '../read_aloud/text_segmenter.js';
 import {VoiceLanguageController} from '../read_aloud/voice_language_controller.js';
 import type {VoiceLanguageListener} from '../read_aloud/voice_language_controller.js';
 import {VoiceNotificationManager} from '../read_aloud/voice_notification_manager.js';
@@ -180,8 +179,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.styleUpdater_ = new AppStyleUpdater(this);
     this.nodeStore_.clear();
     ColorChangeUpdater.forDocument().start();
-    TextSegmenter.getInstance().updateLanguage(
-        this.audioBrowserProxy_.getBaseLanguageForSpeech());
     this.contentState_ = this.contentController_.getState();
     if (this.contentBrowserProxy_.isReadabilityEnabled()) {
       this.contentController_.configureTrustedTypes();
@@ -291,6 +288,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
         });
     this.visualBrowserProxy_.onPresentationStateReceived.addListener(
         this.onPresentationStateReceived_.bind(this));
+    this.audioBrowserProxy_.languageChanged.addListener(
+        this.languageChanged.bind(this));
     this.audioBrowserProxy_.setPlayOnOpen.addListener(
         this.setPlayOnOpen.bind(this));
 
@@ -303,10 +302,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
     chrome.readingMode.restoreSettingsFromPrefs = () => {
       this.restoreSettingsFromPrefs_();
-    };
-
-    chrome.readingMode.languageChanged = () => {
-      this.languageChanged();
     };
   }
 
@@ -837,10 +832,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   languageChanged() {
     this.pageLanguage_ = this.audioBrowserProxy_.getBaseLanguageForSpeech();
-    this.voiceLanguageController_.onPageLanguageChanged();
     // Update the font to ensure the font is valid for the page language.
     this.styleUpdater_.setFont();
-    TextSegmenter.getInstance().updateLanguage(this.pageLanguage_);
   }
 
   protected computeHasContent(): boolean {
