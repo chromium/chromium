@@ -79,12 +79,8 @@ public class SearchBoxContainerView extends LinearLayout {
         mIsNtpAuroraEnabled = NewTabPageUtils.isNtpAuroraEnabled();
 
         Resources res = getResources();
-        if (mIsNtpAuroraEnabled) {
-            mHintTextView.setTextAppearance(R.style.TextAppearance_FakeSearchBoxTextNewStyle);
-        } else {
-            Typeface typeface = Typeface.create("google-sans-medium", Typeface.NORMAL);
-            mHintTextView.setTypeface(typeface);
-        }
+        Typeface typeface = Typeface.create("google-sans-medium", Typeface.NORMAL);
+        mHintTextView.setTypeface(typeface);
 
         @Px int size = res.getDimensionPixelSize(R.dimen.omnibox_search_engine_logo_composed_size);
         @Px int radius = size / 2;
