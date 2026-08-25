@@ -1820,13 +1820,13 @@ class WebUIToolbarFocusInteractiveUiTestBase
             if (curr.getAttribute('part') === 'searchbox-input') {
               return 'omnibox-text-input';
             }
-            if (curr.tagName === 'LOCATION-ICON') {
-              return 'location-icon-container';
-            }
             if (curr.id && curr.id !== 'container' &&
                 curr.id !== 'buttonWrapper' && curr.id !== 'textInput' &&
                 curr.id !== 'button') {
               return curr.id;
+            }
+            if (curr.id === 'container') {
+              return 'location-icon-container';
             }
             let parent = curr.parentElement || curr.parentNode;
             if (parent && parent.host) {

@@ -102,7 +102,7 @@ suite('LocationIconTest', function() {
     };
     await microtasksFinished();
 
-    const container = locationIcon.$.button;
+    const container = locationIcon.$.container;
     assertEquals('View site information', container.title);
   });
 
@@ -131,7 +131,7 @@ suite('LocationIconTest', function() {
     assertTrue(locationIcon.hasAttribute('is-text-dangerous'));
     assertTrue(locationIcon.hasAttribute('is-dangerous'));
 
-    const container = locationIcon.$.button;
+    const container = locationIcon.$.container;
     assertTrue(hasStyle(container, 'background-color', 'rgb(0, 0, 255)'));
     assertTrue(hasStyle(container, 'color', 'rgb(0, 255, 0)'));
   });
@@ -159,7 +159,7 @@ suite('LocationIconTest', function() {
     assertFalse(locationIcon.hasAttribute('is-text-dangerous'));
     assertTrue(locationIcon.hasAttribute('is-dangerous'));
 
-    const container = locationIcon.$.button;
+    const container = locationIcon.$.container;
     assertTrue(hasStyle(container, 'color', 'rgb(255, 0, 0)'));
   });
 
@@ -203,7 +203,7 @@ suite('LocationIconTest', function() {
 
     assertFalse(locationIcon.hasAttribute('clickable'));
 
-    const container = locationIcon.$.button;
+    const container = locationIcon.$.container;
     container.dispatchEvent(new PointerEvent('pointerdown'));
     assertEquals(0, toolbarUiHandler.getCallCount('onLhsChipMousePressed'));
 
@@ -228,7 +228,7 @@ suite('LocationIconTest', function() {
     };
     await microtasksFinished();
 
-    const container = locationIcon.$.button;
+    const container = locationIcon.$.container;
 
     // Simulate normal click pointerdown
     container.dispatchEvent(new PointerEvent('pointerdown', {button: 0}));
@@ -289,7 +289,7 @@ suite('LocationIconTest', function() {
     };
     await microtasksFinished();
 
-    const container = locationIcon.$.button;
+    const container = locationIcon.$.container;
 
     // Initial touch
     container.dispatchEvent(
