@@ -64,6 +64,9 @@ defaults.builderless.set(None)
 defaults.cpu.set(cpu.X86_64)
 defaults.executable.set("recipe:chromium")
 defaults.execution_timeout.set(3 * time.hour)
+defaults.experiments.set({
+    "luci.buildbucket.run_in_turboci": 100,
+})
 defaults.os.set(os.LINUX_DEFAULT)
 defaults.properties.set({
     "$build/chromium_swarming": {
