@@ -52,10 +52,12 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivity;
+import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -928,7 +930,13 @@ public class SigninBridgeTest {
                         .getNextStartedActivity();
         Assert.assertNotNull(intent);
         Assert.assertNotEquals(Settings.ACTION_SYNC_SETTINGS, intent.getAction());
-        Assert.assertEquals(SettingsActivity.class.getName(), intent.getComponent().getClassName());
+        // When SettingsInTab is enabled on desktop, settings opens in a browser tab via
+        // ChromeLauncherActivity (chrome://settings) instead of starting SettingsActivity.
+        Assert.assertEquals(
+                SettingsInTab.isEnabled()
+                        ? ChromeLauncherActivity.class.getName()
+                        : SettingsActivity.class.getName(),
+                intent.getComponent().getClassName());
     }
 
     @Test

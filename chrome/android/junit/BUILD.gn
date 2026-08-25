@@ -1198,7 +1198,10 @@ if (is_android) {
       "src/org/chromium/chrome/browser/signin/SigninBridgeTest.java",
     ]
 
-    deps = [ ":chrome_junit_tests_helper" ]
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//chrome/browser/settings:settings_in_tab_java",
+    ]
   }
 
   robolectric_library(
