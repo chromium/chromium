@@ -35,9 +35,12 @@ class QuicSessionPool::EndpointConnector : public QuicSessionAttempt::Delegate {
  public:
   // `created_by_slow_timer` is true for the connector created when the slow
   // timer fires. This stays unchanged if the connector moves to another slot.
+  // `is_stale` is true if this connector is attempting a stale DNS endpoint
+  // candidate.
   EndpointConnector(AsyncDnsJob* job,
                     const char* name,
-                    bool created_by_slow_timer);
+                    bool created_by_slow_timer,
+                    bool is_stale);
 
   EndpointConnector(const EndpointConnector&) = delete;
   EndpointConnector& operator=(const EndpointConnector&) = delete;
@@ -69,6 +72,8 @@ class QuicSessionPool::EndpointConnector : public QuicSessionAttempt::Delegate {
   size_t attempts_started() const { return attempts_started_; }
 
   bool created_by_slow_timer() const { return created_by_slow_timer_; }
+
+  bool is_stale() const { return is_stale_; }
 
   // True when this connector could start an attempt as soon as the job has a
   // candidate for it. The job advances such connectors when new resolver
@@ -109,6 +114,7 @@ class QuicSessionPool::EndpointConnector : public QuicSessionAttempt::Delegate {
   const raw_ptr<AsyncDnsJob> job_;
   const char* const name_;
   const bool created_by_slow_timer_;
+  const bool is_stale_;
   std::unique_ptr<QuicSessionAttempt> attempt_;
   // The job-wide identifier of `attempt_`.
   std::optional<int> attempt_id_;

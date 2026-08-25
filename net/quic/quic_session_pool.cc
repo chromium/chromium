@@ -1027,7 +1027,8 @@ std::unique_ptr<QuicSessionAttempt> QuicSessionPool::CreateSessionAttempt(
     bool use_dns_aliases,
     std::set<std::string> dns_aliases,
     MultiplexedSessionCreationInitiator session_creation_initiator,
-    std::optional<ConnectionManagementConfig> connection_management_config) {
+    std::optional<ConnectionManagementConfig> connection_management_config,
+    bool is_stale) {
   CHECK(!HasActiveSession(session_key));
   CHECK(!HasActiveJob(session_key));
 
@@ -1042,7 +1043,7 @@ std::unique_ptr<QuicSessionAttempt> QuicSessionPool::CreateSessionAttempt(
       std::move(dns_aliases),
       CreateCryptoConfigHandle(QuicCryptoClientConfigKey(session_key)),
       session_creation_initiator, quic_connection_reuse_details,
-      connection_management_config);
+      connection_management_config, is_stale);
 }
 
 void QuicSessionPool::OnSessionGoingAway(QuicChromiumClientSession* session) {

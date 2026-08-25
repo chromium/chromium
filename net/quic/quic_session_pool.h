@@ -404,7 +404,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       bool use_dns_aliases,
       std::set<std::string> dns_aliases,
       MultiplexedSessionCreationInitiator session_creation_initiator,
-      std::optional<ConnectionManagementConfig> connection_management_config);
+      std::optional<ConnectionManagementConfig> connection_management_config,
+      bool is_stale = false);
 
   // Called by a session when it is going away and no more streams should be
   // created on it.

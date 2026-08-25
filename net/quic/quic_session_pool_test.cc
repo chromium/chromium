@@ -186,7 +186,8 @@ std::vector<TestParams> GetTestParams() {
 class SessionAttemptHelper : public QuicSessionAttempt::Delegate {
  public:
   SessionAttemptHelper(QuicSessionPool* pool,
-                       quic::ParsedQuicVersion quic_version)
+                       quic::ParsedQuicVersion quic_version,
+                       bool is_stale = false)
       : pool_(pool),
         quic_endpoint(quic_version,
                       IPEndPoint(IPAddress::IPv4Localhost(),
@@ -210,7 +211,7 @@ class SessionAttemptHelper : public QuicSessionAttempt::Delegate {
         /*dns_resolution_end_time=*/base::TimeTicks(),
         /*dns_resolution_details=*/std::nullopt, /*use_dns_aliases=*/true,
         /*dns_aliases=*/{}, MultiplexedSessionCreationInitiator::kUnknown,
-        /*connection_management_config=*/std::nullopt);
+        /*connection_management_config=*/std::nullopt, is_stale);
   }
 
   SessionAttemptHelper(const SessionAttemptHelper&) = delete;
@@ -1079,6 +1080,38 @@ TEST_P(QuicSessionPoolTest, RequireConfirmationAsyncQuicSession) {
   EXPECT_TRUE(stream.get());
 
   QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  EXPECT_TRUE(session->require_confirmation());
+}
+
+TEST_P(QuicSessionPoolTest, RequireConfirmationStaleAttempt) {
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ZERO_RTT);
+  Initialize();
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  SessionAttemptHelper session_attempt(pool_.get(), version_,
+                                       /*is_stale=*/true);
+
+  EXPECT_THAT(session_attempt.Start(), IsError(ERR_IO_PENDING));
+
+  crypto_client_stream_factory_.WaitForStreams(1);
+
+  crypto_client_stream_factory_.last_stream()
+      ->NotifySessionOneRttKeyAvailable();
+
+  EXPECT_THAT(session_attempt.result(), testing::Optional(IsOk()));
+
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  EXPECT_TRUE(session);
   EXPECT_TRUE(session->require_confirmation());
 }
 

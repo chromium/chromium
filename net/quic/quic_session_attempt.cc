@@ -68,7 +68,8 @@ QuicSessionAttempt::QuicSessionAttempt(
     std::unique_ptr<QuicCryptoClientConfigHandle> crypto_client_config_handle,
     MultiplexedSessionCreationInitiator session_creation_initiator,
     QuicConnectionReuseDetails quic_connection_reuse_details,
-    std::optional<ConnectionManagementConfig> connection_management_config)
+    std::optional<ConnectionManagementConfig> connection_management_config,
+    bool is_stale)
     : delegate_(delegate),
       start_time_(base::TimeTicks::Now()),
       ip_endpoint_(std::move(ip_endpoint)),
@@ -78,6 +79,7 @@ QuicSessionAttempt::QuicSessionAttempt(
       dns_resolution_start_time_(dns_resolution_start_time),
       dns_resolution_end_time_(dns_resolution_end_time),
       resolution_details_(std::move(resolution_details)),
+      is_stale_(is_stale),
       was_alternative_service_recently_broken_(
           pool()->WasQuicRecentlyBroken(key().session_key())),
       retry_on_alternate_network_before_handshake_(
@@ -102,11 +104,13 @@ QuicSessionAttempt::QuicSessionAttempt(
     const HttpUserAgentSettings* http_user_agent_settings,
     MultiplexedSessionCreationInitiator session_creation_initiator,
     QuicConnectionReuseDetails quic_connection_reuse_details,
-    std::optional<ConnectionManagementConfig> connection_management_config)
+    std::optional<ConnectionManagementConfig> connection_management_config,
+    bool is_stale)
     : delegate_(delegate),
       ip_endpoint_(std::move(proxy_peer_endpoint)),
       quic_version_(std::move(quic_version)),
       cert_verify_flags_(cert_verify_flags),
+      is_stale_(is_stale),
       was_alternative_service_recently_broken_(
           pool()->WasQuicRecentlyBroken(key().session_key())),
       retry_on_alternate_network_before_handshake_(false),
@@ -220,7 +224,8 @@ int QuicSessionAttempt::DoCreateSession() {
   quic_connection_start_time_ = base::TimeTicks::Now();
   next_state_ = State::kCreateSessionComplete;
 
-  const bool require_confirmation = was_alternative_service_recently_broken_;
+  const bool require_confirmation =
+      was_alternative_service_recently_broken_ || is_stale_;
   net_log().AddEntryWithBoolParams(
       NetLogEventType::QUIC_SESSION_POOL_JOB_CONNECT, NetLogEventPhase::BEGIN,
       "require_confirmation", require_confirmation);

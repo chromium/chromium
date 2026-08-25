@@ -84,7 +84,8 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
       MultiplexedSessionCreationInitiator session_creation_initiator,
       QuicConnectionReuseDetails quic_connection_reuse_details,
       std::optional<ConnectionManagementConfig> connection_management_config =
-          std::nullopt);
+          std::nullopt,
+      bool is_stale = false);
   // Create a SessionAttempt for a connection proxied over the given stream.
   QuicSessionAttempt(
       Delegate* delegate,
@@ -97,7 +98,8 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
       MultiplexedSessionCreationInitiator session_creation_initiator,
       QuicConnectionReuseDetails quic_connection_reuse_details,
       std::optional<ConnectionManagementConfig> connection_management_config =
-          std::nullopt);
+          std::nullopt,
+      bool is_stale = false);
 
   ~QuicSessionAttempt();
 
@@ -176,6 +178,7 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
   const base::TimeTicks dns_resolution_start_time_;
   const base::TimeTicks dns_resolution_end_time_;
   const std::optional<ResolutionDetails> resolution_details_;
+  const bool is_stale_;
   const bool was_alternative_service_recently_broken_;
   const bool retry_on_alternate_network_before_handshake_;
   const bool use_dns_aliases_;

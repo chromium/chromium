@@ -678,7 +678,7 @@ void QuicSessionPool::AsyncDnsJob::OnSlowTimer() {
       NetLogEventType::QUIC_SESSION_POOL_ASYNC_DNS_JOB_SLOW_TIMER_FIRED);
 
   secondary_connector_ = std::make_unique<EndpointConnector>(
-      this, "second", /*created_by_slow_timer=*/true);
+      this, "second", /*created_by_slow_timer=*/true, /*is_stale=*/false);
   if (!primary_connector_->is_attempting_ipv6()) {
     // The connector in the primary slot is not on IPv6, either because it
     // attempts IPv4 or because it waits for a candidate. The slots decide the
@@ -801,7 +801,7 @@ QuicSessionPool::AsyncDnsJob::ProcessServiceEndpointResults() {
 
   if (!primary_connector_) {
     primary_connector_ = std::make_unique<EndpointConnector>(
-        this, "first", /*created_by_slow_timer=*/false);
+        this, "first", /*created_by_slow_timer=*/false, /*is_stale=*/false);
   }
 
   std::optional<int> result = AdvanceConnectors();
