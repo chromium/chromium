@@ -305,6 +305,14 @@ luci.notifier(
     ],
 )
 
+luci.notifier(
+    name = "Linux Builder Default Remote Build",
+    on_new_status = ["FAILURE", "INFRA_FAILURE"],
+    notify_emails = [
+        "tikuta@google.com",
+    ],
+)
+
 luci.builder_health_notifier(
     owner_email = "chrome-browser-infra-team@google.com",
     ignore_buckets = ["try"],

@@ -226,6 +226,7 @@ ci.builder(
     ),
     contact_team_email = "chrome-build-team@google.com",
     execution_timeout = 2 * time.hour,
+    notifies = ["Linux Builder Default Remote Build"],
     siso_configs = ["builder", "remote-link", "default-remote"],
     siso_keep_going = 0,
 )
