@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/feature_showcase/gemini_disclosure.h"
 
+#include <string>
 #include <string_view>
 
 #include "base/strings/string_util.h"
@@ -13,106 +14,56 @@
 
 namespace {
 
-class GeminiDisclosureProvider {
- public:
-  virtual ~GeminiDisclosureProvider() = default;
-  virtual GeminiDisclosure GetDisclosure(bool is_managed) const = 0;
-};
+constexpr char16_t kGeminiAppsActivityUrl[] =
+    u"https://myactivity.google.com/product/gemini";
+constexpr char16_t kGeminiActivitySettingsUrl[] =
+    u"https://support.google.com/gemini/?p=activity_settings";
 
-class RowGeminiDisclosureProvider : public GeminiDisclosureProvider {
- public:
-  GeminiDisclosure GetDisclosure(bool is_managed) const override {
-    std::u16string disclosure_2;
-    if (is_managed) {
-      disclosure_2 = l10n_util::GetStringUTF16(
-          IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_2_ENTERPRISE_ROW);
-    } else {
-      disclosure_2 = l10n_util::GetStringFUTF16(
-          IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_2_ROW,
-          u"https://myactivity.google.com/product/gemini",
-          u"https://support.google.com/gemini/?p=activity_settings");
-    }
+constexpr char16_t kGoogleTermsUrl[] = u"https://policies.google.com/terms";
+constexpr char16_t kGeminiPrivacyNoticeUrl[] =
+    u"https://support.google.com/gemini/answer/13594961";
+constexpr char16_t kKoreanLocationTermsUrl[] =
+    u"https://www.google.com/intl/ko/policies/terms/location";
 
-    return {
-        .first_paragraph = l10n_util::GetStringUTF16(
-            IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_1_ROW),
-        .second_paragraph = disclosure_2,
-        .third_paragraph = l10n_util::GetStringFUTF16(
-            IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_3_ROW,
-            u"https://policies.google.com/terms",
-            u"https://support.google.com/gemini/answer/13594961"),
-    };
+constexpr char16_t kGoogleWorkspaceDataNoticeUrl[] =
+    u"https://knowledge.workspace.google.com/admin/generative-ai/"
+    u"generative-ai-in-google-workspace-privacy-hub";
+
+std::u16string GetFirstParagraph(std::string_view country_code,
+                                 bool is_managed) {
+  const bool is_us = (country_code == "us");
+  if (is_managed) {
+    const int message_id =
+        is_us ? IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_1_ENTERPRISE_US
+              : IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_1_ENTERPRISE_ROW;
+    return l10n_util::GetStringFUTF16(message_id,
+                                      kGoogleWorkspaceDataNoticeUrl);
   }
-};
 
-class UsGeminiDisclosureProvider : public GeminiDisclosureProvider {
- public:
-  GeminiDisclosure GetDisclosure(bool is_managed) const override {
-    std::u16string disclosure_2;
-    if (is_managed) {
-      disclosure_2 = l10n_util::GetStringUTF16(
-          IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_2_ENTERPRISE_US);
-    } else {
-      disclosure_2 = l10n_util::GetStringFUTF16(
-          IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_2_US,
-          u"https://myactivity.google.com/product/gemini",
-          u"https://support.google.com/gemini/?p=activity_settings");
-    }
+  const int message_id = is_us ? IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_1_US
+                               : IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_1_ROW;
+  return l10n_util::GetStringFUTF16(message_id, kGeminiAppsActivityUrl,
+                                    kGeminiActivitySettingsUrl);
+}
 
-    return {
-        .first_paragraph = l10n_util::GetStringUTF16(
-            IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_1_ROW),
-        .second_paragraph = disclosure_2,
-        .third_paragraph = l10n_util::GetStringFUTF16(
-            IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_3_ROW,
-            u"https://policies.google.com/terms",
-            u"https://support.google.com/gemini/answer/13594961"),
-    };
-  }
-};
-
-class KrGeminiDisclosureProvider : public GeminiDisclosureProvider {
- public:
-  GeminiDisclosure GetDisclosure(bool is_managed) const override {
-    std::u16string disclosure_2;
-    if (is_managed) {
-      disclosure_2 = l10n_util::GetStringUTF16(
-          IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_2_ENTERPRISE_ROW);
-    } else {
-      disclosure_2 = l10n_util::GetStringFUTF16(
-          IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_2_ROW,
-          u"https://myactivity.google.com/product/gemini",
-          u"https://support.google.com/gemini/?p=activity_settings");
-    }
-
-    return {
-        .first_paragraph = l10n_util::GetStringUTF16(
-            IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_1_ROW),
-        .second_paragraph = disclosure_2,
-        .third_paragraph = l10n_util::GetStringFUTF16(
-            IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_3_KR,
-            u"https://policies.google.com/terms",
-            u"https://www.google.com/intl/ko/policies/terms/location",
-            u"https://support.google.com/gemini?p=privacy_notice"),
-    };
-  }
-};
-
-std::unique_ptr<GeminiDisclosureProvider> CreateGeminiDisclosureProvider(
-    std::string_view country_code) {
-  if (country_code == "us") {
-    return std::make_unique<UsGeminiDisclosureProvider>();
-  }
+std::u16string GetSecondParagraph(std::string_view country_code) {
   if (country_code == "kr") {
-    return std::make_unique<KrGeminiDisclosureProvider>();
+    return l10n_util::GetStringFUTF16(
+        IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_2_KR, kGoogleTermsUrl,
+        kKoreanLocationTermsUrl, kGeminiPrivacyNoticeUrl);
   }
-  return std::make_unique<RowGeminiDisclosureProvider>();
+  return l10n_util::GetStringFUTF16(
+      IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_2_ROW, kGoogleTermsUrl,
+      kGeminiPrivacyNoticeUrl);
 }
 
 }  // namespace
 
 GeminiDisclosure GetGeminiDisclosure(std::string_view country_code,
                                      bool is_managed) {
-  return CreateGeminiDisclosureProvider(base::ToLowerASCII(country_code))
-      ->GetDisclosure(is_managed);
+  const std::string normalized_country_code = base::ToLowerASCII(country_code);
+  return {
+      .first_paragraph = GetFirstParagraph(normalized_country_code, is_managed),
+      .second_paragraph = GetSecondParagraph(normalized_country_code),
+  };
 }

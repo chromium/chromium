@@ -1280,30 +1280,29 @@
     </message>
 
     <!-- Feature Showcase - Gemini -->
-    <message name="IDS_FEATURE_SHOWCASE_GEMINI_SUBTITLE" desc="This is a subtitle explaining a specific feature of the AI assistant: using active page content to provide better context. (CHAR LIMIT = 60)">
-      Get more relevant answers by sharing your tabs
+    <message name="IDS_FEATURE_SHOWCASE_GEMINI_SUBTITLE" desc="This is a subtitle explaining a specific feature of the AI assistant: using active page content to provide better context. Moreover, it explains the technical data flow (content and URLs) to Google for AI processing. The tone should be transparent and cautionary.">
+      For more relevant answers, Google uses the content and the URL of shared tabs. Your current tab is shared in new chats. You can change this setting anytime.
     </message>
-    <message name="IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_1_ROW" desc="This is the body text of a consent dialog. It explains the technical data flow (content and URLs) to Google for AI processing. The tone should be transparent and cautionary.">
-      Google uses the content and URL of shared tabs. Your current tab is shared in new chats. You can change this setting anytime.
-    </message>
-    <message name="IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_2_ROW" desc="This is a disclosure regarding human review and data usage for model training. 'Learn more' links to privacy choices. It is a critical privacy notice. This string includes legal disclaimers and a quality warning about AI 'hallucinations.' The tone should be cautionary.">
+
+    <message name="IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_1_ROW" desc="This is a disclosure regarding human review and data usage for model training. 'Learn more' links to privacy choices. It is a critical privacy notice. This string includes legal disclaimers and a quality warning about AI 'hallucinations.' The tone should be cautionary.">
       Chats are reviewed and used to improve Google AI. Gemini is AI and can make mistakes. You can <ph name="BEGIN_LINK_MANAGE_ACTIVITY">&lt;a href="$1" target="_blank"&gt;</ph>manage your activity<ph name="END_LINK_MANAGE_ACTIVITY">&lt;/a&gt;</ph>, including info about your location. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a href="$2" target="_blank"&gt;</ph>Learn more about your choices<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
     </message>
-    <message name="IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_2_US" desc="This is a disclosure regarding human review and data usage for model training. 'Learn more' links to privacy choices. It is a critical privacy notice. This string includes legal disclaimers and a quality warning about AI 'hallucinations.' The tone should be cautionary.">
+    <message name="IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_1_US" desc="This is a disclosure regarding human review and data usage for model training. 'Learn more' links to privacy choices. It is a critical privacy notice. This string includes legal disclaimers and a quality warning about AI 'hallucinations.' The tone should be cautionary.">
       Chats are reviewed and used to improve Google AI. Gemini is AI and can make mistakes. Some content may not be suitable for everyone. You can <ph name="BEGIN_LINK_MANAGE_ACTIVITY">&lt;a href="$1" target="_blank"&gt;</ph>manage your activity<ph name="END_LINK_MANAGE_ACTIVITY">&lt;/a&gt;</ph>, including info about your location. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a href="$2" target="_blank"&gt;</ph>Learn more about your choices<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
     </message>
-    <message name="IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_2_ENTERPRISE_ROW" desc="This string includes legal disclaimers and a quality warning about AI 'hallucinations.' The tone should be cautionary.">
-      Neither your conversations with Gemini nor your Google Workspace data will be reviewed or used to improve generative AI models. Gemini is AI and can make mistakes.
+    <message name="IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_1_ENTERPRISE_ROW" desc="This string includes legal disclaimers and a quality warning about AI 'hallucinations.' The tone should be cautionary.">
+      Neither your conversations with Gemini nor your <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY">&lt;a href="$1" target="_blank"&gt;</ph>Google Workspace data<ph name="END_LINK_WORKSPACE_DATA_PRIVACY">&lt;/a&gt;</ph> will be reviewed or used to improve generative AI models. Gemini is AI and can make mistakes.
     </message>
-    <message name="IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_2_ENTERPRISE_US" desc="This string includes legal disclaimers and a quality warning about AI 'hallucinations.' The tone should be cautionary.">
-      Neither your conversations with Gemini nor your Google Workspace data will be reviewed or used to improve generative AI models. Gemini is AI and can make mistakes. Some content may not be suitable for everyone.
+    <message name="IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_1_ENTERPRISE_US" desc="This string includes legal disclaimers and a quality warning about AI 'hallucinations.' The tone should be cautionary.">
+      Neither your conversations with Gemini nor your <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY">&lt;a href="$1" target="_blank"&gt;</ph>Google Workspace data<ph name="END_LINK_WORKSPACE_DATA_PRIVACY">&lt;/a&gt;</ph> will be reviewed or used to improve generative AI models. Gemini is AI and can make mistakes. Some content may not be suitable for everyone.
     </message>
-    <message name="IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_3_ROW" desc="">
-      <ph name="BEGIN_LINK_TERMS">&lt;a href="$1" target="_blank"&gt;</ph>Google Terms<ph name="END_LINK_TERMS">&lt;/a&gt;</ph> and the <ph name="BEGIN_LINK_PRIVACY">&lt;a href="$2" target="_blank"&gt;</ph>Gemini Apps Privacy Notice<ph name="END_LINK_PRIVACY">&lt;/a&gt;</ph> apply
-    </message>
-    <message name="IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_3_KR" desc="">
+    <message name="IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_2_KR" desc="">
       Our <ph name="BEGIN_LINK_TERMS">&lt;a href="$1" target="_blank"&gt;</ph>Terms<ph name="END_LINK_TERMS">&lt;/a&gt;</ph>, <ph name="BEGIN_LINK_LOCATION_TERMS">&lt;a href="$2" target="_blank"&gt;</ph>Korean Location Terms<ph name="END_LINK_LOCATION_TERMS">&lt;/a&gt;</ph>, and <ph name="BEGIN_LINK_PRIVACY">&lt;a href="$3" target="_blank"&gt;</ph>Privacy Notice<ph name="END_LINK_PRIVACY">&lt;/a&gt;</ph> apply.
     </message>
+    <message name="IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_2_ROW" desc="">
+      <ph name="BEGIN_LINK_TERMS">&lt;a href="$1" target="_blank"&gt;</ph>Google Terms<ph name="END_LINK_TERMS">&lt;/a&gt;</ph> and the <ph name="BEGIN_LINK_PRIVACY">&lt;a href="$2" target="_blank"&gt;</ph>Gemini Apps Privacy Notice<ph name="END_LINK_PRIVACY">&lt;/a&gt;</ph> apply
+    </message>
+
     <message name="IDS_FEATURE_SHOWCASE_GEMINI_NOT_NOW" desc="This is the button to decline the AI feature consent. (CHAR LIMIT = 15)">
       Not now
     </message>

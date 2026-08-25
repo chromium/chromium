@@ -11,7 +11,6 @@
 struct GeminiDisclosure {
   std::u16string first_paragraph;
   std::u16string second_paragraph;
-  std::u16string third_paragraph;
 };
 
 // Returns the dynamically formatted Gemini consent strings depending on the

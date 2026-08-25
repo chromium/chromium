@@ -16,9 +16,8 @@ export function getHtml(this: FeatureShowcaseGeminiStepElement) {
   <span slot="title">$i18n{geminiTitle}</span>
   <span slot="description">$i18n{geminiSubtitle}</span>
   <div slot="disclosure" class="disclosure">
-    <p>$i18n{geminiDisclosure1}</p>
+    <p>$i18nRaw{geminiDisclosure1}</p>
     <p>$i18nRaw{geminiDisclosure2}</p>
-    <p>$i18nRaw{geminiDisclosure3}</p>
   </div>
   <if expr="is_win">
     <cr-button slot="button" id="confirm-button" class="action-button"

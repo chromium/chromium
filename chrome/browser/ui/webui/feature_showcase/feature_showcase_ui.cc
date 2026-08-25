@@ -101,7 +101,6 @@ void AddGeminiStepResources(content::WebUIDataSource* source, bool is_managed) {
 
   source->AddString("geminiDisclosure1", disclosure.first_paragraph);
   source->AddString("geminiDisclosure2", disclosure.second_paragraph);
-  source->AddString("geminiDisclosure3", disclosure.third_paragraph);
 
   source->AddLocalizedStrings({
       {"geminiTitle", IDS_FEATURE_SHOWCASE_GEMINI_TITLE},
