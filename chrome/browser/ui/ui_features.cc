@@ -332,6 +332,12 @@ BASE_FEATURE(kAiModePageActionOptimization, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPageActionsPrioritySelector, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPageActionsElevatedToolbar, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsPageActionsElevatedToolbarEnabled() {
+  return base::FeatureList::IsEnabled(kPageActionsElevatedToolbar);
+}
+
 BASE_FEATURE(kByDateHistoryInSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabsFromOtherDevicesSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);

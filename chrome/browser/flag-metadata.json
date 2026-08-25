@@ -8101,6 +8101,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "page-actions-elevated-toolbar",
+    "owners": [
+      "amyhwang@chromium.org",
+      "top-chrome-desktop-ui@google.com"
+    ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "page-content-cache",
     "owners": [ "haileywang@google.com", "ssid@chromium.org" ],
     "expiry_milestone": 150

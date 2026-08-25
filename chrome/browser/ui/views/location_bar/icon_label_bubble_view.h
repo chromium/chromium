@@ -171,7 +171,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
   void SetCrossfadeImage(const ui::ImageModel& image);
 
-  gfx::RoundedCornersF GetCornerRadii() const;
+  virtual gfx::RoundedCornersF GetCornerRadii() const;
   void SetCornerRadii(const gfx::RoundedCornersF& radii);
 
   const views::View* GetImageContainerView() const {

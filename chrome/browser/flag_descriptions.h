@@ -4086,6 +4086,11 @@ inline constexpr char kOverscrollHistoryNavigationName[] =
 inline constexpr char kOverscrollHistoryNavigationDescription[] =
     "History navigation in response to horizontal overscroll.";
 
+inline constexpr char kPageActionsElevatedToolbarName[] =
+    "Page Actions Elevated Toolbar";
+inline constexpr char kPageActionsElevatedToolbarDescription[] =
+    "Enables the elevated capsule container for page action icons in the "
+    "location bar.";
 inline constexpr char kPageContentCacheName[] = "Page content cache";
 inline constexpr char kPageContentCacheDescription[] =
     "Enables caching of the annotated page content and screenshot";

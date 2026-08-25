@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_model.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_params.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_util.h"
 #include "chrome/grit/generated_resources.h"
@@ -36,6 +38,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/button/single_animated_image_container.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -122,6 +125,11 @@ PageActionView::AddAnchoredMessageVisibilityChangedCallback(
       std::move(callback));
 }
 
+base::CallbackListSubscription PageActionView::AddVisibilityChangedCallback(
+    VisibilityChangedCallback callback) {
+  return visibility_changed_callbacks_.Add(std::move(callback));
+}
+
 void PageActionView::SetIsChipShowingChangedCallback(
     IsChipShowingChangedCallback callback) {
   is_chip_showing_changed_callback_ = std::move(callback);
@@ -178,8 +186,14 @@ void PageActionView::OnNewActiveController(PageActionController* controller) {
 void PageActionView::OnPageActionModelChanged(
     const PageActionModelInterface& model) {
   const bool visible = model.GetVisible();
+  const bool declared_changed = (declared_visible_ != visible);
+  declared_visible_ = visible;
   SetEnabled(visible);
   SetVisible(visible);
+
+  if (declared_changed) {
+    visibility_changed_callbacks_.Notify(this);
+  }
 
   if (visible) {
     SetLabel(model.GetText(), model.GetAccessibleName());
@@ -283,6 +297,10 @@ std::u16string PageActionView::GetAccessibleName() const {
 
 void PageActionView::SetVisible(bool visible) {
   IconLabelBubbleView::SetVisible(visible);
+}
+
+bool PageActionView::GetDeclaredVisible() const {
+  return declared_visible_;
 }
 
 IconLabelBubbleView* PageActionView::GetIconLabelBubbleViewNotMigrated() {
@@ -703,6 +721,37 @@ SkColor PageActionView::GetBackgroundColor() const {
 bool PageActionView::PaintedOnSolidBackground() const {
   return IconLabelBubbleView::PaintedOnSolidBackground() ||
          IsAnchoredMessageVisible();
+}
+
+gfx::RoundedCornersF PageActionView::GetCornerRadii() const {
+  if (features::IsPageActionsElevatedToolbarEnabled()) {
+    const float current_height =
+        height() > 0 ? static_cast<float>(height())
+                     : static_cast<float>(GetPreferredSize().height());
+    return gfx::RoundedCornersF(current_height / 2.0f);
+  }
+  return IconLabelBubbleView::GetCornerRadii();
+}
+
+void PageActionView::UpdateBackground() {
+  if (features::IsPageActionsElevatedToolbarEnabled()) {
+    if (!GetWidget()) {
+      return;
+    }
+
+    const bool painted_on_solid_background = PaintedOnSolidBackground();
+    SetBackground(painted_on_solid_background
+                      ? views::CreatePillBackground(GetBackgroundColor())
+                      : nullptr);
+    ConfigureInkDropForRefresh2023(this,
+                                   painted_on_solid_background
+                                       ? kColorOmniboxIconHover
+                                       : kColorOmniboxActionIconHover,
+                                   kColorOmniboxIconPressed);
+    UpdateLabelColors();
+    return;
+  }
+  IconLabelBubbleView::UpdateBackground();
 }
 
 BEGIN_METADATA(PageActionView)

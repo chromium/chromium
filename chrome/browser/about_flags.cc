@@ -7138,6 +7138,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(page_content_annotations::features::
                             kExtractRelatedSearchesFromPrefetchedZPSResponse)},
 
+    {"page-actions-elevated-toolbar",
+     flag_descriptions::kPageActionsElevatedToolbarName,
+     flag_descriptions::kPageActionsElevatedToolbarDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kPageActionsElevatedToolbar)},
     {"page-content-cache", flag_descriptions::kPageContentCacheName,
      flag_descriptions::kPageContentCacheDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(page_content_annotations::features::kPageContentCache)},

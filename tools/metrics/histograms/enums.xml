@@ -8011,6 +8011,7 @@ from previous Chrome versions.
   <int value="-2069193978"
       label="ExperimentalAccessibilityColorEnhancementSettings:enabled"/>
   <int value="-2068490665" label="PasswordChange:enabled"/>
+  <int value="-2068448181" label="PageActionsElevatedToolbar:enabled"/>
   <int value="-2067596114" label="WebAuthenticationCableDisco:enabled"/>
   <int value="-2067321630" label="PrivacySandboxPrivacyGuideAdTopics:enabled"/>
   <int value="-2067166422" label="enable-slimming-paint-v2"/>
@@ -9653,6 +9654,7 @@ from previous Chrome versions.
   <int value="-1569426427" label="CaptureModeEducation:enabled"/>
   <int value="-1568737447" label="InsecureFormSubmissionInterstitial:enabled"/>
   <int value="-1568559155" label="WebSocketHandshakeReuseConnection:enabled"/>
+  <int value="-1568426202" label="page-actions-elevated-toolbar:disabled"/>
   <int value="-1567941546" label="EnableUniveralLinks:enabled"/>
   <int value="-1567727398" label="DesktopPWAsWithoutExtensions:disabled"/>
   <int value="-1566859164" label="CustomPolicyRegistrationDelay:enabled"/>
@@ -10117,6 +10119,7 @@ from previous Chrome versions.
   <int value="-1428822216" label="TabSelectionEditorV2:disabled"/>
   <int value="-1428433223" label="ContextMenuAnimationLimiting:enabled"/>
   <int value="-1427130356" label="DetachedTabs:enabled"/>
+  <int value="-1427090261" label="page-actions-elevated-toolbar:enabled"/>
   <int value="-1426911497" label="CCTIncognitoAvailableToThirdParty:enabled"/>
   <int value="-1426817842" label="BlockTabUnders:enabled"/>
   <int value="-1426150007" label="ignore-previews-blacklist"/>
@@ -14908,6 +14911,7 @@ from previous Chrome versions.
   <int value="64942701" label="OfflinePagesSvelteConcurrentLoading:disabled"/>
   <int value="65245449" label="FilesBannerFramework:enabled"/>
   <int value="65750425" label="OmniboxMostVisitedTilesDynamicSpacing:disabled"/>
+  <int value="66706199" label="PageActionsElevatedToolbar:disabled"/>
   <int value="66897259" label="ModalPermissionDialogView:enabled"/>
   <int value="67249017" label="AutoDocPiPPermissionPromptAndroid:disabled"/>
   <int value="67343657"

@@ -305,6 +305,9 @@ BASE_DECLARE_FEATURE(kAiModePageActionOptimization);
 
 BASE_DECLARE_FEATURE(kPageActionsPrioritySelector);
 
+// Enables the elevated capsule toolbar for page actions.
+BASE_DECLARE_FEATURE(kPageActionsElevatedToolbar);
+bool IsPageActionsElevatedToolbarEnabled();
 
 // If enabled, the by date history will show in the side panel.
 BASE_DECLARE_FEATURE(kByDateHistoryInSidePanel);
