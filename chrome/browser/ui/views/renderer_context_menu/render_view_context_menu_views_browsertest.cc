@@ -114,10 +114,12 @@ IN_PROC_BROWSER_TEST_F(RenderViewContextMenuViewsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(RenderViewContextMenuViewsBrowserTest,
-                       DictationAcceleratorSetFromPref) {
+                       DictationAcceleratorSetFromPrefWhenOnboardingCompleted) {
   constexpr char kTestVoiceTypingHotkey[] = "Ctrl+Shift+D";
   browser()->GetProfile()->GetPrefs()->SetString(prefs::kVoiceTypingHotkey,
                                                  kTestVoiceTypingHotkey);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kPrefDictationOnboardingCompleted, true);
   content::ContextMenuParams params;
   TestRenderViewContextMenuViews menu(GetPrimaryMainFrame(), params);
   ui::Accelerator accel;
@@ -126,6 +128,20 @@ IN_PROC_BROWSER_TEST_F(RenderViewContextMenuViewsBrowserTest,
   EXPECT_EQ(ui::VKEY_D, accel.key_code());
   EXPECT_TRUE(accel.IsCtrlDown());
   EXPECT_TRUE(accel.IsShiftDown());
+}
+
+IN_PROC_BROWSER_TEST_F(RenderViewContextMenuViewsBrowserTest,
+                       DictationAcceleratorNotSetWhenOnboardingIncomplete) {
+  constexpr char kTestVoiceTypingHotkey[] = "Ctrl+Shift+D";
+  browser()->GetProfile()->GetPrefs()->SetString(prefs::kVoiceTypingHotkey,
+                                                 kTestVoiceTypingHotkey);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kPrefDictationOnboardingCompleted, false);
+  content::ContextMenuParams params;
+  TestRenderViewContextMenuViews menu(GetPrimaryMainFrame(), params);
+  ui::Accelerator accel;
+  EXPECT_FALSE(
+      menu.GetAcceleratorForCommandId(IDC_CONTENT_CONTEXT_DICTATION, &accel));
 }
 
 }  // namespace

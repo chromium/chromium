@@ -270,6 +270,11 @@ bool RenderViewContextMenuViews::GetAcceleratorForCommandId(
     }
 
     case IDC_CONTENT_CONTEXT_DICTATION: {
+      if (!GetProfile()->GetPrefs()->GetBoolean(
+              prefs::kPrefDictationOnboardingCompleted)) {
+        return false;
+      }
+
       const std::string& pref_shortcut =
           GetProfile()->GetPrefs()->GetString(prefs::kVoiceTypingHotkey);
       if (pref_shortcut.empty()) {
