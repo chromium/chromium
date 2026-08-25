@@ -1123,6 +1123,11 @@ class CONTENT_EXPORT ContentBrowserClient {
       BrowserContext* browser_context,
       ServiceWorkerContext& service_worker_context);
 
+  // Returns the script injection policy for a page at `url`.
+  virtual blink::mojom::ScriptInjectionPolicy GetScriptInjectionPolicy(
+      BrowserContext* browser_context,
+      const GURL& url);
+
   // Allows the embedder to implement policy for whether an SCT auditing report
   // should be sent.
   virtual bool CanSendSCTAuditingReport(BrowserContext* browser_context);

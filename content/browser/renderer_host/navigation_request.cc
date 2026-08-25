@@ -1404,7 +1404,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*is_initial_webui=*/false,
           /*isolated_app_policy=*/std::nullopt,
           /*internal_scroll_to_text_fragment=*/std::nullopt,
-          /*is_secure_context_root=*/false);
+          /*is_secure_context_root=*/false,
+          blink::mojom::ScriptInjectionPolicy::kNone);
 #if !BUILDFLAG(IS_ANDROID)
   CHECK(!GetContentClient()->browser()->IsInitialWebUIURL(common_params->url));
 #endif
@@ -1577,7 +1578,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           /*is_initial_webui=*/false,
           /*isolated_app_policy=*/std::nullopt,
           /*internal_scroll_to_text_fragment=*/std::nullopt,
-          /*is_secure_context_root=*/false);
+          /*is_secure_context_root=*/false,
+          blink::mojom::ScriptInjectionPolicy::kNone);
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New();
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(

@@ -432,6 +432,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void PrewarmServiceWorkerRegistrationForDSE(
       content::BrowserContext* browser_context,
       content::ServiceWorkerContext& service_worker_context) override;
+  blink::mojom::ScriptInjectionPolicy GetScriptInjectionPolicy(
+      content::BrowserContext* browser_context,
+      const GURL& url) override;
   bool CanSendSCTAuditingReport(
       content::BrowserContext* browser_context) override;
   void OnNewSCTAuditingReportSent(

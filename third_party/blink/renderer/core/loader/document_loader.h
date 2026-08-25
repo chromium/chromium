@@ -518,6 +518,14 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   void ReportTotalTakenTimeToUpdateSubresourceLoadMetrics();
 
+  mojom::blink::ScriptInjectionPolicy GetScriptInjectionPolicy() const {
+    return script_injection_policy_;
+  }
+  void SetScriptInjectionPolicyForTesting(
+      mojom::blink::ScriptInjectionPolicy script_injection_policy) {
+    script_injection_policy_ = script_injection_policy;
+  }
+
   bool IsInCommitDataForTesting() const { return in_commit_data_; }
 
  protected:
@@ -787,6 +795,11 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // `ContentBrowserClient::IsSecureContextRoot()`), applied to the
   // window's SecurityContext.
   bool is_secure_context_root_ = false;
+
+  // Policy controlling script injection tracking and protections for this
+  // document.
+  mojom::blink::ScriptInjectionPolicy script_injection_policy_ =
+      mojom::blink::ScriptInjectionPolicy::kNone;
 
   // Whether this load request comes with a sticky user activation. For
   // prerendered pages, this is initially false but could be updated on

@@ -549,12 +549,20 @@ class CORE_EXPORT LocalFrame final
   }
   IdlenessDetector* GetIdlenessDetector() { return idleness_detector_.Get(); }
   AdTracker* GetAdTracker() { return ad_tracker_.Get(); }
-  ExtensionScriptTracker* GetExtensionScriptTracker() {
-    return extension_script_tracker_.Get();
-  }
+  ExtensionScriptTracker* GetExtensionScriptTracker();
   ScriptInitiationMonitor* GetScriptInitiationMonitor() const;
   ScriptInitiationMonitor* GetOrCreateScriptInitiationMonitor();
   void SetAdTrackerForTesting(AdTracker* ad_tracker);
+
+  // Configures extension script tracking for this frame if it is a local root,
+  // based on the document's ScriptInjectionPolicy and whether the feature is
+  // enabled.
+  void UpdateExtensionScriptTracking();
+
+  // Sets or overrides the ExtensionScriptTracker for testing.
+  void SetExtensionScriptTrackerForTesting(
+      ExtensionScriptTracker* extension_script_tracker);
+
   LCPScriptObserver* GetScriptObserver() { return script_observer_.Get(); }
 
   enum class LazyLoadImageSetting { kDisabled, kEnabledExplicit };

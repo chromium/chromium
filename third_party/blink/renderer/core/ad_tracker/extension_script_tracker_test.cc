@@ -16,6 +16,8 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -339,5 +341,44 @@ TEST_F(ExtensionScriptTrackerTest,
   V8ScriptId frame2_script_id = tracker_->FindScriptIdByUrl("child_script.js");
   EXPECT_GT(frame2_script_id.value(), 0);
   EXPECT_TRUE(tracker_->IsMarkedScript(frame2_script_id));
+}
+
+TEST_F(ExtensionScriptTrackerTest, ScriptInjectionPolicyLifecycle) {
+  SimRequest child_resource("https://example.com/child.html", "text/html");
+  main_resource_->Complete(R"(
+    <iframe id="child" src="https://example.com/child.html"></iframe>
+  )");
+  child_resource.Complete("");
+
+  LocalFrame* frame = GetDocument().GetFrame();
+  ASSERT_TRUE(frame);
+  auto* child_element = To<HTMLIFrameElement>(
+      GetDocument().getElementById(AtomicString("child")));
+  ASSERT_TRUE(child_element);
+  LocalFrame* child_frame = To<LocalFrame>(child_element->ContentFrame());
+  ASSERT_TRUE(child_frame);
+
+  EXPECT_EQ(nullptr, frame->GetExtensionScriptTracker());
+  EXPECT_EQ(nullptr, child_frame->GetExtensionScriptTracker());
+
+  frame->Loader().GetDocumentLoader()->SetScriptInjectionPolicyForTesting(
+      mojom::blink::ScriptInjectionPolicy::kNavigationProtection);
+  frame->UpdateExtensionScriptTracking();
+  ExtensionScriptTracker* tracker = frame->GetExtensionScriptTracker();
+  EXPECT_NE(nullptr, tracker);
+  EXPECT_EQ(tracker, child_frame->GetExtensionScriptTracker());
+
+  // Calling again maintains the same tracker.
+  frame->UpdateExtensionScriptTracking();
+  EXPECT_EQ(tracker, frame->GetExtensionScriptTracker());
+  EXPECT_EQ(tracker, child_frame->GetExtensionScriptTracker());
+
+  // Setting policy to kNone shuts down and clears the tracker for both root
+  // and subframe.
+  frame->Loader().GetDocumentLoader()->SetScriptInjectionPolicyForTesting(
+      mojom::blink::ScriptInjectionPolicy::kNone);
+  frame->UpdateExtensionScriptTracking();
+  EXPECT_EQ(nullptr, frame->GetExtensionScriptTracker());
+  EXPECT_EQ(nullptr, child_frame->GetExtensionScriptTracker());
 }
 }  // namespace blink

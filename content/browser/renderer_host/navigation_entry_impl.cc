@@ -1109,7 +1109,8 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
 #endif
           /*permissions_policy_override=*/std::nullopt,
           /*internal_scroll_to_text_fragment=*/std::nullopt,
-          /*is_secure_context_root=*/false);
+          /*is_secure_context_root=*/false,
+          blink::mojom::ScriptInjectionPolicy::kNone);
 #if BUILDFLAG(IS_ANDROID)
   // `data_url_as_string` is saved in NavigationEntry but should only be used by
   // main frames, because loadData* navigations can only happen on the main

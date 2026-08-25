@@ -5,10 +5,17 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -19,12 +26,12 @@ namespace extensions {
 
 class ExtensionScriptTrackerBrowserTest : public ExtensionBrowserTest {
  public:
-  ExtensionScriptTrackerBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {blink::features::kExtensionScriptTagging,
-         blink::features::kExtensionScriptTaggingTestingAPI},
-        {});
-  }
+  ExtensionScriptTrackerBrowserTest()
+      : feature_list_({blink::features::kExtensionScriptTagging,
+                       blink::features::kExtensionScriptTaggingTestingAPI}),
+        prerender_helper_(base::BindRepeating(
+            &ExtensionScriptTrackerBrowserTest::GetWebContents,
+            base::Unretained(this))) {}
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -38,7 +45,39 @@ class ExtensionScriptTrackerBrowserTest : public ExtensionBrowserTest {
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
         &ExtensionScriptTrackerBrowserTest::HandleScriptRequest,
         base::Unretained(this)));
+    prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
+    SetUpDefaultSearchEngine();
+  }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  GURL SetUpDefaultSearchEngine(const std::string& host = "example.com",
+                                const std::string& path = "/empty.html") {
+    TemplateURLService* template_url_service =
+        TemplateURLServiceFactory::GetForProfile(profile());
+    EXPECT_TRUE(template_url_service);
+    search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
+
+    TemplateURLData data;
+    data.SetURL(
+        embedded_test_server()->GetURL(host, path + "?q={searchTerms}").spec());
+    TemplateURL* template_url =
+        template_url_service->Add(std::make_unique<TemplateURL>(data));
+    EXPECT_TRUE(template_url);
+    template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+    return GetDseSearchUrl(host, path);
+  }
+
+  GURL GetDseSearchUrl(const std::string& host = "example.com",
+                       const std::string& path = "/empty.html") {
+    return embedded_test_server()->GetURL(host, path + "?q=test");
   }
 
   GURL RegisterScriptResponse(const std::string& host,
@@ -101,6 +140,8 @@ class ExtensionScriptTrackerBrowserTest : public ExtensionBrowserTest {
 
   // Map of URL path to content for mock HTTP script responses.
   std::map<std::string, std::string> script_responses_;
+
+  content::test::PrerenderTestHelper prerender_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
@@ -134,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = embedded_test_server()->GetURL("example.com", "/empty.html");
+  GURL url = GetDseSearchUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -188,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = embedded_test_server()->GetURL("example.com", "/empty.html");
+  GURL url = GetDseSearchUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -237,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = embedded_test_server()->GetURL("example.com", "/empty.html");
+  GURL url = GetDseSearchUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -286,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = embedded_test_server()->GetURL("example.com", "/empty.html");
+  GURL url = GetDseSearchUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -330,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = embedded_test_server()->GetURL("example.com", "/empty.html");
+  GURL url = GetDseSearchUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -368,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = embedded_test_server()->GetURL("example.com", "/empty.html");
+  GURL url = GetDseSearchUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -418,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = embedded_test_server()->GetURL("example.com", "/empty.html");
+  GURL url = GetDseSearchUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -443,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
         window.internals.isExtensionScriptInStack();
   )");
 
-  GURL url = embedded_test_server()->GetURL("example.com", "/empty.html");
+  GURL url = GetDseSearchUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -490,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = embedded_test_server()->GetURL("example.com", "/empty.html");
+  GURL url = GetDseSearchUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -564,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = embedded_test_server()->GetURL("example.com", "/empty.html");
+  GURL url = GetDseSearchUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -604,7 +645,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = embedded_test_server()->GetURL("example.com", "/empty.html");
+  GURL url = GetDseSearchUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -647,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = embedded_test_server()->GetURL("a.com", "/iframe_cross_site.html");
+  GURL url = SetUpDefaultSearchEngine("a.com", "/iframe_cross_site.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -689,7 +730,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = embedded_test_server()->GetURL("example.com", "/empty.html");
+  GURL url = GetDseSearchUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -722,7 +763,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = embedded_test_server()->GetURL("example.com", "/empty.html");
+  GURL url = GetDseSearchUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -761,7 +802,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = embedded_test_server()->GetURL("example.com", "/empty.html");
+  GURL url = GetDseSearchUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -797,7 +838,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = embedded_test_server()->GetURL("example.com", "/empty.html");
+  GURL url = GetDseSearchUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -840,7 +881,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = embedded_test_server()->GetURL("example.com", "/empty.html");
+  GURL url = GetDseSearchUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -891,7 +932,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = embedded_test_server()->GetURL("example.com", "/empty.html");
+  GURL url = GetDseSearchUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -929,7 +970,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  GURL url = embedded_test_server()->GetURL("example.com", "/empty.html");
+  GURL url = GetDseSearchUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
@@ -947,4 +988,202 @@ IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
       content::EvalJs(iframe_rfh, "window.srcdocScriptTracked").ExtractBool());
 }
 
+IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
+                       TrackingDisabledOnNonDsePage) {
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+    "name": "Extension Script Tracker Non-DSE Test",
+    "version": "0.1",
+    "manifest_version": 3,
+    "content_scripts": [{
+      "matches": ["http://non-dse.com/*"],
+      "js": ["content_script.js"],
+      "run_at": "document_end"
+    }],
+    "web_accessible_resources": [{
+      "resources": ["page_script.js"],
+      "matches": ["http://non-dse.com/*"]
+    }]
+  })");
+
+  test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), R"(
+    const script = document.createElement('script');
+    script.src = chrome.runtime.getURL('page_script.js');
+    document.body.appendChild(script);
+  )");
+
+  test_dir.WriteFile(FILE_PATH_LITERAL("page_script.js"), R"(
+    window.scriptRan = true;
+    window.isExtensionTracked = window.internals.isExtensionScriptInStack();
+  )");
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  GURL non_dse_url =
+      embedded_test_server()->GetURL("non-dse.com", "/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_dse_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  WaitForJsCondition(web_contents, "window.scriptRan === true");
+  EXPECT_FALSE(
+      content::EvalJs(web_contents, "window.isExtensionTracked").ExtractBool());
+  EXPECT_FALSE(
+      IsExtensionScriptUrlMarked(web_contents, extension, "page_script.js"));
+  EXPECT_FALSE(
+      IsExtensionScriptUrlMarked(web_contents, extension, "content_script.js"));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
+                       TrackingDisabledAfterNavigationToNonDsePage) {
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+    "name": "Extension Script Tracker Navigation Test",
+    "version": "0.1",
+    "manifest_version": 3,
+    "content_scripts": [{
+      "matches": ["http://example.com/*"],
+      "js": ["content_script.js"],
+      "world": "MAIN",
+      "run_at": "document_end"
+    }]
+  })");
+
+  test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), R"(
+    window.contentScriptRan = true;
+    window.isExtensionTracked = window.internals.isExtensionScriptInStack();
+  )");
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // 1. Navigate to DSE SRP: tracking should be enabled.
+  GURL dse_url = GetDseSearchUrl();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), dse_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  WaitForJsCondition(web_contents, "window.contentScriptRan === true");
+  EXPECT_TRUE(
+      content::EvalJs(web_contents, "window.isExtensionTracked").ExtractBool());
+  EXPECT_TRUE(
+      IsExtensionScriptUrlMarked(web_contents, extension, "content_script.js"));
+
+  // 2. Navigate to same-site non-DSE page in the same tab: tracking should now
+  // be disabled.
+  GURL non_dse_url =
+      embedded_test_server()->GetURL("example.com", "/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_dse_url));
+
+  web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  WaitForJsCondition(web_contents, "window.contentScriptRan === true");
+  EXPECT_FALSE(
+      content::EvalJs(web_contents, "window.isExtensionTracked").ExtractBool());
+  EXPECT_FALSE(
+      IsExtensionScriptUrlMarked(web_contents, extension, "content_script.js"));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
+                       TrackingEnabledForPrerenderedDsePage) {
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+    "name": "Extension Script Tracker Prerender DSE Test",
+    "version": "0.1",
+    "manifest_version": 3,
+    "content_scripts": [{
+      "matches": ["http://example.com/*"],
+      "js": ["content_script.js"],
+      "world": "MAIN",
+      "run_at": "document_end"
+    }]
+  })");
+
+  test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), R"(
+    window.contentScriptRan = true;
+    window.isExtensionTracked = window.internals.isExtensionScriptInStack();
+  )");
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // 1. Navigate to initial non-DSE page.
+  GURL non_dse_url =
+      embedded_test_server()->GetURL("example.com", "/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_dse_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  WaitForJsCondition(web_contents, "window.contentScriptRan === true");
+  EXPECT_FALSE(
+      content::EvalJs(web_contents, "window.isExtensionTracked").ExtractBool());
+
+  // 2. Prerender DSE SRP.
+  GURL dse_url = GetDseSearchUrl();
+  const auto host_id = prerender_helper().AddPrerender(dse_url);
+  EXPECT_TRUE(prerender_helper().GetPrerenderedMainFrameHost(host_id));
+
+  // 3. Activate the prerendered DSE page.
+  prerender_helper().NavigatePrimaryPage(dse_url);
+
+  WaitForJsCondition(web_contents, "window.contentScriptRan === true");
+  EXPECT_TRUE(
+      content::EvalJs(web_contents, "window.isExtensionTracked").ExtractBool());
+  EXPECT_TRUE(
+      IsExtensionScriptUrlMarked(web_contents, extension, "content_script.js"));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionScriptTrackerBrowserTest,
+                       TrackingDisabledForPrerenderedNonDsePage) {
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+    "name": "Extension Script Tracker Prerender Non-DSE Test",
+    "version": "0.1",
+    "manifest_version": 3,
+    "content_scripts": [{
+      "matches": ["http://example.com/*"],
+      "js": ["content_script.js"],
+      "world": "MAIN",
+      "run_at": "document_end"
+    }]
+  })");
+
+  test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), R"(
+    window.contentScriptRan = true;
+    window.isExtensionTracked = window.internals.isExtensionScriptInStack();
+  )");
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // 1. Navigate to initial DSE page: tracking should be enabled.
+  GURL dse_url = GetDseSearchUrl();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), dse_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  WaitForJsCondition(web_contents, "window.contentScriptRan === true");
+  EXPECT_TRUE(
+      content::EvalJs(web_contents, "window.isExtensionTracked").ExtractBool());
+
+  // 2. Prerender a non-DSE page.
+  GURL non_dse_url =
+      embedded_test_server()->GetURL("example.com", "/empty.html");
+  const auto host_id = prerender_helper().AddPrerender(non_dse_url);
+  EXPECT_TRUE(prerender_helper().GetPrerenderedMainFrameHost(host_id));
+
+  // 3. Activate the prerendered non-DSE page.
+  prerender_helper().NavigatePrimaryPage(non_dse_url);
+
+  WaitForJsCondition(web_contents, "window.contentScriptRan === true");
+  EXPECT_FALSE(
+      content::EvalJs(web_contents, "window.isExtensionTracked").ExtractBool());
+  EXPECT_FALSE(
+      IsExtensionScriptUrlMarked(web_contents, extension, "content_script.js"));
+}
 }  // namespace extensions

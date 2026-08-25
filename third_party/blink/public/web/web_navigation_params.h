@@ -666,6 +666,11 @@ struct BLINK_EXPORT WebNavigationParams {
   // CommitNavigationParams. Same-process descendants'
   // HasInsecureContextInAncestors() stops at frames with this bit set.
   bool is_secure_context_root = false;
+
+  // Policy controlling script injection tracking and protections for this
+  // document.
+  mojom::ScriptInjectionPolicy script_injection_policy =
+      mojom::ScriptInjectionPolicy::kNone;
 };
 
 }  // namespace blink

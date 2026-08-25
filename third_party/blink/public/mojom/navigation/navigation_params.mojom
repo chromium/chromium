@@ -403,6 +403,14 @@ struct IsolatedAppPermissionPolicyEntry {
   array<string> allowed_origins;
 };
 
+// Policy controlling script injection tracking and protections for a document.
+enum ScriptInjectionPolicy {
+  kNone,
+
+  // Prevents injected scripts from navigating the page without a user gesture.
+  kNavigationProtection,
+};
+
 // Used by commit IPC messages. Holds the parameters needed by the renderer to
 // commit a navigation besides those in CommonNavigationParams.
 struct CommitNavigationParams {
@@ -774,6 +782,11 @@ struct CommitNavigationParams {
   // the renderer cannot independently determine if a frame is a MIME
   // handler (which requires browser-side state).
   bool is_secure_context_root = false;
+
+  // Policy controlling script injection tracking and protections for this
+  // document (e.g. preventing injected scripts from navigating the page without
+  // a user gesture).
+  ScriptInjectionPolicy script_injection_policy = kNone;
 };
 
 // Parameters used to dispatch the `pageswap` event on the old Document for

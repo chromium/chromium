@@ -2093,10 +2093,6 @@ LocalFrame::LocalFrame(
       ad_tracker_ = MakeGarbageCollected<AdTracker>(
           this, GetOrCreateScriptInitiationMonitor());
     }
-    if (RuntimeEnabledFeatures::ExtensionScriptTaggingEnabled()) {
-      extension_script_tracker_ = MakeGarbageCollected<ExtensionScriptTracker>(
-          this, GetOrCreateScriptInitiationMonitor());
-    }
     if (blink::LcppScriptObserverEnabled()) {
       script_observer_ = MakeGarbageCollected<LCPScriptObserver>(this);
     }
@@ -2107,7 +2103,6 @@ LocalFrame::LocalFrame(
     UpdateInertIfPossible();
     UpdateInheritedEffectiveTouchActionIfPossible();
     ad_tracker_ = LocalFrameRoot().ad_tracker_;
-    extension_script_tracker_ = LocalFrameRoot().extension_script_tracker_;
     performance_monitor_ = LocalFrameRoot().performance_monitor_;
     script_observer_ = LocalFrameRoot().script_observer_;
   }
@@ -2504,6 +2499,41 @@ void LocalFrame::SetAdTrackerForTesting(AdTracker* ad_tracker) {
     ad_tracker_->Shutdown();
   }
   ad_tracker_ = ad_tracker;
+}
+
+ExtensionScriptTracker* LocalFrame::GetExtensionScriptTracker() {
+  return LocalFrameRoot().extension_script_tracker_.Get();
+}
+
+void LocalFrame::UpdateExtensionScriptTracking() {
+  if (!IsLocalRoot()) {
+    return;
+  }
+  bool should_track =
+      Loader().GetDocumentLoader() &&
+      Loader().GetDocumentLoader()->GetScriptInjectionPolicy() !=
+          mojom::blink::ScriptInjectionPolicy::kNone &&
+      RuntimeEnabledFeatures::ExtensionScriptTaggingEnabled();
+  if (should_track) {
+    if (!extension_script_tracker_) {
+      extension_script_tracker_ = MakeGarbageCollected<ExtensionScriptTracker>(
+          this, GetOrCreateScriptInitiationMonitor());
+    }
+  } else {
+    if (extension_script_tracker_) {
+      extension_script_tracker_->Shutdown();
+      extension_script_tracker_ = nullptr;
+    }
+  }
+}
+
+void LocalFrame::SetExtensionScriptTrackerForTesting(
+    ExtensionScriptTracker* extension_script_tracker) {
+  LocalFrame& root = LocalFrameRoot();
+  if (root.extension_script_tracker_) {
+    root.extension_script_tracker_->Shutdown();
+  }
+  root.extension_script_tracker_ = extension_script_tracker;
 }
 
 DEFINE_WEAK_IDENTIFIER_MAP(LocalFrame)

@@ -687,6 +687,12 @@ void ContentBrowserClient::PrewarmServiceWorkerRegistrationForDSE(
     BrowserContext* browser_context,
     ServiceWorkerContext& service_worker_context) {}
 
+blink::mojom::ScriptInjectionPolicy
+ContentBrowserClient::GetScriptInjectionPolicy(BrowserContext* browser_context,
+                                               const GURL& url) {
+  return blink::mojom::ScriptInjectionPolicy::kNone;
+}
+
 bool ContentBrowserClient::CanSendSCTAuditingReport(
     BrowserContext* browser_context) {
   return false;

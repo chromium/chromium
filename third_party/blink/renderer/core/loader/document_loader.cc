@@ -411,6 +411,8 @@ struct SameSizeAsDocumentLoader
   LoaderFreezeMode defers_loading;
   bool last_navigation_had_transient_user_activation;
   bool last_navigation_had_trusted_initiator;
+  bool is_secure_context_root;
+  mojom::blink::ScriptInjectionPolicy script_injection_policy;
   bool had_sticky_activation;
   bool is_browser_initiated;
   bool is_prerendering;
@@ -639,6 +641,7 @@ DocumentLoader::DocumentLoader(
   DCHECK(frame_);
   DCHECK(params_);
   is_secure_context_root_ = params_->is_secure_context_root;
+  script_injection_policy_ = params_->script_injection_policy;
 
   // See `archive_` attribute documentation.
   if (!frame_->IsMainFrame()) {
@@ -778,6 +781,7 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
       last_navigation_had_transient_user_activation_;
   params->is_browser_initiated = is_browser_initiated_;
   params->was_discarded = was_discarded_;
+  params->script_injection_policy = script_injection_policy_;
   params->document_ukm_source_id = ukm_source_id_;
   params->is_cross_site_cross_browsing_context_group =
       is_cross_site_cross_browsing_context_group_;
@@ -3010,6 +3014,9 @@ void DocumentLoader::CommitNavigation() {
   DCHECK(!frame_->GetDocument() ||
          frame_->GetDocument()->ConnectedSubframeCount() == 0);
   state_ = kCommitted;
+  if (frame_->IsLocalRoot()) {
+    frame_->UpdateExtensionScriptTracking();
+  }
 
   // Prepare a DocumentInit before clearing the frame, because it may need to
   // inherit an aliased security context.

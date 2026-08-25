@@ -17594,6 +17594,13 @@ void RenderFrameHostImpl::SendCommitNavigation(
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+  const GURL& url_to_check =
+      IsOutermostMainFrame() ? navigation_request->GetURL()
+                             : GetOutermostMainFrame()->GetLastCommittedURL();
+  commit_params->script_injection_policy =
+      GetContentClient()->browser()->GetScriptInjectionPolicy(
+          GetSiteInstance()->GetBrowserContext(), url_to_check);
+
   commit_params->commit_sent = base::TimeTicks::Now();
   {
     auto scope = MakeUrgentMessageScopeIfNeeded();

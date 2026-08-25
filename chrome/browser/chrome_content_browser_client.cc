@@ -3771,6 +3771,23 @@ void ChromeContentBrowserClient::PrewarmServiceWorkerRegistrationForDSE(
       browser_context, service_worker_context);
 }
 
+blink::mojom::ScriptInjectionPolicy
+ChromeContentBrowserClient::GetScriptInjectionPolicy(
+    content::BrowserContext* browser_context,
+    const GURL& url) {
+  if (!base::FeatureList::IsEnabled(blink::features::kExtensionScriptTagging)) {
+    return blink::mojom::ScriptInjectionPolicy::kNone;
+  }
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (!profile || profile->IsSystemProfile()) {
+    return blink::mojom::ScriptInjectionPolicy::kNone;
+  }
+  if (IsDefaultSearchEngine(profile, url)) {
+    return blink::mojom::ScriptInjectionPolicy::kNavigationProtection;
+  }
+  return blink::mojom::ScriptInjectionPolicy::kNone;
+}
+
 bool ChromeContentBrowserClient::CanSendSCTAuditingReport(
     content::BrowserContext* browser_context) {
   return SCTReportingService::CanSendSCTAuditingReport();

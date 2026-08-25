@@ -1049,6 +1049,9 @@ void FillMiscNavigationParams(
   navigation_params->should_have_sticky_user_activation =
       commit_params.should_have_sticky_user_activation;
 
+  navigation_params->script_injection_policy =
+      commit_params.script_injection_policy;
+
 #if BUILDFLAG(IS_ANDROID)
   // Only android webview uses this.
   navigation_params->grant_load_local_resources =
