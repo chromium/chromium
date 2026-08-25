@@ -5,6 +5,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_extension_handler.h"
 
 #include <memory>
+#include <variant>
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -19,9 +20,11 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/contextual_search/mock_contextual_search_context_controller.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/permissions/request_type.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -165,6 +168,28 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
           }));
 
   run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       OnPermissionPromptChangedPropagated) {
+  test::PermissionRequestManagerTestApi test_api(browser());
+
+  base::RunLoop show_run_loop;
+  EXPECT_CALL(mock_searchbox_page_,
+              OnPermissionPromptChanged(true, gfx::Size(0, 0)))
+      .WillOnce(base::test::RunClosure(show_run_loop.QuitClosure()));
+
+  test_api.AddSimpleRequest(web_contents_->GetPrimaryMainFrame(),
+                            permissions::RequestType::kMultipleDownloads);
+  show_run_loop.Run();
+
+  base::RunLoop dismiss_run_loop;
+  EXPECT_CALL(mock_searchbox_page_,
+              OnPermissionPromptChanged(false, gfx::Size(0, 0)))
+      .WillOnce(base::test::RunClosure(dismiss_run_loop.QuitClosure()));
+
+  test_api.manager()->Dismiss(/*prompt_options=*/std::monostate());
+  dismiss_run_loop.Run();
 }
 
 }  // namespace contextual_tasks
