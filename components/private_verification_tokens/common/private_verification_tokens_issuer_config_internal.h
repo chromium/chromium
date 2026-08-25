@@ -38,8 +38,10 @@ std::optional<int64_t> GetValidExpiration(const base::DictValue& dict);
 // - The redeemer list size is larger than params.max_number_of_redeemers.
 // - An item in the redeemer list is not a string.
 // - The resulting origin for a redeemer does not have an HTTPS scheme.
-//   (This condition also covers opaque and invalid origins.)
-// - A redeemer has an eTLD+1 different from the issuer's eTLD+1.
+//   (This condition also covers opaque and invalid origins, but exempts
+//   localhost.)
+// - A redeemer has an eTLD+1 different from the issuer's eTLD+1 (unless both
+//   are localhost).
 std::optional<std::vector<url::Origin>> GetValidRedeemers(
     const base::DictValue& dict,
     std::string_view issuer_etld_plus_one,

@@ -200,6 +200,51 @@ TEST(PrivateVerificationTokensIssuerConfigInternalTest, ParseEntry_Valid) {
   EXPECT_EQ(result->deployment_id, "test-deployment-id");
 }
 
+TEST(PrivateVerificationTokensIssuerConfigInternalTest,
+     ParseEntry_ValidLocalhost) {
+  base::DictValue entry;
+  entry.Set(kIssuerRequestUrlKey,
+            base::Value("http://localhost:8080/pvt/issue"));
+  entry.Set(kVersionKey, base::Value(1));
+  entry.Set(kPublicKeyKey, base::Value(base::Base64Encode("some-pvt-key")));
+  entry.Set(kPublicKeyProofKey,
+            base::Value(base::Base64Encode("some-pvt-proof")));
+  entry.Set(kBatchSizeKey, base::Value(3));
+  entry.Set(kExpirationKey, base::Value("12"));
+  base::ListValue redeemers_list;
+  redeemers_list.Append("http://127.0.0.1:8081");
+  entry.Set(kRedeemersKey, std::move(redeemers_list));
+  entry.Set(kDeploymentIdKey, base::Value("test-deployment-id"));
+
+  auto result = ParseEntry(entry);
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(result->issuer_request_url,
+            GURL("http://localhost:8080/pvt/issue"));
+  EXPECT_EQ(result->redeemers.size(), 1u);
+  EXPECT_EQ(result->redeemers[0],
+            url::Origin::Create(GURL("http://127.0.0.1:8081")));
+}
+
+TEST(PrivateVerificationTokensIssuerConfigInternalTest,
+     ParseEntry_InvalidLocalhostPublicRedeemer) {
+  base::DictValue entry;
+  entry.Set(kIssuerRequestUrlKey,
+            base::Value("http://localhost:8080/pvt/issue"));
+  entry.Set(kVersionKey, base::Value(1));
+  entry.Set(kPublicKeyKey, base::Value(base::Base64Encode("some-pvt-key")));
+  entry.Set(kPublicKeyProofKey,
+            base::Value(base::Base64Encode("some-pvt-proof")));
+  entry.Set(kBatchSizeKey, base::Value(3));
+  entry.Set(kExpirationKey, base::Value("12"));
+  base::ListValue redeemers_list;
+  redeemers_list.Append("https://example.com");
+  entry.Set(kRedeemersKey, std::move(redeemers_list));
+  entry.Set(kDeploymentIdKey, base::Value("test-deployment-id"));
+
+  auto result = ParseEntry(entry);
+  EXPECT_FALSE(result.has_value());
+}
+
 struct MissingFieldTestCase {
   std::string field_to_remove;
 };

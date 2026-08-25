@@ -23,6 +23,7 @@
 #include "components/private_verification_tokens/common/private_verification_tokens_issuer_config_internal.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_parameters.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/url_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -106,14 +107,24 @@ std::optional<std::vector<url::Origin>> GetValidRedeemers(
     if (!item.is_string()) {
       return std::nullopt;
     }
-    url::Origin redeemer_origin = url::Origin::Create(GURL(item.GetString()));
-    if (redeemer_origin.scheme() != url::kHttpsScheme) {
+    GURL redeemer_url(item.GetString());
+    url::Origin redeemer_origin = url::Origin::Create(redeemer_url);
+    const bool is_redeemer_localhost = net::IsLocalhost(redeemer_url);
+    if (redeemer_origin.scheme() != url::kHttpsScheme &&
+        !is_redeemer_localhost) {
       return std::nullopt;
     }
-    const std::string redeemer_etld_plus_one =
-        net::registry_controlled_domains::GetDomainAndRegistry(
-            redeemer_origin,
-            net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+
+    std::string redeemer_etld_plus_one;
+    if (is_redeemer_localhost) {
+      redeemer_etld_plus_one = "localhost";
+    } else {
+      redeemer_etld_plus_one =
+          net::registry_controlled_domains::GetDomainAndRegistry(
+              redeemer_origin,
+              net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+    }
+
     if (redeemer_etld_plus_one.empty() ||
         redeemer_etld_plus_one != issuer_etld_plus_one) {
       return std::nullopt;
@@ -140,8 +151,12 @@ std::optional<IssuerConfig> ParseEntry(const base::DictValue& dict) {
   }
 
   GURL issuer_request_url(*issuer_request_url_str);
-  if (!issuer_request_url.is_valid() ||
-      issuer_request_url.scheme() != url::kHttpsScheme) {
+  if (!issuer_request_url.is_valid()) {
+    return std::nullopt;
+  }
+
+  const bool is_localhost = net::IsLocalhost(issuer_request_url);
+  if (issuer_request_url.scheme() != url::kHttpsScheme && !is_localhost) {
     return std::nullopt;
   }
 
@@ -150,11 +165,17 @@ std::optional<IssuerConfig> ParseEntry(const base::DictValue& dict) {
     return std::nullopt;
   }
 
-  const std::string issuer_etld_plus_one =
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          origin, net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
-  if (issuer_etld_plus_one.empty()) {
-    return std::nullopt;
+  std::string issuer_etld_plus_one;
+  if (is_localhost) {
+    issuer_etld_plus_one = "localhost";
+  } else {
+    issuer_etld_plus_one =
+        net::registry_controlled_domains::GetDomainAndRegistry(
+            origin,
+            net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+    if (issuer_etld_plus_one.empty()) {
+      return std::nullopt;
+    }
   }
 
   std::optional<int> version = internal::GetValidVersion(dict);
