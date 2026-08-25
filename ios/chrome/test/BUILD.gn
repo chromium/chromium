@@ -257,6 +257,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/autofill/model:unit_tests",
     "//ios/chrome/browser/autofill/model/bottom_sheet:unit_tests",
     "//ios/chrome/browser/autofill/model/credit_card:unit_tests",
+    "//ios/chrome/browser/autofill/model/message:unit_tests",
     "//ios/chrome/browser/autofill/payments/coordinator:unit_tests",
     "//ios/chrome/browser/autofill/scan_save_and_fill/coordinator:unit_tests",
     "//ios/chrome/browser/autofill/scan_save_and_fill/ui:unit_tests",

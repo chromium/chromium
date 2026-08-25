@@ -14,3 +14,15 @@ source_set("message") {
     "//url",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "save_card_message_with_links_unittest.mm" ]
+  deps = [
+    ":message",
+    "//components/autofill/core/browser:legal_message_line",
+    "//components/autofill/core/browser:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+}
