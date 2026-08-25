@@ -511,9 +511,7 @@ bool ClipboardHistoryControllerImpl::ShowMenu(
 
   // Close the running context menu, if any, before showing the clipboard
   // history menu.
-  if (auto* active_menu_instance = views::MenuController::GetActiveInstance()) {
-    active_menu_instance->Cancel(views::MenuController::ExitType::kAll);
-  }
+  views::MenuController::CancelAllActive();
 
   last_menu_source_ = show_source;
 

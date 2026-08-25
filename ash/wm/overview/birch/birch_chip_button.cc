@@ -378,7 +378,8 @@ void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
       birch_bar_controller->ProvideFeedbackForCoral();
       break;
     default:
-      birch_bar_controller->ExecuteMenuCommand(command_id, /*from_chip=*/true);
+      birch_bar_controller->ExecuteMenuCommand(command_id, /*from_chip=*/true,
+                                               GetWidget());
   }
 }
 

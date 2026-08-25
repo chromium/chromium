@@ -93,13 +93,14 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
       switch_container->SetFlexForView(spacer, 1);
 
       auto switch_button = std::make_unique<Switch>(base::BindRepeating(
-          [](bool from_chip) {
+          [](views::Widget* widget_owner, bool from_chip) {
             auto* birch_bar_controller = BirchBarController::Get();
             CHECK(birch_bar_controller);
             birch_bar_controller->ExecuteMenuCommand(
-                std::to_underlying(CommandId::kShowSuggestions), from_chip);
+                std::to_underlying(CommandId::kShowSuggestions), from_chip,
+                widget_owner);
           },
-          for_chip_menu_));
+          widget_owner(), for_chip_menu_));
       switch_button->SetIsOn(
           BirchBarController::Get()->GetShowBirchSuggestions());
       switch_button->GetViewAccessibility().SetName(label);
@@ -133,11 +134,11 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
       auto* checkbox = item_view->AddChildView(std::make_unique<Checkbox>(
           /*button_width=*/0,
           base::BindRepeating(
-              [](int command_id, bool from_chip) {
-                BirchBarController::Get()->ExecuteMenuCommand(command_id,
-                                                              from_chip);
+              [](int command_id, views::Widget* widget_owner, bool from_chip) {
+                BirchBarController::Get()->ExecuteMenuCommand(
+                    command_id, from_chip, widget_owner);
               },
-              command_id, for_chip_menu_),
+              command_id, widget_owner(), for_chip_menu_),
           label, gfx::Insets::VH(0, menu_item_padding), menu_item_padding));
       bool enabled = item_view->GetEnabled();
       checkbox->SetEnabled(enabled);

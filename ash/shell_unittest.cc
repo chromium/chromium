@@ -192,10 +192,10 @@ class ShellTest : public AshTestBase {
     widget->Close();
   }
 
-  void LockScreenAndVerifyMenuClosed() {
+  void LockScreenAndVerifyMenuClosed(views::Widget* menu_owner) {
     // Verify a menu is open before locking.
     views::MenuController* menu_controller =
-        views::MenuController::GetActiveInstance();
+        views::MenuController::GetForOwnerWidget(menu_owner);
     DCHECK(menu_controller);
     EXPECT_EQ(views::MenuController::ExitType::kNone,
               menu_controller->exit_type());
@@ -220,7 +220,7 @@ class ShellTest : public AshTestBase {
     EXPECT_TRUE(lock_widget->GetNativeView()->HasFocus());
 
     // Verify menu is closed.
-    EXPECT_EQ(nullptr, views::MenuController::GetActiveInstance());
+    EXPECT_FALSE(views::MenuController::GetActiveInstance());
     lock_widget->Close();
     GetSessionControllerClient()->UnlockScreen();
   }
@@ -413,7 +413,7 @@ TEST_F(ShellTest, LockScreenClosesActiveMenu) {
   menu_runner->RunMenuAt(widget, nullptr, gfx::Rect(),
                          views::MenuAnchorPosition::kTopLeft,
                          ui::mojom::MenuSourceType::kMouse);
-  LockScreenAndVerifyMenuClosed();
+  LockScreenAndVerifyMenuClosed(widget);
 }
 
 TEST_F(ShellTest, ManagedWindowModeBasics) {

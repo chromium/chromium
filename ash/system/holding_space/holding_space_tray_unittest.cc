@@ -209,18 +209,15 @@ size_t GetMaxVisibleItemCount(HoldingSpaceSectionId section_id) {
   return GetHoldingSpaceSection(section_id)->max_visible_item_count.value();
 }
 
-// Returns whether a context menu is currently showing.
-bool IsShowingContextMenu() {
-  return views::MenuController::GetActiveInstance();
-}
-
 // Returns the menu item matched by `id`.
-const views::MenuItemView* GetMenuItemByCommandId(HoldingSpaceCommandId id) {
-  if (!IsShowingContextMenu())
-    return nullptr;
-  if (auto* menu_item =
-          views::MenuController::GetActiveInstance()->GetSelectedMenuItem()) {
-    return menu_item->GetMenuItemByID(static_cast<int>(id));
+const views::MenuItemView* GetMenuItemByCommandId(views::Widget* menu_owner,
+                                                  HoldingSpaceCommandId id) {
+  views::MenuController* menu_controller =
+      views::MenuController::GetForOwnerWidget(menu_owner);
+  if (menu_controller) {
+    if (auto* menu_item = menu_controller->GetSelectedMenuItem()) {
+      return menu_item->GetMenuItemByID(static_cast<int>(id));
+    }
   }
   return nullptr;
 }
@@ -2881,7 +2878,8 @@ TEST_P(HoldingSpaceTraySuggestionsSectionTest, SuggestionsRemoval) {
   // `HoldingSpaceClient::RemoveSuggestions()` is called.
   EXPECT_CALL(*client(),
               RemoveSuggestions(std::vector<base::FilePath>({path})));
-  Click(GetMenuItemByCommandId(HoldingSpaceCommandId::kRemoveItem));
+  Click(GetMenuItemByCommandId(item_views.front()->GetWidget(),
+                               HoldingSpaceCommandId::kRemoveItem));
 }
 
 // Base class for tests of the holding space downloads section parameterized by
@@ -3487,8 +3485,9 @@ class HoldingSpaceTrayPrimaryAndSecondaryActionsTest
   }
 
   // Returns whether a context menu is showing with a command matching `id`.
-  bool HasContextMenuCommand(HoldingSpaceCommandId id) const {
-    return !!GetMenuItemByCommandId(id);
+  bool HasContextMenuCommand(views::View* view,
+                             HoldingSpaceCommandId id) const {
+    return !!GetMenuItemByCommandId(view ? view->GetWidget() : nullptr, id);
   }
 };
 
@@ -3567,7 +3566,7 @@ TEST_P(HoldingSpaceTrayPrimaryAndSecondaryActionsTest, HasExpectedActions) {
 
   // Right click the item view to show the context menu.
   RightClick(item_views.front());
-  EXPECT_TRUE(IsShowingContextMenu());
+  EXPECT_TRUE(views::MenuController::GetActiveInstance());
 
   // Verify context menu commands for in-progress holding space items.
   for (const HoldingSpaceCommandId& id : GetHoldingSpaceCommandIds()) {
@@ -3585,12 +3584,13 @@ TEST_P(HoldingSpaceTrayPrimaryAndSecondaryActionsTest, HasExpectedActions) {
         // No action necessary.
         break;
     }
-    EXPECT_EQ(HasContextMenuCommand(id), expect_context_menu_command);
+    EXPECT_EQ(HasContextMenuCommand(item_views.front(), id),
+              expect_context_menu_command);
   }
 
   // Press and release ESC to close the context menu.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
-  EXPECT_FALSE(IsShowingContextMenu());
+  EXPECT_FALSE(views::MenuController::GetActiveInstance());
 
   // Hide progress for the holding space `item`.
   model()
@@ -3620,7 +3620,7 @@ TEST_P(HoldingSpaceTrayPrimaryAndSecondaryActionsTest, HasExpectedActions) {
 
   // Right click the item view to show the context menu.
   RightClick(item_views.front());
-  EXPECT_TRUE(IsShowingContextMenu());
+  EXPECT_TRUE(views::MenuController::GetActiveInstance());
 
   // Verify context menu commands for completed holding space items.
   for (const HoldingSpaceCommandId& id : GetHoldingSpaceCommandIds()) {
@@ -3645,7 +3645,8 @@ TEST_P(HoldingSpaceTrayPrimaryAndSecondaryActionsTest, HasExpectedActions) {
         // No action necessary.
         break;
     }
-    EXPECT_EQ(HasContextMenuCommand(id), expect_context_menu_command);
+    EXPECT_EQ(HasContextMenuCommand(item_views.front(), id),
+              expect_context_menu_command);
   }
 }
 

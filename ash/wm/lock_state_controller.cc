@@ -372,12 +372,7 @@ void LockStateController::StartLockAnimation() {
     return;
   }
 
-  views::MenuController* active_menu_controller =
-      views::MenuController::GetActiveInstance();
-
-  if (active_menu_controller) {
-    NOTREACHED();
-  }
+  CHECK(!views::MenuController::GetActiveInstance());
 
   animating_lock_ = true;
   StoreUnlockedProperties();

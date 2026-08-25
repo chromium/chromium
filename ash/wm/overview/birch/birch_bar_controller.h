@@ -21,6 +21,10 @@
 
 class PrefRegistrySimple;
 
+namespace views {
+class Widget;
+}  // namespace views
+
 namespace ash {
 
 class BirchBarMenuModelAdapter;
@@ -86,7 +90,9 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
   void ProvideFeedbackForCoral();
 
   // Executes the commands from bar and chip context menus. `from_chip` will be
-  // true if the command is from a chip context menu.
+  // true if the command is from a chip context menu. `menu_owner` is the widget
+  // that owns the menu, used to locate and dismiss the MenuController if
+  // needed.
   // Please note that most of the bar menu commands should be executed by the
   // switch button and checkboxes, see `BirchBarMenuModelAdapter` for details.
   // However, due to the way how `MenuController` processes gesture events, the
@@ -95,7 +101,9 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
   // to execute the commands for switch button and checkboxes on touch event.
   // This is not a normal usage. For more details, please see the bug comment in
   // http://b/360072119.
-  void ExecuteMenuCommand(int command_id, bool from_chip);
+  void ExecuteMenuCommand(int command_id,
+                          bool from_chip,
+                          views::Widget* menu_owner);
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;

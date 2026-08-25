@@ -72,6 +72,7 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
 
   ui::SimpleMenuModel* model() { return model_.get(); }
   views::MenuItemView* root_for_testing() { return root_; }
+  views::Widget* widget_owner() { return widget_owner_; }
 
  protected:
   const std::string& app_id() const { return app_id_; }
