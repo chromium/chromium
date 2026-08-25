@@ -199,9 +199,15 @@ void UserInfoRequest::OnAllConfigAndWellKnownFetched(
 void UserInfoRequest::OnAccountsResponseReceived(
     FetchStatus fetch_status,
     IdpNetworkRequestManager::AccountsResponse accounts) {
+  // Speculative guard: UpdateIdpSigninStatus may destroy |this| via observer
+  // callbacks. See crbug.com/548340637.
+  base::WeakPtr<UserInfoRequest> weak_this = weak_ptr_factory_.GetWeakPtr();
   UpdateIdpSigninStatusForAccountsEndpointResponse(
       idp_config_url_, fetch_status, does_idp_have_failing_signin_status_,
       permission_delegate_);
+  if (!weak_this) {
+    return;
+  }
 
   if (fetch_status.parse_status != ParseStatus::kSuccess) {
     CompleteWithError(UserInfoRequestResult::kInvalidAccountsResponse);
