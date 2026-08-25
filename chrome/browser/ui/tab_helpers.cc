@@ -36,6 +36,8 @@
 #include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/finds/core/finds_tab_helper.h"
 #include "chrome/browser/finds/finds_service_factory.h"
+#include "chrome/browser/glic/glic_marketing_page_tab_helper.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
@@ -342,6 +344,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
   // infobars::ContentInfoBarManager comes before common tab helpers since
   // ChromeSubresourceFilterClient has it as a dependency.
   infobars::ContentInfoBarManager::CreateForWebContents(web_contents);
+  if (base::FeatureList::IsEnabled(features::kGlicMarketingAutoOpen)) {
+    glic::GlicMarketingPageTabHelper::CreateForWebContents(web_contents);
+  }
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
