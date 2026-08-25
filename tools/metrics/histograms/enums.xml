@@ -12700,6 +12700,8 @@ from previous Chrome versions.
   <int value="-623364791" label="ClickToCallReceiver:disabled"/>
   <int value="-622685174" label="enable-pdf-material-ui"/>
   <int value="-622474802" label="ReportUnsafeSite:disabled"/>
+  <int value="-621774161"
+      label="AutofillEnableWalletReminderNoticePublicPass:enabled"/>
   <int value="-621382525" label="VizDisplayCompositor:enabled"/>
   <int value="-620902693" label="PageInfoHistory:disabled"/>
   <int value="-620801681" label="EnableCertManagementUIV2:disabled"/>
@@ -19736,6 +19738,8 @@ from previous Chrome versions.
       label="ChromeHomePersonalizedOmniboxSuggestions:disabled"/>
   <int value="1568172566"
       label="OmniboxOnDeviceHeadProviderNonIncognito:disabled"/>
+  <int value="1568919717"
+      label="AutofillEnableWalletReminderNoticePublicPass:disabled"/>
   <int value="1569327162" label="ButterOnDesktopFollowup:enabled"/>
   <int value="1570051274" label="ProductSpecifications:disabled"/>
   <int value="1570067571"

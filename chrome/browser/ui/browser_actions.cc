@@ -182,6 +182,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
@@ -4669,7 +4670,9 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .Build());
 
   if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableWalletReminderNotice)) {
+          autofill::features::kAutofillEnableWalletReminderNotice) ||
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableWalletReminderNoticePublicPass)) {
     root_action_item_->AddChild(
         actions::ActionItem::Builder(
             base::BindRepeating(

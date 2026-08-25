@@ -10188,6 +10188,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableWalletReminderNotice)},
 
+    {"autofill-enable-wallet-reminder-notice-public-pass",
+     flag_descriptions::kAutofillEnableWalletReminderNoticePublicPassName,
+     flag_descriptions::
+         kAutofillEnableWalletReminderNoticePublicPassDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableWalletReminderNoticePublicPass)},
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"cros-locked-mode", flag_descriptions::kLockedModeName,
      flag_descriptions::kLockedModeDescription, kOsCrOS,

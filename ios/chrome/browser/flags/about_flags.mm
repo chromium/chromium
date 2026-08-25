@@ -3023,6 +3023,13 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kMetrickitDeferRegistrationName,
      flag_descriptions::kMetrickitDeferRegistrationDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kMetrickitDeferRegistration)},
+    {"autofill-enable-wallet-reminder-notice-public-pass",
+     flag_descriptions::kAutofillEnableWalletReminderNoticePublicPassName,
+     flag_descriptions::
+         kAutofillEnableWalletReminderNoticePublicPassDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableWalletReminderNoticePublicPass)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -1194,10 +1194,17 @@ inline constexpr char kAutofillEnableWalletDirectOffersDescription[] =
     "for autofill into merchant promo code fields during checkout.";
 
 inline constexpr char kAutofillEnableWalletReminderNoticeName[] =
-    "Enable Wallet Reminder Notice";
+    "Enable Wallet Reminder Notice for cards";
 inline constexpr char kAutofillEnableWalletReminderNoticeDescription[] =
     "When enabled, shows the Wallet Reminder Notice prompt or bottom sheet "
-    "after the payment form submission.";
+    "for cards after payment form submission.";
+
+inline constexpr char kAutofillEnableWalletReminderNoticePublicPassName[] =
+    "Enable Wallet Reminder Notice for public passes";
+inline constexpr char
+    kAutofillEnableWalletReminderNoticePublicPassDescription[] =
+        "When enabled, shows the Wallet Reminder Notice prompt or bottom sheet "
+        "after submitting a form with a public pass.";
 
 inline constexpr char
     kAutofillIgnorePaymentsChurnedUsersStrikesForTestingName[] =

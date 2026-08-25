@@ -314,9 +314,9 @@ BASE_FEATURE(kAutofillEnableWalletBrandingV2,
 BASE_FEATURE(kAutofillEnableWalletDirectOffers,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, shows the Wallet Reminder Notice after payment form submission
-// if higher-priority Autofill features (such as mandatory re-auth, VCN, or card
-// save) do not take precedence.
+// When enabled, shows the Wallet Reminder Notice for credit cards after payment
+// form submission if higher-priority Autofill features (such as mandatory
+// re-auth, VCN, or card save) do not take precedence.
 BASE_FEATURE(kAutofillEnableWalletReminderNotice,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

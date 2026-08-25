@@ -383,6 +383,8 @@ public abstract class ChromeFeatureList {
             "AutofillEnableWalletBrandingV2";
     public static final String AUTOFILL_ENABLE_WALLET_REMINDER_NOTICE =
             "AutofillEnableWalletReminderNotice";
+    public static final String AUTOFILL_ENABLE_WALLET_REMINDER_NOTICE_PUBLIC_PASS =
+            "AutofillEnableWalletReminderNoticePublicPass";
     public static final String AUTOFILL_RETRY_IMAGE_FETCH_ON_FAILURE =
             "AutofillRetryImageFetchOnFailure";
     public static final String AUTOFILL_SYNC_EWALLET_ACCOUNTS = "AutofillSyncEwalletAccounts";

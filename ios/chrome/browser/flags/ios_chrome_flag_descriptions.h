@@ -270,11 +270,18 @@ inline constexpr char kAutofillEnableWalletBrandingV2Description[] =
     "Google Pay and Google Wallet into consistency with branding requirements.";
 
 inline constexpr char kAutofillEnableWalletReminderNoticeName[] =
-    "Enable Wallet Reminder Notice";
+    "Enable Wallet Reminder Notice for cards";
 inline constexpr char kAutofillEnableWalletReminderNoticeDescription[] =
-    "When enabled, shows the Wallet Reminder Notice after payment form "
-    "submission if higher-priority Autofill features (such as mandatory "
-    "re-auth, VCN, or card save) do not take precedence.";
+    "When enabled, shows the Wallet Reminder Notice for cards after "
+    "payment form submission if higher-priority Autofill features (such "
+    "as mandatory re-auth, VCN, or card save) do not take precedence.";
+
+inline constexpr char kAutofillEnableWalletReminderNoticePublicPassName[] =
+    "Enable Wallet Reminder Notice for public passes";
+inline constexpr char
+    kAutofillEnableWalletReminderNoticePublicPassDescription[] =
+        "When enabled, shows the Wallet Reminder Notice after submitting a "
+        "form with a public pass.";
 
 inline constexpr char kAutofillManualTestingDataName[] =
     "Autofill manual testing data";

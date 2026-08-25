@@ -310,6 +310,8 @@ BASE_DECLARE_FEATURE(kAutofillEnableSkippingUnrecognizedAttribute);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableStreetAddressMergeModes);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillEnableWalletReminderNoticePublicPass);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillExtendZipCodeValidation);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillExtractOnlyNonAdFrames);
