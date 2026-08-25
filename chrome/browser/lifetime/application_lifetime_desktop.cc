@@ -65,6 +65,10 @@
 #include "base/win/win_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/shutdown_watchdog_mac.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/sessions/session_data_service.h"
 #include "chrome/browser/sessions/session_data_service_factory.h"
@@ -381,6 +385,14 @@ void SessionEnding() {
     return;
   }
   already_ended = true;
+
+#if BUILDFLAG(IS_MAC)
+  // Hand off from the graceful-path emergency watchdog (armed at SIGTERM
+  // receipt with the same 10s budget EndSession()'s rundown wait uses, which
+  // would otherwise fire mid-critical-writes) to a strict bound covering
+  // SessionEnding itself. See shutdown_watchdog_mac.h.
+  shutdown_watchdog::ArmForSessionEnding();
+#endif
 
   // ~ShutdownWatcherHelper uses IO (it joins a thread). We'll only trigger that
   // if Terminate() fails, which leaves us in a weird state, or the OS is going

@@ -297,13 +297,16 @@ void OnLocalStatePrefsLoaded();
 static const int kUpdateCheckIntervalHours = 6;
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_OZONE)
-// How long to wait for the File thread to complete during EndSession, on Linux
-// and Windows. We have a timeout here because we're unable to run the UI
-// messageloop and there's some deadlock risk. Our only option is to exit
+// LINT.IfChange(EndSessionTimeout)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_MAC)
+// How long to wait for the File thread to complete during EndSession on
+// Windows, Linux, and macOS. A timeout is used here because the UI message
+// loop cannot run and there is some deadlock risk. The only option is to exit
 // anyway.
+// Note: On macOS, shutdown_watchdog_mac.cc relies on this timeout budget.
 static constexpr base::TimeDelta kEndSessionTimeout = base::Seconds(10);
 #endif
+// LINT.ThenChange(//chrome/browser/shutdown_watchdog_mac.cc:EndSessionTimeout)
 
 using content::BrowserThread;
 using content::ChildProcessSecurityPolicy;
@@ -909,16 +912,17 @@ void BrowserProcessImpl::EndSession() {
   }
 #endif
 
-  // We must write that the profile and metrics service shutdown cleanly,
-  // otherwise on startup we'll think we crashed. So we block until done and
-  // then proceed with normal shutdown.
+  // The profile and metrics service must be recorded as shutting down cleanly,
+  // otherwise startup will treat it as a crash. The thread blocks until done
+  // and then proceeds with normal shutdown.
   //
   // If you change the condition here, be sure to also change
   // ProfileBrowserTests to match.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_OZONE)
+  // LINT.IfChange(EndSessionPlatforms)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_MAC)
   // Do a best-effort wait on the successful countdown of rundown tasks. Note
-  // that if we don't complete "quickly enough", Windows will terminate our
-  // process.
+  // that if shutdown does not complete quickly enough, the OS (Windows or
+  // macOS/launchd) will terminate the process.
   //
   // On Windows, we previously posted a message to FILE and then ran a nested
   // message loop, waiting for that message to be processed until quitting.
@@ -933,6 +937,7 @@ void BrowserProcessImpl::EndSession() {
 #else
   NOTIMPLEMENTED();
 #endif
+  // LINT.ThenChange(//chrome/browser/profiles/profile_browsertest.cc:EndSessionPlatforms)
 }
 
 metrics_services_manager::MetricsServicesManager*

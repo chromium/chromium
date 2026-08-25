@@ -119,6 +119,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser:app_controller_mac",
       "//chrome/browser:chrome_browser_application_mac",
+      "//chrome/browser:shutdown_watchdog_mac",
       "//ui/views",
     ]
   }

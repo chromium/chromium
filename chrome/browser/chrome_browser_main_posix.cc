@@ -77,7 +77,7 @@ void ExitHandler::ExitWhenPossibleOnUIThread(int signal) {
     // ExitHandler takes care of deleting itself.
     new ExitHandler();
   } else {
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     switch (signal) {
       case SIGINT:
       case SIGHUP:
@@ -90,9 +90,11 @@ void ExitHandler::ExitWhenPossibleOnUIThread(int signal) {
       case SIGTERM:
         // SIGTERM is usually sent instead of SIGKILL to gracefully shutdown
         // processes.  But most systems use it as a shutdown warning, so
-        // conservatively assume that the session is ending.  If the process
-        // still doesn't quit within a bounded time, most systems will finally
-        // send SIGKILL, which we're unable to install a signal handler for.
+        // conservatively assume that the session is ending. On macOS, launchd
+        // delivers SIGTERM at logout, shutdown, reboot, or update. If the
+        // process still doesn't quit within a bounded time, most systems will
+        // finally send SIGKILL, which we're unable to install a signal handler
+        // for.
         // TODO(thomasanderson): Try to distinguish if the session is really
         // ending or not.  Maybe there's a systemd or DBus API to query.
         chrome::SessionEnding();

@@ -81,6 +81,26 @@ class TearDownWatchdog : public base::PlatformThread::Delegate {
   }
 };
 
+class SessionEndingWatchdog : public base::PlatformThread::Delegate {
+ public:
+  void ThreadMain() override {
+    base::PlatformThread::SetName("MacSessionEndingWatchdog");
+    // LINT.IfChange(EndSessionTimeout)
+    // Deliberately not disarmable: `SessionEnding()` terminates the process on
+    // success. Budget covers `EndSession()`'s bounded rundown wait
+    // (`kEndSessionTimeout`) plus margin for the straight-line work around it.
+    base::PlatformThread::Sleep(GetEmergencyTimeout() + base::Seconds(5));
+    // LINT.ThenChange(//chrome/browser/browser_process_impl.cc:EndSessionTimeout)
+    if (base::debug::BeingDebugged()) {
+      return;  // Attached mid-investigation; do not kill the session.
+    }
+    RAW_LOG(ERROR,
+            "SessionEnding watchdog expired; recording dump and terminating.");
+    base::debug::DumpWithoutCrashing();
+    _exit(content::RESULT_CODE_HUNG);
+  }
+};
+
 }  // namespace
 
 void BlockOnSigtermShutdown() {
@@ -121,6 +141,18 @@ void OnBrowserTearDownStarted() {
 
 void OnShutdownComplete() {
   GetShutdownCompleteEvent().Signal();
+}
+
+void ArmForSessionEnding() {
+  OnShutdownComplete();
+  if (!WatchdogsEnabled()) {
+    return;
+  }
+  [[maybe_unused]] static const bool is_armed = [] {
+    static base::NoDestructor<SessionEndingWatchdog> watchdog;
+    base::PlatformThread::CreateNonJoinable(0, watchdog.get());
+    return true;
+  }();
 }
 
 }  // namespace shutdown_watchdog

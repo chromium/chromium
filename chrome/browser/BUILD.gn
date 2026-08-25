@@ -586,6 +586,10 @@ if (is_mac) {
   source_set("global_keyboard_shortcuts_mac") {
     public = [ "global_keyboard_shortcuts_mac.h" ]
   }
+
+  source_set("shutdown_watchdog_mac") {
+    public = [ "shutdown_watchdog_mac.h" ]
+  }
 }
 
 if (is_win) {
@@ -1527,6 +1531,7 @@ source_set("core") {
       ":chrome_browser_main_mac",
       ":fullscreen",
       ":global_keyboard_shortcuts_mac",
+      ":shutdown_watchdog_mac",
       "//chrome/app_shim",
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac",

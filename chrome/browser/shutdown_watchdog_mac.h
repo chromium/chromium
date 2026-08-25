@@ -32,6 +32,15 @@ void OnBrowserTearDownStarted();
 // watchdog stands down.
 void OnShutdownComplete();
 
+// Hands off from the graceful-path watchdogs to a strict deadline for
+// chrome::SessionEnding(): releases any armed watchdog (whose budget assumes
+// the graceful path and would expire during EndSession()'s own bounded
+// rundown wait), then arms a non-disarmable timer of the emergency timeout
+// plus margin. SessionEnding() unconditionally terminates the process on
+// success, so no disarm exists; this fires only if SessionEnding itself
+// hangs (e.g. in a shutdown observer).
+void ArmForSessionEnding();
+
 }  // namespace shutdown_watchdog
 
 #endif  // CHROME_BROWSER_SHUTDOWN_WATCHDOG_MAC_H_

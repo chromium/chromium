@@ -520,9 +520,10 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, SyncToSigninMigrationAsynchronous) {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// LINT.IfChange(EndSessionPlatforms)
 // The EndSession IO synchronization is only critical on Windows, but also
-// happens under Ozone. See BrowserProcessImpl::EndSession.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_OZONE)
+// happens under Ozone and macOS. See BrowserProcessImpl::EndSession.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_MAC)
 
 namespace {
 
@@ -632,7 +633,8 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
   ASSERT_TRUE(succeeded) << "profile->EndSession() timed out too often.";
 }
 
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_OZONE)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_MAC)
+// LINT.ThenChange(//chrome/browser/browser_process_impl.cc:EndSessionPlatforms)
 
 // The following tests make sure that it's safe to shut down while one of the
 // Profile's URLLoaderFactories is in use by a SimpleURLLoader.
