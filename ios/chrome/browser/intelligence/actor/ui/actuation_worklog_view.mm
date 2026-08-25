@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actor_tool_chip_view.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_accessory_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_item_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
@@ -210,6 +211,11 @@ const CGFloat kSpringDamping = 1.0;
     [self setCollapsed:!_collapsed animated:YES];
     [self.delegate worklogView:self didChangeCollapsed:_collapsed];
   }
+}
+
+- (void)worklogItemView:(ActuationWorklogItemView*)itemView
+    didTapAccessoryItem:(ActuationWorklogAccessoryItem*)accessoryItem {
+  [self.delegate worklogView:self didTapAccessoryItem:accessoryItem];
 }
 
 #pragma mark - Private

@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+@class ActuationWorklogAccessoryItem;
 @class ActuationWorklogItem;
 
 // Defines the visibility of the connector lines for the item view.
@@ -27,6 +28,10 @@ enum class ActuationWorklogConnectorVisibility {
 @protocol ActuationWorklogItemViewDelegate <NSObject>
 // Notifies delegate when the item view is tapped.
 - (void)worklogItemViewDidTapItem:(ActuationWorklogItemView*)itemView;
+
+// Notifies delegate when an accessory card item inside the item view is tapped.
+- (void)worklogItemView:(ActuationWorklogItemView*)itemView
+    didTapAccessoryItem:(ActuationWorklogAccessoryItem*)accessoryItem;
 @end
 
 // Unified view representing a step in the timeline. When no icon is provided,

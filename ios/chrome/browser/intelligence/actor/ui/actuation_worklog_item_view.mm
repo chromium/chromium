@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_item_view.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_accessory_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -42,6 +43,8 @@ const NSTimeInterval kAnimationDuration = 0.25;
   UIStackView* _mainRowStack;
   UIView* _bottomBufferView;
   UITapGestureRecognizer* _tapGestureRecognizer;
+
+  ActuationWorklogAccessoryView* _accessoryCardView;
 
   NSLayoutConstraint* _dotSizeConstraint;
   NSLayoutConstraint* _bottomBufferHeightConstraint;
@@ -108,6 +111,10 @@ const NSTimeInterval kAnimationDuration = 0.25;
     return;
   }
   [self.delegate worklogItemViewDidTapItem:self];
+}
+
+- (void)handleAccessoryTap:(ActuationWorklogAccessoryView*)sender {
+  [self.delegate worklogItemView:self didTapAccessoryItem:sender.accessoryItem];
 }
 
 #pragma mark - UIView
@@ -224,6 +231,13 @@ const NSTimeInterval kAnimationDuration = 0.25;
   _subtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
   [_mainRowStack addArrangedSubview:_subtitleLabel];
 
+  _accessoryCardView = [[ActuationWorklogAccessoryView alloc] init];
+  _accessoryCardView.translatesAutoresizingMaskIntoConstraints = NO;
+  [_accessoryCardView addTarget:self
+                         action:@selector(handleAccessoryTap:)
+               forControlEvents:UIControlEventTouchUpInside];
+  [_mainRowStack addArrangedSubview:_accessoryCardView];
+
   _bottomBufferView = [[UIView alloc] init];
   _bottomBufferView.translatesAutoresizingMaskIntoConstraints = NO;
   _bottomBufferView.hidden = YES;
@@ -298,6 +312,13 @@ const NSTimeInterval kAnimationDuration = 0.25;
                     imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
               : nil;
   _iconView.hidden = !hasIcon;
+
+  BOOL showAccessory = (_item.style == ActuationWorklogItemStyle::kCard) &&
+                       (_item.accessoryItem != nil);
+  _accessoryCardView.hidden = !showAccessory;
+  if (showAccessory) {
+    [_accessoryCardView configureWithAccessoryItem:_item.accessoryItem];
+  }
 }
 
 // Updates constraints values and spacing based on the view style.
@@ -318,6 +339,9 @@ const NSTimeInterval kAnimationDuration = 0.25;
 
   CGFloat spacing = isCard ? kSpacingSmall : kSpacingTiny;
   [_mainRowStack setCustomSpacing:spacing afterView:_titleLabel];
+  if (isCard && _item.accessoryItem) {
+    [_mainRowStack setCustomSpacing:kSpacingMedium afterView:_subtitleLabel];
+  }
 }
 
 // Updates the font and color based on the view style.
