@@ -1068,9 +1068,7 @@ class BottomSheet extends BottomSheetView
     }
 
     private @Nullable View getToolbarView() {
-        return mSheetContent != null && mSheetContent.getToolbarView() != null
-                ? mSheetContent.getToolbarView()
-                : null;
+        return mSheetContent != null ? mSheetContent.getToolbarView() : null;
     }
 
     /** @return The ratio of the height of the screen that the half expanded state is. */
