@@ -256,6 +256,11 @@ class LensOverlayController : public OverlayBaseController,
   // Returns true if the CoBrowse panel with Lens overlay is enabled.
   bool CoBrowsePanelWithLensOverlayEnabled() const;
 
+  // Returns true if the non-blocking privacy notice should be hidden. Note that
+  // non-blocking permission flows may still apply if this is true; the notice
+  // is just not displayed.
+  bool ShouldHideNonBlockingPrivacyNotice() const;
+
   // Gets string for invocation source enum, used for logging metrics.
   std::string GetInvocationSourceString();
 

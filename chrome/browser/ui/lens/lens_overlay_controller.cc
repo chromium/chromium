@@ -271,7 +271,8 @@ void LensOverlayController::CloseUI() {
       Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
   if (lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
       !lens::DidUserGrantLensOverlayNeededPermissions(profile) &&
-      !user_interacted_without_accepting_privacy_notice) {
+      !user_interacted_without_accepting_privacy_notice &&
+      !ShouldHideNonBlockingPrivacyNotice()) {
     lens::RecordNonBlockingPrivacyNoticeAccepted(
         lens::LensOverlayNonBlockingPrivacyNoticeUserAction::
             kClosedWithoutAccepting,
@@ -729,7 +730,8 @@ void LensOverlayController::ShowUI(
   Profile* profile =
       Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
   if (lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
-      !lens::DidUserGrantLensOverlayNeededPermissions(profile)) {
+      !lens::DidUserGrantLensOverlayNeededPermissions(profile) &&
+      !ShouldHideNonBlockingPrivacyNotice()) {
     lens::RecordNonBlockingPrivacyNoticeToBeShown(invocation_source);
   }
 
@@ -1409,6 +1411,12 @@ bool LensOverlayController::CoBrowsePanelWithLensOverlayEnabled() const {
   return omnibox::kAskGCoBrowseWithVisualSelection.Get() &&
          invocation_source_ ==
              lens::LensOverlayInvocationSource::kOmniboxPageAction;
+}
+
+bool LensOverlayController::ShouldHideNonBlockingPrivacyNotice() const {
+  return invocation_source_ ==
+             lens::LensOverlayInvocationSource::kOmniboxPopupButton ||
+         CoBrowsePanelWithLensOverlayEnabled();
 }
 
 bool LensOverlayController::ShouldShowPreselectionBubble() {
@@ -2329,9 +2337,12 @@ void LensOverlayController::MaybeGrantLensOverlayPermissionsForSession(
     GetLensOverlayQueryController()->GrantPermissionForSession();
     GetLensQueryFlowRouter()->MaybeResumeQueryFlow();
     user_interacted_without_accepting_privacy_notice = true;
-    lens::RecordNonBlockingPrivacyNoticeAccepted(
-        lens::LensOverlayNonBlockingPrivacyNoticeUserAction::kLensInteraction,
-        effective_invocation_source);
+
+    if (!ShouldHideNonBlockingPrivacyNotice()) {
+      lens::RecordNonBlockingPrivacyNoticeAccepted(
+          lens::LensOverlayNonBlockingPrivacyNoticeUserAction::kLensInteraction,
+          effective_invocation_source);
+    }
   }
 }
 

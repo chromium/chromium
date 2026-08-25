@@ -345,13 +345,11 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       "canShowTooltipFromPrefs",
       lens_overlay_start_count <= kNumTimesToShowCursorTooltips);
 
-  if (controller.invocation_source() ==
-          lens::LensOverlayInvocationSource::kOmniboxPopupButton ||
-      controller.CoBrowsePanelWithLensOverlayEnabled()) {
+  if (controller.ShouldHideNonBlockingPrivacyNotice()) {
     // Set both `enablePrivacyNotice` and `hasPermissionsForSession` to false so
     // that the privacy notice will not appear but the overlay will still
     // treat permissions as not granted (even if the user has granted
-    // permissions via other entrypoints). This is special behavior for these
+    // permissions via other entrypoints). This is special behavior for certain
     // types of invocations only.
     html_source->AddBoolean("enablePrivacyNotice", false);
     html_source->AddBoolean("hasPermissionsForSession", false);
