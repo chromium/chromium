@@ -110,7 +110,8 @@ std::unique_ptr<viz::CompositorFrame> FastInkHost::CreateCompositorFrame(
 
   auto frame = fast_ink_internal::CreateCompositorFrame(
       begin_frame_ack, GetContentRect(), GetTotalDamage(), auto_update,
-      *host_window(), &resource_manager, client_shared_image_, sync_token_);
+      *host_window(), resource_manager, client_resource_provider,
+      client_shared_image_, sync_token_);
 
   ResetDamage();
 

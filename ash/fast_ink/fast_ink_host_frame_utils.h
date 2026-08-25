@@ -16,6 +16,7 @@
 #include "ui/gfx/geometry/rect.h"
 
 namespace viz {
+class ClientResourceProvider;
 class CompositorFrame;
 }  // namespace viz
 
@@ -66,15 +67,15 @@ ASH_EXPORT std::unique_ptr<UiResource> CreateUiResource(
     gpu::SyncToken sync_token);
 
 // Creates and configures a compositor frame. Uses the SharedImage that
-// `shared_image` (which must be non-null) is referencing. The created
-// UiResource does not own that SharedImage.
+// `shared_image` (which must be non-null) is referencing.
 ASH_EXPORT std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
     const viz::BeginFrameAck& begin_frame_ack,
     const gfx::Rect& content_rect,
     const gfx::Rect& total_damage_rect,
     bool auto_update,
     const aura::Window& host_window,
-    UiResourceManager* resource_manager,
+    UiResourceManager& resource_manager,
+    viz::ClientResourceProvider& client_resource_provider,
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     gpu::SyncToken sync_token);
 

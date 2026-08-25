@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "cc/base/math_util.h"
+#include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
@@ -140,7 +141,8 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
     const gfx::Rect& total_damage_rect,
     bool auto_update,
     const aura::Window& host_window,
-    UiResourceManager* resource_manager,
+    UiResourceManager& resource_manager,
+    viz::ClientResourceProvider& client_resource_provider,
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     gpu::SyncToken sync_token) {
   float device_scale_factor = host_window.layer()->device_scale_factor();
@@ -156,27 +158,6 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
   // NOTE: `shared_image` is guaranteed to be non-null by contract of this
   // method.
   CHECK(shared_image);
-
-  auto resource = AcquireUiResource(resource_manager, shared_image, sync_token);
-
-  if (!resource) {
-    return nullptr;
-  }
-
-  if (!features::IsFastInkHostLowPriorityHintEnabled()) {
-    resource->is_overlay_candidate = auto_update;
-  }
-
-  if (resource->damaged) {
-    resource->sync_token =
-        resource->client_shared_image()->BackingWasExternallyUpdated(
-            resource->sync_token);
-    resource->shared_image_interface->VerifySyncToken(resource->sync_token);
-    resource->damaged = false;
-  }
-
-  viz::TransferableResource transferable_resource =
-      resource_manager->OfferAndPrepareResourceForExport(std::move(resource));
 
   gfx::Transform target_to_buffer_transform(window_to_buffer_transform);
   target_to_buffer_transform.Scale(1.f / device_scale_factor,
@@ -223,11 +204,75 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
   render_pass->SetNew(viz::CompositorRenderPassId{1}, output_rect, damage_rect,
                       buffer_to_target_transform);
 
-  // In auto_update mode, we use hardware overlays to render the content.
-  AppendQuad(transferable_resource, output_rect, quad_rect, buffer_size,
-             buffer_to_target_transform, auto_update, *render_pass);
+  if (features::IsFrameSinkHostNewBackendEnabled() &&
+      features::IsFastInkHostNewBackendEnabled()) {
+    auto context_provider = GetContextProvider();
+    if (!context_provider) {
+      LOG(ERROR) << "Failed to acquire a context provider";
+      return nullptr;
+    }
 
-  frame->resource_list.push_back(std::move(transferable_resource));
+    scoped_refptr<gpu::SharedImageInterface> sii =
+        context_provider->SharedImageInterface();
+
+    gpu::SyncToken updated_sync_token =
+        shared_image->BackingWasExternallyUpdated(sync_token);
+    sii->VerifySyncToken(updated_sync_token);
+
+    viz::TransferableResource transferable_resource;
+    if (!features::IsFastInkHostLowPriorityHintEnabled()) {
+      transferable_resource = viz::TransferableResource::Make(
+          shared_image, viz::TransferableResource::ResourceSource::kUI,
+          updated_sync_token,
+          /*override=*/{.is_overlay_candidate = auto_update});
+    } else {
+      transferable_resource = viz::TransferableResource::Make(
+          shared_image, viz::TransferableResource::ResourceSource::kUI,
+          updated_sync_token);
+    }
+
+    viz::ResourceId resource_id = client_resource_provider.ImportResource(
+        transferable_resource,
+        base::BindOnce([](const gpu::SyncToken& sync_token, bool is_lost) {}));
+
+    client_resource_provider.PrepareSendToParent(
+        {resource_id}, &frame->resource_list, sii.get());
+
+    // In auto_update mode, we use hardware overlays to render the content.
+    AppendQuad(frame->resource_list.back(), output_rect, quad_rect, buffer_size,
+               buffer_to_target_transform, auto_update, *render_pass);
+
+    client_resource_provider.RemoveImportedResource(resource_id);
+  } else {
+    auto resource =
+        AcquireUiResource(&resource_manager, shared_image, sync_token);
+
+    if (!resource) {
+      return nullptr;
+    }
+
+    if (!features::IsFastInkHostLowPriorityHintEnabled()) {
+      resource->is_overlay_candidate = auto_update;
+    }
+
+    if (resource->damaged) {
+      resource->sync_token =
+          resource->client_shared_image()->BackingWasExternallyUpdated(
+              resource->sync_token);
+      resource->shared_image_interface->VerifySyncToken(resource->sync_token);
+      resource->damaged = false;
+    }
+
+    viz::TransferableResource transferable_resource =
+        resource_manager.OfferAndPrepareResourceForExport(std::move(resource));
+
+    // In auto_update mode, we use hardware overlays to render the content.
+    AppendQuad(transferable_resource, output_rect, quad_rect, buffer_size,
+               buffer_to_target_transform, auto_update, *render_pass);
+
+    frame->resource_list.push_back(std::move(transferable_resource));
+  }
+
   frame->render_pass_list.push_back(std::move(render_pass));
 
   return frame;
