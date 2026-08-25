@@ -283,9 +283,7 @@ class MemorySaverChipInteractiveTest
   }
 
   views::BubbleDialogDelegate* GetMemorySaverBubble() {
-    return browser()
-        ->GetFeatures()
-        .memory_saver_bubble_controller()
+    return memory_saver::MemorySaverBubbleController::From(browser())
         ->bubble_for_testing();
   }
 

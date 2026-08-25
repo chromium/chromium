@@ -460,7 +460,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       location_bar_model_delegate_.get(), content::kMaxURLDisplayChars);
 
   memory_saver_bubble_controller_ =
-      std::make_unique<memory_saver::MemorySaverBubbleController>(browser);
+      GetUserDataFactory()
+          .CreateInstance<memory_saver::MemorySaverBubbleController>(*browser,
+                                                                     browser);
 
 #if BUILDFLAG(IS_CHROMEOS)
   locked_state_controller_ =

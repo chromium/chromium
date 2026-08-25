@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_observer.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace actions {
 class ActionItem;
@@ -26,8 +27,14 @@ namespace memory_saver {
 // MemorySaverBubleDelegate.
 class MemorySaverBubbleController : MemorySaverBubbleObserver {
  public:
+  DECLARE_USER_DATA(MemorySaverBubbleController);
+
   explicit MemorySaverBubbleController(BrowserWindowInterface* bwi);
   ~MemorySaverBubbleController() override;
+
+  // Returns the controller for `bwi`'s window, or null if it does not have
+  // one.
+  static MemorySaverBubbleController* From(BrowserWindowInterface* bwi);
 
   // Called by the ActionItem framework when the action is invoked, to show
   // the Memory Saver bubble.
@@ -42,6 +49,9 @@ class MemorySaverBubbleController : MemorySaverBubbleObserver {
  private:
   raw_ptr<actions::ActionItem> action_item_;
   raw_ptr<views::BubbleDialogModelHost> bubble_ = nullptr;
+
+  ui::ScopedUnownedUserData<MemorySaverBubbleController>
+      scoped_unowned_user_data_;
 };
 
 }  // namespace memory_saver

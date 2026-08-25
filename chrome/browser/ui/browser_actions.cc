@@ -739,7 +739,7 @@ void BrowserActions::InitializePageActionIconActions() {
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 auto* bubble_controller =
-                    bwi->GetFeatures().memory_saver_bubble_controller();
+                    memory_saver::MemorySaverBubbleController::From(bwi);
                 bubble_controller->InvokeAction(bwi, item);
               },
               bwi))

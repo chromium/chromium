@@ -410,10 +410,6 @@ class BrowserWindowFeatures {
   }
 #endif
 
-  memory_saver::MemorySaverBubbleController* memory_saver_bubble_controller() {
-    return memory_saver_bubble_controller_.get();
-  }
-
   tab_groups::MostRecentSharedTabUpdateStore*
   most_recent_shared_tab_update_store() {
     return most_recent_shared_tab_update_store_.get();
