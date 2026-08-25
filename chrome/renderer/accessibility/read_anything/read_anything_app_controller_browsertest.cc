@@ -1920,6 +1920,73 @@ TEST_F(ReadAnythingAppControllerTest, IsOverline) {
   EXPECT_EQ(false, controller().IsOverline(3));
 }
 
+TEST_F(ReadAnythingAppControllerTest, GetTextDirection) {
+  ui::AXNodeData node1;
+  node1.id = 2;
+  node1.AddIntAttribute(
+      ax::mojom::IntAttribute::kTextDirection,
+      static_cast<int32_t>(ax::mojom::WritingDirection::kLtr));
+
+  ui::AXNodeData node2;
+  node2.id = 3;
+  node2.AddIntAttribute(
+      ax::mojom::IntAttribute::kTextDirection,
+      static_cast<int32_t>(ax::mojom::WritingDirection::kRtl));
+
+  ui::AXNodeData node3;
+  node3.id = 4;
+  node3.AddIntAttribute(
+      ax::mojom::IntAttribute::kTextDirection,
+      static_cast<int32_t>(ax::mojom::WritingDirection::kTtb));
+
+  ui::AXNodeData node4;
+  node4.id = 5;
+  node4.AddIntAttribute(
+      ax::mojom::IntAttribute::kTextDirection,
+      static_cast<int32_t>(ax::mojom::WritingDirection::kBtt));
+
+  ui::AXNodeData node5;
+  node5.id = 6;
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.child_ids = {node1.id, node2.id, node3.id, node4.id, node5.id};
+  SendUpdateWithNodes({std::move(root), std::move(node1), std::move(node2),
+                       std::move(node3), std::move(node4), std::move(node5)});
+
+  OnAXTreeDistilled(tree_id_, {});
+  EXPECT_EQ("ltr", controller().GetTextDirection(2));
+  EXPECT_EQ("rtl", controller().GetTextDirection(3));
+  EXPECT_EQ("auto", controller().GetTextDirection(4));
+  EXPECT_EQ("auto", controller().GetTextDirection(5));
+  EXPECT_EQ("", controller().GetTextDirection(6));
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetLanguage) {
+  ui::AXNodeData node1;
+  node1.id = 2;
+  node1.AddStringAttribute(ax::mojom::StringAttribute::kLanguage, "en");
+
+  ui::AXNodeData node2;
+  node2.id = 3;
+  node2.AddStringAttribute(ax::mojom::StringAttribute::kLanguage, "es");
+
+  ui::AXNodeData node3;
+  node3.id = 4;
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.AddStringAttribute(ax::mojom::StringAttribute::kLanguage, "zh");
+  root.child_ids = {node1.id, node2.id, node3.id};
+  SendUpdateWithNodes(
+      {std::move(root), std::move(node1), std::move(node2), std::move(node3)});
+
+  ProcessDisplayNodes({2, 3, 4});
+  EXPECT_EQ("en", controller().GetLanguage(2));
+  EXPECT_EQ("es", controller().GetLanguage(3));
+  EXPECT_EQ("zh", controller().GetLanguage(4));
+}
+
 TEST_F(ReadAnythingAppControllerTest, IsLeafNode) {
   ui::AXNodeData node1;
   node1.id = 2;

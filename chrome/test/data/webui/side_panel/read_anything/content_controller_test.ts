@@ -462,7 +462,7 @@ suite('ContentController', () => {
     test('builds a bolded text node', () => {
       const text = 'Hear that sound ringin in your mind';
       contentBrowserProxy.textContentMap = {[contentBrowserProxy.rootId]: text};
-      contentBrowserProxy.shouldBoldVal = true;
+      contentBrowserProxy.shouldBoldMap = {[contentBrowserProxy.rootId]: true};
 
       const root = contentController.updateContent();
 
@@ -474,7 +474,7 @@ suite('ContentController', () => {
     test('builds an overline text node', () => {
       const text = 'Better sit down for the show';
       contentBrowserProxy.textContentMap = {[contentBrowserProxy.rootId]: text};
-      contentBrowserProxy.isOverlineVal = true;
+      contentBrowserProxy.isOverlineMap = {[contentBrowserProxy.rootId]: true};
 
       const root = contentController.updateContent();
 
@@ -680,7 +680,7 @@ suite('ContentController', () => {
       const childId = 70;
       const rootId = contentBrowserProxy.rootId;
       contentBrowserProxy.htmlTagMap = {[rootId]: 'p', [childId]: ''};
-      contentBrowserProxy.textDirection = 'rtl';
+      contentBrowserProxy.textDirectionMap = {[rootId]: 'rtl'};
       contentBrowserProxy.textContentMap = {[childId]: 'spittin facts'};
       contentBrowserProxy.childrenMap = {[rootId]: [childId]};
 
@@ -694,7 +694,7 @@ suite('ContentController', () => {
       const childId = 70;
       const rootId = contentBrowserProxy.rootId;
       contentBrowserProxy.htmlTagMap = {[rootId]: 'p', [childId]: ''};
-      contentBrowserProxy.language = 'ko';
+      contentBrowserProxy.languageMap = {[rootId]: 'ko'};
       contentBrowserProxy.textContentMap = {[childId]: 'you know that\'s'};
       contentBrowserProxy.childrenMap = {[rootId]: [childId]};
 
@@ -714,6 +714,157 @@ suite('ContentController', () => {
       const root = contentController.updateContent();
 
       assertTrue(root instanceof HTMLDivElement);
+    });
+
+    test('builds a bolded and overlined text node', () => {
+      const text = 'Overlined and bold';
+      contentBrowserProxy.textContentMap = {[contentBrowserProxy.rootId]: text};
+      contentBrowserProxy.shouldBoldMap = {[contentBrowserProxy.rootId]: true};
+      contentBrowserProxy.isOverlineMap = {[contentBrowserProxy.rootId]: true};
+
+      const root = contentController.updateContent();
+
+      assertTrue(root instanceof HTMLElement);
+      assertEquals('B', root.nodeName);
+      assertEquals(text, root.textContent);
+      assertEquals('overline', root.style.textDecoration);
+    });
+
+    test('builds child elements with different text directions', () => {
+      const parentId = 10;
+      const child1Id = 11;
+      const child2Id = 12;
+      const text1 = 'This is ltr';
+      const text2 = 'This link is rtl';
+      contentBrowserProxy.rootId = parentId;
+      contentBrowserProxy.htmlTagMap = {
+        [parentId]: 'p',
+        [child1Id]: '',
+        [child2Id]: 'a',
+      };
+      contentBrowserProxy.childrenMap = {[parentId]: [child1Id, child2Id]};
+      contentBrowserProxy.textContentMap = {
+        [child1Id]: text1,
+        [child2Id]: text2,
+      };
+      contentBrowserProxy.textDirectionMap = {
+        [parentId]: 'ltr',
+        [child2Id]: 'rtl',
+      };
+
+      const root = contentController.updateContent();
+
+      assertTrue(root instanceof HTMLParagraphElement);
+      assertEquals('ltr', root.getAttribute('dir'));
+      const link = root.querySelector('a');
+      assertTrue(!!link);
+      assertEquals('rtl', link.getAttribute('dir'));
+    });
+
+    test('builds child elements with different languages', () => {
+      const parentId = 10;
+      const child1Id = 11;
+      const child2Id = 12;
+      const text1 = 'This is in English';
+      const text2 = 'This is a link in Chinese';
+      contentBrowserProxy.rootId = parentId;
+      contentBrowserProxy.htmlTagMap = {
+        [parentId]: 'p',
+        [child1Id]: '',
+        [child2Id]: 'a',
+      };
+      contentBrowserProxy.childrenMap = {[parentId]: [child1Id, child2Id]};
+      contentBrowserProxy.textContentMap = {
+        [child1Id]: text1,
+        [child2Id]: text2,
+      };
+      contentBrowserProxy.languageMap = {
+        [parentId]: 'en',
+        [child2Id]: 'zh',
+      };
+
+      const root = contentController.updateContent();
+
+      assertTrue(root instanceof HTMLParagraphElement);
+      assertEquals('en', root.getAttribute('lang'));
+      const link = root.querySelector('a');
+      assertTrue(!!link);
+      assertEquals('zh', link.getAttribute('lang'));
+    });
+
+    test('builds headings with other content', () => {
+      const rootId = 1;
+      const h1Id = 2;
+      const h1TextId = 3;
+      const h2Id = 4;
+      const h2TextId = 5;
+      const h3Id = 6;
+      const h3TextId = 7;
+      const h4Id = 8;
+      const h4TextId = 9;
+      const h5Id = 10;
+      const h5TextId = 11;
+      const h6Id = 12;
+      const h6TextId = 13;
+      const pId = 14;
+      const pTextId = 15;
+
+      contentBrowserProxy.rootId = rootId;
+      contentBrowserProxy.htmlTagMap = {
+        [rootId]: 'div',
+        [h1Id]: 'h1',
+        [h1TextId]: '',
+        [h2Id]: 'h2',
+        [h2TextId]: '',
+        [h3Id]: 'h3',
+        [h3TextId]: '',
+        [h4Id]: 'h4',
+        [h4TextId]: '',
+        [h5Id]: 'h5',
+        [h5TextId]: '',
+        [h6Id]: 'h6',
+        [h6TextId]: '',
+        [pId]: 'p',
+        [pTextId]: '',
+      };
+      contentBrowserProxy.childrenMap = {
+        [rootId]: [h1Id, h2Id, h3Id, h4Id, h5Id, h6Id, pId],
+        [h1Id]: [h1TextId],
+        [h2Id]: [h2TextId],
+        [h3Id]: [h3TextId],
+        [h4Id]: [h4TextId],
+        [h5Id]: [h5TextId],
+        [h6Id]: [h6TextId],
+        [pId]: [pTextId],
+      };
+      contentBrowserProxy.textContentMap = {
+        [h1TextId]: 'This is an h1.',
+        [h2TextId]: 'This is an h2.',
+        [h3TextId]: 'This is an h3.',
+        [h4TextId]: 'This is an h4.',
+        [h5TextId]: 'This is an h5.',
+        [h6TextId]: 'This is an h6.',
+        [pTextId]: 'This is a paragraph.',
+      };
+
+      const root = contentController.updateContent();
+
+      assertTrue(root instanceof HTMLDivElement);
+      assertEquals(7, root.children.length);
+      assertEquals('H1', root.children[0]!.tagName);
+      assertEquals('This is an h1.', root.children[0]!.textContent);
+      assertEquals('H2', root.children[1]!.tagName);
+      assertEquals('This is an h2.', root.children[1]!.textContent);
+      assertEquals('H3', root.children[2]!.tagName);
+      assertEquals('This is an h3.', root.children[2]!.textContent);
+      assertEquals('H4', root.children[3]!.tagName);
+      assertEquals('This is an h4.', root.children[3]!.textContent);
+      assertEquals('H5', root.children[4]!.tagName);
+      assertEquals('This is an h5.', root.children[4]!.textContent);
+      assertEquals('H6', root.children[5]!.tagName);
+      assertEquals('This is an h6.', root.children[5]!.textContent);
+      assertEquals('P', root.children[6]!.tagName);
+      assertEquals('This is a paragraph.', root.children[6]!.textContent);
     });
 
     test(

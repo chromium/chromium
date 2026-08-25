@@ -371,7 +371,8 @@ declare namespace chrome {
     // Called when the number of words heard by a read aloud user changes.
     function updateWordsHeard(wordsHeard: number): void;
 
-    // Set the content. Used by tests only.
+    // Sets the AX Tree data for testing and forces the processing of the
+    // AX Tree Anchors.
     // SnapshotLite is a data structure which resembles an AXTreeUpdate. E.g.:
     //   const axTree = {
     //     rootId: 1,
@@ -388,10 +389,6 @@ declare namespace chrome {
     //       },
     //     ],
     //   };
-    function setContentForTesting(
-        snapshotLite: Object, contentNodeIds: number[]): void;
-    // Sets the same structure as setContentForTesting but forces
-    // the processing of the AX Tree Anchors.
     function setAnchorsForTesting(
         snapshotLite: Object, contentNodeIds: number[]): void;
 

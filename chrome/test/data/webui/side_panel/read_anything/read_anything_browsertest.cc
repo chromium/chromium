@@ -111,12 +111,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, WordBoundariesUsedForSpeech) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, UpdateContentIntegration) {
-  RunSidePanelTest(
-      "side_panel/read_anything/update_content_integration_test.js",
-      "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Highlighter) {
   RunSidePanelTest("side_panel/read_anything/highlighter_test.js",
                    "mocha.run()");

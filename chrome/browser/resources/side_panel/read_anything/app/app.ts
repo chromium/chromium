@@ -280,6 +280,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
       this.selectionController_.updateSelection(
           this.getSelection(), this.$.container);
     });
+    this.contentBrowserProxy_.updateContent.addListener(
+        this.updateContent.bind(this));
     this.contentBrowserProxy_.showLoading.addListener(
         this.showLoading.bind(this));
     this.visualBrowserProxy_.onPinStateReceived.addListener(
@@ -296,10 +298,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
     /////////////////////////////////////////////////////////////////////
     // Called by ReadAnythingAppController via callback router. //
     /////////////////////////////////////////////////////////////////////
-    chrome.readingMode.updateContent = () => {
-      this.updateContent();
-    };
-
     chrome.readingMode.restoreSettingsFromPrefs = () => {
       this.restoreSettingsFromPrefs_();
     };

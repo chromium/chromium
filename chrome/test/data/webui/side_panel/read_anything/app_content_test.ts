@@ -510,6 +510,17 @@ suite('AppContent', () => {
       assertEquals(text, app.$.container.textContent);
     });
 
+    test('updateContent event calls updateContent', async () => {
+      const text = 'I guess I\'ve already won that';
+      contentBrowserProxy.textContentMap = {2: text};
+
+      contentBrowserProxy.updateContent.callListeners();
+      await microtasksFinished();
+
+      assertTrue(contentController.hasContent());
+      assertEquals(text, app.$.container.textContent);
+    });
+
     test('adds has-selection class when valid selection', async () => {
       // Create and append a nav element to test visibility
       const nav = document.createElement('nav');

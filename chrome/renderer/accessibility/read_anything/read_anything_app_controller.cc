@@ -1642,8 +1642,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("supportedFonts",
                    &ReadAnythingAppController::GetSupportedFonts)
       .SetProperty("allFonts", &ReadAnythingAppController::GetAllFonts)
-      .SetMethod("setContentForTesting",
-                 &ReadAnythingAppController::SetContentForTesting)
       .SetMethod("setAnchorsForTesting",
                  &ReadAnythingAppController::SetAnchorsForTesting)
       .SetMethod("setLanguageForTesting",

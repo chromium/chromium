@@ -37,6 +37,7 @@ export interface ContentBrowserProxy {
   updateImages: ChromeEvent<() => void>;
   updateLinks: ChromeEvent<() => void>;
   updateSelection: ChromeEvent<() => void>;
+  updateContent: ChromeEvent<() => void>;
 
   //////////////////////////////////////////////////////////////////////////////
   // Outgoing calls (TypeScript -> C++):
@@ -105,6 +106,7 @@ export class ContentBrowserProxyImpl implements ContentBrowserProxy {
   updateImages = new EventForwarder<() => void>();
   updateLinks = new EventForwarder<() => void>();
   updateSelection = new EventForwarder<() => void>();
+  updateContent = new EventForwarder<() => void>();
 
   constructor() {
     chrome.readingMode.onAnchorsReadyForReadability = () => {
@@ -145,6 +147,10 @@ export class ContentBrowserProxyImpl implements ContentBrowserProxy {
 
     chrome.readingMode.updateSelection = () => {
       this.updateSelection.forward();
+    };
+
+    chrome.readingMode.updateContent = () => {
+      this.updateContent.forward();
     };
   }
 
