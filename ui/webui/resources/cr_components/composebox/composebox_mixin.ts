@@ -248,6 +248,7 @@ export const ComposeboxEmbedderMixin =
 
         browserTabContextAdded: boolean = false;
         pendingUploads: Set<UnguessableToken> = new Set();
+        earlyCompletedUploads: Set<UnguessableToken> = new Set();
         dragAndDropEnabled: boolean =
             loadTimeData.getBoolean('composeboxContextDragAndDropEnabled');
         composeboxSource: string = loadTimeData.getString('composeboxSource');
@@ -850,6 +851,12 @@ export const ComposeboxEmbedderMixin =
         onContextualInputStatusChanged(
             token: UnguessableToken, status: ContextUploadStatus,
             errorType: ContextUploadErrorType|null) {
+          if (!this.files.has(token) && isContextUploadStatusTerminal(status)) {
+            // Buffer early terminal statuses in case C++ finishes uploading
+            // before the async `addTabContext` response resolves and maps
+            // the token into `this.files`.
+            this.earlyCompletedUploads.add(token);
+          }
           // If error message is updated, then the returned file is stale and
           // removed from carousel. File is removed from carousel on
           // `kUploadReplaced` as well despite no error message being returned
@@ -1362,7 +1369,11 @@ export const ComposeboxEmbedderMixin =
               ...this.addedTabsIds.entries(),
               [tabUpload.tabId, attachment.uuid],
             ]);
-            if (!tabUpload.delayUpload) {
+            // If the upload already completed before the async `addTabContext`
+            // call resolved, avoid adding it to pending uploads so the submit
+            // button is not stuck disabled.
+            if (!tabUpload.delayUpload &&
+                !this.earlyCompletedUploads.delete(token)) {
               this.addToPendingUploads(attachment.uuid);
             }
             this.focusInput();
@@ -2825,6 +2836,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   isCanvasQuerySubmitted: boolean;
   browserTabContextAdded: boolean;
   pendingUploads: Set<UnguessableToken>;
+  earlyCompletedUploads: Set<UnguessableToken>;
   dragAndDropEnabled: boolean;
   composeboxSource: string;
   maxFileCount: number;
