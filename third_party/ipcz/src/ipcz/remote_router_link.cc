@@ -270,8 +270,7 @@ void RemoteRouterLink::AcceptParcel(std::unique_ptr<Parcel> parcel) {
       accept.GetArrayView<RouterDescriptor>(accept.v0()->new_routers);
 
   if (!inline_parcel_data.empty()) {
-    IPCZ_UNSAFE_TODO(memcpy(inline_parcel_data.data(),
-                            parcel->data_view().data(), parcel->data_size()));
+    std::ranges::copy(parcel->data_view(), inline_parcel_data.begin());
   }
 
   // Serialize attached objects. We accumulate the Routers of all attached
@@ -282,8 +281,10 @@ void RemoteRouterLink::AcceptParcel(std::unique_ptr<Parcel> parcel) {
 
   // Explicitly zero the descriptor memory since there may be padding bits
   // within and we'll be copying the full contents into message data below.
-  IPCZ_UNSAFE_TODO(memset(descriptors.data(), 0,
-                          descriptors.size() * sizeof(descriptors[0])));
+  // SAFETY: `descriptors` is an InlinedVector allocated with `num_portals`
+  // elements.
+  IPCZ_UNSAFE_BUFFERS(memset(descriptors.data(), 0,
+                             descriptors.size() * sizeof(descriptors[0])));
 
   size_t portal_index = 0;
   for (size_t i = 0; i < objects.size(); ++i) {
@@ -328,9 +329,13 @@ void RemoteRouterLink::AcceptParcel(std::unique_ptr<Parcel> parcel) {
 
   // Copy all the serialized router descriptors into the message. Our local
   // copy will supply inputs for BeginProxyingToNewRouter() calls below.
+  // A byte-level copy is used to ensure zeroed padding bits are copied to the
+  // wire.
   if (!descriptors.empty()) {
-    IPCZ_UNSAFE_TODO(memcpy(new_routers.data(), descriptors.data(),
-                            new_routers.size() * sizeof(new_routers[0])));
+    // SAFETY: `new_routers` was allocated with `num_portals` elements, matching
+    // `descriptors.size()`.
+    IPCZ_UNSAFE_BUFFERS(memcpy(new_routers.data(), descriptors.data(),
+                               descriptors.size() * sizeof(descriptors[0])));
   }
 
   if (must_split_parcel) {
