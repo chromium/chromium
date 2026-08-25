@@ -539,10 +539,9 @@ public class WebViewChromiumAwInit {
             boolean isUiThreadMainLooper = mainLooper.equals(looper);
             Log.v(
                     TAG,
-                    "Binding Chromium to "
-                            + (isUiThreadMainLooper ? "main" : "background")
-                            + " looper "
-                            + looper);
+                    "Binding Chromium to %s looper %s",
+                    isUiThreadMainLooper ? "main" : "background",
+                    looper);
             RecordHistogram.recordBooleanHistogram(
                     "Android.WebView.Startup.IsUiThreadMainLooper", isUiThreadMainLooper);
             ThreadUtils.setUiThread(looper);
