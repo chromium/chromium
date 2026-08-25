@@ -11,8 +11,6 @@
 
 #import "base/containers/flat_map.h"
 #import "base/functional/callback_forward.h"
-#import "base/memory/ptr_util.h"
-#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/types/expected.h"
 #import "base/types/pass_key.h"
@@ -37,7 +35,7 @@ struct ActorSuggestion;
 
 namespace actor {
 
-class ActorTask;
+class ActorEngine;
 class AggregatedJournal;
 
 // Combines a `credential` and a user choice in the account picker, and
@@ -51,7 +49,7 @@ class ActorTaskFormFillingHandler {
  public:
   // Static public constructor.
   static std::unique_ptr<ActorTaskFormFillingHandler> Create(
-      base::PassKey<ActorTask> pass_key,
+      base::PassKey<ActorEngine> pass_key,
       AggregatedJournal& journal,
       ActorTaskId task_id);
 
@@ -80,7 +78,7 @@ class ActorTaskFormFillingHandler {
 
   // Sets the intervention delegate.
   void SetInterventionDelegate(
-      base::PassKey<ActorTask> pass_key,
+      base::PassKey<ActorEngine> pass_key,
       id<ActorTaskInterventionDelegate> intervention_delegate) {
     intervention_delegate_ = intervention_delegate;
   }

@@ -4,15 +4,9 @@
 
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 
-#import <optional>
-
 #import "base/functional/callback_helpers.h"
 #import "base/strings/string_number_conversions.h"
-#import "base/test/test_future.h"
-#import "base/token.h"
-#import "base/types/strong_alias.h"
 #import "components/actor/core/aggregated_journal.h"
-#import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
@@ -688,7 +682,7 @@ TEST_F(ActorTaskTest, WindowIdAndInsertWebState) {
   int32_t window_id = agent->browser_id().id();
 
   // Test that we can validate the window ID.
-  ToolDelegate* tool_delegate = task_.get();
+  ToolDelegate* tool_delegate = &task_->engine();
   EXPECT_TRUE(tool_delegate->IsWindowIdValid(window_id));
   EXPECT_FALSE(tool_delegate->IsWindowIdValid(999));
 
@@ -729,7 +723,7 @@ TEST_F(ActorTaskTest, InsertWebState_AdjacentPlacement) {
   int32_t window_id =
       ActorBrowserAgent::FromBrowser(browser.get())->browser_id().id();
 
-  ToolDelegate* tool_delegate = task_.get();
+  ToolDelegate* tool_delegate = &task_->engine();
 
   // 1. Insert WebState A (controlled) at index 0.
   auto web_state_a = std::make_unique<web::FakeWebState>();

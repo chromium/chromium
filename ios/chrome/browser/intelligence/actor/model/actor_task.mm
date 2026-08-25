@@ -8,18 +8,15 @@
 
 #import "base/functional/bind.h"
 #import "base/ios/crb_protocol_observers.h"
-#import "base/stl_util.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/timer/timer.h"
 #import "components/actor/core/aggregated_journal.h"
-#import "components/actor/core/journal_details_builder.h"
 #import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
-#import "ios/chrome/browser/intelligence/actor/model/actor_task_intervention_handler.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
@@ -89,11 +86,13 @@ ActorTask::ActorTask(ActorTaskId task_id,
       allow_incognito_web_states_(allow_incognito_web_states),
       journal_(journal),
       tool_factory_(tool_factory) {
-  CHECK(browser_list_);
+  CHECK(journal);
+  CHECK(tool_factory);
+  CHECK(browser_list);
   // TODO(crbug.com/504704411): Allow incognito WebStates.
   CHECK(!allow_incognito_web_states_);
   engine_ = std::make_unique<ActorEngine>(/*execution_updates_delegate=*/this,
-                                          /*tool_delegate=*/this);
+                                          /*owner_task=*/this);
   observers_ = static_cast<CRBProtocolObservers<ActorTaskUpdatesObserver>*>(
       [CRBProtocolObservers
           observersWithProtocol:@protocol(ActorTaskUpdatesObserver)]);
@@ -139,6 +138,11 @@ ActorTaskState ActorTask::GetState() const {
   return state_;
 }
 
+ActorEngine& ActorTask::engine() const {
+  CHECK(engine_);
+  return *engine_;
+}
+
 void ActorTask::Act(std::vector<std::unique_ptr<ActorToolRequest>> actions,
                     const std::string& task_update,
                     ActCallback callback) {
@@ -159,7 +163,7 @@ void ActorTask::AddControlledWebState(web::WebState* web_state) {
   if (!std::ranges::contains(controlled_web_states_, web_state,
                              &base::WeakPtr<web::WebState>::get)) {
     LogJournalEvent(
-        GetJournal(), GURL(), task_id_, "ActorTask::AddControlledWebState",
+        *journal_, GURL(), task_id_, "ActorTask::AddControlledWebState",
         {{"web_state_id", base::NumberToString(
                               web_state->GetUniqueIdentifier().identifier())}});
     controlled_web_states_.push_back(web_state->GetWeakPtr());
@@ -212,10 +216,6 @@ void ActorTask::DidStopLoading(web::WebState* web_state) {
 
 void ActorTask::WebStateDestroyed(web::WebState* web_state) {
   OnWebStateFinishedLoading(web_state);
-}
-
-ActorTaskId ActorTask::GetTaskId() const {
-  return task_id_;
 }
 
 bool ActorTask::IsWindowIdValid(int32_t window_id) {
@@ -280,35 +280,21 @@ ActorToolFactory& ActorTask::GetToolFactory() const {
 void ActorTask::Interrupt(bool retain_user_control,
                           ActorTaskInterruptReason interrupt_reason) {
   // TODO(crbug.com/548051839): Implement and test.
-}
-
-void ActorTask::InterruptFromTool() {
-  // TODO(crbug.com/548051839): Implement using Interrupt.
-  if (GetState() != ActorTaskState::kReflecting &&
-      GetState() != ActorTaskState::kActing) {
+  if (state_ != ActorTaskState::kReflecting &&
+      state_ != ActorTaskState::kActing) {
     return;
   }
-  Pause(/*by_actor=*/true);
+  Pause(/*from_actor=*/true);
   SetState(ActorTaskState::kWaitingOnUser);
 }
 
-void ActorTask::UninterruptFromTool() {
-  if (GetState() != ActorTaskState::kWaitingOnUser) {
+void ActorTask::Uninterrupt(ActorTaskState resumed_state) {
+  // TODO(crbug.com/548051839): Implement and test.
+  if (state_ != ActorTaskState::kWaitingOnUser) {
     return;
   }
   Resume();
-  SetState(ActorTaskState::kActing);
-}
-
-ActorTaskFormFillingHandler* ActorTask::GetActorTaskFormFillingHandler() {
-  if (!form_filling_handler_) {
-    intervention_handler_ = [[ActorTaskInterventionHandler alloc] init];
-    form_filling_handler_ = ActorTaskFormFillingHandler::Create(
-        base::PassKey<ActorTask>(), GetJournal(), task_id_);
-    form_filling_handler_->SetInterventionDelegate(base::PassKey<ActorTask>(),
-                                                   intervention_handler_);
-  }
-  return form_filling_handler_.get();
+  SetState(resumed_state);
 }
 
 void ActorTask::OnWebStateFinishedLoading(web::WebState* web_state) {
@@ -390,7 +376,7 @@ void ActorTask::SetActuatingOnWebStates(bool actuating) {
 }
 
 void ActorTask::SetState(ActorTaskState new_state) {
-  LogJournalEvent(GetJournal(), GURL(), task_id_, "ActorTask::SetState",
+  LogJournalEvent(*journal_, GURL(), task_id_, "ActorTask::SetState",
                   {{"current_state", ActorTaskStateToString(state_)},
                    {"new_state", ActorTaskStateToString(new_state)}});
   ActorTaskState old_state = state_;

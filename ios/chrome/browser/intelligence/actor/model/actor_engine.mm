@@ -4,20 +4,17 @@
 
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 
+#import "base/check_op.h"
 #import "base/functional/bind.h"
-#import "base/strings/string_number_conversions.h"
 #import "base/strings/stringprintf.h"
-#import "base/task/sequenced_task_runner.h"
-#import "components/actor/core/aggregated_journal.h"
-#import "components/actor/core/journal_details_builder.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_task_intervention_handler.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_task_form_filling_handler.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_controller.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/logging_util.h"
-#import "ios/chrome/browser/intelligence/features/features.h"
-#import "ios/web/public/web_state.h"
 
 namespace actor {
 
@@ -88,12 +85,12 @@ web::WebStateID GetWebStateIDForAction(const ActorToolRequest* action) {
 }  // namespace
 
 ActorEngine::ActorEngine(ExecutionUpdatesDelegate* execution_updates_delegate,
-                         ToolDelegate* tool_delegate)
+                         ActorTask* owner_task)
     : state_(State::kInit),
       execution_updates_delegate_(execution_updates_delegate),
-      tool_delegate_(tool_delegate) {
+      owner_task_(owner_task) {
   CHECK(execution_updates_delegate_);
-  CHECK(tool_delegate_);
+  CHECK(owner_task_);
 }
 
 ActorEngine::~ActorEngine() = default;
@@ -106,8 +103,7 @@ void ActorEngine::Act(std::vector<std::unique_ptr<ActorToolRequest>> actions,
   next_action_index_ = 0;
   action_results_.clear();
 
-  LogActStart(tool_delegate_->GetJournal(), tool_delegate_->GetTaskId(),
-              action_sequence_);
+  LogActStart(GetJournal(), GetTaskId(), action_sequence_);
 
   ExecuteNextAction();
 }
@@ -124,8 +120,7 @@ void ActorEngine::CancelOngoingAndPendingActions(
 
   SetState(State::kFailed);
 
-  LogJournalEvent(tool_delegate_->GetJournal(), GURL(),
-                  tool_delegate_->GetTaskId(), "ExecutionEngine::Cancel",
+  LogJournalEvent(GetJournal(), GURL(), GetTaskId(), "ExecutionEngine::Cancel",
                   {{"reason", EngineResultToString(reason)}});
 
   if (completion_callback_) {
@@ -135,8 +130,8 @@ void ActorEngine::CancelOngoingAndPendingActions(
 
 void ActorEngine::SetState(State new_state) {
   // TODO(crbug.com/503841160): Log the proper WebState URLs.
-  LogJournalEvent(tool_delegate_->GetJournal(), GURL(),
-                  tool_delegate_->GetTaskId(), "ExecutionEngine::StateChange",
+  LogJournalEvent(GetJournal(), GURL(), GetTaskId(),
+                  "ExecutionEngine::StateChange",
                   {{"current_state", ActorEngineStateToString(state_)},
                    {"new_state", ActorEngineStateToString(new_state)}});
   state_ = new_state;
@@ -187,7 +182,7 @@ void ActorEngine::FinishedUiPreInvoke(ActionResult result) {
 
   const ActorToolRequest* action =
       action_sequence_[InProgressActionIndex()].get();
-  tool_controller_ = std::make_unique<ToolController>(tool_delegate_);
+  tool_controller_ = std::make_unique<ToolController>(/*tool_delegate=*/this);
   tool_controller_->CreateToolAndValidate(
       *action, base::BindOnce(&ActorEngine::OnToolValidationComplete,
                               weak_ptr_factory_.GetWeakPtr()));
@@ -199,7 +194,7 @@ void ActorEngine::OnToolValidationComplete(ToolExecutionResult result) {
     return;
   }
   LogToolExecutionResult(
-      tool_delegate_->GetJournal(), GURL(), tool_delegate_->GetTaskId(),
+      GetJournal(), GURL(), GetTaskId(),
       /*event_name=*/
       base::StringPrintf("CreateTool #%zu", InProgressActionIndex()), result,
       /*success_details_key=*/"ActorEngine::FinishedUiPreInvoke");
@@ -265,6 +260,58 @@ void ActorEngine::CompleteActions(ActionResult result) {
 size_t ActorEngine::InProgressActionIndex() const {
   CHECK_GT(next_action_index_, 0ul);
   return next_action_index_ - 1;
+}
+
+#pragma mark - ToolDelegate
+
+ActorTaskId ActorEngine::GetTaskId() const {
+  CHECK(owner_task_);
+  return owner_task_->task_id();
+}
+
+AggregatedJournal& ActorEngine::GetJournal() const {
+  CHECK(owner_task_);
+  return owner_task_->GetJournal();
+}
+
+ActorToolFactory& ActorEngine::GetToolFactory() const {
+  CHECK(owner_task_);
+  return owner_task_->GetToolFactory();
+}
+
+ActorTaskFormFillingHandler* ActorEngine::GetActorTaskFormFillingHandler() {
+  if (!form_filling_handler_) {
+    intervention_handler_ = [[ActorTaskInterventionHandler alloc] init];
+    form_filling_handler_ = ActorTaskFormFillingHandler::Create(
+        base::PassKey<ActorEngine>(), GetJournal(), GetTaskId());
+    form_filling_handler_->SetInterventionDelegate(base::PassKey<ActorEngine>(),
+                                                   intervention_handler_);
+  }
+  return form_filling_handler_.get();
+}
+
+void ActorEngine::InterruptFromTool() {
+  CHECK(owner_task_);
+  owner_task_->Interrupt(/*retain_user_control=*/false,
+                         ActorTaskInterruptReason::kUnknownReason);
+}
+
+void ActorEngine::UninterruptFromTool() {
+  CHECK(owner_task_);
+  owner_task_->Uninterrupt(ActorTaskState::kActing);
+}
+
+bool ActorEngine::IsWindowIdValid(int32_t window_id) {
+  CHECK(owner_task_);
+  return owner_task_->IsWindowIdValid(window_id);
+}
+
+web::WebState* ActorEngine::InsertWebState(
+    int32_t window_id,
+    const web::NavigationManager::WebLoadParams& load_params,
+    bool in_background) {
+  CHECK(owner_task_);
+  return owner_task_->InsertWebState(window_id, load_params, in_background);
 }
 
 }  // namespace actor

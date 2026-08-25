@@ -6,22 +6,28 @@
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_ENGINE_H_
 
 #import <memory>
-#import <optional>
 #import <vector>
 
-#import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
-#import "components/actor/core/aggregated_journal.h"
-#import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state_id.h"
+
+@class ActorTaskInterventionHandler;
+
+namespace web {
+class WebState;
+}  // namespace web
 
 namespace actor {
 
+class ActorTask;
+class ActorTaskFormFillingHandler;
 class ActorTool;
+class ActorToolFactory;
 class ActorToolRequest;
-class ToolDelegate;
 class ToolController;
 
 // Executes a sequence of actions moving through the state machine.
@@ -32,7 +38,7 @@ class ToolController;
 //
 // Each action execution includes checks, UI updates, and the core work which is
 // the tool invocation.
-class ActorEngine {
+class ActorEngine : public ToolDelegate {
  public:
   // Delegate interface to receive granular tool execution progress updates
   // from the engine. This allows the owning `ActorTask` to track which specific
@@ -87,9 +93,9 @@ class ActorEngine {
   };
 
   ActorEngine(ExecutionUpdatesDelegate* execution_updates_delegate,
-              ToolDelegate* tool_delegate);
+              ActorTask* owner_task);
 
-  ~ActorEngine();
+  ~ActorEngine() override;
   ActorEngine(const ActorEngine&) = delete;
   ActorEngine& operator=(const ActorEngine&) = delete;
 
@@ -100,6 +106,19 @@ class ActorEngine {
 
   // Cancels any ongoing and pending actions.
   void CancelOngoingAndPendingActions(EngineResult reason);
+
+  // ToolDelegate:
+  ActorTaskId GetTaskId() const override;
+  AggregatedJournal& GetJournal() const override;
+  ActorToolFactory& GetToolFactory() const override;
+  ActorTaskFormFillingHandler* GetActorTaskFormFillingHandler() override;
+  void InterruptFromTool() override;
+  void UninterruptFromTool() override;
+  bool IsWindowIdValid(int32_t window_id) override;
+  web::WebState* InsertWebState(
+      int32_t window_id,
+      const web::NavigationManager::WebLoadParams& load_params,
+      bool in_background) override;
 
  private:
   friend class ActorEngineTest;
@@ -167,12 +186,16 @@ class ActorEngine {
   std::unique_ptr<ToolController> tool_controller_;
 
   // The delegate to notify of execution milestones.
-  raw_ptr<ExecutionUpdatesDelegate> execution_updates_delegate_;
+  raw_ptr<ExecutionUpdatesDelegate> execution_updates_delegate_ = nullptr;
 
-  // The ToolDelegate that provides access to Task level data objects. A raw_ptr
-  // is safe since the delegate is owned by the ActorTask which owns the
-  // ActorEngine.
-  raw_ptr<ToolDelegate> tool_delegate_;
+  // The ActorTask that owns this ActorEngine.
+  raw_ptr<ActorTask> owner_task_ = nullptr;
+
+  // The handler for form filling and login tasks.
+  std::unique_ptr<ActorTaskFormFillingHandler> form_filling_handler_;
+
+  // Handler object that intercepts task UI interventions.
+  __strong ActorTaskInterventionHandler* intervention_handler_ = nil;
 
   // Weak pointer factory.
   base::WeakPtrFactory<ActorEngine> weak_ptr_factory_{this};

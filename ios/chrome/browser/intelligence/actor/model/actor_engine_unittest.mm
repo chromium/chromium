@@ -6,11 +6,11 @@
 
 #import "base/run_loop.h"
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
+#import "base/test/test_future.h"
+#import "components/actor/core/aggregated_journal.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_task_form_filling_handler.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -49,74 +50,90 @@ class MockActorEngineExecutionUpdatesDelegate
   bool on_will_execute_called_ = false;
 };
 
-// A fake ToolDelegate used for testing.
-class FakeToolDelegate : public ToolDelegate {
- public:
-  FakeToolDelegate() {
-    profile_ = TestProfileIOS::Builder().Build();
-    journal_ = std::make_unique<AggregatedJournal>();
-    tool_factory_ = std::make_unique<ActorToolFactory>(profile_.get());
-  }
-  ~FakeToolDelegate() override = default;
-
-  ActorTaskId GetTaskId() const override { return ActorTaskId(1); }
-  bool IsWindowIdValid(int32_t window_id) override { return false; }
-  web::WebState* InsertWebState(
-      int32_t window_id,
-      const web::NavigationManager::WebLoadParams& load_params,
-      bool in_background) override {
-    return nullptr;
-  }
-  AggregatedJournal& GetJournal() const override { return *journal_; }
-  ActorToolFactory& GetToolFactory() const override { return *tool_factory_; }
-  ActorTaskFormFillingHandler* GetActorTaskFormFillingHandler() override {
-    return nullptr;
-  }
-  void InterruptFromTool() override {}
-  void UninterruptFromTool() override {}
-
-  std::unique_ptr<TestProfileIOS> profile_;
-  std::unique_ptr<AggregatedJournal> journal_;
-  std::unique_ptr<ActorToolFactory> tool_factory_;
-};
-
 }  // namespace
 
 // Test fixture for ActorEngine.
 class ActorEngineTest : public PlatformTest {
  protected:
-  ActorEngineTest() : engine_(&execution_updates_delegate_, &tool_delegate_) {
-    scoped_feature_list_.InitAndEnableFeature(kActorTools);
+  ActorEngineTest() { scoped_feature_list_.InitAndEnableFeature(kActorTools); }
+
+  void SetUp() override {
+    PlatformTest::SetUp();
+    profile_ = TestProfileIOS::Builder().Build();
+    journal_ = std::make_unique<AggregatedJournal>();
+    tool_factory_ = std::make_unique<ActorToolFactory>(profile_.get());
+    task_ = std::make_unique<ActorTask>(
+        ActorTaskId(1), "Test Task",
+        /*allow_incognito_web_states=*/false, journal_.get(),
+        tool_factory_.get(), BrowserListFactory::GetForProfile(profile_.get()));
+    engine_ = std::make_unique<ActorEngine>(&execution_updates_delegate_,
+                                            task_.get());
   }
 
-  void SetUp() override { PlatformTest::SetUp(); }
+  void TearDown() override {
+    engine_.reset();
+    task_.reset();
+    tool_factory_.reset();
+    journal_.reset();
+    profile_.reset();
+    PlatformTest::TearDown();
+  }
 
-  void SetNextActionIndex(size_t index) { engine_.next_action_index_ = index; }
+  void SetNextActionIndex(size_t index) { engine_->next_action_index_ = index; }
 
   size_t InProgressActionIndex() const {
-    return engine_.InProgressActionIndex();
+    return engine_->InProgressActionIndex();
   }
 
   void PushActionResult(ActionResult result) {
-    engine_.action_results_.push_back(std::move(result));
+    engine_->action_results_.push_back(std::move(result));
   }
 
   const std::vector<ActionResult>& GetActionResults() const {
-    return engine_.action_results_;
+    return engine_->action_results_;
   }
 
-  ActorEngine::State GetState() const { return engine_.state_; }
+  ActorEngine::State GetState() const { return engine_->state_; }
 
   void CompleteActions(ActionResult&& result) {
-    engine_.CompleteActions(std::move(result));
+    engine_->CompleteActions(std::move(result));
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestProfileIOS> profile_;
+  std::unique_ptr<AggregatedJournal> journal_;
+  std::unique_ptr<ActorToolFactory> tool_factory_;
+  std::unique_ptr<ActorTask> task_;
   MockActorEngineExecutionUpdatesDelegate execution_updates_delegate_;
-  FakeToolDelegate tool_delegate_;
-  ActorEngine engine_;
+  std::unique_ptr<ActorEngine> engine_;
 };
+
+// Tests that ToolDelegate methods on ActorEngine properly forward to the task
+// and own handler objects.
+TEST_F(ActorEngineTest, ToolDelegateForwardingAndOwnership) {
+  ToolDelegate* tool_delegate = engine_.get();
+  EXPECT_EQ(tool_delegate->GetTaskId(), ActorTaskId(1));
+  EXPECT_EQ(&tool_delegate->GetJournal(), journal_.get());
+  EXPECT_EQ(&tool_delegate->GetToolFactory(), tool_factory_.get());
+  EXPECT_NE(tool_delegate->GetActorTaskFormFillingHandler(), nullptr);
+}
+
+// Tests that ToolDelegate InterruptFromTool and UninterruptFromTool change
+// task state properly.
+TEST_F(ActorEngineTest, ToolDelegateInterruptAndUninterrupt) {
+  ToolDelegate* tool_delegate = engine_.get();
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  task_->Act({}, "test update", future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  ASSERT_EQ(task_->GetState(), ActorTaskState::kReflecting);
+
+  tool_delegate->InterruptFromTool();
+  EXPECT_EQ(task_->GetState(), ActorTaskState::kWaitingOnUser);
+
+  tool_delegate->UninterruptFromTool();
+  EXPECT_EQ(task_->GetState(), ActorTaskState::kActing);
+}
 
 // Tests that a single action executing successfully completes the engine
 // sequence with a success result.
@@ -128,15 +145,15 @@ TEST_F(ActorEngineTest, ActSuccess) {
   std::vector<ActionResult> results;
   bool callback_called = false;
 
-  engine_.Act(std::move(actions),
-              base::BindOnce(
-                  [](bool* called, std::vector<ActionResult>* res_out,
-                     base::RunLoop* loop, std::vector<ActionResult> res) {
-                    *called = true;
-                    res_out->swap(res);
-                    loop->Quit();
-                  },
-                  &callback_called, &results, &run_loop));
+  engine_->Act(std::move(actions),
+               base::BindOnce(
+                   [](bool* called, std::vector<ActionResult>* res_out,
+                      base::RunLoop* loop, std::vector<ActionResult> res) {
+                     *called = true;
+                     res_out->swap(res);
+                     loop->Quit();
+                   },
+                   &callback_called, &results, &run_loop));
 
   run_loop.Run();
 
@@ -155,15 +172,15 @@ TEST_F(ActorEngineTest, ActFailure) {
   std::vector<ActionResult> results;
   bool callback_called = false;
 
-  engine_.Act(std::move(actions),
-              base::BindOnce(
-                  [](bool* called, std::vector<ActionResult>* res_out,
-                     base::RunLoop* loop, std::vector<ActionResult> res) {
-                    *called = true;
-                    res_out->swap(res);
-                    loop->Quit();
-                  },
-                  &callback_called, &results, &run_loop));
+  engine_->Act(std::move(actions),
+               base::BindOnce(
+                   [](bool* called, std::vector<ActionResult>* res_out,
+                      base::RunLoop* loop, std::vector<ActionResult> res) {
+                     *called = true;
+                     res_out->swap(res);
+                     loop->Quit();
+                   },
+                   &callback_called, &results, &run_loop));
 
   run_loop.Run();
 
@@ -183,15 +200,15 @@ TEST_F(ActorEngineTest, ActSequenceSuccessFailure) {
   std::vector<ActionResult> results;
   bool callback_called = false;
 
-  engine_.Act(std::move(actions),
-              base::BindOnce(
-                  [](bool* called, std::vector<ActionResult>* res_out,
-                     base::RunLoop* loop, std::vector<ActionResult> res) {
-                    *called = true;
-                    res_out->swap(res);
-                    loop->Quit();
-                  },
-                  &callback_called, &results, &run_loop));
+  engine_->Act(std::move(actions),
+               base::BindOnce(
+                   [](bool* called, std::vector<ActionResult>* res_out,
+                      base::RunLoop* loop, std::vector<ActionResult> res) {
+                     *called = true;
+                     res_out->swap(res);
+                     loop->Quit();
+                   },
+                   &callback_called, &results, &run_loop));
 
   run_loop.Run();
 
@@ -210,15 +227,15 @@ TEST_F(ActorEngineTest, ActEmptySequence) {
   std::vector<ActionResult> results;
   bool callback_called = false;
 
-  engine_.Act(std::move(actions),
-              base::BindOnce(
-                  [](bool* called, std::vector<ActionResult>* res_out,
-                     base::RunLoop* loop, std::vector<ActionResult> res) {
-                    *called = true;
-                    res_out->swap(res);
-                    loop->Quit();
-                  },
-                  &callback_called, &results, &run_loop));
+  engine_->Act(std::move(actions),
+               base::BindOnce(
+                   [](bool* called, std::vector<ActionResult>* res_out,
+                      base::RunLoop* loop, std::vector<ActionResult> res) {
+                     *called = true;
+                     res_out->swap(res);
+                     loop->Quit();
+                   },
+                   &callback_called, &results, &run_loop));
 
   run_loop.Run();
 
@@ -237,15 +254,15 @@ TEST_F(ActorEngineTest, ActMultipleSuccess) {
   std::vector<ActionResult> results;
   bool callback_called = false;
 
-  engine_.Act(std::move(actions),
-              base::BindOnce(
-                  [](bool* called, std::vector<ActionResult>* res_out,
-                     base::RunLoop* loop, std::vector<ActionResult> res) {
-                    *called = true;
-                    res_out->swap(res);
-                    loop->Quit();
-                  },
-                  &callback_called, &results, &run_loop));
+  engine_->Act(std::move(actions),
+               base::BindOnce(
+                   [](bool* called, std::vector<ActionResult>* res_out,
+                      base::RunLoop* loop, std::vector<ActionResult> res) {
+                     *called = true;
+                     res_out->swap(res);
+                     loop->Quit();
+                   },
+                   &callback_called, &results, &run_loop));
 
   run_loop.Run();
 
@@ -284,7 +301,7 @@ TEST_F(ActorEngineTest, CompleteActionsOverwrite) {
 // just before tool execution with correct, unique parameters for every tool in
 // the sequence.
 TEST_F(ActorEngineTest, OnWillExecuteToolCalled) {
-  TestProfileIOS* profile = tool_delegate_.profile_.get();
+  TestProfileIOS* profile = profile_.get();
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
   auto browser = std::make_unique<TestBrowser>(profile);
   browser_list->AddBrowser(browser.get());
@@ -318,7 +335,7 @@ TEST_F(ActorEngineTest, OnWillExecuteToolCalled) {
   actions.push_back(std::make_unique<ActorToolRequest>(action2));
 
   base::RunLoop run_loop;
-  engine_.Act(
+  engine_->Act(
       std::move(actions),
       base::BindOnce([](base::RunLoop* loop,
                         std::vector<ActionResult> res) { loop->Quit(); },
@@ -346,15 +363,15 @@ TEST_F(ActorEngineTest, ActWithNullTool) {
   std::vector<ActionResult> results;
   bool callback_called = false;
 
-  engine_.Act(std::move(actions),
-              base::BindOnce(
-                  [](bool* called, std::vector<ActionResult>* res_out,
-                     base::RunLoop* loop, std::vector<ActionResult> res) {
-                    *called = true;
-                    res_out->swap(res);
-                    loop->Quit();
-                  },
-                  &callback_called, &results, &run_loop));
+  engine_->Act(std::move(actions),
+               base::BindOnce(
+                   [](bool* called, std::vector<ActionResult>* res_out,
+                      base::RunLoop* loop, std::vector<ActionResult> res) {
+                     *called = true;
+                     res_out->swap(res);
+                     loop->Quit();
+                   },
+                   &callback_called, &results, &run_loop));
 
   run_loop.Run();
 

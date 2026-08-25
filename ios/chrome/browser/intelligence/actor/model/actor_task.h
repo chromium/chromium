@@ -5,11 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_TASK_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_TASK_H_
 
-#import <set>
 #import <string>
 #import <vector>
 
-#import "base/containers/flat_map.h"
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
@@ -18,12 +16,9 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_task_form_filling_handler.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state_observer.h"
-#import "url/origin.h"
 
-@class ActorTaskInterventionHandler;
 @class CRBProtocolObservers;
 
 class Browser;
@@ -43,8 +38,7 @@ class AggregatedJournal;
 // a whole Actor journey and be passed multiple sets of actions to execute
 // sequentially.
 class ActorTask : public web::WebStateObserver,
-                  public ActorEngine::ExecutionUpdatesDelegate,
-                  public ToolDelegate {
+                  public ActorEngine::ExecutionUpdatesDelegate {
  public:
   ActorTask(ActorTaskId task_id,
             const std::string& title,
@@ -65,9 +59,13 @@ class ActorTask : public web::WebStateObserver,
   // Removes a registered observer.
   void RemoveObserver(id<ActorTaskUpdatesObserver> observer);
 
-  // Accessors. TODO(crbug.com/496164697): Remove when they are used internally
-  // in ActorTask, this is to fix compilation.
   const std::string& title() const { return title_; }
+
+  // Returns the unique identifier of the task.
+  ActorTaskId task_id() const { return task_id_; }
+
+  // Returns the execution engine associated with this task.
+  ActorEngine& engine() const;
 
   // Returns the current execution state of the task.
   ActorTaskState GetState() const;
@@ -99,9 +97,30 @@ class ActorTask : public web::WebStateObserver,
   void Interrupt(bool retain_user_control,
                  ActorTaskInterruptReason interrupt_reason);
 
+  // Uninterrupts the task from waiting on user input, resuming execution into
+  // the given `resumed_state`.
+  void Uninterrupt(ActorTaskState resumed_state);
+
   // Returns whether this task's underlying engine is actively controlling
   // or observing the given WebState.
   bool IsControllingWebState(web::WebState* web_state) const;
+
+  // Returns the journal used for logging.
+  AggregatedJournal& GetJournal() const;
+
+  // Returns the tool factory associated with this task.
+  ActorToolFactory& GetToolFactory() const;
+
+  // Returns whether the window identified by `window_id` exists.
+  bool IsWindowIdValid(int32_t window_id);
+
+  // Inserts a new WebState with `load_params` in the window identified by
+  // `window_id`. Position of the new tab is determined by the task. Returns
+  // the inserted WebState, or nullptr if the insertion failed.
+  web::WebState* InsertWebState(
+      int32_t window_id,
+      const web::NavigationManager::WebLoadParams& load_params,
+      bool in_background);
 
   // Returns the set of web states actively controlled by this task.
   const std::vector<base::WeakPtr<web::WebState>>& controlled_web_states()
@@ -116,19 +135,6 @@ class ActorTask : public web::WebStateObserver,
 
  private:
   friend class ActorTaskTest;
-
-  // ToolDelegate:
-  ActorTaskId GetTaskId() const override;
-  bool IsWindowIdValid(int32_t window_id) override;
-  web::WebState* InsertWebState(
-      int32_t window_id,
-      const web::NavigationManager::WebLoadParams& load_params,
-      bool in_background) override;
-  AggregatedJournal& GetJournal() const override;
-  ActorToolFactory& GetToolFactory() const override;
-  void InterruptFromTool() override;
-  void UninterruptFromTool() override;
-  ActorTaskFormFillingHandler* GetActorTaskFormFillingHandler() override;
 
   // Sets the actuation state on all controlled `WebState`s based on
   // `actuating`.
@@ -216,15 +222,6 @@ class ActorTask : public web::WebStateObserver,
   // executions. `CRBProtocolObservers` itself is held strongly, but the
   // observers inside are held weakly.
   __strong CRBProtocolObservers<ActorTaskUpdatesObserver>* observers_;
-
-  // The handler for form filling and login tasks.
-  std::unique_ptr<ActorTaskFormFillingHandler> form_filling_handler_;
-
-  // Handler object that intercepts task UI interventions.
-  //
-  // TODO(crbug.com/496195979): This is a temporary placeholder. Replace by the
-  // real one when implemented.
-  __strong ActorTaskInterventionHandler* intervention_handler_;
 
   // Weak pointer factory.
   base::WeakPtrFactory<ActorTask> weak_ptr_factory_{this};

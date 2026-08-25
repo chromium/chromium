@@ -19,7 +19,7 @@ namespace actor {
 
 // static
 std::unique_ptr<ActorTaskFormFillingHandler>
-ActorTaskFormFillingHandler::Create(base::PassKey<ActorTask> pass_key,
+ActorTaskFormFillingHandler::Create(base::PassKey<ActorEngine> pass_key,
                                     AggregatedJournal& journal,
                                     ActorTaskId task_id) {
   return base::WrapUnique(new ActorTaskFormFillingHandler(
