@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/args.gni")
 import("//build/config/ui.gni")
 
 assert(toolkit_views)
@@ -126,5 +127,112 @@ if (!is_android) {
       "//ui/gfx",
       "//ui/views",
     ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test/mock_tab_drag_context.cc",
+    "test/mock_tab_drag_context.h",
+  ]
+  public_deps = [
+    ":dragging",
+    "//testing/gmock",
+    "//ui/base/interaction",
+    "//ui/base/metadata",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "dragging_tabs_session_browsertest.cc" ]
+  deps = [
+    ":dragging",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/test:test_support",
+    "//components/tabs:public",
+    "//content/test:test_support",
+    "//ui/base",
+    "//ui/gfx:test_support",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
+
+if (!is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "tab_drag_controller_interactive_uitest.cc",
+      "tab_drag_controller_interactive_uitest.h",
+    ]
+    deps = [
+      ":dragging",
+      ":tab_drag_controller_interactive_test_mixin",
+      "//base/test:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window:create_browser_window",
+      "//chrome/browser/ui/tabs",
+      "//chrome/browser/ui/tabs:features",
+      "//chrome/browser/ui/views/interaction",
+      "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications:web_applications_test_support",
+      "//chrome/common:constants",
+      "//chrome/test:test_support",
+      "//components/constrained_window",
+      "//components/prefs",
+      "//components/split_tabs",
+      "//components/tab_groups",
+      "//components/tabs:public",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//third_party/blink/public/common:headers",
+      "//ui/base:features",
+      "//ui/base:ozone_buildflags",
+      "//ui/base:test_support",
+      "//ui/base/mojom:ui_base_types",
+      "//ui/compositor",
+      "//ui/display",
+      "//ui/events:gesture_detection",
+      "//ui/gfx:test_support",
+      "//ui/views",
+      "//ui/views:test_support",
+    ]
+
+    if (is_chromeos) {
+      deps += [
+        "//ash:test_support",
+        "//chrome/browser/ash/boca/on_task",
+        "//chrome/browser/ash/system_web_apps/test_support",
+        "//chromeos/ui/base",
+        "//chromeos/ui/frame:test_support",
+        "//ui/display:test_support",
+        "//ui/display/manager",
+      ]
+    }
+
+    if (is_linux) {
+      deps += [
+        "//chrome/common:non_code_constants",
+        "//ui/base/dragdrop:types",
+        "//ui/linux:linux_ui",
+      ]
+    }
+
+    if (use_aura) {
+      deps += [ "//ui/aura" ]
+    }
+
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
   }
 }
