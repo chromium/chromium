@@ -1903,9 +1903,11 @@ public class VerticalTabListCoordinator {
                             mMultiInstanceManager,
                             mWindowAndroid,
                             mDataSharingTabManager,
-                            /* reorderFunction= */ (info, toLeft) -> {
-                                // TODO(crbug.com/521982129): Implement tab reordering for a11y.
-                            },
+                            /* reorderFunction= */ (groupId, toPrevious) ->
+                                    VerticalTabReorderUtils.reorderTabGroup(
+                                            mTabModelSelector.getCurrentModel(),
+                                            groupId,
+                                            toPrevious),
                             TabClosingSource.VERTICAL_TAB_STRIP,
                             TabStripLayoutType.VERTICAL);
         }
@@ -1943,9 +1945,13 @@ public class VerticalTabListCoordinator {
                             mWindowAndroid,
                             activity,
                             /* tabBookmarkerSupplier= */ null,
-                            /* reorderFunction= */ (info, toLeft) -> {
-                                // TODO(crbug.com/521982129): Implement tab reordering for a11y.
-                            },
+                            /* reorderFunction= */ (info, toPrevious) ->
+                                    VerticalTabReorderUtils.reorderTabById(
+                                            mTabModelSelector.getCurrentModel(),
+                                            mPinnedTabsModelList,
+                                            mModelList,
+                                            info.getAnchorTabId(),
+                                            toPrevious),
                             mSnackbarManager,
                             mActivityResultTracker,
                             /* modalDialogManager= */ mWindowAndroid.getModalDialogManager(),

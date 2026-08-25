@@ -31,8 +31,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
-import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListItemTouchHelperCallback;
@@ -417,117 +415,59 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         boolean isSolitaryChild = !isGroupHeader && isSolitaryChild(fromViewHolder);
         boolean isGroup = isGroupHeader || isSolitaryChild;
 
+        Token destGroupId = getTabGroupId(toViewHolder);
+        boolean isDestGroupHeader =
+                toViewHolder.getItemViewType() == TabProperties.UiType.TAB_GROUP;
+
         int distance =
                 toViewHolder.getBindingAdapterPosition()
                         - fromViewHolder.getBindingAdapterPosition();
 
         if (!isStandaloneTab && !isGroup) {
             // This is a non-solitary child tab.
-            Token destGroupId = getTabGroupId(toViewHolder);
-            boolean isDestGroupHeader =
-                    toViewHolder.getItemViewType() == TabProperties.UiType.TAB_GROUP;
-
-            if (!Objects.equals(currentGroupId, destGroupId)
-                    || (isDestGroupHeader && Objects.equals(currentGroupId, destGroupId))) {
-                boolean trailing = distance > 0;
-                Tab currentTab = tabModel.getTabById(currentTabId);
-                if (currentTab != null) {
-                    ungroupTab(tabModel, currentTab, trailing);
-                }
+            if (VerticalTabReorderUtils.tryUngroupChildTab(
+                    tabModel,
+                    currentTabId,
+                    currentGroupId,
+                    destGroupId,
+                    isDestGroupHeader,
+                    distance)) {
                 return true;
             }
         }
 
         if (isStandaloneTab) {
             // Intercept swaps between a standalone tab and a tab group.
-            Token destGroupId = getTabGroupId(toViewHolder);
-            if (destGroupId != null) {
-                boolean isDestGroupHeader =
-                        toViewHolder.getItemViewType() == TabProperties.UiType.TAB_GROUP;
-                boolean isDestGroupCollapsed =
-                        isDestGroupHeader
-                                && assumeNonNull(((ViewHolder) toViewHolder).model)
-                                        .get(TabProperties.IS_COLLAPSED);
-
-                if (!isDestGroupCollapsed) {
-                    boolean isDraggingDown = distance > 0;
-
-                    Tab currentTab = tabModel.getTabById(currentTabId);
-                    Tab destinationTab = tabModel.getTabById(destinationTabId);
-
-                    if (currentTab != null && destinationTab != null) {
-                        // Handle grouping when a standalone tab intersects any part of a group.
-                        Integer indexInGroup = 0;
-                        if (!isDestGroupHeader) {
-                            List<Tab> destRelatedTabs = getRelatedTabsForId(destinationTabId);
-                            if (destRelatedTabs != null) {
-                                boolean isDraggingUp = distance < 0;
-                                boolean isTargetLowestTab =
-                                        destRelatedTabs.get(destRelatedTabs.size() - 1).getId()
-                                                == destinationTabId;
-                                if (isDraggingUp && isTargetLowestTab) {
-                                    indexInGroup = null;
-                                } else {
-                                    indexInGroup = destRelatedTabs.indexOf(destinationTab);
-                                    if (isDraggingDown) {
-                                        indexInGroup++;
-                                    }
-                                }
-                            }
-                        }
-                        tabModel.mergeListOfTabsToGroup(
-                                List.of(currentTab),
-                                destinationTab,
-                                indexInGroup,
-                                TabGroupMergeNotificationType.NOTIFY_ALWAYS);
-                        return true;
-                    }
-                }
+            PropertyModel destModel = ((ViewHolder) toViewHolder).model;
+            if (VerticalTabReorderUtils.tryMergeStandaloneTab(
+                    tabModel,
+                    currentTabId,
+                    destinationTabId,
+                    destGroupId,
+                    isDestGroupHeader,
+                    destModel,
+                    distance)) {
+                return true;
             }
         }
 
-        int destinationIndex;
-        boolean isTraversingGroup =
-                isGroup || (isStandaloneTab && getTabGroupId(toViewHolder) != null);
-        if (isTraversingGroup) {
-            // Tab groups should maintain the boundaries of target tab groups
-            // so they do not split other groups during drags.
-            List<Tab> destinationTabGroup = getRelatedTabsForId(destinationTabId);
-            destinationIndex =
-                    distance >= 0
-                            ? TabGroupUtils.getLastTabModelIndexForList(
-                                    tabModel, destinationTabGroup)
-                            : TabGroupUtils.getFirstTabModelIndexForList(
-                                    tabModel, destinationTabGroup);
-        } else {
-            //  - Child tabs should reorder inside tab groups.
-            //  - Standalone tabs use this logic too, but only when not intersecting with a group.
-            Tab destinationTab = tabModel.getTabById(destinationTabId);
-            destinationIndex =
-                    destinationTab != null
-                            ? tabModel.indexOf(destinationTab)
-                            : TabModel.INVALID_TAB_INDEX;
-        }
+        int destinationIndex =
+                VerticalTabReorderUtils.calculateDestinationIndex(
+                        tabModel,
+                        currentTabId,
+                        destinationTabId,
+                        isGroup,
+                        isStandaloneTab,
+                        destGroupId,
+                        distance);
 
         if (destinationIndex == TabModel.INVALID_TAB_INDEX) return false;
-
-        destinationIndex = adjustIndexBasedOnPinning(tabModel, currentTabId, destinationIndex);
 
         // Track the current UI position to correctly clean up visual selection on drop
         mSelectedTabIndex = toViewHolder.getBindingAdapterPosition();
 
         // Perform basic list reordering by updating the TabModel immediately.
-        // - Group headers use moveRelatedTabs() to fire didMoveTabGroup(),
-        //   which TabListMediator observes to update top-level UI rows.
-        // - Child tabs use moveTab() because they move within their group, firing
-        //   didMoveWithinGroup() which TabListMediator observes.
-        // - Standalone tabs use moveTab() since they are single elements.
-
-        if (isGroup) {
-            tabModel.moveRelatedTabs(currentTabId, destinationIndex);
-        } else {
-            tabModel.moveTab(currentTabId, destinationIndex);
-        }
+        VerticalTabReorderUtils.moveTabOrGroup(tabModel, currentTabId, destinationIndex, isGroup);
         return true;
     }
 

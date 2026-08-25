@@ -30,6 +30,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -42,19 +43,23 @@ import java.util.List;
 public class VerticalTabKeyboardHandlerUnitTest {
     private static final int TAB_ID_1 = 101;
     private static final int TAB_ID_2 = 102;
+    private static final int TAB_ID_3 = 103;
     private static final int PINNED_TAB_ID_1 = 201;
     private static final int PINNED_TAB_ID_2 = 202;
+    private static final Token GROUP_ID = new Token(1L, 2L);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
+    @Mock private TabUngrouper mTabUngrouper;
     @Mock private RecyclerView mRecyclerView;
     @Mock private RecyclerView mPinnedTabsRecyclerView;
     @Mock private View mFocusedView;
     @Mock private View mContainingItemView;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
+    @Mock private Tab mTab3;
     @Mock private Tab mPinnedTab1;
     @Mock private Tab mPinnedTab2;
 
@@ -65,6 +70,7 @@ public class VerticalTabKeyboardHandlerUnitTest {
     @Before
     public void setUp() {
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mTabModel.getTabUngrouper()).thenReturn(mTabUngrouper);
         when(mTab1.getId()).thenReturn(TAB_ID_1);
         when(mTab2.getId()).thenReturn(TAB_ID_2);
         when(mPinnedTab1.getId()).thenReturn(PINNED_TAB_ID_1);
@@ -72,15 +78,18 @@ public class VerticalTabKeyboardHandlerUnitTest {
 
         when(mTabModel.getTabById(TAB_ID_1)).thenReturn(mTab1);
         when(mTabModel.getTabById(TAB_ID_2)).thenReturn(mTab2);
+        when(mTabModel.getTabById(TAB_ID_3)).thenReturn(mTab3);
         when(mTabModel.getTabById(PINNED_TAB_ID_1)).thenReturn(mPinnedTab1);
         when(mTabModel.getTabById(PINNED_TAB_ID_2)).thenReturn(mPinnedTab2);
         when(mTabModel.indexOf(mTab1)).thenReturn(0);
         when(mTabModel.indexOf(mTab2)).thenReturn(1);
+        when(mTabModel.indexOf(mTab3)).thenReturn(2);
         when(mTabModel.indexOf(mPinnedTab1)).thenReturn(0);
         when(mTabModel.indexOf(mPinnedTab2)).thenReturn(1);
-        when(mTabModel.getCount()).thenReturn(2);
+        when(mTabModel.getCount()).thenReturn(3);
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mTabModel.getTabAt(1)).thenReturn(mTab2);
+        when(mTabModel.getTabAt(2)).thenReturn(mTab3);
 
         mModelList = new TabListModel();
         mPinnedTabsModelList = new TabListModel();
@@ -181,7 +190,7 @@ public class VerticalTabKeyboardHandlerUnitTest {
         PropertyModel headerModel =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
                         .with(TabProperties.TAB_ID, TAB_ID_1)
-                        .with(TabProperties.TAB_GROUP_HEADER_ID, new Token(1L, 2L))
+                        .with(TabProperties.TAB_GROUP_HEADER_ID, GROUP_ID)
                         .build();
         mModelList.add(new ListItem(TabProperties.UiType.TAB_GROUP, headerModel));
         PropertyModel tabModel2 =
@@ -200,6 +209,114 @@ public class VerticalTabKeyboardHandlerUnitTest {
 
         assertTrue(mHandler.reorderKeyboardFocusedItem(/* toPrevious= */ false));
         verify(mTabModel).moveRelatedTabs(TAB_ID_1, 1);
+    }
+
+    @Test
+    @SmallTest
+    public void testReorderKeyboardFocusedItem_ChildTab_UngroupUp() {
+        PropertyModel headerModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, TAB_ID_1)
+                        .with(TabProperties.TAB_GROUP_HEADER_ID, GROUP_ID)
+                        .build();
+        PropertyModel childModel1 =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, TAB_ID_1)
+                        .with(TabProperties.TAB_GROUP_ID, GROUP_ID)
+                        .build();
+        PropertyModel childModel2 =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, TAB_ID_2)
+                        .with(TabProperties.TAB_GROUP_ID, GROUP_ID)
+                        .build();
+
+        mModelList.add(new ListItem(TabProperties.UiType.TAB_GROUP, headerModel));
+        mModelList.add(new ListItem(TabProperties.UiType.TAB, childModel1));
+        mModelList.add(new ListItem(TabProperties.UiType.TAB, childModel2));
+
+        when(mRecyclerView.hasFocus()).thenReturn(true);
+        when(mRecyclerView.findFocus()).thenReturn(mFocusedView);
+        when(mRecyclerView.findContainingItemView(mFocusedView)).thenReturn(mContainingItemView);
+        when(mRecyclerView.getChildAdapterPosition(mContainingItemView)).thenReturn(1);
+
+        when(mTabModel.getRelatedTabList(TAB_ID_1)).thenReturn(List.of(mTab1, mTab2));
+
+        assertTrue(mHandler.reorderKeyboardFocusedItem(/* toPrevious= */ true));
+        verify(mTabUngrouper).ungroupTabs(List.of(mTab1), /* trailing= */ false, false);
+    }
+
+    @Test
+    @SmallTest
+    public void testReorderKeyboardFocusedItem_ChildTab_UngroupDown() {
+        PropertyModel headerModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, TAB_ID_1)
+                        .with(TabProperties.TAB_GROUP_HEADER_ID, GROUP_ID)
+                        .build();
+        PropertyModel childModel1 =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, TAB_ID_1)
+                        .with(TabProperties.TAB_GROUP_ID, GROUP_ID)
+                        .build();
+        PropertyModel childModel2 =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, TAB_ID_2)
+                        .with(TabProperties.TAB_GROUP_ID, GROUP_ID)
+                        .build();
+
+        mModelList.add(new ListItem(TabProperties.UiType.TAB_GROUP, headerModel));
+        mModelList.add(new ListItem(TabProperties.UiType.TAB, childModel1));
+        mModelList.add(new ListItem(TabProperties.UiType.TAB, childModel2));
+
+        PropertyModel standaloneModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, TAB_ID_3)
+                        .build();
+        mModelList.add(new ListItem(TabProperties.UiType.TAB, standaloneModel));
+
+        when(mRecyclerView.hasFocus()).thenReturn(true);
+        when(mRecyclerView.findFocus()).thenReturn(mFocusedView);
+        when(mRecyclerView.findContainingItemView(mFocusedView)).thenReturn(mContainingItemView);
+        when(mRecyclerView.getChildAdapterPosition(mContainingItemView)).thenReturn(2);
+
+        when(mTabModel.getRelatedTabList(TAB_ID_2)).thenReturn(List.of(mTab1, mTab2));
+
+        assertTrue(mHandler.reorderKeyboardFocusedItem(/* toPrevious= */ false));
+        verify(mTabUngrouper).ungroupTabs(List.of(mTab2), /* trailing= */ true, false);
+    }
+
+    @Test
+    @SmallTest
+    public void testReorderKeyboardFocusedItem_ChildTabAtEndOfList_UngroupsDown() {
+        PropertyModel headerModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, TAB_ID_1)
+                        .with(TabProperties.TAB_GROUP_HEADER_ID, GROUP_ID)
+                        .build();
+        PropertyModel childModel1 =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, TAB_ID_1)
+                        .with(TabProperties.TAB_GROUP_ID, GROUP_ID)
+                        .build();
+        PropertyModel childModel2 =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, TAB_ID_2)
+                        .with(TabProperties.TAB_GROUP_ID, GROUP_ID)
+                        .build();
+
+        mModelList.add(new ListItem(TabProperties.UiType.TAB_GROUP, headerModel));
+        mModelList.add(new ListItem(TabProperties.UiType.TAB, childModel1));
+        mModelList.add(new ListItem(TabProperties.UiType.TAB, childModel2));
+
+        when(mRecyclerView.hasFocus()).thenReturn(true);
+        when(mRecyclerView.findFocus()).thenReturn(mFocusedView);
+        when(mRecyclerView.findContainingItemView(mFocusedView)).thenReturn(mContainingItemView);
+        when(mRecyclerView.getChildAdapterPosition(mContainingItemView)).thenReturn(2);
+
+        when(mTabModel.getRelatedTabList(TAB_ID_2)).thenReturn(List.of(mTab1, mTab2));
+
+        assertTrue(mHandler.reorderKeyboardFocusedItem(/* toPrevious= */ false));
+        verify(mTabUngrouper).ungroupTabs(List.of(mTab2), /* trailing= */ true, false);
     }
 
     @Test
@@ -327,7 +444,7 @@ public class VerticalTabKeyboardHandlerUnitTest {
     private void setupFocusedTab(
             RecyclerView recyclerView,
             TabListModel modelList,
-            int uiType,
+            @TabProperties.UiType int uiType,
             int firstTabId,
             int secondTabId,
             int focusedPosition) {
