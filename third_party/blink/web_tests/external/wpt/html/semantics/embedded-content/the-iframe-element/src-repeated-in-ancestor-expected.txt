@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] same path name, no document fragment
+  assert_false: Subject iframe should not navigate or fire beforeunload expected false got true
+[FAIL] same path name, different document fragment
+  assert_false: Subject iframe should not navigate or fire beforeunload expected false got true
+[FAIL] same path name, no document fragement (intermediary browsing context)
+  assert_false: Subject iframe should not navigate or fire beforeunload expected false got true
+Harness: the test ran to completion.
+
