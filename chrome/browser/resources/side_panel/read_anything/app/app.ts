@@ -282,10 +282,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
       this.updateImages_();
     };
 
-    chrome.readingMode.onImageDownloaded = (nodeId) => {
-      this.contentController_.onImageDownloaded(nodeId);
-    };
-
     chrome.readingMode.updateSelection = () => {
       this.selectionController_.updateSelection(
           this.getSelection(), this.$.container);
@@ -293,10 +289,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
     chrome.readingMode.showLoading = () => {
       this.showLoading();
-    };
-
-    chrome.readingMode.showEmpty = () => {
-      this.contentController_.setEmpty();
     };
 
     chrome.readingMode.restoreSettingsFromPrefs = () => {
@@ -309,10 +301,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
     chrome.readingMode.onAnchorsReadyForReadability = () => {
       this.onReadabilityAnchorsReady_();
-    };
-
-    chrome.readingMode.onNodeWillBeDeleted = (nodeId: number) => {
-      this.contentController_.onNodeWillBeDeleted(nodeId);
     };
 
     chrome.readingMode.onPresentationStateReceived =

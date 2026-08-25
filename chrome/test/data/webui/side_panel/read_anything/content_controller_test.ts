@@ -1522,4 +1522,37 @@ suite('ContentController', () => {
       assertEquals(0, contentBrowserProxy.getCallCount('getAxMapping'));
     });
   });
+
+  test('showEmpty event triggers setEmpty', () => {
+    contentController.setState(ContentType.HAS_CONTENT);
+    contentBrowserProxy.showEmpty.callListeners();
+    assertTrue(contentController.isEmpty());
+  });
+
+  test('onNodeWillBeDeleted event calls onNodeWillBeDeleted', () => {
+    const nodeId = 42;
+    const element = document.createElement('div');
+    nodeStore.setDomNode(element, nodeId);
+    assertTrue(!!nodeStore.getDomNode(nodeId));
+
+    contentBrowserProxy.onNodeWillBeDeleted.callListeners(nodeId);
+
+    assertFalse(!!nodeStore.getDomNode(nodeId));
+  });
+
+  test('onImageDownloaded event calls onImageDownloaded', () => {
+    const nodeId = 5;
+    const canvas = document.createElement('canvas');
+    nodeStore.setDomNode(canvas, nodeId);
+    contentBrowserProxy.imageBitmap = {
+      data: new Uint8ClampedArray([0, 0, 0, 255]),
+      width: 1,
+      height: 1,
+      scale: 1,
+    };
+
+    contentBrowserProxy.onImageDownloaded.callListeners(nodeId);
+
+    assertTrue(!!nodeStore.getDomNode(nodeId));
+  });
 });

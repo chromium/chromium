@@ -3,10 +3,15 @@
 // found in the LICENSE file.
 
 import type {AxSegment, ContentBrowserProxy, SkiaImageBitmap} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {FakeChromeEvent} from 'chrome-untrusted://webui-test/fake_chrome_event.js';
 import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy.js';
 
 export class TestContentBrowserProxy extends TestBrowserProxy implements
     ContentBrowserProxy {
+  onImageDownloaded = new FakeChromeEvent();
+  onNodeWillBeDeleted = new FakeChromeEvent();
+  showEmpty = new FakeChromeEvent();
+
   startNodeId: number = -1;
   startOffset: number = -1;
   endNodeId: number = -1;
