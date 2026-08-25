@@ -816,3 +816,71 @@ if (use_aura && !is_chromeos) {
     ]
   }
 }
+
+if (is_mac) {
+  source_set("certificate_viewer_mac_views") {
+    sources = [ "certificate_viewer_mac_views.mm" ]
+    deps = [
+      "//base",
+      "//chrome/browser:certificate_viewer",
+      "//components/remote_cocoa/browser",
+      "//components/remote_cocoa/common:mojo",
+    ]
+  }
+}
+
+if (is_win) {
+  source_set("certificate_viewer_win") {
+    sources = [ "certificate_viewer_win.cc" ]
+    deps = [
+      "//base",
+      "//chrome/browser:certificate_viewer",
+      "//crypto",
+      "//net",
+      "//ui/aura",
+      "//ui/shell_dialogs",
+    ]
+  }
+}
+
+source_set("javascript_tab_modal_dialog_view_views") {
+  public = [ "javascript_tab_modal_dialog_view_views.h" ]
+  sources = [ "javascript_tab_modal_dialog_view_views.cc" ]
+  public_deps = [
+    "//base",
+    "//components/javascript_dialogs",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+  deps = [
+    ":title_origin_label",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/javascript_dialogs",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//components/constrained_window",
+    "//ui/base",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/strings:ui_strings",
+  ]
+}
+
+source_set("login_handler_views") {
+  sources = [ "login_handler_views.cc" ]
+  deps = [
+    ":login_view",
+    "//base",
+    "//chrome/browser/ui/blocked_content",
+    "//chrome/browser/ui/dialogs",
+    "//chrome/browser/ui/login",
+    "//components/constrained_window",
+    "//components/password_manager/core/browser",
+    "//components/strings:components_strings",
+    "//components/web_modal",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/views",
+  ]
+}

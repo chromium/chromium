@@ -2364,7 +2364,6 @@ static_library("ui") {
     sources += [
       "browser_commands_mac.h",
       "browser_commands_mac.mm",
-      "views/certificate_viewer_mac_views.mm",
       "views/frame/browser_frame_view_factory_mac.mm",
       "views/frame/browser_frame_view_mac.h",
       "views/frame/browser_frame_view_mac.mm",
@@ -2382,6 +2381,7 @@ static_library("ui") {
       ":fullscreen_util_mac",
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/ui/cocoa",
+      "//chrome/browser/ui/views:certificate_viewer_mac_views",
     ]
 
     # Any circular includes must depend on the target
@@ -2417,7 +2417,6 @@ static_library("ui") {
     sources += [
       "network_profile_bubble.cc",
       "network_profile_bubble.h",
-      "views/certificate_viewer_win.cc",
       "views/frame/browser_caption_button_container_win.cc",
       "views/frame/browser_caption_button_container_win.h",
       "views/frame/browser_desktop_window_tree_host_win.cc",
@@ -2446,6 +2445,7 @@ static_library("ui") {
       "//chrome/browser:font_prewarmer_tab_helper",
       "//chrome/browser:titlebar_config",
       "//chrome/browser/taskbar",
+      "//chrome/browser/ui/views:certificate_viewer_win",
       "//chrome/browser/ui/views:critical_notification_bubble_view",
       "//chrome/browser/ui/views:uninstall_browser_prompt",
       "//chrome/browser/ui/views/frame:minimize_button_metrics_win",
@@ -2684,9 +2684,6 @@ static_library("ui") {
       "views/incognito_clear_browsing_data_dialog_coordinator.h",
       "views/intent_picker_bubble_view.cc",
       "views/intent_picker_bubble_view.h",
-      "views/javascript_tab_modal_dialog_view_views.cc",
-      "views/javascript_tab_modal_dialog_view_views.h",
-      "views/login_handler_views.cc",
       "views/session_crashed_bubble_view.cc",
       "views/session_crashed_bubble_view.h",
       "views/ssl_client_certificate_selector.cc",
@@ -2865,7 +2862,9 @@ static_library("ui") {
       "//chrome/browser/ui/views:external_protocol_dialog",
       "//chrome/browser/ui/views:find_bar_owner",
       "//chrome/browser/ui/views:flying_indicator",
+      "//chrome/browser/ui/views:javascript_tab_modal_dialog_view_views",
       "//chrome/browser/ui/views:layout_provider_impl",
+      "//chrome/browser/ui/views:login_handler_views",
       "//chrome/browser/ui/views:login_view",
       "//chrome/browser/ui/views:media_picker_utils",
       "//chrome/browser/ui/views:message_box_dialog",
