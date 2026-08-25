@@ -136,26 +136,12 @@ final class SidePanelNativeBridgeSelector {
         }
 
         @Override
-        public void onActiveChanged(TabModel tabModel, boolean active) {
-            boolean isObservedTabModelIncognito = tabModel.isOffTheRecord();
-            boolean isCurrentTabModelIncognito =
-                    mTabModelSelector.getCurrentModel().isOffTheRecord();
-            log(
-                    TAG,
-                    "TabModelSelectorTabModelObserver.onActiveChanged",
-                    "isObservedTabModelIncognito="
-                            + isObservedTabModelIncognito
-                            + ", isObservedTabModelActive="
-                            + active
-                            + ", isCurrentTabModelIncognito="
-                            + isCurrentTabModelIncognito);
-
+        public void onWillActiveStateChange(TabModel tabModel, boolean active) {
             // Note: During a Profile switch in the mixed-Profile mode, to close the panel for the
-            // _inactive_ Profile, we must use TabModelSelectorTabModelObserver#onActiveChanged()
-            // for two reasons:
+            // _inactive_ Profile, we must use onWillActiveStateChange() for two reasons:
             //
-            // (1) TabModelSelectorTabModelObserver#onActiveChanged() is invoked _before_ the
-            // current TabModel (in TabModelSelector) is changed to the active TabModel.
+            // (1) onWillActiveStateChange() is invoked _before_ the current TabModel (in
+            // TabModelSelector) is changed to the active TabModel.
             //
             // (2) The C++ side requires all operations to be done _before_ the current
             // TabModel (Profile) is changed. Otherwise, the Java code may call into a native object

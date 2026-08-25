@@ -439,6 +439,16 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
+    public void notifyWillActiveStateChange(boolean active) {
+        mDelegateModel.notifyWillActiveStateChange(active);
+    }
+
+    @Override
+    public void notifyDidActiveStateChange(boolean active) {
+        mDelegateModel.notifyDidActiveStateChange(active);
+    }
+
+    @Override
     public void broadcastSessionRestoreComplete() {}
 
     @Override

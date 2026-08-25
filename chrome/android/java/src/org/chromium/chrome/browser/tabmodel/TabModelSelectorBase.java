@@ -161,9 +161,16 @@ public abstract class TabModelSelectorBase
 
         TabModelInternal newModel = mTabModelInternals.get(newIndex);
         TabModelInternal previousModel = (TabModelInternal) assumeNonNull(mTabModelSupplier.get());
+
+        previousModel.notifyWillActiveStateChange(/* active= */ false);
+        newModel.notifyWillActiveStateChange(/* active= */ true);
+
         previousModel.setActive(false);
         newModel.setActive(true);
         mTabModelSupplier.set(newModel);
+
+        previousModel.notifyDidActiveStateChange(/* active= */ false);
+        newModel.notifyDidActiveStateChange(/* active= */ true);
     }
 
     @Override

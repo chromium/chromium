@@ -270,6 +270,12 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     public void setActive(boolean active) {}
 
     @Override
+    public void notifyWillActiveStateChange(boolean active) {}
+
+    @Override
+    public void notifyDidActiveStateChange(boolean active) {}
+
+    @Override
     public void broadcastSessionRestoreComplete() {}
 
     @Override

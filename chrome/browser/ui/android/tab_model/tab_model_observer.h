@@ -109,13 +109,25 @@ class TabModelObserver {
   // Called after a tab group's visual data has been changed.
   virtual void OnTabGroupVisualsChanged(tab_groups::TabGroupId group_id);
 
-  // Called when the TabModel becomes active or inactive.
+  // Called before the TabModel becomes active or inactive.
+  // At this point, the current model in the TabModelSelector has not yet
+  // changed.
   //
   // The `tab_model` parameter is the TabModel observed by this observer.
   //
   // Note that there can be multiple active TabModels globally since each native
   // `AndroidBrowserWindow` has one `TabModel`.
-  virtual void OnActiveChanged(TabModel& tab_model, bool active);
+  virtual void OnWillActiveStateChange(TabModel& tab_model, bool active);
+
+  // Called after the TabModel becomes active or inactive.
+  // At this point, the current model in the TabModelSelector has already
+  // changed.
+  //
+  // The `tab_model` parameter is the TabModel observed by this observer.
+  //
+  // Note that there can be multiple active TabModels globally since each native
+  // `AndroidBrowserWindow` has one `TabModel`.
+  virtual void OnDidActiveStateChange(TabModel& tab_model, bool active);
 
   // Called when the TabModel is destroyed.
   virtual void OnTabModelDestroyed(TabModel& tab_model);

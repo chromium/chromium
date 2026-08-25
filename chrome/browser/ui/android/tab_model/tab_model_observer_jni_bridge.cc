@@ -279,11 +279,19 @@ void TabModelObserverJniBridge::OnTabGroupVisualsChanged(JNIEnv* env,
   }
 }
 
-void TabModelObserverJniBridge::OnActiveChanged(JNIEnv* env,
-                                                TabModel* tab_model,
-                                                bool active) {
+void TabModelObserverJniBridge::OnWillActiveStateChange(JNIEnv* env,
+                                                        TabModel* tab_model,
+                                                        bool active) {
   for (auto& observer : model_observers_) {
-    observer.OnActiveChanged(*tab_model, active);
+    observer.OnWillActiveStateChange(*tab_model, active);
+  }
+}
+
+void TabModelObserverJniBridge::OnDidActiveStateChange(JNIEnv* env,
+                                                       TabModel* tab_model,
+                                                       bool active) {
+  for (auto& observer : model_observers_) {
+    observer.OnDidActiveStateChange(*tab_model, active);
   }
   for (auto& observer : interface_observers_) {
     observer.OnTabListActiveChanged(*tab_model, active);

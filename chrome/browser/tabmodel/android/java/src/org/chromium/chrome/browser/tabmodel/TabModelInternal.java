@@ -49,6 +49,22 @@ public interface TabModelInternal extends TabModel {
      */
     /* package */ void setActive(boolean active);
 
+    /**
+     * Notifies observers that the active state of this model is about to change.
+     *
+     * @param active Whether the tab model will become active.
+     * @see TabModelObserver#onWillActiveStateChange
+     */
+    /* package */ void notifyWillActiveStateChange(boolean active);
+
+    /**
+     * Notifies observers that the active state of this model has changed.
+     *
+     * @param active Whether the tab model did become active.
+     * @see TabModelObserver#onDidActiveStateChange
+     */
+    /* package */ void notifyDidActiveStateChange(boolean active);
+
     /** Destroy the model and return the destroy status. */
     @TabDestroyStatus
     int destroy();

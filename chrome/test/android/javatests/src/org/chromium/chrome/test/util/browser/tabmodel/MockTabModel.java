@@ -274,6 +274,20 @@ public class MockTabModel extends EmptyTabModel {
     }
 
     @Override
+    public void notifyWillActiveStateChange(boolean active) {
+        for (TabModelObserver observer : mObservers) {
+            observer.onWillActiveStateChange(this, active);
+        }
+    }
+
+    @Override
+    public void notifyDidActiveStateChange(boolean active) {
+        for (TabModelObserver observer : mObservers) {
+            observer.onDidActiveStateChange(this, active);
+        }
+    }
+
+    @Override
     public boolean isActiveModel() {
         return mIsActiveModel;
     }
