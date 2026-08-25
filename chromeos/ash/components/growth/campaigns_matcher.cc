@@ -31,13 +31,14 @@
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/growth/campaigns_utils.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -948,19 +949,23 @@ bool CampaignsMatcher::MatchMinorUser(
   if (manta_capability_for_testing_) {
     capability = manta_capability_for_testing_.value();
   } else {
-    auto* identity_manager = client_->GetIdentityManager();
+    // TODO: We should pass account_id as a context via params from callers.
+    const AccountId& account_id = session_manager::SessionManager::Get()
+                                      ->GetActiveSession()
+                                      ->account_id();
+
+    auto* identity_manager =
+        ash::IdentityManagerProvider::Get().Find(account_id);
     if (!identity_manager) {
       // Identity manager is not available (e.g:guest mode). In that case,
       // a campaign with minor user targeting shouldn't be triggered.
       CAMPAIGNS_LOG(ERROR) << "IdentityManager is null.";
       return false;
     }
-    GaiaId gaia_id = user_manager::UserManager::Get()
-                         ->GetActiveUser()
-                         ->GetAccountId()
-                         .GetGaiaId();
+
     const AccountInfo account_info =
-        identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
+        identity_manager->FindExtendedAccountInfoByGaiaId(
+            account_id.GetGaiaId());
     // TODO: b/333896450 - find a better signal for minor mode.
     capability = account_info.GetAccountCapabilities().can_use_manta_service();
   }

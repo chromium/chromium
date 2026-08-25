@@ -19,10 +19,6 @@ namespace base {
 class Version;
 }  // namespace base
 
-namespace signin {
-class IdentityManager;
-}  // namespace signin
-
 namespace growth {
 
 using CampaignComponentLoadedCallback = base::OnceCallback<void(
@@ -91,8 +87,6 @@ class CampaignsManagerClient {
                            bool trigger_campaigns) = 0;
   virtual bool WouldTriggerHelpUI(
       const std::map<std::string, std::string>& params) = 0;
-  // Returns the IdentityManager for the active user profile.
-  virtual signin::IdentityManager* GetIdentityManager() const = 0;
   virtual void RecordImpressionEvents(int campaign_id,
                                       std::optional<int> group_id) = 0;
 };
