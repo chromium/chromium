@@ -49,9 +49,11 @@ source_set("unit_tests") {
   sources = [
     "actor_overlay_scrim_view_unittest.mm",
     "actor_overlay_view_controller_unittest.mm",
+    "test/actor_ui_test_utils_unittest.mm",
   ]
   deps = [
     ":ui",
+    "test:test_support",
     "//ios/chrome/browser/app_bar/ui:constants",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/coordinator/scene/state",
