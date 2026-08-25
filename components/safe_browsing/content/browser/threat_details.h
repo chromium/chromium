@@ -322,6 +322,7 @@ class ThreatDetails {
   bool is_hats_candidate_;
 
   // Whether the security interstitial tab was closed by the user.
+  // TODO(crbug.com/549161370): Set is_tab_closed_ properly.
   bool is_tab_closed_ = false;
 
   // Whether ThreatDetails should be sent to Safe Browsing.
