@@ -125,6 +125,7 @@
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/core/style/style_initial_data.h"
 #include "third_party/blink/renderer/core/svg/svg_resource.h"
+#include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
@@ -3304,6 +3305,23 @@ bool StyleEngine::EvaluateFunctionalNavigationQuery(
   return result;
 }
 
+void StyleEngine::AddURLPatternFromLocation(const AtomicString& location_name,
+                                            URLPattern* url_pattern) {
+  DCHECK(location_name.starts_with("--"));
+  if (navigation_locations_.find(location_name) !=
+      navigation_locations_.end()) {
+    // TODO(crbug.com/436805487): Handle route modificiation and removal.
+    return;
+  }
+  navigation_locations_.insert(location_name, url_pattern);
+}
+
+const URLPattern* StyleEngine::FindURLPatternByLocation(
+    const AtomicString& location_name) const {
+  const auto it = navigation_locations_.find(location_name);
+  return it == navigation_locations_.end() ? nullptr : it->value;
+}
+
 void StyleEngine::InvalidateFunctionalNavigationDependentStylesIfNeeded() {
   bool has_changes = false;
   for (auto& [exp, previous_result] : functional_navigation_query_results_) {
@@ -4836,6 +4854,7 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(functional_navigation_query_results_);
   visitor->Trace(random_base_value_cache_);
   visitor->Trace(element_keeps_random_caching_key_alive_);
+  visitor->Trace(navigation_locations_);
   FontSelectorClient::Trace(visitor);
 }
 

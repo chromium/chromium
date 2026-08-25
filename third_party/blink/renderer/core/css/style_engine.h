@@ -113,6 +113,7 @@ class StyleSheetContents;
 class StyleInitialData;
 class TextTrack;
 class StyleSheetCollection;
+class URLPattern;
 class ViewportStyleResolver;
 class SelectorFilter;
 struct LogicalSize;
@@ -339,6 +340,15 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool NeedsStyleUpdateOnNavigation() const {
     return needs_style_update_on_navigation_;
   }
+
+  // Add a URLPattern for a given @location rule.
+  // `location` is a <dashed-ident>.
+  void AddURLPatternFromLocation(const AtomicString& location_name,
+                                 URLPattern*);
+
+  // Look up and return the URLPattern identified by <dashed-ident> `location`.
+  const URLPattern* FindURLPatternByLocation(
+      const AtomicString& location_name) const;
 
   void UpdateActiveStyle();
 
@@ -1304,6 +1314,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   RandomValueCache random_base_value_cache_;
   using ElementSharedRandomValueCache = HashMap<AtomicString, double>;
   ElementSharedRandomValueCache element_shared_random_base_value_cache_;
+
+  // URLPattern entries defined by @location rules.
+  HeapHashMap<AtomicString, Member<URLPattern>> navigation_locations_;
 };
 
 void PossiblyScheduleNthPseudoInvalidations(Node& node);

@@ -9,9 +9,9 @@
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_url_pattern_value.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/route_matching/route_map.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 
 namespace blink {
@@ -96,7 +96,7 @@ void StyleRuleLocation::CreateRouteIfNeeded(Document* document) const {
   if (!url_pattern) {
     return;
   }
-  RouteMap::Ensure(*document).AddURLPatternFromLocation(name_, url_pattern);
+  document->GetStyleEngine().AddURLPatternFromLocation(name_, url_pattern);
 }
 
 }  // namespace blink

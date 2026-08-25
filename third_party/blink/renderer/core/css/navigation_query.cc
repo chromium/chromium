@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/route_matching/navigation_state.h"
-#include "third_party/blink/renderer/core/route_matching/route_map.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -30,10 +29,7 @@ const URLPattern* NavigationLocation::FindOrCreateURLPattern(
   }
   // The value is an @location dashed-ident.
   DCHECK_EQ(type_, kLocationName);
-  if (const auto* route_map = RouteMap::Get(&document)) {
-    return route_map->FindURLPatternByLocation(value_);
-  }
-  return nullptr;
+  return document.GetStyleEngine().FindURLPatternByLocation(value_);
 }
 
 bool NavigationLocation::CheckSelectorMatch(
