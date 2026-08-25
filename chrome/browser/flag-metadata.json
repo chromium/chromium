@@ -7380,11 +7380,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "ntp-modules-drag-and-drop",
-    "owners": [ "pauladedeji@chromium.org", "mahmadi@chromium.org", "tiborg@chromium.org" ],
-    "expiry_milestone": 108
-  },
-  {
     "name": "ntp-mvc-refactor",
     "owners": ["hanxi@google.com", "yanlinghu@google.com", "clank-start@google.com"],
     "expiry_milestone": 160

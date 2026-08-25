@@ -6950,12 +6950,6 @@ inline constexpr char kNtpMiddleSlotPromoDismissalDescription[] =
     "Allows middle slot promo to be dismissed from New Tab Page until "
     "new promo message is populated.";
 
-inline constexpr char kNtpModulesDragAndDropName[] =
-    "NTP Modules Drag and Drop";
-inline constexpr char kNtpModulesDragAndDropDescription[] =
-    "Enables modules to be reordered via dragging and dropping on the "
-    "New Tab Page.";
-
 inline constexpr char kNtpModuleSignInRequirementName[] =
     "NTP Modules Sign-in Requirement";
 inline constexpr char kNtpModuleSignInRequirementDescription[] =

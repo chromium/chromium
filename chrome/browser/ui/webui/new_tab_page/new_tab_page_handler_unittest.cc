@@ -1214,17 +1214,11 @@ TEST_F(NewTabPageHandlerTest, GetModulesOrder) {
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
       {{ntp_features::kNtpModulesOrder,
-        {{ntp_features::kNtpModulesOrderParam, "bar,baz,drive"}}},
-       {ntp_features::kNtpModulesDragAndDrop, {}}},
+        {{ntp_features::kNtpModulesOrderParam, "bar,baz,drive"}}}},
       {});
-  base::ListValue module_ids_value;
-  module_ids_value.Append("foo");
-  module_ids_value.Append("bar");
-  profile_->GetPrefs()->SetList(prefs::kNtpModulesOrder,
-                                std::move(module_ids_value));
 
   handler_->GetModulesOrder(callback.Get());
-  EXPECT_THAT(module_ids, ElementsAre("foo", "bar", "baz", "drive",
+  EXPECT_THAT(module_ids, ElementsAre("bar", "baz", "drive",
                                       "microsoft_authentication",
                                       "outlook_calendar", "microsoft_files",
                                       "google_calendar", "tab_resumption"));

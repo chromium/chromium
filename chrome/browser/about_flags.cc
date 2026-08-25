@@ -7429,10 +7429,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpNextCanvasChipDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpNextCanvasChip)},
 
-    {"ntp-modules-drag-and-drop", flag_descriptions::kNtpModulesDragAndDropName,
-     flag_descriptions::kNtpModulesDragAndDropDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpModulesDragAndDrop)},
-
     {"ntp-ogb-async-bar-parts",
      flag_descriptions::kNtpOneGoogleBarAsyncBarPartsName,
      flag_descriptions::kNtpOneGoogleBarAsyncBarPartsDescription, kOsDesktop,

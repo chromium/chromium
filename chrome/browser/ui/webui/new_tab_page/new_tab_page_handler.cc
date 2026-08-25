@@ -945,26 +945,10 @@ void NewTabPageHandler::SetModulesOrder(
 }
 
 void NewTabPageHandler::GetModulesOrder(GetModulesOrderCallback callback) {
-  std::vector<std::string> module_ids;
+  // First, get Finch order.
+  std::vector<std::string> module_ids = ntp_features::GetModulesOrder();
 
-  // First, apply order as set by the last drag&drop interaction.
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpModulesDragAndDrop)) {
-    const auto& module_ids_value =
-        profile_->GetPrefs()->GetList(prefs::kNtpModulesOrder);
-    for (const auto& id : module_ids_value) {
-      module_ids.push_back(id.GetString());
-    }
-  }
-
-  // Second, append Finch order for modules _not_ ordered by drag&drop.
-  std::ranges::copy_if(ntp_features::GetModulesOrder(),
-                       std::back_inserter(module_ids),
-                       [&module_ids](const std::string& id) {
-                         return !std::ranges::contains(module_ids, id);
-                       });
-
-  // Third, append default module order for any modules not ordered by
-  // drag&drop or Finch.
+  // Second, append default module order for any modules not ordered by Finch.
   std::ranges::copy_if(ntp_modules::kOrderedModuleIds,
                        std::back_inserter(module_ids),
                        [&module_ids](const std::string& id) {
