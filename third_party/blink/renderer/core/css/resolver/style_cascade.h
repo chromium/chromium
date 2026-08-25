@@ -534,6 +534,10 @@ class CORE_EXPORT StyleCascade {
 
     // Parent stack frame (for dynamic scoping).
     FunctionContext* parent = nullptr;
+
+    // CSS random() might differ between custom functions invocations, we
+    // use this counter to keep track of different invocations.
+    wtf_size_t invocation_count = 0;
   };
 
   // The Resolve*Into functions either resolve dependencies, append to the

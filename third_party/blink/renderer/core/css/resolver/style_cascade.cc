@@ -1946,6 +1946,8 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
     ++parameter_idx;
   }
 
+  wtf_size_t invocation_count = resolver.NextFunctionInvocationCount();
+
   if (!ResolveUnresolvedFunctionDefaults(
           unresolved_defaults, local_types, function, function_tree_scope,
           function_context, resolver, &context, function_arguments)) {
@@ -1972,7 +1974,8 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
       .locals = {},  // Populated by ApplyLocalVariables.
       .unresolved_locals = unresolved_locals,
       .local_types = local_types,
-      .parent = function_context};
+      .parent = function_context,
+      .invocation_count = invocation_count};
 
   ApplyLocalVariables(resolver, context, local_function_context);
 
@@ -2069,7 +2072,8 @@ bool StyleCascade::ResolveUnresolvedFunctionDefaults(
         .locals = {},  // Populated by ApplyLocalVariables.
         .unresolved_locals = unresolved_defaults,
         .local_types = local_types,
-        .parent = function_context};
+        .parent = function_context,
+        .invocation_count = resolver.FunctionInvocationCount()};
 
     ApplyLocalVariables(resolver, *context, default_context);
 
@@ -2130,12 +2134,13 @@ CSSParserLocalContext StyleCascade::GetCSSParserLocalContext(
   // TODO(crbug.com/489688671): We might have the same function name between
   // different tree scopes, then we need to make CSSParserLocalContext aware of
   // tree scope name.
-  const AtomicString& function_name =
-      function_context && function_context->function
-          ? function_context->function->Name()
-          : g_null_atom;
+  if (function_context && function_context->function) {
+    return CSSParserLocalContext(*property_name, CSSPropertyID::kInvalid,
+                                 function_context->function->Name(),
+                                 function_context->invocation_count);
+  }
   return CSSParserLocalContext(*property_name, CSSPropertyID::kInvalid,
-                               function_name);
+                               g_null_atom);
 }
 
 // Resolves a typed expression; in practice, either a function

@@ -116,14 +116,29 @@ void CSSParserLocalContext::CheckPercentagesFlagSetOnProperty() const {
 }
 #endif
 
+const AtomicString CSSParserLocalContext::CustomFunctionName() const {
+  StringBuilder str;
+  if (custom_function_name_) {
+    str.Append(custom_function_name_);
+    str.Append(";");
+  }
+  return str.ToAtomicString();
+}
+
+const AtomicString CSSParserLocalContext::CustomFunctionNameAndCnt() const {
+  StringBuilder str;
+  if (custom_function_name_) {
+    str.Append(custom_function_name_);
+    str.AppendNumber(custom_function_count_);
+    str.Append(";");
+  }
+  return str.ToAtomicString();
+}
+
 const AtomicString CSSParserLocalContext::PropertyName() const {
   StringBuilder str;
   if (unresolved_property_name_.has_value() &&
       unresolved_property_name_->Id() != CSSPropertyID::kInvalid) {
-    if (custom_function_name_) {
-      str.Append(custom_function_name_);
-      str.Append(";");
-    }
     CSSPropertyName resolved_property_name = *unresolved_property_name_;
     if (current_shorthand_ != CSSPropertyID::kInvalid) {
       resolved_property_name = CSSPropertyName(current_shorthand_);

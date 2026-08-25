@@ -151,6 +151,14 @@ class CORE_EXPORT CascadeResolver {
     }
   }
 
+  wtf_size_t FunctionInvocationCount() const {
+    return function_invocation_count_;
+  }
+
+  wtf_size_t NextFunctionInvocationCount() {
+    return ++function_invocation_count_;
+  }
+
   // Automatically locks and unlocks the given property. (See
   // CascadeResolver::IsLocked).
   class CORE_EXPORT AutoLock {
@@ -220,6 +228,7 @@ class CORE_EXPORT CascadeResolver {
     const cssvalue::CSSPendingSubstitutionValue* value = nullptr;
     HeapVector<CSSPropertyValue, 64> parsed_properties;
   } shorthand_cache_;
+  wtf_size_t function_invocation_count_ = 0;
 };
 
 }  // namespace blink

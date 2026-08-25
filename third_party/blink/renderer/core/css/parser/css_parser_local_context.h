@@ -92,10 +92,12 @@ class CORE_EXPORT CSSParserLocalContext {
   // arguments, result values and local variables.
   explicit CSSParserLocalContext(CSSPropertyName property_name,
                                  CSSPropertyID current_shorthand,
-                                 const AtomicString& custom_function_name)
+                                 const AtomicString& custom_function_name,
+                                 wtf_size_t custom_function_count = 0)
       : current_shorthand_(current_shorthand),
         unresolved_property_name_(property_name),
-        custom_function_name_(custom_function_name) {}
+        custom_function_name_(custom_function_name),
+        custom_function_count_(custom_function_count) {}
 
   void SetCurrentShorthand(CSSPropertyID current_shorthand) {
     current_shorthand_ = current_shorthand;
@@ -128,6 +130,10 @@ class CORE_EXPORT CSSParserLocalContext {
   std::optional<CSSPropertyName> UnresolvedPropertyName() const {
     return unresolved_property_name_;
   }
+
+  const AtomicString CustomFunctionName() const;
+
+  const AtomicString CustomFunctionNameAndCnt() const;
 
   const AtomicString PropertyName() const;
 
@@ -191,6 +197,10 @@ class CORE_EXPORT CSSParserLocalContext {
   // different tree scopes, then we need to make CSSParserLocalContext aware
   // of tree scope name.
   AtomicString custom_function_name_ = g_null_atom;
+  // Since element-shared random() in custom functions should differ not only
+  // by function name and element identifier but also in each invocation, we
+  // use this counter for different invocations.
+  wtf_size_t custom_function_count_;
 
   wtf_size_t random_value_count_ = 0;
 };

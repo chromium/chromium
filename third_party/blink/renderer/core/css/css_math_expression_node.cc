@@ -5724,37 +5724,73 @@ const RandomCacheKey* RandomCacheKey::Parse(
 
   AtomicString ident;
   ElementScoped element_scoped(false);
-  AtomicString random_ua_ident;
+  StringBuilder random_ua_ident_builder;
+  bool is_property_scoped = false;
+  bool is_property_index_scoped = false;
   while (!stream.AtEnd() && stream.Peek().GetType() == kIdentToken) {
     token = stream.Peek();
     if (!ident && token.Value().starts_with("--")) {
       ident = stream.ConsumeIncludingWhitespace().Value().ToAtomicString();
-    } else if (!element_scoped && token.Value() == "element-scoped") {
+      continue;
+    }
+    if (!element_scoped && token.Value() == "element-scoped") {
       element_scoped = ElementScoped(true);
       stream.ConsumeIncludingWhitespace();
-    } else if (!random_ua_ident && (token.Value() == "property-scoped" ||
-                                    token.Value() == "property-index-scoped")) {
-      StringBuilder ua_ident_builder;
-      ua_ident_builder.Append("ua-");
-      ua_ident_builder.Append(local_context.PropertyName());
-      if (token.Value() == "property-index-scoped") {
-        ua_ident_builder.Append("-");
-        ua_ident_builder.AppendNumber(local_context.CurrentRandomValueIndex());
-      }
-      random_ua_ident = ua_ident_builder.ToAtomicString();
-      stream.ConsumeIncludingWhitespace();
-    } else if (!random_ua_ident && token.Value().starts_with("ua-")) {
-      random_ua_ident =
-          stream.ConsumeIncludingWhitespace().Value().ToAtomicString();
-    } else if (!ident && !element_scoped && !random_ua_ident) {
-      return nullptr;
-    } else {
-      return MakeGarbageCollected<RandomCacheKey>(ident, element_scoped,
-                                                  random_ua_ident);
+      continue;
     }
+    if (!is_property_scoped && !is_property_index_scoped &&
+        random_ua_ident_builder.empty()) {
+      if (token.Value() == "property-scoped" ||
+          token.Value() == "property-index-scoped") {
+        if (token.Value() == "property-scoped") {
+          is_property_scoped = true;
+        } else {
+          is_property_index_scoped = true;
+        }
+        stream.ConsumeIncludingWhitespace();
+        continue;
+      }
+      if (token.Value().starts_with("ua-")) {
+        random_ua_ident_builder.Append(
+            stream.ConsumeIncludingWhitespace().Value());
+        continue;
+      }
+    }
+    // Unexpected token.
+    break;
   }
-  return MakeGarbageCollected<RandomCacheKey>(ident, element_scoped,
-                                              random_ua_ident);
+
+  if (!ident && !element_scoped && random_ua_ident_builder.empty() &&
+      !is_property_scoped && !is_property_index_scoped) {
+    return nullptr;
+  }
+
+  if (is_property_scoped || is_property_index_scoped) {
+    random_ua_ident_builder.Append("ua-");
+    if (element_scoped) {
+      random_ua_ident_builder.Append(local_context.CustomFunctionNameAndCnt());
+    } else {
+      random_ua_ident_builder.Append(local_context.CustomFunctionName());
+    }
+    random_ua_ident_builder.Append(local_context.PropertyName());
+    if (is_property_index_scoped) {
+      random_ua_ident_builder.Append("-");
+      random_ua_ident_builder.AppendNumber(
+          local_context.CurrentRandomValueIndex());
+    }
+  } else if (element_scoped &&
+             !local_context.CustomFunctionNameAndCnt().empty()) {
+    if (random_ua_ident_builder.empty()) {
+      random_ua_ident_builder.Append("ua-");
+    }
+    random_ua_ident_builder.Append(local_context.CustomFunctionNameAndCnt());
+  }
+
+  return MakeGarbageCollected<RandomCacheKey>(
+      ident, element_scoped,
+      random_ua_ident_builder.empty()
+          ? g_null_atom
+          : random_ua_ident_builder.ToAtomicString());
 }
 
 const RandomCacheKey* RandomCacheKey::Fixed(double fixed_value) {
@@ -5766,6 +5802,7 @@ const RandomCacheKey* RandomCacheKey::Auto(
     const CSSParserLocalContext& local_context) {
   StringBuilder ua_ident_builder;
   ua_ident_builder.Append("ua-");
+  ua_ident_builder.Append(local_context.CustomFunctionNameAndCnt());
   ua_ident_builder.Append(local_context.PropertyName());
   ua_ident_builder.Append("-");
   ua_ident_builder.AppendNumber(local_context.CurrentRandomValueIndex());
