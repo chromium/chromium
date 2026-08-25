@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/input/touch_emulator_client.h"
@@ -18,7 +19,9 @@
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/blink/web_input_event_traits.h"
+#include "ui/events/gesture_detection/touch_disposition_gesture_filter.h"
 
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
@@ -62,6 +65,7 @@ class TouchEmulatorTest : public testing::Test,
   void ForwardEmulatedGestureEvent(
       const blink::WebGestureEvent& event) override {
     forwarded_events_.push_back(event.GetType());
+    forwarded_gesture_events_.push_back(event);
   }
 
   void ForwardEmulatedTouchEvent(
@@ -112,13 +116,20 @@ class TouchEmulatorTest : public testing::Test,
       result += WebInputEvent::GetName(forwarded_events_[i]);
     }
     forwarded_events_.clear();
+    forwarded_gesture_events_.clear();
     return result;
+  }
+
+  const std::vector<blink::WebGestureEvent>& forwarded_gesture_events() const {
+    return forwarded_gesture_events_;
   }
 
   base::TimeTicks GetNextEventTime() {
     last_event_time_ += event_time_delta_;
     return last_event_time_;
   }
+
+  void set_last_event_time(base::TimeTicks time) { last_event_time_ = time; }
 
   void set_event_time_delta(base::TimeDelta delta) {
     event_time_delta_ = delta;
@@ -261,6 +272,7 @@ class TouchEmulatorTest : public testing::Test,
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<TouchEmulatorImpl> emulator_;
   std::vector<WebInputEvent::Type> forwarded_events_;
+  std::vector<blink::WebGestureEvent> forwarded_gesture_events_;
   base::TimeTicks last_event_time_;
   base::TimeDelta event_time_delta_;
   bool shift_pressed_;
@@ -626,6 +638,129 @@ TEST_F(TouchEmulatorTest, InjectingTouchEventsMode) {
             ExpectedEvents());
   InjectTouchEvent(WebInputEvent::Type::kTouchEnd,
                    WebTouchPoint::State::kStateReleased, 200, 200);
+  EXPECT_EQ("TouchEnd GestureScrollEnd", ExpectedEvents());
+}
+
+class TouchEmulatorCompensationTest : public TouchEmulatorTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kCompensateGestureScrollUpdateLatency);
+    TouchEmulatorTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(TouchEmulatorCompensationTest, EmulatedMouseDragNotCompensated) {
+  base::TimeTicks ack = base::TimeTicks::Now();
+  auto timestamp_override =
+      ui::TouchDispositionGestureFilter::OverrideReferenceTimestampForTesting(
+          ack);
+
+  // Set the event time so that the delay between event timestamp and ack
+  // exceeds acceptable latency for all move events.
+  set_last_event_time(ack - base::Seconds(10));
+
+  MouseDown(100, 200);
+  EXPECT_EQ("TouchStart GestureTapDown", ExpectedEvents());
+
+  MouseDrag(200, 200);
+  // If latency compensation were active, the GestureScrollUpdate would be
+  // zeroed out and dropped because the event delay exceeds acceptable latency.
+  // The first drag breaks out of the touch slop region, so delta is less than
+  // 100.
+  ASSERT_EQ(3U, forwarded_gesture_events().size());
+  EXPECT_EQ(WebInputEvent::Type::kGestureTapCancel,
+            forwarded_gesture_events()[0].GetType());
+  EXPECT_EQ(WebInputEvent::Type::kGestureScrollBegin,
+            forwarded_gesture_events()[1].GetType());
+  EXPECT_EQ(WebInputEvent::Type::kGestureScrollUpdate,
+            forwarded_gesture_events()[2].GetType());
+  EXPECT_GT(forwarded_gesture_events()[2].data.scroll_update.delta_x, 0.f);
+  EXPECT_LT(forwarded_gesture_events()[2].data.scroll_update.delta_x, 100.f);
+  EXPECT_EQ(0.f, forwarded_gesture_events()[2].data.scroll_update.delta_y);
+  EXPECT_EQ("TouchMove GestureTapCancel GestureScrollBegin GestureScrollUpdate",
+            ExpectedEvents());
+
+  // Subsequent drag once scrolling is established produces full 100px delta.
+  MouseDrag(300, 200);
+  ASSERT_EQ(1U, forwarded_gesture_events().size());
+  EXPECT_EQ(WebInputEvent::Type::kGestureScrollUpdate,
+            forwarded_gesture_events()[0].GetType());
+  EXPECT_EQ(100.f, forwarded_gesture_events()[0].data.scroll_update.delta_x);
+  EXPECT_EQ(0.f, forwarded_gesture_events()[0].data.scroll_update.delta_y);
+  EXPECT_EQ("TouchMove GestureScrollUpdate", ExpectedEvents());
+
+  MouseUp(300, 200);
+  // Verify that GestureScrollEnd does not contain compensated scroll deltas.
+  ASSERT_EQ(1U, forwarded_gesture_events().size());
+  EXPECT_EQ(WebInputEvent::Type::kGestureScrollEnd,
+            forwarded_gesture_events()[0].GetType());
+  EXPECT_EQ(0.f,
+            forwarded_gesture_events()[0].data.scroll_end.delta_x_compensated);
+  EXPECT_EQ(0.f,
+            forwarded_gesture_events()[0].data.scroll_end.delta_y_compensated);
+  EXPECT_EQ("TouchEnd GestureScrollEnd", ExpectedEvents());
+}
+
+TEST_F(TouchEmulatorCompensationTest, InjectedTouchEventsNotCompensated) {
+  emulator()->Enable(input::TouchEmulator::Mode::kInjectingTouchEvents,
+                     ui::GestureProviderConfigType::GENERIC_MOBILE);
+
+  base::TimeTicks ack = base::TimeTicks::Now();
+  auto timestamp_override =
+      ui::TouchDispositionGestureFilter::OverrideReferenceTimestampForTesting(
+          ack);
+
+  // Set the event time so that the delay between event timestamp and ack
+  // exceeds acceptable latency for all move events.
+  set_last_event_time(ack - base::Seconds(10));
+
+  InjectTouchEvent(WebInputEvent::Type::kTouchStart,
+                   WebTouchPoint::State::kStatePressed, 100, 200);
+  EXPECT_EQ("TouchStart GestureTapDown", ExpectedEvents());
+
+  InjectTouchEvent(WebInputEvent::Type::kTouchMove,
+                   WebTouchPoint::State::kStateMoved, 200, 200);
+  // If latency compensation were active, the GestureScrollUpdate would be
+  // zeroed out and dropped because the event delay exceeds acceptable latency.
+  // The first move breaks out of the touch slop region, so delta is less than
+  // 100.
+  ASSERT_EQ(3U, forwarded_gesture_events().size());
+  EXPECT_EQ(WebInputEvent::Type::kGestureTapCancel,
+            forwarded_gesture_events()[0].GetType());
+  EXPECT_EQ(WebInputEvent::Type::kGestureScrollBegin,
+            forwarded_gesture_events()[1].GetType());
+  EXPECT_EQ(WebInputEvent::Type::kGestureScrollUpdate,
+            forwarded_gesture_events()[2].GetType());
+  EXPECT_GT(forwarded_gesture_events()[2].data.scroll_update.delta_x, 0.f);
+  EXPECT_LT(forwarded_gesture_events()[2].data.scroll_update.delta_x, 100.f);
+  EXPECT_EQ(0.f, forwarded_gesture_events()[2].data.scroll_update.delta_y);
+  EXPECT_EQ("TouchMove GestureTapCancel GestureScrollBegin GestureScrollUpdate",
+            ExpectedEvents());
+
+  // Subsequent injected move once scrolling is established produces full 100px
+  // delta.
+  InjectTouchEvent(WebInputEvent::Type::kTouchMove,
+                   WebTouchPoint::State::kStateMoved, 300, 200);
+  ASSERT_EQ(1U, forwarded_gesture_events().size());
+  EXPECT_EQ(WebInputEvent::Type::kGestureScrollUpdate,
+            forwarded_gesture_events()[0].GetType());
+  EXPECT_EQ(100.f, forwarded_gesture_events()[0].data.scroll_update.delta_x);
+  EXPECT_EQ(0.f, forwarded_gesture_events()[0].data.scroll_update.delta_y);
+  EXPECT_EQ("TouchMove GestureScrollUpdate", ExpectedEvents());
+
+  InjectTouchEvent(WebInputEvent::Type::kTouchEnd,
+                   WebTouchPoint::State::kStateReleased, 300, 200);
+  ASSERT_EQ(1U, forwarded_gesture_events().size());
+  EXPECT_EQ(WebInputEvent::Type::kGestureScrollEnd,
+            forwarded_gesture_events()[0].GetType());
+  EXPECT_EQ(0.f,
+            forwarded_gesture_events()[0].data.scroll_end.delta_x_compensated);
+  EXPECT_EQ(0.f,
+            forwarded_gesture_events()[0].data.scroll_end.delta_y_compensated);
   EXPECT_EQ("TouchEnd GestureScrollEnd", ExpectedEvents());
 }
 

@@ -143,4 +143,8 @@ void FilteredGestureProvider::ForwardGestureEvent(
   }
 }
 
+void FilteredGestureProvider::DisableScrollUpdateCompensation() {
+  gesture_filter_.DisableScrollUpdateCompensation();
+}
+
 }  // namespace ui

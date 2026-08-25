@@ -189,6 +189,10 @@ void TouchDispositionGestureFilter::Shutdown() {
   client_ = nullptr;
 }
 
+void TouchDispositionGestureFilter::DisableScrollUpdateCompensation() {
+  scroll_update_compensator_.reset();
+}
+
 TouchDispositionGestureFilter::PacketResult
 TouchDispositionGestureFilter::OnGesturePacket(
     const GestureEventDataPacket& packet) {
@@ -674,17 +678,17 @@ GestureEventData TouchDispositionGestureFilter::ScrollUpdateCompensator::
       gfx::Vector2dF(gesture.details.scroll_x() * (1.f - compensation),
                      gesture.details.scroll_y() * (1.f - compensation));
 
-  GestureEventDetails compensated_details(
-      EventType::kGestureScrollUpdate,
-      gesture.details.scroll_x() * compensation,
-      gesture.details.scroll_y() * compensation);
-  compensated_details.set_scroll_x_unconstrained(
+  GestureEventData compensated_gesture(gesture);
+  compensated_gesture.details.set_scroll_x(gesture.details.scroll_x() *
+                                           compensation);
+  compensated_gesture.details.set_scroll_y(gesture.details.scroll_y() *
+                                           compensation);
+  compensated_gesture.details.set_scroll_x_unconstrained(
       gesture.details.scroll_x_unconstrained() * compensation);
-  compensated_details.set_scroll_y_unconstrained(
+  compensated_gesture.details.set_scroll_y_unconstrained(
       gesture.details.scroll_y_unconstrained() * compensation);
 
-  return CreateGesture(compensated_details, packet.unique_touch_event_id(),
-                       packet.tool_type(), packet);
+  return compensated_gesture;
 }
 
 GestureEventData TouchDispositionGestureFilter::ScrollUpdateCompensator::

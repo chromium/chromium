@@ -43,6 +43,11 @@ class TouchDispositionGestureFilterTest
   void SetUp() override {
     queue_ = std::make_unique<TouchDispositionGestureFilter>(this);
     touch_event_.set_flags(kDefaultEventFlags);
+    // Set the reference timestamp to 12 hours ago to prevent any compensation
+    // from being applied.
+    timestamp_override_ =
+        TouchDispositionGestureFilter::OverrideReferenceTimestampForTesting(
+            base::TimeTicks::Now() - base::Hours(12));
   }
 
   void TearDown() override { queue_.reset(); }
@@ -206,10 +211,17 @@ class TouchDispositionGestureFilterTest
   }
 
   const MockMotionEvent& MoveTouchPoint(
+      float x,
+      float y,
       base::TimeTicks event_time = base::TimeTicks::Now()) {
-    touch_event_.MovePoint(0, 0, 0);
+    touch_event_.MovePoint(0, x, y);
     touch_event_.set_event_time(event_time);
     return touch_event_;
+  }
+
+  const MockMotionEvent& MoveTouchPoint(
+      base::TimeTicks event_time = base::TimeTicks::Now()) {
+    return MoveTouchPoint(0, 0, event_time);
   }
 
   const MockMotionEvent& ReleaseTouchPoint() {
@@ -296,6 +308,11 @@ class TouchDispositionGestureFilterTest
                                  float y,
                                  float diameter) {
     GestureEventDetails details(type);
+    if (type == EventType::kGestureScrollUpdate) {
+      // Ensure that the scroll update is not empty since TDGF might filter
+      // out empty scroll updates.
+      details = GestureEventDetails(type, 1.0f, 1.0f);
+    }
     details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
     return GestureEventData(
         details, 0, MotionEvent::ToolType::FINGER, base::TimeTicks(), x, y, 0,
@@ -315,6 +332,8 @@ class TouchDispositionGestureFilterTest
   std::unique_ptr<GestureEventData> last_sent_gesture_;
   gfx::Rect show_press_bounding_box_;
   uint32_t last_sent_touch_event_id_;
+  std::optional<TouchDispositionGestureFilter::AckTimestampOverride>
+      timestamp_override_;
 };
 
 TEST_F(TouchDispositionGestureFilterTest, BasicNoGestures) {
@@ -1240,6 +1259,10 @@ TEST_F(TouchDispositionGestureFilterTest, PreviousScrollPrevented) {
   EXPECT_TRUE(GesturesMatch(Gestures(EventType::kGestureBegin),
                             GetAndResetSentGestures()));
 
+  SendPacket(MoveTouchPoint(), Gestures(EventType::kGestureScrollBegin));
+  SendTouchNotConsumedAckForLastTouch();
+  GetAndResetSentGestures();
+
   // The sent scroll update should always reflect whether any preceding scroll
   // update has been dropped.
   SendPacket(MoveTouchPoint(), Gestures(EventType::kGestureScrollUpdate));
@@ -1354,6 +1377,9 @@ TEST_F(TouchDispositionGestureFilterTest,
   uint32_t touch_press_event_id =
       SendPacket(PressTouchPoint(), Gestures(EventType::kGestureBegin));
 
+  SendPacket(MoveTouchPoint(), Gestures(EventType::kGestureScrollBegin));
+  SendTouchNotConsumedAckForLastTouch();
+
   // Send and synchronously ack two touch moves.
   SendPacket(MoveTouchPoint(), Gestures(EventType::kGestureScrollUpdate));
   SendTouchNotConsumedAckForLastTouch();
@@ -1370,14 +1396,16 @@ TEST_F(TouchDispositionGestureFilterTest,
   // Ack the touch press. All events but the release should be acked.
   SendTouchNotConsumedAck(touch_press_event_id);
   EXPECT_TRUE(GesturesMatch(
-      Gestures(EventType::kGestureBegin, EventType::kGestureScrollUpdate,
+      Gestures(EventType::kGestureBegin, EventType::kGestureScrollBegin,
+               EventType::kGestureScrollUpdate,
                EventType::kGestureScrollUpdate),
       GetAndResetSentGestures()));
 
   // The touch release still requires an ack.
   SendTouchNotConsumedAck(touch_release_event_id);
-  EXPECT_TRUE(GesturesMatch(Gestures(EventType::kGestureEnd),
-                            GetAndResetSentGestures()));
+  EXPECT_TRUE(GesturesMatch(
+      Gestures(EventType::kGestureScrollEnd, EventType::kGestureEnd),
+      GetAndResetSentGestures()));
 }
 
 TEST_F(TouchDispositionGestureFilterTest,

@@ -104,6 +104,16 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
     return data_.scroll_update.y;
   }
 
+  void set_scroll_x(float x) {
+    DCHECK_EQ(EventType::kGestureScrollUpdate, type_);
+    data_.scroll_update.x = x;
+  }
+
+  void set_scroll_y(float y) {
+    DCHECK_EQ(EventType::kGestureScrollUpdate, type_);
+    data_.scroll_update.y = y;
+  }
+
   float scroll_x_unconstrained() const {
     DCHECK_EQ(EventType::kGestureScrollUpdate, type_);
     return data_.scroll_update.x_unconstrained;

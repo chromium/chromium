@@ -122,6 +122,11 @@ void TouchEmulatorImpl::Enable(Mode mode,
     // TODO(dgozman): Use synthetic secondary touch to support multi-touch.
     gesture_provider_->SetMultiTouchZoomSupportEnabled(
         mode != Mode::kEmulatingTouchFromMouse);
+
+    // Disable scroll update compensation for emulated touch events since it is
+    // unreasonable to expect automation to react in realtime to manipulation of
+    // the input events.
+    gesture_provider_->DisableScrollUpdateCompensation();
   }
 
   UpdateCursor();
