@@ -46,6 +46,10 @@
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
+namespace content {
+class NavigationHandle;
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
 #include "components/contextual_search/footprints/public/drive_disclaimer_controller.h"
@@ -361,7 +365,14 @@ class ContextualSearchboxHandler
   omnibox::InputState GetValidInputState();
   std::string GetPreviousQuery() override;
 
-  virtual void OpenUrl(GURL url, const WindowOpenDisposition disposition);
+  virtual void ProcessContextAndOpenUrl(
+      GURL url,
+      const WindowOpenDisposition disposition);
+
+  virtual void OpenUrl(GURL url,
+                       const WindowOpenDisposition disposition,
+                       base::OnceCallback<void(content::NavigationHandle&)>
+                           navigation_handle_callback);
 
   void ContextualizeQueryAndOpenUrl(
       const std::string& query_text,

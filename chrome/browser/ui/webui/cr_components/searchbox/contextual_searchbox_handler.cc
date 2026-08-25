@@ -2180,7 +2180,7 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
             [](base::WeakPtr<ContextualSearchboxHandler> self,
                WindowOpenDisposition disposition, GURL url) {
               if (self) {
-                self->OpenUrl(url, disposition);
+                self->ProcessContextAndOpenUrl(url, disposition);
               }
             },
             weak_ptr_factory_.GetWeakPtr(), disposition));
@@ -2245,38 +2245,12 @@ void ContextualSearchboxHandler::UploadTabContext(
   }
 }
 
-void ContextualSearchboxHandler::OpenUrl(
+void ContextualSearchboxHandler::ProcessContextAndOpenUrl(
     GURL url,
     const WindowOpenDisposition disposition) {
   if (!url.is_valid()) {
     return;
   }
-
-#if !BUILDFLAG(IS_ANDROID)
-  // When the everywhere Omnibox is enabled, check to see if the current web
-  // contents is the everywhere omnibox popup -- if so redirect the open to
-  // the everywhere service.
-  // TODO(crbug.com/526405104): This should probably be moved to the client and
-  // be based on the page classification. The service's impl should also
-  // correctly pass on context like done below.
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhere)) {
-    if (web_contents_->GetVisibleURL().host() ==
-        chrome::kChromeUIOmniboxEverywhereHost) {
-      if (auto* service =
-              OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                [](OmniboxEverywhereService* service, const GURL& url,
-                   WindowOpenDisposition disposition) {
-                  service->OpenUrl(url, disposition, ui::PAGE_TRANSITION_LINK);
-                },
-                base::Unretained(service), url, disposition));
-        return;
-      }
-    }
-  }
-#endif
 
   auto* contextual_session_handle = GetContextualSessionHandle();
 
@@ -2332,6 +2306,20 @@ void ContextualSearchboxHandler::OpenUrl(
       },
       std::move(new_contextual_session_handle),
       std::move(new_input_state_model), std::move(selected_tab_ids));
+
+  OpenUrl(url, disposition, std::move(navigation_handle_callback));
+  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+    ClearFiles(/*should_block_auto_suggested_tabs=*/false,
+               /*query_submitted=*/true);
+  }
+  contextual_session_handle->ClearSubmittedContextTokens();
+}
+
+void ContextualSearchboxHandler::OpenUrl(
+    GURL url,
+    const WindowOpenDisposition disposition,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   // TODO(crbug.com/469137247): Consider moving this logic to the specific
   // subclasses that have aim navigation.
   bool should_open_url = true;
@@ -2367,7 +2355,7 @@ void ContextualSearchboxHandler::OpenUrl(
         active_tab ? active_tab->GetContents() : nullptr;
 
     if (ShouldOpenInLensSidePanel(active_web_contents,
-                                  contextual_session_handle)) {
+                                  GetContextualSessionHandle())) {
       // Open in AIM in lens side panel.
       if (auto* lens_search_controller =
               LensSearchController::FromWebUIWebContents(active_web_contents)) {
@@ -2382,7 +2370,6 @@ void ContextualSearchboxHandler::OpenUrl(
                 : AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
             /*is_zero_prefix_suggestion=*/query_text.empty());
         active_web_contents->Focus();
-        contextual_session_handle->ClearSubmittedContextTokens();
         return;
       }
     }
@@ -2405,12 +2392,6 @@ void ContextualSearchboxHandler::OpenUrl(
                                   ui::PAGE_TRANSITION_LINK, false);
     web_contents_->OpenURL(params, std::move(navigation_handle_callback));
   }
-
-  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
-    ClearFiles(/*should_block_auto_suggested_tabs=*/false,
-               /*query_submitted=*/true);
-  }
-  contextual_session_handle->ClearSubmittedContextTokens();
 }
 
 std::optional<base::Uuid> ContextualSearchboxHandler::GetTaskId() const {

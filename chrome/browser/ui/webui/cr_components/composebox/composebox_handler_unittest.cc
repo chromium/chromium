@@ -536,7 +536,7 @@ class DestructingTestWebContentsDelegate : public TestWebContentsDelegate {
   base::OnceClosure on_open_url_;
 };
 
-TEST_F(ComposeboxHandlerTest, OpenUrl_DestructionSafe) {
+TEST_F(ComposeboxHandlerTest, ProcessContextAndOpenUrl_DestructionSafe) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(omnibox::kOmniboxEverywhere);
 
@@ -544,9 +544,11 @@ TEST_F(ComposeboxHandlerTest, OpenUrl_DestructionSafe) {
    public:
     using ComposeboxHandler::ComposeboxHandler;
 
-    void OpenUrl(GURL url, const WindowOpenDisposition disposition) override {
+    void ProcessContextAndOpenUrl(
+        GURL url,
+        const WindowOpenDisposition disposition) override {
       auto weak_this = weak_ptr_factory_.GetWeakPtr();
-      ContextualSearchboxHandler::OpenUrl(url, disposition);
+      ContextualSearchboxHandler::ProcessContextAndOpenUrl(url, disposition);
       if (!weak_this) {
         return;
       }
@@ -577,12 +579,12 @@ TEST_F(ComposeboxHandlerTest, OpenUrl_DestructionSafe) {
       base::BindLambdaForTesting([&]() { return contextual_session_handle(); }),
       base::DoNothing());
 
-  // Calling OpenUrl will post a navigation task to the task runner.
-  // Running pending tasks will trigger WebContentsDelegate::OpenURLFromTab,
-  // which synchronously destroys the handler, and it should complete safely
-  // without any use-after-free crashes.
-  test_handler->OpenUrl(GURL("https://google.com"),
-                        WindowOpenDisposition::CURRENT_TAB);
+  // Calling ProcessContextAndOpenUrl will post a navigation task to the task
+  // runner. Running pending tasks will trigger
+  // WebContentsDelegate::OpenURLFromTab, which synchronously destroys the
+  // handler, and it should complete safely without any use-after-free crashes.
+  test_handler->ProcessContextAndOpenUrl(GURL("https://google.com"),
+                                         WindowOpenDisposition::CURRENT_TAB);
 
   base::RunLoop().RunUntilIdle();
 
@@ -597,9 +599,11 @@ TEST_F(ComposeboxHandlerTest, SubmitQuery_DestructionSafe) {
    public:
     using ComposeboxHandler::ComposeboxHandler;
 
-    void OpenUrl(GURL url, const WindowOpenDisposition disposition) override {
+    void ProcessContextAndOpenUrl(
+        GURL url,
+        const WindowOpenDisposition disposition) override {
       auto weak_this = weak_ptr_factory_.GetWeakPtr();
-      ContextualSearchboxHandler::OpenUrl(url, disposition);
+      ContextualSearchboxHandler::ProcessContextAndOpenUrl(url, disposition);
       if (!weak_this) {
         return;
       }

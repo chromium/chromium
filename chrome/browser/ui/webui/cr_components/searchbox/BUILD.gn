@@ -107,7 +107,6 @@ source_set("searchbox_impl") {
       "//chrome/browser/new_tab_page",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/lens",
-      "//chrome/browser/ui/omnibox/omnibox_everywhere",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/views/drive_picker_host",
       "//chrome/browser/ui/views/location_bar",

@@ -286,3 +286,14 @@ void OmniboxEverywhereHandler::OnAimEligibilityChanged() {
         profile_->GetPrefs()->GetBoolean(omnibox::kShowAiModeOmniboxButton));
   }
 }
+
+void OmniboxEverywhereHandler::OpenUrl(
+    GURL url,
+    const WindowOpenDisposition disposition,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
+  if (service_) {
+    service_->OpenUrl(url, disposition, ui::PAGE_TRANSITION_LINK,
+                      std::move(navigation_handle_callback));
+  }
+}

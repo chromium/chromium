@@ -45,7 +45,9 @@ class MockOmniboxEverywhereService : public OmniboxEverywhereService {
               OpenUrl,
               (const GURL& url,
                WindowOpenDisposition disposition,
-               ui::PageTransition transition),
+               ui::PageTransition transition,
+               base::OnceCallback<void(content::NavigationHandle&)>
+                   navigation_handle_callback),
               (override));
   MOCK_METHOD(void, ShowProfilePicker, (), (override));
   MOCK_METHOD(void, OnDrivePickerOpened, (), (override));
@@ -105,13 +107,16 @@ TEST_F(OmniboxEverywhereHandlerTest,
   WindowOpenDisposition captured_disposition;
   ui::PageTransition captured_transition;
 
-  EXPECT_CALL(*mock_service_, OpenUrl(testing::_, testing::_, testing::_))
-      .WillOnce([&](const GURL& url, WindowOpenDisposition disposition,
-                    ui::PageTransition transition) {
-        captured_url = url;
-        captured_disposition = disposition;
-        captured_transition = transition;
-      });
+  EXPECT_CALL(*mock_service_,
+              OpenUrl(testing::_, testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&](const GURL& url, WindowOpenDisposition disposition,
+              ui::PageTransition transition,
+              base::OnceCallback<void(content::NavigationHandle&)> callback) {
+            captured_url = url;
+            captured_disposition = disposition;
+            captured_transition = transition;
+          });
 
   handler_->SubmitQuery("weather today", /*mouse_button=*/0, /*alt_key=*/false,
                         /*ctrl_key=*/false, /*meta_key=*/false,
@@ -151,13 +156,16 @@ TEST_F(OmniboxEverywhereHandlerTest,
   WindowOpenDisposition captured_disposition;
   ui::PageTransition captured_transition;
 
-  EXPECT_CALL(*mock_service_, OpenUrl(testing::_, testing::_, testing::_))
-      .WillOnce([&](const GURL& url, WindowOpenDisposition disposition,
-                    ui::PageTransition transition) {
-        captured_url = url;
-        captured_disposition = disposition;
-        captured_transition = transition;
-      });
+  EXPECT_CALL(*mock_service_,
+              OpenUrl(testing::_, testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&](const GURL& url, WindowOpenDisposition disposition,
+              ui::PageTransition transition,
+              base::OnceCallback<void(content::NavigationHandle&)> callback) {
+            captured_url = url;
+            captured_disposition = disposition;
+            captured_transition = transition;
+          });
 
   handler_->SubmitQuery("weather today", /*mouse_button=*/0, /*alt_key=*/false,
                         /*ctrl_key=*/false, /*meta_key=*/false,
@@ -219,6 +227,23 @@ TEST_F(OmniboxEverywhereHandlerTest, CreateAutocompleteMatchWithKeyword) {
 TEST_F(OmniboxEverywhereHandlerTest, ActivateKeywordDoesNotCrash) {
   handler_->ActivateKeyword(0, GURL("https://example.com"),
                             base::TimeTicks::Now(), /*is_mouse_event=*/true);
+}
+
+TEST_F(OmniboxEverywhereHandlerTest, OpenUrlForwardsToService) {
+  GURL test_url("https://www.google.com");
+  EXPECT_CALL(*mock_service_,
+              OpenUrl(test_url, WindowOpenDisposition::CURRENT_TAB, testing::_,
+                      testing::_))
+      .WillOnce(
+          [&](const GURL& url, WindowOpenDisposition disposition,
+              ui::PageTransition transition,
+              base::OnceCallback<void(content::NavigationHandle&)> callback) {
+            EXPECT_TRUE(ui::PageTransitionCoreTypeIs(transition,
+                                                     ui::PAGE_TRANSITION_LINK));
+          });
+
+  handler_->OpenUrl(test_url, WindowOpenDisposition::CURRENT_TAB,
+                    base::NullCallback());
 }
 
 }  // namespace

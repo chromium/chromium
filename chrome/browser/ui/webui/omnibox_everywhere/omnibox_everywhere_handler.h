@@ -66,6 +66,11 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler {
   void OpenProfilePicker() override;
 
   // ContextualSearchboxHandler:
+  void OpenUrl(GURL url,
+               const WindowOpenDisposition disposition,
+               base::OnceCallback<void(content::NavigationHandle&)>
+                   navigation_handle_callback) override;
+
   // Overridden to notify the OmniboxEverywhereService when the Drive picker is
   // dismissed, allowing the standalone widget to regain activation and focus.
   void CleanupDrivePicker() override;

@@ -41,6 +41,10 @@ class ComposeboxEverywhereHandler : public ComposeboxHandler {
   void OnDriveUploadClicked(OnDriveUploadClickedCallback callback) override;
 
   // ContextualSearchboxHandler:
+  void OpenUrl(GURL url,
+               const WindowOpenDisposition disposition,
+               base::OnceCallback<void(content::NavigationHandle&)>
+                   navigation_handle_callback) override;
   void CleanupDrivePicker() override;
 
  private:

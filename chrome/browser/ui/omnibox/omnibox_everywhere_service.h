@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -19,6 +21,10 @@ class ScopedProfileKeepAlive;
 
 namespace user_education {
 class FeaturePromoController;
+}
+
+namespace content {
+class NavigationHandle;
 }
 
 namespace omnibox_everywhere {
@@ -46,9 +52,14 @@ class OmniboxEverywhereService : public KeyedService {
   virtual void OnDrivePickerClosed();
   void OnScreensharePickerOpened();
   void OnScreensharePickerClosed();
+  void OpenUrl(const GURL& url,
+               WindowOpenDisposition disposition,
+               ui::PageTransition transition);
   virtual void OpenUrl(const GURL& url,
                        WindowOpenDisposition disposition,
-                       ui::PageTransition transition);
+                       ui::PageTransition transition,
+                       base::OnceCallback<void(content::NavigationHandle&)>
+                           navigation_handle_callback);
 
   // Acquires a ScopedProfileKeepAlive for this profile while the popup widget
   // is active or being shown. Returns true if profile keep alive was acquired

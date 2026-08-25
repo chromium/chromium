@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
+#include "content/public/browser/navigation_handle.h"
 
 OmniboxEverywhereService::OmniboxEverywhereService(Profile* profile)
     : profile_(profile) {
@@ -140,6 +141,15 @@ void OmniboxEverywhereService::OnScreensharePickerClosed() {
 void OmniboxEverywhereService::OpenUrl(const GURL& url,
                                        WindowOpenDisposition disposition,
                                        ui::PageTransition transition) {
+  OpenUrl(url, disposition, transition, base::NullCallback());
+}
+
+void OmniboxEverywhereService::OpenUrl(
+    const GURL& url,
+    WindowOpenDisposition disposition,
+    ui::PageTransition transition,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   auto* browser_collection = ProfileBrowserCollection::GetForProfile(profile_);
   CHECK(browser_collection);
   BrowserWindowInterface* bwi = browser_collection->GetLastActiveBrowser();
@@ -157,7 +167,10 @@ void OmniboxEverywhereService::OpenUrl(const GURL& url,
                              ? WindowOpenDisposition::NEW_FOREGROUND_TAB
                              : disposition);
     params.window_action = NavigateParams::WindowAction::kShowWindow;
-    Navigate(&params);
+    base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
+    if (handle && navigation_handle_callback) {
+      std::move(navigation_handle_callback).Run(*handle);
+    }
   }
 
   HidePopup();

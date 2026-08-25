@@ -1815,7 +1815,7 @@ class OmniboxComposeboxHandlerTest : public SearchboxHandlerTest {
   ~OmniboxComposeboxHandlerTest() override = default;
 
   void OpenUrl(GURL url, WindowOpenDisposition disposition) {
-    handler_->OpenUrl(url, disposition);
+    handler_->ProcessContextAndOpenUrl(url, disposition);
   }
 
   void SetUp() override {

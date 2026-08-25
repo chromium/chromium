@@ -124,10 +124,13 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
   virtual void ClearSessionHandle();
 
  protected:
-  void OpenUrl(GURL url, const WindowOpenDisposition disposition) override;
+  void ProcessContextAndOpenUrl(
+      GURL url,
+      const WindowOpenDisposition disposition) override;
 
-  FRIEND_TEST_ALL_PREFIXES(ComposeboxHandlerTest,
-                           OpenUrl_ResetsContextControllerObserver);
+  FRIEND_TEST_ALL_PREFIXES(
+      ComposeboxHandlerTest,
+      ProcessContextAndOpenUrl_ResetsContextControllerObserver);
   FRIEND_TEST_ALL_PREFIXES(ComposeboxHandlerTest, SetSmartTabSharingEnabled);
   FRIEND_TEST_ALL_PREFIXES(ComposeboxHandlerTest,
                            SetSmartTabSharingEnabled_FeatureDisabled);
