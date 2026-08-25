@@ -140,9 +140,6 @@ public class VerticalTabUtils {
     /** Feature parameter name for enabling the incognito button in the footer. */
     public static final String INCOGNITO_BUTTON_PARAM = "incognito_button";
 
-    /** Feature parameter name for enabling multi-select. */
-    public static final String MULTI_SELECT_PARAM = "multi_select";
-
     /**
      * Returns whether Vertical Tabs should be enabled by default for eligible users who have not
      * explicitly set their preference.
@@ -261,14 +258,6 @@ public class VerticalTabUtils {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS,
                 GROUP_HOVER_CARD_PARAM,
-                /* defaultValue= */ false);
-    }
-
-    /** Returns whether multi-select behavior is enabled for Vertical Tabs. */
-    public static boolean isMultiSelectEnabled() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS,
-                MULTI_SELECT_PARAM,
                 /* defaultValue= */ false);
     }
 

@@ -186,7 +186,6 @@ import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTa
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarExplicitTrigger;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
@@ -1132,7 +1131,6 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS + ":multi_select/true"})
     public void testTabSelection_MultiSelect_ShiftClick_Vertical() {
         setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.VERTICAL);
         mMediator.resetWithListOfTabs(List.of(mTab1, mTab2), null, false);
@@ -1172,7 +1170,6 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS + ":multi_select/true"})
     public void testOnTabsSelectionChanged_MultiSelectEnabled_UpdatesProperty() {
         setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.VERTICAL);
         assertTrue(mTabListConfig.supportsModifierMultiSelect);
@@ -6610,8 +6607,7 @@ public class TabListMediatorUnitTest {
         boolean supportsModifierMultiSelect =
                 hasMatchingConfig
                         ? mTabListConfig.supportsModifierMultiSelect
-                        : (type == TabListMediatorType.VERTICAL_TABS
-                                && VerticalTabUtils.isMultiSelectEnabled());
+                        : (type == TabListMediatorType.VERTICAL_TABS);
         boolean supportsTabLoadingState =
                 hasMatchingConfig
                         ? mTabListConfig.supportsTabLoadingState

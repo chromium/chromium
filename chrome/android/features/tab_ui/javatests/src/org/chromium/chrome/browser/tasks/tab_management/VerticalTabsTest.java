@@ -83,9 +83,7 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-@EnableFeatures({
-    ChromeFeatureList.ANDROID_VERTICAL_TABS + ":enable_by_default/true/multi_select/true"
-})
+@EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS + ":enable_by_default/true"})
 @Batch(Batch.PER_CLASS)
 public class VerticalTabsTest {
     private static final String TEST_GROUP_TITLE = "Vertical Tabs Project";

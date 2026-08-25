@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListItemTouchHelperCa
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabMultiSelectHelper;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
-import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
@@ -564,8 +563,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             // TODO(crbug.com/544185227): Support batch drag and drop of multi-selected tabs.
             // Currently, we fallback to a standard single-tab drag by clearing
             // the multi-selection state if the user drags a highlighted item.
-            if (VerticalTabUtils.isMultiSelectEnabled()
-                    && TabMultiSelectHelper.hasMultipleTabsSelected(tabModel)) {
+            if (TabMultiSelectHelper.hasMultipleTabsSelected(tabModel)) {
                 tabModel.clearMultiSelection(/* notifyObservers= */ true);
             }
 
@@ -1381,8 +1379,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             TabModel tabModel, @Nullable Tab tab, @TabSelectionType int type) {
         if (tab == null) return;
 
-        if (VerticalTabUtils.isMultiSelectEnabled()
-                && TabMultiSelectHelper.hasMultipleTabsSelected(tabModel)) {
+        if (TabMultiSelectHelper.hasMultipleTabsSelected(tabModel)) {
             // TODO(crbug.com/544185227): Support batch drag and drop of multi-selected tabs.
             // Currently, we fallback to a standard single-tab drag by clearing
             // the multi-selection state if the user drags a highlighted item.
@@ -1475,8 +1472,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                                 // to perform a multi-select operation (which should be handled by
                                 // onClick).
                                 MotionEventInfo info = MotionEventInfo.fromMotionEvent(e);
-                                if (!VerticalTabUtils.isMultiSelectEnabled()
-                                        || (!info.hasCtrlOrMeta() && !info.hasShift())) {
+                                if (!info.hasCtrlOrMeta() && !info.hasShift()) {
                                     selectTab(mActiveViewHolder);
                                 }
                             }

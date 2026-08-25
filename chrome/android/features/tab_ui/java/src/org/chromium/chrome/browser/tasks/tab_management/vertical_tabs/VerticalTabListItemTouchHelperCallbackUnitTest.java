@@ -476,7 +476,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS + ":multi_select/true"})
+    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
     public void testOnSelectedChanged_Drag_ClearsMultiSelection() {
         when(mViewHolder.getBindingAdapterPosition()).thenReturn(0);
 
@@ -628,7 +628,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS + ":multi_select/true"})
+    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
     public void testCreateMouseDragDetector_ActionDownSelectsTab_ClearsMultiSelection() {
         RecyclerView.OnItemTouchListener listener =
                 mCallback.createMouseDragDetector(mItemTouchHelper);

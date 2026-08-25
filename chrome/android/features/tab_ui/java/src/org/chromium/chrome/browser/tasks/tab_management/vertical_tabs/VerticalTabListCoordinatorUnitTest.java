@@ -759,7 +759,7 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS + ":multi_select/true"})
+    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
     public void testShowTabItemContextMenu_MultiSelect() {
         TabListRecyclerView recyclerViewSpy = setupMockRecyclerViewWithTab(mMockTab1, TAB_ID_1);
 

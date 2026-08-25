@@ -2591,15 +2591,12 @@ const FeatureEntry::FeatureParam kAndroidVerticalTabs_ExternalDrag[] = {
     {"external_drag", "true"}};
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_AutoResize[] = {
     {"auto_resize", "true"}};
-const FeatureEntry::FeatureParam kAndroidVerticalTabs_MultiSelect[] = {
-    {"multi_select", "true"}};
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_IncognitoButton[] = {
     {"incognito_button", "true"}};
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_All[] = {
     {"external_drag", "true"},
     {"auto_resize", "true"},
     {"group_hover_card", "true"},
-    {"multi_select", "true"},
     {"incognito_button", "true"}};
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_EnableByDefault[] = {
     {"enable_by_default", "true"}};
@@ -2607,7 +2604,6 @@ const FeatureEntry::FeatureParam kAndroidVerticalTabs_EnableByDefault[] = {
 const FeatureEntry::FeatureVariation kAndroidVerticalTabsVariations[] = {
     {"with external-drag", kAndroidVerticalTabs_ExternalDrag, nullptr},
     {"with auto-resize", kAndroidVerticalTabs_AutoResize, nullptr},
-    {"with multi-select", kAndroidVerticalTabs_MultiSelect, nullptr},
     {"with incognito-button", kAndroidVerticalTabs_IncognitoButton, nullptr},
     {"with all experimental features", kAndroidVerticalTabs_All, nullptr},
     {"with enabled-by-default", kAndroidVerticalTabs_EnableByDefault, nullptr},

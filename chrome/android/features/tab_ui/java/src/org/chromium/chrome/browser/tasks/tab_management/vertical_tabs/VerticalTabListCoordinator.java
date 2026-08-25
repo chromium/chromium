@@ -521,7 +521,7 @@ public class VerticalTabListCoordinator {
 
         TabListConfig tabListConfig =
                 new TabListConfig.Builder(TabListLayoutType.NESTED)
-                        .setSupportsModifierMultiSelect(VerticalTabUtils.isMultiSelectEnabled())
+                        .setSupportsModifierMultiSelect(/* supportsModifierMultiSelect= */ true)
                         .setSupportsTabLoadingState(/* supportsTabLoadingState= */ true)
                         .setTabClosingSource(TabClosingSource.VERTICAL_TAB_STRIP)
                         .setRailCollapseStateSupplier(
@@ -1893,8 +1893,7 @@ public class VerticalTabListCoordinator {
     private void showTabItemContextMenu(RectProvider rectProvider, Activity activity, int tabId) {
         TabModel tabModel = mTabModelSelector.getCurrentModel();
         List<Integer> allTabIds;
-        if (VerticalTabUtils.isMultiSelectEnabled()
-                && TabMultiSelectHelper.hasMultipleTabsSelected(tabModel)
+        if (TabMultiSelectHelper.hasMultipleTabsSelected(tabModel)
                 && tabModel.isTabMultiSelected(tabId)) {
             allTabIds = tabModel.getOrderedMultiSelectedTabIds();
         } else {
