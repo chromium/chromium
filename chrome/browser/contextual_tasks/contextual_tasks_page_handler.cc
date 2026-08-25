@@ -771,7 +771,6 @@ void ContextualTasksPageHandler::OnReceivedUpdatedThreadContextLibrary(
                 for (const auto& item : context_items) {
                   if (item->is_tab() && item->get_tab()->has_chrome_tab_data) {
                     auto tab_info = searchbox::mojom::TabInfo::New();
-                    tab_info->tab_id = item->get_tab()->tab_id;
                     tab_info->url = item->get_tab()->url;
                     tab_info->title = item->get_tab()->title;
                     int32_t handle =
@@ -779,6 +778,11 @@ void ContextualTasksPageHandler::OnReceivedUpdatedThreadContextLibrary(
                             .GetHandleForSessionId(item->get_tab()->tab_id);
                     if (handle != tabs::TabHandle::NullValue) {
                       tab_info->tab_id = handle;
+                    } else if (SessionID::IsValidValue(
+                                   item->get_tab()->tab_id)) {
+                      tab_info->tab_id = item->get_tab()->tab_id;
+                    } else {
+                      tab_info->tab_id = tabs::TabHandle::NullValue;
                     }
                     tabs.push_back(std::move(tab_info));
                   }

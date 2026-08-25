@@ -55,6 +55,7 @@
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/input_state.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_handle_factory.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/url_deduplication/url_deduplication_helper.h"
@@ -619,11 +620,15 @@ void ContextualTasksComposeboxHandler::InitializeInputStateModel() {
                          .GetHandleForSessionId(
                              file_info.tab_session_id.value().id());
             // In case the tab is not mapped.
-            if (tab_id == tabs::TabHandle::NullValue) {
+            if (tab_id == tabs::TabHandle::NullValue &&
+                SessionID::IsValidValue(
+                    file_info.tab_session_id.value().id())) {
               tab_id = file_info.tab_session_id.value().id();
             }
           }
-          tab_info->tab_id = tab_id;
+          tab_info->tab_id = SessionID::IsValidValue(tab_id)
+                                 ? tab_id
+                                 : tabs::TabHandle::NullValue;
           tab_info->title = file_info.tab_title.value_or("");
           tab_info->url = file_info.tab_url.value_or(GURL());
           submitted_tabs.push_back(std::move(tab_info));
