@@ -347,6 +347,7 @@ public class AwContentsClientFullScreenTest extends AwParameterizedTest {
     public void testReparentAwContents_FullScreenTransitionsState() throws Throwable {
         loadTestPage(VIDEO_TEST_URL);
         mTestContainerView = mActivityTestRule.reparentAwContents(mTestContainerView);
+        mContentsClient.setActivity(mActivityTestRule.getActivity());
 
         JSUtils.clickNodeWithUserGesture(
                 mTestContainerView.getWebContents(), CUSTOM_FULLSCREEN_CONTROL_ID);

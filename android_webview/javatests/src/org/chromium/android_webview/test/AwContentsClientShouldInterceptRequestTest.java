@@ -165,12 +165,13 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         Assert.assertEquals(1, mShouldInterceptRequestHelper.getUrls().size());
         Assert.assertEquals(aboutPageUrl, mShouldInterceptRequestHelper.getUrls().get(0));
 
-        AwTestContainerView newView = mActivityTestRule.reparentAwContents(mTestContainerView);
+        mTestContainerView = mActivityTestRule.reparentAwContents(mTestContainerView);
+        mAwContents = mTestContainerView.getAwContents();
 
         final String syncUrl =
                 addPageToTestServer(mWebServer, "/sync.html", "<html><body>hello</body></html>");
         callCount = mShouldInterceptRequestHelper.getCallCount();
-        mActivityTestRule.loadUrlAsync(newView.getAwContents(), syncUrl);
+        mActivityTestRule.loadUrlAsync(mAwContents, syncUrl);
         mShouldInterceptRequestHelper.waitForCallback(callCount);
         Assert.assertEquals(2, mShouldInterceptRequestHelper.getUrls().size());
         Assert.assertEquals(syncUrl, mShouldInterceptRequestHelper.getUrls().get(1));

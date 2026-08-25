@@ -2115,14 +2115,25 @@ public class AwContentsTest extends AwParameterizedTest {
         AwTestContainerView oldView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(client, false);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            oldView.getAwContents().getViewAndroidDelegateForTesting().acquireView();
-        });
+        View anchorView =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return oldView.getAwContents()
+                                    .getViewAndroidDelegateForTesting()
+                                    .acquireView();
+                        });
 
         AwTestContainerView newView =
                 mActivityTestRule.reparentAwContents(oldView, android.R.style.Theme_Black);
 
         Assert.assertNotNull(newView);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    newView.getAwContents()
+                            .getViewAndroidDelegateForTesting()
+                            .removeView(anchorView);
+                });
     }
 
     @Test
