@@ -327,7 +327,7 @@ void ContextualCueingController::RunGlicSingleSourcePath(
   if (!glic_target) {
     CUEING_LOG(base::StringPrintf(
         "%s ineligible for cue: Target feature kGlic not registered.",
-        active_web_contents->GetLastCommittedURL().spec().c_str()));
+        active_web_contents->GetLastCommittedURL().spec()));
     RecordContextualCueingDecision(
         source_id, ContextualCueingDecision::kTargetFeatureNotRegistered);
     return;
@@ -336,7 +336,7 @@ void ContextualCueingController::RunGlicSingleSourcePath(
   if (!glic_target->IsPageEligible(result, active_web_contents)) {
     CUEING_LOG(base::StringPrintf(
         "%s ineligible for cue: Failed category classification.",
-        active_web_contents->GetLastCommittedURL().spec().c_str()));
+        active_web_contents->GetLastCommittedURL().spec()));
     RecordContextualCueingDecision(
         source_id, ContextualCueingDecision::kFailedCategoryClassification);
     return;
@@ -356,7 +356,7 @@ void ContextualCueingController::RunGlicSingleSourcePath(
   CUEING_LOG(base::StringPrintf(
       "%s eligible for cue: Category classification "
       "succeeded. Initiating model execution request.",
-      active_web_contents->GetLastCommittedURL().spec().c_str()));
+      active_web_contents->GetLastCommittedURL().spec()));
   InitiateModelExecutionRequest(CueTargetType::kGlic);
 }
 
@@ -420,7 +420,7 @@ void ContextualCueingController::UrlChanged(const GURL& url) {
     return;
   }
   last_logged_active_url_ = url;
-  CUEING_LOG(base::StringPrintf("Tab URL changed to %s", url.spec().c_str()));
+  CUEING_LOG(base::StringPrintf("Tab URL changed to %s", url.spec()));
 
   // V2: kick off parallel eligibility fan-out for all registered targets.
   if (base::FeatureList::IsEnabled(kContextualCueingV2MultiSource)) {
@@ -1003,6 +1003,11 @@ void ContextualCueingController::ShowCue(
   CueActionData action_data =
       target.CueActionDataFromResponse(cue, tabs_to_show);
 
+  const std::string cuj =
+      cue.suggested_cuj().empty() ? GetName(cue_type) : cue.suggested_cuj();
+
+  auto* window = tab_->GetBrowserWindowInterface();
+  CHECK(window);
   base::TimeDelta show_latency;
   base::Time page_load_time = tab_->GetContents()
                                   ->GetController()
@@ -1012,11 +1017,10 @@ void ContextualCueingController::ShowCue(
     show_latency = base::Time::Now() - page_load_time;
   }
 
-  RecordCueShownMetrics(GetTabSourceId(), cue.suggested_cuj(), tab_metrics,
-                        show_latency);
+  RecordCueShownMetrics(GetTabSourceId(), cuj, tab_metrics, show_latency);
 
   RecordCueShownToPrivateInsights(tab_->GetProfile(), cue_id, cue_type, cue,
-                                  tab_, tabs_to_show, background_tabs);
+                                  tab_, tabs_to_show, background_tabs, cuj);
 
   dependencies_.clear();
   for (const auto& handle : tabs_to_show) {
@@ -1032,8 +1036,8 @@ void ContextualCueingController::ShowCue(
       << "Contextual cueing anchored message UI is not implemented for Android";
 #else
   const auto& strings = cue.anchored_message_cue();
-  active_cue_data_.emplace(cue_type, cue, tabs_to_show, background_tabs,
-                           cue.suggested_cuj(), action_data, cue_id);
+  active_cue_data_.emplace(cue_type, cue, tabs_to_show, background_tabs, cuj,
+                           action_data, cue_id);
 
   page_actions::PageActionController* page_action_controller =
       tab_->GetTabFeatures()->page_action_controller();
@@ -1063,7 +1067,7 @@ void ContextualCueingController::ShowCue(
 
   auto menu_model = std::make_unique<ContextualCueingMenuModel>(
       tab_->GetProfile(), weak_ptr_factory_.GetWeakPtr(), cue_type, cue,
-      tabs_to_show, background_tabs, cue.suggested_cuj(),
+      tabs_to_show, background_tabs, cuj,
       std::move(action_data), cue_id, target.SupportsEditPrompt());
   page_action_controller->SetAnchoredMessageAction(
       kActionAnchoredContextualCue,
@@ -1076,12 +1080,12 @@ void ContextualCueingController::ShowCue(
       kActionAnchoredContextualCue,
       {.priority = page_actions::PageActionPriorityCategory::kContextualCue});
 
-  CUEING_LOG(base::StringPrintf(
-      "Showing cue for CUJ %s: %s [%s]", cue.suggested_cuj(),
-      strings.anchored_message_text(), strings.action_text()));
+  CUEING_LOG(base::StringPrintf("Showing cue for CUJ %s: %s [%s]", cuj,
+                                strings.anchored_message_text(),
+                                strings.action_text()));
 
   auto cue_log = contextual_cueing_internals::mojom::CueLog::New();
-  cue_log->cuj = cue.suggested_cuj();
+  cue_log->cuj = cuj;
   cue_log->anchored_message_text = strings.anchored_message_text();
   cue_log->action_text = strings.action_text();
   if (tab_ && tab_->GetContents()) {
@@ -1098,7 +1102,7 @@ void ContextualCueingController::ShowCue(
 #endif
 
   base::UmaHistogramSparse("ContextualCueing.ShownCueCUJ",
-                           base::HashMetricName(cue.suggested_cuj()));
+                           base::HashMetricName(cuj));
 
   RecordContextualCueingDecision(GetTabSourceId(),
                                  ContextualCueingDecision::kSuccess);

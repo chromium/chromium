@@ -1915,6 +1915,35 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
       static_cast<int64_t>(ContextualCueingInteraction::kCueClicked));
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
+                       RecordsFallbackToTargetNameWhenCUJEmpty) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  base::HistogramTester histogram_tester;
+
+  auto response = MakeCompleteResponse();
+  response.mutable_contextual_cues(0)->clear_suggested_cuj();
+  SeedExecutionResult(std::move(response));
+
+  SimulateFilterPassed();
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kSuccess, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.ShownCueCUJ",
+      base::HashMetricName(GetName(CueTargetType::kGlic)), 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.CueShown",
+      base::HashMetricName(GetName(CueTargetType::kGlic)), 1);
+}
+
 class ContextualCueingControllerBrowserTestWithAgeRestriction
     : public ContextualCueingControllerBrowserTest {
  public:

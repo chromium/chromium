@@ -31,7 +31,7 @@ TEST(ContextualCueingMetricsTest, CreateEvent_EmptyCollections) {
   auto event = internal::CreateContextualCueLogEvent(
       private_insights::events::ContextualCueLogEvent::SHOWN, "test_cue_id",
       CueTargetType::kGlic, {}, &active_tab,
-      /*tabs_to_show=*/{}, /*background_tabs=*/{});
+      /*tabs_to_show=*/{}, /*background_tabs=*/{}, /*cuj=*/"test_cuj");
 
   // Then
   EXPECT_EQ("test_cue_id", event.cue_id());
@@ -39,6 +39,7 @@ TEST(ContextualCueingMetricsTest, CreateEvent_EmptyCollections) {
   EXPECT_EQ("Active Title", event.cue_context().active_page().title());
   EXPECT_EQ("[]", event.cue_context().recent_pages());
   EXPECT_EQ("[]", event.cue_context().tabs_shown());
+  EXPECT_EQ("test_cuj", event.cue_details().cuj_type());
 }
 
 TEST(ContextualCueingMetricsTest, CreateEvent_NullTabToShow) {
@@ -56,7 +57,7 @@ TEST(ContextualCueingMetricsTest, CreateEvent_NullTabToShow) {
   auto event = internal::CreateContextualCueLogEvent(
       private_insights::events::ContextualCueLogEvent::SHOWN, "test_cue_id",
       CueTargetType::kGlic, {}, &active_tab, tabs_to_show,
-      /*background_tabs=*/{});
+      /*background_tabs=*/{}, /*cuj=*/"test_cuj");
 
   // Then
   EXPECT_EQ("test_cue_id", event.cue_id());
@@ -65,6 +66,7 @@ TEST(ContextualCueingMetricsTest, CreateEvent_NullTabToShow) {
   EXPECT_EQ("[]", event.cue_context().recent_pages());
   // The null handle should be skipped by the internal extractor.
   EXPECT_EQ("[]", event.cue_context().tabs_shown());
+  EXPECT_EQ("test_cuj", event.cue_details().cuj_type());
 }
 
 TEST(ContextualCueingMetricsTest, CreateEvent_EmptyBackgroundTab) {
@@ -82,7 +84,7 @@ TEST(ContextualCueingMetricsTest, CreateEvent_EmptyBackgroundTab) {
   auto event = internal::CreateContextualCueLogEvent(
       private_insights::events::ContextualCueLogEvent::SHOWN, "test_cue_id",
       CueTargetType::kGlic, {}, &active_tab,
-      /*tabs_to_show=*/{}, background_tabs);
+      /*tabs_to_show=*/{}, background_tabs, /*cuj=*/"test_cuj");
 
   // Then
   EXPECT_EQ("test_cue_id", event.cue_id());
@@ -93,6 +95,7 @@ TEST(ContextualCueingMetricsTest, CreateEvent_EmptyBackgroundTab) {
   // The extractor returns them, and they are serialized.
   EXPECT_EQ("[{\"title\":\"\",\"url\":\"\"}]",
             event.cue_context().recent_pages());
+  EXPECT_EQ("test_cuj", event.cue_details().cuj_type());
 }
 
 TEST(ContextualCueingMetricsTest, CreateEvent) {
@@ -120,7 +123,8 @@ TEST(ContextualCueingMetricsTest, CreateEvent) {
   // When
   auto event = internal::CreateContextualCueLogEvent(
       private_insights::events::ContextualCueLogEvent::SHOWN, "test_cue_id",
-      CueTargetType::kGlic, {}, &active_tab, tabs_to_show, background_tabs);
+      CueTargetType::kGlic, {}, &active_tab, tabs_to_show, background_tabs,
+      /*cuj=*/"custom_cuj");
 
   // Then
   EXPECT_EQ("test_cue_id", event.cue_id());
@@ -134,6 +138,7 @@ TEST(ContextualCueingMetricsTest, CreateEvent) {
   // Verify tabs_shown (tabs_to_show)
   EXPECT_EQ("[{\"title\":\"Other Title\",\"url\":\"https://other.com/\"}]",
             event.cue_context().tabs_shown());
+  EXPECT_EQ("custom_cuj", event.cue_details().cuj_type());
 }
 
 }  // namespace

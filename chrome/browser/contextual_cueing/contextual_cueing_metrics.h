@@ -59,7 +59,8 @@ void RecordCueShownToPrivateInsights(
     const optimization_guide::proto::ContextualCue& cue,
     tabs::TabInterface* active_tab,
     const std::vector<tabs::TabHandle>& tabs_to_show,
-    const std::vector<optimization_guide::proto::Tab>& background_tabs);
+    const std::vector<optimization_guide::proto::Tab>& background_tabs,
+    const std::string& cuj);
 
 void RecordCueingInteractionToPrivateInsights(
     Profile* profile,
@@ -83,7 +84,8 @@ private_insights::events::ContextualCueLogEvent CreateContextualCueLogEvent(
     const optimization_guide::proto::ContextualCue& cue,
     tabs::TabInterface* active_tab,
     const std::vector<tabs::TabHandle>& tabs_to_show,
-    const std::vector<optimization_guide::proto::Tab>& background_tabs);
+    const std::vector<optimization_guide::proto::Tab>& background_tabs,
+    const std::string& cuj);
 
 }  // namespace internal
 

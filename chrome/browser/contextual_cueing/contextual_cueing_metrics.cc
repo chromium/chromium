@@ -86,7 +86,8 @@ private_insights::events::ContextualCueLogEvent CreateContextualCueLogEvent(
     const optimization_guide::proto::ContextualCue& cue,
     tabs::TabInterface* active_tab,
     const std::vector<tabs::TabHandle>& tabs_to_show,
-    const std::vector<optimization_guide::proto::Tab>& background_tabs) {
+    const std::vector<optimization_guide::proto::Tab>& background_tabs,
+    const std::string& cuj) {
   private_insights::events::ContextualCueLogEvent event;
   event.set_cue_id(cue_id);
   event.set_event_type(event_type);
@@ -110,7 +111,7 @@ private_insights::events::ContextualCueLogEvent CreateContextualCueLogEvent(
       private_insights::SerializeCollectionToPageInfoJson(
           tabs_to_show, ExtractFromTabHandle));
 
-  event.mutable_cue_details()->set_cuj_type(cue.suggested_cuj());
+  event.mutable_cue_details()->set_cuj_type(cuj);
   event.mutable_cue_details()->set_suggestion_text(
       cue.anchored_message_cue().anchored_message_text());
   event.mutable_cue_details()->set_promoted_feature(GetName(cue_type));
@@ -208,7 +209,8 @@ void RecordCueShownToPrivateInsights(
     const optimization_guide::proto::ContextualCue& cue,
     tabs::TabInterface* active_tab,
     const std::vector<tabs::TabHandle>& tabs_to_show,
-    const std::vector<optimization_guide::proto::Tab>& background_tabs) {
+    const std::vector<optimization_guide::proto::Tab>& background_tabs,
+    const std::string& cuj) {
   if (!kEnablePrivateInsightsLogging.Get()) {
     return;
   }
@@ -220,7 +222,7 @@ void RecordCueShownToPrivateInsights(
 
   auto event = internal::CreateContextualCueLogEvent(
       private_insights::events::ContextualCueLogEvent::SHOWN, cue_id, cue_type,
-      cue, active_tab, tabs_to_show, background_tabs);
+      cue, active_tab, tabs_to_show, background_tabs, cuj);
 
   private_insights_service->LogContextualCueEvent(std::move(event));
 }
@@ -263,7 +265,7 @@ void RecordCueingInteractionToPrivateInsights(
 
   auto event = internal::CreateContextualCueLogEvent(
       event_type, cue_id, cue_type, cue, active_tab, tabs_to_show,
-      background_tabs);
+      background_tabs, cuj);
 
   private_insights_service->LogContextualCueEvent(std::move(event));
 }
