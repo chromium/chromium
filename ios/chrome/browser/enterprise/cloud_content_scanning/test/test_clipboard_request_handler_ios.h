@@ -52,6 +52,22 @@ std::unique_ptr<ClipboardRequestHandler> CreateTestClipboardRequestHandlerIOS(
     ClipboardRequestHandler::CompletionCallback callback,
     BinaryUploadRequest::BrowserPolicyConnectorGetter policy_getter);
 
+// This method is used to inject a `closure_callback` in between getting the
+// `RequestHandlerResult` from scanning and before providing the result to the
+// tab helper. It can be used to inject code for verification or simulate change
+// of "Pasting state" to invalidate a paste event.
+void SetMockClipboardRequestHandlerWithClosureForTesting(
+    TriggeredRule::Action action,
+    base::RepeatingClosure closure_callback);
+
+// This method is used to simulate a scan that never completes by dropping the
+// completion callback without executing it, preventing the tab helper from
+// receiving a result. The `closure_callback` is executed to allow the test to
+// wait for the background request to be triggered.
+void SetMockClipboardRequestHandlerWithClosureAndNoResultForTesting(
+    TriggeredRule::Action action,
+    base::RepeatingClosure closure_callback);
+
 }  // namespace enterprise_connectors
 
 #endif  // IOS_CHROME_BROWSER_ENTERPRISE_CLOUD_CONTENT_SCANNING_TEST_TEST_CLIPBOARD_REQUEST_HANDLER_IOS_H_

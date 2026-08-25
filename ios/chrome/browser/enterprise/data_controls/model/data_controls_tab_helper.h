@@ -5,11 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_MODEL_DATA_CONTROLS_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_MODEL_DATA_CONTROLS_TAB_HELPER_H_
 
+#import "base/containers/flat_map.h"
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_observation.h"
 #import "components/enterprise/common/proto/connectors.pb.h"
+#import "components/enterprise/connectors/core/analysis_settings.h"
 #import "components/enterprise/data_controls/core/browser/verdict.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_pasteboard_manager.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_pasteboard_manager_observer.h"
@@ -42,6 +44,9 @@ class DataControlsTabHelper
     : public web::WebStateUserData<DataControlsTabHelper>,
       public DataControlsPasteboardManagerObserver {
  public:
+  // Max number for simultaneous non-blocking scan requests.
+  static constexpr size_t kMaxAuditPasteEvents = 100;
+
   DataControlsTabHelper(const DataControlsTabHelper&) = delete;
   DataControlsTabHelper& operator=(const DataControlsTabHelper&) = delete;
   ~DataControlsTabHelper() override;
@@ -122,18 +127,40 @@ class DataControlsTabHelper
       base::OnceCallback<void(bool)> callback,
       bool bypassed);
 
+  // Allow the paste immediately if it is a non-blocking scan, then try to get
+  // the pasteboard content and start the analysis.
+  void PasteIfNonBlockingAnalysis(const GURL& destination_url,
+                                  const GURL& source_url,
+                                  base::WeakPtr<ProfileIOS> profile,
+                                  base::WeakPtr<ProfileIOS> source_profile,
+                                  base::WeakPtr<ProfileIOS> destination_profile,
+                                  base::OnceCallback<void(bool)> callback);
+
   // Allow or block the paste or show a warning dialog based on the `result`.
   void PasteIfAllowedByContentAnalysis(
       base::OnceCallback<void(bool)> callback,
       enterprise_connectors::RequestHandlerResult result);
 
   // Run the pasted content analysis using the `PastedContentHandlerIOS` with
-  // the info from the parameters.
-  void RunPastedContentAnalysis(
+  // the info from the parameters. A callback to
+  // `PasteIfAllowedByContentAnalysis` will be created and the scan result will
+  // be provided by the handler.
+  void RunBlockingPastedContentAnalysis(
       const GURL& destination_url,
       base::WeakPtr<ProfileIOS> profile,
+      std::optional<enterprise_connectors::AnalysisSettings> settings,
       enterprise_connectors::ContentMetaData::CopiedTextSource copied_source,
       base::OnceCallback<void(bool)> callback,
+      std::optional<PasteboardContentDLP> pasteboard_content);
+
+  // Run the non-blocking version of the Content Analysis. A callback to
+  // `OnReceiveAuditOnlyPasteResult` will be created and scan result will be
+  // ignored.
+  void RunNonBlockingPastedContentAnalysis(
+      const GURL& destination_url,
+      base::WeakPtr<ProfileIOS> profile,
+      std::optional<enterprise_connectors::AnalysisSettings> settings,
+      enterprise_connectors::ContentMetaData::CopiedTextSource copied_source,
       std::optional<PasteboardContentDLP> pasteboard_content);
 
   // Finalizes the copy action invoking the callback.
@@ -178,6 +205,12 @@ class DataControlsTabHelper
   // Returns the management domain for the given `profile`.
   std::string GetManagementDomain(ProfileIOS* profile);
 
+  // Releases the handler stored in the map `audit_paste_events_` at key
+  // `index`.
+  void OnReceiveAuditOnlyPasteResult(
+      size_t index,
+      enterprise_connectors::RequestHandlerResult result);
+
   // Unowned pointer to the WebState owning `this`. `web_state_` will always
   // outlive `this`.
   raw_ptr<web::WebState> web_state_;
@@ -191,6 +224,20 @@ class DataControlsTabHelper
   // The handler for pasteboard content analysis.
   std::unique_ptr<enterprise_connectors::PasteboardContentHandlerIOS>
       pasteboard_content_handler_;
+
+  // The index we used as the key of the `audit_paste_events_`, increments by
+  // one as each new request comes in.
+  size_t audit_paste_event_index_ = 0;
+
+  // A map to keep track of the `PasteboardContentHandlerIOS` for handling
+  // non-blocking pasteboard scan requests.
+  base::flat_map<
+      // The index as the key for the map.
+      size_t,
+      // The handler responsible for sending the non-blocking scan request and
+      // receiving the result.
+      std::unique_ptr<enterprise_connectors::PasteboardContentHandlerIOS>>
+      audit_paste_events_;
 
   PasteEventState paste_event_state_ = PasteEventState::kIdle;
 

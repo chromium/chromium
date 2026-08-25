@@ -105,6 +105,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/enterprise:test_support",
     "//components/enterprise/connectors/core",
     "//components/enterprise/connectors/core:cloud_content_scanning",
     "//components/enterprise/data_controls/core/browser:test_support",
