@@ -36,21 +36,6 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
   - **ViewBinder**: A stateless component that translates changes in the `PropertyModel` to the View. This is the **only** class that is permitted to manipulate View properties at runtime.
   - **View**: Android `View` components that hold layout references. They should host very little logic, if any.
 
-### LocationBarDataProvider & LocationBarModel
-
-- **LocationBarDataProvider (LBDP) Role**:
-  - Acts as the central read-only data provider interface supplying contextual tab, page, and toolbar data to the Omnibox / LocationBar and its sub-components (such as `LocationBarMediator`, `StatusMediator`, `AutocompleteMediator`, `HintTextUpdater`, `VoiceRecognitionHandler`, and `FuseboxSessionState`).
-  - Exposes properties such as the current URL (`GURL`), page title, connection security level & malicious content status, page classification, primary and brand theme colors, incognito / off-the-record state, offline / paint preview status, toolbar position supplier, NewTabPage delegate, and fusebox session state.
-  - Provides an `Observer` mechanism (`LocationBarDataProvider.Observer`) to notify subscribers of state transitions (e.g. `onTabChanged`, `onUrlChanged`, `onPrimaryColorChanged`, `onSecurityStateChanged`, `onPageLoadStopped`, `onTitleChanged`, `onIncognitoStateChanged`, `onTabCrashed`). Because data is typically computed lazily or on demand, observer methods pass signals rather than data payloads; consumers are expected to pull the specific data they require.
-- **Strict Immutability**:
-  - The `LocationBarDataProvider` interface is **intentionally immutable and read-only**, and **must remain immutable**.
-  - **Do NOT add setters or mutators** to `LocationBarDataProvider`. Consumers of this interface should only observe and read state, never modify it directly.
-- **LocationBarModel (Primary Implementation)**:
-  - `LocationBarModel` (under `chrome/browser/ui/android/toolbar/`) is the primary concrete implementation used by Chrome browser, implementing both `LocationBarDataProvider` and `ToolbarDataProvider`.
-  - **All mutators and state modifiers** (such as `setTab()`, `setPrimaryColor()`, navigation lifecycle callbacks, and observer dispatch methods) **must be added to `LocationBarModel`** (or other concrete embedders/implementations), never to the `LocationBarDataProvider` interface.
-  - Acts as the JNI bridge to native C++ (`LocationBarModelAndroid`) for compute-intensive tasks such as URL formatting/display string computation, URL scheme emphasis (`OmniboxUrlEmphasizer`), security status evaluation, and page classification.
-  - Manages caching (e.g., LRU cache for styled spannable display text) and deduplicates redundant notifications (e.g. short-circuiting spurious duplicate events during same-document navigations).
-
 ## Coding
 
 - **Listener Cleanup**: Always remove listeners and observers in the component's `destroy()` method to prevent memory leaks.

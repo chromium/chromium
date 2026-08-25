@@ -63,7 +63,24 @@ import org.chromium.url.GURL;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-/** Provides a way of accessing toolbar data and state. */
+/**
+ * Primary concrete implementation of {@link LocationBarDataProvider} and {@link
+ * ToolbarDataProvider} used by Chrome browser to manage and expose toolbar and location bar state.
+ *
+ * <p><b>State Mutation:</b> While {@link LocationBarDataProvider} is strictly read-only and
+ * immutable, all mutators and state modifiers (such as {@link #setTab(Tab, Profile)}, {@link
+ * #setPrimaryColor(int)}, navigation lifecycle callbacks, and observer dispatch methods) are hosted
+ * here (or in other concrete embedders/implementations).
+ *
+ * <p><b>Native Integration:</b> Acts as the JNI bridge to native C++ ({@code
+ * LocationBarModelAndroid}) for compute-intensive operations such as URL formatting and display
+ * string computation, URL scheme emphasis ({@link OmniboxUrlEmphasizer}), security status
+ * evaluation, and page classification.
+ *
+ * <p><b>Caching & Optimization:</b> Manages LRU caching for styled spannable display text and
+ * deduplicates redundant notifications (such as short-circuiting spurious duplicate events during
+ * same-document navigations).
+ */
 @NullMarked
 public class LocationBarModel implements ToolbarDataProvider, LocationBarDataProvider {
     private static final int LRU_CACHE_SIZE = 10;

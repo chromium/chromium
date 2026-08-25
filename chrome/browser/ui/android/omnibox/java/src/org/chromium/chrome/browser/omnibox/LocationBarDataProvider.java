@@ -21,7 +21,29 @@ import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
-/** Interface defining a provider for data needed by the {@link LocationBar}. */
+/**
+ * Central read-only data provider interface supplying contextual tab, page, and toolbar data to the
+ * LocationBar / Omnibox and its sub-components (such as LocationBarMediator, StatusMediator,
+ * AutocompleteMediator, HintTextUpdater, VoiceRecognitionHandler, and FuseboxSessionState).
+ *
+ * <p>Exposes properties such as the current URL ({@link GURL}), page title, connection security
+ * level & malicious content status, page classification, primary and brand theme colors, incognito
+ * / off-the-record state, offline / paint preview status, toolbar position supplier, {@link
+ * NewTabPageDelegate}, and fusebox session state.
+ *
+ * <p>Provides an {@link Observer} mechanism to notify subscribers of state transitions (e.g. {@code
+ * onTabChanged}, {@code onUrlChanged}, {@code onPrimaryColorChanged}, {@code
+ * onSecurityStateChanged}, {@code onPageLoadStopped}, {@code onTitleChanged}, {@code
+ * onIncognitoStateChanged}, {@code onTabCrashed}). Because data is typically computed lazily or on
+ * demand, observer methods pass signals rather than data payloads; consumers are expected to pull
+ * the specific data they require.
+ *
+ * <p><b>Strict Immutability:</b> This interface is intentionally immutable and read-only, and
+ * <b>must remain immutable</b>. Do NOT add setters or mutator methods to {@code
+ * LocationBarDataProvider}. Consumers of this interface should only observe and read state, never
+ * modify it directly. All state modifications belong in concrete implementors such as {@code
+ * LocationBarModel}.
+ */
 // TODO(crbug.com/40154848): Refine split between LocationBar properties and sub-component
 // properties, e.g. security state, which is only used by the status icon.
 @NullMarked
