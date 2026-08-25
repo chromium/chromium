@@ -14,11 +14,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,17 +32,30 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ApplicationStatus;
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionStore;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
+import org.chromium.components.webapps.AppBannerManager;
+import org.chromium.components.webapps.AppBannerManagerJni;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -54,17 +69,34 @@ public class InstalledWebappBroadcastReceiverTest {
     @Mock public InstalledWebappBroadcastReceiver.ClearDataStrategy mMockStrategy;
     @Mock public InstalledWebappPermissionStore mStore;
     @Mock public SiteChannelsManager mSiteChannelsManager;
+    @Mock private LibraryLoader mMockLibraryLoader;
+    @Mock private AppBannerManager.Natives mMockAppBannerManagerJni;
+    @Mock private TabWindowManager mTabWindowManager;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabModel mTabModel;
+    @Mock private Tab mTab;
+    @Mock private WebContents mWebContents;
+    @Mock private AppBannerManager mAppBannerManager;
 
     private InstalledWebappBroadcastReceiver mReceiver;
 
     @Before
     public void setUp() {
-
         WebappRegistry.getInstance().setPermissionStoreForTesting(mStore);
         SiteChannelsManager.setInstanceForTesting(mSiteChannelsManager);
 
         mReceiver = new InstalledWebappBroadcastReceiver(mMockStrategy);
         mContext = RuntimeEnvironment.application;
+
+        AppBannerManagerJni.setInstanceForTesting(mMockAppBannerManagerJni);
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
+    }
+
+    @After
+    public void tearDown() {
+        AppBannerManagerJni.setInstanceForTesting(null);
+        TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
+        ApplicationStatus.destroyForJUnitTests();
     }
 
     private Intent createMockIntent(int id, String action) {
@@ -172,5 +204,62 @@ public class InstalledWebappBroadcastReceiverTest {
 
         mReceiver.onReceive(mContext, createMockIntent(id, Intent.ACTION_PACKAGE_DATA_CLEARED));
         verify(mMockStrategy).execute(any(), eq("com.package"), eq(false));
+    }
+
+    @Test
+    @Feature("WebApk")
+    public void webApkUninstall_DefersTracking() {
+        String webApkPackage = "org.chromium.webapk.test";
+        Intent intent = new Intent();
+        intent.putExtra(Intent.EXTRA_UID, 12);
+        intent.setAction(Intent.ACTION_PACKAGE_FULLY_REMOVED);
+        intent.setData(Uri.parse("package:" + webApkPackage));
+
+        mReceiver.onReceive(mContext, intent);
+
+        Set<String> uninstalled =
+                ChromeSharedPreferences.getInstance()
+                        .readStringSet(ChromePreferenceKeys.WEBAPK_UNINSTALLED_PACKAGES);
+        assertTrue(uninstalled.contains(webApkPackage));
+    }
+
+    @Test
+    @Feature("TrustedWebActivities")
+    public void twaUninstall_TriggersRecheck() throws Exception {
+        // Mock native loaded.
+        when(mMockLibraryLoader.isInitialized()).thenReturn(true);
+        LibraryLoader.setLibraryLoaderForTesting(mMockLibraryLoader);
+
+        int id = 23;
+        String appName = "App Name";
+        String scope = "https://www.example.com/scope";
+        Set<GURL> urls = new HashSet<>(Arrays.asList(new GURL(scope)));
+
+        addToRegister(id, appName, urls);
+
+        // Setup TabWindowManager to return the selector.
+        when(mTabWindowManager.getAllTabModelSelectors())
+                .thenReturn(Collections.singletonList(mTabModelSelector));
+        when(mTabWindowManager.getCustomTabsTabModelSelectors())
+                .thenReturn(Collections.emptyList());
+
+        when(mTabModelSelector.getModels()).thenReturn(Collections.singletonList(mTabModel));
+        when(mTabModel.getCount()).thenReturn(1);
+        when(mTabModel.getTabAt(0)).thenReturn(mTab);
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+
+        // Mock tab URL to match scope.
+        GURL url = new GURL(scope + "/page.html");
+        when(mWebContents.getLastCommittedUrl()).thenReturn(url);
+
+        // Mock AppBannerManager.forWebContents.
+        when(mMockAppBannerManagerJni.getJavaBannerManagerForWebContents(mWebContents))
+                .thenReturn(mAppBannerManager);
+
+        // Send broadcast.
+        mReceiver.onReceive(mContext, createMockIntent(id, Intent.ACTION_PACKAGE_FULLY_REMOVED));
+
+        // Verify AppBannerManager JNI recheck is called.
+        verify(mAppBannerManager).recheckInstallability();
     }
 }

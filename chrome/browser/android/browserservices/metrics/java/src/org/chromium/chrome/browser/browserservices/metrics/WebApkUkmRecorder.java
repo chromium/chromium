@@ -58,7 +58,7 @@ public class WebApkUkmRecorder {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void recordSessionDuration(
                 @Nullable String manifestId, int distributor, int versionCode, long duration);
 

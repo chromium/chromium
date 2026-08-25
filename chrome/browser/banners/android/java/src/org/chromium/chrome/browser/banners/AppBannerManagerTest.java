@@ -10,9 +10,11 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
 import android.app.Instrumentation.ActivityResult;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -49,6 +51,8 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.browserservices.InstalledWebappBroadcastReceiver;
+import org.chromium.chrome.browser.browserservices.InstalledWebappDataRegister;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -64,6 +68,7 @@ import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.AppData;
 import org.chromium.components.webapps.AppDetailsDelegate;
@@ -119,6 +124,8 @@ public class AppBannerManagerTest {
     private static final String NATIVE_APP_REFERRER = "chrome_inline&playinline=chrome_inline";
 
     private static final String NATIVE_APP_BLANK_REFERRER = "playinline=chrome_inline";
+
+    private static final String NATIVE_APP_PACKAGE_NAME = "com.example.app";
 
     private static final String INSTALL_ACTION = "INSTALL_ACTION";
 
@@ -203,7 +210,12 @@ public class AppBannerManagerTest {
 
     @After
     public void tearDown() {
-        ThreadUtils.runOnUiThreadBlocking(() -> AppBannerManager.setAppDetailsDelegate(null));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AppBannerManager.setAppDetailsDelegate(null);
+                    AppBannerManager.setIsRelatedNonWebAppInstalledForTesting(null);
+                    InstalledWebappDataRegister.removePackage(NATIVE_APP_PACKAGE_NAME);
+                });
         mDetailsDelegate = null;
     }
 
@@ -250,6 +262,18 @@ public class AppBannerManagerTest {
                                 AppBannerManager.isProbablyPromotable(
                                         rule.getActivity().getActivityTab().getWebContents()),
                                 isProbablyPromotable));
+    }
+
+    private void waitUntilPromotableStatus(
+            ChromeActivityTestRule<? extends ChromeActivity> rule,
+            final boolean isProbablyPromotable) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            AppBannerManager.isProbablyPromotable(
+                                    rule.getActivity().getActivityTab().getWebContents()),
+                            Matchers.is(isProbablyPromotable));
+                });
     }
 
     private void waitUntilBottomSheetStatus(@BottomSheetController.SheetState int status) {
@@ -929,5 +953,80 @@ public class AppBannerManagerTest {
                     Criteria.checkThat(installButton, Matchers.notNullValue());
                     Criteria.checkThat(installButton.getVisibility(), Matchers.is(View.GONE));
                 });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AppBanners"})
+    public void testInstallIconReappearsAfterUninstall() throws Exception {
+        // 1. Simulate app is installed.
+        AppBannerManager.setIsRelatedNonWebAppInstalledForTesting(true);
+
+        String url =
+                WebappTestPage.getTestUrlWithManifestAndAction(
+                        mTestServer,
+                        WEB_APP_MANIFEST_WITH_RELATED_APP_LIST,
+                        "call_stashed_prompt_on_click");
+
+        // 2. Load page. Since the related app is "installed", the banner should NOT trigger.
+        mTabbedActivityTestRule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule.getActivityTestRule(), url);
+
+        Tab tab = mTabbedActivityTestRule.getActivityTab();
+
+        // Verify the page is not promotable because related app is installed.
+        checkPromotabilityStatus(mTabbedActivityTestRule.getActivityTestRule(), false);
+
+        // Register the origin for TWA uninstall simulation.
+        String testOrigin = mTestServer.getURL("/");
+        // Normalize origin string (remove trailing slash)
+        testOrigin = testOrigin.substring(0, testOrigin.length() - 1);
+
+        final String finalTestOrigin = testOrigin;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstalledWebappDataRegister.registerPackageForOrigin(
+                            "TWA Name",
+                            NATIVE_APP_PACKAGE_NAME,
+                            "127.0.0.1",
+                            Origin.create(finalTestOrigin));
+                });
+
+        // 3. Simulate uninstall.
+        AppBannerManager.setIsRelatedNonWebAppInstalledForTesting(false);
+
+        // 4. Call receiver directly.
+        Intent uninstallIntent = new Intent(Intent.ACTION_PACKAGE_FULLY_REMOVED);
+        uninstallIntent.setData(Uri.parse("package:" + NATIVE_APP_PACKAGE_NAME));
+        uninstallIntent.putExtra(Intent.EXTRA_UID, 123);
+
+        Context context = ApplicationProvider.getApplicationContext();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstalledWebappBroadcastReceiver.ClearDataStrategy noOpStrategy =
+                            new InstalledWebappBroadcastReceiver.ClearDataStrategy() {
+                                @Override
+                                public void execute(
+                                        Context context, String packageName, boolean uninstalled) {
+                                    // Do nothing to avoid showing ClearDataDialogActivity
+                                }
+                            };
+                    new InstalledWebappBroadcastReceiver(noOpStrategy)
+                            .onReceive(context, uninstallIntent);
+                });
+
+        // 5. Verify the banner pipeline re-runs and the page becomes promotable.
+        waitUntilPromotableStatus(mTabbedActivityTestRule.getActivityTestRule(), true);
+
+        // Tap the page to trigger the modal banner prompt.
+        tapAndWaitForModalBanner(tab);
+
+        // Explicitly dismiss the banner before test completion.
+        final ChromeActivity activity = mTabbedActivityTestRule.getActivity();
+        clickButton(activity, ButtonType.NEGATIVE);
+
+        // Ensure userChoice is resolved and dialog is gone.
+        new TabTitleObserver(tab, "Got userChoice: dismissed").waitForTitleUpdate(3);
+        waitUntilNoDialogsShowing(tab);
     }
 }

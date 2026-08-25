@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.webapps;
 
 import android.text.TextUtils;
 
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
@@ -42,6 +44,7 @@ public class WebApkUninstallTracker {
                 String manifestId = webappDataStorage.getWebApkManifestId();
                 if (!TextUtils.isEmpty(manifestId)) {
                     WebApkSyncService.onWebApkUninstalled(manifestId);
+                    notifyAppBannerManagersOfUninstall(webappDataStorage.getScope());
                 }
 
                 long uninstallTimestamp = webappDataStorage.getWebApkUninstallTimestamp();
@@ -60,7 +63,11 @@ public class WebApkUninstallTracker {
                 ChromePreferenceKeys.WEBAPK_UNINSTALLED_PACKAGES, new HashSet<>());
     }
 
-    /** Sets WebAPK uninstall to be recorded next time that native is loaded. */
+    /**
+     * Defers recording WebAPK uninstall, or records it immediately if native is already loaded.
+     *
+     * @param packageName The package name of the uninstalled WebAPK.
+     */
     public static void deferRecordWebApkUninstalled(String packageName) {
         ChromeSharedPreferences.getInstance()
                 .addToStringSet(ChromePreferenceKeys.WEBAPK_UNINSTALLED_PACKAGES, packageName);
@@ -71,6 +78,18 @@ public class WebApkUninstallTracker {
         if (webappDataStorage != null) {
             webappDataStorage.setWebApkUninstallTimestamp();
         }
+        if (LibraryLoader.getInstance().isInitialized()) {
+            ThreadUtils.runOnUiThread(WebApkUninstallTracker::runDeferredTasks);
+        }
+    }
+
+    private static void notifyAppBannerManagersOfUninstall(String scope) {
+        WebappTabUtils.recheckInstallabilityForMatchingTabs(
+                tab -> {
+                    if (tab.getWebContents() == null) return false;
+                    String url = tab.getWebContents().getLastCommittedUrl().getSpec();
+                    return url != null && url.startsWith(scope);
+                });
     }
 
     private WebApkUninstallTracker() {}

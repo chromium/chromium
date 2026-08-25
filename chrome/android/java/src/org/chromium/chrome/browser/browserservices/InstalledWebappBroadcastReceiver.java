@@ -9,10 +9,13 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
 import org.chromium.chrome.browser.webapps.WebApkUninstallTracker;
+import org.chromium.chrome.browser.webapps.WebappTabUtils;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.webapk.lib.common.WebApkConstants;
 
@@ -116,6 +119,10 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
                 // Native is likely not loaded. Defer recording UMA and UKM till the next browser
                 // launch.
                 WebApkUninstallTracker.deferRecordWebApkUninstalled(packageName);
+            } else {
+                if (LibraryLoader.getInstance().isInitialized()) {
+                    notifyAppBannerManagersOfTwaUninstall(packageName);
+                }
             }
         }
 
@@ -137,8 +144,30 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
         }
     }
 
+    private static void notifyAppBannerManagersOfTwaUninstall(String packageName) {
+        ThreadUtils.assertOnUiThread();
+        Set<String> origins =
+                InstalledWebappDataRegister.getOriginsForRegisteredPackage(packageName);
+        if (origins.isEmpty()) return;
+
+        Set<Origin> twaOrigins = new HashSet<>();
+        for (String originStr : origins) {
+            Origin origin = Origin.create(originStr);
+            if (origin != null) twaOrigins.add(origin);
+        }
+        if (twaOrigins.isEmpty()) return;
+
+        WebappTabUtils.recheckInstallabilityForMatchingTabs(
+                tab -> {
+                    if (tab.getWebContents() == null) return false;
+                    String url = tab.getWebContents().getLastCommittedUrl().getSpec();
+                    Origin tabOrigin = Origin.create(url);
+                    return tabOrigin != null && twaOrigins.contains(tabOrigin);
+                });
+    }
+
     /** Implemented as a class partially for historic reasons, partially to help testing. */
-    static class ClearDataStrategy {
+    public static class ClearDataStrategy {
         public void execute(Context context, String packageName, boolean uninstalled) {
             // Retrieving domains and origins ahead of time, because the register is about to be
             // cleaned up.

@@ -121,6 +121,10 @@ bool AppBannerManagerAndroid::IsRunningForTesting(JNIEnv* env) {
   return app_banner_manager_->IsRunningForTesting();
 }
 
+void AppBannerManagerAndroid::RecheckInstallability(JNIEnv* env) {
+  app_banner_manager_->RecheckInstallabilityForLoadedPage();
+}
+
 int AppBannerManagerAndroid::GetPipelineStatusForTesting(JNIEnv* env) {
   return static_cast<int>(app_banner_manager_->state_for_testing());
 }
