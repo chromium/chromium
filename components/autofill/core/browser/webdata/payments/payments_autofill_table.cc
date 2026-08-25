@@ -2255,7 +2255,7 @@ bool PaymentsAutofillTable::
 
 void PaymentsAutofillTable::AddMaskedCreditCards(
     const std::vector<CreditCard>& credit_cards) {
-  DCHECK_GT(db()->transaction_nesting(), 0);
+  DCHECK(db()->HasActiveTransactions());
   sql::Statement masked_insert;
   sql::InsertBuilder(
       *db(), masked_insert, kMaskedCreditCardsTable,
