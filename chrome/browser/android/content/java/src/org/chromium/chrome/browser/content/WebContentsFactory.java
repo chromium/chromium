@@ -8,6 +8,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -30,10 +31,23 @@ public class WebContentsFactory {
     }
 
     /** For capturing where WebContentsImpl is created. */
+    // TODO(crbug.com/40062641): This should be removed once the off-the-record WebContents no
+    // longer outlive the corresponding profile and crash.
     private static class WebContentsCreationException extends RuntimeException {
         WebContentsCreationException() {
             super("vvv This is where WebContents was created. vvv");
         }
+    }
+
+    private static @Nullable WebContentsCreationException maybeCreateWebContentsCreationException(
+            Profile profile) {
+        // TODO(crbug.com/40062641): This is only needed for debugging off-the-record WebContents
+        // that outlive the corresponding profile and crash. Stack traces are not free so limit
+        // this to only applicable cases.
+        if (profile.isOffTheRecord() || BuildConfig.ENABLE_ASSERTS) {
+            return new WebContentsCreationException();
+        }
+        return null;
     }
 
     /**
@@ -52,7 +66,7 @@ public class WebContentsFactory {
         }
         return WebContentsFactoryJni.get()
                 .createWebContentsWithSeparateStoragePartitionForExperiment(
-                        profile, new WebContentsCreationException());
+                        profile, maybeCreateWebContentsCreationException(profile));
     }
 
     /**
@@ -82,7 +96,7 @@ public class WebContentsFactory {
                         initializeRenderer,
                         usesPlatformAutofill,
                         targetNetwork,
-                        new WebContentsCreationException());
+                        maybeCreateWebContentsCreationException(profile));
     }
 
     /**
@@ -130,9 +144,9 @@ public class WebContentsFactory {
                 boolean initializeRenderer,
                 boolean usesPlatformAutofill,
                 long targetNetwork,
-                Throwable javaCreator);
+                @Nullable Throwable javaCreator);
 
         WebContents createWebContentsWithSeparateStoragePartitionForExperiment(
-                @JniType("Profile*") Profile profile, Throwable javaCreator);
+                @JniType("Profile*") Profile profile, @Nullable Throwable javaCreator);
     }
 }
