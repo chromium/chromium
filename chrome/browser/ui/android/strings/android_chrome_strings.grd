@@ -5841,6 +5841,14 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         <ph name="BEGIN_LINK">&lt;link&gt;</ph>Get help<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
 
+      <!-- WebHID system permission dialog strings -->
+      <message name="IDS_HID_SYSTEM_PERMISSION_EXPLANATION_DIALOG_TITLE" desc="Title of the dialog explaining that Chrome needs system permission to access HID devices.">
+        Human interface device access required
+      </message>
+      <message name="IDS_HID_SYSTEM_PERMISSION_EXPLANATION_DIALOG_BODY" desc="Body of the dialog explaining that Chrome needs system permission to access HID devices and how to navigate to Special app access settings.">
+        <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> needs permission to access human interface devices (HIDs) for this site. You can change this setting later in Settings &gt; Apps &gt; Special app access.
+      </message>
+
       <!-- Special locale UI strings -->
       <message name="IDS_SEARCH_WITH_SOGOU" desc="Text telling the user that the search engine will be switched to Sogou.">
         Search with Sogou

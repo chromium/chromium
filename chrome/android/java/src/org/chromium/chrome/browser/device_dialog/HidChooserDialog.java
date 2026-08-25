@@ -14,6 +14,9 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
+import org.chromium.base.ApkInfo;
+import org.chromium.base.hid.HidManager;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -23,7 +26,12 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.permissions.ItemChooserDialog;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonStyles;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -161,9 +169,57 @@ public class HidChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
             return null;
         }
 
+        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+        HidManager hidManager = delegate != null ? delegate.getHidManager() : null;
+        if (hidManager != null && !hidManager.canEnumerateDevices()) {
+            showSystemPermissionExplanationDialog(windowAndroid);
+            return null;
+        }
+
         HidChooserDialog dialog = new HidChooserDialog(nativeHidChooserDialogPtr, profile);
         dialog.show(activity, origin, securityLevel);
         return dialog;
+    }
+
+    private static void showSystemPermissionExplanationDialog(WindowAndroid windowAndroid) {
+        ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
+        Activity activity = windowAndroid.getActivity().get();
+        if (modalDialogManager == null || activity == null) return;
+
+        String titleText =
+                activity.getString(R.string.hid_system_permission_explanation_dialog_title);
+        String productName = ApkInfo.getHostPackageLabel();
+        String bodyText =
+                activity.getString(
+                        R.string.hid_system_permission_explanation_dialog_body, productName);
+        String positiveButtonText = activity.getString(R.string.ok);
+
+        PropertyModel dialogModel =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(
+                                ModalDialogProperties.CONTROLLER,
+                                new ModalDialogProperties.Controller() {
+                                    @Override
+                                    public void onClick(
+                                            PropertyModel model, @ButtonType int buttonType) {
+                                        modalDialogManager.dismissDialog(
+                                                model,
+                                                DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                                    }
+
+                                    @Override
+                                    public void onDismiss(
+                                            PropertyModel model, int dismissalCause) {}
+                                })
+                        .with(ModalDialogProperties.TITLE, titleText)
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, bodyText)
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
+                                ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, positiveButtonText)
+                        .build();
+
+        modalDialogManager.showDialog(dialogModel, ModalDialogManager.ModalDialogType.APP);
     }
 
     @CalledByNative
