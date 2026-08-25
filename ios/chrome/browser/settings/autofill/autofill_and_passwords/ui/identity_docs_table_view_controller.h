@@ -19,6 +19,10 @@
 - (void)identityDocsTableViewControllerDidRemove:
     (IdentityDocsTableViewController*)controller;
 
+// Called when the user selects the Suggestions from Gemini entry point.
+- (void)identityDocsTableViewControllerDidSelectSuggestionsFromGemini:
+    (IdentityDocsTableViewController*)controller;
+
 @end
 
 // The TableView for Identity Docs settings page.

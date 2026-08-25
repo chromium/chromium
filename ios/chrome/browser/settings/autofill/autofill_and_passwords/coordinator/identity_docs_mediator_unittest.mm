@@ -14,6 +14,7 @@
 #import "components/autofill/core/common/dense_set.h"
 #import "components/optimization_guide/core/feature_registry/feature_registration.h"
 #import "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#import "components/personal_context/core/personal_context_prefs.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
@@ -272,4 +273,36 @@ TEST_F(IdentityDocsMediatorTest, AutofillSettingsPageMappingIsSynced) {
       EXPECT_NE(page, AutofillSettingsPage::kIdentityDocs);
     }
   }
+}
+
+// Tests that setting the consumer updates suggestions from Gemini eligibility
+// and toggle state.
+TEST_F(IdentityDocsMediatorTest, SetsSuggestionsFromGeminiConsumerValues) {
+  mediator_.shouldShowSuggestionsFromGemini = YES;
+  profile_->GetPrefs()->SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      true);
+
+  OCMExpect([consumer_ setShouldShowSuggestionsFromGemini:YES enabled:YES]);
+
+  mediator_.consumer = consumer_;
+
+  [consumer_ verify];
+}
+
+// Tests that toggling suggestions from Gemini pref updates the consumer.
+TEST_F(IdentityDocsMediatorTest, PersonalContextPrefChangeUpdatesConsumer) {
+  mediator_.shouldShowSuggestionsFromGemini = YES;
+  profile_->GetPrefs()->SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      false);
+  mediator_.consumer = consumer_;
+
+  OCMExpect([consumer_ setShouldShowSuggestionsFromGemini:YES enabled:YES]);
+
+  profile_->GetPrefs()->SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      true);
+
+  [consumer_ verify];
 }
