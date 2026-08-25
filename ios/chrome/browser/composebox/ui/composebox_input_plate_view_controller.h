@@ -59,6 +59,9 @@
 /// Shows the multimodal menu. Same as pressing the plus button.
 - (void)showMultimodalMenu;
 
+/// Dismisses the context menu.
+- (void)dismissContextMenu;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_PLATE_VIEW_CONTROLLER_H_

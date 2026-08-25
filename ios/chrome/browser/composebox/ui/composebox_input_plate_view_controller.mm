@@ -516,6 +516,10 @@ UIImage* SendButtonImage(BOOL highlighted,
   [_plusButton performPrimaryAction];
 }
 
+- (void)dismissContextMenu {
+  [_plusButton.contextMenuInteraction dismissMenu];
+}
+
 #pragma mark - ComposeboxInputItemCellDelegate
 
 - (void)composeboxInputItemCellDidTapCloseButton:

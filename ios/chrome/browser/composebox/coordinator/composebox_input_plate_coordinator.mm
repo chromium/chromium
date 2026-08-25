@@ -358,8 +358,12 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 }
 
 - (void)hideComposeboxMenu {
-  [_menuCoorinator stop];
-  _menuCoorinator = nil;
+  if (IsComposeboxPlusButtonBottomSheet()) {
+    [_menuCoorinator stop];
+    _menuCoorinator = nil;
+  } else {
+    [_viewController dismissContextMenu];
+  }
 }
 
 - (void)focusComposebox {
