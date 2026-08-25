@@ -860,4 +860,35 @@ public class WebAppHeaderLayoutCoordinatorTest {
         mCoordinator.destroy();
         verify(mThemeColorProvider).removeTintObserver(mCoordinator);
     }
+
+    @Test
+    public void testTabObserverClearedOnTabChangeAndDestroy() {
+        Tab tab1 = mock(Tab.class);
+        Tab tab2 = mock(Tab.class);
+        doReturn(mWindowAndroid).when(tab1).getWindowAndroid();
+        doReturn(mWindowAndroid).when(tab2).getWindowAndroid();
+
+        // 1. Initial Tab Setup
+        mTabSupplier.set(tab1);
+        createCoordinator();
+        mShadowLooper.idle();
+
+        // Verify observer added to tab1
+        verify(tab1).addObserver(mCoordinator);
+
+        // 2. Tab Change
+        mTabSupplier.set(tab2);
+        mShadowLooper.idle();
+
+        // Verify observer removed from tab1 and added to tab2
+        verify(tab1).removeObserver(mCoordinator);
+        verify(tab2).addObserver(mCoordinator);
+
+        // 3. Coordinator Destroy
+        mCoordinator.destroy();
+        mShadowLooper.idle();
+
+        // Verify observer removed from tab2
+        verify(tab2).removeObserver(mCoordinator);
+    }
 }

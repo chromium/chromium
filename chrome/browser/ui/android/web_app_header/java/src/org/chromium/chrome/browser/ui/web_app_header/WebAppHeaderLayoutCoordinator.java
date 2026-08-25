@@ -132,6 +132,7 @@ public class WebAppHeaderLayoutCoordinator
     private @Nullable ChromeImageButton mToggleButtonView;
     private @Nullable TextView mAppOriginView;
     private @Nullable String mAppOrigin;
+    private @Nullable Tab mObservedTab;
     private final Callback<@Nullable Tab> mOnTabUpdate;
     private final BrowserServicesIntentDataProvider mBrowserServicesIntentDataProvider;
 
@@ -223,8 +224,15 @@ public class WebAppHeaderLayoutCoordinator
     }
 
     private void onTabUpdate(@Nullable Tab tab) {
-        if (tab != null) {
-            tab.addObserver(this);
+        if (mObservedTab == tab) {
+            return;
+        }
+        if (mObservedTab != null) {
+            mObservedTab.removeObserver(this);
+        }
+        mObservedTab = tab;
+        if (mObservedTab != null) {
+            mObservedTab.addObserver(this);
         }
     }
 
@@ -668,9 +676,9 @@ public class WebAppHeaderLayoutCoordinator
             mMenuButtonCoordinator = null;
         }
 
-        final var tab = mTabSupplier.get();
-        if (tab != null) {
-            tab.removeObserver(this);
+        if (mObservedTab != null) {
+            mObservedTab.removeObserver(this);
+            mObservedTab = null;
         }
         mTabSupplier.removeObserver(mOnTabUpdate);
     }
