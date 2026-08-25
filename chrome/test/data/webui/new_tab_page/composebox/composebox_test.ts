@@ -4,7 +4,7 @@
 
 import {ComposeboxElement, NtpComposeboxElement, SubmitButtonIconType} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, InputSource, QueryActionOverride} from 'chrome://new-tab-page/new_tab_page.js';
-import {InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {InputType, ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ComposeboxToolChipElement} from 'chrome://resources/cr_components/composebox/composebox_tool_chip.js';
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {WindowProxy as CrWindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
@@ -12,6 +12,7 @@ import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/s
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
@@ -976,6 +977,68 @@ suite(`NewTabPageComposeboxTest`, () => {
         });
   });
 
+  test('handleFuseboxAction applies and resets action state', async () => {
+    const composebox = new NtpComposeboxElement();
+    const inputStateRequested =
+        testProxy.searchboxHandler.whenCalled('getInputState');
+    document.body.appendChild(composebox);
+    await inputStateRequested;
+    await microtasksFinished();
+
+    await composebox.handleFuseboxAction({
+      suggestion: 'paste suggestion',
+      files: [],
+      fuseboxAction: {
+        preselectedTool: ToolMode.kDeepSearch,
+        preferredInventory: SuggestInventory.kBrainstorm,
+        preselectedModel: ModelMode.kGeminiPro,
+        queryActionOverride: QueryActionOverride.kPaste,
+        preselectedInputSource: null,
+        searchboxOverride: null,
+      },
+    });
+    await microtasksFinished();
+    await composebox.updateComplete;
+
+    assertEquals('paste suggestion', composebox.input);
+    assertEquals(SuggestInventory.kBrainstorm, composebox.suggestInventory);
+    assertEquals(
+        1, testProxy.searchboxHandler.getCallCount('setActiveToolMode'));
+    assertEquals(
+        ToolMode.kDeepSearch,
+        testProxy.searchboxHandler.getArgs('setActiveToolMode')[0][0]);
+    assertEquals(
+        1, testProxy.searchboxHandler.getCallCount('setActiveModelMode'));
+    assertEquals(
+        ModelMode.kGeminiPro,
+        testProxy.searchboxHandler.getArgs('setActiveModelMode')[0][0]);
+
+    await composebox.handleFuseboxAction({
+      suggestion: 'second suggestion',
+      files: [],
+      fuseboxAction: {
+        preselectedTool: null,
+        preferredInventory: null,
+        preselectedModel: null,
+        queryActionOverride: QueryActionOverride.kPaste,
+        preselectedInputSource: null,
+        searchboxOverride: null,
+      },
+    });
+    await microtasksFinished();
+    await composebox.updateComplete;
+
+    assertEquals('second suggestion', composebox.input);
+    assertEquals(null, composebox.suggestInventory);
+    assertEquals(
+        1, testProxy.searchboxHandler.getCallCount('setActiveToolMode'));
+    assertEquals(
+        2, testProxy.searchboxHandler.getCallCount('setActiveModelMode'));
+    assertEquals(
+        ModelMode.kUnspecified,
+        testProxy.searchboxHandler.getArgs('setActiveModelMode')[1][0]);
+  });
+
   test(
       'handleFuseboxAction triggers imageInput click for kInputSourceGallery',
       async () => {
@@ -993,13 +1056,18 @@ suite(`NewTabPageComposeboxTest`, () => {
         });
 
         await composebox.handleFuseboxAction({
-          preselectedTool: null,
-          preferredInventory: null,
-          preselectedModel: null,
-          queryActionOverride: null,
-          preselectedInputSource: InputSource.kInputSourceGallery,
-          searchboxOverride: null,
+          suggestion: '',
+          files: [],
+          fuseboxAction: {
+            preselectedTool: null,
+            preferredInventory: null,
+            preselectedModel: null,
+            queryActionOverride: null,
+            preselectedInputSource: InputSource.kInputSourceGallery,
+            searchboxOverride: null,
+          },
         });
+        await microtasksFinished();
 
         assertTrue(imageInputClicked);
       });
@@ -1021,13 +1089,18 @@ suite(`NewTabPageComposeboxTest`, () => {
         });
 
         await composebox.handleFuseboxAction({
-          preselectedTool: null,
-          preferredInventory: null,
-          preselectedModel: null,
-          queryActionOverride: null,
-          preselectedInputSource: InputSource.kInputSourceFilePicker,
-          searchboxOverride: null,
+          suggestion: '',
+          files: [],
+          fuseboxAction: {
+            preselectedTool: null,
+            preferredInventory: null,
+            preselectedModel: null,
+            queryActionOverride: null,
+            preselectedInputSource: InputSource.kInputSourceFilePicker,
+            searchboxOverride: null,
+          },
         });
+        await microtasksFinished();
 
         assertTrue(fileInputClicked);
       });
@@ -1041,13 +1114,18 @@ suite(`NewTabPageComposeboxTest`, () => {
         await microtasksFinished();
 
         await composebox.handleFuseboxAction({
-          preselectedTool: null,
-          preferredInventory: null,
-          preselectedModel: null,
-          queryActionOverride: null,
-          preselectedInputSource: InputSource.kInputSourceTabPicker,
-          searchboxOverride: null,
+          suggestion: '',
+          files: [],
+          fuseboxAction: {
+            preselectedTool: null,
+            preferredInventory: null,
+            preselectedModel: null,
+            queryActionOverride: null,
+            preselectedInputSource: InputSource.kInputSourceTabPicker,
+            searchboxOverride: null,
+          },
         });
+        await microtasksFinished();
 
         assertTrue(composebox.shareTabsFlyoutOpen);
       });
@@ -1065,13 +1143,18 @@ suite(`NewTabPageComposeboxTest`, () => {
         };
 
         await composebox.handleFuseboxAction({
-          preselectedTool: null,
-          preferredInventory: null,
-          preselectedModel: null,
-          queryActionOverride: null,
-          preselectedInputSource: InputSource.kInputSourceVoice,
-          searchboxOverride: null,
+          suggestion: '',
+          files: [],
+          fuseboxAction: {
+            preselectedTool: null,
+            preferredInventory: null,
+            preselectedModel: null,
+            queryActionOverride: null,
+            preselectedInputSource: InputSource.kInputSourceVoice,
+            searchboxOverride: null,
+          },
         });
+        await microtasksFinished();
 
         assertTrue(voiceSearchClicked);
       });
@@ -1086,16 +1169,18 @@ suite(`NewTabPageComposeboxTest`, () => {
         await composebox.getInputElement().updateComplete;
         const input = composebox.getInputElement().$.input;
 
-        await composebox.handleFuseboxAction(
-            {
-              preselectedTool: null,
-              preferredInventory: null,
-              preselectedModel: null,
-              queryActionOverride: QueryActionOverride.kHint,
-              preselectedInputSource: null,
-              searchboxOverride: null,
-            },
-            'chip hint');
+        await composebox.handleFuseboxAction({
+          suggestion: 'chip hint',
+          files: [],
+          fuseboxAction: {
+            preselectedTool: null,
+            preferredInventory: null,
+            preselectedModel: null,
+            queryActionOverride: QueryActionOverride.kHint,
+            preselectedInputSource: null,
+            searchboxOverride: null,
+          },
+        });
         await composebox.updateComplete;
         await composebox.getInputElement().updateComplete;
         assertEquals('chip hint', input.getAttribute('placeholder'));

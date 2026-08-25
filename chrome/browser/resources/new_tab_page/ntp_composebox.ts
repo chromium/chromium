@@ -16,7 +16,7 @@ import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_components/localized_link/localized_link.js';
 
 import {getLoadTimeBoolean} from '//resources/cr_components/composebox/common.js';
-import type {ComposeboxFile} from '//resources/cr_components/composebox/common.js';
+import type {ComposeboxFile, ContextualUpload} from '//resources/cr_components/composebox/common.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
 import type {ComposeboxFileInputsElement} from '//resources/cr_components/composebox/composebox_file_inputs.js';
@@ -24,6 +24,7 @@ import type {ComposeboxInputElement} from '//resources/cr_components/composebox/
 import {ComposeboxEmbedderMixin} from '//resources/cr_components/composebox/composebox_mixin.js';
 import type {ComposeboxEmbedderMixinInterface} from '//resources/cr_components/composebox/composebox_mixin.js';
 import {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composebox_proxy.js';
+import {ModelMode, ToolMode} from '//resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import type {ErrorScrimElement} from '//resources/cr_components/composebox/error_scrim.js';
 import type {ComposeboxFileCarouselElement} from '//resources/cr_components/composebox/file_carousel.js';
@@ -38,6 +39,12 @@ import {InputSource, QueryActionOverride} from './fusebox_action.mojom-webui.js'
 import type {FuseboxAction} from './fusebox_action.mojom-webui.js';
 import {getCss} from './ntp_composebox.css.js';
 import {getHtml} from './ntp_composebox.html.js';
+
+export interface FuseboxActionRequest {
+  suggestion: string;
+  files: ContextualUpload[];
+  fuseboxAction?: FuseboxAction;
+}
 
 export interface NtpComposeboxElement extends ComposeboxEmbedderMixinInterface {
   $: {
@@ -197,13 +204,24 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
     super.updateInputPlaceholder();
   }
 
-  async handleFuseboxAction(action: FuseboxAction, suggestion?: string) {
-    if (action.queryActionOverride === QueryActionOverride.kHint &&
-        suggestion !== undefined) {
-      this.chipHint_ = suggestion;
+  async handleFuseboxAction(request: FuseboxActionRequest) {
+    const action = request.fuseboxAction;
+    const isHint = action?.queryActionOverride === QueryActionOverride.kHint;
+    if (isHint) {
+      this.chipHint_ = request.suggestion;
       this.updateInputPlaceholder();
     }
-    if (action.preselectedInputSource) {
+    this.state = {
+      text: isHint ? '' : request.suggestion,
+      files: request.files,
+      mode: action?.preselectedTool ?? ToolMode.kUnspecified,
+      model: action?.preselectedModel ?? ModelMode.kUnspecified,
+      suggestInventory: action?.preferredInventory ?? undefined,
+      // <if expr="not is_android">
+      smartTabSharingActive: false,
+      // </if>
+    };
+    if (action?.preselectedInputSource) {
       switch (action.preselectedInputSource) {
         case InputSource.kInputSourceGallery:
           this.$.fileInputs.shadowRoot
