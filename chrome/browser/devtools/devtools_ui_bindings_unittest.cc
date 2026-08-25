@@ -42,6 +42,9 @@ class DevToolsUIBindingsTest : public testing::Test {};
 
 class DevToolsUIBindingsLoadNetworkResourceTest : public testing::Test {
  public:
+  bool GetDevicesUpdatesEnabled() {
+    return bindings_->devices_updates_enabled_;
+  }
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
     web_contents_ = web_contents_factory_.CreateWebContents(profile_.get());
@@ -104,6 +107,19 @@ class MockDevToolsUIBindingsDelegate : public DevToolsUIBindings::Delegate {
  private:
   raw_ptr<content::WebContents> inspected_web_contents_;
 };
+
+TEST_F(DevToolsUIBindingsLoadNetworkResourceTest,
+       RestrictsPrivilegedMethodsFromRemoteFrontend) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(),
+      GURL("devtools://devtools/remote/serve_file/inspector.html"));
+
+  // Should return early without enabling device updates.
+  static_cast<DevToolsEmbedderMessageDispatcher::Delegate*>(bindings())
+      ->SetDevicesUpdatesEnabled(true);
+
+  EXPECT_FALSE(GetDevicesUpdatesEnabled());
+}
 
 TEST_F(DevToolsUIBindingsLoadNetworkResourceTest,
        AllowsFileSchemeFromRemoteFrontendWithFlag) {
