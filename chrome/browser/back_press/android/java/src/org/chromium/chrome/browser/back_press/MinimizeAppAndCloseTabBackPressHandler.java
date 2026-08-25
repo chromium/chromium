@@ -172,9 +172,11 @@ public class MinimizeAppAndCloseTabBackPressHandler
 
         if (currentTab != null) {
             // TAB history handler has a higher priority and should navigate page back before
-            // minimizing app and closing tab.
+            // minimizing app and closing tab. If a navigation occurred during a gesture or due
+            // to deferred navigation notifications, navigate back instead of closing/exiting.
             if (currentTab.canGoBack()) {
-                assert false : "Tab should be navigated back before closing or exiting app";
+                currentTab.goBack();
+                return BackPressResult.SUCCESS;
             }
             // At this point we know either the tab will close or the app will minimize.
             NativePage nativePage = currentTab.getNativePage();
