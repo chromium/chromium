@@ -34,11 +34,16 @@
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/lens/test_lens_overlay_query_controller.h"
+#include "chrome/browser/ui/lens/test_lens_search_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -60,6 +65,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_overlay_permission_utils.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/composebox_features.h"
@@ -110,7 +116,6 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExistsEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementDoesNotExistEvent);
 
 constexpr char kCujInterceptionUrl[] = "https://www.google.com/search?udm=50";
-
 class TestTabContextualizationController
     : public lens::TabContextualizationController {
  public:
@@ -248,7 +253,9 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
     // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox is
     // enabled and then remove the two omnibox features below.
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kContextualTasks},
+        /*enabled_features=*/{kContextualTasks, lens::features::kLensOverlay,
+                              lens::features::kLensSidePanelUnification,
+                              lens::features::kLensOverlayContextualSearchbox},
         /*disabled_features=*/{lens::features::kLensSendRawFileMediaTypes,
                                omnibox::internal::kWebUIOmniboxPopup,
                                omnibox::internal::kWebUIOmniboxAimPopup});
@@ -339,6 +346,11 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
   void SetUpOnMainThread() override {
     TestTabContextualizationController::screenshot_color_ = SK_ColorRED;
     InteractiveBrowserTest::SetUpOnMainThread();
+
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
+        lens::prefs::kLensSharingPageScreenshotEnabled, true);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
+        lens::prefs::kLensSharingPageContentEnabled, true);
 
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -966,6 +978,8 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::optional<ui::UserDataFactory::ScopedOverride> tab_context_override_;
+  std::optional<ui::UserDataFactory::ScopedOverride>
+      lens_search_controller_override_;
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 
  private:
@@ -2486,6 +2500,154 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
           lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE,
           std::nullopt, /*expected_message_index=*/2));
 }
+
+class ContextualTasksRecontextUiTest
+    : public ContextualTasksInteractiveUiTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ContextualTasksRecontextUiTest() {
+    if (GetParam()) {
+      // Explicitly disable `kContextualTasks` here to override the base
+      // class (ContextualTasksInteractiveUiTest) which enables it.
+      scoped_feature_list_.InitWithFeatures(
+          {kContextualTasksSidePanel}, {kContextualTasks});
+    } else {
+      // `kContextualTasks` is already enabled by the base class.
+      scoped_feature_list_.InitWithFeatures(
+          {}, {kContextualTasksSidePanel});
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ContextualTasksRecontextUiTest,
+                       RecontextualizationAfterContextualSearchboxQuery) {
+  const GURL kGenericPageUrl = embedded_test_server()->GetURL("/title1.html");
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+
+  const DeepQuery kPathToComposeboxInput = {"contextual-tasks-app",
+                                            "#composebox", "#composebox",
+                                            "#composeboxInput", "#input"};
+
+  const DeepQuery kPathToOverlaySearchboxInput{
+      "lens-overlay-app",
+      "cr-lens-searchbox",
+      "cr-searchbox-input",
+      "input",
+  };
+
+  const DeepQuery kComposeboxContainer = {"contextual-tasks-app", "#composebox",
+                                          "#composebox"};
+
+  const DeepQuery kFaviconGroup = {
+      "contextual-tasks-app", "#composebox",       "#composebox",
+      "#contextEntrypoint",   "#entrypointButton", "composebox-favicon-group"};
+
+  const DeepQuery kSubmitButton = {"contextual-tasks-app", "#composebox",
+                                   "#composebox", "cr-composebox-submit",
+                                   "#submitContainer"};
+
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0),
+
+      // Navigate active tab to a valid page before opening Lens overlay.
+      NavigateWebContents(kPrimaryTab, kGenericPageUrl),
+      WaitForWebContentsPainted(kPrimaryTab),
+
+      // Trigger Lens Overlay.
+      Do([&]() {
+        LensSearchController* lens_search_controller =
+            LensSearchController::FromTabWebContents(
+                browser()->tab_strip_model()->GetActiveWebContents());
+        lens_search_controller->OpenLensOverlay(
+            lens::LensOverlayInvocationSource::kAppMenu);
+      }),
+
+      // Wait for the overlay to load.
+      InAnyContext(
+          InstrumentNonTabWebView(kOverlayId,
+                                  LensOverlayController::kOverlayId),
+          WaitForWebContentsReady(
+              kOverlayId, GURL(chrome::kChromeUILensOverlayUntrustedURL))),
+
+      // Turn 1: Issue a query from the Lens Overlay Contextual Searchbox entry
+      // point.
+      InSameContext(
+          WaitForShow(LensOverlayController::kOverlayId),
+          WaitForElementExists(kOverlayId, kPathToOverlaySearchboxInput),
+          FocusWebContents(kOverlayId),
+          ExecuteJsAt(kOverlayId, kPathToOverlaySearchboxInput,
+                      "(el) => { el.focus(); }",
+                      ExecuteJsMode::kWaitForCompletion),
+          ExecuteJsAt(
+              kOverlayId, kPathToOverlaySearchboxInput,
+              "(el) => { el.value = 'first query'; el.dispatchEvent(new "
+              "Event('input', { bubbles: true })); el.dispatchEvent(new "
+              "Event('change', { bubbles: true }));}",
+              ExecuteJsMode::kWaitForCompletion),
+          ExecuteJsAt(kOverlayId, kPathToOverlaySearchboxInput,
+                      "(el) => { el.dispatchEvent(new KeyboardEvent('keydown', "
+                      "{ key:'Enter', bubbles: true, cancelable: true, "
+                      "composed: true }));}",
+                      ExecuteJsMode::kFireAndForget)),
+
+      // The query should transition to the Contextual Tasks Side Panel.
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelContentWebViewName",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kSidePanelWebContentsId,
+                              "SidePanelContentWebViewName"),
+      InstrumentInnerWebContents(kInnerWebContentsId, kSidePanelWebContentsId,
+                                 0),
+
+      // Wait for WebUI components to load in the Side Panel.
+      WaitForElementExists(kSidePanelWebContentsId, kComposeboxContainer),
+
+      // Turn 2: Change the viewport screenshot color (simulates
+      // scrolling/viewport change).
+      Do([&]() {
+        TestTabContextualizationController::screenshot_color_ = SK_ColorBLUE;
+      }),
+
+      // Emulate focus into the searchbox. Turn 2: submit a new query to force
+      // re-upload.
+      FocusWebContents(kSidePanelWebContentsId),
+      ExecuteJsAt(kSidePanelWebContentsId,
+                  DeepQuery{"contextual-tasks-app", "#composebox",
+                            "#composebox", "#composeboxInput", "#input"},
+                  R"(el => {
+                      if (el.tagName === 'TEXTAREA') {
+                          el.value = 'second query';
+                      } else {
+                          el.innerText = 'second query';
+                      }
+                      el.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+                      el.dispatchEvent(new Event('change', { bubbles: true, composed: true }));
+                  })"),
+      ExecuteJsAt(
+          kSidePanelWebContentsId,
+          DeepQuery{"contextual-tasks-app", "#composebox", "#composebox",
+                    "cr-composebox-submit", "#submitContainer"},
+          R"(el => { el.click(); })", ExecuteJsMode::kFireAndForget),
+
+      // Verify Turn 2 query correctly triggers an image upload due to the
+      // viewport change.
+      VerifySubmitQueryMessage(
+          lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE,
+          std::nullopt, /*expected_message_index=*/0));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ContextualTasksRecontextUiTest,
+                         testing::Bool());
+
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
                        QueryOpenAndCloseFlow) {
