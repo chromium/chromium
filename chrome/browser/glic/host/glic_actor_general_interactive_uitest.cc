@@ -140,6 +140,7 @@ void ExpectApcHitTestResolvesDifferently(const apc::AnnotatedPageContent& apc,
   }
 }
 
+// TODO(b/552097523): Migrate to GlicApiBrowserTest.
 class GlicActorGeneralUiTest : public GlicActorUiTest {
  public:
   MultiStep CheckActorTabDataHasAnnotatedPageContentCache();
@@ -880,24 +881,30 @@ class GlicActorCallbackOrderGeneralUiTest : public GlicActorGeneralUiTest {
   MultiStep RecordActorTaskStateChanges() {
     return Steps(ExecuteInGlic(base::BindLambdaForTesting(
         [&task_id = task_id_](content::WebContents* glic_contents) {
-          std::string script = content::JsReplace(R"JS(
+          std::string script = content::JsReplace(
+              R"JS(
               window.event_log= [];
               window.taskStateObs = client.browser.getActorTaskState($1);
               window.taskStateObs.subscribe((new_state) => {
                 const state_name = (() => {
                   switch(new_state) {
-                    case ActorTaskState.UNKNOWN: return 'UNKNOWN';
-                    case ActorTaskState.IDLE: return 'IDLE';
-                    case ActorTaskState.ACTING: return 'ACTING';
-                    case ActorTaskState.PAUSED: return 'PAUSED';
-                    case ActorTaskState.STOPPED: return 'STOPPED';
+                    case $2: return 'UNKNOWN';
+                    case $3: return 'IDLE';
+                    case $4: return 'ACTING';
+                    case $5: return 'PAUSED';
+                    case $6: return 'STOPPED';
                     default: return 'UNEXPECTED';
                   }
                 })();
                 window.event_log.push(state_name);
               });
             )JS",
-                                                  task_id.value());
+              task_id.value(),
+              std::to_underlying(mojom::ActorTaskState::kUnknown),
+              std::to_underlying(mojom::ActorTaskState::kIdle),
+              std::to_underlying(mojom::ActorTaskState::kActing),
+              std::to_underlying(mojom::ActorTaskState::kPaused),
+              std::to_underlying(mojom::ActorTaskState::kStopped));
           ASSERT_TRUE(content::ExecJs(glic_contents, script));
         })));
   }
