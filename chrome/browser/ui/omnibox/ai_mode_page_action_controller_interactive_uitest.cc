@@ -310,5 +310,26 @@ IN_PROC_BROWSER_TEST_F(
       }));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    AiModePageActionControllerDynamicAiModeButtonInteractiveUiTest,
+    ShowsLeadingIconWhenNoUserInputInProgress) {
+  RunTestSequence(
+      OpenTabWithPageUrlAndFocusOmnibox(/*is_ntp=*/true),
+      CheckChipVisible(true),
+      Do([this]() {
+        if (features::IsWebUILocationBarEnabled()) {
+          return;
+        }
+        auto* provider = BrowserView::GetBrowserViewForBrowser(browser())
+                             ->toolbar_button_provider();
+        auto* view = static_cast<page_actions::PageActionView*>(
+            page_actions::GetIconLabelBubbleViewForTesting(
+                provider->GetPageActionViewInterface(kActionAiMode),
+                kActionAiMode));
+        ASSERT_NE(view, nullptr);
+        EXPECT_EQ(view->slide_animation_for_testing().GetCurrentValue(), 0.0);
+      }));
+}
+
 }  // namespace omnibox
 

@@ -301,8 +301,9 @@ void AiModePageActionController::UpdatePageActionUi(bool is_visible) {
 
     bool has_user_input = false;
     if (auto* omnibox_controller = location_bar_->GetOmniboxController()) {
-      has_user_input = omnibox_controller->edit_model() &&
-                       !omnibox_controller->edit_model()->user_text().empty();
+      const OmniboxEditModel* edit_model = omnibox_controller->edit_model();
+      has_user_input = edit_model && edit_model->user_input_in_progress() &&
+                       !edit_model->user_text().empty();
     }
     page_action_controller->SetShowTrailingIcon(kActionAiMode, has_user_input);
   }
