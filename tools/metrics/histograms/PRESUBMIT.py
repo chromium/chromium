@@ -416,6 +416,43 @@ def _CheckRemovedSegmentationHistograms(
   ]
 
 
+def _CheckVariantModifiedSegmentationHistograms(
+  output_api: Any,
+  variant_modified_histograms: Set[str],
+  removed_histograms: Set[str],
+) -> List[Any]:
+  """Checks segmentation histograms affected by changed `<variants>` metadata.
+
+  |variant_modified_histograms| contains only existing histograms, so additions
+  that reference a new variants block do not produce an error.
+  """
+  if not variant_modified_histograms:
+    return []
+
+  segmentation_histograms = set(
+    generate_histogram_list.GetActualHistogramNames()
+  )
+  if not segmentation_histograms:
+    return []
+
+  variant_modified_seg = (
+    variant_modified_histograms.intersection(segmentation_histograms)
+    - removed_histograms
+  )
+  if not variant_modified_seg:
+    return []
+
+  return [
+    output_api.PresubmitError(
+      'The following histograms are used by segmentation platform and '
+      'have metadata affected by changed <variants> blocks. Please '
+      'reach out to chrome-segmentation-platform@google.com for '
+      'questions.',
+      items=sorted(list(variant_modified_seg)),
+    )
+  ]
+
+
 def _CheckTooManyHistograms(
   output_api: Any, added_histograms: Set[str]
 ) -> List[Any]:
@@ -486,10 +523,23 @@ def CheckHistogramsChanges(input_api: Any, output_api: Any) -> List[Any]:
 
   added_histograms = all_new_histograms - all_old_histograms
   removed_histograms = all_old_histograms - all_new_histograms
+  variant_modified_histograms = (
+    histogram_validation.get_histograms_with_modified_variants(
+      files_res.files_to_check,
+      files_res.old_variants_doc,
+      files_res.new_variants_doc,
+      files_res.modified_variants_blocks,
+    )
+  )
 
   results = []
   results.extend(
     _CheckRemovedSegmentationHistograms(output_api, removed_histograms)
+  )
+  results.extend(
+    _CheckVariantModifiedSegmentationHistograms(
+      output_api, variant_modified_histograms, removed_histograms
+    )
   )
   results.extend(_CheckTooManyHistograms(output_api, added_histograms))
 

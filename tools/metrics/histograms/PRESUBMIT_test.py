@@ -6,6 +6,7 @@ import contextlib
 import os
 import tempfile
 import unittest
+from unittest import mock
 from typing import Tuple
 
 import setup_modules  # pylint: disable=unused-import
@@ -46,6 +47,21 @@ _TOP_LEVEL_ENUMS_PATH = str(
 
 _INITIAL_HISTOGRAMS_CONTENT = '<histogram name="Foo" enum="Boolean" />'
 _MODIFIED_HISTOGRAMS_CONTENT = '<histogram name="Foo" units="Boolean" />'
+_HISTOGRAMS_WITH_VARIANT_TEMPLATE = """\
+<histogram-configuration>
+  <histograms>
+    <variants name="TestVariant">
+      <variant name="One" summary="{variant_summary}" />
+    </variants>
+    <histogram name="Segmentation.Test.{{Variant}}" units="count"
+        expires_after="M200">
+      <owner>owner@chromium.org</owner>
+      <summary>Records {{Variant}} value.</summary>
+      <token key="Variant" variants="TestVariant" />
+    </histogram>
+  </histograms>
+</histogram-configuration>
+"""
 
 
 def _TempCacheDir():
@@ -874,6 +890,129 @@ class MetricsPresubmitTest(unittest.TestCase):
       mock_input_api, PRESUBMIT_test_mocks.MockOutputApi()
     )
     self.assertEqual(len(results), 0)
+
+  def testVariantMetadataChangeForSegmentationHistogramIsDetected(self):
+    old_contents = _HISTOGRAMS_WITH_VARIANT_TEMPLATE.format(
+      variant_summary='Old variant summary'
+    )
+    new_contents = _HISTOGRAMS_WITH_VARIANT_TEMPLATE.format(
+      variant_summary='New variant summary'
+    )
+    mock_input_api = PRESUBMIT_test_mocks.MockInputApi()
+    mock_input_api.presubmit_local_path = _BASE_DIR
+    mock_input_api.is_committing = True
+    mock_input_api.files = [
+      PRESUBMIT_test_mocks.MockAffectedFile(
+        histogram_paths._HISTOGRAMS_XMLS_RELATIVE[0],
+        new_contents.splitlines(),
+        old_contents.splitlines(),
+        action='M',
+      ),
+    ]
+
+    with mock.patch.object(
+      PRESUBMIT.generate_histogram_list,
+      'GetActualHistogramNames',
+      return_value={'Segmentation.Test.One'},
+    ):
+      results = PRESUBMIT.CheckHistogramsChanges(
+        mock_input_api, PRESUBMIT_test_mocks.MockOutputApi()
+      )
+
+    self.assertEqual(len(results), 1)
+    self.assertEqual(results[0].type, 'error')
+    self.assertRegex(results[0].message, 'metadata affected')
+    self.assertEqual(results[0].items, ['Segmentation.Test.One'])
+
+  def testSharedVariantsChangeAffectingOtherHistogramIsDetected(self):
+    old_variants = self._build_xml(
+      'variants',
+      name='TestVariant',
+      items=['  <variant name="One" summary="Old variant summary" />'],
+    )
+    new_variants = self._build_xml(
+      'variants',
+      name='TestVariant',
+      items=['  <variant name="One" summary="New variant summary" />'],
+    )
+    histogram_contents = """\
+<histogram-configuration>
+  <histograms>
+    <histogram name="Segmentation.Test.{TestVariant}" units="count"
+        expires_after="M200">
+      <owner>owner@chromium.org</owner>
+      <summary>Records {TestVariant} value.</summary>
+      <token key="TestVariant" variants="TestVariant" />
+    </histogram>
+  </histograms>
+</histogram-configuration>
+"""
+    variants_fd, variants_path = tempfile.mkstemp(suffix='_variants.xml')
+    histogram_fd, histogram_path = tempfile.mkstemp(suffix='_histograms.xml')
+    try:
+      with os.fdopen(variants_fd, 'w') as variants_file:
+        variants_file.write('\n'.join(new_variants))
+      with os.fdopen(histogram_fd, 'w') as histogram_file:
+        histogram_file.write(histogram_contents)
+
+      with self._mock_histograms_xmls(
+        histogram_contents, variants_relative_paths=(variants_path,)
+      ):
+        histogram_paths.HISTOGRAMS_XMLS = [histogram_path]
+        with mock.patch.object(
+          PRESUBMIT.generate_histogram_list,
+          'GetActualHistogramNames',
+          return_value={'Segmentation.Test.One'},
+        ):
+          results = self._run_check_histograms_changes(
+            [(variants_path, old_variants, new_variants)]
+          )
+    finally:
+      os.remove(variants_path)
+      os.remove(histogram_path)
+
+    self.assertEqual(len(results), 1)
+    self.assertEqual(results[0].type, 'error')
+    self.assertEqual(results[0].items, ['Segmentation.Test.One'])
+
+  def testNewSegmentationHistogramUsingNewVariantIsNotReported(self):
+    old_contents = """\
+<histogram-configuration>
+  <histograms>
+  </histograms>
+</histogram-configuration>
+"""
+    new_contents = """\
+<histogram-configuration>
+  <histograms>
+    <variants name="TestVariant">
+      <variant name="One" summary="New variant summary" />
+    </variants>
+    <histogram name="Segmentation.Test.{Variant}" units="count"
+        expires_after="M200">
+      <owner>owner@chromium.org</owner>
+      <summary>Records {Variant} value.</summary>
+      <token key="Variant" variants="TestVariant" />
+    </histogram>
+  </histograms>
+</histogram-configuration>
+"""
+    with mock.patch.object(
+      PRESUBMIT.generate_histogram_list,
+      'GetActualHistogramNames',
+      return_value={'Segmentation.Test.One'},
+    ):
+      results = self._run_check_histograms_changes(
+        [
+          (
+            histogram_paths._HISTOGRAMS_XMLS_RELATIVE[0],
+            old_contents.splitlines(),
+            new_contents.splitlines(),
+          )
+        ]
+      )
+
+    self.assertEqual(results, [])
 
 
 if __name__ == '__main__':
