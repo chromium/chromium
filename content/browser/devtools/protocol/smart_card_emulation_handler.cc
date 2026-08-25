@@ -5,7 +5,9 @@
 #include "content/browser/devtools/protocol/smart_card_emulation_handler.h"
 
 #include <optional>
+#include <string_view>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/types/expected_macros.h"
 #include "base/uuid.h"
 #include "content/browser/devtools/protocol/smart_card_emulation.h"
@@ -42,70 +44,64 @@ device::mojom::SmartCardError ToMojoSmartCardError(
     const std::string& result_code) {
   namespace ResultCodeEnum = protocol::SmartCardEmulation::ResultCodeEnum;
 
-  static const base::NoDestructor<
-      base::flat_map<std::string, device::mojom::SmartCardError>>
-      kErrorMap({
-          {ResultCodeEnum::RemovedCard,
-           device::mojom::SmartCardError::kRemovedCard},
-          {ResultCodeEnum::ResetCard,
-           device::mojom::SmartCardError::kResetCard},
-          {ResultCodeEnum::UnpoweredCard,
-           device::mojom::SmartCardError::kUnpoweredCard},
-          {ResultCodeEnum::UnresponsiveCard,
-           device::mojom::SmartCardError::kUnresponsiveCard},
-          {ResultCodeEnum::UnsupportedCard,
-           device::mojom::SmartCardError::kUnsupportedCard},
-          {ResultCodeEnum::ReaderUnavailable,
-           device::mojom::SmartCardError::kReaderUnavailable},
-          {ResultCodeEnum::SharingViolation,
-           device::mojom::SmartCardError::kSharingViolation},
-          {ResultCodeEnum::NotTransacted,
-           device::mojom::SmartCardError::kNotTransacted},
-          {ResultCodeEnum::NoSmartcard,
-           device::mojom::SmartCardError::kNoSmartcard},
-          {ResultCodeEnum::ProtoMismatch,
-           device::mojom::SmartCardError::kProtoMismatch},
-          {ResultCodeEnum::SystemCancelled,
-           device::mojom::SmartCardError::kSystemCancelled},
-          {ResultCodeEnum::NotReady, device::mojom::SmartCardError::kNotReady},
-          {ResultCodeEnum::Cancelled,
-           device::mojom::SmartCardError::kCancelled},
-          {ResultCodeEnum::InsufficientBuffer,
-           device::mojom::SmartCardError::kInsufficientBuffer},
-          {ResultCodeEnum::InvalidHandle,
-           device::mojom::SmartCardError::kInvalidHandle},
-          {ResultCodeEnum::InvalidParameter,
-           device::mojom::SmartCardError::kInvalidParameter},
-          {ResultCodeEnum::InvalidValue,
-           device::mojom::SmartCardError::kInvalidValue},
-          {ResultCodeEnum::NoMemory, device::mojom::SmartCardError::kNoMemory},
-          {ResultCodeEnum::Timeout, device::mojom::SmartCardError::kTimeout},
-          {ResultCodeEnum::UnknownReader,
-           device::mojom::SmartCardError::kUnknownReader},
-          {ResultCodeEnum::UnsupportedFeature,
-           device::mojom::SmartCardError::kUnsupportedFeature},
-          {ResultCodeEnum::NoReadersAvailable,
-           device::mojom::SmartCardError::kNoReadersAvailable},
-          {ResultCodeEnum::ServiceStopped,
-           device::mojom::SmartCardError::kServiceStopped},
-          {ResultCodeEnum::NoService,
-           device::mojom::SmartCardError::kNoService},
-          {ResultCodeEnum::CommError,
-           device::mojom::SmartCardError::kCommError},
-          {ResultCodeEnum::InternalError,
-           device::mojom::SmartCardError::kInternalError},
-          {ResultCodeEnum::ServerTooBusy,
-           device::mojom::SmartCardError::kServerTooBusy},
-          {ResultCodeEnum::Unexpected,
-           device::mojom::SmartCardError::kUnexpected},
-          {ResultCodeEnum::Shutdown, device::mojom::SmartCardError::kShutdown},
-          {ResultCodeEnum::UnknownCard,
-           device::mojom::SmartCardError::kUnknownCard},
-          {ResultCodeEnum::Unknown, device::mojom::SmartCardError::kUnknown},
-      });
+  static constexpr auto kErrorMap = base::MakeFixedFlatMap<
+      std::string_view, device::mojom::SmartCardError>({
+      {ResultCodeEnum::Cancelled, device::mojom::SmartCardError::kCancelled},
+      {ResultCodeEnum::CommError, device::mojom::SmartCardError::kCommError},
+      {ResultCodeEnum::InsufficientBuffer,
+       device::mojom::SmartCardError::kInsufficientBuffer},
+      {ResultCodeEnum::InternalError,
+       device::mojom::SmartCardError::kInternalError},
+      {ResultCodeEnum::InvalidHandle,
+       device::mojom::SmartCardError::kInvalidHandle},
+      {ResultCodeEnum::InvalidParameter,
+       device::mojom::SmartCardError::kInvalidParameter},
+      {ResultCodeEnum::InvalidValue,
+       device::mojom::SmartCardError::kInvalidValue},
+      {ResultCodeEnum::NoMemory, device::mojom::SmartCardError::kNoMemory},
+      {ResultCodeEnum::NoReadersAvailable,
+       device::mojom::SmartCardError::kNoReadersAvailable},
+      {ResultCodeEnum::NoService, device::mojom::SmartCardError::kNoService},
+      {ResultCodeEnum::NoSmartcard,
+       device::mojom::SmartCardError::kNoSmartcard},
+      {ResultCodeEnum::NotReady, device::mojom::SmartCardError::kNotReady},
+      {ResultCodeEnum::NotTransacted,
+       device::mojom::SmartCardError::kNotTransacted},
+      {ResultCodeEnum::ProtoMismatch,
+       device::mojom::SmartCardError::kProtoMismatch},
+      {ResultCodeEnum::ReaderUnavailable,
+       device::mojom::SmartCardError::kReaderUnavailable},
+      {ResultCodeEnum::RemovedCard,
+       device::mojom::SmartCardError::kRemovedCard},
+      {ResultCodeEnum::ResetCard, device::mojom::SmartCardError::kResetCard},
+      {ResultCodeEnum::ServerTooBusy,
+       device::mojom::SmartCardError::kServerTooBusy},
+      {ResultCodeEnum::ServiceStopped,
+       device::mojom::SmartCardError::kServiceStopped},
+      {ResultCodeEnum::SharingViolation,
+       device::mojom::SmartCardError::kSharingViolation},
+      {ResultCodeEnum::Shutdown, device::mojom::SmartCardError::kShutdown},
+      {ResultCodeEnum::SystemCancelled,
+       device::mojom::SmartCardError::kSystemCancelled},
+      {ResultCodeEnum::Timeout, device::mojom::SmartCardError::kTimeout},
+      {ResultCodeEnum::Unexpected, device::mojom::SmartCardError::kUnexpected},
+      {ResultCodeEnum::Unknown, device::mojom::SmartCardError::kUnknown},
+      {ResultCodeEnum::UnknownCard,
+       device::mojom::SmartCardError::kUnknownCard},
+      {ResultCodeEnum::UnknownReader,
+       device::mojom::SmartCardError::kUnknownReader},
+      {ResultCodeEnum::UnpoweredCard,
+       device::mojom::SmartCardError::kUnpoweredCard},
+      {ResultCodeEnum::UnresponsiveCard,
+       device::mojom::SmartCardError::kUnresponsiveCard},
+      {ResultCodeEnum::UnsupportedCard,
+       device::mojom::SmartCardError::kUnsupportedCard},
+      {ResultCodeEnum::UnsupportedFeature,
+       device::mojom::SmartCardError::kUnsupportedFeature},
+  });
 
-  auto it = kErrorMap->find(result_code);
-  if (it != kErrorMap->end()) {
+  auto it = kErrorMap.find(result_code);
+  if (it != kErrorMap.end()) {
     return it->second;
   }
 
@@ -265,15 +261,15 @@ device::mojom::SmartCardProtocol ToMojoSmartCardProtocol(
   namespace Protocol = protocol::SmartCardEmulation::ProtocolEnum;
   using MojomProtocol = device::mojom::SmartCardProtocol;
 
-  static const base::NoDestructor<base::flat_map<std::string, MojomProtocol>>
-      kProtocolMap({
+  static constexpr auto kProtocolMap =
+      base::MakeFixedFlatMap<std::string_view, MojomProtocol>({
+          {Protocol::Raw, MojomProtocol::kRaw},
           {Protocol::T0, MojomProtocol::kT0},
           {Protocol::T1, MojomProtocol::kT1},
-          {Protocol::Raw, MojomProtocol::kRaw},
       });
 
-  auto it = kProtocolMap->find(*protocol_str);
-  if (it != kProtocolMap->end()) {
+  auto it = kProtocolMap.find(*protocol_str);
+  if (it != kProtocolMap.end()) {
     return it->second;
   }
   NOTREACHED();
@@ -313,18 +309,18 @@ device::mojom::SmartCardConnectionState ToMojoSmartCardConnectionState(
   namespace Protocol = protocol::SmartCardEmulation::ConnectionStateEnum;
   using MojomState = device::mojom::SmartCardConnectionState;
 
-  static const base::NoDestructor<base::flat_map<std::string, MojomState>>
-      kStateMap({
-          {Protocol::Specific, MojomState::kSpecific},
+  static constexpr auto kStateMap =
+      base::MakeFixedFlatMap<std::string_view, MojomState>({
+          {Protocol::Absent, MojomState::kAbsent},
           {Protocol::Negotiable, MojomState::kNegotiable},
           {Protocol::Powered, MojomState::kPowered},
-          {Protocol::Swallowed, MojomState::kSwallowed},
           {Protocol::Present, MojomState::kPresent},
-          {Protocol::Absent, MojomState::kAbsent},
+          {Protocol::Specific, MojomState::kSpecific},
+          {Protocol::Swallowed, MojomState::kSwallowed},
       });
 
-  auto it = kStateMap->find(state);
-  if (it != kStateMap->end()) {
+  auto it = kStateMap.find(state);
+  if (it != kStateMap.end()) {
     return it->second;
   }
 
