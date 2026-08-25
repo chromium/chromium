@@ -310,7 +310,7 @@ TEST_F(AutofillAiWalletUtilsTest, GetAddEntityTypeStringForI18n_Branded) {
       GetAddEntityTypeStringForI18n(EntityType(EntityTypeName::kDriversLicense),
                                     /*is_wallet_branded=*/true),
       l10n_util::GetStringUTF8(
-          IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE_BRANDED));
+          IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY_BRANDED));
 #endif
 }
 

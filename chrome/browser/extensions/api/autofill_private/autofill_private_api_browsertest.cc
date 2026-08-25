@@ -999,7 +999,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTestWithWalletPassBranding,
   EXPECT_EQ(
       api_type_branded.add_entity_type_string,
       l10n_util::GetStringUTF8(
-          IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE_BRANDED));
+          IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY_BRANDED));
 #else
   EXPECT_EQ(
       api_type_branded.add_entity_type_string,

@@ -1057,6 +1057,61 @@
     Add redress number
   </message>
 
+  <message name="IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY_BRANDED" desc="The title of a dialog within Chrome settings that allows a user to explicitly create a driver's license, with Google Wallet branding.">
+    Add driver's license to Google Wallet
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY_VARIANT_1_BRANDED" desc="The title of a dialog within Chrome settings that allows a user to explicitly create a driver's license, with Google Wallet branding.">
+    Add driver's license securely to Google Wallet
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY_VARIANT_2_SECURELY" desc="The title of a dialog within Chrome settings that allows a user to explicitly create a driver's license.">
+    Add driver's license securely
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_ID_CARD_ENTITY_BRANDED" desc="The title of a dialog within Chrome settings that allows a user to explicitly create an identity card, with Google Wallet branding.">
+    Add ID card to Google Wallet
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_ID_CARD_ENTITY_VARIANT_1_BRANDED" desc="The title of a dialog within Chrome settings that allows a user to explicitly create an identity card, with Google Wallet branding.">
+    Add ID card securely to Google Wallet
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_ID_CARD_ENTITY_VARIANT_2_SECURELY" desc="The title of a dialog within Chrome settings that allows a user to explicitly create an identity card.">
+    Add ID card securely
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_PASSPORT_ENTITY_BRANDED" desc="The title of a dialog within Chrome settings that allows a user to explicitly create a passport, with Google Wallet branding.">
+    Add passport to Google Wallet
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_PASSPORT_ENTITY_VARIANT_1_BRANDED" desc="The title of a dialog within Chrome settings that allows a user to explicitly create a passport, with Google Wallet branding.">
+    Add passport securely to Google Wallet
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_PASSPORT_ENTITY_VARIANT_2_SECURELY" desc="The title of a dialog within Chrome settings that allows a user to explicitly create a passport.">
+    Add passport securely
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY_BRANDED" desc="The title of a dialog within Chrome settings that allows a user to explicitly create a vehicle, with Google Wallet branding.">
+    Add vehicle to Google Wallet
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY_VARIANT_1_BRANDED" desc="The title of a dialog within Chrome settings that allows a user to explicitly create a vehicle, with Google Wallet branding.">
+    Add vehicle securely to Google Wallet
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY_VARIANT_2_SECURELY" desc="The title of a dialog within Chrome settings that allows a user to explicitly create a vehicle.">
+    Add vehicle securely
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_KNOWN_TRAVELER_NUMBER_ENTITY_BRANDED" desc="The title of a dialog within Chrome settings that allows a user to explicitly create a Known Traveler Number, with Google Wallet branding.">
+    Add Known Traveler Number to Google Wallet
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_KNOWN_TRAVELER_NUMBER_ENTITY_VARIANT_1_BRANDED" desc="The title of a dialog within Chrome settings that allows a user to explicitly create a Known Traveler Number, with Google Wallet branding.">
+    Add Known Traveler Number securely to Google Wallet
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_KNOWN_TRAVELER_NUMBER_ENTITY_VARIANT_2_SECURELY" desc="The title of a dialog within Chrome settings that allows a user to explicitly create a Known Traveler Number.">
+    Add Known Traveler Number securely
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_REDRESS_NUMBER_ENTITY_BRANDED" desc="The title of a dialog within Chrome settings that allows a user to explicitly create a redress number, with Google Wallet branding.">
+    Add redress number to Google Wallet
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_REDRESS_NUMBER_ENTITY_VARIANT_1_BRANDED" desc="The title of a dialog within Chrome settings that allows a user to explicitly create a redress number, with Google Wallet branding.">
+    Add redress number securely to Google Wallet
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_REDRESS_NUMBER_ENTITY_VARIANT_2_SECURELY" desc="The title of a dialog within Chrome settings that allows a user to explicitly create a redress number.">
+    Add redress number securely
+  </message>
+
   <!-- Edit entity strings -->
   <message name="IDS_AUTOFILL_AI_EDIT_DRIVERS_LICENSE_ENTITY" desc="The title of a dialog box that allows the user to edit their information.">
     Edit driver's license

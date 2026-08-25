@@ -100,7 +100,7 @@ TEST(ManagementUtilsTest, GetAddEntityTypeStringForI18n) {
   EXPECT_EQ(GetAddEntityTypeStringForI18n(EntityType(EntityTypeName::kPassport),
                                           /*is_wallet_branded=*/true),
             l10n_util::GetStringUTF8(
-                IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE_BRANDED));
+                IDS_AUTOFILL_AI_ADD_PASSPORT_ENTITY_BRANDED));
 
   // Verify string serving for variant 1 across entity types.
   {
@@ -111,37 +111,37 @@ TEST(ManagementUtilsTest, GetAddEntityTypeStringForI18n) {
         GetAddEntityTypeStringForI18n(EntityType(EntityTypeName::kPassport),
                                       /*is_wallet_branded=*/true),
         l10n_util::GetStringUTF8(
-            IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE_VARIANT_1_BRANDED));
+            IDS_AUTOFILL_AI_ADD_PASSPORT_ENTITY_VARIANT_1_BRANDED));
     EXPECT_EQ(
         GetAddEntityTypeStringForI18n(
             EntityType(EntityTypeName::kDriversLicense),
             /*is_wallet_branded=*/true),
         l10n_util::GetStringUTF8(
-            IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE_VARIANT_1_BRANDED));
+            IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY_VARIANT_1_BRANDED));
     EXPECT_EQ(
         GetAddEntityTypeStringForI18n(
             EntityType(EntityTypeName::kVehicle),
             /*is_wallet_branded=*/true),
         l10n_util::GetStringUTF8(
-            IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE_VARIANT_1_BRANDED));
+            IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY_VARIANT_1_BRANDED));
     EXPECT_EQ(
         GetAddEntityTypeStringForI18n(
             EntityType(EntityTypeName::kNationalIdCard),
             /*is_wallet_branded=*/true),
         l10n_util::GetStringUTF8(
-            IDS_AUTOFILL_AI_SAVE_ID_CARD_ENTITY_DIALOG_TITLE_VARIANT_1_BRANDED));
+            IDS_AUTOFILL_AI_ADD_ID_CARD_ENTITY_VARIANT_1_BRANDED));
     EXPECT_EQ(
         GetAddEntityTypeStringForI18n(
             EntityType(EntityTypeName::kKnownTravelerNumber),
             /*is_wallet_branded=*/true),
         l10n_util::GetStringUTF8(
-            IDS_AUTOFILL_AI_SAVE_KNOWN_TRAVELER_NUMBER_ENTITY_DIALOG_TITLE_VARIANT_1_BRANDED));
+            IDS_AUTOFILL_AI_ADD_KNOWN_TRAVELER_NUMBER_ENTITY_VARIANT_1_BRANDED));
     EXPECT_EQ(
         GetAddEntityTypeStringForI18n(
             EntityType(EntityTypeName::kRedressNumber),
             /*is_wallet_branded=*/true),
         l10n_util::GetStringUTF8(
-            IDS_AUTOFILL_AI_SAVE_REDRESS_NUMBER_ENTITY_DIALOG_TITLE_VARIANT_1_BRANDED));
+            IDS_AUTOFILL_AI_ADD_REDRESS_NUMBER_ENTITY_VARIANT_1_BRANDED));
   }
 
   // Verify string serving for variant 2 across entity types.
@@ -153,37 +153,37 @@ TEST(ManagementUtilsTest, GetAddEntityTypeStringForI18n) {
         GetAddEntityTypeStringForI18n(EntityType(EntityTypeName::kPassport),
                                       /*is_wallet_branded=*/true),
         l10n_util::GetStringUTF8(
-            IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE_VARIANT_2_SECURELY));
+            IDS_AUTOFILL_AI_ADD_PASSPORT_ENTITY_VARIANT_2_SECURELY));
     EXPECT_EQ(
         GetAddEntityTypeStringForI18n(
             EntityType(EntityTypeName::kDriversLicense),
             /*is_wallet_branded=*/true),
         l10n_util::GetStringUTF8(
-            IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE_VARIANT_2_SECURELY));
+            IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY_VARIANT_2_SECURELY));
     EXPECT_EQ(
         GetAddEntityTypeStringForI18n(
             EntityType(EntityTypeName::kVehicle),
             /*is_wallet_branded=*/true),
         l10n_util::GetStringUTF8(
-            IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE_VARIANT_2_SECURELY));
+            IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY_VARIANT_2_SECURELY));
     EXPECT_EQ(
         GetAddEntityTypeStringForI18n(
             EntityType(EntityTypeName::kNationalIdCard),
             /*is_wallet_branded=*/true),
         l10n_util::GetStringUTF8(
-            IDS_AUTOFILL_AI_SAVE_ID_CARD_ENTITY_DIALOG_TITLE_VARIANT_2_SECURELY));
+            IDS_AUTOFILL_AI_ADD_ID_CARD_ENTITY_VARIANT_2_SECURELY));
     EXPECT_EQ(
         GetAddEntityTypeStringForI18n(
             EntityType(EntityTypeName::kKnownTravelerNumber),
             /*is_wallet_branded=*/true),
         l10n_util::GetStringUTF8(
-            IDS_AUTOFILL_AI_SAVE_KNOWN_TRAVELER_NUMBER_ENTITY_DIALOG_TITLE_VARIANT_2_SECURELY));
+            IDS_AUTOFILL_AI_ADD_KNOWN_TRAVELER_NUMBER_ENTITY_VARIANT_2_SECURELY));
     EXPECT_EQ(
         GetAddEntityTypeStringForI18n(
             EntityType(EntityTypeName::kRedressNumber),
             /*is_wallet_branded=*/true),
         l10n_util::GetStringUTF8(
-            IDS_AUTOFILL_AI_SAVE_REDRESS_NUMBER_ENTITY_DIALOG_TITLE_VARIANT_2_SECURELY));
+            IDS_AUTOFILL_AI_ADD_REDRESS_NUMBER_ENTITY_VARIANT_2_SECURELY));
   }
 
   // Verify fallback to default branded strings for invalid variant parameters.
@@ -195,7 +195,7 @@ TEST(ManagementUtilsTest, GetAddEntityTypeStringForI18n) {
         GetAddEntityTypeStringForI18n(EntityType(EntityTypeName::kPassport),
                                       /*is_wallet_branded=*/true),
         l10n_util::GetStringUTF8(
-            IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE_BRANDED));
+            IDS_AUTOFILL_AI_ADD_PASSPORT_ENTITY_BRANDED));
   }
 #else
   EXPECT_EQ(GetAddEntityTypeStringForI18n(EntityType(EntityTypeName::kPassport),
