@@ -45,6 +45,13 @@ class PLATFORM_EXPORT WebrtcEncodingInfoHandler {
       std::optional<gfx::Size> video_resolution,
       OnMediaCapabilitiesEncodingInfoCallback callback) const;
 
+  // Returns true if the video format is supported by the built-in software
+  // encoder factory (webrtc::InternalEncoderFactory).
+  bool IsSoftwareEncoderSupported(
+      const webrtc::SdpVideoFormat& format,
+      const String& video_scalability_mode,
+      std::optional<gfx::Size> video_resolution) const;
+
  private:
   friend class WebrtcEncodingInfoHandlerTests;
   friend class MediaCapabilitiesWebrtcTests;

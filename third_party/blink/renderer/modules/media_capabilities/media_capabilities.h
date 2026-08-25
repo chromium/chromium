@@ -37,16 +37,89 @@ class MediaKeySystemAccess;
 class NavigatorBase;
 class ScriptState;
 
+// =============================================================================
+// MediaCapabilities Pipeline Architecture: Non-WebRTC vs. WebRTC
+// =============================================================================
+//
+// 1. NON-WEBRTC PIPELINE (type: 'file' | 'media-source')
+// -----------------------------------------------------------------------------
+// • Support Model (Two-Stage):
+//   a) Coarse Pre-Check: Checks StreamParserFactory (MSE) or
+//      media::IsDecoderSupportedVideoType() (file) upfront. Validates codec,
+//      profile, color space, and HDR metadata, but has NO knowledge of stream
+//      dimensions (width/height) or GPU device limits.
+//   b) Fine-Grained GPU Check: GpuVideoAcceleratorFactories verifies whether
+//      the hardware decoder can handle the specific resolution.
+//
+// • Execution Flow (Parallel):
+//   Fires two asynchronous queries concurrently:
+//   1. decode_history_service_->GetPerfInfo() -> Queries VideoDecodePerfHistory
+//      database for `smooth` and baseline `powerEfficient`.
+//   2. GetGpuFactoriesSupport() -> Queries GPU process with exact resolution
+//      to determine hardware decode support (sets `powerEfficient`).
+//
+// • Software Fallback & Hardware-Only Codecs:
+//   If GPU factories report `powerEfficient == false` (or fail to respond):
+//   - Built-in codecs (VP9, AV1, H.264 w/ FFmpeg) have CPU software decoders,
+//     so playback succeeds in software -> `supported` remains true.
+//   - Non-builtin codecs (HEVC, Dolby Vision) have NO software decoders in the
+//     binary. Lack of GPU support means playback will fail -> `supported` is
+//     flipped to false.
+//
+// • Worker & EME Scopes:
+//   In Web Workers or EME (where UseGpuFactoriesForPowerEfficient() == false),
+//   GpuFactories cannot be queried. The pipeline relies on DB heuristics and
+//   preserves `supported = true` to avoid false negatives for hardware codecs.
+//
+// • Timeout / Fallback Rule:
+//   - powerEfficient = is_gpu_factories_supported.value_or(false)
+//   - supported      = is_power_efficient || is_builtin_video_codec
+//   - smooth         = db_is_smooth.value_or(false)
+//
+// =============================================================================
+// 2. WEBRTC PIPELINE (type: 'webrtc')
+// -----------------------------------------------------------------------------
+// • Support Model (Unified / Single-Stage):
+//   No coarse pre-check. Capabilities are delegated directly to
+//   Webrtc(Decoding|Encoding)InfoHandler, which queries WebRTC's internal
+//   software and hardware factories atomically with resolution and scalability.
+//
+// • Execution Flow (Sequential / In Series):
+//   Queries CANNOT run in parallel because the database lookup requires the
+//   hardware acceleration status:
+//   1. Step 1: Handler evaluates codec support -> returns `is_supported` and
+//      `is_power_efficient` synchronously or via callback.
+//   2. Step 2: `is_power_efficient` is assigned to
+//      WebrtcPredictionFeatures::hardware_accelerated.
+//   3. Step 3: webrtc_history_service_->GetPerfInfo() queries the DB for
+//      `smooth`.
+//
+// • Software Fallback:
+//   WebRTC codec factories natively manage their own software vs. hardware
+//   selection (e.g. libvpx/OpenH264 fallback vs. RTCVideoDecoderFactory).
+//
+// • Timeout / Fallback Rule:
+//   - If the DB times out in Step 3, the known `is_supported` and
+//     `is_power_efficient` from Step 1 are preserved, while `smooth` defaults
+//     to false.
+//   - If the handler itself timed out before Step 1, support falls back to
+//     handler->IsSoftware(Decoder|Encoder)Supported().
+// =============================================================================
 class MODULES_EXPORT MediaCapabilities final
     : public ScriptWrappable,
       public Supplement<NavigatorBase> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static constexpr base::TimeDelta kMediaCapabilitiesQueryTimeout =
+      base::Seconds(10);
+
   static const char kWebrtcDecodeSmoothIfPowerEfficientParamName[];
   static const char kWebrtcEncodeSmoothIfPowerEfficientParamName[];
 
   static const char kSupplementName[];
+
+  enum class QueryType { kDecoding, kWebrtcDecoding, kWebrtcEncoding };
 
   // Getter for navigator.mediaCapabilities
   static MediaCapabilities* mediaCapabilities(NavigatorBase&);
@@ -71,7 +144,8 @@ class MODULES_EXPORT MediaCapabilities final
    public:
     PendingCallbackState(ScriptPromiseResolverBase* resolver,
                          MediaKeySystemAccess* access,
-                         const base::TimeTicks& request_time);
+                         const base::TimeTicks& request_time,
+                         QueryType query_type = QueryType::kDecoding);
     virtual void Trace(blink::Visitor* visitor) const;
 
     Member<ScriptPromiseResolverBase> resolver;
@@ -84,6 +158,12 @@ class MODULES_EXPORT MediaCapabilities final
     std::optional<bool> is_gpu_factories_supported;
     std::optional<bool> is_builtin_video_codec;
     base::TimeTicks request_time;
+    QueryType query_type;
+
+    bool IsWebrtc() const {
+      return query_type == QueryType::kWebrtcDecoding ||
+             query_type == QueryType::kWebrtcEncoding;
+    }
   };
 
   FRIEND_TEST_ALL_PREFIXES(MediaCapabilitiesWebrtcTests,
@@ -143,16 +223,27 @@ class MODULES_EXPORT MediaCapabilities final
   // |pending_callback_map_|.
   void ResolveCallbackIfReady(int callback_id);
 
-  enum class OperationType { kEncoding, kDecoding };
   void OnWebrtcSupportInfo(
       int callback_id,
       media::mojom::blink::WebrtcPredictionFeaturesPtr features,
       float frames_per_second,
-      OperationType,
+      QueryType,
       bool is_supported,
       bool is_power_efficient);
 
-  void OnWebrtcPerfHistoryInfo(int callback_id, OperationType, bool is_smooth);
+  void OnWebrtcPerfHistoryInfo(int callback_id, QueryType, bool is_smooth);
+
+  void OnCallbackTimeout(int callback_id);
+  void OnServiceDisconnected(bool is_webrtc);
+
+  int InsertCallbackAndScheduleTimeout(ScriptPromiseResolverBase* resolver,
+                                       MediaKeySystemAccess* access,
+                                       const base::TimeTicks& request_time,
+                                       QueryType query_type);
+  void ResolveWebrtcCallback(int callback_id,
+                             bool is_supported,
+                             bool is_power_efficient,
+                             bool is_smooth);
 
   // Creates a new (incremented) callback ID from |last_callback_id_| for
   // mapping in |pending_cb_map_|.

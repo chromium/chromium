@@ -21,6 +21,7 @@
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
+#include "third_party/webrtc/media/engine/internal_encoder_factory.h"
 
 namespace blink {
 
@@ -131,6 +132,24 @@ void WebrtcEncodingInfoHandler::ContinueVideoSupportCheck(
            << " power_efficient:" << support.is_power_efficient;
 
   std::move(callback).Run(support.is_supported, support.is_power_efficient);
+}
+
+bool WebrtcEncodingInfoHandler::IsSoftwareEncoderSupported(
+    const webrtc::SdpVideoFormat& format,
+    const String& video_scalability_mode,
+    std::optional<gfx::Size> video_resolution) const {
+  std::optional<std::string> scalability_mode =
+      !video_scalability_mode.IsNull()
+          ? std::make_optional(video_scalability_mode.Utf8())
+          : std::nullopt;
+  std::optional<webrtc::Resolution> resolution;
+  if (video_resolution) {
+    resolution = {video_resolution->width(), video_resolution->height()};
+  }
+  webrtc::InternalEncoderFactory software_encoder_factory;
+  return software_encoder_factory
+      .QueryCodecSupport(format, scalability_mode, resolution)
+      .is_supported;
 }
 
 }  // namespace blink

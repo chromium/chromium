@@ -3422,6 +3422,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Capabilities.TimedOut.{QueryType}"
+    enum="BooleanTimedOut" expires_after="2027-08-24">
+  <owner>kron@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records whether an asynchronous MediaCapabilities {QueryType} query timed
+    out (true) or completed and resolved before timing out (false). Recorded
+    just before the query promise is resolved, either upon normal completion
+    with capabilities or upon timing out with fallback capabilities.
+  </summary>
+  <token key="QueryType">
+    <variant name="Decoding"
+        summary="non-WebRTC decoding (file or media-source)"/>
+    <variant name="WebrtcDecoding" summary="WebRTC decoding"/>
+    <variant name="WebrtcEncoding" summary="WebRTC encoding"/>
+  </token>
+</histogram>
+
 <histogram name="Media.CodedSizeGuessing" enum="CodedSizeGuessStatus"
     expires_after="2026-12-23">
   <owner>vasilyt@chromium.org</owner>
