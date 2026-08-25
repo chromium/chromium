@@ -3571,6 +3571,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Jxl.DecodeThroughput" units="megapixels/second"
+    expires_after="2027-02-15">
+  <owner>veluca@chromium.org</owner>
+  <owner>helmut@januschka.com</owner>
+  <owner>
+    src/third_party/blink/renderer/platform/image-decoders/jxl/OWNERS
+  </owner>
+  <summary>
+    JXL pixel decode throughput. A sample is recorded when each JXL frame
+    finishes decoding, and the decode time includes only time spent inside
+    jxl-rs.
+  </summary>
+</histogram>
+
 <histogram name="Blink.KeyboardLock.MethodCalled" enum="KeyboardLockMethods"
     expires_after="2023-06-30">
   <owner>joedow@chromium.org</owner>

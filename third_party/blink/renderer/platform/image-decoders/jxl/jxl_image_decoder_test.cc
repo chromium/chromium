@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/jxl/jxl_image_decoder.h"
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <vector>
@@ -1338,6 +1339,100 @@ TEST_F(JXLImageDecoderTest, BppHistogramAlpha) {
 // Test that grayscale images do NOT record histogram.
 TEST_F(JXLImageDecoderTest, BppHistogramGrayscale) {
   TestJxlBppHistogram("/images/resources/3x3_gray_lossless.jxl");
+}
+
+// =============================================================================
+// Multi-threaded decoding tests
+// =============================================================================
+
+namespace {
+
+// Decodes all frames of `data` and returns one hash per frame.
+Vector<unsigned> DecodeAllFrameHashes(scoped_refptr<SharedBuffer> data) {
+  auto decoder = CreateJXLDecoder();
+  decoder->SetData(data.get(), true);
+  Vector<unsigned> hashes;
+  const wtf_size_t frame_count = decoder->FrameCount();
+  EXPECT_GT(frame_count, 0u);
+  for (wtf_size_t i = 0; i < frame_count; ++i) {
+    ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(i);
+    EXPECT_TRUE(frame);
+    EXPECT_FALSE(decoder->Failed());
+    if (!frame || frame->GetStatus() != ImageFrame::kFrameComplete) {
+      return hashes;
+    }
+    hashes.push_back(HashBitmap(frame->Bitmap()));
+  }
+  return hashes;
+}
+
+void TestParallelDecode(const char* dir, const char* file) {
+  SCOPED_TRACE(file);
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(dir, file);
+  ASSERT_TRUE(data);
+  EXPECT_FALSE(DecodeAllFrameHashes(data).empty());
+}
+
+}  // namespace
+
+// Exercise multi-threaded VarDCT decoding.
+TEST_F(JXLImageDecoderTest, ParallelDecodeVarDct) {
+  TestParallelDecode(kJxlTestDir, "green_queen_vardct_e3.jxl");
+}
+
+// Exercise multi-threaded modular decoding.
+TEST_F(JXLImageDecoderTest, ParallelDecodeModular) {
+  TestParallelDecode(kJxlTestDir, "green_queen_modular_e3.jxl");
+}
+
+// Images with patches exercise cross-group references while decoding in
+// parallel.
+TEST_F(JXLImageDecoderTest, ParallelDecodePatches) {
+  TestParallelDecode(kJxlTestDir, "conformance_patches.jxl");
+}
+
+// Progressive AC images exercise multiple passes while decoding in parallel.
+TEST_F(JXLImageDecoderTest, ParallelDecodeProgressiveAc) {
+  TestParallelDecode(kJxlTestDir, "progressive_ac.jxl");
+}
+
+// Multi-frame animations decode every frame on the thread pool.
+TEST_F(JXLImageDecoderTest, ParallelDecodeAnimation) {
+  TestParallelDecode(kImagesDir, "newtons_cradle.jxl");
+}
+
+// Incremental input and partial flushes must converge to the same final image
+// as a one-shot multi-threaded decode.
+TEST_F(JXLImageDecoderTest, ParallelIncrementalDecode) {
+  scoped_refptr<SharedBuffer> full_data =
+      ReadFileToSharedBuffer(kJxlTestDir, "green_queen_vardct_e3.jxl");
+  ASSERT_TRUE(full_data);
+
+  Vector<unsigned> one_shot_hashes = DecodeAllFrameHashes(full_data);
+  ASSERT_EQ(1u, one_shot_hashes.size());
+
+  auto decoder = CreateJXLDecoder();
+  const Vector<char> file_data = full_data->CopyAs<Vector<char>>();
+  const base::span<const char> source(file_data);
+  constexpr size_t kChunkSize = 16 * 1024;
+  scoped_refptr<SharedBuffer> partial_data = SharedBuffer::Create();
+  size_t offset = 0;
+  while (offset < file_data.size()) {
+    const size_t chunk =
+        std::min(kChunkSize, static_cast<size_t>(file_data.size()) - offset);
+    partial_data->Append(source.subspan(offset, chunk));
+    offset += chunk;
+    decoder->SetData(partial_data.get(), offset == file_data.size());
+    // Trigger partial decodes (and partial flushes) along the way.
+    decoder->DecodeFrameBufferAtIndex(0);
+    ASSERT_FALSE(decoder->Failed());
+  }
+
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  ASSERT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+  EXPECT_EQ(one_shot_hashes[0], HashBitmap(frame->Bitmap()));
 }
 
 }  // namespace blink

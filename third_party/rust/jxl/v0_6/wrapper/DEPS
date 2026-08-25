@@ -1,0 +1,8 @@
+include_rules = [
+  '+base/functional/bind.h',
+  '+base/location.h',
+  '+base/system/sys_info.h',
+  '+base/task/post_job.h',
+  '+base/task/task_traits.h',
+  '+base/task/thread_pool/thread_pool_instance.h',
+]

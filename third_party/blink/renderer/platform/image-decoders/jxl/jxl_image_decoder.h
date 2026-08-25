@@ -114,6 +114,10 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
   Vector<jxl_rs::JxlRsVisibleFrameInfo> frame_infos_;
   Vector<FrameTiming> frame_timings_;
 
+  // Cumulative wall time spent inside the jxl-rs decoder for the frame
+  // currently being decoded. Used to log decode throughput (MP/s).
+  base::TimeDelta current_frame_decode_time_;
+
   // Used to call UpdateBppHistogram<"Jxl">() at most once.
   CrossThreadOnceFunction<void(gfx::Size, size_t)>
       update_bpp_histogram_callback_;

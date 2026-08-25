@@ -13,8 +13,37 @@ rust_static_library("jxl_rs") {
   sources = [ "lib.rs" ]
   cxx_bindings = [ "lib.rs" ]
 
+  public_deps = [ ":parallel_runner" ]
   deps = [
     "..:lib",
+    "//build/rust:cxx_cppdeps",
+  ]
+}
+
+rust_static_library("parallel_runner_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  allow_unsafe = true
+  crate_root = "parallel_runner_unittest.rs"
+  sources = [ crate_root ]
+  cxx_bindings = [ crate_root ]
+  deps = [
+    ":parallel_runner",
+    "//base/test:task_environment",
+    "//build/rust:cxx_cppdeps",
+    "//testing/rust_gtest_interop",
+  ]
+}
+
+# C++ side of the parallel runner used to decode on the Chromium thread pool.
+source_set("parallel_runner") {
+  visibility = [ ":*" ]
+  sources = [
+    "parallel_runner.cc",
+    "parallel_runner.h",
+  ]
+  deps = [
+    "//base",
     "//build/rust:cxx_cppdeps",
   ]
 }

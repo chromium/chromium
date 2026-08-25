@@ -6,10 +6,11 @@
 
 use jxl::api::{
     check_signature, Endianness, JxlBasicInfo, JxlColorEncoding, JxlColorProfile, JxlColorType,
-    JxlDataFormat, JxlDecoderInner, JxlDecoderOptions, JxlOutputBuffer, JxlPixelFormat,
-    ProcessingResult, VisibleFrameInfo,
+    JxlDataFormat, JxlDecoderInner, JxlDecoderOptions, JxlOutputBuffer, JxlParallelRunner,
+    JxlParallelRunnerFun, JxlPixelFormat, ProcessingResult, VisibleFrameInfo,
 };
 use jxl::headers::extra_channels::ExtraChannel;
+use std::sync::Mutex;
 
 #[cxx::bridge(namespace = "blink::jxl_rs")]
 mod ffi {
@@ -137,6 +138,25 @@ mod ffi {
         fn get_frame_info(self: &JxlRsDecoder, index: usize) -> JxlRsVisibleFrameInfo;
 
     }
+
+    unsafe extern "C++" {
+        include!("third_party/rust/jxl/v0_6/wrapper/parallel_runner.h");
+
+        /// C++ `void` (aliased as `c_void` in parallel_runner.h), so that
+        /// opaque context pointers can be spelled `void*` on the C++ side.
+        /// cxx has no built-in `c_void` support (dtolnay/cxx#1049).
+        type c_void;
+
+        /// Runs `task(context, index)` for every `index` in
+        /// `[0, num_tasks)`, potentially in parallel on the Chromium thread
+        /// pool, and blocks until all tasks completed.
+        #[cxx_name = "RunParallelTasks"]
+        unsafe fn run_parallel_tasks(
+            num_tasks: usize,
+            context: *mut c_void,
+            task: unsafe fn(*mut c_void, usize),
+        );
+    }
 }
 
 use ffi::*;
@@ -145,6 +165,53 @@ pub struct JxlRsDecoder {
     decoder: JxlDecoderInner,
     pixel_format: Option<JxlPixelFormat>,
     icc_profile: Vec<u8>,
+}
+
+/// Shared state between `ChromiumParallelRunner::run` and the tasks it
+/// spawns on the Chromium thread pool.
+struct ParallelTaskContext<'a, 'b> {
+    fun: &'a JxlParallelRunnerFun<'b>,
+    error: Mutex<Option<jxl::error::Error>>,
+}
+
+fn run_parallel_task(context: *mut c_void, task_index: usize) {
+    // SAFETY: `context` points to the `ParallelTaskContext` created in
+    // `ChromiumParallelRunner::run`, which outlives the (synchronous)
+    // `run_parallel_tasks` call that invokes this function.
+    let context = unsafe { &*(context as *const ParallelTaskContext) };
+    if context.error.lock().unwrap().is_some() {
+        // A previous task failed; skip the remaining work.
+        return;
+    }
+    if let Err(e) = (context.fun)(task_index) {
+        let mut error = context.error.lock().unwrap();
+        if error.is_none() {
+            *error = Some(e);
+        }
+    }
+}
+
+/// `JxlParallelRunner` implementation backed by the Chromium thread pool
+/// (`base::PostJob`, see parallel_runner.cc).
+struct ChromiumParallelRunner;
+
+impl JxlParallelRunner for ChromiumParallelRunner {
+    fn run(&mut self, num: usize, fun: &JxlParallelRunnerFun<'_>) -> Result<(), jxl::error::Error> {
+        let context = ParallelTaskContext { fun, error: Mutex::new(None) };
+        // SAFETY: `run_parallel_tasks` invokes the callback synchronously, so
+        // `context` remains valid for the duration of every callback.
+        unsafe {
+            run_parallel_tasks(
+                num,
+                &context as *const ParallelTaskContext as *mut c_void,
+                run_parallel_task,
+            );
+        }
+        match context.error.into_inner().unwrap() {
+            Some(e) => Err(e),
+            None => Ok(()),
+        }
+    }
 }
 
 fn jxl_rs_scan_decoder_create(sample_limit: u64) -> Box<JxlRsDecoder> {
@@ -263,7 +330,8 @@ impl JxlRsDecoder {
 
         let output = output.as_mut().map(std::slice::from_mut);
 
-        match self.decoder.process(&mut input, output, None) {
+        let mut runner = ChromiumParallelRunner;
+        match self.decoder.process(&mut input, output, Some(&mut runner)) {
             Ok(ProcessingResult::Complete { .. }) => JxlRsProcessResult {
                 status: JxlRsStatus::Success,
                 bytes_consumed: len_before - input.len(),
@@ -285,7 +353,8 @@ impl JxlRsDecoder {
     ) -> JxlRsProcessResult {
         let output = self.make_output_buffer(buffer, width, height, row_stride);
 
-        match self.decoder.flush_pixels(&mut [output], None) {
+        let mut runner = ChromiumParallelRunner;
+        match self.decoder.flush_pixels(&mut [output], Some(&mut runner)) {
             Ok(true) => JxlRsProcessResult { status: JxlRsStatus::Success, bytes_consumed: 0 },
             Ok(false) => {
                 JxlRsProcessResult { status: JxlRsStatus::NeedMoreInput, bytes_consumed: 0 }
