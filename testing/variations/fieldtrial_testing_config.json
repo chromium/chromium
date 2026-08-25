@@ -8409,24 +8409,6 @@
             ]
         }
     ],
-    "ExtensionBlocklistSkipNetworkQuery": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ExtensionBlocklistSkipNetworkQuery"
-                    ]
-                }
-            ]
-        }
-    ],
     "ExtensionContentVerificationUsesExtensionRoot": [
         {
             "platforms": [
