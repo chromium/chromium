@@ -948,7 +948,7 @@ void AddSurfaceToRenderSurfaceList(
                                   view_transition_capture_surfaces);
   }
   render_surface->ClearAccumulatedContentRect();
-  render_surface_list->push_back(render_surface);
+  render_surface_list->push_back(render_surface->EffectTreeIndex());
   render_surface->set_is_render_surface_list_member(true);
   if (render_surface->ViewTransitionElementResourceId().MatchesToken(
           capture_view_transition_tokens)) {
@@ -1274,8 +1274,9 @@ void ComputeSurfaceContentRects(
         view_transition_content_rects) {
   // Walk the list backwards, accumulating each surface's content rect into its
   // target's content rect.
-  for (RenderSurfaceImpl* render_surface :
-       base::Reversed(*render_surface_list)) {
+  for (int effect_id : base::Reversed(*render_surface_list)) {
+    RenderSurfaceImpl* render_surface =
+        property_trees->effect_tree_mutable().GetRenderSurface(effect_id);
     if (render_surface->EffectTreeIndex() == kContentsRootPropertyNodeId) {
       // The root surface's content rect is always the entire viewport.
       render_surface->SetContentRectToViewport();
@@ -1337,7 +1338,9 @@ void ComputeListOfNonEmptySurfaces(LayerTreeImpl* layer_tree_impl,
   // because their contents are required regardless of the state of the target
   // surface.
   std::unordered_set<RenderSurfaceImpl*> surfaces_to_remove;
-  for (RenderSurfaceImpl* surface : *initial_surface_list) {
+  for (int effect_id : *initial_surface_list) {
+    RenderSurfaceImpl* surface =
+        property_trees->effect_tree_mutable().GetRenderSurface(effect_id);
     bool is_root = surface->EffectTreeIndex() == kContentsRootPropertyNodeId;
     RenderSurfaceImpl* target_surface = surface->render_target();
     if (!is_root && ((surface->content_rect().IsEmpty() &&
@@ -1357,10 +1360,10 @@ void ComputeListOfNonEmptySurfaces(LayerTreeImpl* layer_tree_impl,
          surfaces_to_remove.count(target_to_undelete);
          target_to_undelete = target_to_undelete->render_target()) {
       surface->set_is_render_surface_list_member(true);
-      final_surface_list->push_back(target_to_undelete);
+      final_surface_list->push_back(target_to_undelete->EffectTreeIndex());
       surfaces_to_remove.erase(target_to_undelete);
     }
-    final_surface_list->push_back(surface);
+    final_surface_list->push_back(effect_id);
   }
 
   for (auto* surface : surfaces_to_remove) {
@@ -1429,9 +1432,8 @@ void RecordRenderSurfaceReasonsForTracing(
   // kTest is the last value which is not included for tracing.
   constexpr auto kNumReasons = static_cast<size_t>(RenderSurfaceReason::kTest);
   std::array<int, kNumReasons> reason_counts = {0};
-  for (const RenderSurfaceImpl* render_surface : *render_surface_list) {
-    const auto& effect_node =
-        property_trees->effect_tree().Node(render_surface->EffectTreeIndex());
+  for (int effect_id : *render_surface_list) {
+    const auto& effect_node = property_trees->effect_tree().Node(effect_id);
     reason_counts[static_cast<size_t>(effect_node.render_surface_reason)]++;
   }
   for (size_t i = 0; i < kNumReasons; i++) {
@@ -1859,9 +1861,10 @@ bool LogDoubleBackgroundBlur(const LayerTreeImpl& layer_tree_impl,
   std::vector<std::pair<const LayerImpl*, gfx::Rect>> rects;
   rects.reserve(render_surface_list.size());
 
-  for (const RenderSurfaceImpl* render_surface : render_surface_list) {
-    const auto* effect_node =
-        &property_trees.effect_tree().Node(render_surface->EffectTreeIndex());
+  for (int effect_id : render_surface_list) {
+    const RenderSurfaceImpl* render_surface =
+        property_trees.effect_tree().GetRenderSurface(effect_id);
+    const auto* effect_node = &property_trees.effect_tree().Node(effect_id);
     if (NodeMayContainBackdropBlurFilter(*effect_node)) {
       const FilterOperations& filters = render_surface->BackdropFilters();
       if (filters.HasFilterOfType(FilterOperation::BLUR)) {

@@ -1990,6 +1990,14 @@ const RenderSurfaceList& LayerTreeImpl::GetRenderSurfaceList() const {
   return render_surface_list_;
 }
 
+RenderSurfaceImpl* LayerTreeImpl::GetRenderSurface(int effect_id) {
+  return property_trees_.effect_tree_mutable().GetRenderSurface(effect_id);
+}
+
+const RenderSurfaceImpl* LayerTreeImpl::GetRenderSurface(int effect_id) const {
+  return property_trees_.effect_tree().GetRenderSurface(effect_id);
+}
+
 const Region& LayerTreeImpl::UnoccludedScreenSpaceRegion() const {
   // If this assert triggers, then the render_surface_list_ is dirty, so the
   // unoccluded_screen_space_region_ is not valid anymore.

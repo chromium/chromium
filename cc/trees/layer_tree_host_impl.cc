@@ -1082,7 +1082,9 @@ bool LayerTreeHostImpl::HasDamage() const {
   // Unbounded elements can be positioned outside the root viewport, so check if
   // any unbounded render surface has damage even if the root surface has none.
   if (settings_.enable_unbounded_element) {
-    for (const auto* surface : active_tree->GetRenderSurfaceList()) {
+    for (int effect_id : active_tree->GetRenderSurfaceList()) {
+      const RenderSurfaceImpl* surface =
+          active_tree->GetRenderSurface(effect_id);
       if (surface->IsUnbounded() &&
           surface->GetDamageRect().Intersects(surface->content_rect())) {
         return true;
@@ -1231,8 +1233,9 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
   size_t render_surface_list_size = frame->render_surface_list->size();
   for (size_t i = 0; i < render_surface_list_size; ++i) {
     const size_t surface_index = render_surface_list_size - 1 - i;
+    int effect_id = (*frame->render_surface_list)[surface_index];
     RenderSurfaceImpl* render_surface =
-        (*frame->render_surface_list)[surface_index];
+        active_tree_->GetRenderSurface(effect_id);
 
     const bool is_root_surface =
         render_surface->EffectTreeIndex() == kContentsRootPropertyNodeId;
@@ -3008,7 +3011,8 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
   // The next frame should start by assuming nothing has changed, and changes
   // are noted as they occur.
   for (size_t i = 0; i < frame->render_surface_list->size(); i++) {
-    auto* surface = (*frame->render_surface_list)[i];
+    int effect_id = (*frame->render_surface_list)[i];
+    auto* surface = active_tree_->GetRenderSurface(effect_id);
     surface->damage_tracker()->DidDrawDamagedArea();
   }
   if (active_tree_->RootRenderSurface()) {
@@ -3130,7 +3134,9 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     ViewTransitionRequest::ViewTransitionElementMap view_transition_element_map;
     const auto& capture_view_transition_tokens =
         active_tree_->GetCaptureViewTransitionTokens();
-    for (RenderSurfaceImpl* render_surface : *frame->render_surface_list) {
+    for (int effect_id : *frame->render_surface_list) {
+      RenderSurfaceImpl* render_surface =
+          active_tree_->GetRenderSurface(effect_id);
       const auto& view_transition_element_resource_id =
           render_surface->OwningEffectNode()
               ->view_transition_element_resource_id;

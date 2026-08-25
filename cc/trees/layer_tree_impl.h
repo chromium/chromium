@@ -528,6 +528,8 @@ class CC_EXPORT LayerTreeImpl {
   void set_ui_resource_request_queue(UIResourceRequestQueue queue);
 
   const RenderSurfaceList& GetRenderSurfaceList() const;
+  RenderSurfaceImpl* GetRenderSurface(int effect_id);
+  const RenderSurfaceImpl* GetRenderSurface(int effect_id) const;
   const Region& UnoccludedScreenSpaceRegion() const;
 
   // These return the size of the root scrollable area and the size of
@@ -1005,10 +1007,9 @@ class CC_EXPORT LayerTreeImpl {
 
   base::flat_set<viz::SurfaceRange> surface_layer_ranges_;
 
-  // List of render surfaces for the most recently prepared frame.
-  //
-  // RAW_PTR_EXCLUSION: visible in stack samples when Renderer BRP is enabled.
-  RAW_PTR_EXCLUSION RenderSurfaceList render_surface_list_;
+  // List of effect node IDs for the render surfaces in the most recently
+  // prepared frame.
+  RenderSurfaceList render_surface_list_;
   // After drawing the |render_surface_list_| the areas in this region
   // would not be fully covered by opaque content.
   Region unoccluded_screen_space_region_;

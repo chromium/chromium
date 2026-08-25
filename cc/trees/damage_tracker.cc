@@ -166,8 +166,9 @@ void DamageTracker::InitializeUpdateDamageTracking(
     LayerTreeImpl* layer_tree_impl,
     ViewTransitionElementResourceIdToRenderSurfaceMap&
         id_to_render_surface_map) {
-  for (RenderSurfaceImpl* render_surface :
-       layer_tree_impl->GetRenderSurfaceList()) {
+  for (int effect_id : layer_tree_impl->GetRenderSurfaceList()) {
+    RenderSurfaceImpl* render_surface =
+        layer_tree_impl->GetRenderSurface(effect_id);
     render_surface->damage_tracker()->PrepareForUpdate();
 
     // Build ViewTransitionElementResourceId to RenderSurface Map. This will be

@@ -112,8 +112,10 @@ class CC_EXPORT DebugRectHistory {
   void SaveWebVitalsDebugRects(HeadsUpDisplayLayerImpl* hud);
   void SavePaintRects(LayerTreeImpl* tree_impl);
   void SavePropertyChangedRects(LayerTreeImpl* tree_impl, LayerImpl* hud_layer);
-  void SaveSurfaceDamageRects(const RenderSurfaceList& render_surface_list);
-  void SaveScreenSpaceRects(const RenderSurfaceList& render_surface_list);
+  void SaveSurfaceDamageRects(LayerTreeImpl* tree_impl,
+                              const RenderSurfaceList& render_surface_list);
+  void SaveScreenSpaceRects(LayerTreeImpl* tree_impl,
+                            const RenderSurfaceList& render_surface_list);
   void SaveTouchEventHandlerRects(LayerTreeImpl* tree_impl);
   void SaveWheelEventHandlerRects(LayerTreeImpl* tree_impl);
   void SaveScrollEventHandlerRects(LayerTreeImpl* tree_impl);

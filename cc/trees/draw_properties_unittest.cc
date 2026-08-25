@@ -95,8 +95,33 @@ class DrawPropertiesTestBase : public LayerTreeImplTestBase {
     return layer ? host_impl()->pending_tree()->LayerById(layer->id())
                  : nullptr;
   }
+  RenderSurfaceImpl* GetRenderSurface(LayerImpl* layer) {
+    if (!layer) {
+      return nullptr;
+    }
+    auto& effect_tree = GetPropertyTrees(layer)->effect_tree_mutable();
+    if (auto* surface =
+            effect_tree.GetRenderSurface(layer->effect_tree_index())) {
+      return surface;
+    }
+    return effect_tree.GetRenderSurface(GetEffectNode(layer)->target_id);
+  }
+  const RenderSurfaceImpl* GetRenderSurface(const LayerImpl* layer) const {
+    if (!layer) {
+      return nullptr;
+    }
+    const auto& effect_tree = GetPropertyTrees(layer)->effect_tree();
+    if (const auto* surface =
+            effect_tree.GetRenderSurface(layer->effect_tree_index())) {
+      return surface;
+    }
+    return effect_tree.GetRenderSurface(GetEffectNode(layer)->target_id);
+  }
   RenderSurfaceImpl* GetRenderSurfaceImpl(const scoped_refptr<Layer>& layer) {
     return GetRenderSurface(ImplOf(layer));
+  }
+  RenderSurfaceImpl* GetRenderSurface(int effect_id) {
+    return host_impl()->active_tree()->GetRenderSurface(effect_id);
   }
 
   // Updates main thread draw properties, commits main thread tree to
@@ -1175,8 +1200,10 @@ TEST_F(DrawPropertiesTest, ClipRectCullsRenderSurfaces) {
   UpdateActiveTreeDrawProperties();
 
   ASSERT_EQ(2U, GetRenderSurfaceList().size());
-  EXPECT_EQ(root->element_id(), GetRenderSurfaceList().at(0)->id());
-  EXPECT_EQ(child->element_id(), GetRenderSurfaceList().at(1)->id());
+  EXPECT_EQ(root->element_id(),
+            GetRenderSurface(GetRenderSurfaceList().at(0))->id());
+  EXPECT_EQ(child->element_id(),
+            GetRenderSurface(GetRenderSurfaceList().at(1))->id());
 }
 
 TEST_F(DrawPropertiesTest, ClipRectCullsSurfaceWithoutVisibleContent) {
@@ -1220,7 +1247,8 @@ TEST_F(DrawPropertiesTest, ClipRectCullsSurfaceWithoutVisibleContent) {
 
   // We should cull child and grand_child from the GetRenderSurfaceList.
   ASSERT_EQ(1U, GetRenderSurfaceList().size());
-  EXPECT_EQ(root->element_id(), GetRenderSurfaceList().at(0)->id());
+  EXPECT_EQ(root->element_id(),
+            GetRenderSurface(GetRenderSurfaceList().at(0))->id());
 }
 
 TEST_F(DrawPropertiesTest, IsClippedIsSetCorrectlyLayerImpl) {
@@ -3949,11 +3977,14 @@ TEST_F(DrawPropertiesTestWithLayerTree, SubtreeHiddenWithCopyRequest) {
   // parent since it has opacity and two drawing descendants, one for the parent
   // since it owns a surface, and one for the copy_layer.
   ASSERT_EQ(4u, GetRenderSurfaceList().size());
-  EXPECT_EQ(root->element_id(), GetRenderSurfaceList().at(0)->id());
+  EXPECT_EQ(root->element_id(),
+            GetRenderSurface(GetRenderSurfaceList().at(0))->id());
   EXPECT_EQ(copy_grand_parent->element_id(),
-            GetRenderSurfaceList().at(1)->id());
-  EXPECT_EQ(copy_parent->element_id(), GetRenderSurfaceList().at(2)->id());
-  EXPECT_EQ(copy_layer->element_id(), GetRenderSurfaceList().at(3)->id());
+            GetRenderSurface(GetRenderSurfaceList().at(1))->id());
+  EXPECT_EQ(copy_parent->element_id(),
+            GetRenderSurface(GetRenderSurfaceList().at(2))->id());
+  EXPECT_EQ(copy_layer->element_id(),
+            GetRenderSurface(GetRenderSurfaceList().at(3))->id());
 
   // The root render surface should have 2 contributing layers.
   EXPECT_EQ(2, GetRenderSurfaceImpl(root)->num_contributors());
@@ -4025,7 +4056,8 @@ TEST_F(DrawPropertiesTestWithLayerTree, ClippedOutCopyRequest) {
 
   // We should have two render surface, as the others are clipped out.
   ASSERT_EQ(2u, GetRenderSurfaceList().size());
-  EXPECT_EQ(root->element_id(), GetRenderSurfaceList().at(0)->id());
+  EXPECT_EQ(root->element_id(),
+            GetRenderSurface(GetRenderSurfaceList().at(0))->id());
 
   // The root render surface should have only 2 contributing layer, since the
   // other layers are clipped away.
@@ -8141,8 +8173,8 @@ TEST_F(DrawPropertiesTest, LargeTransformTest) {
   EXPECT_TRUE(is_inf_or_nan);
 
   // The root layer should be in the RenderSurfaceList.
-  EXPECT_TRUE(
-      std::ranges::contains(GetRenderSurfaceList(), GetRenderSurface(root)));
+  EXPECT_TRUE(std::ranges::contains(GetRenderSurfaceList(),
+                                    GetRenderSurface(root)->EffectTreeIndex()));
 }
 
 #if DCHECK_IS_ON()
@@ -8419,12 +8451,14 @@ TEST_F(DrawPropertiesTestWithLayerTree, SubtreeHiddenWithCacheRenderSurface) {
   // parent since it has opacity and two drawing descendants, one for the parent
   // since it owns a surface, and one for the cache.
   ASSERT_EQ(4u, GetRenderSurfaceList().size());
-  EXPECT_EQ(root->element_id(), GetRenderSurfaceList().at(0)->id());
+  EXPECT_EQ(root->element_id(),
+            GetRenderSurface(GetRenderSurfaceList().at(0))->id());
   EXPECT_EQ(cache_grand_parent->element_id(),
-            GetRenderSurfaceList().at(1)->id());
-  EXPECT_EQ(cache_parent->element_id(), GetRenderSurfaceList().at(2)->id());
+            GetRenderSurface(GetRenderSurfaceList().at(1))->id());
+  EXPECT_EQ(cache_parent->element_id(),
+            GetRenderSurface(GetRenderSurfaceList().at(2))->id());
   EXPECT_EQ(cache_render_surface->element_id(),
-            GetRenderSurfaceList().at(3)->id());
+            GetRenderSurface(GetRenderSurfaceList().at(3))->id());
 
   // The root render surface should have 2 contributing layers.
   EXPECT_EQ(2, GetRenderSurfaceImpl(root)->num_contributors());

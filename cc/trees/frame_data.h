@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer_collections.h"
@@ -52,9 +53,9 @@ struct CC_EXPORT FrameData {
   bool use_default_lower_bound_deadline = false;
   viz::CompositorRenderPassList render_passes;
   viz::CompositorRenderPassList unbounded_render_passes;
-  // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
-  // stacks.
-  RAW_PTR_EXCLUSION const RenderSurfaceList* render_surface_list = nullptr;
+
+  // List of effect node IDs for render surfaces in the active tree.
+  raw_ptr<const RenderSurfaceList> render_surface_list = nullptr;
 
   // List of layer IDs for layers in the active tree that will draw in this
   // frame.
