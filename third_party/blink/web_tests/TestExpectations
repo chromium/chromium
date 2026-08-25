@@ -9360,3 +9360,6 @@ crbug.com/550301058 [ Debug Linux ] external/wpt/webdriver/tests/bidi/network/pr
 crbug.com/549609779 [ Debug Linux ] external/wpt/webdriver/tests/bidi/script/call_function/result_node.py [ Failure Pass Timeout ]
 crbug.com/550080120 [ Debug Linux ] external/wpt/webdriver/tests/bidi/script/evaluate/csp_tentative.py [ Failure Pass Timeout ]
 crbug.com/551134373 [ Linux ] external/wpt/html/semantics/scripting-1/the-template-element/template-for/template-for-mutation-records.html [ Failure Pass ]
+
+# Gardener 2026-08-25
+crbug.com/552043107 [ Win11-arm64 ] virtual/media-foundation-for-clear-dcomp/media/track/track-cue-rendering-controls-fade-then-disable.html [ Failure ]
