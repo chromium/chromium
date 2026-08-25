@@ -933,9 +933,6 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "enableAltClickAndSixPackCustomization",
       ash::features::IsAltClickAndSixPackCustomizationEnabled());
 
-  // TODO(b/540713714): To clean up the WebUI-related changes.
-  html_source->AddBoolean("enableF11AndF12KeyShortcuts", true);
-
   AddDevicePointersStrings(html_source);
   AddDeviceGraphicsTabletStrings(html_source);
   AddCustomizeButtonsPageStrings(html_source);
