@@ -6009,7 +6009,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5316" label="CSSEnvironmentVariable_SafeAreaMaxInsetBottom"/>
   <int value="5317"
       label="OBSOLETE_V8AILanguageModel_ExpectedInputLanguages_AttributeGetter"/>
-  <int value="5318" label="V8AnimationTrigger_Constructor"/>
+  <int value="5318" label="V8TimelineTrigger_Constructor"/>
   <int value="5319"
       label="PrivateNetworkAccessInsecureResourceNotKnownPrivate"/>
   <int value="5320" label="GeolocationGetCurrentPositionHighAccuracy"/>

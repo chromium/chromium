@@ -415,6 +415,8 @@ TEST_F(TimelineTriggerPlayBackwardsForwardsTest,
 
 TEST_F(TimelineTriggerTest, CSSUseCounter) {
   EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kTimelineTrigger));
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kV8TimelineTrigger_Constructor));
 
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -432,10 +434,14 @@ TEST_F(TimelineTriggerTest, CSSUseCounter) {
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kTimelineTrigger));
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kV8TimelineTrigger_Constructor));
 }
 
 TEST_F(TimelineTriggerTest, JSUseCounter) {
   EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kTimelineTrigger));
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kV8TimelineTrigger_Constructor));
   GetDocument().GetSettings()->SetScriptEnabled(true);
 
   ClassicScript::CreateUnspecifiedScript(
@@ -443,6 +449,8 @@ TEST_F(TimelineTriggerTest, JSUseCounter) {
       ->RunScript(GetDocument().domWindow());
 
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kTimelineTrigger));
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kV8TimelineTrigger_Constructor));
 }
 
 TEST_F(TimelineTriggerTest, ScrollAndTimeDrivenAnimationReplay) {

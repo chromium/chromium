@@ -28,6 +28,6 @@
     Exposed=Window,
     RuntimeEnabled=TimelineTrigger
 ] interface TimelineTrigger : AnimationTrigger {
-  [CallWith=ExecutionContext, MeasureAs=V8AnimationTrigger_Constructor, RaisesException] constructor(optional sequence<TimelineTriggerOptions> options = []);
+  [CallWith=ExecutionContext, Measure, RaisesException] constructor(optional sequence<TimelineTriggerOptions> options = []);
   readonly attribute TimelineTriggerRangeList ranges;
 };
