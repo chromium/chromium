@@ -26,16 +26,17 @@ async function getOutstandingStatusPromise() {
  * 'window.location.origin/icon.png' is used.
  * @param {boolean} showOptOut - Whether to show the SPC opt-out experience.
  * If not specified, the parameter is not set in the input data blob.
+ * @param {Array<string>} locale - An optional list of preferred locales.
+ * If not specified, the parameter is not set in the input data blob.
  * @return {Array<PaymentMethodData>} - Secure payment confirmation method data.
  */
-function getTestMethodData(credentialIdentifier, iconUrl, showOptOut) {
+function getTestMethodData(credentialIdentifier, iconUrl, showOptOut, locale) {
   return getTestMethodDataWithInstrument(
-    {
-      displayName: 'display_name_for_instrument',
-      icon: iconUrl ? iconUrl : window.location.origin + '/icon.png',
-    },
-    credentialIdentifier,
-    showOptOut);
+      {
+        displayName: 'display_name_for_instrument',
+        icon: iconUrl ? iconUrl : window.location.origin + '/icon.png',
+      },
+      credentialIdentifier, showOptOut, locale);
 }
 
 /**
@@ -47,10 +48,12 @@ function getTestMethodData(credentialIdentifier, iconUrl, showOptOut) {
  * identifier. If not specified, then 'cred' is used instead.
  * @param {boolean} showOptOut - Whether to show the SPC opt-out experience.
  * If not specified, the parameter is not set in the input data blob.
+ * @param {Array<string>} locale - An optional list of preferred locales.
+ * If not specified, the parameter is not set in the input data blob.
  * @return {Array<PaymentMethodData>} - Secure payment confirmation method data.
  */
 function getTestMethodDataWithInstrument(
-  paymentInstrument, credentialIdentifier, showOptOut) {
+    paymentInstrument, credentialIdentifier, showOptOut, locale) {
   const methodData = {
     supportedMethods: 'secure-payment-confirmation',
     data: {
@@ -68,6 +71,10 @@ function getTestMethodDataWithInstrument(
 
   if (typeof showOptOut !== 'undefined') {
     methodData.data.showOptOut = showOptOut;
+  }
+
+  if (typeof locale !== 'undefined') {
+    methodData.data.locale = locale;
   }
 
   return [methodData];
@@ -88,6 +95,20 @@ async function getSecurePaymentConfirmationStatus(
     credentialIdentifier, iconUrl, showOptOut) {
   statusPromise = getStatusForMethodData(
       getTestMethodData(credentialIdentifier, iconUrl, showOptOut));
+  return statusPromise;
+}
+
+/**
+ * Returns the status field of the response to a secure payment confirmation
+ * request with specified locales.
+ * @param {Array<string>} locale - The list of preferred locales.
+ * @return {string} - The status field or error message.
+ */
+async function getSecurePaymentConfirmationStatusWithLocale(locale) {
+  statusPromise = getStatusForMethodData(getTestMethodData(
+      /* credentialIdentifier = */ undefined,
+      /* iconUrl = */ undefined,
+      /* showOptOut = */ undefined, locale));
   return statusPromise;
 }
 
@@ -138,6 +159,19 @@ async function securePaymentConfirmationCanMakePayment(iconUrl) {
 }
 
 /**
+ * Checks whether secure payment confirmation can make payments with specified
+ * locales.
+ * @param {Array<string>} locale - The list of preferred locales.
+ * @return {string} - 'true', 'false', or error message on failure.
+ */
+async function securePaymentConfirmationCanMakePaymentWithLocale(locale) {
+  return canMakePaymentForMethodData(getTestMethodData(
+      /* credentialIdentifier = */ undefined,
+      /* iconUrl = */ undefined,
+      /* showOptOut = */ undefined, locale));
+}
+
+/**
  * Creates a PaymentRequest for secure payment confirmation, checks
  * canMakePayment twice, and returns the second value.
  * @return {string} - 'true', 'false', or error message on failure.
@@ -152,6 +186,20 @@ async function securePaymentConfirmationCanMakePaymentTwice() {
  */
 async function securePaymentConfirmationHasEnrolledInstrument() {
   return hasEnrolledInstrumentForMethodData(getTestMethodData());
+}
+
+/**
+ * Checks whether secure payment confirmation has enrolled instruments with
+ * specified locales.
+ * @param {Array<string>} locale - The list of preferred locales.
+ * @return {string} - 'true', 'false', or error message on failure.
+ */
+async function securePaymentConfirmationHasEnrolledInstrumentWithLocale(
+    locale) {
+  return hasEnrolledInstrumentForMethodData(getTestMethodData(
+      /* credentialIdentifier = */ undefined,
+      /* iconUrl = */ undefined,
+      /* showOptOut = */ undefined, locale));
 }
 
 /**

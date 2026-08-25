@@ -793,11 +793,41 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         Assert.assertNull(
                 defaultBuilder()
                         .setOnlySpcMethodWithoutPaymentOptions()
-                        .setSecurePaymentConfirmationRequestValid(false)
+                        .setSecurePaymentConfirmationValidationError(
+                                SecurePaymentConfirmationRequestValidationError
+                                        .CREDENTIAL_IDS_REQUIRED)
                         .build());
         assertErrorAndReason(
                 ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
                 PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testSpcLocaleMismatch_returnsNotSupported() {
+        Assert.assertNull(
+                defaultBuilder()
+                        .setOnlySpcMethodWithoutPaymentOptions()
+                        .setSecurePaymentConfirmationValidationError(
+                                SecurePaymentConfirmationRequestValidationError
+                                        .LOCALE_DOES_NOT_MATCH)
+                        .build());
+        assertErrorAndReason(
+                ErrorStrings.SPC_LOCALE_DOES_NOT_MATCH, PaymentErrorReason.NOT_SUPPORTED);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testSpcWebAuthnExtensionsNotSupported_returnsNotSupported() {
+        Assert.assertNull(
+                defaultBuilder()
+                        .setOnlySpcMethodWithoutPaymentOptions()
+                        .setSecurePaymentConfirmationValidationError(
+                                SecurePaymentConfirmationRequestValidationError
+                                        .WEB_AUTHN_EXTENSIONS_NOT_SUPPORTED)
+                        .build());
+        assertErrorAndReason(
+                ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA, PaymentErrorReason.NOT_SUPPORTED);
     }
 
     @Test

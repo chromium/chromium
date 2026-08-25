@@ -81,7 +81,8 @@ SecurePaymentConfirmationRequestValidationError
 ValidateSecurePaymentConfirmationRequest(
     const std::vector<mojom::PaymentMethodDataPtr>& method_data,
     const mojom::PaymentOptionsPtr& options,
-    const url::Origin& initiator_origin) {
+    const url::Origin& initiator_origin,
+    const std::string& application_locale) {
   CHECK_GT(method_data.size(), 0u);
 
   if (!base::FeatureList::IsEnabled(::features::kSecurePaymentConfirmation)) {
@@ -121,9 +122,7 @@ ValidateSecurePaymentConfirmationRequest(
 
   return IsValidSecurePaymentConfirmationRequest(
       method_data_entry->secure_payment_confirmation, initiator_origin,
-      /*application_locale=*/"");  // TODO(crbug.com/545148854):
-                                   // Need to wire up the application
-                                   // locale, it is behind a flag.
+      application_locale);
 }
 
 // Helper to map JourneyLogger::AbortReason to aborted PaymentRequestOutcomes.
@@ -294,8 +293,9 @@ void PaymentRequest::Init(
                datum->supported_method == methods::kSecurePaymentConfirmation;
       })) {
     SecurePaymentConfirmationRequestValidationError validation_result =
-        ValidateSecurePaymentConfirmationRequest(method_data, options,
-                                                 frame_security_origin_);
+        ValidateSecurePaymentConfirmationRequest(
+            method_data, options, frame_security_origin_,
+            delegate_->GetApplicationLocale());
     if (validation_result !=
         SecurePaymentConfirmationRequestValidationError::kOk) {
       std::string error_message =
@@ -303,14 +303,17 @@ void PaymentRequest::Init(
               validation_result);
       log_.Error(error_message);
 
-      // The renderer cannot check whether WebAuthn extensions are allowed or
-      // not, as it doesn't know whether the page origin can claim the
-      // relying party ID. For that case we return an error.
+      /// We return an error because the renderer cannot check for:
+      // - WebAuthn extensions: the renderer doesn't know whether the page
+      // origin can claim the relying party ID.
+      // - Locale matches: the renderer doesn't know the browser's UI locale.
       //
       // All other failures indicate an invalid request. In that case we
       // report it as a bad message and mojo will kill the renderer.
       if (validation_result == SecurePaymentConfirmationRequestValidationError::
-                                   kWebAuthnExtensionsNotSupported) {
+                                   kWebAuthnExtensionsNotSupported ||
+          validation_result == SecurePaymentConfirmationRequestValidationError::
+                                   kLocaleDoesNotMatch) {
         client_->OnError(mojom::PaymentErrorReason::NOT_SUPPORTED,
                          error_message);
       } else {

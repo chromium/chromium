@@ -20,6 +20,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/core/browser/test_utils/test_event_waiter.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -27,6 +28,7 @@
 #include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/error_strings.h"
 #include "components/payments/core/features.h"
+#include "components/payments/core/native_error_strings.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata_services/web_data_service_wrapper_factory.h"
@@ -49,7 +51,8 @@ SecurePaymentConfirmationTest::SecurePaymentConfirmationTest() {
       // TODO(crbug.com/40868539): Refactor code to allow mocking out the
       // credential store APIs.
       /*disabled_features=*/{
-          features::kSecurePaymentConfirmationUseCredentialStoreAPIs});
+          features::kSecurePaymentConfirmationUseCredentialStoreAPIs,
+          features::kSPCLocaleValidation});
 }
 
 SecurePaymentConfirmationTest::~SecurePaymentConfirmationTest() = default;
@@ -116,6 +119,10 @@ std::string GetIconDownloadErrorMessage() {
   return "NotSupportedError: The payment method "
          "\"secure-payment-confirmation\" is not supported. "
          "The \"instrument.icon\" either could not be downloaded or decoded.";
+}
+
+std::string GetLocaleMismatchErrorMessage() {
+  return base::StrCat({"NotSupportedError: ", errors::kSpcLocaleDoesNotMatch});
 }
 
 // Tests that show() will display the Transaction UX, if there is a matching
@@ -559,6 +566,118 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationSynchronousDestructionTest,
 
   // The WebContents and PaymentRequest were closed during OnUIDisplayed(),
   // and SetupModelAndShowDialogIfApplicable() returned safely without a UAF.
+}
+
+class SecurePaymentConfirmationLocaleFeatureEnabledTest
+    : public SecurePaymentConfirmationTest {
+ public:
+  SecurePaymentConfirmationLocaleFeatureEnabledTest() {
+    feature_list_.InitAndEnableFeature(features::kSPCLocaleValidation);
+  }
+
+  void SetUpOnMainThread() override {
+    SecurePaymentConfirmationTest::SetUpOnMainThread();
+    g_browser_process->SetApplicationLocale("en-US");
+    test_controller()->SetHasAuthenticator(true);
+    NavigateTo("a.com", "/secure_payment_confirmation.html");
+
+    std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
+    std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
+    webdata_services::WebDataServiceWrapperFactory::
+        GetWebPaymentsWebDataServiceForBrowserContext(
+            GetActiveWebContents()->GetBrowserContext(),
+            ServiceAccessType::EXPLICIT_ACCESS)
+            ->AddSecurePaymentConfirmationCredential(
+                std::make_unique<SecurePaymentConfirmationCredential>(
+                    std::move(credential_id), "a.com", std::move(user_id)),
+                base::BindOnce(
+                    &SecurePaymentConfirmationTest::OnWebDataServiceRequestDone,
+                    weak_ptr_factory_.GetWeakPtr()));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationLocaleFeatureEnabledTest,
+                       Show_LocaleMatches) {
+  ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
+  ExecuteScriptAsync(GetActiveWebContents(),
+                     "getSecurePaymentConfirmationStatusWithLocale(['en-US'])");
+  WaitForObservedEvent();
+
+  EXPECT_TRUE(database_write_responded_);
+  test_controller()->CloseDialog();
+  EXPECT_EQ(
+      GetCancelErrorMessage(),
+      content::EvalJs(GetActiveWebContents(), "getOutstandingStatusPromise()"));
+}
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationLocaleFeatureEnabledTest,
+                       Show_LocaleMismatch) {
+  EXPECT_EQ(
+      GetLocaleMismatchErrorMessage(),
+      content::EvalJs(GetActiveWebContents(),
+                      "getSecurePaymentConfirmationStatusWithLocale(['fr'])"));
+}
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationLocaleFeatureEnabledTest,
+                       CanMakePayment_LocaleMatches) {
+  EXPECT_EQ(
+      "true",
+      content::EvalJs(
+          GetActiveWebContents(),
+          "securePaymentConfirmationCanMakePaymentWithLocale(['en-US'])"));
+}
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationLocaleFeatureEnabledTest,
+                       CanMakePayment_LocaleMismatch) {
+  EXPECT_EQ(errors::kSpcLocaleDoesNotMatch,
+            content::EvalJs(
+                GetActiveWebContents(),
+                "securePaymentConfirmationCanMakePaymentWithLocale(['fr'])"));
+}
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationLocaleFeatureEnabledTest,
+                       HasEnrolledInstrument_LocaleMatches) {
+  EXPECT_EQ("true", content::EvalJs(GetActiveWebContents(),
+                                    "securePaymentConfirmationHasEnrolledInstru"
+                                    "mentWithLocale(['en-US'])"));
+}
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationLocaleFeatureEnabledTest,
+                       HasEnrolledInstrument_LocaleMismatch) {
+  EXPECT_EQ(
+      errors::kSpcLocaleDoesNotMatch,
+      content::EvalJs(
+          GetActiveWebContents(),
+          "securePaymentConfirmationHasEnrolledInstrumentWithLocale(['fr'])"));
+}
+
+class SecurePaymentConfirmationLocaleFeatureDisabledTest
+    : public SecurePaymentConfirmationLocaleFeatureEnabledTest {
+ public:
+  SecurePaymentConfirmationLocaleFeatureDisabledTest() {
+    feature_list_.InitAndDisableFeature(features::kSPCLocaleValidation);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationLocaleFeatureDisabledTest,
+                       Show_LocaleFeatureDisabled) {
+  // With kSPCLocaleValidation disabled, a mismatched locale is ignored.
+  ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
+  ExecuteScriptAsync(GetActiveWebContents(),
+                     "getSecurePaymentConfirmationStatusWithLocale(['fr'])");
+  WaitForObservedEvent();
+
+  EXPECT_TRUE(database_write_responded_);
+  test_controller()->CloseDialog();
+  EXPECT_EQ(
+      GetCancelErrorMessage(),
+      content::EvalJs(GetActiveWebContents(), "getOutstandingStatusPromise()"));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -296,13 +296,17 @@ public class PaymentRequestService
 
         /**
          * @param request The SecurePaymentConfirmationRequest to verify.
+         * @param initiatorOrigin The origin of the initiator frame.
+         * @param applicationLocale The current application locale.
          * @return The validation error result.
          */
         default @SecurePaymentConfirmationRequestValidationError int
                 validateSecurePaymentConfirmationRequest(
-                        SecurePaymentConfirmationRequest request, Origin initiatorOrigin) {
+                        SecurePaymentConfirmationRequest request,
+                        Origin initiatorOrigin,
+                        String applicationLocale) {
             return PaymentValidator.validateSecurePaymentConfirmationRequest(
-                    request, initiatorOrigin);
+                    request, initiatorOrigin, applicationLocale);
         }
 
         /**
@@ -561,6 +565,11 @@ public class PaymentRequestService
                 mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
 
                 if (validationResult
+                        == SecurePaymentConfirmationRequestValidationError.LOCALE_DOES_NOT_MATCH) {
+                    disconnectFromClientWithDebugMessage(
+                            ErrorStrings.SPC_LOCALE_DOES_NOT_MATCH,
+                            PaymentErrorReason.NOT_SUPPORTED);
+                } else if (validationResult
                         == SecurePaymentConfirmationRequestValidationError
                                 .WEB_AUTHN_EXTENSIONS_NOT_SUPPORTED) {
                     disconnectFromClientWithDebugMessage(
@@ -652,7 +661,9 @@ public class PaymentRequestService
 
         // Delegate to the native implementation for final validation.
         return mDelegate.validateSecurePaymentConfirmationRequest(
-                spcMethodData.securePaymentConfirmation, mPaymentRequestSecurityOrigin);
+                spcMethodData.securePaymentConfirmation,
+                mPaymentRequestSecurityOrigin,
+                LocaleUtils.getDefaultLocaleString());
     }
 
     private void startPaymentAppService() {

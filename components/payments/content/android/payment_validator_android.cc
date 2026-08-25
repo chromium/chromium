@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "components/payments/content/android/byte_buffer_helper.h"
 #include "components/payments/content/payment_request_converter.h"
 #include "components/payments/content/secure_payment_confirmation_validation.h"
@@ -55,7 +56,8 @@ static jint
 JNI_PaymentValidator_ValidateSecurePaymentConfirmationRequestAndroid(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& buffer,
-    const url::Origin& initiator_origin) {
+    const url::Origin& initiator_origin,
+    const std::string& application_locale) {
   mojom::SecurePaymentConfirmationRequestPtr request;
   auto span = base::android::JavaByteBufferToSpan(env, buffer);
   if (!mojom::SecurePaymentConfirmationRequest::Deserialize(
@@ -64,11 +66,7 @@ JNI_PaymentValidator_ValidateSecurePaymentConfirmationRequestAndroid(
         SecurePaymentConfirmationRequestValidationError::kInternalError);
   }
   return static_cast<jint>(IsValidSecurePaymentConfirmationRequest(
-      request, initiator_origin,
-      /*application_locale=*/""));  // TODO(crbug.com/545148854):
-                                    // Need to wire up the
-                                    // application locale, it is
-                                    // behind a flag.
+      request, initiator_origin, application_locale));
 }
 
 }  // namespace payments
