@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
 
@@ -266,9 +267,9 @@ void RTCRtpTransceiver::setCodecPreferences(
       return;
     }
     auto type = codec->mimeType().subview(0, slash_position);
-    if (type == "video") {
+    if (EqualIgnoringAsciiCase(type, "video")) {
       webrtc_codec.kind = webrtc::MediaType::VIDEO;
-    } else if (type == "audio") {
+    } else if (EqualIgnoringAsciiCase(type, "audio")) {
       webrtc_codec.kind = webrtc::MediaType::AUDIO;
     } else {
       exception_state.ThrowDOMException(
