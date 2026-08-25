@@ -292,11 +292,19 @@ source_set("browser_tests") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "oobe_dialog_size_utils_unittest.cc" ]
+  sources = [
+    "oobe_dialog_size_utils_unittest.cc",
+    "oobe_ui_dialog_delegate_unittest.cc",
+  ]
 
   deps = [
     ":login",
+    "//ash:test_support",
     "//base/test:test_support",
+    "//chrome/browser/ui/webui/ash/login",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/network:test_support",
+    "//content/test:test_support",
     "//testing/gtest",
     "//ui/gfx/geometry",
   ]
