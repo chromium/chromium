@@ -12,18 +12,18 @@
 #import "base/task/sequenced_task_runner.h"
 #import "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #import "components/enterprise/connectors/core/cloud_content_scanning/files_request_handler_base.h"
+#import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/files_request_handler_ios.h"
 #import "ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
-#import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
-#import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
 #import "url/gurl.h"
 
 namespace enterprise_connectors {
 
 BackgroundCloudScannerManager::BackgroundCloudScanner::BackgroundCloudScanner(
     std::unique_ptr<ContentAnalysisInfo> info,
-    ProfileIOS* profile,
+    ConnectorsService* connectors_service,
+    ReportingEventRouter* router,
     BinaryUploadService* upload_service,
     const GURL& url,
     const base::FilePath& file_path,
@@ -31,8 +31,7 @@ BackgroundCloudScannerManager::BackgroundCloudScanner::BackgroundCloudScanner(
     : info_(std::move(info)),
       on_complete_callback_(std::move(on_complete_callback)) {
   auto delegate = std::make_unique<FilesRequestHandlerIOS>(
-      ConnectorsServiceFactory::GetForProfile(profile),
-      IOSReportingEventRouterFactory::GetForProfile(profile), file_path,
+      connectors_service, router, file_path,
       base::BindOnce(&BackgroundCloudScannerManager::BackgroundCloudScanner::
                          OnScanComplete,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -54,9 +53,12 @@ void BackgroundCloudScannerManager::BackgroundCloudScanner::OnScanComplete(
 }
 
 BackgroundCloudScannerManager::BackgroundCloudScannerManager(
-    ProfileIOS* profile,
+    ConnectorsService* connectors_service,
+    ReportingEventRouter* router,
     BinaryUploadService* upload_service)
-    : profile_(profile), upload_service_(upload_service) {}
+    : upload_service_(upload_service),
+      connectors_service_(connectors_service),
+      router_(router) {}
 
 BackgroundCloudScannerManager::~BackgroundCloudScannerManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -68,7 +70,8 @@ void BackgroundCloudScannerManager::StartScanner(
     const base::FilePath& file_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto scanner = base::WrapUnique(new BackgroundCloudScanner(
-      std::move(info), profile_, upload_service_, url, file_path,
+      std::move(info), connectors_service_, router_, upload_service_, url,
+      file_path,
       base::BindOnce(&BackgroundCloudScannerManager::RemoveScanner,
                      GetWeakPtr())));
   BackgroundCloudScanner* scanner_ptr = scanner.get();

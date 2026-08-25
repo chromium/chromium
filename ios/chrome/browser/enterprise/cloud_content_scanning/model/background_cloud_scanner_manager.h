@@ -16,7 +16,6 @@
 #import "components/keyed_service/core/keyed_service.h"
 
 class GURL;
-class ProfileIOS;
 
 namespace base {
 class FilePath;
@@ -25,8 +24,10 @@ class FilePath;
 namespace enterprise_connectors {
 
 class BinaryUploadService;
+class ConnectorsService;
 class ContentAnalysisInfo;
 class FilesRequestHandlerBase;
+class ReportingEventRouter;
 
 // Helper manager attached to ProfileIOS (as a KeyedService) to own active
 // background scans. Tying active background scans to the profile's lifetime
@@ -34,13 +35,10 @@ class FilesRequestHandlerBase;
 // 1. Scans survive tab closures to maintain enterprise compliance and auditing.
 // 2. All pending scans are safely cancelled and destroyed when the profile is
 //    destroyed, preventing use-after-free/dangling raw_ptr<ProfileIOS> issues.
-//
-// // TODO(crbug.com/545744370): Remove the ProfileIOS dependency and inject the
-// service directly. To remove the ProfileIOS dependency, we'll need to
-// refactor `FilesRequestHandlerIOS` first.
 class BackgroundCloudScannerManager : public KeyedService {
  public:
-  BackgroundCloudScannerManager(ProfileIOS* profile,
+  BackgroundCloudScannerManager(ConnectorsService* connectors_service,
+                                ReportingEventRouter* router,
                                 BinaryUploadService* upload_service);
 
   BackgroundCloudScannerManager(const BackgroundCloudScannerManager&) = delete;
@@ -71,7 +69,8 @@ class BackgroundCloudScannerManager : public KeyedService {
     // their lifecycles, as the nested class access bypass does not apply to std
     // library templates.
     BackgroundCloudScanner(std::unique_ptr<ContentAnalysisInfo> info,
-                           ProfileIOS* profile,
+                           ConnectorsService* connectors_service,
+                           ReportingEventRouter* router,
                            BinaryUploadService* upload_service,
                            const GURL& url,
                            const base::FilePath& file_path,
@@ -105,8 +104,9 @@ class BackgroundCloudScannerManager : public KeyedService {
   // to avoid use-after-free/re-entrancy during active callback execution.
   void RemoveScanner(BackgroundCloudScanner* scanner);
 
-  raw_ptr<ProfileIOS> profile_;
   raw_ptr<BinaryUploadService> upload_service_;
+  raw_ptr<ConnectorsService> connectors_service_;
+  raw_ptr<ReportingEventRouter> router_;
 
   std::vector<std::unique_ptr<BackgroundCloudScanner>> scanners_;
   SEQUENCE_CHECKER(sequence_checker_);

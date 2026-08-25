@@ -41,7 +41,9 @@ std::unique_ptr<KeyedService>
 BackgroundCloudScannerManagerFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   return std::make_unique<BackgroundCloudScannerManager>(
-      profile, IOSCloudBinaryUploadServiceFactory::GetForProfile(profile));
+      ConnectorsServiceFactory::GetForProfile(profile),
+      IOSReportingEventRouterFactory::GetForProfile(profile),
+      IOSCloudBinaryUploadServiceFactory::GetForProfile(profile));
 }
 
 }  // namespace enterprise_connectors
