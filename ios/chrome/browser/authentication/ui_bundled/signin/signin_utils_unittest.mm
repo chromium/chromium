@@ -527,8 +527,8 @@ TEST_F(SigninUtilsTest, TestWillNotShowIfFirstRunAfterPostRestore) {
   ASSERT_TRUE(
       signin::ShouldPresentUserSigninUpgrade(profile_.get(), version_1_0));
 
-  AccountInfo accountInfo;
-  accountInfo.email = "foo@bar.com";
+  AccountInfo accountInfo =
+      AccountInfo::Builder(GaiaId("gaia"), "foo@bar.com").Build();
   StorePreRestoreIdentity(GetProfilePrefs(), accountInfo,
                           /*history_sync_enabled=*/false);
   EXPECT_FALSE(

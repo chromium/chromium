@@ -140,7 +140,7 @@ class SigninAccountCapabilitiesSceneAgentTest : public PlatformTest {
         identity_manager, identity_manager
                               ->FindExtendedAccountInfoByEmailAddress(
                                   base::SysNSStringToUTF8(identity.userEmail))
-                              .account_id);
+                              .GetAccountId());
   }
 
   void FetchCapabilities(FakeSystemIdentity* identity) {

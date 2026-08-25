@@ -79,7 +79,7 @@ TEST_F(SigninProfileInfoUpdaterTest, SigninSignout) {
   {
     ProfileAttributesIOS attr = GetAttributesForProfile();
     EXPECT_TRUE(attr.IsAuthenticated());
-    EXPECT_EQ(account_info.gaia, attr.GetGaiaId());
+    EXPECT_EQ(account_info.GetGaiaId(), attr.GetGaiaId());
     EXPECT_EQ(kEmail, attr.GetUserName());
   }
 
@@ -104,7 +104,7 @@ TEST_F(SigninProfileInfoUpdaterTest, AuthError) {
 
   // Set auth error.
   identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
-      account_info.account_id,
+      account_info.GetAccountId(),
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
@@ -112,7 +112,7 @@ TEST_F(SigninProfileInfoUpdaterTest, AuthError) {
 
   // Remove auth error.
   identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
-      account_info.account_id, GoogleServiceAuthError::AuthErrorNone());
+      account_info.GetAccountId(), GoogleServiceAuthError::AuthErrorNone());
 
   EXPECT_FALSE(GetAttributesForProfile().HasAuthenticationError());
 }

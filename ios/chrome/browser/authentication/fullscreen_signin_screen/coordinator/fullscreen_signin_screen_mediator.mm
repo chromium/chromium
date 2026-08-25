@@ -381,7 +381,7 @@ enum class SigninScreenState {
     GaiaId gaia(self.selectedIdentity.gaiaId);
     return std::ranges::contains(
         _identityManager->GetAccountsOnDevice(), gaia,
-        [](const AccountInfo& info) { return info.gaia; });
+        [](const AccountInfo& info) { return info.GetGaiaId(); });
   }
   return false;
 }
@@ -446,7 +446,7 @@ enum class SigninScreenState {
 
 - (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
   id<SystemIdentity> identity =
-      _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
+      _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.GetGaiaId());
   [self handleIdentityUpdated:identity];
 }
 

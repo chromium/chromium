@@ -83,8 +83,9 @@ class PostRestoreProfileAgentTest : public PlatformTest {
   }
 
   void SetFakePreRestoreAccountInfo() {
-    AccountInfo accountInfo;
-    accountInfo.email = kFakePreRestoreAccountEmail;
+    AccountInfo accountInfo =
+        AccountInfo::Builder(GaiaId("gaia"), kFakePreRestoreAccountEmail)
+            .Build();
     StorePreRestoreIdentity(pref_service(), accountInfo,
                             /*history_sync_enabled=*/false);
   }

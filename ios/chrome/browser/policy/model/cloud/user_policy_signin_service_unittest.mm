@@ -114,7 +114,7 @@ class UserPolicySigninServiceTest : public PlatformTest {
         base::BindOnce(&UserPolicySigninServiceTest::OnRegisterCompleted,
                        base::Unretained(this));
     service->RegisterForPolicyWithAccountId(
-        kManagedTestUser, account_info.account_id,
+        kManagedTestUser, account_info.GetAccountId(),
         /*is_registration_for_management_consistency_check=*/false,
         std::move(callback));
     ASSERT_TRUE(IsRequestActive());

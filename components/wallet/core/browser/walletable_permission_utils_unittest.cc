@@ -102,7 +102,7 @@ TEST_F(WalletablePermissionUtilsTest, OptInStatus_TiedToAccount) {
 
   // Switch back to the first account.
   identity_test_env().ClearPrimaryAccount();
-  identity_test_env().SetPrimaryAccount(account1.email,
+  identity_test_env().SetPrimaryAccount(std::string(account1.GetEmail()),
                                         signin::ConsentLevel::kSignin);
   EXPECT_TRUE(
       GetWalletablePassDetectionOptInStatus(prefs(), identity_manager()));

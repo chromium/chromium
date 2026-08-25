@@ -315,7 +315,7 @@ ChromeAccountManagerService::GetIdentitiesOnDeviceWithGaiaIDs(
     const std::vector<AccountInfo>& account_infos) const {
   NSMutableArray<id<SystemIdentity>>* identities = [NSMutableArray array];
   for (const AccountInfo& account_info : account_infos) {
-    GaiaId gaia_id = account_info.gaia;
+    GaiaId gaia_id = account_info.GetGaiaId();
     id<SystemIdentity> identity = GetIdentityOnDeviceWithGaiaID(gaia_id);
     if (identity) {
       [identities addObject:identity];

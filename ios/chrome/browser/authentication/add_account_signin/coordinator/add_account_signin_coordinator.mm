@@ -226,7 +226,7 @@ using signin_metrics::PromoAction;
       std::vector<AccountInfo> accountsOnDevice =
           _identityManager->GetAccountsOnDevice();
       for (const AccountInfo& accountInfo : accountsOnDevice) {
-        if (accountInfo.gaia == gaia) {
+        if (accountInfo.GetGaiaId() == gaia) {
           identityOnDeviceFound = true;
           break;
         }

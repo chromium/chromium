@@ -59,7 +59,7 @@ TEST_F(TrustedVaultAccessTokenFetcherFrontendTest,
       identity_env()
           ->MakePrimaryAccountAvailable("test@gmail.com",
                                         signin::ConsentLevel::kSignin)
-          .account_id;
+          .GetAccountId();
   const std::string kAccessToken = "access_token";
 
   base::MockCallback<TrustedVaultAccessTokenFetcher::TokenCallback>
@@ -78,7 +78,7 @@ TEST_F(TrustedVaultAccessTokenFetcherFrontendTest,
       identity_env()
           ->MakePrimaryAccountAvailable("test@gmail.com",
                                         signin::ConsentLevel::kSignin)
-          .account_id;
+          .GetAccountId();
   const std::string kAccessToken = "access_token";
 
   base::MockCallback<TrustedVaultAccessTokenFetcher::TokenCallback>
@@ -96,7 +96,7 @@ TEST_F(TrustedVaultAccessTokenFetcherFrontendTest,
   identity_env()->MakePrimaryAccountAvailable("test1@gmail.com",
                                               signin::ConsentLevel::kSignin);
   const CoreAccountId kSecondaryAccountId =
-      identity_env()->MakeAccountAvailable("test2@gmail.com").account_id;
+      identity_env()->MakeAccountAvailable("test2@gmail.com").GetAccountId();
 
   // Fetch should be rejected immediately.
   base::MockCallback<TrustedVaultAccessTokenFetcher::TokenCallback>
@@ -114,7 +114,7 @@ TEST_F(TrustedVaultAccessTokenFetcherFrontendTest,
       identity_env()
           ->MakePrimaryAccountAvailable("test@gmail.com",
                                         signin::ConsentLevel::kSignin)
-          .account_id;
+          .GetAccountId();
   const std::string kAccessToken = "access_token";
 
   base::MockCallback<TrustedVaultAccessTokenFetcher::TokenCallback>
@@ -136,7 +136,7 @@ TEST_F(TrustedVaultAccessTokenFetcherFrontendTest,
       identity_env()
           ->MakePrimaryAccountAvailable("test@gmail.com",
                                         signin::ConsentLevel::kSignin)
-          .account_id;
+          .GetAccountId();
   const std::string kAccessToken = "access_token";
 
   base::MockCallback<TrustedVaultAccessTokenFetcher::TokenCallback>
@@ -156,7 +156,7 @@ TEST_F(TrustedVaultAccessTokenFetcherFrontendTest, ShouldAllowMultipleFetches) {
       identity_env()
           ->MakePrimaryAccountAvailable("test@gmail.com",
                                         signin::ConsentLevel::kSignin)
-          .account_id;
+          .GetAccountId();
   const std::string kAccessToken = "access_token";
 
   base::MockCallback<TrustedVaultAccessTokenFetcher::TokenCallback>
@@ -186,7 +186,7 @@ TEST_F(TrustedVaultAccessTokenFetcherFrontendTest,
   identity_env()->MakePrimaryAccountAvailable("test1@gmail.com",
                                               signin::ConsentLevel::kSignin);
   const CoreAccountId kSecondaryAccountId =
-      identity_env()->MakeAccountAvailable("test2@gmail.com").account_id;
+      identity_env()->MakeAccountAvailable("test2@gmail.com").GetAccountId();
 
   base::MockCallback<TrustedVaultAccessTokenFetcher::TokenCallback>
       token_callback;

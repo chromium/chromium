@@ -74,7 +74,7 @@
     GaiaId gaia(_defaultIdentity.gaiaId);
     return std::ranges::contains(
         _identityManager->GetAccountsOnDevice(), gaia,
-        [](const AccountInfo& info) { return info.gaia; });
+        [](const AccountInfo& info) { return info.GetGaiaId(); });
   }
   return false;
 }
@@ -134,7 +134,7 @@
 
 - (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
   id<SystemIdentity> identity =
-      _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
+      _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.GetGaiaId());
   CHECK(identity);
   TableViewIdentityItem* item =
       [self.consumer tableViewIdentityItemWithGaiaID:identity.gaiaId];

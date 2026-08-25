@@ -27,10 +27,10 @@ class GeminiFeatureAvailabilityTest : public PlatformTest {
 
   // Helper to create AccountInfo with specific capability.
   AccountInfo CreateAccountInfoWithCapability(bool can_use_model_execution) {
-    AccountInfo account_info;
-    account_info.account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
-    account_info.email = "test@example.com";
-    account_info.gaia = GaiaId("test_gaia_id");
+    AccountInfo account_info =
+        AccountInfo::Builder(GaiaId("test_gaia_id"), "test@example.com")
+            .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("test_gaia_id")))
+            .Build();
 
     AccountCapabilitiesTestMutator mutator(&account_info);
     mutator.set_can_use_model_execution_features(can_use_model_execution);

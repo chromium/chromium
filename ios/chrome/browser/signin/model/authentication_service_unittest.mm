@@ -266,7 +266,7 @@ class AuthenticationServiceTest : public PlatformTest {
         identity_manager()->GetAccountsOnDevice();
     CHECK_LT(index, accountInfos.size());
     return account_manager_->GetIdentityOnDeviceWithGaiaID(
-        accountInfos[index].gaia);
+        accountInfos[index].GetGaiaId());
   }
 
   // Sets a restricted pattern.
@@ -310,10 +310,10 @@ TEST_F(AuthenticationServiceTest, TestSignInAndGetPrimaryIdentity) {
   std::string user_email = base::SysNSStringToUTF8([identity(0) userEmail]);
   AccountInfo account_info =
       identity_manager()->FindExtendedAccountInfoByEmailAddress(user_email);
-  EXPECT_EQ(user_email, account_info.email);
-  EXPECT_EQ(identity(0).gaiaId, account_info.gaia);
-  EXPECT_TRUE(
-      identity_manager()->HasAccountWithRefreshToken(account_info.account_id));
+  EXPECT_EQ(user_email, account_info.GetEmail());
+  EXPECT_EQ(identity(0).gaiaId, account_info.GetGaiaId());
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
+      account_info.GetAccountId()));
   EXPECT_TRUE(authentication_service()->HasPrimaryIdentity());
   histogram_tester_.ExpectUniqueSample(
       "Signin.SignIn.Completed",

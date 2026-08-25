@@ -80,9 +80,9 @@ class ReportGeneratorIOSTest : public PlatformTest,
     AccountInfo account_info = signin::MakePrimaryAccountAvailable(
         identity_manager, kFakeEmail, signin::ConsentLevel::kSignin);
     signin::SimulateSuccessfulFetchOfAccountInfo(
-        identity_manager, account_info.account_id, account_info.email,
-        account_info.gaia, kFakeHostedDomain, kFakeFullName, kFakeGivenName,
-        kFakeLocale, "");
+        identity_manager, account_info.GetAccountId(), account_info.GetEmail(),
+        account_info.GetGaiaId(), kFakeHostedDomain, kFakeFullName,
+        kFakeGivenName, kFakeLocale, "");
   }
 
   ReportGeneratorIOSTest(const ReportGeneratorIOSTest&) = delete;

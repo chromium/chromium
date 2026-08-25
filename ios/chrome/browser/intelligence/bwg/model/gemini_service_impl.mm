@@ -99,11 +99,11 @@ GeminiServiceImpl::GeminiIneligibilityForProfile() {
       gemini::HasGeminiInChromeCapability(account_info);
   const bool allowed_by_enterprise =
       gemini::GeminiAllowedByPolicy(pref_service_);
-  const bool authenticated =
-      !account_info.IsEmpty() &&
-      identity_manager_
-              ->GetErrorStateOfRefreshTokenForAccount(account_info.account_id)
-              .state() == GoogleServiceAuthError::NONE;
+  const bool authenticated = !account_info.IsEmpty() &&
+                             identity_manager_
+                                     ->GetErrorStateOfRefreshTokenForAccount(
+                                         account_info.GetAccountId())
+                                     .state() == GoogleServiceAuthError::NONE;
 
   // For managed accounts, we err on the side of caution and only show Gemini
   // entrypoints when we know whether they are eligible. Otherwise, we're OK
@@ -171,7 +171,7 @@ void GeminiServiceImpl::OnRefreshTokenUpdatedForAccount(
 
 void GeminiServiceImpl::OnExtendedAccountInfoUpdated(
     const AccountInfo& account_info) {
-  if (account_info.account_id ==
+  if (account_info.GetAccountId() ==
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin)) {
     // Account capabilities (like age/model execution) may have finished
     // loading from the server, changing overall eligibility.

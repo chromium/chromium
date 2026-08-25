@@ -644,7 +644,7 @@ void GeminiBrowserAgent::OnIdentityManagerShutdown(
 void GeminiBrowserAgent::OnExtendedAccountInfoUpdated(
     const AccountInfo& account_info) {
   if (identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .account_id == account_info.account_id) {
+          .account_id == account_info.GetAccountId()) {
     [gemini_container_mediator_ configureGemini];
     UpdateGeminiAvailability();
     UpdateGeminiLiveIconVisibility();
