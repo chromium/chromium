@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -43,7 +42,10 @@ public class TabGroupHoverCardViewUnitTest {
         mHoverCardView =
                 (TabGroupHoverCardView)
                         LayoutInflater.from(mActivity)
-                                .inflate(R.layout.tab_group_hover_card_holder, root, false);
+                                .inflate(
+                                        R.layout.tab_group_hover_card_holder,
+                                        root,
+                                        /* attachToRoot= */ false);
         root.addView(mHoverCardView);
     }
 
@@ -52,14 +54,9 @@ public class TabGroupHoverCardViewUnitTest {
     public void testShow_setsAllFieldsAndPositions() {
         List<String> childTitles = List.of("• Tab 1", "• Tab 2");
 
-        mHoverCardView.show(
-                "Custom Group",
-                Color.RED,
-                childTitles,
-                /* excessCount= */ 0,
-                /* isIncognito= */ false,
-                /* x= */ 50f,
-                /* y= */ 100f);
+        mHoverCardView.bindData(
+                "Custom Group", childTitles, /* excessCount= */ 0, /* isIncognito= */ false);
+        mHoverCardView.show(/* x= */ 50f, /* y= */ 100f);
 
         assertTrue(mHoverCardView.isShown());
         assertEquals(View.VISIBLE, mHoverCardView.getVisibility());
@@ -85,14 +82,9 @@ public class TabGroupHoverCardViewUnitTest {
     public void testShow_excessCountVisibleWhenPositive() {
         List<String> childTitles = List.of("• Tab 1", "• Tab 2", "• Tab 3", "• Tab 4", "• Tab 5");
 
-        mHoverCardView.show(
-                "Big Group",
-                Color.BLUE,
-                childTitles,
-                /* excessCount= */ 3,
-                /* isIncognito= */ false,
-                /* x= */ 0f,
-                /* y= */ 0f);
+        mHoverCardView.bindData(
+                "Big Group", childTitles, /* excessCount= */ 3, /* isIncognito= */ false);
+        mHoverCardView.show(/* x= */ 0f, /* y= */ 0f);
 
         assertEquals(
                 View.VISIBLE, mHoverCardView.getGroupExcessTabsViewForTesting().getVisibility());
@@ -103,33 +95,34 @@ public class TabGroupHoverCardViewUnitTest {
     @Test
     @SmallTest
     public void testShow_incognitoColorsApplied() {
-        mHoverCardView.show(
+        mHoverCardView.bindData(
                 "Incognito Group",
-                Color.RED,
                 List.of("• Tab 1"),
                 /* excessCount= */ 0,
-                /* isIncognito= */ true,
-                /* x= */ 0f,
-                /* y= */ 0f);
+                /* isIncognito= */ true);
+        mHoverCardView.show(/* x= */ 0f, /* y= */ 0f);
 
         assertEquals(
                 TabUiThemeProvider.getTabHoverCardTextColorPrimary(
                         mActivity, /* isIncognito= */ true),
                 mHoverCardView.getGroupTitleViewForTesting().getCurrentTextColor());
+        assertEquals(
+                TabUiThemeProvider.getTabHoverCardTextColorSecondary(
+                        mActivity, /* isIncognito= */ true),
+                mHoverCardView.getChildTabViewsForTesting()[0].getCurrentTextColor());
+        assertEquals(
+                TabUiThemeProvider.getTabHoverCardBackgroundTintList(
+                        mActivity, /* isIncognito= */ true),
+                mHoverCardView.getBackgroundTintListForTesting());
     }
 
     @Test
     @SmallTest
     public void testShow_childTabsCappedAtMaxPreviewTabs() {
         List<String> manyTabs = List.of("• T1", "• T2", "• T3", "• T4", "• T5", "• T6", "• T7");
-        mHoverCardView.show(
-                "Large Group",
-                Color.BLUE,
-                manyTabs,
-                /* excessCount= */ 2,
-                /* isIncognito= */ false,
-                /* x= */ 0f,
-                /* y= */ 0f);
+        mHoverCardView.bindData(
+                "Large Group", manyTabs, /* excessCount= */ 2, /* isIncognito= */ false);
+        mHoverCardView.show(/* x= */ 0f, /* y= */ 0f);
 
         TextView[] childViews = mHoverCardView.getChildTabViewsForTesting();
         for (int i = 0; i < TabGroupHoverCardView.MAX_PREVIEW_TABS; i++) {
@@ -143,14 +136,9 @@ public class TabGroupHoverCardViewUnitTest {
     public void testHide() {
         List<String> childTitles = List.of("• Tab 1");
 
-        mHoverCardView.show(
-                "Group",
-                Color.GREEN,
-                childTitles,
-                /* excessCount= */ 0,
-                /* isIncognito= */ false,
-                /* x= */ 0f,
-                /* y= */ 0f);
+        mHoverCardView.bindData(
+                "Group", childTitles, /* excessCount= */ 0, /* isIncognito= */ false);
+        mHoverCardView.show(/* x= */ 0f, /* y= */ 0f);
         assertTrue(mHoverCardView.isShown());
 
         mHoverCardView.hide();
@@ -167,17 +155,27 @@ public class TabGroupHoverCardViewUnitTest {
 
     @Test
     @SmallTest
-    public void testOnMeasure_enforcesExactBoundedWidth() {
+    public void testOnMeasure_hugsContentAndCapsAtMaxWidth() {
         int expectedMaxWidth = TabHoverCardView.getHoverCardWidthPx(mActivity);
 
-        mHoverCardView.show(
-                "Title",
-                Color.RED,
-                List.of("• Tab 1"),
+        // Short content should hug the content (measured width <= expectedMaxWidth).
+        mHoverCardView.bindData(
+                "Short", List.of("• A"), /* excessCount= */ 0, /* isIncognito= */ false);
+        mHoverCardView.show(/* x= */ 0f, /* y= */ 0f);
+
+        mHoverCardView.measure(
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        assertTrue(mHoverCardView.getMeasuredWidth() <= expectedMaxWidth);
+
+        // Extremely long content should be capped at expectedMaxWidth.
+        String longTitle = "A".repeat(500);
+        mHoverCardView.bindData(
+                longTitle,
+                List.of("• " + longTitle),
                 /* excessCount= */ 0,
-                /* isIncognito= */ false,
-                /* x= */ 0f,
-                /* y= */ 0f);
+                /* isIncognito= */ false);
+        mHoverCardView.show(/* x= */ 0f, /* y= */ 0f);
 
         mHoverCardView.measure(
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),

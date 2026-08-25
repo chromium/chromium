@@ -259,15 +259,8 @@ found in the LICENSE file.
 
     <!-- Dimens for Vertical Tabs hover cards. -->
     <dimen name="vertical_tab_hover_card_margin_to_rail">4dp</dimen>
-
-    <!-- Dimens for Vertical Tabs tab group hover cards. -->
-    <dimen name="tab_group_hover_card_corner_radius">16dp</dimen>
-    <dimen name="tab_group_hover_card_border_width">1dp</dimen>
-    <dimen name="tab_group_hover_card_color_icon_size">12dp</dimen>
-    <dimen name="tab_group_hover_card_color_icon_margin_end">8dp</dimen>
-    <dimen name="tab_group_hover_card_header_margin_bottom">8dp</dimen>
-    <dimen name="tab_group_hover_card_child_item_padding_vertical">4dp</dimen>
-    <dimen name="tab_group_hover_card_excess_tabs_margin_top">4dp</dimen>
+    <dimen name="tab_group_hover_card_padding">16dp</dimen>
+    <dimen name="tab_group_hover_card_gap">8dp</dimen>
 
     <!-- Dimens for tab search -->
     <dimen name="tab_search_overlay_width">264dp</dimen>
