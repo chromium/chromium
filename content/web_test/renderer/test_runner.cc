@@ -101,7 +101,6 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
-#include "ui/gfx/test/icc_profiles.h"
 #include "v8/include/cppgc/allocation.h"
 #include "v8/include/cppgc/prefinalizer.h"
 #include "v8/include/v8-cppgc.h"
@@ -2045,7 +2044,13 @@ void TestRunnerBindings::SetColorProfile(const std::string& name,
   } else if (name == "sRGB") {
     color_space = gfx::ColorSpace::CreateSRGB();
   } else if (name == "colorSpin") {
-    color_space = gfx::ICCProfileForTestingColorSpin().GetColorSpace();
+    // Color spin is sRGB, but in GBR order, and with a 2.2 gamma.
+    const auto& srgb = SkNamedPrimariesExt::kSRGB;
+    SkColorSpacePrimaries srgb_spin = {
+        srgb.fGX, srgb.fGY, srgb.fBX, srgb.fBY,
+        srgb.fRX, srgb.fRY, srgb.fWX, srgb.fWY,
+    };
+    color_space = gfx::ColorSpace(srgb_spin, SkNamedTransferFn::k2Dot2);
   } else if (name == "adobeRGB") {
     color_space = gfx::ColorSpace(SkNamedPrimariesExt::kA98RGB,
                                   SkNamedTransferFn::k2Dot2);
