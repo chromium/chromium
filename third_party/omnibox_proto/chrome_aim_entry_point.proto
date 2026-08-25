@@ -100,11 +100,11 @@ enum ChromeAimEntryPoint {
   DESKTOP_CHROME_NTP_ACTION_CHIPS_ENTRY_POINT = 198;
 
   // AIM is entered from the omnibox action chip (Ask G) to enter cobrowsing.
-  DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION = 203;
+  DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION = 205;
 
   // AIM is entered from the omnibox composebox search with an attached tab.
-  DESKTOP_CHROME_COBROWSE_OMNIBOX_TAB_SEARCH = 204;
+  DESKTOP_CHROME_COBROWSE_OMNIBOX_TAB_SEARCH = 206;
 
   // AIM is entered from a contextual search suggestion in the omnibox.
-  DESKTOP_CHROME_COBROWSE_OMNIBOX_CONTEXTUAL_SUGGESTION = 205;
+  DESKTOP_CHROME_COBROWSE_OMNIBOX_CONTEXTUAL_SUGGESTION = 207;
 }
