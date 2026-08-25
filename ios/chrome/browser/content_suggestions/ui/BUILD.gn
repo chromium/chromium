@@ -78,6 +78,7 @@ source_set("unit_tests") {
     ":ui_util",
     "//base/test:test_support",
     "//ios/chrome/browser/ntp/search_engine_logo/ui",
+    "//ios/chrome/browser/ntp/ui_bundled:constants",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",

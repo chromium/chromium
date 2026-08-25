@@ -12,6 +12,7 @@ enum class SearchEngineLogoState;
 namespace content_suggestions {
 
 extern const CGFloat kHintTextScale;
+extern const CGFloat kHintTextScaleUICleanup;
 
 // Bottom margin for the Return to Recent Tab tile.
 extern const CGFloat kReturnToRecentTabSectionBottomMargin;
@@ -22,7 +23,6 @@ extern const CGFloat kLogoTopPaddingTight;
 extern const CGFloat kLogoToFakeboxPaddingTight;
 extern const CGFloat kDoodleTopPaddingTight;
 extern const CGFloat kDoodleToFakeboxPaddingTight;
-extern const CGFloat kQuickActionsTopPaddingTight;
 extern const CGFloat kMostVisitedTopPaddingTight;
 
 // Medium Padding Arm.
@@ -30,7 +30,6 @@ extern const CGFloat kLogoTopPaddingMedium;
 extern const CGFloat kLogoToFakeboxPaddingMedium;
 extern const CGFloat kDoodleTopPaddingMedium;
 extern const CGFloat kDoodleToFakeboxPaddingMedium;
-extern const CGFloat kQuickActionsTopPaddingMedium;
 extern const CGFloat kMostVisitedTopPaddingMedium;
 
 // Preferred Padding Arm.
@@ -38,7 +37,6 @@ extern const CGFloat kLogoTopPaddingPreferred;
 extern const CGFloat kLogoToFakeboxPaddingPreferred;
 extern const CGFloat kDoodleTopPaddingPreferred;
 extern const CGFloat kDoodleToFakeboxPaddingPreferred;
-extern const CGFloat kQuickActionsTopPaddingPreferred;
 extern const CGFloat kMostVisitedTopPaddingPreferred;
 
 // Control Padding.
@@ -47,6 +45,7 @@ extern const CGFloat kMostVisitedTopPaddingControl;
 extern const CGFloat kReducedModuleSpacingControl;
 
 // Shared spacing constants.
+extern const CGFloat kQuickActionsTopPadding;
 extern const CGFloat kReducedModuleSpacing;
 extern const CGFloat kReducedModuleSpacingRegularXRegular;
 
