@@ -1309,6 +1309,8 @@ suite('OmniboxEverywhereAppTest', () => {
     assertFalse(voiceSearch.classList.contains('permission-prompt-showing'));
   });
 
+  // TODO(crbug.com/552283274): Flaky on Mac.
+  // <if expr="not is_macosx">
   test(
       'open-voice-search reflects attribute on app and hides MV tiles and ' +
           'content',
@@ -1359,6 +1361,7 @@ suite('OmniboxEverywhereAppTest', () => {
         assertEquals('block', window.getComputedStyle(content).display);
         assertEquals('flex', window.getComputedStyle(mvContainer).display);
       });
+  // </if>
 
   test(
       'close-composebox event exits composebox mode and focuses searchbox',
