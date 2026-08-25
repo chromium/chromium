@@ -97,6 +97,7 @@
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_reauth_provider.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/webui/profile_helper.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
@@ -317,62 +318,6 @@ GURL GetSyncConfirmationURL() {
   return AppendSyncConfirmationQueryParams(GURL("chrome://sync-confirmation/"),
                                            SyncConfirmationStyle::kWindow,
                                            /*is_sync_promo=*/true);
-}
-
-std::string_view GetRejectHistoryOptinScript() {
-  if (base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh)) {
-    static constexpr std::string_view kScript = R"(
-      (() => {
-        const appElement =
-            document.querySelector('history-sync-optin-app-refresh');
-        const rejectButton =
-            appElement.shadowRoot.querySelector('#rejectButton');
-        rejectButton.click();
-        return true;
-      })();
-    )";
-    return kScript;
-  } else {
-    static constexpr std::string_view kScript = R"(
-      (() => {
-        const appElement =
-            document.querySelector('history-sync-optin-app');
-        const rejectButton =
-            appElement.shadowRoot.querySelector('#rejectButton');
-        rejectButton.click();
-        return true;
-      })();
-    )";
-    return kScript;
-  }
-}
-
-std::string_view GetAcceptHistoryOptinScript() {
-  if (base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh)) {
-    static constexpr std::string_view kScript = R"(
-      (() => {
-        const appElement =
-            document.querySelector('history-sync-optin-app-refresh');
-        const acceptButton =
-            appElement.shadowRoot.querySelector('#acceptButton');
-        acceptButton.click();
-        return true;
-      })();
-    )";
-    return kScript;
-  } else {
-    static constexpr std::string_view kScript = R"(
-      (() => {
-        const appElement =
-            document.querySelector('history-sync-optin-app');
-        const acceptButton =
-            appElement.shadowRoot.querySelector('#acceptButton');
-        acceptButton.click();
-        return true;
-      })();
-    )";
-    return kScript;
-  }
 }
 
 class BrowserAddedWaiter : public BrowserCollectionObserver {
@@ -976,14 +921,16 @@ class ProfilePickerCreationFlowBrowserTest
   // TODO(crbug.com/447584795): Add retry logic.
   void RejectHistoryOptin() {
     CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
-    CHECK_EQ(content::EvalJs(web_contents(), GetRejectHistoryOptinScript()),
+    CHECK_EQ(content::EvalJs(web_contents(),
+                             profiles::testing::GetRejectHistoryOptinScript()),
              true);
   }
 
   // TODO(crbug.com/447584795): Add retry logic.
   void AcceptHistoryOptin() {
     CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
-    CHECK_EQ(content::EvalJs(web_contents(), GetAcceptHistoryOptinScript()),
+    CHECK_EQ(content::EvalJs(web_contents(),
+                             profiles::testing::GetAcceptHistoryOptinScript()),
              true);
   }
 

@@ -4,11 +4,16 @@
 
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 
+#include <string>
+#include <string_view>
+
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_test_util.h"
@@ -22,6 +27,7 @@
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_handler.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
@@ -347,6 +353,39 @@ void ExpectPickerManagedUserNoticeScreenTypeAndProceed(
 
   // Simulate clicking on the next button.
   handler->CallProceedCallbackForTesting(choice);
+}
+
+namespace {
+
+std::string GetClickButtonWithinAppScript(std::string_view app_id,
+                                          std::string_view button_id) {
+  return base::StringPrintf(R"(
+      (() => {
+        const app = document.querySelector('%s');
+        const button = app.shadowRoot.querySelector('%s');
+        button.click();
+        return true;
+      })();
+    )",
+                            app_id, button_id);
+}
+
+std::string_view GetHistorySyncOptinAppId() {
+  return base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh)
+             ? "history-sync-optin-app-refresh"
+             : "history-sync-optin-app";
+}
+
+}  // namespace
+
+std::string GetRejectHistoryOptinScript() {
+  return GetClickButtonWithinAppScript(GetHistorySyncOptinAppId(),
+                                       "#rejectButton");
+}
+
+std::string GetAcceptHistoryOptinScript() {
+  return GetClickButtonWithinAppScript(GetHistorySyncOptinAppId(),
+                                       "#acceptButton");
 }
 
 }  // namespace profiles::testing

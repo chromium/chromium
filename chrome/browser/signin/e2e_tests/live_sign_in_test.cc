@@ -24,11 +24,11 @@
 #include "chrome/browser/signin/e2e_tests/sign_in_test_observer.h"
 #include "chrome/browser/signin/e2e_tests/signin_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
-#include "chrome/browser/ui/views/profiles/dice_web_signin_interception_bubble_view.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
@@ -47,7 +47,9 @@
 #include "components/signin/public/identity_manager/test_accounts.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/unexportable_keys/features.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -80,6 +82,12 @@
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/sync/sync_ui_util.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/views/profiles/dice_web_signin_interception_bubble_view.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin_ui.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 namespace signin::test {
 namespace {
@@ -496,7 +504,7 @@ IN_PROC_BROWSER_TEST_P(LiveSignInTest,
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync, MANUAL_CreateSignedInProfile) {
+IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_CreateSignedInProfile) {
   base::HistogramTester histogram_tester;
   std::optional<TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
@@ -536,21 +544,45 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync, MANUAL_CreateSignedInProfile) {
            signin::ConsentLevel::kSignin;
   });
 
-  // Confirm Sync.
+  // Confirm Sync or History Sync Opt-in.
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
-  GURL sync_confirmation_url =
-      AppendSyncConfirmationQueryParams(GURL("chrome://sync-confirmation/"),
-                                        SyncConfirmationStyle::kWindow, true);
-  profiles::testing::WaitForPickerLoadStop(sync_confirmation_url);
-  LoginUIServiceFactory::GetForProfile(new_profile)
-      ->SyncConfirmationUIClosed(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
+  if (GetParam()) {
+    GURL history_sync_optin_url =
+        HistorySyncOptinUI::AppendHistorySyncOptinQueryParams(
+            GURL(chrome::kChromeUIHistorySyncOptinURL),
+            HistorySyncOptinLaunchContext::kWindow);
+    profiles::testing::WaitForPickerLoadStop(history_sync_optin_url);
+
+    EXPECT_TRUE(base::test::RunUntil([picker_contents]() {
+      return content::EvalJs(picker_contents,
+                             profiles::testing::GetAcceptHistoryOptinScript())
+          .ExtractBool();
+    }));
+  } else {
+    GURL sync_confirmation_url =
+        AppendSyncConfirmationQueryParams(GURL("chrome://sync-confirmation/"),
+                                          SyncConfirmationStyle::kWindow, true);
+    profiles::testing::WaitForPickerLoadStop(sync_confirmation_url);
+    LoginUIServiceFactory::GetForProfile(new_profile)
+        ->SyncConfirmationUIClosed(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
+  }
 
   // Wait for browser to open.
   profiles::testing::WaitForPickerClosed();
   BrowserWindowInterface* new_browser = browser_created_observer.Wait();
   EXPECT_EQ(new_browser->GetProfile(), new_profile);
-  EXPECT_EQ(GetPrimaryAccountConsentLevel(identity_manager),
-            signin::ConsentLevel::kSync);
+  if (GetParam()) {
+    EXPECT_EQ(GetPrimaryAccountConsentLevel(identity_manager),
+              signin::ConsentLevel::kSignin);
+    syncer::SyncService* sync_service =
+        SyncServiceFactory::GetForProfile(new_profile);
+    EXPECT_TRUE(sync_service->GetUserSettings()->GetSelectedTypes().HasAll(
+        {syncer::UserSelectableType::kHistory,
+         syncer::UserSelectableType::kTabs}));
+  } else {
+    EXPECT_EQ(GetPrimaryAccountConsentLevel(identity_manager),
+              signin::ConsentLevel::kSync);
+  }
 
   // Both LST and Sync Header are received so their time difference must be
   // recorded.
