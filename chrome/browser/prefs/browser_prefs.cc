@@ -320,7 +320,6 @@
 #include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/side_panel/side_panel_prefs.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tabs/pinned_tab_codec.h"
@@ -949,6 +948,8 @@ constexpr char kMetricsConsentRestructureFeatureState[] =
     "user_experience_metrics.consent_restructure_feature_state";
 
 // Deprecated 08/2026.
+constexpr char kInitialSendAnimationShown[] =
+    "send_tab_to_self.initial_animation_shown";
 constexpr char kPrivacySandboxNotices[] = "privacy_sandbox.notices";
 constexpr char kPrivacySandboxM1ConsentDecisionMade[] =
     "privacy_sandbox.m1.consent_decision_made";
@@ -1353,6 +1354,7 @@ void RegisterProfilePrefsForMigration(
 #endif
 
   // Deprecated 08/2026.
+  registry->RegisterBooleanPref(kInitialSendAnimationShown, false);
   registry->RegisterDictionaryPref(kPrivacySandboxNotices);
   registry->RegisterTimePref(kPrivacySandboxTopicsDataAccessibleSince,
                              base::Time());
@@ -2026,7 +2028,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   PromoService::RegisterProfilePrefs(registry);
   RegisterReadAnythingProfilePrefs(registry);
   settings::SettingsUI::RegisterProfilePrefs(registry);
-  send_tab_to_self::RegisterProfilePrefs(registry);
   signin::RegisterProfilePrefs(registry);
   StartupBrowserCreator::RegisterProfilePrefs(registry);
   TabGroupsPageHandler::RegisterProfilePrefs(registry);
@@ -2712,6 +2713,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #endif
 
   // Added 08/2026.
+  profile_prefs->ClearPref(kInitialSendAnimationShown);
   profile_prefs->ClearPref(kPrivacySandboxNotices);
   profile_prefs->ClearPref(kPrivacySandboxM1ConsentDecisionMade);
   profile_prefs->ClearPref(kPrivacySandboxM1EEANoticeAcknowledged);

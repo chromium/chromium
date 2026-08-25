@@ -40,10 +40,6 @@ namespace ui {
 class Event;
 }  // namespace ui
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}  // namespace user_prefs
-
 struct AccountInfo;
 
 namespace send_tab_to_self {
@@ -92,11 +88,6 @@ class SendTabToSelfBubbleController
   // Close the bubble when the user clicks on the back button.
   void OnBackButtonPressed();
 
-  // Returns true if the initial "Send" animation that's displayed once per
-  // profile was shown.
-  bool InitialSendAnimationShown();
-  void SetInitialSendAnimationShown(bool shown);
-
   bool show_back_button() const { return show_back_button_; }
 
   std::optional<ShareEntryPoint> entry_point() const { return entry_point_; }
@@ -104,10 +95,6 @@ class SendTabToSelfBubbleController
   base::WeakPtr<SendTabToSelfBubbleController> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
-
-  // Register SendTabToSelfBubbleController related prefs in the Profile prefs.
-  static void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* user_prefs);
 
   void SetSelectorGenerationTimeoutForTesting(base::TimeDelta timeout);
 

@@ -28,11 +28,9 @@
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_promo_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/user_education/user_education_service.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
-#include "components/send_tab_to_self/pref_names.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_info.h"
@@ -318,16 +316,6 @@ void SendTabToSelfBubbleController::HandleSendTabToDeviceResult(
   }
 }
 
-bool SendTabToSelfBubbleController::InitialSendAnimationShown() {
-  return GetProfile()->GetPrefs()->GetBoolean(
-      prefs::kInitialSendAnimationShown);
-}
-
-void SendTabToSelfBubbleController::SetInitialSendAnimationShown(bool shown) {
-  GetProfile()->GetPrefs()->SetBoolean(prefs::kInitialSendAnimationShown,
-                                       shown);
-}
-
 void SendTabToSelfBubbleController::SetSelectorGenerationTimeoutForTesting(
     base::TimeDelta timeout) {
   SendTabToSelfPageHandler::GetOrCreateForWebContents(&GetWebContents())
@@ -369,12 +357,6 @@ void SendTabToSelfBubbleController::StartWaitingForTargetDeviceList() {
       base::BindOnce(
           &SendTabToSelfBubbleController::ShowBubbleWhenTargetDeviceListReady,
           weak_ptr_factory_.GetWeakPtr()));
-}
-
-// Static:
-void SendTabToSelfBubbleController::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* user_prefs) {
-  user_prefs->RegisterBooleanPref(prefs::kInitialSendAnimationShown, false);
 }
 
 SendTabToSelfBubbleController::SendTabToSelfBubbleController(

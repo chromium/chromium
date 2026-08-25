@@ -18,8 +18,4 @@ void ShowBubble(content::WebContents* web_contents,
       ->ShowBubble(entry_point, show_back_button);
 }
 
-void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* user_prefs) {
-  SendTabToSelfBubbleController::RegisterProfilePrefs(user_prefs);
-}
-
 }  // namespace send_tab_to_self

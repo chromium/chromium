@@ -11,17 +11,11 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}  // namespace user_prefs
-
 namespace send_tab_to_self {
 
 void ShowBubble(content::WebContents* web_contents,
                 ShareEntryPoint entry_point,
                 bool show_back_button = false);
-
-void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* user_prefs);
 
 }  // namespace send_tab_to_self
 
