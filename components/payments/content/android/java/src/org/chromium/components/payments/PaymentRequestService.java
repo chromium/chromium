@@ -19,6 +19,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -509,6 +510,16 @@ public class PaymentRequestService
         mShippingType = mPaymentOptions.shippingType;
 
         mJourneyLogger.recordCheckoutStep(CheckoutFunnelStep.INITIATED);
+        if (!mRenderFrameHost.isOutermostMainFrame()
+                && mRenderFrameHost.getLastCommittedURL() != null
+                && mRenderFrameHost.getMainFrame() != null
+                && mRenderFrameHost.getMainFrame().getLastCommittedURL() != null
+                && !UrlUtilities.sameDomainOrHost(
+                        mRenderFrameHost.getLastCommittedURL().getSpec(),
+                        mRenderFrameHost.getMainFrame().getLastCommittedURL().getSpec(),
+                        true)) {
+            mJourneyLogger.setInitiatedInCrossSiteIframe();
+        }
 
         if (!mDelegate.isOriginAllowedToUseWebPaymentApis(mWebContents.getLastCommittedUrl())) {
             Log.d(TAG, ErrorStrings.PROHIBITED_ORIGIN);
@@ -1570,6 +1581,7 @@ public class PaymentRequestService
         if (sNativeObserverForTest != null) {
             sNativeObserverForTest.onCanMakePaymentCalled();
         }
+        mJourneyLogger.setCanMakePaymentCalled();
 
         if (mIsFinishedQueryingPaymentApps) {
             respondCanMakePaymentQuery();
@@ -1584,6 +1596,7 @@ public class PaymentRequestService
         if (sNativeObserverForTest != null) {
             sNativeObserverForTest.onHasEnrolledInstrumentCalled();
         }
+        mJourneyLogger.setHasEnrolledInstrumentCalled();
 
         if (mIsFinishedQueryingPaymentApps) {
             respondHasEnrolledInstrumentQuery();

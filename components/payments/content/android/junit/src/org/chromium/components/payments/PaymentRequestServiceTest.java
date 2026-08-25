@@ -29,6 +29,7 @@ import org.chromium.components.payments.test_support.PaymentRequestServiceBuilde
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImplJni;
 import org.chromium.content_public.browser.NavigationController;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.payments.mojom.CanMakePaymentQueryResult;
@@ -41,6 +42,7 @@ import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequestClient;
 import org.chromium.payments.mojom.PaymentResponse;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 import org.chromium.url.mojom.Url;
 
 import java.util.ArrayList;
@@ -1032,5 +1034,34 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         // A request to open the payment handler window should be denied because the invoked app
         // has a different origin scope than the target URL.
         Assert.assertNull(PaymentRequestService.openPaymentHandlerWindow(targetUrl));
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testCanMakePayment_recordsToJourneyLogger() {
+        PaymentRequestService service = defaultBuilder().build();
+        service.canMakePayment();
+        Mockito.verify(mJourneyLogger, Mockito.times(1)).setCanMakePaymentCalled();
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testHasEnrolledInstrument_recordsToJourneyLogger() {
+        PaymentRequestService service = defaultBuilder().build();
+        service.hasEnrolledInstrument();
+        Mockito.verify(mJourneyLogger, Mockito.times(1)).setHasEnrolledInstrumentCalled();
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testInitiatedInCrossSiteIframe_recordsToJourneyLogger() {
+        RenderFrameHost mainFrame = Mockito.mock(RenderFrameHost.class);
+        Mockito.doReturn(JUnitTestGURLs.URL_1).when(mainFrame).getLastCommittedURL();
+        PaymentRequestServiceBuilder builder = defaultBuilder();
+        Mockito.doReturn(false).when(builder.getRenderFrameHost()).isOutermostMainFrame();
+        Mockito.doReturn(mainFrame).when(builder.getRenderFrameHost()).getMainFrame();
+        builder.setFrameOrigin(JUnitTestGURLs.URL_2);
+        builder.build();
+        Mockito.verify(mJourneyLogger, Mockito.times(1)).setInitiatedInCrossSiteIframe();
     }
 }

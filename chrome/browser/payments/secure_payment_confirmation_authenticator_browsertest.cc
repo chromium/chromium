@@ -280,8 +280,10 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
   ASSERT_NE(nullptr, rpId) << response;
   EXPECT_EQ("a.com", *rpId);
 
-  ExpectEvent2Histogram({Event2::kInitiated, Event2::kShown, Event2::kCompleted,
-                         Event2::kPayClicked, Event2::kHadInitialFormOfPayment,
+  ExpectEvent2Histogram({Event2::kInitiated,
+                         Event2::kInitiatedInCrossSiteIframe, Event2::kShown,
+                         Event2::kCompleted, Event2::kPayClicked,
+                         Event2::kHadInitialFormOfPayment,
                          Event2::kRequestMethodSecurePaymentConfirmation,
                          Event2::kSelectedSecurePaymentConfirmation});
 }
@@ -330,8 +332,10 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
       dict.FindStringByDottedPath("payment.payeeOrigin");
   ASSERT_EQ(nullptr, payee_origin) << response;
 
-  ExpectEvent2Histogram({Event2::kInitiated, Event2::kShown, Event2::kCompleted,
-                         Event2::kPayClicked, Event2::kHadInitialFormOfPayment,
+  ExpectEvent2Histogram({Event2::kInitiated,
+                         Event2::kInitiatedInCrossSiteIframe, Event2::kShown,
+                         Event2::kCompleted, Event2::kPayClicked,
+                         Event2::kHadInitialFormOfPayment,
                          Event2::kRequestMethodSecurePaymentConfirmation,
                          Event2::kSelectedSecurePaymentConfirmation});
 }
@@ -382,8 +386,10 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NE(nullptr, payee_origin) << response;
   EXPECT_EQ(GURL("https://example-payee-origin.test"), GURL(*payee_origin));
 
-  ExpectEvent2Histogram({Event2::kInitiated, Event2::kShown, Event2::kCompleted,
-                         Event2::kPayClicked, Event2::kHadInitialFormOfPayment,
+  ExpectEvent2Histogram({Event2::kInitiated,
+                         Event2::kInitiatedInCrossSiteIframe, Event2::kShown,
+                         Event2::kCompleted, Event2::kPayClicked,
+                         Event2::kHadInitialFormOfPayment,
                          Event2::kRequestMethodSecurePaymentConfirmation,
                          Event2::kSelectedSecurePaymentConfirmation});
 }

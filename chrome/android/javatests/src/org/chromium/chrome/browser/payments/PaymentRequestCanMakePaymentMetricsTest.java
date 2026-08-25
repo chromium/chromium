@@ -79,7 +79,9 @@ public class PaymentRequestCanMakePaymentMetricsTest {
                 Event2.SHOWN
                         | Event2.USER_ABORTED
                         | Event2.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event2.REQUEST_METHOD_OTHER;
+                        | Event2.REQUEST_METHOD_OTHER
+                        | Event2.CAN_MAKE_PAYMENT_CALLED
+                        | Event2.HAS_ENROLLED_INSTRUMENT_CALLED;
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -134,7 +136,9 @@ public class PaymentRequestCanMakePaymentMetricsTest {
                         | Event2.PAY_CLICKED
                         | Event2.COMPLETED
                         | Event2.REQUEST_METHOD_OTHER
-                        | Event2.SELECTED_CREDIT_CARD;
+                        | Event2.SELECTED_CREDIT_CARD
+                        | Event2.CAN_MAKE_PAYMENT_CALLED
+                        | Event2.HAS_ENROLLED_INSTRUMENT_CALLED;
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -169,7 +173,9 @@ public class PaymentRequestCanMakePaymentMetricsTest {
                 Event2.SHOWN
                         | Event2.OTHER_ABORTED
                         | Event2.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event2.REQUEST_METHOD_OTHER;
+                        | Event2.REQUEST_METHOD_OTHER
+                        | Event2.CAN_MAKE_PAYMENT_CALLED
+                        | Event2.HAS_ENROLLED_INSTRUMENT_CALLED;
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -203,7 +209,9 @@ public class PaymentRequestCanMakePaymentMetricsTest {
                         | Event2.COMPLETED
                         | Event2.HAD_INITIAL_FORM_OF_PAYMENT
                         | Event2.REQUEST_METHOD_OTHER
-                        | Event2.SELECTED_OTHER;
+                        | Event2.SELECTED_OTHER
+                        | Event2.CAN_MAKE_PAYMENT_CALLED
+                        | Event2.HAS_ENROLLED_INSTRUMENT_CALLED;
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -249,7 +257,9 @@ public class PaymentRequestCanMakePaymentMetricsTest {
                         | Event2.COMPLETED
                         | Event2.HAD_INITIAL_FORM_OF_PAYMENT
                         | Event2.REQUEST_METHOD_OTHER
-                        | Event2.SELECTED_OTHER;
+                        | Event2.SELECTED_OTHER
+                        | Event2.CAN_MAKE_PAYMENT_CALLED
+                        | Event2.HAS_ENROLLED_INSTRUMENT_CALLED;
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(

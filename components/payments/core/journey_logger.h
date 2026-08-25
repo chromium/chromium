@@ -113,6 +113,13 @@ class JourneyLogger {
     // True when a NotShownReason is set.
     kCouldNotShow = 1 << 23,
 
+    // Whether PaymentRequest.canMakePayment() was called.
+    kCanMakePaymentCalled = 1 << 24,
+    // Whether PaymentRequest.hasEnrolledInstrument() was called.
+    kHasEnrolledInstrumentCalled = 1 << 25,
+    // Whether the PaymentRequest was initiated in a cross-site iframe.
+    kInitiatedInCrossSiteIframe = 1 << 26,
+
     // Bits for secure-payment-confirmation method.
     kNoMatchingCredentials = 1 << 29,
     kRequestMethodSecurePaymentConfirmation = 1 << 30,
@@ -250,6 +257,15 @@ class JourneyLogger {
 
   // Records that the Payment Request was not shown to the user.
   void SetNotShown();
+
+  // Records that PaymentRequest.canMakePayment() was called.
+  void SetCanMakePaymentCalled();
+
+  // Records that PaymentRequest.hasEnrolledInstrument() was called.
+  void SetHasEnrolledInstrumentCalled();
+
+  // Records that the PaymentRequest was initiated in a cross-site iframe.
+  void SetInitiatedInCrossSiteIframe();
 
   // Increments the bucket count for the given checkout step.
   void RecordCheckoutStep(CheckoutFunnelStep step);

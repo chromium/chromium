@@ -33,6 +33,9 @@ class JourneyLoggerAndroid {
   void SetSkippedShow(JNIEnv* env);
   void SetShown(JNIEnv* env);
   void SetPayClicked(JNIEnv* env);
+  void SetCanMakePaymentCalled(JNIEnv* env);
+  void SetHasEnrolledInstrumentCalled(JNIEnv* env);
+  void SetInitiatedInCrossSiteIframe(JNIEnv* env);
   void SetSelectedMethod(JNIEnv* env, int32_t jPaymentMethodCategory);
   void SetRequestedInformation(JNIEnv* env,
                                bool requested_shipping,

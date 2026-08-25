@@ -283,6 +283,10 @@ public class PaymentRequestServiceBuilder implements Delegate {
         return this;
     }
 
+    public RenderFrameHost getRenderFrameHost() {
+        return mRenderFrameHost;
+    }
+
     public PaymentRequestServiceBuilder setInvalidSslCertificateErrorMessage(
             String invalidSslCertificateErrorMessage) {
         mInvalidSslCertificateErrorMessage = invalidSslCertificateErrorMessage;

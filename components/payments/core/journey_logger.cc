@@ -117,6 +117,18 @@ void JourneyLogger::SetPayClicked() {
   SetEvent2Occurred(Event2::kPayClicked);
 }
 
+void JourneyLogger::SetCanMakePaymentCalled() {
+  SetEvent2Occurred(Event2::kCanMakePaymentCalled);
+}
+
+void JourneyLogger::SetHasEnrolledInstrumentCalled() {
+  SetEvent2Occurred(Event2::kHasEnrolledInstrumentCalled);
+}
+
+void JourneyLogger::SetInitiatedInCrossSiteIframe() {
+  SetEvent2Occurred(Event2::kInitiatedInCrossSiteIframe);
+}
+
 void JourneyLogger::SetSelectedMethod(PaymentMethodCategory category) {
   switch (category) {
     case PaymentMethodCategory::kBasicCard:
