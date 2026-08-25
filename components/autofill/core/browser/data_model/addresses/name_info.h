@@ -121,11 +121,6 @@ class NameInfo : public FormGroup {
   bool MergeStructuredName(const NameInfo& newer,
                            bool newer_was_more_recently_used);
 
-  // Merges the validation statuses of |newer| into |this|.
-  // If two tokens of the same type have the exact same value, the validation
-  // status is updated to the higher one.
-  void MergeStructuredNameValidationStatuses(const NameInfo& newer);
-
   // Returns true if `full_name` is a variant of name stored in `this`.
   //
   // This function generates all variations of `full_name` and returns true if

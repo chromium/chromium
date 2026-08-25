@@ -666,13 +666,6 @@ bool NameInfo::MergeStructuredName(const NameInfo& newer,
   return false;
 }
 
-void NameInfo::MergeStructuredNameValidationStatuses(const NameInfo& newer) {
-  name_->MergeVerificationStatuses(*newer.name_);
-  if (IsAlternativeNameSupported() && newer.IsAlternativeNameSupported()) {
-    alternative_name_->MergeVerificationStatuses(*newer.alternative_name_);
-  }
-}
-
 bool NameInfo::IsNameVariantOf(std::u16string_view value,
                                std::string_view app_locale) const {
   return IsNormalizedNameVariantOf(
