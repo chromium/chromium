@@ -35,6 +35,7 @@
 #include "components/lens/ref_counted_lens_overlay_client_logs.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/lens_suggest_inputs_utils.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/logger.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -554,6 +555,12 @@ void LensQueryFlowRouter::HandleInteractionResponse(
 
 void LensQueryFlowRouter::RemoveContextualSearchContextIfNecessary(
     bool has_region_selection) {
+  // If context management is handled by the composebox, do not let Lens
+  // unilaterally delete the tab context when closing.
+  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+    return;
+  }
+
   if (ShouldRouteToContextualTasks() &&
       overlay_tab_context_file_token_.has_value() && !has_region_selection) {
     auto* session_handle = GetContextualSearchSessionHandle();
