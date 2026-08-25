@@ -12,6 +12,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/serial_chooser.h"
 #include "content/public/browser/serial_delegate.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -121,6 +122,43 @@ IN_PROC_BROWSER_TEST_F(SerialTest, DisallowRequestPort) {
                               return false;
                             }
                           })())"));
+}
+
+IN_PROC_BROWSER_TEST_F(SerialTest, FrameDetachDuringRunChooser) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
+
+  EXPECT_CALL(delegate(), CanRequestPortPermission).WillOnce(Return(true));
+
+  // Add an iframe and wait for it to load.
+  EXPECT_TRUE(ExecJs(shell(), R"(
+    new Promise(resolve => {
+      let iframe = document.createElement('iframe');
+      iframe.src = 'simple_page.html';
+      iframe.onload = resolve;
+      document.body.appendChild(iframe);
+    });
+  )"));
+
+  RenderFrameHost* child_rfh =
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_rfh);
+
+  EXPECT_CALL(delegate(), RunChooserInternal).WillOnce([&]() {
+    // Synchronously detach the iframe during RunChooser.
+    EXPECT_TRUE(ExecJs(shell(), "document.querySelector('iframe').remove();"));
+    return nullptr;
+  });
+
+  auto result = EvalJs(child_rfh, R"((async () => {
+    try {
+      await navigator.serial.requestPort({});
+      return true;
+    } catch (e) {
+      return false;
+    }
+  })())");
+  EXPECT_THAT(result,
+              EvalJsResult::ErrorIs(testing::HasSubstr("RenderFrame deleted")));
 }
 
 }  // namespace content

@@ -105,11 +105,20 @@ void SerialService::RequestPort(
     return;
   }
 
-  chooser_ = delegate->RunChooser(
+  // The delegate's chooser implementation may spin a nested message loop (e.g.
+  // to drop fullscreen), during which the frame may be detached and the
+  // service destroyed. Check that the service is still alive before accessing
+  // member variables.
+  base::WeakPtr<SerialService> weak_this = weak_factory_.GetWeakPtr();
+  auto chooser = delegate->RunChooser(
       &render_frame_host(), std::move(filters),
       allowed_bluetooth_service_class_ids,
       base::BindOnce(&SerialService::FinishRequestPort,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
+  if (!weak_this) {
+    return;
+  }
+  chooser_ = std::move(chooser);
 }
 
 void SerialService::OpenPort(

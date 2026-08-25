@@ -358,8 +358,17 @@ void WebUsbServiceImpl::GetPermission(
     return;
   }
 
-  usb_chooser_ = delegate->RunChooser(*render_frame_host_, std::move(options),
+  // The delegate's chooser implementation may spin a nested message loop (e.g.
+  // to drop fullscreen), during which the frame may be detached and the
+  // service destroyed. Check that the service is still alive before accessing
+  // member variables.
+  base::WeakPtr<WebUsbServiceImpl> weak_this = weak_factory_.GetWeakPtr();
+  auto chooser = delegate->RunChooser(*render_frame_host_, std::move(options),
                                       std::move(callback));
+  if (!weak_this) {
+    return;
+  }
+  usb_chooser_ = std::move(chooser);
 }
 
 void WebUsbServiceImpl::ForgetDevice(const std::string& guid,

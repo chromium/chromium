@@ -121,6 +121,10 @@ class WebUsbTest : public ContentBrowserTest {
 
   WebContents* web_contents() { return shell()->web_contents(); }
 
+  const device::mojom::UsbDeviceInfoPtr& fake_device_info() const {
+    return fake_device_info_;
+  }
+
  private:
   std::unique_ptr<
       UsbTestContentBrowserClientBase<ContentBrowserTestContentBrowserClient>>
@@ -233,6 +237,40 @@ IN_PROC_BROWSER_TEST_F(WebUsbTest, ForgetDevice) {
         const devices = await navigator.usb.getDevices();
         return devices.length;
       })())"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUsbTest, FrameDetachDuringRunChooser) {
+  // Add an iframe and wait for it to load.
+  EXPECT_TRUE(ExecJs(web_contents(), R"(
+    new Promise(resolve => {
+      let iframe = document.createElement('iframe');
+      iframe.src = 'simple_page.html';
+      iframe.onload = resolve;
+      document.body.appendChild(iframe);
+    });
+  )"));
+
+  RenderFrameHost* child_rfh =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_rfh);
+
+  EXPECT_CALL(delegate(), RunChooserInternal).WillOnce([&]() {
+    // Synchronously detach the iframe during RunChooser.
+    EXPECT_TRUE(
+        ExecJs(web_contents(), "document.querySelector('iframe').remove();"));
+    return fake_device_info()->Clone();
+  });
+
+  auto result = EvalJs(child_rfh, R"((async () => {
+    try {
+      await navigator.usb.requestDevice({ filters: [{ vendorId: 0 }] });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  })())");
+  EXPECT_THAT(result,
+              EvalJsResult::ErrorIs(testing::HasSubstr("RenderFrame deleted")));
 }
 
 }  // namespace

@@ -445,10 +445,19 @@ void HidService::RequestDevice(
     std::move(callback).Run(std::vector<device::mojom::HidDeviceInfoPtr>());
     return;
   }
-  chooser_ = GetContentClient()->browser()->GetHidDelegate()->RunChooser(
+  // The delegate's chooser implementation may spin a nested message loop (e.g.
+  // to drop fullscreen), during which the frame may be detached and the
+  // service destroyed. Check that the service is still alive before accessing
+  // member variables.
+  base::WeakPtr<HidService> weak_this = weak_factory_.GetWeakPtr();
+  auto chooser = delegate->RunChooser(
       render_frame_host_, std::move(filters), std::move(exclusion_filters),
       base::BindOnce(&HidService::FinishRequestDevice,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
+  if (!weak_this) {
+    return;
+  }
+  chooser_ = std::move(chooser);
 }
 
 void HidService::Connect(
