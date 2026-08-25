@@ -74,11 +74,11 @@ action("embed_mobile_devices_in_cpp") {
 }
 
 minify_js("minify_bidimapper") {
-  deps = [ "//third_party/bidimapper" ]
-  input_dir =
-      get_label_info("//third_party/bidimapper:bidimapper", "target_gen_dir")
+  deps = [ "//third_party/chromium-bidi/src:mapper_bundle" ]
+  input_dir = get_label_info("//third_party/chromium-bidi/src:mapper_bundle",
+                             "target_gen_dir")
   in_folder = "$input_dir"
-  in_files = [ "mapper.js" ]
+  in_files = [ "mapperTab.js" ]
   out_folder = "$target_gen_dir/bidimapper/minified"
 }
 
@@ -86,7 +86,7 @@ action("embed_bidimapper_in_cpp") {
   script = "embed_bidimapper_in_cpp.py"
 
   input_dir = get_label_info(":minify_bidimapper", "target_gen_dir")
-  js_files = [ "$input_dir/bidimapper/minified/mapper.js" ]
+  js_files = [ "$input_dir/bidimapper/minified/mapperTab.js" ]
 
   inputs = [ "cpp_source.py" ] + js_files
 
@@ -623,6 +623,11 @@ test("chromedriver_unittests") {
   data = [
     "//chrome/test/data/chromedriver/",
     "//chrome/test/chromedriver/log_replay/test_data",
+  ]
+
+  data_deps = [
+    "//third_party/chromium-bidi:webdriver_bidi_e2e_tests",
+    "//third_party/chromium-bidi:webdriver_bidi_unittests",
   ]
 
   deps = [
