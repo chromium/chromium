@@ -3978,7 +3978,6 @@ crbug.com/626703 external/wpt/css/css-text/white-space/text-wrap-balance-float-0
 crbug.com/626703 external/wpt/css/css-text/white-space/text-wrap-balance-float-005.html [ Failure ]
 crbug.com/626703 [ Win11 ] external/wpt/fetch/orb/tentative/known-mime-type.sub.any.html [ Failure Timeout ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/css/css-fonts/font-display/font-display-feature-policy-02.tentative.html [ Failure ]
-crbug.com/626703 [ Win ] external/wpt/fetch/api/redirect/redirect-keepalive.any.html [ Skip Timeout ]
 crbug.com/626703 [ Win11 ] external/wpt/fetch/metadata/generated/element-meta-refresh.https.optional.sub.html [ Timeout ]
 crbug.com/332345882 [ Win11-arm64 ] external/wpt/fetch/metadata/generated/element-meta-refresh.https.optional.sub.html [ Timeout ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/resource-timing/iframe-sequence-of-events.html [ Timeout ]
