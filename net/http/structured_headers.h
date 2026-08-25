@@ -30,8 +30,32 @@ using Parameters = quiche::structured_headers::Parameters;
 // See crbug.com/377941140 for details of this migration.
 NET_EXPORT BASE_DECLARE_FEATURE(kStructuredHeadersInRust);
 
+// Parses an Item strictly according to RFC 8941.
+NET_EXPORT std::optional<ParameterizedItem> ParseItemStrict(std::string_view);
+
+// Parses a List strictly according to RFC 8941.
+NET_EXPORT std::optional<List> ParseListStrict(std::string_view);
+
+// Parses a Dictionary strictly according to RFC 8941.
+NET_EXPORT std::optional<Dictionary> ParseDictionaryStrict(std::string_view);
+
+// Parses an Item according to RFC 8941, but deviates from the specification by
+// allowing trailing decimal points and non-conformant byte sequences.
+//
+// Deprecated: New users should use `ParseItemStrict`.
 NET_EXPORT std::optional<ParameterizedItem> ParseItem(std::string_view str);
+
+// Parses a List according to RFC 8941, but deviates from the specification by
+// allowing trailing decimal points and non-conformant byte sequences.
+//
+// Deprecated: New users should use `ParseListStrict`.
 NET_EXPORT std::optional<List> ParseList(std::string_view str);
+
+// Parses a Dictionary according to RFC 8941, but deviates from the
+// specification by allowing trailing decimal points and non-conformant byte
+// sequences.
+//
+// Deprecated: New users should use `ParseDictionaryStrict`.
 NET_EXPORT std::optional<Dictionary> ParseDictionary(std::string_view str);
 
 inline std::optional<ParameterisedList> ParseParameterisedList(
