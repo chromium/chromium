@@ -189,7 +189,7 @@ BASE_FEATURE(kHideAimEntrypointOnUserInput,
 
 // Hides the AIM entrypoint in the Omnibox when the default suggestion is a URL.
 // Only used on desktop platforms.
-BASE_FEATURE(kHideAimEntrypointForUrlSuggestions, DISABLED);
+BASE_FEATURE(kHideAimEntrypointForUrlSuggestions, ENABLED);
 
 // When enabled, the multimodal input button is shown in the Omnibox.
 BASE_FEATURE(kOmniboxMultimodalInput, ENABLED);
