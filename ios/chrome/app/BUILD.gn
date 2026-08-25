@@ -186,6 +186,7 @@ source_set("unit_tests") {
     "deferred_initialization_runner_unittest.mm",
     "legacy_scene_identifier_map_unittest.mm",
     "safe_mode_app_state_agent_unittest.mm",
+    "scene_identifier_map_impl_unittest.mm",
     "tab_opener_unittest.mm",
     "task_orchestrator_unittest.mm",
     "task_request_shortcut_item_unittest.mm",
@@ -800,11 +801,14 @@ source_set("scene_identifier_map") {
     "legacy_scene_identifier_map.h",
     "legacy_scene_identifier_map.mm",
     "scene_identifier_map.h",
+    "scene_identifier_map_impl.h",
+    "scene_identifier_map_impl.mm",
   ]
   deps = [
     "//base",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
   ]
 }
