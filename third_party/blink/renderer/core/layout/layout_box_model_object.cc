@@ -628,9 +628,7 @@ StickyConstraintsData LayoutBoxModelObject::ComputeStickyPositionConstraints(
     }
   }
 
-  // The location container for boxes is not always the containing block.
-  LayoutObject* location_container =
-      IsLayoutInline() ? Container() : To<LayoutBox>(this)->LocationContainer();
+  const LayoutObject* container = Container();
 
   // Compute the sticky-box rect.
   PhysicalRect sticky_box_rect;
@@ -644,9 +642,8 @@ StickyConstraintsData LayoutBoxModelObject::ComputeStickyPositionConstraints(
           PhysicalRect(box.PhysicalLocation(), box.StitchedSize());
     }
 
-    scroll_container_relative_sticky_box_rect =
-        location_container->LocalToAncestorRect(sticky_box_rect,
-                                                scroll_container, flags);
+    scroll_container_relative_sticky_box_rect = container->LocalToAncestorRect(
+        sticky_box_rect, scroll_container, flags);
 
     // Make relative to the padding-box instead of border-box.
     scroll_container_relative_sticky_box_rect.Move(
@@ -658,9 +655,9 @@ StickyConstraintsData LayoutBoxModelObject::ComputeStickyPositionConstraints(
   // sticky-container, and between the sticky-container and their
   // scroll-container.
   //
-  // The respective search ranges are [location_container, sticky_container)
-  // and [sticky_container, scroll_container). Store the range endpoints so the
-  // nearest sticky ancestors can be recomputed on demand.
+  // Store the endpoints of the half-open ranges [container, sticky_container)
+  // and [sticky_container, scroll_container) so the nearest sticky ancestors
+  // can be recomputed on demand.
   const PhysicalRect constraining_rect =
       scroll_container->ComputeStickyConstrainingRect();
 
@@ -704,10 +701,10 @@ StickyConstraintsData LayoutBoxModelObject::ComputeStickyPositionConstraints(
     return MakeGarbageCollected<
         StickyPositionScrollingConstraints::PerAxisData>(
         axis, scroll_container_relative_containing_block_rect,
-        scroll_container_relative_sticky_box_rect, constraining_rect,
-        location_container, sticky_container, &scroll_container_layer,
-        is_fixed_to_view, min_inset, max_inset,
-        min_inset_for_get_computed_style, max_inset_for_get_computed_style);
+        scroll_container_relative_sticky_box_rect, constraining_rect, container,
+        sticky_container, &scroll_container_layer, is_fixed_to_view, min_inset,
+        max_inset, min_inset_for_get_computed_style,
+        max_inset_for_get_computed_style);
   };
 
   const auto& style = StyleRef();

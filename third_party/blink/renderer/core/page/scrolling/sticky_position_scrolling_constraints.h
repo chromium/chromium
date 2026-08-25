@@ -96,7 +96,7 @@ struct CORE_EXPORT StickyPositionScrollingConstraints final {
                 const PhysicalRect& containing_block,
                 const PhysicalRect& sticky_box,
                 const PhysicalRect& constraining,
-                const LayoutObject* location_container,
+                const LayoutObject* container,
                 const LayoutBox* sticky_container,
                 const PaintLayer* containing_scroll_container_layer,
                 bool is_fixed_to_view,
@@ -140,9 +140,11 @@ struct CORE_EXPORT StickyPositionScrollingConstraints final {
     // and the overflow clip ancestor.
     //
     // These members store the search range endpoints so the nearest sticky
-    // ancestors can be recomputed on demand. The scroll-container endpoint is
-    // retrieved from |containing_scroll_container_layer|.
-    const Member<const LayoutObject> location_container;
+    // ancestors can be recomputed on demand. |container| is the sticky box's
+    // Container() and begins the layout ancestry walk for the sticky-box
+    // range. The scroll-container endpoint is retrieved from
+    // |containing_scroll_container_layer|.
+    const Member<const LayoutObject> container;
     const Member<const LayoutBox> sticky_container;
 
     // These fields cache the result of

@@ -1910,7 +1910,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // is closed shadow hidden from |base|.
   Element* OffsetParent(const Element* base = nullptr) const;
 
-  // Inclusive of |this|, exclusive of |below|.
+  // Inclusive of |this|, exclusive of |below|. |below| must be reachable
+  // through the layout Container() ancestry.
   const LayoutBoxModelObject* FindFirstStickyContainer(
       const LayoutBox* below) const;
 

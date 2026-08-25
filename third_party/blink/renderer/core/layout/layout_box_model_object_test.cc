@@ -761,6 +761,81 @@ TEST_P(LayoutBoxModelObjectTest,
             inner_inline_constraints.NearestStickyLayerShiftingStickyBox());
 }
 
+TEST_P(LayoutBoxModelObjectTest, StickyPositionInlineBlockUnderStickyInline) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller { width: 200px; height: 200px; overflow: hidden; }
+      #contents { height: 500px; }
+      #before { height: 100px; }
+      #container { height: 300px; }
+      #outer { display: inline; position: sticky; top: 50px; }
+      #inner {
+        display: inline-block;
+        position: sticky;
+        top: 60px;
+        width: 100px;
+        height: 50px;
+      }
+    </style>
+    <div id="scroller">
+      <div id="contents">
+        <div id="before"></div>
+        <div id="container">
+          <span id="outer"><span id="inner"></span></span>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  auto* container = GetLayoutBoxByElementId("container");
+  auto* outer = GetLayoutBoxModelObjectByElementId("outer");
+  auto* inner = GetLayoutBoxByElementId("inner");
+
+  // An inline-block's geometry location container skips its inline ancestors,
+  // but its layout container chain retains them for sticky ancestry.
+  ASSERT_TRUE(outer->IsLayoutInline());
+  ASSERT_TRUE(inner->IsInline());
+  ASSERT_EQ(outer, inner->Container());
+  ASSERT_EQ(container, inner->LocationContainer());
+
+  const auto inner_constraints = inner->StickyConstraints();
+  EXPECT_EQ(outer, inner_constraints.NearestStickyLayerShiftingStickyBox());
+}
+
+TEST_P(LayoutBoxModelObjectTest,
+       StickyPositionFindsNearestStickyInlineForBlockChild) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller { width: 200px; height: 200px; overflow: hidden; }
+      #contents { height: 500px; }
+      #before { height: 100px; }
+      #container { height: 300px; }
+      #farther, #nearer { display: inline; position: sticky; top: 0; }
+      #inner { display: block; position: sticky; top: 0; height: 50px; }
+    </style>
+    <div id="scroller">
+      <div id="contents">
+        <div id="before"></div>
+        <div id="container">
+          <span id="farther">
+            <span id="nearer"><span id="inner"></span></span>
+          </span>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  auto* farther = GetLayoutBoxModelObjectByElementId("farther");
+  auto* nearer = GetLayoutBoxModelObjectByElementId("nearer");
+  auto* inner = GetLayoutBoxModelObjectByElementId("inner");
+
+  ASSERT_TRUE(farther->IsLayoutInline());
+  ASSERT_TRUE(nearer->IsLayoutInline());
+  ASSERT_TRUE(inner->Parent()->IsBlockInInline());
+  EXPECT_EQ(nearer,
+            inner->StickyConstraints().NearestStickyLayerShiftingStickyBox());
+}
+
 // Verifies that the correct containing-block shifting ancestor is found when
 // computing the sticky constraints. Any such ancestor is the first sticky
 // element between your containing block (inclusive) and your ancestor overflow

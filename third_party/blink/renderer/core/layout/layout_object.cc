@@ -2020,19 +2020,12 @@ bool LayoutObject::ComputeIsAbsoluteContainer(const ComputedStyle& style,
 const LayoutBoxModelObject* LayoutObject::FindFirstStickyContainer(
     const LayoutBox* below) const {
   NOT_DESTROYED();
-  const LayoutObject* maybe_sticky_ancestor = this;
-  while (maybe_sticky_ancestor && maybe_sticky_ancestor != below) {
-    if (maybe_sticky_ancestor->StyleRef().HasStickyConstrainedPosition()) {
-      return To<LayoutBoxModelObject>(maybe_sticky_ancestor);
+  DCHECK(IsContainedBy(below));
+  for (const LayoutObject* ancestor = this; ancestor != below;
+       ancestor = ancestor->Container()) {
+    if (ancestor->StyleRef().HasStickyConstrainedPosition()) {
+      return To<LayoutBoxModelObject>(ancestor);
     }
-
-    // We use LocationContainer here to find the nearest sticky ancestor which
-    // shifts the given element's position so that the sticky positioning code
-    // is aware ancestor sticky position shifts.
-    maybe_sticky_ancestor =
-        maybe_sticky_ancestor->IsLayoutInline()
-            ? maybe_sticky_ancestor->Container()
-            : To<LayoutBox>(maybe_sticky_ancestor)->LocationContainer();
   }
   return nullptr;
 }
