@@ -119,9 +119,12 @@ public class ExtensionActionPopupContents implements Destroyable {
     }
 
     @CalledByNative
-    private boolean handleKeyboardEvent(WebContents webContents, KeyEvent event) {
+    private boolean handleKeyboardEvent(@Nullable KeyEvent event) {
+        if (event == null) {
+            return false;
+        }
         if (mDelegate != null) {
-            return mDelegate.handleKeyboardEvent(webContents, event);
+            return mDelegate.handleKeyboardEvent(event);
         }
         return false;
     }
@@ -140,7 +143,7 @@ public class ExtensionActionPopupContents implements Destroyable {
          *
          * @return True if the event was handled, otherwise false.
          */
-        boolean handleKeyboardEvent(WebContents webContents, KeyEvent event);
+        boolean handleKeyboardEvent(@Nullable KeyEvent event);
 
         /** Called when it finished loading the initial page. */
         void onLoaded();
