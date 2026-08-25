@@ -9,7 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/bits.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
 #include "build/build_config.h"
@@ -1063,7 +1063,10 @@ void ExternalVkImageBacking::CopyPixelsFromGLTextureToVkImage() {
   std::vector<SkPixmap> pixmaps;
   for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
     auto& sk_image_info = plane_data[plane].image_info;
-    uint8_t* memory = UNSAFE_TODO(cpu_buffer.data() + plane_data[plane]).offset;
+    uint8_t* memory = base::span(cpu_buffer)
+                          .subspan(plane_data[plane].offset,
+                                   sk_image_info.computeMinByteSize())
+                          .data();
     pixmaps.emplace_back(sk_image_info, memory, sk_image_info.minRowBytes());
 
     if (!gl_textures_[plane]->ReadbackToMemory(pixmaps.back())) {
@@ -1091,7 +1094,10 @@ void ExternalVkImageBacking::CopyPixelsFromVkImageToGLTexture() {
   std::vector<SkPixmap> pixmaps;
   for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
     auto& sk_image_info = plane_data[plane].image_info;
-    uint8_t* memory = UNSAFE_TODO(cpu_buffer.data() + plane_data[plane]).offset;
+    uint8_t* memory = base::span(cpu_buffer)
+                          .subspan(plane_data[plane].offset,
+                                   sk_image_info.computeMinByteSize())
+                          .data();
     pixmaps.emplace_back(sk_image_info, memory, sk_image_info.minRowBytes());
   }
 
