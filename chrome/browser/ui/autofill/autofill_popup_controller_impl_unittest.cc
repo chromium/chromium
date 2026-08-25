@@ -524,6 +524,7 @@ TEST_F(AutofillPopupControllerImplTest, PopupForwardsSuggestionPosition) {
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
 }
 
+// Tests that unacceptable suggestions cannot be accepted.
 TEST_F(AutofillPopupControllerImplTest, DoesNotAcceptUnacceptableSuggestions) {
   Suggestion suggestion(u"Open the pod bay doors, HAL",
                         SuggestionType::kAutocompleteEntry);
@@ -537,14 +538,29 @@ TEST_F(AutofillPopupControllerImplTest, DoesNotAcceptUnacceptableSuggestions) {
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
 }
 
-TEST_F(AutofillPopupControllerImplTest, DoesNotSelectUnacceptableSuggestions) {
+// Tests that unselectable suggestions cannot be selected.
+TEST_F(AutofillPopupControllerImplTest, DoesNotSelectUnselectableSuggestions) {
   Suggestion suggestion(u"I'm sorry, Dave. I'm afraid I can't do that.",
                         SuggestionType::kAutocompleteEntry);
+  suggestion.acceptability =
+      Suggestion::Acceptability::kUnselectableAndUnacceptable;
+  ShowSuggestions(manager(), {std::move(suggestion)});
+
+  EXPECT_CALL(manager().external_delegate(), DidSelectSuggestion).Times(0);
+  task_environment()->FastForwardBy(base::Milliseconds(1000));
+  client().suggestion_controller(manager()).SelectSuggestion(/*index=*/0);
+}
+
+// Tests that suggestions that are selectable but unacceptable can still be
+// selected.
+TEST_F(AutofillPopupControllerImplTest,
+       SelectsSelectableButUnacceptableSuggestions) {
+  Suggestion suggestion(u"Alright, Dave.", SuggestionType::kAutocompleteEntry);
   suggestion.acceptability =
       Suggestion::Acceptability::kSelectableButUnacceptable;
   ShowSuggestions(manager(), {std::move(suggestion)});
 
-  EXPECT_CALL(manager().external_delegate(), DidSelectSuggestion).Times(0);
+  EXPECT_CALL(manager().external_delegate(), DidSelectSuggestion);
   task_environment()->FastForwardBy(base::Milliseconds(1000));
   client().suggestion_controller(manager()).SelectSuggestion(/*index=*/0);
 }
