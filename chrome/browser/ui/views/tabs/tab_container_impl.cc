@@ -1247,8 +1247,8 @@ void TabContainerImpl::StartRemoveTabAnimation(Tab* tab,
   // closing mode. See crbug.com/40838229.
   UpdateIdealBounds();
   if (in_tab_close_ && GetTabCount() > 0 &&
-      override_available_width_for_tabs_ >
-          tabs_view_model_.ideal_bounds(GetTabCount() - 1).right()) {
+      override_available_width_for_tabs_.value_or(0) >=
+          layout_helper_->CalculatePreferredWidth()) {
     // Tab closing mode is no longer constraining tab widths - they're at full
     // size. Exit tab closing mode so that it doesn't artificially inflate our
     // bounds.
@@ -1355,17 +1355,20 @@ void TabContainerImpl::OnTabRemoved(Tab* tab) {
 void TabContainerImpl::UpdateClosingModeOnRemovedTab(int model_index,
                                                      bool was_active) {
   // The tab at `model_index` has already been removed from the model, but is
-  // still in `tabs_view_model_`.  Index math with care!
-  const int model_count = GetTabCount() - 1;
+  // still in `tabs_view_model_`. Index math with care!
+  const int visible_tab_count = GetVisibleTabCount();
 
-  // If we're closing the last tab, tab closing mode is no longer meaningful.
-  if (model_count == 0) {
+  // If we're closing the last visible tab, tab closing mode is no longer
+  // meaningful.
+  if (visible_tab_count <= 1) {
     ExitTabClosingMode();
+    return;
   }
 
-  // No updates needed if we aren't in tab closing mode or are closing the
-  // trailingmost tab.
-  if (!in_tab_close_ || model_index == model_count) {
+  const int last_visible_tab_index = GetLastVisibleTabModelIndex();
+  // Closing the trailingmost visible tab allows remaining visible tabs to
+  // expand.
+  if (!in_tab_close_ || model_index >= last_visible_tab_index) {
     return;
   }
 
@@ -1400,9 +1403,48 @@ void TabContainerImpl::UpdateClosingModeOnRemovedTab(int model_index,
     }
   }
 
+  const int current_width =
+      override_available_width_for_tabs_.value_or(GetIdealTrailingX());
   override_available_width_for_tabs_ =
-      tabs_view_model_.ideal_bounds(model_count).right() - size_delta +
-      TabStyle::Get()->GetTabOverlap();
+      current_width - size_delta + TabStyle::Get()->GetTabOverlap();
+}
+
+bool TabContainerImpl::IsTabVisible(const Tab* tab) const {
+  if (!tab) {
+    return false;
+  }
+  if (tab->data().pinned) {
+    return true;
+  }
+  std::optional<tab_groups::TabGroupId> focused_group =
+      controller_->GetFocusedGroup();
+  if (focused_group.has_value()) {
+    return tab->group() == focused_group;
+  }
+  if (tab->group().has_value() &&
+      controller_->IsGroupCollapsed(tab->group().value())) {
+    return false;
+  }
+  return true;
+}
+
+int TabContainerImpl::GetVisibleTabCount() const {
+  int count = 0;
+  for (int i = 0; i < GetTabCount(); ++i) {
+    if (IsTabVisible(GetTabAtModelIndex(i))) {
+      ++count;
+    }
+  }
+  return count;
+}
+
+int TabContainerImpl::GetLastVisibleTabModelIndex() const {
+  for (int i = GetTabCount() - 1; i >= 0; --i) {
+    if (IsTabVisible(GetTabAtModelIndex(i))) {
+      return i;
+    }
+  }
+  return -1;
 }
 
 void TabContainerImpl::ResizeLayoutTabs() {

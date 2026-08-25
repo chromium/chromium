@@ -168,7 +168,7 @@ class FakeTabContainerController final : public TabContainerController {
                              gfx::Rect target_bounds) override {}
 
   std::optional<tab_groups::TabGroupId> GetFocusedGroup() const override {
-    return std::nullopt;
+    return tab_strip_controller_->GetFocusedGroup();
   }
 
  private:
@@ -454,7 +454,7 @@ TEST_F(TabContainerTest, ExitsClosingModeAtStandardWidth) {
 
   // Create just enough tabs so tabs are not full size.
   const int standard_width =
-      TabStyle::Get()->GetStandardWidth(/*is_split*/ false);
+      TabStyle::Get()->GetStandardWidth(/*is_split=*/false);
   while (tab_container_->GetTabAtModelIndex(0)->width() == standard_width) {
     AddTab(0);
     tab_container_->CompleteAnimationAndLayout();
@@ -485,7 +485,7 @@ TEST_F(TabContainerTest, StaysInClosingModeBelowStandardWidth) {
 
   // Create just enough tabs so tabs are not full size.
   const int standard_width =
-      TabStyle::Get()->GetStandardWidth(/*is_split*/ false);
+      TabStyle::Get()->GetStandardWidth(/*is_split=*/false);
   while (tab_container_->GetTabAtModelIndex(0)->width() == standard_width) {
     AddTab(0);
     tab_container_->CompleteAnimationAndLayout();
@@ -520,7 +520,7 @@ TEST_F(TabContainerTest, ClosingModeAffectsMinWidth) {
 
   // Create just enough tabs so tabs are not full size.
   const int standard_width =
-      TabStyle::Get()->GetStandardWidth(/*is_split*/ false);
+      TabStyle::Get()->GetStandardWidth(/*is_split=*/false);
   while (tab_container_->GetTabAtModelIndex(0)->width() == standard_width) {
     AddTab(0);
     tab_container_->CompleteAnimationAndLayout();
@@ -551,7 +551,7 @@ TEST_F(TabContainerTest, RemoveTabInGroupWithTabClosingMode) {
 
   // Create enough tabs so tabs are not full size.
   const int standard_width =
-      TabStyle::Get()->GetStandardWidth(/*is_split*/ false);
+      TabStyle::Get()->GetStandardWidth(/*is_split=*/false);
 
   // Set a tab_counter to avoid infinite loop
   int tab_counter = 0;
@@ -589,6 +589,134 @@ TEST_F(TabContainerTest, RemoveTabInGroupWithTabClosingMode) {
   Tab* tab_next = tab_container_->GetTabAtModelIndex(1);
   raw_ptr<TabCloseButton> tab_next_close_button = tab_next->close_button();
   EXPECT_TRUE(tab_next_close_button->GetBoundsInScreen().Contains(tab_center));
+}
+
+TEST_F(TabContainerTest, StaysInClosingModeWithFocusedGroupBelowStandardWidth) {
+  base::test::ScopedFeatureList feature_list(features::kTabGroupsFocusing);
+
+  // Add initial ungrouped tabs.
+  AddTab(0);
+  AddTab(1);
+
+  // Add grouped tabs.
+  tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
+
+  // Calculate the number of tabs needed to overflow the container width so
+  // tabs are shrunk below standard width.
+  const int standard_width =
+      TabStyle::Get()->GetStandardWidth(/*is_split=*/false);
+  const int tab_overlap = TabStyle::Get()->GetTabOverlap();
+  const int tab_effective_width = standard_width - tab_overlap;
+  const int num_grouped_tabs = (tab_container_width_ / tab_effective_width) + 2;
+
+  for (int i = 0; i < num_grouped_tabs; ++i) {
+    AddTab(2 + i, group);
+  }
+
+  // Add an ungrouped tab after the group.
+  AddTab(tab_container_->GetTabCount());
+
+  // Focus the group.
+  tab_strip_controller_->SetFocusedGroup(group);
+  tab_container_->CompleteAnimationAndLayout();
+
+  const int initial_grouped_tab_width =
+      tab_container_->GetTabAtModelIndex(2)->width();
+  ASSERT_LT(initial_grouped_tab_width, standard_width);
+
+  // Enter tab closing mode manually (as happens on mouse click).
+  tab_container_->EnterTabClosingMode(std::nullopt, CloseTabSource::kFromMouse);
+
+  // Close a tab in the middle of the focused group.
+  int close_index = tab_strip_controller_->ListTabsInGroup(group).start() + 1;
+  RemoveTab(close_index);
+  tab_container_->CompleteAnimationAndLayout();
+
+  // Tab closing mode should remain active, keeping tab widths below standard
+  // width.
+  EXPECT_TRUE(tab_container_->InTabClose());
+  EXPECT_EQ(tab_container_->GetTabAtModelIndex(2)->width(),
+            initial_grouped_tab_width);
+}
+
+TEST_F(TabContainerTest, ClosingLastVisibleTabInFocusedGroupExitsClosingMode) {
+  base::test::ScopedFeatureList feature_list(features::kTabGroupsFocusing);
+
+  // Add initial ungrouped tabs.
+  AddTab(0);
+  AddTab(1);
+
+  // Add one grouped tab.
+  tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
+  AddTab(2, group);
+
+  // Add an ungrouped tab after the group.
+  AddTab(3);
+
+  // Focus the group so only tab 2 is visible.
+  tab_strip_controller_->SetFocusedGroup(group);
+  tab_container_->CompleteAnimationAndLayout();
+
+  // Enter tab closing mode manually.
+  tab_container_->EnterTabClosingMode(std::nullopt, CloseTabSource::kFromMouse);
+
+  // Close the only visible tab (index 2).
+  RemoveTab(2);
+  tab_container_->CompleteAnimationAndLayout();
+
+  // Closing the last visible tab should exit tab closing mode.
+  EXPECT_FALSE(tab_container_->InTabClose());
+}
+
+TEST_F(TabContainerTest, ClosingTrailingmostVisibleTabInFocusedGroup) {
+  base::test::ScopedFeatureList feature_list(features::kTabGroupsFocusing);
+
+  // Add initial ungrouped tabs.
+  AddTab(0);
+  AddTab(1);
+
+  // Add grouped tabs.
+  tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
+  const int standard_width =
+      TabStyle::Get()->GetStandardWidth(/*is_split=*/false);
+  const int tab_overlap = TabStyle::Get()->GetTabOverlap();
+  const int tab_effective_width = standard_width - tab_overlap;
+
+  // Add enough tabs so that tabs are shrunk below standard width, and removing
+  // one trailing tab still leaves the remaining tabs shrunk below standard
+  // width.
+  const int num_grouped_tabs = (tab_container_width_ / tab_effective_width) + 3;
+  for (int i = 0; i < num_grouped_tabs; ++i) {
+    AddTab(2 + i, group);
+  }
+
+  // Add an ungrouped tab after the group.
+  AddTab(tab_container_->GetTabCount());
+
+  // Focus the group.
+  tab_strip_controller_->SetFocusedGroup(group);
+  tab_container_->CompleteAnimationAndLayout();
+
+  const int initial_grouped_tab_width =
+      tab_container_->GetTabAtModelIndex(2)->width();
+  ASSERT_LT(initial_grouped_tab_width, standard_width);
+
+  // Enter tab closing mode manually.
+  tab_container_->EnterTabClosingMode(std::nullopt, CloseTabSource::kFromMouse);
+
+  // Close the trailingmost tab in the focused group.
+  const int last_group_tab_index =
+      tab_strip_controller_->ListTabsInGroup(group).end() - 1;
+  RemoveTab(last_group_tab_index);
+  tab_container_->CompleteAnimationAndLayout();
+
+  // Closing the trailingmost visible tab should keep tab closing mode active
+  // while allowing remaining tabs to strictly expand within the available
+  // width.
+  EXPECT_TRUE(tab_container_->InTabClose());
+  EXPECT_GT(tab_container_->GetTabAtModelIndex(2)->width(),
+            initial_grouped_tab_width);
+  EXPECT_LT(tab_container_->GetTabAtModelIndex(2)->width(), standard_width);
 }
 
 // Verifies child view order matches model order.

@@ -232,6 +232,18 @@ class TabContainerImpl : public TabContainer,
   // the removal of the tab at `model_index`.
   void UpdateClosingModeOnRemovedTab(int model_index, bool was_active);
 
+  // Returns whether `tab` is visible, accounting for tab group focusing and
+  // collapsed groups.
+  bool IsTabVisible(const Tab* tab) const;
+
+  // Returns the number of visible tabs in `tabs_view_model_`, accounting for
+  // tab group focusing and collapsed groups.
+  int GetVisibleTabCount() const;
+
+  // Returns the model index of the trailingmost visible tab in
+  // `tabs_view_model_`, or -1 if no tabs are visible.
+  int GetLastVisibleTabModelIndex() const;
+
   // Perform an animated resize-relayout of the TabContainer immediately.
   void ResizeLayoutTabs();
 
