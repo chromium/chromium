@@ -17,6 +17,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_WIDGET_ACCOUNT_EMAIL;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_WIDGET_IS_AI_MODE_AVAILABLE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE;
@@ -38,6 +39,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
@@ -88,6 +90,7 @@ public class SearchActivityPreferencesManagerTest {
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlServiceMock);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManager);
+        ComposeplateUtils.setIsEnabledForTesting(false);
 
         mPreferences =
                 new SearchActivityPreferences.Builder()
@@ -96,6 +99,7 @@ public class SearchActivityPreferencesManagerTest {
                         .setSearchEngineUrl(new GURL("https://URL"))
                         .setVoiceSearchAvailable(false)
                         .setGoogleLensAvailable(true)
+                        .setAiModeAvailable(true)
                         .build();
 
         doAnswer(
@@ -233,6 +237,7 @@ public class SearchActivityPreferencesManagerTest {
         Assert.assertFalse(manager.contains(SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE));
         Assert.assertFalse(manager.contains(SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE));
         Assert.assertFalse(manager.contains(SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE));
+        Assert.assertFalse(manager.contains(SEARCH_WIDGET_IS_AI_MODE_AVAILABLE));
         Assert.assertFalse(manager.contains(SEARCH_WIDGET_ACCOUNT_EMAIL));
 
         // Install receiver of the async pref update notification.
@@ -262,6 +267,7 @@ public class SearchActivityPreferencesManagerTest {
         Assert.assertEquals(
                 true, manager.readBoolean(SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE, false));
         Assert.assertEquals(true, manager.readBoolean(SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE, false));
+        Assert.assertEquals(true, manager.readBoolean(SEARCH_WIDGET_IS_AI_MODE_AVAILABLE, false));
         Assert.assertEquals(
                 "persisted@email.com", manager.readString(SEARCH_WIDGET_ACCOUNT_EMAIL, null));
 
@@ -273,6 +279,7 @@ public class SearchActivityPreferencesManagerTest {
         Assert.assertFalse(manager.contains(SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE));
         Assert.assertFalse(manager.contains(SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE));
         Assert.assertFalse(manager.contains(SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE));
+        Assert.assertFalse(manager.contains(SEARCH_WIDGET_IS_AI_MODE_AVAILABLE));
         Assert.assertFalse(manager.contains(SEARCH_WIDGET_ACCOUNT_EMAIL));
     }
 
@@ -382,6 +389,7 @@ public class SearchActivityPreferencesManagerTest {
         doReturn(true).when(mLensController).isLensEnabled(any());
         VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(true);
         IncognitoUtils.setEnabledForTesting(true);
+        ComposeplateUtils.setIsEnabledForTesting(true);
 
         SearchActivityPreferencesManager.updateFeatureAvailability(
                 ContextUtils.getApplicationContext(), null);
@@ -389,6 +397,7 @@ public class SearchActivityPreferencesManagerTest {
         Assert.assertTrue(data.googleLensAvailable);
         Assert.assertTrue(data.voiceSearchAvailable);
         Assert.assertTrue(data.incognitoAvailable);
+        Assert.assertTrue(data.aiModeAvailable);
         Assert.assertNull(data.accountEmail);
 
         // Disable Lens.
@@ -399,6 +408,7 @@ public class SearchActivityPreferencesManagerTest {
         Assert.assertFalse(data.googleLensAvailable);
         Assert.assertTrue(data.voiceSearchAvailable);
         Assert.assertTrue(data.incognitoAvailable);
+        Assert.assertTrue(data.aiModeAvailable);
         Assert.assertNull(data.accountEmail);
 
         // Disable Voice.
@@ -409,6 +419,7 @@ public class SearchActivityPreferencesManagerTest {
         Assert.assertFalse(data.googleLensAvailable);
         Assert.assertFalse(data.voiceSearchAvailable);
         Assert.assertTrue(data.incognitoAvailable);
+        Assert.assertTrue(data.aiModeAvailable);
         Assert.assertNull(data.accountEmail);
 
         // Disable Incognito.
@@ -419,6 +430,18 @@ public class SearchActivityPreferencesManagerTest {
         Assert.assertFalse(data.googleLensAvailable);
         Assert.assertFalse(data.voiceSearchAvailable);
         Assert.assertFalse(data.incognitoAvailable);
+        Assert.assertTrue(data.aiModeAvailable);
+        Assert.assertNull(data.accountEmail);
+
+        // Disable AI Mode.
+        ComposeplateUtils.setIsEnabledForTesting(false);
+        SearchActivityPreferencesManager.updateFeatureAvailability(
+                ContextUtils.getApplicationContext(), null);
+        data = SearchActivityPreferencesManager.getCurrent();
+        Assert.assertFalse(data.googleLensAvailable);
+        Assert.assertFalse(data.voiceSearchAvailable);
+        Assert.assertFalse(data.incognitoAvailable);
+        Assert.assertFalse(data.aiModeAvailable);
         Assert.assertNull(data.accountEmail);
     }
 

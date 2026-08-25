@@ -13,6 +13,7 @@ android_library("java") {
   ]
   deps = [
     "//base:base_java",
+    "//chrome/browser/composeplate/android:java",
     "//chrome/browser/incognito:java",
     "//chrome/browser/lens:java",
     "//chrome/browser/preferences:java",
@@ -41,6 +42,7 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/composeplate/android:java",
     "//chrome/browser/incognito:java",
     "//chrome/browser/lens:java",
     "//chrome/browser/preferences:java",

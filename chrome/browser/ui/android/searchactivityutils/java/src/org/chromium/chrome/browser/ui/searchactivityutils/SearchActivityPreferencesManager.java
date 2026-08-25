@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.searchactivityutils;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_WIDGET_ACCOUNT_EMAIL;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_WIDGET_IS_AI_MODE_AVAILABLE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE;
@@ -24,6 +25,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
@@ -122,6 +124,10 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
                                 manager.readBoolean(
                                         SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE,
                                         SearchActivityPreferences.DEFAULT_INCOGNITO_AVAILABILITY))
+                        .setAiModeAvailable(
+                                manager.readBoolean(
+                                        SEARCH_WIDGET_IS_AI_MODE_AVAILABLE,
+                                        SearchActivityPreferences.DEFAULT_AI_MODE_AVAILABILITY))
                         .build();
         setCurrentlyLoadedPreferences(preferences, shouldUpdateStorageToSaveSerializedGurl);
     }
@@ -138,6 +144,7 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
         manager.removeKey(SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE);
         manager.removeKey(SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE);
         manager.removeKey(SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE);
+        manager.removeKey(SEARCH_WIDGET_IS_AI_MODE_AVAILABLE);
         initializeFromCache();
     }
 
@@ -176,6 +183,8 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
                                 SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE, prefs.googleLensAvailable);
                         manager.writeBoolean(
                                 SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE, prefs.incognitoAvailable);
+                        manager.writeBoolean(
+                                SEARCH_WIDGET_IS_AI_MODE_AVAILABLE, prefs.aiModeAvailable);
                     }
 
                     for (Consumer<SearchActivityPreferences> observer : self.mObservers) {
@@ -233,6 +242,7 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
                                 VoiceRecognitionUtil.isVoiceSearchEnabled(permissionDelegate))
                         .setGoogleLensAvailable(isLensEnabled(context))
                         .setIncognitoAvailable(IncognitoUtils.isIncognitoModeEnabled(profile))
+                        .setAiModeAvailable(ComposeplateUtils.isComposeplateEnabled(profile))
                         .build();
         setCurrentlyLoadedPreferences(currentPreferences, true);
     }
@@ -265,8 +275,8 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
     private void updateDefaultSearchEngineInfo() {
         // Getting an instance of the TemplateUrlService requires that the native library be
         // loaded, but the TemplateUrlService also itself needs to be initialized.
-        TemplateUrlService service =
-                TemplateUrlServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile());
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
+        TemplateUrlService service = TemplateUrlServiceFactory.getForProfile(profile);
 
         // Update the URL that we show for zero-suggest.
         TemplateUrl dseTemplateUrl = service.getDefaultSearchEngineTemplateUrl();
@@ -279,6 +289,7 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
                 mCurrentlyLoadedPreferences.toBuilder()
                         .setSearchEngineName(dseTemplateUrl.getShortName())
                         .setSearchEngineUrl(url.getOrigin())
+                        .setAiModeAvailable(ComposeplateUtils.isComposeplateEnabled(profile))
                         .build(),
                 true);
     }

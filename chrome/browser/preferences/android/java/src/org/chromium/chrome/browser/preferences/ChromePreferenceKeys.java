@@ -911,6 +911,8 @@ public final class ChromePreferenceKeys {
             "Chrome.Widget.IsGoogleLensAvailable";
     public static final String SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE =
             "Chrome.Widget.IsIncognitoAvailable";
+    public static final String SEARCH_WIDGET_IS_AI_MODE_AVAILABLE =
+            "Chrome.Widget.IsAiModeAvailable";
 
     // Segmentation platform related prefs.
     public static final String SEGMENTATION_FEED_ACTIVE_USER = "Chrome.Segmentation.FeedActiveUser";
@@ -1341,6 +1343,7 @@ public final class ChromePreferenceKeys {
                 SEARCH_ENGINE_CHOICE_OS_CHOICE_APPLIED_TIMESTAMP,
                 SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS,
                 SEARCH_WIDGET_ACCOUNT_EMAIL,
+                SEARCH_WIDGET_IS_AI_MODE_AVAILABLE,
                 SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE,
                 SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE,
                 SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE,

@@ -24,6 +24,9 @@ public final class SearchActivityPreferences {
     /** The default/fallback value describing Incognito browsing availability. */
     /* package */ static final boolean DEFAULT_INCOGNITO_AVAILABILITY = true;
 
+    /** The default/fallback value describing AI Mode availability. */
+    /* package */ static final boolean DEFAULT_AI_MODE_AVAILABILITY = false;
+
     /** Signed-in account email. */
     public final @Nullable String accountEmail;
 
@@ -42,6 +45,9 @@ public final class SearchActivityPreferences {
     /** Whether Incognito browsing functionality is available. */
     public final boolean incognitoAvailable;
 
+    /** Whether AI Mode functionality is available. */
+    public final boolean aiModeAvailable;
+
     private SearchActivityPreferences(Builder builder) {
         this.accountEmail = builder.mAccountEmail;
         this.searchEngineName = builder.mSearchEngineName;
@@ -50,6 +56,7 @@ public final class SearchActivityPreferences {
         this.voiceSearchAvailable = builder.mVoiceSearchAvailable;
         this.googleLensAvailable = builder.mGoogleLensAvailable;
         this.incognitoAvailable = builder.mIncognitoAvailable;
+        this.aiModeAvailable = builder.mAiModeAvailable;
     }
 
     /** Creates a new {@link Builder} initialized with this object's values. */
@@ -65,6 +72,7 @@ public final class SearchActivityPreferences {
         private boolean mVoiceSearchAvailable = DEFAULT_VOICE_SEARCH_AVAILABILITY;
         private boolean mGoogleLensAvailable = DEFAULT_GOOGLE_LENS_AVAILABILITY;
         private boolean mIncognitoAvailable = DEFAULT_INCOGNITO_AVAILABILITY;
+        private boolean mAiModeAvailable = DEFAULT_AI_MODE_AVAILABILITY;
 
         public Builder() {}
 
@@ -75,6 +83,7 @@ public final class SearchActivityPreferences {
             mVoiceSearchAvailable = copyFrom.voiceSearchAvailable;
             mGoogleLensAvailable = copyFrom.googleLensAvailable;
             mIncognitoAvailable = copyFrom.incognitoAvailable;
+            mAiModeAvailable = copyFrom.aiModeAvailable;
         }
 
         public Builder setAccountEmail(@Nullable String accountEmail) {
@@ -107,6 +116,11 @@ public final class SearchActivityPreferences {
             return this;
         }
 
+        public Builder setAiModeAvailable(boolean aiModeAvailable) {
+            mAiModeAvailable = aiModeAvailable;
+            return this;
+        }
+
         public SearchActivityPreferences build() {
             return new SearchActivityPreferences(this);
         }
@@ -121,6 +135,7 @@ public final class SearchActivityPreferences {
         return voiceSearchAvailable == other.voiceSearchAvailable
                 && googleLensAvailable == other.googleLensAvailable
                 && incognitoAvailable == other.incognitoAvailable
+                && aiModeAvailable == other.aiModeAvailable
                 && TextUtils.equals(searchEngineName, other.searchEngineName)
                 && searchEngineUrl.equals(other.searchEngineUrl)
                 && TextUtils.equals(accountEmail, other.accountEmail);
@@ -134,6 +149,7 @@ public final class SearchActivityPreferences {
                 voiceSearchAvailable,
                 googleLensAvailable,
                 incognitoAvailable,
+                aiModeAvailable,
                 accountEmail);
     }
 }
