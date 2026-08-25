@@ -69,7 +69,7 @@ TEST_F(AtMemoryPersistedStateManagerTest,
 
   EXPECT_FALSE(state_manager().IsSearching());
 
-  const std::optional<AtMemoryManagerState>& restored_state =
+  const std::optional<AtMemorySearchState>& restored_state =
       state_manager().GetStateForField(field_id(), FieldOrigin());
   ASSERT_TRUE(restored_state.has_value());
   EXPECT_EQ(restored_state->filter, u"address");
@@ -103,7 +103,7 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   state_manager().OnFilterChanged(u"add");
   EXPECT_FALSE(state_manager().IsSearching());
 
-  const std::optional<AtMemoryManagerState>& state =
+  const std::optional<AtMemorySearchState>& state =
       state_manager().GetStateForField(field_id(), FieldOrigin());
   ASSERT_TRUE(state.has_value());
   EXPECT_EQ(state->filter, u"add");
@@ -116,7 +116,8 @@ TEST_F(AtMemoryPersistedStateManagerTest,
             std::nullopt);
 }
 
-TEST_F(AtMemoryPersistedStateManagerTest, OnSuggestionAcceptedResetsState) {
+TEST_F(AtMemoryPersistedStateManagerTest,
+       OnSuggestionAcceptedResetsSearchState) {
   state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().OnFilterSubmitted(u"address");
   state_manager().OnSuggestionAccepted();
@@ -139,7 +140,7 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   state_manager().StopSearching();
   EXPECT_FALSE(state_manager().IsSearching());
 
-  const std::optional<AtMemoryManagerState>& restored_state =
+  const std::optional<AtMemorySearchState>& restored_state =
       state_manager().GetStateForField(field_id(), FieldOrigin());
   ASSERT_TRUE(restored_state.has_value());
   EXPECT_EQ(restored_state->filter, u"ongoing_query");

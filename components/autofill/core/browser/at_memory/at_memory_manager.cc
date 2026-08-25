@@ -25,9 +25,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_utils.h"
-#include "components/autofill/core/browser/at_memory/at_memory_manager_state.h"
 #include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h"
 #include "components/autofill/core/browser/at_memory/at_memory_persisted_state_manager.h"
+#include "components/autofill/core/browser/at_memory/at_memory_search_state.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
@@ -392,12 +392,12 @@ AtMemoryManager::AtMemoryManager(AutofillClient* client)
 
 AtMemoryManager::~AtMemoryManager() = default;
 
-AtMemoryManagerState AtMemoryManager::GetStateForField(
+AtMemorySearchState AtMemoryManager::GetStateForField(
     const FieldGlobalId& field_id,
     const url::Origin& field_origin) {
   if (base::FeatureList::IsEnabled(
           features::kAutofillAtMemorySearchStatefulness)) {
-    if (const std::optional<AtMemoryManagerState>& state =
+    if (const std::optional<AtMemorySearchState>& state =
             state_manager_.GetStateForField(field_id, field_origin)) {
       return *state;
     }

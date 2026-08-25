@@ -36,7 +36,7 @@
 
 namespace autofill {
 
-struct AtMemoryManagerState;
+struct AtMemorySearchState;
 struct MemorySearchResults;
 class AutofillClient;
 class BrowserAutofillManager;
@@ -60,8 +60,8 @@ class AtMemoryManager {
   // Returns the state (suggestions and filter) for `field_id`.
   // If search statefulness is enabled and persisted state exists, returns
   // the persisted state. Otherwise, returns empty query suggestions.
-  AtMemoryManagerState GetStateForField(const FieldGlobalId& field_id,
-                                        const url::Origin& field_origin);
+  AtMemorySearchState GetStateForField(const FieldGlobalId& field_id,
+                                       const url::Origin& field_origin);
 
   // Called when suggestions are shown. The manager initiates an AtMemory
   // session if the `trigger_source` is an AtMemory one.

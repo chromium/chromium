@@ -2717,7 +2717,7 @@ TEST_F(AtMemoryManagerTestBase, SearchStatefulness_PersistsAndResetsState) {
   // 3. Hide popup without accepting. State should be preserved.
   manager().OnPopupHidden();
 
-  AtMemoryManagerState restored_state =
+  AtMemorySearchState restored_state =
       manager().GetStateForField(field_id, form_origin());
   EXPECT_EQ(restored_state.filter, u"john");
   ASSERT_EQ(restored_state.suggestions.size(), 1u);

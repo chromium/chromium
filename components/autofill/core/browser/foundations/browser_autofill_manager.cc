@@ -49,7 +49,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_utils.h"
 #include "components/autofill/core/browser/at_memory/at_memory_manager.h"
-#include "components/autofill/core/browser/at_memory/at_memory_persisted_state_manager.h"
+#include "components/autofill/core/browser/at_memory/at_memory_search_state.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
@@ -1149,7 +1149,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
 
   if (AtMemoryManager* am = client().GetAtMemoryManager();
       am && IsAtMemoryTriggerSource(trigger_source)) {
-    AtMemoryManagerState state =
+    AtMemorySearchState state =
         am->GetStateForField(field.global_id(), field.origin());
 
     // Show suggestions with a search bar to start the flow.

@@ -10,7 +10,7 @@
 #include <string_view>
 #include <vector>
 
-#include "components/autofill/core/browser/at_memory/at_memory_manager_state.h"
+#include "components/autofill/core/browser/at_memory/at_memory_search_state.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "url/origin.h"
@@ -27,8 +27,8 @@ namespace autofill {
 //
 // A `std::nullopt` state represents the unmodified / initial 0-state for the
 // active field (e.g. before any filter has been entered, or after clearing the
-// filter). `state_` is only instantiated once the user enters or submits a
-// query.
+// filter). `search_state_` is only instantiated once the user enters or submits
+// a query.
 class AtMemoryPersistedStateManager {
  public:
   AtMemoryPersistedStateManager();
@@ -41,7 +41,7 @@ class AtMemoryPersistedStateManager {
   // Returns the existing persisted state if `field_id` matches the stored
   // persisted AtMemory search state. Otherwise resets state and initializes a
   // new persisted AtMemory search state for `field_id` with `field_origin`.
-  const std::optional<AtMemoryManagerState>& GetStateForField(
+  const std::optional<AtMemorySearchState>& GetStateForField(
       const FieldGlobalId& field_id,
       const url::Origin& field_origin);
 
@@ -58,9 +58,13 @@ class AtMemoryPersistedStateManager {
   }
 
  private:
+  // Field id for which the `search_state_` is kept.
   FieldGlobalId field_id_;
+  // Origin of the field for which the `search_state_` is kept.
   url::Origin field_origin_;
-  std::optional<AtMemoryManagerState> state_;
+  // State of the search for the active field. Reset if
+  // `GetStateForField` is called for another field.
+  std::optional<AtMemorySearchState> search_state_;
 };
 
 }  // namespace autofill

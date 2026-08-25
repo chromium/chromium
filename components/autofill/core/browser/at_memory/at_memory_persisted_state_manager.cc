@@ -13,66 +13,66 @@ namespace autofill {
 AtMemoryPersistedStateManager::AtMemoryPersistedStateManager() = default;
 AtMemoryPersistedStateManager::~AtMemoryPersistedStateManager() = default;
 
-const std::optional<AtMemoryManagerState>&
+const std::optional<AtMemorySearchState>&
 AtMemoryPersistedStateManager::GetStateForField(
     const FieldGlobalId& field_id,
     const url::Origin& field_origin) {
   if (field_id_ != field_id) {
     field_id_ = field_id;
     field_origin_ = field_origin;
-    state_.reset();
+    search_state_.reset();
   }
-  return state_;
+  return search_state_;
 }
 
 void AtMemoryPersistedStateManager::OnFilterChanged(
     std::u16string_view filter) {
   CHECK(field_id_);
   if (filter.empty()) {
-    state_.reset();
+    search_state_.reset();
     return;
   }
-  if (!state_) {
-    state_.emplace();
+  if (!search_state_) {
+    search_state_.emplace();
   }
-  state_->filter = filter;
-  state_->suggestions.clear();
-  state_->is_searching = false;
+  search_state_->filter = filter;
+  search_state_->suggestions.clear();
+  search_state_->is_searching = false;
 }
 
 void AtMemoryPersistedStateManager::OnFilterSubmitted(
     const std::u16string& filter) {
   CHECK(field_id_);
-  if (!state_) {
-    state_.emplace();
+  if (!search_state_) {
+    search_state_.emplace();
   }
-  state_->filter = filter;
-  state_->is_searching = true;
+  search_state_->filter = filter;
+  search_state_->is_searching = true;
 }
 
 void AtMemoryPersistedStateManager::OnSuggestionsChanged(
     std::vector<Suggestion> suggestions) {
-  if (!state_) {
+  if (!search_state_) {
     return;
   }
-  state_->suggestions = std::move(suggestions);
+  search_state_->suggestions = std::move(suggestions);
 }
 
 void AtMemoryPersistedStateManager::OnSuggestionAccepted() {
   field_id_ = FieldGlobalId();
-  state_.reset();
+  search_state_.reset();
 }
 
 bool AtMemoryPersistedStateManager::IsSearching() const {
-  return state_ && state_->is_searching;
+  return search_state_ && search_state_->is_searching;
 }
 
 void AtMemoryPersistedStateManager::StopSearching() {
-  if (state_) {
-    if (state_->is_searching) {
-      state_->suggestions.clear();
+  if (search_state_) {
+    if (search_state_->is_searching) {
+      search_state_->suggestions.clear();
     }
-    state_->is_searching = false;
+    search_state_->is_searching = false;
   }
 }
 
