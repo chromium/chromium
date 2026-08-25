@@ -2301,6 +2301,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityButton) {
   RunHtmlTest(FILE_PATH_LITERAL("button.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityButtonChildrenPresentational) {
+  RunHtmlTest(FILE_PATH_LITERAL("button-children-presentational.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityButtonSubmit) {
   RunHtmlTest(FILE_PATH_LITERAL("button-submit.html"));
 }

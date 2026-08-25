@@ -4377,6 +4377,8 @@ data/accessibility/html/br.html
 data/accessibility/html/bullet.png
 data/accessibility/html/button-alt-changed-expected-blink.txt
 data/accessibility/html/button-alt-changed.html
+data/accessibility/html/button-children-presentational-expected-mac.txt
+data/accessibility/html/button-children-presentational.html
 data/accessibility/html/button-content-changed-expected-blink.txt
 data/accessibility/html/button-content-changed.html
 data/accessibility/html/button-expected-android-assist-data.txt

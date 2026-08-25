@@ -4,7 +4,6 @@ AXWebArea AXTitle='Auto-Rotating Image Carousel with Tabs for Slide Control Exam
 ++++++AXGroup
 ++++++++AXGroup
 ++++++++++AXButton AXDescription='Start automatic slide show' AXTitle='Start automatic slide show'
-++++++++++++AXImage
 ++++++++++AXGroup
 ++++++++++++AXTabGroup AXDescription='Slides' AXTitle='Slides'
 ++++++++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Slide 1' AXTitle='Slide 1' AXValue=1

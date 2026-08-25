@@ -1,0 +1,8 @@
+AXWebArea
+++AXGroup
+++++AXButton AXTitle='Plain button'
+++++AXButton AXTitle='Single div'
+++++AXButton AXTitle='Multiple spans'
+++++AXButton AXTitle='Multiple divs'
+++++AXButton AXTitle='Presentation divs'
+++++AXButton AXTitle='None divs'

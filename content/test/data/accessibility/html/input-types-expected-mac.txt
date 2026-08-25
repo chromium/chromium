@@ -53,8 +53,6 @@ AXWebArea
 ++++AXGroup
 ++++++AXStaticText AXValue='Image: '
 ++++++AXButton AXTitle='Image:'
-++++++++AXImage
-++++++++AXStaticText AXValue='Submit'
 ++++AXStaticText AXValue=' '
 ++++AXGroup
 ++++++AXStaticText AXValue='Invalid: '

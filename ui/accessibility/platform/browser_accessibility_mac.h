@@ -26,6 +26,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityMac
   void UpdatePlatformNode() override;
   size_t PlatformChildCount() const override;
   BrowserAccessibility* PlatformGetChild(size_t child_index) const override;
+  bool IsLeaf() const override;
 
   BrowserAccessibility* PlatformGetFirstChild() const override;
   BrowserAccessibility* PlatformGetLastChild() const override;

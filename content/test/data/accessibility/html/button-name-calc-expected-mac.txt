@@ -6,18 +6,8 @@ AXWebArea
 ++AXButton AXCustomContent=[{label: 'description', value: 'DescribedBy4'}] AXTitle='LabelledBy4'
 ++AXButton AXCustomContent=[{label: 'description', value: 'DescribedBy5'}] AXTitle='InnerText5'
 ++AXButton AXTitle='Outer inner'
-++++AXStaticText
-++++AXGroup
-++++++AXStaticText
 ++AXButton AXTitle='Outer inner1'
-++++AXStaticText
-++++AXGroup AXDescription='inner1' AXTitle='inner1'
-++++++AXStaticText
 ++AXButton AXTitle='Outer grandchild'
-++++AXStaticText
-++++AXGroup
-++++++AXGroup
-++++++++AXStaticText
 ++AXGroup
 ++++AXGroup
 ++++++AXStaticText
