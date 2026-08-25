@@ -12,8 +12,9 @@ import static org.junit.Assert.assertTrue;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -66,8 +67,8 @@ public class AvatarGeneratorUnitTest {
         Drawable drawable =
                 AvatarGenerator.makeRoundAvatar(mContext.getResources(), avatar, imageSize);
         assertNotNull(drawable);
-        assertTrue(drawable instanceof BitmapDrawable);
-        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+        assertTrue(drawable instanceof RoundedBitmapDrawable);
+        Bitmap bitmap = ((RoundedBitmapDrawable) drawable).getBitmap();
         // The backing bitmap is scaled by SUPERSAMPLING_FACTOR for supersampling.
         int expectedBitmapSize = imageSize * AvatarGenerator.SUPERSAMPLING_FACTOR;
         assertEquals(expectedBitmapSize, bitmap.getWidth());
@@ -89,8 +90,8 @@ public class AvatarGeneratorUnitTest {
                 AvatarGenerator.makeRoundAvatar(
                         mContext.getResources(), Arrays.asList(avatar1, avatar2), imageSize);
         assertNotNull(drawable);
-        assertTrue(drawable instanceof BitmapDrawable);
-        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+        assertTrue(drawable instanceof RoundedBitmapDrawable);
+        Bitmap bitmap = ((RoundedBitmapDrawable) drawable).getBitmap();
         // The backing bitmap is scaled by SUPERSAMPLING_FACTOR for supersampling.
         int expectedBitmapSize = imageSize * AvatarGenerator.SUPERSAMPLING_FACTOR;
         assertEquals(expectedBitmapSize, bitmap.getWidth());

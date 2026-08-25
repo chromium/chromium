@@ -8,16 +8,13 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuff.Mode;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
@@ -43,29 +40,27 @@ public class AvatarGenerator {
      * @return the scaled and cropped avatar.
      */
     @Contract("_, !null, _ -> !null")
-    public static @Nullable Drawable makeRoundAvatar(
+    public static @Nullable RoundedBitmapDrawable makeRoundAvatar(
             Resources resources, Bitmap avatar, @Px int imageSize) {
         if (avatar == null) return null;
 
         // Render at a higher resolution and scale the density accordingly so the returned
-        // BitmapDrawable retains 1x intrinsic dimensions while providing supersampled resolution.
+        // Drawable retains 1x intrinsic dimensions while providing supersampled resolution.
         // This prevents blurring and resampling artifacts caused by subpixel centering and texture
         // capture passes.
         int renderSize = imageSize * SUPERSAMPLING_FACTOR;
-        Bitmap output = Bitmap.createBitmap(renderSize, renderSize, Config.ARGB_8888);
-        output.setDensity(resources.getDisplayMetrics().densityDpi * SUPERSAMPLING_FACTOR);
-        Canvas canvas = new Canvas(output);
-        // Fill the canvas with transparent color.
-        canvas.drawColor(Color.TRANSPARENT);
-        // Draw a white circle.
-        float radius = (float) renderSize / 2;
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
-        paint.setColor(Color.WHITE);
-        canvas.drawCircle(radius, radius, radius, paint);
-        // Use SRC_IN so white circle acts as a mask while drawing the avatar.
-        paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
-        canvas.drawBitmap(avatar, null, new Rect(0, 0, renderSize, renderSize), paint);
-        return new BitmapDrawable(resources, output);
+        Bitmap scaledAvatar = Bitmap.createScaledBitmap(avatar, renderSize, renderSize, true);
+        if (scaledAvatar == avatar) {
+            // Copy if returned as-is by createScaledBitmap to avoid mutating shared cache density.
+            scaledAvatar = avatar.copy(Bitmap.Config.ARGB_8888, true);
+        }
+        scaledAvatar.setDensity(resources.getDisplayMetrics().densityDpi * SUPERSAMPLING_FACTOR);
+
+        RoundedBitmapDrawable roundedAvatar =
+                RoundedBitmapDrawableFactory.create(resources, scaledAvatar);
+        roundedAvatar.setAntiAlias(true);
+        roundedAvatar.setCircular(true);
+        return roundedAvatar;
     }
 
     /**
@@ -77,7 +72,7 @@ public class AvatarGenerator {
      * @param imageSize the target image size in pixels.
      * @return the scaled and cropped avatar.
      */
-    public static @Nullable Drawable makeRoundAvatar(
+    public static @Nullable RoundedBitmapDrawable makeRoundAvatar(
             Resources resources, List<Bitmap> avatars, @Px int imageSize) {
         for (Bitmap avatar : avatars) {
             if (avatar == null) return null;
