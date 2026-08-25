@@ -422,6 +422,11 @@ class MidiManagerWin::InPort final : public Port {
     if (in_handle_ != kInvalidInHandle) {
       // Following API call may fail because device was already disconnected.
       // But just in case.
+      midiInReset(in_handle_);
+      if (hdr_) {
+        midiInUnprepareHeader(in_handle_, hdr_.get(), sizeof(*hdr_));
+        hdr_.reset();
+      }
       midiInClose(in_handle_);
       manager_->port_manager()->UnregisterInHandle(in_handle_);
       in_handle_ = kInvalidInHandle;
@@ -562,6 +567,7 @@ class MidiManagerWin::OutPort final : public Port {
     if (out_handle_ != kInvalidOutHandle) {
       // Following API call may fail because device was already disconnected.
       // But just in case.
+      midiOutReset(out_handle_);
       midiOutClose(out_handle_);
       out_handle_ = kInvalidOutHandle;
     }
