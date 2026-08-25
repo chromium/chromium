@@ -26,6 +26,10 @@ interface Page {
   // Called when the Omnibox Everywhere ephemeral model preference state
   // changes.
   OnEphemeralModelChanged(bool enabled);
+
+  // Called when the Omnibox Everywhere launch on startup preference state
+  // changes.
+  OnLaunchOnStartupChanged(bool enabled);
 };
 
 // Interface for controlling Omnibox Everywhere features and preferences from
@@ -36,6 +40,12 @@ interface PageHandler {
 
   // Retrieves the current state of the background mode preference.
   GetBackgroundModeEnabled() => (bool enabled);
+
+  // Enables or disables the Omnibox Everywhere launch on startup preference.
+  SetLaunchOnStartupEnabled(bool enabled);
+
+  // Retrieves the current state of the launch on startup preference.
+  GetLaunchOnStartupEnabled() => (bool enabled);
 
   // Enables or disables the global system hotkey preference.
   SetHotkeyEnabled(bool enabled);

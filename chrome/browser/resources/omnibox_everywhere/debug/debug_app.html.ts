@@ -19,6 +19,15 @@ export function getHtml(this: OmniboxEverywhereDebugAppElement) {
 </div>
 <div class="toggle-container">
   <label class="switch">
+    <input id="launchOnStartupToggle" type="checkbox"
+        .checked="${this.launchOnStartupEnabled}"
+        @change="${this.onLaunchOnStartupToggleChange}">
+    <span class="slider"></span>
+  </label>
+  <span class="toggle-label">Enable Launch On Startup</span>
+</div>
+<div class="toggle-container">
+  <label class="switch">
     <input id="hotkeyToggle" type="checkbox" .checked="${this.hotkeyEnabled}"
         @change="${this.onHotkeyToggleChange}">
     <span class="slider"></span>

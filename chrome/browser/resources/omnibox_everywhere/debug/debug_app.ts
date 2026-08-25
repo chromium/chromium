@@ -17,6 +17,7 @@ export interface InvocationSourceOption {
 export interface OmniboxEverywhereDebugAppElement {
   $: {
     bgModeToggle: HTMLInputElement,
+    launchOnStartupToggle: HTMLInputElement,
     hotkeyToggle: HTMLInputElement,
     ephemeralModelToggle: HTMLInputElement,
     sourceSelect: HTMLSelectElement,
@@ -39,6 +40,7 @@ export class OmniboxEverywhereDebugAppElement extends CrLitElement {
   static override get properties() {
     return {
       bgModeEnabled: {type: Boolean},
+      launchOnStartupEnabled: {type: Boolean},
       hotkeyEnabled: {type: Boolean},
       ephemeralModelEnabled: {type: Boolean},
       selectedInvocationSource: {type: Number},
@@ -47,6 +49,7 @@ export class OmniboxEverywhereDebugAppElement extends CrLitElement {
   }
 
   protected accessor bgModeEnabled: boolean = false;
+  protected accessor launchOnStartupEnabled: boolean = false;
   protected accessor hotkeyEnabled: boolean = true;
   protected accessor ephemeralModelEnabled: boolean = false;
   protected accessor selectedInvocationSource: InvocationSource =
@@ -67,6 +70,12 @@ export class OmniboxEverywhereDebugAppElement extends CrLitElement {
             }));
 
     this.listenerIds_.push(
+        proxy.callbackRouter.onLaunchOnStartupChanged.addListener(
+            (enabled: boolean) => {
+              this.launchOnStartupEnabled = enabled;
+            }));
+
+    this.listenerIds_.push(
         proxy.callbackRouter.onHotkeyChanged.addListener((enabled: boolean) => {
           this.hotkeyEnabled = enabled;
         }));
@@ -79,6 +88,10 @@ export class OmniboxEverywhereDebugAppElement extends CrLitElement {
 
     proxy.handler.getBackgroundModeEnabled().then(res => {
       this.bgModeEnabled = res.enabled;
+    });
+
+    proxy.handler.getLaunchOnStartupEnabled().then(res => {
+      this.launchOnStartupEnabled = res.enabled;
     });
 
     proxy.handler.getHotkeyEnabled().then(res => {
@@ -115,6 +128,11 @@ export class OmniboxEverywhereDebugAppElement extends CrLitElement {
   protected onBgModeToggleChange() {
     browserProxyFactory.getInstance().handler.setBackgroundModeEnabled(
         this.$.bgModeToggle.checked);
+  }
+
+  protected onLaunchOnStartupToggleChange() {
+    browserProxyFactory.getInstance().handler.setLaunchOnStartupEnabled(
+        this.$.launchOnStartupToggle.checked);
   }
 
   protected onHotkeyToggleChange() {

@@ -41,6 +41,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       std::to_underlying(ShowShortcutsPrefValue::kUnset));
   registry->RegisterBooleanPref(kOmniboxEverywhereEnabled, true);
   registry->RegisterBooleanPref(kOmniboxEverywhereBackgroundMode, false);
+  registry->RegisterBooleanPref(kOmniboxEverywhereLaunchOnStartup, false);
 #if BUILDFLAG(IS_MAC)
   registry->RegisterBooleanPref(kOmniboxEverywhereEphemeralModel, true);
 #else

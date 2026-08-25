@@ -51,6 +51,11 @@ inline constexpr char kOmniboxEverywhereEnabled[] =
 inline constexpr char kOmniboxEverywhereBackgroundMode[] =
     "omnibox_everywhere.background_mode";
 
+// Boolean preference specifying whether Omnibox Everywhere launches on OS
+// startup.
+inline constexpr char kOmniboxEverywhereLaunchOnStartup[] =
+    "omnibox_everywhere.launch_on_startup";
+
 // Boolean preference specifying whether Omnibox Everywhere uses the ephemeral
 // (close/hide on focus loss) model instead of the persistent model.
 inline constexpr char kOmniboxEverywhereEphemeralModel[] =
