@@ -8,6 +8,7 @@
 #include <concepts>
 #include <cstdint>
 #include <iosfwd>
+#include <optional>
 
 #include "base/base_export.h"
 #include "base/numerics/checked_math.h"
@@ -598,6 +599,10 @@ constexpr ByteSize EiBU(T eib) {
 
 BASE_EXPORT std::ostream& operator<<(std::ostream& os, ByteSize size);
 BASE_EXPORT std::ostream& operator<<(std::ostream& os, ByteSizeDelta delta);
+BASE_EXPORT std::ostream& operator<<(std::ostream& os,
+                                     std::optional<ByteSize> size);
+BASE_EXPORT std::ostream& operator<<(std::ostream& os,
+                                     std::optional<ByteSizeDelta> delta);
 
 // Implementation.
 

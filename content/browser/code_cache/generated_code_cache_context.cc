@@ -1,6 +1,7 @@
 // Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "content/browser/code_cache/generated_code_cache_context.h"
 
 #include <stdint.h>
@@ -60,12 +61,16 @@ MakePersistentCacheCollection(
     int max_bytes,
     const base::FilePath& disk_cache_path,
     const base::FilePath& persistent_cache_collection_path) {
+  std::optional<base::SysInfo::DiskSpaceInfo> disk_space =
+      base::SysInfo::AmountOfDiskSpace(disk_cache_path);
+
   int64_t disk_cache_max_size =
       max_bytes > 0 ? max_bytes
                     : disk_cache::PreferredCacheSize(
-                          base::SysInfo::AmountOfFreeDiskSpace(disk_cache_path)
-                              .value_or(-1),
-                          net::GENERATED_BYTE_CODE_CACHE);
+                          disk_space ? std::make_optional(disk_space->available)
+                                     : std::nullopt,
+                          net::GENERATED_BYTE_CODE_CACHE)
+                          .InBytes();
 
   return std::make_unique<persistent_cache::PersistentCacheCollection>(
       persistent_cache_collection_path, disk_cache_max_size,

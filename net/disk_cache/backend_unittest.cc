@@ -9,6 +9,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/byte_size.h"
 #include "base/containers/queue.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -81,15 +82,6 @@ using testing::Field;
 #include <windows.h>
 
 #include "base/win/scoped_handle.h"
-#endif
-
-// TODO(crbug.com/41451310): Fix memory leaks in tests and re-enable on LSAN.
-#ifdef LEAK_SANITIZER
-#define MAYBE_NonEmptyCorruptSimpleCacheDoesNotRecover \
-  DISABLED_NonEmptyCorruptSimpleCacheDoesNotRecover
-#else
-#define MAYBE_NonEmptyCorruptSimpleCacheDoesNotRecover \
-  NonEmptyCorruptSimpleCacheDoesNotRecover
 #endif
 
 using base::Time;
@@ -3744,15 +3736,17 @@ TEST_F(DiskCacheTest, MultipleInstances) {
 // Test the six regions of the curve that determines the max cache size.
 TEST_F(DiskCacheTest, AutomaticMaxSize) {
   using disk_cache::kDefaultCacheSize;
-  const int64_t large_size = kDefaultCacheSize;
+  const base::ByteSize large_size = kDefaultCacheSize;
 
   // Region 1: expected = available * 0.8
-  EXPECT_EQ((kDefaultCacheSize - 1) * 8 / 10,
-            disk_cache::PreferredCacheSize(large_size - 1));
+  EXPECT_EQ(
+      (kDefaultCacheSize - base::ByteSizeDelta(1)) * 8 / 10,
+      disk_cache::PreferredCacheSize(large_size - base::ByteSizeDelta(1)));
   EXPECT_EQ(kDefaultCacheSize * 8 / 10,
             disk_cache::PreferredCacheSize(large_size));
-  EXPECT_EQ(kDefaultCacheSize - 1,
-            disk_cache::PreferredCacheSize(large_size * 10 / 8 - 1));
+  EXPECT_EQ(kDefaultCacheSize - base::ByteSizeDelta(1),
+            disk_cache::PreferredCacheSize(large_size * 10 / 8 -
+                                           base::ByteSizeDelta(1)));
 
   // Region 2: expected = default_size
   EXPECT_EQ(kDefaultCacheSize,
@@ -3764,7 +3758,8 @@ TEST_F(DiskCacheTest, AutomaticMaxSize) {
     // true, the value obtained here is scaled with:
     // min(0.2 * available space, internal size * 4), which evaluates to
     // 0.2 * available space.
-    const int64_t available_space = large_size * 10 - 1;
+    const base::ByteSize available_space =
+        large_size * 10 - base::ByteSizeDelta(1);
     EXPECT_EQ(
         kHTTPCacheSizeIsIncreased ? available_space / 5 : kDefaultCacheSize,
         disk_cache::PreferredCacheSize(available_space));
@@ -3775,7 +3770,7 @@ TEST_F(DiskCacheTest, AutomaticMaxSize) {
     // With `kHTTPCacheSizeIsIncreased`, the value is adjusted with
     // min(0.2 * available space, internal size * 4), which evaluates to
     // 0.2 * available space.
-    const int64_t available_space = large_size * 10;
+    const base::ByteSize available_space = large_size * 10;
     EXPECT_EQ(
         kHTTPCacheSizeIsIncreased ? available_space / 5 : kDefaultCacheSize,
         disk_cache::PreferredCacheSize(available_space));
@@ -3784,7 +3779,8 @@ TEST_F(DiskCacheTest, AutomaticMaxSize) {
     // With `kHTTPCacheSizeIsIncreased`, the value is adjusted with
     // min(0.2 * available space, internal size * 4), which evaluates to
     // 0.2 * available space.
-    const int64_t available_space = large_size * 25 - 1;
+    const base::ByteSize available_space =
+        large_size * 25 - base::ByteSizeDelta(1);
     EXPECT_EQ(
         kHTTPCacheSizeIsIncreased ? available_space / 5 : available_space / 10,
         disk_cache::PreferredCacheSize(available_space));
@@ -3795,7 +3791,7 @@ TEST_F(DiskCacheTest, AutomaticMaxSize) {
     // With `kHTTPCacheSizeIsIncreased`, the value is adjusted with
     // min(0.2 * available space, internal size * 4), which evaluates to
     // 0.2 * available space.
-    const int64_t available_space = large_size * 25;
+    const base::ByteSize available_space = large_size * 25;
     EXPECT_EQ(kHTTPCacheSizeIsIncreased ? available_space / 5
                                         : kDefaultCacheSize * 25 / 10,
               disk_cache::PreferredCacheSize(available_space));
@@ -3804,7 +3800,8 @@ TEST_F(DiskCacheTest, AutomaticMaxSize) {
     // With `kHTTPCacheSizeIsIncreased`, the value is adjusted with
     // min(0.2 * available space, internal size * 4), which evaluates to
     // internal size * 4 (internal size is kDefaultCacheSize * 2.5).
-    const int64_t available_space = large_size * 100 - 1;
+    const base::ByteSize available_space =
+        large_size * 100 - base::ByteSizeDelta(1);
     EXPECT_EQ(kHTTPCacheSizeIsIncreased ? kDefaultCacheSize * 10
                                         : kDefaultCacheSize * 25 / 10,
               disk_cache::PreferredCacheSize(available_space));
@@ -3813,7 +3810,7 @@ TEST_F(DiskCacheTest, AutomaticMaxSize) {
     // With `kHTTPCacheSizeIsIncreased`, the value is adjusted with
     // min(0.2 * available space, internal size * 4), which evaluates to
     // internal size * 4 (internal size is kDefaultCacheSize * 2.5).
-    const int64_t available_space = large_size * 100;
+    const base::ByteSize available_space = large_size * 100;
     EXPECT_EQ(kHTTPCacheSizeIsIncreased ? kDefaultCacheSize * 10
                                         : kDefaultCacheSize * 25 / 10,
               disk_cache::PreferredCacheSize(available_space));
@@ -3822,7 +3819,8 @@ TEST_F(DiskCacheTest, AutomaticMaxSize) {
     // With `kHTTPCacheSizeIsIncreased`, the value is adjusted with
     // min(0.2 * available space, internal size * 4), which evaluates to
     // internal size * 4 (internal size is kDefaultCacheSize * 2.5).
-    const int64_t available_space = large_size * 250 - 1;
+    const base::ByteSize available_space =
+        large_size * 250 - base::ByteSizeDelta(1);
     EXPECT_EQ(kHTTPCacheSizeIsIncreased ? kDefaultCacheSize * 10
                                         : kDefaultCacheSize * 25 / 10,
               disk_cache::PreferredCacheSize(available_space));
@@ -3831,22 +3829,24 @@ TEST_F(DiskCacheTest, AutomaticMaxSize) {
     // With `kHTTPCacheSizeIsIncreased`, the value is adjusted with
     // min(0.2 * available space, internal size * 4), which evaluates to
     // internal size * 4 (internal size is kDefaultCacheSize * 2.5).
-    const int64_t available_space = large_size * 250;
+    const base::ByteSize available_space = large_size * 250;
     EXPECT_EQ(kHTTPCacheSizeIsIncreased ? kDefaultCacheSize * 10
                                         : kDefaultCacheSize * 25 / 10,
               disk_cache::PreferredCacheSize(available_space));
   }
 
   // Region 5: expected = available * 0.1
-  int64_t largest_size = kDefaultCacheSize * 4;
+  base::ByteSize largest_size = kDefaultCacheSize * 4;
   {
     // With `kHTTPCacheSizeIsIncreased`, the value is adjusted with
     // min(0.2 * available space, internal size * 4), which evaluates to
     // internal size * 4 (internal size is available_space - 1).
-    const int64_t available_space = largest_size * 100 - 1;
-    EXPECT_EQ(
-        kHTTPCacheSizeIsIncreased ? 4 * (largest_size - 1) : largest_size - 1,
-        disk_cache::PreferredCacheSize(available_space));
+    const base::ByteSize available_space =
+        largest_size * 100 - base::ByteSizeDelta(1);
+    EXPECT_EQ(kHTTPCacheSizeIsIncreased
+                  ? 4 * (largest_size - base::ByteSizeDelta(1))
+                  : largest_size - base::ByteSizeDelta(1),
+              disk_cache::PreferredCacheSize(available_space));
   }
 
   // Region 6: expected = largest possible size
@@ -3854,7 +3854,7 @@ TEST_F(DiskCacheTest, AutomaticMaxSize) {
     // With `kHTTPCacheSizeIsIncreased`, the value is adjusted with
     // min(0.2 * available space, internal size * 4), which evaluates to
     // internal size * 4 (internal size is available_space).
-    const int64_t available_space = largest_size * 100;
+    const base::ByteSize available_space = largest_size * 100;
     EXPECT_EQ(kHTTPCacheSizeIsIncreased ? largest_size * 4 : largest_size,
               disk_cache::PreferredCacheSize(available_space));
   }
@@ -3862,7 +3862,7 @@ TEST_F(DiskCacheTest, AutomaticMaxSize) {
     // With `kHTTPCacheSizeIsIncreased`, the value is adjusted with
     // min(0.2 * available space, internal size * 4), which evaluates to
     // internal size * 4 (internal size is available_space).
-    const int64_t available_space = largest_size * 10000;
+    const base::ByteSize available_space = largest_size * 10000;
     EXPECT_EQ(kHTTPCacheSizeIsIncreased ? largest_size * 4 : largest_size,
               disk_cache::PreferredCacheSize(available_space));
   }
@@ -4416,12 +4416,12 @@ TEST_F(DiskCacheBackendTest, MAYBE_SimpleCacheNegMaxSize) {
   EXPECT_NE(simple_cache_impl_->index()->max_size(),
             std::numeric_limits<uint64_t>::max());
 
-  int max_default_size =
-      4 * disk_cache::PreferredCacheSize(std::numeric_limits<int32_t>::max());
+  base::ByteSize max_default_size =
+      4 * disk_cache::PreferredCacheSize(
+              base::ByteSize(std::numeric_limits<int32_t>::max()));
 
-  ASSERT_GE(max_default_size, 0);
   EXPECT_LT(simple_cache_impl_->index()->max_size(),
-            static_cast<unsigned>(max_default_size));
+            max_default_size.InBytes());
 
   uint64_t max_size_without_scaling = simple_cache_impl_->index()->max_size();
   uint64_t max_file_size_without_scaling = simple_cache_impl_->MaxFileSize();
@@ -4862,6 +4862,14 @@ TEST_F(DiskCacheBackendTest, EmptyCorruptSimpleCacheRecovery) {
   EXPECT_THAT(rv.net_error, IsOk());
 }
 
+// TODO(crbug.com/41451310): Fix memory leaks in tests and re-enable on LSAN.
+#ifdef LEAK_SANITIZER
+#define MAYBE_NonEmptyCorruptSimpleCacheDoesNotRecover \
+  DISABLED_NonEmptyCorruptSimpleCacheDoesNotRecover
+#else
+#define MAYBE_NonEmptyCorruptSimpleCacheDoesNotRecover \
+  NonEmptyCorruptSimpleCacheDoesNotRecover
+#endif
 TEST_F(DiskCacheBackendTest, MAYBE_NonEmptyCorruptSimpleCacheDoesNotRecover) {
   SetBackendToTest(BackendToTest::kSimple);
   BackendOpenOrCreateEntry();

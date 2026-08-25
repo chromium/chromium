@@ -765,7 +765,7 @@ SimpleBackendImpl::DiskStatResult SimpleBackendImpl::InitCacheStructureOnDisk(
       result.cache_dir_mtime = file_info->last_modified;
       if (!result.max_size) {
         result.max_size =
-            disk_cache::PreferredCacheSizeForPath(path, cache_type);
+            disk_cache::PreferredCacheSizeForPath(path, cache_type).InBytes();
         DCHECK(result.max_size);
       }
     }

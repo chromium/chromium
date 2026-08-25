@@ -7,7 +7,9 @@
 #include <stdio.h>
 
 #include <map>
+#include <optional>
 
+#include "base/byte_size.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/safe_base_name.h"
@@ -37,7 +39,7 @@ class CacheUtilTest : public PlatformTest {
     dir1_ = base::FilePath(cache_dir_.Append(FILE_PATH_LITERAL("dir01")));
     file3_ = base::FilePath(dir1_.Append(FILE_PATH_LITERAL("file03")));
     ASSERT_TRUE(base::CreateDirectory(cache_dir_));
-    FILE *fp = base::OpenFile(file1_, "w");
+    FILE* fp = base::OpenFile(file1_, "w");
     ASSERT_TRUE(fp != nullptr);
     base::CloseFile(fp);
     fp = base::OpenFile(file2_, "w");
@@ -76,9 +78,9 @@ TEST_F(CacheUtilTest, MoveCache) {
   EXPECT_TRUE(base::PathExists(dest_file2_));
   EXPECT_TRUE(base::PathExists(dest_dir1_));
 #if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_TRUE(base::PathExists(cache_dir_)); // old cache dir stays
+  EXPECT_TRUE(base::PathExists(cache_dir_));  // old cache dir stays
 #else
-  EXPECT_FALSE(base::PathExists(cache_dir_)); // old cache is gone
+  EXPECT_FALSE(base::PathExists(cache_dir_));  // old cache is gone
 #endif
   EXPECT_FALSE(base::PathExists(file1_));
   EXPECT_FALSE(base::PathExists(file2_));
@@ -87,7 +89,7 @@ TEST_F(CacheUtilTest, MoveCache) {
 
 TEST_F(CacheUtilTest, DeleteCache) {
   disk_cache::DeleteCache(cache_dir_, false);
-  EXPECT_TRUE(base::PathExists(cache_dir_)); // cache dir stays
+  EXPECT_TRUE(base::PathExists(cache_dir_));  // cache dir stays
   EXPECT_FALSE(base::PathExists(dir1_));
   EXPECT_FALSE(base::PathExists(file1_));
   EXPECT_FALSE(base::PathExists(file2_));
@@ -96,7 +98,7 @@ TEST_F(CacheUtilTest, DeleteCache) {
 
 TEST_F(CacheUtilTest, DeleteCacheAndDir) {
   disk_cache::DeleteCache(cache_dir_, true);
-  EXPECT_FALSE(base::PathExists(cache_dir_)); // cache dir is gone
+  EXPECT_FALSE(base::PathExists(cache_dir_));  // cache dir is gone
   EXPECT_FALSE(base::PathExists(dir1_));
   EXPECT_FALSE(base::PathExists(file1_));
   EXPECT_FALSE(base::PathExists(file2_));
@@ -177,8 +179,6 @@ TEST_F(CacheUtilTest,
 #endif
 
 TEST_F(CacheUtilTest, PreferredCacheSize) {
-  constexpr int64_t kMiBInBytes = 1024 * 1024;
-
   // The size of the HTTP cache is multiplied by 4 by default on non-Windows.
   constexpr bool kHTTPCacheSizeIsIncreased =
 #if BUILDFLAG(IS_WIN)
@@ -188,85 +188,93 @@ TEST_F(CacheUtilTest, PreferredCacheSize) {
 #endif
 
   const struct TestCase {
-    int64_t available;
-    int64_t expected_100percent;
-    int64_t expected_200percent;
-    int64_t expected_250percent;
-    int64_t expected_300percent;
-    int64_t expected_400percent;
+    std::optional<base::ByteSize> available;
+    base::ByteSize expected_100percent;
+    base::ByteSize expected_200percent;
+    base::ByteSize expected_250percent;
+    base::ByteSize expected_300percent;
+    base::ByteSize expected_400percent;
   } kTestCases[] = {
-      // Weird negative value for available --- return the "default"
-      {-1000LL, 80 * kMiBInBytes, 160 * kMiBInBytes, 200 * kMiBInBytes,
-       240 * kMiBInBytes, 320 * kMiBInBytes},
-      {-1LL, 80 * kMiBInBytes, 160 * kMiBInBytes, 200 * kMiBInBytes,
-       240 * kMiBInBytes, 320 * kMiBInBytes},
+      {std::nullopt, base::MiB(80), base::MiB(160), base::MiB(200),
+       base::MiB(240), base::MiB(320)},
 
       // 0 produces 0.
-      {0LL, 0, 0, 0, 0, 0},
+      {base::ByteSize(0), base::ByteSize(0), base::ByteSize(0),
+       base::ByteSize(0), base::ByteSize(0), base::ByteSize(0)},
 
       // Cache is 80% of available space, when default cache size is larger than
       // 80% of available space..
-      {50 * kMiBInBytes, 40 * kMiBInBytes, 40 * kMiBInBytes, 40 * kMiBInBytes,
-       40 * kMiBInBytes, 40 * kMiBInBytes},
+      {base::MiB(50), base::MiB(40), base::MiB(40), base::MiB(40),
+       base::MiB(40), base::MiB(40)},
+
       // Cache is default size, when default size is 10% to 80% of available
       // space.
-      {100 * kMiBInBytes, 80 * kMiBInBytes, 80 * kMiBInBytes, 80 * kMiBInBytes,
-       80 * kMiBInBytes, 80 * kMiBInBytes},
-      {200 * kMiBInBytes, 80 * kMiBInBytes, 80 * kMiBInBytes, 80 * kMiBInBytes,
-       80 * kMiBInBytes, 80 * kMiBInBytes},
+      {base::MiB(100), base::MiB(80), base::MiB(80), base::MiB(80),
+       base::MiB(80), base::MiB(80)},
+      {base::MiB(200), base::MiB(80), base::MiB(80), base::MiB(80),
+       base::MiB(80), base::MiB(80)},
+
       // Cache is 10% of available space if 2.5 * default size is more than 10%
       // of available space.
-      {1000 * kMiBInBytes, 100 * kMiBInBytes, 200 * kMiBInBytes,
-       200 * kMiBInBytes, 200 * kMiBInBytes, 200 * kMiBInBytes},
-      {2000 * kMiBInBytes, 200 * kMiBInBytes, 400 * kMiBInBytes,
-       400 * kMiBInBytes, 400 * kMiBInBytes, 400 * kMiBInBytes},
+      {base::MiB(1000), base::MiB(100), base::MiB(200), base::MiB(200),
+       base::MiB(200), base::MiB(200)},
+      {base::MiB(2000), base::MiB(200), base::MiB(400), base::MiB(400),
+       base::MiB(400), base::MiB(400)},
+
       // Cache is 2.5 * kDefaultCacheSize if 2.5 * kDefaultCacheSize uses from
       // 1% to 10% of available space.
-      {10000 * kMiBInBytes, 200 * kMiBInBytes, 400 * kMiBInBytes,
-       500 * kMiBInBytes, 600 * kMiBInBytes, 800 * kMiBInBytes},
+      {base::MiB(10000), base::MiB(200), base::MiB(400), base::MiB(500),
+       base::MiB(600), base::MiB(800)},
+
       // Otherwise, cache is 1% of available space.
-      {20000 * kMiBInBytes, 200 * kMiBInBytes, 400 * kMiBInBytes,
-       500 * kMiBInBytes, 600 * kMiBInBytes, 800 * kMiBInBytes},
+      {base::MiB(20000), base::MiB(200), base::MiB(400), base::MiB(500),
+       base::MiB(600), base::MiB(800)},
+
       // Until it runs into the cache size cap.
-      {32000 * kMiBInBytes, 320 * kMiBInBytes, 640 * kMiBInBytes,
-       800 * kMiBInBytes, 960 * kMiBInBytes, 1280 * kMiBInBytes},
-      {50000 * kMiBInBytes, 320 * kMiBInBytes, 640 * kMiBInBytes,
-       800 * kMiBInBytes, 960 * kMiBInBytes, 1280 * kMiBInBytes},
+      {base::MiB(32000), base::MiB(320), base::MiB(640), base::MiB(800),
+       base::MiB(960), base::MiB(1280)},
+      {base::MiB(50000), base::MiB(320), base::MiB(640), base::MiB(800),
+       base::MiB(960), base::MiB(1280)},
   };
 
   for (const auto& test_case : kTestCases) {
-    const int64_t expected = kHTTPCacheSizeIsIncreased
-                                 ? test_case.expected_400percent
-                                 : test_case.expected_100percent;
-    EXPECT_EQ(expected, PreferredCacheSize(test_case.available))
-        << test_case.available;
+    SCOPED_TRACE(testing::Message()
+                 << "test_case.available = " << test_case.available);
+
+    const base::ByteSize expected = kHTTPCacheSizeIsIncreased
+                                        ? test_case.expected_400percent
+                                        : test_case.expected_100percent;
+    EXPECT_EQ(expected, PreferredCacheSize(test_case.available));
 
     // Preferred size for WebUI code cache is the same as without trial, but
     // should never be more than 5 MB.
-    int expected_webui_code_cache_size = std::min(5 * kMiBInBytes, expected);
+    base::ByteSize expected_webui_code_cache_size =
+        std::min(base::MiB(5), expected);
     EXPECT_EQ(expected_webui_code_cache_size,
               PreferredCacheSize(test_case.available,
-                                 net::GENERATED_WEBUI_BYTE_CODE_CACHE))
-        << test_case.available;
+                                 net::GENERATED_WEBUI_BYTE_CODE_CACHE));
   }
 
   // Check that the cache size cap is 50% higher for native code caches.
-  EXPECT_EQ(((320 * kMiBInBytes) / 2) * 3,
-            PreferredCacheSize(50000 * kMiBInBytes,
-                               net::GENERATED_NATIVE_CODE_CACHE));
+  EXPECT_EQ(
+      (base::MiB(320) / 2) * 3,
+      PreferredCacheSize(base::MiB(50000), net::GENERATED_NATIVE_CODE_CACHE));
 
-  for (int cache_size_exeriment : {100, 200, 250, 300, 400}) {
+  for (int cache_size_experiment : {100, 200, 250, 300, 400}) {
     base::test::ScopedFeatureList scoped_feature_list;
     std::map<std::string, std::string> field_trial_params;
     field_trial_params["percent_relative_size"] =
-        base::NumberToString(cache_size_exeriment);
+        base::NumberToString(cache_size_experiment);
     scoped_feature_list.InitAndEnableFeatureWithParameters(
         disk_cache::kChangeGeneratedCodeCacheSizeExperiment,
         field_trial_params);
 
     for (const auto& test_case : kTestCases) {
-      int expected = 0;
-      switch (cache_size_exeriment) {
+      SCOPED_TRACE(testing::Message()
+                   << "test_case.available = " << test_case.available);
+
+      base::ByteSize expected;
+      switch (cache_size_experiment) {
         case 100:
           expected = test_case.expected_100percent;
           break;
@@ -292,26 +300,25 @@ TEST_F(CacheUtilTest, PreferredCacheSize) {
 
       // For caches other than generated code cache, the size is not scaled
       // through `kChangeGeneratedCodeCacheSizeExperiment`.
-      int64_t default_expected = kHTTPCacheSizeIsIncreased
-                                     ? test_case.expected_400percent
-                                     : test_case.expected_100percent;
+      base::ByteSize default_expected = kHTTPCacheSizeIsIncreased
+                                            ? test_case.expected_400percent
+                                            : test_case.expected_100percent;
       EXPECT_EQ(default_expected, PreferredCacheSize(test_case.available));
 
       // Preferred size for WebUI code cache is not scaled by the trial, and
       // should never be more than 5 MB.
-      int expected_webui_code_cache_size =
-          std::min(5 * kMiBInBytes, test_case.expected_100percent);
+      base::ByteSize expected_webui_code_cache_size =
+          std::min(base::MiB(5), test_case.expected_100percent);
       EXPECT_EQ(expected_webui_code_cache_size,
                 PreferredCacheSize(test_case.available,
-                                   net::GENERATED_WEBUI_BYTE_CODE_CACHE))
-          << test_case.available;
+                                   net::GENERATED_WEBUI_BYTE_CODE_CACHE));
     }
 
     // Check that the cache size cap is 50% higher for native code caches but is
     // not scaled for the experiment.
-    EXPECT_EQ(((320 * kMiBInBytes) / 2) * 3,
-              PreferredCacheSize(50000 * kMiBInBytes,
-                                 net::GENERATED_NATIVE_CODE_CACHE));
+    EXPECT_EQ(
+        (base::MiB(320) / 2) * 3,
+        PreferredCacheSize(base::MiB(50000), net::GENERATED_NATIVE_CODE_CACHE));
   }
 
   // Check no explicit "percent_relative_size" matches default behavior.
@@ -325,9 +332,9 @@ TEST_F(CacheUtilTest, PreferredCacheSize) {
                                    net::GENERATED_BYTE_CODE_CACHE));
     }
     // Check that the cache size cap is 50% higher for native code caches.
-    EXPECT_EQ(((320 * kMiBInBytes) / 2) * 3,
-              PreferredCacheSize(50000 * kMiBInBytes,
-                                 net::GENERATED_NATIVE_CODE_CACHE));
+    EXPECT_EQ(
+        (base::MiB(320) / 2) * 3,
+        PreferredCacheSize(base::MiB(50000), net::GENERATED_NATIVE_CODE_CACHE));
   }
 }
 

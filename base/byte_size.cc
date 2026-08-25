@@ -121,4 +121,18 @@ std::ostream& operator<<(std::ostream& os, ByteSizeDelta delta) {
   return os << result;
 }
 
+std::ostream& operator<<(std::ostream& os, std::optional<ByteSize> size) {
+  if (size.has_value()) {
+    return os << size.value();
+  }
+  return os << "<<std::nullopt>>";
+}
+
+std::ostream& operator<<(std::ostream& os, std::optional<ByteSizeDelta> size) {
+  if (size.has_value()) {
+    return os << size.value();
+  }
+  return os << "<<std::nullopt>>";
+}
+
 }  // namespace base
