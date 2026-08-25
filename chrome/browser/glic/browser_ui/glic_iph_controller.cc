@@ -36,12 +36,22 @@ base::TimeDelta GetPromoCheckInterval() {
 
 }  // namespace
 
+DEFINE_USER_DATA(GlicIphController);
+
+// static
+GlicIphController* GlicIphController::From(
+    BrowserWindowInterface* browser_window) {
+  return Get(browser_window->GetUnownedUserDataHost());
+}
+
 GlicIphController::GlicIphController(BrowserWindowInterface* browser_window,
                                      GlicKeyedService& glic_service)
     : show_cta_(base::FeatureList::IsEnabled(
           feature_engagement::kIPHGlicTryItFeature)),
       window_(*browser_window),
-      glic_service_(glic_service) {
+      glic_service_(glic_service),
+      scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
+                                *this) {
   if (GlicEnabling::IsEnabledByGlobalCriteria()) {
     show_timer_.Start(FROM_HERE, GetPromoCheckInterval(),
                       base::BindRepeating(&GlicIphController::MaybeShowPromo,

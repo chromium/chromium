@@ -67,7 +67,7 @@ class GlicIphControllerTestBase : public TestBase {
 
   auto ShowPromoForTest() {
     return Do([&]() {
-      browser()->GetFeatures().glic_iph_controller()->MaybeShowPromoForTest();
+      glic::GlicIphController::From(browser())->MaybeShowPromoForTest();
     });
   }
 

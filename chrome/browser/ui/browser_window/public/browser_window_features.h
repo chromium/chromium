@@ -369,10 +369,6 @@ class BrowserWindowFeatures {
 
   actions::ActionItem* GetRootActionItem();
 
-  glic::GlicIphController* glic_iph_controller() {
-    return glic_iph_controller_.get();
-  }
-
   glic::GlicNudgeController* glic_nudge_controller();
 
   // Returns true if a FindBarController exists for this browser window.

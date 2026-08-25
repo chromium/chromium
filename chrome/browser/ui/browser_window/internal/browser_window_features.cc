@@ -580,7 +580,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       if (glic::GlicKeyedService* glic_service =
               glic::GlicKeyedService::Get(profile)) {
         glic_iph_controller_ =
-            std::make_unique<glic::GlicIphController>(browser, *glic_service);
+            GetUserDataFactory().CreateInstance<glic::GlicIphController>(
+                *browser, browser, *glic_service);
         glic_split_button_controller_ =
             std::make_unique<glic::GlicSplitButtonController>(browser,
                                                               glic_service);
