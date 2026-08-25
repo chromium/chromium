@@ -5,6 +5,7 @@
 import argparse
 import dataclasses
 import datetime
+import enum
 import glob
 import hashlib
 import logging
@@ -18,6 +19,12 @@ import string
 import subprocess
 import sys
 import typing
+
+
+class PackageFormat(enum.Enum):
+    DEB = "deb"
+    RPM = "rpm"
+    FLATPAK = "flatpak"
 
 
 class StandardPermissions:
@@ -332,6 +339,9 @@ class InstallerConfig:
     repoconfig: str = ""
     repoconfigregex: str = ""
 
+    # Package Format
+    package_format: PackageFormat = PackageFormat.DEB
+
     # Deb
     deb_pre_depends: str = ""
     deb_depends: str = ""
@@ -346,21 +356,43 @@ class InstallerConfig:
     rpm_depends: str = ""
     rpm_provides: str = ""
 
+    # Flatpak
+    flatpak_arch: str = ""
+    flatpak_runtime_version: str = "24.08"
+    flatpak_command: str = ""
+    flatpak_app_id: str = ""
+    flatpak_tags: str = ""
+    developer_id: str = ""
+    project_license_spdx: str = ""
+    release_date: str = ""
+    flatpak_package_filename: str = ""
+    app_id: str = ""
+
     # Runtime/Installer
+    appstream_screenshot_url: str = (
+        "https://www.gstatic.com/chrome/appstream/chrome-2.png"
+    )
+    desktop_exec: str = ""
+    desktop_icon: str = ""
     logo_resources_png: str = ""
     uri_scheme: str = ""
     extra_desktop_entries: str = ""
     startup_wm_class: str = ""
+    include_setuid_sandbox: bool = True
 
     @classmethod
     def from_args(
-        cls, args: argparse.Namespace, output_dir: pathlib.Path
+        cls,
+        args: argparse.Namespace,
+        output_dir: pathlib.Path,
+        package_format: PackageFormat,
     ) -> "InstallerConfig":
         data = cls._load_branding_and_version(
             output_dir, args.branding, args.channel
         )
         data.update(
             {
+                "package_format": package_format,
                 "arch": args.arch,
                 "target_os": args.target_os,
                 "architecture": args.arch,
@@ -392,7 +424,54 @@ class InstallerConfig:
 
         config = cls(**data)
         config.rpm_package_filename = f"{config.package_orig}-{config.channel}"
+        config.desktop_exec = f"/usr/bin/{config.usr_bin_symlink_name}"
+        config.desktop_icon = config.info_vars["PACKAGE"]
         return config
+
+    def flatpak_init(self) -> None:
+        if self.branding == "google_chrome":
+            self.developer_id = "com.google"
+            self.project_license_spdx = "LicenseRef-proprietary"
+            self.flatpak_command = "chrome"
+            self.flatpak_tags = "\ntags=proprietary;"
+            base_id = "com.google.Chrome"
+        else:
+            self.developer_id = "org.chromium"
+            self.project_license_spdx = (
+                "BSD-3-Clause and LGPL-2.1+ and Apache-2.0 and IJG and MIT "
+                "and GPL-2.0+ and ISC and OpenSSL and (MPL-1.1 or GPL-2.0 or "
+                "LGPL-2.0)"
+            )
+            self.flatpak_command = "chromium"
+            self.flatpak_tags = ""
+            base_id = "org.chromium.Chromium"
+
+        if self.channel == "stable":
+            self.app_id = base_id
+        elif self.channel == "beta":
+            self.app_id = f"{base_id}.beta"
+        elif self.channel in ["unstable", "dev"]:
+            self.app_id = f"{base_id}.unstable"
+        elif self.channel == "canary":
+            self.app_id = f"{base_id}.canary"
+        else:
+            self.app_id = base_id
+
+        self.flatpak_app_id = self.app_id
+        self.desktop_exec = self.flatpak_command
+        self.desktop_icon = self.app_id
+        self.flatpak_arch = self.arch
+        self.include_setuid_sandbox = False
+
+        if self.build_timestamp:
+            ts = int(self.build_timestamp)
+            dt = datetime.datetime.fromtimestamp(ts, datetime.timezone.utc)
+            self.release_date = dt.strftime("%Y-%m-%d")
+
+        self.flatpak_package_filename = (
+            f"{self.package_orig}-{self.channel}_{self.versionfull}_"
+            f"{self.arch}.flatpak"
+        )
 
     @staticmethod
     def _load_branding_and_version(
@@ -481,7 +560,9 @@ class InstallerConfig:
         ctx = self.info_vars | self.version_vars | self.branding_vars
         for field in dataclasses.fields(self):
             val = getattr(self, field.name)
-            if val is not None and type(val) is not dict:
+            if isinstance(val, enum.Enum):
+                ctx[field.name] = val.value
+            elif val is not None and type(val) is not dict:
                 ctx[field.name] = val
         return ctx
 
@@ -493,12 +574,6 @@ class InstallerConfig:
                 progname,
                 ArtifactType.BINARY,
                 StandardPermissions.EXECUTABLE,
-            ),
-            Artifact(
-                f"{progname}_sandbox.stripped",
-                "chrome-sandbox",
-                ArtifactType.BINARY,
-                StandardPermissions.SANDBOX,
             ),
             Artifact(
                 "chrome_crashpad_handler.stripped",
@@ -577,6 +652,15 @@ class InstallerConfig:
                 is_optional=True,
             ),
         ]
+        if self.include_setuid_sandbox:
+            artifacts.append(
+                Artifact(
+                    f"{progname}_sandbox.stripped",
+                    "chrome-sandbox",
+                    ArtifactType.BINARY,
+                    StandardPermissions.SANDBOX,
+                )
+            )
 
         # Widevine CDM
         if (self.output_dir / "WidevineCdm").is_dir():
@@ -797,6 +881,13 @@ class InstallerConfig:
             )
         )
 
+        # Host system integration files are only applicable to DEB and RPM
+        # packages. Flatpak exports applications via standard Flatpak
+        # directories (share/applications, share/metainfo, share/icons) staged
+        # separately.
+        if self.package_format == PackageFormat.FLATPAK:
+            return artifacts
+
         # symlink for PACKAGE_ORIG
         package_orig = self.package_orig
         if package_orig and package_orig != self.info_vars["PACKAGE"]:
@@ -970,18 +1061,21 @@ class Installer:
         install_dir = self.config.staging_dir / self.config.info_vars[
             "INSTALLDIR"
         ].lstrip("/")
-        dirs = [
-            install_dir,
-            self.config.staging_dir / "usr/bin",
-            self.config.staging_dir / "usr/share/applications",
-            self.config.staging_dir / "usr/share/appdata",
-            (
-                self.config.staging_dir
-                / "usr/share/gnome-control-center/default-apps"
-            ),
-            self.config.staging_dir / "usr/share/man/man1",
-            install_dir / "apparmor.d",
-        ]
+        if self.config.package_format == PackageFormat.FLATPAK:
+            dirs = [install_dir]
+        else:
+            dirs = [
+                install_dir,
+                self.config.staging_dir / "usr/bin",
+                self.config.staging_dir / "usr/share/applications",
+                self.config.staging_dir / "usr/share/appdata",
+                (
+                    self.config.staging_dir
+                    / "usr/share/gnome-control-center/default-apps"
+                ),
+                self.config.staging_dir / "usr/share/man/man1",
+                install_dir / "apparmor.d",
+            ]
         for d in dirs:
             d.mkdir(parents=True, exist_ok=True)
             d.chmod(StandardPermissions.EXECUTABLE)

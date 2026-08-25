@@ -1,0 +1,36 @@
+[Application]
+name=@@app_id
+runtime=org.freedesktop.Platform/@@flatpak_arch/@@flatpak_runtime_version
+sdk=org.freedesktop.Sdk/@@flatpak_arch/@@flatpak_runtime_version
+command=@@flatpak_command
+required-flatpak=1.8.2@@flatpak_tags
+
+[Context]
+devices=all;
+filesystems=/run/.heim_org.h5l.kcm-socket;home;host-etc;xdg-documents;xdg-download;xdg-music;xdg-pictures;xdg-run/dconf;xdg-run/pipewire-0;xdg-videos;~/.config/dconf:ro;~/.config/kioslaverc;
+shared=ipc;network;
+sockets=cups;pcsc;pulseaudio;wayland;x11;
+
+[Session Bus Policy]
+ca.desrt.dconf=talk
+com.canonical.AppMenu.Registrar=talk
+org.freedesktop.FileManager1=talk
+org.freedesktop.Notifications=talk
+org.freedesktop.ScreenSaver=talk
+org.freedesktop.secrets=talk
+org.gnome.SessionManager=talk
+org.kde.StatusNotifierWatcher=talk
+org.kde.kwalletd5=talk
+org.kde.kwalletd6=talk
+org.mpris.MediaPlayer2.chromium.*=own
+
+[System Bus Policy]
+org.bluez=talk
+org.freedesktop.Avahi=talk
+org.freedesktop.UPower=talk
+
+[Environment]
+DCONF_USER_CONFIG_DIR=.config/dconf
+GIO_EXTRA_MODULES=/app/lib/gio/modules
+GSETTINGS_BACKEND=dconf
+GTK_PATH=/app/lib/gtkmodules

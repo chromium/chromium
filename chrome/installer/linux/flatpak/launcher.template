@@ -1,0 +1,9 @@
+#!/bin/bash
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# INSTALLDIR (/opt/...) is reused verbatim inside /app to keep internal
+# relative paths, asset loading, and common artifact staging logic identical
+# across DEB, RPM, and Flatpak packages.
+exec /app@@INSTALLDIR/@@PACKAGE "$@"

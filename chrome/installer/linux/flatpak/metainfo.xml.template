@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2026 The Chromium Authors -->
+<component type="desktop-application">
+  <id>@@app_id</id>
+  <launchable type="desktop-id">@@app_id.desktop</launchable>
+  <name>@@MENUNAME</name>
+  <developer id="@@developer_id">
+    <name>@@DEVELOPER_NAME</name>
+  </developer>
+  <summary>@@SHORTDESC</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>@@project_license_spdx</project_license>
+  <url type="homepage">@@PRODUCTURL</url>
+  <url type="bugtracker">@@BUGTRACKERURL</url>
+  <url type="help">@@HELPURL</url>
+  <content_rating type="oars-1.1"/>
+  <update_contact>@@MAINTMAIL</update_contact>
+  <description>
+    <p>
+    @@FULLDESC
+    </p>
+  </description>
+  <screenshots>
+    <screenshot type="default">
+      <image>@@appstream_screenshot_url</image>
+      <caption/>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="@@versionfull" date="@@release_date"/>
+  </releases>
+</component>

@@ -44,7 +44,9 @@ def main() -> None:
         script_dir
     )
 
-    config = installer.InstallerConfig.from_args(args, output_dir)
+    config = installer.InstallerConfig.from_args(
+        args, output_dir, package_format=installer.PackageFormat.DEB
+    )
 
     # Override things for the repo package
     config.versionfull = repo_package_version

@@ -94,7 +94,9 @@ def main() -> None:
         deb_files = tmp_file_dir / "files"
         deb_control = tmp_file_dir / "control"
 
-        config = installer.InstallerConfig.from_args(args, output_dir)
+        config = installer.InstallerConfig.from_args(
+            args, output_dir, package_format=installer.PackageFormat.DEB
+        )
         config.script_dir = script_dir
         config.staging_dir = staging_dir
         config.tmp_file_dir = tmp_file_dir

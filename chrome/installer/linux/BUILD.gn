@@ -27,6 +27,9 @@ declare_args() {
   # Enables checks that ensure the packages are installable on all supported
   # distributions.
   enable_distro_version_check = true
+
+  # Enables building Flatpak package bundles (.flatpak).
+  enable_flatpak = false
 }
 
 assert(is_linux)
@@ -34,27 +37,35 @@ assert(is_linux)
 if (current_cpu == "x86") {
   deb_arch = "i386"
   rpm_arch = "i386"
+  flatpak_arch = "i386"
 } else if (current_cpu == "x64") {
   deb_arch = "amd64"
   rpm_arch = "x86_64"
+  flatpak_arch = "x86_64"
 } else if (current_cpu == "arm") {
   deb_arch = "armhf"
   rpm_arch = "armhf"
+  flatpak_arch = "arm"
 } else if (current_cpu == "arm64") {
   deb_arch = "arm64"
   rpm_arch = "aarch64"
+  flatpak_arch = "aarch64"
 } else if (current_cpu == "mipsel") {
   deb_arch = "mipsel"
   rpm_arch = "mipsel"
+  flatpak_arch = "mipsel"
 } else if (current_cpu == "mips64el") {
   deb_arch = "mips64el"
   rpm_arch = "mips64el"
+  flatpak_arch = "mips64el"
 } else if (current_cpu == "loong64") {
   deb_arch = "loong64"
   rpm_arch = "loongarch64"
+  flatpak_arch = "loongarch64"
 } else if (current_cpu == "riscv64") {
   deb_arch = "riscv64"
   rpm_arch = "riscv64"
+  flatpak_arch = "riscv64"
 } else {
   assert(false, "Linux installer not configured for this architecture.")
 }
@@ -441,6 +452,18 @@ if (!is_chromeos) {
     sources = [ "rpm/chrome.spec.template" ]
     outputs = [ "$root_out_dir/installer/rpm/{{source_file_part}}" ]
   }
+
+  if (enable_flatpak) {
+    copy("flatpak_packaging_files") {
+      visibility = [ ":*" ]
+      sources = [
+        "flatpak/launcher.template",
+        "flatpak/metadata.template",
+        "flatpak/metainfo.xml.template",
+      ]
+      outputs = [ "$root_out_dir/installer/flatpak/{{source_file_part}}" ]
+    }
+  }
 }
 
 process_version("save_build_info") {
@@ -519,6 +542,9 @@ group("installer_deps") {
   }
   if (!is_chromeos) {
     public_deps += [ ":rpm_packaging_files" ]
+    if (enable_flatpak) {
+      public_deps += [ ":flatpak_packaging_files" ]
+    }
   }
   if (build_with_internal_optimization_guide) {
     public_deps += [
@@ -628,12 +654,46 @@ template("linux_package") {
         ":merge_rpm_dependencies",
       ]
     }
+
+    if (enable_flatpak) {
+      flatpak_target_name = "${target_name}_flatpak"
+      action(flatpak_target_name) {
+        visibility = [ ":*" ]
+        script = "flatpak/build.py"
+
+        inputs = packaging_files
+        outputs = [ "$root_out_dir/${package}-${channel}_${chrome_version_full}-1_${flatpak_arch}.flatpak" ]
+
+        args = [
+          "-a",
+          flatpak_arch,
+          "-b",
+          build_timestamp,
+          "-c",
+          invoker.channel,
+          "-d",
+          branding_path_component,
+          "-o",
+          rebase_path(root_out_dir, root_build_dir),
+          "-t",
+          target_os,
+          "--use-static-angle=$use_static_angle",
+        ]
+        if (is_official_build) {
+          args += [ "-f" ]
+        }
+        deps = [ ":installer_deps" ]
+      }
+    }
   }
 
   group(target_name) {
     deps = [ ":$deb_target_name" ]
     if (!is_chromeos) {
       deps += [ ":$rpm_target_name" ]
+      if (enable_flatpak) {
+        deps += [ ":$flatpak_target_name" ]
+      }
     }
   }
 }
@@ -650,4 +710,22 @@ linux_package("unstable") {
 }
 linux_package("canary") {
   channel = "canary"
+}
+
+# For convenience, alias 'dev' to 'unstable'.
+group("dev") {
+  deps = [ ":unstable" ]
+}
+if (!is_chromeos) {
+  group("dev_deb") {
+    deps = [ ":unstable_deb" ]
+  }
+  group("dev_rpm") {
+    deps = [ ":unstable_rpm" ]
+  }
+  if (enable_flatpak) {
+    group("dev_flatpak") {
+      deps = [ ":unstable_flatpak" ]
+    }
+  }
 }

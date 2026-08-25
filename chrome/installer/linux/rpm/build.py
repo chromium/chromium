@@ -87,7 +87,9 @@ def main() -> None:
     with installer.StagingContext(staging_dir, tmp_file_dir, rpm_build_dir):
         spec_file = tmp_file_dir / "chrome.spec"
 
-        config = installer.InstallerConfig.from_args(args, output_dir)
+        config = installer.InstallerConfig.from_args(
+            args, output_dir, package_format=installer.PackageFormat.RPM
+        )
         config.script_dir = script_dir
         config.staging_dir = staging_dir
         config.tmp_file_dir = tmp_file_dir
