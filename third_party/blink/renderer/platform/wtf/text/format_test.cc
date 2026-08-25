@@ -233,6 +233,14 @@ TEST(FormatTest, TypeSpecifierFloat) {
   EXPECT_EQ("3", Format("{:.1}", 3.14159));
   EXPECT_EQ("0.567", Format("{:.6g}", 0.567));
   EXPECT_EQ("150001", Format("{:.6g}", 150000.5));
+  // crbug.com/548859820
+  EXPECT_EQ(
+      "1797693134862315708145274237317043567980705675258449965989174768031572"
+      "6078002853876058955863276687817154045895351438246423432132688946418276"
+      "8467546703537516986049910576551282076245490090389328944075868508455133"
+      "9423045832369032229481658085593321233482747978262041447231687381771809"
+      "19299881250404026184124858368.000",
+      Format("{:.3f}", 1.7976931348623157e308));
 }
 
 TEST(FormatTest, TypeSpecifierDeathTest) {
@@ -288,6 +296,9 @@ TEST(FormatTest, TypeSpecifierDeathTest) {
 
   // Invalid precision specifier
   EXPECT_DEATH_IF_SUPPORTED(VFormat("{:.}", FormatArgs(double_args)), "");
+
+  // Large precision that exceeds the buffer size (512 bytes)
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:.1000f}", FormatArgs(double_args)), "");
 }
 
 TEST(FormatTest, Character) {

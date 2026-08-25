@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/strings/span_printf.h"
 #include "base/third_party/double_conversion/double-conversion/double-conversion.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -27,6 +28,33 @@ void Pad(LChar ch,
     for (wtf_size_t k = 0; k < width - value_length; ++k) {
       builder.Append(ch);
     }
+  }
+}
+
+void PadAndAppend(base::span<uint8_t> byte_span,
+                  bool is_uppercase,
+                  bool zero_pad,
+                  uint32_t width,
+                  StringBuilder& builder) {
+  if (is_uppercase) {
+    for (uint8_t& byte : byte_span) {
+      byte = ToAsciiUpper(byte);
+    }
+  }
+  wtf_size_t value_len = static_cast<wtf_size_t>(byte_span.size());
+  bool starts_with_minus = (value_len > 0 && byte_span[0] == '-');
+  if (zero_pad) {
+    if (starts_with_minus) {
+      builder.Append('-');
+      Pad('0', width, value_len, builder);
+      builder.Append(byte_span.subspan(1u, value_len - 1u));
+    } else {
+      Pad('0', width, value_len, builder);
+      builder.Append(byte_span.first(value_len));
+    }
+  } else {
+    Pad(' ', width, value_len, builder);
+    builder.Append(byte_span.first(value_len));
   }
 }
 
@@ -112,8 +140,35 @@ void FormatDouble(double val,
                   uint32_t width,
                   std::optional<uint32_t> precision,
                   StringBuilder& builder) {
-  // std::to_chars() is not yet approved for use in Chromium, so
-  // we use double_conversion::DoubleToStringConverter instead.
+  // std::to_chars() is not yet approved for use in Chromium, so we use
+  // base::SpanPrintf() and double_conversion::DoubleToStringConverter instead.
+
+  if (type == 'f' || type == 'F') {
+    // DoubleToStringConverter::ToFixed has digit limits: it fails when
+    // `val` >= 1e60 (kMaxFixedDigitsBeforePoint = 60) or `precision` > 100
+    // (kMaxFixedDigitsAfterPoint = 100). Therefore, we use base::SpanPrintf
+    // directly for 'f' and 'F' format specifiers.
+
+    // Blink code only specifies fixed precisions in format strings. A buffer
+    // of this size can support precision <= kMaxPrecision, which is sufficient
+    // for now. Specifying a larger precision will safely crash via CHECK().
+    // If such a large precision is needed in the future, we should dynamically
+    // allocate a buffer based on the return value of base::SpanPrintf().
+    constexpr size_t kMaxDoubleIntegerDigits = 309;
+    constexpr size_t kMaxPrecision = 200;
+    // 1 (sign) + 309 (integer) + 1 ('.') + 200 (precision) + 1 ('\0') = 512
+    char buffer[1 + kMaxDoubleIntegerDigits + 1 + kMaxPrecision + 1];
+
+    uint32_t prec = precision.value_or(6);
+    int len = base::SpanPrintf(base::span(buffer), "%.*f", prec, val);
+    CHECK_GT(len, 0);
+    CHECK_GT(sizeof(buffer), static_cast<size_t>(len));
+    auto writable_span = base::as_writable_bytes(base::span(buffer))
+                             .first(static_cast<size_t>(len));
+    PadAndAppend(writable_span, type == 'F', zero_pad, width, builder);
+    return;
+  }
+
   using D2SConverter = double_conversion::DoubleToStringConverter;
   int flags = D2SConverter::EMIT_POSITIVE_EXPONENT_SIGN;
   if (type == 'g' || type == 'G' || type == '\0') {
@@ -127,8 +182,6 @@ void FormatDouble(double val,
   bool success = false;
   if (type == 'e' || type == 'E') {
     success = converter.ToExponential(val, precision.value_or(-1), &dc_builder);
-  } else if (type == 'f' || type == 'F') {
-    success = converter.ToFixed(val, precision.value_or(6), &dc_builder);
   } else if (type == 'g' || type == 'G') {
     uint32_t prec = precision.value_or(6);
     if (prec == 0) {
@@ -155,28 +208,11 @@ void FormatDouble(double val,
   }
   CHECK(success) << "double_conversion failed";
 
-  wtf_size_t value_len = static_cast<wtf_size_t>(dc_builder.position());
-  auto byte_span = base::as_writable_bytes(base::span(buffer));
-  if (type == 'E' || type == 'F' || type == 'G') {
-    for (wtf_size_t i = 0; i < value_len; ++i) {
-      byte_span[i] = ToAsciiUpper(byte_span[i]);
-    }
-  }
-
-  bool starts_with_minus = (value_len > 0 && byte_span[0] == '-');
-  if (zero_pad) {
-    if (starts_with_minus) {
-      builder.Append('-');
-      Pad('0', width, value_len, builder);
-      builder.Append(byte_span.subspan(1u, value_len - 1u));
-    } else {
-      Pad('0', width, value_len, builder);
-      builder.Append(byte_span.first(value_len));
-    }
-  } else {
-    Pad(' ', width, value_len, builder);
-    builder.Append(byte_span.first(value_len));
-  }
+  auto writable_span =
+      base::as_writable_bytes(base::span(buffer))
+          .first(static_cast<wtf_size_t>(dc_builder.position()));
+  PadAndAppend(writable_span, type == 'E' || type == 'G', zero_pad, width,
+               builder);
 }
 
 }  // namespace
