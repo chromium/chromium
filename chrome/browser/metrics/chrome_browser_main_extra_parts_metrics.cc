@@ -822,17 +822,17 @@ void RecordAppCompatMetrics() {
 
 void RecordWin11HardwareRequirementsMetrics(
     const base::win::HardwareEvaluationResult& result) {
-  base::UmaHistogramBoolean("Windows.Win11UpgradeEligible",
+  base::UmaHistogramBoolean("Windows.Win11UpgradeEligible2",
                             result.IsEligible());
-  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.CPUCheck",
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements2.CPUCheck",
                             result.cpu);
-  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.MemoryCheck",
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements2.MemoryCheck",
                             result.memory);
-  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.DiskCheck",
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements2.DiskCheck",
                             result.disk);
-  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.FirmwareCheck",
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements2.FirmwareCheck",
                             result.firmware);
-  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements.TPMCheck",
+  base::UmaHistogramBoolean("Windows.Win11HardwareRequirements2.TPMCheck",
                             result.tpm);
 }
 

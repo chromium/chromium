@@ -9,8 +9,10 @@
 
 #include <tbs.h>
 
+#include <optional>
 #include <string_view>
 
+#include "base/byte_size.h"
 #include "base/cpu.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
@@ -110,35 +112,33 @@ bool HardwareEvaluationResult::IsEligible() const {
 }
 
 HardwareEvaluationResult EvaluateWin11HardwareRequirements() {
-  static constexpr int64_t kMinTotalDiskSpace = 64 * 1024 * 1024;
-  // TODO(crbug.com/429140103): This was migrated as-is to 4MiB in ByteSize but
-  // the legacy code potentially intended 4GiB, needs investigation.
-  static constexpr ByteSize kMinTotalPhysicalMemory = MiB(4);
+  static constexpr ByteSize kMinTotalDiskSpace = GiB(64);
+  static constexpr ByteSize kMinTotalPhysicalMemory = GiB(4);
 
-  static const HardwareEvaluationResult evaluate_win11_upgrade_eligibility =
-      [] {
-        HardwareEvaluationResult result;
+  static const HardwareEvaluationResult eligibility = [] {
+    HardwareEvaluationResult result;
 
-        result.cpu = IsWin11SupportedProcessor(
-            CPU(), OSInfo::GetInstance()->processor_vendor_name());
+    result.cpu = IsWin11SupportedProcessor(
+        CPU(), OSInfo::GetInstance()->processor_vendor_name());
 
-        result.memory =
-            SysInfo::AmountOfTotalPhysicalMemory() >= kMinTotalPhysicalMemory;
+    result.memory =
+        SysInfo::AmountOfTotalPhysicalMemory() >= kMinTotalPhysicalMemory;
 
-        FilePath system_path;
-        result.disk = PathService::Get(DIR_SYSTEM, &system_path) &&
-                      SysInfo::AmountOfTotalDiskSpace(
-                          FilePath(system_path.GetComponents()[0]))
-                              .value_or(-1) >= kMinTotalDiskSpace;
+    FilePath system_path;
+    if (PathService::Get(DIR_SYSTEM, &system_path)) {
+      std::optional<SysInfo::DiskSpaceInfo> disk_info =
+          SysInfo::AmountOfDiskSpace(FilePath(system_path.GetComponents()[0]));
+      result.disk = disk_info && disk_info->total >= kMinTotalDiskSpace;
+    }
 
-        result.firmware = IsUEFISecureBootCapable();
+    result.firmware = IsUEFISecureBootCapable();
 
-        result.tpm = IsTPM20Supported();
+    result.tpm = IsTPM20Supported();
 
-        return result;
-      }();
+    return result;
+  }();
 
-  return evaluate_win11_upgrade_eligibility;
+  return eligibility;
 }
 
 }  // namespace base::win

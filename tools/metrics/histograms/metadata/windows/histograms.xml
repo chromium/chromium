@@ -646,7 +646,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.Win11HardwareRequirements.{Type}Check"
+<histogram name="Windows.Win11HardwareRequirements2.{Type}Check"
     enum="BooleanEnabled" expires_after="2027-01-03">
   <owner>estalin@chromium.org</owner>
   <owner>davidbienvenu@chromium.org</owner>
@@ -663,7 +663,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Windows.Win11UpgradeEligible" enum="BooleanEnabled"
+<histogram name="Windows.Win11UpgradeEligible2" enum="BooleanEnabled"
     expires_after="2026-12-27">
   <owner>estalin@chromium.org</owner>
   <owner>davidbienvenu@chromium.org</owner>
