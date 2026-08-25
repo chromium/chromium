@@ -169,6 +169,9 @@ class OmniboxPopupPresenterBase
   // Returns true if the presenter is currently deactivating.
   virtual bool IsDeactivating() const;
 
+  // Returns whether the WebUI content view receives focus.
+  virtual bool ShouldReceiveFocus() const;
+
  protected:
   inline static constexpr std::string_view kWebUIPopupMetricPrefix =
       "Omnibox.Popup.WebUI";
@@ -201,9 +204,6 @@ class OmniboxPopupPresenterBase
 
   // Returns whether or not the popup should include the location bar cutout.
   virtual bool ShouldShowLocationBarCutout() const;
-
-  // Returns whether the WebUI content view receive focus.
-  virtual bool ShouldReceiveFocus() const;
 
   // Returns true if the popup widget should start transparent to allow the
   // initial layout pass to complete without visual artifacts.
