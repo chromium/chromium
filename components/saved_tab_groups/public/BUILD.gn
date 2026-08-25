@@ -46,7 +46,7 @@ source_set("public") {
     ":features",
     ":prefs",
   ]
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     deps += [ "//extensions/common:common_constants" ]
   }
 }

@@ -241,7 +241,7 @@ TEST_F(SavedTabGroupConversionTest, DataToTabWithExtensionURL) {
   SavedTabGroupTab tab =
       SavedTabGroupSyncBridge::DataToSavedTabGroupTabForTest(pb_data);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   EXPECT_EQ(tab.url(), GURL("chrome-extension://"
                             "gbkeeggdbebmphjfgccenjimijgnhkjj/suspended.html"));
   EXPECT_EQ(tab.title(), u"Extension URL Title");

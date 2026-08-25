@@ -87,7 +87,7 @@ bool IsURLValidForSavedTabGroups(const GURL& gurl) {
 }
 
 bool IsURLValidForLocalTab(const GURL& gurl) {
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Extensions don't exist on this platform (e.g. iOS), so an extension URL
   // can't be loaded. extensions::kExtensionScheme is unavailable here, so match
   // the scheme literal directly.
