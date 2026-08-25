@@ -1487,12 +1487,8 @@ bool IsDefaultSearchEngine(Profile* profile, const GURL& url) {
     return true;
   }
 
-  if (base::FeatureList::IsEnabled(features::kConsiderDSEWarmUpPageAsSRP)) {
-    return IsPrewarmUrl(url,
-                        template_url_service->GetDefaultSearchProviderOrigin());
-  }
-
-  return false;
+  return IsPrewarmUrl(url,
+                      template_url_service->GetDefaultSearchProviderOrigin());
 }
 
 #if !BUILDFLAG(IS_ANDROID)

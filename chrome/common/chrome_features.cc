@@ -1708,11 +1708,6 @@ BASE_FEATURE(kProcessPerSiteForDSE,
 #endif
 );
 
-// Consider the default search engine (DSE) warmup page as a search results page
-// (SRP), for the purpose of applying the "process per site for DSE SRP" policy
-// (`kProcessPerSiteForDSE`).
-BASE_FEATURE(kConsiderDSEWarmUpPageAsSRP, base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_CHROMEOS)
 // Enables Camera Cloud Storage for saving photos and videos on Google Drive
 // or OneDrive, controlled by CameraSaveLocation policy.
