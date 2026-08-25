@@ -831,7 +831,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       break;
     case SuggestionType::kAtMemorySearchResult:
       manager_->client().GetAtMemoryManager()->FillOrPreviewSearchResult(
-          mojom::ActionPersistence::kPreview, last_query_.form_id,
+          *manager_, mojom::ActionPersistence::kPreview, last_query_.form_id,
           last_query_.field_id, suggestion);
       break;
     case SuggestionType::kWebauthnPasskeyQrCode:
@@ -1162,7 +1162,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kAtMemorySearchResult: {
       const IsAsync is_async =
           manager_->client().GetAtMemoryManager()->FillOrPreviewSearchResult(
-              mojom::ActionPersistence::kFill, last_query_.form_id,
+              *manager_, mojom::ActionPersistence::kFill, last_query_.form_id,
               last_query_.field_id, suggestion, metadata);
       if (is_async) {
         manager_->client().UpdateAutofillSuggestions(

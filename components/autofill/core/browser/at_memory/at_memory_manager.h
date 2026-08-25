@@ -67,6 +67,7 @@ class AtMemoryManager {
   // session if the `trigger_source` is an AtMemory one.
   // TODO(crbug.com/507770024): Rename to OnSuggestionsShown.
   void OnPopupShown(
+      BrowserAutofillManager& bam,
       const FormGlobalId& form_id,
       const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source,
@@ -89,6 +90,7 @@ class AtMemoryManager {
   // Fills or previews the selected search result. Returns `IsAsync(true)` if
   // the operation involves reauthentication or server communication.
   IsAsync FillOrPreviewSearchResult(
+      BrowserAutofillManager& bam,
       mojom::ActionPersistence action_persistence,
       const FormGlobalId& form_id,
       const FieldGlobalId& field_id,
@@ -99,6 +101,7 @@ class AtMemoryManager {
   // Fills the selected search result. Returns `IsAsync(true)` if the operation
   // involves reauthentication or server communication.
   IsAsync FillSearchResult(
+      BrowserAutofillManager& bam,
       const FormGlobalId& form_id,
       const FieldGlobalId& field_id,
       const Suggestion& suggestion,
@@ -219,14 +222,16 @@ class AtMemoryManager {
                                      const MemorySearchResults& result);
 
   // Fills the unmasked IBAN value after fetching it.
-  void FillIban(const std::variant<Iban::Guid, Iban::InstrumentId>& identifier,
+  void FillIban(BrowserAutofillManager& bam,
+                const std::variant<Iban::Guid, Iban::InstrumentId>& identifier,
                 const FormGlobalId& form_id,
                 const FieldGlobalId& field_id,
                 const Suggestion& suggestion,
                 std::unique_ptr<AtMemoryMetricsRecorder> metrics);
 
   // Fills the unmasked credit card value after fetching it.
-  void FillCreditCard(const std::string& credit_card_guid,
+  void FillCreditCard(BrowserAutofillManager& bam,
+                      const std::string& credit_card_guid,
                       const FormGlobalId& form_id,
                       const FieldGlobalId& field_id,
                       const Suggestion& suggestion,
@@ -236,6 +241,7 @@ class AtMemoryManager {
   // value, which fills the field upon completion. Returns `IsAsync(true)` if
   // the operation involves reauthentication or server communication.
   IsAsync FillSensitivePersonalContextData(
+      BrowserAutofillManager& bam,
       const FormGlobalId& form_id,
       const FieldGlobalId& field_id,
       const Suggestion& suggestion,
@@ -244,6 +250,7 @@ class AtMemoryManager {
   // Fills the field with the unmasked sensitive SPII Personal Context value if
   // fetching succeeded, or records failure metrics if it failed.
   void OnSensitivePersonalContextDataFetched(
+      base::WeakPtr<BrowserAutofillManager> bam,
       const FormGlobalId& form_id,
       const FieldGlobalId& field_id,
       std::unique_ptr<AtMemoryMetricsRecorder> metrics,
@@ -254,6 +261,7 @@ class AtMemoryManager {
   // Context. Returns `IsAsync(true)` if the operation involves reauthentication
   // or server communication.
   IsAsync FillSensitiveAutofillAiOrPersonalContextData(
+      BrowserAutofillManager& bam,
       const FormGlobalId& form_id,
       const FieldGlobalId& field_id,
       const Suggestion& suggestion,
@@ -263,6 +271,7 @@ class AtMemoryManager {
   // `IsAsync(true)` if the operation involves reauthentication or server
   // communication.
   IsAsync FillSensitiveAutofillAiData(
+      BrowserAutofillManager& bam,
       const EntityInstance::EntityId& entity_id,
       const FormGlobalId& form_id,
       const FieldGlobalId& field_id,
@@ -272,6 +281,7 @@ class AtMemoryManager {
 
   // Callback handler when the unmasked AutofillAI entity has been fetched.
   void OnAutofillAiFetched(
+      base::WeakPtr<BrowserAutofillManager> bam,
       const FormGlobalId& form_id,
       const FieldGlobalId& field_id,
       const Suggestion& suggestion,
@@ -281,9 +291,6 @@ class AtMemoryManager {
           result,
       bool reauth_attempted,
       bool did_fetch_from_server);
-
-  BrowserAutofillManager* GetBrowserAutofillManager(
-      const FormGlobalId& form_id);
 
   // Returns the active target field origin depending on whether search
   // statefulness is enabled.

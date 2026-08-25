@@ -2140,7 +2140,7 @@ void BrowserAutofillManager::DidShowSuggestions(
       FindMutableFormAndField(form_id, field_id);
 
   if (AtMemoryManager* am = client().GetAtMemoryManager()) {
-    am->OnPopupShown(form_id, field_id, trigger_source,
+    am->OnPopupShown(*this, form_id, field_id, trigger_source,
                      parent_suggestion_metadata, update_suggestions_callback,
                      driver().GetPageUkmSourceId());
   }
