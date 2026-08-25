@@ -13,19 +13,23 @@ loadScript.then(async function() {
     function setupWindow() {
       createWindow([pageUrl('a')], {}, pass(function(winId, tabIds) {
                      firstTabId = tabIds[0];
-                     chrome.tabs.get(firstTabId, pass(function(tab) {
-                                       assertTrue(tab.width > 0);
-                                       assertTrue(tab.height > 0);
-                                       firstTab = tab;
-                                     }));
+                     waitForTabWithNonZeroSize(firstTabId, pass(function(tab) {
+                                                 assertTrue(tab.width > 0);
+                                                 assertTrue(tab.height > 0);
+                                                 firstTab = tab;
+                                               }));
                    }));
     },
 
     function sizeAfterDuplicatingTab() {
-      chrome.tabs.duplicate(firstTabId, pass(function(tab) {
-                              assertEq(firstTab.width, tab.width);
-                              assertEq(firstTab.height, tab.height);
-                            }));
+      chrome.tabs.duplicate(
+          firstTabId, pass(function(tab) {
+            waitForTabWithNonZeroSize(
+                tab.id, pass(function(duplicatedTab) {
+                  assertEq(firstTab.width, duplicatedTab.width);
+                  assertEq(firstTab.height, duplicatedTab.height);
+                }));
+          }));
     },
   ]);
 });

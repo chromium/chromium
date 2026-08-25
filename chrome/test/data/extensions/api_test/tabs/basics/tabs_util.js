@@ -61,6 +61,21 @@ function waitForAllTabs(callback) {
   waitForTabs();
 }
 
+// Waits until a tab has non-zero width and height.
+// The |callback| should look like function(tab) {...}.
+function waitForTabWithNonZeroSize(tabId, callback) {
+  function waitForTab() {
+    chrome.tabs.get(tabId, function(tab) {
+      if (tab && tab.width > 0 && tab.height > 0) {
+        callback(tab);
+      } else {
+        setTimeout(waitForTab, 30);
+      }
+    });
+  }
+  waitForTab();
+}
+
 // Like chrome.tabs.query, but with the ability to filter by |tabId| as well.
 // Returns the found tab or null
 function queryForTab(tabId, queryInfo, callback) {
