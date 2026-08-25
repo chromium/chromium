@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 94 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 108 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] SubtleCrypto.supports method exists
   assert_true: SubtleCrypto.supports should be a function expected true got false
 [FAIL] supports(generateKey, ML-DSA-44)
@@ -184,8 +184,37 @@ Found 94 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
 [FAIL] supports(getPublicKey, ChaCha20-Poly1305)
   promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports validates ML-DSA-44 sign context length
+  SubtleCrypto.supports is not a function
+[FAIL] supports validates ML-DSA-44 verify context length
+  SubtleCrypto.supports is not a function
+[FAIL] supports validates ML-DSA-65 sign context length
+  SubtleCrypto.supports is not a function
+[FAIL] supports validates ML-DSA-65 verify context length
+  SubtleCrypto.supports is not a function
+[FAIL] supports validates ML-DSA-87 sign context length
+  SubtleCrypto.supports is not a function
+[FAIL] supports validates ML-DSA-87 verify context length
+  SubtleCrypto.supports is not a function
+[FAIL] supports encapsulateKey with a matching HMAC length
+  SubtleCrypto.supports is not a function
+[FAIL] supports encapsulateKey with an algorithm without raw-secret import
+  SubtleCrypto.supports is not a function
+[FAIL] supports encapsulateKey with an HMAC length shorter than the shared secret
+  SubtleCrypto.supports is not a function
+[FAIL] supports encapsulateKey with an HMAC length longer than the shared secret
+  SubtleCrypto.supports is not a function
+[FAIL] supports decapsulateKey with a matching HMAC length
+  SubtleCrypto.supports is not a function
+[FAIL] supports decapsulateKey with an algorithm without raw-secret import
+  SubtleCrypto.supports is not a function
+[FAIL] supports decapsulateKey with an HMAC length shorter than the shared secret
+  SubtleCrypto.supports is not a function
+[FAIL] supports decapsulateKey with an HMAC length longer than the shared secret
+  SubtleCrypto.supports is not a function
 [FAIL] supports returns true for algorithm objects with valid parameters
   SubtleCrypto.supports is not a function
 [FAIL] supports returns false for algorithm objects with invalid parameters
   SubtleCrypto.supports is not a function
 Harness: the test ran to completion.
+

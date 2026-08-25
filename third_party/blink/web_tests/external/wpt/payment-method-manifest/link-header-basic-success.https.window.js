@@ -23,7 +23,7 @@ promise_test(async t => {
   const logs = await waitForServerAccessLogs(t, testId);
 
   assert_equals(logs.length, 2, 'Browser must issue exactly 2 server requests (HEAD for PMI, GET for PMM)');
-  assert_equals(logs[0].endpoint, 'pmi', 'First request must hit PMI URL');
+  assert_equals(logs[0].endpoint, 'payment-method-identifier', 'First request must hit PMI URL');
   assert_equals(logs[0].method, 'HEAD', 'PMI request must use HEAD method');
 
   assert_equals(logs[1].endpoint, 'payment-method-manifest', 'Second request must hit PMM URL');

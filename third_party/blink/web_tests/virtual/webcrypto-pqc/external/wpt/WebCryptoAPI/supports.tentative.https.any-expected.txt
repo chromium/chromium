@@ -1,4 +1,28 @@
 This is a testharness.js-based test.
-All subtests passed and are omitted for brevity.
-See https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/writing_web_tests.md#Text-Test-Baselines for details.
+Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] supports validates HKDF SHA-1 output length
+  assert_false: HKDF with SHA-1 rejects output longer than its maximum expected false got true
+[FAIL] supports validates HKDF SHA-256 output length
+  assert_false: HKDF with SHA-256 rejects output longer than its maximum expected false got true
+[FAIL] supports validates HKDF SHA-384 output length
+  assert_false: HKDF with SHA-384 rejects output longer than its maximum expected false got true
+[FAIL] supports validates HKDF SHA-512 output length
+  assert_false: HKDF with SHA-512 rejects output longer than its maximum expected false got true
+[FAIL] supports validates HKDF output length for deriveKey
+  assert_false: HKDF rejects a derived key longer than 255 hash blocks expected false got true
+[FAIL] supports validates HMAC import length
+  assert_false: HMAC rejects an explicitly zero-length imported key expected false got true
+[FAIL] supports validates ECDH P-256 deriveBits length
+  assert_false: ECDH P-256 rejects output longer than its maximum expected false got true
+[FAIL] supports validates ECDH P-384 deriveBits length
+  assert_false: ECDH P-384 rejects output longer than its maximum expected false got true
+[FAIL] supports validates ECDH P-521 deriveBits length
+  assert_false: ECDH P-521 rejects output longer than its maximum expected false got true
+[FAIL] supports validates the ECDH public key
+  assert_false: ECDH rejects a private public property expected false got true
+[FAIL] supports validates the X25519 public key
+  assert_false: X25519 rejects a private public property expected false got true
+[FAIL] supports derives the ECDH output limit from the public curve
+  assert_false: ECDH P-256 cannot derive a 512-bit HMAC key expected false got true
 Harness: the test ran to completion.
+

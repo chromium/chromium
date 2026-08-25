@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 171 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 198 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] SubtleCrypto.supports method exists
   assert_true: SubtleCrypto.supports should be a function expected true got false
 [FAIL] supports returns false for invalid operations
@@ -334,6 +334,60 @@ Found 171 FAIL, 0 TIMEOUT, 0 NOTRUN.
   SubtleCrypto.supports is not a function
 [FAIL] supports returns false for algorithm objects with invalid parameters
   SubtleCrypto.supports is not a function
+[FAIL] supports validates HKDF SHA-1 output length
+  SubtleCrypto.supports is not a function
+[FAIL] supports validates HKDF SHA-256 output length
+  SubtleCrypto.supports is not a function
+[FAIL] supports validates HKDF SHA-384 output length
+  SubtleCrypto.supports is not a function
+[FAIL] supports validates HKDF SHA-512 output length
+  SubtleCrypto.supports is not a function
+[FAIL] supports validates HKDF output length for deriveKey
+  SubtleCrypto.supports is not a function
+[FAIL] supports validates HMAC import length
+  SubtleCrypto.supports is not a function
+[FAIL] supports rejects RSASSA-PKCS1-v1_5 generateKey with a modulus shorter than 4 bits
+  SubtleCrypto.supports is not a function
+[FAIL] supports rejects RSASSA-PKCS1-v1_5 generateKey with a public exponent less than 3
+  SubtleCrypto.supports is not a function
+[FAIL] supports rejects RSASSA-PKCS1-v1_5 generateKey with an even public exponent
+  SubtleCrypto.supports is not a function
+[FAIL] supports rejects RSASSA-PKCS1-v1_5 generateKey with a public exponent equal to 2^modulusLength - 1
+  SubtleCrypto.supports is not a function
+[FAIL] supports rejects RSA-PSS generateKey with a modulus shorter than 4 bits
+  SubtleCrypto.supports is not a function
+[FAIL] supports rejects RSA-PSS generateKey with a public exponent less than 3
+  SubtleCrypto.supports is not a function
+[FAIL] supports rejects RSA-PSS generateKey with an even public exponent
+  SubtleCrypto.supports is not a function
+[FAIL] supports rejects RSA-PSS generateKey with a public exponent equal to 2^modulusLength - 1
+  SubtleCrypto.supports is not a function
+[FAIL] supports rejects RSA-OAEP generateKey with a modulus shorter than 4 bits
+  SubtleCrypto.supports is not a function
+[FAIL] supports rejects RSA-OAEP generateKey with a public exponent less than 3
+  SubtleCrypto.supports is not a function
+[FAIL] supports rejects RSA-OAEP generateKey with an even public exponent
+  SubtleCrypto.supports is not a function
+[FAIL] supports rejects RSA-OAEP generateKey with a public exponent equal to 2^modulusLength - 1
+  SubtleCrypto.supports is not a function
+[FAIL] supports validates ECDSA import namedCurve
+  SubtleCrypto.supports is not a function
+[FAIL] supports validates ECDH import namedCurve
+  SubtleCrypto.supports is not a function
+[FAIL] supports validates ECDH P-256 deriveBits length
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports validates ECDH P-384 deriveBits length
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports validates ECDH P-521 deriveBits length
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports validates X25519 deriveBits length
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports validates the ECDH public key
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports validates the X25519 public key
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
+[FAIL] supports derives the ECDH output limit from the public curve
+  promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
 [FAIL] Common algorithm and operation combinations work
   SubtleCrypto.supports is not a function
 [FAIL] Invalid algorithm and operation combinations fail
@@ -343,3 +397,4 @@ Found 171 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] deriveKey promise tests
   promise_test: Unhandled rejection with value: object "TypeError: SubtleCrypto.supports is not a function"
 Harness: the test ran to completion.
+
