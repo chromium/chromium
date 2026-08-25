@@ -35,7 +35,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/version.h"
-#include "base/win/atl.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/win_util.h"
 #include "chrome/browser/google/google_update_app_command.h"
