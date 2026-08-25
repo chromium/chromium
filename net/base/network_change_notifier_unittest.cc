@@ -5,6 +5,7 @@
 #include "net/base/network_change_notifier.h"
 
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/network_interfaces.h"
@@ -293,6 +294,95 @@ TEST_F(NetworkChangeNotifierConnectionCostTest, AddObserver) {
   // RunUntilIdle because the secondary work resulting from adding an observer
   // may be posted to a task queue.
   base::RunLoop().RunUntilIdle();
+}
+
+class TestLowLatencyObserver
+    : public NetworkChangeNotifier::LowLatencyNetworkChangeObserver {
+ public:
+  void OnLowLatencyNetworkChanged() override { ++calls_; }
+
+  int calls() const { return calls_; }
+
+ private:
+  int calls_ = 0;
+};
+
+TEST_F(NetworkChangeNotifierMockedTest, AddAndRemoveLowLatencyObserver) {
+  TestLowLatencyObserver observer;
+
+  NetworkChangeNotifier::AddLowLatencyNetworkChangeObserver(&observer);
+  NetworkChangeNotifier::RemoveLowLatencyNetworkChangeObserver(&observer);
+}
+
+TEST_F(NetworkChangeNotifierMockedTest, TriggerLowLatencyNetworkChange) {
+  TestLowLatencyObserver observer;
+  NetworkChangeNotifier::AddLowLatencyNetworkChangeObserver(&observer);
+
+  ASSERT_EQ(0, observer.calls());
+
+  NetworkChangeNotifier::NotifyObserversOfLowLatencyNetworkChangeForTests();
+  ASSERT_TRUE(base::test::RunUntil([&] { return observer.calls() == 1; }));
+
+  NetworkChangeNotifier::RemoveLowLatencyNetworkChangeObserver(&observer);
+
+  // Add a canary observer to wait until the notification dispatch finishes.
+  TestLowLatencyObserver canary_observer;
+  NetworkChangeNotifier::AddLowLatencyNetworkChangeObserver(&canary_observer);
+
+  NetworkChangeNotifier::NotifyObserversOfLowLatencyNetworkChangeForTests();
+
+  // Wait for the canary observer to receive the notification.
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return canary_observer.calls() == 1; }));
+
+  // Verify the removed observer did not receive the second notification.
+  EXPECT_EQ(1, observer.calls());
+
+  NetworkChangeNotifier::RemoveLowLatencyNetworkChangeObserver(
+      &canary_observer);
+}
+
+TEST_F(NetworkChangeNotifierMockedTest,
+       LowLatencyObserverTriggeredOnIPAddressChange) {
+  TestLowLatencyObserver observer;
+  NetworkChangeNotifier::AddLowLatencyNetworkChangeObserver(&observer);
+
+  ASSERT_EQ(0, observer.calls());
+
+  NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
+  ASSERT_TRUE(base::test::RunUntil([&] { return observer.calls() == 1; }));
+
+  NetworkChangeNotifier::RemoveLowLatencyNetworkChangeObserver(&observer);
+}
+
+TEST_F(NetworkChangeNotifierMockedTest,
+       LowLatencyObserverTriggeredOnConnectionTypeChange) {
+  TestLowLatencyObserver observer;
+  NetworkChangeNotifier::AddLowLatencyNetworkChangeObserver(&observer);
+
+  ASSERT_EQ(0, observer.calls());
+
+  NetworkChangeNotifier::NotifyObserversOfConnectionTypeChangeForTests(
+      NetworkChangeNotifier::CONNECTION_WIFI);
+  ASSERT_TRUE(base::test::RunUntil([&] { return observer.calls() == 1; }));
+
+  NetworkChangeNotifier::RemoveLowLatencyNetworkChangeObserver(&observer);
+}
+
+TEST_F(NetworkChangeNotifierMockedTest, LowLatencyObserverNoDebouncing) {
+  TestLowLatencyObserver observer;
+  NetworkChangeNotifier::AddLowLatencyNetworkChangeObserver(&observer);
+
+  ASSERT_EQ(0, observer.calls());
+
+  constexpr int kNumNotifications = 5;
+  for (int i = 0; i < kNumNotifications; ++i) {
+    NetworkChangeNotifier::NotifyObserversOfLowLatencyNetworkChangeForTests();
+  }
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return observer.calls() == kNumNotifications; }));
+
+  NetworkChangeNotifier::RemoveLowLatencyNetworkChangeObserver(&observer);
 }
 
 }  // namespace net

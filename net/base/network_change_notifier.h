@@ -241,6 +241,35 @@ class NET_EXPORT NetworkChangeNotifier {
         observer_list_;
   };
 
+  class NET_EXPORT LowLatencyNetworkChangeObserver {
+   public:
+    LowLatencyNetworkChangeObserver(const LowLatencyNetworkChangeObserver&) =
+        delete;
+    LowLatencyNetworkChangeObserver& operator=(
+        const LowLatencyNetworkChangeObserver&) = delete;
+
+    // OnLowLatencyNetworkChanged will be called as soon as the OS provides an
+    // update about network changes affecting connectivity, link state, or IP
+    // addresses.
+    //
+    // Unlike NetworkChangeObserver, no attempt is made to debounce, coalesce,
+    // delay, or filter redundant or spurious notifications. Callers should
+    // avoid triggering heavy operations (such as tearing down or
+    // re-establishing connections) from this callback, and should instead use
+    // it for lightweight actions like flushing caches of network information
+    // that must not be used on a changed network.
+    virtual void OnLowLatencyNetworkChanged() = 0;
+
+   protected:
+    LowLatencyNetworkChangeObserver();
+    virtual ~LowLatencyNetworkChangeObserver();
+
+   private:
+    friend NetworkChangeNotifier;
+    scoped_refptr<base::ObserverListThreadSafe<LowLatencyNetworkChangeObserver>>
+        observer_list_;
+  };
+
   class NET_EXPORT MaxBandwidthObserver {
    public:
     MaxBandwidthObserver(const MaxBandwidthObserver&) = delete;
@@ -523,6 +552,8 @@ class NET_EXPORT NetworkChangeNotifier {
   static void AddConnectionTypeObserver(ConnectionTypeObserver* observer);
   static void AddDNSObserver(DNSObserver* observer);
   static void AddNetworkChangeObserver(NetworkChangeObserver* observer);
+  static void AddLowLatencyNetworkChangeObserver(
+      LowLatencyNetworkChangeObserver* observer);
   static void AddMaxBandwidthObserver(MaxBandwidthObserver* observer);
   static void AddNetworkObserver(NetworkObserver* observer);
   static void AddConnectionCostObserver(ConnectionCostObserver* observer);
@@ -545,6 +576,8 @@ class NET_EXPORT NetworkChangeNotifier {
   static void RemoveConnectionTypeObserver(ConnectionTypeObserver* observer);
   static void RemoveDNSObserver(DNSObserver* observer);
   static void RemoveNetworkChangeObserver(NetworkChangeObserver* observer);
+  static void RemoveLowLatencyNetworkChangeObserver(
+      LowLatencyNetworkChangeObserver* observer);
   static void RemoveMaxBandwidthObserver(MaxBandwidthObserver* observer);
   static void RemoveNetworkObserver(NetworkObserver* observer);
   static void RemoveConnectionCostObserver(ConnectionCostObserver* observer);
@@ -561,6 +594,7 @@ class NET_EXPORT NetworkChangeNotifier {
       ConnectionType type);
   static void NotifyObserversOfDNSChangeForTests();
   static void NotifyObserversOfNetworkChangeForTests(ConnectionType type);
+  static void NotifyObserversOfLowLatencyNetworkChangeForTests();
   static void NotifyObserversOfMaxBandwidthChangeForTests(
       double max_bandwidth_mbps,
       ConnectionType type);
@@ -682,6 +716,7 @@ class NET_EXPORT NetworkChangeNotifier {
   static void NotifyObserversOfConnectionTypeChange();
   static void NotifyObserversOfDNSChange();
   static void NotifyObserversOfNetworkChange(ConnectionType type);
+  static void NotifyObserversOfLowLatencyNetworkChange();
   static void NotifyObserversOfMaxBandwidthChange(double max_bandwidth_mbps,
                                                   ConnectionType type);
   static void NotifyObserversOfSpecificNetworkChange(
@@ -725,6 +760,7 @@ class NET_EXPORT NetworkChangeNotifier {
   void NotifyObserversOfConnectionTypeChangeImpl(ConnectionType type);
   void NotifyObserversOfDNSChangeImpl();
   void NotifyObserversOfNetworkChangeImpl(ConnectionType type);
+  void NotifyObserversOfLowLatencyNetworkChangeImpl();
   void NotifyObserversOfMaxBandwidthChangeImpl(double max_bandwidth_mbps,
                                                ConnectionType type);
   void NotifyObserversOfSpecificNetworkChangeImpl(
