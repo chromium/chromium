@@ -83,11 +83,6 @@ class AtMemoryBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public boolean hideOnScroll() {
-        return false;
-    }
-
-    @Override
     public String getSheetContentDescription(Context context) {
         // TODO(crbug.com/502801668): Implement a string.
         return "";

@@ -275,11 +275,6 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public boolean hideOnScroll() {
-        return false;
-    }
-
-    @Override
     public boolean handleBackPress() {
         if (mBackPressHandler != null) {
             mBackPressHandler.run();

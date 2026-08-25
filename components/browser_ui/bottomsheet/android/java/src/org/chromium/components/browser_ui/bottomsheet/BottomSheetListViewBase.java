@@ -439,11 +439,6 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
     }
 
     @Override
-    public boolean hideOnScroll() {
-        return false;
-    }
-
-    @Override
     public void destroy() {
         mBottomSheetController.removeObserver(mBottomSheetObserver);
     }

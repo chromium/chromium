@@ -190,11 +190,6 @@ class AllPasswordsBottomSheetView implements BottomSheetContent {
     }
 
     @Override
-    public boolean hideOnScroll() {
-        return false;
-    }
-
-    @Override
     public String getSheetContentDescription(Context context) {
         return context.getString(R.string.all_passwords_bottom_sheet_content_description);
     }

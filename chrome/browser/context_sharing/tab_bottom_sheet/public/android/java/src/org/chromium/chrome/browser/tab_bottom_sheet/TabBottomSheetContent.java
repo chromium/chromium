@@ -157,11 +157,6 @@ public abstract class TabBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public boolean hideOnScroll() {
-        return false;
-    }
-
-    @Override
     public abstract @StringRes int getSheetHalfHeightAccessibilityStringId();
 
     @Override

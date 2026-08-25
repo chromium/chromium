@@ -184,16 +184,6 @@ public class ReaderModeBottomSheetCoordinator {
         }
 
         @Override
-        public boolean hideOnScroll() {
-            // This bottom sheet is "persistent", but the default #hideOnScroll behavior is too
-            // buggy when the sheet interacts with the bottom controls. Correct implementation for
-            // this is to integrate BottomSheetManager directly with BottomControlsStacker, but the
-            // implementation is non-trivial. Instead, this sheet will be easily dismissable and
-            // come back on scroll up.
-            return false;
-        }
-
-        @Override
         public String getSheetContentDescription(Context context) {
             return context.getString(R.string.reader_mode_bottom_sheet_content_description);
         }
