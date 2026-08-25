@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.hub;
 
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.tab.TabId;
 
 /**
  * This is the primary interface for interacting with the Hub. Create using {@link
@@ -27,6 +28,13 @@ public interface HubManager {
 
     /** Returns a supplier that contains true when the Hub is visible and false otherwise. */
     NonNullObservableSupplier<Boolean> getHubVisibilitySupplier();
+
+    /**
+     * Sets a tab as active and hides the Hub.
+     *
+     * @param tabId The ID of the tab to select.
+     */
+    void selectTabAndHideHub(@TabId int tabId);
 
     /**
      * Returns the {@link HubShowPaneHelper} used to select a pane before opening the {@link

@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.hub.HubColorMixer.ColorBlendProgress;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager;
@@ -176,6 +177,13 @@ public class HubManagerImpl implements HubManager, HubController {
     @Override
     public NonNullObservableSupplier<Boolean> getHubVisibilitySupplier() {
         return mHubVisibilitySupplier;
+    }
+
+    @Override
+    public void selectTabAndHideHub(@TabId int tabId) {
+        if (mHubLayoutController != null) {
+            mHubLayoutController.selectTabAndHideHubLayout(tabId);
+        }
     }
 
     @Override

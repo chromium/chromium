@@ -10,7 +10,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -249,8 +252,7 @@ public class HubManagerImplUnitTest {
         hubController.onHubLayoutShow();
 
         verify(mSnackbarManager)
-                .pushParentViewOverride(
-                        eq(ParentOverrideSlot.HUB), any(), org.mockito.ArgumentMatchers.isNull());
+                .pushParentViewOverride(eq(ParentOverrideSlot.HUB), any(), isNull());
     }
 
     @Test
@@ -588,5 +590,38 @@ public class HubManagerImplUnitTest {
 
         mRootView.removeView(containerView);
         assertEquals(appHeaderHeight, ((LayoutParams) containerView.getLayoutParams()).topMargin);
+    }
+
+    @Test
+    @SmallTest
+    public void testSelectTabAndHideHub() {
+        PaneListBuilder builder = new PaneListBuilder(new DefaultPaneOrderController());
+        HubManagerImpl hubManager =
+                new HubManagerImpl(
+                        mActivity,
+                        mProfileProviderSupplier,
+                        builder,
+                        mBackPressManager,
+                        mMenuOrKeyboardActionController,
+                        mSnackbarManager,
+                        mBottomSheetController,
+                        mBottomBarHostManager,
+                        mTabSupplier,
+                        mMenuButtonCoordinator,
+                        mHubShowPaneHelper,
+                        mEdgeToEdgeSupplier,
+                        mSearchActivityClient,
+                        /* xrSpaceModeObservableSupplier= */ null,
+                        /* defaultPaneId= */ PaneId.TAB_SWITCHER);
+
+        // Safe before layout controller is attached.
+        hubManager.selectTabAndHideHub(TAB_ID);
+        verify(mHubLayoutController, never()).selectTabAndHideHubLayout(anyInt());
+
+        HubController hubController = hubManager.getHubController();
+        hubController.setHubLayoutController(mHubLayoutController);
+
+        hubManager.selectTabAndHideHub(TAB_ID);
+        verify(mHubLayoutController).selectTabAndHideHubLayout(TAB_ID);
     }
 }
