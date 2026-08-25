@@ -362,13 +362,54 @@ public class BasicSuggestionProcessorUnitTest {
     }
 
     @Test
+    @SmallTest
     public void getFallbackIconFromIconType_validIconForEachType() {
+        var resourceMap =
+                Map.ofEntries(
+                        Map.entry(SuggestTemplateInfo.IconType.ICON_TYPE_UNSPECIFIED, 0),
+                        Map.entry(SuggestTemplateInfo.IconType.HISTORY, R.drawable.ic_history_24dp),
+                        Map.entry(
+                                SuggestTemplateInfo.IconType.SEARCH_LOOP,
+                                R.drawable.ic_suggestion_magnifier),
+                        Map.entry(
+                                SuggestTemplateInfo.IconType.SEARCH_LOOP_WITH_SPARKLE,
+                                R.drawable.search_spark_black_24dp),
+                        Map.entry(
+                                SuggestTemplateInfo.IconType.TRENDING,
+                                R.drawable.trending_up_black_24dp),
+                        Map.entry(
+                                SuggestTemplateInfo.IconType.SUB_ARROW_RIGHT,
+                                R.drawable.ic_suggestion_magnifier),
+                        Map.entry(
+                                SuggestTemplateInfo.IconType.GLOBE_WITH_SEARCH_LOOP,
+                                R.drawable.travel_explore_24dp),
+                        Map.entry(
+                                SuggestTemplateInfo.IconType.BANANA, R.drawable.create_image_24dp),
+                        Map.entry(SuggestTemplateInfo.IconType.FAVICON, R.drawable.ic_globe_24dp),
+                        Map.entry(SuggestTemplateInfo.IconType.NOTES_SPARK, R.drawable.notes_spark),
+                        Map.entry(
+                                SuggestTemplateInfo.IconType.DRAFT_SPARK,
+                                R.drawable.draft_spark_24dp),
+                        Map.entry(
+                                SuggestTemplateInfo.IconType.LIGHTBULB,
+                                R.drawable.ic_lightbulb_24dp),
+                        Map.entry(
+                                SuggestTemplateInfo.IconType.ATTACH_FILE,
+                                R.drawable.ic_attach_file_24dp),
+                        Map.entry(SuggestTemplateInfo.IconType.SCHOOL, R.drawable.ic_school_24dp),
+                        Map.entry(SuggestTemplateInfo.IconType.INK_PEN, R.drawable.ic_ink_pen_24dp),
+                        Map.entry(SuggestTemplateInfo.IconType.TAB, R.drawable.tab),
+                        Map.entry(
+                                SuggestTemplateInfo.IconType.PHOTO_SPARK,
+                                R.drawable.ic_photo_spark_24dp),
+                        Map.entry(SuggestTemplateInfo.IconType.BOLT, R.drawable.bolt_24dp));
+
         for (var iconType : SuggestTemplateInfo.IconType.values()) {
-            if (iconType == SuggestTemplateInfo.IconType.ICON_TYPE_UNSPECIFIED) {
-                assertEquals(0, mProcessor.getFallbackIconFromIconType(iconType.getNumber()));
-            } else {
-                assertNotEquals(0, mProcessor.getFallbackIconFromIconType(iconType.getNumber()));
-            }
+            assertTrue(iconType.toString(), resourceMap.containsKey(iconType));
+            assertEquals(
+                    iconType.toString(),
+                    (int) resourceMap.get(iconType),
+                    mProcessor.getFallbackIconFromIconType(iconType.getNumber()));
         }
     }
 

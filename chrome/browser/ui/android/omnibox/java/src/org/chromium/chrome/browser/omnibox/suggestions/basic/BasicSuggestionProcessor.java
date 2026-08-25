@@ -102,51 +102,40 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
                 return R.drawable.ic_suggestion_magnifier;
 
             case SuggestTemplateInfo.IconType.GLOBE_WITH_SEARCH_LOOP_VALUE:
-                // TODO(crbug.com/479890202): Replace with the correct symbol when it's available.
-                return R.drawable.ic_suggestion_magnifier;
+                return R.drawable.travel_explore_24dp;
 
             case SuggestTemplateInfo.IconType.BANANA_VALUE:
-                // TODO(crbug.com/479890202): Replace with the correct symbol when it's available.
-                return R.drawable.ic_suggestion_magnifier;
+                return R.drawable.create_image_24dp;
 
             case SuggestTemplateInfo.IconType.FAVICON_VALUE:
-                // TODO(crbug.com/479890202): Replace with the correct symbol when it's available.
-                return R.drawable.ic_suggestion_magnifier;
+                return R.drawable.ic_globe_24dp;
 
             case SuggestTemplateInfo.IconType.NOTES_SPARK_VALUE:
                 return R.drawable.notes_spark;
 
             case SuggestTemplateInfo.IconType.DRAFT_SPARK_VALUE:
-                // TODO(crbug.com/479890202): Replace with the correct symbol when it's available.
-                return R.drawable.ic_suggestion_magnifier;
+                return R.drawable.draft_spark_24dp;
 
             case SuggestTemplateInfo.IconType.LIGHTBULB_VALUE:
-                // TODO(crbug.com/479890202): Replace with the correct symbol when it's available.
-                return R.drawable.ic_suggestion_magnifier;
+                return R.drawable.ic_lightbulb_24dp;
 
             case SuggestTemplateInfo.IconType.ATTACH_FILE_VALUE:
-                // TODO(crbug.com/479890202): Replace with the correct symbol when it's available.
-                return R.drawable.ic_suggestion_magnifier;
+                return R.drawable.ic_attach_file_24dp;
 
             case SuggestTemplateInfo.IconType.SCHOOL_VALUE:
-                // TODO(crbug.com/479890202): Replace with the correct symbol when it's available.
-                return R.drawable.ic_suggestion_magnifier;
+                return R.drawable.ic_school_24dp;
 
             case SuggestTemplateInfo.IconType.INK_PEN_VALUE:
-                // TODO(crbug.com/479890202): Replace with the correct symbol when it's available.
-                return R.drawable.ic_suggestion_magnifier;
+                return R.drawable.ic_ink_pen_24dp;
 
             case SuggestTemplateInfo.IconType.TAB_VALUE:
-                // TODO(crbug.com/479890202): Replace with the correct symbol when it's available.
-                return R.drawable.ic_suggestion_magnifier;
+                return R.drawable.tab;
 
             case SuggestTemplateInfo.IconType.PHOTO_SPARK_VALUE:
-                // TODO(crbug.com/479890202): Replace with the correct symbol when it's available.
-                return R.drawable.ic_suggestion_magnifier;
+                return R.drawable.ic_photo_spark_24dp;
 
             case SuggestTemplateInfo.IconType.BOLT_VALUE:
-                // TODO(crbug.com/479890202): Replace with the correct symbol when it's available.
-                return R.drawable.ic_suggestion_magnifier;
+                return R.drawable.bolt_24dp;
 
             default: // Icon type is specified, but not recognized
                 assert false : "Unrecognized IconType: " + iconType;
