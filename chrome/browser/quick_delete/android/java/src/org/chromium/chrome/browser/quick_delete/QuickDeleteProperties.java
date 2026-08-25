@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.quick_delete;
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteDelegate.DomainVisitsData;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -14,8 +15,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** The class responsible for specifying the various quick delete MVC properties. */
 @NullMarked
 class QuickDeleteProperties {
-    public static final PropertyModel.WritableIntPropertyKey TIME_PERIOD =
-            new PropertyModel.WritableIntPropertyKey();
+    public static final PropertyModel.WritableIntDefPropertyKey<TimePeriod> TIME_PERIOD =
+            new PropertyModel.WritableIntDefPropertyKey<>(TimePeriod.LAST_15_MINUTES);
     public static final PropertyModel.WritableObjectPropertyKey<DomainVisitsData>
             DOMAIN_VISITED_DATA = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableIntPropertyKey CLOSED_TABS_COUNT =
