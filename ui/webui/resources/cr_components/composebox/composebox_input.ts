@@ -122,9 +122,8 @@ export class ComposeboxInputElement extends I18nMixinLit
             if (text === '') {
               this.$.input.replaceChildren();
             }
-            if (!this.disableCaretColorAnimation) {
-              this.updateMirror_();
-              this.resetCaret();
+            if (this.shadowRoot?.activeElement === this.$.input) {
+              setCaretToEnd(this.$.input, this.shadowRoot);
             }
           }
         }
@@ -508,8 +507,7 @@ export class ComposeboxInputElement extends I18nMixinLit
   }
 
   getSelectionEnd(): number {
-    const isFocused = this.shadowRoot?.activeElement === this.$.input ||
-        document.activeElement === this.$.input;
+    const isFocused = this.shadowRoot?.activeElement === this.$.input;
     if (!isFocused) {
       return this.input ? this.input.length : 0;
     }
@@ -540,6 +538,21 @@ function getCaretCharacterOffsetWithin(
     }
   }
   return caretOffset;
+}
+
+function setCaretToEnd(
+    element: HTMLElement, shadowRoot?: ShadowRoot|null) {
+  const sel = (shadowRoot && 'getSelection' in shadowRoot ?
+                   (shadowRoot as unknown as Document).getSelection() :
+                   null) ??
+      window.getSelection();
+  if (sel) {
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
 }
 
 function getTargetSpan(
