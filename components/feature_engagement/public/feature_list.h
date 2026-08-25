@@ -450,10 +450,6 @@ DEFINE_VARIATION_PARAM(kIPHExtensionsRequestAccessButtonFeature,
 DEFINE_VARIATION_PARAM(kIPHExtensionsZeroStatePromoFeature,
                        "IPH_ExtensionsZeroStatePromo");
 #endif
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-DEFINE_VARIATION_PARAM(kIPHExtensionsPinnedByDefaultFeature,
-                       "IPH_ExtensionsPinnedByDefault");
-#endif
 // The feature is used in Finch experiments so it is unable to be renamed
 // alongside the variable name.
 DEFINE_VARIATION_PARAM(kIPHMemorySaverModeFeature, "IPH_HighEfficiencyMode");
@@ -646,6 +642,11 @@ DEFINE_VARIATION_PARAM(kIPHResumptionRailFeature, "IPH_ResumptionRail");
 DEFINE_VARIATION_PARAM(kIPHSearchPromotionFeature,
                        "IPH_SearchPromotionFeature");
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+DEFINE_VARIATION_PARAM(kIPHExtensionsPinnedByDefaultFeature,
+                       "IPH_ExtensionsPinnedByDefault");
+#endif
 
 // Defines the array of which features should be listed in the chrome://flags
 // UI to be able to select them alone for demo-mode. The features listed here
@@ -863,9 +864,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHExtensionsMenuFeature),
         VARIATION_ENTRY(kIPHExtensionsRequestAccessButtonFeature),
 #endif
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-        VARIATION_ENTRY(kIPHExtensionsPinnedByDefaultFeature),
-#endif
 // keep-sorted start case=no
         VARIATION_ENTRY(kIPHBackNavigationMenuFeature),
         VARIATION_ENTRY(kIPHBatterySaverModeFeature),
@@ -978,6 +976,10 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
 #if BUILDFLAG(IS_WIN)
         VARIATION_ENTRY(kIPHSearchPromotionFeature),
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+        VARIATION_ENTRY(kIPHExtensionsPinnedByDefaultFeature),
+#endif
 
         // clang-format on
 };
