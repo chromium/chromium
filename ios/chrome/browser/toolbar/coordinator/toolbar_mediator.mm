@@ -411,8 +411,20 @@
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
                        status:(const WebStateListStatus&)status {
+  if (webStateList->IsBatchInProgress()) {
+    return;
+  }
   if (status.active_web_state_change() && status.new_active_web_state) {
     [self updateConsumerWithWebState:status.new_active_web_state animated:NO];
+  } else {
+    [self updateConsumerTabCountAndGroupState];
+  }
+}
+
+- (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
+  if (webStateList->GetActiveWebState()) {
+    [self updateConsumerWithWebState:webStateList->GetActiveWebState()
+                            animated:NO];
   } else {
     [self updateConsumerTabCountAndGroupState];
   }

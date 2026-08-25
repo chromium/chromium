@@ -621,6 +621,9 @@ inline LayoutStateScenePassKey PassKey() {
 // Updates the layout of the scene views depending on the active layout strategy
 // (Constraints vs. Frames).
 - (void)updateLayoutForViews {
+  if (!self.isViewLoaded || !self.view.window) {
+    return;
+  }
   AppBarPosition position = self.layoutState.appBarPosition;
   _appBar.view.hidden = (position == AppBarPosition::kNone);
   if (IsFullscreenRefactoringEnabled()) {

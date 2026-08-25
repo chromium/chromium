@@ -148,6 +148,9 @@ UIColor* NormalTintColor() {
 #pragma mark - UIControl
 
 - (void)setEnabled:(BOOL)enabled {
+  if (self.enabled == enabled) {
+    return;
+  }
   [super setEnabled:enabled];
   if (enabled) {
     self.imageView.tintColor = NormalTintColor();

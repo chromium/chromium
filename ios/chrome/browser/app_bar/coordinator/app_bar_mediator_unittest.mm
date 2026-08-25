@@ -2257,3 +2257,27 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonDisabledWhenLensOverlayVisible) {
   [lens_overlay_state_ lensOverlayDidPrepare];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
+
+// Tests that WebStateList updates during batch operations are deferred until
+// the batch ends.
+TEST_F(AppBarMediatorTest, TestWebStateListBatchOperation) {
+  WebStateList* web_state_list = regular_browser_->GetWebStateList();
+
+  // Reject intermediate tab count updates during batch insertion.
+  OCMReject([consumer_ updateTabCount:1]);
+  OCMReject([consumer_ updateTabCount:2]);
+
+  // Expect only the final tab count update when the batch operation ends.
+  OCMExpect([consumer_ updateTabCount:3]);
+
+  {
+    WebStateList::ScopedBatchOperation batch =
+        web_state_list->StartBatchOperation();
+    for (int i = 0; i < 3; ++i) {
+      auto web_state = std::make_unique<web::FakeWebState>();
+      web_state_list->InsertWebState(std::move(web_state));
+    }
+  }
+
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
