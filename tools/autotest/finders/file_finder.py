@@ -337,7 +337,10 @@ def _FindTestForFile(target: os.PathLike[str]) -> str | None:
 
 
 def FindMatchingTestFiles(
-  target: str, remote_search: bool = False, path_index: int | None = None
+  target: str,
+  remote_search: bool = False,
+  path_index: int | None = None,
+  run_all: bool = False,
 ) -> list[str]:
   # Return early if there's an exact file match.
   exists = os.path.isfile(target)
@@ -397,7 +400,9 @@ def FindMatchingTestFiles(
     test_files = close
 
   if len(test_files) > 1:
-    if path_index is not None and 0 <= path_index < len(test_files):
+    if run_all:
+      test_files = sorted(test_files)
+    elif path_index is not None and 0 <= path_index < len(test_files):
       test_files = [test_files[path_index]]
     else:
       test_files = [command.HaveUserPickFile(test_files)]

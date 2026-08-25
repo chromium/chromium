@@ -122,12 +122,22 @@ def HaveUserPickFile(paths: list[str]) -> str:
   paths = sorted(paths, key=lambda p: (len(p), p))[:20]
   path_list: str = '\n'.join(f'{i}. {t}' for i, t in enumerate(paths))
 
+  fail_fast = False
+  hint = (
+    'Hint: Avoid this in subsequent runs using '
+    + '--target=$TARGET_NAME, or --run-all\n'
+  )
+  if utils.IsLlm():
+    fail_fast = True
+    hint = 'Try again with full paths (not just base names).\n'
+
   logging.info(f"""\
 Found multiple paths with that name.
-Hint: Avoid this in subsequent runs using --target=$TARGET_NAME, or --run-all
-
+{hint}
 {path_list}
 """)
+  if fail_fast:
+    sys.exit(1)
   msg = 'Pick the path that you want by its index: '
   return _ChooseByIndex(msg, paths)
 
