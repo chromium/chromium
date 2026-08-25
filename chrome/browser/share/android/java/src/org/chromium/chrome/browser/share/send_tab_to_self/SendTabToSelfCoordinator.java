@@ -10,10 +10,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Handler;
-import android.os.Looper;
 import android.provider.Browser;
-import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
@@ -43,12 +40,9 @@ import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegat
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
 import org.chromium.chrome.browser.ui.signin.account_picker.PostSigninOperationResult;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
-import org.chromium.chrome.browser.user_education.IphCommandBuilder;
-import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -403,39 +397,5 @@ public class SendTabToSelfCoordinator
                         mTabProvider,
                         mEntryPoint),
                 true);
-    }
-
-    /** Attempts to show the Send Tab to Self Omnibox IPH upon browser startup whenever eligible. */
-    public static void maybeShowOmniboxIphOnStartup(
-            Activity activity,
-            Profile profile,
-            @Nullable Tab currentTab,
-            @Nullable View anchorView) {
-        if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
-            return;
-        }
-        if (currentTab == null || anchorView == null) {
-            return;
-        }
-
-        Integer displayReason =
-                SendTabToSelfAndroidBridge.getEntryPointDisplayReason(
-                        profile, currentTab.getUrl().getSpec());
-        // Only show the IPH if the entry point is available to the user and has target devices.
-        if (displayReason == null
-                || displayReason != EntryPointDisplayReason.OFFER_FEATURE
-                || !ChromeFeatureList.sSendTabToSelfExtraEntryPoints.isEnabled()) {
-            return;
-        }
-
-        new UserEducationHelper(activity, profile, new Handler(Looper.getMainLooper()))
-                .requestShowIph(
-                        new IphCommandBuilder(
-                                        activity.getResources(),
-                                        FeatureConstants.SEND_TAB_TO_SELF_OMNIBOX,
-                                        R.string.send_tab_to_self_omnibox_iph_text,
-                                        R.string.send_tab_to_self_omnibox_iph_text)
-                                .setAnchorView(anchorView)
-                                .build());
     }
 }

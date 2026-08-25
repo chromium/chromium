@@ -905,6 +905,7 @@ public class TabbedRootUiCoordinatorTest {
         SendTabToSelfAndroidBridge.Natives bridgeMock =
                 mock(SendTabToSelfAndroidBridge.Natives.class);
         SendTabToSelfAndroidBridgeJni.setInstanceForTesting(bridgeMock);
+        doReturn(true).when(bridgeMock).isModelReady(any());
         doReturn(EntryPointDisplayReason.OFFER_FEATURE)
                 .when(bridgeMock)
                 .getEntryPointDisplayReason(any(), any());
@@ -938,6 +939,7 @@ public class TabbedRootUiCoordinatorTest {
         SendTabToSelfAndroidBridge.Natives bridgeMock =
                 mock(SendTabToSelfAndroidBridge.Natives.class);
         SendTabToSelfAndroidBridgeJni.setInstanceForTesting(bridgeMock);
+        doReturn(true).when(bridgeMock).isModelReady(any());
         doReturn(EntryPointDisplayReason.OFFER_SIGN_IN)
                 .when(bridgeMock)
                 .getEntryPointDisplayReason(any(), any());

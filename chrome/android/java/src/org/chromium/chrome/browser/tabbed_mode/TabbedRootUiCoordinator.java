@@ -181,7 +181,7 @@ import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogCoor
 import org.chromium.chrome.browser.selection.ChromeSelectionDropdownMenuDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextIphController;
-import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfCoordinator;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfOmniboxIphController;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
@@ -345,6 +345,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mOfflineIndicatorInProductHelpController;
     private @Nullable ReadAloudIphController mReadAloudIphController;
     private @Nullable ReadLaterIphController mReadLaterIphController;
+    private @Nullable SendTabToSelfOmniboxIphController mSendTabToSelfOmniboxIphController;
     private @Nullable DesktopSiteSettingsIphController mDesktopSiteSettingsIphController;
     private @Nullable PdfPageIphController mPdfPageIphController;
     private @Nullable UrlFocusChangeListener mUrlFocusChangeListener;
@@ -851,6 +852,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (mReadAloudIphController != null) {
             mReadAloudIphController.destroy();
+        }
+
+        if (mSendTabToSelfOmniboxIphController != null) {
+            mSendTabToSelfOmniboxIphController.destroy();
+            mSendTabToSelfOmniboxIphController = null;
         }
 
         if (mRootUiTabObserver != null) mRootUiTabObserver.destroy();
@@ -1606,6 +1612,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         profile,
                         menuButtonView,
                         mAppMenuCoordinator.getAppMenuHandler());
+        mSendTabToSelfOmniboxIphController =
+                new SendTabToSelfOmniboxIphController(
+                        mActivity,
+                        profile,
+                        mActivityTabProvider,
+                        toolbarManager.getLocationBar().getContainerView());
         mReaderModeIphControllerSupplier.set(
                 new ReaderModeIphController(
                         mActivity,
@@ -1628,13 +1640,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         } else {
             mToolbarButtonInProductHelpController.showColdStartIph();
             mReadLaterIphController.showColdStartIph();
-            SendTabToSelfCoordinator.maybeShowOmniboxIphOnStartup(
-                    mActivity,
-                    profile,
-                    mActivityTabProvider.get(),
-                    toolbarManager.getLocationBar() == null
-                            ? null
-                            : toolbarManager.getLocationBar().getContainerView());
+            mSendTabToSelfOmniboxIphController.maybeShowIph();
             String featureName = null;
             int stringId = 0;
             int menuId = 0;

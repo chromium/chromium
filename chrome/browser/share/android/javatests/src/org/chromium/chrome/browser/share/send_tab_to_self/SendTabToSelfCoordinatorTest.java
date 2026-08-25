@@ -28,7 +28,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -60,7 +59,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -91,7 +89,6 @@ import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
-import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -935,142 +932,6 @@ public class SendTabToSelfCoordinatorTest {
         onView(withId(R.id.sheet_item_list)).check(matches(isDisplayed()));
         onView(withId(R.id.send_button)).check(matches(isDisplayed()));
         onView(withId(R.id.send_button)).check(matches(isEnabled()));
-    }
-
-    @Test
-    @LargeTest
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
-    public void testMaybeShowOmniboxIphOnStartup_eligible() {
-        SendTabToSelfAndroidBridge.Natives bridgeMock =
-                mock(SendTabToSelfAndroidBridge.Natives.class);
-        SendTabToSelfAndroidBridgeJni.setInstanceForTesting(bridgeMock);
-
-        doAnswer(
-                        invocation -> {
-                            invocation.<Callback<Boolean>>getArgument(0).onResult(true);
-                            return null;
-                        })
-                .when(mTracker)
-                .addOnInitializedCallback(any());
-
-        doReturn(EntryPointDisplayReason.OFFER_FEATURE)
-                .when(bridgeMock)
-                .getEntryPointDisplayReason(any(), any());
-
-        ChromeTabbedActivity activity = mSyncTestRule.getActivity();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SendTabToSelfCoordinator.maybeShowOmniboxIphOnStartup(
-                            activity,
-                            ProfileManager.getLastUsedRegularProfile(),
-                            activity.getActivityTab(),
-                            activity.findViewById(R.id.location_bar));
-                    verify(mTracker).shouldTriggerHelpUi(FeatureConstants.SEND_TAB_TO_SELF_OMNIBOX);
-                });
-    }
-
-    @Test
-    @LargeTest
-    @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
-    public void testMaybeShowOmniboxIphOnStartup_notEligible_featureDisabled() {
-        ChromeTabbedActivity activity = mSyncTestRule.getActivity();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SendTabToSelfCoordinator.maybeShowOmniboxIphOnStartup(
-                            activity,
-                            ProfileManager.getLastUsedRegularProfile(),
-                            activity.getActivityTab(),
-                            activity.findViewById(R.id.location_bar));
-                    verify(mTracker, never()).shouldTriggerHelpUi(any());
-                });
-    }
-
-    @Test
-    @LargeTest
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
-    public void testMaybeShowOmniboxIphOnStartup_notEligible_nullDisplayReason() {
-        SendTabToSelfAndroidBridge.Natives bridgeMock =
-                mock(SendTabToSelfAndroidBridge.Natives.class);
-        SendTabToSelfAndroidBridgeJni.setInstanceForTesting(bridgeMock);
-        doReturn(null).when(bridgeMock).getEntryPointDisplayReason(any(), any());
-
-        ChromeTabbedActivity activity = mSyncTestRule.getActivity();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SendTabToSelfCoordinator.maybeShowOmniboxIphOnStartup(
-                            activity,
-                            ProfileManager.getLastUsedRegularProfile(),
-                            activity.getActivityTab(),
-                            activity.findViewById(R.id.location_bar));
-                    verify(mTracker, never()).shouldTriggerHelpUi(any());
-                });
-    }
-
-    @Test
-    @LargeTest
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
-    public void testMaybeShowOmniboxIphOnStartup_notEligible_offerSignIn() {
-        SendTabToSelfAndroidBridge.Natives bridgeMock =
-                mock(SendTabToSelfAndroidBridge.Natives.class);
-        SendTabToSelfAndroidBridgeJni.setInstanceForTesting(bridgeMock);
-        doReturn(EntryPointDisplayReason.OFFER_SIGN_IN)
-                .when(bridgeMock)
-                .getEntryPointDisplayReason(any(), any());
-
-        ChromeTabbedActivity activity = mSyncTestRule.getActivity();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SendTabToSelfCoordinator.maybeShowOmniboxIphOnStartup(
-                            activity,
-                            ProfileManager.getLastUsedRegularProfile(),
-                            activity.getActivityTab(),
-                            activity.findViewById(R.id.location_bar));
-                    verify(mTracker, never()).shouldTriggerHelpUi(any());
-                });
-    }
-
-    @Test
-    @LargeTest
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
-    public void testMaybeShowOmniboxIphOnStartup_notEligible_informNoTargetDevice() {
-        SendTabToSelfAndroidBridge.Natives bridgeMock =
-                mock(SendTabToSelfAndroidBridge.Natives.class);
-        SendTabToSelfAndroidBridgeJni.setInstanceForTesting(bridgeMock);
-        doReturn(EntryPointDisplayReason.INFORM_NO_TARGET_DEVICE)
-                .when(bridgeMock)
-                .getEntryPointDisplayReason(any(), any());
-
-        ChromeTabbedActivity activity = mSyncTestRule.getActivity();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SendTabToSelfCoordinator.maybeShowOmniboxIphOnStartup(
-                            activity,
-                            ProfileManager.getLastUsedRegularProfile(),
-                            activity.getActivityTab(),
-                            activity.findViewById(R.id.location_bar));
-                    verify(mTracker, never()).shouldTriggerHelpUi(any());
-                });
-    }
-
-    @Test
-    @LargeTest
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
-    public void testMaybeShowOmniboxIphOnStartup_nullTabOrAnchorDoesNotCrash() {
-        ChromeTabbedActivity activity = mSyncTestRule.getActivity();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SendTabToSelfCoordinator.maybeShowOmniboxIphOnStartup(
-                            activity,
-                            ProfileManager.getLastUsedRegularProfile(),
-                            null,
-                            activity.findViewById(R.id.location_bar));
-                    SendTabToSelfCoordinator.maybeShowOmniboxIphOnStartup(
-                            activity,
-                            ProfileManager.getLastUsedRegularProfile(),
-                            activity.getActivityTab(),
-                            null);
-                    verify(mTracker, never()).shouldTriggerHelpUi(any());
-                });
     }
 
     @Test

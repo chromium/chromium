@@ -365,6 +365,14 @@ static void JNI_SendTabToSelfAndroidBridge_RemoveModelObserver(
   delete reinterpret_cast<SendTabToSelfModelObserverBridge*>(observer_ptr);
 }
 
+static jboolean JNI_SendTabToSelfAndroidBridge_IsModelReady(JNIEnv* env,
+                                                            Profile* profile) {
+  SendTabToSelfModel* model =
+      SendTabToSelfSyncServiceFactory::GetForProfile(profile)
+          ->GetSendTabToSelfModel();
+  return model && model->IsReady();
+}
+
 static int64_t JNI_SendTabToSelfAndroidBridge_AddTargetDeviceListWaiter(
     JNIEnv* env,
     Profile* profile,

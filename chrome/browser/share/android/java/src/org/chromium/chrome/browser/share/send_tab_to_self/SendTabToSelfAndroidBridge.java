@@ -527,6 +527,16 @@ public class SendTabToSelfAndroidBridge {
         SendTabToSelfAndroidBridgeJni.get().removeModelObserver(observerPtr);
     }
 
+    /**
+     * Returns whether the SendTabToSelfModel is loaded and ready to sync.
+     *
+     * @param profile The profile to check the model for.
+     * @return true if the model is ready.
+     */
+    public static boolean isModelReady(Profile profile) {
+        return SendTabToSelfAndroidBridgeJni.get().isModelReady(profile);
+    }
+
     /** Executes the given action once the WebContents of the tab is available. */
     static void runWhenWebContentsAvailable(Tab tab, Callback<WebContents> action) {
         if (tab.isDestroyed()) return;
@@ -620,6 +630,8 @@ public class SendTabToSelfAndroidBridge {
                 @JniType("Profile*") Profile profile, SendTabToSelfModelObserver observer);
 
         void removeModelObserver(long observerPtr);
+
+        boolean isModelReady(@JniType("Profile*") Profile profile);
 
         long addTargetDeviceListWaiter(
                 @JniType("Profile*") Profile profile,

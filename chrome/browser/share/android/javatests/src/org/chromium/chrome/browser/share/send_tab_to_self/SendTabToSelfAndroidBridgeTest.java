@@ -200,6 +200,14 @@ public class SendTabToSelfAndroidBridgeTest {
         verify(mNativeMock).getEntryPointDisplayReason(eq(mProfile), eq(URL));
     }
 
+    @Test
+    @SmallTest
+    public void testIsModelReady() {
+        when(mNativeMock.isModelReady(eq(mProfile))).thenReturn(true);
+        Assert.assertTrue(SendTabToSelfAndroidBridge.isModelReady(mProfile));
+        verify(mNativeMock).isModelReady(eq(mProfile));
+    }
+
     // Tests that adding a target device list waiter invokes the native JNI method and returns the
     // native pointer.
     @Test
