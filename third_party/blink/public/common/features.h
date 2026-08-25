@@ -1813,6 +1813,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // WebRTC's security.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcPqcForDtls);
 
+// TODO(crbug.com/501209160): Remove this kill switch after confirming the
+// standards-compliant behavior does not cause regressions.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kWebRtcSuppressDtlsStateChangeOnClose);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppEnableScopeExtensionsBySite);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kWebAppEnableScopeExtensionsForIsolatedWebApps);

@@ -105,7 +105,9 @@ void RTCDtlsTransport::ChangeState(webrtc::DtlsTransportInformation info) {
 
 void RTCDtlsTransport::Close() {
   closed_from_owner_ = true;
-  if (current_state_.state() != webrtc::DtlsTransportState::kClosed) {
+  if (!base::FeatureList::IsEnabled(
+          features::kWebRtcSuppressDtlsStateChangeOnClose) &&
+      current_state_.state() != webrtc::DtlsTransportState::kClosed) {
     DispatchEvent(*Event::Create(event_type_names::kStatechange));
   }
   ice_transport_->Stop();

@@ -2382,6 +2382,11 @@ BASE_FEATURE(kWebRtcUseCaptureBeginTimestamp, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebRtcPqcForDtls, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// TODO(crbug.com/501209160): Remove this kill switch after confirming the
+// standards-compliant behavior does not cause regressions.
+BASE_FEATURE(kWebRtcSuppressDtlsStateChangeOnClose,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kWebRtcUseMediaThreadTypes, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRendererMainIsDefaultThreadTypeForWebRTC,
