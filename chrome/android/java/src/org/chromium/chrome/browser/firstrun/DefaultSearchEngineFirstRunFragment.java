@@ -14,6 +14,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.LayoutRes;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.base.metrics.RecordUserAction;
@@ -22,6 +23,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelper;
@@ -40,9 +42,14 @@ public class DefaultSearchEngineFirstRunFragment extends Fragment implements Fir
             LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-        View rootView =
-                inflater.inflate(
-                        R.layout.default_search_engine_first_run_fragment, container, false);
+        boolean useCentered =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_FRE_LAYOUT_UPDATE);
+        @LayoutRes
+        int layoutId =
+                useCentered
+                        ? R.layout.default_search_engine_first_run_fragment_centered
+                        : R.layout.default_search_engine_first_run_fragment;
+        View rootView = inflater.inflate(layoutId, container, /* attachToRoot= */ false);
         // Layout that displays the available search engines to the user.
         RadioButtonLayout engineLayout =
                 rootView.findViewById(R.id.default_search_engine_dialog_options);
