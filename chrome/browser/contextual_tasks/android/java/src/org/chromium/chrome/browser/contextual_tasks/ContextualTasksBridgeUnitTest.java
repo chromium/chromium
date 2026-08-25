@@ -61,7 +61,6 @@ public class ContextualTasksBridgeUnitTest {
     private final UnownedUserDataHost mUserDataHost = new UnownedUserDataHost();
 
     private static final String TEST_URL = "https://example.com";
-    private static final String TEST_TASK_ID = "test-task-id";
     private static final long TEST_NATIVE_BROWSER_WINDOW_INTERFACE_PTR = 5678L;
     private static final long TEST_NATIVE_BRIDGE_PTR = 1234L;
 

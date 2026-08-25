@@ -80,7 +80,6 @@ public class ImprovedBookmarkRowCoordinatorTest {
     @Mock private CurrencyFormatter.Natives mCurrencyFormatterJniMock;
 
     private Activity mActivity;
-    private PropertyModel mModel;
     private ImprovedBookmarkRowCoordinator mCoordinator;
 
     @Before

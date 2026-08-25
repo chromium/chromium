@@ -78,7 +78,6 @@ public class ImprovedBookmarkFolderViewRenderTest {
                     .build();
 
     private BookmarkModel mBookmarkModel;
-    private ImprovedBookmarkFolderView mView;
     private PropertyModel mModel;
     private Bitmap mPrimaryBitmap;
     private Bitmap mSecondaryBitmap;

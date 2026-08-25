@@ -25,7 +25,6 @@ import org.chromium.google_apis.gaia.GaiaId;
 /** Unit tests for {@link AccountPreviewDataService} and {@link AccountPreviewPreference}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AccountPreviewDataServiceUnitTest {
-    private static final long NATIVE_SERVICE_PTR = 12345L;
     private static final GaiaId GAIA_ID = new GaiaId("gaia-id-1");
     private static final @DataType int[] DATA_TYPES =
             new int[] {DataType.BOOKMARKS, DataType.PASSWORDS};
