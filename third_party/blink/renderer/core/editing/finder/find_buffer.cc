@@ -485,8 +485,12 @@ void FindBuffer::CollectTextUntilBlockBoundary(
     return;
   }
 
+  bool skipped_laid_out_content = false;
   while (node && node != just_after_block) {
     if (ShouldIgnoreContents(*node)) {
+      if (node->GetLayoutObject()) {
+        skipped_laid_out_content = true;
+      }
       if (end_node && (end_node == node ||
                        FlatTreeTraversal::IsDescendantOf(*end_node, *node))) {
         // For setting |node_after_block| later.
@@ -525,8 +529,21 @@ void FindBuffer::CollectTextUntilBlockBoundary(
       const auto* text_node = DynamicTo<Text>(node);
       if (text_node) {
         last_added_text_node = node;
-        AddTextToBuffer(*text_node, range, buffer_, &buffer_node_mappings_);
+
+        // Skipping nodes (eg. visibility:hidden) can leave a space on each side
+        // of the skipped node. Without the node in between, the double space
+        // prevents matching across skipped content, so drop one of them. Only
+        // ' ' is checked because other whitespace is already collapsed.
+        const bool ignore_leading_space =
+            RuntimeEnabledFeatures::FindBufferCollapseSkippedSpaceEnabled() &&
+            skipped_laid_out_content && style->ShouldCollapseWhiteSpaces() &&
+            !buffer_.empty() && buffer_.back() == ' ';
+        AddTextToBuffer(*text_node, range, ignore_leading_space, buffer_,
+                        &buffer_node_mappings_);
+        skipped_laid_out_content = false;
       }
+    } else if (node->GetLayoutObject()) {
+      skipped_laid_out_content = true;
     }
     if (node == end_node) {
       node = FlatTreeTraversal::Next(*node);
@@ -610,7 +627,8 @@ Vector<UChar> FindBuffer::SerializeLevelInGraph(
       for (const auto& text_or_char : chunk_list[index]->TextList()) {
         if (text_or_char.text) {
           wtf_size_t start = buffer.size();
-          AddTextToBuffer(*text_or_char.text, range, buffer, mappings);
+          AddTextToBuffer(*text_or_char.text, range,
+                          /*ignore_leading_space=*/false, buffer, mappings);
           for (wtf_size_t i = start; i < buffer.size(); ++i) {
             buffer[i] = kSkippedChar;
           }
@@ -622,7 +640,8 @@ Vector<UChar> FindBuffer::SerializeLevelInGraph(
     }
     for (const auto& text_or_char : chunk->TextList()) {
       if (text_or_char.text) {
-        AddTextToBuffer(*text_or_char.text, range, buffer, mappings);
+        AddTextToBuffer(*text_or_char.text, range,
+                        /*ignore_leading_space=*/false, buffer, mappings);
       } else {
         buffer.push_back(text_or_char.code_point);
       }
@@ -634,6 +653,7 @@ Vector<UChar> FindBuffer::SerializeLevelInGraph(
 
 void FindBuffer::AddTextToBuffer(const Text& text_node,
                                  const EphemeralRangeInFlatTree& range,
+                                 bool ignore_leading_space,
                                  Vector<UChar>& buffer,
                                  HeapVector<BufferNodeMapping>* mappings) {
   LayoutBlockFlow& block_flow = *OffsetMapping::GetInlineFormattingContextOf(
@@ -663,18 +683,23 @@ void FindBuffer::AddTextToBuffer(const Text& text_node,
   for (const OffsetMappingUnit& unit :
        offset_mapping_->GetMappingUnitsForDOMRange(
            EphemeralRange(node_start, node_end))) {
+    unsigned content_start = unit.TextContentStart();
+    if (ignore_leading_space && first_unit &&
+        content_start < unit.TextContentEnd() &&
+        mapped_text[content_start] == ' ') {
+      ++content_start;
+    }
     if (first_unit || last_unit_end != unit.TextContentStart()) {
       if (mappings) {
         // This is the first unit, or the units are not consecutive, so we need
         // to insert a new BufferNodeMapping.
-        mappings->push_back(BufferNodeMapping(
-            {offset_mapping_, buffer.size(), unit.TextContentStart()}));
+        mappings->push_back(
+            BufferNodeMapping({offset_mapping_, buffer.size(), content_start}));
       }
       first_unit = false;
     }
-    String text_for_unit =
-        mapped_text.substr(unit.TextContentStart(),
-                           unit.TextContentEnd() - unit.TextContentStart());
+    String text_for_unit = mapped_text.substr(
+        content_start, unit.TextContentEnd() - content_start);
     text_for_unit.Ensure16Bit();
     buffer.append_range(text_for_unit.Span16());
     last_unit_end = unit.TextContentEnd();

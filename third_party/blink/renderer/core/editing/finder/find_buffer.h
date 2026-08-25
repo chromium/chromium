@@ -154,6 +154,7 @@ class CORE_EXPORT FindBuffer {
   // Adds text in |text_node| that are located within |range| to |buffer|.
   void AddTextToBuffer(const Text& text_node,
                        const EphemeralRangeInFlatTree& range,
+                       bool ignore_leading_space,
                        Vector<UChar>& buffer,
                        HeapVector<BufferNodeMapping>* mappings);
 

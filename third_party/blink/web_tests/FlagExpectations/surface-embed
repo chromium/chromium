@@ -4829,7 +4829,6 @@ external/wpt/scroll-animations/scroll-timelines/scroll-timeline-range.html [ Fai
 external/wpt/scroll-animations/view-timelines/view-timeline-inset.html [ Failure Pass ]
 external/wpt/scroll-animations/view-timelines/view-timeline-range.html [ Failure Pass ]
 external/wpt/scroll-performance-timing/tentative/supported-entry-types.window.html [ Failure Pass ]
-external/wpt/scroll-to-text-fragment/find-range-from-text-directive.html [ Failure Pass ]
 external/wpt/scroll-to-text-fragment/non-html-documents.html [ Failure Pass ]
 external/wpt/scroll-to-text-fragment/percent-encoding.html [ Failure Pass ]
 external/wpt/scroll-to-text-fragment/redirects.html [ Failure Pass ]

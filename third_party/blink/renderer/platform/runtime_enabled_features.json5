@@ -3005,6 +3005,10 @@
       implied_by: ["FilterableSelect", "CustomizableCombobox"],
     },
     {
+      name: "FindBufferCollapseSkippedSpace",
+      status: "stable",
+    },
+    {
       name: "FindBufferMatchAcrossIgnoredNodes",
       status: "stable",
     },
