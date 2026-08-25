@@ -6,6 +6,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <vector>
+
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/functional/callback_helpers.h"
@@ -44,8 +46,12 @@ void ShowNetworkProxySettings(content::WebContents* web_contents) {
 void ShowManageSSLCertificates(content::WebContents* web_contents) {
   NSURL* keychain_app = [NSWorkspace.sharedWorkspace
       URLForApplicationWithBundleIdentifier:@"com.apple.keychainaccess"];
-  base::mac::LaunchApplication(base::apple::NSURLToFilePath(keychain_app),
-                               /*command_line_args=*/{}, /*url_specs=*/{},
+  std::vector<std::string> args = {
+      "-User Has Acknowledged Passwords App Dialog",
+      "<true/>",
+  };
+  base::mac::LaunchApplication(base::apple::NSURLToFilePath(keychain_app), args,
+                               /*url_specs=*/{},
                                /*options=*/{}, base::DoNothing());
 }
 
