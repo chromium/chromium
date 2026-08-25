@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/wallet_reminder_notice_page_action_controller.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/page_action/test_support/mock_page_action_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/core/browser/metrics/payments/wallet_reminder_notice_metrics.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -146,11 +148,44 @@ TEST_F(WalletReminderNoticeBubbleControllerTest,
 }
 
 TEST_F(WalletReminderNoticeBubbleControllerTest, OnAcceptButton) {
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(mock_page_action_controller_, Hide(kActionWalletReminderNotice));
   controller_->OnAcceptButton();
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WalletReminderNotice.Interaction",
+      autofill_metrics::WalletReminderNoticeInteraction::kAcknowledgedCta, 1);
 }
 
-TEST_F(WalletReminderNoticeBubbleControllerTest, OnBubbleClosed) {
+TEST_F(WalletReminderNoticeBubbleControllerTest, OnLinkClicked) {
+  base::HistogramTester histogram_tester;
+  controller_->OnLinkClicked(GURL("https://example.com"));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WalletReminderNotice.Interaction",
+      autofill_metrics::WalletReminderNoticeInteraction::kClickedLink, 1);
+}
+
+TEST_F(WalletReminderNoticeBubbleControllerTest, OnBubbleClosed_Accepted) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(mock_autofill_bubble_handler_,
+              ShowWalletReminderNoticeBubble(web_contents(), controller_.get(),
+                                             /*is_user_gesture=*/false))
+      .WillOnce(testing::Return(&test_bubble_));
+  controller_->Show({TestLegalMessageLine("Line 1")});
+  EXPECT_EQ(controller_->GetBubbleView(), &test_bubble_);
+
+  controller_->OnAcceptButton();
+  controller_->OnBubbleClosed();
+  EXPECT_EQ(controller_->GetBubbleView(), nullptr);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WalletReminderNotice.Interaction",
+      autofill_metrics::WalletReminderNoticeInteraction::kAcknowledgedCta, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.WalletReminderNotice.Interaction",
+      autofill_metrics::WalletReminderNoticeInteraction::kDismissed, 0);
+}
+
+TEST_F(WalletReminderNoticeBubbleControllerTest, OnBubbleClosed_Dismissed) {
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(mock_autofill_bubble_handler_,
               ShowWalletReminderNoticeBubble(web_contents(), controller_.get(),
                                              /*is_user_gesture=*/false))
@@ -160,6 +195,9 @@ TEST_F(WalletReminderNoticeBubbleControllerTest, OnBubbleClosed) {
 
   controller_->OnBubbleClosed();
   EXPECT_EQ(controller_->GetBubbleView(), nullptr);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WalletReminderNotice.Interaction",
+      autofill_metrics::WalletReminderNoticeInteraction::kDismissed, 1);
 }
 
 }  // namespace

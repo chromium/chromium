@@ -11,11 +11,15 @@
 #include "chrome/browser/ui/autofill/payments/wallet_reminder_notice_page_action_controller.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "components/autofill/core/browser/metrics/payments/wallet_reminder_notice_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/window_open_disposition.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
@@ -83,15 +87,37 @@ WalletReminderNoticeBubbleController::GetWeakPtr() {
 }
 
 void WalletReminderNoticeBubbleController::OnAcceptButton() {
+  autofill_metrics::LogWalletReminderNoticeInteraction(
+      autofill_metrics::WalletReminderNoticeInteraction::kAcknowledgedCta);
+  logged_accept_button_clicked_ = true;
+
   if (WalletReminderNoticePageActionController* page_action_controller =
           WalletReminderNoticePageActionController::From(*tab_interface_)) {
     page_action_controller->Hide();
   }
 }
 
+void WalletReminderNoticeBubbleController::OnLinkClicked(const GURL& url) {
+  autofill_metrics::LogWalletReminderNoticeInteraction(
+      autofill_metrics::WalletReminderNoticeInteraction::kClickedLink);
+  logged_link_clicked_ = true;
+
+  web_contents()->OpenURL(
+      content::OpenURLParams(url, content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK,
+                             /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
+}
+
 void WalletReminderNoticeBubbleController::OnBubbleClosed() {
   if (actions::ActionItem* action_item = GetActionItem()) {
     action_item->SetIsShowingBubble(false);
+  }
+  if (!logged_accept_button_clicked_ && !logged_link_clicked_ &&
+      !bubble_hide_initiated_by_bubble_manager_) {
+    autofill_metrics::LogWalletReminderNoticeInteraction(
+        autofill_metrics::WalletReminderNoticeInteraction::kDismissed);
   }
   ResetBubbleViewAndInformBubbleManager();
 }

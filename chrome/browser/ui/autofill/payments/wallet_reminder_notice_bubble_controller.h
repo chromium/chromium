@@ -13,6 +13,8 @@
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
+class GURL;
+
 namespace actions {
 class ActionItem;
 }
@@ -57,6 +59,7 @@ class WalletReminderNoticeBubbleController
   base::WeakPtr<WalletReminderNoticeBubbleController> GetWeakPtr();
 
   void OnAcceptButton();
+  void OnLinkClicked(const GURL& url);
   void OnBubbleClosed();
 
   // BubbleControllerBase:
@@ -79,6 +82,10 @@ class WalletReminderNoticeBubbleController
   // as an alert without stealing input focus from the webpage. Clicking the
   // bubble or its icon again sets this to true, which focuses the bubble.
   bool is_reshow_ = false;
+  // Whether clicking the accept button was logged.
+  bool logged_accept_button_clicked_ = false;
+  // Whether clicking a legal message line link was logged.
+  bool logged_link_clicked_ = false;
 
   // The legal message lines with links displayed in the notice bubble.
   LegalMessageLines legal_message_lines_;
