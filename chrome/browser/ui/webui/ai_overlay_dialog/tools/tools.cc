@@ -38,7 +38,6 @@
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"

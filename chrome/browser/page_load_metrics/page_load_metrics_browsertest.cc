@@ -468,10 +468,10 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NewWindowClassification) {
   nav_params.disposition = WindowOpenDisposition::NEW_WINDOW;
   Navigate(&nav_params);
 
-  Browser* new_browser = static_cast<Browser*>(
-      GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+  BrowserWindowInterface* new_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   PageLoadMetricsTestWaiter waiter(
-      new_browser->tab_strip_model()->GetActiveWebContents());
+      new_browser->GetTabStripModel()->GetActiveWebContents());
   waiter.AddPageExpectation(TimingField::kFirstContentfulPaint);
   waiter.AddPageExpectation(TimingField::kLargestContentfulPaint);
   waiter.AddPageExpectation(TimingField::kLoadEvent);
