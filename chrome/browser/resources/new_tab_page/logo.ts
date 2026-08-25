@@ -190,9 +190,12 @@ export class LogoElement extends CrLitElement {
   }
 
   private computeDoodleBoxed_(): boolean {
+    if (!this.imageDoodle_) {
+      return false;
+    }
+
     const backgroundColor = this.computeBackgroundColor_();
     return !backgroundColor ||
-        !!this.imageDoodle_ &&
         this.imageDoodle_.backgroundColor.value !== backgroundColor.value;
   }
 
