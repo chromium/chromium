@@ -2306,7 +2306,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mCompositorViewHolderSupplier,
                             mTabGroupUiActionHandlerSupplier,
                             getDesktopWindowStateManager(),
-                            mTabObscuringHandlerSupplier.get());
+                            mTabObscuringHandlerSupplier.get(),
+                            mToolbarManager);
         }
 
         mSideUiCoordinator =

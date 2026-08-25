@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.UrlBar;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxControls;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -177,6 +178,12 @@ public class TabSearchOverlayCoordinator
             mChangeProcessor;
     private @Nullable LinearLayout mPanelContainer;
     private @Nullable PopupWindow mPopupWindow;
+    // On desktop / tablet devices with a hardware keyboard connected, loading the NTP causes the
+    // Omnibox to enter a STANDBY input session. When Tab Search is opened, this interface
+    // terminates
+    // any active Omnibox/Fusebox session so background suggestions are not triggered while Tab
+    // Search is active.
+    private final @Nullable FuseboxControls mFuseboxControls;
     private @Nullable SearchUiCoordinator mSearchUiCoordinator;
     private ViewTreeObserver.@Nullable OnWindowFocusChangeListener mWindowFocusListener;
     private TabObscuringHandler.@Nullable Token mTabObscuringToken;
@@ -198,6 +205,8 @@ public class TabSearchOverlayCoordinator
      * @param tabGroupUiActionHandlerSupplier Supplier for the tab group UI action handler.
      * @param desktopWindowStateManager Manager for monitoring desktop windowing state changes.
      * @param tabObscuringHandler Delegate object handling obscuring views.
+     * @param fuseboxControls Optional interface to control Omnibox fusebox input sessions before
+     *     showing the overlay.
      */
     public TabSearchOverlayCoordinator(
             Activity activity,
@@ -212,7 +221,8 @@ public class TabSearchOverlayCoordinator
             MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             OneshotSupplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            TabObscuringHandler tabObscuringHandler) {
+            TabObscuringHandler tabObscuringHandler,
+            @Nullable FuseboxControls fuseboxControls) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mProfileSupplier = profileSupplier;
@@ -226,6 +236,7 @@ public class TabSearchOverlayCoordinator
         mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
         mDesktopWindowStateManager = desktopWindowStateManager;
         mTabObscuringHandler = tabObscuringHandler;
+        mFuseboxControls = fuseboxControls;
         mBackPressManager.addHandler(this, BackPressHandler.Type.TAB_SEARCH_OVERLAY);
         mLifecycleDispatcher.register(this);
 
@@ -616,6 +627,10 @@ public class TabSearchOverlayCoordinator
 
         ensureInitialized();
         if (mModel.get(TabSearchOverlayProperties.VISIBLE)) return;
+
+        if (mFuseboxControls != null) {
+            mFuseboxControls.endFuseboxInput();
+        }
 
         // Obscure underlying tabs and toolbar to suppress accessibility focus and screen reader
         // interactions.

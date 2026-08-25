@@ -129,6 +129,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxChipManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegateImpl;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxControls;
 import org.chromium.chrome.browser.omnibox.status.SiteControlsIphController;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
@@ -297,7 +298,8 @@ public class ToolbarManager
                 ThemeColorObserver,
                 TintObserver,
                 MenuButtonDelegate,
-                TabObscuringHandler.Observer {
+                TabObscuringHandler.Observer,
+                FuseboxControls {
     private final LocationBarEmbedderUiOverrides mLocationBarEmbedderUiOverrides =
             new LocationBarEmbedderUiOverrides().setIsMainBrowserOmnibox();
     private final IncognitoStateProvider mIncognitoStateProvider;
@@ -3431,18 +3433,21 @@ public class ToolbarManager
      *
      * @param input The AutocompleteInput to start the session with.
      */
+    @Override
     public void beginFuseboxInput(AutocompleteInput input) {
         if (mIsDestroyed || mLocationBar == null || mLocationBar.getOmniboxStub() == null) return;
         assumeNonNull(mLocationBar.getOmniboxStub()).beginInput(input);
     }
 
     /** End the current fusebox input session. */
+    @Override
     public void endFuseboxInput() {
         if (mIsDestroyed || mLocationBar == null || mLocationBar.getOmniboxStub() == null) return;
         assumeNonNull(mLocationBar.getOmniboxStub()).endInput();
     }
 
     /** Suspend the current fusebox input session. */
+    @Override
     public void suspendFuseboxInput() {
         if (mIsDestroyed || mLocationBar == null || mLocationBar.getOmniboxStub() == null) return;
         assumeNonNull(mLocationBar.getOmniboxStub()).suspendInput();

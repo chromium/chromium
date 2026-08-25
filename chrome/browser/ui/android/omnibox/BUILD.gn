@@ -93,6 +93,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxAttachmentRecyclerView.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxAttachmentRecyclerViewAdapter.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxAttachmentViewBinder.java",
+    "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxControls.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxCoordinator.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxFeatureUtils.java",
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMediator.java",

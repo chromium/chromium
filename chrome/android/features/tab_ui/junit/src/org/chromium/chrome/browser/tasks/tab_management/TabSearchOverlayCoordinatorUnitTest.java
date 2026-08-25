@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxControls;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.searchwidget.SearchUiCoordinator;
@@ -135,6 +136,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
     @Mock private Tab mTab;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock private AppHeaderState mAppHeaderState;
+    @Mock private FuseboxControls mFuseboxControls;
 
     private final OneshotSupplierImpl<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier =
             new OneshotSupplierImpl<>();
@@ -189,7 +191,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
                         ObservableSuppliers.createNonNull(mCompositorViewHolder),
                         mTabGroupUiActionHandlerSupplier,
                         mDesktopWindowStateManager,
-                        mTabObscuringHandler);
+                        mTabObscuringHandler,
+                        mFuseboxControls);
         mCoordinator.setSearchUiCoordinatorForTesting(mSearchUiCoordinator);
 
         // Inflate the overlay and initialize member views.
@@ -235,6 +238,51 @@ public class TabSearchOverlayCoordinatorUnitTest {
         verify(mSearchUiCoordinator)
                 .beginQuery(
                         eq(IntentOrigin.HUB), eq(SearchType.TEXT), eq(null), eq(mWindowAndroid));
+    }
+
+    @Test
+    public void testShow_endsFuseboxInput() {
+        showOverlay();
+        verify(mFuseboxControls).endFuseboxInput();
+    }
+
+    @Test
+    public void testShow_nullFuseboxControls_doesNotThrow() {
+        mCoordinator.destroy();
+        clearInvocations(mSearchUiCoordinator);
+        mCoordinator =
+                new TabSearchOverlayCoordinator(
+                        mActivity,
+                        mWindowAndroid,
+                        mProfileSupplier,
+                        mSnackbarManager,
+                        ObservableSuppliers.createNonNull(mModalDialogManager),
+                        mActivityLifecycleDispatcher,
+                        mTabModelSelectorSupplier,
+                        /* edgeToEdgeSystemBarColorHelper= */ null,
+                        mBackPressManager,
+                        ObservableSuppliers.createNonNull(mCompositorViewHolder),
+                        mTabGroupUiActionHandlerSupplier,
+                        mDesktopWindowStateManager,
+                        mTabObscuringHandler,
+                        /* fuseboxControls= */ null);
+        mCoordinator.setSearchUiCoordinatorForTesting(mSearchUiCoordinator);
+        mCoordinator.ensureInitialized();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        mPanelContainer = mCoordinator.getPanelContainerForTesting();
+
+        showOverlay();
+        assertTrue(mCoordinator.isVisible());
+    }
+
+    @Test
+    public void testShow_alreadyVisible_doesNotInvokeEndFuseboxInput() {
+        showOverlay();
+        verify(mFuseboxControls, times(1)).endFuseboxInput();
+
+        // Calling show again while visible should not re-invoke endFuseboxInput.
+        mCoordinator.show(TabSearchEntryPoint.HORIZONTAL_TAB_STRIP);
+        verify(mFuseboxControls, times(1)).endFuseboxInput();
     }
 
     @Test
@@ -971,7 +1019,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
                         ObservableSuppliers.createNonNull(mCompositorViewHolder),
                         mTabGroupUiActionHandlerSupplier,
                         mDesktopWindowStateManager,
-                        mTabObscuringHandler);
+                        mTabObscuringHandler,
+                        mFuseboxControls);
         mCoordinator.setSearchUiCoordinatorForTesting(mSearchUiCoordinator);
         mCoordinator.ensureInitialized();
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
