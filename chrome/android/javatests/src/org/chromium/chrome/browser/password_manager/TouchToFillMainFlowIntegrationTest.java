@@ -57,7 +57,6 @@ public class TouchToFillMainFlowIntegrationTest {
     private static final String FORM_URL = "/chrome/test/data/password/simple_password.html";
     private static final String PASSWORD_ATTRIBUTE_NAME = "pm_parser_annotation";
     private static final String PASSWORD_NODE_ID = "password_field";
-    private static final String TEST_ACCOUNT_EMAIL = "test@gmail.com";
     private static final String TEST_ACCOUNT_NAME = "Test user";
     private static final String TEST_ACCOUNT_PASSWORD = "S3cr3t";
     private EmbeddedTestServer mTestServer;

@@ -64,8 +64,6 @@ import java.util.concurrent.TimeoutException;
 @Batch(Batch.PER_CLASS)
 @EnableFeatures(AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER)
 public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpener {
-    private static final int CARD_ACCESSIBILITY_STRING_RESOURCE =
-            R.string.autofill_virtual_card_container_accessibility_description;
     private static final int LOADING_ACCESSIBILITY_STRING_RESOURCE =
             R.string.autofill_virtual_card_enroll_loading_throbber_accessible_name;
     private static final int DESCRIPTION_STRING_RESOURCE =
