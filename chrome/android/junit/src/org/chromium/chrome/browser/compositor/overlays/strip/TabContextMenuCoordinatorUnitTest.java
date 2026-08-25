@@ -1245,7 +1245,7 @@ public class TabContextMenuCoordinatorUnitTest {
                 modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
         ListItem addToGroupItem =
-                findItemByPluralsId(modelList, R.plurals.add_tab_to_group_menu_item);
+                findItemByTitle(modelList, mActivity.getString(R.string.menu_move_tab_to_group));
         assertNotNull("Add to group item should be present", addToGroupItem);
         addToGroupItem.model.get(CLICK_LISTENER).onClick(mView);
 

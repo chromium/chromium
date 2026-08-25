@@ -799,9 +799,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         submenuItems.addAll(potentialGroups);
 
         String title =
-                mActivity
-                        .getResources()
-                        .getQuantityString(R.plurals.add_tab_to_group_menu_item, tabs.size());
+                TabGroupUiUtils.getAddToGroupMenuItemTitle(
+                        mActivity, groupToNotBeIncluded, tabs.size());
         return new ListItemBuilder()
                 .withTitle(title)
                 .withIsIncognito(isIncognito)
