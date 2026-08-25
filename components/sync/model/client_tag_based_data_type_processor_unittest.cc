@@ -816,6 +816,48 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldReportErrorDuringActivation) {
   EXPECT_EQ(received_error->location(), error.location());
 }
 
+// Test that stopping sync while connection is in flight prevents ConnectSync()
+// from connecting the worker, and does not cause a CHECK failure when
+// OnSyncStarting() is called again.
+TEST_F(ClientTagBasedDataTypeProcessorTest,
+       ShouldIgnoreConnectSyncIfStoppedWhileInFlight) {
+  InitializeToMetadataLoaded();
+
+  DataTypeActivationRequest request;
+  request.error_handler = base::BindRepeating([](const ModelError& error) {});
+  request.cache_guid = kCacheGuid;
+  request.authenticated_gaia_id = kDefaultAuthenticatedGaiaId;
+  request.sync_mode = SyncMode::kFull;
+  request.configuration_start_time = base::Time::Now();
+
+  base::RunLoop loop;
+  std::unique_ptr<syncer::DataTypeActivationResponse>
+      data_type_activation_response;
+  type_processor()->OnSyncStarting(
+      request,
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<syncer::DataTypeActivationResponse> response) {
+            data_type_activation_response = std::move(response);
+            loop.Quit();
+          }));
+  loop.Run();
+
+  ASSERT_NE(nullptr, data_type_activation_response);
+
+  // Stop sync while connection is in flight (before ConnectSync is invoked).
+  type_processor()->OnSyncStopping(KEEP_METADATA);
+
+  // Mimic the in-flight connection completing on the sync thread and posting
+  // ConnectSync back to the model thread.
+  OnReadyToConnect(std::move(data_type_activation_response));
+
+  // The processor should not be connected since sync was stopped.
+  EXPECT_FALSE(type_processor()->IsConnected());
+
+  // Starting sync again should succeed and not trigger CHECK(!IsConnected()).
+  OnSyncStarting();
+}
+
 // Test that an error during the merge is propagated to the error handler.
 TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldReportErrorDuringMerge) {
   ModelReadyToSync();
