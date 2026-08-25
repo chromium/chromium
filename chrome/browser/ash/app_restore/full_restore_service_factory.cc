@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "components/prefs/pref_service.h"
@@ -64,7 +63,6 @@ FullRestoreServiceFactory::FullRestoreServiceFactory()
                                      .WithSystem(ProfileSelection::kNone)
                                      .WithAshInternals(ProfileSelection::kNone)
                                      .Build()) {
-  DependsOn(NotificationDisplayServiceFactory::GetInstance());
   DependsOn(apps::AppServiceProxyFactory::GetInstance());
 }
 

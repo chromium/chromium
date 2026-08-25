@@ -92,7 +92,6 @@ static_library("app_restore") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/custom_handlers",
     "//chrome/browser/first_run",
-    "//chrome/browser/notifications",
     "//chrome/browser/prefs:util",
     "//chrome/browser/profiles:profile_io_data",
     "//chrome/browser/ui/browser_window:create_browser_window",
