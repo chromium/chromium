@@ -22,7 +22,7 @@ namespace base {
 // `TaggedMetricLock` is used to measure and categorize lock acquisition
 // times under UMA metrics.
 //
-// Must be acquired using `base::TaggedAutoLock`. Attempting to pass a
+// Must be acquired using `base::TaggedMetricAutoLock`. Attempting to pass a
 // `TaggedMetricLock` to standard `base::AutoLock` will result in a compile-time
 // type error.
 //
@@ -42,7 +42,7 @@ namespace base {
 //         : lock_(GetMojoTag(), GetMojoChannelLockTag()) {}
 //
 //     void WriteMessage() {
-//       base::TaggedAutoLock auto_lock(lock_);
+//       base::TaggedMetricAutoLock auto_lock(lock_);
 //       // Critical section...
 //     }
 //
@@ -71,6 +71,17 @@ class LOCKABLE BASE_EXPORT TaggedMetricLock {
     lock_.Acquire(tag_list_, tracking);
   }
 
+  // Override custom_tag at acquisition time.
+  void Acquire(const LockMetricTag& custom_tag,
+               subtle::LockTracking tracking = subtle::LockTracking::kDisabled)
+      EXCLUSIVE_LOCK_FUNCTION() {
+    // Only allow overriding the custom tag for locks that have no custom tag.
+    CHECK(!this->custom_tag().has_value());
+    lock_.Acquire(
+        LockMetricTagList(Lock::GetBaseLockMetricTag(), core_tag(), custom_tag),
+        tracking);
+  }
+
   void Release() UNLOCK_FUNCTION() { lock_.Release(); }
   void AssertAcquired() const ASSERT_EXCLUSIVE_LOCK() {
     lock_.AssertAcquired();
@@ -86,8 +97,65 @@ class LOCKABLE BASE_EXPORT TaggedMetricLock {
 };
 
 // A helper that acquires the given `TaggedMetricLock` while in scope.
-// `TaggedAutoLock` can only be used to acquire a `TaggedMetricLock`.
-using TaggedAutoLock = internal::BasicAutoLock<TaggedMetricLock>;
+// `TaggedMetricAutoLock` can only be used to acquire a `TaggedMetricLock`.
+// Lock tags can optionally be overridden at acquisition time.
+//
+// Example Usage:
+//   class MojoChannel {
+//    public:
+//     MojoChannel()
+//         : lock_(GetMojoChannelLockTag()) {}
+//
+//     void WriteMessage() {
+//       // Acquires lock_ and overrides the custom tag for this acquisition.
+//       base::TaggedMetricAutoLock auto_lock(lock_, GetWriteMessageTag());
+//       // Critical section...
+//     }
+//
+//    private:
+//     base::TaggedMetricLock lock_;
+//   };
+class [[nodiscard]] SCOPED_LOCKABLE BASE_EXPORT TaggedMetricAutoLock {
+  STACK_ALLOCATED();
+
+ public:
+  struct AlreadyAcquired {};
+
+  explicit TaggedMetricAutoLock(
+      TaggedMetricLock& lock,
+      subtle::LockTracking tracking = subtle::LockTracking::kDisabled)
+      EXCLUSIVE_LOCK_FUNCTION(lock)
+      : lock_(lock) {
+    lock_.Acquire(tracking);
+  }
+
+  // Override custom_tag at acquisition time.
+  TaggedMetricAutoLock(
+      TaggedMetricLock& lock,
+      const LockMetricTag& custom_tag,
+      subtle::LockTracking tracking = subtle::LockTracking::kDisabled)
+      EXCLUSIVE_LOCK_FUNCTION(lock)
+      : lock_(lock) {
+    lock_.Acquire(custom_tag, tracking);
+  }
+
+  TaggedMetricAutoLock(TaggedMetricLock& lock, const AlreadyAcquired&)
+      EXCLUSIVE_LOCKS_REQUIRED(lock)
+      : lock_(lock) {
+    lock_.AssertAcquired();
+  }
+
+  TaggedMetricAutoLock(const TaggedMetricAutoLock&) = delete;
+  TaggedMetricAutoLock& operator=(const TaggedMetricAutoLock&) = delete;
+
+  ~TaggedMetricAutoLock() UNLOCK_FUNCTION() {
+    lock_.AssertAcquired();
+    lock_.Release();
+  }
+
+ private:
+  TaggedMetricLock& lock_;
+};
 
 }  // namespace base
 

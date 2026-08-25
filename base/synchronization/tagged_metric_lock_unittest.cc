@@ -6,8 +6,11 @@
 
 #include "base/features.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/synchronization/lock_metrics_recorder.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
@@ -19,12 +22,17 @@ namespace base {
 namespace {
 
 const LockMetricTag& GetTestCoreLockMetricTag() {
-  static constinit LockMetricTag tag("TestCoreLockTag");
+  static constinit LockMetricTag tag("BaseLock.TestCoreLockTag");
   return tag;
 }
 
 const LockMetricTag& GetTestCustomLockMetricTag() {
-  static constinit LockMetricTag tag("TestCustomLockTag");
+  static constinit LockMetricTag tag("BaseLock.TestCustomLockTag");
+  return tag;
+}
+
+const LockMetricTag& GetTestOverrideCustomLockMetricTag() {
+  static constinit LockMetricTag tag("BaseLock.TestOverrideCustomTag");
   return tag;
 }
 
@@ -90,7 +98,7 @@ class TaggedMetricLockTest : public ::testing::Test {
     ~TestThread() override { PlatformThread::Join(handle_); }
 
     void ThreadMain() override {
-      TaggedAutoLock auto_lock(*lock_);
+      TaggedMetricAutoLock auto_lock(*lock_);
       lock_acquired_event_.Signal();
       // Sleep for enough time to ensure the other thread takes the slow path
       // of acquire and will record a sample.
@@ -101,7 +109,12 @@ class TaggedMetricLockTest : public ::testing::Test {
     // acquire the lock on the main thread to create contention.
     void CreateLockContention() {
       lock_acquired_event_.Wait();
-      TaggedAutoLock auto_lock(*lock_);
+      TaggedMetricAutoLock auto_lock(*lock_);
+    }
+
+    void CreateLockContention(const LockMetricTag& custom_tag) {
+      lock_acquired_event_.Wait();
+      TaggedMetricAutoLock auto_lock(*lock_, custom_tag);
     }
 
    private:
@@ -121,6 +134,9 @@ class TaggedMetricLockTest : public ::testing::Test {
   }
   const LockMetricTag& test_custom_lock_tag() const {
     return GetTestCustomLockMetricTag();
+  }
+  const LockMetricTag& test_override_custom_lock_tag() const {
+    return GetTestOverrideCustomLockMetricTag();
   }
 
   static const LockMetricTag* GetTag(const LockMetricTagList& tags,
@@ -153,13 +169,13 @@ TEST_F(TaggedMetricLockTest, DirectAcquireAndRelease) {
   tagged_lock.AssertNotHeld();
 }
 
-// Test TaggedAutoLock acquires on creation and releases on scope exit.
-TEST_F(TaggedMetricLockTest, TaggedAutoLockRAII) {
+// Test TaggedMetricAutoLock acquires on creation and releases on scope exit.
+TEST_F(TaggedMetricLockTest, TaggedMetricAutoLockRAII) {
   TaggedMetricLock tagged_lock(test_core_lock_tag());
   tagged_lock.AssertNotHeld();
 
   {
-    TaggedAutoLock auto_lock(tagged_lock);
+    TaggedMetricAutoLock auto_lock(tagged_lock);
     tagged_lock.AssertAcquired();
   }
 
@@ -250,7 +266,7 @@ TEST_F(TaggedMetricLockTest, TaggedMetricLockUncontendedRecordsNoSamples) {
   TaggedMetricLock tagged_lock(test_core_lock_tag(), test_custom_lock_tag());
 
   {
-    TaggedAutoLock auto_lock(tagged_lock);
+    TaggedMetricAutoLock auto_lock(tagged_lock);
   }
 
   size_t sample_count = 0;
@@ -259,6 +275,38 @@ TEST_F(TaggedMetricLockTest, TaggedMetricLockUncontendedRecordsNoSamples) {
         sample_count++;
       });
   EXPECT_EQ(sample_count, 0u);
+}
+
+// Test using different TaggedMetricAutoLock constructor overloads on the same
+// lock instance to verify per-acquisition custom tag overriding in histograms.
+TEST_F(TaggedMetricLockTest, TaggedMetricAutoLockOverloadOverridesCustomTag) {
+  constexpr std::string_view kHistogramPrefix =
+      "Scheduling.ContendedLockAcquisitionTime.BaseLock.";
+  base::HistogramTester histogram_tester;
+
+  TaggedMetricLock tagged_lock(test_core_lock_tag());
+
+  // Standard TaggedMetricAutoLock (uses default core_tag) under contention.
+  {
+    TestThread thread(&tagged_lock);
+    thread.CreateLockContention();
+  }
+
+  // TaggedMetricAutoLock with custom_tag override under contention.
+  {
+    TestThread thread(&tagged_lock);
+    thread.CreateLockContention(test_override_custom_lock_tag());
+  }
+
+  LockMetricsRecorder::GetForCurrentThread()->ReportLockAcquisitionTimes();
+
+  // Core tag histogram should receive both acquisitions
+  histogram_tester.ExpectTotalCount(
+      StrCat({kHistogramPrefix, "TestCoreLockTag.TestThread"}), 2);
+
+  // Custom tag histogram should receive only 1 acquisition
+  histogram_tester.ExpectTotalCount(
+      StrCat({kHistogramPrefix, "TestOverrideCustomTag.TestThread"}), 1);
 }
 
 }  // namespace base

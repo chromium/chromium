@@ -30,8 +30,8 @@ void AutoLockAsTemporary(StructWithLock* s) {
   AutoLock(s->lock); // expected-error {{ignoring temporary of type 'BasicAutoLock<base::Lock>' declared with 'nodiscard' attribute}}
 }
 
-void TaggedAutoLockWithStandardLock(Lock& lock) {
-  TaggedAutoLock auto_lock(lock); // expected-error {{no matching constructor for initialization of 'TaggedAutoLock'}}
+void TaggedMetricAutoLockWithStandardLock(Lock& lock) {
+  TaggedMetricAutoLock auto_lock(lock); // expected-error {{no matching constructor for initialization of 'TaggedMetricAutoLock'}}
 }
 
 void AutoLockWithTaggedMetricLock(TaggedMetricLock& lock) {
