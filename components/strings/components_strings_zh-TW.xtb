@@ -2544,7 +2544,7 @@
 <translation id="4943872375798546930">沒有結果</translation>
 <translation id="495170559598752135">動作</translation>
 <translation id="4953689047182316270">回應無障礙活動</translation>
-<translation id="4954505713046251871">為提供建議及改善這項功能，系統會將網頁網址和內容提供給 Google</translation>
+<translation id="4954505713046251871">為提供建議及改良這項功能，網頁網址和內容會提供給 Google</translation>
 <translation id="4954891067389874142">儲存卡片可加快付款速度。卡片資料會以加密方式存在 Google 錢包。</translation>
 <translation id="4957080528849277028">「查看 Chrome 歷史記錄」按鈕，啟動後即可在 Chrome 設定中查看及管理瀏覽記錄</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{和另外 1 個網站}other{和另外 # 個網站}}</translation>
@@ -2777,7 +2777,7 @@
 <translation id="5323043727018853753">允許內嵌的內容</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />，<ph name="NUM_MATCHES" /> 之 <ph name="MATCH_POSITION" /></translation>
 <translation id="5323501626199324454">在 Google 帳戶中管理</translation>
-<translation id="5327248766486351172">名稱</translation>
+<translation id="5327248766486351172">姓名</translation>
 <translation id="5329858041417644019">你的瀏覽器未受管理</translation>
 <translation id="5330451136755214328"><ph name="MANUFACTURER" /> 電腦</translation>
 <translation id="5331585574693522196">設為預設</translation>
@@ -3042,7 +3042,7 @@
 <translation id="5715918316982363436">這部裝置上的 <ph name="TAB_COUNT" /> (<ph name="WINDOW_COUNT" />)</translation>
 <translation id="5716325061445053985">輕觸即可在手機上開啟分頁</translation>
 <translation id="5717509257172454543">滑冰</translation>
-<translation id="5718601519531438273">提供護照和駕照等資訊</translation>
+<translation id="5718601519531438273">包含護照和駕照等資訊</translation>
 <translation id="5720705177508910913">目前使用者</translation>
 <translation id="5720895412771013401">桌上型電腦</translation>
 <translation id="5721147290164931316">掃描即可使用手機登入</translation>
@@ -3107,7 +3107,7 @@
 <translation id="5820751560028604030">已封鎖本機下載作業</translation>
 <translation id="5826507051599432481">一般名稱 (CN)</translation>
 <translation id="5830698870816298009">使用及調整攝影機</translation>
-<translation id="5831217499016131155">Google 電子錢包</translation>
+<translation id="5831217499016131155">Google 錢包</translation>
 <translation id="583281660410589416">未知</translation>
 <translation id="5832976493438355584">已鎖定</translation>
 <translation id="5837220895135257862">請先釋出「<ph name="CLOUD_PROVIDER" />」中的空間，然後再試一次</translation>
@@ -4815,7 +4815,7 @@
 <translation id="8449036207308062757">管理儲存空間</translation>
 <translation id="8449155699563577224">17 x 24 吋</translation>
 <translation id="8449836157089738489">在新分頁群組中開啟所有網址</translation>
-<translation id="8451518040456311377">儲存及填入身分證件</translation>
+<translation id="8451518040456311377">儲存及填入身分證明文件</translation>
 <translation id="84561192812921051">系統管理員可以從遠端變更你的設定檔和瀏覽器、透過報表分析瀏覽器相關資訊，以及執行其他必要工作。這部裝置上的活動也可以透過 Chrome 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">底部功能表已關閉。</translation>
 <translation id="8456775115498700722">你的「<ph name="CARD_ISSUER_NAME" />」帳戶已連結至 Google Pay，因此現在可以自動填入「<ph name="CARD_ISSUER_NAME" />」卡片的資訊。</translation>

@@ -2029,7 +2029,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="9190355771000652811">En la barra de direcciones, usa esta combinación de teclas con atajos para los motores de búsqueda y las búsquedas en el sitio.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, pestaña de incógnito seleccionada y fijada</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Se verificó hace 1 minuto}other{Se verificó hace # minutos}}</translation>
-<translation id="9202894533863490414">¿Seguro que deseas descargar desde este sitio?</translation>
+<translation id="9202894533863490414">¿Confirmas que quieres descargar desde este sitio?</translation>
 <translation id="9204836675896933765">Queda 1 archivo</translation>
 <translation id="9205933215779845960">No se puede encontrar la página. Revisa la ortografía o intenta buscar en <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>

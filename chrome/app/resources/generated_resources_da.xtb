@@ -453,7 +453,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1316495628809031177">Synkroniseringen er sat på pause</translation>
 <translation id="1319983966058170660">Knap til undersiden <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">Se og administrer gemte adgangskoder på din <ph name="SAVED_PASSWORDS_STORE" /></translation>
-<translation id="1323433172918577554">Se flere</translation>
+<translation id="1323433172918577554">Vis flere</translation>
 <translation id="132539964543492755">Brug "x" til at skifte mellem venstre og højre museknap eller dem begge</translation>
 <translation id="1325611581149097457">Skriv bedre</translation>
 <translation id="1325798198269334655">Få flere oplysninger om, hvordan du holder Chrome opdateret</translation>
@@ -637,7 +637,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Føj fane til ny gruppe}one{Føj fane til ny gruppe}other{Føj faner til ny gruppe}}</translation>
 <translation id="1470946456740188591">Brug genvejen Ctrl+søgetasten+7 for at aktivere eller deaktivere tastenavigation</translation>
 <translation id="1471034383866732283">Læsetilstand kan ikke finde hovedindholdet på denne side</translation>
-<translation id="1472675084647422956">Vis mere</translation>
+<translation id="1472675084647422956">Vis flere</translation>
 <translation id="1473223074251193484">Angiv konfiguration af netdeling</translation>
 <translation id="1473616112002966036">&amp;Videobillede</translation>
 <translation id="1476088332184200792">Kopiér til din enhed</translation>

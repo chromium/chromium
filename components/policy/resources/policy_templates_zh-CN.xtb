@@ -28,7 +28,7 @@
 
       如果您未设置此政策，系统将不会应用任何限制，并且用户可以打印任何文档。</translation>
 <translation id="101438888985615157">将屏幕旋转 180 度</translation>
-<translation id="1016249716881514655"><ph name="CHROME_DEVTOOLS_NAME" />中的这些功能采用生成式 AI 模型来提供额外的调试信息。如需使用这些功能，<ph name="PRODUCT_NAME" /> 必须收集错误消息、堆栈轨迹、代码段和网络请求等数据，并将这些数据发送到用于运行生成式 AI 模型的 Google 服务器。网络请求中的响应正文或身份验证信息和 Cookie 标头不会包含在发送至服务器的数据中。
+<translation id="1016249716881514655"><ph name="CHROME_DEVTOOLS_NAME" />中的这些功能采用生成式 AI 模型来提供额外的调试信息。如需使用这些功能，<ph name="PRODUCT_NAME" /> 必须收集出错提示、堆栈轨迹、代码段和网络请求等数据，并将这些数据发送到用于运行生成式 AI 模型的 Google 服务器。网络请求中的响应正文或身份验证信息和 Cookie 标头不会包含在发送至服务器的数据中。
 
 0 表示允许使用此功能，同时允许 Google 使用相关数据改进其 AI 模型。相关数据可能包括提示、输入、输出、素材和书面反馈，具体取决于相应功能。这些数据也可能会由人工审核，以改进 AI 模型。默认值是 0，但以下注明的情况除外。
 
@@ -846,7 +846,7 @@ Chrome 政策的优先级高于此政策，例如：如果某个扩展程序已�
       如需详细了解有效的 <ph name="URL_LABEL" /> 格式，请访问 https://chromeenterprise.google/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="1595013560176869154">如果此政策已启用，系统会允许使用安全系数低的 PIN 码。安全系数低的 PIN 码的一些特征：由同一个数字构成 (1111)、数字以 1 为单位递增 (1234)、数字以 1 为单位递减 (4321)，以及常用的 PIN 码。如果此政策已停用，用户将无法设置安全系数低且易被猜中的 PIN 码。
 
-      如果此政策未设置，当系统认为 PIN 码的安全系数偏低时，就会向用户显示警告（而非错误消息）。</translation>
+      如果此政策未设置，当系统认为 PIN 码的安全系数偏低时，就会向用户显示警告（而非出错提示）。</translation>
 <translation id="1596396758769156412">如果此政策已停用或未设置，您的 <ph name="PRODUCT_OS_NAME" /> 设备将拒绝附近蓝牙外围设备发起的“Just Works”配对请求。
 
 如果此政策已启用，您的 <ph name="PRODUCT_OS_NAME" /> 设备将接受附近蓝牙外围设备发起的“Just Works”配对请求。
@@ -4969,7 +4969,7 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 <translation id="4243419387411966417">禁止删除无法破解的密码</translation>
 <translation id="4245159233848584683">如果此政策已启用或未设置，当设备离线时，如果系统已设置设备本地账号以实现零延迟的自动登录，<ph name="PRODUCT_OS_NAME" /> 会显示网络配置提示。
 
-如果此政策已停用，系统则会显示错误消息。</translation>
+如果此政策已停用，系统则会显示出错提示。</translation>
 <translation id="4245192755797817012">此政策允许您设置一个网址格式列表，用于指定不允许哪些网站使用 Idle Detection API。
 
 如需详细了解有效的网站网址格式，请访问 https://chromeenterprise.google/policies/url-patterns。允许使用通配符 <ph name="WILDCARD_VALUE" />。此政策只能根据源进行匹配，因此网址格式中的任何路径都会被忽略。

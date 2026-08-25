@@ -700,7 +700,7 @@
 <translation id="3349031117032695619">封鎖彈出式視窗</translation>
 <translation id="3350976670663926380">已儲存編輯內容</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" /> 是代管帳戶</translation>
-<translation id="3365529507898144230">儲存在相簿中</translation>
+<translation id="3365529507898144230">儲存到相簿</translation>
 <translation id="3371831930909698441">有可用的翻譯。翻譯選項的位置接近畫面底部。</translation>
 <translation id="3377063233124932127">你儲存的書籤、密碼等內容現在會顯示在頂端。</translation>
 <translation id="3378214228000661758">使用以下名稱建立密碼金鑰：</translation>
@@ -708,7 +708,7 @@
 <translation id="3385742921291399323">取得儲存的密碼、分頁、書籤等資料。</translation>
 <translation id="3391765987934722383">別錯過降價資訊</translation>
 <translation id="3392923070107623576">建立分頁群組，讓一切井然有序</translation>
-<translation id="3404232721752787413">儲存在 Google 相簿中</translation>
+<translation id="3404232721752787413">儲存到 Google 相簿</translation>
 <translation id="3406506285180498376">分享網頁…</translation>
 <translation id="340669334496430859">上次修改時間</translation>
 <translation id="3409785640040772790">地圖</translation>
@@ -1288,7 +1288,7 @@
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5318298563956633672">你已在追蹤這項產品。</translation>
-<translation id="5327248766486351172">名稱</translation>
+<translation id="5327248766486351172">姓名</translation>
 <translation id="5329451663851195956">向下拉即可重新整理。</translation>
 <translation id="5336910966955551309">按住就能釘選喜愛的網站</translation>
 <translation id="5338512273860059533">正在登入。</translation>
@@ -1437,7 +1437,7 @@
 <translation id="5819208479324046259">由「<ph name="MANAGER" />」管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">同步處理中…</translation>
-<translation id="5831217499016131155">Google 電子錢包</translation>
+<translation id="5831217499016131155">Google 錢包</translation>
 <translation id="583281660410589416">未知</translation>
 <translation id="5838430324585198889">用 Google 應用程式讓 iPad 更強大</translation>
 <translation id="583923961930319521">在所有裝置上使用你的密碼</translation>
@@ -2206,7 +2206,7 @@
 <translation id="8320212361750431956">近期活動</translation>
 <translation id="8325455175867928593">隱藏「依興趣喜好顯示的評論」</translation>
 <translation id="8333459276976141586">Live 需要使用麥克風。輕觸「Live」按鈕即可開啟麥克風。如要關閉麥克風，請輕觸「停止」按鈕或關閉 Gemini。</translation>
-<translation id="833647236762414178">你可以設定、儲存及管理密碼和密碼金鑰，輕鬆登入網站和應用程式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="833647236762414178">你可以建立、儲存及管理密碼和密碼金鑰，輕鬆登入網站和應用程式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">備份資料即可在任何裝置上使用。</translation>
 <translation id="8345328955902001853">{count,plural, =1{再完成 1 項任務即可升級}other{再完成 {count} 項任務即可升級}}</translation>
 <translation id="8348530355586151720">輕觸三點圖示選單</translation>

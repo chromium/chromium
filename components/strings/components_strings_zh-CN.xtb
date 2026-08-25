@@ -331,7 +331,7 @@
 <translation id="1495677929897281669">返回到标签页</translation>
 <translation id="1500286806237135498">摄像头（<ph name="CAMERAS_COUNT" /> 个）</translation>
 <translation id="1504042622576912555">瓦楞纸板</translation>
-<translation id="1507202001669085618">&lt;p&gt;如果您使用的 Wi-Fi 门户网站必须登录才能连接网络，您就会看到这条错误消息。&lt;/p&gt;
+<translation id="1507202001669085618">&lt;p&gt;如果您使用的 Wi-Fi 门户网站必须登录才能连接网络，您就会看到这条出错提示。&lt;/p&gt;
     &lt;p&gt;要修正该错误，请在您尝试打开的网页上点击&lt;strong&gt;连接&lt;/strong&gt;。&lt;/p&gt;</translation>
 <translation id="1513706915089223971">历史记录条目列表</translation>
 <translation id="1515436033764190215">小时前</translation>
@@ -587,7 +587,7 @@
 <translation id="1913037223029790376">使用此虚拟卡的银行卡验证码 (CVC)</translation>
 <translation id="191374271204266022">以 JSON 格式复制</translation>
 <translation id="1914326953223720820">解压缩服务</translation>
-<translation id="1919367280705858090">了解如何解决特定错误消息指出的错误</translation>
+<translation id="1919367280705858090">了解如何解决特定出错提示指出的错误</translation>
 <translation id="1919526244108283799">400 x 600 毫米</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{无}=1{1 个网站}other{# 个网站}}</translation>
 <translation id="192095259937375524">“分享此标签页”按钮，激活它即可通过分享链接、创建二维码、投放等操作分享此标签页</translation>
@@ -2084,11 +2084,11 @@
     &lt;h4&gt;第 3 步：更新您的操作系统&lt;/h4&gt;
     &lt;p&gt;确保您的设备运行的是最新版操作系统。&lt;/p&gt;
     &lt;h4&gt;第 4 步：暂时关闭您的杀毒软件&lt;/h4&gt;
-    &lt;p&gt;如果您安装了可提供“HTTPS 保护”或“HTTPS 扫描”功能的杀毒软件，您就会看到这条错误消息。此类杀毒软件会阻止 Chrome 提供安全保护。&lt;/p&gt;
+    &lt;p&gt;如果您安装了可提供“HTTPS 保护”或“HTTPS 扫描”功能的杀毒软件，您就会看到这条出错提示。此类杀毒软件会阻止 Chrome 提供安全保护。&lt;/p&gt;
     &lt;p&gt;要想解决该问题，请关闭您的杀毒软件。如果关闭杀毒软件后该网页可以正常打开，那么当您使用安全网站时，请一定关闭此软件。&lt;/p&gt;
     &lt;p&gt;事后请记得要重新开启您的杀毒程序。&lt;/p&gt;
     &lt;h4&gt;第 5 步：获取额外帮助&lt;/h4&gt;
-    &lt;p&gt;如果您仍会看到这条错误消息，请与网站所有者联系。&lt;/p&gt;</translation>
+    &lt;p&gt;如果您仍会看到这条出错提示，请与网站所有者联系。&lt;/p&gt;</translation>
 <translation id="4223404254440398437">已拒绝授予麦克风使用权限</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />尝试运行网络诊断<ph name="END_LINK" />。</translation>
 <translation id="422722221769396062">餐馆外卖服务</translation>
@@ -4117,7 +4117,7 @@
 <translation id="7403591733719184120">您的 <ph name="DEVICE_NAME" /> 受管理</translation>
 <translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> 已安装了一些应用来提供更多功能。这些应用有权访问您的部分数据。</translation>
 <translation id="740691708085211707">要从 Chrome 自动填充中移除工作地址吗？</translation>
-<translation id="7407424307057130981">&lt;p&gt;如果您的 Windows 计算机上装有 SuperFish 软件，您将会看到这条错误消息。&lt;/p&gt;
+<translation id="7407424307057130981">&lt;p&gt;如果您的 Windows 计算机上装有 SuperFish 软件，您将会看到这条出错提示。&lt;/p&gt;
       &lt;p&gt;您可以按照下述步骤暂时停用该软件，以便连接到网络。您需要拥有管理员权限才能执行下列操作。&lt;/p&gt;
       &lt;ol&gt;
       &lt;li&gt;点击&lt;strong&gt;开始&lt;/strong&gt;，然后搜索并选择&lt;strong&gt;“查看本地服务”&lt;/strong&gt;
@@ -5323,7 +5323,7 @@
 <translation id="981121421437150478">离线</translation>
 <translation id="984101218975906499">医药与生物技术</translation>
 <translation id="984275831282074731">支付方式</translation>
-<translation id="985199708454569384">&lt;p&gt;如果您的计算机或移动设备的日期与时间不准确，您就会看到这条错误消息。&lt;/p&gt;
+<translation id="985199708454569384">&lt;p&gt;如果您的计算机或移动设备的日期与时间不准确，您就会看到这条出错提示。&lt;/p&gt;
     &lt;p&gt;要修正该错误，请打开您设备的时钟，并确保日期与时间正确无误。&lt;/p&gt;</translation>
 <translation id="987264212798334818">常规</translation>
 <translation id="988159990683914416">开发者内部版本</translation>
