@@ -46,6 +46,11 @@ bool IsUserSignedInToWeb(signin::IdentityManager* identity_manager,
 // Returns if the cookie jar contains the primary signed in account.
 bool CookieJarContainsPrimaryAccount(signin::IdentityManager* identity_manager);
 
+// Returns true if the user is signed into the browser with a primary account
+// that has a refresh token and is not in a persistent error state.
+bool IsSignedInToBrowserWithValidCredentials(
+    signin::IdentityManager* identity_manager);
+
 }  // namespace contextual_tasks
 
 #endif  // COMPONENTS_CONTEXTUAL_TASKS_PUBLIC_ACCOUNT_UTILS_H_

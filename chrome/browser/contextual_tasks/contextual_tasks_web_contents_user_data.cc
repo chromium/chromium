@@ -88,15 +88,11 @@ ContextualTasksWebContentsUserData::GetOrCreateInputStateModel(
              omnibox::kComposeboxDriveIdentityFallback.Get()) {
     if (auto* identity_manager =
             IdentityManagerFactory::GetForProfile(profile)) {
-      if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-        CoreAccountId account_id = identity_manager->GetPrimaryAccountId(
-            signin::ConsentLevel::kSignin);
-        if (!identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-                account_id)) {
-          is_signed_in = true;
-          browser_identity_matches_aim_identity =
-              contextual_tasks::IsUrlForPrimaryAccount(identity_manager, url);
-        }
+      if (contextual_tasks::IsSignedInToBrowserWithValidCredentials(
+              identity_manager)) {
+        is_signed_in = true;
+        browser_identity_matches_aim_identity =
+            contextual_tasks::IsUrlForPrimaryAccount(identity_manager, url);
       }
     }
   }

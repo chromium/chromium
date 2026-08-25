@@ -299,4 +299,36 @@ TEST_F(AccountUtilsTest, CookieJarContainsPrimaryAccount_NullIdentityManager) {
   EXPECT_FALSE(CookieJarContainsPrimaryAccount(nullptr));
 }
 
+TEST_F(AccountUtilsTest,
+       IsSignedInToBrowserWithValidCredentials_NullIdentityManager) {
+  EXPECT_FALSE(IsSignedInToBrowserWithValidCredentials(nullptr));
+}
+
+TEST_F(AccountUtilsTest,
+       IsSignedInToBrowserWithValidCredentials_NoPrimaryAccount) {
+  EXPECT_FALSE(IsSignedInToBrowserWithValidCredentials(
+      identity_test_environment_.identity_manager()));
+}
+
+TEST_F(AccountUtilsTest,
+       IsSignedInToBrowserWithValidCredentials_ValidPrimaryAccount) {
+  identity_test_environment_.MakePrimaryAccountAvailable(
+      "primary@example.com", signin::ConsentLevel::kSignin);
+  EXPECT_TRUE(IsSignedInToBrowserWithValidCredentials(
+      identity_test_environment_.identity_manager()));
+}
+
+TEST_F(AccountUtilsTest,
+       IsSignedInToBrowserWithValidCredentials_PersistentAuthError) {
+  AccountInfo account = identity_test_environment_.MakePrimaryAccountAvailable(
+      "primary@example.com", signin::ConsentLevel::kSignin);
+  identity_test_environment_.UpdatePersistentErrorOfRefreshTokenForAccount(
+      account.account_id,
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+  EXPECT_FALSE(IsSignedInToBrowserWithValidCredentials(
+      identity_test_environment_.identity_manager()));
+}
+
 }  // namespace contextual_tasks

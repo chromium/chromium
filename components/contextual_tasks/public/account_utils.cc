@@ -117,4 +117,21 @@ bool CookieJarContainsPrimaryAccount(
   return false;
 }
 
+bool IsSignedInToBrowserWithValidCredentials(
+    signin::IdentityManager* identity_manager) {
+  if (!identity_manager) {
+    return false;
+  }
+
+  if (!identity_manager->HasPrimaryAccountWithRefreshToken(
+          signin::ConsentLevel::kSignin)) {
+    return false;
+  }
+
+  const CoreAccountId primary_account =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  return !identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+      primary_account);
+}
+
 }  // namespace contextual_tasks
