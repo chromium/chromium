@@ -335,6 +335,8 @@ bool VTTParser::CheckAndStoreRegion(const String& line) {
     return false;
   }
 
+  // Only register the region if it has a non-empty id; a cue's "region:"
+  // setting matches by id, so regions without one can never be referenced.
   if (!current_region_->id().empty())
     region_map_.Set(current_region_->id(), current_region_);
   current_region_ = nullptr;

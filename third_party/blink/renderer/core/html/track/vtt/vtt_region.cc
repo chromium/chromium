@@ -201,7 +201,7 @@ void VTTRegion::ParseSettingValue(RegionSetting setting, VTTScanner& input) {
   switch (setting) {
     case kId: {
       String string_value = value_input.RestOfInputAsString();
-      if (!string_value.contains("-->")) {
+      if (!string_value.empty() && !string_value.contains("-->")) {
         id_ = string_value;
       }
       break;
