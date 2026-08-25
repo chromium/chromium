@@ -14,7 +14,7 @@ namespace {
 
 // The default time offset used to pre-populate the date/time picker when the
 // 'Set a Reminder' UI half-sheet is first shown.
-const base::TimeDelta kReminderNotificationsDefaultOffset = base::Hours(24);
+constexpr base::TimeDelta kReminderNotificationsDefaultOffset = base::Hours(24);
 
 }  // namespace
 #endif  // BUILDFLAG(IS_IOS)
@@ -85,7 +85,7 @@ bool AreIOSTabRemindersEnabled() {
 const char kReminderNotificationsDefaultTimeOffset[] =
     "ReminderNotificationsDefaultTimeOffset";
 
-const base::TimeDelta GetReminderNotificationsDefaultTimeOffset() {
+base::TimeDelta GetReminderNotificationsDefaultTimeOffset() {
   // Default to 24 hours.
   return base::GetFieldTrialParamByFeatureAsTimeDelta(
       kIOSTabReminders, kReminderNotificationsDefaultTimeOffset,

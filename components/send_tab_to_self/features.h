@@ -109,7 +109,7 @@ extern const char kReminderNotificationsDefaultTimeOffset[];
 // Returns the default time offset used to pre-populate the date/time picker
 // when the 'Set a Reminder' UI half-sheet is first shown. This value is
 // controlled by the `kReminderNotificationsDefaultTimeOffset` Finch parameter.
-const base::TimeDelta GetReminderNotificationsDefaultTimeOffset();
+base::TimeDelta GetReminderNotificationsDefaultTimeOffset();
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

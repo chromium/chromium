@@ -59,9 +59,9 @@ void RecordSendResultAndRunCallback(
   std::move(callback).Run(result);
 }
 
-const base::TimeDelta kDedupeTime = base::Seconds(5);
+constexpr base::TimeDelta kDedupeTime = base::Seconds(5);
 
-const base::TimeDelta kDeviceExpiration = base::Days(10);
+constexpr base::TimeDelta kDeviceExpiration = base::Days(10);
 
 // Converts a time field from sync protobufs to a time object.
 base::Time ProtoTimeToTime(int64_t proto_t) {
