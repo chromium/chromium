@@ -23,3 +23,6 @@
 
 # crbug.com/422528199
 -All/SitePerProcessBrowserTestWithoutSadFrameTabReload.ChildFrameCrashMetrics_ScrolledIntoViewAfterTabIsShown/*
+
+# crbug.com/544000851
+-All/AndroidInputBrowserTest.RestartingGPUProcessResetsMojoConnection/1
