@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/glass_frame_service.h"
@@ -36,6 +37,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_accessibility.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_view.h"
+#include "chrome/browser/ui/views/tabs/horizontal/horizontal_tab_closing_helper.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_context_menu_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_collection_types.h"
@@ -57,6 +59,7 @@ TabStripCollectionController::TabStripCollectionController(
     RootTabCollectionNode& root_node,
     TabDragHandler& drag_handler,
     TabHoverCardController* hover_card_controller,
+    TabStripOrientation orientation,
     std::unique_ptr<TabMenuModelFactory> menu_model_factory_override)
     : model_(model),
       browser_view_(browser_view),
@@ -64,6 +67,11 @@ TabStripCollectionController::TabStripCollectionController(
       drag_handler_(drag_handler),
       hover_card_controller_(hover_card_controller) {
   CHECK(browser_view_);
+
+  if (orientation == TabStripOrientation::kHorizontal) {
+    tab_closing_helper_ =
+        std::make_unique<HorizontalTabClosingHelper>(root_node);
+  }
 
   if (menu_model_factory_override) {
     menu_model_factory_ = std::move(menu_model_factory_override);
@@ -288,6 +296,10 @@ void TabStripCollectionController::SelectTab(
 void TabStripCollectionController::CloseTab(
     const tabs::TabInterface* tab_interface,
     CloseTabSource source) {
+  if (tab_closing_helper_ && source != CloseTabSource::kFromNonUIEvent) {
+    tab_closing_helper_->MaybeEnterTabClosingMode(std::nullopt, source);
+  }
+
   model_->delegate()->CloseTab(tab_interface, source);
 }
 

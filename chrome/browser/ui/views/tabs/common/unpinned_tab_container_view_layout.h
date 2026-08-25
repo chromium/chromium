@@ -30,6 +30,11 @@ class UnpinnedTabContainerViewLayout : public views::LayoutManagerBase {
       const views::SizeBounds& size_bounds) const override;
   gfx::Size GetMinimumSize(const views::View* host) const override;
 
+  // Returns the total preferred width of all visible children at their standard
+  // unconstrained sizes, ignoring any active tab closing mode override.
+  int GetUnconstrainedPreferredWidth(
+      const UnpinnedTabContainerView* host) const;
+
  private:
   views::ProposedLayout CalculateHorizontalLayout(
       const UnpinnedTabContainerView* host,
@@ -52,6 +57,8 @@ class UnpinnedTabContainerViewLayout : public views::LayoutManagerBase {
       const UnpinnedTabContainerView* tab_container_view) const;
   std::optional<tab_groups::TabGroupId> GetGroupIdForChild(
       const views::View* child) const;
+  std::optional<int> GetClosingModeOverrideWidth(
+      const UnpinnedTabContainerView* tab_container_view) const;
 
   const TabStripOrientation orientation_;
 };

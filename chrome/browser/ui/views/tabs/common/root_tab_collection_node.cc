@@ -80,6 +80,12 @@ RootTabCollectionNode::RegisterOnChildMovedCallback(
 }
 
 base::CallbackListSubscription
+RootTabCollectionNode::RegisterOnChildWillBeRemovedCallback(
+    RootTabCollectionNode::ChildWillBeRemovedCallback callback) {
+  return on_child_will_be_removed_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription
 RootTabCollectionNode::RegisterOnActiveTabChangedCallback(
     RootTabCollectionNode::ActiveTabChangedCallback callback) {
   return on_active_tab_changed_callback_list_.Add(std::move(callback));
@@ -107,6 +113,10 @@ void RootTabCollectionNode::OnChildrenRemoved(
   }
 
   for (auto& handle : handles) {
+    TabCollectionNode* child_node = parent_node->GetNodeForHandle(handle);
+    if (child_node) {
+      on_child_will_be_removed_callback_list_.Notify(child_node);
+    }
     parent_node->RemoveChild(GetPassKey(), handle,
                              /*perform_deinitialization=*/false);
   }

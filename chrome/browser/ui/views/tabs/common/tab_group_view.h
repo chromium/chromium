@@ -62,6 +62,7 @@ class TabGroupView : public views::View,
   void ShiftGroupUp() override;
   void ShiftGroupDown() override;
   bool IsGroupFocused() const override;
+  HorizontalTabClosingHelper* GetTabClosingHelper() const override;
 
   // TabCollectionAnimatingLayoutManager::Delegate:
   bool IsDragging() const override;

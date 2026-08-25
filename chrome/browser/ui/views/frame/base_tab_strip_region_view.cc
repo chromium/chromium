@@ -105,7 +105,7 @@ void BaseTabStripRegionView::InitializeTabStrip() {
   tab_strip_controller_ = std::make_unique<TabStripCollectionController>(
       tab_strip_model, browser_view_, *root_node_.get(),
       *AddChildView(std::move(drag_handler)), hover_card_controller_.get(),
-      std::move(tab_menu_model_factory));
+      orientation_, std::move(tab_menu_model_factory));
 
   root_node_->SetController(tab_strip_controller_.get());
 

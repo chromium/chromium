@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_accessibility.h"
+#include "chrome/browser/ui/views/tabs/horizontal/horizontal_tab_closing_helper.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "components/tabs/public/tab_collection_storage.h"
@@ -131,8 +132,38 @@ void TabGroupView::ToggleCollapsedState(
     return;
   }
 
+  const bool is_currently_collapsed = IsCollapsed();
+  std::optional<int> new_override;
+  CloseTabSource source = CloseTabSource::kFromMouse;
+
+  // When collapsing a group via mouse or touch, lock remaining tab widths by
+  // entering tab closing mode so tabs do not expand under the cursor.
+  // Otherwise, exit closing mode when expanding or toggling via keyboard/menu.
+  if (auto* closing_helper = GetTabClosingHelper()) {
+    if (!is_currently_collapsed &&
+        (origin == ToggleTabGroupCollapsedStateOrigin::kMouse ||
+         origin == ToggleTabGroupCollapsedStateOrigin::kGesture)) {
+      source = origin == ToggleTabGroupCollapsedStateOrigin::kMouse
+                   ? CloseTabSource::kFromMouse
+                   : CloseTabSource::kFromTouch;
+      int current_override =
+          closing_helper->override_available_width_for_tabs().value_or(
+              closing_helper->GetUnpinnedContainerWidth());
+      new_override = current_override - width() +
+                     group_header_->GetPreferredSize({}).width();
+    } else {
+      closing_helper->ExitTabClosingMode();
+    }
+  }
+
   collection_node_->GetController()->ToggleTabGroupCollapsedState(
       GetTabGroupFromNode(collection_node_), origin);
+
+  if (new_override.has_value()) {
+    if (auto* closing_helper = GetTabClosingHelper()) {
+      closing_helper->MaybeEnterTabClosingMode(new_override, source);
+    }
+  }
   InvalidateLayout();
 }
 
@@ -468,6 +499,13 @@ bool TabGroupView::IsGroupFocused() const {
   }
   return collection_node_->GetController()->GetFocusedGroup() ==
          GetTabGroup().id();
+}
+
+HorizontalTabClosingHelper* TabGroupView::GetTabClosingHelper() const {
+  if (collection_node_ && collection_node_->GetController()) {
+    return collection_node_->GetController()->tab_closing_helper();
+  }
+  return nullptr;
 }
 
 BEGIN_METADATA(TabGroupView)

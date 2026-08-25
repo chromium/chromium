@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_accessibility.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_tracker.h"
+#include "chrome/browser/ui/views/tabs/horizontal/horizontal_tab_closing_helper.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/data_sharing/public/features.h"
@@ -699,12 +700,18 @@ void TabGroupHeaderView::OnBubbleOpened() {
   if (!expand_on_hover_lock_) {
     expand_on_hover_lock_ = delegate_->AcquireExpandOnHoverLock();
   }
+  if (auto* closing_helper = delegate_->GetTabClosingHelper()) {
+    closing_helper->PauseMouseWatcher();
+  }
 
   UpdateEditorBubbleButtonVisibility();
 }
 
 void TabGroupHeaderView::OnBubbleClosed() {
   expand_on_hover_lock_.reset();
+  if (auto* closing_helper = delegate_->GetTabClosingHelper()) {
+    closing_helper->ResumeMouseWatcher();
+  }
   UpdateEditorBubbleButtonVisibility();
 }
 

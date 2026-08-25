@@ -33,6 +33,9 @@ namespace {
 
 class MockDelegate : public TabGroupHeaderView::Delegate {
  public:
+  MockDelegate() {
+    ON_CALL(*this, GetTabClosingHelper).WillByDefault(testing::Return(nullptr));
+  }
   MOCK_METHOD(void,
               ToggleCollapsedState,
               (ToggleTabGroupCollapsedStateOrigin),
@@ -61,6 +64,10 @@ class MockDelegate : public TabGroupHeaderView::Delegate {
   MOCK_METHOD(void, ShiftGroupUp, (), (override));
   MOCK_METHOD(void, ShiftGroupDown, (), (override));
   MOCK_METHOD(bool, IsGroupFocused, (), (const, override));
+  MOCK_METHOD(HorizontalTabClosingHelper*,
+              GetTabClosingHelper,
+              (),
+              (const, override));
 };
 
 int GetPlatformDependentAccelerator() {

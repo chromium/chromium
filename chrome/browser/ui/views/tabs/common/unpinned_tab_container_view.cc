@@ -221,6 +221,12 @@ gfx::Size UnpinnedTabContainerView::GetTargetPreferredSize() const {
   return layout_manager_->GetTargetPreferredSize();
 }
 
+int UnpinnedTabContainerView::GetUnconstrainedPreferredWidth() const {
+  return static_cast<UnpinnedTabContainerViewLayout*>(
+             layout_manager_->target_layout_manager())
+      ->GetUnconstrainedPreferredWidth(this);
+}
+
 void UnpinnedTabContainerView::ResetCollectionNode() {
   collection_node_ = nullptr;
 }

@@ -54,6 +54,10 @@ class UnpinnedTabContainerView
   // occupy once current animations complete.
   gfx::Size GetTargetPreferredSize() const;
 
+  // Returns the total preferred width of all visible children at standard size,
+  // ignoring any active tab closing mode override.
+  int GetUnconstrainedPreferredWidth() const;
+
   // Sets the main-axis space allocated for this container during TabStripView
   // layout passes.
   void SetAvailableSpace(views::SizeBound space) { available_space_ = space; }

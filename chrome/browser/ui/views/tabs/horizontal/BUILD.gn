@@ -6,14 +6,44 @@ import("//build/config/ui.gni")
 
 source_set("horizontal") {
   sources = [
-    "horizontal_tab_strip_overflow_indicator_view.cc",
+    "horizontal_tab_closing_helper.h",
     "horizontal_tab_strip_overflow_indicator_view.h",
   ]
 
-  deps = [
+  public_deps = [
     "//base",
+    "//chrome/browser/ui/views/tabs/shared",
+    "//ui/views",
+  ]
+
+  deps = [
+    "//base:i18n",
     "//cc/paint",
     "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//skia",
+    "//ui/base/metadata",
+    "//ui/color",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "horizontal_tab_closing_helper.cc",
+    "horizontal_tab_strip_overflow_indicator_view.cc",
+  ]
+
+  deps = [
+    ":horizontal",
+    "//base",
+    "//base:i18n",
+    "//cc/paint",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views/tabs/common",
+    "//chrome/browser/ui/views/tabs/common:impl",
     "//skia",
     "//ui/base/metadata",
     "//ui/color",

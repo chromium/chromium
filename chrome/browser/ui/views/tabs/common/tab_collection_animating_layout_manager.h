@@ -125,6 +125,13 @@ class TabCollectionAnimatingLayoutManager
 
   bool is_animating() const { return animation_.is_animating(); }
 
+  views::LayoutManagerBase* target_layout_manager() {
+    return &*target_layout_manager_;
+  }
+  const views::LayoutManagerBase* target_layout_manager() const {
+    return &*target_layout_manager_;
+  }
+
  protected:
   // LayoutManagerBase:
   views::ProposedLayout CalculateProposedLayout(
