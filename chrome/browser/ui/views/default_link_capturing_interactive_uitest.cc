@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_P(DefaultLinkCapturingInteractiveUiTest,
   // Verify that no icon was shown.
   EXPECT_TRUE(web_app::AwaitIntentPickerTabHelperIconUpdateComplete(
       browser()->GetTabStripModel()->GetActiveWebContents()));
-  ASSERT_FALSE(web_app::GetIntentPickerButton(browser())->GetVisible());
+  ASSERT_FALSE(web_app::GetIntentPickerButton(browser()).GetVisible());
 
   // Load a different page while simulating it having a native app.
   apps::OverrideMacAppForUrlForTesting(true, kFinderAppPath);
@@ -197,8 +197,7 @@ IN_PROC_BROWSER_TEST_P(DefaultLinkCapturingInteractiveUiTest,
   // Verify app icon shows up in the intent picker.
   EXPECT_TRUE(web_app::AwaitIntentPickerTabHelperIconUpdateComplete(
       browser()->GetTabStripModel()->GetActiveWebContents()));
-  views::Button* intent_picker_icon = web_app::GetIntentPickerButton(browser());
-  ASSERT_NE(intent_picker_icon, nullptr);
+  ASSERT_TRUE(web_app::GetIntentPickerButton(browser()).GetVisible());
 
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();

@@ -4521,7 +4521,7 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
           if (!is_app_browser && active_tab_contents != nullptr) {
             EXPECT_TRUE(AwaitIntentPickerTabHelperIconUpdateComplete(
                 active_tab_contents));
-            launch_icon_shown = GetIntentPickerButton(browser)->GetVisible();
+            launch_icon_shown = GetIntentPickerButton(browser).GetVisible();
           }
 
           webapps::AppId app_id;

@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_TEST_SUPPORT_PAGE_ACTION_TEST_ACCESSOR_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_TEST_SUPPORT_PAGE_ACTION_TEST_ACCESSOR_H_
 
+#include <string>
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/page_action/page_action_triggers.h"
 #include "ui/actions/action_id.h"
 
 class BrowserWindowInterface;
@@ -38,6 +40,9 @@ class PageActionTestAccessor {
   bool IsChipVisible();
   bool IsIconVisible();
   bool IsAnimating();
+  std::u16string GetText();
+  void Click(page_actions::PageActionTrigger trigger =
+                 page_actions::PageActionTrigger::kMouse);
 
  private:
   bool EvaluateWebUI(std::string_view element_predicate_js);

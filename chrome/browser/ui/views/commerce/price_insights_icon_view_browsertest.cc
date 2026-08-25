@@ -11,8 +11,9 @@
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/commerce/price_insights_page_action_view_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/page_action/page_action_container_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -87,8 +88,7 @@ class PriceInsightsIconViewBaseBrowserTest : public UiBrowserTest {
     if (!price_insights_chip) {
       return false;
     }
-    EXPECT_EQ(base::ToLowerASCII(
-                  price_insights_chip->GetViewAccessibility().GetCachedName()),
+    EXPECT_EQ(base::ToLowerASCII(price_insights_chip->GetAccessibleName()),
               base::ToLowerASCII(l10n_util::GetStringUTF16(
                   IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT)));
 
@@ -105,19 +105,15 @@ class PriceInsightsIconViewBaseBrowserTest : public UiBrowserTest {
  protected:
   std::optional<commerce::PriceInsightsInfo> price_insights_info_;
 
-  IconLabelBubbleView* GetChip() {
-    return GetLocationBarView()->page_action_container()->GetPageActionView(
-        kActionCommercePriceInsights);
+  page_actions::PageActionViewInterface* GetChip() {
+    auto* provider = BrowserView::GetBrowserViewForBrowser(browser())
+                         ->toolbar_button_provider();
+    return provider ? provider->GetPageActionViewInterface(
+                          kActionCommercePriceInsights)
+                    : nullptr;
   }
 
  private:
-  BrowserView* GetBrowserView() {
-    return BrowserView::GetBrowserViewForBrowser(browser());
-  }
-
-  LocationBarView* GetLocationBarView() {
-    return GetBrowserView()->toolbar()->location_bar_view();
-  }
 
   ui::UserDataFactory::ScopedOverride commerce_ui_override_;
 };
@@ -184,24 +180,23 @@ class PriceInsightsIconViewWithLabelBrowserTest
       return false;
     }
 
+    page_actions::PageActionTestAccessor accessor(browser(),
+                                                  kActionCommercePriceInsights);
     std::string test_name =
         testing::UnitTest::GetInstance()->current_test_info()->name();
     if (test_name == "InvokeUi_show_price_insights_icon_with_low_price_label") {
-      EXPECT_TRUE(price_insights_chip->ShouldShowLabel());
-      EXPECT_EQ(base::ToLowerASCII(price_insights_chip->GetText()),
-                u"price is low");
+      EXPECT_TRUE(accessor.IsChipVisible());
+      EXPECT_EQ(base::ToLowerASCII(accessor.GetText()), u"price is low");
 
       // TODO(meiliang): Add pixel test.
     } else if (test_name ==
                "InvokeUi_show_price_insights_icon_with_high_price_label") {
-      EXPECT_TRUE(price_insights_chip->ShouldShowLabel());
-      EXPECT_EQ(base::ToLowerASCII(price_insights_chip->GetText()),
-                u"price is high");
+      EXPECT_TRUE(accessor.IsChipVisible());
+      EXPECT_EQ(base::ToLowerASCII(accessor.GetText()), u"price is high");
 
       // TODO(meiliang): Add pixel test.
     }
-    EXPECT_EQ(base::ToLowerASCII(
-                  price_insights_chip->GetViewAccessibility().GetCachedName()),
+    EXPECT_EQ(base::ToLowerASCII(price_insights_chip->GetAccessibleName()),
               base::ToLowerASCII(l10n_util::GetStringUTF16(
                   IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT)));
     return true;

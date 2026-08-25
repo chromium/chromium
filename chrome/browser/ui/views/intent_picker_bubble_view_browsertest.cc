@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/intent_chip_button_test_base.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
@@ -186,7 +187,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
   ASSERT_TRUE(ExpectLinkClickNotCapturedIntoAppBrowser(
       browser(), out_of_scope_url, rel()));
 
-  EXPECT_FALSE(GetIntentChip(browser())->GetVisible());
+  EXPECT_FALSE(GetIntentChip(browser()).GetVisible());
 
   EXPECT_EQ(nullptr, intent_picker_bubble());
 }
@@ -213,7 +214,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
   run_loop.Run();
 
   EXPECT_TRUE(WaitForPageActionButtonVisible(browser()));
-  EXPECT_TRUE(GetIntentChip(browser())->GetVisible());
+  EXPECT_TRUE(GetIntentChip(browser()).GetVisible());
 }
 
 // Tests that the intent icon updates its visibility when switching between
@@ -230,15 +231,15 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
   // OpenNewTab opens a new tab and focus on the new tab.
   OpenNewTab(in_scope_url, /*rel=*/rel());
   EXPECT_TRUE(WaitForPageActionButtonVisible(browser()));
-  EXPECT_TRUE(GetIntentChip(browser())->GetVisible());
+  EXPECT_TRUE(GetIntentChip(browser()).GetVisible());
   OpenNewTab(out_of_scope_url, /*rel=*/rel());
-  EXPECT_FALSE(GetIntentChip(browser())->GetVisible());
+  EXPECT_FALSE(GetIntentChip(browser()).GetVisible());
 
   chrome::SelectPreviousTab(browser());
   EXPECT_TRUE(WaitForPageActionButtonVisible(browser()));
-  EXPECT_TRUE(GetIntentChip(browser())->GetVisible());
+  EXPECT_TRUE(GetIntentChip(browser()).GetVisible());
   chrome::SelectNextTab(browser());
-  EXPECT_FALSE(GetIntentChip(browser())->GetVisible());
+  EXPECT_FALSE(GetIntentChip(browser()).GetVisible());
 }
 
 // Tests that the navigation in iframe doesn't affect intent picker icon
@@ -251,14 +252,14 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
   const GURL out_of_scope_url = embedded_https_test_server().GetURL(
       GetAppUrlHost(), GetOutOfScopeUrlPath());
 
-  views::Button* intent_picker_icon = GetIntentChip(browser());
+  auto intent_picker_icon = GetIntentChip(browser());
 
   content::WebContents* initial_tab = OpenNewTab(out_of_scope_url);
   ASSERT_TRUE(InsertIFrame(initial_tab));
 
   EXPECT_TRUE(
       content::NavigateIframeToURL(initial_tab, "iframe", in_scope_url));
-  EXPECT_FALSE(intent_picker_icon->GetVisible());
+  EXPECT_FALSE(intent_picker_icon.GetVisible());
 
   content::WebContents* new_tab = OpenNewTab(in_scope_url);
   ASSERT_TRUE(InsertIFrame(new_tab));
@@ -266,7 +267,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
   EXPECT_TRUE(
       content::NavigateIframeToURL(initial_tab, "iframe", out_of_scope_url));
   EXPECT_TRUE(WaitForPageActionButtonVisible(browser()));
-  EXPECT_TRUE(intent_picker_icon->GetVisible());
+  EXPECT_TRUE(intent_picker_icon.GetVisible());
 }
 
 // Tests that the intent picker icon is not visible if the navigation redirects
@@ -282,17 +283,17 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
   const GURL redirect_url = embedded_https_test_server().GetURL(
       GetOtherAppUrlHost(), CreateServerRedirect(out_of_scope_url));
 
-  views::Button* intent_picker_icon = GetIntentChip(browser());
+  auto intent_picker_icon = GetIntentChip(browser());
 
   OpenNewTab(in_scope_url);
   EXPECT_TRUE(WaitForPageActionButtonVisible(browser()));
-  EXPECT_TRUE(intent_picker_icon->GetVisible());
+  EXPECT_TRUE(intent_picker_icon.GetVisible());
   ASSERT_TRUE(DoAndWaitForIntentPickerIconUpdate(
       [this, redirect_url, out_of_scope_url] {
         ClickLinkAndWaitForURL(GetWebContents(), redirect_url, out_of_scope_url,
                                LinkTarget::SELF, rel());
       }));
-  EXPECT_FALSE(intent_picker_icon->GetVisible());
+  EXPECT_FALSE(intent_picker_icon.GetVisible());
 }
 
 // Test that navigating to service pages (chrome://) will hide the intent picker
@@ -306,12 +307,11 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
   GURL chrome_pages_url("chrome://version");
   std::string app_name = "test_name";
 
-  views::Button* intent_picker_view = GetIntentChip(browser());
+  auto intent_picker_view = GetIntentChip(browser());
 
   OpenNewTab(in_scope_url);
-  ASSERT_TRUE(intent_picker_view);
   EXPECT_TRUE(WaitForPageActionButtonVisible(browser()));
-  EXPECT_TRUE(intent_picker_view->GetVisible());
+  EXPECT_TRUE(intent_picker_view.GetVisible());
 
   // Now switch to chrome://version.
   ASSERT_TRUE(DoAndWaitForIntentPickerIconUpdate([this, &chrome_pages_url]() {
@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
   }));
 
   // Make sure that the intent picker icon is no longer visible.
-  EXPECT_FALSE(intent_picker_view->GetVisible());
+  EXPECT_FALSE(intent_picker_view.GetVisible());
 }
 
 // Test that error pages do not show the intent picker icon.
@@ -333,13 +333,12 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest, DoNotShowIconOnErrorPages) {
   const GURL in_scope_url =
       embedded_https_test_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
 
-  views::Button* intent_picker_view = GetIntentChip(browser());
-  ASSERT_TRUE(intent_picker_view);
+  auto intent_picker_view = GetIntentChip(browser());
 
   // Go to the test app and wait for the intent picker icon to load.
   OpenNewTab(in_scope_url);
   EXPECT_TRUE(WaitForPageActionButtonVisible(browser()));
-  EXPECT_TRUE(intent_picker_view->GetVisible());
+  EXPECT_TRUE(intent_picker_view.GetVisible());
 
   // Now switch to www.google.com, which gives a network error in the test
   // environment.
@@ -352,7 +351,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest, DoNotShowIconOnErrorPages) {
 
   // Make sure that the intent picker icon is not shown on the error page, even
   // though there's a PWA available for www.google.com.
-  EXPECT_FALSE(intent_picker_view->GetVisible());
+  EXPECT_FALSE(intent_picker_view.GetVisible());
 }
 
 // Test that loading a page with pushState() call that changes URL updates the
@@ -366,11 +365,11 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest, PushStateURLChangeTest) {
       embedded_test_server()->GetURL("/intent_picker/push_state_test.html");
   web_app::test::InstallDummyWebApp(profile(), "Test app", test_url);
 
-  views::Button* intent_picker_view = GetIntentChip(browser());
+  auto intent_picker_view = GetIntentChip(browser());
 
   OpenNewTab(test_url);
   EXPECT_TRUE(WaitForPageActionButtonVisible(browser()));
-  EXPECT_TRUE(intent_picker_view->GetVisible());
+  EXPECT_TRUE(intent_picker_view.GetVisible());
 
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
@@ -380,7 +379,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest, PushStateURLChangeTest) {
         "document.getElementById('push_to_new_url_button').click();"));
   }));
 
-  EXPECT_FALSE(intent_picker_view->GetVisible());
+  EXPECT_FALSE(intent_picker_view.GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
@@ -407,7 +406,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
   // load.
   OpenNewTab(extension_url);
   EXPECT_TRUE(WaitForPageActionButtonVisible(browser()));
-  EXPECT_TRUE(GetIntentChip(browser())->GetVisible());
+  EXPECT_TRUE(GetIntentChip(browser()).GetVisible());
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -581,8 +580,8 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconPrerenderingBrowserTest,
       embedded_https_test_server().GetURL(GetAppUrlHost(), "/empty.html");
   OpenNewTab(initial_url);
 
-  views::Button* intent_picker_icon = GetIntentChip(browser());
-  EXPECT_FALSE(intent_picker_icon->GetVisible());
+  auto intent_picker_icon = GetIntentChip(browser());
+  EXPECT_FALSE(intent_picker_icon.GetVisible());
 
   // Load a prerender page and prerendering should not try to show the
   // intent picker.
@@ -593,7 +592,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconPrerenderingBrowserTest,
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);
   EXPECT_FALSE(host_observer.was_activated());
-  EXPECT_FALSE(intent_picker_icon->GetVisible());
+  EXPECT_FALSE(intent_picker_icon.GetVisible());
 
   // Activate the prerender page.
   ASSERT_TRUE(DoAndWaitForIntentPickerIconUpdate([this, prerender_url] {
@@ -604,7 +603,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconPrerenderingBrowserTest,
   // After activation, IntentPickerTabHelper should show the
   // intent picker.
   EXPECT_TRUE(WaitForPageActionButtonVisible(browser()));
-  EXPECT_TRUE(intent_picker_icon->GetVisible());
+  EXPECT_TRUE(intent_picker_icon.GetVisible());
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -638,12 +637,12 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconFencedFrameBrowserTest,
                        ShouldShowIntentPickerInFencedFrame) {
   InstallTestWebApp();
 
-  views::Button* intent_picker_icon = GetIntentChip(browser());
+  auto intent_picker_icon = GetIntentChip(browser());
 
   const GURL initial_url =
       embedded_https_test_server().GetURL(GetAppUrlHost(), "/empty.html");
   OpenNewTab(initial_url);
-  EXPECT_FALSE(intent_picker_icon->GetVisible());
+  EXPECT_FALSE(intent_picker_icon.GetVisible());
 
   const GURL fenced_frame_url = embedded_https_test_server().GetURL(
       GetAppUrlHost(), std::string(GetAppScopePath()) + "index1.html");
@@ -651,7 +650,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconFencedFrameBrowserTest,
   ASSERT_TRUE(fenced_frame_test_helper().CreateFencedFrame(
       GetWebContents()->GetPrimaryMainFrame(), fenced_frame_url));
 
-  EXPECT_FALSE(intent_picker_icon->GetVisible());
+  EXPECT_FALSE(intent_picker_icon.GetVisible());
 }
 
 INSTANTIATE_TEST_SUITE_P(

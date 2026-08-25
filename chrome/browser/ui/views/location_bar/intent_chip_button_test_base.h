@@ -8,9 +8,7 @@
 #include <string>
 
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
-#include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/views/page_action/page_action_view.h"
-#include "ui/views/controls/button/button.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 
 class Browser;
 
@@ -21,8 +19,8 @@ class IntentChipButtonTestBase {
   // Checks if the intent chip is fully collapsed.
   bool IsIntentChipFullyCollapsed(Browser* browser);
 
-  // Gets the intent chip button.
-  views::Button* GetIntentChip(Browser* browser);
+  // Gets the intent chip accessor.
+  page_actions::PageActionTestAccessor GetIntentChip(Browser* browser) const;
 
   // Check if the intent picker chip is done animating
   testing::AssertionResult WaitForPageActionButtonVisible(

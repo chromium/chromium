@@ -296,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest,
 
   dialog_delegate->CancelDialog();
   ASSERT_TRUE(web_app::WaitForIntentPickerToShow(browser()));
-  EXPECT_TRUE(web_app::GetIntentPickerButton(browser())->GetVisible());
+  EXPECT_TRUE(web_app::GetIntentPickerButton(browser()).GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest,

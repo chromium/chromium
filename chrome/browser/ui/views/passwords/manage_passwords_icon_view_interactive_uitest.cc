@@ -9,7 +9,8 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -37,13 +38,16 @@ class ManagePasswordsIconViewTest : public ManagePasswordsTest {
     return GetController()->GetState();
   }
 
-  IconLabelBubbleView* GetIcon() {
+  page_actions::PageActionTestAccessor GetIconAccessor() {
+    return page_actions::PageActionTestAccessor(
+        browser(), kActionShowPasswordsBubbleOrPage);
+  }
+
+  page_actions::PageActionViewInterface* GetIcon() {
     auto* provider = BrowserView::GetBrowserViewForBrowser(browser())
                          ->toolbar_button_provider();
-    auto* view = page_actions::GetIconLabelBubbleViewForTesting(
-        provider->GetPageActionViewInterface(kActionShowPasswordsBubbleOrPage),
+    return provider->GetPageActionViewInterface(
         kActionShowPasswordsBubbleOrPage);
-    return view;
   }
 
   std::u16string GetTooltipText() { return GetIcon()->GetTooltipText(); }
@@ -68,13 +72,13 @@ class ManagePasswordsIconViewTestToolbarPinningOnly
 
 IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTest, DefaultStateIsInactive) {
   EXPECT_EQ(password_manager::ui::INACTIVE_STATE, ViewState());
-  EXPECT_FALSE(GetIcon()->GetVisible());
+  EXPECT_FALSE(GetIconAccessor().GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTest, PendingState) {
   SetupPendingPassword();
   EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE, ViewState());
-  EXPECT_TRUE(GetIcon()->GetVisible());
+  EXPECT_TRUE(GetIconAccessor().GetVisible());
   // No tooltip because the bubble is showing.
   EXPECT_EQ(std::u16string(), GetTooltipText());
 }
@@ -82,17 +86,15 @@ IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTest, PendingState) {
 IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTest, ManageState) {
   SetupManagingPasswords();
   EXPECT_EQ(password_manager::ui::MANAGE_STATE, ViewState());
-  EXPECT_TRUE(GetIcon()->GetVisible());
+  EXPECT_TRUE(GetIconAccessor().GetVisible());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_MANAGE),
             GetTooltipText());
 }
 
 IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTest, CloseOnClick) {
   SetupPendingPassword();
-  EXPECT_TRUE(GetIcon()->GetVisible());
-  views::test::InteractionTestUtilSimulatorViews::PressButton(
-      static_cast<views::Button*>(GetIcon()),
-      ui::test::InteractionTestUtil::InputType::kDontCare);
+  EXPECT_TRUE(GetIconAccessor().GetVisible());
+  GetIconAccessor().Click();
   // Wait for the command execution to close the bubble.
   content::RunAllPendingInMessageLoop();
 }

@@ -7,18 +7,14 @@
 
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace views {
 class Button;
 }  // namespace views
-
-namespace content {
-class WebContents;
-}  // namespace content
-
-class BrowserWindowInterface;
 
 namespace web_app {
 
@@ -30,7 +26,8 @@ namespace web_app {
 // This test function handles the the case where intent picker migration is
 // enabled to use the PageActionView of the intent picker from the
 // IntentChipButton.
-views::Button* GetIntentPickerButton(BrowserWindowInterface* browser);
+page_actions::PageActionTestAccessor GetIntentPickerButton(
+    BrowserWindowInterface* browser);
 
 IntentPickerBubbleView* intent_picker_bubble();
 

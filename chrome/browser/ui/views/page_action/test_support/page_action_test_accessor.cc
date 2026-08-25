@@ -22,7 +22,11 @@
 #include "content/public/test/browser_test_utils.h"
 #include "ui/actions/action_id.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
@@ -238,6 +242,125 @@ bool PageActionTestAccessor::IsAnimating() {
     return pav->is_animating_label();
   }
   return false;
+}
+
+std::u16string PageActionTestAccessor::GetText() {
+  if (features::IsWebUILocationBarEnabled()) {
+    if (auto* tracked_el = GetTrackedElement()) {
+      if (content::WebContents* contents = GetWebContents()) {
+        const std::string script = base::StringPrintf(
+            R"((() => {
+              const manager = window._trackedElementManager;
+              if (!manager) return '';
+              const tracked = manager.getElementWithId({
+                nativeIdentifier: "%s",
+                secondaryIdentifier: "%s"
+              });
+              if (!tracked || !tracked.element) return '';
+              return (tracked.element.state?.text || '').toString();
+            })())",
+            tracked_el->identifier().GetName().c_str(),
+            tracked_el->GetSecondaryIdentifier().c_str());
+        content::EvalJsResult result = content::EvalJs(contents, script);
+        if (result.is_string()) {
+          return base::UTF8ToUTF16(result.ExtractString());
+        }
+      }
+    }
+    // TODO(crbug.com/526715177): Remove this fallback once support for
+    // TrackedElements in page actions is implemented.
+    content::WebContents* contents = GetWebContents();
+    if (contents) {
+      const int action_id_int = static_cast<int>(
+          webui_toolbar::ActionIdToMojomPageActionId(action_id_));
+      const std::string script = base::StringPrintf(
+          R"((() => {
+            %s
+            const el = findDeep(document.body,
+                                e => e.state?.pageActionId === %d);
+            if (!el) return '';
+            return (el.state?.text || '').toString();
+          })())",
+          kFindDeepJS, action_id_int);
+      content::EvalJsResult result = content::EvalJs(contents, script);
+      if (result.is_string()) {
+        return base::UTF8ToUTF16(result.ExtractString());
+      }
+    }
+    return std::u16string();
+  }
+  views::View* view = GetView();
+  if (auto* button = views::AsViewClass<views::LabelButton>(view)) {
+    return std::u16string(button->GetText());
+  }
+  return std::u16string();
+}
+
+void PageActionTestAccessor::Click(page_actions::PageActionTrigger trigger) {
+  if (features::IsWebUILocationBarEnabled()) {
+    if (auto* tracked_el = GetTrackedElement()) {
+      if (content::WebContents* contents = GetWebContents()) {
+        const std::string script = base::StringPrintf(
+            R"((() => {
+              const manager = window._trackedElementManager;
+              if (!manager) return false;
+              const tracked = manager.getElementWithId({
+                nativeIdentifier: "%s",
+                secondaryIdentifier: "%s"
+              });
+              if (!tracked || !tracked.element) return false;
+              const el = tracked.element;
+              const btn = el.shadowRoot
+                  ? (el.shadowRoot.querySelector(
+                         '#button, toolbar-chip-button, toolbar-button, button, [role="button"]') || el)
+                  : el;
+              btn.click();
+              return true;
+            })())",
+            tracked_el->identifier().GetName().c_str(),
+            tracked_el->GetSecondaryIdentifier().c_str());
+        content::EvalJsResult result = content::EvalJs(contents, script);
+        if (result.is_bool() && result.ExtractBool()) {
+          return;
+        }
+      }
+    }
+    // TODO(crbug.com/526715177): Remove this fallback once support for
+    // TrackedElements in page actions is implemented.
+    content::WebContents* contents = GetWebContents();
+    if (contents) {
+      const int action_id_int = static_cast<int>(
+          webui_toolbar::ActionIdToMojomPageActionId(action_id_));
+      const std::string script = base::StringPrintf(
+          R"((() => {
+            %s
+            const el = findDeep(document.body,
+                                e => e.state?.pageActionId === %d);
+            if (el) {
+              const btn = el.shadowRoot
+                  ? (el.shadowRoot.querySelector(
+                        'button, [role="button"]') || el)
+                  : el;
+              btn.click();
+              return true;
+            }
+            return false;
+          })())",
+          kFindDeepJS, action_id_int);
+      content::EvalJsResult result = content::EvalJs(contents, script);
+      if (result.is_bool() && result.ExtractBool()) {
+        return;
+      }
+    }
+    return;
+  }
+  views::View* view = GetView();
+  if (auto* button = views::AsViewClass<views::Button>(view)) {
+    ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                         gfx::Point(), ui::EventTimeForNow(),
+                         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+    views::test::ButtonTestApi(button).NotifyClick(event);
+  }
 }
 
 }  // namespace page_actions

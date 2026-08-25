@@ -22,7 +22,8 @@
 #include "chrome/browser/ui/views/autofill/payments/manage_saved_iban_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_iban_bubble_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -378,14 +379,17 @@ class IbanBubbleViewFullFormBrowserTest
     return iban_bubble_controller->GetIbanBubbleType();
   }
 
-  IconLabelBubbleView* GetSaveIbanIconView() {
+  page_actions::PageActionTestAccessor GetSaveIbanIconAccessor() {
+    return page_actions::PageActionTestAccessor(
+        GetBrowser(0), kActionShowPaymentsBubbleOrPage);
+  }
+
+  page_actions::PageActionViewInterface* GetSaveIbanIconView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(GetBrowser(0));
     auto* provider = browser_view->toolbar_button_provider();
-    IconLabelBubbleView* icon = page_actions::GetIconLabelBubbleViewForTesting(
-        provider->GetPageActionViewInterface(kActionShowPaymentsBubbleOrPage),
-        kActionShowPaymentsBubbleOrPage);
-    CHECK(browser_view->GetLocationBarView()->Contains(icon));
+    auto* icon =
+        provider->GetPageActionViewInterface(kActionShowPaymentsBubbleOrPage);
     return icon;
   }
 
@@ -601,7 +605,7 @@ IN_PROC_BROWSER_TEST_P(IbanBubbleViewFullFormBrowserTest,
               kIbanValueWithoutWhitespaces)));
 
   // Post migration, the icon will not show after max strikes.
-  EXPECT_FALSE(GetSaveIbanIconView()->GetVisible());
+  EXPECT_FALSE(GetSaveIbanIconAccessor().GetVisible());
   EXPECT_FALSE(GetSaveIbanBubbleView());
 
   histogram_tester.ExpectUniqueSample(
@@ -672,7 +676,7 @@ IN_PROC_BROWSER_TEST_P(IbanBubbleViewFullFormBrowserTest,
   SubmitFormAndWaitForIbanLocalSaveBubble();
 
   ClickOnCloseButton();
-  EXPECT_FALSE(GetSaveIbanIconView()->GetVisible());
+  EXPECT_FALSE(GetSaveIbanIconAccessor().GetVisible());
   EXPECT_FALSE(GetSaveIbanBubbleView());
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveIbanPromptOffer.Local.FirstShow",
@@ -698,7 +702,7 @@ IN_PROC_BROWSER_TEST_P(IbanBubbleViewFullFormBrowserTest,
 
   // Open up manage IBANs bubble.
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  ClickOnView(GetSaveIbanIconView());
+  GetSaveIbanIconAccessor().Click();
   ASSERT_TRUE(WaitForObservedEvent());
 
   const views::Label* nickname_label = static_cast<views::Label*>(
@@ -723,7 +727,7 @@ IN_PROC_BROWSER_TEST_P(IbanBubbleViewFullFormBrowserTest,
 
   // Open up manage IBANs bubble.
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  ClickOnView(GetSaveIbanIconView());
+  GetSaveIbanIconAccessor().Click();
   ASSERT_TRUE(WaitForObservedEvent());
 
   EXPECT_FALSE(FindViewInBubbleById(DialogViewId::NICKNAME_LABEL));
