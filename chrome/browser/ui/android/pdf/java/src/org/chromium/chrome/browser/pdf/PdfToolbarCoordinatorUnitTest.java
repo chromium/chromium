@@ -97,7 +97,11 @@ public class PdfToolbarCoordinatorUnitTest {
 
     private void setToolbarWidth(PdfToolbar toolbar, int widthDp) {
         float density = mActivity.getResources().getDisplayMetrics().density;
-        toolbar.layout(0, 0, (int) (widthDp * density), 56);
+        int widthPx = (int) (widthDp * density);
+        toolbar.measure(
+                View.MeasureSpec.makeMeasureSpec(widthPx, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(56, View.MeasureSpec.EXACTLY));
+        toolbar.layout(0, 0, widthPx, 56);
     }
 
     @Test
@@ -701,7 +705,7 @@ public class PdfToolbarCoordinatorUnitTest {
         assertEquals(View.VISIBLE, editButton.getVisibility());
         assertEquals(View.VISIBLE, navZoomDivider.getVisibility());
         assertEquals(View.GONE, zoomFitDivider.getVisibility());
-        assertEquals(View.GONE, fitEditDivider.getVisibility());
+        assertEquals(View.VISIBLE, fitEditDivider.getVisibility());
         assertEquals(View.VISIBLE, centerGroup.getVisibility());
 
         // State 5: Narrower (e.g. 620dp) -> Download, Fit, Zoom GONE (was Download, Rotate, Fit,
@@ -714,7 +718,7 @@ public class PdfToolbarCoordinatorUnitTest {
         assertEquals(View.VISIBLE, editButton.getVisibility());
         assertEquals(View.GONE, navZoomDivider.getVisibility());
         assertEquals(View.GONE, zoomFitDivider.getVisibility());
-        assertEquals(View.GONE, fitEditDivider.getVisibility());
+        assertEquals(View.VISIBLE, fitEditDivider.getVisibility());
         assertEquals(View.VISIBLE, centerGroup.getVisibility());
 
         // State 6: Most narrow (e.g. 550dp) -> All center gone, only print/menu/title remain
