@@ -612,7 +612,7 @@ enum DataTransferEventTrigger {
   MOUSE_ACTION = 10;
 }
 
-// Next ID: 22.
+// Next ID: 23.
 message SafeBrowsingInterstitialEvent {
   reserved 2, 6, 8, 9, 10, 11, 12, 13, 15;
 
@@ -681,6 +681,16 @@ message SafeBrowsingInterstitialEvent {
   // The referrers of the webpage that sent the user to the url that triggered
   // the event.
   repeated UrlInfo referrers = 21;
+
+    // The title of the tab when the interstitial event is logged.
+  string tab_title = 22
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_USER_CONTENT
+      // ]
+      // copybara:datapol_end
+      ;
+
 }
 
 // A DLP (Data Loss Prevention) event where sensitive data may have leaked.
