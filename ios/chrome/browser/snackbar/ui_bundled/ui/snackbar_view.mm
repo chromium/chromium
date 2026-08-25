@@ -26,6 +26,7 @@ const NSTimeInterval kSnackbarAnimationDuration = 0.8;
 const CGFloat kSnackbarCornerRadius = 16.0;
 const CGFloat kHorizontalPadding = 16.0;
 const CGFloat kVerticalPadding = 16.0;
+const CGFloat kKeyboardOffset = 10.0;
 const CGFloat kInterItemSpacing = 16.0;
 const CGFloat kAccessoryViewSize = 32.0;
 const CGFloat kSnackbarMarginLegacy = 8.0;
@@ -415,15 +416,29 @@ const CGFloat kTextSpacing = 2.0;
   UILayoutGuide* safeAreaLayoutGuide = self.safeAreaLayoutGuide;
   const CGFloat margin =
       IsChromeNextIaEnabled() ? kSnackbarMarginNext : kSnackbarMarginLegacy;
+
+  // A composite layout guide that adjusts for the keyboard: adds padding when
+  // shown, and aligns with the safe area when the keyboard is dismissed.
+  UILayoutGuide* keyboardSafeAreaGuide = [[UILayoutGuide alloc] init];
+  [self addLayoutGuide:keyboardSafeAreaGuide];
+
+  AddSameConstraintsToSides(keyboardSafeAreaGuide, self,
+                            LayoutSides::kHorizontal | LayoutSides::kBottom);
+
+  self.keyboardLayoutGuide.usesBottomSafeArea = NO;
+
+  NSLayoutConstraint* toSafeArea = [keyboardSafeAreaGuide.topAnchor
+      constraintLessThanOrEqualToAnchor:safeAreaLayoutGuide.bottomAnchor];
+  NSLayoutConstraint* toKeyboard = [keyboardSafeAreaGuide.topAnchor
+      constraintEqualToAnchor:self.keyboardLayoutGuide.topAnchor
+                     constant:-kKeyboardOffset];
+  toKeyboard.priority = toSafeArea.priority - 1;
+  [NSLayoutConstraint activateConstraints:@[ toKeyboard, toSafeArea ]];
+
   _bottomConstraint = [_contentView.bottomAnchor
-      constraintLessThanOrEqualToAnchor:self.bottomAnchor
+      constraintLessThanOrEqualToAnchor:keyboardSafeAreaGuide.topAnchor
                                constant:-(self.bottomOffset + margin)];
   _bottomConstraint.active = YES;
-
-  [_contentView.bottomAnchor
-      constraintLessThanOrEqualToAnchor:safeAreaLayoutGuide.bottomAnchor
-                               constant:-margin]
-      .active = YES;
 
   // On iPhone portrait, pin to the edges of the safe area.
   _compactWidthConstraints = @[
