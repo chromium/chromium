@@ -8,14 +8,11 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
-#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
-#include "chrome/browser/readaloud/fake_audio_stream_factory.h"
 #include "chrome/browser/readaloud/read_aloud_service_factory.h"
-#include "chrome/common/readaloud/read_aloud_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/dom_distiller/core/distiller_page.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
@@ -25,10 +22,7 @@
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
-#include "media/audio/audio_device_description.h"
 #include "media/base/audio_parameters.h"
-#include "media/mojo/mojom/audio_data_pipe.mojom.h"
-#include "media/mojo/mojom/audio_output_stream.mojom.h"
 #include "mojo/public/mojom/base/work_in_progress.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -129,22 +123,12 @@ class FakePlaybackController
   void Reset() {
     receiver_.reset();
     received_segments_.clear();
-    last_audio_stream_.reset();
-    last_data_pipe_.reset();
   }
 
   void InitializeAudio(
       mojo::PendingRemote<media::mojom::AudioOutputStream> stream,
       media::mojom::ReadWriteAudioDataPipePtr data_pipe,
-      const media::AudioParameters& params) override {
-    last_audio_stream_ = std::move(stream);
-    last_data_pipe_ = std::move(data_pipe);
-    last_audio_params_ = params;
-    initialize_audio_called_count_++;
-    if (initialize_audio_callback_) {
-      std::move(initialize_audio_callback_).Run();
-    }
-  }
+      const media::AudioParameters& params) override {}
 
   void SetTextContent(
       std::vector<read_aloud::mojom::TextSegmentPtr> segments) override {
@@ -198,26 +182,11 @@ class FakePlaybackController
   int play_count() const { return play_count_; }
   int pause_count() const { return pause_count_; }
   float last_playback_rate() const { return last_playback_rate_; }
-  void set_initialize_audio_callback(base::OnceClosure callback) {
-    initialize_audio_callback_ = std::move(callback);
-  }
-
-  int initialize_audio_called_count() const {
-    return initialize_audio_called_count_;
-  }
-  const media::AudioParameters& last_audio_params() const {
-    return last_audio_params_;
-  }
-  bool has_audio_stream() const { return last_audio_stream_.is_valid(); }
-  bool has_data_pipe() const { return !last_data_pipe_.is_null(); }
 
  private:
   mojo::Receiver<read_aloud::mojom::ReadAloudPlaybackController> receiver_{
       this};
   std::vector<read_aloud::mojom::TextSegmentPtr> received_segments_;
-  mojo::PendingRemote<media::mojom::AudioOutputStream> last_audio_stream_;
-  media::mojom::ReadWriteAudioDataPipePtr last_data_pipe_;
-  media::AudioParameters last_audio_params_;
   base::OnceClosure set_text_content_callback_;
   base::OnceClosure play_callback_;
   base::OnceClosure pause_callback_;
@@ -225,8 +194,6 @@ class FakePlaybackController
   int play_count_ = 0;
   int pause_count_ = 0;
   float last_playback_rate_ = 1.0f;
-  base::OnceClosure initialize_audio_callback_;
-  int initialize_audio_called_count_ = 0;
 };
 }  // namespace
 
@@ -252,10 +219,7 @@ class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
               return std::make_unique<ReadAloudService>(
                   Profile::FromBrowserContext(context),
                   base::BindRepeating(&ReadAloudServiceTest::BindController,
-                                      base::Unretained(test)),
-                  base::BindRepeating(
-                      &ReadAloudServiceTest::BindAudioStreamFactory,
-                      base::Unretained(test)));
+                                      base::Unretained(test)));
             },
             this));
   }
@@ -274,18 +238,6 @@ class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
     return service()->GetViewerHandleForTesting();
   }
 
-  void ExpectDistillation(const GURL& url) {
-    EXPECT_CALL(*mock_distiller_service(),
-                CreateDefaultDistillerPageWithHandle(testing::_))
-        .WillOnce(testing::Return(testing::ByMove(
-            std::make_unique<dom_distiller::test::MockDistillerPage>())));
-
-    EXPECT_CALL(*mock_distiller_service(),
-                ViewUrlIgnoreCache(service(), testing::_, url))
-        .WillOnce(testing::Return(testing::ByMove(
-            std::make_unique<dom_distiller::ViewerHandle>(base::DoNothing()))));
-  }
-
   void SetFakeController(
       std::unique_ptr<FakePlaybackController> controller) {
     fake_controller_ = std::move(controller);
@@ -293,10 +245,6 @@ class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
 
   FakePlaybackController* fake_controller() {
     return fake_controller_.get();
-  }
-
-  FakeAudioStreamFactory* fake_audio_stream_factory() {
-    return &fake_audio_stream_factory_;
   }
 
   void BindController(
@@ -307,14 +255,8 @@ class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
     }
   }
 
-  void BindAudioStreamFactory(
-      mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
-    fake_audio_stream_factory_.Bind(std::move(receiver));
-  }
-
  private:
   std::unique_ptr<FakePlaybackController> fake_controller_;
-  FakeAudioStreamFactory fake_audio_stream_factory_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -520,7 +462,16 @@ TEST_F(ReadAloudServiceTest, OnArticleUpdated) {
 TEST_F(ReadAloudServiceTest, ShutdownClearsHandle) {
   NavigateAndCommit(GURL("https://www.example.com/article"));
 
-  ExpectDistillation(GURL("https://www.example.com/article"));
+  EXPECT_CALL(*mock_distiller_service(),
+              CreateDefaultDistillerPageWithHandle(testing::_))
+      .WillOnce(testing::Return(testing::ByMove(
+          std::make_unique<dom_distiller::test::MockDistillerPage>())));
+
+  EXPECT_CALL(*mock_distiller_service(),
+              ViewUrlIgnoreCache(service(), testing::_,
+                                 GURL("https://www.example.com/article")))
+      .WillOnce(testing::Return(testing::ByMove(
+          std::make_unique<dom_distiller::ViewerHandle>(base::DoNothing()))));
 
   service()->Play(web_contents());
   EXPECT_NE(nullptr, GetViewerHandle());
@@ -565,7 +516,16 @@ TEST_F(ReadAloudServiceTest, SetDelegateAndShutdownLifecycle) {
 TEST_F(ReadAloudServiceTest, PrimaryPageChangedStopsAndDetachesObserver) {
   NavigateAndCommit(GURL("https://www.example.com/article"));
 
-  ExpectDistillation(GURL("https://www.example.com/article"));
+  EXPECT_CALL(*mock_distiller_service(),
+              CreateDefaultDistillerPageWithHandle(testing::_))
+      .WillOnce(testing::Return(testing::ByMove(
+          std::make_unique<dom_distiller::test::MockDistillerPage>())));
+
+  EXPECT_CALL(*mock_distiller_service(),
+              ViewUrlIgnoreCache(service(), testing::_,
+                                 GURL("https://www.example.com/article")))
+      .WillOnce(testing::Return(testing::ByMove(
+          std::make_unique<dom_distiller::ViewerHandle>(base::DoNothing()))));
 
   service()->Play(web_contents());
   EXPECT_NE(nullptr, GetViewerHandle());
@@ -657,74 +617,6 @@ TEST_F(ReadAloudServiceTest, UtilityProcessLifecycle) {
   // set at the top of this test case will fail if a third distillation is
   // triggered.
   service()->Play(web_contents());
-}
-
-TEST_F(ReadAloudServiceTest, AudioStreamLifecycle) {
-  NavigateAndCommit(GURL("https://www.example.com/article"));
-
-  SetFakeController(std::make_unique<FakePlaybackController>());
-
-  ExpectDistillation(GURL("https://www.example.com/article"));
-
-  base::RunLoop run_loop;
-  fake_controller()->set_initialize_audio_callback(run_loop.QuitClosure());
-
-  // Calling Play() initializes controller and requests audio stream creation.
-  service()->Play(web_contents());
-  run_loop.Run();
-
-  EXPECT_EQ(fake_audio_stream_factory()->create_output_stream_called_count(),
-            1);
-  EXPECT_EQ(fake_audio_stream_factory()->last_device_id(),
-            media::AudioDeviceDescription::kDefaultDeviceId);
-  EXPECT_EQ(fake_audio_stream_factory()->last_params().sample_rate(),
-            readaloud::kAudioSampleRate);
-  EXPECT_EQ(fake_audio_stream_factory()->last_params().frames_per_buffer(),
-            readaloud::kAudioFramesPerBuffer);
-  EXPECT_EQ(fake_audio_stream_factory()->last_group_id(),
-            web_contents()->GetAudioGroupId());
-
-  // Controller received the audio initialization call with valid handles.
-  EXPECT_EQ(fake_controller()->initialize_audio_called_count(), 1);
-  EXPECT_TRUE(fake_controller()->has_audio_stream());
-  EXPECT_TRUE(fake_controller()->has_data_pipe());
-  EXPECT_EQ(fake_controller()->last_audio_params().sample_rate(),
-            readaloud::kAudioSampleRate);
-}
-
-TEST_F(ReadAloudServiceTest, AudioStreamCreationFailureDispatchesError) {
-  NavigateAndCommit(GURL("https://www.example.com/article"));
-
-  SetFakeController(std::make_unique<FakePlaybackController>());
-  fake_audio_stream_factory()->set_auto_respond(/*auto_respond=*/true,
-                                                /*should_succeed=*/false);
-
-  auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
-  MockDelegate* delegate_ptr = delegate.get();
-  service()->SetDelegate(std::move(delegate));
-
-  ExpectDistillation(GURL("https://www.example.com/article"));
-
-  base::RunLoop run_loop;
-  testing::InSequence s;
-  EXPECT_CALL(*delegate_ptr,
-              OnPlaybackStateChanged(ReadAloudService::PlaybackState::kPlaying))
-      .Times(1);
-  EXPECT_CALL(*delegate_ptr,
-              OnPlaybackStateChanged(ReadAloudService::PlaybackState::kStopped))
-      .Times(1);
-  EXPECT_CALL(*delegate_ptr,
-              OnPlaybackError("Failed to initialize audio output stream"))
-      .Times(1)
-      .WillOnce(testing::InvokeWithoutArgs([&run_loop] { run_loop.Quit(); }));
-
-  service()->Play(web_contents());
-  run_loop.Run();
-
-  EXPECT_EQ(service()->web_contents(), nullptr);
-  EXPECT_TRUE(service()->IsPlaybackPaused());
-
-  EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
 }
 
 TEST_F(ReadAloudServiceTest,

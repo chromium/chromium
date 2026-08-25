@@ -9,31 +9,23 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/unguessable_token.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/readaloud/audio_generation/speech_synthesis_broker.h"
-#include "chrome/browser/readaloud/read_aloud_audio_broker.h"
 #include "chrome/browser/readaloud/read_aloud_playback_session.h"
-#include "chrome/common/readaloud/read_aloud_constants.h"
 #include "components/dom_distiller/content/browser/distiller_page_web_contents.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "media/base/audio_parameters.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 
 namespace readaloud {
 
-ReadAloudService::ReadAloudService(
-    Profile* profile,
-    PlaybackControllerBinder controller_binder,
-    ReadAloudAudioBroker::AudioStreamFactoryBinder factory_binder)
+ReadAloudService::ReadAloudService(Profile* profile,
+                                   PlaybackControllerBinder controller_binder)
     : profile_(profile),
       controller_binder_(std::move(controller_binder)),
-      audio_broker_(
-          std::make_unique<ReadAloudAudioBroker>(std::move(factory_binder))),
       speech_synthesis_broker_(std::make_unique<SpeechSynthesisBroker>()) {}
 
 ReadAloudService::~ReadAloudService() = default;
@@ -109,7 +101,6 @@ void ReadAloudService::Stop() {
     delegate_->OnPlaybackStateChanged(current_state);
   }
 }
-
 void ReadAloudService::SeekToWordIndex(int word_index) {}
 void ReadAloudService::Seek(base::TimeDelta absolute_time) {}
 void ReadAloudService::SeekRelative(base::TimeDelta offset) {}
@@ -123,6 +114,7 @@ void ReadAloudService::SetVoice(std::string_view voice_id) {
     speech_synthesis_broker_->SetVoice(voice_id);
   }
 }
+
 void ReadAloudService::SetLanguageCode(std::string_view language_code) {
   if (speech_synthesis_broker_) {
     speech_synthesis_broker_->SetLanguageCode(language_code);
@@ -286,7 +278,6 @@ void ReadAloudService::Initialize(content::WebContents* new_web_contents) {
   ProvideInitialMetadata();
   DistillPage(new_web_contents);
   EnsurePlaybackControllerConnected();
-  InitializeAudioStream();
 }
 
 void ReadAloudService::ProvideInitialMetadata() {
@@ -341,52 +332,6 @@ void ReadAloudService::EnsurePlaybackControllerConnected() {
       &ReadAloudService::OnUtilityDisconnect, weak_factory_.GetWeakPtr()));
 }
 
-void ReadAloudService::InitializeAudioStream() {
-  if (!utility_player_.is_bound() || !audio_broker_) {
-    return;
-  }
-
-  // TODO(b/547989045): Query audio parameters from the OS rather than using
-  // hardcoded constants.
-  media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                media::ChannelLayoutConfig::Mono(),
-                                readaloud::kAudioSampleRate,
-                                readaloud::kAudioFramesPerBuffer);
-
-  // Associate the audio output stream with the hosting WebContents' audio group
-  // ID. This ensures the Audio Service correctly links this stream to the tab
-  // for tab-strip muting, media indicator tracking, and tab audio
-  // capture/mirroring.
-  if (!web_contents()) {
-    return;
-  }
-  base::UnguessableToken group_id = web_contents()->GetAudioGroupId();
-
-  audio_broker_->CreateOutputStream(
-      group_id, params,
-      base::BindOnce(&ReadAloudService::OnAudioStreamCreated,
-                     weak_factory_.GetWeakPtr(), params));
-}
-
-void ReadAloudService::OnAudioStreamCreated(
-    const media::AudioParameters& params,
-    mojo::PendingRemote<media::mojom::AudioOutputStream> stream_remote,
-    media::mojom::ReadWriteAudioDataPipePtr data_pipe) {
-  if (!utility_player_.is_bound()) {
-    return;
-  }
-  if (!stream_remote.is_valid() || !data_pipe) {
-    Stop();
-    if (delegate_) {
-      delegate_->OnPlaybackError("Failed to initialize audio output stream");
-    }
-    return;
-  }
-
-  utility_player_->InitializeAudio(std::move(stream_remote),
-                                   std::move(data_pipe), params);
-}
-
 void ReadAloudService::OnUtilityDisconnect() {
   Stop();
   if (delegate_) {
@@ -398,9 +343,6 @@ void ReadAloudService::ResetUtilityConnection() {
   utility_observer_receiver_.reset();
   utility_player_.reset();
   player_factory_.reset();
-  if (audio_broker_) {
-    audio_broker_->Reset();
-  }
 }
 
 void ReadAloudService::OnDistillationFailed(

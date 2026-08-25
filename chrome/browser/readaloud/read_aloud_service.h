@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/readaloud/read_aloud_audio_broker.h"
 #include "chrome/common/readaloud/read_aloud.mojom.h"
 #include "components/dom_distiller/core/task_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -148,8 +147,7 @@ class ReadAloudService
 
   explicit ReadAloudService(
       Profile* profile,
-      PlaybackControllerBinder controller_binder = {},
-      ReadAloudAudioBroker::AudioStreamFactoryBinder factory_binder = {});
+      PlaybackControllerBinder controller_binder = {});
 
   ReadAloudService(const ReadAloudService&) = delete;
   ReadAloudService& operator=(const ReadAloudService&) = delete;
@@ -255,18 +253,12 @@ class ReadAloudService
   // Sends page title and publisher metadata to the UI delegate.
   void ProvideInitialMetadata();
   void EnsurePlaybackControllerConnected();
-  void InitializeAudioStream();
-  void OnAudioStreamCreated(
-      const media::AudioParameters& params,
-      mojo::PendingRemote<media::mojom::AudioOutputStream> stream_remote,
-      media::mojom::ReadWriteAudioDataPipePtr data_pipe);
   void OnUtilityDisconnect();
   void ResetUtilityConnection();
   PlaybackState GetCurrentPlaybackState() const;
 
   raw_ptr<Profile> profile_;
   PlaybackControllerBinder controller_binder_;
-  std::unique_ptr<ReadAloudAudioBroker> audio_broker_;
   std::unique_ptr<dom_distiller::ViewerHandle> viewer_handle_;
   std::unique_ptr<Delegate> delegate_;
   base::TimeTicks distillation_start_time_;
