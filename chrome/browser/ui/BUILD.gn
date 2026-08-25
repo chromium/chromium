@@ -1865,8 +1865,6 @@ static_library("ui") {
       "settings_window_manager_chromeos.cc",
       "settings_window_manager_chromeos.h",
       "views/chrome_views_delegate_ash.cc",
-      "views/extensions/media_galleries_dialog_views.cc",
-      "views/extensions/media_galleries_dialog_views.h",
       "views/external_protocol_handler_ash.cc",
       "views/frame/browser_frame_header_chromeos.cc",
       "views/frame/browser_frame_header_chromeos.h",
@@ -2045,6 +2043,7 @@ static_library("ui") {
       "//chrome/browser/ui/ash/wm",
       "//chrome/browser/ui/chromeos/locked_state",
       "//chrome/browser/ui/views/apps/app_dialog",
+      "//chrome/browser/ui/views/extensions:media_galleries_dialog_views",
       "//chrome/browser/ui/views/extensions:media_gallery_checkbox_view",
       "//chrome/browser/ui/views/extensions/dialogs:document_scanner_discovery_confirmation_dialog",
       "//chrome/browser/ui/views/extensions/dialogs:document_scanner_start_scan_confirmation_dialog",
@@ -2570,21 +2569,12 @@ static_library("ui") {
       "views/extensions/extension_install_dialog_view.h",
       "views/extensions/extension_view_utils.cc",
       "views/extensions/extension_view_utils.h",
-      "views/extensions/extensions_container_views.h",
-      "views/extensions/extensions_menu_button.cc",
-      "views/extensions/extensions_menu_button.h",
       "views/extensions/extensions_menu_coordinator.cc",
       "views/extensions/extensions_menu_coordinator.h",
       "views/extensions/extensions_menu_delegate_desktop.cc",
       "views/extensions/extensions_menu_delegate_desktop.h",
-      "views/extensions/extensions_menu_entry_view.cc",
-      "views/extensions/extensions_menu_entry_view.h",
-      "views/extensions/extensions_menu_item_view.cc",
-      "views/extensions/extensions_menu_item_view.h",
       "views/extensions/extensions_menu_main_page_view.cc",
       "views/extensions/extensions_menu_main_page_view.h",
-      "views/extensions/extensions_menu_site_permissions_page_view.cc",
-      "views/extensions/extensions_menu_site_permissions_page_view.h",
       "views/extensions/extensions_menu_view.cc",
       "views/extensions/extensions_menu_view.h",
       "views/extensions/extensions_request_access_button.cc",
@@ -2956,6 +2946,11 @@ static_library("ui") {
       "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/views/exclusive_access",
       "//chrome/browser/ui/views/exclusive_access:impl",
+      "//chrome/browser/ui/views/extensions:extensions_container_views",
+      "//chrome/browser/ui/views/extensions:extensions_menu_button",
+      "//chrome/browser/ui/views/extensions:extensions_menu_entry_view",
+      "//chrome/browser/ui/views/extensions:extensions_menu_item_view",
+      "//chrome/browser/ui/views/extensions:extensions_menu_site_permissions_page_view",
       "//chrome/browser/ui/views/extensions:security_dialog_tracker",
       "//chrome/browser/ui/views/extensions:windows_utils_views",
       "//chrome/browser/ui/views/frame:app_menu_button_observer",
@@ -3433,7 +3428,10 @@ static_library("ui") {
     }
 
     if (is_chromeos) {
-      deps += [ "//chrome/browser/ui/views/web_apps/isolated_web_apps:multi_capture_notification_details_view" ]
+      deps += [
+        "//chrome/browser/ui/views/extensions:media_galleries_dialog_views",
+        "//chrome/browser/ui/views/web_apps/isolated_web_apps:multi_capture_notification_details_view",
+      ]
     } else {
       sources += [
         "views/frame/opaque_browser_frame_view.cc",
@@ -3995,6 +3993,9 @@ static_library("test_support") {
     deps += [
       "//chrome/browser/ui/extensions:test_support",
       "//chrome/browser/ui/views/controls",
+      "//chrome/browser/ui/views/extensions:extensions_menu_button",
+      "//chrome/browser/ui/views/extensions:extensions_menu_entry_view",
+      "//chrome/browser/ui/views/extensions:extensions_menu_item_view",
       "//chrome/browser/ui/views/web_apps/isolated_web_apps:installer_base",
       "//components/constrained_window",
       "//components/webauthn/content/browser",

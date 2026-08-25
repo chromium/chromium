@@ -140,6 +140,7 @@ if (toolkit_views) {
       "//chrome/browser/ui/views:layout_provider",
       "//chrome/browser/ui/views:sub_apps_permission_explanation",
       "//chrome/browser/ui/views:title_origin_label",
+      "//chrome/browser/ui/views/extensions:extensions_container_views",
       "//chrome/browser/ui/views/infobars",
       "//chrome/browser/ui/views/location_bar",
       "//chrome/browser/ui/views/omnibox",

@@ -56,6 +56,114 @@ source_set("windows_utils_views") {
   ]
 }
 
+source_set("extensions_menu_button") {
+  public = [ "extensions_menu_button.h" ]
+  sources = [ "extensions_menu_button.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/toolbar",
+    "//chrome/browser/ui/views/controls",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+  deps = [
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views:bubble_menu_item_factory",
+    "//chrome/browser/ui/views:layout_provider",
+  ]
+}
+
+source_set("extensions_menu_entry_view") {
+  public = [ "extensions_menu_entry_view.h" ]
+  sources = [ "extensions_menu_entry_view.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/views/controls",
+    "//chrome/browser/ui/views/extensions:extensions_views_utils",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/views:layout_provider",
+    "//ui/base",
+    "//ui/color",
+    "//ui/gfx",
+    "//ui/strings:ui_strings",
+  ]
+}
+
+source_set("extensions_menu_site_permissions_page_view") {
+  public = [ "extensions_menu_site_permissions_page_view.h" ]
+  sources = [ "extensions_menu_site_permissions_page_view.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/extensions",
+    "//extensions/browser",
+    "//extensions/common",
+    "//ui/views",
+    "//url",
+  ]
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ui:chrome_pages",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/extensions:extensions_menu_handler",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/controls",
+    "//components/strings:components_strings",
+    "//components/vector_icons",
+    "//ui/base",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("extensions_container_views") {
+  public = [ "extensions_container_views.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/toolbar",
+    "//extensions/common",
+    "//ui/views",
+  ]
+}
+
+source_set("extensions_menu_item_view") {
+  public = [ "extensions_menu_item_view.h" ]
+  sources = [ "extensions_menu_item_view.cc" ]
+  public_deps = [
+    ":extensions_menu_button",
+    "//base",
+    "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/views/extensions:extensions_views_utils",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/toolbar",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/controls",
+    "//extensions/common:extension_features",
+    "//ui/accessibility",
+    "//ui/base",
+    "//ui/color",
+    "//ui/gfx",
+    "//ui/strings:ui_strings",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [
@@ -65,6 +173,7 @@ source_set("test_support") {
     "extensions_toolbar_interactive_uitest.h",
   ]
   deps = [
+    ":extensions_menu_button",
     "//base",
     "//chrome/browser/extensions",
     "//chrome/browser/extensions:test_support",
@@ -123,6 +232,7 @@ source_set("unit_tests") {
   if (is_chromeos) {
     sources += [ "media_galleries_dialog_views_unittest.cc" ]
     deps += [
+      ":media_galleries_dialog_views",
       ":media_gallery_checkbox_view",
       "//chrome/browser/media_galleries:test_support",
     ]
@@ -156,6 +266,10 @@ source_set("browser_tests") {
     ]
     deps += [
       ":extension_post_install_dialog_view_utils",
+      ":extensions_menu_button",
+      ":extensions_menu_entry_view",
+      ":extensions_menu_item_view",
+      ":extensions_menu_site_permissions_page_view",
       ":extensions_views_utils",
       ":security_dialog_tracker",
       ":test_support",
@@ -204,6 +318,7 @@ source_set("browser_tests") {
       "media_galleries_dialog_views_browsertest.cc",
     ]
     deps += [
+      ":media_galleries_dialog_views",
       ":media_gallery_checkbox_view",
       "//chrome/browser/media_galleries:test_support",
       "//chrome/browser/ui:browser_select_file_dialog_controller",
@@ -227,6 +342,10 @@ source_set("interactive_ui_tests") {
     "extensions_toolbar_desktop_interactive_uitest.cc",
   ]
   deps = [
+    ":extensions_menu_button",
+    ":extensions_menu_entry_view",
+    ":extensions_menu_item_view",
+    ":extensions_menu_site_permissions_page_view",
     ":security_dialog_tracker",
     ":test_support",
     "//base",
@@ -319,6 +438,29 @@ if (is_chromeos) {
       "//chrome/browser/ui/views:layout_provider",
       "//skia",
       "//ui/gfx/geometry",
+    ]
+  }
+
+  source_set("media_galleries_dialog_views") {
+    public = [ "media_galleries_dialog_views.h" ]
+    sources = [ "media_galleries_dialog_views.cc" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/media_galleries",
+      "//ui/base/metadata",
+      "//ui/views",
+    ]
+    deps = [
+      ":media_gallery_checkbox_view",
+      "//chrome/app:generated_resources",
+      "//chrome/app/resources:locale_settings",
+      "//chrome/browser/ui/views:layout_provider",
+      "//components/constrained_window",
+      "//components/web_modal",
+      "//ui/base",
+      "//ui/base/mojom:ui_base_types",
+      "//ui/gfx",
+      "//ui/native_theme",
     ]
   }
 }
