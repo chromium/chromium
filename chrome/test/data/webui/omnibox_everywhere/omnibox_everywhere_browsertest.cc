@@ -23,3 +23,7 @@ class OmniboxEverywhereWebUITest : public WebUIMochaBrowserTest {
 IN_PROC_BROWSER_TEST_F(OmniboxEverywhereWebUITest, TabSelectionAndRestoration) {
   RunTest("omnibox_everywhere/omnibox_test.js", "mocha.run();");
 }
+
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereWebUITest, FreModal) {
+  RunTest("omnibox_everywhere/fre_modal_test.js", "mocha.run();");
+}

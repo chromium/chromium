@@ -1,0 +1,288 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  color-scheme: light;
+  display: block;
+  font-family: 'Google Sans Text', 'Google Sans',
+      var(--cr-primary-font-family, Roboto, sans-serif);
+  user-select: none;
+  -webkit-app-region: no-drag;
+  -webkit-font-smoothing: antialiased;
+
+  /* TODO(crbug.com/550425049): Remove scoped light-mode token overrides once
+   * full Dark Mode support is enabled across the FRE modal. */
+  --color-sys-divider: #fff;
+  --color-sys-on-primary-container: #041e49;
+  --color-sys-on-surface: #1f1f1f;
+  --color-sys-on-surface-subtle: #474747;
+  --color-sys-primary: #0b57d0;
+  --color-sys-primary-container: #d3e3fd;
+  --color-sys-state-hover-on-subtle: rgba(0, 0, 0, 0.06);
+  --color-sys-surface: #fff;
+  --color-sys-surface-container: #f0f4f9;
+  --color-sys-surface-container-highest: #dde3ea;
+}
+
+.fre-card {
+  background-color: var(--color-sys-surface);
+  border-radius: 16px;
+  box-shadow: var(--cr-elevation-3, 0 1px 3px 0 rgba(0, 0, 0, 0.15),
+      0 4px 8px 3px rgba(0, 0, 0, 0.15));
+  box-sizing: border-box;
+  font-family: inherit;
+  padding: 20px;
+  position: relative;
+  width: 100%;
+}
+
+.close-button {
+  align-items: center;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: var(--color-sys-on-surface-subtle);
+  cursor: pointer;
+  display: flex;
+  height: 24px;
+  justify-content: center;
+  outline: none;
+  padding: 4px;
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  width: 24px;
+}
+
+.close-button:hover {
+  background-color: var(--color-sys-state-hover-on-subtle);
+}
+
+.close-button cr-icon {
+  --cr-icon-size: 16px;
+}
+
+.top-section {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.content {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.header {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+  width: 100%;
+}
+
+.g-logo {
+  background-image:
+      url(//resources/cr_components/searchbox/icons/google_g.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 32px;
+  width: 32px;
+}
+
+.title {
+  color: var(--color-sys-on-surface);
+  font-family: 'Google Sans', 'Google Sans Text',
+      var(--cr-primary-font-family, Roboto, sans-serif);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 25px;
+  text-align: center;
+}
+
+.containers {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.second-container {
+  background-color: var(--color-sys-divider);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px; /* border divider simulation */
+  overflow: hidden;
+}
+
+.list-item {
+  align-items: center;
+  background-color: var(--color-sys-surface-container);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  padding: 12px 16px;
+  width: 100%;
+}
+
+.list-item:first-child {
+  align-items: flex-start;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.list-item:last-child {
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.icon {
+  flex-shrink: 0;
+  margin-right: 12px;
+}
+
+.lens-icon {
+  background-color: var(--color-sys-primary);
+  height: 16px;
+  margin-top: 2px;
+  -webkit-mask-image: url(icons/fre/lens.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  width: 16px;
+}
+
+.keyboard-icon {
+  background-color: var(--color-sys-primary);
+  height: 10px;
+  -webkit-mask-image: url(icons/fre/keyboard.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  width: 16px;
+}
+
+.item-text {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 2px;
+}
+
+.primary-text {
+  color: var(--color-sys-on-surface);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+.secondary-text {
+  color: var(--color-sys-on-surface-subtle);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+.horizontal-text {
+  align-items: center;
+  color: var(--color-sys-on-surface);
+  display: flex;
+  flex-direction: row;
+  font-size: 13px;
+  font-weight: 500;
+  gap: 8px;
+  justify-content: flex-start;
+  line-height: 20px;
+}
+
+.label-text {
+  color: var(--color-sys-on-surface);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+.keys-wrapper {
+  align-items: center;
+  background-color: var(--color-sys-surface);
+  border-radius: 8px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  padding: 4px;
+}
+
+.keys-container {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+}
+
+.key-badge {
+  background-color: var(--color-sys-surface-container-highest);
+  border-radius: 6px;
+  color: var(--color-sys-on-surface);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+  padding: 4px 8px;
+}
+
+.accept-hotkey-btn {
+  align-items: center;
+  background-color: var(--color-sys-primary-container);
+  border: none;
+  border-radius: 100px;
+  box-sizing: border-box;
+  color: var(--color-sys-on-primary-container);
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  font-family: inherit;
+  height: 24px;
+  outline: none;
+  padding: 4px 10px;
+}
+
+.accept-hotkey-btn:hover {
+  background-color: var(--color-sys-surface-container-highest);
+}
+
+.accept-label {
+  color: var(--color-sys-on-primary-container);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+.or-text {
+  color: var(--color-sys-on-surface);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+.edit-link {
+  color: var(--color-sys-primary);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+  text-decoration: none;
+}

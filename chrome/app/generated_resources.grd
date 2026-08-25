@@ -7616,6 +7616,43 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_GOOGLE_LENS_SEARCH_BOX_EMPTY_HINT" desc="The text displayed in the lens searchboxes when they are empty.">
         Search
       </message>
+      <message name="IDS_LOOMNIBOX_FRE_TITLE" desc="Title of the First Run Experience (FRE) modal for Loomnibox.">
+        Ask Google from anywhere
+      </message>
+      <message name="IDS_LOOMNIBOX_FRE_LENS_PRIMARY" desc="Primary text explaining how to use Google Lens in the Loomnibox.">
+        Use the lens button to share what’s on your screen
+      </message>
+      <message name="IDS_LOOMNIBOX_FRE_LENS_SECONDARY" desc="Secondary description detailing Google Lens functionality in Loomnibox.">
+        Add context to your question by selecting an area or your entire screen
+      </message>
+      <message name="IDS_LOOMNIBOX_FRE_KEYBOARD_PRIMARY" desc="Label instructing the user on the keyboard shortcut to open Loomnibox.">
+        Easily open with
+      </message>
+      <if expr="is_macosx">
+        <message name="IDS_LOOMNIBOX_FRE_KEYBOARD_BADGE_OPTION" desc="Key badge label for Option key on macOS.">
+          Option
+        </message>
+      </if>
+      <if expr="not is_macosx">
+        <message name="IDS_LOOMNIBOX_FRE_KEYBOARD_BADGE_OPTION" desc="Key badge label for Alt key on Windows.">
+          Alt
+        </message>
+      </if>
+      <message name="IDS_LOOMNIBOX_FRE_KEYBOARD_BADGE_SPACE" desc="Key badge label for Space key.">
+        Space
+      </message>
+      <message name="IDS_LOOMNIBOX_FRE_OR" desc="Conjunction 'or' separating the accept hotkey button and the custom shortcut settings link in the Loomnibox FRE modal.">
+        or
+      </message>
+      <message name="IDS_LOOMNIBOX_FRE_KEYBOARD_OPTION_EDIT_OWN" desc="Link text allowing the user to customize their own keyboard shortcut in settings.">
+        edit your own
+      </message>
+      <message name="IDS_LOOMNIBOX_FRE_ACCEPT_HOTKEY" desc="Button label allowing the user to accept the default keyboard shortcut in the Loomnibox FRE modal.">
+        Accept hotkey
+      </message>
+      <message name="IDS_LOOMNIBOX_FRE_CLOSE_BUTTON_ARIA" desc="Accessibility label for the Close button on the FRE modal.">
+        Close
+      </message>
       <message name="IDS_NTP_SEARCH_BOX_PLACEHOLDER_ASK_OR_TYPE" desc="A steady state placeholder text for the NTP searchbox">
         Ask Google or type a URL
       </message>

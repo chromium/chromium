@@ -11,12 +11,16 @@ build_webui("build") {
   static_files = [
     "omnibox_everywhere.html",
     "debug/debug.html",
+    "icons/fre/keyboard.svg",
+    "icons/fre/lens.svg",
   ]
   ts_files = [
     "composebox.html.ts",
     "composebox.ts",
     "app.html.ts",
     "app.ts",
+    "fre_modal.html.ts",
+    "fre_modal.ts",
     "omnibox.html.ts",
     "omnibox.ts",
     "omnibox_everywhere.ts",
@@ -29,6 +33,7 @@ build_webui("build") {
   css_files = [
     "composebox.css",
     "app.css",
+    "fre_modal.css",
     "omnibox.css",
     "profile_icon.css",
     "searchbox_shared_style.css",
