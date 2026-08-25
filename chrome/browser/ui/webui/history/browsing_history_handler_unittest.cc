@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -573,6 +574,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          });
 
 TEST_F(BrowsingHistoryHandlerTest, CriticalActionsPopulatedForActorVisits) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       critical_actions::features::kCriticalActionHistory);
@@ -620,6 +622,42 @@ TEST_F(BrowsingHistoryHandlerTest, CriticalActionsPopulatedForActorVisits) {
   EXPECT_EQ(
       results->value[0]->critical_actions[0]->action_type,
       history::mojom::CriticalActionType::kCredentialAccess);
+
+  histogram_tester.ExpectTotalCount("HistoryPage.CriticalActionsQueryTime", 1);
+  histogram_tester.ExpectTotalCount(
+      "HistoryPage.QueryHistoryTotalTime.WithCriticalActions", 1);
+  histogram_tester.ExpectTotalCount(
+      "HistoryPage.QueryHistoryTotalTime.WithoutCriticalActions", 0);
+  histogram_tester.ExpectUniqueSample(
+      "HistoryPage.CriticalActionsPerVisitCount", 1, 1);
+}
+
+TEST_F(BrowsingHistoryHandlerTest,
+       QueryPerformanceMetricsEmittedWithoutCriticalActions) {
+  base::HistogramTester histogram_tester;
+  base::Time visit_time = base::Time::Now();
+
+  BrowsingHistoryService::HistoryEntry non_actor_entry(
+      BrowsingHistoryService::HistoryEntry::LOCAL_ENTRY,
+      GURL("http://regular-example.com"), u"Regular Visit", visit_time,
+      std::string(), false, std::u16string(), false, GURL(), 1, 0,
+      /*is_actor_visit=*/false, history::kNoAppIdFilter, /*visit_id=*/10);
+
+  QueryOptions options;
+  MockHistoryServiceCall(u"regular-example", options, {non_actor_entry});
+
+  mojom::QueryResultPtr results = RunQueryHistory("regular-example");
+  ASSERT_TRUE(results);
+  ASSERT_EQ(results->value.size(), 1u);
+  EXPECT_FALSE(results->value[0]->is_actor_visit);
+
+  histogram_tester.ExpectTotalCount("HistoryPage.CriticalActionsQueryTime", 0);
+  histogram_tester.ExpectTotalCount(
+      "HistoryPage.QueryHistoryTotalTime.WithCriticalActions", 0);
+  histogram_tester.ExpectTotalCount(
+      "HistoryPage.QueryHistoryTotalTime.WithoutCriticalActions", 1);
+  histogram_tester.ExpectTotalCount("HistoryPage.CriticalActionsPerVisitCount",
+                                    0);
 }
 
 TEST_F(BrowsingHistoryHandlerTest,

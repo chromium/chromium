@@ -17,6 +17,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/time_formatting.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -496,6 +497,7 @@ void BrowsingHistoryHandler::SendHistoryQuery(
     std::optional<double> begin_timestamp,
     bool include_user_visits,
     bool include_actor_visits) {
+  query_timer_ = base::ElapsedTimer();
   history::QueryOptions options;
   options.max_count = max_count;
   options.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
@@ -760,9 +762,10 @@ void BrowsingHistoryHandler::OnQueryComplete(
         critical_actions::CriticalActionQueryOptions options;
         options.visit_ids = std::move(actor_visit_ids);
         critical_action_service->GetCriticalActions(
-            options, base::BindOnce(&BrowsingHistoryHandler::HandleQueryResults,
-                                    weak_factory_.GetWeakPtr(), results,
-                                    query_results_info));
+            options,
+            base::BindOnce(&BrowsingHistoryHandler::CriticalActionsFetched,
+                           weak_factory_.GetWeakPtr(), results,
+                           query_results_info, base::ElapsedTimer()));
         return;
       }
     }
@@ -771,10 +774,38 @@ void BrowsingHistoryHandler::OnQueryComplete(
   HandleQueryResults(results, query_results_info, {});
 }
 
+void BrowsingHistoryHandler::CriticalActionsFetched(
+    const std::vector<BrowsingHistoryService::HistoryEntry>& results,
+    const BrowsingHistoryService::QueryResultsInfo& query_results_info,
+    base::ElapsedTimer critical_actions_timer,
+    std::vector<critical_actions::CriticalActionEntry> critical_actions) {
+  base::UmaHistogramTimes("HistoryPage.CriticalActionsQueryTime",
+                          critical_actions_timer.Elapsed());
+  HandleQueryResults(results, query_results_info, std::move(critical_actions));
+}
+
 void BrowsingHistoryHandler::HandleQueryResults(
     const std::vector<BrowsingHistoryService::HistoryEntry>& results,
     const BrowsingHistoryService::QueryResultsInfo& query_results_info,
     std::vector<critical_actions::CriticalActionEntry> critical_actions) {
+  if (query_timer_.has_value()) {
+    const bool has_actor_visits =
+        std::any_of(results.begin(), results.end(),
+                    [](const auto& entry) { return entry.is_actor_visit; });
+    if (has_actor_visits &&
+        base::FeatureList::IsEnabled(
+            critical_actions::features::kCriticalActionHistory)) {
+      base::UmaHistogramTimes(
+          "HistoryPage.QueryHistoryTotalTime.WithCriticalActions",
+          query_timer_->Elapsed());
+    } else {
+      base::UmaHistogramTimes(
+          "HistoryPage.QueryHistoryTotalTime.WithoutCriticalActions",
+          query_timer_->Elapsed());
+    }
+    query_timer_.reset();
+  }
+
   BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile_);
 
@@ -799,7 +830,9 @@ void BrowsingHistoryHandler::HandleQueryResults(
     history::mojom::HistoryEntryPtr entry_mojom =
         HistoryEntryToMojom(entry, bookmark_model, *profile_, tracker, clock_);
 
-    if (entry.is_actor_visit) {
+    if (entry.is_actor_visit &&
+        base::FeatureList::IsEnabled(
+            critical_actions::features::kCriticalActionHistory)) {
       for (history::VisitID visit_id : entry.all_visit_ids) {
         auto it = actions_by_visit_id.find(visit_id);
         if (it != actions_by_visit_id.end()) {
@@ -808,6 +841,8 @@ void BrowsingHistoryHandler::HandleQueryResults(
           }
         }
       }
+      base::UmaHistogramCounts100("HistoryPage.CriticalActionsPerVisitCount",
+                                  entry_mojom->critical_actions.size());
     }
 
     results_mojom.push_back(std::move(entry_mojom));

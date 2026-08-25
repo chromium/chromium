@@ -41,6 +41,15 @@ chromium-metrics-reviews@google.com.
                and on scroll"/>
 </variants>
 
+<variants name="HasCriticalActions">
+  <variant name="WithCriticalActions"
+      summary="results contained agent visits and critical actions were
+               queried from the database"/>
+  <variant name="WithoutCriticalActions"
+      summary="results contained no agent visits or the critical actions
+               feature is disabled"/>
+</variants>
+
 <variants name="PassagePriority">
   <variant name="" summary="aggregated across all priorities"/>
   <variant name=".Latent" summary="Latent priority"/>
@@ -2878,11 +2887,35 @@ chromium-metrics-reviews@google.com.
   <owner>kalinino@google.com</owner>
   <owner>polonium@google.com</owner>
   <summary>
-    Records the ActionType category (e.g. form fill, password manager login,
-    federated login, download, OTP) of a critical action when the user clicks on
-    its linkout row on the chrome://history page to navigate to the external
-    management surface. Recorded in WebUI whenever the user clicks an action
-    linkout.
+    Records the category of critical action (e.g. form fill, password manager
+    login, federated login, download, or OTP) opened from the chrome://history
+    page. Recorded in WebUI when the user clicks an action linkout row under an
+    agent-annotated visit to navigate to its external management surface.
+  </summary>
+</histogram>
+
+<histogram name="HistoryPage.CriticalActionsPerVisitCount" units="actions"
+    expires_after="2026-11-01">
+  <owner>kalinino@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    Records the total number of critical actions attached to a single
+    agent-annotated browsing history visit item on the chrome://history page.
+    Recorded for each agent-annotated visit whenever browsing history entries
+    are retrieved and prepared for display (on initial page load, search, or
+    infinite scroll).
+  </summary>
+</histogram>
+
+<histogram name="HistoryPage.CriticalActionsQueryTime" units="ms"
+    expires_after="2026-11-01">
+  <owner>kalinino@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    Records the time (in milliseconds) taken to query and retrieve critical
+    actions from the local database for agent-annotated history visits. Recorded
+    each time chrome://history receives a batch of history results containing
+    agent visits and completes fetching their corresponding critical actions.
   </summary>
 </histogram>
 
@@ -2912,6 +2945,20 @@ chromium-metrics-reviews@google.com.
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
   </summary>
+</histogram>
+
+<histogram name="HistoryPage.QueryHistoryTotalTime.{HasCriticalActions}"
+    units="ms" expires_after="2026-11-01">
+  <owner>kalinino@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    Records the total round-trip time (in milliseconds) taken to query,
+    assemble, and deliver browsing history results to the chrome://history page.
+    Recorded each time the history page requests history data (on initial page
+    load, when performing a search, or when scrolling down to load more items).
+    Recorded for queries where {HasCriticalActions}.
+  </summary>
+  <token key="HasCriticalActions" variants="HasCriticalActions"/>
 </histogram>
 
 </histograms>
