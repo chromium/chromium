@@ -20383,6 +20383,26 @@
             ]
         }
     ],
+    "WebHistoryUseNewApi": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260617",
+                    "enable_features": [
+                        "WebHistoryUseNewApi"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebMCP": [
         {
             "platforms": [
