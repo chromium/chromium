@@ -126,17 +126,6 @@ void PageTimingMetricsSender::DidObserveSoftNavigation(
   CHECK_GT(new_metrics.performance_timeline_navigation_id, 1u);
   CHECK(!new_metrics.start_time.is_zero());
   CHECK(!new_metrics.same_document_metrics_token.is_empty());
-  if (!soft_navigation_metrics_.empty()) {
-    CHECK_EQ(
-        soft_navigation_metrics_.back()->performance_timeline_navigation_id + 1,
-        new_metrics.performance_timeline_navigation_id);
-    if (soft_navigation_metrics_.back()->commit) {
-      CHECK_NE(
-          new_metrics.same_document_metrics_token,
-          soft_navigation_metrics_.back()->commit->same_document_metrics_token);
-    }
-  }
-  // Now that we've checked the invariants, enter the soft nav into the queue.
   auto entry = mojom::SoftNavigationMetrics::New();
   entry->performance_timeline_navigation_id =
       new_metrics.performance_timeline_navigation_id;
