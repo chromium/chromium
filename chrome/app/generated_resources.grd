@@ -19245,6 +19245,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_OMNIBOX_EVERYWHERE_REGION" desc="Label of the option to capture a region screenshot.">
       Region
     </message>
+    <message name="IDS_OMNIBOX_EVERYWHERE_REGION_SELECT_ACCESSIBLE_NAME" desc="Accessible name for the region screenshot capture overlay." is_accessibility_with_no_ui="true">
+      Region select screenshot
+    </message>
 
     <!-- Responsive Toolbar -->
     <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE" desc="Overflow menu item text of profile button">

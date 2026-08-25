@@ -28,6 +28,7 @@
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "content/public/browser/navigation_handle.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 OmniboxEverywhereService::OmniboxEverywhereService(Profile* profile)
     : profile_(profile) {
@@ -136,6 +137,16 @@ void OmniboxEverywhereService::OnScreensharePickerClosed() {
   if (ui_manager()) {
     ui_manager()->OnScreensharePickerClosed();
   }
+}
+
+void OmniboxEverywhereService::ShowRegionSelectOverlay(
+    const SkBitmap& screenshot,
+    RegionSelectedCallback callback) {
+  if (ui_manager()) {
+    ui_manager()->ShowRegionSelectOverlay(screenshot, std::move(callback));
+    return;
+  }
+  std::move(callback).Run(SkBitmap());
 }
 
 void OmniboxEverywhereService::OpenUrl(const GURL& url,

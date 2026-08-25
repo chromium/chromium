@@ -18,6 +18,7 @@
 
 class Profile;
 class ScopedProfileKeepAlive;
+class SkBitmap;
 
 namespace user_education {
 class FeaturePromoController;
@@ -51,8 +52,12 @@ class OmniboxEverywhereService : public KeyedService {
   virtual void ShowProfilePicker();
   virtual void OnDrivePickerOpened();
   virtual void OnDrivePickerClosed();
-  void OnScreensharePickerOpened();
-  void OnScreensharePickerClosed();
+  virtual void OnScreensharePickerOpened();
+  virtual void OnScreensharePickerClosed();
+  using RegionSelectedCallback =
+      base::OnceCallback<void(const SkBitmap& result_bitmap)>;
+  virtual void ShowRegionSelectOverlay(const SkBitmap& screenshot,
+                                       RegionSelectedCallback callback);
   void OpenUrl(const GURL& url,
                WindowOpenDisposition disposition,
                ui::PageTransition transition);

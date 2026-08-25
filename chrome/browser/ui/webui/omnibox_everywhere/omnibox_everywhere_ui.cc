@@ -428,6 +428,17 @@ void OmniboxEverywhereUI::OnScreensharePickerClosed() {
   }
 }
 
+void OmniboxEverywhereUI::ShowRegionSelectOverlay(
+    const SkBitmap& screenshot,
+    RegionSelectedCallback callback) {
+  if (auto* service =
+          OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
+    service->ShowRegionSelectOverlay(screenshot, std::move(callback));
+    return;
+  }
+  std::move(callback).Run(SkBitmap());
+}
+
 void OmniboxEverywhereUI::BindInterface(
     mojo::PendingReceiver<omnibox_everywhere_debug::mojom::PageHandlerFactory>
         receiver) {

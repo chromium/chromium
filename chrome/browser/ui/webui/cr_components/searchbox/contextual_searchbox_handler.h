@@ -164,6 +164,10 @@ class ContextualSearchboxHandler
     // Invoked when the screenshare picker is opened or closed.
     virtual void OnScreensharePickerOpened() {}
     virtual void OnScreensharePickerClosed() {}
+    using RegionSelectedCallback =
+        base::OnceCallback<void(const SkBitmap& result_bitmap)>;
+    virtual void ShowRegionSelectOverlay(const SkBitmap& screenshot,
+                                         RegionSelectedCallback callback) {}
   };
 
   struct ProcessedScreenshot {

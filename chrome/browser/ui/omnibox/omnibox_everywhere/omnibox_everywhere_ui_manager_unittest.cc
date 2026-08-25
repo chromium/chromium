@@ -11,11 +11,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_region_select_overlay.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
@@ -30,6 +32,7 @@
 #include "content/public/browser/context_menu_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -58,6 +61,8 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/views/win/hwnd_util.h"
 #endif
+
+namespace omnibox_everywhere {
 
 namespace {
 
@@ -120,14 +125,12 @@ class OmniboxEverywhereUIManagerTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
   }
 
-  std::unique_ptr<omnibox_everywhere::OmniboxEverywhereUIManager>
-  CreateUIManager() {
+  std::unique_ptr<OmniboxEverywhereUIManager> CreateUIManager() {
     auto ui_manager =
-        std::make_unique<omnibox_everywhere::OmniboxEverywhereUIManager>(
-            base::BindRepeating(
-                [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
-                  return std::make_unique<TestWebUIContentsWrapper>(profile);
-                }));
+        std::make_unique<OmniboxEverywhereUIManager>(base::BindRepeating(
+            [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+              return std::make_unique<TestWebUIContentsWrapper>(profile);
+            }));
     ui_manager->SetMenuRunnerFactoryForTesting(base::BindRepeating(
         [](ui::MenuModel* model, base::RepeatingClosure on_closed) {
           auto runner = std::make_unique<views::MenuRunner>(
@@ -1567,6 +1570,8 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringScreensharePicker) {
   ui_manager->OnScreensharePickerClosed();
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
   EXPECT_TRUE(base::test::RunUntil([&]() { return !widget->IsVisible(); }));
+
+  ui_manager->Shutdown();
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest,
@@ -1668,3 +1673,140 @@ TEST_F(OmniboxEverywhereUIManagerTest, WindowPropertiesPersistentMode) {
   ui_manager->Shutdown();
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       ShowRegionSelectOverlay_CreateAndDismiss) {
+  auto ui_manager = CreateUIManager();
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(100, 100);
+  bitmap.eraseColor(SK_ColorRED);
+
+  base::test::TestFuture<const SkBitmap&> future;
+  ui_manager->ShowRegionSelectOverlay(bitmap, future.GetCallback());
+
+  OmniboxEverywhereRegionSelectOverlay* overlay =
+      ui_manager->region_select_overlay_for_testing();
+  ASSERT_TRUE(overlay);
+  views::Widget* overlay_widget = overlay->widget();
+  ASSERT_TRUE(overlay_widget);
+  EXPECT_TRUE(overlay_widget->IsVisible());
+
+  // Close the overlay widget (simulating Escape / dismiss).
+  overlay_widget->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+  EXPECT_FALSE(ui_manager->region_select_overlay_for_testing());
+
+  ui_manager->Shutdown();
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       ShowRegionSelectOverlay_ReentrancyCancelsPreviousOverlay) {
+  auto ui_manager = CreateUIManager();
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(100, 100);
+  bitmap.eraseColor(SK_ColorRED);
+
+  base::test::TestFuture<const SkBitmap&> future1;
+  ui_manager->ShowRegionSelectOverlay(bitmap, future1.GetCallback());
+  EXPECT_TRUE(ui_manager->region_select_overlay_for_testing());
+
+  base::test::TestFuture<const SkBitmap&> future2;
+  ui_manager->ShowRegionSelectOverlay(bitmap, future2.GetCallback());
+
+  // The first overlay should be cancelled cleanly with empty bitmap.
+  EXPECT_TRUE(future1.IsReady());
+  EXPECT_TRUE(future1.Get().empty());
+  EXPECT_FALSE(future2.IsReady());
+  EXPECT_TRUE(ui_manager->region_select_overlay_for_testing());
+
+  ui_manager->Shutdown();
+  EXPECT_TRUE(future2.IsReady());
+  EXPECT_TRUE(future2.Get().empty());
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       ShowRegionSelectOverlay_ShutdownOrCleanUpDismisses) {
+  auto ui_manager = CreateUIManager();
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(100, 100);
+  bitmap.eraseColor(SK_ColorRED);
+
+  base::test::TestFuture<const SkBitmap&> future;
+  ui_manager->ShowRegionSelectOverlay(bitmap, future.GetCallback());
+  EXPECT_TRUE(ui_manager->region_select_overlay_for_testing());
+
+  // CleanUpWidget / Shutdown cleanly destroys overlay and resolves callback.
+  ui_manager->Shutdown();
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+  EXPECT_FALSE(ui_manager->region_select_overlay_for_testing());
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, HasOpenModalDialog_RegionSelectOverlay) {
+  auto ui_manager = CreateUIManager();
+  EXPECT_FALSE(ui_manager->HasOpenModalDialog());
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(100, 100);
+  bitmap.eraseColor(SK_ColorRED);
+
+  base::test::TestFuture<const SkBitmap&> future;
+  ui_manager->ShowRegionSelectOverlay(bitmap, future.GetCallback());
+  EXPECT_TRUE(ui_manager->HasOpenModalDialog());
+
+  ui_manager->region_select_overlay_for_testing()->widget()->CloseWithReason(
+      views::Widget::ClosedReason::kEscKeyPressed);
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_FALSE(ui_manager->HasOpenModalDialog());
+
+  ui_manager->Shutdown();
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       DismissBypassedDuringRegionSelectOverlay) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+  }
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(100, 100);
+  bitmap.eraseColor(SK_ColorRED);
+
+  base::test::TestFuture<const SkBitmap&> future;
+  ui_manager->ShowRegionSelectOverlay(bitmap, future.GetCallback());
+  EXPECT_TRUE(ui_manager->HasOpenModalDialog());
+
+  // Simulating deactivation while region select overlay is open should NOT
+  // close the widget.
+  ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+  EXPECT_TRUE(ui_manager->widget());
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Dismiss overlay and simulate deactivation after grace period.
+  ui_manager->region_select_overlay_for_testing()->widget()->CloseWithReason(
+      views::Widget::ClosedReason::kEscKeyPressed);
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_FALSE(ui_manager->HasOpenModalDialog());
+
+  task_environment()->FastForwardBy(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kActivationGracePeriod +
+      base::Milliseconds(1));
+  ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !widget->IsVisible(); }));
+
+  ui_manager->Shutdown();
+}
+
+}  // namespace omnibox_everywhere

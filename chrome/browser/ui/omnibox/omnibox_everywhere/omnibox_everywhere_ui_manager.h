@@ -30,6 +30,7 @@
 
 class Profile;
 class ScopedKeepAlive;
+class SkBitmap;
 
 namespace views {
 class MenuRunner;
@@ -41,6 +42,7 @@ namespace omnibox_everywhere {
 #if defined(USE_AURA)
 class OmniboxEverywhereEventHandlerAura;
 #endif
+class OmniboxEverywhereRegionSelectOverlay;
 class OmniboxEverywhereWidgetDelegate;
 
 // Manages the desktop Omnibox Everywhere native window (views::Widget)
@@ -164,6 +166,12 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
 
   void OnScreensharePickerOpened();
   void OnScreensharePickerClosed();
+  using RegionSelectedCallback =
+      base::OnceCallback<void(const SkBitmap& result_bitmap)>;
+  void ShowRegionSelectOverlay(const SkBitmap& screenshot,
+                               RegionSelectedCallback callback);
+  void OnRegionSelectOverlayClosed(RegionSelectedCallback callback,
+                                   const SkBitmap& result_bitmap);
 
   // BrowserCollectionObserver:
   void OnBrowserCreated(BrowserWindowInterface* browser) override {}
@@ -196,6 +204,9 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   }
   bool is_screenshare_picker_open_for_testing() const {
     return is_screenshare_picker_open_;
+  }
+  OmniboxEverywhereRegionSelectOverlay* region_select_overlay_for_testing() {
+    return region_select_overlay_.get();
   }
   bool is_context_menu_open_for_testing() const {
     return is_context_menu_open_;
@@ -254,6 +265,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   std::unique_ptr<OmniboxEverywhereWidgetDelegate> widget_delegate_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
+  std::unique_ptr<OmniboxEverywhereRegionSelectOverlay> region_select_overlay_;
 
   bool is_file_chooser_open_ = false;
   bool is_drive_picker_open_ = false;

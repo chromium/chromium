@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/omnibox/clipboard_utils.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_region_select_overlay.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
@@ -563,6 +564,7 @@ void OmniboxEverywhereUIManager::CleanUpWidget() {
   is_dragging_ = false;
   pending_auto_resize_size_.reset();
   draggable_region_.reset();
+  region_select_overlay_.reset();
   browser_collection_observation_.Reset();
   last_shown_time_.reset();
   ReleaseKeepAlives();
@@ -587,7 +589,7 @@ bool OmniboxEverywhereUIManager::IsActive() const {
 
 bool OmniboxEverywhereUIManager::HasOpenModalDialog() const {
   return is_file_chooser_open_ || is_drive_picker_open_ ||
-         is_screenshare_picker_open_;
+         is_screenshare_picker_open_ || region_select_overlay_ != nullptr;
 }
 
 void OmniboxEverywhereUIManager::OnWidgetActivationChanged(
@@ -724,6 +726,32 @@ void OmniboxEverywhereUIManager::OnScreensharePickerClosed() {
   if (widget_) {
     ActivateAndFocus();
   }
+}
+
+void OmniboxEverywhereUIManager::ShowRegionSelectOverlay(
+    const SkBitmap& screenshot,
+    RegionSelectedCallback callback) {
+  if (region_select_overlay_) {
+    auto old_overlay = std::move(region_select_overlay_);
+    old_overlay.reset();
+  }
+  gfx::NativeWindow context =
+      widget_ ? widget_->GetNativeWindow() : gfx::NativeWindow();
+  region_select_overlay_ = OmniboxEverywhereRegionSelectOverlay::Create(
+      screenshot,
+      base::BindOnce(&OmniboxEverywhereUIManager::OnRegionSelectOverlayClosed,
+                     weak_factory_.GetWeakPtr(), std::move(callback)),
+      context);
+}
+
+void OmniboxEverywhereUIManager::OnRegionSelectOverlayClosed(
+    RegionSelectedCallback callback,
+    const SkBitmap& result_bitmap) {
+  if (region_select_overlay_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(region_select_overlay_));
+  }
+  std::move(callback).Run(result_bitmap);
 }
 
 void OmniboxEverywhereUIManager::OnBrowserActivated(
