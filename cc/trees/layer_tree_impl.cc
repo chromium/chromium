@@ -1504,8 +1504,17 @@ void LayerTreeImpl::SetBrowserControlsParams(
   UpdateViewportContainerSizes();
 
   if (IsActiveTree()) {
+    // Without TreeAnimationsInViz, the Viz display tree mirrors browser
+    // controls ratios produced by the renderer. Do not initialize a local
+    // height-change animation because it will never be ticked and its
+    // animation bounds would clamp the incoming renderer ratios.
+    const bool can_animate_browser_controls =
+        !settings().trees_in_viz_in_viz_process ||
+        settings().TreeAnimationsInVizInVizProcess();
+
     host_impl_->browser_controls_manager()->OnBrowserControlsParamsChanged(
-        params.animate_browser_controls_height_changes);
+        params.animate_browser_controls_height_changes &&
+        can_animate_browser_controls);
   }
 }
 
