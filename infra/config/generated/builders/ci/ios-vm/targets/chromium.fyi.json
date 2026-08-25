@@ -12,7 +12,7 @@
           "--platform",
           "iPhone 16",
           "--version",
-          "26.0",
+          "26.5",
           "--xcodebuild-sim-runner",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -25,7 +25,7 @@
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module",
         "module_scheme": "xctest",
-        "name": "ios_chrome_integration_eg2tests_module iPhone 16 26.0",
+        "name": "ios_chrome_integration_eg2tests_module iPhone 16 26.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -45,8 +45,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_26_0",
-              "path": "Runtime-ios-26.0"
+              "name": "runtime_ios_26_5",
+              "path": "Runtime-ios-26.5"
             },
             {
               "name": "xcode_ios_17f42",
@@ -58,7 +58,7 @@
         },
         "test": "ios_chrome_integration_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
-        "variant_id": "iPhone 16 26.0"
+        "variant_id": "iPhone 16 26.5"
       },
       {
         "args": [
@@ -66,7 +66,7 @@
           "--platform",
           "iPad (10th generation)",
           "--version",
-          "26.0",
+          "26.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -78,7 +78,7 @@
         },
         "module_name": "//ios/chrome/test:ios_chrome_unittests",
         "module_scheme": "gtest",
-        "name": "ios_chrome_unittests iPad (10th generation) 26.0",
+        "name": "ios_chrome_unittests iPad (10th generation) 26.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -98,8 +98,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_26_0",
-              "path": "Runtime-ios-26.0"
+              "name": "runtime_ios_26_5",
+              "path": "Runtime-ios-26.5"
             },
             {
               "name": "xcode_ios_17f42",
@@ -110,7 +110,7 @@
         },
         "test": "ios_chrome_unittests",
         "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
-        "variant_id": "iPad (10th generation) 26.0"
+        "variant_id": "iPad (10th generation) 26.5"
       },
       {
         "args": [
@@ -118,7 +118,7 @@
           "--platform",
           "iPhone 16",
           "--version",
-          "26.0",
+          "26.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -130,7 +130,7 @@
         },
         "module_name": "//ios/chrome/test:ios_chrome_unittests",
         "module_scheme": "gtest",
-        "name": "ios_chrome_unittests iPhone 16 26.0",
+        "name": "ios_chrome_unittests iPhone 16 26.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -150,8 +150,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_26_0",
-              "path": "Runtime-ios-26.0"
+              "name": "runtime_ios_26_5",
+              "path": "Runtime-ios-26.5"
             },
             {
               "name": "xcode_ios_17f42",
@@ -162,7 +162,7 @@
         },
         "test": "ios_chrome_unittests",
         "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
-        "variant_id": "iPhone 16 26.0"
+        "variant_id": "iPhone 16 26.5"
       },
       {
         "args": [
@@ -170,7 +170,7 @@
           "--platform",
           "iPhone 16",
           "--version",
-          "26.0",
+          "26.5",
           "--xcodebuild-sim-runner",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -183,7 +183,7 @@
         },
         "module_name": "//ios/web/shell/test:ios_web_shell_eg2tests_module",
         "module_scheme": "xctest",
-        "name": "ios_web_shell_eg2tests_module iPhone 16 26.0",
+        "name": "ios_web_shell_eg2tests_module iPhone 16 26.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -203,8 +203,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_26_0",
-              "path": "Runtime-ios-26.0"
+              "name": "runtime_ios_26_5",
+              "path": "Runtime-ios-26.5"
             },
             {
               "name": "xcode_ios_17f42",
@@ -215,7 +215,7 @@
         },
         "test": "ios_web_shell_eg2tests_module",
         "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
-        "variant_id": "iPhone 16 26.0"
+        "variant_id": "iPhone 16 26.5"
       }
     ]
   }
