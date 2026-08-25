@@ -56,6 +56,7 @@
 #include "ui/views/focus/focus_manager_factory.h"
 #include "ui/views/focus/native_view_focus_manager.h"
 #include "ui/views/input_protection/default_input_protection_policy.h"
+#include "ui/views/input_protection/input_protection_event_handler.h"
 #include "ui/views/input_protection/occluded_widget_input_protector.h"
 #include "ui/views/input_protection/occlusion_aware_input_protection_policy.h"
 #include "ui/views/input_protection/window_activation_input_protection_policy.h"
@@ -671,6 +672,11 @@ void Widget::Init(InitParams params) {
 
   OccludedWidgetInputProtector::GetInstance()->UpdateTracking(
       base::PassKey<Widget>(), this);
+
+  if (base::FeatureList::IsEnabled(features::kEnableInputProtection)) {
+    input_protection_event_handler_ =
+        std::make_unique<InputProtectionEventHandler>(root_view_.get());
+  }
 
   internal::AnyWidgetObserverSingleton::GetInstance()->OnAnyWidgetInitialized(
       this);
@@ -1391,16 +1397,6 @@ void Widget::EnableInputEventActivationProtection(
 
 bool Widget::IsInputEventActivationProtectionEnabled() const {
   return input_event_activation_protection_enabled_;
-}
-
-bool Widget::IsPossiblyUnintendedInteraction(const ui::Event& event,
-                                             const View* target) {
-  if (!IsInputEventActivationProtectionEnabled()) {
-    return false;
-  }
-
-  return input_protector_->IsPossiblyUnintendedInteraction(
-      event, /*allow_key_events=*/false, target);
 }
 
 const ui::ThemeProvider* Widget::GetThemeProvider() const {
@@ -2811,6 +2807,7 @@ internal::RootView* Widget::CreateRootView() {
 void Widget::DestroyRootView() {
   NotifyWillRemoveView(root_view_.get());
   non_client_view_ = nullptr;
+  input_protection_event_handler_.reset();
   // Remove all children before the unique_ptr reset so that
   // GetWidget()->GetRootView() doesn't return nullptr while the views hierarchy
   // is being torn down.

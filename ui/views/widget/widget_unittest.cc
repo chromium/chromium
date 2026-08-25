@@ -6787,12 +6787,14 @@ TEST_F(WidgetTest, InputProtectionDisabledByDefault) {
   std::unique_ptr<Widget> widget =
       CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   EXPECT_FALSE(widget->IsInputEventActivationProtectionEnabled());
-  EXPECT_EQ(widget->input_protector_for_testing(), nullptr);
+  EXPECT_EQ(widget->GetInputEventActivationProtector(), nullptr);
+  EXPECT_EQ(widget->input_protection_event_handler_for_testing(), nullptr);
 
   // Attempting to enable it when feature is disabled should be a no-op.
   widget->EnableInputEventActivationProtection();
   EXPECT_FALSE(widget->IsInputEventActivationProtectionEnabled());
-  EXPECT_EQ(widget->input_protector_for_testing(), nullptr);
+  EXPECT_EQ(widget->GetInputEventActivationProtector(), nullptr);
+  EXPECT_EQ(widget->input_protection_event_handler_for_testing(), nullptr);
 }
 
 TEST_F(WidgetTest, InputProtectionForwardsToProtector) {
@@ -6808,7 +6810,7 @@ TEST_F(WidgetTest, InputProtectionForwardsToProtector) {
 
   widget->EnableInputEventActivationProtection(std::move(mock_protector));
   EXPECT_TRUE(widget->IsInputEventActivationProtectionEnabled());
-  ASSERT_NE(widget->input_protector_for_testing(), nullptr);
+  ASSERT_NE(widget->GetInputEventActivationProtector(), nullptr);
 
   ui::MouseEvent dummy_event(ui::EventType::kMousePressed, gfx::Point(),
                              gfx::Point(), ui::EventTimeForNow(), 0, 0);
@@ -6818,18 +6820,66 @@ TEST_F(WidgetTest, InputProtectionForwardsToProtector) {
                                        testing::_, testing::_, testing::_))
       .WillOnce(testing::Return(true));
 
-  EXPECT_TRUE(
-      widget->input_protector_for_testing()->IsPossiblyUnintendedInteraction(
-          dummy_event, /*allow_key_events=*/false, widget->GetRootView()));
+  EXPECT_TRUE(widget->GetInputEventActivationProtector()
+                  ->IsPossiblyUnintendedInteraction(dummy_event,
+                                                    /*allow_key_events=*/false,
+                                                    widget->GetRootView()));
 
   // Expect that the mock protector is called and returns false.
   EXPECT_CALL(*mock_protector_ptr, IsPossiblyUnintendedInteraction(
                                        testing::_, testing::_, testing::_))
       .WillOnce(testing::Return(false));
 
-  EXPECT_FALSE(
-      widget->input_protector_for_testing()->IsPossiblyUnintendedInteraction(
-          dummy_event, /*allow_key_events=*/false, widget->GetRootView()));
+  EXPECT_FALSE(widget->GetInputEventActivationProtector()
+                   ->IsPossiblyUnintendedInteraction(dummy_event,
+                                                     /*allow_key_events=*/false,
+                                                     widget->GetRootView()));
+}
+
+TEST_F(WidgetTest, InputProtectionEventHandlerInterceptsEvents) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kEnableInputProtection);
+
+  std::unique_ptr<Widget> widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetBounds(gfx::Rect(0, 0, 400, 400));
+  EXPECT_NE(widget->input_protection_event_handler_for_testing(), nullptr);
+
+  auto* contents = widget->SetContentsView(std::make_unique<View>());
+  int click_count = 0;
+  auto button = std::make_unique<LabelButton>(
+      base::BindRepeating([](int* count) { (*count)++; }, &click_count),
+      u"Button");
+  button->SetBounds(10, 10, 100, 40);
+  auto* button_ptr = contents->AddChildView(std::move(button));
+  widget->Show();
+
+  auto mock_protector =
+      std::make_unique<testing::NiceMock<MockInputEventActivationProtector>>();
+  auto* mock_protector_ptr = mock_protector.get();
+  widget->EnableInputEventActivationProtection(std::move(mock_protector));
+
+  // When the protector blocks the event, mouse click is intercepted and
+  // dropped.
+  EXPECT_CALL(*mock_protector_ptr, IsPossiblyUnintendedInteraction(
+                                       testing::_, testing::_, testing::_))
+      .WillRepeatedly(testing::Return(true));
+
+  ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
+  generator.MoveMouseTo(button_ptr->GetBoundsInScreen().CenterPoint());
+  generator.PressLeftButton();
+  generator.ReleaseLeftButton();
+  EXPECT_EQ(click_count, 0);
+
+  // When the protector allows the event, mouse click goes through to the
+  // button.
+  EXPECT_CALL(*mock_protector_ptr, IsPossiblyUnintendedInteraction(
+                                       testing::_, testing::_, testing::_))
+      .WillRepeatedly(testing::Return(false));
+
+  generator.PressLeftButton();
+  generator.ReleaseLeftButton();
+  EXPECT_EQ(click_count, 1);
 }
 
 namespace {
