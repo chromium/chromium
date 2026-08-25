@@ -41,7 +41,7 @@ class ScrollPaintPropertyNode;
 class SynthesizedClip;
 class TransformPaintPropertyNode;
 
-using StackScrollTranslationVector =
+using StackTransformPaintPropertyNodeVector =
     HeapVector<Member<const TransformPaintPropertyNode>, 32>;
 
 class PropertyTreeManagerClient {
@@ -207,7 +207,7 @@ class PropertyTreeManager {
       const HashSet<int>& layers_having_video);
 
   void EnsureCompositorNodesForAnchorPositionAdjustmentContainers(
-      const StackScrollTranslationVector& scroll_translations);
+      const StackTransformPaintPropertyNodeVector& transforms);
 
   // The type of operation the current cc effect node applies.
   enum CcEffectType {

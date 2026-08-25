@@ -695,7 +695,7 @@ class PaintArtifactCompositor::Layerizer {
     pending_layers_.reserve(reserve_capacity);
   }
 
-  PendingLayers Layerize();
+  std::pair<PendingLayers, StackTransformPaintPropertyNodeVector> Layerize();
 
  private:
   // This is the internal recursion of Layerize(). This function loops over the
@@ -731,6 +731,7 @@ class PaintArtifactCompositor::Layerizer {
   const PaintArtifact& artifact_;
   PaintChunks::const_iterator chunk_cursor_;
   PendingLayers pending_layers_;
+  StackTransformPaintPropertyNodeVector merged_sticky_transforms_;
   // This is to optimize the first time a paint property tree node is
   // encountered that has direct compositing reasons. This case will always
   // start a new layer and can skip merge tests. New values are added when
@@ -913,18 +914,17 @@ void PaintArtifactCompositor::Layerizer::LayerizeGroup(
     // If the new layer is the first using the nearest directly composited
     // ancestor, it can't be merged into any previous layers, so skip the merge
     // and overlap loop below.
-    if (const auto* composited_transform =
-            new_layer.GetPropertyTreeState()
-                .Transform()
-                .NearestDirectlyCompositedAncestor()) {
-      if ((!RuntimeEnabledFeatures::MergeFixedLayersEnabled() ||
-           !composited_transform->RequiresCompositingForFixedPositionOnly()) &&
-          (!RuntimeEnabledFeatures::MergeStickyLayersEnabled() ||
-           !composited_transform->RequiresCompositingForStickyPositionOnly()) &&
-          directly_composited_transforms_.insert(composited_transform)
-              .is_new_entry) {
-        continue;
-      }
+    const auto* composited_transform = new_layer.GetPropertyTreeState()
+                                           .Transform()
+                                           .NearestDirectlyCompositedAncestor();
+    if (composited_transform &&
+        (!RuntimeEnabledFeatures::MergeFixedLayersEnabled() ||
+         !composited_transform->RequiresCompositingForFixedPositionOnly()) &&
+        (!RuntimeEnabledFeatures::MergeStickyLayersEnabled() ||
+         !composited_transform->RequiresCompositingForStickyPositionOnly()) &&
+        directly_composited_transforms_.insert(composited_transform)
+            .is_new_entry) {
+      continue;
     }
 
     // This iterates pending_layers_[first_layer_in_current_group:-1] in
@@ -942,6 +942,14 @@ void PaintArtifactCompositor::Layerizer::LayerizeGroup(
           new_layer, compositor_.lcd_text_preference_,
           compositor_.device_pixel_ratio_, is_composited_scroll);
       if (merge_result.merged) {
+        if (composited_transform &&
+            composited_transform->RequiresCompositingForStickyPositionOnly() &&
+            candidate_layer.GetPropertyTreeState()
+                    .Transform()
+                    .NearestDirectlyCompositedAncestor() !=
+                composited_transform) {
+          merged_sticky_transforms_.push_back(composited_transform);
+        }
         pending_layers_.pop_back();
         if (merge_result.scroll_range_dependent) {
           compositor_.AddRangeDependentScroll(
@@ -957,13 +965,15 @@ void PaintArtifactCompositor::Layerizer::LayerizeGroup(
   }
 }
 
-PendingLayers PaintArtifactCompositor::Layerizer::Layerize() {
+std::pair<PendingLayers, StackTransformPaintPropertyNodeVector>
+PaintArtifactCompositor::Layerizer::Layerize() {
   LayerizeGroup(EffectPaintPropertyNode::Root(),
                 /*canvas_child_id=*/kInvalidDOMNodeId,
                 /*force_draws_content=*/false);
   DCHECK(chunk_cursor_ == artifact_.GetPaintChunks().end());
   pending_layers_.ShrinkToReasonableCapacity();
-  return std::move(pending_layers_);
+  return std::make_pair(std::move(pending_layers_),
+                        std::move(merged_sticky_transforms_));
 }
 
 void SynthesizedClip::UpdateLayer(const ClipPaintPropertyNode& clip,
@@ -1143,7 +1153,7 @@ void PaintArtifactCompositor::UpdateCompositorViewportProperties(
 void PaintArtifactCompositor::Update(
     const PaintArtifact& artifact,
     const ViewportProperties& viewport_properties,
-    const StackScrollTranslationVector& scroll_translation_nodes,
+    const StackTransformPaintPropertyNodeVector& scroll_translation_nodes,
     Vector<std::unique_ptr<cc::ViewTransitionRequest>> transition_requests) {
   // See: |UpdateRepaintedLayers| for repaint updates.
   DCHECK_EQ(needs_update_, UpdateType::kFull);
@@ -1173,7 +1183,9 @@ void PaintArtifactCompositor::Update(
   should_always_update_on_scroll_ = false;
 
   // Make compositing decisions, storing the result in |pending_layers_|.
-  pending_layers_ = Layerizer(*this, artifact, old_size).Layerize();
+  StackTransformPaintPropertyNodeVector merged_sticky_transforms;
+  std::tie(pending_layers_, merged_sticky_transforms) =
+      Layerizer(*this, artifact, old_size).Layerize();
   PendingLayer::DecompositeTransforms(pending_layers_);
 
   LayerListBuilder layer_list_builder;
@@ -1350,6 +1362,9 @@ void PaintArtifactCompositor::Update(
   property_tree_manager
       .EnsureCompositorNodesForAnchorPositionAdjustmentContainers(
           scroll_translation_nodes);
+  property_tree_manager
+      .EnsureCompositorNodesForAnchorPositionAdjustmentContainers(
+          merged_sticky_transforms);
 
   // Mark the property trees as having been rebuilt.
   host->property_trees()->set_needs_rebuild(false);

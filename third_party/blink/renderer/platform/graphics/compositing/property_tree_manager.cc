@@ -1490,14 +1490,19 @@ void PropertyTreeManager::UpdatePixelMovingFilterClipExpanders() {
 
 void PropertyTreeManager::
     EnsureCompositorNodesForAnchorPositionAdjustmentContainers(
-        const StackScrollTranslationVector& scroll_translations) {
+        const StackTransformPaintPropertyNodeVector& transforms) {
   if (anchor_position_adjustment_container_ids_.empty()) {
     return;
   }
-  for (auto& scroll_translation : scroll_translations) {
-    if (anchor_position_adjustment_container_ids_.Contains(
-            scroll_translation->ScrollNode()->GetCompositorElementId())) {
-      EnsureCompositorScrollAndTransformNode(*scroll_translation);
+  for (auto& transform : transforms) {
+    if (auto* scroll = transform->ScrollNode()) {
+      if (anchor_position_adjustment_container_ids_.Contains(
+              scroll->GetCompositorElementId())) {
+        EnsureCompositorScrollAndTransformNode(*transform);
+      }
+    } else if (anchor_position_adjustment_container_ids_.Contains(
+                   transform->GetCompositorElementId())) {
+      EnsureCompositorTransformNode(*transform);
     }
   }
 }
