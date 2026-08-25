@@ -13,6 +13,7 @@ proto_library("personal_context_proto") {
     "features/at_memory.proto",
     "features/auto_todos.proto",
     "features/common_data.proto",
+    "features/smart_search.proto",
   ]
 }
 

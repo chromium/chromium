@@ -28,6 +28,7 @@ chromium-metrics-reviews@google.com.
   <variant name="AmbientAutofill" summary="Ambient Autofill"/>
   <variant name="AtMemory" summary="AtMemory"/>
   <variant name="AutoTodos" summary="AutoTodos"/>
+  <variant name="SmartSearch" summary="Smart Search"/>
   <variant name="Unspecified" summary="Unspecified feature"/>
 </variants>
 

@@ -63,6 +63,7 @@ size_t GetMaxParallelFeatureFetchers(proto::ContextMemoryFeature feature) {
       return 2;
     case proto::CONTEXT_MEMORY_FEATURE_AT_MEMORY:
     case proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS:
+    case proto::CONTEXT_MEMORY_FEATURE_SMART_SEARCH:
       return 1;
     default:
       NOTREACHED();
@@ -78,6 +79,7 @@ size_t GetMaxParallelPiiFeatureFetchers(proto::ContextMemoryFeature feature) {
     case proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL:
     case proto::CONTEXT_MEMORY_FEATURE_AT_MEMORY:
     case proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS:
+    case proto::CONTEXT_MEMORY_FEATURE_SMART_SEARCH:
       return 1;
     default:
       NOTREACHED();
