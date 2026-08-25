@@ -33,20 +33,23 @@ NET_EXPORT std::optional<int> LookupStringInFixedSet(
     base::span<const uint8_t> graph,
     std::string_view key);
 
-// Looks up the longest matching suffix for |host| with length |length| in a
-// reversed DAFSA. Partial matches must begin at a new component, i.e. host
-// itself could match or a host part starting after a dot could match.
-// If no match was found a value of 0 is written to |suffix_length| and the
-// value `std::nullopt` is returned, otherwise the length of the longest match
-// is written to |suffix_length| and the type of the longest match is returned.
+struct SuffixMatch {
+  DomainRuleTags tags;
+  std::string_view suffix;
+};
+
+// Looks up the longest matching suffix for `host` in a reversed DAFSA. Partial
+// matches must begin at a new component, i.e. `host` itself could match or a
+// host part starting after a dot could match.
+// If no match was found, returns `std::nullopt`. Otherwise, returns the tags
+// and the matched suffix substring of `host`.
 //
 // This function must only be used on DAFSA graphs of registry-controlled
 // domains which use the same encoding as //net/tools/tld_cleanup.cc.
-std::optional<DomainRuleTags> LookupSuffixInReversedSet(
+std::optional<SuffixMatch> LookupSuffixInReversedSet(
     base::span<const uint8_t> graph,
     bool include_private,
-    std::string_view host,
-    size_t* suffix_length);
+    std::string_view host);
 
 // FixedSetIncrementalLookup provides efficient membership and prefix queries
 // against a fixed set of strings. The set of strings must be known at compile

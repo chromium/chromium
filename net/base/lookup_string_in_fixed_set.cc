@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <iterator>
 #include <optional>
 #include <string_view>
 
@@ -201,20 +202,18 @@ std::optional<int> LookupStringInFixedSet(base::span<const uint8_t> graph,
   return lookup.GetResultForCurrentSequence();
 }
 
-// This function is only used by GetRegistryLengthInStrippedHost(), but is
+// This function is only used by GetRegistryInTrimmedHost(), but is
 // implemented here to allow inlining of
 // LookupStringInFixedSet::GetResultForCurrentSequence() and
 // LookupStringInFixedSet::Advance() at compile time. Tests on x86_64 linux
 // indicated about 10% increased runtime cost for GetRegistry() in average
 // if the implementation of this function was separated from the lookup methods.
-std::optional<DomainRuleTags> LookupSuffixInReversedSet(
+std::optional<SuffixMatch> LookupSuffixInReversedSet(
     base::span<const uint8_t> graph,
     bool include_private,
-    std::string_view host,
-    size_t* suffix_length) {
+    std::string_view host) {
   FixedSetIncrementalLookup lookup(graph);
-  *suffix_length = 0;
-  std::optional<DomainRuleTags> result;
+  std::optional<SuffixMatch> result;
   std::string_view::const_iterator pos = host.end();
   // Look up host from right to left.
   while (pos != host.begin() && lookup.Advance(*--pos)) {
@@ -228,10 +227,13 @@ std::optional<DomainRuleTags> LookupSuffixInReversedSet(
         if (value.value().Has(DomainRuleTag::kPrivate) && !include_private) {
           break;
         }
-        // Save length and return value. Since hosts are looked up from right to
-        // left, the last saved values will be from the longest match.
-        *suffix_length = host.end() - pos;
-        result = value;
+        // Save matching suffix and return value. Since hosts are looked up
+        // from right to left, the last saved values will be from the longest
+        // match.
+        result = SuffixMatch{
+            .tags = *value,
+            .suffix = host.substr(std::distance(host.begin(), pos)),
+        };
       }
     }
   }
