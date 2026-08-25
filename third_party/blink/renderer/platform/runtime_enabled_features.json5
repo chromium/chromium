@@ -7223,6 +7223,13 @@
       status: "stable",
     },
     {
+      // Kill switch for sizing and placing WebVTT cue boxes by the computed
+      // position alignment instead of the CSS text alignment.
+      // Spec: https://w3c.github.io/webvtt/#cue-computed-position-alignment
+      name: "WebVTTCueLayoutByPositionAlignment",
+      status: "stable",
+    },
+    {
       name: "WebVTTLineAndPositionAlignment",
       status: "experimental",
       // No base::Feature while experimental: avoids a mutable-constant

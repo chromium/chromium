@@ -201,6 +201,8 @@ class CORE_EXPORT VTTCue final : public TextTrackCue {
   VTTDisplayParameters CalculateDisplayParameters() const;
   double CalculateComputedTextPosition() const;
   AlignSetting CalculateComputedCueAlignment() const;
+  PositionAlignSetting CalculateComputedPositionAlignment(
+      CSSValueID base_direction) const;
 
   enum class CueSetting {
     kNone,
