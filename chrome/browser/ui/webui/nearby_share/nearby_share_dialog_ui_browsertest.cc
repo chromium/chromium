@@ -8,7 +8,7 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -49,7 +49,7 @@ class NearbyShareDialogUITest : public InProcessBrowserTest {
     GURL kUrl(content::GetWebUIURL(chrome::kChromeUINearbyShareHost));
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     EXPECT_TRUE(web_contents);
     EXPECT_EQ(kUrl, web_contents->GetLastCommittedURL());
     EXPECT_FALSE(web_contents->IsCrashed());

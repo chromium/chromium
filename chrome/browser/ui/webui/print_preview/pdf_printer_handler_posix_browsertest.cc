@@ -17,7 +17,7 @@
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(PdfPrinterHandlerPosixTest, SaveAsPdfFilePermissions) {
     base::FilePath save_to_pdf_file = save_to_dir.Append("output.pdf");
 
     auto pdf_printer = std::make_unique<FakePdfPrinterHandler>(
-        GetProfile(), browser()->tab_strip_model()->GetActiveWebContents(),
+        GetProfile(), browser()->GetTabStripModel()->GetActiveWebContents(),
         save_to_pdf_file);
     pdf_printer->StartPrintToPdf();
     EXPECT_EQ(kExpectedFileMode, GetFilePermissions(save_to_pdf_file));

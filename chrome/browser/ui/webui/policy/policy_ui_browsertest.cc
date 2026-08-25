@@ -79,7 +79,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/account_id/account_id.h"
@@ -454,11 +454,11 @@ bool PolicyUIStatusTest::ReloadPolicies(content::WebContents* contents) {
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(PolicyUIStatusTest, CheckPolicyUiInGuestProfile) {
   // Verifies that the page opens in guest session.
-  const Browser* policy_browser = OpenURLOffTheRecord(
+  const BrowserWindowInterface* policy_browser = OpenURLOffTheRecord(
       browser()->GetProfile(), GURL(chrome::kChromeUIPolicyURL));
   ASSERT_TRUE(policy_browser);
   content::WebContents* contents =
-      policy_browser->tab_strip_model()->GetActiveWebContents();
+      policy_browser->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(ReloadPolicies(contents));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -765,11 +765,11 @@ IN_PROC_BROWSER_TEST_P(PolicyUITest, ReportButtonWithProfileReporting) {
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(PolicyUITest, ReportButtonOTRProfile) {
-  Browser* otr_browser = OpenURLOffTheRecord(browser()->GetProfile(),
-                                             GURL(chrome::kChromeUIPolicyURL));
+  BrowserWindowInterface* otr_browser = OpenURLOffTheRecord(
+      browser()->GetProfile(), GURL(chrome::kChromeUIPolicyURL));
   ASSERT_TRUE(otr_browser);
   content::WebContents* otr_contents =
-      otr_browser->tab_strip_model()->GetActiveWebContents();
+      otr_browser->GetTabStripModel()->GetActiveWebContents();
 
   // Concretely assert that CloudProfileReportingServiceFactory returns nullptr
   // for OTR profile, so no reporting service / scheduler is available.

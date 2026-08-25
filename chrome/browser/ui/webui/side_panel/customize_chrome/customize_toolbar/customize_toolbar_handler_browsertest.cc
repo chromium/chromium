@@ -12,8 +12,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom.h"
@@ -69,7 +69,7 @@ class CustomizeToolbarHandlerBrowserTest : public InProcessBrowserTest {
         mojo::PendingReceiver<
             side_panel::customize_chrome::mojom::CustomizeToolbarHandler>(),
         mock_page_.BindAndGetRemote(),
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
     mock_page_.FlushForTesting();
 
     auto* const template_url_service =

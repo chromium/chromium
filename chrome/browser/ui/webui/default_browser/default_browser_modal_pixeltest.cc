@@ -6,8 +6,8 @@
 
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/default_browser/default_browser_modal_dialog_delegate.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -43,7 +43,7 @@ class DefaultBrowserModalPixelTest : public InteractiveBrowserTest {
     dialog_widget_ =
         ::default_browser::Show(browser()->GetProfile(),
                                 browser()
-                                    ->tab_strip_model()
+                                    ->GetTabStripModel()
                                     ->GetActiveWebContents()
                                     ->GetTopLevelNativeWindow(),
                                 use_settings_illustration, can_pin_to_taskbar);

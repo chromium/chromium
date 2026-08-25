@@ -18,7 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_test_utils.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_page_handler.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/page_context_monitor.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -162,7 +162,7 @@ class AiOverlayToolsBrowserTest : public InProcessBrowserTest {
         browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     content::WebContents* contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     EXPECT_TRUE(content::ExecJs(contents, "document.title = '" + title + "'"));
   }
 
@@ -178,16 +178,16 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, OpenUrlNewTab) {
   GURL target_url = embedded_test_server()->GetURL("/empty.html?target");
 
   AddTabWithTitle(initial_url, "Initial");
-  int initial_count = browser()->tab_strip_model()->count();
+  int initial_count = browser()->GetTabStripModel()->count();
 
   base::test::TestFuture<OpenUrlResult> future;
   tools()->OpenUrl(target_url.spec(), /*new_tab=*/true, future.GetCallback());
 
   EXPECT_TRUE(future.Get().has_value());
-  EXPECT_EQ(initial_count + 1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(initial_count + 1, browser()->GetTabStripModel()->count());
   EXPECT_EQ(
       target_url,
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL());
 }
 
 IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, OpenUrlCurrentTab) {
@@ -195,16 +195,16 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, OpenUrlCurrentTab) {
   GURL target_url = embedded_test_server()->GetURL("/empty.html?target");
 
   AddTabWithTitle(initial_url, "Initial");
-  int initial_count = browser()->tab_strip_model()->count();
+  int initial_count = browser()->GetTabStripModel()->count();
 
   base::test::TestFuture<OpenUrlResult> future;
   tools()->OpenUrl(target_url.spec(), /*new_tab=*/false, future.GetCallback());
 
   EXPECT_TRUE(future.Get().has_value());
-  EXPECT_EQ(initial_count, browser()->tab_strip_model()->count());
+  EXPECT_EQ(initial_count, browser()->GetTabStripModel()->count());
   EXPECT_EQ(
       target_url,
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL());
 }
 
 IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, OpenUrlInvalid) {
@@ -221,13 +221,13 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, SwitchTabByTitle) {
                   "Second Tab");
   AddTabWithTitle(embedded_test_server()->GetURL("/empty.html?3"), "Third Tab");
 
-  int initial_active = browser()->tab_strip_model()->active_index();
+  int initial_active = browser()->GetTabStripModel()->active_index();
 
   base::test::TestFuture<SwitchTabResult> future;
   tools()->SwitchTab("second", future.GetCallback());
 
   EXPECT_TRUE(future.Get().has_value());
-  EXPECT_EQ(initial_active - 1, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(initial_active - 1, browser()->GetTabStripModel()->active_index());
 }
 
 IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, SwitchTabByUrl) {
@@ -236,14 +236,14 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, SwitchTabByUrl) {
   AddTabWithTitle(target_url, "Second Tab");
   AddTabWithTitle(embedded_test_server()->GetURL("/empty.html?3"), "Third Tab");
 
-  int initial_active = browser()->tab_strip_model()->active_index();
+  int initial_active = browser()->GetTabStripModel()->active_index();
 
   base::test::TestFuture<SwitchTabResult> future;
   tools()->SwitchTab("target_path", future.GetCallback());
 
   EXPECT_TRUE(future.Get().has_value());
   EXPECT_EQ(target_url, future.Get().value()->url);
-  EXPECT_EQ(initial_active - 1, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(initial_active - 1, browser()->GetTabStripModel()->active_index());
 }
 
 IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, SwitchTabNotFound) {
@@ -261,13 +261,13 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, CloseCurrentTab) {
   AddTabWithTitle(embedded_test_server()->GetURL("/empty.html?2"),
                   "Second Tab");
 
-  int initial_count = browser()->tab_strip_model()->count();
+  int initial_count = browser()->GetTabStripModel()->count();
 
   base::test::TestFuture<CloseTabResult> future;
   tools()->CloseCurrentTab(future.GetCallback());
 
   EXPECT_TRUE(future.Get().has_value());
-  EXPECT_EQ(initial_count - 1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(initial_count - 1, browser()->GetTabStripModel()->count());
 }
 
 IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, GoBack) {
@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, GoBack) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), second_url));
 
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::NavigationController& controller = contents->GetController();
 
   EXPECT_TRUE(controller.CanGoBack());
@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, GoBack) {
 IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, GoBackCannotGoBack) {
   AddTabWithTitle(embedded_test_server()->GetURL("/empty.html?1"), "First");
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::NavigationController& controller = contents->GetController();
 
   // Fresh tab has an initial navigation, wait wait, navigating once might add
@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, GoForward) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), second_url));
 
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::NavigationController& controller = contents->GetController();
 
   controller.GoBack();
@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, GoForward) {
 IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, GoForwardCannotGoForward) {
   AddTabWithTitle(embedded_test_server()->GetURL("/empty.html?1"), "First");
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::NavigationController& controller = contents->GetController();
 
   EXPECT_FALSE(controller.CanGoForward());
@@ -417,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, VideoControls) {
                      "/media/session/video-with-metadata.html")));
 
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Start playback.
   ASSERT_EQ(base::Value(), content::EvalJs(contents, "play()"));
@@ -471,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, TranslatePageDefault) {
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   auto lang_waiter = translate::CreateTranslateWaiter(
       contents, translate::TranslateWaiter::WaitEvent::kLanguageDetermined);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -506,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, TranslatePageDefault) {
 
 IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, TranslatePageSpecificTarget) {
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   auto lang_waiter = translate::CreateTranslateWaiter(
       contents, translate::TranslateWaiter::WaitEvent::kLanguageDetermined);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -557,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, FollowLink) {
 
   load_observer.Wait();
   EXPECT_EQ(target_url, browser()
-                            ->tab_strip_model()
+                            ->GetTabStripModel()
                             ->GetActiveWebContents()
                             ->GetLastCommittedURL());
 }
@@ -588,7 +588,7 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, FollowLinkWithHashSymbol) {
 
   load_observer.Wait();
   EXPECT_EQ(target_url, browser()
-                            ->tab_strip_model()
+                            ->GetTabStripModel()
                             ->GetActiveWebContents()
                             ->GetLastCommittedURL());
 }
@@ -666,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, OpenPageSingleMatchAutoNavigat
       browser(), tab2_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  TabStripModel* tab_strip = browser()->tab_strip_model();
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
   ASSERT_EQ(2, tab_strip->count());
   ASSERT_EQ(1, tab_strip->active_index());
 
@@ -682,7 +682,7 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, OpenPageNegativeNoMatch) {
   GURL tab_url = embedded_test_server()->GetURL("/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), tab_url));
 
-  TabStripModel* tab_strip = browser()->tab_strip_model();
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
   int initial_active_index = tab_strip->active_index();
 
   ToolResultFuture future;
@@ -745,8 +745,9 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, OpenPageHistorySearch) {
   tools()->OpenPage("Title3", future.GetCallback());
 
   EXPECT_EQ("opened_history", GetToolResultAction(future));
-  EXPECT_EQ(history_url,
-            browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+  EXPECT_EQ(
+      history_url,
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL());
 }
 
 IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, OpenPageSearchByTitle) {
@@ -759,7 +760,7 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, OpenPageSearchByTitle) {
       browser(), tab1_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  TabStripModel* tab_strip = browser()->tab_strip_model();
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
   ASSERT_EQ(2, tab_strip->count());
   ASSERT_EQ(1, tab_strip->active_index());
 
@@ -797,7 +798,7 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, SetTextSuccess) {
            "value='old' /></body></html>")));
 
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   int dom_node_id =
       content::GetDOMNodeId(*contents->GetPrimaryMainFrame(), "#test_input")
           .value();
@@ -831,7 +832,7 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, ClickElementCheckbox) {
            "/></body></html>")));
 
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   int dom_node_id =
       content::GetDOMNodeId(*contents->GetPrimaryMainFrame(), "#test_check")
           .value();
@@ -852,7 +853,7 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, ClickElementRadioButton) {
            "/></body></html>")));
 
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   int dom_node_id =
       content::GetDOMNodeId(*contents->GetPrimaryMainFrame(), "#test_radio")
           .value();
@@ -885,7 +886,7 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, SelectOptionSuccess) {
            "value='opt1'>Opt 1</option><option value='opt2'>Opt 2</option></select></body></html>")));
 
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   int dom_node_id =
       content::GetDOMNodeId(*contents->GetPrimaryMainFrame(), "#test_select")
           .value();

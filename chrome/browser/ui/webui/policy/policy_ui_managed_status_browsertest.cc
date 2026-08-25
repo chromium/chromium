@@ -38,7 +38,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/policy/policy_ui.h"
 #include "chrome/browser/ui/webui/policy/policy_ui_handler.h"
 #include "chrome/common/url_constants.h"
@@ -316,7 +316,7 @@ class PolicyUIManagedStatusTest : public PlatformBrowserTest,
         !is_dismissed) {
       ASSERT_TRUE(base::test::RunUntil([&]() {
         auto result =
-            EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+            EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(),
                    kPromotionBannerVisibilityJavaScript)
                 .ExtractString();
 
@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
                                            GURL(chrome::kChromeUIPolicyURL)));
   SetupAndListenForPromotion();
 
-  auto result = EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+  auto result = EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(),
                        kPromotionBannerVisibilityJavaScript)
                     .ExtractString();
 
@@ -357,7 +357,7 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
                                            GURL(chrome::kChromeUIPolicyURL)));
   SetupAndListenForPromotion();
 
-  auto result = EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+  auto result = EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(),
                        kPromotionBannerVisibilityJavaScript)
                     .ExtractString();
 
@@ -374,10 +374,10 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
                                            GURL(chrome::kChromeUIPolicyURL)));
   SetupAndListenForPromotion();
 
-  EXPECT_TRUE(ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+  EXPECT_TRUE(ExecJs(browser()->GetTabStripModel()->GetActiveWebContents(),
                      kPromotionBannerDismissJavaScript));
 
-  auto result = EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+  auto result = EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(),
                        kPromotionBannerVisibilityJavaScript)
                     .ExtractString();
   EXPECT_EQ(result, kBannerHidden);
@@ -394,7 +394,7 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
                                            GURL(chrome::kChromeUIPolicyURL)));
   SetupAndListenForPromotion();
 
-  auto result = EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+  auto result = EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(),
                        kPromotionBannerVisibilityJavaScript)
                     .ExtractString();
   EXPECT_EQ(result, kBannerHidden);
@@ -417,7 +417,7 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
 }
 
 IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest, PageLoadedInGuestMode) {
-  Browser* policy_browser = OpenURLOffTheRecord(
+  BrowserWindowInterface* policy_browser = OpenURLOffTheRecord(
       browser()->GetProfile(), GURL(chrome::kChromeUIPolicyURL));
   ASSERT_TRUE(policy_browser);
   // In guest mode, the banner should always be hidden, and typically, the
@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest, PageLoadedInGuestMode) {
                                            GURL(chrome::kChromeUIPolicyURL)));
 
   auto result =
-      EvalJs(policy_browser->tab_strip_model()->GetActiveWebContents(),
+      EvalJs(policy_browser->GetTabStripModel()->GetActiveWebContents(),
              kPromotionBannerVisibilityJavaScript)
           .ExtractString();
   EXPECT_EQ(result, kBannerHidden);

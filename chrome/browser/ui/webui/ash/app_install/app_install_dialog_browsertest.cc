@@ -17,8 +17,8 @@
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, InstallApp) {
 
   // Expect the browser tab was not closed.
   EXPECT_EQ(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       app_url);
 }
 

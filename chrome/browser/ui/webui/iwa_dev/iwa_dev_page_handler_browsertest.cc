@@ -11,7 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/webui/iwa_dev/iwa_dev_ui.h"
@@ -148,7 +148,7 @@ class IwaDevHandlerBrowserTest
 
   IwaDevPageHandler* GetHandler() {
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     IwaDevUI* controller =
         static_cast<IwaDevUI*>(web_contents->GetWebUI()->GetController());
     CHECK(controller);
@@ -1012,7 +1012,7 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerUpdateManifestBrowserTest,
   MockPage mock_page;
   mojo::Remote<iwa_dev::mojom::PageHandler> remote;
   auto handler = std::make_unique<IwaDevPageHandler>(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetWebUI(),
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetWebUI(),
       mock_page.BindAndGetRemote(), remote.BindNewPipeAndPassReceiver());
 
   web_app::IsolatedWebAppUrlInfo app = InstallUpdateManifestApp();
@@ -1078,7 +1078,7 @@ class IwaDevHandlerObserverBrowserTest : public IwaDevHandlerBrowserTest {
     IwaDevHandlerBrowserTest::SetUpOnMainThread();
 
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
 
     handler_ = std::make_unique<IwaDevPageHandler>(
         web_contents->GetWebUI(), mock_page_.BindAndGetRemote(),

@@ -12,7 +12,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/extensions/test_extension_system.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
@@ -204,7 +203,7 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
  protected:
   std::unique_ptr<TestAppHomePageHandler> GetAppHomePageHandler() {
     content::WebContents* contents =
-        browser()->tab_strip_model()->GetWebContentsAt(0);
+        browser()->GetTabStripModel()->GetWebContentsAt(0);
     test_web_ui_.set_web_contents(contents);
 
     return std::make_unique<TestAppHomePageHandler>(&test_web_ui_, profile(),
@@ -482,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, ShowWebAppSettings) {
   page_handler->ShowAppSettings(installed_app_id);
   // Wait for new web content to be created.
   nav_observer.GetWebContents();
-  GURL url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
+  GURL url = browser()->GetTabStripModel()->GetActiveWebContents()->GetURL();
   EXPECT_EQ(url, GURL(chrome::kChromeUIWebAppSettingsURL + installed_app_id));
 }
 
@@ -670,7 +669,7 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerUpdateTest, MigrationCalls) {
   // migration.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), to_url));
   web_app::test::WaitForLoadCompleteAndMaybeManifestSeen(
-      *browser()->tab_strip_model()->GetActiveWebContents());
+      *browser()->GetTabStripModel()->GetActiveWebContents());
   provider->command_manager().AwaitAllCommandsCompleteForTesting();
 
   // Trigger the dialog and accept the pending migration. The `model` is scoped

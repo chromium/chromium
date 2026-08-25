@@ -5,7 +5,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/internals_ui_handler.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -32,7 +32,7 @@ class AutofillInternalsWebUIBrowserTest : public InProcessBrowserTest {
 
   content::EvalJsResult EvalJs(const std::string& code) {
     content::WebContents* contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     return content::EvalJs(contents, code,
                            content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
                            1 /* world_id */);
@@ -40,7 +40,7 @@ class AutofillInternalsWebUIBrowserTest : public InProcessBrowserTest {
 
   ::testing::AssertionResult ExecJs(const std::string& code) {
     content::WebContents* contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     return content::ExecJs(contents, code,
                            content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
                            1 /* world_id */);
@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest,
   EXPECT_CALL(*mock_authenticator, AuthenticateWithMessage)
       .WillOnce(base::test::RunOnceCallback<1>(true));
   content::WebUI* web_ui =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetWebUI();
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetWebUI();
   autofill::InternalsUIHandler* handler = nullptr;
   for (const std::unique_ptr<content::WebUIMessageHandler>& handler_ptr :
        *web_ui->GetHandlersForTesting()) {

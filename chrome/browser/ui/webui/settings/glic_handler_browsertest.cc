@@ -21,7 +21,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -71,7 +71,7 @@ class GlicHandlerBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->set_web_contents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
     glic_handler_ = std::make_unique<GlicHandler>();
     glic_handler_->SetWebUIForTesting(web_ui_.get());
   }

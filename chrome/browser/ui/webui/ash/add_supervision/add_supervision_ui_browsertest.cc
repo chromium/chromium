@@ -10,7 +10,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_metrics_recorder.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/confirm_signout_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -87,7 +87,7 @@ class AddSupervisionBrowserTest : public InProcessBrowserTest {
   }
 
   content::WebContents* contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   GURL add_supervision_webui_url() {

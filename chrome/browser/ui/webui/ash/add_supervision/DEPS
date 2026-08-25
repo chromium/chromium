@@ -17,6 +17,7 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/supervised_user",
   "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_window/public",
   "+chrome/browser/ui/dialogs/browser_dialogs.h",
   "+chrome/browser/ui/views/chrome_web_dialog_view.h",
   "+chrome/browser/ui/webui/ash/system_web_dialog",

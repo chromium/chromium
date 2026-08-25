@@ -12,7 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_browsertest_base.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_metrics_utils.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"

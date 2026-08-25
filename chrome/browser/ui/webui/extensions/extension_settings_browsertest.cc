@@ -32,7 +32,7 @@
 #include "extensions/test/extension_test_message_listener.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"  // nogncheck
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"  // nogncheck
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"  // nogncheck
@@ -84,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest, ViewSource) {
             options_contents->GetLastCommittedURL());
 
   // Open the view-source of the options page.
-  int old_tabs_count = browser()->tab_strip_model()->count();
+  int old_tabs_count = browser()->GetTabStripModel()->count();
   content::WebContentsAddedObserver view_source_contents_added_observer;
   options_contents->GetPrimaryMainFrame()->ViewSource();
   content::WebContents* view_source_contents =
@@ -93,10 +93,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest, ViewSource) {
   EXPECT_TRUE(content::WaitForLoadStop(view_source_contents));
 
   // Verify that the view-source is present in the tab-strip.
-  int new_tabs_count = browser()->tab_strip_model()->count();
+  int new_tabs_count = browser()->GetTabStripModel()->count();
   EXPECT_EQ(new_tabs_count, old_tabs_count + 1);
   EXPECT_EQ(view_source_contents,
-            browser()->tab_strip_model()->GetActiveWebContents());
+            browser()->GetTabStripModel()->GetActiveWebContents());
 
   // Verify the contents of the view-source tab.
   std::string view_source_extraction_script = R"(

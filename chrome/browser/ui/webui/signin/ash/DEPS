@@ -24,6 +24,7 @@ include_rules = [
   "+chrome/browser/ui/ash/account_manager",
   "+chrome/browser/ui/browser_commands.h",
   "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_window/public",
   "+chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h",
   "+chrome/browser/ui/webui/ash/edu_coexistence",
   "+chrome/browser/ui/webui/ash/login",

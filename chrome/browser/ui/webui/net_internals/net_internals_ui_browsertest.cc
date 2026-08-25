@@ -26,7 +26,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/net_internals/net_internals_ui.h"
 #include "chrome/common/channel_info.h"
@@ -301,7 +301,7 @@ class NetInternalsTest::MessageHandler : public content::WebUIMessageHandler {
   // Register a test shared dictionary for testing.
   void RgisterTestSharedDictionary(const base::ListValue& list);
 
-  Browser* browser() { return net_internals_test_->browser(); }
+  BrowserWindowInterface* browser() { return net_internals_test_->browser(); }
 
   raw_ptr<NetInternalsTest> net_internals_test_;
 

@@ -14,11 +14,8 @@
 #include "base/values.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
-struct AccountInfo;
-class Browser;
 class BrowserWindowInterface;
 class Profile;
-struct AccountInfo;
 
 namespace content {
 class RenderFrameHost;

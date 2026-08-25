@@ -9,7 +9,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profile_resetter/resettable_settings_snapshot.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(ManagementUIPWATest, RunOnOsLoginApplicationsReported) {
       "    JSON.stringify(result));";
 
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   std::string actual_json =
       content::EvalJs(contents, javascript).ExtractString();
 

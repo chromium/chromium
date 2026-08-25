@@ -16,7 +16,7 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 #include "chrome/browser/ui/test/pixel_test_configuration_mixin.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -354,7 +354,7 @@ class SearchEngineChoiceUIPixelTest
       ui_test_utils::BrowserCreatedObserver browser_created_observer;
 
       CreateGuestBrowser();
-      Browser* new_browser = browser_created_observer.Wait();
+      BrowserWindowInterface* new_browser = browser_created_observer.Wait();
       ASSERT_TRUE(new_browser);
       ASSERT_NE(new_browser, browser());
       ASSERT_TRUE(new_browser->GetProfile()->IsGuestSession());

@@ -10,7 +10,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/new_tab_footer/mock_new_tab_footer_document.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
@@ -75,11 +75,11 @@ class NewTabFooterHandlerBrowserTest : public extensions::ExtensionBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(NewTabFooterHandlerBrowserTest, OpenUrlInCurrentTab) {
   const GURL url = GURL("https://google.com");
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
   handler().OpenUrlInCurrentTab(url);
 
   WaitForLoadStop(web_contents());
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
   EXPECT_EQ(url, web_contents()->GetLastCommittedURL());
 }
 
@@ -106,11 +106,11 @@ IN_PROC_BROWSER_TEST_F(NewTabFooterHandlerBrowserTest,
   // Page extension ID.
   handler().UpdateNtpExtensionName();
 
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
   handler().OpenExtensionOptionsPageWithFallback();
   WaitForLoadStop(web_contents());
 
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
   const GURL expected_url = net::AppendOrReplaceQueryParameter(
       GURL(chrome::kChromeUIExtensionsURL), "id", extension->id());
   EXPECT_EQ(expected_url, web_contents()->GetLastCommittedURL());
@@ -118,21 +118,21 @@ IN_PROC_BROWSER_TEST_F(NewTabFooterHandlerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(NewTabFooterHandlerBrowserTest,
                        OpenExtensionOptionsPage_UseFallback) {
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
   handler().OpenExtensionOptionsPageWithFallback();
 
   WaitForLoadStop(web_contents());
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
   const GURL expected_url = GURL(chrome::kChromeUIExtensionsURL);
   EXPECT_EQ(expected_url, web_contents()->GetLastCommittedURL());
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabFooterHandlerBrowserTest, OpenManagementPage) {
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
   handler().OpenManagementPage();
 
   WaitForLoadStop(web_contents());
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
   const GURL expected_url = GURL(chrome::kChromeUIManagementURL);
   EXPECT_EQ(expected_url, web_contents()->GetLastCommittedURL());
 }
@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(NewTabFooterHandlerBrowserTest, ShowContextMenu) {
 IN_PROC_BROWSER_TEST_F(NewTabFooterHandlerBrowserTest, TargetTypeIsNotPage) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(chrome::kChromeUINewTabFooterURL)));
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
   content::WebContents* footer_contents = web_contents();
 
   scoped_refptr<content::DevToolsAgentHost> agent_host =
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(NewTabFooterHandlerBrowserTest, TargetTypeIsNotPage) {
 IN_PROC_BROWSER_TEST_F(NewTabFooterHandlerBrowserTest, TabTargetIsNotCreated) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(chrome::kChromeUINewTabFooterURL)));
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
 
   content::DevToolsAgentHost::List agent_hosts =
       content::DevToolsAgentHost::GetOrCreateAll();

@@ -14,9 +14,9 @@
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, VerifySiteInstance) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ntp_url));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_EQ(ntp_url, web_contents->GetLastCommittedURL());
 
   const GURL& webui_ntp_url = chrome::ChromeUINewTabPageURLAsGURL();
@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, SpareRenderer) {
 
   // Open an NTP.
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
-  auto* ntp = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* ntp = browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(WaitForLoadStop(ntp));
   ExpectIsWebUiNtp(ntp);
 
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, SpareRenderer) {
 // guaranteed to be always present and fixed for the lifetime of the NTP.
 IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, LoadsSuccessfullyWithoutTabModel) {
   // Add a new about:blank tab to the browser tab strip.
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), 1, true);
   tabs::TabInterface* initial_tab = tab_strip_model->GetTabAtIndex(1);
   EXPECT_EQ(2, tab_strip_model->count());
@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, LoadsSuccessfullyWithoutTabModel) {
 // guaranteed to be always present and fixed for the lifetime of the NTP.
 IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, HandlesTabModelChanges) {
   // Add a new NTP tab to the browser tab strip.
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   chrome::AddTabAt(browser(), chrome::ChromeUINewTabURLAsGURL(), 1, true);
   tabs::TabInterface* initial_tab = tab_strip_model->GetTabAtIndex(1);
   EXPECT_EQ(2, tab_strip_model->count());
@@ -275,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpEnterpriseShortcutsBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), chrome::ChromeUINewTabPageURLAsGURL()));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // 3. Verify through JavaScript that the page is configured correctly.
   // - Enterprise shortcuts are displayed.

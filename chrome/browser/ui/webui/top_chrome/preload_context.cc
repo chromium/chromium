@@ -6,7 +6,9 @@
 
 #include <variant>
 
-class Browser;
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+
+class BrowserWindowInterface;
 class Profile;
 
 namespace webui {
@@ -15,7 +17,7 @@ PreloadContext::PreloadContext() = default;
 PreloadContext::~PreloadContext() = default;
 
 // static
-PreloadContext PreloadContext::From(Browser* browser) {
+PreloadContext PreloadContext::From(BrowserWindowInterface* browser) {
   PreloadContext context;
   context.store_ = browser;
   return context;
@@ -28,12 +30,12 @@ PreloadContext PreloadContext::From(Profile* profile) {
   return context;
 }
 
-Browser* PreloadContext::GetBrowser() {
-  return IsBrowser() ? std::get<Browser*>(store_) : nullptr;
+BrowserWindowInterface* PreloadContext::GetBrowser() {
+  return IsBrowser() ? std::get<BrowserWindowInterface*>(store_) : nullptr;
 }
 
-const Browser* PreloadContext::GetBrowser() const {
-  return IsBrowser() ? std::get<Browser*>(store_) : nullptr;
+const BrowserWindowInterface* PreloadContext::GetBrowser() const {
+  return IsBrowser() ? std::get<BrowserWindowInterface*>(store_) : nullptr;
 }
 
 Profile* PreloadContext::GetProfile() {
@@ -45,7 +47,7 @@ const Profile* PreloadContext::GetProfile() const {
 }
 
 bool PreloadContext::IsBrowser() const {
-  return std::holds_alternative<Browser*>(store_);
+  return std::holds_alternative<BrowserWindowInterface*>(store_);
 }
 
 bool PreloadContext::IsProfile() const {

@@ -26,6 +26,7 @@ if (!is_android) {
       "//chrome/browser/resources/omnibox_popup:resources",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/omnibox",

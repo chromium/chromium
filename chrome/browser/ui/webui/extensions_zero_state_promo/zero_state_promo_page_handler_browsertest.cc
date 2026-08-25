@@ -7,7 +7,7 @@
 #include <string_view>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -77,10 +77,10 @@ class ZeroStatePromoPageHandlerTest : public InProcessBrowserTest {
 
     handler().LaunchWebStoreLink(test_case.link_type);
 
-    ASSERT_EQ(2, browser()->tab_strip_model()->count());
+    ASSERT_EQ(2, browser()->GetTabStripModel()->count());
     GURL expected_url = GetExpectedUrlWithUtm(test_case.url_constant);
     ASSERT_EQ(expected_url,
-              browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+              browser()->GetTabStripModel()->GetActiveWebContents()->GetURL());
     ExpectZeroStatePromoLinkClickCount(test_case.link_type, 1);
   }
 

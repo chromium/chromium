@@ -11,8 +11,8 @@
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_metrics.h"
@@ -62,7 +62,7 @@ class PrintPreviewBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PrintPreviewBrowserTest, PrintCommands) {
   // We start off at about:blank page.
   // Make sure there is 1 tab and print is enabled.
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
 
   ASSERT_TRUE(chrome::IsCommandEnabled(browser(), IDC_PRINT));
 
@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewBrowserTest, PrintCommands) {
             chrome::IsCommandEnabled(browser(), IDC_BASIC_PRINT));
 
   content::TestNavigationObserver reload_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   reload_observer.Wait();
 
@@ -138,14 +138,14 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewBrowserTest,
       browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  browser()->tab_strip_model()->ActivateTabAt(
+  browser()->GetTabStripModel()->ActivateTabAt(
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
   // Navigate main tab to hide print preview.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
-  browser()->tab_strip_model()->ActivateTabAt(
+  browser()->GetTabStripModel()->ActivateTabAt(
       1, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 }
@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewBrowserTest, PreviewStartedMetric) {
 
   // Get the print preview UI ID to construct the expected URL.
   content::WebContents* initiator =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(initiator);
   content::WebContents* preview_dialog =
       printing::PrintPreviewDialogController::GetInstance()

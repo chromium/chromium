@@ -12,7 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/dns_probe_test_util.h"
 #include "chrome/browser/net/secure_dns_config.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/country_codes/country_codes.h"
@@ -38,7 +38,7 @@
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -152,7 +152,7 @@ class SecureDnsHandlerTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     handler_ = std::make_unique<TestSecureDnsHandler>();
     web_ui_.set_web_contents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
     handler_->set_web_ui(&web_ui_);
     handler_->RegisterMessages();
     handler_->AllowJavascriptForTesting();

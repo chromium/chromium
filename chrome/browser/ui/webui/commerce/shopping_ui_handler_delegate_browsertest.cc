@@ -10,7 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -150,12 +150,12 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
   const GURL url_2 = GURL("https://www.google.com");
   OpenURLInNewTab(url_2);
 
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
   ASSERT_NE(web_contents(), web_contents_1);
   ASSERT_EQ(url_2, web_contents()->GetLastCommittedURL());
   delegate->SwitchToOrOpenTab(url_1);
 
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
   EXPECT_EQ(web_contents_1, web_contents());
   EXPECT_EQ(url_1, web_contents()->GetLastCommittedURL());
 }
@@ -170,12 +170,12 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
   content::TestNavigationObserver observer(url_2);
   observer.StartWatchingNewWebContents();
 
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
   ASSERT_EQ(url, web_contents()->GetLastCommittedURL());
   delegate->SwitchToOrOpenTab(url_2);
   observer.WaitForNavigationFinished();
 
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
   EXPECT_EQ(url_2, web_contents()->GetLastCommittedURL());
 }
 
@@ -191,12 +191,12 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
   OpenURLInNewTab(valid_url);
   const auto* valid_web_contents = web_contents();
 
-  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+  ASSERT_EQ(3, browser()->GetTabStripModel()->count());
   ASSERT_EQ(valid_web_contents, web_contents());
   ASSERT_EQ(valid_url, web_contents()->GetLastCommittedURL());
   delegate->SwitchToOrOpenTab(invalid_url_1);
 
-  EXPECT_EQ(3, browser()->tab_strip_model()->count());
+  EXPECT_EQ(3, browser()->GetTabStripModel()->count());
   // Ensure that the web contents remain the same, since `SwitchToOrOpenTab`
   // shouldn't work for non-HTTP(S) urls.
   EXPECT_EQ(valid_web_contents, web_contents());
@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
 
   delegate->SwitchToOrOpenTab(invalid_url_2);
 
-  EXPECT_EQ(3, browser()->tab_strip_model()->count());
+  EXPECT_EQ(3, browser()->GetTabStripModel()->count());
   EXPECT_EQ(valid_web_contents, web_contents());
   EXPECT_EQ(valid_url, web_contents()->GetLastCommittedURL());
 }

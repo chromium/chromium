@@ -26,7 +26,7 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
@@ -298,7 +298,7 @@ class RealboxHandlerTest : public InProcessBrowserTest,
     handler_ = std::make_unique<RealboxHandlerPublic>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
         page_.BindAndGetRemote(), browser()->GetProfile(),
-        /*web_contents=*/browser()->tab_strip_model()->GetActiveWebContents(),
+        /*web_contents=*/browser()->GetTabStripModel()->GetActiveWebContents(),
         base::BindLambdaForTesting(
             []() -> contextual_search::ContextualSearchSessionHandle* {
               return nullptr;

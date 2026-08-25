@@ -16,7 +16,7 @@
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(SettingsUITest, ToggleJavaScript) {
   ASSERT_TRUE(NavigateToURL(browser(), GURL(chrome::kChromeUISettingsURL)));
 
   const auto& handlers = *browser()
-                              ->tab_strip_model()
+                              ->GetTabStripModel()
                               ->GetActiveWebContents()
                               ->GetWebUI()
                               ->GetHandlersForTesting();
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(
   // Wait for sync controls to load which would initialize the batch upload
   // service if the sync service was not null.
   ASSERT_TRUE(
-      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+      content::ExecJs(browser()->GetTabStripModel()->GetActiveWebContents(),
                       R"((() => {
                            return customElements.whenDefined(
                               'settings-sync-controls');
@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(SettingsUITest, GoogleSearchAiModeWorkspaceUrl) {
   ASSERT_TRUE(NavigateToURL(browser(), GURL(chrome::kChromeUISettingsURL)));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Wait for settings UI to be loaded.
   ASSERT_TRUE(content::ExecJs(web_contents,
@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(SettingsUITest, GoogleSearchAiModeRestrictedUrl) {
   ASSERT_TRUE(NavigateToURL(browser(), GURL(chrome::kChromeUISettingsURL)));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Wait for settings UI to be loaded.
   ASSERT_TRUE(content::ExecJs(web_contents,
@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(SettingsUITestGlicDisabledButAnchored, DoesNotCrash) {
   ASSERT_TRUE(NavigateToURL(browser(), GURL(chrome::kChromeUISettingsURL)));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Wait for settings UI to be loaded.
   ASSERT_TRUE(content::ExecJs(web_contents,
@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(SettingsUIWalletReminderNoticeTest,
   ASSERT_TRUE(NavigateToURL(browser(), GURL(chrome::kChromeUISettingsURL)));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Wait for settings UI to be loaded.
   ASSERT_TRUE(content::ExecJs(web_contents,

@@ -7,7 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision.mojom.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler_utils.h"
@@ -35,7 +35,7 @@ class AddSupervisionMetricsRecorderTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     test_web_ui_.set_web_contents(web_contents);
   }
 

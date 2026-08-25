@@ -10,8 +10,8 @@
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -97,7 +97,7 @@ class ContextualSearchboxHandlerBrowserTest : public InProcessBrowserTest {
     handler_ = std::make_unique<TestSearchboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
         page_.BindAndGetRemote(), browser()->GetProfile(),
-        /*web_contents=*/browser()->tab_strip_model()->GetActiveWebContents(),
+        /*web_contents=*/browser()->GetTabStripModel()->GetActiveWebContents(),
         base::BindLambdaForTesting([&]() { return session_handle_.get(); }));
   }
 
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTest,
   int expected_height = 200 * 1;
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   auto options = handler_->CreateTabPreviewEncodingOptions(web_contents);
 
   ASSERT_TRUE(options.has_value());
@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTestDSF2,
   int expected_height = 200 * 2;
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   auto options = handler_->CreateTabPreviewEncodingOptions(web_contents);
 
   ASSERT_TRUE(options.has_value());
@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTest,
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
-  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   ASSERT_TRUE(tab);
   int32_t tab_id = tab->GetHandle().raw_value();
 
@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTest,
   GURL url = embedded_test_server()->GetURL("/favicon/page_with_favicon.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   ASSERT_TRUE(tab);
   int32_t tab_id = tab->GetHandle().raw_value();
 
@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTest,
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   ASSERT_TRUE(tab);
   int32_t tab_id = tab->GetHandle().raw_value();
 
@@ -227,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTest,
   handler_->WaitForTabFaviconLoad(tab_id, future.GetCallback());
 
   // Destroy the WebContents by closing the tab.
-  browser()->tab_strip_model()->CloseSelectedTabs();
+  browser()->GetTabStripModel()->CloseSelectedTabs();
 
   std::optional<GURL> data_url = future.Get();
   EXPECT_FALSE(data_url.has_value());
@@ -324,7 +324,7 @@ class WebuiOmniboxHandlerBrowserTest
     ContextualSearchboxHandlerBrowserTest::SetUpOnMainThread();
 
     test_web_ui_.set_web_contents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
 
     omnibox_controller_ = std::make_unique<OmniboxController>(
         std::make_unique<TestOmniboxClient>());
@@ -353,9 +353,9 @@ class WebuiOmniboxHandlerBrowserTest
 
 IN_PROC_BROWSER_TEST_F(WebuiOmniboxHandlerBrowserTest,
                        AddTabContextRejectsTabFromDifferentProfile) {
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   tabs::TabInterface* incognito_tab =
-      incognito_browser->tab_strip_model()->GetActiveTab();
+      incognito_browser->GetTabStripModel()->GetActiveTab();
   ASSERT_TRUE(incognito_tab);
   ASSERT_NE(incognito_tab->GetProfile(), browser()->GetProfile());
 
@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(WebuiOmniboxHandlerBrowserTest,
       static_cast<int>(
           contextual_search::SearchContentSharingSettingsValue::kDisabled));
 
-  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   ASSERT_TRUE(tab);
 
   base::test::TestFuture<base::expected<

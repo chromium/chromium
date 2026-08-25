@@ -13,6 +13,7 @@ include_rules = [
   "+chrome/browser/ash/login",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_window/public",
   "+chrome/browser/ui/views/chrome_web_dialog_view.h",
   "+chrome/browser/ui/zoom",
   "+chrome/common",
