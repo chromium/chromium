@@ -6623,6 +6623,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "lens-block-fetch-objects-interaction-rpcs-on-separate-handshake",
+    "owners": ["cmyang@google.com", "brandonli@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "lens-bypass-compression-for-c2pa",
     "owners": [
       "hujasonx@google.com"
@@ -6662,6 +6667,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "lens-exact-matches-enabled",
+    "owners": ["cmyang@google.com", "brandonli@google.com", "lens-chrome@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "lens-fetch-srp-api-enabled",
     "owners": ["cmyang@google.com", "brandonli@google.com"],
     "expiry_milestone": 145
@@ -6684,6 +6694,11 @@
       "cmyang@google.com"
     ],
     "expiry_milestone": 160
+  },
+  {
+    "name": "lens-gesture-text-selection-disabled",
+    "owners": ["cmyang@google.com"],
+    "expiry_milestone": 145
   },
   {
     "name": "lens-initial-lvf-zoom-level-90-percent",
@@ -6739,6 +6754,16 @@
     "expiry_milestone": 145
   },
   {
+    "name": "lens-prewarm-hard-stickiness-in-input-selection",
+    "owners": ["cmyang@google.com", "brandonli@google.com"],
+    "expiry_milestone": 145
+  },
+  {
+    "name": "lens-prewarm-hard-stickiness-in-query-formulation",
+    "owners": ["cmyang@google.com", "brandonli@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "lens-reinvocation-affordance",
     "owners": ["juanmojica@google.com", "lens-chrome@google.com"],
     "expiry_milestone": 152
@@ -6749,9 +6774,19 @@
     "expiry_milestone": 150
   },
   {
+    "name": "lens-single-tap-text-selection-disabled",
+    "owners": ["cmyang@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "lens-stream-service-web-channel-transport-enabled",
     "owners": ["cmyang@google.com", "brandonli@google.com"],
     "expiry_milestone": 165
+  },
+  {
+    "name": "lens-strokes-api-enabled",
+    "owners": ["aboodmufti@google.com", "cmyang@google.com"],
+    "expiry_milestone": 145
   },
   {
     "name": "lens-translate-toogle-mode-enabled",
@@ -6762,6 +6797,11 @@
     "name": "lens-triple-camera-enabled",
     "owners": ["cmyang@google.com", "aruslan@google.com"],
     "expiry_milestone": 165
+  },
+  {
+    "name": "lens-unary-api-salient-text-enabled",
+    "owners": ["cmyang@google.com", "brandonli@google.com"],
+    "expiry_milestone": 145
   },
   {
     "name": "lens-updated-feedback-entrypoint",
