@@ -224,7 +224,7 @@ inability to every change them.
 
 Avoid it if possible. Use `@Nullable` instead.
 
-## Rationale:
+**Rationale:**
 
 `Optional` adds binary size overhead and requires an extra allocation for each
 use. It may still be a good choice if you need to distinguish between "null" and
