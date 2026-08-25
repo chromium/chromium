@@ -40,6 +40,10 @@
   return _taskInfo->GetIconSymbol();
 }
 
+- (BOOL)multicolorIcon {
+  return _taskInfo->IsMulticolorIcon();
+}
+
 - (LevelUpTaskCategory)category {
   return _taskInfo->GetCategory();
 }

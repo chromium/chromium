@@ -17,7 +17,6 @@
 
   [self configureWithTitle:titleText
                description:nil
-                      icon:nil
            backgroundColor:[UIColor colorNamed:kSecondaryBackgroundColor]
            chevronExpanded:expanded
            separatorHidden:!expanded];

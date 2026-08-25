@@ -30,6 +30,9 @@ class TaskInfo {
   // Icon symbol associated with the task.
   virtual Symbol GetIconSymbol() const = 0;
 
+  // Whether the icon symbol should be rendered using multicolor.
+  virtual bool IsMulticolorIcon() const;
+
   // The category this task belongs to.
   virtual LevelUpTaskCategory GetCategory() const = 0;
 

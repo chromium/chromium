@@ -28,6 +28,7 @@ class LensSearchTaskInfo : public TaskInfo {
            "your tab";
   }
   Symbol GetIconSymbol() const override { return SymbolCameraLens; }
+  bool IsMulticolorIcon() const override { return true; }
   LevelUpTaskCategory GetCategory() const override {
     return LevelUpTaskCategory::kSearch;
   }

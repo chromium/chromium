@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/level_up/ui/level_up_task_row_view.h"
 
 #import "ios/chrome/browser/level_up/coordinator/level_up_task.h"
+#import "ios/chrome/browser/level_up/ui/level_up_task_icon_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -15,8 +16,6 @@ namespace {
 
 // Padding spacing constant.
 const CGFloat kLayoutSpacing = 16.0;
-// The point size of a task icon.
-const CGFloat kIconSize = 24.0;
 // The point size of status chevron indicators.
 const CGFloat kChevronSize = 14.0;
 // The spacing within the vertical text container stack.
@@ -29,8 +28,8 @@ const NSTimeInterval kChevronAnimationDuration = 0.25;
 }  // namespace
 
 @implementation LevelUpTaskRowView {
-  // Icon showing task completion state.
-  UIImageView* _iconView;
+  // Task icon view.
+  LevelUpTaskIconView* _iconView;
   // Task title label.
   UILabel* _titleLabel;
   // Task description label.
@@ -50,10 +49,8 @@ const NSTimeInterval kChevronAnimationDuration = 0.25;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    _iconView = [[UIImageView alloc] init];
+    _iconView = [[LevelUpTaskIconView alloc] init];
     _iconView.translatesAutoresizingMaskIntoConstraints = NO;
-    _iconView.contentMode = UIViewContentModeScaleAspectFit;
-    AddSquareConstraints(_iconView, kIconSize);
 
     _titleLabel = [[UILabel alloc] init];
     _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -131,17 +128,10 @@ const NSTimeInterval kChevronAnimationDuration = 0.25;
   _chevronView.transform = CGAffineTransformIdentity;
   _task = task;
 
-  _iconView.hidden = NO;
+  [_iconView configureWithTask:task];
+
   [_rowStack setCustomSpacing:UIStackViewSpacingUseDefault
                     afterView:_textContainer];
-
-  if (task.completed) {
-    _iconView.tintColor = [UIColor colorNamed:kGreen600Color];
-    _iconView.image = SymbolWithPointSize(SymbolCheckmark, kIconSize);
-  } else {
-    _iconView.tintColor = [UIColor colorNamed:kBlueColor];
-    _iconView.image = SymbolWithPointSize(task.iconSymbol, kIconSize);
-  }
 
   _titleLabel.text = task.title;
   _descriptionLabel.text = task.taskDescription;
@@ -150,29 +140,18 @@ const NSTimeInterval kChevronAnimationDuration = 0.25;
 
 - (void)configureWithTitle:(NSString*)title
                description:(NSString*)description
-                      icon:(UIImage*)icon
            backgroundColor:(UIColor*)backgroundColor
            chevronExpanded:(BOOL)chevronExpanded
            separatorHidden:(BOOL)separatorHidden {
   self.backgroundColor = backgroundColor;
   _task = nil;
 
-  if (icon) {
-    _iconView.image = icon;
-    _iconView.hidden = NO;
-    [_rowStack setCustomSpacing:UIStackViewSpacingUseDefault
-                      afterView:_textContainer];
-    _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-    _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  } else {
-    _iconView.image = nil;
-    _iconView.hidden = YES;
-    [_rowStack setCustomSpacing:UIStackViewSpacingUseSystem
-                      afterView:_textContainer];
-    _titleLabel.textColor = [UIColor colorNamed:kGrey700Color];
-    _titleLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-  }
+  [_iconView configureWithTask:nil];
+  [_rowStack setCustomSpacing:UIStackViewSpacingUseSystem
+                    afterView:_textContainer];
+  _titleLabel.textColor = [UIColor colorNamed:kGrey700Color];
+  _titleLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
 
   _titleLabel.text = title;
   _descriptionLabel.text = description;

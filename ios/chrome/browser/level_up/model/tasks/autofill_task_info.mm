@@ -29,6 +29,7 @@ class AutofillTaskInfo : public TaskInfo {
     return "Quickly sign into sites and apps with your saved passwords";
   }
   Symbol GetIconSymbol() const override { return SymbolPasswordManager; }
+  bool IsMulticolorIcon() const override { return true; }
   LevelUpTaskCategory GetCategory() const override {
     return LevelUpTaskCategory::kProductivity;
   }

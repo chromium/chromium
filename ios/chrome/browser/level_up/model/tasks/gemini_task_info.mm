@@ -29,6 +29,13 @@ class GeminiTaskInfo : public TaskInfo {
     return SymbolGeminiNonBrandedLogo;
 #endif
   }
+  bool IsMulticolorIcon() const override {
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+    return true;
+#else
+    return false;
+#endif
+  }
   LevelUpTaskCategory GetCategory() const override {
     return LevelUpTaskCategory::kProductivity;
   }

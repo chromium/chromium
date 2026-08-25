@@ -27,6 +27,7 @@ class PasswordCheckupTaskInfo : public TaskInfo {
     return "Check your saved passwords for security issues";
   }
   Symbol GetIconSymbol() const override { return SymbolPasswordManager; }
+  bool IsMulticolorIcon() const override { return true; }
   LevelUpTaskCategory GetCategory() const override {
     return LevelUpTaskCategory::kSafety;
   }
