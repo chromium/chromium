@@ -134,6 +134,7 @@ std::string GetHistogramName(std::string_view prefix, std::string_view metric) {
 NOINLINE NOOPT void HandlePersistentCacheError(
     GpuProcessShmCount* use_shader_cache_shm_count,
     persistent_cache::TransactionError error) {
+  LOG(ERROR) << "Persistent cache error: " << static_cast<int>(error);
   switch (error) {
     case persistent_cache::TransactionError::kPermanent:
       if (use_shader_cache_shm_count) {
@@ -433,11 +434,8 @@ void GpuPersistentCache::InitializeCache(
       auto cache,
       persistent_cache::PersistentCache::Bind(
           persistent_cache::Client::kShaderCache, std::move(pending_backend)),
-      [use_shader_cache_shm_count](persistent_cache::TransactionError error) {
-        // Treat any failure to bind to the cache as a permanent error.
-        HandlePersistentCacheError(
-            &use_shader_cache_shm_count->data,
-            persistent_cache::TransactionError::kPermanent);
+      [&](persistent_cache::TransactionError error) {
+        HandlePersistentCacheError(&use_shader_cache_shm_count->data, error);
       });
 
   disk_cache_ = base::MakeRefCounted<DiskCache>(
