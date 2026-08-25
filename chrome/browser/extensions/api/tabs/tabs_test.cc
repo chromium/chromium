@@ -23,6 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_future.h"
@@ -2552,6 +2553,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TestGroupDetachedAndReInserted) {
   ASSERT_TRUE(destination_tab_list);
   destination_tab_list->OpenTab(about_blank, -1);
 
+  int initial_source_count = tab_list->GetTabCount();
+  int initial_dest_count = destination_tab_list->GetTabCount();
+
   TestEventRouterObserver event_observer(EventRouter::Get(profile()));
 
   tab_list->MoveTabGroupToWindow(*group, second_browser->GetSessionID(), 0);
@@ -2563,6 +2567,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TestGroupDetachedAndReInserted) {
   event_observer.WaitForEventWithName(api::tabs::OnUpdated::kEventName);
   EXPECT_TRUE(
       event_observer.events().contains(api::tabs::OnUpdated::kEventName));
+
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return tab_list->GetTabCount() == initial_source_count - 2 &&
+           destination_tab_list->GetTabCount() == initial_dest_count + 2;
+  })) << "Timed out waiting for tab group to transfer to destination window.";
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
