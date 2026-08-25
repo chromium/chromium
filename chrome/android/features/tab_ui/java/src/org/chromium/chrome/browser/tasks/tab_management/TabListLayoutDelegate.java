@@ -8,7 +8,9 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.isOnlyArchivedMsg;
 
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.view.View;
+import android.view.accessibility.AccessibilityNodeInfo;
 
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
@@ -381,5 +383,29 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
             return currentIndex - 1;
         }
         return currentIndex;
+    }
+
+    /**
+     * Allows layout-specific customization of accessibility node info for a given view model.
+     *
+     * @param host The host view being initialized.
+     * @param info The {@link AccessibilityNodeInfo} being populated.
+     * @param model The {@link PropertyModel} associated with the view.
+     */
+    void populateAccessibilityNodeInfo(
+            View host, AccessibilityNodeInfo info, @Nullable PropertyModel model) {}
+
+    /**
+     * Handles layout-specific accessibility actions.
+     *
+     * @param host The host view executing the action.
+     * @param action The accessibility action ID.
+     * @param args Optional bundle arguments.
+     * @param model The {@link PropertyModel} associated with the view.
+     * @return True if the action was handled, false otherwise.
+     */
+    boolean performAccessibilityAction(
+            View host, int action, @Nullable Bundle args, @Nullable PropertyModel model) {
+        return false;
     }
 }

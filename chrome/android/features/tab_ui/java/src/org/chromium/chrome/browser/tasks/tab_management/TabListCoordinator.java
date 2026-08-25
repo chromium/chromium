@@ -338,6 +338,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                         .setSupportsMessageCards(isGridMode)
                         .setSupportsShrinkCloseAnimation(isGridMode)
                         .setSupportsDelayedTabAddition(isGridOrDialogComponent)
+                        .setSupportsTabContextClick(true)
                         .setTabClosingSource(TabClosingSource.UNKNOWN)
                         .build();
 

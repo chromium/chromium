@@ -30,7 +30,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -53,7 +52,6 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.chrome.R.string;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
 import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -1610,48 +1608,11 @@ public class TabVerticalViewBinderUnitTest {
     public void testTabGroupHeaderAccessibilityDelegate() {
         ViewGroup headerView = inflateGroupHeaderView();
 
-        // Initially collapsed = true.
-        mModel.set(TabProperties.IS_COLLAPSED, true);
-        TabVerticalViewBinder.bindTabGroupHeader(mModel, headerView, TabProperties.IS_COLLAPSED);
+        mModel.set(TabProperties.ACCESSIBILITY_DELEGATE, mAccessibilityDelegate);
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.ACCESSIBILITY_DELEGATE);
 
-        // Get the accessibility delegate.
-        View.AccessibilityDelegate delegate = headerView.getAccessibilityDelegate();
-        assertNotNull("Accessibility delegate should be set", delegate);
-
-        AccessibilityNodeInfo nodeInfo = AccessibilityNodeInfo.obtain();
-        delegate.onInitializeAccessibilityNodeInfo(headerView, nodeInfo);
-
-        // Verify action click description is "Expand section".
-        boolean hasExpandAction = false;
-        String expandLabel = mActivity.getString(string.accessibility_expand_section);
-        for (AccessibilityNodeInfo.AccessibilityAction action : nodeInfo.getActionList()) {
-            if (action.getId() == AccessibilityNodeInfo.ACTION_CLICK) {
-                assertEquals(expandLabel, action.getLabel());
-                hasExpandAction = true;
-            }
-        }
-        assertTrue("Should contain expand click action", hasExpandAction);
-
-        // Toggle to expanded = false.
-        mModel.set(TabProperties.IS_COLLAPSED, false);
-        TabVerticalViewBinder.bindTabGroupHeader(mModel, headerView, TabProperties.IS_COLLAPSED);
-
-        delegate = headerView.getAccessibilityDelegate();
-        assertNotNull("Accessibility delegate should not be null after model update", delegate);
-
-        nodeInfo = AccessibilityNodeInfo.obtain();
-        delegate.onInitializeAccessibilityNodeInfo(headerView, nodeInfo);
-
-        // Verify action click description updates to "Collapse section".
-        boolean hasCollapseAction = false;
-        String collapseLabel = mActivity.getString(string.accessibility_collapse_section);
-        for (AccessibilityNodeInfo.AccessibilityAction action : nodeInfo.getActionList()) {
-            if (action.getId() == AccessibilityNodeInfo.ACTION_CLICK) {
-                assertEquals(collapseLabel, action.getLabel());
-                hasCollapseAction = true;
-            }
-        }
-        assertTrue("Should contain collapse click action", hasCollapseAction);
+        assertEquals(mAccessibilityDelegate, headerView.getAccessibilityDelegate());
     }
 
     @Test

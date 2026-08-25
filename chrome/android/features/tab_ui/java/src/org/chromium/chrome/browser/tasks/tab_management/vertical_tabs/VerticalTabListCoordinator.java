@@ -416,6 +416,9 @@ public class VerticalTabListCoordinator {
                         if (newState != RecyclerView.SCROLL_STATE_IDLE) {
                             mTabHoverCardController.hideHoverCard();
                         }
+                        if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                            dismissActiveContextMenus();
+                        }
                     }
                 };
         recyclerView.addOnScrollListener(mOnScrollListener);
@@ -593,6 +596,13 @@ public class VerticalTabListCoordinator {
 
         mMediator.initWithNative(profile.getOriginalProfile());
         mMediator.setupAccessibilityDelegate(mRecyclerView);
+        mMediator.setOnLongPressTabItemEventListener(
+                (tabId, cardView) -> {
+                    if (cardView != null) {
+                        showMenuForItemView(getItemViewAnchorRectProvider(cardView), cardView);
+                    }
+                    return this::dismissActiveContextMenus;
+                });
 
         // Setup Pinned Tabs UI & Mediator.
         TabListRecyclerView pinnedTabsRecyclerView = mContainerView.getPinnedTabsRecyclerView();
@@ -759,7 +769,7 @@ public class VerticalTabListCoordinator {
                 new TabModelSelectorTabModelObserver(tabModelSelector) {
                     @Override
                     public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                        if (mIsActive) {
+                        if (mIsActive && type != TabSelectionType.FROM_DRAG) {
                             scrollActiveTabIntoView();
                         }
                         mTabHoverCardController.hideHoverCard();
@@ -1001,6 +1011,17 @@ public class VerticalTabListCoordinator {
         int uiIndex = getIndexForTabScroll(activeTabId);
 
         if (uiIndex != TabModel.INVALID_TAB_INDEX) {
+            RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
+            if (layoutManager instanceof LinearLayoutManager lm) {
+                int firstVisible = lm.findFirstCompletelyVisibleItemPosition();
+                int lastVisible = lm.findLastCompletelyVisibleItemPosition();
+                if (firstVisible != RecyclerView.NO_POSITION
+                        && lastVisible != RecyclerView.NO_POSITION
+                        && uiIndex >= firstVisible
+                        && uiIndex <= lastVisible) {
+                    return;
+                }
+            }
             mRecyclerView.scrollToPositionWithOffset(uiIndex);
         }
     }
@@ -1161,6 +1182,7 @@ public class VerticalTabListCoordinator {
 
                     return this::dismissActiveContextMenus;
                 });
+        touchHelperCallback.setOnDragStartCallback(this::dismissActiveContextMenus);
 
         recyclerView.addOnItemTouchListener(
                 VerticalTabListItemTouchHelperCallback.createBeforeOnItemTouchListener(
@@ -1793,19 +1815,20 @@ public class VerticalTabListCoordinator {
         View itemView = recyclerView.findContainingItemView(focusedChild);
         if (itemView == null) return false;
 
-        int position = recyclerView.getChildAdapterPosition(itemView);
-        if (position == RecyclerView.NO_POSITION) return false;
-
-        Activity activity = mWindowAndroid.getActivity().get();
-        if (activity == null) return false;
-
-        boolean menuShown =
-                showMenuForAdapterPosition(
-                        getItemViewAnchorRectProvider(itemView), activity, recyclerView, position);
+        boolean menuShown = showMenuForItemView(getItemViewAnchorRectProvider(itemView), itemView);
         if (menuShown) {
             itemView.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK);
         }
         return menuShown;
+    }
+
+    private boolean showMenuForItemView(RectProvider rectProvider, View itemView) {
+        if (!(itemView.getParent() instanceof RecyclerView recyclerView)) return false;
+        int position = recyclerView.getChildAdapterPosition(itemView);
+        if (position == RecyclerView.NO_POSITION) return false;
+        Activity activity = mWindowAndroid.getActivity().get();
+        if (activity == null) return false;
+        return showMenuForAdapterPosition(rectProvider, activity, recyclerView, position);
     }
 
     /**
@@ -2258,5 +2281,15 @@ public class VerticalTabListCoordinator {
     /** Returns the {@link VerticalTabKeyboardHandler} instance for testing. */
     VerticalTabKeyboardHandler getKeyboardHandlerForTesting() {
         return mKeyboardHandler;
+    }
+
+    /** Returns the {@link TabListMediator} instance for testing. */
+    TabListMediator getMediatorForTesting() {
+        return mMediator;
+    }
+
+    /** Returns the {@link VerticalTabListRecyclerView} instance for testing. */
+    VerticalTabListRecyclerView getRecyclerViewForTesting() {
+        return mRecyclerView;
     }
 }

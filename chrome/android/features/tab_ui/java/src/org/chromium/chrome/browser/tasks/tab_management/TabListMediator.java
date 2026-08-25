@@ -41,6 +41,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
@@ -139,6 +140,7 @@ import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.recyclerview.widget.ItemTouchHelper2;
 import org.chromium.url.GURL;
 
@@ -1140,6 +1142,11 @@ public class TabListMediator implements TabListNotificationHandler {
                 onLongPressTabItemEventListener);
     }
 
+    @Nullable
+    public OnLongPressTabItemEventListener getOnLongPressTabItemEventListenerForTesting() {
+        return mOnLongPressTabItemEventListener;
+    }
+
     /**
      * @param listener the handler for dropping tabs on top of an archival message card.
      */
@@ -1676,31 +1683,99 @@ public class TabListMediator implements TabListNotificationHandler {
                     public void onInitializeAccessibilityNodeInfo(
                             View host, AccessibilityNodeInfo info) {
                         super.onInitializeAccessibilityNodeInfo(host, info);
+                        Context context = host.getContext();
+                        PropertyModel model = getModelForView(host);
+
+                        // 1. Layout-specific accessibility info (e.g. Expand/Collapse for Nested
+                        // layouts).
+                        mTabListLayoutDelegate.populateAccessibilityNodeInfo(host, info, model);
+
+                        // 2. Reorder actions from helper.
                         for (AccessibilityAction action : helper.getPotentialActionsForView(host)) {
                             info.addAction(action);
+                        }
+
+                        // 3. Context menu actions.
+                        info.addAction(AccessibilityAction.ACTION_LONG_CLICK);
+                        if (context != null
+                                && model != null
+                                && TabProperties.isTabGroupHeader(model)) {
+                            String groupTitle = model.get(TabProperties.TITLE);
+                            if (TextUtils.isEmpty(groupTitle)) {
+                                Token groupId = model.get(TabProperties.TAB_GROUP_HEADER_ID);
+                                TabModel tabModel = mCurrentTabModelSupplier.get();
+                                if (groupId != null && tabModel != null) {
+                                    groupTitle =
+                                            TabGroupTitleUtils.getDisplayableTitle(
+                                                    context, tabModel, groupId);
+                                }
+                            }
+                            if (groupTitle == null) {
+                                groupTitle = "";
+                            }
+                            info.addAction(
+                                    new AccessibilityAction(
+                                            R.id.tab_context_menu,
+                                            context.getString(
+                                                    R.string.tab_group_menu_accessibility_text,
+                                                    groupTitle)));
                         }
                     }
 
                     @Override
                     public boolean performAccessibilityAction(
                             View host, int action, @Nullable Bundle args) {
-                        if (!helper.isReorderAction(action)) {
-                            return super.performAccessibilityAction(host, action, args);
+                        PropertyModel model = getModelForView(host);
+                        if (mTabListLayoutDelegate.performAccessibilityAction(
+                                host, action, args, model)) {
+                            return true;
                         }
 
-                        Pair<Integer, Integer> positions =
-                                helper.getPositionsOfReorderAction(host, action);
-                        int currentPosition = positions.first;
-                        int targetPosition = positions.second;
-                        if (!mModelList.isValidIndex(currentPosition)
-                                || !mModelList.isValidIndex(targetPosition)) {
-                            return false;
+                        if (helper.isReorderAction(action)) {
+                            Pair<Integer, Integer> positions =
+                                    helper.getPositionsOfReorderAction(host, action);
+                            int currentPosition = positions.first;
+                            int targetPosition = positions.second;
+                            if (!mModelList.isValidIndex(currentPosition)
+                                    || !mModelList.isValidIndex(targetPosition)) {
+                                return false;
+                            }
+                            mModelList.move(currentPosition, targetPosition);
+                            RecordUserAction.record("TabGrid.AccessibilityDelegate.Reordered");
+                            return true;
                         }
-                        mModelList.move(currentPosition, targetPosition);
-                        RecordUserAction.record("TabGrid.AccessibilityDelegate.Reordered");
-                        return true;
+
+                        if (action == R.id.tab_context_menu
+                                || action == AccessibilityAction.ACTION_LONG_CLICK.getId()
+                                || action == AccessibilityAction.ACTION_CONTEXT_CLICK.getId()) {
+                            if (mOnLongPressTabItemEventListener != null) {
+                                int tabId =
+                                        model != null
+                                                ? TabProperties.getTabId(model)
+                                                : Tab.INVALID_TAB_ID;
+                                mOnLongPressTabItemEventListener.onLongPressEvent(tabId, host);
+                                return true;
+                            }
+                        }
+
+                        return super.performAccessibilityAction(host, action, args);
                     }
                 };
+    }
+
+    private @Nullable PropertyModel getModelForView(View host) {
+        if (host.getParent() instanceof RecyclerView rv) {
+            RecyclerView.ViewHolder vh = rv.getChildViewHolder(host);
+            if (vh instanceof SimpleRecyclerViewAdapter.ViewHolder simpleVh) {
+                return simpleVh.model;
+            } else {
+                int pos = rv.getChildAdapterPosition(host);
+                if (mModelList.isValidIndex(pos)) {
+                    return mModelList.get(pos).model;
+                }
+            }
+        }
+        return null;
     }
 
     /** Destroy any members that needs clean up. */
@@ -1837,6 +1912,9 @@ public class TabListMediator implements TabListNotificationHandler {
 
     private @Nullable TabActionListener getTabContextClickListener(
             @TabActionState int tabActionState) {
+        if (!mTabListConfig.supportsTabContextClick) {
+            return null;
+        }
         return tabActionState != TabActionState.SELECTABLE
                 ? mContextClickTabItemEventListener
                 : null;

@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -473,7 +474,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
                 TabListModel.AnimationStatus.SELECTED_CARD_ZOOM_IN,
                 mPropertyModel.get(TabListModel.CardProperties.CARD_ANIMATION_STATUS));
         assertEquals(0.8f, mPropertyModel.get(TabListModel.CardProperties.CARD_ALPHA), 0.01f);
-        verify(mTabModel).setIndex(0, TabSelectionType.FROM_USER);
+        verify(mTabModel).setIndex(0, TabSelectionType.FROM_DRAG);
     }
 
     @Test
@@ -660,6 +661,9 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         RecyclerView.OnItemTouchListener listener =
                 mCallback.createMouseDragDetector(mItemTouchHelper);
 
+        Runnable dragStartCallback = Mockito.mock(Runnable.class);
+        mCallback.setOnDragStartCallback(dragStartCallback);
+
         // 1. ACTION_DOWN.
         MotionEvent downEvent = createMouseEvent(MotionEvent.ACTION_DOWN, 10f, 10f);
         when(mRecyclerView.findChildViewUnder(10f, 10f)).thenReturn(mChildView);
@@ -678,9 +682,52 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         assertFalse(listener.onInterceptTouchEvent(mRecyclerView, moveEvent));
         verify(mItemTouchHelper).startDrag(mViewHolder);
+        verify(dragStartCallback).run();
 
         downEvent.recycle();
         moveEvent.recycle();
+    }
+
+    @Test
+    @SmallTest
+    public void testOnChildDraw_TriggersDragStartCallbackOnDisplacement() {
+        Runnable dragStartCallback = Mockito.mock(Runnable.class);
+        mCallback.setOnDragStartCallback(dragStartCallback);
+        mCallback.setTabGridItemLongPressOrchestratorForTesting(mOrchestrator);
+
+        // Displacement within threshold (e.g. 1dp <= threshold).
+        mCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mViewHolder,
+                /* dX= */ 1f,
+                /* dY= */ 1f,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                /* isCurrentlyActive= */ true);
+        verify(dragStartCallback, never()).run();
+
+        // Displacement exceeding threshold (> cancel threshold).
+        float largeDisplacement = mCallback.getLongPressDpCancelThresholdForTesting() + 5f;
+        mCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mViewHolder,
+                /* dX= */ 0f,
+                /* dY= */ largeDisplacement,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                /* isCurrentlyActive= */ true);
+        verify(dragStartCallback).run();
+
+        // Subsequent onChildDraw calls should not re-trigger the callback (one-shot latch).
+        mCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mViewHolder,
+                /* dX= */ 0f,
+                /* dY= */ largeDisplacement + 10f,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                /* isCurrentlyActive= */ true);
+        verify(dragStartCallback, times(1)).run();
     }
 
     @Test

@@ -51,6 +51,13 @@ public class TabListConfig {
      */
     public final boolean supportsDelayedTabAddition;
 
+    /**
+     * Whether the tab list items support a context click listener (e.g. mouse right click).
+     * Defaults to false; enabled for Tab Switcher Grid and Dialogs where context clicks trigger tab
+     * item context actions.
+     */
+    public final boolean supportsTabContextClick;
+
     /** The {@link TabClosingSource} to attribute when tabs or tab groups are closed. */
     public final @TabClosingSource int tabClosingSource;
 
@@ -74,6 +81,7 @@ public class TabListConfig {
         supportsTabLoadingState = builder.mSupportsTabLoadingState;
         supportsShrinkCloseAnimation = builder.mSupportsShrinkCloseAnimation;
         supportsDelayedTabAddition = builder.mSupportsDelayedTabAddition;
+        supportsTabContextClick = builder.mSupportsTabContextClick;
         tabClosingSource = builder.mTabClosingSource;
         railCollapseStateSupplier = builder.mRailCollapseStateSupplier;
         tabHoverCardListener = builder.mTabHoverCardListener;
@@ -89,6 +97,7 @@ public class TabListConfig {
         private boolean mSupportsTabLoadingState;
         private boolean mSupportsShrinkCloseAnimation;
         private boolean mSupportsDelayedTabAddition;
+        private boolean mSupportsTabContextClick;
         private @TabClosingSource int mTabClosingSource;
         private @Nullable NonNullObservableSupplier<@RailCollapseState Integer>
                 mRailCollapseStateSupplier;
@@ -161,6 +170,15 @@ public class TabListConfig {
          */
         public Builder setSupportsDelayedTabAddition(boolean supportsDelayedTabAddition) {
             mSupportsDelayedTabAddition = supportsDelayedTabAddition;
+            return this;
+        }
+
+        /**
+         * @param supportsTabContextClick Whether tab list items support context click listeners.
+         * @return The {@link Builder} instance.
+         */
+        public Builder setSupportsTabContextClick(boolean supportsTabContextClick) {
+            mSupportsTabContextClick = supportsTabContextClick;
             return this;
         }
 

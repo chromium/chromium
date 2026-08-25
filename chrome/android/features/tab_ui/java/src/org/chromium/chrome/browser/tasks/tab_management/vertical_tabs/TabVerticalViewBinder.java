@@ -21,7 +21,6 @@ import android.view.MotionEvent;
 import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -39,7 +38,6 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.R.string;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
 import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -180,12 +178,9 @@ class TabVerticalViewBinder {
         } else if (TabProperties.TAB_GROUP_CARD_COLOR == propertyKey
                 || TabProperties.IS_INCOGNITO == propertyKey) {
             updateGroupHeaderColors(model, view);
-        } else if (TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER == propertyKey) {
-            updateAccessibilityDelegate(model, view);
         } else if (TabProperties.IS_COLLAPSED == propertyKey) {
             updateChevronRotation(model, view);
             updateContentDescription(model, view);
-            updateAccessibilityDelegate(model, view);
         } else if (TabProperties.RAIL_COLLAPSE_STATE == propertyKey) {
             int itemHeight =
                     view.getContext()
@@ -872,27 +867,6 @@ class TabVerticalViewBinder {
                 expandChevron.setRotation(targetRotation);
             }
         }
-    }
-
-    private static void updateAccessibilityDelegate(PropertyModel model, View view) {
-        view.setAccessibilityDelegate(
-                new View.AccessibilityDelegate() {
-                    @Override
-                    public void onInitializeAccessibilityNodeInfo(
-                            View host, AccessibilityNodeInfo info) {
-                        super.onInitializeAccessibilityNodeInfo(host, info);
-                        boolean isCollapsed = model.get(TabProperties.IS_COLLAPSED);
-                        String actionLabel =
-                                host.getContext()
-                                        .getString(
-                                                isCollapsed
-                                                        ? string.accessibility_expand_section
-                                                        : string.accessibility_collapse_section);
-                        info.addAction(
-                                new AccessibilityNodeInfo.AccessibilityAction(
-                                        AccessibilityNodeInfo.ACTION_CLICK, actionLabel));
-                    }
-                });
     }
 
     private static void updateChildRowPadding(PropertyModel model, View view) {

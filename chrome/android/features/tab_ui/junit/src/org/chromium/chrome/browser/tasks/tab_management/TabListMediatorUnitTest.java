@@ -56,6 +56,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Pair;
@@ -70,6 +71,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -173,6 +175,7 @@ import org.chromium.chrome.browser.tabmodel.TabUiUnitTestUtils;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridDialogHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListItemOnClickListenerProvider;
@@ -635,6 +638,7 @@ public class TabListMediatorUnitTest {
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID2)).thenReturn(mSavedTabGroup2);
         when(mTabModel.getTabGroupTitle(any(Token.class))).thenReturn(UNSET_TAB_GROUP_TITLE);
         when(mTabModel.getTabGroupTitle(any(Tab.class))).thenReturn(UNSET_TAB_GROUP_TITLE);
+        when(mAccessibilityNodeInfo.getExtras()).thenReturn(new Bundle());
 
         mModelList = new TabListModel();
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
@@ -3396,6 +3400,162 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testInitializeAccessibilityNodeInfo_ContextMenuActions() {
+        when(mItemView1.getContext()).thenReturn(mContext);
+        mMediator.setupAccessibilityDelegate(mTabGridAccessibilityHelper);
+        View.AccessibilityDelegate delegate = mMediator.getAccessibilityDelegateForTesting();
+        assertNotNull(delegate);
+
+        delegate.onInitializeAccessibilityNodeInfo(mItemView1, mAccessibilityNodeInfo);
+
+        verify(mAccessibilityNodeInfo).addAction(eq(AccessibilityAction.ACTION_LONG_CLICK));
+    }
+
+    @Test
+    public void
+            testInitializeAccessibilityNodeInfo_TabGroupHeader_ExpandCollapseAndContextMenuActions() {
+        mTabListConfig = new TabListConfig.Builder(TabListLayoutType.NESTED).build();
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.VERTICAL);
+
+        when(mItemView1.getContext()).thenReturn(mContext);
+        when(mItemView1.getParent()).thenReturn(mRecyclerView);
+        when(mRecyclerView.getChildAdapterPosition(mItemView1)).thenReturn(0);
+
+        // Make item 0 a collapsed tab group header.
+        PropertyModel model0 = mModelList.get(0).model;
+        model0.set(TabProperties.TAB_GROUP_HEADER_ID, TAB_GROUP_ID);
+        model0.set(TabProperties.TITLE, "Shopping");
+        model0.set(TabProperties.IS_COLLAPSED, true);
+
+        mMediator.setupAccessibilityDelegate(mTabGridAccessibilityHelper);
+        View.AccessibilityDelegate delegate = mMediator.getAccessibilityDelegateForTesting();
+        assertNotNull(delegate);
+
+        delegate.onInitializeAccessibilityNodeInfo(mItemView1, mAccessibilityNodeInfo);
+        verify(mAccessibilityNodeInfo).addAction(eq(AccessibilityAction.ACTION_EXPAND));
+        verify(mAccessibilityNodeInfo).addAction(eq(AccessibilityAction.ACTION_LONG_CLICK));
+        if (Build.VERSION.SDK_INT >= 36) {
+            verify(mAccessibilityNodeInfo)
+                    .setExpandedState(eq(AccessibilityNodeInfo.EXPANDED_STATE_COLLAPSED));
+        } else {
+            assertEquals(
+                    AccessibilityNodeInfoCompat.EXPANDED_STATE_COLLAPSED,
+                    AccessibilityNodeInfoCompat.wrap(mAccessibilityNodeInfo).getExpandedState());
+        }
+
+        ArgumentCaptor<AccessibilityAction> actionCaptor =
+                ArgumentCaptor.forClass(AccessibilityAction.class);
+        verify(mAccessibilityNodeInfo, atLeastOnce()).addAction(actionCaptor.capture());
+        boolean hasCustomContextMenuAction =
+                actionCaptor.getAllValues().stream()
+                        .anyMatch(
+                                a ->
+                                        a.getId() == R.id.tab_context_menu
+                                                && "Shopping tab group options"
+                                                        .equals(a.getLabel()));
+        assertTrue(hasCustomContextMenuAction);
+
+        // Toggle to expanded.
+        model0.set(TabProperties.IS_COLLAPSED, false);
+        AccessibilityNodeInfo nodeInfo2 = Mockito.mock(AccessibilityNodeInfo.class);
+        when(nodeInfo2.getExtras()).thenReturn(new Bundle());
+        delegate.onInitializeAccessibilityNodeInfo(mItemView1, nodeInfo2);
+        verify(nodeInfo2).addAction(eq(AccessibilityAction.ACTION_COLLAPSE));
+        if (Build.VERSION.SDK_INT >= 36) {
+            verify(nodeInfo2).setExpandedState(eq(AccessibilityNodeInfo.EXPANDED_STATE_FULL));
+        } else {
+            assertEquals(
+                    AccessibilityNodeInfoCompat.EXPANDED_STATE_FULL,
+                    AccessibilityNodeInfoCompat.wrap(nodeInfo2).getExpandedState());
+        }
+    }
+
+    @Test
+    public void testInitializeAccessibilityNodeInfo_GtsGroupCard_DoesNotAddExpandCollapseActions() {
+        when(mItemView1.getContext()).thenReturn(mContext);
+        when(mItemView1.getParent()).thenReturn(mRecyclerView);
+        when(mRecyclerView.getChildAdapterPosition(mItemView1)).thenReturn(0);
+
+        // GTS default mediator is GROUPED.
+        PropertyModel model0 = mModelList.get(0).model;
+        model0.set(TabProperties.TAB_GROUP_HEADER_ID, TAB_GROUP_ID);
+        model0.set(TabProperties.IS_COLLAPSED, true);
+
+        mMediator.setupAccessibilityDelegate(mTabGridAccessibilityHelper);
+        View.AccessibilityDelegate delegate = mMediator.getAccessibilityDelegateForTesting();
+        assertNotNull(delegate);
+
+        delegate.onInitializeAccessibilityNodeInfo(mItemView1, mAccessibilityNodeInfo);
+        verify(mAccessibilityNodeInfo, never()).addAction(eq(AccessibilityAction.ACTION_EXPAND));
+        verify(mAccessibilityNodeInfo, never()).addAction(eq(AccessibilityAction.ACTION_COLLAPSE));
+        if (Build.VERSION.SDK_INT >= 36) {
+            verify(mAccessibilityNodeInfo, never()).setExpandedState(anyInt());
+        } else {
+            assertEquals(
+                    AccessibilityNodeInfoCompat.EXPANDED_STATE_UNDEFINED,
+                    AccessibilityNodeInfoCompat.wrap(mAccessibilityNodeInfo).getExpandedState());
+        }
+
+        assertFalse(
+                delegate.performAccessibilityAction(
+                        mItemView1, AccessibilityAction.ACTION_EXPAND.getId(), mBundle));
+        assertFalse(
+                delegate.performAccessibilityAction(
+                        mItemView1, AccessibilityAction.ACTION_COLLAPSE.getId(), mBundle));
+    }
+
+    @Test
+    public void testPerformAccessibilityAction_ExpandCollapse() {
+        mTabListConfig = new TabListConfig.Builder(TabListLayoutType.NESTED).build();
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.VERTICAL);
+
+        when(mItemView1.getParent()).thenReturn(mRecyclerView);
+        when(mRecyclerView.getChildAdapterPosition(mItemView1)).thenReturn(0);
+        PropertyModel model0 = mModelList.get(0).model;
+        model0.set(TabProperties.TAB_GROUP_HEADER_ID, TAB_GROUP_ID);
+
+        mMediator.setupAccessibilityDelegate(mTabGridAccessibilityHelper);
+        View.AccessibilityDelegate delegate = mMediator.getAccessibilityDelegateForTesting();
+        assertNotNull(delegate);
+
+        assertTrue(
+                delegate.performAccessibilityAction(
+                        mItemView1, AccessibilityAction.ACTION_EXPAND.getId(), mBundle));
+        verify(mItemView1).performClick();
+
+        assertTrue(
+                delegate.performAccessibilityAction(
+                        mItemView1, AccessibilityAction.ACTION_COLLAPSE.getId(), mBundle));
+        verify(mItemView1, times(2)).performClick();
+    }
+
+    @Test
+    public void testPerformAccessibilityAction_ContextMenu() {
+        when(mItemView1.getParent()).thenReturn(mRecyclerView);
+        when(mRecyclerView.getChildAdapterPosition(mItemView1)).thenReturn(0);
+
+        OnLongPressTabItemEventListener listener =
+                Mockito.mock(OnLongPressTabItemEventListener.class);
+        mMediator.setOnLongPressTabItemEventListener(listener);
+        mMediator.setupAccessibilityDelegate(mTabGridAccessibilityHelper);
+        View.AccessibilityDelegate delegate = mMediator.getAccessibilityDelegateForTesting();
+        assertNotNull(delegate);
+
+        assertTrue(delegate.performAccessibilityAction(mItemView1, R.id.tab_context_menu, mBundle));
+        verify(listener).onLongPressEvent(eq(TAB1_ID), eq(mItemView1));
+
+        assertTrue(
+                delegate.performAccessibilityAction(
+                        mItemView1, AccessibilityAction.ACTION_LONG_CLICK.getId(), mBundle));
+        verify(listener, times(2)).onLongPressEvent(eq(TAB1_ID), eq(mItemView1));
+
+        assertTrue(
+                delegate.performAccessibilityAction(
+                        mItemView1, AccessibilityAction.ACTION_CONTEXT_CLICK.getId(), mBundle));
+        verify(listener, times(3)).onLongPressEvent(eq(TAB1_ID), eq(mItemView1));
+    }
+
+    @Test
     public void testTabObserverRemovedFromClosedTab() {
         initAndAssertAllProperties();
 
@@ -5893,6 +6053,21 @@ public class TabListMediatorUnitTest {
         assertNull(mModelList.get(0).model.get(TabProperties.TAB_CONTEXT_CLICK_LISTENER));
     }
 
+    @Test
+    public void testContextClickListener_VerticalTabs_ReturnsNull() {
+        TabListConfig config = new TabListConfig.Builder(TabListLayoutType.NESTED).build();
+        mMediator =
+                new MediatorBuilder()
+                        .setTabListConfig(config)
+                        .setTabListItemOnClickListenerProvider(null)
+                        .setUndoBarExplicitTrigger(null)
+                        .build();
+        mMediator.initWithNative(mProfile);
+
+        initAndAssertAllProperties();
+        assertNull(mModelList.get(0).model.get(TabProperties.TAB_CONTEXT_CLICK_LISTENER));
+    }
+
     @EnableFeatures(ChromeFeatureList.GLIC)
     @Test
     public void testActorUiState_InitialSet() {
@@ -6621,6 +6796,10 @@ public class TabListMediatorUnitTest {
                         ? mTabListConfig.supportsDelayedTabAddition
                         : (type == TabListMediatorType.TAB_SWITCHER
                                 || type == TabListMediatorType.TAB_GRID_DIALOG);
+        boolean supportsTabContextClick =
+                hasMatchingConfig
+                        ? mTabListConfig.supportsTabContextClick
+                        : (type != TabListMediatorType.VERTICAL_TABS);
         @TabClosingSource
         int tabClosingSource =
                 hasMatchingConfig
@@ -6645,6 +6824,7 @@ public class TabListMediatorUnitTest {
                         .setSupportsTabLoadingState(supportsTabLoadingState)
                         .setSupportsShrinkCloseAnimation(supportsShrinkCloseAnimation)
                         .setSupportsDelayedTabAddition(supportsDelayedTabAddition)
+                        .setSupportsTabContextClick(supportsTabContextClick)
                         .setTabClosingSource(tabClosingSource)
                         .setRailCollapseStateSupplier(railCollapseStateSupplier)
                         .setTabHoverCardListener(tabHoverCardListener)

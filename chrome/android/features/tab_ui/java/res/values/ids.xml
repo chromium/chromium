@@ -31,6 +31,7 @@ found in the LICENSE file.
     <item type="id" name="tab_list_editor_archive_settings_menu_item" />
 
     <!-- Tab Switcher Context Menu. -->
+    <item type="id" name="tab_context_menu" />
     <item type="id" name="edit_bookmark" />
     <item type="id" name="send_tab_to_self" />
 

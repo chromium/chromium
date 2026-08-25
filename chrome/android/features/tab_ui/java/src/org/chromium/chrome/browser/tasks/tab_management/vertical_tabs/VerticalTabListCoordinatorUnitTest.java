@@ -4103,4 +4103,63 @@ public class VerticalTabListCoordinatorUnitTest {
         clearInvocations(mTabHoverCardView);
         return tab;
     }
+
+    @Test
+    @SmallTest
+    public void testMediatorOnLongPressTabItemEventListener_ShowsItemContextMenu() {
+        TabListRecyclerView recyclerView = setupMockRecyclerViewWithTab(mMockTab1, TAB_ID_1);
+        when(mMockChildView.getParent()).thenReturn(recyclerView);
+        when(recyclerView.getChildAdapterPosition(mMockChildView)).thenReturn(0);
+
+        when(mMockChildView.getWidth()).thenReturn(300);
+        when(mMockChildView.getHeight()).thenReturn(100);
+        doAnswer(
+                        invocation -> {
+                            int[] pos = invocation.getArgument(0);
+                            pos[0] = 50;
+                            pos[1] = 100;
+                            return null;
+                        })
+                .when(mMockChildView)
+                .getLocationInWindow(any());
+
+        mCoordinator.setTabContextMenuCoordinatorForTesting(mTabContextMenuCoordinator);
+
+        TabListMediator mediator = mCoordinator.getMediatorForTesting();
+        var listener = mediator.getOnLongPressTabItemEventListenerForTesting();
+        assertNotNull(listener);
+
+        listener.onLongPressEvent(TAB_ID_1, mMockChildView);
+
+        ArgumentCaptor<RectProvider> rectCaptor = ArgumentCaptor.forClass(RectProvider.class);
+        ArgumentCaptor<AnchorInfo> anchorInfoCaptor = ArgumentCaptor.forClass(AnchorInfo.class);
+        verify(mTabContextMenuCoordinator)
+                .showMenu(rectCaptor.capture(), anchorInfoCaptor.capture());
+
+        Rect bounds = rectCaptor.getValue().getRect();
+        assertEquals(50, bounds.left);
+        assertEquals(100, bounds.top);
+        assertEquals(350, bounds.right);
+        assertEquals(200, bounds.bottom);
+        assertEquals(TAB_ID_1, anchorInfoCaptor.getValue().getAnchorTabId());
+    }
+
+    @Test
+    @SmallTest
+    public void testOnScrollStateChanged_DraggingDismissesContextMenus() {
+        createCoordinator();
+        mCoordinator.setTabContextMenuCoordinatorForTesting(mTabContextMenuCoordinator);
+        mCoordinator.setTabStripContextMenuCoordinatorForTesting(mTabStripContextMenuCoordinator);
+        mCoordinator.setTabGroupContextMenuCoordinatorForTesting(mTabGroupContextMenuCoordinator);
+
+        RecyclerView.OnScrollListener scrollListener = mCoordinator.getOnScrollListenerForTesting();
+        assertNotNull(scrollListener);
+
+        scrollListener.onScrollStateChanged(
+                mCoordinator.getRecyclerViewForTesting(), RecyclerView.SCROLL_STATE_DRAGGING);
+
+        verify(mTabContextMenuCoordinator).dismiss();
+        verify(mTabStripContextMenuCoordinator).dismiss();
+        verify(mTabGroupContextMenuCoordinator).dismiss();
+    }
 }
