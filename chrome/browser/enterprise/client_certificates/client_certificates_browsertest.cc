@@ -61,11 +61,6 @@ class ClientCertificateBrowserTest : public MixinBasedPlatformBrowserTest,
             .affiliated = false,
         });
 
-#if BUILDFLAG(IS_ANDROID)
-    scoped_feature_list_.InitAndEnableFeature(
-        client_certificates::features::
-            kEnableClientCertificateProvisioningOnAndroid);
-#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   void SetUp() override {

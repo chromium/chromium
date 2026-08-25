@@ -164,20 +164,6 @@ TEST_F(ChromeBrowserCloudManagementControllerAndroidTest, DeferInitialization) {
 }
 
 TEST_F(ChromeBrowserCloudManagementControllerAndroidTest,
-       CreateCertificateProvisioningService_FeatureDisabled) {
-  ChromeBrowserCloudManagementControllerAndroid delegate;
-  // The test setup using TestingBrowserProcess provides the necessary
-  // dependencies like local_state and a device_management_service, so the
-  // service should be created successfully.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      client_certificates::features::
-          kEnableClientCertificateProvisioningOnAndroid);
-  auto service = delegate.CreateCertificateProvisioningService();
-  EXPECT_EQ(service, nullptr);
-}
-
-TEST_F(ChromeBrowserCloudManagementControllerAndroidTest,
        GetSaasUsageReportingDelegateFactory) {
   ChromeBrowserCloudManagementControllerAndroid delegate;
   auto factory = delegate.GetSaasUsageReportingDelegateFactory();

@@ -268,12 +268,6 @@ void ChromeBrowserCloudManagementControllerAndroid::DeferInitialization(
 std::unique_ptr<client_certificates::CertificateProvisioningService>
 ChromeBrowserCloudManagementControllerAndroid::
     CreateCertificateProvisioningService() {
-  if (!base::FeatureList::IsEnabled(
-          client_certificates::features::
-              kEnableClientCertificateProvisioningOnAndroid)) {
-    return nullptr;
-  }
-
   if (!certificate_store_) {
     certificate_store_ =
         std::make_unique<client_certificates::PrefsCertificateStore>(

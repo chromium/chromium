@@ -16,11 +16,6 @@ BASE_DECLARE_FEATURE(kManagedUserClientCertificateInPrefs);
 // Return true if the managed user certificate should be stored in prefs.
 bool IsManagedUserClientCertificateInPrefsEnabled();
 
-// Controls whether client certificate provisioning on Android is enabled.
-BASE_DECLARE_FEATURE(kEnableClientCertificateProvisioningOnAndroid);
-
-// Return true if client certificate provisioning on Android is enabled.
-bool IsClientCertificateProvisioningOnAndroidEnabled();
 
 #if BUILDFLAG(IS_WIN)
 // Controls whether Windows TPM keys are blocked from
