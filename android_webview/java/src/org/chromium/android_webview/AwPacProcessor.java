@@ -16,6 +16,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.UsedByReflection;
 
 import java.util.ArrayList;
@@ -148,7 +149,9 @@ public class AwPacProcessor {
 
         boolean setProxyScript(long nativeAwPacProcessor, @JniType("std::string") String script);
 
-        String makeProxyRequest(long nativeAwPacProcessor, String url);
+        @JniType("std::optional<std::string>")
+        @Nullable String makeProxyRequest(
+                long nativeAwPacProcessor, @JniType("std::string") String url);
 
         void destroyNative(long nativeAwPacProcessor);
 

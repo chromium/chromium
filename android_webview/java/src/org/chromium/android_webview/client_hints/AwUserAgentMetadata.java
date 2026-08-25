@@ -183,7 +183,7 @@ public class AwUserAgentMetadata {
     }
 
     @CalledByNative
-    private @FormFactors String[] getFormFactors() {
+    private @FormFactors @JniType("std::vector<std::string>") String[] getFormFactors() {
         return mFormFactors;
     }
 
@@ -202,7 +202,7 @@ public class AwUserAgentMetadata {
             boolean mobile,
             @JniType("std::string") String bitness,
             boolean wow64,
-            @FormFactors String[] formFactors) {
+            @FormFactors @JniType("std::vector<std::string>") String[] formFactors) {
         AwUserAgentMetadata result = new AwUserAgentMetadata();
         result.mBrandVersionList = new String[brandVersionList.length][BRAND_VERSION_LENGTH];
         for (int i = 0; i < brandVersionList.length; i++) {

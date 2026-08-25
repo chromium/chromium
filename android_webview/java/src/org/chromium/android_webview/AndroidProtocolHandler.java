@@ -48,7 +48,7 @@ public class AndroidProtocolHandler {
      * @return An InputStream to the Android resource.
      */
     @CalledByNative
-    public static @Nullable InputStream open(@Nullable GURL url) {
+    public static @Nullable InputStream open(@JniType("GURL") @Nullable GURL url) {
         Uri uri = verifyUrl(url);
         if (uri == null) {
             return null;
@@ -236,7 +236,7 @@ public class AndroidProtocolHandler {
      */
     @CalledByNative
     public static @JniType("std::string") @Nullable String getMimeType(
-            InputStream stream, @Nullable GURL url) {
+            InputStream stream, @JniType("GURL") @Nullable GURL url) {
         Uri uri = verifyUrl(url);
         if (uri == null) {
             return null;

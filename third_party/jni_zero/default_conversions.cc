@@ -15,10 +15,12 @@ namespace jni_zero {
   template <>                                                         \
   std::vector<T> FromJniArray<std::vector<T>>(                        \
       JNIEnv * env, const JavaRef<jobject>& j_object) {               \
+    std::vector<T> ret;                                               \
+    if (!j_object)                                                    \
+      return ret;                                                     \
     JTYPE##Array j_array = static_cast<JTYPE##Array>(j_object.obj()); \
     jsize array_jsize = env->GetArrayLength(j_array);                 \
     size_t array_size = static_cast<size_t>(array_jsize);             \
-    std::vector<T> ret;                                               \
     if (array_size == 0) {                                            \
       return ret;                                                     \
     }                                                                 \

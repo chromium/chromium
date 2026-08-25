@@ -11,15 +11,14 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/strings/string_number_conversions.h"
+#include "third_party/jni_zero/default_conversions.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwUserAgentMetadata_jni.h"
 
-using base::android::ConvertUTF8ToJavaString;
 using base::android::Java2dStringArrayTo2dStringVector;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStringArray;
-using base::android::ToJavaArrayOfStrings;
 
 namespace android_webview {
 
@@ -87,9 +86,8 @@ blink::UserAgentMetadata FromJavaAwUserAgentMetadata(
 
   ua_metadata.wow64 = Java_AwUserAgentMetadata_isWow64(env, java_ua_metadata);
 
-  base::android::AppendJavaStringArrayToStringVector(
-      env, Java_AwUserAgentMetadata_getFormFactors(env, java_ua_metadata),
-      &ua_metadata.form_factors);
+  ua_metadata.form_factors =
+      Java_AwUserAgentMetadata_getFormFactors(env, java_ua_metadata);
 
   return ua_metadata;
 }
@@ -110,18 +108,15 @@ ScopedJavaLocalRef<jobject> ToJavaAwUserAgentMetadata(
 
   ScopedJavaLocalRef<jobjectArray> java_brand_version_list =
       ToJavaArrayOfStringArray(env, brand_version_list);
-  ScopedJavaLocalRef<jobjectArray> java_brand_full_version_lis =
+  ScopedJavaLocalRef<jobjectArray> java_brand_full_version_list =
       ToJavaArrayOfStringArray(env, brand_full_version_list);
-  bool java_mobile = ua_metadata.mobile;
-  bool java_wow64 = ua_metadata.wow64;
-  ScopedJavaLocalRef<jobjectArray> java_form_factors =
-      ToJavaArrayOfStrings(env, ua_metadata.form_factors);
 
   return Java_AwUserAgentMetadata_create(
-      env, java_brand_version_list, java_brand_full_version_lis,
+      env, java_brand_version_list, java_brand_full_version_list,
       ua_metadata.full_version, ua_metadata.platform,
       ua_metadata.platform_version, ua_metadata.architecture, ua_metadata.model,
-      java_mobile, ua_metadata.bitness, java_wow64, java_form_factors);
+      ua_metadata.mobile, ua_metadata.bitness, ua_metadata.wow64,
+      ua_metadata.form_factors);
 }
 
 }  // namespace android_webview

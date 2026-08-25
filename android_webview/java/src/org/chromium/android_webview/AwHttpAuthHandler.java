@@ -6,6 +6,7 @@ package org.chromium.android_webview;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
@@ -63,7 +64,10 @@ public class AwHttpAuthHandler {
 
     @NativeMethods
     interface Natives {
-        void proceed(long nativeAwHttpAuthHandler, String username, String password);
+        void proceed(
+                long nativeAwHttpAuthHandler,
+                @JniType("std::u16string") String username,
+                @JniType("std::u16string") String password);
 
         void cancel(long nativeAwHttpAuthHandler);
     }

@@ -75,6 +75,13 @@ inline T FromJniArray(JNIEnv* env, const JavaRef<jobject>& j_object) {
 template <internal::IsObjectContainer ContainerType>
 inline ContainerType FromJniArray(JNIEnv* env,
                                   const JavaRef<jobject>& j_object) {
+  ContainerType ret;
+  // If nullptr is a valid option, std::optional<> should be used. Without
+  // std::optional<>, it's convenient to map null -> empty container. If null
+  // is an invalid value, then the lack of @Nullable should catch this.
+  if (!j_object) {
+    return ret;
+  }
   jobjectArray j_array = static_cast<jobjectArray>(j_object.obj());
   using ElementType = std::remove_const_t<typename ContainerType::value_type>;
   constexpr bool has_push_back = internal::HasPushBack<ContainerType>;
@@ -82,7 +89,6 @@ inline ContainerType FromJniArray(JNIEnv* env,
   static_assert(has_push_back || has_insert, "Template type not supported.");
   jsize array_jsize = env->GetArrayLength(j_array);
 
-  ContainerType ret;
   if constexpr (internal::HasReserve<ContainerType>) {
     size_t array_size = static_cast<size_t>(array_jsize);
     ret.reserve(array_size);

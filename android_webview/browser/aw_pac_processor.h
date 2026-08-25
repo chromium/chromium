@@ -7,6 +7,10 @@
 
 #include <android/multinetwork.h>
 
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -27,16 +31,12 @@ class AwPacProcessor {
   AwPacProcessor& operator=(const AwPacProcessor&) = delete;
 
   ~AwPacProcessor();
-  void DestroyNative(JNIEnv* env);
+  void DestroyNative();
 
-  bool SetProxyScript(JNIEnv* env, const std::string& jscript);
-  bool SetProxyScript(std::string script);
-  base::android::ScopedJavaLocalRef<jstring> MakeProxyRequest(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& jurl);
+  bool SetProxyScript(const std::string& script);
+  std::optional<std::string> MakeProxyRequest(const std::string& url);
   bool MakeProxyRequest(std::string url, std::string* result);
   void SetNetworkAndLinkAddresses(
-      JNIEnv* env,
       net_handle_t net_handle,
       const std::vector<std::string>& string_link_addresses);
 

@@ -46,30 +46,26 @@ class AwQuotaManagerBridge
       AwBrowserContext* browser_context);
 
   // Delete all browsing data stored by the profile this bridge is attached to.
-  void DeleteBrowsingData(JNIEnv* env,
-                          const base::android::JavaRef<jobject>& callback);
+  void DeleteBrowsingData(const base::android::JavaRef<jobject>& callback);
   // Delete all browsing data stored by the profile this bridge is attached to,
   // for the specified eTLD+1 (site). The `domain` parameter can contain a
   // subdomain. Any subdomains will be ignored, and the actual site domain used
   // for deletion is returned.
   std::string DeleteBrowsingDataForSite(
-      JNIEnv* env,
       const std::string& domain,
       const base::android::JavaRef<jobject>& callback);
 
   // http://crbug.com/373826557 does not actually delete all data, preserved for
   // Android Framework implementation.
-  void DeleteAllDataFramework(JNIEnv* env);
+  void DeleteAllDataFramework();
   // http://crbug.com/373826557 does not actually delete all data, preserved for
   // Android Framework implementation.
-  void DeleteOriginFramework(JNIEnv* env,
-                             const base::android::JavaRef<jstring>& origin);
+  void DeleteOriginFramework(const std::u16string& origin);
   void GetOrigins(JNIEnv* env,
                   const base::android::JavaRef<jobject>& object,
                   const base::android::JavaRef<jobject>& callback);
   void GetUsageAndQuotaForOrigin(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& origin,
+      const std::u16string& origin,
       const base::android::JavaRef<jobject>& callback,
       bool is_quota);
 

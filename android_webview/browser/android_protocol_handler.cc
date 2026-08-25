@@ -26,8 +26,6 @@
 #include "android_webview/browser_jni_headers/AndroidProtocolHandler_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ClearException;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -42,8 +40,7 @@ std::unique_ptr<InputStream> CreateInputStream(JNIEnv* env, const GURL& url) {
 
   // Open the input stream.
   ScopedJavaLocalRef<jobject> stream =
-      android_webview::Java_AndroidProtocolHandler_open(
-          env, url::GURLAndroid::FromNativeGURL(env, url));
+      android_webview::Java_AndroidProtocolHandler_open(env, url);
 
   if (!stream) {
     DLOG(ERROR) << "Unable to open input stream for Android URL";
@@ -60,7 +57,7 @@ bool GetInputStreamMimeType(JNIEnv* env,
   // fail, as the mime type cannot be determined for all supported schemes.
   std::string returned_type =
       android_webview::Java_AndroidProtocolHandler_getMimeType(
-          env, stream->jobj(), url::GURLAndroid::FromNativeGURL(env, url));
+          env, stream->jobj(), url);
   if (returned_type.empty()) {
     return false;
   }
@@ -69,18 +66,16 @@ bool GetInputStreamMimeType(JNIEnv* env,
   return true;
 }
 
-static std::string JNI_AndroidProtocolHandler_GetAndroidAssetPath(JNIEnv* env) {
+static std::string JNI_AndroidProtocolHandler_GetAndroidAssetPath() {
   return android_webview::kAndroidAssetPath;
 }
 
-static std::string JNI_AndroidProtocolHandler_GetAndroidResourcePath(
-    JNIEnv* env) {
+static std::string JNI_AndroidProtocolHandler_GetAndroidResourcePath() {
   return android_webview::kAndroidResourcePath;
 }
 
 // Returns the mime type, or returns empty string if a mime type was not found.
 static std::string JNI_AndroidProtocolHandler_GetWellKnownMimeType(
-    JNIEnv* env,
     const std::string& path) {
   std::string mime_type;
 

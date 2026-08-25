@@ -15,7 +15,6 @@
 #include "android_webview/browser/permission/media_access_permission_request.h"
 #include "android_webview/browser/permission/permission_request_handler.h"
 #include "android_webview/common/aw_features.h"
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
@@ -39,6 +38,7 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -140,8 +140,7 @@ void AwWebContentsDelegate::RunFileChooser(
   Java_AwWebContentsDelegate_runFileChooser(
       env, java_delegate, render_frame_host->GetProcess()->GetDeprecatedID(),
       render_frame_host->GetRoutingID(), params.mode, params.open_writable,
-      ConvertUTF16ToJavaString(env,
-                               base::JoinString(params.accept_types, u",")),
+      base::JoinString(params.accept_types, u","),
       params.title.empty() ? nullptr
                            : ConvertUTF16ToJavaString(env, params.title),
       params.default_file_name.empty()
@@ -418,12 +417,11 @@ AwWebContentsDelegate::TakeFileSelectListener() {
 }
 
 static void JNI_AwWebContentsDelegate_FilesSelectedInChooser(
-    JNIEnv* env,
     int32_t process_id,
     int32_t render_id,
     int32_t mode_flags,
-    const JavaRef<jobjectArray>& file_paths,
-    const JavaRef<jobjectArray>& display_names) {
+    const std::vector<std::string>& file_paths,
+    const std::vector<std::u16string>& display_names) {
   content::RenderFrameHost* rfh =
       content::RenderFrameHost::FromID(process_id, render_id);
   auto* web_contents = WebContents::FromRenderFrameHost(rfh);
@@ -436,25 +434,18 @@ static void JNI_AwWebContentsDelegate_FilesSelectedInChooser(
   scoped_refptr<content::FileSelectListener> listener =
       delegate->TakeFileSelectListener();
 
-  if (!file_paths.obj()) {
+  if (file_paths.empty()) {
     listener->FileSelectionCanceled();
     return;
   }
 
-  std::vector<std::string> file_path_str;
-  std::vector<std::u16string> display_name_str;
-  // Note file_paths maybe NULL, but this will just yield a zero-length vector.
-  base::android::AppendJavaStringArrayToStringVector(env, file_paths,
-                                                     &file_path_str);
-  base::android::AppendJavaStringArrayToStringVector(env, display_names,
-                                                     &display_name_str);
   std::vector<FileChooserFileInfoPtr> files;
-  files.reserve(file_path_str.size());
-  for (size_t i = 0; i < file_path_str.size(); ++i) {
-    GURL url(file_path_str[i]);
+  files.reserve(file_paths.size());
+  for (size_t i = 0; i < file_paths.size(); ++i) {
+    GURL url(file_paths[i]);
     if (!url.is_valid()) {
       LOG(ERROR) << "The file choice request has an invalid Uri: "
-                 << file_path_str[i];
+                 << file_paths[i];
       continue;
     }
     base::FilePath path;
@@ -462,12 +453,13 @@ static void JNI_AwWebContentsDelegate_FilesSelectedInChooser(
       if (!net::FileURLToFilePath(url, &path))
         continue;
     } else {
-      path = base::FilePath(file_path_str[i]);
+      path = base::FilePath(file_paths[i]);
     }
     auto file_info = blink::mojom::NativeFileInfo::New();
     file_info->file_path = path;
-    if (!display_name_str[i].empty())
-      file_info->display_name = display_name_str[i];
+    if (!display_names[i].empty()) {
+      file_info->display_name = display_names[i];
+    }
     files.push_back(FileChooserFileInfo::NewNativeFile(std::move(file_info)));
   }
   base::FilePath base_dir;
@@ -480,7 +472,7 @@ static void JNI_AwWebContentsDelegate_FilesSelectedInChooser(
     mode = FileChooserParams::Mode::kOpen;
   }
   DVLOG(0) << "File Chooser result: mode = " << mode
-           << ", file paths = " << base::JoinString(file_path_str, ":");
+           << ", file paths = " << base::JoinString(file_paths, ":");
   listener->FileSelected(std::move(files), base_dir, mode);
 }
 

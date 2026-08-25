@@ -20,7 +20,6 @@
 #include "android_webview/common/aw_content_client.h"
 #include "android_webview/common/aw_features.h"
 #include "base/android/jni_android.h"
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -40,15 +39,13 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwSettings_jni.h"
 
-using base::android::ConvertJavaStringToUTF16;
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using blink::web_pref::WebPreferences;
@@ -217,21 +214,20 @@ void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
   if (!web_contents())
     return;
 
-  ScopedJavaLocalRef<jstring> str =
+  std::optional<std::string> ua_string_override =
       Java_AwSettings_getUserAgentLocked(env, obj);
-  bool ua_overidden = !!str;
+  bool ua_overidden = ua_string_override.has_value();
   bool ua_metadata_overridden =
       Java_AwSettings_getHasUserAgentMetadataOverridesLocked(env, obj);
 
   if (ua_overidden) {
-    std::string ua_string_override = ConvertJavaStringToUTF8(str);
     std::string ua_default = GetUserAgent();
     blink::UserAgentOverride override_ua_with_metadata;
-    override_ua_with_metadata.ua_string_override = ua_string_override;
+    override_ua_with_metadata.ua_string_override = *ua_string_override;
 
     // If kUACHOverrideBlank is enabled, set user-agent metadata with the
     // default blank value.
-    if (!ua_string_override.empty() &&
+    if (!ua_string_override->empty() &&
         base::FeatureList::IsEnabled(blink::features::kUACHOverrideBlank)) {
       override_ua_with_metadata.ua_metadata_override =
           blink::UserAgentMetadata();
@@ -252,7 +248,7 @@ void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
           FromJavaAwUserAgentMetadata(env, java_ua_metadata);
       LogUserAgentMetadataAvailableType(
           UserAgentMetadataAvailableType::kUserOverrides);
-    } else if (ua_string_override.contains(ua_default)) {
+    } else if (ua_string_override->contains(ua_default)) {
       override_ua_with_metadata.ua_metadata_override =
           AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand();
       LogUserAgentMetadataAvailableType(
@@ -614,31 +610,25 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
   web_prefs->force_enable_zoom = false;
 
   web_prefs->standard_font_family_map[blink::web_pref::kCommonScript] =
-      ConvertJavaStringToUTF16(
-          Java_AwSettings_getStandardFontFamilyLocked(env, obj));
+      Java_AwSettings_getStandardFontFamilyLocked(env, obj);
 
   web_prefs->fixed_font_family_map[blink::web_pref::kCommonScript] =
-      ConvertJavaStringToUTF16(
-          Java_AwSettings_getFixedFontFamilyLocked(env, obj));
+      Java_AwSettings_getFixedFontFamilyLocked(env, obj);
 
   web_prefs->sans_serif_font_family_map[blink::web_pref::kCommonScript] =
-      ConvertJavaStringToUTF16(
-          Java_AwSettings_getSansSerifFontFamilyLocked(env, obj));
+      Java_AwSettings_getSansSerifFontFamilyLocked(env, obj);
 
   web_prefs->serif_font_family_map[blink::web_pref::kCommonScript] =
-      ConvertJavaStringToUTF16(
-          Java_AwSettings_getSerifFontFamilyLocked(env, obj));
+      Java_AwSettings_getSerifFontFamilyLocked(env, obj);
 
   web_prefs->cursive_font_family_map[blink::web_pref::kCommonScript] =
-      ConvertJavaStringToUTF16(
-          Java_AwSettings_getCursiveFontFamilyLocked(env, obj));
+      Java_AwSettings_getCursiveFontFamilyLocked(env, obj);
 
   web_prefs->fantasy_font_family_map[blink::web_pref::kCommonScript] =
-      ConvertJavaStringToUTF16(
-          Java_AwSettings_getFantasyFontFamilyLocked(env, obj));
+      Java_AwSettings_getFantasyFontFamilyLocked(env, obj);
 
-  web_prefs->default_encoding = ConvertJavaStringToUTF8(
-      Java_AwSettings_getDefaultTextEncodingLocked(env, obj));
+  web_prefs->default_encoding =
+      Java_AwSettings_getDefaultTextEncodingLocked(env, obj);
 
   web_prefs->minimum_font_size =
       Java_AwSettings_getMinimumFontSizeLocked(env, obj);
@@ -708,10 +698,9 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
           ? blink::mojom::AutoplayPolicy::kUserGestureRequired
           : blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
 
-  ScopedJavaLocalRef<jstring> url =
+  std::optional<std::string> url =
       Java_AwSettings_getDefaultVideoPosterUrlLocked(env, obj);
-  web_prefs->default_video_poster_url =
-      url.obj() ? GURL(ConvertJavaStringToUTF8(url)) : GURL();
+  web_prefs->default_video_poster_url = url.has_value() ? GURL(*url) : GURL();
 
   bool support_quirks = Java_AwSettings_getSupportLegacyQuirksLocked(env, obj);
   // Please see the corresponding Blink settings for bug references.
@@ -864,9 +853,8 @@ static ScopedJavaLocalRef<jobject> JNI_AwSettings_FromWebContents(
   return jaw_settings;
 }
 
-static ScopedJavaLocalRef<jstring> JNI_AwSettings_GetDefaultUserAgent(
-    JNIEnv* env) {
-  return base::android::ConvertUTF8ToJavaString(env, GetUserAgent());
+static std::string JNI_AwSettings_GetDefaultUserAgent() {
+  return GetUserAgent();
 }
 
 void JNI_AwSettings_SetShouldDownloadFaviconsGlobal(JNIEnv* env) {

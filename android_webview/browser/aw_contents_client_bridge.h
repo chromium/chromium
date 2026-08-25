@@ -136,19 +136,16 @@ class AwContentsClientBridge {
       const net::HttpResponseHeaders* response_headers);
 
   // Methods called from Java.
-  void ProceedSslError(JNIEnv* env, bool proceed, int32_t id);
+  void ProceedSslError(bool proceed, int32_t id);
   void ProvideClientCertificateResponse(
       JNIEnv* env,
       int32_t request_id,
       const base::android::JavaRef<jobjectArray>& encoded_chain_ref,
       const base::android::JavaRef<jobject>& private_key_ref);
-  void ConfirmJsResult(JNIEnv*, int id, std::optional<std::u16string> prompt);
-  void CancelJsResult(JNIEnv*, int id);
+  void ConfirmJsResult(int id, std::optional<std::u16string> prompt);
+  void CancelJsResult(int id);
 
-  void TakeSafeBrowsingAction(JNIEnv*,
-                              int action,
-                              bool reporting,
-                              int request_id);
+  void TakeSafeBrowsingAction(int action, bool reporting, int request_id);
 
  private:
   JavaObjectWeakGlobalRef java_ref_;

@@ -13,7 +13,6 @@
 #include "android_webview/browser_jni_headers/AwNavigationClient_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::ScopedJavaLocalRef;
 
 namespace android_webview {
@@ -58,7 +57,6 @@ void AwNavigationClient::OnPerformanceMark(content::Page& page,
   }
 
   Java_AwNavigationClient_onPerformanceMark(
-      env, obj, page.GetJavaPage(), ConvertUTF8ToJavaString(env, mark_name),
-      mark_time.InMilliseconds());
+      env, obj, page.GetJavaPage(), mark_name, mark_time.InMilliseconds());
 }
 }  // namespace android_webview

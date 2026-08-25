@@ -183,7 +183,10 @@ public class AwQuotaManagerBridge {
 
     @CalledByNative
     private void onGetOriginsCallback(
-            Callback<Origins> callback, String[] origin, long[] usages, long[] quotas) {
+            Callback<Origins> callback,
+            @JniType("std::vector<std::string>") String[] origin,
+            @JniType("std::vector<int64_t>") long[] usages,
+            @JniType("std::vector<int64_t>") long[] quotas) {
         callback.onResult(new Origins(origin, usages, quotas));
     }
 
@@ -191,7 +194,8 @@ public class AwQuotaManagerBridge {
     interface Natives {
         void deleteAllDataFramework(long nativeAwQuotaManagerBridge);
 
-        void deleteOriginFramework(long nativeAwQuotaManagerBridge, String origin);
+        void deleteOriginFramework(
+                long nativeAwQuotaManagerBridge, @JniType("std::u16string") String origin);
 
         void deleteBrowsingData(long nativeAwQuotaManagerBridge, Callback<Boolean> callback);
 
@@ -209,7 +213,7 @@ public class AwQuotaManagerBridge {
 
         void getUsageAndQuotaForOrigin(
                 long nativeAwQuotaManagerBridge,
-                String origin,
+                @JniType("std::u16string") String origin,
                 Callback<Long> callback,
                 boolean isQuota);
     }

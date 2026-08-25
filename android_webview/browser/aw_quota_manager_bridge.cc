@@ -11,7 +11,6 @@
 #include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/common/aw_features.h"
 #include "base/android/callback_android.h"
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
@@ -30,6 +29,7 @@
 #include "net/base/schemeful_site.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -238,7 +238,6 @@ QuotaManager* AwQuotaManagerBridge::GetQuotaManager() const {
 }
 
 void AwQuotaManagerBridge::DeleteBrowsingData(
-    JNIEnv* env,
     const base::android::JavaRef<jobject>& jcallback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -253,7 +252,6 @@ void AwQuotaManagerBridge::DeleteBrowsingData(
 }
 
 std::string AwQuotaManagerBridge::DeleteBrowsingDataForSite(
-    JNIEnv* env,
     const std::string& domain,
     const base::android::JavaRef<jobject>& jcallback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -278,7 +276,7 @@ std::string AwQuotaManagerBridge::DeleteBrowsingDataForSite(
   return site;
 }
 
-void AwQuotaManagerBridge::DeleteAllDataFramework(JNIEnv* env) {
+void AwQuotaManagerBridge::DeleteAllDataFramework() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // (Legacy) Clear all web storage data except cookies.
@@ -290,17 +288,13 @@ void AwQuotaManagerBridge::DeleteAllDataFramework(JNIEnv* env) {
                                    base::DoNothing());
 }
 
-void AwQuotaManagerBridge::DeleteOriginFramework(
-    JNIEnv* env,
-    const JavaRef<jstring>& origin) {
+void AwQuotaManagerBridge::DeleteOriginFramework(const std::u16string& origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::u16string origin_string(
-      base::android::ConvertJavaStringToUTF16(env, origin));
   StoragePartition* storage_partition = GetStoragePartition();
   // All (temporary) QuotaClient types.
   uint32_t remove_mask = StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS |
                          StoragePartition::REMOVE_DATA_MASK_INDEXEDDB;
-  storage_partition->ClearDataForOrigin(remove_mask, GURL(origin_string),
+  storage_partition->ClearDataForOrigin(remove_mask, GURL(origin),
                                         base::DoNothing());
 }
 
@@ -313,11 +307,8 @@ void AwQuotaManagerBridge::GetOrigins(JNIEnv* env,
          const std::vector<std::string>& origin,
          const std::vector<int64_t>& usage, const std::vector<int64_t>& quota) {
         JNIEnv* env = AttachCurrentThread();
-        Java_AwQuotaManagerBridge_onGetOriginsCallback(
-            env, obj, callback,
-            base::android::ToJavaArrayOfStrings(env, origin),
-            base::android::ToJavaLongArray(env, usage),
-            base::android::ToJavaLongArray(env, quota));
+        Java_AwQuotaManagerBridge_onGetOriginsCallback(env, obj, callback,
+                                                       origin, usage, quota);
       },
       ScopedJavaGlobalRef<jobject>(env, object),
       ScopedJavaGlobalRef<jobject>(env, callback));
@@ -345,13 +336,10 @@ void OnUsageAndQuotaObtained(
 }  // namespace
 
 void AwQuotaManagerBridge::GetUsageAndQuotaForOrigin(
-    JNIEnv* env,
-    const JavaRef<jstring>& origin,
+    const std::u16string& origin,
     const JavaRef<jobject>& callback,
     bool is_quota) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::u16string origin_string(
-      base::android::ConvertJavaStringToUTF16(env, origin));
 
   QuotaUsageCallback ui_callback = base::BindOnce(
       [](const JavaRef<jobject>& callback, bool is_quota, int64_t usage,
@@ -359,7 +347,7 @@ void AwQuotaManagerBridge::GetUsageAndQuotaForOrigin(
         base::android::RunLongCallbackAndroid(callback,
                                               (is_quota ? quota : usage));
       },
-      ScopedJavaGlobalRef<jobject>(env, callback), is_quota);
+      ScopedJavaGlobalRef<jobject>(callback), is_quota);
 
   // TODO(crbug.com/41417435): Use helper for url::Origin creation from string.
   content::GetIOThreadTaskRunner({})->PostTask(
@@ -367,7 +355,7 @@ void AwQuotaManagerBridge::GetUsageAndQuotaForOrigin(
       base::BindOnce(
           &QuotaManager::GetUsageAndQuota, GetQuotaManager(),
           blink::StorageKey::CreateFirstParty(
-              url::Origin::Create(GURL(origin_string))),
+              url::Origin::Create(GURL(origin))),
           base::BindOnce(&OnUsageAndQuotaObtained, std::move(ui_callback))));
 }
 

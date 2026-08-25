@@ -4,13 +4,16 @@
 
 #include "android_webview/browser/aw_contents_statics.h"
 
+#include <set>
+#include <string>
+#include <vector>
+
 #include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/aw_contents.h"
 #include "android_webview/browser/aw_contents_io_thread_client.h"
 #include "android_webview/browser/aw_crash_keys.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_allowlist_manager.h"
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/command_line.h"
@@ -27,12 +30,12 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/url_constants.h"
 #include "net/cert/cert_database.h"
+#include "third_party/jni_zero/default_conversions.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwContentsStatics_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -70,8 +73,7 @@ net::SocketTag GetDefaultSocketTag() {
 }
 
 // static
-static std::string JNI_AwContentsStatics_GetSafeBrowsingPrivacyPolicyUrl(
-    JNIEnv* env) {
+static std::string JNI_AwContentsStatics_GetSafeBrowsingPrivacyPolicyUrl() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   GURL privacy_policy_url(
       security_interstitials::kSafeBrowsingPrivacyPolicyUrl);
@@ -94,24 +96,20 @@ static void JNI_AwContentsStatics_ClearClientCertPreferences(
 }
 
 // static
-static std::string JNI_AwContentsStatics_GetUnreachableWebDataUrl(JNIEnv* env) {
+static std::string JNI_AwContentsStatics_GetUnreachableWebDataUrl() {
   return content::kUnreachableWebDataURL;
 }
 
 // static
-static ScopedJavaLocalRef<jstring> JNI_AwContentsStatics_GetProductVersion(
-    JNIEnv* env) {
-  return base::android::ConvertUTF8ToJavaString(
-      env, version_info::GetVersionNumber());
+static std::string JNI_AwContentsStatics_GetProductVersion() {
+  return std::string(version_info::GetVersionNumber());
 }
 
 // static
 static void JNI_AwContentsStatics_SetSafeBrowsingAllowlist(
     JNIEnv* env,
-    const JavaRef<jobjectArray>& jrules,
+    std::vector<std::string> rules,
     const JavaRef<jobject>& callback) {
-  std::vector<std::string> rules;
-  base::android::AppendJavaStringArrayToStringVector(env, jrules, &rules);
   AwSafeBrowsingAllowlistManager* allowlist_manager =
       AwBrowserProcess::GetInstance()->GetSafeBrowsingAllowlistManager();
   allowlist_manager->SetAllowlistOnUIThread(
@@ -121,13 +119,12 @@ static void JNI_AwContentsStatics_SetSafeBrowsingAllowlist(
 }
 
 // static
-static void JNI_AwContentsStatics_SetCheckClearTextPermitted(JNIEnv* env,
-                                                             bool permitted) {
+static void JNI_AwContentsStatics_SetCheckClearTextPermitted(bool permitted) {
   AwContentBrowserClient::set_check_cleartext_permitted(permitted);
 }
 
 // static
-static void JNI_AwContentsStatics_LogCommandLineForDebugging(JNIEnv* env) {
+static void JNI_AwContentsStatics_LogCommandLineForDebugging() {
   // Note: this should only be called for debugging purposes, since this is
   // *very* spammy.
   const base::CommandLine& command_line =
@@ -141,30 +138,20 @@ static void JNI_AwContentsStatics_LogCommandLineForDebugging(JNIEnv* env) {
 
 // static
 static void JNI_AwContentsStatics_LogFlagMetrics(
-    JNIEnv* env,
-    const JavaRef<JArray<jstring>>& jswitches,
-    const JavaRef<JArray<jstring>>& jfeatures) {
-  std::set<std::string> switches;
-  for (const auto& jswitch : jswitches.CreateView(env)) {
-    switches.insert(ConvertJavaStringToUTF8(jswitch));
-  }
-  std::set<std::string> features;
-  for (const auto& jfeature : jfeatures.CreateView(env)) {
-    features.insert(ConvertJavaStringToUTF8(jfeature));
-  }
-
+    const std::set<std::string>& switches,
+    const std::set<std::string>& features) {
   flags_ui::ReportAboutFlagsHistogram("Launch.FlagsAtStartup", switches,
                                       features);
   SetCrashKeysFromFeaturesAndSwitches(switches, features);
 }
 
 // static
-static bool JNI_AwContentsStatics_IsMultiProcessEnabled(JNIEnv* env) {
+static bool JNI_AwContentsStatics_IsMultiProcessEnabled() {
   return !content::RenderProcessHost::run_renderer_in_process();
 }
 
 // static
-static std::string JNI_AwContentsStatics_GetVariationsHeader(JNIEnv* env) {
+static std::string JNI_AwContentsStatics_GetVariationsHeader() {
   const bool is_signed_in = false;
   auto headers =
       variations::VariationsIdsProvider::GetInstance()->GetClientDataHeaders(
@@ -176,7 +163,6 @@ static std::string JNI_AwContentsStatics_GetVariationsHeader(JNIEnv* env) {
 
 // static
 static void JNI_AwContentsStatics_ForceVariationIdsForTesting(  // IN-TEST
-    JNIEnv* env,
     const std::vector<std::string>& variationIds,
     const std::string& commandLineVariationIds) {
   variations::VariationsIdsProvider::GetInstance()

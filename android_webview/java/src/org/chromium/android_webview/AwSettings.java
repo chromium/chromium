@@ -15,11 +15,11 @@ import android.os.Message;
 import android.webkit.WebSettings;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.client_hints.AwUserAgentMetadata;
@@ -38,6 +38,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.PasswordEchoSettingState;
 import org.chromium.components.webauthn.WebauthnMode;
 import org.chromium.components.webauthn.WebauthnModeProvider;
@@ -872,7 +873,7 @@ public class AwSettings {
     }
 
     @CalledByNative
-    private String getUserAgentLocked() {
+    private @JniType("std::optional<std::string>") @Nullable String getUserAgentLocked() {
         assert Thread.holdsLock(mAwSettingsLock);
         return mUserAgent;
     }
@@ -997,7 +998,7 @@ public class AwSettings {
     }
 
     @CalledByNative
-    private String getStandardFontFamilyLocked() {
+    private @JniType("std::u16string") String getStandardFontFamilyLocked() {
         assert Thread.holdsLock(mAwSettingsLock);
         return mStandardFontFamily;
     }
@@ -1021,7 +1022,7 @@ public class AwSettings {
     }
 
     @CalledByNative
-    private String getFixedFontFamilyLocked() {
+    private @JniType("std::u16string") String getFixedFontFamilyLocked() {
         assert Thread.holdsLock(mAwSettingsLock);
         return mFixedFontFamily;
     }
@@ -1045,7 +1046,7 @@ public class AwSettings {
     }
 
     @CalledByNative
-    private String getSansSerifFontFamilyLocked() {
+    private @JniType("std::u16string") String getSansSerifFontFamilyLocked() {
         assert Thread.holdsLock(mAwSettingsLock);
         return mSansSerifFontFamily;
     }
@@ -1069,7 +1070,7 @@ public class AwSettings {
     }
 
     @CalledByNative
-    private String getSerifFontFamilyLocked() {
+    private @JniType("std::u16string") String getSerifFontFamilyLocked() {
         assert Thread.holdsLock(mAwSettingsLock);
         return mSerifFontFamily;
     }
@@ -1093,7 +1094,7 @@ public class AwSettings {
     }
 
     @CalledByNative
-    private String getCursiveFontFamilyLocked() {
+    private @JniType("std::u16string") String getCursiveFontFamilyLocked() {
         assert Thread.holdsLock(mAwSettingsLock);
         return mCursiveFontFamily;
     }
@@ -1117,7 +1118,7 @@ public class AwSettings {
     }
 
     @CalledByNative
-    private String getFantasyFontFamilyLocked() {
+    private @JniType("std::u16string") String getFantasyFontFamilyLocked() {
         assert Thread.holdsLock(mAwSettingsLock);
         return mFantasyFontFamily;
     }
@@ -1653,7 +1654,7 @@ public class AwSettings {
     }
 
     @CalledByNative
-    private String getDefaultTextEncodingLocked() {
+    private @JniType("std::string") String getDefaultTextEncodingLocked() {
         assert Thread.holdsLock(mAwSettingsLock);
         return mDefaultTextEncoding;
     }
@@ -1701,7 +1702,8 @@ public class AwSettings {
     }
 
     @CalledByNative
-    private String getDefaultVideoPosterUrlLocked() {
+    private @JniType("std::optional<std::string>") @Nullable String
+            getDefaultVideoPosterUrlLocked() {
         assert Thread.holdsLock(mAwSettingsLock);
         return mDefaultVideoPosterUrl;
     }
@@ -2462,6 +2464,7 @@ public class AwSettings {
 
         void updateWebkitPreferencesLocked(long nativeAwSettings, AwSettings caller);
 
+        @JniType("std::string")
         String getDefaultUserAgent();
 
         AwUserAgentMetadata getDefaultUserAgentMetadata();

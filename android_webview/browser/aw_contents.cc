@@ -121,6 +121,7 @@
 #include "net/cert/x509_util.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -137,12 +138,7 @@
 
 struct AwDrawSWFunctionTable;
 
-using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;
-using base::android::ConvertJavaStringToUTF16;
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF16ToJavaString;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::HasException;
 using base::android::JavaIntArrayToIntVector;
 using base::android::JavaRef;
@@ -236,12 +232,10 @@ AwContents* AwContents::FromWebContents(WebContents* web_contents) {
 }
 
 // static
-static void JNI_AwContents_UpdateDefaultLocale(
-    JNIEnv* env,
-    const JavaRef<jstring>& locale,
-    const JavaRef<jstring>& locale_list) {
-  *g_locale() = ConvertJavaStringToUTF8(env, locale);
-  *g_locale_list() = ConvertJavaStringToUTF8(env, locale_list);
+static void JNI_AwContents_UpdateDefaultLocale(const std::string& locale,
+                                               const std::string& locale_list) {
+  *g_locale() = locale;
+  *g_locale_list() = locale_list;
 }
 
 // static
@@ -536,11 +530,8 @@ static int32_t JNI_AwContents_GetNativeInstanceCount(JNIEnv* env) {
 }
 
 // static
-static ScopedJavaLocalRef<jstring>
-JNI_AwContents_GetSafeBrowsingLocaleForTesting(JNIEnv* env) {
-  ScopedJavaLocalRef<jstring> locale =
-      ConvertUTF8ToJavaString(env, base::i18n::GetConfiguredLocale());
-  return locale;
+static std::string JNI_AwContents_GetSafeBrowsingLocaleForTesting() {
+  return base::i18n::GetConfiguredLocale();
 }
 
 static ScopedJavaLocalRef<jobject> JNI_AwContents_FromWebContents(
@@ -581,16 +572,16 @@ void GenerateMHTMLCallback(const JavaRef<jobject>& callback,
                            int64_t size) {
   JNIEnv* env = AttachCurrentThread();
   // Android files are UTF8, so the path conversion below is safe.
-  Java_AwContents_generateMHTMLCallback(
-      env, ConvertUTF8ToJavaString(env, path.AsUTF8Unsafe()), size, callback);
+  Java_AwContents_generateMHTMLCallback(env, path.AsUTF8Unsafe(), size,
+                                        callback);
 }
 }  // namespace
 
 void AwContents::GenerateMHTML(JNIEnv* env,
-                               const JavaRef<jstring>& jpath,
+                               const std::string& path,
                                const JavaRef<jobject>& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::FilePath target_path(ConvertJavaStringToUTF8(env, jpath));
+  base::FilePath target_path(path);
   web_contents_->GenerateMHTML(
       content::MHTMLGenerationParams(target_path),
       base::BindOnce(&GenerateMHTMLCallback,
@@ -612,11 +603,9 @@ bool AwContents::OnReceivedHttpAuthRequest(const JavaRef<jobject>& handler,
   if (!obj)
     return false;
 
-  ScopedJavaLocalRef<jstring> jhost = ConvertUTF8ToJavaString(env, host);
-  ScopedJavaLocalRef<jstring> jrealm = ConvertUTF8ToJavaString(env, realm);
   devtools_instrumentation::ScopedEmbedderCallbackTask embedder_callback(
       "onReceivedHttpAuthRequest");
-  Java_AwContents_onReceivedHttpAuthRequest(env, obj, handler, jhost, jrealm);
+  Java_AwContents_onReceivedHttpAuthRequest(env, obj, handler, host, realm);
   return true;
 }
 
@@ -625,18 +614,13 @@ void AwContents::SetOffscreenPreRaster(bool enabled) {
   browser_view_renderer_.SetOffscreenPreRaster(enabled);
 }
 
-void AwContents::AddVisitedLinks(JNIEnv* env,
-                                 const JavaRef<jobjectArray>& jvisited_links) {
+void AwContents::AddVisitedLinks(
+    const std::vector<std::string>& visited_link_strings) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::vector<std::u16string> visited_link_strings;
-  AppendJavaStringArrayToStringVector(env, jvisited_links,
-                                      &visited_link_strings);
-
   std::vector<GURL> visited_link_gurls;
-  std::vector<std::u16string>::const_iterator itr;
-  for (itr = visited_link_strings.begin(); itr != visited_link_strings.end();
-       ++itr) {
-    visited_link_gurls.push_back(GURL(*itr));
+  visited_link_gurls.reserve(visited_link_strings.size());
+  for (const auto& link : visited_link_strings) {
+    visited_link_gurls.emplace_back(link);
   }
 
   AwBrowserContext::FromWebContents(web_contents_.get())
@@ -650,11 +634,10 @@ void ShowGeolocationPromptHelperTask(const JavaObjectWeakGlobalRef& java_ref,
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> j_ref = java_ref.get(env);
   if (j_ref.obj()) {
-    ScopedJavaLocalRef<jstring> j_origin(
-        ConvertUTF8ToJavaString(env, origin.spec()));
     devtools_instrumentation::ScopedEmbedderCallbackTask embedder_callback(
         "onGeolocationPermissionsShowPrompt");
-    Java_AwContents_onGeolocationPermissionsShowPrompt(env, j_ref, j_origin);
+    Java_AwContents_onGeolocationPermissionsShowPrompt(env, j_ref,
+                                                       origin.spec());
   }
 }
 
@@ -683,14 +666,13 @@ void AwContents::ShowGeolocationPrompt(const GURL& requesting_frame,
 }
 
 // Invoked from Java
-void AwContents::InvokeGeolocationCallback(JNIEnv* env,
-                                           bool value,
-                                           const JavaRef<jstring>& origin) {
+void AwContents::InvokeGeolocationCallback(bool value,
+                                           const std::string& origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (pending_geolocation_prompts_.empty())
     return;
 
-  GURL callback_origin(base::android::ConvertJavaStringToUTF16(env, origin));
+  GURL callback_origin(origin);
   if (callback_origin.DeprecatedGetOriginAsURL() ==
       pending_geolocation_prompts_.front().first) {
     std::move(pending_geolocation_prompts_.front().second).Run(value);
@@ -761,11 +743,9 @@ void AwContents::OnPermissionRequestCanceled(AwPermissionRequest* request) {
   Java_AwContents_onPermissionRequestCanceled(env, j_ref, j_request);
 }
 
-void AwContents::PreauthorizePermission(JNIEnv* env,
-                                        const JavaRef<jstring>& origin,
+void AwContents::PreauthorizePermission(const std::string& origin,
                                         int64_t resources) {
-  permission_request_handler_->PreauthorizePermission(
-      GURL(base::android::ConvertJavaStringToUTF8(env, origin)), resources);
+  permission_request_handler_->PreauthorizePermission(GURL(origin), resources);
 }
 
 void AwContents::RequestProtectedMediaIdentifierPermission(
@@ -815,10 +795,9 @@ void AwContents::CancelMIDISysexPermissionRequests(const GURL& origin) {
       origin, AwPermissionRequest::AwPermissionRequest::MIDISysex);
 }
 
-void AwContents::FindAllAsync(JNIEnv* env,
-                              const JavaRef<jstring>& search_string) {
+void AwContents::FindAllAsync(const std::u16string& search_string) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  GetFindHelper()->FindAllAsync(ConvertJavaStringToUTF16(env, search_string));
+  GetFindHelper()->FindAllAsync(search_string);
 }
 
 void AwContents::FindNext(JNIEnv* env, bool forward) {
@@ -918,8 +897,7 @@ void AwContents::OnReceivedTouchIconUrl(const std::string& url,
   if (!obj)
     return;
 
-  Java_AwContents_onReceivedTouchIconUrl(
-      env, obj, ConvertUTF8ToJavaString(env, url), precomposed);
+  Java_AwContents_onReceivedTouchIconUrl(env, obj, url, precomposed);
 }
 
 void AwContents::PostInvalidate(bool inside_vsync) {
@@ -990,22 +968,25 @@ void AwContents::UpdateLastHitTestData(JNIEnv* env) {
     return;
 
   // Make sure to null the Java object if data is empty/invalid.
-  ScopedJavaLocalRef<jstring> extra_data_for_type;
-  if (data->extra_data_for_type.length())
-    extra_data_for_type =
-        ConvertUTF8ToJavaString(env, data->extra_data_for_type);
+  std::optional<std::string> extra_data_for_type;
+  if (!data->extra_data_for_type.empty()) {
+    extra_data_for_type = data->extra_data_for_type;
+  }
 
-  ScopedJavaLocalRef<jstring> href;
-  if (data->href.length())
-    href = ConvertUTF16ToJavaString(env, data->href);
+  std::optional<std::u16string> href;
+  if (!data->href.empty()) {
+    href = data->href;
+  }
 
-  ScopedJavaLocalRef<jstring> anchor_text;
-  if (data->anchor_text.length())
-    anchor_text = ConvertUTF16ToJavaString(env, data->anchor_text);
+  std::optional<std::u16string> anchor_text;
+  if (!data->anchor_text.empty()) {
+    anchor_text = data->anchor_text;
+  }
 
-  ScopedJavaLocalRef<jstring> img_src;
-  if (data->img_src.is_valid())
-    img_src = ConvertUTF8ToJavaString(env, data->img_src.spec());
+  std::optional<std::string> img_src;
+  if (data->img_src.is_valid()) {
+    img_src = data->img_src.spec();
+  }
 
   Java_AwContents_updateHitTestData(env, obj, static_cast<int32_t>(data->type),
                                     extra_data_for_type, href, anchor_text,
@@ -1270,8 +1251,8 @@ void AwContents::SetDipScale(JNIEnv* env, float dip_scale) {
   SetDipScaleInternal(dip_scale);
 }
 
-base::android::ScopedJavaLocalRef<jstring> AwContents::GetScheme(JNIEnv* env) {
-  return ConvertUTF8ToJavaString(env, scheme_);
+std::string AwContents::GetScheme() {
+  return scheme_;
 }
 
 void AwContents::OnInputEvent(JNIEnv* env) {
@@ -1414,19 +1395,14 @@ void AwContents::RemovePersistentJavaScript(JNIEnv* env, int32_t script_id) {
   GetJsCommunicationHost()->RemovePersistentJavaScript(script_id);
 }
 
-base::android::ScopedJavaLocalRef<jstring> AwContents::AddWebMessageListener(
-    JNIEnv* env,
+std::u16string AwContents::AddWebMessageListener(
     const base::android::JavaRef<jobject>& listener,
     const std::u16string& js_object_name,
     const std::vector<std::string>& allowed_origin_rules,
     int32_t world_id) {
-  const std::u16string error_message =
-      GetJsCommunicationHost()->AddWebMessageHostFactory(
-          std::make_unique<AwWebMessageHostFactory>(listener), js_object_name,
-          allowed_origin_rules, world_id);
-  if (error_message.empty())
-    return nullptr;
-  return base::android::ConvertUTF16ToJavaString(env, error_message);
+  return GetJsCommunicationHost()->AddWebMessageHostFactory(
+      std::make_unique<AwWebMessageHostFactory>(listener), js_object_name,
+      allowed_origin_rules, world_id);
 }
 
 void AwContents::RemoveWebMessageListener(JNIEnv* env,
@@ -1638,16 +1614,11 @@ void AwContents::ClearView(JNIEnv* env) {
   browser_view_renderer_.ClearView();
 }
 
-void AwContents::SetExtraHeadersForUrl(JNIEnv* env,
-                                       const JavaRef<jstring>& url,
-                                       const JavaRef<jstring>& jextra_headers) {
-  std::string extra_headers;
-  if (jextra_headers)
-    extra_headers = ConvertJavaStringToUTF8(env, jextra_headers);
+void AwContents::SetExtraHeadersForUrl(const std::string& url,
+                                       const std::string& extra_headers) {
   auto* browser_context =
       AwBrowserContext::FromWebContents(web_contents_.get());
-  browser_context->SetExtraHeadersForUrl(
-      GURL(ConvertJavaStringToUTF8(env, url)), extra_headers);
+  browser_context->SetExtraHeadersForUrl(GURL(url), extra_headers);
 }
 
 void AwContents::SetJsOnlineProperty(JNIEnv* env, bool network_up) {

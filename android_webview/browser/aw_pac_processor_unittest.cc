@@ -57,7 +57,7 @@ TEST_F(AwPacProcessorTest, MakeProxyRequestDnsResolve) {
 }
 
 TEST_F(AwPacProcessorTest, MyIpAddressWithUnspecifiedNetwork) {
-  pac_processor_->SetNetworkAndLinkAddresses(nullptr, NETWORK_UNSPECIFIED, {});
+  pac_processor_->SetNetworkAndLinkAddresses(NETWORK_UNSPECIFIED, {});
   EXPECT_TRUE(pac_processor_->SetProxyScript(kScriptMyIpAddress));
 
   std::string result;

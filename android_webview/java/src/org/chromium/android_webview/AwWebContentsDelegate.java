@@ -12,6 +12,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.blink.mojom.FileChooserParams;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 
 /**
@@ -30,9 +31,9 @@ public abstract class AwWebContentsDelegate extends WebContentsDelegateAndroid {
             @JniType("blink::mojom::FileChooserParams::Mode") @FileChooserParams.Mode.EnumType
                     int blinkFileChooserParamsMode,
             boolean openWritable,
-            String acceptTypes,
-            String title,
-            String defaultFilename,
+            @JniType("std::u16string") String acceptTypes,
+            @Nullable String title,
+            @Nullable String defaultFilename,
             boolean capture);
 
     // See //android_webview/docs/how-does-on-create-window-work.md for more details.
@@ -66,7 +67,7 @@ public abstract class AwWebContentsDelegate extends WebContentsDelegateAndroid {
                 int processId,
                 int renderId,
                 int modeFlags,
-                String[] filePath,
-                String[] displayName);
+                @JniType("std::vector<std::string>") String @Nullable [] filePath,
+                @JniType("std::vector<std::u16string>") String @Nullable [] displayName);
     }
 }
