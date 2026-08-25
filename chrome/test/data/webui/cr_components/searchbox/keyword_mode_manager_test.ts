@@ -3,19 +3,30 @@
 // found in the LICENSE file.
 
 import {KeywordModeManager} from '//resources/cr_components/searchbox/keyword_mode_manager.js';
+import type {KeywordClearedEvent} from '//resources/cr_components/searchbox/keyword_mode_manager.js';
 import {createMatchKeywordModelForTesting, createSearchMatchForTesting} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {KeywordType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('KeywordModeManagerTest', () => {
   let manager: KeywordModeManager;
   let modelChangedCount: number;
+  let lastKeywordCleared: KeywordClearedEvent|null;
+  let keywordEnteredCount: number;
 
   setup(() => {
     modelChangedCount = 0;
+    lastKeywordCleared = null;
+    keywordEnteredCount = 0;
     manager = new KeywordModeManager({
       onKeywordModelChanged: () => {
         modelChangedCount++;
+      },
+      onKeywordCleared: (e) => {
+        lastKeywordCleared = e;
+      },
+      onKeywordEntered: () => {
+        keywordEnteredCount++;
       },
     });
   });
@@ -90,7 +101,7 @@ suite('KeywordModeManagerTest', () => {
       keyword: 'google.com',
       displayText: 'Search Google',
     };
-    assertTrue(manager.acceptInputTrigger('google.com\u3000', 11));
+    assertTrue(manager.acceptInputTrigger('google.com　', 11));
     assertTrue(manager.isInKeywordMode);
   });
 
@@ -98,7 +109,7 @@ suite('KeywordModeManagerTest', () => {
     // Null cursor position -> false.
     assertFalse(manager.acceptInputTrigger('?', null));
 
-    // Input not "?" -> false.
+    // Input not '?' -> false.
     assertFalse(manager.acceptInputTrigger('?a', 2));
     assertFalse(manager.acceptInputTrigger('hello', 5));
 
@@ -109,13 +120,62 @@ suite('KeywordModeManagerTest', () => {
     manager.enter('google.com', 'Search Google');
     assertFalse(manager.acceptInputTrigger('?', 1));
 
-    // Input "?" with cursor at 1 -> true and automatically enters question mark
+    // Input '?' with cursor at 1 -> true and automatically enters question mark
     // keyword mode.
     manager.exit();
     assertTrue(manager.acceptInputTrigger('?', 1));
     assertTrue(manager.isInKeywordMode);
     assertEquals('?', manager.activeKeyword);
     assertEquals('', manager.inputKeywordModel?.displayText);
+  });
+
+  test('handleBackspace', () => {
+    // Not in keyword mode -> returns false.
+    const inputState = {
+      value: 'query',
+      selectionStart: 0,
+      selectionEnd: 0,
+    };
+    assertFalse(manager.handleBackspace(inputState));
+
+    // In keyword mode, but cursor not at 0 -> returns false.
+    manager.enter('google.com', 'Search Google');
+    assertFalse(manager.handleBackspace({
+      value: 'query',
+      selectionStart: 2,
+      selectionEnd: 2,
+    }));
+
+    // In keyword mode with cursor at 0 -> exits keyword mode and emits
+    // onKeywordCleared.
+    assertTrue(manager.handleBackspace({
+      value: 'query',
+      selectionStart: 0,
+      selectionEnd: 0,
+    }));
+    assertFalse(manager.isInKeywordMode);
+    assertEquals('google.com query', lastKeywordCleared?.restoredText);
+    assertEquals(11, lastKeywordCleared?.cursorPosition);
+  });
+
+  test('handleKeywordClick', () => {
+    const matchWithoutKeyword = createSearchMatchForTesting({
+      keywordModel: undefined,
+    });
+    assertThrows(() => manager.handleKeywordClick(matchWithoutKeyword));
+
+    const matchWithKeyword = createSearchMatchForTesting({
+      keywordModel: createMatchKeywordModelForTesting({
+        type: KeywordType.kChip,
+        keyword: 'youtube.com',
+        chipHint: 'Search YouTube',
+      }),
+    });
+
+    manager.handleKeywordClick(matchWithKeyword);
+    assertTrue(manager.isInKeywordMode);
+    assertEquals('youtube.com', manager.activeKeyword);
+    assertEquals(1, keywordEnteredCount);
   });
 
   test('formatMatchFillIntoEdit', () => {

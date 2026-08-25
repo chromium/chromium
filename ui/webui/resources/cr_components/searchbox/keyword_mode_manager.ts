@@ -2,11 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from '//resources/js/assert.js';
 import {KeywordType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch, InputKeywordModel} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
+export interface KeywordClearedEvent {
+  restoredText: string;
+  cursorPosition: number;
+}
+
+export interface InputSelectionState {
+  value: string;
+  selectionStart: number|null;
+  selectionEnd: number|null;
+}
+
 export interface KeywordModeManagerDelegate {
   onKeywordModelChanged(): void;
+  onKeywordCleared(event: KeywordClearedEvent): void;
+  onKeywordEntered(): void;
 }
 
 /**
@@ -56,6 +70,43 @@ export class KeywordModeManager {
    */
   exit(): void {
     this.inputKeywordModel = null;
+  }
+
+  /**
+   * Handles Backspace when cursor is at index 0 in keyword mode, exiting
+   * keyword mode and notifying the delegate of the restored text and cursor.
+   * Returns true if Backspace was handled.
+   */
+  handleBackspace(inputState: InputSelectionState): boolean {
+    const cursorAtStart =
+        inputState.selectionStart === 0 && inputState.selectionEnd === 0;
+    if (!this.isInKeywordMode || !cursorAtStart) {
+      return false;
+    }
+
+    const remainingText = inputState.value;
+    // TODO(b/504669216): Restoring keyword text correctly is more
+    //   complicated than just prepending keyword and a space.
+    const restoredKeywordText = this.activeKeyword + ' ';
+    const restoredText = restoredKeywordText + remainingText;
+    const newCursorPos = restoredKeywordText.length;
+
+    this.exit();
+    this.delegate_.onKeywordCleared({
+      restoredText: restoredText,
+      cursorPosition: newCursorPos,
+    });
+    return true;
+  }
+
+  /**
+   * Handles clicking a keyword chip on an autocomplete match, entering keyword
+   * mode and notifying the delegate.
+   */
+  handleKeywordClick(match: AutocompleteMatch): void {
+    assert(match.keywordModel);
+    this.enter(match.keywordModel.keyword, match.keywordModel.chipHint);
+    this.delegate_.onKeywordEntered();
   }
 
   /**
