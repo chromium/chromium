@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 
@@ -163,6 +164,7 @@ public abstract class BaseSuggestionViewBinder<T extends View>
             actionView.setOnClickListener(v -> action.callback.run());
             actionView.setContentDescription(action.accessibilityDescription);
             actionView.enableShowOnlyOnFocus(action.showOnlyOnFocus);
+            TooltipCompat.setTooltipText(actionView, action.accessibilityDescription);
             updateIcon(
                     actionView,
                     action.icon,
