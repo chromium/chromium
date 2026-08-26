@@ -498,7 +498,6 @@ TEST(FormFieldDataTest, IsTextInputElement) {
       {FormControlType::kInputPassword, true},
       {FormControlType::kInputNumber, true},
       {FormControlType::kSelectOne, false},
-      {FormControlType::kInputCheckbox, false},
       {FormControlType::kTextArea, false},
   };
 

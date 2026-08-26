@@ -2332,11 +2332,7 @@ class AutofillMetricsParseQueryResponseTest : public AutofillMetricsTest {
     AutofillMetricsTest::SetUp();
 
     forms_.push_back(test::GetFormData(
-        {.fields = {{.role = NAME_FULL},
-                    {.role = ADDRESS_HOME_LINE1},
-                    {.label = u"radio_button",
-                     // Checkable fields should be ignored in parsing.
-                     .form_control_type = FormControlType::kInputRadio}}}));
+        {.fields = {{.role = NAME_FULL}, {.role = ADDRESS_HOME_LINE1}}}));
     SeeForm(forms_.back());
 
     forms_.push_back(test::GetFormData(

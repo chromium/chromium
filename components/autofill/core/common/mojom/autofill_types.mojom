@@ -16,12 +16,12 @@ import "url/mojom/url.mojom";
 // Do not modify the integer values because they are used UKM metrics.
 enum FormControlType {
   kContentEditable = 0,
-  kInputCheckbox = 1,
+  // deprecated: kInputCheckbox = 1,
   kInputEmail = 2,
   kInputMonth = 3,
   kInputNumber = 4,
   kInputPassword = 5,
-  kInputRadio = 6,
+  // deprecated: kInputRadio = 6,
   kInputSearch = 7,
   kInputTelephone = 8,
   kInputText = 9,

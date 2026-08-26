@@ -190,15 +190,10 @@ SubmissionReadinessState CalculateSubmissionReadiness(
   }
 
   auto ShouldIgnoreField = [](const autofill::FormFieldData& field) {
-    if (!field.is_focusable()) {
-      return true;
-    }
-    // Don't treat a checkbox (e.g. "remember me") as an input field that may
-    // block a form submission. Note: Don't use `check_status != kNotCheckable`,
-    // a radio button is considered a "checkable" element too, but it should
-    // block a submission.
-    return field.form_control_type() ==
-           autofill::FormControlType::kInputCheckbox;
+    // Autofill does not extract checkboxes and radio buttons anymore
+    // (crbug.com/402071086). When they are ever reintroduced, checkboxes should
+    // be ignored.
+    return !field.is_focusable();
   };
 
   if (username_it < password_it) {

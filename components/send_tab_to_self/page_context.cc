@@ -14,12 +14,10 @@ bool IsSensitiveFieldType(autofill::FormControlType type) {
     case autofill::FormControlType::kInputPassword:
       return true;
     case autofill::FormControlType::kContentEditable:
-    case autofill::FormControlType::kInputCheckbox:
     case autofill::FormControlType::kInputDate:
     case autofill::FormControlType::kInputEmail:
     case autofill::FormControlType::kInputMonth:
     case autofill::FormControlType::kInputNumber:
-    case autofill::FormControlType::kInputRadio:
     case autofill::FormControlType::kInputSearch:
     case autofill::FormControlType::kInputTelephone:
     case autofill::FormControlType::kInputText:

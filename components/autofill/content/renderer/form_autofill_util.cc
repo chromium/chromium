@@ -277,10 +277,8 @@ bool IsTextInput(const WebFormControlElement& element) {
   }
   switch (*type) {
     case FormControlType::kContentEditable:
-    case FormControlType::kInputCheckbox:
     case FormControlType::kInputMonth:
     case FormControlType::kInputDate:
-    case FormControlType::kInputRadio:
     case FormControlType::kSelectOne:
     case FormControlType::kTextArea:
       return false;
@@ -1330,9 +1328,6 @@ void FillFormField(const FormFieldData::FillData& data,
     return;
   }
   switch (*type) {
-    case FormControlType::kInputCheckbox:
-    case FormControlType::kInputRadio:
-      return;
     case FormControlType::kContentEditable:
       NOTREACHED();
     case FormControlType::kInputDate:
@@ -1403,9 +1398,6 @@ void PreviewFormField(const FormFieldData::FillData& data,
     return;
   }
   switch (*type) {
-    case FormControlType::kInputCheckbox:
-    case FormControlType::kInputRadio:
-      return;
     case FormControlType::kContentEditable:
       NOTREACHED();
     case FormControlType::kInputDate:
@@ -2329,8 +2321,6 @@ std::optional<FormControlType> GetAutofillFormControlType(
   switch (element.FormControlTypeForAutofill()) {
     case blink::mojom::FormControlType::kInputEmail:
       return FormControlType::kInputEmail;
-    case blink::mojom::FormControlType::kInputHidden:
-      break;
     case blink::mojom::FormControlType::kInputMonth:
       return FormControlType::kInputMonth;
     case blink::mojom::FormControlType::kInputNumber:
@@ -2361,6 +2351,7 @@ std::optional<FormControlType> GetAutofillFormControlType(
     case blink::mojom::FormControlType::kInputColor:
     case blink::mojom::FormControlType::kInputDatetimeLocal:
     case blink::mojom::FormControlType::kInputFile:
+    case blink::mojom::FormControlType::kInputHidden:
     case blink::mojom::FormControlType::kInputImage:
     case blink::mojom::FormControlType::kInputRadio:
     case blink::mojom::FormControlType::kInputRange:

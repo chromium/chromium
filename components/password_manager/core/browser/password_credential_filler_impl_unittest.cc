@@ -50,7 +50,6 @@ struct MockPasswordManagerDriver : password_manager::StubPasswordManagerDriver {
 
 enum class FormFieldFocusabilityType {
   kFocusableInput,
-  kFocusableCheckbox,
   kNonFocusableInput,
 };
 
@@ -129,14 +128,6 @@ const std::vector<PasswordCredentialFillerV2ParameterTestParam>
          .username_field_index = 0,
          .password_field_index = 2,
          .submission_readiness = SubmissionReadinessState::kTwoFields},
-        // There is a checkbox field after the password field.
-        {.focusability_vector = {FormFieldFocusabilityType::kFocusableInput,
-                                 FormFieldFocusabilityType::kFocusableInput,
-                                 FormFieldFocusabilityType::kFocusableCheckbox},
-         .has_captcha = false,
-         .username_field_index = 0,
-         .password_field_index = 1,
-         .submission_readiness = SubmissionReadinessState::kTwoFields},
         // There is a CAPTCHA within the form
         {.focusability_vector = {FormFieldFocusabilityType::kFocusableInput,
                                  FormFieldFocusabilityType::kFocusableInput},
@@ -169,13 +160,9 @@ class PasswordCredentialFillerBaseTest : public testing::Test {
           FormFieldData field;
           field.set_host_frame(form.host_frame());
           field.set_renderer_id(autofill::test::MakeFieldRendererId());
-          field.set_is_focusable(
-              (type == FormFieldFocusabilityType::kFocusableInput ||
-               type == FormFieldFocusabilityType::kFocusableCheckbox));
-          field.set_form_control_type(
-              (type == FormFieldFocusabilityType::kFocusableCheckbox)
-                  ? autofill::FormControlType::kInputCheckbox
-                  : autofill::FormControlType::kInputText);
+          field.set_is_focusable(type ==
+                                 FormFieldFocusabilityType::kFocusableInput);
+          field.set_form_control_type(autofill::FormControlType::kInputText);
           return field;
         }));
     // CAPTCHA is most often incapsulated into a separate iframe on the page. We

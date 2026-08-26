@@ -154,18 +154,6 @@ TEST_P(MatchTest, Match) {
   }
 }
 
-// Test that we ignore checkable elements.
-TEST_F(FormFieldParserTest, ParseFormFieldsIgnoreCheckableElements) {
-  AddFormFieldData(FormControlType::kInputCheckbox, "", "Is PO Box",
-                   UNKNOWN_TYPE);
-  // Add 3 dummy fields to reach kMinRequiredFieldsForHeuristics = 3.
-  AddTextFormFieldData("", "Address line 1", ADDRESS_HOME_LINE1);
-  AddTextFormFieldData("", "Address line 2", ADDRESS_HOME_LINE2);
-  AddTextFormFieldData("", "Address line 3", ADDRESS_HOME_LINE3);
-  EXPECT_EQ(ParseFormFields(), 3);
-  TestClassificationExpectations();
-}
-
 // Test that the minimum number of required fields for the heuristics considers
 // whether a field is actually fillable.
 TEST_F(FormFieldParserTest, ParseFormFieldsEnforceMinFillableFields) {

@@ -396,8 +396,6 @@ std::string_view FormControlTypeToString(FormControlType type) {
   switch (type) {
     case FormControlType::kContentEditable:
       return "contenteditable";
-    case FormControlType::kInputCheckbox:
-      return "checkbox";
     case FormControlType::kInputDate:
       return "date";
     case FormControlType::kInputEmail:
@@ -408,8 +406,6 @@ std::string_view FormControlTypeToString(FormControlType type) {
       return "number";
     case FormControlType::kInputPassword:
       return "password";
-    case FormControlType::kInputRadio:
-      return "radio";
     case FormControlType::kInputSearch:
       return "search";
     case FormControlType::kInputTelephone:
@@ -432,9 +428,7 @@ std::optional<FormControlType> StringToFormControlTypeDiscouraged(
        i <= std::to_underlying(FormControlType::kMaxValue); ++i) {
     FormControlType type = static_cast<FormControlType>(i);
     if (mojom::IsKnownEnumValue(type) &&
-        type_string == FormControlTypeToString(type) &&
-        (type != FormControlType::kInputCheckbox &&
-         type != FormControlType::kInputRadio)) {
+        type_string == FormControlTypeToString(type)) {
       return type;
     }
   }

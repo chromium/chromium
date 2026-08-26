@@ -1425,8 +1425,8 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_OnNonTextInput) {
   FormData form_data = MakeSingleUsernameFormData();
   // Make the field a non-text field.
   FormFieldData& field = test_api(form_data).field(0);
-  field.set_form_control_type(autofill::FormControlType::kInputCheckbox);
-  field.set_name(u"checkbox");
+  field.set_form_control_type(autofill::FormControlType::kSelectOne);
+  field.set_name(u"select");
   field.set_id_attribute(field.name());
   field.set_name_attribute(field.name());
 

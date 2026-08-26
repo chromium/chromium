@@ -57,11 +57,9 @@ bool IsPossibleAnchorElement(blink::WebFormControlElement element) {
       // Contenteditable elements are not extracted by default in Autofill and
       // are excluded in this function for simplicity.
       return false;
-    case mojom::FormControlType::kInputCheckbox:
     case mojom::FormControlType::kInputMonth:
     case mojom::FormControlType::kInputNumber:
     case mojom::FormControlType::kInputPassword:
-    case mojom::FormControlType::kInputRadio:
     case mojom::FormControlType::kSelectOne:
     case mojom::FormControlType::kInputDate:
       return false;

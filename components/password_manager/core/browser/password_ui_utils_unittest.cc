@@ -205,15 +205,6 @@ TEST_F(CalculateSubmissionReadinessTest, FieldAfterPasswordFieldIgnored) {
   EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].global_id(),
                                          form.fields()[1].global_id()),
             SubmissionReadinessState::kTwoFields);
-
-  form = CreateForm(3);
-  test_api(form).field(2).set_form_control_type(
-      FormControlType::kInputCheckbox);
-
-  // Field after password is ignored because it is a checkbox.
-  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].global_id(),
-                                         form.fields()[1].global_id()),
-            SubmissionReadinessState::kTwoFields);
 }
 
 TEST_F(CalculateSubmissionReadinessTest, LikelyHasCaptcha) {
@@ -305,17 +296,6 @@ TEST_F(CalculateSubmissionReadinessTest,
   EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[1].global_id(),
                                          form.fields()[2].global_id()),
             SubmissionReadinessState::kLikelyHasCaptcha);
-}
-
-TEST_F(CalculateSubmissionReadinessTest,
-       FieldBetweenUsernameAndPassword_RadioNotIgnored) {
-  FormData form = CreateForm(3);
-  test_api(form).field(1).set_form_control_type(FormControlType::kInputRadio);
-
-  // Radio button between username and password should block submission.
-  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].global_id(),
-                                         form.fields()[2].global_id()),
-            SubmissionReadinessState::kFieldBetweenUsernameAndPassword);
 }
 
 }  // namespace
