@@ -9,12 +9,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/cpu_performance.mojom-blink.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/inspector/inspector_session_state.h"
 #include "third_party/blink/renderer/core/inspector/protocol/protocol.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_cpu_throttler.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -255,6 +257,52 @@ TEST_F(InspectorEmulationAgentTest, MultiSessionCPUThrottlingRestoreTest) {
   helper_.Reset();
 }
 #endif
+
+TEST_F(InspectorEmulationAgentTest, CPUPerformanceOverrideRestoreAndDisable) {
+  test::TaskEnvironment task_environment;
+  frame_test_helpers::WebViewHelper helper;
+  WebViewImpl* web_view = helper.Initialize();
+  WebLocalFrameImpl* web_frame = web_view->MainFrameImpl();
+  LocalFrame* frame = web_frame->GetFrame();
+  auto* virtual_time_controller =
+      web_view->Scheduler()->GetVirtualTimeController();
+
+  DummyFrontendChannel channel;
+  protocol::UberDispatcher dispatcher(&channel);
+  auto reattach_state = mojom::blink::DevToolsSessionState::New();
+  InspectorSessionState session_state(std::move(reattach_state));
+
+  auto* agent = MakeGarbageCollected<InspectorEmulationAgent>(
+      web_frame, *virtual_time_controller);
+  agent->Init(frame->GetProbeSink(), &dispatcher, &session_state,
+              V8SessionHolder());
+
+  // Without an override.
+  mojom::blink::PerformanceTier tier = mojom::blink::PerformanceTier::kUltra;
+  probe::ApplyCPUPerformanceOverride(frame->GetProbeSink(), tier);
+  EXPECT_EQ(mojom::blink::PerformanceTier::kUltra, tier);
+
+  // With an override.
+  EXPECT_TRUE(agent->setCPUPerformanceOverride("low").IsSuccess());
+  tier = mojom::blink::PerformanceTier::kUltra;
+  probe::ApplyCPUPerformanceOverride(frame->GetProbeSink(), tier);
+  EXPECT_EQ(mojom::blink::PerformanceTier::kLow, tier);
+
+  // Restore() should maintain the override.
+  agent->Restore();
+  tier = mojom::blink::PerformanceTier::kUltra;
+  probe::ApplyCPUPerformanceOverride(frame->GetProbeSink(), tier);
+  EXPECT_EQ(mojom::blink::PerformanceTier::kLow, tier);
+
+  // disable() should clear the override.
+  agent->disable();
+  tier = mojom::blink::PerformanceTier::kUltra;
+  probe::ApplyCPUPerformanceOverride(frame->GetProbeSink(), tier);
+  EXPECT_EQ(mojom::blink::PerformanceTier::kUltra, tier);
+
+  agent->Dispose();
+  helper.Reset();
+}
 
 class MutatingBodyLoader : public WebNavigationBodyLoader {
  public:

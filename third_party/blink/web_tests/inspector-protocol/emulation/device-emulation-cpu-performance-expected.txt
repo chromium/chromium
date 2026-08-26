@@ -10,4 +10,6 @@ Match after setting tier, run 4 after reload: true
 Failed to set invalid tier bogus: Invalid performanceTier enum value
 Match after setting invalid tier bogus: true
 Match after clearing tier: true
+Match in iframe after initial override: true
+Match in iframe after changing override: true
 

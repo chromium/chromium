@@ -79,5 +79,45 @@
 
   await testReset();
 
+  async function testIframe() {
+    const targetTierIndex1 = (defaultValue + 1) % 5;
+    const targetTierName1 = tierNames[targetTierIndex1];
+    const response1 =
+        await session.protocol.Emulation.setCPUPerformanceOverride(
+            {performanceTier: targetTierName1});
+    if (response1.error) {
+      testRunner.log(`Unexpected failure to set tier 1 for iframe test: ${
+          response1.error.message}`);
+    }
+    const iframeValue1 = await session.evaluateAsync(`
+      new Promise(resolve => {
+        window.testIframe = document.createElement('iframe');
+        window.testIframe.onload = () => resolve(window.testIframe.contentWindow.navigator.cpuPerformance);
+        document.body.appendChild(window.testIframe);
+      })
+    `);
+    testRunner.log(`Match in iframe after initial override: ${
+        iframeValue1 === targetTierIndex1}`);
+
+    const targetTierIndex2 = (defaultValue + 2) % 5;
+    const targetTierName2 = tierNames[targetTierIndex2];
+    const response2 =
+        await session.protocol.Emulation.setCPUPerformanceOverride(
+            {performanceTier: targetTierName2});
+    if (response2.error) {
+      testRunner.log(`Unexpected failure to set tier 2 for iframe test: ${
+          response2.error.message}`);
+    }
+    const iframeValue2 = await session.evaluate(
+        'window.testIframe.contentWindow.navigator.cpuPerformance');
+    testRunner.log(`Match in iframe after changing override: ${
+        iframeValue2 === targetTierIndex2}`);
+
+    await session.evaluate('window.testIframe.remove()');
+    await session.protocol.Emulation.setCPUPerformanceOverride({});
+  }
+
+  await testIframe();
+
   testRunner.completeTest();
 })
