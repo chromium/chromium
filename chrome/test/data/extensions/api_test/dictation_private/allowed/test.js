@@ -57,17 +57,21 @@ if (chrome.dictationPrivate === undefined) {
         typeof chrome.dictationPrivate.setStreamState === 'function');
     chrome.test.assertTrue(
         typeof chrome.dictationPrivate.updateAudioLevel === 'function');
+    chrome.test.assertEq(
+        1, chrome.dictationPrivate.areAdditionalPropertiesIgnored);
 
     try {
       await chrome.dictationPrivate.setStreamState({
         streamId,
         state: chrome.dictationPrivate.StreamState.TRANSCRIBING,
+        unknownParameterIsNotAnError: true,
       });
       await chrome.dictationPrivate.updateAudioLevel(0.5);
       await chrome.dictationPrivate.updateTranscription({
         streamId,
         type: chrome.dictationPrivate.TranscriptionType.PARTIAL,
         data: 'Hello',
+        unknownParameterIsNotAnError: true,
       });
       await chrome.dictationPrivate.updateTranscription({
         streamId,

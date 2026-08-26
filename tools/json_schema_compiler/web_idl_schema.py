@@ -804,6 +804,8 @@ class Dictionary:
       'type': 'object',
     }
     AddCommonExtendedAttributeProperties(self.node, result)
+    if HasExtendedAttribute(self.node, 'ignoreAdditionalProperties'):
+      result['ignoreAdditionalProperties'] = True
 
     return result
 

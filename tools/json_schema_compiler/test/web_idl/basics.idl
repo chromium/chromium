@@ -166,6 +166,11 @@ dictionary DictionaryWithCallbackMembers {
   required CallbackWithReturn returnCallback;
 };
 
+[ignoreAdditionalProperties]
+dictionary IgnoreAdditionalPropertiesType {
+  DOMString x;
+};
+
 // Enum description.
 enum EnumType {
   // Comment1.
