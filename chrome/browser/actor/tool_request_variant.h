@@ -42,6 +42,7 @@ using ToolRequestVariant = std::variant<
     MediaControlToolRequest,
     MoveMouseToolRequest,
     NavigateToolRequest,
+    PerformSearchToolRequest,
     RemoveBookmarkToolRequest,
     ScriptToolRequest,
     ScrollToolRequest,
@@ -86,6 +87,7 @@ class ConvertToVariantFn : public ToolRequestVisitorFunctor {
   void Apply(const MediaControlToolRequest&) override;
   void Apply(const MoveMouseToolRequest&) override;
   void Apply(const NavigateToolRequest&) override;
+  void Apply(const PerformSearchToolRequest&) override;
   void Apply(const RemoveBookmarkToolRequest&) override;
   void Apply(const ScriptToolRequest&) override;
   void Apply(const ScrollToolRequest&) override;

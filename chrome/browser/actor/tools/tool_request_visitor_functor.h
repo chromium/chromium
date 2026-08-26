@@ -17,6 +17,7 @@
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/move_mouse_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
+#include "chrome/browser/actor/tools/perform_search_tool_request.h"
 #include "chrome/browser/actor/tools/script_tool_request.h"
 #include "chrome/browser/actor/tools/scroll_to_tool_request.h"
 #include "chrome/browser/actor/tools/scroll_tool_request.h"
@@ -62,6 +63,7 @@ class ToolRequestVisitorFunctor {
   virtual void Apply(const MediaControlToolRequest&) = 0;
   virtual void Apply(const MoveMouseToolRequest&) = 0;
   virtual void Apply(const NavigateToolRequest&) = 0;
+  virtual void Apply(const PerformSearchToolRequest&) = 0;
   virtual void Apply(const RemoveBookmarkToolRequest&) = 0;
   virtual void Apply(const ScriptToolRequest&) = 0;
   virtual void Apply(const ScrollToolRequest&) = 0;

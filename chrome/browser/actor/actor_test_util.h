@@ -222,6 +222,8 @@ std::unique_ptr<ToolRequest> MakeMouseMoveRequest(tabs::TabInterface& tab,
                                                   const gfx::Point& move_point);
 std::unique_ptr<ToolRequest> MakeNavigateRequest(tabs::TabInterface& tab,
                                                  std::string_view target_url);
+std::unique_ptr<ToolRequest> MakePerformSearchRequest(tabs::TabInterface& tab,
+                                                      std::string_view query);
 std::unique_ptr<ToolRequest> MakeTypeRequest(content::RenderFrameHost& rfh,
                                              int content_node_id,
                                              std::string_view text,

@@ -77,6 +77,9 @@ void ConvertToVariantFn::Apply(const MoveMouseToolRequest& tr) {
 void ConvertToVariantFn::Apply(const NavigateToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
+void ConvertToVariantFn::Apply(const PerformSearchToolRequest& tr) {
+  var_ = ToolRequestVariant(tr);
+}
 void ConvertToVariantFn::Apply(const RemoveBookmarkToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }

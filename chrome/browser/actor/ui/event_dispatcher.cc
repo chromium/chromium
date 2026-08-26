@@ -93,6 +93,7 @@ constexpr absl::Overload PreToolEventsFn{
           MouseMove(tr.GetTabHandle(), pt, source)};
     },
     NoUiEvents<NavigateToolRequest>,
+    NoUiEvents<PerformSearchToolRequest>,
     NoUiEvents<RemoveBookmarkToolRequest>,
     NoUiEvents<ScrollToolRequest>,
     NoUiEvents<SelectToolRequest>,
@@ -131,6 +132,7 @@ constexpr absl::Overload PostToolEventsFn{
     NoUiEvents<MediaControlToolRequest>,
     NoUiEvents<MoveMouseToolRequest>,
     NoUiEvents<NavigateToolRequest>,
+    NoUiEvents<PerformSearchToolRequest>,
     NoUiEvents<RemoveBookmarkToolRequest>,
     NoUiEvents<ScrollToolRequest>,
     NoUiEvents<SelectToolRequest>,

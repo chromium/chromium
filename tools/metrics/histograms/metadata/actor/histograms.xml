@@ -88,6 +88,7 @@ chromium-metrics-reviews@google.com.
   <variant name="MediaControl" summary="Media Control"/>
   <variant name="MoveMouse" summary="MoveMouse"/>
   <variant name="Navigate" summary="Navigate"/>
+  <variant name="PerformSearch" summary="Perform Search"/>
   <variant name="RemoveBookmark" summary="Remove Bookmark"/>
   <variant name="ScriptTool" summary="ScriptTool"/>
   <variant name="Scroll" summary="Scroll"/>
