@@ -63,42 +63,9 @@ public interface NavigationSheet {
                 && controller.isSheetOpen();
     }
 
-    /** Placeholder object that does nothing. Saves lots of null checks. */
-    NavigationSheet PLACEHOLDER =
-            new NavigationSheet() {
-                @Override
-                public void setDelegate(Delegate delegate) {}
-
-                @Override
-                public void start(boolean forward, boolean showCloseIndicator) {}
-
-                @Override
-                public boolean startAndExpand(boolean forward, boolean animate) {
-                    return false;
-                }
-
-                @Override
-                public void close(boolean animate) {}
-
-                @Override
-                public void onScroll(float delta, float overscroll, boolean willNavigate) {}
-
-                @Override
-                public void release() {}
-
-                @Override
-                public boolean isHidden() {
-                    return true;
-                }
-
-                @Override
-                public boolean isExpanded() {
-                    return false;
-                }
-            };
-
     /**
      * Set a new {@link Delegate} object whenever the dependency is updated.
+     *
      * @param delegate Delegate used by navigation sheet to perform actions.
      */
     void setDelegate(Delegate delegate);
@@ -127,22 +94,19 @@ public interface NavigationSheet {
 
     /**
      * Process swipe gesture and update the navigation sheet state.
+     *
      * @param delta Scroll delta from the previous scroll.
      * @param overscroll Total amount of scroll since the dragging started.
-     * @param willNavigate {@code true} if navgation will be triggered upon release.
+     * @param willNavigate {@code true} if navigation will be triggered upon release.
      */
     void onScroll(float delta, float overscroll, boolean willNavigate);
 
     /** Process release events. */
     void release();
 
-    /**
-     * @param {@code true} if navigation sheet is in hidden state.
-     */
+    /** Returns whether navigation sheet is in hidden state. */
     boolean isHidden();
 
-    /**
-     * @param {@code true} if navigation sheet is in expanded (half/full) state.
-     */
+    /** Returns whether navigation sheet is in expanded (half/full) state. */
     boolean isExpanded();
 }

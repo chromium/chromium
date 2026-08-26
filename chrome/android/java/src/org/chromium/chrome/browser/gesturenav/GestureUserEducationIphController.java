@@ -111,10 +111,7 @@ public class GestureUserEducationIphController {
                     @Override
                     public void onPageLoadFinished(Tab tab, GURL url) {
                         mMaybeShowIphCancelableRunnable =
-                                new CancelableRunnable(
-                                        () -> {
-                                            maybeShowIph(tab);
-                                        });
+                                new CancelableRunnable(() -> maybeShowIph(tab));
                         PostTask.postDelayedTask(
                                 TaskTraits.UI_DEFAULT,
                                 mMaybeShowIphCancelableRunnable,

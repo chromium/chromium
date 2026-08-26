@@ -67,7 +67,6 @@ import java.lang.ref.WeakReference;
 @NullMarked
 public abstract class FullscreenHtmlApiHandlerBase
         implements ActivityStateListener, WindowFocusChangedListener, FullscreenManager {
-    private static final String TAG = "FullscreenHTMLBase";
     private static final boolean DEBUG_LOGS = false;
 
     protected static final int MSG_ID_SET_VISIBILITY_FOR_SYSTEM_BARS = 1;
@@ -115,8 +114,6 @@ public abstract class FullscreenHtmlApiHandlerBase
     private @Nullable Tab mTab;
     private boolean mDisplayEdgeToEdgeFullscreenToBeExited;
     private boolean mIsInMultiWindowMode;
-
-    private final FullscreenMultiWindowModeObserver mMultiWindowModeObserver;
 
     private boolean mNotifyOnNextExit;
 
@@ -275,14 +272,11 @@ public abstract class FullscreenHtmlApiHandlerBase
                 this::maybeEnterFullscreenFromPendingState);
 
         mFullscreenManagerDelegate =
-                new FullscreenManagerDelegate() {
-                    @Override
-                    public void onExitFullscreen(@Nullable Tab tab) {
-                        if (tab == null) {
-                            exitPersistentFullscreenMode();
-                        } else {
-                            FullscreenHtmlApiHandlerBase.this.onExitFullscreen(tab);
-                        }
+                (@Nullable Tab tab) -> {
+                    if (tab == null) {
+                        exitPersistentFullscreenMode();
+                    } else {
+                        FullscreenHtmlApiHandlerBase.this.onExitFullscreen(tab);
                     }
                 };
 
@@ -290,8 +284,9 @@ public abstract class FullscreenHtmlApiHandlerBase
 
         mExitFullscreenOnStop = exitFullscreenOnStop;
 
-        mMultiWindowModeObserver = new FullscreenMultiWindowModeObserver();
-        multiWindowDispatcher.addObserver(mMultiWindowModeObserver);
+        FullscreenMultiWindowModeObserver multiWindowModeObserver =
+                new FullscreenMultiWindowModeObserver();
+        multiWindowDispatcher.addObserver(multiWindowModeObserver);
     }
 
     /**
@@ -688,12 +683,7 @@ public abstract class FullscreenHtmlApiHandlerBase
             // fullscreen exit in that scenario, we are moving window to the front.
             ensureTaskMovedToFront();
             maybeExitActivityFullscreenMode(
-                    new OutcomeReceiver<@Nullable Void, Throwable>() {
-                        @Override
-                        public void onResult(@Nullable Void unused) {
-                            tryToMoveTaskTo(homeAttrs.first, homeAttrs.second);
-                        }
-                    });
+                    _ -> tryToMoveTaskTo(homeAttrs.first, homeAttrs.second));
         }
     }
 
@@ -748,25 +738,12 @@ public abstract class FullscreenHtmlApiHandlerBase
             contentView.removeOnLayoutChangeListener(mFullscreenOnLayoutChangeListener);
         }
         mFullscreenOnLayoutChangeListener =
-                new OnLayoutChangeListener() {
-                    @Override
-                    public void onLayoutChange(
-                            View v,
-                            int left,
-                            int top,
-                            int right,
-                            int bottom,
-                            int oldLeft,
-                            int oldTop,
-                            int oldRight,
-                            int oldBottom) {
-                        // At this point, browser controls are hidden.
-                        TabBrowserControlsConstraintsHelper.update(
-                                mTab, BrowserControlsState.SHOWN, true);
-                        if (mFullscreenOnLayoutChangeListener != null) {
-                            contentView.removeOnLayoutChangeListener(
-                                    mFullscreenOnLayoutChangeListener);
-                        }
+                (_, _, _, _, _, _, _, _, _) -> {
+                    // At this point, browser controls are hidden.
+                    TabBrowserControlsConstraintsHelper.update(
+                            mTab, BrowserControlsState.SHOWN, true);
+                    if (mFullscreenOnLayoutChangeListener != null) {
+                        contentView.removeOnLayoutChangeListener(mFullscreenOnLayoutChangeListener);
                     }
                 };
         contentView.addOnLayoutChangeListener(mFullscreenOnLayoutChangeListener);
