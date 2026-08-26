@@ -28,6 +28,7 @@ using Synthetic = ScrollUpdates::Synthetic;
 using BeginFrameArgsForScrollJank =
     ScrollJankV4Frame::BeginFrameArgsForScrollJank;
 using TraceId = EventMetrics::TraceId;
+using VsyncIntervalType = ScrollJankV4Result::VsyncIntervalType;
 
 using QueryResult = base::test::TestTraceProcessor::QueryResult;
 using ::testing::ElementsAreArray;
@@ -187,6 +188,8 @@ TEST_F(ScrollJankV4RecorderTest, IrrelevantTracingCategory) {
           .running_delivery_cutoff = base::Milliseconds(11),
           .adjusted_delivery_cutoff = base::Milliseconds(12),
           .current_delivery_cutoff = base::Milliseconds(13),
+          .vsync_interval = base::Milliseconds(16),
+          .vsync_interval_type = VsyncIntervalType::kCurrentOsProvided,
           .first_scroll_update =
               ScrollJankV4Result::RealFirstScrollUpdate{
                   .actual_input_generation_ts = MillisSinceEpoch(20)},
@@ -258,6 +261,8 @@ TEST_F(ScrollJankV4RecorderTest, RealDamagingFrame) {
           .running_delivery_cutoff = base::Milliseconds(11),
           .adjusted_delivery_cutoff = base::Milliseconds(12),
           .current_delivery_cutoff = base::Milliseconds(13),
+          .vsync_interval = base::Milliseconds(16),
+          .vsync_interval_type = VsyncIntervalType::kCurrentOsProvided,
           .first_scroll_update =
               ScrollJankV4Result::RealFirstScrollUpdate{
                   .actual_input_generation_ts = MillisSinceEpoch(20)},
@@ -311,6 +316,7 @@ TEST_F(ScrollJankV4RecorderTest, RealDamagingFrame) {
            "4.0"},
           {"scroll_jank_v4.updates.real.total_raw_delta_pixels", "5.0"},
           {"scroll_jank_v4.updates.scroll_begin_arrival_us", "10000"},
+          {"scroll_jank_v4.vsync_interval_type", "CURRENT_OS_PROVIDED"},
           {"scroll_jank_v4.vsync_interval_us", "16000000"},
           {"scroll_jank_v4.vsyncs_since_previous_frame", "9"},
       }));
@@ -398,6 +404,8 @@ TEST_F(ScrollJankV4RecorderTest,
           .running_delivery_cutoff = base::Milliseconds(11),
           .adjusted_delivery_cutoff = base::Milliseconds(12),
           .current_delivery_cutoff = base::Milliseconds(13),
+          .vsync_interval = base::Milliseconds(16),
+          .vsync_interval_type = VsyncIntervalType::kCurrentOsProvided,
           .first_scroll_update =
               ScrollJankV4Result::RealFirstScrollUpdate{
                   .actual_input_generation_ts = MillisSinceEpoch(20)},
@@ -453,6 +461,7 @@ TEST_F(ScrollJankV4RecorderTest,
            "4.0"},
           {"scroll_jank_v4.updates.real.total_raw_delta_pixels", "-5.0"},
           {"scroll_jank_v4.updates.scroll_begin_arrival_us", "10000"},
+          {"scroll_jank_v4.vsync_interval_type", "CURRENT_OS_PROVIDED"},
           {"scroll_jank_v4.vsync_interval_us", "16000000"},
           {"scroll_jank_v4.vsyncs_since_previous_frame", "9"},
       }));
@@ -536,6 +545,8 @@ TEST_F(ScrollJankV4RecorderTest,
           .running_delivery_cutoff = base::Milliseconds(11),
           .adjusted_delivery_cutoff = base::Milliseconds(12),
           .current_delivery_cutoff = base::Milliseconds(13),
+          .vsync_interval = base::Milliseconds(16),
+          .vsync_interval_type = VsyncIntervalType::kCurrentOsProvided,
           .first_scroll_update =
               ScrollJankV4Result::SyntheticFirstScrollUpdate{
                   .extrapolated_input_generation_ts = MillisSinceEpoch(20)},
@@ -593,6 +604,7 @@ TEST_F(ScrollJankV4RecorderTest,
           {"scroll_jank_v4.updates.scroll_begin_arrival_us", "10000"},
           {"scroll_jank_v4.updates.synthetic.first_event_latency_id", "99"},
           {"scroll_jank_v4.updates.synthetic.has_inertial_input", "false"},
+          {"scroll_jank_v4.vsync_interval_type", "CURRENT_OS_PROVIDED"},
           {"scroll_jank_v4.vsync_interval_us", "16000000"},
           {"scroll_jank_v4.vsyncs_since_previous_frame", "9"},
       }));
@@ -671,6 +683,8 @@ TEST_F(ScrollJankV4RecorderTest,
                                   .interval = base::Milliseconds(16),
                                   .result_id = 123},
       ScrollJankV4Result{
+          .vsync_interval = base::Milliseconds(16),
+          .vsync_interval_type = VsyncIntervalType::kCurrentOsProvided,
           .first_scroll_update =
               ScrollJankV4Result::SyntheticFirstScrollUpdate{
                   .extrapolated_input_generation_ts = std::nullopt},
@@ -712,6 +726,7 @@ TEST_F(ScrollJankV4RecorderTest,
            "SYNTHETIC_WITHOUT_EXTRAPOLATED_INPUT_GENERATION_TIMESTAMP"},
           {"scroll_jank_v4.updates.scroll_begin_arrival_us", "10000"},
           {"scroll_jank_v4.updates.synthetic.has_inertial_input", "false"},
+          {"scroll_jank_v4.vsync_interval_type", "CURRENT_OS_PROVIDED"},
           {"scroll_jank_v4.vsync_interval_us", "16000000"},
       }));
   EXPECT_THAT(QueryTraceProcessor(kScrollJankV4ResultsQuery),
@@ -790,6 +805,8 @@ TEST_F(ScrollJankV4RecorderTest, RealNonDamagingFrameWithInputAfterBeginFrame) {
                                   .interval = base::Milliseconds(16),
                                   .result_id = 123},
       ScrollJankV4Result{
+          .vsync_interval = base::Milliseconds(16),
+          .vsync_interval_type = VsyncIntervalType::kCurrentOsProvided,
           .first_scroll_update =
               ScrollJankV4Result::RealFirstScrollUpdate{
                   .actual_input_generation_ts = MillisSinceEpoch(55)},
@@ -812,6 +829,54 @@ TEST_F(ScrollJankV4RecorderTest, RealNonDamagingFrameWithInputAfterBeginFrame) {
           {"id", "name", "ts", "dur", "result_id"},
           {kSliceIdMatcher, "ScrollJankV4", "50000000", "10001000", "123"},
       }));
+}
+
+TEST_F(ScrollJankV4RecorderTest, DeadlineDerivedInterval) {
+  trace_processor_.StartTrace("input");
+
+  ScrollJankV4TracingRecorder::RecordTraceEvents(
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(20),
+                         .last_input_generation_ts = MillisSinceEpoch(30),
+                         .has_inertial_input = false,
+                         .total_raw_delta_pixels = 5.0f,
+                         .max_abs_inertial_raw_delta_pixels = 0.0f,
+                         .first_input_trace_id = TraceId(99)},
+                    /* synthetic= */ std::nullopt,
+                    /* scroll_begin_arrival_timestamp= */ MillisSinceEpoch(10)),
+      DamagingFrame{.presentation_ts = MillisSinceEpoch(60)},
+      BeginFrameArgsForScrollJank{.frame_time = MillisSinceEpoch(50),
+                                  .interval = base::Milliseconds(16),
+                                  .result_id = 123},
+      ScrollJankV4Result{
+          .vsync_interval = base::Milliseconds(8),
+          .vsync_interval_type = VsyncIntervalType::kPreviousDeadlineDerived,
+          .first_scroll_update =
+              ScrollJankV4Result::RealFirstScrollUpdate{
+                  .actual_input_generation_ts = MillisSinceEpoch(20)},
+          .presentation =
+              ScrollJankV4Result::DamagingPresentation{
+                  .actual_presentation_ts = MillisSinceEpoch(60)},
+      });
+
+  absl::Status status = trace_processor_.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  EXPECT_THAT(
+      QueryTraceProcessor(kScrollJankV4ArgsQuery),
+      QueryResultIs({
+          {"key", "display_value"},
+          {"scroll_jank_v4.damage_type", "DAMAGING"},
+          {"scroll_jank_v4.is_janky", "false"},
+          {"scroll_jank_v4.result_id", "123"},
+          {"scroll_jank_v4.updates.first_scroll_update_type", "REAL"},
+          {"scroll_jank_v4.updates.real.first_event_latency_id", "99"},
+          {"scroll_jank_v4.updates.real.total_raw_delta_pixels", "5.0"},
+          {"scroll_jank_v4.updates.scroll_begin_arrival_us", "10000"},
+          {"scroll_jank_v4.vsync_interval_type", "PREVIOUS_DEADLINE_DERIVED"},
+          {"scroll_jank_v4.vsync_interval_us", "8000000"},
+      }));
+  ExpectThatAllTraceEventsAreOnTheSameTrack();
+  ExpectThatAllSubEventsAreDescendantsOfMainTraceEvent();
 }
 
 }  // namespace

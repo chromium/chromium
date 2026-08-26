@@ -916,7 +916,7 @@ message EventLatency {
   // documentation for more information.
   //
   message ScrollJankV4Result {
-    // Next ID: 15
+    // Next ID: 16
 
     // This field is a new version of `EventLatency.is_janky_scrolled_frame`
     // based on the Event.ScrollJank.DelayedFramesPercentage4.FixedWindow
@@ -1148,8 +1148,8 @@ message EventLatency {
     }
     optional DamageType damage_type = 11;
 
-    // The VSync interval that this frame was produced for according to the
-    // BeginFrameArgs.
+    // The VSync interval that was used to evaluate this frame for scroll jank.
+    // See `vsync_interval_type`.
     optional int64 vsync_interval_us = 12;
 
     // The ID of this frame's result. Used to associate sub-slices (e.g.
@@ -1182,6 +1182,21 @@ message EventLatency {
       optional HasSeen has_seen_in_current_scroll = 2;
     }
     optional FrameStageCalculation frame_stage_calculation = 14;
+
+    // The type of the VSync interval that was used to evaluate this frame for
+    // scroll jank.
+    // LINT.IfChange(ScrollJankV4VsyncIntervalType)
+    enum VsyncIntervalType {
+      VSYNC_INTERVAL_TYPE_UNSPECIFIED = 0;
+      // VSync interval that the OS provided to Chrome for the current frame (or
+      // most recently before the current frame).
+      CURRENT_OS_PROVIDED = 1;
+      // VSync interval which Chrome derived from possible deadlines for the
+      // previous frame.
+      PREVIOUS_DEADLINE_DERIVED = 2;
+    }
+    // LINT.ThenChange(//cc/metrics/scroll_jank_v4_result.h:ScrollJankV4Result.VsyncIntervalType)
+    optional VsyncIntervalType vsync_interval_type = 15;
   }
 
   // Deprecated in favor of top-level `ChromeTrackEvent.scroll_jank_v4`.

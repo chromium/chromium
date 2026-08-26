@@ -26,6 +26,7 @@ namespace {
 using ScrollDamage = ScrollJankV4Frame::ScrollDamage;
 using DamagingFrame = ScrollJankV4Frame::DamagingFrame;
 using ScrollUpdates = ScrollJankV4Frame::Stage::ScrollUpdates;
+using VsyncIntervalType = ScrollJankV4Result::VsyncIntervalType;
 
 }  // namespace
 
@@ -99,16 +100,22 @@ ScrollJankV4Result ScrollJankV4Decider::DecideJankForFrameWithScrollUpdates(
   DCHECK(!prev_frame_data_.has_value() ||
          args.frame_time > prev_frame_data_->begin_frame_ts);
 
-  base::TimeDelta vsync_interval =
-      prev_frame_data_.has_value() &&
-              prev_frame_data_->deadline_derived_interval.has_value()
-          ? *prev_frame_data_->deadline_derived_interval
-          : args.interval;
+  auto [vsync_interval, vsync_interval_type] =
+      [&]() -> std::pair<base::TimeDelta, VsyncIntervalType> {
+    if (prev_frame_data_.has_value() &&
+        prev_frame_data_->deadline_derived_interval.has_value()) {
+      return {*prev_frame_data_->deadline_derived_interval,
+              VsyncIntervalType::kPreviousDeadlineDerived};
+    }
+    return {args.interval, VsyncIntervalType::kCurrentOsProvided};
+  }();
 
   const DamagingFrame* damaging_frame = std::get_if<DamagingFrame>(&damage);
 
   auto first_scroll_update = GetFirstScrollUpdate(updates);
   ScrollJankV4Result result = {
+      .vsync_interval = vsync_interval,
+      .vsync_interval_type = vsync_interval_type,
       .first_scroll_update = first_scroll_update,
   };
 

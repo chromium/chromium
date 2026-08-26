@@ -41,6 +41,7 @@ using NonDamagingFrame = ScrollJankV4Frame::NonDamagingFrame;
 using ScrollUpdates = ScrollJankV4Frame::Stage::ScrollUpdates;
 using Real = ScrollUpdates::Real;
 using Synthetic = ScrollUpdates::Synthetic;
+using VsyncIntervalType = ScrollJankV4Result::VsyncIntervalType;
 
 /* Matches a result iff `matcher` matches `result->missed_vsyncs_per_reason`. */
 ::testing::Matcher<const ScrollJankV4Result&> HasMissedVsyncsPerReasonMatching(
@@ -2566,6 +2567,8 @@ TEST_F(ScrollJankV4DeciderTest, DeadlineDerivedIntervalDecrease) {
        .interval = kIrrelevantInterval,
        .deadline_derived_interval = kOldDerivedInterval});
   EXPECT_THAT(result1, kHasNoMissedVsyncs);
+  EXPECT_EQ(result1.vsync_interval, kIrrelevantInterval);
+  EXPECT_EQ(result1.vsync_interval_type, VsyncIntervalType::kCurrentOsProvided);
 
   // Presented 32 ms after frame 1. Should be evaluated against frame 1's
   // deadline_derived_interval (16 ms), resulting in 1 missed VSync.
@@ -2583,6 +2586,9 @@ TEST_F(ScrollJankV4DeciderTest, DeadlineDerivedIntervalDecrease) {
   EXPECT_THAT(result2,
               HasMissedVsyncs(JankReason::kMissedVsyncDuringFastScroll, 1));
   EXPECT_EQ(result2.vsyncs_since_previous_frame, 2);
+  EXPECT_EQ(result2.vsync_interval, kOldDerivedInterval);
+  EXPECT_EQ(result2.vsync_interval_type,
+            VsyncIntervalType::kPreviousDeadlineDerived);
 
   // Presented 32 ms after frame 2. Should be evaluated against frame 2's
   // deadline_derived_interval (8 ms), resulting in 3 missed VSyncs.
@@ -2600,6 +2606,9 @@ TEST_F(ScrollJankV4DeciderTest, DeadlineDerivedIntervalDecrease) {
   EXPECT_THAT(result3,
               HasMissedVsyncs(JankReason::kMissedVsyncDuringFastScroll, 3));
   EXPECT_EQ(result3.vsyncs_since_previous_frame, 4);
+  EXPECT_EQ(result3.vsync_interval, kNewDerivedInterval);
+  EXPECT_EQ(result3.vsync_interval_type,
+            VsyncIntervalType::kPreviousDeadlineDerived);
 }
 
 TEST_F(ScrollJankV4DeciderTest, DeadlineDerivedIntervalIncrease) {
@@ -2619,6 +2628,8 @@ TEST_F(ScrollJankV4DeciderTest, DeadlineDerivedIntervalIncrease) {
        .interval = kIrrelevantInterval,
        .deadline_derived_interval = kOldDerivedInterval});
   EXPECT_THAT(result1, kHasNoMissedVsyncs);
+  EXPECT_EQ(result1.vsync_interval, kIrrelevantInterval);
+  EXPECT_EQ(result1.vsync_interval_type, VsyncIntervalType::kCurrentOsProvided);
 
   // Presented 32 ms after frame 1. Should be evaluated against frame 1's
   // deadline_derived_interval (8 ms), resulting in 3 missed VSyncs.
@@ -2636,6 +2647,9 @@ TEST_F(ScrollJankV4DeciderTest, DeadlineDerivedIntervalIncrease) {
   EXPECT_THAT(result2,
               HasMissedVsyncs(JankReason::kMissedVsyncDuringFastScroll, 3));
   EXPECT_EQ(result2.vsyncs_since_previous_frame, 4);
+  EXPECT_EQ(result2.vsync_interval, kOldDerivedInterval);
+  EXPECT_EQ(result2.vsync_interval_type,
+            VsyncIntervalType::kPreviousDeadlineDerived);
 
   // Presented 32 ms after frame 2. Should be evaluated against frame 2's
   // deadline_derived_interval (16 ms), resulting in 1 missed VSync.
@@ -2653,6 +2667,9 @@ TEST_F(ScrollJankV4DeciderTest, DeadlineDerivedIntervalIncrease) {
   EXPECT_THAT(result3,
               HasMissedVsyncs(JankReason::kMissedVsyncDuringFastScroll, 1));
   EXPECT_EQ(result3.vsyncs_since_previous_frame, 2);
+  EXPECT_EQ(result3.vsync_interval, kNewDerivedInterval);
+  EXPECT_EQ(result3.vsync_interval_type,
+            VsyncIntervalType::kPreviousDeadlineDerived);
 }
 
 TEST_F(ScrollJankV4DeciderTest, IsValidFrame) {
