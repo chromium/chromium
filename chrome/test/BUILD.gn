@@ -2159,6 +2159,7 @@ if (!is_android) {
       "//chrome/browser/resource_coordinator:mojo_bindings",
       "//chrome/browser/safe_browsing:advanced_protection",
       "//chrome/browser/safe_browsing:blocking_page_platform_test_support",
+      "//chrome/browser/safe_browsing:browser_tests",
       "//chrome/browser/safe_browsing:verdict_cache_manager_factory",
       "//chrome/browser/screen_ai:browser_tests",
       "//chrome/browser/screen_ai:screen_ai_install_state",

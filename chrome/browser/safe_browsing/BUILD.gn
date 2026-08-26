@@ -1193,3 +1193,46 @@ if (safe_browsing_mode != 0) {
     }
   }
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = []
+  deps = []
+
+  if (enable_extensions) {
+    sources +=
+        [ "extension_telemetry/extension_telemetry_service_browsertest.cc" ]
+    deps += [
+      ":safe_browsing",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/enterprise/connectors/test:test_support",
+      "//chrome/browser/extensions",
+      "//chrome/browser/extensions:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/common:constants",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/enterprise/connectors/core",
+      "//components/omnibox/browser",
+      "//components/safe_browsing/content/browser/web_ui",
+      "//components/safe_browsing/core/common",
+      "//components/safe_browsing/core/common:safe_browsing_prefs",
+      "//components/safe_browsing/core/common/proto:csd_proto",
+      "//components/search_engines",
+      "//content/public/browser",
+      "//content/test:browsertest_support",
+      "//extensions:test_support",
+      "//extensions/browser:test_support",
+      "//extensions/common",
+      "//extensions/common/api",
+      "//net:test_support",
+      "//testing/gtest",
+    ]
+  }
+}
