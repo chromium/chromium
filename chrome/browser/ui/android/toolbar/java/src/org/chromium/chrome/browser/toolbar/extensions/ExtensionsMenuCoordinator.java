@@ -107,6 +107,8 @@ public class ExtensionsMenuCoordinator
 
     @Nullable @VisibleForTesting ExtensionsMenuMediator mMediator;
     private long mLastDismissalTimeMs;
+    private boolean mIsMenuOpen;
+    private final boolean mIsWebApp;
 
     /**
      * Constructor.
@@ -123,6 +125,7 @@ public class ExtensionsMenuCoordinator
      * @param MenuButtonPinningDelegate The {@link MenuButtonPinningDelegate} to handle pinning the
      *     icon.
      * @param modalDialogManager The {@link ModalDialogManager}.
+     * @param isWebApp Whether this extensions menu is in a web app.
      */
     public ExtensionsMenuCoordinator(
             Context context,
@@ -135,7 +138,8 @@ public class ExtensionsMenuCoordinator
             TabCreator tabCreator,
             ExtensionsToolbarBridge extensionsToolbarBridge,
             MenuButtonPinningDelegate menuButtonPinningDelegate,
-            ModalDialogManager modalDialogManager) {
+            ModalDialogManager modalDialogManager,
+            boolean isWebApp) {
         mContext = context;
         mCurrentTabSupplier = currentTabSupplier;
         mProfile = profile;
@@ -145,6 +149,7 @@ public class ExtensionsMenuCoordinator
         mExtensionsToolbarBridge = extensionsToolbarBridge;
         mMenuButtonPinningDelegate = menuButtonPinningDelegate;
         mModalDialogManager = modalDialogManager;
+        mIsWebApp = isWebApp;
 
         mExtensionsToolbarBridge.setMenuDelegate(this);
 
@@ -202,10 +207,13 @@ public class ExtensionsMenuCoordinator
         mExtensionsMenuButton.addPopupListener(
                 new ListMenuHost.PopupMenuShownListener() {
                     @Override
-                    public void onPopupMenuShown() {}
+                    public void onPopupMenuShown() {
+                        mIsMenuOpen = true;
+                    }
 
                     @Override
                     public void onPopupMenuDismissed() {
+                        mIsMenuOpen = false;
                         mLastDismissalTimeMs = TimeUtils.elapsedRealtimeMillis();
                         mMenuButtonPinningDelegate.requestLayoutWithViewUtils();
                         destroyMediator();
@@ -307,7 +315,7 @@ public class ExtensionsMenuCoordinator
 
     /** Returns whether the extensions menu is open. */
     public boolean isExtensionsMenuOpen() {
-        return mExtensionsMenuButton.getHost().isMenuShowing();
+        return mIsMenuOpen;
     }
 
     private void setupMainPageModel() {
@@ -340,6 +348,7 @@ public class ExtensionsMenuCoordinator
         mMainPageModel.set(
                 ExtensionsMenuProperties.MENU_BUTTON_PINNED,
                 mMenuButtonPinningDelegate.isMenuButtonPinned());
+        mMainPageModel.set(ExtensionsMenuProperties.MENU_BUTTON_PINNING_VISIBLE, !mIsWebApp);
         mMainPageModel.set(ExtensionsMenuProperties.SITE_SETTINGS_CONTAINER_VISIBLE, true);
         mMainPageModel.set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE, true);
         mMainPageModel.set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CHECKED, true);
@@ -526,6 +535,7 @@ public class ExtensionsMenuCoordinator
 
     @Override
     public void destroy() {
+        mIsMenuOpen = false;
         mCurrentTabSupplier.removeObserver(mTabSupplierObserver);
         destroyMediator();
         mModalDialogManager.removeObserver(mModalDialogManagerObserver);

@@ -39,16 +39,23 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
 import org.chromium.chrome.browser.ui.actions.appmenu.MenuButtonState;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeatureKey;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.web_app_header.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
@@ -59,10 +66,12 @@ import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.util.TokenHolder;
@@ -137,12 +146,21 @@ public class WebAppHeaderLayoutCoordinator
     private @Nullable Tab mObservedTab;
     private final Callback<@Nullable Tab> mOnTabUpdate;
     private final BrowserServicesIntentDataProvider mBrowserServicesIntentDataProvider;
+    private final OneshotSupplier<ChromeAndroidTask> mChromeAndroidTaskSupplier;
+    private final TabModelSelector mTabModelSelector;
+    private final TabCreator mTabCreator;
+    private final ModalDialogManager mModalDialogManager;
+    private @Nullable ExtensionsToolbarCoordinator mExtensionsToolbarCoordinator;
+    private boolean mIsDestroyed;
 
     /**
      * Creates an instance of {@link WebAppHeaderLayoutCoordinator}.
      *
      * @param viewStub a stub in which web app header will be inflated into.
      * @param desktopWindowStateManager a class that notifies about desktop windowing state changes.
+     * @param tabCreator a {@link TabCreator} used by the extensions toolbar to open external URLs
+     *     (e.g., Chrome Web Store or extension management) in a standard browser window rather than
+     *     inside the web app.
      */
     public WebAppHeaderLayoutCoordinator(
             Activity activity,
@@ -160,7 +178,11 @@ public class WebAppHeaderLayoutCoordinator
                     browserStateBrowserControlsVisibilityDelegate,
             WindowAndroid activityWindowAndroid,
             Runnable requestRenderRunnable,
-            @Nullable String clientPackageName) {
+            @Nullable String clientPackageName,
+            OneshotSupplier<ChromeAndroidTask> chromeAndroidTaskSupplier,
+            TabModelSelector tabModelSelector,
+            TabCreator tabCreator,
+            ModalDialogManager modalDialogManager) {
         assert browserServicesIntentDataProvider.isWebApkActivity()
                 || browserServicesIntentDataProvider.isTrustedWebActivity();
 
@@ -171,6 +193,10 @@ public class WebAppHeaderLayoutCoordinator
         mDisabledControlsHolder = new TokenHolder(this::updateControlsEnabledState);
         mScrimManager = scrimManager;
         mSetHeaderAsOverlayCallback = setHeaderAsOverlayCallback;
+        mChromeAndroidTaskSupplier = chromeAndroidTaskSupplier;
+        mTabModelSelector = tabModelSelector;
+        mTabCreator = tabCreator;
+        mModalDialogManager = modalDialogManager;
 
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mBrowserControlsStateProvider.addObserver(this);
@@ -411,6 +437,55 @@ public class WebAppHeaderLayoutCoordinator
         mMediator.setOnButtonBottomInsetChanged(this::onButtonBottomInsetChanged);
     }
 
+    private void initExtensionsToolbar() {
+        assert mExtensionsToolbarCoordinator == null;
+        if (!mIsTWA || mView == null) return;
+
+        mChromeAndroidTaskSupplier.onAvailable(
+                (task) -> {
+                    if (mIsDestroyed || mExtensionsToolbarCoordinator != null || mView == null) {
+                        return;
+                    }
+                    final WebAppHeaderLayout view = mView;
+                    ViewStub stub = view.findViewById(R.id.extensions_toolbar_container_stub);
+                    if (stub == null) return;
+
+                    TabModel currentModel = mTabModelSelector.getCurrentModel();
+                    if (currentModel == null || currentModel.getProfile() == null) return;
+                    Profile profile = currentModel.getProfile();
+
+                    Runnable cleanup = () -> mExtensionsToolbarCoordinator = null;
+                    mExtensionsToolbarCoordinator =
+                            (ExtensionsToolbarCoordinator)
+                                    task.addFeature(
+                                            new ChromeAndroidTaskFeatureKey(
+                                                    ExtensionsToolbarCoordinator.class,
+                                                    profile,
+                                                    (ActivityWindowAndroid) mActivityWindowAndroid),
+                                            () ->
+                                                    ExtensionsToolbarCoordinator.maybeCreate(
+                                                            mActivity,
+                                                            stub,
+                                                            mActivityWindowAndroid,
+                                                            task,
+                                                            profile,
+                                                            mTabSupplier,
+                                                            mTabCreator,
+                                                            mThemeColorProvider,
+                                                            view,
+                                                            /* contextMenuPopulatorFactory= */ null,
+                                                            /* selectionDropdownMenuDelegate= */ null,
+                                                            mTabModelSelector,
+                                                            mModalDialogManager,
+                                                            cleanup,
+                                                            /* isWebApp= */ true));
+                });
+    }
+
+    public @Nullable ExtensionsToolbarCoordinator getExtensionsToolbarCoordinator() {
+        return mExtensionsToolbarCoordinator;
+    }
+
     private void initMenuButton() {
         assert mView != null;
         assert mMenuButtonContainer == null;
@@ -447,6 +522,8 @@ public class WebAppHeaderLayoutCoordinator
                             /* isWebApp= */ true);
             mMenuButtonCoordinator.setMenuButton(
                     mMenuButtonContainer.findViewById(R.id.menu_button_wrapper));
+
+            initExtensionsToolbar();
         }
     }
 
@@ -536,6 +613,16 @@ public class WebAppHeaderLayoutCoordinator
         if (mToggleButtonView != null && mToggleButtonView.getVisibility() == View.VISIBLE) {
             final var rect = new Rect();
             mToggleButtonView.getHitRect(rect);
+            mView.offsetDescendantRectToMyCoords(rightAlignedWrapper, rect);
+            areas.add(rect);
+        }
+
+        View extensionsToolbar = mView.findViewById(R.id.extensions_toolbar_container);
+        if (extensionsToolbar != null
+                && extensionsToolbar.getVisibility() == View.VISIBLE
+                && extensionsToolbar.getWidth() > 0) {
+            final var rect = new Rect();
+            extensionsToolbar.getHitRect(rect);
             mView.offsetDescendantRectToMyCoords(rightAlignedWrapper, rect);
             areas.add(rect);
         }
@@ -692,6 +779,13 @@ public class WebAppHeaderLayoutCoordinator
             mObservedTab = null;
         }
         mTabSupplier.removeObserver(mOnTabUpdate);
+
+        if (mExtensionsToolbarCoordinator != null) {
+            mExtensionsToolbarCoordinator.destroy();
+            mExtensionsToolbarCoordinator = null;
+        }
+
+        mIsDestroyed = true;
     }
 
     @VisibleForTesting

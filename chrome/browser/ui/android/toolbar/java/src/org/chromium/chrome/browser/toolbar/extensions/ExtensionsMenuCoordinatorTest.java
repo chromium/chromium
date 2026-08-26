@@ -177,7 +177,8 @@ public class ExtensionsMenuCoordinatorTest {
                         mTabCreator,
                         mExtensionsToolbarBridge,
                         mMenuButtonPinningDelegate,
-                        mModalDialogManager);
+                        mModalDialogManager,
+                        /* isWebApp= */ false);
 
         // Clear invocations from initialization to ensure tests start fresh.
         clearInvocations(mExtensionsMenuBridgeJniMock);
@@ -621,6 +622,38 @@ public class ExtensionsMenuCoordinatorTest {
 
         verify(mExtensionsToolbarBridge)
                 .getMenuButtonState(eq(newWebContents), anyInt(), anyInt(), anyFloat(), anyInt());
+    }
+
+    @Test
+    public void testPinMenuIconButton_VisibilityInBrowserVsWebApp() {
+        // In browser mode (isWebApp = false), pin to toolbar row is visible.
+        View browserPinRow =
+                mExtensionsMenuCoordinator
+                        .getContentView()
+                        .findViewById(R.id.extensions_menu_pin_menu_icon_button);
+        assertEquals(View.VISIBLE, browserPinRow.getVisibility());
+
+        // In web app mode (isWebApp = true), pin to toolbar row is gone.
+        ExtensionsMenuCoordinator webAppCoordinator =
+                new ExtensionsMenuCoordinator(
+                        mContext,
+                        mExtensionsMenuButton,
+                        mThemeColorProvider,
+                        mTask,
+                        mWindowAndroid,
+                        mProfile,
+                        mCurrentTabSupplier,
+                        mTabCreator,
+                        mExtensionsToolbarBridge,
+                        mMenuButtonPinningDelegate,
+                        mModalDialogManager,
+                        /* isWebApp= */ true);
+        View webAppPinRow =
+                webAppCoordinator
+                        .getContentView()
+                        .findViewById(R.id.extensions_menu_pin_menu_icon_button);
+        assertEquals(View.GONE, webAppPinRow.getVisibility());
+        webAppCoordinator.destroy();
     }
 
     private ExtensionsMenuTypes.SiteSettingsState createSiteSettingsState(

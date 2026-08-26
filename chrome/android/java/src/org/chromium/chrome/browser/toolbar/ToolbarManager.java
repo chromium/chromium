@@ -2736,7 +2736,8 @@ public class ToolbarManager
                                                         selectionDropdownMenuDelegate,
                                                         mTabModelSelector,
                                                         mModalDialogManagerSupplier.get(),
-                                                        cleanup));
+                                                        cleanup,
+                                                        /* isWebApp= */ false));
                 if (mExtensionsToolbarCoordinator != null) {
                     mToolbar.setExtensionsToolbarCoordinator(mExtensionsToolbarCoordinator);
                 }

@@ -9,9 +9,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
@@ -59,9 +61,14 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.web_app_header.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
@@ -71,8 +78,9 @@ import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.TestActivity;
-import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
 
@@ -113,7 +121,10 @@ public class WebAppHeaderLayoutCoordinatorTest {
     @Mock public Callback<Boolean> mSetHeaderAsOverlayCallback;
     @Mock public BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private Runnable mRequestRenderRunnable;
-    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private ActivityWindowAndroid mWindowAndroid;
+    @Mock public TabModelSelector mTabModelSelector;
+    @Mock public TabCreator mTabCreator;
+    @Mock public ModalDialogManager mModalDialogManager;
 
     private WebAppHeaderLayoutCoordinator mCoordinator;
     private Activity mActivity;
@@ -124,10 +135,12 @@ public class WebAppHeaderLayoutCoordinatorTest {
     private AppHeaderState mAppHeaderState;
     private ShadowLooper mShadowLooper;
     private OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
+    private OneshotSupplierImpl<ChromeAndroidTask> mChromeAndroidTaskSupplier;
 
     @Before
     public void setup() {
         mShadowLooper = shadowOf(Looper.getMainLooper());
+        mChromeAndroidTaskSupplier = new OneshotSupplierImpl<>();
 
         when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.WEB_APK);
         setupDisplayMode(DisplayMode.STANDALONE);
@@ -166,7 +179,11 @@ public class WebAppHeaderLayoutCoordinatorTest {
                         null,
                         mWindowAndroid,
                         mRequestRenderRunnable,
-                        "Package name");
+                        "Package name",
+                        mChromeAndroidTaskSupplier,
+                        mTabModelSelector,
+                        mTabCreator,
+                        mModalDialogManager);
     }
 
     private void setupDesktopWindowing(boolean isInDesktopWindow) {
@@ -985,5 +1002,315 @@ public class WebAppHeaderLayoutCoordinatorTest {
 
         // Verify observer removed from tab2
         verify(tab2).removeObserver(mCoordinator);
+    }
+
+    @Test
+    public void testExtensionsToolbarCoordinator_InitializedWhenTaskAvailable() {
+        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.STANDALONE);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
+
+        TabModel tabModel = mock(TabModel.class);
+        when(tabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
+
+        createCoordinator();
+        mShadowLooper.idle();
+
+        // Before ChromeAndroidTask is available, extensions toolbar is not yet initialized.
+        assertNull(mCoordinator.getExtensionsToolbarCoordinator());
+
+        // Provide ChromeAndroidTask.
+        ChromeAndroidTask task = mock(ChromeAndroidTask.class);
+        ExtensionsToolbarCoordinator mockToolbarCoordinator =
+                mock(ExtensionsToolbarCoordinator.class);
+        when(task.addFeature(any(), any())).thenReturn(mockToolbarCoordinator);
+        mChromeAndroidTaskSupplier.set(task);
+        mShadowLooper.idle();
+
+        // Verify ExtensionsToolbarCoordinator is initialized.
+        assertNotNull(mCoordinator.getExtensionsToolbarCoordinator());
+        assertEquals(mockToolbarCoordinator, mCoordinator.getExtensionsToolbarCoordinator());
+    }
+
+    @Test
+    public void testExtensionsToolbarCoordinator_NotInitializedForWebApk() {
+        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.WEB_APK);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.STANDALONE);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
+
+        TabModel tabModel = mock(TabModel.class);
+        when(tabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
+
+        createCoordinator();
+        mShadowLooper.idle();
+
+        ChromeAndroidTask task = mock(ChromeAndroidTask.class);
+        mChromeAndroidTaskSupplier.set(task);
+        mShadowLooper.idle();
+
+        assertNull(mCoordinator.getExtensionsToolbarCoordinator());
+        verify(task, never()).addFeature(any(), any());
+    }
+
+    @Test
+    public void testExtensionsToolbarCoordinator_NotInitializedWhenHeaderNotInflated() {
+        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(null);
+        setupDisplayMode(DisplayMode.STANDALONE);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
+
+        TabModel tabModel = mock(TabModel.class);
+        when(tabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
+
+        createCoordinator();
+        mShadowLooper.idle();
+
+        ChromeAndroidTask task = mock(ChromeAndroidTask.class);
+        mChromeAndroidTaskSupplier.set(task);
+        mShadowLooper.idle();
+
+        assertNull(mCoordinator.getExtensionsToolbarCoordinator());
+        verify(task, never()).addFeature(any(), any());
+    }
+
+    @Test
+    public void testExtensionsToolbarCoordinator_NotInitializedWhenProfileNull() {
+        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.STANDALONE);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
+
+        TabModel tabModel = mock(TabModel.class);
+        when(tabModel.getProfile()).thenReturn(null);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
+
+        createCoordinator();
+        mShadowLooper.idle();
+
+        ChromeAndroidTask task = mock(ChromeAndroidTask.class);
+        mChromeAndroidTaskSupplier.set(task);
+        mShadowLooper.idle();
+
+        assertNull(mCoordinator.getExtensionsToolbarCoordinator());
+        verify(task, never()).addFeature(any(), any());
+    }
+
+    private void testExtensionsToolbarCoordinator_InitializedInDisplayMode(
+            @DisplayMode.EnumType int displayMode) {
+        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(displayMode);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
+
+        TabModel tabModel = mock(TabModel.class);
+        when(tabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
+
+        createCoordinator();
+        mShadowLooper.idle();
+
+        ChromeAndroidTask task = mock(ChromeAndroidTask.class);
+        ExtensionsToolbarCoordinator mockToolbarCoordinator =
+                mock(ExtensionsToolbarCoordinator.class);
+        when(task.addFeature(any(), any())).thenReturn(mockToolbarCoordinator);
+        mChromeAndroidTaskSupplier.set(task);
+        mShadowLooper.idle();
+
+        assertNotNull(
+                "ExtensionsToolbarCoordinator should be initialized for display mode "
+                        + displayMode,
+                mCoordinator.getExtensionsToolbarCoordinator());
+        assertEquals(mockToolbarCoordinator, mCoordinator.getExtensionsToolbarCoordinator());
+    }
+
+    private void testExtensionsToolbarCoordinator_NotInitializedInDisplayMode(
+            @DisplayMode.EnumType int displayMode) {
+        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(displayMode);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
+
+        TabModel tabModel = mock(TabModel.class);
+        when(tabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
+
+        createCoordinator();
+        mShadowLooper.idle();
+
+        ChromeAndroidTask task = mock(ChromeAndroidTask.class);
+        mChromeAndroidTaskSupplier.set(task);
+        mShadowLooper.idle();
+
+        assertNull(
+                "ExtensionsToolbarCoordinator should not be initialized for display mode "
+                        + displayMode,
+                mCoordinator.getExtensionsToolbarCoordinator());
+        verify(task, never()).addFeature(any(), any());
+    }
+
+    @Test
+    public void testExtensionsToolbarCoordinator_InitializedInMinimalUi() {
+        testExtensionsToolbarCoordinator_InitializedInDisplayMode(DisplayMode.MINIMAL_UI);
+    }
+
+    @Test
+    public void testExtensionsToolbarCoordinator_InitializedInStandalone() {
+        testExtensionsToolbarCoordinator_InitializedInDisplayMode(DisplayMode.STANDALONE);
+    }
+
+    @Test
+    public void testExtensionsToolbarCoordinator_InitializedInWindowControlsOverlay() {
+        testExtensionsToolbarCoordinator_InitializedInDisplayMode(
+                DisplayMode.WINDOW_CONTROLS_OVERLAY);
+    }
+
+    @Test
+    public void testExtensionsToolbarCoordinator_NotInitializedInBrowser() {
+        testExtensionsToolbarCoordinator_NotInitializedInDisplayMode(DisplayMode.BROWSER);
+    }
+
+    @Test
+    public void testExtensionsToolbarCoordinator_NotInitializedInFullscreen() {
+        testExtensionsToolbarCoordinator_NotInitializedInDisplayMode(DisplayMode.FULLSCREEN);
+    }
+
+    @Test
+    public void testExtensionsToolbarCoordinator_NotInitializedInTabbed() {
+        testExtensionsToolbarCoordinator_NotInitializedInDisplayMode(DisplayMode.TABBED);
+    }
+
+    @Test
+    public void testExtensionsToolbarCoordinator_NotInitializedInUnframed() {
+        testExtensionsToolbarCoordinator_NotInitializedInDisplayMode(DisplayMode.UNFRAMED);
+    }
+
+    @Test
+    public void testExtensionsToolbarCoordinator_NotInitializedInPictureInPicture() {
+        testExtensionsToolbarCoordinator_NotInitializedInDisplayMode(
+                DisplayMode.PICTURE_IN_PICTURE);
+    }
+
+    @Test
+    public void testExtensionsToolbarCoordinator_DestroyedOnCoordinatorDestroy() {
+        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.STANDALONE);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
+
+        TabModel tabModel = mock(TabModel.class);
+        when(tabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
+
+        createCoordinator();
+        mShadowLooper.idle();
+
+        ChromeAndroidTask task = mock(ChromeAndroidTask.class);
+        ExtensionsToolbarCoordinator mockToolbarCoordinator =
+                mock(ExtensionsToolbarCoordinator.class);
+        when(task.addFeature(any(), any())).thenReturn(mockToolbarCoordinator);
+        mChromeAndroidTaskSupplier.set(task);
+        mShadowLooper.idle();
+
+        assertEquals(mockToolbarCoordinator, mCoordinator.getExtensionsToolbarCoordinator());
+
+        mCoordinator.destroy();
+        verify(mockToolbarCoordinator).destroy();
+        assertNull(mCoordinator.getExtensionsToolbarCoordinator());
+    }
+
+    @Test
+    public void testExtensionsToolbar_NonDraggableAreaIncludedWhenVisible() {
+        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.STANDALONE);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
+
+        createCoordinator();
+        mShadowLooper.idle();
+
+        // Add a view representing the inflated extensions toolbar container.
+        ViewGroup rightAlignedWrapper = mActivity.findViewById(R.id.right_aligned_wrapper);
+        assertNotNull("Right aligned wrapper should be present", rightAlignedWrapper);
+        View extensionsContainer = new View(mActivity);
+        extensionsContainer.setId(R.id.extensions_toolbar_container);
+        rightAlignedWrapper.addView(extensionsContainer);
+        extensionsContainer.setVisibility(View.VISIBLE);
+        extensionsContainer.layout(10, 0, 50, 40);
+
+        notifyHeaderStateChanged();
+        mShadowLooper.idle();
+
+        List<Rect> nonDraggableAreas = mCoordinator.collectControlPositions();
+        assertFalse("Non-draggable areas should not be empty", nonDraggableAreas.isEmpty());
+        verifyHeaderContainsNonDraggableAreas(nonDraggableAreas);
+    }
+
+    @Test
+    public void
+            testMinimizeWindow_Standalone_MenuButtonAndExtensionsToolbar_DragExclusionUpdated() {
+        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.STANDALONE);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
+
+        createCoordinator();
+        mShadowLooper.idle();
+
+        // Add extensions toolbar container in default (GONE) state.
+        ViewGroup rightAlignedWrapper = mActivity.findViewById(R.id.right_aligned_wrapper);
+        assertNotNull("Right aligned wrapper should be present", rightAlignedWrapper);
+        View extensionsContainer = new View(mActivity);
+        extensionsContainer.setId(R.id.extensions_toolbar_container);
+        extensionsContainer.setVisibility(View.GONE);
+        rightAlignedWrapper.addView(extensionsContainer);
+
+        // Emulate minimizing window where controls do not fit.
+        int flexibleAreaWidth =
+                getMinButtonWidth(DisplayMode.STANDALONE) + HEADER_CONTROL_BUTTON_DP - 1;
+        setupDesktopWindowing(
+                new Rect(0, 0, LEFT_INSET + flexibleAreaWidth + RIGHT_INSET, SCREEN_HEIGHT),
+                new Rect(LEFT_INSET, 0, LEFT_INSET + flexibleAreaWidth, SYS_APP_HEADER_HEIGHT),
+                /* isInDesktopWindow= */ true);
+        notifyHeaderStateChanged();
+        mShadowLooper.idle();
+
+        // When minimized, controls do not fit and whole header is draggable.
+        var headerLayout = mCoordinator.getWebAppHeaderLayout();
+        assertNotNull("WebAppHeaderLayout should be initialized", headerLayout);
+        var headerMenuContainer = headerLayout.findViewById(R.id.web_app_menu_button_wrapper);
+        assertEquals(
+                "Header menu button container should be gone when controls do not fit",
+                View.GONE,
+                headerMenuContainer.getVisibility());
+        verifyWholeHeaderIsDraggable();
+
+        // Maximize window so controls fit.
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        notifyHeaderStateChanged();
+        mShadowLooper.idle();
+
+        // Menu button should be visible, enabled, and excluded from drag.
+        assertEquals(
+                "Header menu button container should be visible when controls fit",
+                View.VISIBLE,
+                headerMenuContainer.getVisibility());
+        verifyHeaderContainsNonDraggableAreas(mCoordinator.collectControlPositions());
+
+        // When extensions toolbar becomes visible, it is also included in non-draggable areas.
+        extensionsContainer.setVisibility(View.VISIBLE);
+        extensionsContainer.layout(10, 0, 50, 40);
+        notifyHeaderStateChanged();
+        mShadowLooper.idle();
+
+        List<Rect> nonDraggableAreasWithExtensions = mCoordinator.collectControlPositions();
+        assertTrue(
+                "Non-draggable areas should include both menu button and extensions container",
+                nonDraggableAreasWithExtensions.size() >= 2);
+        verifyHeaderContainsNonDraggableAreas(nonDraggableAreasWithExtensions);
     }
 }

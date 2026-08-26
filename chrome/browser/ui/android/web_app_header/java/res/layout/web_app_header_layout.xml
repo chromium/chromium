@@ -73,6 +73,13 @@ found in the LICENSE file.
                 android:visibility="gone"
                 app:tint="@color/default_icon_color_tint_list" />
 
+            <ViewStub
+                android:id="@+id/extensions_toolbar_container_stub"
+                android:inflatedId="@+id/extensions_toolbar_container"
+                android:layout_width="wrap_content"
+                android:layout_height="?attr/toolbarButtonHeight"
+                android:layout_marginVertical="?attr/toolbarButtonMarginVertical"/>
+
             <FrameLayout
                 android:id="@+id/web_app_menu_button_wrapper"
                 style="@style/HeaderButton"

@@ -184,6 +184,12 @@ public class ExtensionsMenuViewBinder {
         } else if (key == ExtensionsMenuProperties.MENU_BUTTON_PINNED) {
             MaterialSwitch toggle = view.findViewById(R.id.extensions_menu_button_pinning_toggle);
             toggle.setChecked(model.get(ExtensionsMenuProperties.MENU_BUTTON_PINNED));
+        } else if (key == ExtensionsMenuProperties.MENU_BUTTON_PINNING_VISIBLE) {
+            View pinningRow = view.findViewById(R.id.extensions_menu_pin_menu_icon_button);
+            pinningRow.setVisibility(
+                    model.get(ExtensionsMenuProperties.MENU_BUTTON_PINNING_VISIBLE)
+                            ? View.VISIBLE
+                            : View.GONE);
         }
     }
 

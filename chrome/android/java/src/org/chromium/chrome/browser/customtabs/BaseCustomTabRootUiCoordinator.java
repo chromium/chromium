@@ -10,7 +10,9 @@ import static org.chromium.chrome.browser.flags.CustomTabProfileType.INCOGNITO;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Build;
+import android.provider.Browser;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.View;
@@ -92,8 +94,11 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarBehavior;
@@ -118,6 +123,7 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -125,7 +131,9 @@ import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.url.GURL;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -783,6 +791,86 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             assert mWebAppThemeColorProvider != null;
             var webAppThemeColorProvider = mWebAppThemeColorProvider.get();
             assert webAppThemeColorProvider != null;
+
+            // This TabCreator is provided to WebAppHeaderLayoutCoordinator for opening links in the
+            // extensions menu. Those URLs should open in a normal Chrome browser window rather than
+            // inside the Trusted Web Activity.
+            TabCreator browserTabCreator =
+                    new TabCreator() {
+                        private void openUrlInBrowser(String url) {
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                            intent.setClass(mActivity, ChromeLauncherActivity.class);
+                            intent.putExtra(
+                                    Browser.EXTRA_APPLICATION_ID, mActivity.getPackageName());
+                            intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
+                            IntentUtils.addTrustedIntentExtras(intent);
+                            mActivity.startActivity(intent);
+                        }
+
+                        @Override
+                        public @Nullable Tab createNewTab(
+                                LoadUrlParams loadUrlParams,
+                                @TabLaunchType int type,
+                                @Nullable Tab parent) {
+                            openUrlInBrowser(loadUrlParams.getUrl());
+                            return null;
+                        }
+
+                        @Override
+                        public @Nullable Tab createNewTab(
+                                LoadUrlParams loadUrlParams,
+                                @TabLaunchType int type,
+                                @Nullable Tab parent,
+                                int position) {
+                            openUrlInBrowser(loadUrlParams.getUrl());
+                            return null;
+                        }
+
+                        @Override
+                        public @Nullable Tab createNewTab(
+                                LoadUrlParams loadUrlParams,
+                                String title,
+                                @TabLaunchType int type,
+                                @Nullable Tab parent,
+                                int position) {
+                            openUrlInBrowser(loadUrlParams.getUrl());
+                            return null;
+                        }
+
+                        @Override
+                        public @Nullable Tab createFrozenTab(
+                                @Nullable TabState state, int id, int index) {
+                            return null;
+                        }
+
+                        @Override
+                        public @Nullable Tab launchUrl(String url, @TabLaunchType int type) {
+                            openUrlInBrowser(url);
+                            return null;
+                        }
+
+                        @Override
+                        public @Nullable Tab createTabWithWebContents(
+                                @Nullable Tab parent,
+                                boolean shouldPin,
+                                WebContents webContents,
+                                @TabLaunchType int type,
+                                GURL url,
+                                int index,
+                                CompletableFuture<Boolean> addTabToModel) {
+                            return null;
+                        }
+
+                        @Override
+                        public @Nullable Tab createTabWithHistory(
+                                Tab parent, @TabLaunchType int type) {
+                            return null;
+                        }
+
+                        @Override
+                        public void launchNtp(@TabLaunchType int type) {}
+                    };
+
             mWebAppHeaderLayoutCoordinator =
                     new WebAppHeaderLayoutCoordinator(
                             mActivity,
@@ -809,7 +897,11 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                 assumeNonNull(holder);
                                 holder.requestFocus();
                             },
-                            mClientPackageName);
+                            mClientPackageName,
+                            mChromeAndroidTaskSupplier,
+                            mTabModelSelectorSupplier.asNonNull().get(),
+                            browserTabCreator,
+                            mModalDialogManagerSupplier.get());
             mBrowserControlsManager.addObserver(mWebAppHeaderLayoutCoordinator);
         }
         if (DesktopPopupHeaderUtils.isDesktopPopupHeaderEnabled(intentDataProvider)) {

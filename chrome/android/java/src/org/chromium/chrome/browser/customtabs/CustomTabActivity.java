@@ -8,6 +8,7 @@ import static androidx.annotation.VisibleForTesting.PRIVATE;
 import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK;
 import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.PRICE_INSIGHTS;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.PRICE_TRACKING;
 
@@ -55,6 +56,8 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigatio
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabHistoryIphController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history.HistoryManager;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
@@ -66,9 +69,13 @@ import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
+import org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarCoordinator;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
+import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -431,6 +438,41 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                 return true;
             }
             pageInfo.show(tab, ChromePageInfoHighlight.noHighlight());
+            return true;
+        } else if (id == R.id.extensions_menu_menu_id) {
+            if (WebAppHeaderUtils.isWebAppHeaderEnabled(getIntentDataProvider())) {
+                ExtensionsToolbarCoordinator coordinator =
+                        assumeNonNull(
+                                assumeNonNull(
+                                                getBaseCustomTabRootUiCoordinator()
+                                                        .getWebAppHeaderLayoutCoordinator())
+                                        .getExtensionsToolbarCoordinator());
+                coordinator.showExtensionsMenu();
+                RecordUserAction.record("MobileMenuExtensionsMenu");
+                return true;
+            }
+        } else if (id == R.id.extensions_webstore_menu_id) {
+            Intent intent =
+                    new Intent(Intent.ACTION_VIEW, Uri.parse(UrlConstants.CHROME_WEBSTORE_URL));
+            intent.setClass(this, ChromeLauncherActivity.class);
+            intent.putExtra(Browser.EXTRA_APPLICATION_ID, getPackageName());
+            intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
+            IntentUtils.addTrustedIntentExtras(intent);
+            startActivity(intent);
+            RecordUserAction.record("MobileMenuChromeWebstore");
+            return true;
+        } else if (id == R.id.manage_extensions_menu_id) {
+            Intent intent =
+                    new Intent(Intent.ACTION_VIEW, Uri.parse(UrlConstants.CHROME_EXTENSIONS_URL));
+            intent.setClass(this, ChromeLauncherActivity.class);
+            intent.putExtra(Browser.EXTRA_APPLICATION_ID, getPackageName());
+            intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
+            IntentUtils.addTrustedIntentExtras(intent);
+            startActivity(intent);
+            RecordUserAction.record("MobileMenuManageExtensions");
+            TrackerFactory.getTrackerForProfile(
+                            getTabModelSelector().getCurrentModel().getProfile())
+                    .notifyEvent(EventConstants.EXTENSIONS_ROW_IN_APP_MENU_CLICKED);
             return true;
         } else if (id == R.id.price_insights_menu_id) {
             getBaseCustomTabRootUiCoordinator().runPriceInsightsAction();

@@ -74,6 +74,9 @@ class ExtensionsMenuProperties {
     public static final WritableObjectPropertyKey<OnClickListener>
             MENU_BUTTON_PINNING_CLICK_LISTENER = new WritableObjectPropertyKey<>();
 
+    public static final WritableBooleanPropertyKey MENU_BUTTON_PINNING_VISIBLE =
+            new WritableBooleanPropertyKey();
+
     public static final WritableIntDefPropertyKey<OptionalSectionType> OPTIONAL_SECTION_TYPE =
             new WritableIntDefPropertyKey<>(OptionalSectionType.NONE);
 
@@ -123,6 +126,7 @@ class ExtensionsMenuProperties {
                 MANAGE_EXTENSIONS_CLICK_LISTENER,
                 MENU_BUTTON_PINNED,
                 MENU_BUTTON_PINNING_CLICK_LISTENER,
+                MENU_BUTTON_PINNING_VISIBLE,
                 OPTIONAL_SECTION_TYPE,
                 POPUP_RESIZE_CALLBACK,
                 RELOAD_CLICK_LISTENER,
