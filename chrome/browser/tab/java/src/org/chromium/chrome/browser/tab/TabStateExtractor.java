@@ -66,7 +66,10 @@ public class TabStateExtractor {
         // Case 1: The tab is still frozen we can just use the existing state.
         if (tab.getWebContentsState() != null) {
             assert pendingLoadParams == null;
-            return tab.getWebContentsState();
+            // Instantiate a new reference-counted handle to the underlying PackedData so the
+            // extracted state's lifecycle is decoupled from the source tab. Otherwise, destroying
+            // the source tab (e.g. on close or unarchive) would free the shared native buffer.
+            return new WebContentsState(tab.getWebContentsState());
         }
 
         // The tab is not frozen we need to create a new state. This may be null if buffer

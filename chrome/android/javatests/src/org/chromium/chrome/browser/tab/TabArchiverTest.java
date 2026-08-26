@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -1304,6 +1305,70 @@ public class TabArchiverTest {
                                         .get()));
         CriteriaHelper.pollUiThread(() -> 2 == getTabCountOnUiThread(mRegularTabModel));
         assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
+    }
+
+    @Test
+    @MediumTest
+    public void testUnarchiveAndRestoreTabs_RestoreFrozenTabWithWebContentsState() {
+        Tab tab =
+                mActivityTestRule.loadUrlInNewTab(
+                        mActivityTestRule.getTestServer().getURL(TEST_PATH),
+                        /* incognito= */ false);
+
+        TabState state = runOnUiThreadBlocking(() -> TabStateExtractor.from(tab));
+        assertNotNull(state);
+        assertNotNull(state.contentsState);
+
+        // Close original tab and create a frozen tab in the archived tab model.
+        Tab archivedTab =
+                runOnUiThreadBlocking(
+                        () -> {
+                            mRegularTabModel
+                                    .getTabRemover()
+                                    .closeTabs(
+                                            TabClosureParams.closeTab(tab).allowUndo(false).build(),
+                                            /* allowDialog= */ false);
+                            return mArchivedTabCreator.createFrozenTab(
+                                    state, tab.getId(), INVALID_TAB_INDEX);
+                        });
+
+        assertEquals(1, getTabCountOnUiThread(mRegularTabModel));
+        assertEquals(1, getTabCountOnUiThread(mArchivedTabModel));
+
+        assertNotNull(archivedTab);
+        assertNull(archivedTab.getWebContents());
+        WebContentsState oldContentsState = archivedTab.getWebContentsState();
+        assertNotNull(oldContentsState);
+
+        // Unarchive and restore the frozen tab into the regular tab model.
+        runOnUiThreadBlocking(
+                () ->
+                        mTabArchiver.unarchiveAndRestoreTabs(
+                                mRegularTabCreator,
+                                Arrays.asList(archivedTab),
+                                /* updateTimestamp= */ true,
+                                /* areTabsBeingOpened= */ false));
+
+        assertEquals(2, getTabCountOnUiThread(mRegularTabModel));
+        assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
+
+        Tab restoredTab = runOnUiThreadBlocking(() -> mRegularTabModel.getTabById(tab.getId()));
+        assertNotNull(restoredTab);
+
+        // Verify that the restored tab has an independent WebContentsState instance and can be
+        // loaded / selected without crashing.
+        assertNotSame(oldContentsState, restoredTab.getWebContentsState());
+        runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(restoredTab.loadIfNeeded(/* forceBackingSize= */ false));
+                });
+        CriteriaHelper.pollUiThread(() -> restoredTab.getWebContents() != null);
+        CriteriaHelper.pollUiThread(
+                () ->
+                        mActivityTestRule
+                                .getTestServer()
+                                .getURL(TEST_PATH)
+                                .equals(restoredTab.getUrl().getSpec()));
     }
 
     private void addRegularTabInBackgroundForArchive(String path) {

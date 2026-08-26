@@ -98,7 +98,7 @@ public class TabbedModeTabModelStoreTest {
     @After
     public void tearDown() {
         if (mLoadedData != null) {
-            destroyData(mLoadedData);
+            runOnUiThreadBlocking(mLoadedData::destroy);
             mLoadedData = null;
         }
     }
@@ -779,19 +779,10 @@ public class TabbedModeTabModelStoreTest {
                 runOnUiThreadBlocking(() -> newModel.getTabById(newTabId)));
     }
 
-    private void destroyData(StorageLoadedData data) {
-        for (StorageLoadedData.LoadedTabState lts : data.getLoadedTabStates()) {
-            if (lts.tabState != null && lts.tabState.contentsState != null) {
-                lts.tabState.contentsState.destroy();
-            }
-        }
-        data.destroy();
-    }
-
     private StorageLoadedData loadAllDataSync(String windowTag, boolean incognito)
             throws Exception {
         if (mLoadedData != null) {
-            destroyData(mLoadedData);
+            runOnUiThreadBlocking(mLoadedData::destroy);
             mLoadedData = null;
         }
         Holder<StorageLoadedData> holder = new Holder<>(null);
