@@ -6,9 +6,11 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -153,10 +155,104 @@ class FileLookInStream {
                              .bufSize = look_stream_buffer_ ? kBufferSize : 0};
 };
 
+// An ILookInStream backed by a `base::span<const uint8_t>`.
+class MemoryLookInStream {
+ public:
+  explicit MemoryLookInStream(base::span<const uint8_t> input_buffer)
+      : data_(input_buffer) {}
+
+  MemoryLookInStream(const MemoryLookInStream&) = delete;
+  MemoryLookInStream& operator=(const MemoryLookInStream&) = delete;
+
+  ILookInStreamPtr AsILookInStream() { return &look_to_memory_.vtable; }
+
+ private:
+  struct LookToMemory {
+    ILookInStream vtable;
+    MemoryLookInStream* parent;
+  };
+  static_assert(std::is_standard_layout_v<LookToMemory>,
+                "LookToMemory must have standard layout");
+
+  static SRes Look(ILookInStreamPtr stream, const void** buf, size_t* size) {
+    MemoryLookInStream& instance =
+        *reinterpret_cast<const LookToMemory*>(stream)->parent;
+    auto remaining = instance.data_.subspan(instance.position_);
+    size_t to_show = std::min(*size, remaining.size());
+    *buf = to_show ? remaining.data() : nullptr;
+    *size = to_show;
+    return SZ_OK;
+  }
+
+  // Advance the look's position by `offset` bytes; up to the size of the input
+  // buffer.
+  static SRes Skip(ILookInStreamPtr stream, size_t offset) {
+    MemoryLookInStream& instance =
+        *reinterpret_cast<const LookToMemory*>(stream)->parent;
+    if (offset > instance.data_.size() - instance.position_) {
+      return SZ_ERROR_PARAM;
+    }
+    instance.position_ += offset;
+    return SZ_OK;
+  }
+
+  static SRes Read(ILookInStreamPtr stream, void* buf, size_t* size) {
+    MemoryLookInStream& instance =
+        *reinterpret_cast<const LookToMemory*>(stream)->parent;
+    if (instance.position_ >= instance.data_.size()) {
+      *size = 0;
+      return SZ_OK;
+    }
+    size_t to_read =
+        std::min(*size, instance.data_.size() - instance.position_);
+    base::span(static_cast<uint8_t*>(buf), to_read)
+        .copy_from_nonoverlapping(
+            instance.data_.subspan(instance.position_, to_read));
+    instance.position_ += to_read;
+    *size = to_read;
+    return SZ_OK;
+  }
+
+  static SRes Seek(ILookInStreamPtr stream, int64_t* pos, ESzSeek origin) {
+    MemoryLookInStream& instance =
+        *reinterpret_cast<const LookToMemory*>(stream)->parent;
+
+    int64_t new_pos = 0;
+    switch (origin) {
+      case SZ_SEEK_SET:
+        new_pos = *pos;
+        break;
+      case SZ_SEEK_CUR:
+        new_pos = static_cast<int64_t>(instance.position_) + *pos;
+        break;
+      case SZ_SEEK_END:
+        new_pos = static_cast<int64_t>(instance.data_.size()) + *pos;
+        break;
+    }
+    if (new_pos < 0) {
+      return SZ_ERROR_READ;
+    }
+    instance.position_ =
+        static_cast<size_t>(std::min<uint64_t>(new_pos, instance.data_.size()));
+    *pos = instance.position_;
+    return SZ_OK;
+  }
+
+  const base::span<const uint8_t> data_;
+  LookToMemory look_to_memory_{
+      {&MemoryLookInStream::Look, &MemoryLookInStream::Skip,
+       &MemoryLookInStream::Read, &MemoryLookInStream::Seek},
+      this};
+  size_t position_ = 0;
+};
+
 class SevenZipReaderImpl {
  public:
   SevenZipReaderImpl(
       base::File archive_file,
+      base::OnceCallback<base::File()> temp_file_request_callback);
+  SevenZipReaderImpl(
+      base::span<const uint8_t> archive_data,
       base::OnceCallback<base::File()> temp_file_request_callback);
   ~SevenZipReaderImpl();
 
@@ -188,7 +284,10 @@ class SevenZipReaderImpl {
   static bool AreHeadersEncrypted(ILookInStreamPtr archive_stream,
                                   base::File temp_file);
 
-  ILookInStreamPtr in_stream() { return in_stream_.AsILookInStream(); }
+  ILookInStreamPtr in_stream() {
+    return std::visit([](auto& stream) { return stream.AsILookInStream(); },
+                      in_stream_);
+  }
 
   Result ExtractIntoTempFile(size_t folder_index);
 
@@ -198,7 +297,7 @@ class SevenZipReaderImpl {
   const ISzAlloc alloc_temp_{.Alloc = &AllocTemp, .Free = &FreeTemp};
   base::OnceCallback<base::File()> temp_file_request_callback_;
   base::File temp_file_;
-  FileLookInStream in_stream_;
+  std::variant<FileLookInStream, MemoryLookInStream> in_stream_;
   CSzArEx db_{};
 
   // The index of the folder that has been decoded into the temp file via
@@ -258,7 +357,17 @@ SevenZipReaderImpl::SevenZipReaderImpl(
     base::File archive_file,
     base::OnceCallback<base::File()> temp_file_request_callback)
     : temp_file_request_callback_(std::move(temp_file_request_callback)),
-      in_stream_(std::move(archive_file)) {
+      in_stream_(std::in_place_type<FileLookInStream>,
+                 std::move(archive_file)) {
+  EnsureLzmaSdkInitialized();
+  SzArEx_Init(&db_);
+}
+
+SevenZipReaderImpl::SevenZipReaderImpl(
+    base::span<const uint8_t> archive_data,
+    base::OnceCallback<base::File()> temp_file_request_callback)
+    : temp_file_request_callback_(std::move(temp_file_request_callback)),
+      in_stream_(std::in_place_type<MemoryLookInStream>, archive_data) {
   EnsureLzmaSdkInitialized();
   SzArEx_Init(&db_);
 }
@@ -672,6 +781,25 @@ std::unique_ptr<SevenZipReader> SevenZipReader::Create(
   auto impl = std::make_unique<internal::SevenZipReaderImpl>(
       std::move(seven_zip_file), base::BindOnce(&Delegate::OnTempFileRequest,
                                                 base::Unretained(&delegate)));
+  Result open_result = impl->Open();
+  if (open_result != Result::kSuccess) {
+    delegate.OnOpenError(open_result);
+    return nullptr;
+  }
+
+  return base::WrapUnique(new SevenZipReader(std::move(impl), delegate));
+}
+
+// static
+std::unique_ptr<SevenZipReader> SevenZipReader::Create(
+    base::span<const uint8_t> seven_zip_buffer,
+    Delegate& delegate) {
+  // Unretained is safe here because the delegate is required to outlive
+  // the returned `SevenZipReader`, and the `SevenZipReaderImpl` only
+  // ever runs the callback synchronously.
+  auto impl = std::make_unique<internal::SevenZipReaderImpl>(
+      seven_zip_buffer, base::BindOnce(&Delegate::OnTempFileRequest,
+                                       base::Unretained(&delegate)));
   Result open_result = impl->Open();
   if (open_result != Result::kSuccess) {
     delegate.OnOpenError(open_result);
