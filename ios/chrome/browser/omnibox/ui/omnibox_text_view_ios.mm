@@ -187,7 +187,7 @@ const CGFloat kVerticalOffset = 1;
 
 - (void)setPlaceholderLabel:(UILabel*)placeholderLabel {
   placeholderLabel.font = self.font;
-  placeholderLabel.textColor = [UIColor colorNamed:kTextfieldPlaceholderColor];
+  placeholderLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   placeholderLabel.isAccessibilityElement = NO;
   _placeholderLabel = placeholderLabel;
 
