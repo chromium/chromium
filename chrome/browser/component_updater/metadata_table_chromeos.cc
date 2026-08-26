@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/hash/sha1.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -20,8 +19,20 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
+#include "crypto/obsolete/sha1.h"
 
 namespace component_updater {
+
+// Converts username to a hashed string.
+//
+// The result is converted to lowercase to stay compatible with
+// CryptoLib::HexEncodeToBuffer().
+//
+// Public so it can be friended by crypto/obsolete/sha1.
+std::string HashUsername(std::string_view username) {
+  return base::HexEncodeLower(
+      crypto::obsolete::Sha1::Hash(base::ToLowerASCII(username)));
+}
 
 namespace {
 
@@ -53,15 +64,6 @@ const user_manager::User* GetActiveUser() {
   DCHECK(user_manager::UserManager::Get());
 
   return user_manager::UserManager::Get()->GetActiveUser();
-}
-
-// Converts username to a hashed string.
-//
-// The result is converted to lowercase to stay compatible with
-// CryptoLib::HexEncodeToBuffer().
-std::string HashUsername(std::string_view username) {
-  return base::HexEncodeLower(
-      base::SHA1Hash(base::as_byte_span(base::ToLowerASCII(username))));
 }
 
 const std::string& GetRequiredStringFromDict(const base::Value& dict,
