@@ -8854,6 +8854,13 @@
        null,
        {}
       ]
+     ],
+     "view-transition-class-non-existing-crash.html": [
+      "46f0561eecda16945fb4d4038dd8f40cb21df82f",
+      [
+       null,
+       {}
+      ]
      ]
     },
     "css-viewport": {
@@ -385044,6 +385051,22 @@
      "7acfd736140237bb3e3d5ee552c8aeb08e918f7b",
      []
     ],
+    "decompression-brotli-large-window.tentative.any-expected.txt": [
+     "9afa319a4821b244249a5daf0a71d14c0cd08b35",
+     []
+    ],
+    "decompression-brotli-large-window.tentative.any.serviceworker-expected.txt": [
+     "9afa319a4821b244249a5daf0a71d14c0cd08b35",
+     []
+    ],
+    "decompression-brotli-large-window.tentative.any.sharedworker-expected.txt": [
+     "9afa319a4821b244249a5daf0a71d14c0cd08b35",
+     []
+    ],
+    "decompression-brotli-large-window.tentative.any.worker-expected.txt": [
+     "9afa319a4821b244249a5daf0a71d14c0cd08b35",
+     []
+    ],
     "decompression-buffersource.any-expected.txt": [
      "deb3d3cd1e50753c595cf3753bb6c620fe602a90",
      []
@@ -459125,14 +459148,6 @@
       "cloned-any.js": [
        "2bca96c7043db34b9cd4a60156019b7f870100a2",
        []
-      ],
-      "mime-type.any-expected.txt": [
-       "1ae55c802254ecc8c662025e736b9d8abafb5660",
-       []
-      ],
-      "mime-type.any.worker-expected.txt": [
-       "1ae55c802254ecc8c662025e736b9d8abafb5660",
-       []
       ]
      },
      "cors": {
@@ -482748,6 +482763,14 @@
        "cd0463c0c2e4207c5d43f8c527354d55d0647cb5",
        []
       ],
+      "custom-element-reparenting-expected.txt": [
+       "359c33e14e34b96b66ab36bc223d23e6e5298d3f",
+       []
+      ],
+      "custom-element-reparenting-template-cycle-expected.txt": [
+       "0d8482b511729cca0001478ba05ba6e36c35ee4a",
+       []
+      ],
       "foreign_content_001.html": [
        "10ebaa8434fb8263d7f61df02c15986ed9dfbb7e",
        []
@@ -500463,22 +500486,6 @@
      ],
      "cache-keys.https.any.worker-expected.txt": [
       "6130b0d3d5b413468ddda470bc14b1824e190a6d",
-      []
-     ],
-     "cache-match.https.any-expected.txt": [
-      "5038daa69b0f4024f5858bce497d2aedb11c598e",
-      []
-     ],
-     "cache-match.https.any.serviceworker-expected.txt": [
-      "5038daa69b0f4024f5858bce497d2aedb11c598e",
-      []
-     ],
-     "cache-match.https.any.sharedworker-expected.txt": [
-      "5038daa69b0f4024f5858bce497d2aedb11c598e",
-      []
-     ],
-     "cache-match.https.any.worker-expected.txt": [
-      "5038daa69b0f4024f5858bce497d2aedb11c598e",
       []
      ],
      "cache-matchAll.https.any-expected.txt": [
@@ -567859,6 +567866,53 @@
         [
          "script",
          "resources/formats.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "decompression-brotli-large-window.tentative.any.js": [
+     "4cbf445785e6bbc8ec29239696a6014353955727",
+     [
+      "compression/decompression-brotli-large-window.tentative.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compression/decompression-brotli-large-window.tentative.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compression/decompression-brotli-large-window.tentative.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compression/decompression-brotli-large-window.tentative.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
         ]
        ]
       }
@@ -748545,7 +748599,7 @@
          ]
         ],
         "template-content-hierarcy.html": [
-         "7cf2ed84258c22d1ea28476e4800e429e2534f6e",
+         "6326ee859deed18beb69b9b40b2a994858617585",
          [
           null,
           {}
@@ -749902,6 +749956,27 @@
       ],
       "cdata-in-integration-point-fragment.html": [
        "cdfcf676079c2e543561f874615dbcfa30261b02",
+       [
+        null,
+        {}
+       ]
+      ],
+      "custom-element-reparenting-shadow-cycle.html": [
+       "bcbf84164241bdf9e53f77d89349d5f219157556",
+       [
+        null,
+        {}
+       ]
+      ],
+      "custom-element-reparenting-template-cycle.html": [
+       "51f69ad930873234d29c6ac3e15c89a53be8afa4",
+       [
+        null,
+        {}
+       ]
+      ],
+      "custom-element-reparenting.html": [
+       "b1f46b3a46f50d9b07c251742c2a1a0950459f67",
        [
         null,
         {}
