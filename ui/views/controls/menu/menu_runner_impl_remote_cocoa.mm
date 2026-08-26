@@ -8,7 +8,9 @@
 #include "components/remote_cocoa/common/native_widget_ns_window.mojom.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/menu/menu_controller_cocoa_delegate_params.h"
 #include "ui/views/widget/widget.h"
 
@@ -33,9 +35,11 @@ void MenuRunnerImplRemoteCocoa::RunMenu(Widget* widget,
 
   menu_model_->MenuWillShow();
   std::set<int> command_ids;
+  const ui::ColorProvider* color_provider =
+      widget ? widget->GetColorProvider() : nullptr;
   auto menu = remote_cocoa::mojom::ContextMenu::New(
-      ModelToMojo(*menu_model_, command_ids), anchor, target_view_id,
-      MenuControllerParamsForWidget(widget));
+      ModelToMojo(*menu_model_, command_ids, color_provider), anchor,
+      target_view_id, MenuControllerParamsForWidget(widget));
   remote_cocoa::mojom::NativeWidgetNSWindow* remote_window =
       remote_cocoa::GetWindowMojoInterface(widget->GetNativeWindow());
   remote_window->DisplayContextMenu(std::move(menu),
@@ -108,7 +112,8 @@ void MenuRunnerImplRemoteCocoa::MenuClosed() {
 
 std::vector<remote_cocoa::mojom::MenuItemPtr>
 MenuRunnerImplRemoteCocoa::ModelToMojo(const ui::MenuModel& model,
-                                       std::set<int>& command_ids) {
+                                       std::set<int>& command_ids,
+                                       const ui::ColorProvider* color_provider) {
   std::vector<remote_cocoa::mojom::MenuItemPtr> result;
   const size_t count = model.GetItemCount();
   result.reserve(count);
@@ -126,6 +131,8 @@ MenuRunnerImplRemoteCocoa::ModelToMojo(const ui::MenuModel& model,
       ui::ImageModel icon = model.GetIconAt(index);
       if (icon.IsImage()) {
         common->icon = icon.GetImage().AsImageSkia();
+      } else if (icon.IsVectorIcon() && color_provider) {
+        common->icon = icon.Rasterize(color_provider);
       }
       common->is_enabled = model.IsEnabledAt(index);
       common->is_visible = model.IsVisibleAt(index);
@@ -138,7 +145,7 @@ MenuRunnerImplRemoteCocoa::ModelToMojo(const ui::MenuModel& model,
       if (common->is_visible &&
           model.GetTypeAt(index) == ui::MenuModel::TYPE_SUBMENU) {
         ui::MenuModel* submenuModel = model.GetSubmenuModelAt(index);
-        auto children = ModelToMojo(*submenuModel, command_ids);
+        auto children = ModelToMojo(*submenuModel, command_ids, color_provider);
         result.push_back(remote_cocoa::mojom::MenuItem::NewSubmenu(
             remote_cocoa::mojom::SubmenuMenuItem::New(std::move(common),
                                                       std::move(children))));
