@@ -279,13 +279,13 @@ void LocalDOMWindow::ClearForReuse() {
           document_->DidRemoveEventListeners(count);
         });
   }
-  document_ = nullptr;
-
-  // Reset per-document metrics bookkeeping.
+  // Reset per-document metrics bookkeeping before clearing `document_`.
   if (soft_navigation_heuristics_) {
     soft_navigation_heuristics_->Shutdown();
     soft_navigation_heuristics_ = nullptr;
   }
+  document_ = nullptr;
+
   WindowPerformance::ClearForWindowReuse(*this);
 }
 

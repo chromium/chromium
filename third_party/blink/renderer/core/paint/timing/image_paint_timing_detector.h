@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/callback_forward.h"
+#include "base/functional/function_ref.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -30,6 +31,7 @@ struct DOMPaintTimingInfo;
 class LargestContentfulPaintManager;
 class LayoutObject;
 class MediaTiming;
+class PaintTimingClient;
 class PaintTimingDetector;
 class PropertyTreeStateOrAlias;
 class StyleImage;
@@ -156,11 +158,6 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // collections.
   ImageRecord* RemoveRecord(MediaRecordIdHash);
 
-  inline ImageRecord* GetPendingImage(MediaRecordIdHash record_id_hash) {
-    auto it = pending_images_.find(record_id_hash);
-    return it == pending_images_.end() ? nullptr : it->value.Get();
-  }
-
   // Sets the first animated frame time for the given `ImageRecord` based on the
   // record's `MediaTiming`, which must be a VideoTiming.
   void SetVideoFirstAnimatedFrameTime(ImageRecord*);
@@ -174,6 +171,8 @@ class CORE_EXPORT ImagePaintTimingDetector final
   void QueueToMeasurePaintTime(ImageRecord*, PresentationReason);
 
   base::TimeTicks LoadTime(MediaRecordIdHash) const;
+
+  void ForEachPaintTimingClient(base::FunctionRef<void(PaintTimingClient*)>);
 
   // Used to decide which frame a record belongs to, monotonically increasing.
   uint32_t frame_index_ = 1;

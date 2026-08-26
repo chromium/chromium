@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -27,6 +28,7 @@
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_manager.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_client.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
 #include "third_party/blink/renderer/core/paint/timing/text_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
@@ -406,22 +408,6 @@ void PaintTiming::FlushPaintTimingsOnFramePresented(
     return;
   }
 
-  // First, compute the paintedImages and paintedTextNodes by invoking the text
-  // and image paint timing detector callbacks. This only computes the
-  // candidates to feed into various algorithms, it does not update any metrics
-  // or emit any web-exposed performance entries.
-  HeapVector<Member<ImageRecord>> image_records;
-  if (compute_painted_images_callback) {
-    std::move(*compute_painted_images_callback)
-        .Run(raw_presentation_timestamp, paint_timing_info, image_records);
-  }
-  HeapVector<Member<TextRecord>> text_records;
-  if (compute_painted_text_callback) {
-    std::move(*compute_painted_text_callback)
-        .Run(raw_presentation_timestamp, paint_timing_info, text_records);
-  }
-  const bool may_have_lcp = !image_records.empty() || !text_records.empty();
-
   // 10.1. If document should report first paint, then: Report paint timing
   // given document, "first-paint", and paintTimingInfo.
   if (record.paint_events.Contains(PaintEvent::kFirstPaint)) {
@@ -434,27 +420,33 @@ void PaintTiming::FlushPaintTimingsOnFramePresented(
     performance->AddFirstContentfulPaintTiming(paint_timing_info);
   }
 
-  // 10.3. Report largest contentful paint given document, paintTimingInfo,
+  // 10.3. Report largest contentful paint given document,
+  // paintTimingInfo, paintedImages and paintedTextNodes.
+  //
+  // 10.4 Report element timing given document, paintTimingInfo,
   // paintedImages and paintedTextNodes.
-  if (largest_contentful_paint_manager_ && may_have_lcp) {
-    largest_contentful_paint_manager_->OnFramePresented(image_records,
-                                                        text_records);
-  }
+  {
+    // First, compute the paintedImages and paintedTextNodes by invoking the
+    // text and image paint timing detector callbacks. This only computes
+    // the candidates to feed into various algorithms, it does not update
+    // any metrics or emit any web-exposed performance entries.
+    HeapVector<Member<ImageRecord>> image_records;
+    if (compute_painted_images_callback) {
+      std::move(*compute_painted_images_callback)
+          .Run(raw_presentation_timestamp, paint_timing_info, image_records);
+    }
+    HeapVector<Member<TextRecord>> text_records;
+    if (compute_painted_text_callback) {
+      std::move(*compute_painted_text_callback)
+          .Run(raw_presentation_timestamp, paint_timing_info, text_records);
+    }
 
-  // 10.4 Report element timing given document, paintTimingInfo, paintedImages
-  // and paintedTextNodes.
-  if (image_element_timings) {
-    image_element_timing_->OnFramePresented(*image_element_timings,
-                                            paint_timing_info);
-  }
-  if (text_element_timing_ && !text_records.empty()) {
-    text_element_timing_->OnFramePresented(text_records);
-  }
-
-  if (may_have_lcp) {
-    if (SoftNavigationHeuristics* heuristics =
-            GetFrame()->DomWindow()->GetSoftNavigationHeuristics()) {
-      heuristics->OnFramePresented(image_records, text_records);
+    if (!image_records.empty() || !text_records.empty() ||
+        !!image_element_timings) {
+      ForEachClient([&](PaintTimingClient* client) {
+        client->OnFramePresented(image_records, text_records,
+                                 image_element_timings, paint_timing_info);
+      });
     }
   }
 
@@ -473,6 +465,7 @@ void PaintTiming::Trace(Visitor* visitor) const {
   visitor->Trace(text_element_timing_);
   visitor->Trace(largest_contentful_paint_manager_);
   visitor->Trace(callback_manager_);
+  visitor->Trace(clients_);
   Supplement<Document>::Trace(visitor);
 }
 
@@ -490,6 +483,11 @@ PaintTiming::PaintTiming(Document& document)
     largest_contentful_paint_manager_ =
         MakeGarbageCollected<LargestContentfulPaintManager>(
             document.domWindow());
+    // Note: these are added in the order that the spec calls out to the various
+    // other specs in https://w3c.github.io/paint-timing/#mark-paint-timing.
+    AddClient(largest_contentful_paint_manager_);
+    AddClient(text_element_timing_);
+    AddClient(image_element_timing_);
   }
 }
 
@@ -776,28 +774,26 @@ void PaintTiming::OnRestoredFromBackForwardCache() {
 }
 
 void PaintTiming::NotifyPaintFinished() {
+  DOMWindowPerformance::performance(CHECK_DEREF(GetDocument()->domWindow()))
+      ->OnPaintFinished();
   paint_timing_detector_->NotifyPaintFinished();
-  // We should never be painting detached frames.
-  CHECK(GetFrame());
-  LocalDOMWindow* window = GetFrame()->DomWindow();
-  CHECK(window);
-  DOMWindowPerformance::performance(*window)->OnPaintFinished();
-  if (auto* heuristics = window->GetSoftNavigationHeuristics()) {
-    heuristics->OnPaintFinished();
-  }
+
+  ForEachClient([](PaintTimingClient* client) { client->OnPaintFinished(); });
 
   MarkPaintTimingInternal();
 }
 
 void PaintTiming::OnInputOrScroll() {
+  ForEachClient([](PaintTimingClient* client) { client->OnInputOrScroll(); });
+
   // `largest_contentful_paint_manager_` will be non-null as long as first input
   // has not occurred and this object wasn't created while detached (in which
   // case the associated frame cannot be targeted for input).
   if (!largest_contentful_paint_manager_) {
     return;
   }
-  // LCP stops recording on first input or scroll.
-  largest_contentful_paint_manager_->OnFirstInputOrScroll();
+
+  RemoveClient(largest_contentful_paint_manager_);
   largest_contentful_paint_manager_ = nullptr;
 
   // Notify the metrics layer of the timestamp so it can determine which records
@@ -807,6 +803,27 @@ void PaintTiming::OnInputOrScroll() {
       ->timingForReporting()
       ->SetFirstInputOrScrollNotifiedTimestamp(base::TimeTicks::Now());
   paint_timing::NotifyLoaderPerformanceTimingChanged(GetSupplementable());
+}
+
+void PaintTiming::AddClient(PaintTimingClient* client) {
+  CHECK(allow_client_modifications_);
+  DCHECK(!clients_.Contains(client));
+  clients_.push_back(client);
+}
+
+void PaintTiming::RemoveClient(PaintTimingClient* client) {
+  CHECK(allow_client_modifications_);
+  wtf_size_t count =
+      EraseIf(clients_, [&](const auto& c) { return c == client; });
+  CHECK_EQ(count, 1u);
+}
+
+void PaintTiming::ForEachClient(
+    base::FunctionRef<void(PaintTimingClient*)> callback) {
+  base::AutoReset<bool> scope(&allow_client_modifications_, false);
+  for (PaintTimingClient* client : clients_) {
+    callback(client);
+  }
 }
 
 }  // namespace blink

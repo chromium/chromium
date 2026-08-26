@@ -140,6 +140,8 @@ class PaintTimingTestBase : public RenderingTest {
 
   base::TimeTicks NowTicks() { return base::TimeTicks::Now(); }
 
+  PaintTiming& GetPaintTiming() { return PaintTiming::From(GetDocument()); }
+
   PaintTimingDetector& GetPaintTimingDetector() {
     return PaintTimingDetector::From(GetDocument());
   }
@@ -154,8 +156,9 @@ class PaintTimingTestBase : public RenderingTest {
     return scrollable_area->VisibleContentRect(kExcludeScrollbars);
   }
 
-  void SimulateScroll() {
-    GetPaintTimingDetector().NotifyScroll(mojom::blink::ScrollType::kUser);
+  void SimulateScroll(
+      mojom::blink::ScrollType type = mojom::blink::ScrollType::kUser) {
+    GetPaintTimingDetector().NotifyScroll(type);
   }
 
   void SimulateKeyDown() {

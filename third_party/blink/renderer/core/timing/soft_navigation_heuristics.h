@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_client.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/timing/performance_timeline_entry_id_generator.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -37,7 +38,8 @@ class SoftNavigationPaintAttributionTracker;
 // This class contains the logic for calculating Single-Page-App soft navigation
 // heuristics. See https://github.com/WICG/soft-navigations
 class CORE_EXPORT SoftNavigationHeuristics
-    : public GarbageCollected<SoftNavigationHeuristics> {
+    : public GarbageCollected<SoftNavigationHeuristics>,
+      public PaintTimingClient {
  public:
   FRIEND_TEST_ALL_PREFIXES(SoftNavigationHeuristicsTest,
                            EarlyReturnOnInvalidPendingInteractionTimestamp);
@@ -48,7 +50,6 @@ class CORE_EXPORT SoftNavigationHeuristics
   MaybeCreateTaskScopeForEvent(PerformanceEventTiming* entry);
 
   explicit SoftNavigationHeuristics(LocalDOMWindow* window);
-  virtual ~SoftNavigationHeuristics() = default;
 
   static SoftNavigationHeuristics* CreateIfNeeded(LocalDOMWindow*);
 
@@ -74,8 +75,22 @@ class CORE_EXPORT SoftNavigationHeuristics
   // to a `SoftNavigationContext` and connected to the DOM.
   static void OnVideoSrcChanged(HTMLVideoElement*);
 
-  // GarbageCollected boilerplate.
-  void Trace(Visitor*) const;
+  // PaintTimingClient implementation:
+  //
+  // TODO(crbug.com/454082771): This should also override `OnFirstPaint()` and
+  // update the underlying LCP calculator's "largest pending image" like we do
+  // for hard navs.
+  void OnElementLastContentfulPaint(ImageRecord*) override;
+  void OnElementLastContentfulPaint(TextRecord*,
+                                    bool was_previously_reported) override;
+  void OnFramePresented(const HeapVector<Member<ImageRecord>>&,
+                        const HeapVector<Member<TextRecord>>&,
+                        const GCedHeapVector<Member<ElementTimingInfo>>*,
+                        const DOMPaintTimingInfo&) override;
+  void OnPaintFinished() override;
+  void OnInputOrScroll() override;
+
+  void Trace(Visitor*) const override;
 
   void Shutdown();
 
@@ -94,8 +109,6 @@ class CORE_EXPORT SoftNavigationHeuristics
   bool ModifiedDOM(Node* node);
   uint64_t SoftNavigationCount() { return soft_navigation_count_; }
 
-  void OnPaintFinished();
-  void OnInputOrScroll();
   void UpdateSoftLcpCandidate();
 
   SoftNavigationPaintAttributionTracker* GetPaintAttributionTracker() {
@@ -114,19 +127,6 @@ class CORE_EXPORT SoftNavigationHeuristics
   void OnContextDisposed(SoftNavigationContext*);
   void UpdateSoftFcpMetricsForContext(SoftNavigationContext*) const;
   void UpdateSoftLcpMetricsForContext(SoftNavigationContext*);
-
-  // Called by PaintTiming on the initial paint for an image. Sets the relevant
-  // `SoftNavigationContext` on the `ImageRecord` if there is one.
-  void InitializePaintTracking(ImageRecord*);
-
-  // Called by PaintTiming when a text aggregation node is painted. Sets the
-  // relevant `SoftNavigationContext` on the `TextRecord` if there is one.
-  void InitializePaintTracking(TextRecord*);
-
-  // Called by PaintTiming with the image and text records that were presented
-  // in the last presented frame.
-  void OnFramePresented(const HeapVector<Member<ImageRecord>>&,
-                        const HeapVector<Member<TextRecord>>&);
 
  private:
   // For new Interactions, we unconditionally use the Interaction id to map to
@@ -162,10 +162,8 @@ class CORE_EXPORT SoftNavigationHeuristics
   // when this is called, and it must not have already been emitted.
   void EmitSoftNavigation(SoftNavigationContext*);
 
-  // Sets the `PaintTimingRecord`'s `SoftNavigationContext` if this is an image
-  // or text whose paint should be tracked.
   template <IsDerivedFromPaintTimingRecord T>
-  void MaybeSetContextOnFirstPaint(T*) const;
+  void OnContentfulPaintImpl(T*) const;
 
   uint64_t CalculateRequiredPaintArea() const;
   uint64_t CalculateViewportArea() const;

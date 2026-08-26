@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/paint/timing/text_element_timing.h"
 
+#include "base/check_deref.h"
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -64,11 +66,14 @@ bool TextElementTiming::CanReportElements() {
 }
 
 void TextElementTiming::OnFramePresented(
-    const HeapVector<Member<TextRecord>>& records) {
+    const HeapVector<Member<ImageRecord>>& image_records,
+    const HeapVector<Member<TextRecord>>& text_records,
+    const GCedHeapVector<Member<ElementTimingInfo>>*,
+    const DOMPaintTimingInfo&) {
   if (!CanReportElements()) {
     return;
   }
-  for (auto& record : records) {
+  for (auto& record : text_records) {
     if (record->IsNeededForElementTiming()) {
       OnTextNodePresented(*record.Get());
     }
@@ -113,6 +118,17 @@ void TextElementTiming::OnTextNodePresented(const TextRecord& record) {
     container_timing_->OnElementPainted(record.PaintTimingInfo(), element,
                                         record.ElementTimingRect());
   }
+}
+
+void TextElementTiming::OnElementLastContentfulPaint(
+    TextRecord* record,
+    bool was_previously_reported) {
+  CHECK(!record->IsNeededForElementTiming());
+  if (was_previously_reported ||
+      !NeededForTiming(CHECK_DEREF(record->GetNode()))) {
+    return;
+  }
+  record->SetIsNeededForElementTiming(true);
 }
 
 void TextElementTiming::Trace(Visitor* visitor) const {

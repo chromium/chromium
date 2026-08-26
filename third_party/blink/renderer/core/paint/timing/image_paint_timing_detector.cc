@@ -77,8 +77,6 @@ void ImagePaintTimingDetector::SendRectsToHud() {
     return;
   }
 
-  bool is_recording_lcp = !!GetLargestContentfulPaintManager();
-
   for (const auto& info : images_queued_for_paint_time_) {
     if (info->frame_index == frame_index_) {
       ImageRecord* record = info->image_record;
@@ -86,7 +84,7 @@ void ImagePaintTimingDetector::SendRectsToHud() {
 
       if (record->GetSoftNavigationContext()) {
         type = cc::WebVitalMetricType::kInteractionContentfulPaint;
-      } else if (is_recording_lcp) {
+      } else if (record->IsNeededForLargestContentfulPaint()) {
         type = cc::WebVitalMetricType::kNavigationContentfulPaint;
       } else {
         continue;
@@ -128,14 +126,9 @@ void ImagePaintTimingDetector::NotifyImageRemoved(
     const MediaTiming* media_timing) {
   ImageRecord* record =
       RemoveRecord(MediaRecordId::GenerateHash(&object, media_timing));
-  if (auto* manager = GetLargestContentfulPaintManager()) {
-    // Notify `manager` even if record is null so it can update the largest
-    // ignored image, if needed.
-    //
-    // TODO(crbug.com/449779010): When soft navs supports largest pending image,
-    // this will need to be updated to notify the relevant soft nav context.
-    manager->OnImageRemoved(record, object, media_timing);
-  }
+  ForEachPaintTimingClient([&](PaintTimingClient* client) {
+    client->OnImageRemoved(record, object, media_timing);
+  });
 }
 
 void ImagePaintTimingDetector::StopRecordEntries() {
@@ -255,7 +248,8 @@ bool ImagePaintTimingDetector::RecordImage(
   // the image hasn't been "finalized" yet, i.e. the image wasn't sufficiently
   // loaded the last time it was painted or the presentation time callback for
   // the first paint after being sufficiently loaded is still pending.
-  ImageRecord* record = GetPendingImage(record_id_hash);
+  auto it = pending_images_.find(record_id_hash);
+  ImageRecord* record = it == pending_images_.end() ? nullptr : it->value.Get();
 
   // Skip measuring content that was already fully measured.
   //  - `record` is null: we aren't actively measuring this content, but we
@@ -324,27 +318,15 @@ bool ImagePaintTimingDetector::RecordImage(
       return false;
     }
 
-    if (auto* manager = GetLargestContentfulPaintManager()) {
-      manager->InitializePaintTracking(record);
-    }
-
-    LocalDOMWindow* window = object.GetDocument().domWindow();
-    CHECK(window);
-    if (SoftNavigationHeuristics* heuristics =
-            window->GetSoftNavigationHeuristics()) {
-      heuristics->InitializePaintTracking(record);
-    }
+    ForEachPaintTimingClient([&](PaintTimingClient* client) {
+      client->OnElementFirstContentfulPaint(record);
+    });
 
     // Mark the image as recorded regardless of if this is needed for any
     // PaintTiming clients so the image isn't reconsidered as a candidate.
     recorded_images_.insert(record_id_hash);
 
-    if (!record->IsNeededForInteractionContentfulPaint() &&
-        !record->IsNeededForLargestContentfulPaint()) {
-      return false;
-    }
-    // Finally, we have at least one client that wants to track paints for this
-    // image, so set up future tracking.
+    // Finally, set up tracking future paints for this `record`.
     pending_images_.insert(record->Hash(), record);
   }
 
@@ -361,8 +343,8 @@ bool ImagePaintTimingDetector::RecordImage(
   // track a single paint time for animated images/videos.
   if (!is_video && media_timing.IsPaintedFirstFrame() &&
       !record->HasFirstAnimatedFrameTime()) {
-    // Note that if `record` is already queued for first animated frame time,
-    // this will get ignored in `AssignPaintTimeToRegisteredQueuedRecords()`.
+    // Always measure the first frame time so it's available if this record is
+    // needed when it's sufficiently loaded.
     QueueToMeasurePaintTime(record, PresentationReason::kFirstAnimatedFrame);
   }
 
@@ -376,6 +358,8 @@ bool ImagePaintTimingDetector::RecordImage(
     return false;
   }
 
+  // Mark the image as sufficiently loaded first since clients may depend on
+  // that for filtering.
   record->SetIsSufficientlyLoadedForReporting();
   if (is_video) {
     SetVideoFirstAnimatedFrameTime(record);
@@ -384,10 +368,15 @@ bool ImagePaintTimingDetector::RecordImage(
                                     : LoadTime(record_id_hash));
   }
 
-  if (SoftNavigationContext* context = record->GetSoftNavigationContext()) {
-    context->AddPaintedArea(record);
+  // Inform clients about the contentful paint and set up for measuring
+  // presentation time if any clients need the `record`.
+  ForEachPaintTimingClient([&](PaintTimingClient* client) {
+    client->OnElementLastContentfulPaint(record);
+  });
+  if (!record->IsNeededForPaintTiming()) {
+    pending_images_.erase(record->Hash());
+    return false;
   }
-
   QueueToMeasurePaintTime(record, PresentationReason::kSufficientlyLoaded);
   return true;
 }
@@ -425,6 +414,12 @@ void ImagePaintTimingDetector::ReportLargestIgnoredImage() {
   // Trigger FCP if it's not already set.
   paint_timing_detector_->GetPaintTiming().MarkFirstImagePaint();
 
+  // Notify clients of the first and contentful paints and set up presentation
+  // feedback.
+  ForEachPaintTimingClient([&](PaintTimingClient* client) {
+    client->OnElementFirstContentfulPaint(record);
+    client->OnElementLastContentfulPaint(record);
+  });
   recorded_images_.insert(record->Hash());
   pending_images_.insert(record->Hash(), record);
 
@@ -518,6 +513,11 @@ base::TimeTicks ImagePaintTimingDetector::LoadTime(
     MediaRecordIdHash hash) const {
   auto it = image_finished_times_.find(hash);
   return it != image_finished_times_.end() ? it->value : base::TimeTicks();
+}
+
+void ImagePaintTimingDetector::ForEachPaintTimingClient(
+    base::FunctionRef<void(PaintTimingClient*)> callback) {
+  paint_timing_detector_->GetPaintTiming().ForEachClient(std::move(callback));
 }
 
 ImagePaintTimingDetector::QueuedImageRecordInfo::QueuedImageRecordInfo(

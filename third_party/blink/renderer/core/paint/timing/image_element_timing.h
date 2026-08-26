@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/paint/timing/container_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/media_record_id.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_callbacks.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_client.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -29,7 +30,8 @@ class StyleImage;
 // ImageElementTiming is responsible for tracking the paint timings for <img>
 // elements for a given window.
 class CORE_EXPORT ImageElementTiming final
-    : public GarbageCollected<ImageElementTiming> {
+    : public GarbageCollected<ImageElementTiming>,
+      public PaintTimingClient {
  public:
   // The maximum amount of characters included in Element Timing and Largest
   // Contentful Paint for inline images.
@@ -38,9 +40,15 @@ class CORE_EXPORT ImageElementTiming final
   ImageElementTiming(LocalDOMWindow&, const ImagePaintTimingDetector&);
   ImageElementTiming(const ImageElementTiming&) = delete;
   ImageElementTiming& operator=(const ImageElementTiming&) = delete;
-  ~ImageElementTiming() = default;
 
   static ImageElementTiming& From(LocalDOMWindow&);
+
+  // PaintTimingClient:
+  void OnFramePresented(const HeapVector<Member<ImageRecord>>&,
+                        const HeapVector<Member<TextRecord>>&,
+                        const GCedHeapVector<Member<ElementTimingInfo>>*,
+                        const DOMPaintTimingInfo&) override;
+  void Trace(Visitor* visitor) const override;
 
   // Called when the LayoutObject has been painted. Does nothing if the image is
   // not fully loaded. This method might queue a presentation promise to compute
@@ -60,12 +68,7 @@ class CORE_EXPORT ImageElementTiming final
   void NotifyImageRemoved(const LayoutObject&,
                           const ImageResourceContent* image);
 
-  void Trace(Visitor*) const;
-
   HeapVector<Member<ElementTimingInfo>> TakeElementTimingsOnPaintFinished();
-
-  void OnFramePresented(const GCedHeapVector<Member<ElementTimingInfo>>&,
-                        const DOMPaintTimingInfo&);
 
  private:
   friend class ImageElementTimingTest;
