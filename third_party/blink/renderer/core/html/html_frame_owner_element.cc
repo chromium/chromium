@@ -248,18 +248,8 @@ void HTMLFrameOwnerElement::DidChangeIsInCanvasSubtree() {
       root->SetIsInCanvasSubtree(IsInCanvasSubtree());
       if (auto* layout_view = inner_document->GetLayoutView()) {
         layout_view->SetNeedsPaintPropertyUpdate();
-        layout_view->Layer()->SetNeedsRepaint();
-        // At this point we do not know if the layout view background etc.
-        // will be painted by the layout view itself or the scrollable area.
-        // So invalidate both display item clients.
-        ObjectPaintInvalidator(*layout_view)
-            .InvalidateDisplayItemClient(
-                *layout_view, PaintInvalidationReason::kUncacheable);
-        ObjectPaintInvalidator(*layout_view)
-            .InvalidateDisplayItemClient(
-                layout_view->GetScrollableArea()
-                    ->GetScrollingBackgroundDisplayItemClient(),
-                PaintInvalidationReason::kUncacheable);
+        layout_view->SetShouldDoFullPaintInvalidation();
+        layout_view->SetBackgroundNeedsFullPaintInvalidation();
       }
     }
   }
