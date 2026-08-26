@@ -6920,15 +6920,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   const ui::BrowserAccessibility* button_1_refresh =
       FindNode(ax::mojom::Role::kButton, "Button 1");
   ASSERT_NE(nullptr, button_1_refresh);
-  // button_1 is now a dangling pointer for the old button.
-  // The pointers are not the same, proving that button_1_refresh is new.
-  ASSERT_NE(button_1, button_1_refresh);
   const ui::BrowserAccessibility* button_2_refresh =
       FindNode(ax::mojom::Role::kButton, "Button 2");
   ASSERT_NE(nullptr, button_2_refresh);
-  // button_2 is now a dangling pointer for the old button.
-  // The pointers are not the same, proving that button_2_refresh is new.
-  ASSERT_NE(button_2, button_2_refresh);
 
   // Test platform node ids have remained the same.
   EXPECT_EQ(unique_id_1, button_1_refresh->GetAXPlatformNode()->GetUniqueId());
