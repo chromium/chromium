@@ -27,6 +27,9 @@ BASE_FEATURE(kFileSystemAccessDirectoryIterationBlocklistCheck,
 BASE_FEATURE(kFileSystemAccessObserverQuotaLimit,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, check for hidden WebContents before showing chooser.
+BASE_FEATURE(kFileSystemAccessCheckHidden, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // On Linux, the quota limit is found by:
 // 1. Rounding down the system limit (read from
 //    /proc/sys/fs/inotify/max_user_watches) to the nearest

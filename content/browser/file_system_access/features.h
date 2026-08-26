@@ -19,6 +19,7 @@ namespace content::features {
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kFileSystemAccessDirectoryIterationBlocklistCheck);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessObserverQuotaLimit);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessCheckHidden);
 CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
     size_t,
     kFileSystemObserverQuotaLimitLinuxBucketSize);
