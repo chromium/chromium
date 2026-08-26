@@ -707,7 +707,7 @@
 <translation id="3349031117032695619">阻止弹出式窗口</translation>
 <translation id="3350976670663926380">修改已保存</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />。此账号处于受管理状态。</translation>
-<translation id="3365529507898144230">保存在相册中</translation>
+<translation id="3365529507898144230">保存到相册中</translation>
 <translation id="3371831930909698441">可以翻译。选项位于屏幕底部附近。</translation>
 <translation id="3377063233124932127">现在，您已保存的书签、密码等信息会显示在顶部。</translation>
 <translation id="3378214228000661758">使用以下名称创建通行密钥</translation>
@@ -715,7 +715,7 @@
 <translation id="3385742921291399323">获取您保存的密码、标签页、书签等。</translation>
 <translation id="3391765987934722383">别错过降价</translation>
 <translation id="3392923070107623576">创建标签页分组，让一切井井有条</translation>
-<translation id="3404232721752787413">保存在 Google 相册中</translation>
+<translation id="3404232721752787413">保存到 Google 相册中</translation>
 <translation id="3406506285180498376">分享页面…</translation>
 <translation id="340669334496430859">上次修改时间</translation>
 <translation id="3409785640040772790">地图</translation>
@@ -1217,7 +1217,7 @@
 <translation id="507187271399539513">{count,plural, =1{第 {position} 种建议支付方式，共 {count} 种}other{第 {position} 种建议支付方式，共 {count} 种}}</translation>
 <translation id="5075939510584558547">直接保存，不加密</translation>
 <translation id="5076534614343816664">价格跟踪</translation>
-<translation id="507762438756999615">根据您所在组织的政策，您无法共享文件</translation>
+<translation id="507762438756999615">根据您所在组织的政策，无法共享文件</translation>
 <translation id="5078303485429639424">开启“<ph name="FEATURE_NAME" />”的通知</translation>
 <translation id="5079950360618752063">使用建议的密码</translation>
 <translation id="5083464117946352670">无法确定文件大小。</translation>
@@ -2158,7 +2158,7 @@
 <translation id="8131740175452115882">确认</translation>
 <translation id="8132598642024322408">现价 <ph name="PRICE" />，原价 <ph name="PREVIOUS_PRICE" />。</translation>
 <translation id="813370552429173916">请为每个网站或应用分别使用专用密码。如果有人发现了您重复使用的密码，就能利用此密码访问您的其他账号。点击可立即打开相应网站并更改密码。</translation>
-<translation id="8133810265969517544">不建议分享</translation>
+<translation id="8133810265969517544">不建议共享</translation>
 <translation id="8135556271852808840">{count,plural, =1{{count} 个标签页已关闭}other{{count} 个标签页已关闭}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 项其他内容}other{# 项其他内容}}</translation>
 <translation id="8150167929304790980">姓名</translation>
@@ -2431,7 +2431,7 @@
 <translation id="8976414606286374109">系统会将信用卡信息保存到您的 Google 账号中。</translation>
 <translation id="8981454092730389528">Google 活动控件</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />，已固定的网站</translation>
-<translation id="8990960056509724223">根据您所在组织的政策，您无法保存文件</translation>
+<translation id="8990960056509724223">根据您所在组织的政策，无法保存文件</translation>
 <translation id="8998289560386111590">在您的设备上不可用</translation>
 <translation id="9003263770394939629">来自 Gemini 的建议。在设置中管理增强型自动填充功能。</translation>
 <translation id="9003677638446136377">再次检查</translation>

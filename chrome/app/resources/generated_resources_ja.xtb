@@ -4720,7 +4720,7 @@
 <translation id="4621866192918370652">このページを Google で検索して、追加の関連情報を確認できます</translation>
 <translation id="4622051949285931942">自動更新をオフにしますか？</translation>
 <translation id="4623167406982293031">アカウントを確認</translation>
-<translation id="4623894491222334521">ID ドキュメント</translation>
+<translation id="4623894491222334521">身分証明書</translation>
 <translation id="4624054169152573743">色のテーマ</translation>
 <translation id="4625350031596795804">フォーカス（大）のスタイル</translation>
 <translation id="4625905218692741757">グレーのデフォルト カラー</translation>
@@ -8951,7 +8951,7 @@
 <translation id="7938881824185772026">Labs</translation>
 <translation id="793923212791838">このサイトはお使いのデバイスではご利用いただけません</translation>
 <translation id="7939328347457537652">デバイス証明書の管理</translation>
-<translation id="7939918959917132075">拡張機能によってこの検索プロバイダに変更されました</translation>
+<translation id="7939918959917132075">拡張機能によって設定された検索プロバイダ</translation>
 <translation id="7940087892955752820">このフォルダを使用しているアプリケーションがあるため、共有を停止できませんでした。次回 <ph name="SPECIFIC_NAME" /> をシャットダウンするときに、フォルダの共有を停止します。</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> で並べ替え</translation>
 <translation id="7941179291434537290">テザリングの準備:</translation>

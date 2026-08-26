@@ -220,7 +220,7 @@
 <translation id="1671568970992212376">Salve suas fotos no Google Fotos para acessar quando quiser.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> para <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">De acordo com as políticas da sua organização, este arquivo pode conter informações sensíveis</translation>
-<translation id="1683276189281028863">Check-up de Senha</translation>
+<translation id="1683276189281028863">Check-up de senha</translation>
 <translation id="168389590065701766">Agora você pode abrir o Google Lens na barra de endereço e pesquisar qualquer coisa que vê</translation>
 <translation id="1689333818294560261">Apelido</translation>
 <translation id="169048873465870056">Remover guia e excluir grupo?</translation>
@@ -481,7 +481,7 @@
 <translation id="2529021024822217800">Abrir todos</translation>
 <translation id="2536991091671391962">Você pode usar as senhas salvas em qualquer dispositivo. Elas são armazenadas no Gerenciador de senhas do Google da conta <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Senha oculta</translation>
-<translation id="2538705697765638552">Salve suas informações e agilize ações como o preenchimento de formulários em produtos do Google. Você pode gerenciar esses dados na Carteira do Google de <ph name="USER_EMAIL" />.</translation>
+<translation id="2538705697765638552">Salve suas informações e agilize ações como o preenchimento de formulários em produtos do Google. Você pode gerenciar esses dados na Carteira de <ph name="USER_EMAIL" />.</translation>
 <translation id="2539748786028143624">Ativar a proteção reforçada…</translation>
 <translation id="2540111494300686866">Bloquear caixas de diálogo</translation>
 <translation id="2542268842667970959">Ocultar a "Confirmação de segurança"</translation>
@@ -496,7 +496,7 @@
 <translation id="2584994295315085351">Abrir uma nova guia ao voltar para o Chrome após 4 horas</translation>
 <translation id="2593272815202181319">Espaçamento uniforme</translation>
 <translation id="2601778637777010194">Monitorar reduções no preço de produtos</translation>
-<translation id="2602372807870028932">Isso vai excluir as informações selecionadas salvas neste dispositivo</translation>
+<translation id="2602372807870028932">Isso remove as informações selecionadas salvas neste dispositivo</translation>
 <translation id="260378315836159338">Na parte de cima da tela, toque em +.</translation>
 <translation id="2612676031748830579">Número do cartão</translation>
 <translation id="261305050785128654">Informe seus idiomas para que os sites mostrem conteúdo com essas opções sempre que possível.</translation>
@@ -1692,7 +1692,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="659407965921887085">Este card mostra reduções de preço na Web para produtos que você está monitorando</translation>
 <translation id="6596481460663245319">Pesquisar imagem com o Google</translation>
 <translation id="6601302169302852717">Imagem salva no Google Fotos de <ph name="USER_EMAIL" /></translation>
-<translation id="6602173570135186741">Preenchimento automático e senhas</translation>
+<translation id="6602173570135186741">Preenc. automático e senhas</translation>
 <translation id="6603393121510733479">Sua organização desativou a navegação privada.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">A Confirmação de segurança está sendo executada…</translation>
@@ -1909,7 +1909,7 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="736564850024123010">Mude a posição da barra de endereço para personalizar sua experiência.</translation>
 <translation id="7366909168761621528">Dados de navegação</translation>
 <translation id="7367530036083223701">Acesse suas senhas com segurança na tela inicial com o widget do Gerenciador de senhas.</translation>
-<translation id="73750335798090836">Para ter mais proteção, sempre use sua impressão digital, rosto ou outro bloqueio de tela ao acessar informações sensíveis, como documentos de viagem e de identidade</translation>
+<translation id="73750335798090836">Para mais proteção, sempre use sua digital, rosto ou outro bloqueio de tela ao preencher informações sensíveis, como documentos de viagem e de identidade</translation>
 <translation id="7380220816562673297">Por enquanto, só é possível compartilhar senhas com membros da família. <ph name="BEGIN_LINK" />Crie um grupo familiar<ph name="END_LINK" /> com até seis membros e aproveite ao máximo seus produtos e assinaturas do Google.</translation>
 <translation id="7380698179418029202">Selecione o arquivo <ph name="BEGIN_BOLD" />.zip<ph name="END_BOLD" /> de exportação do Safari</translation>
 <translation id="739101637685146669">Qual URL você quer adicionar aos favoritos?</translation>
@@ -2107,7 +2107,7 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="797824194429476746">As guias vão continuar abertas no dispositivo, mas o grupo será excluído permanentemente.</translation>
 <translation id="7982789257301363584">Rede</translation>
 <translation id="798299424881500862">Tema laranja</translation>
-<translation id="7987685713885608670">Para ter mais segurança, criptografe as senhas no dispositivo antes que elas sejam salvas no Gerenciador de Senhas do Google.</translation>
+<translation id="7987685713885608670">Para mais segurança, antes que as senhas sejam salvas no Gerenciador de Senhas, criptografe-as no dispositivo</translation>
 <translation id="798991908416757345">Os grupos de guias estão indisponíveis</translation>
 <translation id="7993170188789685695">Toque duas vezes para fechar a notificação.</translation>
 <translation id="7996239959906074962">Configurar…</translation>
@@ -2314,7 +2314,7 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="8636825310635137004">Para acessar suas guias abertas em outros dispositivos, ative a sincronização.</translation>
 <translation id="8637431369725868556">Proteja-se contra sites perigosos.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Nenhuma senha comprometida}=1{{COUNT} senha comprometida}one{{COUNT} senha comprometida}other{{COUNT} senhas comprometidas}}</translation>
-<translation id="8639963783467694461">Configurações de preenchimento automático</translation>
+<translation id="8639963783467694461">Definições de preenchimento automático</translation>
 <translation id="8642417828095157370">As guias são compartilhadas para deixar as respostas mais relevantes</translation>
 <translation id="8643403533759285912">Excluir grupo</translation>
 <translation id="8647280737650867362">Não foi possível remover o monitoramento do preço.</translation>

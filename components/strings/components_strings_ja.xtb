@@ -447,7 +447,7 @@
 <translation id="1656489000284462475">受け取り</translation>
 <translation id="1658111267661135323">テレビ＆動画</translation>
 <translation id="1658918301167915956">Bluetooth デバイス</translation>
-<translation id="1662550410081243962">お支払い方法を保存、入力する</translation>
+<translation id="1662550410081243962">お支払い方法を保存して自動入力する</translation>
 <translation id="1662980953334786797">先頭ページから印刷</translation>
 <translation id="1663943134801823270">Chrome に保存されているクレジット カードと住所です。[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で管理できます。</translation>
 <translation id="1664389769577564606">フレキソ フォトポリマー</translation>
@@ -564,7 +564,7 @@
 <translation id="1839331950812095887">考えをあらわすいくつかの単語</translation>
 <translation id="1839551713262164453">ポリシーの値を検証できませんでした（エラーが発生しました）</translation>
 <translation id="1840009953725035797">ホームシアター システム</translation>
-<translation id="184153295865602321">自動入力によるお支払い方法を利用する場合は、セキュリティを強化するため、必ず指紋認証や顔認証などの画面ロックを使用してください</translation>
+<translation id="184153295865602321">セキュリティを強化するため、自動入力による支払いを行う際に、指紋認証や顔認証などの画面ロックを常に使用します</translation>
 <translation id="1842969606798536927">お支払い</translation>
 <translation id="184517536440397176">保護者の方から、このウェブサイトを開いてもよいという承認をもらう必要があります。その前に本人確認が必要です。</translation>
 <translation id="1846432862466000825">プラスチック（アーカイバル）</translation>
@@ -852,7 +852,7 @@
 <translation id="2277753418458118549">接続の詳細を表示</translation>
 <translation id="2277949605527755300"><ph name="URL" /> がハンド トラッキングの許可を求めています</translation>
 <translation id="22792995594807632">ダウンロードする前に確認が必要です</translation>
-<translation id="2283340219607151381">住所を保存、入力する</translation>
+<translation id="2283340219607151381">住所を保存して自動入力する</translation>
 <translation id="2283447177162560884">「<ph name="PAGE_TITLE" />」を削除しました</translation>
 <translation id="2283599456633275070">旅行</translation>
 <translation id="2285709459648658719">パスポート</translation>
@@ -944,7 +944,7 @@
 <translation id="2400600116338235695">シリアルポートへの接続を要求できる</translation>
 <translation id="2403474027143565107">正確</translation>
 <translation id="240450251994300576">サブヘッダーのロゴ</translation>
-<translation id="2404715426538856682">クレジット カードとデビットカード · IBAN · ポイントカード</translation>
+<translation id="2404715426538856682">クレジット / デビットカード · IBAN · ポイントカード</translation>
 <translation id="2404884497378469141">ファイルをもう一度コピーしてみてください</translation>
 <translation id="2413155254802890957">旧</translation>
 <translation id="2413528052993050574">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は取り消されている可能性があります。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
@@ -2312,7 +2312,7 @@
 <translation id="4480760608050410381">MP4 動画</translation>
 <translation id="448363931695049633">ピザ屋</translation>
 <translation id="4489023393592172404">角形 4 号封筒</translation>
-<translation id="4489977488133295402">お支払い方法を自動入力するため、本人確認を行う</translation>
+<translation id="4489977488133295402">お支払い方法を自動入力する際に本人確認を行う</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Google アカウントで同期パスワードを暗号化する</translation>
 <translation id="4493480324863638523">URL が無効です。標準のスキームを使用した URL を指定してください（例: http://example.com、https://example.com）。</translation>
@@ -2387,7 +2387,7 @@
 <translation id="4619669610757527494">Google ウォレットに運転免許証を保存</translation>
 <translation id="4622292761762557753">このまま転送</translation>
 <translation id="4622647778991854660">通知センターで通知を有効にします。<ph name="LINK" /> を開きます。</translation>
-<translation id="4623894491222334521">ID ドキュメント</translation>
+<translation id="4623894491222334521">身分証明書</translation>
 <translation id="4627675673814409125">このポリシーは、Chrome プロフィール単位では設定できないため、無視されます。</translation>
 <translation id="4628678854894591460">ツアー旅行</translation>
 <translation id="4628948037717959914">写真</translation>
@@ -2610,7 +2610,7 @@
 <translation id="4943872375798546930">結果はありません</translation>
 <translation id="495170559598752135">操作</translation>
 <translation id="4953689047182316270">ユーザー補助機能のイベントへの応答</translation>
-<translation id="4954505713046251871">候補を表示して、この機能を改善するため、ページの URL とコンテンツを Google と共有します</translation>
+<translation id="4954505713046251871">候補の提案やこの機能の改善のため、ページの URL とコンテンツが Google と共有されます</translation>
 <translation id="4954891067389874142">カードを保存するとすばやくお支払いできます。カード情報は Google ウォレットで暗号化されます。</translation>
 <translation id="4957080528849277028">[Chrome 履歴を表示] ボタンです。実行すると、Chrome の設定で閲覧履歴を表示、管理できます</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{と 1 件のサイト}other{と # 件のサイト}}</translation>
@@ -4202,7 +4202,7 @@
 <translation id="7377314930809374926">サービス業</translation>
 <translation id="7378594059915113390">メディアの操作</translation>
 <translation id="7378810950367401542">/</translation>
-<translation id="7379321689415048316">標準の自動入力が難しい項目に自動入力できます</translation>
+<translation id="7379321689415048316">標準の自動入力では検出しにくい項目にも自動入力できます</translation>
 <translation id="7380398842872229465">10x15 インチ</translation>
 <translation id="7381551826960739226">このフォームは安全な接続を使用していないため、お支払い方法の自動入力が無効になっています。</translation>
 <translation id="7388380253839603603">ガソリン料金、燃費</translation>

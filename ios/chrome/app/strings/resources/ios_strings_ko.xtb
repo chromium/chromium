@@ -496,7 +496,7 @@
 <translation id="2584994295315085351">4시간 후 Chrome으로 돌아오면 새 탭 열기</translation>
 <translation id="2593272815202181319">고정폭</translation>
 <translation id="2601778637777010194">제품 가격 인하 추적</translation>
-<translation id="2602372807870028932">선택된 정보가 이 기기에서 삭제됩니다</translation>
+<translation id="2602372807870028932">이 기기에 저장된 선택 항목의 정보가 삭제됩니다</translation>
 <translation id="260378315836159338">화면 상단에서 +를 탭합니다.</translation>
 <translation id="2612676031748830579">카드 번호</translation>
 <translation id="261305050785128654">사용하는 언어를 웹사이트에 알려주세요. 가능한 경우 해당 언어로 콘텐츠가 표시됩니다.</translation>
@@ -707,7 +707,7 @@
 <translation id="3349031117032695619">팝업 차단</translation>
 <translation id="3350976670663926380">수정 사항 저장됨</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. 관리 계정임</translation>
-<translation id="3365529507898144230">포토에 저장</translation>
+<translation id="3365529507898144230">사진에 저장</translation>
 <translation id="3371831930909698441">번역을 사용할 수 있습니다. 화면 하단에서 옵션을 선택할 수 있습니다.</translation>
 <translation id="3377063233124932127">저장된 북마크, 비밀번호 등이 상단에 표시됩니다</translation>
 <translation id="3378214228000661758">다음의 패스키 생성</translation>
@@ -1692,7 +1692,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="659407965921887085">이 카드에는 현재 추적 중인 제품의 웹 가격 인하가 표시됩니다</translation>
 <translation id="6596481460663245319">Google로 이미지 검색</translation>
 <translation id="6601302169302852717"><ph name="USER_EMAIL" />의 Google 포토에 저장된 이미지</translation>
-<translation id="6602173570135186741">자동 완성 및 비밀번호</translation>
+<translation id="6602173570135186741">자동 완성 및 암호</translation>
 <translation id="6603393121510733479">조직에서 시크릿 브라우징을 사용 중지했습니다.
 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">안전 확인 실행 중…</translation>

@@ -373,7 +373,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="4799870290441980300">Activa funcions addicionals per proporcionar les proteccions més eficaces de Chrome</translation>
 <translation id="4828579605166583682">Google Chrome està provant de substituir les contrasenyes existents. Escriu la teva contrasenya de Windows per permetre-ho.</translation>
 <translation id="4842397268809523050">ChromeOS Flex no ha pogut sincronitzar les teves dades perquè la sincronització no està disponible per al teu domini.</translation>
-<translation id="4851866215237571846"><ph name="EXISTING_USER" /> ja ha iniciat la sessió.  Per mantenir la navegació per separat, inicia la sessió a Chrome amb el teu perfil (<ph name="USER_EMAIL_ADDRESS" />).</translation>
+<translation id="4851866215237571846"><ph name="EXISTING_USER" /> ja ha iniciat la sessió.  Per mantenir la navegació per separat, inicia la sessió a Chrome amb el teu perfil com a <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Per compartir la pantalla, permet que Chrome gravi la pantalla a Configuració del sistema</translation>
 <translation id="4873783916118289636">Revisa els controls principals de privadesa i seguretat a Chrome</translation>
 <translation id="4885446229353981848">Mostra sempre la drecera de Google Lens</translation>
