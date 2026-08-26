@@ -83,6 +83,7 @@ impl U32Set {
     /// Add val as a member of this set.
     ///
     /// If the set did not previously contain this value, returns `true`.
+    #[inline]
     pub fn insert(&mut self, val: u32) -> bool {
         let page = self.ensure_page_for_mut(val);
         let ret = page.insert(val);
@@ -119,15 +120,27 @@ impl U32Set {
     /// iterator of values.
     ///
     /// [`extend()`]: Self::extend
+    #[inline]
     pub fn extend_unsorted<U: IntoIterator<Item = u32>>(&mut self, iter: U) {
-        self.length += iter
-            .into_iter()
-            .map(|val| {
-                let major_value = Self::get_major_value(val);
-                let page = self.ensure_page_for_major_mut(major_value);
-                page.insert(val) as u64
-            })
-            .sum::<u64>();
+        // Unsorted values from real workloads (e.g. the glyph ids of a
+        // shaping buffer) still tend to arrive in runs that stay within a
+        // single page. Memoizing the page index of the last value in loop
+        // locals skips the page_map search for all but the first value of
+        // each run.
+        let mut last_major_value = u32::MAX;
+        let mut last_page_index = usize::MAX;
+        let mut added = 0u64;
+        for val in iter {
+            let major_value = Self::get_major_value(val);
+            if major_value != last_major_value {
+                last_page_index = self.ensure_page_index_for_major(major_value);
+                last_major_value = major_value;
+            }
+            if let Some(page) = self.pages.get_mut(last_page_index) {
+                added += page.insert(val) as u64;
+            }
+        }
+        self.length += added;
     }
 
     /// Remove val from this set.
@@ -690,7 +703,7 @@ impl U32Set {
 
     /// Returns the index in `self.pages` for the page with the same major as `major_value`. Will create
     /// the page if it does not yet exist.
-    #[inline]
+    #[inline(always)]
     fn ensure_page_index_for_major(&mut self, major_value: u32) -> usize {
         match self
             .page_map
@@ -698,16 +711,25 @@ impl U32Set {
         {
             Ok(map_index) => self.page_map[map_index].index as usize,
             Err(map_index_to_insert) => {
-                let page_index = self.pages.len();
-                self.pages.push(BitPage::new_zeroes());
-                let new_info = PageInfo {
-                    index: page_index as u32,
-                    major_value,
-                };
-                self.page_map.insert(map_index_to_insert, new_info);
-                page_index
+                self.insert_page_for_major(map_index_to_insert, major_value)
             }
         }
+    }
+
+    /// The miss path of `ensure_page_index_for_major`: allocate and
+    /// link a new page. Kept out of line so the hit path stays small
+    /// enough to inline into the per-value insert loops.
+    #[cold]
+    #[inline(never)]
+    fn insert_page_for_major(&mut self, map_index_to_insert: usize, major_value: u32) -> usize {
+        let page_index = self.pages.len();
+        self.pages.push(BitPage::new_zeroes());
+        let new_info = PageInfo {
+            index: page_index as u32,
+            major_value,
+        };
+        self.page_map.insert(map_index_to_insert, new_info);
+        page_index
     }
 
     /// Return a mutable reference to the page that `value` resides in.
@@ -727,12 +749,14 @@ impl U32Set {
     /// Return a mutable reference to the page that `value` resides in.
     ///
     /// Insert a new page if it doesn't exist.
+    #[inline(always)]
     fn ensure_page_for_mut(&mut self, value: u32) -> &mut BitPage {
         self.ensure_page_for_major_mut(Self::get_major_value(value))
     }
 
     /// Return a mutable reference to the page with major value equal to `major_value`.
     /// Inserts a new page if it doesn't exist.
+    #[inline(always)]
     fn ensure_page_for_major_mut(&mut self, major_value: u32) -> &mut BitPage {
         let page_index = self.ensure_page_index_for_major(major_value);
         self.pages.get_mut(page_index).unwrap()

@@ -36,6 +36,7 @@ pub mod loca;
 pub mod ltag;
 pub mod maxp;
 pub mod meta;
+pub mod mort;
 pub mod morx;
 pub mod mvar;
 pub mod name;

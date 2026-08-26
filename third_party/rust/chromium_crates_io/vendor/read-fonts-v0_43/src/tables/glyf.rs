@@ -8,6 +8,15 @@ use types::{F26Dot6, Point};
 
 include!("../../generated/generated_glyf.rs");
 
+/// Number of "phantom" points appended to the end of a glyph outline.
+///
+/// These are not part of the glyph's contours. They carry the horizontal and
+/// vertical side bearings and advances so that variation deltas and the
+/// TrueType interpreter can adjust glyph metrics along with the outline.
+///
+/// See [phantom points](https://learn.microsoft.com/en-us/typography/opentype/spec/tt_instructing_glyphs#phantom-points).
+pub const PHANTOM_POINT_COUNT: usize = 4;
+
 /// Marker bits for point flags that are set during variation delta
 /// processing and hinting.
 #[derive(Copy, Clone, PartialEq, Eq, Default, Debug)]

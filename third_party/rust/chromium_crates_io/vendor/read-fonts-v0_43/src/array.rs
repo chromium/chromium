@@ -215,11 +215,12 @@ impl<'a, T: AnyBitPattern + FixedSize> FontRead<'a> for &'a [T] {
 
 /// Helper to retrieve a pair of items from a slice, returning an error
 /// if the second index overflows or if either index is out of bounds.
-pub(crate) fn get_pair<T>(slice: &[T], idx: usize) -> Result<[&T; 2], ReadError> {
-    let second_idx = idx.checked_add(1).ok_or(ReadError::OutOfBounds)?;
-    let first = slice.get(idx).ok_or(ReadError::OutOfBounds)?;
-    let second = slice.get(second_idx).ok_or(ReadError::OutOfBounds)?;
-    Ok([first, second])
+pub(crate) fn get_pair<T>(slice: &[T], idx: usize) -> Result<&[T; 2], ReadError> {
+    slice
+        .get(idx..)
+        .ok_or(ReadError::OutOfBounds)?
+        .first_chunk()
+        .ok_or(ReadError::OutOfBounds)
 }
 
 #[cfg(test)]

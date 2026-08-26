@@ -437,7 +437,7 @@ dependencies = [
 
 [[package]]
 name = "read-fonts"
-version = "0.43.2"
+version = "0.43.3"
 dependencies = [
  "bytemuck",
  "core_maths",

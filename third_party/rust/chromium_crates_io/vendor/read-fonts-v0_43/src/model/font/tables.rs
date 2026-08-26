@@ -350,6 +350,10 @@ impl<'a> TableProvider<'a> for &'a FontTables {
         self.load_table(self.morx_state())
     }
 
+    fn mort(&self) -> Result<tables::mort::Mort<'a>, ReadError> {
+        self.load_table(self.mort_state())
+    }
+
     fn kerx(&self) -> Result<tables::kerx::Kerx<'a>, ReadError> {
         self.load_table(self.kerx_state())
     }

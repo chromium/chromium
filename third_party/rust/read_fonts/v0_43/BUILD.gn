@@ -97,6 +97,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/src/tables/gsub.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/src/tables/gsub/closure.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/src/tables/gvar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/src/tables/gvar/deltas.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/src/tables/hdmx.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/src/tables/head.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/src/tables/hhea.rs",
@@ -116,6 +117,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/src/tables/ltag.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/src/tables/maxp.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/src/tables/meta.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/src/tables/mort.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/src/tables/morx.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/src/tables/mvar.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/src/tables/name.rs",
@@ -177,6 +179,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/src/../generated/generated_ltag.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/src/../generated/generated_maxp.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/src/../generated/generated_meta.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/src/../generated/generated_mort.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/src/../generated/generated_morx.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/src/../generated/generated_mvar.rs",
     "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/src/../generated/generated_name.rs",
@@ -208,7 +211,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "read-fonts"
   cargo_pkg_description = "Reading OpenType font files."
   cargo_pkg_repository = "https://github.com/googlefonts/fontations"
-  cargo_pkg_version = "0.43.2"
+  cargo_pkg_version = "0.43.3"
 
   allow_unsafe = false
 

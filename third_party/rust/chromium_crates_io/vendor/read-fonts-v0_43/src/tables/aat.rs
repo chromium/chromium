@@ -342,9 +342,9 @@ where
 /// See <https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6Tables.html#StateHeader>
 /// for more detail.
 #[derive(Clone)]
-pub struct StateTable<'a> {
+pub struct StateTable<'a, T = NoPayload> {
     pub header: StateHeader<'a>,
-    n_classes: usize,
+    pub n_classes: usize,
     class_first_glyph: u16,
     class_array: &'a [u8],
     state_array: &'a [u8],
@@ -352,11 +352,17 @@ pub struct StateTable<'a> {
     /// floor(2^32 / n_classes) + 1: exact reciprocal for dividends < 2^16,
     /// so the per-transition new-state conversion avoids a hardware divide.
     n_classes_magic: u64,
+    _marker: std::marker::PhantomData<fn() -> T>,
 }
 
-impl StateTable<'_> {
+impl<T> StateTable<'_, T> {
     pub const HEADER_LEN: usize = u16::RAW_BYTE_LEN * 4;
+}
 
+impl<T> StateTable<'_, T>
+where
+    T: FixedSize + bytemuck::AnyBitPattern,
+{
     /// Returns the class table entry for the given glyph identifier.
     pub fn class(&self, glyph_id: GlyphId16) -> Result<u8, ReadError> {
         let glyph_id = glyph_id.to_u16();
@@ -369,9 +375,14 @@ impl StateTable<'_> {
             .ok_or(ReadError::OutOfBounds)
     }
 
+    /// Returns the first covered glyph and its consecutive class values.
+    pub fn class_mappings(&self) -> (u16, &'_ [u8]) {
+        (self.class_first_glyph, self.class_array)
+    }
+
     /// Returns the entry for the given state and class.
     #[inline(always)]
-    pub fn entry(&self, state: u16, class: u8) -> Result<StateEntry, ReadError> {
+    pub fn entry(&self, state: u16, class: u8) -> Result<StateEntry<T>, ReadError> {
         let mut class = class as usize;
         if class >= self.n_classes {
             class = class::OUT_OF_BOUNDS as usize;
@@ -381,7 +392,7 @@ impl StateTable<'_> {
             .get(state as usize * self.n_classes + class)
             .copied()
             .ok_or(ReadError::OutOfBounds)? as usize;
-        let entry_offset = entry_ix * 4;
+        let entry_offset = entry_ix.wrapping_mul(StateEntry::<T>::RAW_BYTE_LEN);
         let entry_data = self
             .entry_table
             .get(entry_offset..)
@@ -404,16 +415,93 @@ impl StateTable<'_> {
     }
 
     /// Reads scalar values that are referenced from state table entries.
-    pub fn read_value<T: Scalar>(&self, offset: usize) -> Result<T, ReadError> {
-        self.header.offset_data().read_at::<T>(offset)
+    pub fn read_value<S: Scalar>(&self, offset: usize) -> Result<S, ReadError> {
+        self.header.offset_data().read_at::<S>(offset)
     }
 }
 
-impl ReadArgs for StateTable<'_> {
+/// Pre-resolved byte offsets of a legacy [StateTable]'s components, relative
+/// to the table start.
+#[derive(Clone, Copy, Debug, Default)]
+pub struct LegacyStateTableParts {
+    pub n_classes: u16,
+    pub class_table_offset: u16,
+    pub state_array_offset: u16,
+    pub entry_table_offset: u16,
+}
+
+impl LegacyStateTableParts {
+    /// Reads the header of a legacy state table at the start of `data`.
+    pub fn read(data: FontData) -> Result<Self, ReadError> {
+        let header = StateHeader::read(data)?;
+        Ok(Self {
+            n_classes: header.state_size(),
+            class_table_offset: header.class_table_offset().to_u32() as u16,
+            state_array_offset: header.state_array_offset().to_u32() as u16,
+            entry_table_offset: header.entry_table_offset().to_u32() as u16,
+        })
+    }
+}
+
+impl<'a, T> StateTable<'a, T> {
+    /// Builds the state table from `data` and offsets previously captured
+    /// with [LegacyStateTableParts::read] on the same data.
+    #[inline]
+    pub fn from_parts(
+        data: FontData<'a>,
+        parts: &LegacyStateTableParts,
+    ) -> Result<Self, ReadError> {
+        let n_classes = parts.n_classes as usize;
+        if n_classes == 0 {
+            return Err(ReadError::MalformedData("empty AAT state table"));
+        }
+        let class_table = ClassSubtable::read(
+            data.split_off(parts.class_table_offset as usize)
+                .ok_or(ReadError::OutOfBounds)?,
+        )?;
+        let class_first_glyph = class_table.first_glyph();
+        let class_array = class_table.class_array();
+        let state_array = data
+            .as_bytes()
+            .get(parts.state_array_offset as usize..)
+            .ok_or(ReadError::OutOfBounds)?;
+        let entry_table = data
+            .as_bytes()
+            .get(parts.entry_table_offset as usize..)
+            .ok_or(ReadError::OutOfBounds)?;
+        Ok(Self {
+            header: StateHeader::read(data)?,
+            n_classes,
+            class_first_glyph,
+            class_array,
+            state_array,
+            entry_table,
+            n_classes_magic: (1u64 << 32) / n_classes as u64 + 1,
+            _marker: std::marker::PhantomData,
+        })
+    }
+}
+
+impl<'a> StateTable<'a, NoPayload> {
+    /// Reads a state table whose entries carry no payload.
+    ///
+    /// This exists so that `StateTable::read(data)` still resolves without
+    /// naming the payload type: a type parameter's default does not apply in a
+    /// path expression, only in type position. Without it, adding the payload
+    /// parameter would have broken every existing caller.
+    ///
+    /// Remove this at the next breaking release, so that callers name the
+    /// payload as they do for `ExtendedStateTable`.
+    pub fn read(data: FontData<'a>) -> Result<Self, ReadError> {
+        <Self as FontRead<'a>>::read(data)
+    }
+}
+
+impl<T> ReadArgs for StateTable<'_, T> {
     type Args = ();
 }
 
-impl<'a> FontRead<'a> for StateTable<'a> {
+impl<'a, T> FontRead<'a> for StateTable<'a, T> {
     fn read_with_args(data: FontData<'a>, _: ()) -> Result<Self, ReadError> {
         let header = StateHeader::read(data)?;
         // Each state has a 1-byte entry per class so state_size == n_classes
@@ -435,12 +523,13 @@ impl<'a> FontRead<'a> for StateTable<'a> {
             state_array,
             entry_table,
             n_classes_magic: (1u64 << 32) / n_classes as u64 + 1,
+            _marker: std::marker::PhantomData,
         })
     }
 }
 
 #[cfg(feature = "experimental_traverse")]
-impl<'a> SomeTable<'a> for StateTable<'a> {
+impl<'a, T> SomeTable<'a> for StateTable<'a, T> {
     fn type_name(&self) -> &str {
         "StateTable"
     }
@@ -891,7 +980,7 @@ mod tests {
             .extend(classes)
             .extend(state_array)
             .extend(entry_table);
-        let table = StateTable::read(buf.data().into()).unwrap();
+        let table = StateTable::<NoPayload>::read(buf.data().into()).unwrap();
         // check class lookups
         for i in 0..4u8 {
             assert_eq!(table.class(GlyphId16::from(i as u16 + 3)).unwrap(), i + 1);

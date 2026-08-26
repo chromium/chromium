@@ -83,6 +83,8 @@ struct PerTableData<T> {
     maxp: T,
     /// Metadata table.
     meta: T,
+    /// Metamorphosis table (deprecated).
+    mort: T,
     /// Extended metamorphosis table.
     morx: T,
     /// Metrics variation table.
@@ -157,6 +159,7 @@ impl<T> PerTableData<T> {
         f(Tag::new(b"MATH"), &mut self.math);
         f(Tag::new(b"maxp"), &mut self.maxp);
         f(Tag::new(b"meta"), &mut self.meta);
+        f(Tag::new(b"mort"), &mut self.mort);
         f(Tag::new(b"morx"), &mut self.morx);
         f(Tag::new(b"MVAR"), &mut self.mvar);
         f(Tag::new(b"name"), &mut self.name);
@@ -335,6 +338,10 @@ trait TableDataProvider<'a> where Self: 'a {
 
     fn meta(&self) -> Option<TableState<'a>> {
         self.table_state(Tag::new(b"meta"), &self.tables().meta)
+    }
+
+    fn mort(&self) -> Option<TableState<'a>> {
+        self.table_state(Tag::new(b"mort"), &self.tables().mort)
     }
 
     fn morx(&self) -> Option<TableState<'a>> {
@@ -982,6 +989,21 @@ impl FontTables {
             TableSource::None => None,
             TableSource::Blob(blob) => blob.meta(),
             TableSource::Function(func) => func.meta(),
+        }
+    }
+
+    /// Metamorphosis table (deprecated) data.
+    ///
+    /// See the [mort](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6mort.html) specification.
+    pub fn mort_data(&self) -> Option<&'_ [u8]> {
+        self.mort_state().map(|state| state.data)
+    }
+
+    fn mort_state(&self) -> Option<TableState<'_>> {
+        match &self.0 {
+            TableSource::None => None,
+            TableSource::Blob(blob) => blob.mort(),
+            TableSource::Function(func) => func.mort(),
         }
     }
 

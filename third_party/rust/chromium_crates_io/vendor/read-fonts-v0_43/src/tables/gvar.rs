@@ -3,6 +3,10 @@
 
 include!("../../generated/generated_gvar.rs");
 
+mod deltas;
+
+pub use deltas::DeltaBuffers;
+
 use super::{
     glyf::{CompositeGlyphFlags, Glyf, Glyph, PointCoord},
     loca::Loca,

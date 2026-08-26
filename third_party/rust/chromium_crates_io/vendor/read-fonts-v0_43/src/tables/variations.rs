@@ -809,10 +809,13 @@ where
     /// Returns an iterator over all of the pairs of (variation tuple, scalar)
     /// for this glyph that are active for the given set of normalized
     /// coordinates.
-    pub fn active_tuples_at(
+    pub fn active_tuples_at<'b>(
         &self,
-        coords: &'a [F2Dot14],
-    ) -> impl Iterator<Item = (TupleVariation<'a, T>, Fixed)> + 'a {
+        coords: &'b [F2Dot14],
+    ) -> impl Iterator<Item = (TupleVariation<'a, T>, Fixed)> + 'b
+    where
+        'a: 'b,
+    {
         ActiveTupleVariationIter {
             coords,
             parent: self.clone(),
@@ -882,8 +885,8 @@ where
 
 /// An iterator over the active [`TupleVariation`]s for a specific glyph
 /// for a given set of coordinates.
-struct ActiveTupleVariationIter<'a, T> {
-    coords: &'a [F2Dot14],
+struct ActiveTupleVariationIter<'a, 'b, T> {
+    coords: &'b [F2Dot14],
     parent: TupleVariationData<'a, T>,
     header_iter: TupleVariationHeaderIter<'a>,
     serialized_data: FontData<'a>,
@@ -891,7 +894,7 @@ struct ActiveTupleVariationIter<'a, T> {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
 
-impl<'a, T> Iterator for ActiveTupleVariationIter<'a, T>
+impl<'a, T> Iterator for ActiveTupleVariationIter<'a, '_, T>
 where
     T: TupleDelta,
 {

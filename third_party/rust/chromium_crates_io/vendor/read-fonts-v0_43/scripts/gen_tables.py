@@ -58,7 +58,7 @@ TABLES = [
     ("MATH", "Mathematical typesetting table.", "https://learn.microsoft.com/en-us/typography/opentype/spec/math"),
     ("maxp", "Maximum profile table.", "https://learn.microsoft.com/en-us/typography/opentype/spec/maxp"),
     ("meta", "Metadata table.", "https://learn.microsoft.com/en-us/typography/opentype/spec/meta"),
-#   ("mort", "Metamorphosis table (deprecated).", "https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6mort.html"),
+    ("mort", "Metamorphosis table (deprecated).", "https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6mort.html"),
     ("morx", "Extended metamorphosis table.", "https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6morx.html"),
     ("MVAR", "Metrics variation table.", "https://learn.microsoft.com/en-us/typography/opentype/spec/mvar"),
     ("name", "Naming table.", "https://learn.microsoft.com/en-us/typography/opentype/spec/name"),
