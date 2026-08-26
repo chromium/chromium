@@ -1329,22 +1329,15 @@
       status: "experimental",
     },
     {
-      // Enables Connection-Allowlist embedded enforcement: the
-      // `connectionallowlist` iframe content attribute (and its
-      // `connectionAllowlist` IDL reflection), by which an embedder requires a
-      // Connection-Allowlist of the document it frames. Kept separate from the
-      // `ConnectionAllowlist` feature so this in-development piece can iterate
-      // independently. See
-      // https://github.com/WICG/connection-allowlists/issues/1.
-      //
-      // Has its own `origin_trial_feature_name` so the `connectionAllowlist` IDL
-      // reflection can gate on this feature directly: that makes the Web IDL
-      // bindings generator treat it as context-dependent and emit the
-      // context-aware accessor, so the property is exposed only when embedded
-      // enforcement is actually available -- not merely when the base
-      // `ConnectionAllowlist` origin trial is enabled.
+      // Connection-Allowlist embedded enforcement: the `connectionallowlist`
+      // iframe attribute, by which an embedder requires a Connection-Allowlist
+      // of the document it frames. `base_feature_status` and
+      // `copied_from_base_feature_if` give the origin trial a Finch kill
+      // switch. See https://github.com/WICG/connection-allowlists/issues/1.
       name: "ConnectionAllowlistEmbeddedEnforcement",
       origin_trial_feature_name: "ConnectionAllowlistEmbeddedEnforcement",
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
       status: "experimental",
     },
     {

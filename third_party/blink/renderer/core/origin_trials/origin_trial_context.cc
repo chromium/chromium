@@ -534,6 +534,11 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   if (trial_name == "WebMCP") {
     return base::FeatureList::IsEnabled(blink::features::kWebMCP);
   }
+
+  if (trial_name == "ConnectionAllowlistEmbeddedEnforcement") {
+    return base::FeatureList::IsEnabled(
+        blink::features::kConnectionAllowlistEmbeddedEnforcement);
+  }
   return true;
 }
 
