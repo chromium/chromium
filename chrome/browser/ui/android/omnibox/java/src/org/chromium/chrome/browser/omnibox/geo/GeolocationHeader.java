@@ -20,6 +20,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
@@ -258,7 +259,8 @@ public class GeolocationHeader {
     }
 
     @CalledByNative
-    private static @Nullable String getGeoHeader(String url, @Nullable Profile profile) {
+    private static @JniType("std::optional<std::string>") @Nullable String getGeoHeader(
+            @JniType("std::string") String url, @Nullable Profile profile) {
         if (profile == null) return null;
         TemplateUrlService service = TemplateUrlServiceFactory.getForProfile(profile);
         return getGeoHeader(url, profile, service);

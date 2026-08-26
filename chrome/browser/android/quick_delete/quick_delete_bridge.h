@@ -18,23 +18,21 @@ namespace browsing_data {
 class HistoryCounter;
 }  // namespace browsing_data
 
-using base::android::JavaRef;
 
 // The bridge for fetching information and executing commands for the Android
 // Quick Delete UI.
 class QuickDeleteBridge {
  public:
-  explicit QuickDeleteBridge(JNIEnv* env,
-                             const base::android::JavaRef<jobject>& obj,
+  explicit QuickDeleteBridge(const base::android::JavaRef<jobject>& obj,
                              Profile* profile);
 
   QuickDeleteBridge(const QuickDeleteBridge&) = delete;
   QuickDeleteBridge& operator=(const QuickDeleteBridge&) = delete;
   ~QuickDeleteBridge();
 
-  void Destroy(JNIEnv* env);
+  void Destroy();
 
-  void RestartCounterForTimePeriod(JNIEnv* env, const int32_t time_period);
+  void RestartCounterForTimePeriod(const int32_t time_period);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> jobject_;

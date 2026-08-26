@@ -7,7 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/profiles/profile.h"
-#include "url/android/gurl_android.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -17,18 +17,8 @@ std::optional<std::string> GetGeolocationHeaderIfAllowed(const GURL& url,
                                                          Profile* profile) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  base::android::ScopedJavaLocalRef<jobject> j_profile_android =
-      profile->GetJavaObject();
-
-  base::android::ScopedJavaLocalRef<jstring> geo_header =
-      Java_GeolocationHeader_getGeoHeader(
-          env, base::android::ConvertUTF8ToJavaString(env, url.spec()),
-          j_profile_android);
-
-  if (!geo_header)
-    return std::nullopt;
-
-  return base::android::ConvertJavaStringToUTF8(env, geo_header);
+  return Java_GeolocationHeader_getGeoHeader(
+      env, url.spec(), profile ? profile->GetJavaObject() : nullptr);
 }
 
 DEFINE_JNI(GeolocationHeader)

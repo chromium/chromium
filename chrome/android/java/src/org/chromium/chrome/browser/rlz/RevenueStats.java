@@ -99,7 +99,8 @@ public class RevenueStats {
     public interface Natives {
         void setSearchClient(@JniType("std::string") String client);
 
-        void setCustomTabSearchClient(@Nullable String client);
+        void setCustomTabSearchClient(
+                @JniType("std::optional<std::string>") @Nullable String client);
 
         void setRlzParameterValue(@JniType("std::u16string") String rlz);
     }

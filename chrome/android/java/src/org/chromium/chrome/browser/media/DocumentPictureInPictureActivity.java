@@ -99,7 +99,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
             "org.chromium.chrome.browser.media.DocumentPictureInPicture.IsFromActivityRecreation";
     private WebContents mWebContents;
     private WebContents mParentWebContents;
-    private Tab mInitiatorTab;
+    private @MonotonicNonNull Tab mInitiatorTab;
     private @MonotonicNonNull ThinWebView mThinWebView;
     private @MonotonicNonNull TabObserver mInitiatorTabObserver;
     private @MonotonicNonNull PictureInPictureWindowOptions mWindowOptions;
@@ -158,9 +158,9 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                 sParentWebContentsForTesting != null
                         ? sParentWebContentsForTesting
                         : mWebContents.getDocumentPictureInPictureOpener();
-        mInitiatorTab = TabUtils.fromWebContents(parentWebContents);
+        Tab initiatorTab = TabUtils.fromWebContents(parentWebContents);
         if (parentWebContents == null
-                || mInitiatorTab == null
+                || initiatorTab == null
                 // During activity recreation, the initiator tab activity may not be available
                 // because of the tab reparenting process.
                 || (TabUtils.getActivity(mInitiatorTab) == null && !mIsFromActivityRecreation)) {
@@ -168,6 +168,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
             finish();
             return;
         }
+        mInitiatorTab = initiatorTab;
         mParentWebContents = parentWebContents;
 
         if (!verifyOpenerOrigin(intent, parentWebContents)) {
@@ -565,6 +566,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
 
     @Override
     protected OneshotSupplier<ProfileProvider> createProfileProvider() {
+        assert isContentsInitialized();
         OneshotSupplierImpl<ProfileProvider> supplier = new OneshotSupplierImpl<>();
         ProfileProvider profileProvider =
                 new ProfileProvider() {

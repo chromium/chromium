@@ -24,6 +24,7 @@ import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -269,6 +270,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
             return;
         }
         Tab tab = TabUtils.fromWebContents(mWebContents);
+        assert tab != null;
 
         // FEEDBACK_REPORT_TYPE: Reports for Chrome mobile must have a contextTag of the form
         // com.chrome.feed.USER_INITIATED_FEEDBACK_REPORT, or they will be discarded for not
@@ -289,12 +291,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         rowWrapper.addView(historyRow);
         controllers.add(
                 new PageInfoHistoryController(
-                        mainController,
-                        historyRow,
-                        this,
-                        () -> {
-                            return tab;
-                        }));
+                        mainController, historyRow, this, SupplierUtils.of(tab)));
 
         if (PageInfoAboutThisSiteController.isFeatureEnabled()
                 && (mEphemeralTabCoordinatorSupplier != null || mTabCreator != null)) {

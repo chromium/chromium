@@ -63,7 +63,7 @@ public class TabUtils {
     /**
      * @return {@link Activity} associated with the given tab.
      */
-    public static @Nullable Activity getActivity(Tab tab) {
+    public static @Nullable Activity getActivity(@Nullable Tab tab) {
         WebContents webContents = tab != null ? tab.getWebContents() : null;
         if (webContents == null || webContents.isDestroyed()) return null;
         WindowAndroid window = webContents.getTopLevelNativeWindow();
@@ -105,7 +105,7 @@ public class TabUtils {
         return screenBounds;
     }
 
-    public static Tab fromWebContents(@Nullable WebContents webContents) {
+    public static @Nullable Tab fromWebContents(@Nullable WebContents webContents) {
         return TabImplJni.get().fromWebContents(webContents);
     }
 

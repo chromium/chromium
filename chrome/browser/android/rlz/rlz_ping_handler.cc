@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/android/callback_android.h"
-#include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
@@ -32,9 +31,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/RlzPingHandler_jni.h"
 
-using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaRef;
-
 constexpr int kMaxRetries = 10;
 
 namespace {
@@ -52,24 +48,21 @@ RlzPingHandler::RlzPingHandler(Profile* profile) {
 
 RlzPingHandler::~RlzPingHandler() = default;
 
-void RlzPingHandler::Ping(const base::android::JavaRef<jstring>& j_brand,
-                          const base::android::JavaRef<jstring>& j_language,
-                          const base::android::JavaRef<jstring>& j_events,
-                          const base::android::JavaRef<jstring>& j_id,
-                          const base::android::JavaRef<jobject>& j_callback) {
-  if (!j_brand || !j_language || !j_events || !j_id || !j_callback) {
-    base::android::RunBooleanCallbackAndroid(j_callback, false);
+void RlzPingHandler::Ping(const std::string& brand,
+                          const std::string& language,
+                          const std::string& events,
+                          const std::string& id,
+                          base::OnceCallback<void(bool)> callback) {
+  if (brand.empty() || language.empty() || events.empty() || id.empty() ||
+      !callback) {
+    if (callback) {
+      std::move(callback).Run(false);
+    }
     delete this;
     return;
   }
 
-  JNIEnv* env = base::android::AttachCurrentThread();
-
-  j_callback_.Reset(env, j_callback);
-  std::string brand = ConvertJavaStringToUTF8(env, j_brand);
-  std::string language = ConvertJavaStringToUTF8(env, j_language);
-  std::string events = ConvertJavaStringToUTF8(env, j_events);
-  std::string id = ConvertJavaStringToUTF8(env, j_id);
+  callback_ = std::move(callback);
 
   DCHECK_EQ(brand.length(), 4u);
   DCHECK_EQ(language.length(), 2u);
@@ -148,20 +141,19 @@ void RlzPingHandler::OnSimpleLoaderComplete(
 
   // TODO(yusufo) : Investigate what else can be checked for validity that is
   // specific to the ping
-  base::android::RunBooleanCallbackAndroid(j_callback_, valid);
+  std::move(callback_).Run(valid);
   delete this;
 }
 
 static void JNI_RlzPingHandler_StartPing(
-    JNIEnv* env,
     Profile* profile,
-    const base::android::JavaRef<jstring>& j_brand,
-    const base::android::JavaRef<jstring>& j_language,
-    const base::android::JavaRef<jstring>& j_events,
-    const base::android::JavaRef<jstring>& j_id,
-    const base::android::JavaRef<jobject>& j_callback) {
+    const std::string& brand,
+    const std::string& language,
+    const std::string& events,
+    const std::string& id,
+    base::OnceCallback<void(bool)> callback) {
   RlzPingHandler* handler = new RlzPingHandler(profile);
-  handler->Ping(j_brand, j_language, j_events, j_id, j_callback);
+  handler->Ping(brand, language, events, id, std::move(callback));
 }
 
 }  // namespace android

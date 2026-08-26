@@ -412,14 +412,14 @@ TEST_F(TabAndroidTest, ReverseInitializationOrder) {
       content::WebContents::Create(
           content::WebContents::CreateParams(profile_.get()));
   content::WebContents* raw_web_contents = web_contents.get();
-  tab->AttachWebContentsToContentLayer(nullptr, raw_web_contents);
+  tab->AttachWebContentsToContentLayer(raw_web_contents);
 
   ASSERT_EQ(1u, content_layer->children().size());
   EXPECT_EQ(raw_web_contents->GetNativeView()->GetLayer(),
             content_layer->children()[0]);
 
   // 5. Test idempotency of AttachWebContentsToContentLayer.
-  tab->AttachWebContentsToContentLayer(nullptr, raw_web_contents);
+  tab->AttachWebContentsToContentLayer(raw_web_contents);
   ASSERT_EQ(1u, content_layer->children().size());
   EXPECT_EQ(raw_web_contents->GetNativeView()->GetLayer(),
             content_layer->children()[0]);

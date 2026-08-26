@@ -38,7 +38,6 @@
 #include "chrome/android/chrome_jni_headers/NotificationManager_jni.h"
 #include "chrome/android/chrome_jni_headers/SendTabToSelfNotificationReceiver_jni.h"
 
-using base::android::ConvertUTF8ToJavaString;
 using base::android::ScopedJavaLocalRef;
 using jni_zero::AttachCurrentThread;
 

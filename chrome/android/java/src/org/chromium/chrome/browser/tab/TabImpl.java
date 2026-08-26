@@ -3377,7 +3377,9 @@ class TabImpl implements Tab, TabInternal {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        TabImpl fromWebContents(@Nullable WebContents webContents);
+        @JniType("TabAndroid*")
+        @Nullable TabImpl fromWebContents(
+                @JniType("content::WebContents*") @Nullable WebContents webContents);
 
         void init(TabImpl caller, @JniType("Profile*") Profile profile, int id);
 
@@ -3392,13 +3394,15 @@ class TabImpl implements Tab, TabInternal {
                 long nativeTabAndroid,
                 boolean isOffTheRecord,
                 boolean isBackgroundTab,
-                WebContents webContents,
+                @JniType("content::WebContents*") WebContents webContents,
                 TabWebContentsDelegateAndroidImpl delegate,
                 ContextMenuPopulatorFactory contextMenuPopulatorFactory);
 
         void initializeAutofillIfNecessary(long nativeTabAndroid);
 
-        void getMemoryUsageBytes(long nativeTabAndroid, Callback<Long> callback);
+        void getMemoryUsageBytes(
+                long nativeTabAndroid,
+                @JniType("base::OnceCallback<void(int64_t)>") Callback<Long> callback);
 
         void updateDelegates(
                 long nativeTabAndroid,
@@ -3410,10 +3414,14 @@ class TabImpl implements Tab, TabInternal {
 
         void releaseWebContents(long nativeTabAndroid);
 
-        boolean isPhysicalBackingSizeEmpty(long nativeTabAndroid, WebContents webContents);
+        boolean isPhysicalBackingSizeEmpty(
+                long nativeTabAndroid, @JniType("content::WebContents*") WebContents webContents);
 
         void onPhysicalBackingSizeChanged(
-                long nativeTabAndroid, WebContents webContents, int width, int height);
+                long nativeTabAndroid,
+                @JniType("content::WebContents*") WebContents webContents,
+                int width,
+                int height);
 
         void setActiveNavigationEntryTitleForUrl(
                 long nativeTabAndroid,
@@ -3422,7 +3430,7 @@ class TabImpl implements Tab, TabInternal {
 
         void loadOriginalImage(long nativeTabAndroid);
 
-        boolean handleNonNavigationAboutURL(GURL url);
+        boolean handleNonNavigationAboutURL(@JniType("GURL") GURL url);
 
         void onShow(long nativeTabAndroid);
 

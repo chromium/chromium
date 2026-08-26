@@ -138,9 +138,9 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     @CalledByNative
     @Override
     protected boolean addNewContents(
-            @Nullable WebContents sourceWebContents,
-            WebContents webContents,
-            GURL targetUrl,
+            @JniType("content::WebContents*") @Nullable WebContents sourceWebContents,
+            @JniType("content::WebContents*") WebContents webContents,
+            @JniType("GURL") GURL targetUrl,
             int disposition,
             WindowFeatures windowFeatures,
             boolean userGesture,
@@ -423,7 +423,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
      */
     @CalledByNative
     @Override
-    protected @Nullable String getManifestScope() {
+    protected @JniType("std::string") @Nullable String getManifestScope() {
         return mDelegate.getManifestScope();
     }
 
@@ -470,7 +470,9 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     @CalledByNative
     @Override
     public void requestPointerLock(
-            WebContents webContents, boolean userGesture, boolean lastUnlockedByTarget) {
+            @JniType("content::WebContents*") WebContents webContents,
+            boolean userGesture,
+            boolean lastUnlockedByTarget) {
         mDelegate.requestPointerLock(webContents, userGesture, lastUnlockedByTarget);
     }
 

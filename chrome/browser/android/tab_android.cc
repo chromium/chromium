@@ -95,8 +95,6 @@
 #include "chrome/android/chrome_jni_headers/TabImpl_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaLongArrayToLongVector;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -365,7 +363,6 @@ void TabAndroid::Destroy() {
 }
 
 void TabAndroid::AttachWebContentsToContentLayer(
-    JNIEnv* env,
     content::WebContents* web_contents) {
   CHECK(web_contents);
   GetContentLayer()->InsertChild(web_contents->GetNativeView()->GetLayer(), 0);
@@ -379,10 +376,10 @@ void TabAndroid::InitWebContents(
     JNIEnv* env,
     bool incognito,
     bool is_background_tab,
-    const JavaRef<jobject>& jweb_contents,
+    content::WebContents* web_contents,
     const JavaRef<jobject>& jweb_contents_delegate,
     const JavaRef<jobject>& jcontext_menu_populator_factory) {
-  web_contents_.reset(content::WebContents::FromJavaWebContents(jweb_contents));
+  web_contents_.reset(web_contents);
   DCHECK(web_contents_.get());
 
   night_mode::WebContentsThemeClient::CreateForWebContents(web_contents_.get());
@@ -392,12 +389,13 @@ void TabAndroid::InitWebContents(
       Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
   web_contents_->SetOwnerLocationForDebug(FROM_HERE);
 
-  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(), this);
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents_.get(),
+                                                       this);
   web_contents_delegate_ =
       std::make_unique<android::TabWebContentsDelegateAndroid>(
           env, jweb_contents_delegate);
-  web_contents()->SetDelegate(web_contents_delegate_.get());
-  web_contents()->SetSelectionPopupDelegate(
+  web_contents_->SetDelegate(web_contents_delegate_.get());
+  web_contents_->SetSelectionPopupDelegate(
       std::make_unique<android::ChromeSelectionDropdownMenuDelegate>());
 
   AttachTabHelpers(web_contents_.get());
@@ -425,11 +423,11 @@ void TabAndroid::InitWebContents(
   SetSessionId(session_id.id());
   SetWindowSessionID(session_window_id_);
 
-  ContextMenuHelper::FromWebContents(web_contents())
+  ContextMenuHelper::FromWebContents(web_contents_.get())
       ->SetPopulatorFactory(jcontext_menu_populator_factory);
 
   if (synced_tab_delegate_) {
-    synced_tab_delegate_->SetWebContents(web_contents());
+    synced_tab_delegate_->SetWebContents(web_contents_.get());
   }
 
   // Verify that the WebContents this tab represents matches the expected
@@ -437,14 +435,14 @@ void TabAndroid::InitWebContents(
   CHECK_EQ(profile()->IsOffTheRecord(), incognito);
 
   if (is_background_tab) {
-    BackgroundTabManager::CreateForWebContents(web_contents(), profile());
+    BackgroundTabManager::CreateForWebContents(web_contents_.get(), profile());
   }
   if (content_layer_) {
     content_layer_->InsertChild(web_contents_->GetNativeView()->GetLayer(), 0);
   }
 
   // Shows a warning notification for dangerous flags in about:flags.
-  ShowBadFlagsPrompt(web_contents());
+  ShowBadFlagsPrompt(web_contents_.get());
 
   MediaStateObserver::CreateForWebContents(web_contents_.get());
   if (glic::GlicEnabling::IsProfileEligible(profile())) {
@@ -471,10 +469,9 @@ void TabAndroid::OnAlertStateChanged(
 }
 
 void TabAndroid::GetMemoryUsageBytes(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& j_callback) {
+    base::OnceCallback<void(int64_t)> callback) {
   if (!web_contents_) {
-    base::android::RunLongCallbackAndroid(j_callback, 0);
+    std::move(callback).Run(0);
     return;
   }
 
@@ -482,17 +479,15 @@ void TabAndroid::GetMemoryUsageBytes(
       resource_attribution::PageContext::FromWebContents(web_contents_.get());
 
   if (!page_context.has_value()) {
-    base::android::RunLongCallbackAndroid(j_callback, 0);
+    std::move(callback).Run(0);
     return;
   }
-
-  base::android::ScopedJavaGlobalRef<jobject> global_callback(env, j_callback);
 
   resource_attribution::QueryBuilder()
       .AddResourceType(resource_attribution::ResourceType::kMemorySummary)
       .AddResourceContext(page_context.value())
       .QueryOnce(base::BindOnce(
-          [](base::android::ScopedJavaGlobalRef<jobject> callback,
+          [](base::OnceCallback<void(int64_t)> callback,
              const resource_attribution::QueryResultMap& results) {
             int64_t bytes_used = 0;
             for (const auto& [context, result] : results) {
@@ -502,9 +497,9 @@ void TabAndroid::GetMemoryUsageBytes(
                 break;
               }
             }
-            base::android::RunLongCallbackAndroid(callback, bytes_used);
+            std::move(callback).Run(bytes_used);
           },
-          std::move(global_callback)));
+          std::move(callback)));
 }
 
 void TabAndroid::InitializeAutofillIfNecessary() {
@@ -815,19 +810,15 @@ std::unique_ptr<content::WebContents> TabAndroid::TakeWebContentsAndDestroyTab(
 }
 
 bool TabAndroid::IsPhysicalBackingSizeEmpty(
-    const JavaRef<jobject>& jweb_contents) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(jweb_contents);
+    content::WebContents* web_contents) {
   auto size = web_contents->GetNativeView()->GetPhysicalBackingSize();
   return size.IsEmpty();
 }
 
 void TabAndroid::OnPhysicalBackingSizeChanged(
-    const JavaRef<jobject>& jweb_contents,
+    content::WebContents* web_contents,
     int32_t width,
     int32_t height) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(jweb_contents);
   gfx::Size size(width, height);
   web_contents->GetNativeView()->OnPhysicalBackingSizeChanged(size);
 }
@@ -1193,25 +1184,12 @@ ScopedJavaLocalRef<jobject> TabAndroid::GetJavaObject(JNIEnv* env) const {
   return Java_TabImpl_getJavaObject(env, reinterpret_cast<intptr_t>(this));
 }
 
-static ScopedJavaLocalRef<jobject> JNI_TabImpl_FromWebContents(
-    JNIEnv* env,
-    const JavaRef<jobject>& jweb_contents) {
-  ScopedJavaLocalRef<jobject> jtab;
-
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(jweb_contents);
-  TabAndroid* tab =
-      web_contents ? TabAndroid::FromWebContents(web_contents) : nullptr;
-  if (tab) {
-    jtab = tab->GetJavaObject();
-  }
-  return jtab;
+static TabAndroid* JNI_TabImpl_FromWebContents(
+    content::WebContents* web_contents) {
+  return web_contents ? TabAndroid::FromWebContents(web_contents) : nullptr;
 }
 
-static bool JNI_TabImpl_HandleNonNavigationAboutURL(
-    JNIEnv* env,
-    const JavaRef<jobject>& jurl) {
-  GURL url = url::GURLAndroid::ToNativeGURL(env, jurl);
+static bool JNI_TabImpl_HandleNonNavigationAboutURL(const GURL& url) {
   // TODO(crbug.com/418187845): Set browser context to support URL block policy.
   return HandleNonNavigationAboutURL(url, /*context=*/nullptr);
 }

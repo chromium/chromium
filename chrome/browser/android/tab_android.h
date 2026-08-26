@@ -193,19 +193,17 @@ class TabAndroid : public tabs::TabInterface,
   // Methods called from Java via JNI -----------------------------------------
 
   void Destroy();
-  void AttachWebContentsToContentLayer(JNIEnv* env,
-                                       content::WebContents* web_contents);
+  void AttachWebContentsToContentLayer(content::WebContents* web_contents);
   bool HasParentCollection();
   void InitWebContents(
       JNIEnv* env,
       bool incognito,
       bool is_background_tab,
-      const base::android::JavaRef<jobject>& jweb_contents,
+      content::WebContents* web_contents,
       const base::android::JavaRef<jobject>& jweb_contents_delegate,
       const base::android::JavaRef<jobject>& jcontext_menu_populator_factory);
   void InitializeAutofillIfNecessary();
-  void GetMemoryUsageBytes(JNIEnv* env,
-                           const base::android::JavaRef<jobject>& j_callback);
+  void GetMemoryUsageBytes(base::OnceCallback<void(int64_t)> callback);
   void OnAlertStateChanged(std::optional<tabs::TabAlert> alert_state);
   void UpdateDelegates(
       JNIEnv* env,
@@ -226,12 +224,10 @@ class TabAndroid : public tabs::TabInterface,
       TabAndroid* tab,
       base::PassKey<TabModelJniBridge>);
 
-  bool IsPhysicalBackingSizeEmpty(
-      const base::android::JavaRef<jobject>& jweb_contents);
-  void OnPhysicalBackingSizeChanged(
-      const base::android::JavaRef<jobject>& jweb_contents,
-      int32_t width,
-      int32_t height);
+  bool IsPhysicalBackingSizeEmpty(content::WebContents* web_contents);
+  void OnPhysicalBackingSizeChanged(content::WebContents* web_contents,
+                                    int32_t width,
+                                    int32_t height);
   void SetActiveNavigationEntryTitleForUrl(const std::string& jurl,
                                            std::u16string jtitle);
   void LoadOriginalImage();
@@ -389,6 +385,12 @@ inline ScopedJavaLocalRef<jobject> ToJniType<TabAndroid>(
     JNIEnv* env,
     const TabAndroid& tab) {
   return tab.GetJavaObject();
+}
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<TabAndroid*>(
+    JNIEnv* env,
+    TabAndroid* const& tab) {
+  return tab ? tab->GetJavaObject() : nullptr;
 }
 }  // namespace jni_zero
 

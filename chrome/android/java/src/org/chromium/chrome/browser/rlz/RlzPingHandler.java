@@ -63,10 +63,10 @@ public class RlzPingHandler {
     interface Natives {
         void startPing(
                 @JniType("Profile*") Profile profile,
-                String brand,
-                String language,
-                String events,
-                String id,
-                Callback<Boolean> callback);
+                @JniType("std::string") String brand,
+                @JniType("std::string") String language,
+                @JniType("std::string") String events,
+                @JniType("std::string") String id,
+                @JniType("base::OnceCallback<void(bool)>") Callback<Boolean> callback);
     }
 }

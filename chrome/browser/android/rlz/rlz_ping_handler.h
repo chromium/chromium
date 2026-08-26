@@ -5,13 +5,11 @@
 #ifndef CHROME_BROWSER_ANDROID_RLZ_RLZ_PING_HANDLER_H_
 #define CHROME_BROWSER_ANDROID_RLZ_RLZ_PING_HANDLER_H_
 
-#include <jni.h>
-
 #include <memory>
 #include <optional>
 #include <string>
 
-#include "base/android/scoped_java_ref.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 
 class Profile;
@@ -35,22 +33,22 @@ class RlzPingHandler {
   ~RlzPingHandler();
 
   // Makes a GET request to the designated web end point with the given
-  // parameters. |j_brand| is a 4 character priorly designated brand value.
-  // |j_language| is the 2 letter lower case language. |events| is a single
+  // parameters. |brand| is a 4 character priorly designated brand value.
+  // |language| is the 2 letter lower case language. |events| is a single
   // string where multiple 4 character long events are concatenated with ,
   // and |id| is a unique id for the device that is 50 characters long.
-  void Ping(const base::android::JavaRef<jstring>& j_brand,
-            const base::android::JavaRef<jstring>& j_language,
-            const base::android::JavaRef<jstring>& j_events,
-            const base::android::JavaRef<jstring>& j_id,
-            const base::android::JavaRef<jobject>& j_callback);
+  void Ping(const std::string& brand,
+            const std::string& language,
+            const std::string& events,
+            const std::string& id,
+            base::OnceCallback<void(bool)> callback);
 
  private:
   void OnSimpleLoaderComplete(std::optional<std::string> response_body);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
-  base::android::ScopedJavaGlobalRef<jobject> j_callback_;
+  base::OnceCallback<void(bool)> callback_;
 };
 
 }  // namespace android
