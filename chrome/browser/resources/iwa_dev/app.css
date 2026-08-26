@@ -26,12 +26,14 @@ h1 {
   margin-bottom: 16px;
 }
 
-#learn-more a {
+#learn-more a,
+#error-message a {
   color: var(--cr-link-color);
   text-decoration: none;
 }
 
-#learn-more a:hover {
+#learn-more a:hover,
+#error-message a:hover {
   text-decoration: underline;
 }
 
@@ -66,3 +68,13 @@ h2 {
   margin-inline-end: 21px;
   min-width: 81px;
 }
+
+#error-message {
+  font-size: 14px;
+  margin-top: 32px;
+}
+
+#error-message p {
+  margin: 6px 0;
+}
+

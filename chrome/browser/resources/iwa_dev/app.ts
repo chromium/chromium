@@ -83,6 +83,7 @@ export class IwaDevAppElement extends CrLitElement {
   static override get properties() {
     return {
       devModeEnabled_: {type: Boolean},
+      devToolsRestrictedByAdmin_: {type: Boolean},
       installedApps_: {type: Array},
       hasFetchedApps_: {type: Boolean, state: true},
       updatingAppIds_: {type: Array, state: true},
@@ -93,6 +94,8 @@ export class IwaDevAppElement extends CrLitElement {
 
   protected accessor devModeEnabled_: boolean =
       loadTimeData.getBoolean('isIwaDevModeEnabled');
+  protected accessor devToolsRestrictedByAdmin_: boolean =
+      loadTimeData.getBoolean('isDevToolsRestrictedByAdmin');
   protected accessor installedApps_: IwaDevModeAppInfo[] = [];
   protected accessor hasFetchedApps_: boolean = false;
   protected accessor toastMessage_: string = '';

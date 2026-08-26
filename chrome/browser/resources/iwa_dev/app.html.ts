@@ -18,12 +18,16 @@ export function getHtml(this: IwaDevAppElement) {
 </div>
 ${!this.devModeEnabled_ ? html`
   <div id="error-message">
-    <p>Isolated Web App Developer Mode is disabled.</p>
-    <p>To use this page, please enable the
-      <a href="chrome://flags#enable-isolated-web-app-dev-mode">
-        Isolated Web App Developer Mode
-      </a> flag.
-    </p>
+    ${this.devToolsRestrictedByAdmin_ ? html`
+      <p>Isolated Web App Developer Mode is disabled by your administrator.</p>
+    ` : html`
+      <p>Isolated Web App Developer Mode is disabled.</p>
+      <p>To use this page, please enable the
+        <a href="chrome://flags#enable-isolated-web-app-dev-mode" target="_blank">
+          Isolated Web App Developer Mode
+        </a> flag.
+      </p>
+    `}
   </div>
 ` : html`
   <div id="content">

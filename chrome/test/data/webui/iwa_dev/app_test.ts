@@ -61,8 +61,13 @@ suite('<iwa-dev-app>', () => {
     uninstalledListener = undefined;
   });
 
-  function createApp(devModeEnabled: boolean = true) {
-    loadTimeData.overrideValues({isIwaDevModeEnabled: devModeEnabled});
+  function createApp(
+      devModeEnabled: boolean = true,
+      devToolsRestrictedByAdmin: boolean = false) {
+    loadTimeData.overrideValues({
+      isIwaDevModeEnabled: devModeEnabled,
+      isDevToolsRestrictedByAdmin: devToolsRestrictedByAdmin,
+    });
     app = document.createElement('iwa-dev-app');
     document.body.appendChild(app);
   }
@@ -150,6 +155,19 @@ suite('<iwa-dev-app>', () => {
     await new Promise(resolve => setTimeout(resolve, MIN_UPDATE_DELAY_MS + 10));
     await microtasksFinished();
   }
+
+  test(
+      'display error message when IWA dev mode is disabled by policy',
+      async () => {
+        createApp(
+            /*devModeEnabled=*/ false, /*devToolsRestrictedByAdmin=*/ true);
+        await microtasksFinished();
+
+        const errorMessage = app.shadowRoot.querySelector('#error-message');
+        assertTrue(!!errorMessage);
+        assertTrue(errorMessage.textContent.includes(
+            'Isolated Web App Developer Mode is disabled by your administrator.'));
+      });
 
   test('display error message when IWA dev mode is disabled', async () => {
     createApp(/*devModeEnabled=*/ false);
