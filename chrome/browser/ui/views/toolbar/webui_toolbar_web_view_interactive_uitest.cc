@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_tabrestore.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -31,6 +32,7 @@
 #include "components/collaboration/public/features.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/data_sharing/public/features.h"
+#include "components/sessions/core/serialized_navigation_entry.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
@@ -414,4 +416,53 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsInteractiveTest,
         model_->UpdatePinnedState(action_id1, false);
         model_->UpdatePinnedState(action_id2, false);
       }));
+}
+
+// Verifies that restoring a background WebUI tab and switching to it does not
+// cause the WebUI toolbar to be occluded or freeze its Omnibox location
+// updates. See b/547718312.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
+                       TabSwitchStaleBoundsOccludesWebUIToolbar) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUIToolbarWebViewId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kInstrumentedWebViewId);
+
+  WaitForInitialWebUIToolbar(browser());
+
+  // Restore a background WebUI tab (e.g. chrome://version).
+  const GURL webui_url("chrome://version/");
+  std::vector<sessions::SerializedNavigationEntry> navigations;
+  sessions::SerializedNavigationEntry entry;
+  entry.set_virtual_url(webui_url);
+  entry.set_index(0);
+  navigations.push_back(entry);
+
+  content::WebContents* restored_contents = chrome::AddRestoredTab(
+      browser(), navigations, /*tab_index=*/1, /*selected_navigation=*/0,
+      /*extension_app_id=*/"", /*group=*/std::nullopt, /*select=*/false,
+      /*pin=*/false, base::TimeTicks::Now(), base::Time::Now(),
+      /*storage_namespace=*/nullptr,
+      sessions::SerializedUserAgentOverride(),
+      /*extra_data=*/{}, /*from_session_restore=*/true,
+      /*is_active_browser=*/std::nullopt);
+  ASSERT_TRUE(restored_contents);
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+
+  RunTestSequence(
+      WaitForShow(kWebUIToolbarElementIdentifier),
+      WithView(kWebUIToolbarElementIdentifier,
+               [](WebUIToolbarWebView* parent) {
+                 parent->GetWebViewForTesting()->SetProperty(
+                     views::kElementIdentifierKey, kInstrumentedWebViewId);
+               }),
+      InstrumentNonTabWebView(kWebUIToolbarWebViewId, kInstrumentedWebViewId,
+                              /*wait_for_ready=*/true),
+      // Switch to the restored WebUI background tab.
+      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(1); }),
+      // Verify that the WebUI Location Bar receives the update and displays the
+      // new URL.
+      WaitForJsResultAt(kWebUIToolbarWebViewId,
+                        DeepQuery{"toolbar-app", "#location-bar", "#omnibox",
+                                  "#textInput", "#input"},
+                        "el => el.value.includes('chrome://version')", true));
 }
