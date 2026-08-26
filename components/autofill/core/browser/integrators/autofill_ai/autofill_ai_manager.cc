@@ -83,36 +83,6 @@ namespace autofill {
 
 namespace {
 
-bool DidUserExplicitlyAcceptedImportPrompt(
-    AutofillClient::AutofillAiBubbleResult result) {
-  switch (result) {
-    case AutofillClient::AutofillAiBubbleResult::kAccepted:
-    case AutofillClient::AutofillAiBubbleResult::kEditAccepted:
-      return true;
-    case AutofillClient::AutofillAiBubbleResult::kCancelled:
-    case AutofillClient::AutofillAiBubbleResult::kClosed:
-    case AutofillClient::AutofillAiBubbleResult::kUnknown:
-    case AutofillClient::AutofillAiBubbleResult::kNotInteracted:
-    case AutofillClient::AutofillAiBubbleResult::kLostFocus:
-      return false;
-  }
-}
-
-bool DidUserExplicitlyDeclineImportPrompt(
-    AutofillClient::AutofillAiBubbleResult result) {
-  switch (result) {
-    case AutofillClient::AutofillAiBubbleResult::kCancelled:
-    case AutofillClient::AutofillAiBubbleResult::kClosed:
-      return true;
-    case AutofillClient::AutofillAiBubbleResult::kUnknown:
-    case AutofillClient::AutofillAiBubbleResult::kAccepted:
-    case AutofillClient::AutofillAiBubbleResult::kEditAccepted:
-    case AutofillClient::AutofillAiBubbleResult::kNotInteracted:
-    case AutofillClient::AutofillAiBubbleResult::kLostFocus:
-      return false;
-  }
-}
-
 // Given an `entity`, returns the string to use as a strike key for each entry
 // in `entity.type().strike_keys()`.
 std::vector<std::string> GetAttributeStrikeKeys(const EntityInstance& entity,

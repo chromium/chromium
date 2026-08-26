@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
@@ -42,6 +43,12 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
 // locale is "en_US", the returned string is "Jan 31, 2025".
 std::optional<std::u16string> MaybeGetLocalizedDate(
     const AttributeInstance& attribute);
+
+bool DidUserExplicitlyAcceptedImportPrompt(
+    AutofillClient::AutofillAiBubbleResult result);
+
+bool DidUserExplicitlyDeclineImportPrompt(
+    AutofillClient::AutofillAiBubbleResult result);
 
 }  // namespace autofill
 

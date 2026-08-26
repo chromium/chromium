@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_utils.h"
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
@@ -186,7 +187,7 @@ void AutofillAiSaveUpdateEntityPromptController::RunPromptClosedCallback(
   if (prompt_result_callback_) {
     std::move(prompt_result_callback_)
         .Run(result, std::move(edited_entity_instance),
-             result == AutofillClient::AutofillAiBubbleResult::kAccepted
+             DidUserExplicitlyAcceptedImportPrompt(result)
                  ? ui_context_
                  : AutofillClient::EntityImportUIContext{});
   }
