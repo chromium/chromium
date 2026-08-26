@@ -4069,6 +4069,85 @@ IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest, DeniedDownload) {
   ASSERT_EQ(download::DownloadItem::CANCELLED, download->GetState());
 }
 
+// A stale DevTools session must not reset a newer session's download path when
+// it detaches from the same browser context.
+IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest,
+                       OlderSessionDetachPreservesNewerAllowPath) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath older_download_path =
+      temp_dir.GetPath().AppendASCII("older");
+  const base::FilePath newer_download_path =
+      temp_dir.GetPath().AppendASCII("newer");
+  SetupEnsureNoPendingDownloads();
+  NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
+
+  TestDevToolsProtocolClient older_client;
+  older_client.AttachToBrowserTarget();
+  base::DictValue older_params;
+  older_params.Set("behavior", "allow");
+  older_params.Set("downloadPath", older_download_path.AsUTF8Unsafe());
+  EXPECT_TRUE(older_client.SendCommandSync("Browser.setDownloadBehavior",
+                                           std::move(older_params)));
+
+  TestDevToolsProtocolClient newer_client;
+  newer_client.AttachToBrowserTarget();
+  base::DictValue newer_params;
+  newer_params.Set("behavior", "allow");
+  newer_params.Set("downloadPath", newer_download_path.AsUTF8Unsafe());
+  EXPECT_TRUE(newer_client.SendCommandSync("Browser.setDownloadBehavior",
+                                           std::move(newer_params)));
+
+  older_client.DetachProtocolClient();
+
+  download::DownloadItem* download = StartDownloadAndReturnItem(
+      shell(), embedded_test_server()->GetURL("/download/download-test.lib"));
+  WaitForCompletion(download);
+  EXPECT_EQ(newer_download_path.AppendASCII("download-test.lib"),
+            download->GetTargetFilePath());
+  EXPECT_FALSE(
+      base::PathExists(older_download_path.AppendASCII("download-test.lib")));
+  EXPECT_TRUE(base::PathExists(download->GetTargetFilePath()));
+  EXPECT_TRUE(EnsureNoPendingDownloads());
+
+  newer_client.DetachProtocolClient();
+}
+
+// Detaching the current owner restores the default behavior instead of
+// reviving an older session's override.
+IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest,
+                       CurrentSessionDetachRestoresDefaultBehavior) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  SetupEnsureNoPendingDownloads();
+  NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
+
+  TestDevToolsProtocolClient older_client;
+  older_client.AttachToBrowserTarget();
+  base::DictValue params;
+  params.Set("behavior", "deny");
+  EXPECT_TRUE(older_client.SendCommandSync("Browser.setDownloadBehavior",
+                                           params.Clone()));
+
+  TestDevToolsProtocolClient newer_client;
+  newer_client.AttachToBrowserTarget();
+  EXPECT_TRUE(newer_client.SendCommandSync("Browser.setDownloadBehavior",
+                                           std::move(params)));
+
+  newer_client.DetachProtocolClient();
+
+  download::DownloadItem* download = StartDownloadAndReturnItem(
+      shell(), embedded_test_server()->GetURL(
+                   content::SlowDownloadHttpResponse::kUnknownSizeUrl));
+  EXPECT_EQ(download::DownloadItem::IN_PROGRESS, download->GetState());
+  download->Cancel(true);
+  DownloadTestFlushObserver flush_observer(DownloadManagerForShell(shell()));
+  flush_observer.WaitForFlush();
+  EXPECT_TRUE(EnsureNoPendingDownloads());
+
+  older_client.DetachProtocolClient();
+}
+
 // Check that defaulting downloads works as expected.
 IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest, DefaultDownload) {
   base::ScopedAllowBlockingForTesting allow_blocking;

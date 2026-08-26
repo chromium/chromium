@@ -97,25 +97,7 @@ Response BrowserHandler::Disable() {
   }
   contexts_with_overridden_permissions_.clear();
 
-  // TODO: this leaks context ids for all contexts with overridden downloads.
-  for (auto& browser_context_id : contexts_with_overridden_downloads_) {
-    content::BrowserContext* browser_context = nullptr;
-    std::string error;
-    std::optional<std::string> context_id =
-        browser_context_id == ""
-            ? std::nullopt
-            : std::optional<std::string>(browser_context_id);
-    FindBrowserContext(context_id, &browser_context);
-    if (browser_context) {
-      auto* delegate =
-          DevToolsDownloadManagerDelegate::GetInstance(browser_context);
-      if (delegate) {
-        delegate->set_download_behavior(
-            DevToolsDownloadManagerDelegate::DownloadBehavior::DEFAULT);
-      }
-    }
-  }
-  contexts_with_overridden_downloads_.clear();
+  download_behavior_overrides_.clear();
   SetDownloadEventsEnabled(false);
   histograms_snapshots_.clear();
 
@@ -597,26 +579,30 @@ Response BrowserHandler::DoSetDownloadBehavior(
 
   auto* delegate =
       DevToolsDownloadManagerDelegate::GetOrCreateInstance(browser_context);
+  DevToolsDownloadManagerDelegate::DownloadBehaviorOverrideHandle
+      override_handle;
   if (behavior == Browser::SetDownloadBehavior::BehaviorEnum::Allow) {
-    delegate->set_download_behavior(
-        DevToolsDownloadManagerDelegate::DownloadBehavior::ALLOW);
-    delegate->set_download_path(download_path.value());
+    override_handle = delegate->SetDownloadBehavior(
+        DevToolsDownloadManagerDelegate::DownloadBehavior::ALLOW,
+        download_path.value());
   } else if (behavior ==
              Browser::SetDownloadBehavior::BehaviorEnum::AllowAndName) {
-    delegate->set_download_behavior(
-        DevToolsDownloadManagerDelegate::DownloadBehavior::ALLOW_AND_NAME);
-    delegate->set_download_path(download_path.value());
+    override_handle = delegate->SetDownloadBehavior(
+        DevToolsDownloadManagerDelegate::DownloadBehavior::ALLOW_AND_NAME,
+        download_path.value());
   } else if (behavior == Browser::SetDownloadBehavior::BehaviorEnum::Deny) {
-    delegate->set_download_behavior(
-        DevToolsDownloadManagerDelegate::DownloadBehavior::DENY);
+    override_handle = delegate->SetDownloadBehavior(
+        DevToolsDownloadManagerDelegate::DownloadBehavior::DENY, "");
   } else {
-    delegate->set_download_behavior(
-        DevToolsDownloadManagerDelegate::DownloadBehavior::DEFAULT);
+    override_handle = delegate->SetDownloadBehavior(
+        DevToolsDownloadManagerDelegate::DownloadBehavior::DEFAULT, "");
   }
-  contexts_with_overridden_downloads_.insert(
+  const std::string browser_context_id =
       manager_delegate->GetDefaultBrowserContext() == browser_context
           ? ""
-          : browser_context->UniqueId());
+          : browser_context->UniqueId();
+  download_behavior_overrides_.insert_or_assign(browser_context_id,
+                                                std::move(override_handle));
 
   return Response::Success();
 }
