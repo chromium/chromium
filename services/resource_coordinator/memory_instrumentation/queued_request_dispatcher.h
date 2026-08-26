@@ -34,9 +34,6 @@ class QueuedRequestDispatcher {
       std::unique_ptr<base::trace_event::ProcessMemoryDump>)>;
   using OsCallback = base::RepeatingCallback<
       void(base::ProcessId, mojom::RequestOutcome, OSMemDumpMap)>;
-  using VmRegions =
-      base::flat_map<base::ProcessId,
-                     std::vector<memory_instrumentation::mojom::VmRegionPtr>>;
 
   struct ClientInfo {
     ClientInfo(mojom::ClientProcess* client,
@@ -64,13 +61,6 @@ class QueuedRequestDispatcher {
   // |tracing_observer| if the |request| requires it.
   static void Finalize(QueuedRequest* request,
                        TracingObserver* tracing_observer);
-
-  static void SetUpAndDispatchVmRegionRequest(
-      QueuedVmRegionRequest* request,
-      const std::vector<ClientInfo>& clients,
-      const std::vector<base::ProcessId>& desired_pids,
-      const OsCallback& os_callback);
-  static VmRegions FinalizeVmRegionRequest(QueuedVmRegionRequest* request);
 
  private:
   static bool AddChromeMemoryDumpToTrace(

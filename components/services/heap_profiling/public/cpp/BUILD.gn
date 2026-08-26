@@ -4,49 +4,21 @@
 
 import("//base/allocator/allocator.gni")
 
-static_library("cpp") {
+source_set("cpp") {
   sources = [
-    "controller.cc",
-    "controller.h",
-    "profiling_client.cc",
-    "profiling_client.h",
-    "settings.cc",
-    "settings.h",
-    "switches.cc",
-    "switches.h",
+    "merge_samples.cc",
+    "merge_samples.h",
   ]
 
-  public_deps = [
-    "//base",
-    "//components/services/heap_profiling/public/mojom",
-    "//mojo/public/cpp/bindings",
-  ]
-
-  deps = [
-    "//base:debugging_buildflags",
-    "//base/allocator:buildflags",
-  ]
-
-  if (!is_ios || use_allocator_shim) {
-    sources += [
-      "merge_samples.cc",
-      "merge_samples.h",
-    ]
-  }
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "switches_unittest.cc" ]
+  sources = [ "merge_samples_unittest.cc" ]
   deps = [
     ":cpp",
     "//base",
-    "//base/allocator:buildflags",
-    "//base/test:test_support",
     "//testing/gtest",
   ]
-
-  if (!is_ios || use_allocator_shim) {
-    sources += [ "merge_samples_unittest.cc" ]
-  }
 }

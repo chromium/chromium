@@ -49,7 +49,6 @@ source_set("common") {
     "//components/heap_profiling/in_process:mojom",
     "//components/safe_browsing/core/common:features",
     "//components/sensitive_content:features",
-    "//components/services/heap_profiling/public/cpp",
     "//components/version_info",
     "//components/version_info:generate_version_info",
     "//components/version_info/android:channel_getter",

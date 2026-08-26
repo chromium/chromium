@@ -14,17 +14,13 @@
 
 namespace memory_instrumentation {
 
-// Interface to register client processes and heap profilers with the memory
-// instrumentation coordinator. This is considered privileged and the browser
-// should be the only client.
+// Interface to register client processes with the memory instrumentation
+// coordinator. This is considered privileged and the browser should be the only
+// client.
 class COMPONENT_EXPORT(
     RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION) Registry {
  public:
   virtual ~Registry() = default;
-
-  virtual void RegisterHeapProfiler(
-      mojo::PendingRemote<mojom::HeapProfiler> profiler,
-      mojo::PendingReceiver<mojom::HeapProfilerHelper> helper_receiver) = 0;
 
   // Must be called once for each client process, including the browser process.
   // |client_process| is an endpoint the service can use to push client events
