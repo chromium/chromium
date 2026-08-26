@@ -18,8 +18,6 @@ import org.chromium.components.signin.AccountCapabilitiesConstants;
 import org.chromium.components.signin.AccountManagerDelegate;
 import org.chromium.components.signin.Tribool;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +44,8 @@ public final class AccountCapabilitiesTest {
                 return capabilities.canFetchFamilyMemberInfo();
             case AccountCapabilitiesConstants.CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME:
                 return capabilities.canHaveEmailAddressDisplayed();
+            case AccountCapabilitiesConstants.CAN_OVERRIDE_ACCOUNT_INFO_CAPABILITY_NAME:
+                return capabilities.canOverrideAccountInfo();
             case AccountCapabilitiesConstants.CAN_RUN_CHROME_PRIVACY_SANDBOX_TRIALS_CAPABILITY_NAME:
                 return capabilities.canRunChromePrivacySandboxTrials();
             case AccountCapabilitiesConstants
@@ -78,12 +78,11 @@ public final class AccountCapabilitiesTest {
                 return capabilities.isSubjectToEnterpriseFeatures();
             case AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME:
                 return capabilities.isSubjectToParentalControls();
-            case AccountCapabilitiesConstants
-                    .IS_SUBJECT_TO_UNIVERSAL_OPT_OUT_CAPABILITY_NAME:
+            case AccountCapabilitiesConstants.IS_SUBJECT_TO_UNIVERSAL_OPT_OUT_CAPABILITY_NAME:
                 return capabilities.isSubjectToUniversalOptOut();
             case AccountCapabilitiesConstants.SUPPORTS_WALLET_PRIVATE_PASSES_IN_AUTOFILL_NAME:
                 return capabilities.supportsWalletPrivatePassesInAutofill();
-                /** keep-sorted end */
+            /** keep-sorted end */
         }
         throw new AssertionError("Capability name is not known.");
     }
@@ -100,41 +99,8 @@ public final class AccountCapabilitiesTest {
     }
 
     @Parameters
-    public static Collection<Object> data() {
-        List<Object> params =
-                Arrays.asList(
-                        new Object[] {
-                            AccountCapabilitiesConstants
-                                    .CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME,
-                            AccountCapabilitiesConstants
-                                    .CAN_SHOW_HISTORY_SYNC_OPT_INS_WITHOUT_MINOR_MODE_RESTRICTIONS_CAPABILITY_NAME,
-                            AccountCapabilitiesConstants
-                                    .CAN_RUN_CHROME_PRIVACY_SANDBOX_TRIALS_CAPABILITY_NAME,
-                            AccountCapabilitiesConstants
-                                    .IS_OPTED_IN_TO_PARENTAL_SUPERVISION_CAPABILITY_NAME,
-                            AccountCapabilitiesConstants
-                                    .CAN_USE_DEVTOOLS_GENERATIVE_AI_FEATURES_CAPABILITY_NAME,
-                            AccountCapabilitiesConstants.CAN_USE_MANTA_SERVICE_NAME,
-                            AccountCapabilitiesConstants.CAN_USE_MODEL_EXECUTION_FEATURES_NAME,
-                            AccountCapabilitiesConstants
-                                    .IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME,
-                            AccountCapabilitiesConstants
-                                    .IS_SUBJECT_TO_ENTERPRISE_POLICIES_CAPABILITY_NAME,
-                            AccountCapabilitiesConstants
-                                    .CAN_FETCH_FAMILY_MEMBER_INFO_CAPABILITY_NAME,
-                            AccountCapabilitiesConstants.CAN_USE_GEMINI_IN_CHROME_CAPABILITY_NAME,
-                            AccountCapabilitiesConstants
-                                    .IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
-                            AccountCapabilitiesConstants
-                                    .IS_SUBJECT_TO_UNIVERSAL_OPT_OUT_CAPABILITY_NAME,
-                            AccountCapabilitiesConstants.CAN_USE_SPEAKER_LABEL_IN_RECORDER_APP,
-                            AccountCapabilitiesConstants
-                                    .SUPPORTS_WALLET_PRIVATE_PASSES_IN_AUTOFILL_NAME,
-                            AccountCapabilitiesConstants
-                                    .IS_SUBJECT_TO_ACCOUNT_LEVEL_ENTERPRISE_POLICIES_CAPABILITY_NAME
-                        });
-        assert AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES.containsAll(params);
-        return params;
+    public static List<String> data() {
+        return List.copyOf(AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES);
     }
 
     @Test

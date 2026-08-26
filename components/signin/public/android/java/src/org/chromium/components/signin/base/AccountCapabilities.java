@@ -85,6 +85,14 @@ public class AccountCapabilities {
     }
 
     /**
+     * @return canOverrideAccountInfo capability value.
+     */
+    public @Tribool int canOverrideAccountInfo() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.CAN_OVERRIDE_ACCOUNT_INFO_CAPABILITY_NAME);
+    }
+
+    /**
      * @return canRunChromePrivacySandboxTrials capability value.
      */
     public @Tribool int canRunChromePrivacySandboxTrials() {

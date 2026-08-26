@@ -77,6 +77,9 @@ class AccountCapabilities {
   signin::Tribool can_make_chrome_search_engine_choice_screen_choice() const;
 #endif
 
+  // Chrome can override the account info for accounts with this capability.
+  signin::Tribool can_override_account_info() const;
+
 #if !BUILDFLAG(IS_IOS)
   // Chrome can run privacy sandbox trials for accounts with this capability.
   signin::Tribool can_run_chrome_privacy_sandbox_trials() const;

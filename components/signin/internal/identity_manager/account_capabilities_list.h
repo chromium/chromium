@@ -60,6 +60,10 @@ ACCOUNT_CAPABILITY(kCanMakeChromeSearchEngineChoiceScreenChoice,
                    "accountcapabilities/ge4tenznmnqxa")
 #endif
 
+ACCOUNT_CAPABILITY(kCanOverrideAccountInfoCapabilityName,
+                   CAN_OVERRIDE_ACCOUNT_INFO_CAPABILITY_NAME,
+                   "accountcapabilities/gmydknbnmnqxa")
+
 #if !BUILDFLAG(IS_IOS)
 ACCOUNT_CAPABILITY(kCanRunChromePrivacySandboxTrialsCapabilityName,
                    CAN_RUN_CHROME_PRIVACY_SANDBOX_TRIALS_CAPABILITY_NAME,
