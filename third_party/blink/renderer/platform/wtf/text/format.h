@@ -45,10 +45,11 @@ consteval void FormatStringError(const char* message) {
 // `VFormat()`, and `VFormatTo()` and is not intended for direct public usage.
 class WTF_EXPORT FormatArg {
  public:
-  using Value =
-      std::variant<int64_t, uint64_t, StringView, const void*, double, UChar>;
+  using Value = std::
+      variant<bool, int64_t, uint64_t, StringView, const void*, double, UChar>;
 
   // NOLINTBEGIN(google-explicit-constructor)
+  FormatArg(bool v) : value_(v) {}
   FormatArg(char v)
       : value_(static_cast<UChar>(static_cast<unsigned char>(v))) {}
   FormatArg(LChar v) : value_(static_cast<UChar>(v)) {}
@@ -272,9 +273,11 @@ class FormatString {
         if (type == 'd' || type == 'x' || type == 'X') {
           valid = std::is_integral_v<RawT> || std::is_enum_v<RawT>;
         } else if (type == 'c') {
-          valid = std::is_integral_v<RawT> || std::is_enum_v<RawT>;
+          valid = (std::is_integral_v<RawT> && !std::is_same_v<RawT, bool>) ||
+                  std::is_enum_v<RawT>;
         } else if (type == 's') {
-          valid = std::convertible_to<const RawT&, StringView> ||
+          valid = std::is_same_v<RawT, bool> ||
+                  std::convertible_to<const RawT&, StringView> ||
                   std::convertible_to<const RawT&, std::string_view>;
         } else if (type == 'p' || type == 'P') {
           valid = (std::convertible_to<RawT, const void*> &&
@@ -367,6 +370,9 @@ WTF_EXPORT StringBuilder& VFormatTo(StringBuilder& builder,
 //   implicitly convertible types). The `c` specifier formats integral types as
 //   characters. A CHECK failure occurs if the value is negative or exceeds
 //   0x10FFFF.
+// - Boolean type: `bool`. If no type specifier or `s` is given, it is formatted
+//   as "true" or "false". It can also be formatted as an integer using `d`,
+//   `x`, `X`.
 // - Floating-point types: `double` (and implicitly convertible types).
 // - String types: `blink::StringView`, `blink::String`, `blink::AtomicString`,
 //   `std::string`, `std::string_view`, `const char[N]`.

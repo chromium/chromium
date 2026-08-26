@@ -248,6 +248,7 @@ TEST(FormatTest, TypeSpecifierDeathTest) {
   FormatArg str_args[] = {FormatArg(StringView("abc"))};
   FormatArg ptr_args[] = {FormatArg(static_cast<const void*>(nullptr))};
   FormatArg double_args[] = {FormatArg(3.14)};
+  FormatArg bool_args[] = {FormatArg(true)};
 
   // String argument with integer/pointer/float type specifiers
   EXPECT_DEATH_IF_SUPPORTED(VFormat("{:d}", FormatArgs(str_args)), "");
@@ -284,6 +285,14 @@ TEST(FormatTest, TypeSpecifierDeathTest) {
   EXPECT_DEATH_IF_SUPPORTED(VFormat("{:p}", FormatArgs(double_args)), "");
   EXPECT_DEATH_IF_SUPPORTED(VFormat("{:P}", FormatArgs(double_args)), "");
 
+  // Bool argument with char/pointer/float type specifiers
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:c}", FormatArgs(bool_args)), "");
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:p}", FormatArgs(bool_args)), "");
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:P}", FormatArgs(bool_args)), "");
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:f}", FormatArgs(bool_args)), "");
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:e}", FormatArgs(bool_args)), "");
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:g}", FormatArgs(bool_args)), "");
+
   // Unsupported type specifier
   EXPECT_DEATH_IF_SUPPORTED(VFormat("{:z}", FormatArgs(int_args)), "");
 
@@ -293,6 +302,9 @@ TEST(FormatTest, TypeSpecifierDeathTest) {
   EXPECT_DEATH_IF_SUPPORTED(VFormat("{:.2s}", FormatArgs(str_args)), "");
   EXPECT_DEATH_IF_SUPPORTED(VFormat("{:.2}", FormatArgs(str_args)), "");
   EXPECT_DEATH_IF_SUPPORTED(VFormat("{:.2p}", FormatArgs(ptr_args)), "");
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:.2}", FormatArgs(bool_args)), "");
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:.2s}", FormatArgs(bool_args)), "");
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:.2d}", FormatArgs(bool_args)), "");
 
   // Invalid precision specifier
   EXPECT_DEATH_IF_SUPPORTED(VFormat("{:.}", FormatArgs(double_args)), "");
@@ -341,6 +353,39 @@ TEST(FormatTest, CharacterDeathTest) {
   EXPECT_DEATH_IF_SUPPORTED(VFormat("{:c}", FormatArgs({FormatArg(-1)})), "");
   EXPECT_DEATH_IF_SUPPORTED(VFormat("{:c}", FormatArgs({FormatArg(0x110000)})),
                             "");
+}
+
+TEST(FormatTest, Boolean) {
+  EXPECT_EQ("true", Format("{}", true));
+  EXPECT_EQ("false", Format("{}", false));
+  EXPECT_EQ("true", Format("{:}", true));
+  EXPECT_EQ("false", Format("{:}", false));
+  EXPECT_EQ("true", Format("{:s}", true));
+  EXPECT_EQ("false", Format("{:s}", false));
+
+  // Width and padding with string formatting
+  EXPECT_EQ("true  ", Format("{:6}", true));
+  EXPECT_EQ("false ", Format("{:6}", false));
+  EXPECT_EQ("true  ", Format("{:6s}", true));
+  EXPECT_EQ("false ", Format("{:6s}", false));
+  EXPECT_EQ("true", Format("{:2}", true));
+  EXPECT_EQ("false", Format("{:2}", false));
+
+  // Integer formatting (d, x, X)
+  EXPECT_EQ("1", Format("{:d}", true));
+  EXPECT_EQ("0", Format("{:d}", false));
+  EXPECT_EQ("1", Format("{:x}", true));
+  EXPECT_EQ("0", Format("{:x}", false));
+  EXPECT_EQ("1", Format("{:X}", true));
+  EXPECT_EQ("0", Format("{:X}", false));
+
+  // Width and padding with integer formatting
+  EXPECT_EQ("  1", Format("{:3d}", true));
+  EXPECT_EQ("  0", Format("{:3d}", false));
+  EXPECT_EQ("001", Format("{:03d}", true));
+  EXPECT_EQ("000", Format("{:03d}", false));
+  EXPECT_EQ("001", Format("{:03x}", true));
+  EXPECT_EQ("000", Format("{:03X}", false));
 }
 
 }  // namespace blink

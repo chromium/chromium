@@ -34,7 +34,6 @@
 #include "base/compiler_specific.h"
 #include "base/memory/values_equivalent.h"
 #include "base/notreached.h"
-#include "base/strings/to_string.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/web_font_description.h"
 #include "third_party/blink/renderer/platform/geometry/evaluation_input.h"
@@ -771,7 +770,7 @@ String FontDescription::VariantLigatures::ToString() const {
 
 String FontDescription::Size::ToString() const {
   return Format("keyword_size={}, specified_size={:f}, is_absolute_size={}",
-                keyword, value, base::ToString(is_absolute));
+                keyword, value, is_absolute);
 }
 
 String FontDescription::FamilyDescription::ToString() const {
@@ -818,16 +817,14 @@ String FontDescription::ToString() const {
       blink::ToString(
           static_cast<TypesettingFeatures>(fields_.typesetting_features_)),
       blink::ToString(Orientation()), blink::ToString(WidthVariant()),
-      FontDescription::ToString(VariantCaps()),
-      base::ToString(IsAbsoluteSize()),
+      FontDescription::ToString(VariantCaps()), IsAbsoluteSize(),
       FontDescription::ToString(GenericFamily()),
       FontDescription::ToString(Kerning()), GetVariantLigatures().ToString(),
       KeywordSize(), blink::ToString(FontSmoothing()),
-      blink::ToString(TextRendering()), base::ToString(IsSyntheticBold()),
-      base::ToString(IsSyntheticItalic()),
-      base::ToString(UseSubpixelPositioning()),
-      base::ToString(SubpixelAscentDescent()), VariantNumeric().ToString(),
-      VariantEastAsian().ToString(), blink::ToString(FontOpticalSizing()),
+      blink::ToString(TextRendering()), IsSyntheticBold(), IsSyntheticItalic(),
+      UseSubpixelPositioning(), SubpixelAscentDescent(),
+      VariantNumeric().ToString(), VariantEastAsian().ToString(),
+      blink::ToString(FontOpticalSizing()),
       FontDescription::ToString(GetFontSynthesisWeight()),
       FontDescription::ToString(GetFontSynthesisStyle()),
       FontDescription::ToString(GetFontSynthesisSmallCaps()),

@@ -17,7 +17,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
 #include "base/sequence_checker.h"
-#include "base/strings/to_string.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -385,10 +384,9 @@ WebMediaPlayerMS::WebMediaPlayerMS(
   DCHECK(delegate_);
   weak_this_ = weak_factory_.GetWeakPtr();
   delegate_id_ = delegate_->AddObserver(this);
-  SendLogMessage(UNSAFE_TODO(String::Format(
-      "%s({delegate_id=%d}, {is_audio_element=%s}, {sink_id=%s})", __func__,
-      delegate_id_, client_->IsAudioElement() ? "true" : "false",
-      sink_id.Utf8().c_str())));
+  SendLogMessage(
+      Format("{}({{delegate_id={}}}, {{is_audio_element={}}}, {{sink_id={}}})",
+             __func__, delegate_id_, client_->IsAudioElement(), sink_id));
 
   // TODO(tmathmeyer) WebMediaPlayerImpl gets the URL from the WebLocalFrame.
   // doing that here causes a nullptr deref.
@@ -651,8 +649,7 @@ void WebMediaPlayerMS::TrackRemoved(const WebString& track_id) {
 
 void WebMediaPlayerMS::ActiveStateChanged(bool is_active) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  SendLogMessage(String::Format("%s({is_active=%s})", __func__,
-                                base::ToString(is_active).c_str()));
+  SendLogMessage(Format("{}({{is_active={}}})", __func__, is_active));
   // The case when the stream becomes active is handled by TrackAdded().
   if (is_active)
     return;
@@ -673,8 +670,7 @@ void WebMediaPlayerMS::ActiveStateChanged(bool is_active) {
 
 void WebMediaPlayerMS::EnabledStateChangedForWebRtcAudio(bool is_enabled) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  SendLogMessage(String::Format("%s({is_enabled=%s})", __func__,
-                                base::ToString(is_enabled).c_str()));
+  SendLogMessage(Format("{}({{is_enabled={}}})", __func__, is_enabled));
   if (enabled_ == is_enabled) {
     return;
   }

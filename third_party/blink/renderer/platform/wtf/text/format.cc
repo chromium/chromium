@@ -265,7 +265,20 @@ StringBuilder& VFormatTo(StringBuilder& builder,
                type](const auto& val) {
                 using T = std::decay_t<decltype(val)>;
                 uint32_t width = optional_width.value_or(0);
-                if constexpr (std::is_same_v<T, UChar>) {
+                if constexpr (std::is_same_v<T, bool>) {
+                  CHECK(!precision.has_value())
+                      << "Precision specified for non-floating-point type";
+                  if (type == '\0' || type == 's') {
+                    StringView str = val ? "true" : "false";
+                    builder.Append(str);
+                    Pad(' ', width, str.length(), builder);
+                  } else if (type == 'd' || type == 'x' || type == 'X') {
+                    FormatUnsignedInteger(val ? 1 : 0, type, zero_pad, width,
+                                          builder);
+                  } else {
+                    NOTREACHED() << "Invalid type specifier for bool argument";
+                  }
+                } else if constexpr (std::is_same_v<T, UChar>) {
                   CHECK(!precision.has_value())
                       << "Precision specified for non-floating-point type";
                   if (type == '\0' || type == 'c') {
