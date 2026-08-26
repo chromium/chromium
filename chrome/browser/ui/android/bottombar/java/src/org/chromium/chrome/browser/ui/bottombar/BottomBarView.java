@@ -36,16 +36,20 @@ public class BottomBarView extends LinearLayout {
     private RippleDrawable mNewTabRippleNoBackground;
     private BottomBarButtonContainer[] mOtherContainers;
     private RippleDrawable[] mOtherRipples;
+    private @Nullable ColorStateList mCachedNewTabRippleBackgroundColorStateList;
+    private @Nullable ColorStateList mCachedOtherRipplesColorStateList;
+    private @Nullable ColorStateList mCachedIconTint;
     private @Nullable Integer mColorScheme;
     private @Nullable Boolean mNewTabBackgroundVisible;
-    private float mDisabledAlpha;
     private @ColorInt int mNewTabBackgroundTintForTesting;
     private @ColorInt int mNewTabRippleBackgroundColorForTesting;
     private @ColorInt int mOtherRipplesColorForTesting;
+    private @ColorInt int mCachedOnSurfaceColor;
     private int mNewTabPaddingStart;
     private int mNewTabPaddingTop;
     private int mNewTabPaddingEnd;
     private int mNewTabPaddingBottom;
+    private float mDisabledAlpha;
 
     public BottomBarView(Context context, @Nullable AttributeSet attributeSet) {
         super(context, attributeSet);
@@ -108,7 +112,11 @@ public class BottomBarView extends LinearLayout {
      */
     public void setNewTabRippleBackgroundColor(@ColorInt int color) {
         mNewTabRippleBackgroundColorForTesting = color;
-        mNewTabRippleBackground.setColor(ColorStateList.valueOf(color));
+        if (mCachedNewTabRippleBackgroundColorStateList == null
+                || mCachedNewTabRippleBackgroundColorStateList.getDefaultColor() != color) {
+            mCachedNewTabRippleBackgroundColorStateList = ColorStateList.valueOf(color);
+        }
+        mNewTabRippleBackground.setColor(mCachedNewTabRippleBackgroundColorStateList);
     }
 
     /**
@@ -118,13 +126,16 @@ public class BottomBarView extends LinearLayout {
      */
     public void setOtherRipplesColor(@ColorInt int color) {
         mOtherRipplesColorForTesting = color;
-        ColorStateList noBackgroundTint = ColorStateList.valueOf(color);
+        if (mCachedOtherRipplesColorStateList == null
+                || mCachedOtherRipplesColorStateList.getDefaultColor() != color) {
+            mCachedOtherRipplesColorStateList = ColorStateList.valueOf(color);
+        }
         for (RippleDrawable ripple : mOtherRipples) {
             if (ripple != null) {
-                ripple.setColor(noBackgroundTint);
+                ripple.setColor(mCachedOtherRipplesColorStateList);
             }
         }
-        mNewTabRippleNoBackground.setColor(noBackgroundTint);
+        mNewTabRippleNoBackground.setColor(mCachedOtherRipplesColorStateList);
     }
 
     /**
@@ -133,15 +144,21 @@ public class BottomBarView extends LinearLayout {
      * @param onSurfaceColor The onSurface color int.
      */
     public void setIconOnSurfaceColor(@ColorInt int onSurfaceColor) {
-        ColorStateList tint =
-                BottomBarUtils.getIconColorStateListFromOnSurface(onSurfaceColor, mDisabledAlpha);
+        // Note: mDisabledAlpha is immutable post-inflation, so onSurfaceColor is the sole cache
+        // key.
+        if (mCachedIconTint == null || mCachedOnSurfaceColor != onSurfaceColor) {
+            mCachedOnSurfaceColor = onSurfaceColor;
+            mCachedIconTint =
+                    BottomBarUtils.getIconColorStateListFromOnSurface(
+                            onSurfaceColor, mDisabledAlpha);
+        }
         @BrandedColorScheme
         int scheme = mColorScheme != null ? mColorScheme : BrandedColorScheme.APP_DEFAULT;
-        mHomeContainer.setColorScheme(tint, scheme);
-        mExtraContainer.setColorScheme(tint, scheme);
-        mNewTabContainer.setColorScheme(tint, scheme);
-        mTabSwitcherContainer.setColorScheme(tint, scheme);
-        mAppMenuContainer.setColorScheme(tint, scheme);
+        mHomeContainer.setColorScheme(mCachedIconTint, scheme);
+        mExtraContainer.setColorScheme(mCachedIconTint, scheme);
+        mNewTabContainer.setColorScheme(mCachedIconTint, scheme);
+        mTabSwitcherContainer.setColorScheme(mCachedIconTint, scheme);
+        mAppMenuContainer.setColorScheme(mCachedIconTint, scheme);
     }
 
     /** Resets the view colors to its configured {@link BrandedColorScheme}. */
@@ -180,7 +197,13 @@ public class BottomBarView extends LinearLayout {
         return mOtherRipples;
     }
 
-    void setColorScheme(@BrandedColorScheme int colorScheme) {
+    /**
+     * Sets the {@link BrandedColorScheme} for the bottom bar and updates its background, button
+     * tints, and ripple colors.
+     *
+     * @param colorScheme The {@link BrandedColorScheme} to apply.
+     */
+    public void setColorScheme(@BrandedColorScheme int colorScheme) {
         Context context = getContext();
         setBackgroundColor(BottomBarUtils.getBottomBarBackgroundColor(context, colorScheme));
         setNewTabBackgroundTint(BottomBarUtils.getColorSurfaceBright(context, colorScheme));
