@@ -118,6 +118,7 @@ import java.util.List;
     ChromeFeatureList.AUTOFILL_AI_LIMIT_SUGGESTION_WIDTH,
     ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP,
     ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING,
+    ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_HOVER_PREVIEW,
 })
 public class KeyboardAccessoryControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -493,6 +494,47 @@ public class KeyboardAccessoryControllerTest {
 
         // Verify that suggestionAccepted was called with originalIndex 5 instead of loop index 0.
         verify(mMockAutofillDelegate).suggestionAccepted(5, false);
+    }
+
+    @Test
+    public void testSuggestionHoverTriggersDelegate() {
+        AutofillSuggestion suggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Test Suggestion")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.AUTOCOMPLETE_ENTRY)
+                        .setFeatureForIph("")
+                        .build();
+
+        mCoordinator.setSuggestions(List.of(suggestion), mMockAutofillDelegate);
+
+        List<ActionBarItem> barItems = flattenItemGroups();
+        assertThat(barItems.get(0).getAction().getHoverCallback(), notNullValue());
+
+        // Simulate hover enter.
+        barItems.get(0).getAction().getHoverCallback().onResult(true);
+        verify(mMockAutofillDelegate).suggestionSelectionStateChanged(0, true);
+
+        // Simulate hover exit.
+        barItems.get(0).getAction().getHoverCallback().onResult(false);
+        verify(mMockAutofillDelegate).suggestionSelectionStateChanged(0, false);
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_HOVER_PREVIEW})
+    public void testSuggestionHoverDisabledWithoutFlag() {
+        AutofillSuggestion suggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Test Suggestion")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.AUTOCOMPLETE_ENTRY)
+                        .setFeatureForIph("")
+                        .build();
+
+        mCoordinator.setSuggestions(List.of(suggestion), mMockAutofillDelegate);
+
+        List<ActionBarItem> barItems = flattenItemGroups();
+        assertThat(barItems.get(0).getAction().getHoverCallback(), nullValue());
     }
 
     private void verifyLongPressOnPersonalContextSuggestionOpensSettings(

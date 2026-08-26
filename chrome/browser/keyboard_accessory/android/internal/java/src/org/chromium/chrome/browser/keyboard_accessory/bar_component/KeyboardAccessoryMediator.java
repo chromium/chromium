@@ -334,7 +334,11 @@ class KeyboardAccessoryMediator
                         return;
                     }
                     delegate.deleteSuggestion(pos);
-                });
+                },
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_HOVER_PREVIEW)
+                        ? selected -> delegate.suggestionSelectionStateChanged(pos, selected)
+                        : null);
     }
 
     private boolean maybeShowDialogOnLongPress(

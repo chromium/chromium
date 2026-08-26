@@ -27,6 +27,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -297,6 +298,22 @@ class KeyboardAccessoryViewBinder {
                 chipView.showLoadingView(/* loadingViewObserver= */ null);
             } else {
                 chipView.hideLoadingView(/* loadingViewObserver= */ null, /* skipDelay= */ true);
+            }
+
+            @Nullable Callback<Boolean> hoverCallback = action.getHoverCallback();
+            if (hoverCallback != null) {
+                chipView.setOnHoverListener(
+                        (view, motionEvent) -> {
+                            int actionMasked = motionEvent.getActionMasked();
+                            if (actionMasked == MotionEvent.ACTION_HOVER_ENTER) {
+                                hoverCallback.onResult(true);
+                            } else if (actionMasked == MotionEvent.ACTION_HOVER_EXIT) {
+                                hoverCallback.onResult(false);
+                            }
+                            return false;
+                        });
+            } else {
+                chipView.setOnHoverListener(null);
             }
 
             @Nullable String voiceOver = item.getSuggestion().getVoiceOver();
