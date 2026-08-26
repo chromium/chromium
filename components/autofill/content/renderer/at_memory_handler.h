@@ -58,13 +58,6 @@ class AutofillAgent;
 // AtMemoryHandler.
 class AtMemoryHandler {
  public:
-  struct AskForValuesToFillInfo {
-    FieldRendererId field_id{};
-    bool caused_by_trigger_string = false;
-    size_t value_hash = 0;
-    blink::WebRange selection_range;
-  };
-
   explicit AtMemoryHandler(AutofillAgent* agent);
   AtMemoryHandler(const AtMemoryHandler&) = delete;
   AtMemoryHandler& operator=(const AtMemoryHandler&) = delete;
@@ -75,47 +68,54 @@ class AtMemoryHandler {
   // Returns true in the latter case to indicate that the browser must not
   // default-handle the shortcut (in particular: not bubble up the keyboard
   // shortcut to the browser process).
-  bool DidReceiveKeyDown(const blink::WebElement& element,
+  bool DidReceiveKeyDown(const blink::WebElement& field,
                          const blink::WebKeyboardEvent& event);
 
   void FocusedElementChanged(const blink::WebElement& new_focused_element);
 
   void DidReceiveLeftMouseDownOrGestureTapInNode(const blink::WebNode& node);
 
-  // Tries to fill `value` into `element` at the location where AtMemory was
-  // last triggered on `element`.
-  void ReplaceSelectionForAtMemory(blink::WebElement element,
+  // Tries to fill `value` into `field` at the location where AtMemory was
+  // last triggered on `field`.
+  void ReplaceSelectionForAtMemory(blink::WebElement field,
                                    const std::u16string& value);
 
-  // Stores metadata for an AskForValuesToFill() on `element` if
-  // `trigger_source` is related to AtMemory.
+  // Stores metadata for an AskForValuesToFill() on `field` if `trigger_source`
+  // is related to AtMemory.
   void MaybeUpdateAskForValuesToFill(
-      const blink::WebElement& element,
+      const blink::WebElement& field,
       AutofillSuggestionTriggerSource trigger_source);
 
  private:
+  struct AskForValuesToFillInfo {
+    FieldRendererId field_id{};
+    bool caused_by_trigger_string = false;
+    size_t value_hash = 0;
+    blink::WebRange selection_range;
+  };
+
   const blink::RendererPreferences* GetRendererPreferences() const;
 
   const std::u16string& GetTriggerString() const;
 
-  // Returns true if the trigger string occurs before the caret in `element`.
-  bool HasTriggerStringNextToCaret(const blink::WebElement& element) const;
+  // Returns true if the trigger string occurs before the caret in `field`.
+  bool HasTriggerStringNextToCaret(const blink::WebElement& field) const;
 
   bool DidReceiveKeyDownForAtMemoryShortcut(
-      const blink::WebElement& element,
+      const blink::WebElement& field,
       const blink::WebKeyboardEvent& event);
 
   void DidReceiveKeyDownForAtMemoryTriggerString(
-      const blink::WebElement& element,
+      const blink::WebElement& field,
       const blink::WebKeyboardEvent& event);
 
   // Finds the metadata for the last AtMemory-related AskForValuesToFill() on
-  // `element` and removes the entry, if one was found.
+  // `field` and removes the entry, if one was found.
   std::optional<AskForValuesToFillInfo> ExtractAskForValuesToFill(
-      const blink::WebElement& element);
+      const blink::WebElement& field);
 
   // Records a UKM event if the user pressed "@" twice in quick succession.
-  void MaybeRecordAtAt(const blink::WebElement& element,
+  void MaybeRecordAtAt(const blink::WebElement& field,
                        const blink::WebKeyboardEvent& event,
                        const FieldDataManager& field_data_manager,
                        const CallTimerState& timer_state,
@@ -136,7 +136,7 @@ class AtMemoryHandler {
     // timespan are considered coherent.
     base::TimeTicks last_time;
     // The target of the last keydown event.
-    FieldRendererId last_element_id{};
+    FieldRendererId last_field_id{};
     // The caret offset before (!) the character occurs.
     // Note that the character might not appear at all, e.g., in
     // <input type=number>.
