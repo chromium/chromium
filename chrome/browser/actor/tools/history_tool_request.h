@@ -14,7 +14,7 @@
 namespace actor {
 class ToolRequestVisitorFunctor;
 
-// Invokes a history back or forward traversal in a specified tab.
+// Invokes a history back, forward traversal, or reload in a specified tab.
 class HistoryToolRequest : public TabToolRequest {
  public:
   static constexpr char kName[] = "History";
@@ -22,6 +22,8 @@ class HistoryToolRequest : public TabToolRequest {
   enum class Direction {
     kBack,
     kForward,
+    kReload,
+    kReloadBypassingCache,
   };
 
   HistoryToolRequest(tabs::TabHandle handle, Direction direction);

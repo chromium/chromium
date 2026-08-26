@@ -63,6 +63,8 @@ class HistoryTool : public Tool, content::WebContentsObserver {
 
   bool IsInvokeInProgress() const;
 
+  int GetTargetOffset() const;
+
   // Whether the navigation is backwards or forwards in session history.
   HistoryToolRequest::Direction direction_;
 

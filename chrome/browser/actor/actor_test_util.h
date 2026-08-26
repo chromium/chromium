@@ -213,6 +213,9 @@ std::unique_ptr<ToolRequest> MakeClickRequest(
     mojom::ClickCount count = mojom::ClickCount::kSingle);
 std::unique_ptr<ToolRequest> MakeHistoryBackRequest(tabs::TabInterface& tab);
 std::unique_ptr<ToolRequest> MakeHistoryForwardRequest(tabs::TabInterface& tab);
+std::unique_ptr<ToolRequest> MakeHistoryReloadRequest(
+    tabs::TabInterface& tab,
+    bool bypass_cache = false);
 std::unique_ptr<ToolRequest> MakeMouseMoveRequest(content::RenderFrameHost& rfh,
                                                   int content_node_id);
 std::unique_ptr<ToolRequest> MakeMouseMoveRequest(tabs::TabInterface& tab,

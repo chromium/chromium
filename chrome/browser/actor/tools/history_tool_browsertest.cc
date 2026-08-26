@@ -9,6 +9,7 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
@@ -20,6 +21,7 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
@@ -634,6 +636,133 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
 
   // The browser should remain on the current page.
   EXPECT_EQ(web_contents()->GetURL(), url_c);
+}
+
+// Basic test of the HistoryTool reloading page.
+IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest, HistoryTool_Reload) {
+  const GURL url = embedded_test_server()->GetURL("/actor/blank.html?reload");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  content::TestNavigationObserver observer(web_contents(), 1);
+  content::NavigationHandleObserver handle_observer(web_contents(), url);
+  ActResultFuture result_success;
+  std::unique_ptr<ToolRequest> action =
+      MakeHistoryReloadRequest(*active_tab(), /*bypass_cache=*/false);
+  actor_task().Act(ToRequestList(action), result_success.GetCallback());
+  ExpectOkResult(result_success);
+
+  observer.Wait();
+  EXPECT_EQ(web_contents()->GetURL(), url);
+  EXPECT_EQ(handle_observer.reload_type(), content::ReloadType::NORMAL);
+}
+
+// Test of the HistoryTool reloading page bypassing cache.
+IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
+                       HistoryTool_ReloadBypassingCache) {
+  const GURL url = embedded_test_server()->GetURL("/actor/blank.html?nocache");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  content::TestNavigationObserver observer(web_contents(), 1);
+  content::NavigationHandleObserver handle_observer(web_contents(), url);
+  ActResultFuture result_success;
+  std::unique_ptr<ToolRequest> action =
+      MakeHistoryReloadRequest(*active_tab(), /*bypass_cache=*/true);
+  actor_task().Act(ToRequestList(action), result_success.GetCallback());
+  ExpectOkResult(result_success);
+
+  observer.Wait();
+  EXPECT_EQ(web_contents()->GetURL(), url);
+  EXPECT_EQ(handle_observer.reload_type(),
+            content::ReloadType::BYPASSING_CACHE);
+}
+
+// Ensure the history reload tool works correctly when a beforeunload handler is
+// present on the page.
+IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
+                       HistoryTool_ReloadBeforeUnload) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/blank.html?beforeunload");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Add a no-op beforeunload handler.
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     R"JS(
+                      addEventListener('beforeunload', () => {});
+                      )JS"));
+
+  content::TestNavigationObserver observer(web_contents(), 1);
+  ActResultFuture result_success;
+  std::unique_ptr<ToolRequest> action =
+      MakeHistoryReloadRequest(*active_tab(), /*bypass_cache=*/false);
+  actor_task().Act(ToRequestList(action), result_success.GetCallback());
+  ExpectOkResult(result_success);
+
+  observer.Wait();
+  EXPECT_EQ(web_contents()->GetURL(), url);
+}
+
+// Test that reloading an initial blank entry fails validation.
+IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
+                       HistoryTool_ReloadInitialBlankPage) {
+  // A newly created WebContents has an initial blank entry.
+  std::unique_ptr<content::WebContents> new_contents_ptr =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->GetProfile()));
+  content::WebContents* new_contents = new_contents_ptr.get();
+  browser()->tab_strip_model()->AppendWebContents(std::move(new_contents_ptr),
+                                                  /*foreground=*/true);
+  tabs::TabInterface* new_tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_EQ(new_tab->GetContents(), new_contents);
+  ASSERT_TRUE(new_contents->GetController().GetLastCommittedEntry());
+  ASSERT_TRUE(
+      new_contents->GetController().GetLastCommittedEntry()->IsInitialEntry());
+
+  ActResultFuture fut;
+  std::unique_ptr<ToolRequest> action =
+      MakeHistoryReloadRequest(*new_tab, /*bypass_cache=*/false);
+  actor_task().Act(ToRequestList(action), fut.GetCallback());
+  ExpectErrorResult(fut, mojom::ActionResultCode::kHistoryNoNavigationsCreated);
+}
+
+// Test that reloading a page resets DOM modifications.
+IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
+                       HistoryTool_ReloadDOMReset) {
+  const GURL url = embedded_test_server()->GetURL("/actor/blank.html?domreset");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Modify the DOM content.
+  ASSERT_TRUE(
+      ExecJs(web_contents(), "document.body.innerText = 'modified_content';"));
+  EXPECT_EQ(content::EvalJs(web_contents(), "document.body.innerText"),
+            "modified_content");
+
+  content::TestNavigationObserver observer(web_contents(), 1);
+  ActResultFuture result_success;
+  std::unique_ptr<ToolRequest> action =
+      MakeHistoryReloadRequest(*active_tab(), /*bypass_cache=*/false);
+  actor_task().Act(ToRequestList(action), result_success.GetCallback());
+  ExpectOkResult(result_success);
+
+  observer.Wait();
+  EXPECT_NE(content::EvalJs(web_contents(), "document.body.innerText"),
+            "modified_content");
+}
+
+// Test that the history reload tool fails validation if the destination URL is
+// blocked.
+IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
+                       HistoryTool_ReloadTargetUrlRestriction) {
+  const GURL url_blocked = embedded_test_server()->GetURL(
+      "blocked.example.com", "/actor/blank.html?blocked");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_blocked));
+
+  // Attempting a reload on the blocked URL should fail validation.
+  ActResultFuture fut;
+  std::unique_ptr<ToolRequest> action =
+      MakeHistoryReloadRequest(*active_tab(), /*bypass_cache=*/false);
+  actor_task().Act(ToRequestList(action), fut.GetCallback());
+  ExpectErrorResult(fut, mojom::ActionResultCode::kUrlBlocked);
 }
 
 }  // namespace
