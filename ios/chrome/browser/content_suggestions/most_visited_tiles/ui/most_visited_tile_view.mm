@@ -231,9 +231,10 @@
                                                   ? colorPalette.primaryColor
                                                   : colorPalette.tertiaryColor;
   } else {
-    self.imageContainerView.backgroundColor = [UIColor
-        colorNamed:IsNewTabPageUICleanupEnabled() ? kNewTabPageBackgroundColor
-                                                  : kGrey100Color];
+    self.imageContainerView.backgroundColor =
+        [UIColor colorNamed:IsNewTabPageUICleanupEnabled()
+                                ? kNTPRedesignTileBackgroundColor
+                                : kGrey100Color];
   }
 }
 

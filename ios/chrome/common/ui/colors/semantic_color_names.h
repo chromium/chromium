@@ -42,6 +42,12 @@ extern NSString* const kSurfaceContainerLowColor;
 extern NSString* const kNTPQuickActionChipColor;
 // Background color for NTP Redesign.
 extern NSString* const kNTPRedesignBackgroundColor;
+// Customization menu button icon color for NTP Redesign.
+extern NSString* const kNTPRedesignCustomizationMenuButtonIconColor;
+// Fakebox background color for NTP Redesign.
+extern NSString* const kNTPRedesignFakeboxBackgroundColor;
+// Tile background color for NTP Redesign.
+extern NSString* const kNTPRedesignTileBackgroundColor;
 // Background color for NTP module and feed cards in NTP Redesign.
 extern NSString* const kNTPCardBackgroundColor;
 // Primary background color.

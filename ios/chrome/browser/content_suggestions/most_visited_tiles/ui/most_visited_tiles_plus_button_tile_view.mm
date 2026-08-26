@@ -52,8 +52,8 @@
     self.iconView.tintColor = colorPalette.monogramColor;
   } else {
     self.imageBackgroundView.tintColor =
-        [UIColor colorNamed:kNewTabPageBackgroundColor];
-    self.iconView.tintColor = [UIColor colorNamed:kGrey700Color];
+        [UIColor colorNamed:kNTPRedesignTileBackgroundColor];
+    self.iconView.tintColor = [UIColor colorNamed:kBlue600Color];
   }
 }
 

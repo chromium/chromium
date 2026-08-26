@@ -1090,7 +1090,10 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   configuration.background.cornerRadius = ntp_home::kNTPMenuButtonCornerRadius;
   customizationMenuButton.configuration = configuration;
 
-  UIColor* unthemedTintColor = [UIColor colorNamed:kBlue600Color];
+  UIColor* unthemedTintColor =
+      IsNewTabPageUICleanupEnabled()
+          ? [UIColor colorNamed:kNTPRedesignCustomizationMenuButtonIconColor]
+          : [UIColor colorNamed:kBlue600Color];
   customizationMenuButton.configurationUpdateHandler =
       CreateThemedButtonConfigurationUpdateHandler(
           unthemedTintColor, ^UIColor*(NewTabPageColorPalette* palette) {
@@ -1100,11 +1103,15 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
             return [UIColor colorWithDynamicProvider:^UIColor*(
                                 UITraitCollection* traits) {
-              return traits.userInterfaceStyle == UIUserInterfaceStyleDark
-                         ? [UIColor colorNamed:kTabGroupFaviconBackgroundColor]
-                         : [[UIColor colorNamed:kSolidWhiteColor]
-                               colorWithAlphaComponent:
-                                   ntp_home::kNTPMenuButtonLightUnthemedAlpha];
+              if (traits.userInterfaceStyle == UIUserInterfaceStyleDark) {
+                return IsNewTabPageUICleanupEnabled()
+                           ? [UIColor colorNamed:kSurfaceContainerLowColor]
+                           : [UIColor
+                                 colorNamed:kTabGroupFaviconBackgroundColor];
+              }
+              return [[UIColor colorNamed:kSolidWhiteColor]
+                  colorWithAlphaComponent:ntp_home::
+                                              kNTPMenuButtonLightUnthemedAlpha];
             }];
           });
 

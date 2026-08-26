@@ -28,7 +28,7 @@
   }
 
   self.imageBackgroundView.tintColor =
-      [UIColor colorNamed:kNewTabPageBackgroundColor];
+      [UIColor colorNamed:kNTPRedesignTileBackgroundColor];
   self.iconView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
 }
 

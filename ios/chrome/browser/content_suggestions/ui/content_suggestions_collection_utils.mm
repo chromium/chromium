@@ -565,7 +565,7 @@ UIView* NearestAncestor(UIView* view, Class of_class) {
 
 UIColor* SearchHintLabelColor() {
   if (IsNewTabPageUICleanupEnabled()) {
-    return [UIColor colorNamed:kTextTertiaryColor];
+    return [UIColor colorNamed:kTextSecondaryColor];
   }
   return [UIColor colorNamed:kGrey800Color];
 }

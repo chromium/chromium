@@ -115,7 +115,7 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
     _productImage.backgroundColor = colorPalette.primaryColor;
   } else {
     _productImage.backgroundColor =
-        [UIColor colorNamed:kNewTabPageBackgroundColor];
+        [UIColor colorNamed:kNTPRedesignTileBackgroundColor];
   }
 }
 

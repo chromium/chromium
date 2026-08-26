@@ -34,11 +34,11 @@ bool ShouldApplyFakeboxBackgroundAndShadow() {
 }
 
 // Helper function to resolve dynamic fakebox background color. The fakebox
-// background color is dependent on if kNewTabPageUICleanup is enabled.
+// background color is dependent on if `kNewTabPageUICleanup` is enabled.
 UIColor* DynamicFakeboxColor(NSString* solid_color_name,
                              NSString* gradient_color_name) {
   if (ShouldApplyFakeboxBackgroundAndShadow()) {
-    return [UIColor colorNamed:kPrimaryBackgroundColor];
+    return [UIColor colorNamed:kNTPRedesignFakeboxBackgroundColor];
   }
   return UIAccessibilityIsReduceTransparencyEnabled()
              ? [UIColor colorNamed:solid_color_name]
