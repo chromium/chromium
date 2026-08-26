@@ -35,6 +35,7 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
+#include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -1613,9 +1614,14 @@ TEST_F(ContextHubPageHandlerTest, GetConfirmedTabGroups) {
   auto* sync_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(&profile_);
   base::Uuid uuid = base::Uuid::GenerateRandomV4();
-  tab_groups::SavedTabGroup group(u"Test Group",
-                                  tab_groups::TabGroupColorId::kBlue, {},
-                                  /*position=*/std::nullopt, uuid);
+  tab_groups::SavedTabGroup group(
+      u"Test Group", tab_groups::TabGroupColorId::kBlue, {},
+      /*position=*/std::nullopt, uuid,
+      tab_groups::test::GenerateRandomTabGroupID());
+  tab_groups::SavedTabGroupTab tab(
+      GURL("https://example.com"), u"Example", group.saved_guid(),
+      /*position=*/0, /*saved_tab_guid=*/std::nullopt, /*local_tab_id=*/1);
+  group.AddTabLocally(tab);
   sync_service->AddGroup(group);
 
   base::test::TestFuture<std::vector<browser::context_hub::mojom::TabGroupPtr>>
@@ -1686,9 +1692,14 @@ TEST_F(ContextHubPageHandlerTest, RemoveAllConfirmedTabGroups) {
   auto* sync_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(&profile_);
   base::Uuid uuid = base::Uuid::GenerateRandomV4();
-  tab_groups::SavedTabGroup group(u"Test Group",
-                                  tab_groups::TabGroupColorId::kBlue, {},
-                                  /*position=*/std::nullopt, uuid);
+  tab_groups::SavedTabGroup group(
+      u"Test Group", tab_groups::TabGroupColorId::kBlue, {},
+      /*position=*/std::nullopt, uuid,
+      tab_groups::test::GenerateRandomTabGroupID());
+  tab_groups::SavedTabGroupTab tab(
+      GURL("https://example.com"), u"Example", group.saved_guid(),
+      /*position=*/0, /*saved_tab_guid=*/std::nullopt, /*local_tab_id=*/1);
+  group.AddTabLocally(tab);
   sync_service->AddGroup(group);
 
   EXPECT_CALL(*mock_tab_provider_, UngroupGroupFromTabstripIfOpen(uuid));

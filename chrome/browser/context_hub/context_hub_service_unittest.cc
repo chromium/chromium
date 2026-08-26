@@ -1182,6 +1182,7 @@ TEST_F(ContextHubServiceTest, GroupTabs_WithConfirmedGroupsPayload) {
   tab_groups::SavedTabGroup confirmed_group(
       u"Confirmed Group", tab_groups::TabGroupColorId::kBlue, {},
       /*position=*/std::nullopt);
+  confirmed_group.SetLocalGroupId(tab_groups::test::GenerateRandomTabGroupID());
   tab_groups::SavedTabGroupTab confirmed_tab1(
       GURL("https://example1.com"), u"Tab 1", confirmed_group.saved_guid(),
       /*position=*/0, /*saved_tab_guid=*/std::nullopt, /*local_tab_id=*/1);
@@ -1803,26 +1804,52 @@ TEST_F(ContextHubServiceTest, ConfirmAllTabGroups_EmptyGroups) {
 }
 
 TEST_F(ContextHubServiceTest, GetConfirmedTabGroups) {
-  tab_groups::SavedTabGroup group(u"Test Group",
-                                  tab_groups::TabGroupColorId::kBlue, {},
-                                  /*position=*/std::nullopt);
-  tab_groups::SavedTabGroupTab tab(GURL("https://example.com"), u"Example",
-                                   group.saved_guid(), /*position=*/0);
-  group.AddTabLocally(tab);
-  fake_tab_group_sync_service_.AddGroup(group);
+  // 1. Open group with an open tab (should be included).
+  tab_groups::SavedTabGroup open_group(u"Open Group",
+                                       tab_groups::TabGroupColorId::kBlue, {},
+                                       /*position=*/std::nullopt);
+  open_group.SetLocalGroupId(tab_groups::test::GenerateRandomTabGroupID());
+  tab_groups::SavedTabGroupTab open_tab(
+      GURL("https://example.com"), u"Example", open_group.saved_guid(),
+      /*position=*/0, /*saved_tab_guid=*/std::nullopt, /*local_tab_id=*/1);
+  open_group.AddTabLocally(open_tab);
+  fake_tab_group_sync_service_.AddGroup(open_group);
+
+  // 2. Closed group without local_group_id (should be excluded).
+  tab_groups::SavedTabGroup closed_group(u"Closed Group",
+                                         tab_groups::TabGroupColorId::kRed, {},
+                                         /*position=*/std::nullopt);
+  tab_groups::SavedTabGroupTab closed_tab(
+      GURL("https://example2.com"), u"Example 2", closed_group.saved_guid(),
+      /*position=*/0, /*saved_tab_guid=*/std::nullopt, /*local_tab_id=*/2);
+  closed_group.AddTabLocally(closed_tab);
+  fake_tab_group_sync_service_.AddGroup(closed_group);
+
+  // 3. Group with local_group_id but no open tabs (should be excluded).
+  tab_groups::SavedTabGroup no_open_tabs_group(
+      u"Group Without Open Tabs", tab_groups::TabGroupColorId::kGreen, {},
+      /*position=*/std::nullopt);
+  no_open_tabs_group.SetLocalGroupId(
+      tab_groups::test::GenerateRandomTabGroupID());
+  tab_groups::SavedTabGroupTab unopened_tab(
+      GURL("https://example3.com"), u"Example 3",
+      no_open_tabs_group.saved_guid(), /*position=*/0);
+  no_open_tabs_group.AddTabLocally(unopened_tab);
+  fake_tab_group_sync_service_.AddGroup(no_open_tabs_group);
 
   std::vector<TabGroupEntry> groups = service_.GetConfirmedTabGroups();
   ASSERT_EQ(groups.size(), 1u);
-  EXPECT_EQ(groups[0].id, group.saved_guid().AsLowercaseString());
-  EXPECT_EQ(groups[0].label, "Test Group");
+  EXPECT_EQ(groups[0].id, open_group.saved_guid().AsLowercaseString());
+  EXPECT_EQ(groups[0].label, "Open Group");
   ASSERT_EQ(groups[0].tabs.size(), 1u);
+  EXPECT_EQ(groups[0].tabs[0].id, 1);
   EXPECT_EQ(groups[0].tabs[0].title, "Example");
   EXPECT_EQ(groups[0].tabs[0].url, GURL("https://example.com"));
 
   std::optional<TabGroupEntry> fetched_group =
-      service_.GetConfirmedTabGroup(group.saved_guid());
+      service_.GetConfirmedTabGroup(open_group.saved_guid());
   ASSERT_TRUE(fetched_group.has_value());
-  EXPECT_EQ(fetched_group->id, group.saved_guid().AsLowercaseString());
+  EXPECT_EQ(fetched_group->id, open_group.saved_guid().AsLowercaseString());
   EXPECT_EQ(fetched_group->tabs.size(), 1u);
 }
 

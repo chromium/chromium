@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/barrier_callback.h"
 #include "base/check_deref.h"
@@ -907,7 +908,17 @@ void ContextHubService::OnAllTabGroupsFetchedForConfirmation(
 
 std::vector<TabGroupEntry>
 ContextHubService::GetConfirmedTabGroups() const {
-  return FromSavedTabGroups(tab_group_sync_service_->GetAllGroups());
+  std::vector<tab_groups::SavedTabGroup> groups =
+      tab_group_sync_service_->GetAllGroups();
+  // Filter out closed or remotely synced tab groups that do not have active
+  // tabs open in any browser window.
+  std::erase_if(groups, [](const tab_groups::SavedTabGroup& group) {
+    return !group.local_group_id().has_value() ||
+           !std::ranges::any_of(group.saved_tabs(), [](const auto& tab) {
+             return tab.local_tab_id().has_value();
+           });
+  });
+  return FromSavedTabGroups(groups);
 }
 
 std::optional<TabGroupEntry>
