@@ -2281,7 +2281,7 @@ void RenderProcessHostImpl::CreateMessageFilters() {
   // TODO(crbug.com/40169214): Move this initialization out of
   // CreateMessageFilters().
   p2p_socket_dispatcher_host_ =
-      std::make_unique<P2PSocketDispatcherHost>(GetDeprecatedID());
+      std::make_unique<P2PSocketDispatcherHost>(GetID());
 #endif  // BUILDFLAG(IS_P2P_ENABLED)
 }
 
