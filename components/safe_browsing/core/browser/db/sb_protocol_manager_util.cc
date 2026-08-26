@@ -156,7 +156,7 @@ void GenerateHostVariantsToCheckV4(const std::string& host,
        i != host.rend() && hosts->size() < kMaxHostsToCheck; ++i) {
     if (*i == '.') {
       if (skipped_last_component) {
-        hosts->push_back(std::string(i.base(), host.end()));
+        hosts->emplace_back(i.base(), host.end());
       } else {
         skipped_last_component = true;
       }
@@ -847,7 +847,7 @@ void SBProtocolManagerUtil::GeneratePathVariantsToCheck(
   for (std::string::const_iterator i(path.begin());
        i != path.end() && paths->size() < kMaxPathsToCheck; ++i) {
     if (*i == '/') {
-      paths->push_back(std::string(path.begin(), i + 1));
+      paths->emplace_back(path.begin(), i + 1);
     }
   }
 
