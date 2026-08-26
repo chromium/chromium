@@ -6118,9 +6118,11 @@ inline constexpr char kDesktopAndroidLinkCapturingDescription[] =
     "Enables Link Capturing on desktop Android.";
 
 inline constexpr char kDesktopAndroidTWADisclosuresName[] =
-    "Desktop Android TWA Disclosures";
+    "Desktop Android TWA Disclosures Suppression";
 inline constexpr char kDesktopAndroidTWADisclosuresDescription[] =
-    "Enables TWA disclosures on Android desktop devices.";
+    "Enables replacement for TWA disclosures for desktop Android. "
+    "This suppresses the FRE disclosures, displays the origin on the app "
+    "header, and provides a new uninstall dialog to delete browser data.";
 
 inline constexpr char kDesktopFlingCurveOnAndroidName[] =
     "Desktop Fling Curve on Android";
