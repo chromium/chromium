@@ -4,9 +4,7 @@
 
 #include "chrome/browser/component_updater/app_provisioning_component_installer.h"
 
-#include <stdint.h>
-
-#include <iterator>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -91,8 +89,7 @@ base::FilePath AppProvisioningComponentInstallerPolicy::GetRelativeInstallDir()
 
 void AppProvisioningComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
-  hash->assign(std::begin(kAppProvisioningPublicKeySHA256),
-               std::end(kAppProvisioningPublicKeySHA256));
+  hash->assign_range(kAppProvisioningPublicKeySHA256);
 }
 
 std::string AppProvisioningComponentInstallerPolicy::GetName() const {

@@ -4,6 +4,7 @@
 
 #include "components/component_updater/installer_policies/private_verification_tokens_installer_policy.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
@@ -104,8 +105,7 @@ PrivateVerificationTokensInstallerPolicy::GetInstallerAttributes() const {
 void PrivateVerificationTokensInstallerPolicy::GetPublicKeyHash(
     std::vector<uint8_t>* hash) {
   CHECK(hash);
-  hash->assign(std::begin(kPrivateVerificationTokensPublicKeySHA256),
-               std::end(kPrivateVerificationTokensPublicKeySHA256));
+  hash->assign_range(kPrivateVerificationTokensPublicKeySHA256);
 }
 
 }  // namespace component_updater

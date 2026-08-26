@@ -11,9 +11,12 @@
 // The recovery component is built and used by Google Chrome only.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-#include <iterator>
+#include <cstdint>
+#include <memory>
+#include <string>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -197,8 +200,7 @@ base::FilePath RecoveryImprovedInstallerPolicy::GetRelativeInstallDir() const {
 
 void RecoveryImprovedInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
-  hash->assign(std::begin(kRecoveryImprovedPublicKeySHA256),
-               std::end(kRecoveryImprovedPublicKeySHA256));
+  hash->assign_range(kRecoveryImprovedPublicKeySHA256);
 }
 
 std::string RecoveryImprovedInstallerPolicy::GetName() const {

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/component_updater/file_type_policies_component_installer.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
@@ -109,8 +110,7 @@ base::FilePath FileTypePoliciesComponentInstallerPolicy::GetRelativeInstallDir()
 
 void FileTypePoliciesComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
-  hash->assign(std::begin(kFileTypePoliciesPublicKeySHA256),
-               std::end(kFileTypePoliciesPublicKeySHA256));
+  hash->assign_range(kFileTypePoliciesPublicKeySHA256);
 }
 
 std::string FileTypePoliciesComponentInstallerPolicy::GetName() const {

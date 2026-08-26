@@ -4,8 +4,9 @@
 
 #include "chrome/browser/component_updater/soda_language_pack_component_installer.h"
 
-#include <iterator>
+#include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -147,8 +148,7 @@ base::FilePath SodaLanguagePackComponentInstallerPolicy::GetRelativeInstallDir()
 
 void SodaLanguagePackComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
-  hash->assign(std::begin(language_config_.public_key_sha),
-               std::end(language_config_.public_key_sha));
+  hash->assign_range(language_config_.public_key_sha);
 }
 
 std::string SodaLanguagePackComponentInstallerPolicy::GetName() const {

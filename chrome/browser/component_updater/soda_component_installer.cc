@@ -4,9 +4,13 @@
 
 #include "chrome/browser/component_updater/soda_component_installer.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -200,8 +204,7 @@ base::FilePath SodaComponentInstallerPolicy::GetRelativeInstallDir() const {
 }
 
 void SodaComponentInstallerPolicy::GetHash(std::vector<uint8_t>* hash) const {
-  hash->assign(std::begin(kSodaPublicKeySHA256),
-               std::end(kSodaPublicKeySHA256));
+  hash->assign_range(kSodaPublicKeySHA256);
 }
 
 std::string SodaComponentInstallerPolicy::GetName() const {

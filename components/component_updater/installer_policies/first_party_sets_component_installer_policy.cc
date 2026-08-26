@@ -4,9 +4,12 @@
 
 #include "components/component_updater/installer_policies/first_party_sets_component_installer_policy.h"
 
+#include <cstdint>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -167,8 +170,7 @@ base::FilePath FirstPartySetsComponentInstallerPolicy::GetRelativeInstallDir()
 // static
 void FirstPartySetsComponentInstallerPolicy::GetPublicKeyHash(
     std::vector<uint8_t>* hash) {
-  hash->assign(std::begin(kFirstPartySetsPublicKeySHA256),
-               std::end(kFirstPartySetsPublicKeySHA256));
+  hash->assign_range(kFirstPartySetsPublicKeySHA256);
 }
 
 void FirstPartySetsComponentInstallerPolicy::GetHash(

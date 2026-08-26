@@ -4,7 +4,11 @@
 
 #include "components/component_updater/installer_policies/optimization_hints_component_installer.h"
 
+#include <cstdint>
+#include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -106,8 +110,7 @@ void OptimizationHintsComponentInstallerPolicy::GetHash(
   if (!hash) {
     return;
   }
-  hash->assign(std::begin(kOptimizationHintsPublicKeySHA256),
-               std::end(kOptimizationHintsPublicKeySHA256));
+  hash->assign_range(kOptimizationHintsPublicKeySHA256);
 }
 
 std::string OptimizationHintsComponentInstallerPolicy::GetName() const {

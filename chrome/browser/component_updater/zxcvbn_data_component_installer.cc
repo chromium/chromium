@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -171,8 +172,7 @@ base::FilePath ZxcvbnDataComponentInstallerPolicy::GetRelativeInstallDir()
 
 void ZxcvbnDataComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
-  hash->assign(kZxcvbnDataPublicKeySha256.begin(),
-               kZxcvbnDataPublicKeySha256.end());
+  hash->assign_range(kZxcvbnDataPublicKeySha256);
 }
 
 std::string ZxcvbnDataComponentInstallerPolicy::GetName() const {

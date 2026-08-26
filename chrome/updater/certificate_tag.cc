@@ -483,7 +483,7 @@ std::optional<std::vector<uint8_t>> SetTagImpl(
   std::vector<uint8_t> ret;
   const size_t padding = (8 - cbb_span.size() % 8) % 8;
   ret.reserve(cbb_span.size() + padding);
-  ret.assign(cbb_span.begin(), cbb_span.end());
+  ret.assign_range(cbb_span);
   ret.insert(ret.end(), padding, 0);
   return ret;
 }

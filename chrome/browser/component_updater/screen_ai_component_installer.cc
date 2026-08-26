@@ -4,6 +4,11 @@
 
 #include "chrome/browser/component_updater/screen_ai_component_installer.h"
 
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -99,8 +104,7 @@ std::string ScreenAIComponentInstallerPolicy::GetOmahaId() {
 
 void ScreenAIComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
-  hash->assign(std::begin(kScreenAIPublicKeySHA256),
-               std::end(kScreenAIPublicKeySHA256));
+  hash->assign_range(kScreenAIPublicKeySHA256);
 }
 
 std::string ScreenAIComponentInstallerPolicy::GetName() const {

@@ -4,8 +4,8 @@
 
 #include "components/component_updater/installer_policies/actor_safety_lists_component_installer.h"
 
-#include <stdint.h>
-
+#include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
@@ -122,8 +122,7 @@ base::FilePath ActorSafetyListsComponentInstallerPolicy::GetRelativeInstallDir()
 
 void ActorSafetyListsComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
-  hash->assign(std::begin(kActorSafetyListsPublicKeySHA256),
-               std::end(kActorSafetyListsPublicKeySHA256));
+  hash->assign_range(kActorSafetyListsPublicKeySHA256);
 }
 
 std::string ActorSafetyListsComponentInstallerPolicy::GetName() const {

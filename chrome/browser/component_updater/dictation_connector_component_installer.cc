@@ -5,7 +5,10 @@
 #include "chrome/browser/component_updater/dictation_connector_component_installer.h"
 
 #include <array>
+#include <cstdint>
+#include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -157,8 +160,7 @@ DictationConnectorComponentInstallerPolicy::GetRelativeInstallDir() const {
 
 void DictationConnectorComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
-  hash->assign(std::begin(kDictationConnectorPublicKeySHA256),
-               std::end(kDictationConnectorPublicKeySHA256));
+  hash->assign_range(kDictationConnectorPublicKeySHA256);
 }
 
 std::string DictationConnectorComponentInstallerPolicy::GetName() const {

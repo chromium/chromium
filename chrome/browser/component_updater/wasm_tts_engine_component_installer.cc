@@ -4,7 +4,12 @@
 
 #include "chrome/browser/component_updater/wasm_tts_engine_component_installer.h"
 
+#include <array>
+#include <cstdint>
+#include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -250,8 +255,7 @@ base::FilePath WasmTtsEngineComponentInstallerPolicy::GetRelativeInstallDir()
 
 void WasmTtsEngineComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
-  hash->assign(std::begin(kWasmTtsEnginePublicKeySHA256),
-               std::end(kWasmTtsEnginePublicKeySHA256));
+  hash->assign_range(kWasmTtsEnginePublicKeySHA256);
 }
 
 std::string WasmTtsEngineComponentInstallerPolicy::GetName() const {

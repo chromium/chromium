@@ -4,6 +4,7 @@
 
 #include "chrome/browser/component_updater/mei_preload_component_installer.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
@@ -111,8 +112,7 @@ MediaEngagementPreloadComponentInstallerPolicy::GetRelativeInstallDir() const {
 
 void MediaEngagementPreloadComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
-  hash->assign(std::begin(kMeiPreloadPublicKeySHA256),
-               std::end(kMeiPreloadPublicKeySHA256));
+  hash->assign_range(kMeiPreloadPublicKeySHA256);
 }
 
 std::string MediaEngagementPreloadComponentInstallerPolicy::GetName() const {

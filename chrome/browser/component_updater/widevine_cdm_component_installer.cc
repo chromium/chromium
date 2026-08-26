@@ -4,9 +4,8 @@
 
 #include "chrome/browser/component_updater/widevine_cdm_component_installer.h"
 
-#include <stddef.h>
-#include <stdint.h>
-
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -362,7 +361,7 @@ base::FilePath WidevineCdmComponentInstallerPolicy::GetRelativeInstallDir()
 
 void WidevineCdmComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
-  hash->assign(std::begin(kWidevineSha2Hash), std::end(kWidevineSha2Hash));
+  hash->assign_range(kWidevineSha2Hash);
 }
 
 std::string WidevineCdmComponentInstallerPolicy::GetName() const {

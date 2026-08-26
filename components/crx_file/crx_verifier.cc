@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 #include <climits>
+#include <cstdint>
 #include <cstring>
 #include <iterator>
 #include <memory>
@@ -14,6 +15,7 @@
 #include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/feature.h"
@@ -154,8 +156,7 @@ VerifierResult VerifyCrx3(
   // Parse [verified_contents].
   if (header.has_verified_contents() && compressed_verified_contents) {
     const std::string& header_verified_contents(header.verified_contents());
-    compressed_verified_contents->assign(header_verified_contents.begin(),
-                                         header_verified_contents.end());
+    compressed_verified_contents->assign_range(header_verified_contents);
   }
 
   // Parse [signed-header].

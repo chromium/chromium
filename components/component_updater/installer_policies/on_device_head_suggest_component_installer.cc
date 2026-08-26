@@ -122,8 +122,7 @@ base::FilePath OnDeviceHeadSuggestInstallerPolicy::GetRelativeInstallDir()
 
 void OnDeviceHeadSuggestInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
-  hash->assign(std::begin(kOnDeviceHeadSuggestPublicKeySHA256),
-               std::end(kOnDeviceHeadSuggestPublicKeySHA256));
+  hash->assign_range(kOnDeviceHeadSuggestPublicKeySHA256);
 }
 
 std::string OnDeviceHeadSuggestInstallerPolicy::GetName() const {

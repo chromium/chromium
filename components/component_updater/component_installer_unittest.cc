@@ -4,6 +4,7 @@
 
 #include "components/component_updater/component_installer.h"
 
+#include <cstdint>
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -188,7 +189,7 @@ class MockInstallerPolicy : public ComponentInstallerPolicy {
 
  private:
   static void GetPkHash(std::vector<uint8_t>* hash) {
-    hash->assign(std::begin(kSha256Hash), std::end(kSha256Hash));
+    hash->assign_range(kSha256Hash);
   }
 
   ComponentReadyCallback component_ready_cb_;

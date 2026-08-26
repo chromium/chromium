@@ -186,7 +186,7 @@ class OptimizationGuideOnDeviceBaseModelInstallerPolicy final
   }
 
   void GetHash(std::vector<uint8_t>* hash) const override {
-    hash->assign(std::begin(kPublicKeySHA256), std::end(kPublicKeySHA256));
+    hash->assign_range(kPublicKeySHA256);
   }
 
   std::string GetName() const override { return kManifestName; }
@@ -410,8 +410,7 @@ class ManifestMonitorInstallerPolicy final
   }
 
   void GetHash(std::vector<uint8_t>* hash) const override {
-    hash->assign(std::begin(kManifestPublicKeySHA256),
-                 std::end(kManifestPublicKeySHA256));
+    hash->assign_range(kManifestPublicKeySHA256);
   }
 
   std::string GetName() const override {

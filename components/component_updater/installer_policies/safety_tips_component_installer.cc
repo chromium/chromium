@@ -4,8 +4,11 @@
 
 #include "components/component_updater/installer_policies/safety_tips_component_installer.h"
 
+#include <cstdint>
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -116,8 +119,7 @@ base::FilePath SafetyTipsComponentInstallerPolicy::GetRelativeInstallDir()
 
 void SafetyTipsComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
-  hash->assign(std::begin(kSafetyTipsPublicKeySHA256),
-               std::end(kSafetyTipsPublicKeySHA256));
+  hash->assign_range(kSafetyTipsPublicKeySHA256);
 }
 
 std::string SafetyTipsComponentInstallerPolicy::GetName() const {

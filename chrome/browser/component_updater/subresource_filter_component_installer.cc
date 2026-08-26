@@ -4,8 +4,12 @@
 
 #include "chrome/browser/component_updater/subresource_filter_component_installer.h"
 
+#include <cstdint>
+#include <memory>
 #include <optional>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -110,8 +114,7 @@ SubresourceFilterComponentInstallerPolicy::GetRelativeInstallDir() const {
 
 void SubresourceFilterComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
-  hash->assign(std::begin(kSubresourceFilterPublicKeySHA256),
-               std::end(kSubresourceFilterPublicKeySHA256));
+  hash->assign_range(kSubresourceFilterPublicKeySHA256);
 }
 
 std::string SubresourceFilterComponentInstallerPolicy::GetName() const {

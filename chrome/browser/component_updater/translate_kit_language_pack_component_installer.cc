@@ -5,6 +5,7 @@
 #include "chrome/browser/component_updater/translate_kit_language_pack_component_installer.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -107,8 +108,7 @@ TranslateKitLanguagePackComponentInstallerPolicy::GetRelativeInstallDir()
 void TranslateKitLanguagePackComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
   auto const& config = GetConfig();
-  hash->assign(std::begin(config.public_key_sha),
-               std::end(config.public_key_sha));
+  hash->assign_range(config.public_key_sha);
 }
 
 std::string TranslateKitLanguagePackComponentInstallerPolicy::GetName() const {

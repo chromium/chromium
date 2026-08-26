@@ -5,8 +5,13 @@
 #include "chrome/browser/component_updater/smart_dim_component_installer.h"
 
 #include <cstddef>
+#include <cstdint>
+#include <memory>
 #include <optional>
+#include <string>
 #include <tuple>
+#include <utility>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
@@ -173,8 +178,7 @@ base::FilePath SmartDimComponentInstallerPolicy::GetRelativeInstallDir() const {
 void SmartDimComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
   DCHECK(hash);
-  hash->assign(std::begin(kSmartDimPublicKeySHA256),
-               std::end(kSmartDimPublicKeySHA256));
+  hash->assign_range(kSmartDimPublicKeySHA256);
 }
 
 std::string SmartDimComponentInstallerPolicy::GetName() const {
