@@ -3773,6 +3773,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.PolicyLogger.LogCount.{CompressionState}"
+    units="logs" expires_after="2027-09-01">
+  <owner>nicolaso@chromium.org</owner>
+  <owner>enterprise-policy-review@google.com</owner>
+  <summary>
+    Records the number of policy log messages stored in memory. Recorded
+    periodically every 24 hours. The logs are {CompressionState}.
+  </summary>
+  <token key="CompressionState">
+    <variant name="Compressed" summary="compressed"/>
+    <variant name="Uncompressed" summary="uncompressed"/>
+  </token>
+</histogram>
+
+<histogram name="Enterprise.PolicyLogger.MemoryUsage.{CompressionState}"
+    units="bytes" expires_after="2027-09-01">
+  <owner>nicolaso@chromium.org</owner>
+  <owner>enterprise-policy-review@google.com</owner>
+  <summary>
+    Records the estimated memory size in bytes of policy logs stored in memory.
+    Recorded periodically every 24 hours. The logs are {CompressionState}.
+  </summary>
+  <token key="CompressionState">
+    <variant name="Compressed" summary="compressed"/>
+    <variant name="Uncompressed" summary="uncompressed"/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.PolicyRefresh2" enum="EnterprisePolicyRefresh"
     expires_after="2027-02-07">
   <owner>asumaneev@google.com</owner>

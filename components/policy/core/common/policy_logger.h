@@ -180,6 +180,9 @@ class POLICY_EXPORT PolicyLogger {
   // Sets `is_log_deletion_enabled_` to allow scheduling old log deletion.
   void EnableLogDeletion();
 
+  // Records memory usage and log count UMA metrics.
+  void RecordPerformanceMetrics();
+
   // Returns the logs size for testing purposes.
   size_t GetPolicyLogsSizeForTesting();
 

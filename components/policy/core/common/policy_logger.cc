@@ -11,6 +11,7 @@
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
@@ -317,6 +318,22 @@ std::vector<policy::mojom::LogPtr> PolicyLogger::GetAsMojoList() {
 
 void PolicyLogger::EnableLogDeletion() {
   is_log_deletion_enabled_ = true;
+}
+
+void PolicyLogger::RecordPerformanceMetrics() {
+  size_t memory_usage = 0;
+  size_t log_count = 0;
+  {
+    base::AutoLock lock(lock_);
+    for (const auto& log : logs_) {
+      memory_usage += sizeof(Log) + log.message().size();
+    }
+    log_count = logs_.size();
+  }
+  base::UmaHistogramCounts1M("Enterprise.PolicyLogger.MemoryUsage.Uncompressed",
+                             memory_usage);
+  base::UmaHistogramCounts10000("Enterprise.PolicyLogger.LogCount.Uncompressed",
+                                log_count);
 }
 
 size_t PolicyLogger::GetPolicyLogsSizeForTesting() {

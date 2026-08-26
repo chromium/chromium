@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/mock_policy_service.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_test_utils.h"
@@ -80,6 +81,8 @@ class PolicyStatisticsCollectorTest : public testing::Test {
       : task_runner_(new base::TestSimpleTaskRunner()) {}
 
   void SetUp() override {
+    PolicyLogger::GetInstance()->ResetLoggerForTesting();
+
     ASSIGN_OR_RETURN(chrome_schema_, Schema::Parse(kTestChromeSchema),
                      [](const auto& e) { ADD_FAILURE() << e; });
 
@@ -269,6 +272,22 @@ TEST_F(PolicyStatisticsCollectorTest, EnrollmentOnly) {
 
   histogram_tester_.ExpectUniqueSample("Enterprise.Policies.Sources",
                                        PoliciesSources::kEnrollmentOnly, 1);
+}
+
+TEST_F(PolicyStatisticsCollectorTest, PolicyLoggerMetrics) {
+  std::string msg1 = "Test log message 1";
+  std::string msg2 = "Test log message 2";
+  LOG_POLICY(INFO, POLICY_PROCESSING) << msg1;
+  LOG_POLICY(INFO, POLICY_PROCESSING) << msg2;
+
+  policy_statistics_collector_->Initialize();
+
+  size_t expected_memory =
+      2 * sizeof(PolicyLogger::Log) + msg1.size() + msg2.size();
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.PolicyLogger.MemoryUsage.Uncompressed", expected_memory, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.PolicyLogger.LogCount.Uncompressed", 2, 1);
 }
 
 }  // namespace policy
