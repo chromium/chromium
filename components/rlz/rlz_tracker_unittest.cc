@@ -20,6 +20,7 @@
 #include "net/url_request/url_request_test_util.h"
 #include "rlz/test/rlz_test_helpers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_IOS)
@@ -30,9 +31,8 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #endif
 
-using testing::AssertionResult;
-using testing::AssertionSuccess;
-using testing::AssertionFailure;
+using ::testing::HasSubstr;
+using ::testing::Not;
 
 namespace rlz {
 namespace {
@@ -137,39 +137,7 @@ const char kAppListRlzString[] = "test_applist";
 const char kNewAppListRlzString[] = "new_applist";
 #endif  // !BUILDFLAG(IS_IOS)
 
-// Some helper macros to test it a string contains/does not contain a substring.
 
-AssertionResult CmpHelperSTRC(const char* str_expression,
-                              const char* substr_expression,
-                              const char* str,
-                              const char* substr) {
-  if ((std::string_view(str)).contains(substr)) {
-    return AssertionSuccess();
-  }
-
-  return AssertionFailure() << "Expected: (" << substr_expression << ") in ("
-                            << str_expression << "), actual: '"
-                            << substr << "' not in '" << str << "'";
-}
-
-AssertionResult CmpHelperSTRNC(const char* str_expression,
-                               const char* substr_expression,
-                               const char* str,
-                               const char* substr) {
-  if (!(std::string_view(str)).contains(substr)) {
-    return AssertionSuccess();
-  }
-
-  return AssertionFailure() << "Expected: (" << substr_expression
-                            << ") not in (" << str_expression << "), actual: '"
-                            << substr << "' in '" << str << "'";
-}
-
-#define EXPECT_STR_CONTAINS(str, substr) \
-    EXPECT_PRED_FORMAT2(CmpHelperSTRC, str, substr)
-
-#define EXPECT_STR_NOT_CONTAIN(str, substr) \
-    EXPECT_PRED_FORMAT2(CmpHelperSTRNC, str, substr)
 
 }  // namespace
 
@@ -338,9 +306,9 @@ void RlzLibTest::ExpectEventRecorded(const char* event_name, bool expected) {
   char cgi[rlz_lib::kMaxCgiLength];
   GetProductEventsAsCgi(rlz_lib::CHROME, cgi, std::size(cgi));
   if (expected) {
-    EXPECT_STR_CONTAINS(cgi, event_name);
+    EXPECT_THAT(cgi, HasSubstr(event_name));
   } else {
-    EXPECT_STR_NOT_CONTAIN(cgi, event_name);
+    EXPECT_THAT(cgi, Not(HasSubstr(event_name)));
   }
 }
 
