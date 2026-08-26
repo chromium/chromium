@@ -42,9 +42,20 @@ PanelFocusDependentHotkeyManager::~PanelFocusDependentHotkeyManager() = default;
 
 bool PanelFocusDependentHotkeyManager::AcceleratorPressed(
     LocalHotkeyManager::Command command) {
+  return AcceleratorPressed(command, ui::Accelerator());
+}
+
+bool PanelFocusDependentHotkeyManager::AcceleratorPressed(
+    LocalHotkeyManager::Command command,
+    const ui::Accelerator& accelerator) {
   if (!panel_ || !panel_->HasFocus()) {
     return false;
   }
+
+  // Derive source for zoom actions.
+  ZoomSource zoom_source = accelerator.IsShiftDown()
+                               ? ZoomSource::kHotkeyWithShift
+                               : ZoomSource::kHotkey;
 
   switch (command) {
     case LocalHotkeyManager::Command::kClose: {
@@ -64,13 +75,13 @@ bool PanelFocusDependentHotkeyManager::AcceleratorPressed(
       }
       return false;
     case LocalHotkeyManager::Command::kZoomIn:
-      panel_->Zoom(mojom::ZoomAction::kZoomIn);
+      panel_->Zoom(mojom::ZoomAction::kZoomIn, zoom_source);
       return true;
     case LocalHotkeyManager::Command::kZoomOut:
-      panel_->Zoom(mojom::ZoomAction::kZoomOut);
+      panel_->Zoom(mojom::ZoomAction::kZoomOut, zoom_source);
       return true;
     case LocalHotkeyManager::Command::kZoomReset:
-      panel_->Zoom(mojom::ZoomAction::kReset);
+      panel_->Zoom(mojom::ZoomAction::kReset, zoom_source);
       return true;
 #if BUILDFLAG(IS_WIN)
     case LocalHotkeyManager::Command::kTitleBarContextMenu:

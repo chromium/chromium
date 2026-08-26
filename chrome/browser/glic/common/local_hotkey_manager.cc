@@ -26,7 +26,7 @@ constexpr int kFocusToggleAcceleratorModifiers =
 #if BUILDFLAG(IS_MAC)
     ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN;
 #elif BUILDFLAG(IS_CHROMEOS)
-// ui::EF_COMMAND_DOWN is the search key for ChromeOS.
+    // ui::EF_COMMAND_DOWN is the search key for ChromeOS.
     ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN;
 #else
     ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN;
@@ -238,7 +238,13 @@ bool LocalHotkeyManager::AcceleratorPressed(
     return false;
   }
   auto command = GetCommand(accelerator);
-  return event_handler_->AcceleratorPressed(command);
+  return event_handler_->AcceleratorPressed(command, accelerator);
+}
+
+bool LocalHotkeyManager::EventHandler::AcceleratorPressed(
+    Command command,
+    const ui::Accelerator& accelerator) {
+  return AcceleratorPressed(command);
 }
 
 bool LocalHotkeyManager::CanHandleAccelerators() const {

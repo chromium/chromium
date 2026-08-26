@@ -1157,7 +1157,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetZoomLevel) {
 
   // Zoom in and confirm that the observer is notified of the new state, i.e.
   // zoom level of 1.1.
-  instance->host().Zoom(mojom::ZoomAction::kZoomIn);
+  instance->host().Zoom(mojom::ZoomAction::kZoomIn, ZoomSource::kHotkey);
   ContinueJsTest();
 }
 

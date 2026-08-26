@@ -161,7 +161,7 @@ void GlicPageHandler::NotifyWindowIntentToShow() {
   page_->IntentToShow();
 }
 
-void GlicPageHandler::Zoom(mojom::ZoomAction zoom_action) {
+void GlicPageHandler::Zoom(mojom::ZoomAction zoom_action, ZoomSource source) {
   auto* pref_service =
       Profile::FromBrowserContext(browser_context_)->GetPrefs();
   int current_zoom = pref_service->GetInteger(prefs::kGlicZoomLevel);
@@ -192,7 +192,26 @@ void GlicPageHandler::Zoom(mojom::ZoomAction zoom_action) {
       break;
   }
 
+  // Log the aggregate base metric for reporting continuity.
   base::UmaHistogramEnumeration("Glic.ZoomAction", action_metric);
+
+  // Log the sliced metric.
+  const char* zoom_action_by_source_metric_name;
+  switch (source) {
+    case ZoomSource::kHotkey:
+      zoom_action_by_source_metric_name = "Glic.ZoomAction.Hotkey";
+      break;
+    case ZoomSource::kHotkeyWithShift:
+      zoom_action_by_source_metric_name = "Glic.ZoomAction.HotkeyWithShift";
+      break;
+    case ZoomSource::kScroll:
+      zoom_action_by_source_metric_name = "Glic.ZoomAction.Scroll";
+      break;
+  }
+
+  base::UmaHistogramEnumeration(zoom_action_by_source_metric_name,
+                                action_metric);
+
   page_->Zoom(zoom_action);
 }
 

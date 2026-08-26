@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_close_options.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -66,7 +67,7 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
     virtual bool IsShowing() const = 0;
     virtual void Close(const CloseOptions& options) = 0;
     virtual bool ActivateBrowser() = 0;
-    virtual void Zoom(mojom::ZoomAction action) = 0;
+    virtual void Zoom(mojom::ZoomAction action, ZoomSource source) = 0;
     virtual void ShowTitleBarContextMenuAt(gfx::Point event_loc) {}
     virtual BrowserWindowInterface* GetBrowserWindowInterface();
 #if !BUILDFLAG(IS_ANDROID)
@@ -131,6 +132,11 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
     // Called when a registered command associated with this manager is pressed.
     // Returns true if the accelerator was handled, false otherwise.
     virtual bool AcceleratorPressed(Command command) = 0;
+
+    // Additionally provides the triggering accelerator for modifier checks.
+    // By default, forwards to the command-only version.
+    virtual bool AcceleratorPressed(Command command,
+                                    const ui::Accelerator& accelerator);
 
     // Returns true if hotkeys can be handled right now.
     virtual bool CanHandleAccelerators() const = 0;

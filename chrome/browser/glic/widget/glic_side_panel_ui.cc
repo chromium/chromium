@@ -88,8 +88,9 @@ std::unique_ptr<views::View> GlicSidePanelUi::CreateView(Profile* profile) {
         if (!panel) {
           return;
         }
-        panel->Zoom(zoom_in ? mojom::ZoomAction::kZoomIn
-                            : mojom::ZoomAction::kZoomOut);
+        panel->Zoom(
+            zoom_in ? mojom::ZoomAction::kZoomIn : mojom::ZoomAction::kZoomOut,
+            ZoomSource::kScroll);
       },
       weak_ptr_factory_.GetWeakPtr()));
 
@@ -283,8 +284,8 @@ bool GlicSidePanelUi::ActivateBrowser() {
   return true;
 }
 
-void GlicSidePanelUi::Zoom(mojom::ZoomAction zoom_action) {
-  delegate_->host().Zoom(zoom_action);
+void GlicSidePanelUi::Zoom(mojom::ZoomAction zoom_action, ZoomSource source) {
+  delegate_->host().Zoom(zoom_action, source);
 }
 
 bool GlicSidePanelUi::HasSelectionOverlay() {

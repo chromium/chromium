@@ -102,7 +102,7 @@ class GlicFloatingUi : public GlicUiEmbedder,
   void FocusIfOpen() override;
   bool HasFocus() override;
   bool ActivateBrowser() override;
-  void Zoom(mojom::ZoomAction zoom_action) override;
+  void Zoom(mojom::ZoomAction zoom_action, ZoomSource source) override;
   void ShowTitleBarContextMenuAt(gfx::Point event_loc) override;
 #if !BUILDFLAG(IS_ANDROID)
   bool HasSelectionOverlay() override;

@@ -366,9 +366,9 @@ void Host::NotifyWindowIntentToShow() {
   }
 }
 
-void Host::Zoom(mojom::ZoomAction zoom_action) {
+void Host::Zoom(mojom::ZoomAction zoom_action, ZoomSource source) {
   if (GlicPageHandler* handler = page_handler()) {
-    handler->Zoom(zoom_action);
+    handler->Zoom(zoom_action, source);
   }
 }
 

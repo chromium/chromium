@@ -27,6 +27,8 @@ class PanelFocusDependentHotkeyManager
 
   // LocalHotkeyManager::EventHandler:
   bool AcceleratorPressed(LocalHotkeyManager::Command command) override;
+  bool AcceleratorPressed(LocalHotkeyManager::Command command,
+                          const ui::Accelerator& accelerator) override;
   bool CanHandleAccelerators() const override;
 
   // Initializes accelerators. This must be called after the panel's view has

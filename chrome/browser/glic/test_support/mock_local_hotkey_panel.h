@@ -25,7 +25,10 @@ class MockLocalHotkeyPanel
   MOCK_METHOD(bool, IsShowing, (), (const, override));
   MOCK_METHOD(void, Close, (const CloseOptions& options), (override));
   MOCK_METHOD(bool, ActivateBrowser, (), (override));
-  MOCK_METHOD(void, Zoom, (mojom::ZoomAction action), (override));
+  MOCK_METHOD(void,
+              Zoom,
+              (mojom::ZoomAction action, ZoomSource source),
+              (override));
   MOCK_METHOD(void,
               ShowTitleBarContextMenuAt,
               (gfx::Point event_loc),

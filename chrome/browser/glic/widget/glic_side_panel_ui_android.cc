@@ -373,8 +373,8 @@ bool GlicSidePanelUi::ActivateBrowser() {
   return true;
 }
 
-void GlicSidePanelUi::Zoom(mojom::ZoomAction zoom_action) {
-  delegate_->host().Zoom(zoom_action);
+void GlicSidePanelUi::Zoom(mojom::ZoomAction zoom_action, ZoomSource source) {
+  delegate_->host().Zoom(zoom_action, source);
 }
 
 BrowserWindowInterface* GlicSidePanelUi::GetBrowserWindowInterface() {

@@ -125,7 +125,7 @@ class GlicSidePanelUi
   // LocalHotkeyManager::Panel:
   void FocusIfOpen() override;
   bool ActivateBrowser() override;
-  void Zoom(mojom::ZoomAction action) override;
+  void Zoom(mojom::ZoomAction action, ZoomSource source) override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
 
   PanelFocusDependentHotkeyManager*
