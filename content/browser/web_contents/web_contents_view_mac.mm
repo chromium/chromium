@@ -20,6 +20,7 @@
 #include "base/task/current_thread.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
+#include "components/remote_cocoa/app_shim/window_move_loop.h"
 #include "components/remote_cocoa/browser/ns_view_ids.h"
 #include "components/remote_cocoa/common/application.mojom.h"
 #include "content/app_shim_remote_cocoa/web_contents_ns_view_bridge.h"
@@ -212,6 +213,12 @@ void WebContentsViewMac::StartDragging(
       static_cast<RenderWidgetHostImpl*>(source_rfh.GetRenderWidgetHost());
   // Disallow reentrant drag which could be an attempt to exploit drag state.
   if (drag_source_start_rwh_) {
+    return;
+  }
+  // A window move loop already owns the held mouse button; refuse to start a
+  // dragging session that would interfere with it.
+  if (remote_cocoa::CocoaWindowMoveLoop::IsActive()) {
+    web_contents_->SystemDragEnded(source_rwh);
     return;
   }
   url::Origin source_origin = source_rfh.GetLastCommittedOrigin();

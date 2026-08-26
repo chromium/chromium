@@ -9,6 +9,7 @@
 #include "base/strings/sys_string_conversions.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
+#include "components/remote_cocoa/app_shim/window_move_loop.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #import "ui/base/dragdrop/os_exchange_data_provider_mac.h"
@@ -31,6 +32,12 @@ void DragDropClientMac::StartDragAndDrop(
     std::unique_ptr<ui::OSExchangeData> data,
     int operation,
     ui::mojom::DragEventSource source) {
+  // A window move loop already owns the held mouse button; starting a dragging
+  // session here would interfere with it.
+  if (remote_cocoa::CocoaWindowMoveLoop::IsActive()) {
+    return;
+  }
+
   exchange_data_ = std::move(data);
   source_operation_ = operation;
   is_drag_source_ = true;

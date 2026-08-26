@@ -27,6 +27,11 @@ class REMOTE_COCOA_APP_SHIM_EXPORT CocoaWindowMoveLoop {
 
   ~CocoaWindowMoveLoop();
 
+  // Returns true if any window in this process is currently inside Run(). The
+  // move loop tracks the held mouse button, so callers that would otherwise
+  // start a dragging session should refuse to do so while this returns true.
+  static bool IsActive();
+
   // Initiates the drag until a mouse up event is observed, or End() is called.
   // Returns true if a mouse up event ended the loop.
   bool Run();

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #import "ui/base/clipboard/clipboard_util_mac.h"
 #import "ui/base/dragdrop/drag_drop_types.h"
@@ -26,6 +27,10 @@
 #include "ui/views/widget/native_widget_mac.h"
 #include "ui/views/widget/widget.h"
 
+namespace {
+int g_begin_dragging_session_call_count = 0;
+}  // namespace
+
 @interface NSView (DragSessionTestingDonor)
 @end
 
@@ -34,6 +39,7 @@
                                                  event:(NSEvent*)event
                                                 source:(id<NSDraggingSource>)
                                                            source {
+  ++g_begin_dragging_session_call_count;
   return nil;
 }
 @end
@@ -290,6 +296,45 @@ TEST_F(DragDropClientMacTest, ReleaseCapture) {
 
   // The capture should be released.
   EXPECT_FALSE(ns_window_host()->IsMouseCaptureActive());
+}
+
+// A drag should not start while a window move loop is running for any window
+// in the process. The move loop already owns the held mouse button and a
+// concurrent dragging session would interfere with it.
+TEST_F(DragDropClientMacTest, DragRejectedDuringWindowMoveLoop) {
+  std::unique_ptr<OSExchangeData> data = std::make_unique<OSExchangeData>();
+  data->SetString(u"text");
+  data->provider().SetDragImage(gfx::test::CreateImageSkia(100, 100),
+                                gfx::Vector2d());
+
+  // There's no way to cleanly stop NSDraggingSession inside unit tests, so just
+  // don't start it at all.
+  g_begin_dragging_session_call_count = 0;
+  base::apple::ScopedObjCClassSwizzler swizzle(
+      [NSView class], @selector(beginDraggingSessionWithItems:event:source:),
+      @selector(cr_beginDraggingSessionWithItems:event:source:));
+
+  // Attempt to start a drag from inside the move loop and then end the move
+  // loop.
+  bool drag_attempted = false;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](DragDropClientMac* client,
+             remote_cocoa::NativeWidgetNSWindowBridge* bridge,
+             std::unique_ptr<OSExchangeData> data, bool* drag_attempted) {
+            client->StartDragAndDrop(std::move(data),
+                                     ui::DragDropTypes::DRAG_COPY,
+                                     ui::mojom::DragEventSource::kMouse);
+            *drag_attempted = true;
+            bridge->EndMoveLoop();
+          },
+          drag_drop_client(), bridge(), std::move(data), &drag_attempted));
+
+  bridge()->RunMoveLoop(gfx::Vector2d());
+
+  EXPECT_TRUE(base::test::RunUntil([&]() { return drag_attempted; }));
+  EXPECT_EQ(0, g_begin_dragging_session_call_count);
 }
 
 // Tests if the drag and drop target rejects the dropped data with the

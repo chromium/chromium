@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
@@ -94,6 +95,15 @@ class ChildWindowMover {
 
 namespace remote_cocoa {
 
+namespace {
+bool g_move_loop_active = false;
+}  // namespace
+
+// static
+bool CocoaWindowMoveLoop::IsActive() {
+  return g_move_loop_active;
+}
+
 CocoaWindowMoveLoop::CocoaWindowMoveLoop(NativeWidgetNSWindowBridge* owner,
                                          const NSPoint& initial_mouse_in_screen)
     : owner_(owner),
@@ -111,6 +121,11 @@ CocoaWindowMoveLoop::~CocoaWindowMoveLoop() {
 }
 
 bool CocoaWindowMoveLoop::Run() {
+  CHECK(!g_move_loop_active);
+  // |this| may be deleted while the nested run loop below is spinning, so this
+  // must not refer to any member state on destruction.
+  base::AutoReset<bool> active_resetter(&g_move_loop_active, true);
+
   LoopExitReason exit_reason = ENDED_EXTERNALLY;
   exit_reason_ref_ = &exit_reason;
   NSWindow* window = owner_->ns_window();
