@@ -97,7 +97,8 @@ class HatsServiceBrowserTestBase : public policy::PolicyTest {
 
   Profile* profile() { return chrome_test_utils::GetProfile(this); }
 
-  HatsServiceDesktop* GetHatsService(Browser* browser = nullptr) {
+  HatsServiceDesktop* GetHatsService(
+      BrowserWindowInterface* browser = nullptr) {
     Profile* profile =
         browser ? browser->GetProfile() : this->browser()->GetProfile();
     HatsServiceDesktop* service = static_cast<HatsServiceDesktop*>(
@@ -109,7 +110,7 @@ class HatsServiceBrowserTestBase : public policy::PolicyTest {
     scoped_metrics_consent_.emplace(consent);
   }
 
-  bool HatsNextDialogCreated(Browser* browser = nullptr) {
+  bool HatsNextDialogCreated(BrowserWindowInterface* browser = nullptr) {
     return GetHatsService(browser)->hats_next_dialog_exists_for_testing();
   }
 
@@ -117,7 +118,7 @@ class HatsServiceBrowserTestBase : public policy::PolicyTest {
   // param may be used to mock the survey in another browser too. Returns the
   // trigger to use when launching the survey.
   std::string MockSurveyWithRequestedBrowserType(
-      Browser* other_browser,
+      BrowserWindowInterface* other_browser,
       hats::SurveyConfig::RequestedBrowserType requested_browser_type) {
     for (HatsServiceDesktop* service :
          {GetHatsService(), GetHatsService(other_browser)}) {

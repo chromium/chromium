@@ -6,24 +6,26 @@
 
 #include "base/test/run_until.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-bool IntentChipButtonTestBase::IsIntentChipFullyCollapsed(Browser* browser) {
+bool IntentChipButtonTestBase::IsIntentChipFullyCollapsed(
+    BrowserWindowInterface* browser) {
   return !GetIntentChip(browser).IsChipVisible();
 }
 
 page_actions::PageActionTestAccessor IntentChipButtonTestBase::GetIntentChip(
-    Browser* browser) const {
+    BrowserWindowInterface* browser) const {
   return page_actions::PageActionTestAccessor(browser, kActionShowIntentPicker);
 }
 
 testing::AssertionResult
 IntentChipButtonTestBase::WaitForPageActionButtonVisible(
-    Browser* browser) const {
+    BrowserWindowInterface* browser) const {
   bool is_view_visible = base::test::RunUntil(
       [&]() { return GetIntentChip(browser).GetVisible(); });
 

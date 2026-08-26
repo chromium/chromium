@@ -20,7 +20,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "content/public/browser/web_contents_observer.h"
 
-class Browser;
+class BrowserWindowInterface;
 class PrefService;
 
 // Key-value mapping type for survey's product specific bits data.
@@ -193,7 +193,7 @@ class HatsServiceDesktop : public HatsService {
 
   // Returns the launch error for the given trigger and browser, performing all
   // checks.
-  LaunchError RunLaunchChecks(Browser* browser,
+  LaunchError RunLaunchChecks(BrowserWindowInterface* browser,
                               const std::string& trigger) const;
 
   // Helper for CanShowSurvey, performing browser-independent checks (except
@@ -202,12 +202,12 @@ class HatsServiceDesktop : public HatsService {
 
   // Returns true if the requested browser type matches the actual browser type.
   bool IsRightBrowserType(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       hats::SurveyConfig::RequestedBrowserType requested_browser_type) const;
 
   // Shows the survey after checking all conditions are met.
   LaunchError ShowSurvey(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const std::string& trigger,
       base::OnceClosure success_callback,
       base::OnceClosure failure_callback,

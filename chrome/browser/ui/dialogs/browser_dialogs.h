@@ -25,7 +25,6 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/native_ui_types.h"
 
-class Browser;
 class BrowserWindowInterface;
 class Profile;
 
@@ -141,14 +140,14 @@ void HideTaskManagerViews();
 base::OnceClosure ShowDeviceChooserDialog(
     content::RenderFrameHost* owner,
     std::unique_ptr<permissions::ChooserController> controller);
-bool IsDeviceChooserShowingForTesting(Browser* browser);
+bool IsDeviceChooserShowingForTesting(BrowserWindowInterface* browser);
 #endif
 
 // Show the prompt to set a window name for browser's window, optionally with
 // the given context.
-void ShowWindowNamePrompt(Browser* browser);
+void ShowWindowNamePrompt(BrowserWindowInterface* browser);
 std::unique_ptr<ui::DialogModel> CreateWindowNamePromptDialogModelForTesting(
-    Browser* browser);
+    BrowserWindowInterface* browser);
 
 #if BUILDFLAG(ENABLE_COMPOSE)
 std::unique_ptr<compose::ComposeDialogController> ShowComposeDialog(

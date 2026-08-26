@@ -19,7 +19,6 @@
 #include "ui/views/controls/button/button.h"
 
 class AvatarToolbarButton;
-class Browser;
 class BrowserWindowInterface;
 class WebUIAvatarToolbarButton;
 enum class AvatarToolbarButtonState;
@@ -54,11 +53,11 @@ void SetUpWebUI(const ui::ElementIdentifier& element_id,
                 ui::TrackedElement** element_out,
                 WebUIToolbarWebView** webui_toolbar_view_out,
                 views::WebView** web_view_out,
-                Browser* browser);
+                BrowserWindowInterface* browser);
 
 // Retrieves the WebUIToolbarWebView instance associated with the given
 // `browser`.
-WebUIToolbarWebView* GetWebUIToolbarWebView(Browser* browser);
+WebUIToolbarWebView* GetWebUIToolbarWebView(BrowserWindowInterface* browser);
 
 // Simulates a left-click on the WebUI toolbar extension button with the given
 // `id` (or the puzzle piece extensions menu button if `id` is empty).
@@ -86,10 +85,12 @@ bool WaitForButtonHidden(content::WebContents* web_contents,
                          const std::string& selector);
 
 // Pins a button preference and waits for composition in WebUI toolbar.
-void PinButton(Browser* browser, views::WebView* web_view, const char* pref);
+void PinButton(BrowserWindowInterface* browser,
+               views::WebView* web_view,
+               const char* pref);
 
 // Pins Home button and waits for it to become visible in WebUI toolbar.
-WebUIToolbarWebView* SetUpAndPinHomeButton(Browser* browser);
+WebUIToolbarWebView* SetUpAndPinHomeButton(BrowserWindowInterface* browser);
 
 // Returns JS expression selecting the inner icon/chip button element.
 std::string GetButtonIconJS(const std::string& selector);

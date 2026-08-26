@@ -153,7 +153,7 @@ void SetUpWebUI(const ui::ElementIdentifier& element_id,
                 ui::TrackedElement** element_out,
                 WebUIToolbarWebView** webui_toolbar_view_out,
                 views::WebView** web_view_out,
-                Browser* browser) {
+                BrowserWindowInterface* browser) {
   // Wait for the WebUIToolbarWebView to be available.
   *webui_toolbar_view_out = nullptr;
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -189,7 +189,7 @@ void SetUpWebUI(const ui::ElementIdentifier& element_id,
   content::WaitForCopyableViewInWebContents((*web_view_out)->GetWebContents());
 }
 
-WebUIToolbarWebView* GetWebUIToolbarWebView(Browser* browser) {
+WebUIToolbarWebView* GetWebUIToolbarWebView(BrowserWindowInterface* browser) {
   return BrowserView::GetBrowserViewForBrowser(browser)
       ->toolbar_button_provider()
       ->GetWebUIToolbarViewForTesting();
@@ -831,12 +831,14 @@ bool WaitForButtonHidden(content::WebContents* web_contents,
       [&]() { return !IsButtonVisible(web_contents, selector); });
 }
 
-void PinButton(Browser* browser, views::WebView* web_view, const char* pref) {
+void PinButton(BrowserWindowInterface* browser,
+               views::WebView* web_view,
+               const char* pref) {
   browser->GetProfile()->GetPrefs()->SetBoolean(pref, true);
   content::WaitForCopyableViewInWebContents(web_view->GetWebContents());
 }
 
-WebUIToolbarWebView* SetUpAndPinHomeButton(Browser* browser) {
+WebUIToolbarWebView* SetUpAndPinHomeButton(BrowserWindowInterface* browser) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser);
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
   PinButton(browser, web_view, prefs::kShowHomeButton);

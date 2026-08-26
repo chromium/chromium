@@ -2883,8 +2883,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                chrome::ToggleAlwaysShowToolbarInFullscreen(
-                    bwi->GetBrowserForMigrationOnly());
+                chrome::ToggleAlwaysShowToolbarInFullscreen(bwi);
               },
               bwi))
           .SetActionId(kActionToggleFullscreenToolbar)

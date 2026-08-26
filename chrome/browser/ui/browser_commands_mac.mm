@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/fullscreen_util_mac.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -25,7 +26,7 @@
 
 namespace chrome {
 
-void ToggleAlwaysShowToolbarInFullscreen(Browser* browser) {
+void ToggleAlwaysShowToolbarInFullscreen(BrowserWindowInterface* browser) {
   DCHECK(browser);
 
   // If this browser belongs to an app, toggle the value for that app.
@@ -42,15 +43,16 @@ void ToggleAlwaysShowToolbarInFullscreen(Browser* browser) {
   prefs->SetBoolean(prefs::kShowFullscreenToolbar, !show_toolbar);
 }
 
-void SetAlwaysShowToolbarInFullscreenForTesting(Browser* browser,  // IN-TEST
-                                                bool always_show) {
+void SetAlwaysShowToolbarInFullscreenForTesting(
+    BrowserWindowInterface* browser,  // IN-TEST
+    bool always_show) {
   if (always_show == fullscreen_utils::IsAlwaysShowToolbarEnabled(browser)) {
     return;
   }
   ToggleAlwaysShowToolbarInFullscreen(browser);
 }
 
-void ToggleJavaScriptFromAppleEventsAllowed(Browser* browser) {
+void ToggleJavaScriptFromAppleEventsAllowed(BrowserWindowInterface* browser) {
   CGEventRef cg_event = NSApp.currentEvent.CGEvent;
   if (!cg_event) {
     return;
@@ -82,7 +84,7 @@ void ToggleJavaScriptFromAppleEventsAllowed(Browser* browser) {
                     !prefs->GetBoolean(prefs::kAllowJavascriptAppleEvents));
 }
 
-void RevealToolbarForTesting(Browser* browser) {
+void RevealToolbarForTesting(BrowserWindowInterface* browser) {
   NSWindow* window =
       browser->GetWindow()->GetNativeWindow().GetNativeNSWindow();
   NSThemeFrame* theme_frame =

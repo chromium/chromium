@@ -76,13 +76,13 @@ webapps::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchWebApp(
 }
 
 webapps::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchWebApp(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const GURL& start_url) {
   return InstallAndLaunchWebApp(browser->GetProfile(), start_url);
 }
 
 webapps::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchCustomWebApp(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
     const GURL& start_url) {
   webapps::AppId app_id = web_app::test::InstallWebApp(browser->GetProfile(),

@@ -121,8 +121,8 @@ class TestBrowserHiddenWaiter : public views::WidgetObserver {
     future_.SetValue();
   }
 
-  base::ScopedObservation<views::Widget, WidgetObserver> widget_observation_{
-      this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
   base::test::TestFuture<void> future_;
 };
 

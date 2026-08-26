@@ -2976,7 +2976,7 @@ void ToggleCaretBrowsing(BrowserWindowInterface* browser) {
 }
 
 void PromptToNameWindow(BrowserWindowInterface* browser) {
-  chrome::ShowWindowNamePrompt(browser->GetBrowserForMigrationOnly());
+  chrome::ShowWindowNamePrompt(browser);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

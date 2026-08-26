@@ -10,21 +10,22 @@
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 class IntentChipButtonTestBase {
  public:
   virtual ~IntentChipButtonTestBase() = default;
 
   // Checks if the intent chip is fully collapsed.
-  bool IsIntentChipFullyCollapsed(Browser* browser);
+  bool IsIntentChipFullyCollapsed(BrowserWindowInterface* browser);
 
   // Gets the intent chip accessor.
-  page_actions::PageActionTestAccessor GetIntentChip(Browser* browser) const;
+  page_actions::PageActionTestAccessor GetIntentChip(
+      BrowserWindowInterface* browser) const;
 
   // Check if the intent picker chip is done animating
   testing::AssertionResult WaitForPageActionButtonVisible(
-      Browser* browser) const;
+      BrowserWindowInterface* browser) const;
 
   // Function to generate test names for IntentChipButton tests.
   static std::string GenerateIntentChipTestName(

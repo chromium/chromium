@@ -16,7 +16,7 @@ namespace {
 
 class AppMenuTestApiViews : public test::AppMenuTestApi {
  public:
-  explicit AppMenuTestApiViews(Browser* browser);
+  explicit AppMenuTestApiViews(BrowserWindowInterface* browser);
 
   AppMenuTestApiViews(const AppMenuTestApiViews&) = delete;
   AppMenuTestApiViews& operator=(const AppMenuTestApiViews&) = delete;
@@ -29,10 +29,10 @@ class AppMenuTestApiViews : public test::AppMenuTestApi {
   void ExecuteCommand(int command) override;
 
  private:
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
 };
 
-AppMenuTestApiViews::AppMenuTestApiViews(Browser* browser)
+AppMenuTestApiViews::AppMenuTestApiViews(BrowserWindowInterface* browser)
     : browser_(browser) {}
 AppMenuTestApiViews::~AppMenuTestApiViews() = default;
 
@@ -68,7 +68,8 @@ void AppMenuTestApiViews::ExecuteCommand(int command) {
 
 namespace test {
 
-std::unique_ptr<AppMenuTestApi> AppMenuTestApi::Create(Browser* browser) {
+std::unique_ptr<AppMenuTestApi> AppMenuTestApi::Create(
+    BrowserWindowInterface* browser) {
   return std::make_unique<AppMenuTestApiViews>(browser);
 }
 

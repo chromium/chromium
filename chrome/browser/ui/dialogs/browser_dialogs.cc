@@ -22,11 +22,11 @@
 namespace chrome {
 
 #if !defined(TOOLKIT_VIEWS)
-void ShowWindowNamePrompt(Browser* browser) {
+void ShowWindowNamePrompt(BrowserWindowInterface* browser) {
   NOTIMPLEMENTED();
 }
 
-void ShowWindowNamePromptForTesting(Browser* browser,
+void ShowWindowNamePromptForTesting(BrowserWindowInterface* browser,
                                     gfx::NativeWindow context) {
   NOTIMPLEMENTED();
 }
