@@ -72,15 +72,14 @@ There are also other, non-crate-specific files such as:
 
 # Importing new third-party crates
 
-See
-[`//third_party/rust/README-importing-new-crates.md`](../third_party/rust/README-importing-new-crates.md)
+See [`README-importing-new-crates.md`](README-importing-new-crates.md)
 for instructions on how to import a crate from https://crates.io into Chromium.
 
 # Updating existing third-party crates
 
 Third-party crates will get updated semi-automatically through the process
 described in
-[`../tools/crates/create_update_cl.md`](../tools/crates/create_update_cl.md).
+[`//tools/crates/create_update_cl.md`](../../tools/crates/create_update_cl.md).
 If you nevertheless need to manually update a crate to its latest minor or major
 version, then follow the steps below.  To facilitate easier review, we recommend
 uploading separate patchsets for 1) manual changes, and 2) tool-driven,
