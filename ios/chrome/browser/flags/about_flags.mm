@@ -3052,6 +3052,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableWalletReminderNoticePublicPass)},
+    {"new-tab-page-pinned-omnibox-color-update",
+     flag_descriptions::kNewTabPagePinnedOmniboxColorUpdateName,
+     flag_descriptions::kNewTabPagePinnedOmniboxColorUpdateDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kNewTabPagePinnedOmniboxColorUpdate)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -13460,6 +13460,7 @@
                         "new-tab-page-ui-cleanup-arm": "1"
                     },
                     "enable_features": [
+                        "NewTabPagePinnedOmniboxColorUpdate",
                         "NewTabPageUICleanup"
                     ]
                 }

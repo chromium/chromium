@@ -35,6 +35,9 @@ BASE_FEATURE(kMVTInBottomSheet, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNewTabPageUICleanup, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNewTabPagePinnedOmniboxColorUpdate,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAimButtonRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #pragma mark - Feature parameters
@@ -172,4 +175,8 @@ bool IsNewTabPageUICleanupEnabled() {
 bool IsNewTabPageUICleanupFakeboxOnlyEnabled() {
   return GetNewTabPageUICleanupVariation() ==
          NTPUICleanupVariation::kFakeboxBackgroundAndShadow;
+}
+
+bool IsNewTabPagePinnedOmniboxColorUpdateEnabled() {
+  return base::FeatureList::IsEnabled(kNewTabPagePinnedOmniboxColorUpdate);
 }

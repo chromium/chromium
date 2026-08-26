@@ -817,7 +817,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   // Update the opacity of the header background color as the user scrolls so
   // that content does not appear beneath it. Since the NTP background might be
   // a gradient, the opacity must be 0 by default.
-  if (!IsChromeNextIaEnabled()) {
+  if (!IsChromeNextIaEnabled() ||
+      IsNewTabPagePinnedOmniboxColorUpdateEnabled()) {
     self.backgroundColor =
         [HeaderBackgroundColor(self) colorWithAlphaComponent:progress];
   }
