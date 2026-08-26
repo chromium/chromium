@@ -4,11 +4,15 @@
 
 package org.chromium.chrome.browser.modaldialog;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.FrameLayout;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,6 +39,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.function.Supplier;
 
@@ -88,6 +94,17 @@ public class ChromeTabModalPresenterUnitTest {
         @Override
         public void setBrowserControlsAccess(boolean restricted) {
             super.setBrowserControlsAccess(restricted);
+        }
+
+        private ViewGroup mTestDialogContainer;
+
+        public void setDialogContainerForTesting(ViewGroup container) {
+            mTestDialogContainer = container;
+        }
+
+        @Override
+        protected ViewGroup getDialogContainer() {
+            return mTestDialogContainer != null ? mTestDialogContainer : super.getDialogContainer();
         }
     }
 
@@ -163,5 +180,33 @@ public class ChromeTabModalPresenterUnitTest {
 
         // Simulate dismissing the dialog. This should not crash even though the tab is destroyed.
         mPresenter.setBrowserControlsAccess(false);
+    }
+
+    @Test
+    public void testTopControlsHeightChanged_UpdatesScrimTopMargin() {
+        ViewGroup container = new FrameLayout(mActivity);
+        container.setLayoutParams(
+                new MarginLayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mPresenter.setDialogContainerForTesting(container);
+
+        PropertyModel scrimModel =
+                new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
+                        .with(ScrimProperties.TOP_MARGIN, 56)
+                        .build();
+        mPresenter.setScrimModelForTesting(scrimModel);
+
+        when(mBrowserControlsVisibilityManager.getTopControlsHeight()).thenReturn(96);
+
+        mPresenter.onTopControlsHeightChanged(96, 0);
+
+        assertEquals(
+                "Dialog container top margin should be updated.",
+                96,
+                ((MarginLayoutParams) container.getLayoutParams()).topMargin);
+        assertEquals(
+                "Scrim top margin should be updated.",
+                96,
+                scrimModel.get(ScrimProperties.TOP_MARGIN));
     }
 }
