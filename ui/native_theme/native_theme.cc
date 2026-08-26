@@ -29,6 +29,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkScalar.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_metrics.h"
@@ -286,9 +287,13 @@ void NativeTheme::NotifyOnNativeThemeUpdated() {
   const size_t initial_providers_initialized =
       color_provider_manager.num_providers_initialized();
 
-  // Reset the ColorProviderManager's cache so that ColorProviders requested
-  // from this point onwards incorporate the changes to the system theme.
-  color_provider_manager.ResetColorProviderCache();
+  if (base::FeatureList::IsEnabled(features::kThemeChangeOptimization)) {
+    IncrementSystemColorVersion();
+  } else {
+    // Reset the ColorProviderManager's cache so that ColorProviders requested
+    // from this point onwards incorporate the changes to the system theme.
+    color_provider_manager.ResetColorProviderCache();
+  }
 
   NotifyOnNativeThemeUpdatedImpl();
 
@@ -357,6 +362,7 @@ ColorProviderKey NativeTheme::GetColorProviderKey(
   key.user_color = user_color();
   key.scheme_variant = scheme_variant();
   key.custom_theme = std::move(custom_theme);
+  key.system_theme_version = system_color_version_;
   return key;
 }
 

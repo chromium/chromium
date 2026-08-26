@@ -536,6 +536,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
     caret_blink_interval_ = caret_blink_interval;
   }
 
+  size_t system_color_version() const { return system_color_version_; }
+  void IncrementSystemColorVersion() { ++system_color_version_; }
+
  protected:
   explicit NativeTheme(SystemTheme system_theme = SystemTheme::kDefault);
   virtual ~NativeTheme();
@@ -615,6 +618,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   ColorProviderKey::UserColorSource preferred_color_source_ =
       ColorProviderKey::UserColorSource::kAccent;
   base::TimeDelta caret_blink_interval_;
+  size_t system_color_version_ = 0;
 
   raw_ptr<NativeTheme> associated_web_instance_ = nullptr;
 

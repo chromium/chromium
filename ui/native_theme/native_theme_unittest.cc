@@ -14,7 +14,9 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/native_theme/features/native_theme_features.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme_observer.h"
@@ -178,6 +180,57 @@ TEST_F(NativeThemeTest, DelayScoper) {
   // even though there were multiple changes above.
   scoper_1.reset();
   expect_notification_count(1);
+}
+
+TEST_F(NativeThemeTest, SystemColorVersionAndCacheReset) {
+  auto* const native_theme = NativeTheme::GetInstanceForNativeUi();
+  auto& manager = ColorProviderManager::Get();
+
+  // Test with kThemeChangeOptimization disabled.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        features::kThemeChangeOptimization);
+
+    ColorProviderKey key1 = native_theme->GetColorProviderKey(nullptr);
+    ColorProvider* provider1 = manager.GetColorProviderFor(key1);
+    EXPECT_EQ(provider1, manager.GetColorProviderFor(key1));
+
+    const size_t version_before = native_theme->system_color_version();
+    native_theme->NotifyOnNativeThemeUpdated();
+    EXPECT_EQ(version_before, native_theme->system_color_version());
+
+    ColorProviderKey key2 = native_theme->GetColorProviderKey(nullptr);
+    EXPECT_EQ(key1, key2);
+    ColorProvider* provider2 = manager.GetColorProviderFor(key2);
+    // Because the cache was reset, a new ColorProvider was created.
+    EXPECT_NE(provider1, provider2);
+  }
+
+  // Test with kThemeChangeOptimization enabled.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        features::kThemeChangeOptimization);
+
+    ColorProviderKey key1 = native_theme->GetColorProviderKey(nullptr);
+    ColorProvider* provider1 = manager.GetColorProviderFor(key1);
+    EXPECT_EQ(provider1, manager.GetColorProviderFor(key1));
+
+    const size_t version_before = native_theme->system_color_version();
+    native_theme->NotifyOnNativeThemeUpdated();
+    EXPECT_EQ(version_before + 1, native_theme->system_color_version());
+
+    ColorProviderKey key2 = native_theme->GetColorProviderKey(nullptr);
+    EXPECT_NE(key1, key2);
+    EXPECT_EQ(key2.system_theme_version, version_before + 1);
+
+    ColorProvider* provider2 = manager.GetColorProviderFor(key2);
+    EXPECT_NE(provider1, provider2);
+
+    // Old key should still be cached in manager without needing re-creation.
+    EXPECT_EQ(provider1, manager.GetColorProviderFor(key1));
+  }
 }
 
 }  // namespace
