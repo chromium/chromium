@@ -1763,6 +1763,9 @@ bool Texture::CanRenderTo(const FeatureInfo* feature_info, GLint level) const {
   if (face_infos_.size() == 6 && !cube_complete())
     return false;
   DCHECK(level >= 0 && level < static_cast<GLint>(MaxValidMipLevel()));
+  if (level < base_level_) {
+    return false;
+  }
   if (level > base_level_ && !texture_complete()) {
     return false;
   }
