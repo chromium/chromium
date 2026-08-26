@@ -2437,6 +2437,22 @@ TEST_F(ContextualTasksUiServiceTest,
   contextual_tasks::SetForcedEmbeddedPageHostOverride("");
 }
 
+TEST_F(ContextualTasksUiServiceTest,
+       AddRequiredSidePanelUrlChanges_NonHttpOrHttps_NotOverridden) {
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  contextual_tasks::SetForcedEmbeddedPageHostOverride("test.google.com");
+
+  GURL webui_url("chrome://contextual-tasks/?chrome_task_id=123");
+  GURL new_url = ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
+      webui_url, web_contents.get());
+
+  EXPECT_EQ(webui_url, new_url);
+
+  contextual_tasks::SetForcedEmbeddedPageHostOverride("");
+}
+
 TEST_F(ContextualTasksUiServiceTest, HandleNavigation_DisplayUrlRewritten) {
   GURL display_url("chrome://google.com/search?udm=50&q=test+query");
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
