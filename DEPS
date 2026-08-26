@@ -2634,7 +2634,7 @@ deps = {
   },
 
   'src/third_party/libphonenumber/src':
-    Var('chromium_git') + '/external/libphonenumber.git' + '@' + '17c9061a3af14f2e10907d73df92601b27785713',
+    Var('chromium_git') + '/external/libphonenumber.git' + '@' + 'ba2a029f8f22dd24455c72ed1f558061a7ec98cf',
 
   'src/third_party/libprotobuf-mutator/src':
     Var('chromium_git') + '/external/github.com/google/libprotobuf-mutator.git' + '@' +  Var('libprotobuf-mutator'),
