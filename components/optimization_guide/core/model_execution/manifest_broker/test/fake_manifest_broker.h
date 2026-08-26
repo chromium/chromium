@@ -48,7 +48,6 @@ class FakeManifestBroker {
 
  private:
   ScopedModelBrokerFeatureList scoped_feature_list_;
-  testing::NiceMock<FakeComponentUpdateService> component_update_service_;
   ModelBrokerPrefService local_state_;
   TestManifestAssetManagerComponentState component_state_;
   on_device_model::FakeOnDeviceServiceSettings settings_;

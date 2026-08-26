@@ -21,11 +21,26 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "components/crx_file/id_util.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h"
 #include "components/optimization_guide/core/model_execution/test/fake_component_update_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace optimization_guide {
+
+namespace {
+
+std::string GetCrxIdForPublicKey(const std::string& public_key) {
+  std::vector<uint8_t> public_key_hash;
+  if (!base::HexStringToBytes(public_key, &public_key_hash)) {
+    public_key_hash =
+        std::vector<uint8_t>(public_key.begin(), public_key.end());
+    public_key_hash.resize(32, 0);
+  }
+  return crx_file::id_util::GenerateIdFromHash(public_key_hash);
+}
+
+}  // namespace
 
 TestManifestAssetManagerComponentState::InstallTarget::InstallTarget() =
     default;
@@ -257,6 +272,12 @@ void TestManifestAssetManagerComponentState::MaybeCompleteDownload(
   registration.has_foreground_update_requested = false;
   registration.has_background_update_requested = false;
 
+  std::string crx_id = GetCrxIdForPublicKey(public_key);
+  FakeComponent comp(crx_id, 1000);
+  auto item =
+      comp.CreateUpdateItem(update_client::ComponentState::kUpdated, 1000);
+  component_update_service_.SendUpdate(item);
+
   VLOG(2) << "Posted OnAssetReady: " << public_key;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
@@ -325,6 +346,15 @@ void TestManifestAssetManagerComponentState::SimulateRestart() {
   registrations_.clear();
 }
 
+void TestManifestAssetManagerComponentState::ClearInstalledComponents() {
+  installed_components_.clear();
+}
+
+void TestManifestAssetManagerComponentState::Uninstall(
+    const std::string& public_key) {
+  installed_components_.erase(public_key);
+}
+
 bool TestManifestAssetManagerComponentState::IsRegistered(
     const std::string& public_key) const {
   auto it = registrations_.find(public_key);
@@ -373,6 +403,20 @@ bool TestManifestAssetManagerComponentState::IsInstalled(
 bool TestManifestAssetManagerComponentState::IsUninstalled(
     const std::string& public_key) const {
   return !installed_components_.contains(public_key);
+}
+
+void TestManifestAssetManagerComponentState::UpdateDownloadProgress(
+    const std::string& public_key,
+    uint64_t downloaded_bytes,
+    uint64_t total_bytes) {
+  std::string crx_id = GetCrxIdForPublicKey(public_key);
+  FakeComponent comp(crx_id, total_bytes);
+  auto item = comp.CreateUpdateItem(
+      downloaded_bytes == total_bytes
+          ? update_client::ComponentState::kUpdated
+          : update_client::ComponentState::kDownloading,
+      downloaded_bytes);
+  component_update_service_.SendUpdate(item);
 }
 
 }  // namespace optimization_guide

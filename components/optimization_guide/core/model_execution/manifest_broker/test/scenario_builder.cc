@@ -111,6 +111,10 @@ ScenarioBuilder& ScenarioBuilder::AddUnsafeSolution(
                      FileReference("manifest", use_case + "config.pb")));
   builder.Add(DeviceUseCase{DeviceCategory::kGpuHighTier, use_case},
               use_case + "_solution");
+  builder.Add(DeviceUseCase{DeviceCategory::kGpuLowTier, use_case},
+              use_case + "_solution");
+  builder.Add(DeviceUseCase{DeviceCategory::kCpu, use_case},
+              use_case + "_solution");
   return *this;
 }
 
@@ -126,6 +130,10 @@ ScenarioBuilder& ScenarioBuilder::AddSafeSolution(
                      FileReference("manifest", use_case + "config.pb")));
   builder.Add(DeviceUseCase{DeviceCategory::kGpuHighTier, use_case},
               use_case + "_solution");
+  builder.Add(DeviceUseCase{DeviceCategory::kGpuLowTier, use_case},
+              use_case + "_solution");
+  builder.Add(DeviceUseCase{DeviceCategory::kCpu, use_case},
+              use_case + "_solution");
   return *this;
 }
 
@@ -133,6 +141,14 @@ ScenarioBuilder& ScenarioBuilder::SetFeatureConfig(DeviceCategory category,
                                                    const std::string& use_case,
                                                    const proto::Any& config) {
   builder.SetFeatureConfig(category, use_case, config);
+  return *this;
+}
+
+ScenarioBuilder& ScenarioBuilder::SetFeatureConfig(const std::string& use_case,
+                                                   const proto::Any& config) {
+  SetFeatureConfig(DeviceCategory::kGpuHighTier, use_case, config);
+  SetFeatureConfig(DeviceCategory::kGpuLowTier, use_case, config);
+  SetFeatureConfig(DeviceCategory::kCpu, use_case, config);
   return *this;
 }
 

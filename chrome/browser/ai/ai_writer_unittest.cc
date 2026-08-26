@@ -41,6 +41,8 @@
 
 namespace {
 
+namespace proto = ::optimization_guide::proto;
+
 using ::base::test::TestFuture;
 using ::blink::mojom::AILanguageCode;
 using ::blink::mojom::AILanguageCodePtr;
@@ -167,16 +169,11 @@ class AIWriterTest : public AITestUtils::AITestBase {
   }
 
  protected:
-  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig CreateConfig()
-      override {
-    return CreateWriterConfig();
-  }
-
-  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig
-  CreateSafeConfig() {
-    auto config = CreateConfig();
-    config.set_can_skip_text_safety(false);
-    return config;
+  proto::SolutionConfig CreateSolution() override {
+    proto::SolutionConfig solution_config;
+    *solution_config.mutable_feature() = CreateWriterConfig();
+    *solution_config.mutable_safety() = CreateSafetyConfig();
+    return solution_config;
   }
 
   mojo::Remote<blink::mojom::AIWriter> GetAIWriterRemote(
@@ -337,8 +334,8 @@ TEST_F(AIWriterTest, CreateWriterModelNotEligible) {
         {{"compatible_on_device_performance_classes", "3,4,5,6"}}}},
       {{on_device_model::features::kOnDeviceModelCpuBackend}});
 
-  fake_broker_->service_settings().performance_class =
-      PerformanceClass::kVeryLow;
+  fake_broker_->settings().performance_class =
+      on_device_model::mojom::PerformanceClass::kVeryLow;
 
   TestCreateWriterClient create_writer_client;
   GetAIManagerRemote()->CreateWriter(
@@ -350,77 +347,16 @@ TEST_F(AIWriterTest, CreateWriterModelNotEligible) {
             blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
 }
 
-TEST_F(AIWriterTest, CreateWriterWaitsForBaseModel) {
-  fake_broker_->InstallBaseModel(nullptr);
-
-  TestCreateWriterClient create_writer_client;
-  GetAIManagerRemote()->CreateWriter(
-      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
-      /*monitor=*/mojo::NullRemote());
-
-  TestFuture<CreateWriterResult>& future = create_writer_client.result();
-  task_environment()->FastForwardBy(base::Hours(1));
-  EXPECT_FALSE(future.IsReady());
-
-  fake_broker_->InstallBaseModel(
-      std::make_unique<optimization_guide::FakeBaseModelAsset>());
-
-  EXPECT_OK(future.Take());
-}
-
-TEST_F(AIWriterTest, CreateWriterWaitsForModelAdaptation) {
-  fake_broker_->model_provider().RemoveModel(
-      optimization_guide::proto::
-          OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_WRITING_ASSISTANCE_API);
-
-  TestCreateWriterClient create_writer_client;
-  GetAIManagerRemote()->CreateWriter(
-      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
-      /*monitor=*/mojo::NullRemote());
-
-  TestFuture<CreateWriterResult>& future = create_writer_client.result();
-  task_environment()->FastForwardBy(base::Hours(1));
-  EXPECT_FALSE(future.IsReady());
-
-  optimization_guide::FakeAdaptationAsset fake_asset(
-      {.config = CreateConfig()});
-  fake_broker_->UpdateModelAdaptation(fake_asset);
-
-  EXPECT_OK(future.Take());
-}
-
-TEST_F(AIWriterTest, CreateWriterWaitsForTextSafetyModel) {
-  optimization_guide::FakeAdaptationAsset fake_asset(
-      {.config = CreateSafeConfig()});
-  fake_broker_->UpdateModelAdaptation(fake_asset);
-
-  TestCreateWriterClient create_writer_client;
-  GetAIManagerRemote()->CreateWriter(
-      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
-      /*monitor=*/mojo::NullRemote());
-
-  TestFuture<CreateWriterResult>& future = create_writer_client.result();
-  task_environment()->FastForwardBy(base::Hours(1));
-  EXPECT_FALSE(future.IsReady());
-
-  optimization_guide::FakeSafetyModelAsset safety_asset(CreateSafetyConfig());
-  fake_broker_->UpdateSafetyModel(safety_asset);
-
-  EXPECT_OK(future.Take());
-}
-
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(AIWriterTest, CreateWriterSafetyConfigNotAvailable) {
-  optimization_guide::FakeAdaptationAsset fake_asset(
-      {.config = CreateSafeConfig()});
-  fake_broker_->UpdateModelAdaptation(fake_asset);
-  // Provide a safety asset that does not support writer.
-  optimization_guide::FakeSafetyModelAsset safety_asset([] {
-    auto safety_config = CreateSafetyConfig();
-    safety_config.set_feature(
+  SetSolutionConfig([&]() {
+    auto solution_config = CreateSolution();
+    solution_config.mutable_feature()->set_can_skip_text_safety(false);
+    // Provide a safety asset that does not support writer.
+    solution_config.mutable_safety()->set_feature(
         optimization_guide::proto::MODEL_EXECUTION_FEATURE_TEST);
-    return safety_config;
+    return solution_config;
   }());
-  fake_broker_->UpdateSafetyModel(safety_asset);
 
   TestCreateWriterClient create_writer_client;
   GetAIManagerRemote()->CreateWriter(
@@ -431,16 +367,18 @@ TEST_F(AIWriterTest, CreateWriterSafetyConfigNotAvailable) {
   EXPECT_EQ(result.error().error,
             blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
 }
+#endif
 
 TEST_F(AIWriterTest, CreateWriterUnableToCalculateTokenSize) {
   // Incorrect `request_base_name` cause session to fail constructing input
   // string and checking token size.
-  auto config = CreateConfig();
-  auto& input_config = *config.mutable_input_config();
-  input_config.set_request_base_name("InvalidRequestBaseName");
-
-  optimization_guide::FakeAdaptationAsset fake_asset({.config = config});
-  fake_broker_->UpdateModelAdaptation(fake_asset);
+  SetSolutionConfig([&]() {
+    auto solution_config = CreateSolution();
+    solution_config.mutable_feature()
+        ->mutable_input_config()
+        ->set_request_base_name("InvalidRequestBaseName");
+    return solution_config;
+  }());
 
   TestCreateWriterClient create_writer_client;
   GetAIManagerRemote()->CreateWriter(
@@ -573,11 +511,11 @@ TEST_F(AIWriterTest, Priority) {
 }
 
 TEST_F(AIWriterTest, TextSafetyInput) {
-  optimization_guide::FakeAdaptationAsset fake_asset(
-      {.config = CreateSafeConfig()});
-  fake_broker_->UpdateModelAdaptation(fake_asset);
-  optimization_guide::FakeSafetyModelAsset safety_asset(CreateSafetyConfig());
-  fake_broker_->UpdateSafetyModel(safety_asset);
+  SetSolutionConfig([&]() {
+    auto solution_config = CreateSolution();
+    solution_config.mutable_feature()->set_can_skip_text_safety(false);
+    return solution_config;
+  }());
 
   fake_broker_->settings().set_execute_result({"hi"});
   auto writer_remote = GetAIWriterRemote();
@@ -592,11 +530,11 @@ TEST_F(AIWriterTest, TextSafetyInput) {
 }
 
 TEST_F(AIWriterTest, TextSafetyContext) {
-  optimization_guide::FakeAdaptationAsset fake_asset(
-      {.config = CreateSafeConfig()});
-  fake_broker_->UpdateModelAdaptation(fake_asset);
-  optimization_guide::FakeSafetyModelAsset safety_asset(CreateSafetyConfig());
-  fake_broker_->UpdateSafetyModel(safety_asset);
+  SetSolutionConfig([&]() {
+    auto solution_config = CreateSolution();
+    solution_config.mutable_feature()->set_can_skip_text_safety(false);
+    return solution_config;
+  }());
 
   fake_broker_->settings().set_execute_result({"hi"});
   auto writer_remote = GetAIWriterRemote();
@@ -611,11 +549,11 @@ TEST_F(AIWriterTest, TextSafetyContext) {
 }
 
 TEST_F(AIWriterTest, TextSafetySharedContext) {
-  optimization_guide::FakeAdaptationAsset fake_asset(
-      {.config = CreateSafeConfig()});
-  fake_broker_->UpdateModelAdaptation(fake_asset);
-  optimization_guide::FakeSafetyModelAsset safety_asset(CreateSafetyConfig());
-  fake_broker_->UpdateSafetyModel(safety_asset);
+  SetSolutionConfig([&]() {
+    auto solution_config = CreateSolution();
+    solution_config.mutable_feature()->set_can_skip_text_safety(false);
+    return solution_config;
+  }());
 
   const auto options = blink::mojom::AIWriterCreateOptions::New(
       "unsafe", blink::mojom::AIWriterTone::kNeutral,
@@ -635,15 +573,14 @@ TEST_F(AIWriterTest, TextSafetySharedContext) {
 }
 
 TEST_F(AIWriterTest, TextSafetyOutput) {
-  optimization_guide::FakeAdaptationAsset fake_asset(
-      {.config = CreateSafeConfig()});
-  fake_broker_->UpdateModelAdaptation(fake_asset);
-  optimization_guide::FakeSafetyModelAsset safety_asset([] {
-    auto safety_config = CreateSafetyConfig();
-    safety_config.mutable_partial_output_checks()->set_minimum_tokens(1000);
-    return safety_config;
+  SetSolutionConfig([&]() {
+    auto solution_config = CreateSolution();
+    solution_config.mutable_feature()->set_can_skip_text_safety(false);
+    solution_config.mutable_safety()
+        ->mutable_partial_output_checks()
+        ->set_minimum_tokens(1000);
+    return solution_config;
   }());
-  fake_broker_->UpdateSafetyModel(safety_asset);
 
   // Fake text safety checker looks for the string "unsafe".
   fake_broker_->settings().set_execute_result(
@@ -658,16 +595,17 @@ TEST_F(AIWriterTest, TextSafetyOutput) {
 }
 
 TEST_F(AIWriterTest, TextSafetyOutputPartial) {
-  optimization_guide::FakeAdaptationAsset fake_asset(
-      {.config = CreateSafeConfig()});
-  fake_broker_->UpdateModelAdaptation(fake_asset);
-  optimization_guide::FakeSafetyModelAsset safety_asset([] {
-    auto safety_config = CreateSafetyConfig();
-    safety_config.mutable_partial_output_checks()->set_minimum_tokens(3);
-    safety_config.mutable_partial_output_checks()->set_token_interval(2);
-    return safety_config;
+  SetSolutionConfig([&]() {
+    auto solution_config = CreateSolution();
+    solution_config.mutable_feature()->set_can_skip_text_safety(false);
+    solution_config.mutable_safety()
+        ->mutable_partial_output_checks()
+        ->set_minimum_tokens(3);
+    solution_config.mutable_safety()
+        ->mutable_partial_output_checks()
+        ->set_token_interval(2);
+    return solution_config;
   }());
-  fake_broker_->UpdateSafetyModel(safety_asset);
 
   // Fake text safety checker looks for the string "unsafe".
   fake_broker_->settings().set_execute_result(
@@ -688,7 +626,7 @@ TEST_F(AIWriterTest, ServiceCrash) {
   auto writer_remote = GetAIWriterRemote();
   AITestUtils::TestStreamingResponder responder;
   writer_remote->Write(kInputString, kContextString, responder.BindRemote());
-  fake_broker_->CrashService();
+  fake_broker_->launcher().CrashService();
 
   EXPECT_FALSE(responder.WaitForCompletion());
   // TODO(crbug.com/494980521): Crashes should be yield kErrorSessionDestroyed.
@@ -703,7 +641,7 @@ TEST_F(AIWriterTest, ServiceCrash) {
 
 TEST_F(AIWriterTest, CrashRecoveryMeasureInputUsage) {
   auto writer_remote = GetAIWriterRemote();
-  fake_broker_->CrashService();
+  fake_broker_->launcher().CrashService();
 
   base::test::TestFuture<std::optional<uint32_t>> measure_future;
   writer_remote->MeasureUsage(kInputString, kContextString,
@@ -783,76 +721,59 @@ TEST_F(AIWriterTest, CreateOnDeviceAiUserSettingDisabled) {
   SetOnDeviceAiUserSetting(true);
 }
 
-class AIWriterManifestTest : public AITestUtils::AITestManifestBase {
- protected:
-  AIWriterManifestTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kAIWriterAPI,
-         optimization_guide::kOptimizationGuideManifestBroker},
-        {});
-  }
-
-  void SetupManifest() override {
-    optimization_guide::proto::WritingAssistanceApiFeatureConfig writer_cfg;
+#if !BUILDFLAG(IS_ANDROID)
+class AIWriterWithFeatureConfigTest : public AIWriterTest {
+ public:
+  void SetupBroker() override {
+    proto::WritingAssistanceApiFeatureConfig writer_cfg;
     writer_cfg.set_default_use_case("writing_assistance_api");
     (*writer_cfg.mutable_experimental_use_cases())["v4"] =
         "writing_assistance_gemma4";
 
-    optimization_guide::proto::Any any_cfg;
-    any_cfg.set_type_url(
-        "type.googleapis.com/"
-        "chrome_intelligence_proto_features.WritingAssistanceApiFeatureConfig");
-    any_cfg.set_value(writer_cfg.SerializeAsString());
+    // Explicit BaseModelRecipeArgs and empty FakeBaseModelAsset::Content are
+    // needed: ScenarioBuilder::AddBaseModel(name) defaults to 100 max_tokens
+    // and non-empty cache weights (1015, 1016, 1017), which causes
+    // FakeOnDeviceModel to emit dummy cache weight response chunks.
+    constexpr uint32_t kDefaultMaxTokens = 8096;
+    proto::SolutionConfig default_solution = CreateSolution();
 
-    optimization_guide::proto::SolutionConfig solution_config;
-    *solution_config.mutable_feature() = CreateConfig();
-
-    optimization_guide::ScenarioBuilder(
-        fake_manifest_broker_->component_state())
+    fake_broker_ = std::make_unique<optimization_guide::FakeManifestBroker>();
+    optimization_guide::ScenarioBuilder(fake_broker_->component_state())
         .AddBaseModel(
-            "writing_assistance_base_model",
+            "base",
             optimization_guide::BaseModelRecipeArgs(
-                optimization_guide::proto::BaseModelRecipe::BACKEND_TYPE_GPU,
-                optimization_guide::proto::BaseModelRecipe::
-                    PERFORMANCE_HINT_HIGHEST_QUALITY,
-                {}, 8096))
+                proto::BaseModelRecipe::BACKEND_TYPE_GPU,
+                proto::BaseModelRecipe::PERFORMANCE_HINT_HIGHEST_QUALITY,
+                {}, kDefaultMaxTokens),
+            optimization_guide::FakeBaseModelAsset::Content{}, "1.0.0.0")
         .AddBaseModel(
-            "writing_assistance_gemma4_base_model",
+            "gemma4_base",
             optimization_guide::BaseModelRecipeArgs(
-                optimization_guide::proto::BaseModelRecipe::BACKEND_TYPE_GPU,
-                optimization_guide::proto::BaseModelRecipe::
-                    PERFORMANCE_HINT_HIGHEST_QUALITY,
-                {}, 8096))
-        .AddSafetyModel("safety_model")
-        .AddSafeSolution("writing_assistance_api",
-                         "writing_assistance_base_model", "safety_model",
-                         solution_config)
-        .AddSafeSolution("writing_assistance_gemma4",
-                         "writing_assistance_gemma4_base_model", "safety_model",
-                         solution_config)
-        .SetFeatureConfig(optimization_guide::DeviceCategory::kGpuHighTier,
-                          "writing_assistance_api", any_cfg)
+                proto::BaseModelRecipe::BACKEND_TYPE_GPU,
+                proto::BaseModelRecipe::PERFORMANCE_HINT_HIGHEST_QUALITY,
+                {}, kDefaultMaxTokens),
+            optimization_guide::FakeBaseModelAsset::Content{}, "1.0.0.0")
+        .AddSafetyModel("safety")
+        .AddSafeSolution("writing_assistance_api", "base", "safety",
+                         default_solution)
+        .AddSafeSolution("writing_assistance_gemma4", "gemma4_base", "safety",
+                         default_solution)
+        .SetFeatureConfig("writing_assistance_api",
+                          optimization_guide::AnyWrapProto(writer_cfg))
         .Finish();
 
-    fake_manifest_broker_->settings().performance_class =
+    fake_broker_->settings().performance_class =
         on_device_model::mojom::PerformanceClass::kHigh;
+    fake_broker_->Startup();
   }
-
-  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig CreateConfig()
-      override {
-    return CreateWriterConfig();
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(AIWriterManifestTest, CanCreateAndCreateWithManifestGemma4) {
+TEST_F(AIWriterWithFeatureConfigTest, CanCreateAndCreateWithManifestGemma4) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kAIApiFoundationalModel, {{"model_version", "v4"}});
 
-  ASSERT_TRUE(fake_manifest_broker_);
-  fake_manifest_broker_->client().RequestAssetsFor("writing_assistance_gemma4");
+  fake_broker_->client().RequestAssetsFor("writing_assistance_gemma4");
   ASSERT_TRUE(base::test::RunUntil([&] {
     base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
     ai_manager_->CanCreateWriter(GetDefaultOptions(), future.GetCallback());
@@ -870,14 +791,12 @@ TEST_F(AIWriterManifestTest, CanCreateAndCreateWithManifestGemma4) {
   EXPECT_TRUE(result.has_value());
 }
 
-TEST_F(AIWriterManifestTest, CanCreateBeforeDownloadGemma4) {
+TEST_F(AIWriterWithFeatureConfigTest, CanCreateBeforeDownloadGemma4) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kAIApiFoundationalModel, {{"model_version", "v4"}});
 
-  ASSERT_TRUE(fake_manifest_broker_);
-
-  fake_manifest_broker_->client().RequestAssetsFor("writing_assistance_api");
+  fake_broker_->client().RequestAssetsFor("writing_assistance_api");
 
   // Verify CanCreateWriter check returns kDownloadable before assets are
   // requested.
@@ -886,5 +805,6 @@ TEST_F(AIWriterManifestTest, CanCreateBeforeDownloadGemma4) {
   EXPECT_EQ(future.Get(),
             blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace

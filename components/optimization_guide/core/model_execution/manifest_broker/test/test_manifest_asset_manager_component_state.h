@@ -141,6 +141,10 @@ class TestManifestAssetManagerComponentState final {
   // This will clear all registrations, but not installed components.
   void SimulateRestart();
 
+  // Clears all installed components.
+  void ClearInstalledComponents();
+  void Uninstall(const std::string& public_key);
+
   //////////////////////
   // Test assertions  //
   //////////////////////
@@ -174,10 +178,19 @@ class TestManifestAssetManagerComponentState final {
     return component_update_service_;
   }
 
+  bool WaitForDownloadObserver() const {
+    return base::test::RunUntil(
+        [&]() { return component_update_service_.HasObserver(); });
+  }
+
+  void UpdateDownloadProgress(const std::string& public_key,
+                              uint64_t downloaded_bytes,
+                              uint64_t total_bytes);
  private:
   class DelegateImpl;
 
   void MaybeCompleteDownload(const std::string& public_key);
+  void SetComponentInstalled(const std::string& public_key, bool installed);
 
   // The simulated network behavior.
   DownloadScenario download_scenario_ = DownloadScenario::kHealthy;

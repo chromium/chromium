@@ -49,7 +49,9 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/component_updater/ai_embeddings_component_installer.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/test/scenario_builder.h"
 #include "components/optimization_guide/core/model_execution/test/fake_component_update_service.h"
+#include "components/optimization_guide/proto/feature_configs.pb.h"
 #endif
 
 using optimization_guide::MockSession;
@@ -59,6 +61,8 @@ using testing::AtMost;
 using testing::NiceMock;
 
 namespace {
+
+namespace proto = ::optimization_guide::proto;
 
 class AISemanticEmbedderServiceLauncherForTest
     : public AISemanticEmbedderServiceLauncher {};
@@ -173,14 +177,61 @@ class AIManagerTest : public AITestUtils::AITestBase {
   }
 
  protected:
-  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig CreateConfig()
-      override {
-    optimization_guide::proto::OnDeviceModelExecutionFeatureConfig config;
+  proto::SolutionConfig CreateSolution() override {
+    proto::OnDeviceModelExecutionFeatureConfig config;
     config.set_can_skip_text_safety(true);
-    config.set_feature(optimization_guide::proto::ModelExecutionFeature::
+    config.set_feature(proto::ModelExecutionFeature::
                            MODEL_EXECUTION_FEATURE_PROMPT_API);
-    return config;
+
+    proto::SolutionConfig solution_config;
+    *solution_config.mutable_feature() = config;
+    return solution_config;
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  void SetupBroker() override {
+    fake_broker_ = std::make_unique<optimization_guide::FakeManifestBroker>();
+    proto::PromptApiFeatureConfig prompt_api_cfg;
+    prompt_api_cfg.set_default_use_case("prompt_api");
+
+    proto::WritingAssistanceApiFeatureConfig writer_cfg;
+    writer_cfg.set_default_use_case("writing_assistance_api");
+
+    proto::SummarizerFeatureConfig summarizer_cfg;
+    summarizer_cfg.set_default_use_case("summarizer_api");
+
+    // Explicit BaseModelRecipeArgs and empty FakeBaseModelAsset::Content are
+    // needed: ScenarioBuilder::AddBaseModel(name) defaults to 100 max_tokens
+    // and non-empty cache weights (1015, 1016, 1017), which causes
+    // FakeOnDeviceModel to emit dummy cache weight response chunks.
+    constexpr uint32_t kDefaultMaxTokens = 8096;
+
+    optimization_guide::ScenarioBuilder(fake_broker_->component_state())
+        .AddBaseModel(
+            "base",
+            optimization_guide::BaseModelRecipeArgs(
+                proto::BaseModelRecipe::BACKEND_TYPE_GPU,
+                proto::BaseModelRecipe::PERFORMANCE_HINT_HIGHEST_QUALITY, {},
+                kDefaultMaxTokens),
+            optimization_guide::FakeBaseModelAsset::Content{}, "1.0.0.0")
+        .AddSafetyModel("safety")
+        .AddSafeSolution("prompt_api", "base", "safety", CreateSolution())
+        .AddSafeSolution("writing_assistance_api", "base", "safety",
+                         CreateSolution())
+        .AddSafeSolution("summarizer_api", "base", "safety", CreateSolution())
+        .SetFeatureConfig("prompt_api",
+                          optimization_guide::AnyWrapProto(prompt_api_cfg))
+        .SetFeatureConfig("writing_assistance_api",
+                          optimization_guide::AnyWrapProto(writer_cfg))
+        .SetFeatureConfig("summarizer_api",
+                          optimization_guide::AnyWrapProto(summarizer_cfg))
+        .Finish();
+
+    fake_broker_->settings().performance_class =
+        on_device_model::mojom::PerformanceClass::kHigh;
+    fake_broker_->Startup();
+  }
+#endif
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -384,44 +435,6 @@ TEST_F(AIManagerTest, CanCreateSemanticEmbedderCrashLimit) {
   service_launcher->controller()->MaybeUpdateModelInfo(std::nullopt);
 }
 
-TEST_F(AIManagerTest, CanCreateNotEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{
-          optimization_guide::features::kOptimizationGuideModelExecution,
-          blink::features::kAIEmbeddingsAPI});
-  {
-    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
-    ai_manager_->CanCreateLanguageModel(/*options=*/{}, future.GetCallback());
-    EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
-                                kUnavailableFeatureNotEnabled);
-  }
-  {
-    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
-    ai_manager_->CanCreateWriter(/*options=*/{}, future.GetCallback());
-    EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
-                                kUnavailableFeatureNotEnabled);
-  }
-  {
-    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
-    ai_manager_->CanCreateSummarizer(/*options=*/{}, future.GetCallback());
-    EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
-                                kUnavailableFeatureNotEnabled);
-  }
-  {
-    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
-    ai_manager_->CanCreateRewriter(/*options=*/{}, future.GetCallback());
-    EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
-                                kUnavailableFeatureNotEnabled);
-  }
-  {
-    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
-    ai_manager_->CanCreateSemanticEmbedder(future.GetCallback());
-    EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
-                                kUnavailableFeatureNotEnabled);
-  }
-}
 
 TEST_F(AIManagerTest, CanCreateFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;

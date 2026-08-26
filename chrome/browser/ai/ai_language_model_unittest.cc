@@ -66,11 +66,12 @@
 
 namespace {
 
+namespace proto = ::optimization_guide::proto;
+
 using ::base::test::TestFuture;
 using ::on_device_model::mojom::PerformanceClass;
 using ::optimization_guide::FieldSubstitution;
 using ::optimization_guide::ForbidUnsafe;
-using ::optimization_guide::MockDownloadProgressObserver;
 using ::optimization_guide::StringValueField;
 using ::testing::_;
 using ::testing::ElementsAre;
@@ -282,35 +283,31 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
   }
 
  protected:
-  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig CreateConfig()
-      override {
-    optimization_guide::proto::OnDeviceModelExecutionFeatureConfig config;
+  proto::SolutionConfig CreateSolution() override {
+    proto::OnDeviceModelExecutionFeatureConfig config;
     config.set_can_skip_text_safety(true);
-    optimization_guide::proto::SamplingParams default_sampling_params;
+    proto::SamplingParams default_sampling_params;
     default_sampling_params.set_top_k(kTestDefaultTopK);
     default_sampling_params.set_temperature(kTestDefaultTemperature);
     *config.mutable_sampling_params() = default_sampling_params;
 
     config.mutable_input_config()->set_max_context_tokens(kTestMaxTokens);
 
-    optimization_guide::proto::PromptApiMetadata metadata;
-    optimization_guide::proto::SamplingParams max_sampling_params;
+    proto::PromptApiMetadata metadata;
+    proto::SamplingParams max_sampling_params;
     max_sampling_params.set_top_k(kTestMaxTopK);
     max_sampling_params.set_temperature(kTestMaxTemperature);
     *metadata.mutable_max_sampling_params() = max_sampling_params;
     *config.mutable_feature_metadata() =
         optimization_guide::AnyWrapProto(metadata);
 
-    config.set_feature(optimization_guide::proto::ModelExecutionFeature::
+    config.set_feature(proto::ModelExecutionFeature::
                            MODEL_EXECUTION_FEATURE_PROMPT_API);
-    return config;
-  }
 
-  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig
-  CreateSafeConfig() {
-    auto config = CreateConfig();
-    config.set_can_skip_text_safety(false);
-    return config;
+    proto::SolutionConfig solution_config;
+    *solution_config.mutable_feature() = config;
+    *solution_config.mutable_safety() = CreateSafetyConfig();
+    return solution_config;
   }
 
   mojo::Remote<blink::mojom::AILanguageModel> CreateSession(
@@ -623,29 +620,26 @@ TEST_F(AILanguageModelTest, SamplingModeMappings) {
                      ElementsAre("UfooEM", IsPromptWithParams(100, 1.2)));
 
   // Test custom presets configured in metadata.
-  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig config =
-      CreateConfig();
-  optimization_guide::proto::PromptApiMetadata metadata;
+  SetSolutionConfig([&]() {
+    auto solution_config = CreateSolution();
+    optimization_guide::proto::PromptApiMetadata metadata;
 
-  // Fully overridden preset: predictable
-  auto* preset_predictable = metadata.add_sampling_presets();
-  preset_predictable->set_name("predictable");
-  preset_predictable->set_top_k(20);
-  preset_predictable->set_temperature(0.1f);
+    // Fully overridden preset: predictable
+    auto* preset_predictable = metadata.add_sampling_presets();
+    preset_predictable->set_name("predictable");
+    preset_predictable->set_top_k(20);
+    preset_predictable->set_temperature(0.1f);
 
-  // Partial preset override: slightly-creative (overrides temperature only,
-  // top_k falls back to mode-specific default 72).
-  auto* preset_partial = metadata.add_sampling_presets();
-  preset_partial->set_name("slightly-creative");
-  preset_partial->set_temperature(0.5f);
+    // Partial preset override: slightly-creative (overrides temperature only,
+    // top_k falls back to mode-specific default 72).
+    auto* preset_partial = metadata.add_sampling_presets();
+    preset_partial->set_name("slightly-creative");
+    preset_partial->set_temperature(0.5f);
 
-  *config.mutable_feature_metadata() =
-      optimization_guide::AnyWrapProto(metadata);
-
-  optimization_guide::FakeAdaptationAsset::Content content{.config = config};
-  auto custom_asset = std::make_unique<optimization_guide::FakeAdaptationAsset>(
-      std::move(content));
-  fake_broker_->UpdateModelAdaptation(*custom_asset);
+    *solution_config.mutable_feature()->mutable_feature_metadata() =
+        optimization_guide::AnyWrapProto(metadata);
+    return solution_config;
+  }());
 
   // Test predictable (custom preset overrides both top_k and temperature)
   test_sampling_mode(blink::mojom::AILanguageModelSamplingMode::kPredictable,
@@ -1022,10 +1016,9 @@ TEST_F(AILanguageModelTest, OutputOverflowsModelMaxTokens) {
 TEST_F(AILanguageModelTest, OutputOverflowsAdditionalBuffer) {
   base::test::ScopedFeatureList scoped_feature_list;
   // Use a smaller output buffer to test the value is used correctly.
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{features::kAILanguageModelOverrideConfiguration,
-        {{"ai_language_model_output_buffer", "10"}}}},
-      {});
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAILanguageModelOverrideConfiguration,
+      {{"ai_language_model_output_buffer", "10"}});
   auto session = CreateSession();
   // Append an input that is just below max tokens, the next output should
   // overflow the buffer and cause an error.
@@ -1209,12 +1202,14 @@ TEST_F(AILanguageModelTest, UnsupportedOutputCapability) {
 }
 
 TEST_F(AILanguageModelTest, MultimodalInputImageNotSpecified) {
-  fake_broker_->InstallBaseModel(
-      {.config = optimization_guide::ExecutionConfigWithCapabilities(
-           {optimization_guide::proto::OnDeviceModelCapability::
-                ON_DEVICE_MODEL_CAPABILITY_IMAGE_INPUT,
-            optimization_guide::proto::OnDeviceModelCapability::
-                ON_DEVICE_MODEL_CAPABILITY_AUDIO_INPUT})});
+  SetSolutionConfig([&]() {
+    auto solution_config = CreateSolution();
+    solution_config.add_capabilities(
+        proto::OnDeviceModelCapability::ON_DEVICE_MODEL_CAPABILITY_IMAGE_INPUT);
+    solution_config.add_capabilities(
+        proto::OnDeviceModelCapability::ON_DEVICE_MODEL_CAPABILITY_AUDIO_INPUT);
+    return solution_config;
+  }());
 
   auto audio_input = blink::mojom::AILanguageModelExpected::New();
   audio_input->type = blink::mojom::AILanguageModelPromptType::kAudio;
@@ -1253,12 +1248,14 @@ TEST_F(AILanguageModelTest, MultimodalInputImageNotSpecified) {
 }
 
 TEST_F(AILanguageModelTest, MultimodalInputAudioNotSpecified) {
-  fake_broker_->InstallBaseModel(
-      {.config = optimization_guide::ExecutionConfigWithCapabilities(
-           {optimization_guide::proto::OnDeviceModelCapability::
-                ON_DEVICE_MODEL_CAPABILITY_IMAGE_INPUT,
-            optimization_guide::proto::OnDeviceModelCapability::
-                ON_DEVICE_MODEL_CAPABILITY_AUDIO_INPUT})});
+  SetSolutionConfig([&]() {
+    auto solution_config = CreateSolution();
+    solution_config.add_capabilities(
+        proto::OnDeviceModelCapability::ON_DEVICE_MODEL_CAPABILITY_IMAGE_INPUT);
+    solution_config.add_capabilities(
+        proto::OnDeviceModelCapability::ON_DEVICE_MODEL_CAPABILITY_AUDIO_INPUT);
+    return solution_config;
+  }());
 
   auto image_input = blink::mojom::AILanguageModelExpected::New();
   image_input->type = blink::mojom::AILanguageModelPromptType::kImage;
@@ -1297,12 +1294,14 @@ TEST_F(AILanguageModelTest, MultimodalInputAudioNotSpecified) {
 }
 
 TEST_F(AILanguageModelTest, MultimodalInput) {
-  fake_broker_->InstallBaseModel(
-      {.config = optimization_guide::ExecutionConfigWithCapabilities(
-           {optimization_guide::proto::OnDeviceModelCapability::
-                ON_DEVICE_MODEL_CAPABILITY_IMAGE_INPUT,
-            optimization_guide::proto::OnDeviceModelCapability::
-                ON_DEVICE_MODEL_CAPABILITY_AUDIO_INPUT})});
+  SetSolutionConfig([&]() {
+    auto solution_config = CreateSolution();
+    solution_config.add_capabilities(
+        proto::OnDeviceModelCapability::ON_DEVICE_MODEL_CAPABILITY_IMAGE_INPUT);
+    solution_config.add_capabilities(
+        proto::OnDeviceModelCapability::ON_DEVICE_MODEL_CAPABILITY_AUDIO_INPUT);
+    return solution_config;
+  }());
 
   auto audio_input = blink::mojom::AILanguageModelExpected::New();
   audio_input->type = blink::mojom::AILanguageModelPromptType::kAudio;
@@ -1330,31 +1329,6 @@ TEST_F(AILanguageModelTest, MultimodalInput) {
               ElementsAreArray({"UfooEU<image>EU<audio>EM"}));
 }
 
-TEST_F(AILanguageModelTest, ModelDownload) {
-  MockDownloadProgressObserver observer;
-  blink::mojom::AILanguageModelCreateOptionsPtr options =
-      blink::mojom::AILanguageModelCreateOptions::New();
-  auto session =
-      CreateSession(std::move(options), observer.BindNewPipeAndPassRemote());
-  fake_broker_->component_state().WaitForDownloadObserver();
-
-  // Receives the zero update.
-  uint64_t total_bytes =
-      fake_broker_->component_state().component().total_bytes();
-  fake_broker_->component_state().UpdateDownloadProgress(0);
-  observer.ExpectReceivedNormalizedUpdate(0, total_bytes);
-
-  // Receives an update for normalized to the total bytes.
-  task_environment()->FastForwardBy(base::Milliseconds(51));
-  uint64_t downloaded_bytes = total_bytes / 2;
-  fake_broker_->component_state().UpdateDownloadProgress(downloaded_bytes);
-  observer.ExpectReceivedNormalizedUpdate(downloaded_bytes, total_bytes);
-
-  // Receives the final one update.
-  task_environment()->FastForwardBy(base::Milliseconds(51));
-  fake_broker_->component_state().UpdateDownloadProgress(total_bytes);
-  observer.ExpectReceivedNormalizedUpdate(total_bytes, total_bytes);
-}
 
 TEST_F(AILanguageModelTest, MeasureInputUsage) {
   auto session = CreateSession();
@@ -1364,11 +1338,11 @@ TEST_F(AILanguageModelTest, MeasureInputUsage) {
 }
 
 TEST_F(AILanguageModelTest, TextSafetyInitialPrompts) {
-  optimization_guide::FakeAdaptationAsset fake_asset(
-      {.config = CreateSafeConfig()});
-  fake_broker_->UpdateModelAdaptation(fake_asset);
-  optimization_guide::FakeSafetyModelAsset safety_asset(CreateSafetyConfig());
-  fake_broker_->UpdateSafetyModel(safety_asset);
+  SetSolutionConfig([&]() {
+    auto solution_config = CreateSolution();
+    solution_config.mutable_feature()->set_can_skip_text_safety(false);
+    return solution_config;
+  }());
 
   auto options = blink::mojom::AILanguageModelCreateOptions::New();
   options->initial_prompts.push_back(MakePrompt(Role::kSystem, "unsafe"));
@@ -1384,11 +1358,11 @@ TEST_F(AILanguageModelTest, TextSafetyInitialPrompts) {
 }
 
 TEST_F(AILanguageModelTest, TextSafetyInput) {
-  optimization_guide::FakeAdaptationAsset fake_asset(
-      {.config = CreateSafeConfig()});
-  fake_broker_->UpdateModelAdaptation(fake_asset);
-  optimization_guide::FakeSafetyModelAsset safety_asset(CreateSafetyConfig());
-  fake_broker_->UpdateSafetyModel(safety_asset);
+  SetSolutionConfig([&]() {
+    auto solution_config = CreateSolution();
+    solution_config.mutable_feature()->set_can_skip_text_safety(false);
+    return solution_config;
+  }());
 
   fake_broker_->settings().set_execute_result({"hi"});
   auto session = CreateSession();
@@ -1403,15 +1377,14 @@ TEST_F(AILanguageModelTest, TextSafetyInput) {
 }
 
 TEST_F(AILanguageModelTest, TextSafetyOutput) {
-  optimization_guide::FakeAdaptationAsset fake_asset(
-      {.config = CreateSafeConfig()});
-  fake_broker_->UpdateModelAdaptation(fake_asset);
-  optimization_guide::FakeSafetyModelAsset safety_asset([] {
-    auto safety_config = CreateSafetyConfig();
-    safety_config.mutable_partial_output_checks()->set_minimum_tokens(1000);
-    return safety_config;
+  SetSolutionConfig([&]() {
+    auto solution_config = CreateSolution();
+    solution_config.mutable_feature()->set_can_skip_text_safety(false);
+    solution_config.mutable_safety()
+        ->mutable_partial_output_checks()
+        ->set_minimum_tokens(1000);
+    return solution_config;
   }());
-  fake_broker_->UpdateSafetyModel(safety_asset);
 
   // Fake text safety checker looks for the string "unsafe".
   fake_broker_->settings().set_execute_result(
@@ -1426,16 +1399,17 @@ TEST_F(AILanguageModelTest, TextSafetyOutput) {
 }
 
 TEST_F(AILanguageModelTest, TextSafetyOutputPartial) {
-  optimization_guide::FakeAdaptationAsset fake_asset(
-      {.config = CreateSafeConfig()});
-  fake_broker_->UpdateModelAdaptation(fake_asset);
-  optimization_guide::FakeSafetyModelAsset safety_asset([] {
-    auto safety_config = CreateSafetyConfig();
-    safety_config.mutable_partial_output_checks()->set_minimum_tokens(3);
-    safety_config.mutable_partial_output_checks()->set_token_interval(2);
-    return safety_config;
+  SetSolutionConfig([&]() {
+    auto solution_config = CreateSolution();
+    solution_config.mutable_feature()->set_can_skip_text_safety(false);
+    solution_config.mutable_safety()
+        ->mutable_partial_output_checks()
+        ->set_minimum_tokens(3);
+    solution_config.mutable_safety()
+        ->mutable_partial_output_checks()
+        ->set_token_interval(2);
+    return solution_config;
   }());
-  fake_broker_->UpdateSafetyModel(safety_asset);
 
   // Fake text safety checker looks for the string "unsafe".
   fake_broker_->settings().set_execute_result(
@@ -1505,7 +1479,7 @@ TEST_F(AILanguageModelTest, ServiceCrash) {
   auto session = CreateSession();
   AITestUtils::TestStreamingResponder responder;
   session->Prompt(MakeInput("bar"), nullptr, responder.BindRemote());
-  fake_broker_->CrashService();
+  fake_broker_->launcher().CrashService();
   EXPECT_FALSE(responder.WaitForCompletion());
   EXPECT_EQ(responder.error_status(),
             blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
@@ -1519,7 +1493,8 @@ TEST_F(AILanguageModelTest, CrashRecovery) {
   auto session = CreateSession();
   Append(*session, MakeInput("foo"));
 
-  fake_broker_->CrashService();
+  fake_broker_->launcher().CrashService();
+  task_environment()->RunUntilIdle();
 
   EXPECT_THAT(Prompt(*session, MakeInput("bar")),
               ElementsAre("UfooE", "UbarEM"));
@@ -1528,10 +1503,12 @@ TEST_F(AILanguageModelTest, CrashRecovery) {
 TEST_F(AILanguageModelTest, CrashRecoveryWithMultipleCrashes) {
   auto session = CreateSession();
   Append(*session, MakeInput("foo"));
-  fake_broker_->CrashService();
+  fake_broker_->launcher().CrashService();
+  task_environment()->RunUntilIdle();
 
   Append(*session, MakeInput("bar"));
-  fake_broker_->CrashService();
+  fake_broker_->launcher().CrashService();
+  task_environment()->RunUntilIdle();
 
   EXPECT_THAT(Prompt(*session, MakeInput("baz")),
               ElementsAre("UfooEUbarE", "UbazEM"));
@@ -1543,7 +1520,8 @@ TEST_F(AILanguageModelTest, CrashRecoveryWithInitialPrompts) {
   auto session = CreateSession(std::move(options));
   Append(*session, MakeInput("foo"));
 
-  fake_broker_->CrashService();
+  fake_broker_->launcher().CrashService();
+  task_environment()->RunUntilIdle();
 
   EXPECT_THAT(Prompt(*session, MakeInput("bar")),
               ElementsAre("ShiE", "UfooE", "UbarEM"));
@@ -1553,7 +1531,8 @@ TEST_F(AILanguageModelTest, CrashRecoveryMeasureInputUsage) {
   auto session = CreateSession();
   Append(*session, MakeInput("foo"));
 
-  fake_broker_->CrashService();
+  fake_broker_->launcher().CrashService();
+  task_environment()->RunUntilIdle();
 
   base::test::TestFuture<std::optional<uint32_t>> measure_future;
   session->MeasureInputUsage(MakeInput("foo"), measure_future.GetCallback());
@@ -1675,12 +1654,14 @@ TEST_F(AILanguageModelTest, CanCreate_TextInputCapabilities) {
 }
 
 TEST_F(AILanguageModelTest, CanCreate_ImageAndAudioInputCapabilities) {
-  fake_broker_->InstallBaseModel(
-      {.config = optimization_guide::ExecutionConfigWithCapabilities(
-           {optimization_guide::proto::OnDeviceModelCapability::
-                ON_DEVICE_MODEL_CAPABILITY_IMAGE_INPUT,
-            optimization_guide::proto::OnDeviceModelCapability::
-                ON_DEVICE_MODEL_CAPABILITY_AUDIO_INPUT})});
+  SetSolutionConfig([&]() {
+    auto solution_config = CreateSolution();
+    solution_config.add_capabilities(
+        proto::OnDeviceModelCapability::ON_DEVICE_MODEL_CAPABILITY_IMAGE_INPUT);
+    solution_config.add_capabilities(
+        proto::OnDeviceModelCapability::ON_DEVICE_MODEL_CAPABILITY_AUDIO_INPUT);
+    return solution_config;
+  }());
 
   EnsureModelIsReady();
 
@@ -1725,8 +1706,13 @@ TEST_F(AILanguageModelTest, CanCreate_DeviceCapabilities) {
         {{"compatible_on_device_performance_classes", "3,4,5,6"}}}},
       {{on_device_model::features::kOnDeviceModelCpuBackend}});
 
-  fake_broker_->service_settings().performance_class =
-      PerformanceClass::kVeryLow;
+  optimization_guide::UpdatePerformanceClassPref(
+      &fake_broker_->local_state(),
+      optimization_guide::OnDeviceModelPerformanceClass::kVeryLow);
+  fake_broker_->SimulateShutdown();
+  fake_broker_->Startup();
+  ai_manager_ =
+      std::make_unique<AIManager>(main_rfh()->GetBrowserContext(), main_rfh());
 
   auto options = blink::mojom::AILanguageModelCreateOptions::New();
   {
@@ -1739,7 +1725,7 @@ TEST_F(AILanguageModelTest, CanCreate_DeviceCapabilities) {
     GetAIManagerInterface()->CanCreateLanguageModel(options.Clone(),
                                                     future.GetCallback());
     EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
-                                kUnavailableModelAdaptationNotAvailable);
+                                kUnavailableConfigNotAvailableForFeature);
   }
 
   {
@@ -1752,12 +1738,12 @@ TEST_F(AILanguageModelTest, CanCreate_DeviceCapabilities) {
     GetAIManagerInterface()->CanCreateLanguageModel(options.Clone(),
                                                     future.GetCallback());
     EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
-                                kUnavailableModelAdaptationNotAvailable);
+                                kUnavailableConfigNotAvailableForFeature);
   }
 }
 
 TEST_F(AILanguageModelTest, CanCreate_DeviceAudioCapabilities) {
-  fake_broker_->service_settings().vram_mb =
+  fake_broker_->settings().vram_mb =
       on_device_model::kAudioVramMinMb - 1;
 
   auto options = blink::mojom::AILanguageModelCreateOptions::New();
@@ -1795,95 +1781,8 @@ TEST_F(AILanguageModelTest, CreateLanguageModelModelNotEligible) {
         {{"compatible_on_device_performance_classes", "3,4,5,6"}}}},
       {{on_device_model::features::kOnDeviceModelCpuBackend}});
 
-  fake_broker_->service_settings().performance_class =
-      PerformanceClass::kVeryLow;
-
-  auto options = blink::mojom::AILanguageModelCreateOptions::New();
-  TestCreateLanguageModelClient language_model_client;
-  GetAIManagerRemote()->CreateLanguageModel(
-      language_model_client.BindNewPipeAndPassRemote(), std::move(options),
-      /*monitor=*/mojo::NullRemote());
-
-  auto result = language_model_client.result().Take();
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().error,
-            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
-}
-
-TEST_F(AILanguageModelTest, CreateLanguageModelWaitsForBaseModel) {
-  fake_broker_->InstallBaseModel(nullptr);
-
-  auto options = blink::mojom::AILanguageModelCreateOptions::New();
-  TestCreateLanguageModelClient language_model_client;
-  GetAIManagerRemote()->CreateLanguageModel(
-      language_model_client.BindNewPipeAndPassRemote(), std::move(options),
-      /*monitor=*/mojo::NullRemote());
-
-  auto& future = language_model_client.result();
-  task_environment()->FastForwardBy(base::Hours(1));
-  EXPECT_FALSE(future.IsReady());
-
-  fake_broker_->InstallBaseModel(
-      std::make_unique<optimization_guide::FakeBaseModelAsset>());
-
-  EXPECT_OK(future.Take());
-}
-
-TEST_F(AILanguageModelTest, CreateLanguageModelWaitsForModelAdaptation) {
-  fake_broker_->model_provider().RemoveModel(
-      optimization_guide::proto::
-          OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PROMPT_API);
-
-  auto options = blink::mojom::AILanguageModelCreateOptions::New();
-  TestCreateLanguageModelClient language_model_client;
-  GetAIManagerRemote()->CreateLanguageModel(
-      language_model_client.BindNewPipeAndPassRemote(), std::move(options),
-      /*monitor=*/mojo::NullRemote());
-
-  auto& future = language_model_client.result();
-  task_environment()->FastForwardBy(base::Hours(1));
-  EXPECT_FALSE(future.IsReady());
-
-  optimization_guide::FakeAdaptationAsset fake_asset(
-      {.config = CreateConfig()});
-  fake_broker_->UpdateModelAdaptation(fake_asset);
-
-  EXPECT_OK(future.Take());
-}
-
-TEST_F(AILanguageModelTest, CreateLanguageModelWaitsForTextSafetyModel) {
-  optimization_guide::FakeAdaptationAsset fake_asset(
-      {.config = CreateSafeConfig()});
-  fake_broker_->UpdateModelAdaptation(fake_asset);
-
-  auto options = blink::mojom::AILanguageModelCreateOptions::New();
-  TestCreateLanguageModelClient language_model_client;
-  GetAIManagerRemote()->CreateLanguageModel(
-      language_model_client.BindNewPipeAndPassRemote(), std::move(options),
-      /*monitor=*/mojo::NullRemote());
-
-  auto& future = language_model_client.result();
-  task_environment()->FastForwardBy(base::Hours(1));
-  EXPECT_FALSE(future.IsReady());
-
-  optimization_guide::FakeSafetyModelAsset safety_asset(CreateSafetyConfig());
-  fake_broker_->UpdateSafetyModel(safety_asset);
-
-  EXPECT_OK(future.Take());
-}
-
-TEST_F(AILanguageModelTest, CreateLanguageModelSafetyConfigNotAvailable) {
-  optimization_guide::FakeAdaptationAsset fake_asset(
-      {.config = CreateSafeConfig()});
-  fake_broker_->UpdateModelAdaptation(fake_asset);
-  // Provide a safety asset that does not support prompt.
-  optimization_guide::FakeSafetyModelAsset safety_asset([] {
-    auto safety_config = CreateSafetyConfig();
-    safety_config.set_feature(
-        optimization_guide::proto::MODEL_EXECUTION_FEATURE_TEST);
-    return safety_config;
-  }());
-  fake_broker_->UpdateSafetyModel(safety_asset);
+  fake_broker_->settings().performance_class =
+      on_device_model::mojom::PerformanceClass::kVeryLow;
 
   auto options = blink::mojom::AILanguageModelCreateOptions::New();
   TestCreateLanguageModelClient language_model_client;
@@ -2015,13 +1914,14 @@ class AILanguageModelOpenLoopToolTest : public AILanguageModelTest {
   }
 
  protected:
-  // Override CreateConfig to use higher max tokens for `Tool Use` testing.
-  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig CreateConfig()
-      override {
-    auto config = AILanguageModelTest::CreateConfig();
+  // Override CreateSolution to use higher max tokens for `Tool Use` testing.
+  optimization_guide::proto::SolutionConfig CreateSolution() override {
+    auto solution = AILanguageModelTest::CreateSolution();
     // Use higher max tokens to accommodate tool declarations/responses.
-    config.mutable_input_config()->set_max_context_tokens(3000);
-    return config;
+    solution.mutable_feature()
+        ->mutable_input_config()
+        ->set_max_context_tokens(3000);
+    return solution;
   }
 
   // Helper to create a weather tool for testing.
@@ -2592,12 +2492,12 @@ TEST_F(AILanguageModelTest, CreateOnDeviceAiUserSettingDisabled) {
 class AILanguageModelConfiguredMaxOutputTokensTest
     : public AILanguageModelTest {
  protected:
-  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig CreateConfig()
-      override {
-    auto config = AILanguageModelTest::CreateConfig();
-    config.mutable_output_config()->set_max_output_tokens(
-        kTestConfiguredMaxOutputTokens);
-    return config;
+  optimization_guide::proto::SolutionConfig CreateSolution() override {
+    auto solution = AILanguageModelTest::CreateSolution();
+    solution.mutable_feature()
+        ->mutable_output_config()
+        ->set_max_output_tokens(kTestConfiguredMaxOutputTokens);
+    return solution;
   }
 };
 
@@ -2616,75 +2516,59 @@ TEST_F(AILanguageModelConfiguredMaxOutputTokensTest,
                 kErrorResponseExceedsMaxTokens);
 }
 
-class AILanguageModelManifestTest : public AITestUtils::AITestManifestBase {
+#if !BUILDFLAG(IS_ANDROID)
+class AILanguageModelWithFeatureConfigTest : public AILanguageModelTest {
  public:
-  AILanguageModelManifestTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {optimization_guide::kOptimizationGuideManifestBroker}, {});
-  }
-
- protected:
-  void SetupManifest() override {
-    optimization_guide::proto::PromptApiFeatureConfig prompt_api_cfg;
+  void SetupBroker() override {
+    proto::PromptApiFeatureConfig prompt_api_cfg;
     prompt_api_cfg.set_default_use_case("prompt_api");
     (*prompt_api_cfg.mutable_experimental_use_cases())["v4"] =
         "prompt_api_gemma4";
 
-    optimization_guide::proto::Any any_cfg;
-    any_cfg.set_type_url(
-        "type.googleapis.com/"
-        "chrome_intelligence_proto_features.PromptApiFeatureConfig");
-    any_cfg.set_value(prompt_api_cfg.SerializeAsString());
+    // Explicit BaseModelRecipeArgs and empty FakeBaseModelAsset::Content are
+    // needed: ScenarioBuilder::AddBaseModel(name) defaults to 100 max_tokens
+    // and non-empty cache weights (1015, 1016, 1017), which causes
+    // FakeOnDeviceModel to emit dummy cache weight response chunks.
+    constexpr uint32_t kDefaultMaxTokens = 8096;
+    proto::SolutionConfig default_solution = CreateSolution();
 
-    optimization_guide::proto::SolutionConfig solution_config;
-    *solution_config.mutable_feature() = CreateConfig();
-
-    optimization_guide::ScenarioBuilder(
-        fake_manifest_broker_->component_state())
+    fake_broker_ = std::make_unique<optimization_guide::FakeManifestBroker>();
+    optimization_guide::ScenarioBuilder(fake_broker_->component_state())
         .AddBaseModel(
-            "prompt_api_base_model",
+            "base",
             optimization_guide::BaseModelRecipeArgs(
-                optimization_guide::proto::BaseModelRecipe::BACKEND_TYPE_GPU,
-                optimization_guide::proto::BaseModelRecipe::
-                    PERFORMANCE_HINT_HIGHEST_QUALITY,
-                {}, kTestMaxTokens))
+                proto::BaseModelRecipe::BACKEND_TYPE_GPU,
+                proto::BaseModelRecipe::PERFORMANCE_HINT_HIGHEST_QUALITY,
+                {}, kDefaultMaxTokens),
+            optimization_guide::FakeBaseModelAsset::Content{}, "1.0.0.0")
         .AddBaseModel(
-            "prompt_api_gemma4_base_model",
+            "gemma4_base",
             optimization_guide::BaseModelRecipeArgs(
-                optimization_guide::proto::BaseModelRecipe::BACKEND_TYPE_GPU,
-                optimization_guide::proto::BaseModelRecipe::
-                    PERFORMANCE_HINT_HIGHEST_QUALITY,
-                {}, kTestMaxTokens))
-        .AddSafetyModel("safety_model")
-        .AddSafeSolution("prompt_api", "prompt_api_base_model", "safety_model",
-                         solution_config)
-        .AddSafeSolution("prompt_api_gemma4", "prompt_api_gemma4_base_model",
-                         "safety_model", solution_config)
-        .SetFeatureConfig(optimization_guide::DeviceCategory::kGpuHighTier,
-                          "prompt_api", any_cfg)
+                proto::BaseModelRecipe::BACKEND_TYPE_GPU,
+                proto::BaseModelRecipe::PERFORMANCE_HINT_HIGHEST_QUALITY,
+                {}, kDefaultMaxTokens),
+            optimization_guide::FakeBaseModelAsset::Content{}, "1.0.0.0")
+        .AddSafetyModel("safety")
+        .AddSafeSolution("prompt_api", "base", "safety", default_solution)
+        .AddSafeSolution("prompt_api_gemma4", "gemma4_base", "safety",
+                         default_solution)
+        .SetFeatureConfig("prompt_api",
+                          optimization_guide::AnyWrapProto(prompt_api_cfg))
         .Finish();
 
-    fake_manifest_broker_->settings().performance_class =
+    fake_broker_->settings().performance_class =
         on_device_model::mojom::PerformanceClass::kHigh;
+    fake_broker_->Startup();
   }
-
-  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig CreateConfig()
-      override {
-    optimization_guide::proto::OnDeviceModelExecutionFeatureConfig config;
-    config.set_feature(optimization_guide::proto::ModelExecutionFeature::
-                           MODEL_EXECUTION_FEATURE_PROMPT_API);
-    return config;
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(AILanguageModelManifestTest, CanCreateAndCreateWithManifestGemma4) {
+TEST_F(AILanguageModelWithFeatureConfigTest,
+       CanCreateAndCreateWithManifestGemma4) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kAIApiFoundationalModel, {{"model_version", "v4"}});
 
-  fake_manifest_broker_->client().RequestAssetsFor("prompt_api_gemma4");
+  fake_broker_->client().RequestAssetsFor("prompt_api_gemma4");
   ASSERT_TRUE(base::test::RunUntil([&] {
     base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
     ai_manager_->CanCreateLanguageModel(
@@ -2705,16 +2589,16 @@ TEST_F(AILanguageModelManifestTest, CanCreateAndCreateWithManifestGemma4) {
   EXPECT_TRUE(result.has_value());
 }
 
-TEST_F(AILanguageModelManifestTest, CanCreateBeforeDownloadGemma4) {
+TEST_F(AILanguageModelWithFeatureConfigTest, CanCreateBeforeDownloadGemma4) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kAIApiFoundationalModel, {{"model_version", "v4"}});
 
-  ASSERT_TRUE(fake_manifest_broker_);
+  ASSERT_TRUE(fake_broker_);
 
   // Assets are requested for prompt_api, but since gemma4 is the configured
   // model_version, we should get kDownloadable for gemma4.
-  fake_manifest_broker_->client().RequestAssetsFor("prompt_api");
+  fake_broker_->client().RequestAssetsFor("prompt_api");
 
   // Verify CanCreateLanguageModel check returns kDownloadable before assets are
   // requested.
@@ -2724,5 +2608,6 @@ TEST_F(AILanguageModelManifestTest, CanCreateBeforeDownloadGemma4) {
   EXPECT_EQ(future.Get(),
             blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
