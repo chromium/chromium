@@ -32,7 +32,7 @@ const base::FeatureParam<std::string> kSkillsServiceApiOAuth2Scope{
     "https://www.googleapis.com/auth/chromeskills"};
 
 BASE_FEATURE(kEnterprisePublishedSkillsPolicyEnabled,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kInterceptedSkillsUrl{
     &kSkillsWebViewV2Enabled, "intercepted_skills_url",
