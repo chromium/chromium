@@ -39,7 +39,9 @@ void GlobalAcceleratorListenerChromeOS::StopListening() {}
 
 bool GlobalAcceleratorListenerChromeOS::StartListeningForAccelerator(
     const ui::Accelerator& accelerator) {
-  CHECK(g_delegate);
+  if (!g_delegate) {
+    return false;
+  }
 
   if (accelerator.IsEmpty()) {
     return false;
@@ -56,8 +58,9 @@ bool GlobalAcceleratorListenerChromeOS::StartListeningForAccelerator(
 
 void GlobalAcceleratorListenerChromeOS::StopListeningForAccelerator(
     const ui::Accelerator& accelerator) {
-  CHECK(g_delegate);
-  g_delegate->Unregister(accelerator, this);
+  if (g_delegate) {
+    g_delegate->Unregister(accelerator, this);
+  }
 }
 
 bool GlobalAcceleratorListenerChromeOS::CanHandleAccelerators() const {
