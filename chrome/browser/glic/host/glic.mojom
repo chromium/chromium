@@ -2862,6 +2862,8 @@ enum HostCapability {
   kNoWebUiLoader = 13,
   // Indicates that the host enforces paste eligibility checks.
   kEnforcesPasteEligibility = 14,
+  // Indicates that the host supports autofilling OTPs.
+  kAttemptOtpFilling = 15,
 };
 
 // @generate glic_api

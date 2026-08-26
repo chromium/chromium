@@ -745,6 +745,11 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
     state->host_capabilities.push_back(
         mojom::HostCapability::kAutoLoginSignInWithGoogle);
   }
+  if (base::FeatureList::IsEnabled(
+          features::kGlicActorAutofillOneTimePassword)) {
+    state->host_capabilities.push_back(
+        mojom::HostCapability::kAttemptOtpFilling);
+  }
   state->enable_get_page_metadata =
       base::FeatureList::IsEnabled(blink::features::kFrameMetadataObserver);
   if (base::FeatureList::IsEnabled(

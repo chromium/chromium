@@ -606,6 +606,8 @@ export enum HostCapability {
   NO_WEB_UI_LOADER = 13,
   // Indicates that the host enforces paste eligibility checks.
   ENFORCES_PASTE_ELIGIBILITY = 14,
+  // Indicates that the host supports autofilling OTPs.
+  ATTEMPT_OTP_FILLING = 15,
 }
 
 // Lists capabilities that the glic web client may support.
