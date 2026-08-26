@@ -479,6 +479,27 @@ TEST_F(PlatformSharedMemoryRegionTest, MemfdReadOnlyDescriptor) {
   ASSERT_TRUE(ro_mapping.IsValid());
   EXPECT_EQ(0x5a, ro_mapping.GetMemoryAsSpan<const uint8_t>()[kRegionSize - 1]);
 }
+
+// Tests that CreateUnsafeAnonymous() produces a working, sealed, unsafe region
+// without a read-only descriptor.
+TEST_F(PlatformSharedMemoryRegionTest, CreateUnsafeAnonymous) {
+  PlatformSharedMemoryRegion region =
+      PlatformSharedMemoryRegion::CreateUnsafeAnonymous(kRegionSize);
+  if (!region.IsValid()) {
+    GTEST_SKIP() << "memfd_create() is not supported here";
+  }
+  EXPECT_EQ(PlatformSharedMemoryRegion::Mode::kUnsafe, region.GetMode());
+  EXPECT_EQ(kRegionSize, region.GetSize());
+  EXPECT_TRUE(IsMemfd(region.GetPlatformHandle().fd));
+  EXPECT_LT(region.GetPlatformHandle().readonly_fd, 0);
+  const int seals = fcntl(region.GetPlatformHandle().fd, F_GET_SEALS);
+  EXPECT_EQ(seals & (F_SEAL_SHRINK | F_SEAL_GROW | F_SEAL_SEAL),
+            F_SEAL_SHRINK | F_SEAL_GROW | F_SEAL_SEAL);
+  WritableSharedMemoryMapping mapping = MapForTesting(&region);
+  ASSERT_TRUE(mapping.IsValid());
+  std::ranges::fill(mapping.GetMemoryAsSpan<uint8_t>(), 1);
+  EXPECT_FALSE(PlatformSharedMemoryRegion::CreateUnsafeAnonymous(0).IsValid());
+}
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 void CheckReadOnlyMapProtection(void* addr) {

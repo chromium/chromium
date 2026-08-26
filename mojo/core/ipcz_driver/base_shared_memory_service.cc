@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/shared_memory_hooks.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -129,6 +130,20 @@ base::MappedReadOnlyRegion CreateReadOnlySharedMemoryRegion(
 }
 
 base::UnsafeSharedMemoryRegion CreateUnsafeSharedMemoryRegion(size_t size) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // An unsafe region never needs a read-only descriptor, and a memfd-backed
+  // one needs no filesystem access to create, so allocate it in-process when
+  // the kernel supports that instead of paying for a synchronous round trip
+  // to the broker. memfd_create(), ftruncate() and the size seals used by
+  // base are permitted by the baseline seccomp policy.
+  auto anonymous_region =
+      base::subtle::PlatformSharedMemoryRegion::CreateUnsafeAnonymous(size);
+  if (anonymous_region.IsValid()) {
+    return base::UnsafeSharedMemoryRegion::Deserialize(
+        std::move(anonymous_region));
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
   auto writable_region = CreateWritableSharedMemoryRegion(size);
   if (!writable_region.IsValid()) {
     return {};
