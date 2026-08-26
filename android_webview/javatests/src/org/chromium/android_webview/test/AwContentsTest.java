@@ -2154,4 +2154,60 @@ public class AwContentsTest extends AwParameterizedTest {
 
         Assert.assertNotNull(newView);
     }
+
+    /**
+     * Regression test for b/547720473. Ensures that evaluating JavaScript and executing callbacks
+     * immediately upon bringing a backgrounded (frozen) WebView to the foreground succeeds without
+     * dropping execution.
+     */
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add(
+            "enable-features=stop-in-background:DelayForBackgroundTabFreezingMills/50")
+    public void testImmediateJsOnForegroundAfterBackgroundFreezing() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        AwContents awContents =
+                mActivityTestRule
+                        .createAwTestContainerViewOnMainSync(mContentsClient)
+                        .getAwContents();
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
+        mActivityTestRule.loadUrlSync(
+                awContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+
+        // 1. Move to background and wait for more than the freezing timeout (50ms).
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> awContents.getViewMethods().onWindowVisibilityChanged(View.INVISIBLE));
+        Thread.sleep(150);
+
+        // 2. Bring to foreground and evaluate JavaScript with a WebIDL callback in the same UI
+        // task. This ensures the JS executes before WebView's asynchronously posted unfreeze
+        // runnable completes.
+        final String script =
+                """
+                (() => {
+                  try {
+                    const policy =
+                        window.trustedTypes.createPolicy('p', {createScriptURL: s => s});
+                    policy.createScriptURL('https://example.com');
+                    return 'success';
+                  } catch (e) {
+                    return 'error: ' + e.message;
+                  }
+                })()
+                """;
+
+        SettableFuture<String> resultFuture = SettableFuture.create();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    awContents.getViewMethods().onWindowVisibilityChanged(View.VISIBLE);
+                    awContents.evaluateJavaScript(script, resultFuture::set);
+                });
+
+        Assert.assertEquals(
+                "\"success\"", resultFuture.get(WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+    }
 }
+
