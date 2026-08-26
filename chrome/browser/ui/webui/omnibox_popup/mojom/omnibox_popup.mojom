@@ -95,6 +95,9 @@ interface PageHandler {
 
   // Updates the client-side edit history undo/redo availability state.
   SetEditHistoryState(bool can_undo, bool can_redo);
+
+  // Opens DevTools to inspect the Omnibox popup WebUI.
+  OpenDevTools();
 };
 
 // The WebUI page for the Omnibox Popup.

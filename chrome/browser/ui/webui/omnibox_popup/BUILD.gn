@@ -21,6 +21,7 @@ if (!is_android) {
       "//base",
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/contextual_search",
+      "//chrome/browser/devtools",
       "//chrome/browser/history_clusters",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/resources/omnibox_popup:resources",

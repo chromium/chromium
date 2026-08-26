@@ -450,6 +450,10 @@ export class OmniboxPopupSearchboxElement extends
     return (e.altKey && e.shiftKey) || (e.metaKey && !e.shiftKey);
   }
 
+  protected onDebugClick_() {
+    this.popupPageHandler_.openDevTools();
+  }
+
   focusInput() {
     this.$.input.focus();
   }

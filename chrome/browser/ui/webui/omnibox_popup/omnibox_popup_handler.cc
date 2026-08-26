@@ -4,14 +4,17 @@
 
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_handler.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -367,4 +370,12 @@ void OmniboxPopupHandler::OnCutOrCopy(uint32_t sequence_number,
 void OmniboxPopupHandler::SetEditHistoryState(bool can_undo, bool can_redo) {
   can_undo_ = can_undo;
   can_redo_ = can_redo;
+}
+
+void OmniboxPopupHandler::OpenDevTools() {
+  CHECK(base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopupDebug));
+  if (web_contents_) {
+    DevToolsWindow::OpenDevToolsWindow(web_contents_,
+                                       DevToolsOpenedByAction::kUnknown);
+  }
 }

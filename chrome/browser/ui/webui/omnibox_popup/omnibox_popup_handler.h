@@ -59,6 +59,7 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler {
                    const std::string& full_text,
                    const gfx::Range& selection) override;
   void SetEditHistoryState(bool can_undo, bool can_redo) override;
+  void OpenDevTools() override;
 
   // omnibox_popup::mojom::Page:
   void OnShow();
