@@ -134,6 +134,9 @@ void FetchIdentityDelegationHeaders(
     return;
   }
 
+  std::string canonical_origin =
+      origin.empty() ? "" : url::Origin::Create(GURL(origin)).Serialize();
+
   signin::AccountsInCookieJarInfo cookie_jar_info =
       identity_manager->GetAccountsInCookieJar();
 
@@ -144,9 +147,9 @@ void FetchIdentityDelegationHeaders(
   if (accounts.empty()) {
     // Signed-out case: return only Origin if present.
     std::vector<std::string> headers;
-    if (!origin.empty()) {
+    if (!canonical_origin.empty()) {
       headers.push_back("Origin");
-      headers.push_back(origin);
+      headers.push_back(canonical_origin);
     }
     std::move(callback).Run(headers);
     return;
@@ -195,9 +198,9 @@ void FetchIdentityDelegationHeaders(
           ->GetCookieManagerForBrowserProcess();
   if (!cookie_manager) {
     std::vector<std::string> headers;
-    if (!origin.empty()) {
+    if (!canonical_origin.empty()) {
       headers.push_back("Origin");
-      headers.push_back(origin);
+      headers.push_back(canonical_origin);
     }
     std::move(callback).Run(headers);
     return;
@@ -211,8 +214,9 @@ void FetchIdentityDelegationHeaders(
   cookie_manager->GetCookieList(
       google_url, net::CookieOptions::MakeAllInclusive(),
       net::CookiePartitionKeyCollection(),
-      base::BindOnce(&OnCookiesFetched, selected_account.raw_email, origin,
-                     true_authuser_index, std::move(callback)));
+      base::BindOnce(&OnCookiesFetched, selected_account.raw_email,
+                     canonical_origin, true_authuser_index,
+                     std::move(callback)));
 }
 
 }  // namespace lens
