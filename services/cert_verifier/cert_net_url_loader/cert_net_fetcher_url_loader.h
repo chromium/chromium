@@ -37,8 +37,8 @@ class COMPONENT_EXPORT(CERT_VERIFIER_CPP) CertNetFetcherURLLoader
   // If the other side of the |factory| remote disconnects, the
   // CertNetFetcherURLLoader will attempt to reconnect using
   // |bind_new_url_loader_factory_cb|. This must be called before ever
-  // performing a fetch. It is recommended, but not required, to provide a
-  // functional |bind_new_url_loader_factory_cb|.
+  // performing a fetch and can only be called once. It is recommended, but not
+  // required, to provide a functional |bind_new_url_loader_factory_cb|.
   void SetURLLoaderFactoryAndReconnector(
       mojo::PendingRemote<network::mojom::URLLoaderFactory> factory,
       base::RepeatingCallback<

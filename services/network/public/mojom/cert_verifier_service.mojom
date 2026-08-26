@@ -44,8 +44,9 @@ interface CertVerifierService {
   // |url_loader_factory| allows the CertVerifierService to connect to the
   // network for things like AIA or OCSP. |reconnector| allows the CertVerifier
   // to reconnect its URLLoaderFactory in case the network service disconnects
-  // its URLLoaderFactories without crashing. Must be called before Verify() to
-  // have an effect.
+  // its URLLoaderFactories without crashing. May only be called once, and
+  // must be called before Verify() to have an effect. Calling this more than
+  // once is invalid and will report a bad message.
   EnableNetworkAccess(
       pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
       pending_remote<URLLoaderFactoryConnector>? reconnector);

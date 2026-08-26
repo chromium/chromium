@@ -129,6 +129,12 @@ void CertVerifierServiceImpl::SetConfig(
 void CertVerifierServiceImpl::EnableNetworkAccess(
     mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory,
     mojo::PendingRemote<mojom::URLLoaderFactoryConnector> reconnector) {
+  if (enable_network_access_called_) {
+    mojo::ReportBadMessage("EnableNetworkAccess was already called");
+    return;
+  }
+  enable_network_access_called_ = true;
+
   if (cert_net_fetcher_) {
     auto reconnect_cb =
         std::make_unique<mojo::Remote<mojom::URLLoaderFactoryConnector>>(

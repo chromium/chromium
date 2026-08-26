@@ -52,6 +52,7 @@ source_set("tests") {
     "//base/test:test_support",
     "//crypto:test_support",
     "//mojo/public/cpp/base:protobuf_support",
+    "//mojo/public/cpp/test_support:test_utils",
     "//net",
     "//net:test_support",
     "//net/cert:root_store_proto_lite",

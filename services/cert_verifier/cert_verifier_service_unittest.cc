@@ -26,6 +26,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/cert_verifier.h"
@@ -37,6 +38,7 @@
 #include "net/log/net_log.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
 #include "services/cert_verifier/cert_verifier_service_factory.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -224,7 +226,9 @@ class CertVerifierServiceTest : public PlatformTest,
             std::make_unique<CertVerifierServiceFactoryImpl>(
                 cv_service_factory_remote_.BindNewPipeAndPassReceiver())) {}
 
-  void CreateImpl(bool wait_for_update) {
+  void CreateImpl(
+      bool wait_for_update,
+      scoped_refptr<CertNetFetcherURLLoader> cert_net_fetcher = nullptr) {
     dummy_cv_ = new DummyCertVerifier;
     // NOTE: CertVerifierServiceImpl is self-deleting.
     auto* cvs_impl = new internal::CertVerifierServiceImpl(
@@ -232,7 +236,7 @@ class CertVerifierServiceTest : public PlatformTest,
         cv_service_remote_.BindNewPipeAndPassReceiver(),
         cv_service_updater_remote_.BindNewPipeAndPassReceiver(),
         cv_service_client_.BindNewPipeAndPassRemote(),
-        /*cert_net_fetcher=*/nullptr,
+        std::move(cert_net_fetcher),
         /*instance_params=*/{},
         /*wait_for_update=*/wait_for_update);
 
@@ -593,6 +597,43 @@ TEST_F(CertVerifierServiceTest, TestSingleQueuedRequestCVServiceDisconnection) {
 
   ASSERT_TRUE(disconnected_future.Wait());
   ASSERT_FALSE(cv_service_req.is_completed);
+}
+
+TEST_F(CertVerifierServiceTest, EnableNetworkAccessTwiceReportsBadMessage) {
+  CreateImpl(/*wait_for_update=*/false);
+  mojo::test::BadMessageObserver bad_message_observer;
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote1;
+  std::ignore = pending_remote1.InitWithNewPipeAndPassReceiver();
+  cv_service_remote()->EnableNetworkAccess(std::move(pending_remote1),
+                                           mojo::NullRemote());
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote2;
+  std::ignore = pending_remote2.InitWithNewPipeAndPassReceiver();
+  cv_service_remote()->EnableNetworkAccess(std::move(pending_remote2),
+                                           mojo::NullRemote());
+
+  EXPECT_EQ("EnableNetworkAccess was already called",
+            bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(CertVerifierServiceTest,
+       EnableNetworkAccessTwiceWithFetcherReportsBadMessage) {
+  CreateImpl(/*wait_for_update=*/false,
+             base::MakeRefCounted<CertNetFetcherURLLoader>());
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote1;
+  std::ignore = pending_remote1.InitWithNewPipeAndPassReceiver();
+  cv_service_remote()->EnableNetworkAccess(std::move(pending_remote1),
+                                           mojo::NullRemote());
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote2;
+  std::ignore = pending_remote2.InitWithNewPipeAndPassReceiver();
+  cv_service_remote()->EnableNetworkAccess(std::move(pending_remote2),
+                                           mojo::NullRemote());
+
+  EXPECT_EQ("EnableNetworkAccess was already called",
+            bad_message_observer.WaitForBadMessage());
 }
 
 }  // namespace cert_verifier
