@@ -10,11 +10,8 @@
 #include "base/allocator/partition_alloc_features.h"
 #include "base/base_paths_android.h"
 #include "base/check.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/path_service.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/time/time.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/history/core/browser/features.h"
 #include "components/input/features.h"
@@ -373,28 +370,6 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // DISABLED_TEMPORARY: crbug.com/515084572
   aw_feature_overrides.DisableFeature(
       net::features::kCloseQuicSessionsOnPreFreeze);
-
-  // PARAM_OVERRIDDEN: crbug.com/547720473
-  if (!feature_list->HasAssociatedFieldTrialByFeatureName(
-          blink::features::kStopInBackground.name)) {
-    const char kStopInBackgroundWebViewExperiment[] =
-        "StopInBackgroundWebViewExperiment";
-    const char kStopInBackgroundWebViewGroup[] = "StopInBackgroundWebViewGroup";
-    base::FieldTrial* stop_in_background_field_trial =
-        base::FieldTrialList::CreateFieldTrial(
-            kStopInBackgroundWebViewExperiment, kStopInBackgroundWebViewGroup);
-    base::FieldTrialParams params;
-    const std::string delay_for_background_tab_freezing_30_mins =
-        base::NumberToString(base::Minutes(30).InMilliseconds());
-    params.emplace("DelayForBackgroundTabFreezingMills",
-                   delay_for_background_tab_freezing_30_mins);
-    base::AssociateFieldTrialParams(kStopInBackgroundWebViewExperiment,
-                                    kStopInBackgroundWebViewGroup, params);
-    feature_list->RegisterFieldTrialOverride(
-        blink::features::kStopInBackground.name,
-        base::FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE,
-        stop_in_background_field_trial);
-  }
 }
 
 void AwFieldTrials::EnableRuntimeMutableFeatures(
