@@ -1861,6 +1861,7 @@ void WebAppIntegrationTestDriver::LaunchFileExpectDialog(
     if (is_open_in_app_browser) {
       browser_added_waiter.Wait();
       app_browser_ = browser_added_waiter.browser_added();
+      active_app_id_ = app_id;
       target_contents =
           app_browser_->GetTabStripModel()->GetActiveWebContents();
     } else {
@@ -1916,6 +1917,7 @@ void WebAppIntegrationTestDriver::LaunchFileExpectNoDialog(
   if (is_open_in_app_browser) {
     browser_added_waiter.Wait();
     app_browser_ = browser_added_waiter.browser_added();
+    active_app_id_ = app_id;
     target_contents = app_browser_->GetTabStripModel()->GetActiveWebContents();
   } else {
     target_contents = tab_added_waiter.Wait();
