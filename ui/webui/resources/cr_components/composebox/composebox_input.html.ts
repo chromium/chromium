@@ -22,7 +22,7 @@ export function getHtml(this: ComposeboxInputElement) {
             <div
               aria-expanded="${this.showDropdown}" aria-controls="matches"
               role="combobox" autocomplete="off" id="input"
-              contenteditable="true" spellcheck="false"
+              contenteditable="plaintext-only" spellcheck="false"
               placeholder="${this.inputPlaceholder}"
               part="input"
               @click="${this.onInputClick_}"
