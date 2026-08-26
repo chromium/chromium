@@ -4863,7 +4863,15 @@ public class StripLayoutHelper
                 float drawXOffset = MathUtils.flipSignIf(mGroupTitleDrawXOffset, rtl);
                 setGroupTitleIdealX(groupTitle, startX + drawXOffset);
 
-                delta = (view.getWidth() - mGroupTitleOverlapWidth) * view.getWidthWeight();
+                float overlapWidth = mGroupTitleOverlapWidth;
+                if (groupTitle.isCollapsed()) {
+                    // When a tab group is collapsed, both its left and right neighbors are tabs
+                    // outside the group, so both sides should use the start margin instead of the
+                    // end margin. We adjust the overlap width on the right to match the left side
+                    // spacing.
+                    overlapWidth -= StripLayoutGroupTitle.COLLAPSED_MARGIN_ADJUSTMENT_DP;
+                }
+                delta = (view.getWidth() - overlapWidth) * view.getWidthWeight();
             } else {
                 assert false : "Unexpected view type in tab strip views.";
                 delta = 0;

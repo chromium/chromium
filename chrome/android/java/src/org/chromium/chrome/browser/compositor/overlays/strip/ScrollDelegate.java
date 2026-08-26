@@ -200,7 +200,11 @@ public class ScrollDelegate {
             if (view instanceof final StripLayoutTab tab) {
                 totalViewWidth += (tab.getWidth() - tabOverlapWidth);
             } else if (view instanceof StripLayoutGroupTitle groupTitle) {
-                totalViewWidth += (groupTitle.getWidth() - groupTitleOverlapWidth);
+                float overlapWidth = groupTitleOverlapWidth;
+                if (groupTitle.isCollapsed()) {
+                    overlapWidth -= StripLayoutGroupTitle.COLLAPSED_MARGIN_ADJUSTMENT_DP;
+                }
+                totalViewWidth += (groupTitle.getWidth() - overlapWidth);
             }
         }
 

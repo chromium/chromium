@@ -3524,6 +3524,50 @@ public class StripLayoutHelperTest {
                 EPSILON);
     }
 
+    @Test
+    public void testCollapsedGroupSpacing() {
+        // Initialize with 3 tabs: Tab 0, Tab 1, Tab 2.
+        initializeTest(false, false, 0, 3);
+        mStripLayoutHelper.onSizeChanged(
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+
+        // Group Tab 1 (the middle tab).
+        groupTabs(1, 2, TAB_GROUP_ID_1);
+
+        // Collapse the tab group.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertTrue(views[1] instanceof StripLayoutGroupTitle);
+        StripLayoutGroupTitle groupTitle = (StripLayoutGroupTitle) views[1];
+        mStripLayoutHelper.collapseTabGroupForTesting(groupTitle, true);
+
+        // Force positions to be recomputed.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // The views are now: [Tab 0, GroupTitle, Collapsed Tab 1, Tab 2].
+        StripLayoutTab tab0 = (StripLayoutTab) views[0];
+        StripLayoutTab tab2 = (StripLayoutTab) views[3];
+
+        // Spacing on the left of groupTitle: the distance from tab0's flat end to the start of
+        // groupTitle's bubble.
+        // tab0's flat end = tab0.getIdealX() + tab0.getWidth() - 16.f (FOLIO_FOOT_LENGTH_DP)
+        // groupTitle's bubble start = groupTitle.getPaddedX()
+        float leftSpacing = groupTitle.getPaddedX() - (tab0.getIdealX() + tab0.getWidth() - 16.f);
+
+        // Spacing on the right of groupTitle: the distance from the end of groupTitle's bubble to
+        // tab2's flat start.
+        // groupTitle's bubble end = groupTitle.getPaddedX() + groupTitle.getPaddedWidth()
+        // tab2's flat start = tab2.getIdealX() + 16.f (FOLIO_FOOT_LENGTH_DP)
+        float rightSpacing =
+                (tab2.getIdealX() + 16.f) - (groupTitle.getPaddedX() + groupTitle.getPaddedWidth());
+
+        // Assert: left and right spacings of the collapsed group should be equal / even.
+        assertEquals(
+                "Left and right visual spacing of a collapsed group should be even.",
+                leftSpacing,
+                rightSpacing,
+                EPSILON);
+    }
+
     private float calculateExpectedBottomIndicatorWidth(
             float tabWidth, float tabCount, StripLayoutGroupTitle groupTitle) {
         // (tabWidth - tabOverlap(28.f)) * tabCount + groupTitleWidth -

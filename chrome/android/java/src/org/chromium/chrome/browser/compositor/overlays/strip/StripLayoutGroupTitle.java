@@ -77,6 +77,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     private static final int MARGIN_BOTTOM_DP = 9;
     private static final int MARGIN_START_DP = 13;
     private static final int MARGIN_END_DP = 9;
+    static final float COLLAPSED_MARGIN_ADJUSTMENT_DP = MARGIN_START_DP - MARGIN_END_DP;
     private static final int TEXT_PADDING_DP = 8;
 
     // The padding between the start of the indicator and the avatar when the group is shared. If no
