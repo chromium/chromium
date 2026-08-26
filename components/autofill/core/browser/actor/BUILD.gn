@@ -29,6 +29,7 @@ source_set("actor") {
   deps = [
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
+    "//components/critical_actions/core/browser",
     "//ui/gfx/geometry",
   ]
 }
@@ -59,6 +60,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "actor_autofill_manager_unittest.cc",
     "actor_filling_observer_unittest.cc",
     "actor_form_filling_service_unittest.cc",
     "actor_form_section_splitter_unittest.cc",
@@ -71,6 +73,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
+    "//components/critical_actions/core/browser",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx:test_support",

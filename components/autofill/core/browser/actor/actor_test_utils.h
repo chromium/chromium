@@ -115,9 +115,12 @@ class TestActorAutofillClient : public TestAutofillClient {
   AutofillManager* GetAutofillManagerForPrimaryMainFrame() override;
 
   ActorAutofillManager* GetActorAutofillManager() override;
+  int64_t GetNavigationId() const override;
+  void set_navigation_id(int64_t id) { navigation_id_ = id; }
 
  private:
   std::unique_ptr<ActorAutofillManager> actor_autofill_manager_;
+  int64_t navigation_id_ = 0;
 };
 
 // Base test fixture for core Autofill Actor component unit tests. Manages the

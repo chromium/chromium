@@ -26,6 +26,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="ActionSource">
   <variant name="Actor" summary="Actor agent events"/>
+  <variant name="Autofill" summary="autofill events"/>
   <variant name="PasswordManager" summary="password manager fill events"/>
 </variants>
 

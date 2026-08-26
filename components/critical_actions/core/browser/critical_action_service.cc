@@ -28,6 +28,8 @@ std::string_view ActionSourceToString(ActionSource source) {
       return "PasswordManager";
     case ActionSource::kActor:
       return "Actor";
+    case ActionSource::kAutofill:
+      return "Autofill";
     case ActionSource::kUnknown:
       return "Unknown";
   }

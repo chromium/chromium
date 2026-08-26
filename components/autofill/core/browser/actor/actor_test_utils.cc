@@ -82,7 +82,8 @@ void TestBrowserAutofillManagerWithTestCCAM::FillOrPreviewForm(
 }
 
 TestActorAutofillClient::TestActorAutofillClient() {
-  actor_autofill_manager_ = std::make_unique<ActorAutofillManager>(this);
+  actor_autofill_manager_ =
+      std::make_unique<ActorAutofillManager>(this, nullptr);
 }
 
 TestActorAutofillClient::~TestActorAutofillClient() = default;
@@ -97,6 +98,10 @@ TestActorAutofillClient::GetAutofillManagerForPrimaryMainFrame() {
 
 ActorAutofillManager* TestActorAutofillClient::GetActorAutofillManager() {
   return actor_autofill_manager_.get();
+}
+
+int64_t TestActorAutofillClient::GetNavigationId() const {
+  return navigation_id_;
 }
 
 ActorTestBase::ActorTestBase()

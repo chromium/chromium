@@ -714,6 +714,9 @@ class AutofillClient {
   // Returns the `ActorAutofillManager` for the current tab (if one exists).
   virtual ActorAutofillManager* GetActorAutofillManager();
 
+  // Returns the navigation ID associated with the main frame of the client.
+  virtual int64_t GetNavigationId() const;
+
   // Returns true if either Profile or CreditCard Autofill is enabled.
   virtual bool IsAutofillEnabled() const = 0;
 

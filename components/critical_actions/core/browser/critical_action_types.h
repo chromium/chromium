@@ -37,7 +37,8 @@ enum class ActionSource {
   kUnknown = 0,
   kPasswordManager = 1,
   kActor = 2,
-  kMaxValue = kActor,
+  kAutofill = 3,
+  kMaxValue = kAutofill,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/critical_actions/histograms.xml:ActionSource)
 

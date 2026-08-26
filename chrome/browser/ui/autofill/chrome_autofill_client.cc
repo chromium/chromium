@@ -28,6 +28,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/autofill/address_normalizer_factory.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_mode.h"
 #include "chrome/browser/autofill/at_memory/at_memory_query_service_factory.h"
@@ -48,6 +49,7 @@
 #include "chrome/browser/autofill/wallet_pass_access_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
+#include "chrome/browser/critical_actions/critical_action_factory.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
@@ -143,6 +145,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/buildflags.h"
+#include "components/critical_actions/core/browser/critical_action_service.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -1024,6 +1027,12 @@ ActorAutofillManager* ChromeAutofillClient::GetActorAutofillManager() {
   return actor_autofill_manager_.get();
 }
 
+int64_t ChromeAutofillClient::GetNavigationId() const {
+  return web_contents()
+             ? web_contents()->GetPrimaryMainFrame()->GetNavigationId()
+             : 0;
+}
+
 bool ChromeAutofillClient::IsAutofillEnabled() const {
   if (IsAutofillProfileEnabled() || AutofillClient::GetPaymentsAutofillClient()
                                         ->IsAutofillPaymentMethodsEnabled()) {
@@ -1303,7 +1312,9 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
   }
 
   form_predictions_tracker_ = std::make_unique<FormPredictionsTracker>(this);
-  actor_autofill_manager_ = std::make_unique<ActorAutofillManager>(this);
+  actor_autofill_manager_ = std::make_unique<ActorAutofillManager>(
+      this,
+      critical_actions::CriticalActionFactory::GetForProfile(GetProfile()));
 
   // Notify the EntityDataManager about the availability of device re-auth.
   // This information is injected through the client because the device
@@ -1638,10 +1649,10 @@ void ChromeAutofillClient::OnActorTaskStateChange(actor::ActorTask& task) {
   const actor::TaskId task_id = task.id();
   const actor::ActorTask::State state = task.GetState();
 
-  std::optional<actor::TaskId> active_task =
+  std::optional<ActorAutofillManager::ActorTaskInfo> active_task =
       actor_autofill_manager_->active_actor_task();
 
-  if (active_task && *active_task != task_id) {
+  if (active_task && active_task->task_id != task_id) {
     // The update is for an actor that isn't working on the current tab.
     return;
   }
@@ -1672,7 +1683,11 @@ void ChromeAutofillClient::OnActorTaskStateChange(actor::ActorTask& task) {
 
   // TODO(crbug.com/469428128): Evaluate whether
   // `actor::ActorTask::State::kCreated` state should enable the actor mode.
-  actor_autofill_manager_->set_active_actor_task(task_id);
+  actor_autofill_manager_->set_active_actor_task(
+      ActorAutofillManager::ActorTaskInfo{
+          .conversation_id = task.source_info().id.value_or(""),
+          .task_id = task_id,
+      });
 }
 
 void ChromeAutofillClient::OpenGeminiInSidebar(const std::u16string& prompt) {

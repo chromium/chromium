@@ -232,6 +232,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
       const FieldTypeSet& triggering_field_types) final;
   bool IsTabInActorMode() const final;
   ActorAutofillManager* GetActorAutofillManager() final;
+  int64_t GetNavigationId() const final;
   bool IsAutofillEnabled() const final;
   bool IsAutofillProfileEnabled() const final;
   bool IsAutofillTypeBlockedByPolicy(

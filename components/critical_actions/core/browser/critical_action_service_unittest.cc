@@ -409,10 +409,21 @@ TEST_F(CriticalActionServiceTest, EventLoggedHistogramEmitted) {
   pwm_entry.action_source = ActionSource::kPasswordManager;
   service_->AddCriticalAction(pwm_entry);
 
+  CriticalActionEntry autofill_entry;
+  autofill_entry.critical_action_id =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  autofill_entry.timestamp = base::Time::Now();
+  autofill_entry.visit_id = 1003;
+  autofill_entry.action_type = ActionType::kFormFill;
+  autofill_entry.action_source = ActionSource::kAutofill;
+  service_->AddCriticalAction(autofill_entry);
+
   histogram_tester.ExpectUniqueSample("CriticalActions.EventLogged.Actor",
                                       ActionType::kGooglePasswordManager, 1);
   histogram_tester.ExpectUniqueSample(
       "CriticalActions.EventLogged.PasswordManager", ActionType::kFormFill, 1);
+  histogram_tester.ExpectUniqueSample("CriticalActions.EventLogged.Autofill",
+                                      ActionType::kFormFill, 1);
 }
 
 }  // namespace critical_actions
