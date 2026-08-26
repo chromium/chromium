@@ -1958,23 +1958,22 @@ void MaybeRegisterChromeFeaturePromos(
 
 #if BUILDFLAG(IS_WIN)
   // kIPHSearchPromotionFeature:
-  // Query the Finch experiment arm at registration time to decide which
-  // localized strings (Arm A promo only vs Arms B, C, D promo and install)
-  // should populate this promo bubble.
+  // Query the Finch experiment action at registration time to decide which
+  // localized strings (open only vs install) should populate this
+  // promo bubble.
   //
   // TODO(b/467255671): Re-evaluate tracking feature usage to suppress
   // the promo once experiments are complete. Similarly if launch
   // occurs the values may need changing to re-show.
-  std::string arm_str = feature_engagement::kSearchPromotionArm.Get();
+  feature_engagement::SearchPromotionAction action =
+      feature_engagement::kSearchPromotionAction.Get();
 
   int body_id = IDS_SEARCH_PROMOTION_IPH_BODY_ARM_A;
   int cta_id = IDS_SEARCH_PROMOTION_IPH_CTA_ARM_A;
   int dismiss_id = IDS_SEARCH_PROMOTION_IPH_DISMISS_ARM_A;
   int title_id = IDS_SEARCH_PROMOTION_IPH_TITLE_ARM_A;
 
-  if (arm_str == feature_engagement::kSearchPromotionArmB ||
-      arm_str == feature_engagement::kSearchPromotionArmC ||
-      arm_str == feature_engagement::kSearchPromotionArmD) {
+  if (action == feature_engagement::SearchPromotionAction::kInstall) {
     body_id = IDS_SEARCH_PROMOTION_IPH_BODY_ARM_B;
     cta_id = IDS_SEARCH_PROMOTION_IPH_CTA_ARM_B;
     dismiss_id = IDS_SEARCH_PROMOTION_IPH_DISMISS_ARM_B;
@@ -1994,7 +1993,7 @@ void MaybeRegisterChromeFeaturePromos(
                 if (browser) {
                   // Delegate execution to the active SearchPromotionManager
                   // service to trigger the relevant promotion action
-                  // corresponding to the Finch arm.
+                  // corresponding to the Finch action.
                   SearchPromotionManager* manager =
                       SearchPromotionManagerFactory::GetForProfile(
                           browser->GetProfile());

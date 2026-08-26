@@ -491,8 +491,31 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHResumptionRailFeature);
 
 #if BUILDFLAG(IS_WIN)
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHSearchPromotionFeature);
+
+// Experiment actions / arms for the Windows search promotion feature.
+// Defaults to `kDisabled` if no valid action parameter is specified.
+enum class SearchPromotionAction {
+  kDisabled = 0,
+  kOpen = 1,
+  kInstall = 2,
+  kControl = 3,
+  kMaxValue = kControl,
+};
+
+// Target engagement cohorts for the Windows search promotion feature.
+// Defaults to `kAll` if omitted or if an unrecognized cohort is specified.
+enum class SearchPromotionCohort {
+  kAll = 0,
+  kLow = 1,
+  kMedium = 2,
+  kPower = 3,
+  kMaxValue = kPower,
+};
+
 COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
-BASE_DECLARE_FEATURE_PARAM(std::string, kSearchPromotionArm);
+BASE_DECLARE_FEATURE_PARAM(SearchPromotionAction, kSearchPromotionAction);
+COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
+BASE_DECLARE_FEATURE_PARAM(SearchPromotionCohort, kSearchPromotionCohort);
 COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
 BASE_DECLARE_FEATURE_PARAM(std::string, kSearchPromotionStoreUrl);
 COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
@@ -502,11 +525,14 @@ BASE_DECLARE_FEATURE_PARAM(std::string, kSearchPromotionInstructionsUrl);
 COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
 BASE_DECLARE_FEATURE_PARAM(std::string, kSearchPromotionMinPehVersion);
 
-inline constexpr char kSearchPromotionArmDefault[] = "disabled";
-inline constexpr char kSearchPromotionArmA[] = "arm_a";
-inline constexpr char kSearchPromotionArmB[] = "arm_b";
-inline constexpr char kSearchPromotionArmC[] = "arm_c";
-inline constexpr char kSearchPromotionArmD[] = "arm_d";
+inline constexpr char kSearchPromotionActionOpen[] = "open";
+inline constexpr char kSearchPromotionActionInstall[] = "install";
+inline constexpr char kSearchPromotionActionControl[] = "control";
+
+inline constexpr char kSearchPromotionCohortLow[] = "low";
+inline constexpr char kSearchPromotionCohortMedium[] = "medium";
+inline constexpr char kSearchPromotionCohortPower[] = "power";
+inline constexpr char kSearchPromotionCohortAll[] = "all";
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace feature_engagement

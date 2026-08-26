@@ -21,11 +21,11 @@ enum class SearchPromotionExitCode {
   kInvalidPostInstallUrl = 101,
   kRegistryWriteFailed = 102,
 
-  // Arm A:
+  // Open action:
   kUrlLaunchFailed = 103,
   kUrlLaunchSuccess = 104,
 
-  // Arm B:
+  // Install action:
   kTimeout = 105,
   kSuccessBackground = 106,
   kSuccessWithForegroundFallback = 107,

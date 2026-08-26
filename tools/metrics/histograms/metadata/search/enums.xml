@@ -626,12 +626,12 @@ chromium-metrics-reviews@google.com.
   <int value="100" label="Invalid Extension ID"/>
   <int value="101" label="Invalid Post-Install URL"/>
   <int value="102" label="Registry Write Failed"/>
-  <int value="103" label="URL Launch Failed (Arm A)"/>
-  <int value="104" label="URL Launch Success (Arm A)"/>
-  <int value="105" label="Timeout (Arm B)"/>
-  <int value="106" label="Success Background (Arm B)"/>
-  <int value="107" label="Success With Foreground Fallback (Arm B)"/>
-  <int value="108" label="Foreground Fallback Launch Failed (Arm B)"/>
+  <int value="103" label="URL Launch Failed (Open)"/>
+  <int value="104" label="URL Launch Success (Open)"/>
+  <int value="105" label="Timeout (Install)"/>
+  <int value="106" label="Success Background (Install)"/>
+  <int value="107" label="Success With Foreground Fallback (Install)"/>
+  <int value="108" label="Foreground Fallback Launch Failed (Install)"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/search_promotion/register_search_promotion_task.h:SearchPromotionExitCode) -->
