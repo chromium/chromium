@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/popup_menu/overflow_menu/coordinator/overflow_menu_mediator.h"
 
 #import "base/files/scoped_temp_dir.h"
+#import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/string_number_conversions.h"
@@ -55,6 +56,8 @@
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/lens_overlay/public/lens_overlay_availability.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
@@ -83,6 +86,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
+#import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -121,6 +126,7 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -129,6 +135,10 @@ using sync_preferences::PrefServiceSyncable;
 using testing::_;
 using testing::Return;
 using user_prefs::PrefRegistrySyncable;
+
+@interface OverflowMenuMediator (Testing)
+- (void)startAskGemini;
+@end
 
 namespace {
 
@@ -1679,4 +1689,43 @@ TEST_F(OverflowMenuMediatorTest, TestCustomizeHomePageNotShownInIncognito) {
   mediator_.model = model_;
 
   EXPECT_FALSE(HasItem(kToolsMenuCustomizeHomePageId, /*enabled=*/YES));
+}
+
+// Tests that startAskGemini triggers the generalized Gemini entry flow command.
+TEST_F(OverflowMenuMediatorTest,
+       TestStartAskGeminiTriggersGeneralizedEntryFlow) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{kPageActionMenu, kGeneralizedGeminiEntryFlow},
+      /*disabled_features=*/{});
+
+  CreateMediator(/*incognito=*/NO);
+  id mockGeminiHandler = OCMProtocolMock(@protocol(GeminiCommands));
+  id mockPopupMenuHandler = OCMProtocolMock(@protocol(PopupMenuCommands));
+  mediator_.geminiHandler = mockGeminiHandler;
+  mediator_.popupMenuHandler = mockPopupMenuHandler;
+
+  OCMExpect([mockPopupMenuHandler
+      dismissPopupMenuAnimated:YES
+                    completion:[OCMArg checkWithBlock:^BOOL(
+                                           ProceduralBlock completion) {
+                      if (completion) {
+                        completion();
+                      }
+                      return YES;
+                    }]]);
+  OCMExpect([mockGeminiHandler
+      startGeminiEntryFlowWithStartupState:[OCMArg checkWithBlock:^BOOL(
+                                                       GeminiStartupState*
+                                                           state) {
+        return state.entryPoint == gemini::EntryPoint::OverflowMenu;
+      }]
+                        baseViewController:baseViewController_
+                  showSnackbarOnCompletion:YES
+                                completion:nil]);
+
+  [mediator_ startAskGemini];
+
+  [mockPopupMenuHandler verify];
+  [mockGeminiHandler verify];
 }

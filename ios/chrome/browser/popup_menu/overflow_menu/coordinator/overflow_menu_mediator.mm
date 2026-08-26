@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/popup_menu/overflow_menu/coordinator/overflow_menu_mediator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
@@ -2265,9 +2266,13 @@ void GetPresetNTPBackgroundPreview(
   return visibleItem->GetUserAgentType();
 }
 
-- (void)dismissMenu {
+- (void)dismissMenuWithCompletion:(ProceduralBlock)completion {
   self.menuHasBeenDismissed = YES;
-  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES completion:completion];
+}
+
+- (void)dismissMenu {
+  [self dismissMenuWithCompletion:nil];
 }
 
 // Possibly logs a feature engagement tracker event when the user clicks on a
@@ -2965,11 +2970,24 @@ void GetPresetNTPBackgroundPreview(
 
 // Starts ask Gemini.
 - (void)startAskGemini {
-  [self dismissMenu];
-  [self.geminiHandler
-      startGeminiFlowWithStartupState:
-          [[GeminiStartupState alloc]
-              initWithEntryPoint:gemini::EntryPoint::OverflowMenu]];
+  __weak id<GeminiCommands> weakGeminiHandler = self.geminiHandler;
+  __weak UIViewController* weakBaseViewController = self.baseViewController;
+  [self dismissMenuWithCompletion:^{
+    id<GeminiCommands> strongGeminiHandler = weakGeminiHandler;
+    SEL selector =
+        @selector(startGeminiEntryFlowWithStartupState:baseViewController:
+                  showSnackbarOnCompletion:completion:);
+    if (![strongGeminiHandler respondsToSelector:selector]) {
+      return;
+    }
+    [strongGeminiHandler
+        startGeminiEntryFlowWithStartupState:
+            [[GeminiStartupState alloc]
+                initWithEntryPoint:gemini::EntryPoint::OverflowMenu]
+                          baseViewController:weakBaseViewController
+                    showSnackbarOnCompletion:YES
+                                  completion:nil];
+  }];
 }
 
 - (void)startCollapseToolbars {

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/popup_menu/coordinator/popup_menu_coordinator.h"
 
 #import "base/check.h"
+#import "base/ios/block_types.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -447,6 +448,11 @@ NSString* const kPreferredContentSizeKey = @"preferredContentSize";
 }
 
 - (void)dismissPopupMenuAnimated:(BOOL)animated {
+  [self dismissPopupMenuAnimated:animated completion:nil];
+}
+
+- (void)dismissPopupMenuAnimated:(BOOL)animated
+                      completion:(ProceduralBlock)completion {
   if (self.toolsMenuOpenTime != 0) {
     OverflowMenuVisitedEvent event;
     base::TimeDelta elapsed = base::Seconds(
@@ -529,7 +535,7 @@ NSString* const kPreferredContentSizeKey = @"preferredContentSize";
       _menu = nil;
     }
     [self.baseViewController dismissViewControllerAnimated:animated
-                                                completion:nil];
+                                                completion:completion];
     _overflowMenuModel = nil;
     [_overflowMenuOrderer updateForMenuDisappearance];
     [_overflowMenuOrderer disconnect];
@@ -538,6 +544,8 @@ NSString* const kPreferredContentSizeKey = @"preferredContentSize";
     self.overflowMenuMediator = nil;
     self.contentBlockerMediator.consumer = nil;
     self.contentBlockerMediator = nil;
+  } else if (completion) {
+    completion();
   }
 }
 

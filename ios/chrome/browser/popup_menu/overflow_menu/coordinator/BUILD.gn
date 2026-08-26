@@ -154,6 +154,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/dom_distiller/model",
     "//ios/chrome/browser/home_customization/model",
     "//ios/chrome/browser/image_fetcher/model",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/lens_overlay/public:lens_overlay_availability",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/overlays/model",
@@ -179,6 +181,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
@@ -207,6 +210,7 @@ source_set("unit_tests") {
     "//ios/web/public/test:util",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//ui/base",
   ]
 }
