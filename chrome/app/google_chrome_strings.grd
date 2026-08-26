@@ -3321,7 +3321,7 @@ Google Chrome is unable to recover your settings.
           Allow voice typing to use your microphone and page content to generate polished text?
         </message>
         <message name="IDS_DICTATION_ONBOARDING_BULLET_MICROPHONE" desc="The first paragraph in the onboarding dialog describing how the microphone is used." translateable="false">
-          Your microphone will be used to capture your voice.
+          Your microphone will be used to capture your voice
         </message>
         <message name="IDS_DICTATION_ONBOARDING_BULLET_DISCLAIMER" desc="The disclaimer text in the onboarding dialog describing the use of AI and potential for mistakes and providing a link for more details." translateable="false">
           Gemini models can make mistakes. <ph name="LEARN_MORE_LINK">$1<ex>Learn more</ex></ph>

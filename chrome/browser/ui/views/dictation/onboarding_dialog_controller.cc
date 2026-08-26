@@ -29,9 +29,11 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -56,10 +58,10 @@ std::unique_ptr<views::View> CreateOnboardingCardView() {
 
   return views::Builder<views::BoxLayoutView>()
       .SetOrientation(views::BoxLayout::Orientation::kVertical)
-      .SetBetweenChildSpacing(2)
+      .SetBetweenChildSpacing(1)
       .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStretch)
       .AddChildren(
-          // Row 1 (Sparkles) - Top tile with 16px top corners & 4px bottom
+          // Row 1 (Sparkles) - Top tile with 12px top corners & 0px bottom
           // corners
           views::Builder<views::BoxLayoutView>()
               .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
@@ -68,7 +70,7 @@ std::unique_ptr<views::View> CreateOnboardingCardView() {
                   views::BoxLayout::CrossAxisAlignment::kStart)
               .SetBackground(views::CreateRoundedRectBackground(
                   ui::kColorSysNeutralContainer,
-                  gfx::RoundedCornersF(16.0f, 16.0f, 0.0f, 0.0f)))
+                  gfx::RoundedCornersF(12.0f, 12.0f, 0.0f, 0.0f)))
               .SetInsideBorderInsets(gfx::Insets(16))
               .AddChildren(
                   views::Builder<views::ImageView>()
@@ -79,13 +81,16 @@ std::unique_ptr<views::View> CreateOnboardingCardView() {
                   views::Builder<views::Label>()
                       .SetText(l10n_util::GetStringUTF16(
                           IDS_DICTATION_ONBOARDING_BULLET_DATA_SHARING))
-                      .SetTextStyle(views::style::STYLE_BODY_4)
+                      .SetFontList(views::TypographyProvider::Get()
+                                       .GetFont(views::style::CONTEXT_LABEL,
+                                                views::style::STYLE_BODY_5)
+                                       .DeriveWithSizeDelta(-1))
                       .SetLineHeight(18)
                       .SetMultiLine(true)
                       .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                       .SetEnabledColor(ui::kColorSysOnSurface)
                       .SetSubpixelRenderingEnabled(false)),
-          // Row 2 (Microphone) - Bottom tile with 0px top corners & 16px bottom
+          // Row 2 (Microphone) - Bottom tile with 0px top corners & 12px bottom
           // corners
           views::Builder<views::BoxLayoutView>()
               .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
@@ -94,7 +99,7 @@ std::unique_ptr<views::View> CreateOnboardingCardView() {
                   views::BoxLayout::CrossAxisAlignment::kStart)
               .SetBackground(views::CreateRoundedRectBackground(
                   ui::kColorSysNeutralContainer,
-                  gfx::RoundedCornersF(0.0f, 0.0f, 16.0f, 16.0f)))
+                  gfx::RoundedCornersF(0.0f, 0.0f, 12.0f, 12.0f)))
               .SetInsideBorderInsets(gfx::Insets(16))
               .AddChildren(
                   views::Builder<views::ImageView>()
@@ -105,7 +110,10 @@ std::unique_ptr<views::View> CreateOnboardingCardView() {
                   views::Builder<views::Label>()
                       .SetText(l10n_util::GetStringUTF16(
                           IDS_DICTATION_ONBOARDING_BULLET_MICROPHONE))
-                      .SetTextStyle(views::style::STYLE_BODY_4)
+                      .SetFontList(views::TypographyProvider::Get()
+                                       .GetFont(views::style::CONTEXT_LABEL,
+                                                views::style::STYLE_BODY_5)
+                                       .DeriveWithSizeDelta(-1))
                       .SetLineHeight(18)
                       .SetMultiLine(true)
                       .SetHorizontalAlignment(gfx::ALIGN_LEFT)
@@ -118,7 +126,9 @@ std::unique_ptr<views::View> CreateBodyView(
     base::RepeatingClosure learn_more_callback) {
   auto container = views::Builder<views::BoxLayoutView>()
                        .SetOrientation(views::BoxLayout::Orientation::kVertical)
-                       .SetBetweenChildSpacing(20)
+                       .SetBetweenChildSpacing(
+                           views::LayoutProvider::Get()->GetDistanceMetric(
+                               views::DISTANCE_RELATED_CONTROL_VERTICAL))
                        .Build();
 
   container->AddChildView(CreateOnboardingCardView());
@@ -135,12 +145,17 @@ std::unique_ptr<views::View> CreateBodyView(
   auto disclaimer_label = std::make_unique<views::StyledLabel>();
   disclaimer_label->SetText(disclaimer_text);
   disclaimer_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  disclaimer_label->SetDefaultTextStyle(views::style::STYLE_BODY_5);
+  disclaimer_label->SetDefaultTextStyle(views::style::STYLE_CAPTION);
   disclaimer_label->SetDefaultEnabledColorId(ui::kColorSysOnSurfaceSubtle);
 
-  views::StyledLabel::RangeStyleInfo link_style =
-      views::StyledLabel::RangeStyleInfo::CreateForLink(
-          std::move(learn_more_callback));
+  auto link_view = std::make_unique<views::Link>(
+      link_text, views::style::CONTEXT_LABEL, views::style::STYLE_CAPTION);
+  link_view->SetCallback(std::move(learn_more_callback));
+
+  views::StyledLabel::RangeStyleInfo link_style;
+  link_style.custom_view = link_view.get();
+  disclaimer_label->AddCustomView(std::move(link_view));
+
   disclaimer_label->AddStyleRange(
       gfx::Range(link_offset, link_offset + link_text.length()), link_style);
 
@@ -175,8 +190,21 @@ void OnboardingDialogController::Show(base::OnceClosure complete_callback,
           CreateDialogModel(std::move(complete_callback)),
           ui::mojom::ModalType::kChild)
           .release();
-  model_host->set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH));
+  const int dialog_width =
+      views::LayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH) +
+      views::LayoutProvider::Get()
+          ->GetInsetsMetric(views::INSETS_DIALOG)
+          .width();
+  model_host->set_fixed_width(dialog_width);
+  const gfx::Insets dialog_insets =
+      views::LayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG);
+  const int related_control_gap =
+      views::LayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_RELATED_CONTROL_VERTICAL);
+  model_host->set_frame_margins(
+      {.title = gfx::Insets::TLBR(related_control_gap, dialog_insets.left(),
+                                  related_control_gap, dialog_insets.right())});
   model_host->SetOwnershipOfNewWidget(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
@@ -185,7 +213,7 @@ void OnboardingDialogController::Show(base::OnceClosure complete_callback,
 
   if (auto* frame = model_host->GetBubbleFrameView()) {
     if (auto* title_label = views::AsViewClass<views::Label>(frame->title())) {
-      title_label->SetTextStyle(views::style::STYLE_HEADLINE_4);
+      title_label->SetTextStyle(views::style::STYLE_HEADLINE_5);
     }
   }
 
@@ -211,7 +239,7 @@ std::unique_ptr<ui::DialogModel> OnboardingDialogController::CreateDialogModel(
               CreateBodyView(base::BindRepeating(
                   &OnboardingDialogController::OnLearnMoreLinkClicked,
                   weak_ptr_factory_.GetWeakPtr())),
-              views::BubbleDialogModelHost::FieldType::kControl))
+              views::BubbleDialogModelHost::FieldType::kText))
       .AddOkButton(base::BindOnce(&OnboardingDialogController::OnDialogAccepted,
                                   weak_ptr_factory_.GetWeakPtr(),
                                   std::move(complete_callback)),
