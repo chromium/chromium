@@ -5,12 +5,16 @@
 #include "ui/ozone/demo/window_manager.h"
 
 #include <memory>
+#include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/display/types/display_configuration_params.h"
 #include "ui/display/types/display_snapshot.h"
@@ -45,10 +49,21 @@ WindowManager::WindowManager(std::unique_ptr<RendererFactory> renderer_factory,
     LOG(WARNING) << "No display delegate; falling back to test window";
     int width = kTestWindowWidth;
     int height = kTestWindowHeight;
-    UNSAFE_TODO(sscanf(base::CommandLine::ForCurrentProcess()
-                           ->GetSwitchValueASCII(kWindowSize)
-                           .c_str(),
-                       "%dx%d", &width, &height));
+    const std::string window_size =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            kWindowSize);
+    const std::vector<std::string_view> parts = base::SplitStringPiece(
+        window_size, "x", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    if (parts.size() == 2) {
+      int parsed_width = 0;
+      int parsed_height = 0;
+      if (base::StringToInt(parts[0], &parsed_width) &&
+          base::StringToInt(parts[1], &parsed_height) && parsed_width > 0 &&
+          parsed_height > 0) {
+        width = parsed_width;
+        height = parsed_height;
+      }
+    }
 
     DemoWindow* window = new DemoWindow(this, renderer_factory_.get(),
                                         gfx::Rect(gfx::Size(width, height)));
