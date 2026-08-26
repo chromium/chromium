@@ -385,6 +385,9 @@ bool OzoneImageBackingFactory::CanImportNativePixmapToWebGPU() {
   // This testing in runtime can be done where graphite is enabled by checking
   // against features in the 'dawn_context_provider' in the
   // 'shared_context_state_'.
+  // TODO(crbug.com/413659843: Also ensure WEBGPU_READ usage is passed properly
+  // for WebGPU zero-copy compatibility from the clients (eg.
+  // MappableSharedImageVideoFramePool) for non-ChromeOS Ozone.
   return false;
 #endif
 }
