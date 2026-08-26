@@ -434,6 +434,27 @@ Contributions should follow the [Chromium Contributing Guide](https://chromium.g
 The BiDi commands are processed in `src/bidiMapper/CommandProcessor.ts`. To add a
 new command, add it to `_processCommand`, write and call the module processor for it.
 
+### Updating Node dependencies
+
+> [!NOTE]
+> This does not work on Cog workspaces.
+
+1. Check and bump dependencies:
+   - Check outdated: `npm outdated`
+   - Bulk upgrade `package.json` to latest: `npx npm-check-updates -u && npm install --ignore-scripts`
+   - Upgrade specific package: `npm install --ignore-scripts <package>@latest`
+   - Or update within semver ranges: `npm update --ignore-scripts`
+2. Build and run tests to ensure dependencies work properly:
+   ```sh
+   autoninja -C ../../out/Default third_party/chromium-bidi:default third_party/chromium-bidi:webdriver_bidi_unittests
+   ../../out/Default/bin/run_webdriver_bidi_unittests
+   ```
+3. Upload the filtered `node_modules` to Google Cloud Storage and update `DEPS`:
+   ```sh
+   ./tools/update_node_modules.mjs --force
+   ```
+4. Upload a CL with `package.json`, `package-lock.json`, and `DEPS` via `git cl upload` and submit for review.
+
 ### Publish new `npm` release
 
 TODO(crbug.com/540164671): describe the process.
