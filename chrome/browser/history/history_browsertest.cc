@@ -23,6 +23,7 @@
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -582,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, MultiTabsWindowsHistory) {
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("simple.html")));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
-  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, url2));
   ui_test_utils::NavigateToURLWithDisposition(
       browser2, url3, WindowOpenDisposition::NEW_FOREGROUND_TAB,

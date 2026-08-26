@@ -1174,9 +1174,10 @@ IN_PROC_BROWSER_TEST_F(DeveloperModeNativeBindingsApiTest,
 
   const GURL extension_url = extension->GetResourceURL("page.html");
 
-  Browser* incognito_browser = OpenURLOffTheRecord(profile(), extension_url);
+  BrowserWindowInterface* incognito_browser =
+      OpenURLOffTheRecord(profile(), extension_url);
   content::WebContents* incognito_tab =
-      incognito_browser->tab_strip_model()->GetActiveWebContents();
+      incognito_browser->GetTabStripModel()->GetActiveWebContents();
   content::WaitForLoadStop(incognito_tab);
 
   ScriptResultQueue result_queue;

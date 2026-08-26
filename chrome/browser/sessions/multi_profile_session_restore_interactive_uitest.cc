@@ -27,6 +27,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/base_window.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -84,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(MultiProfileSessionRestoreInteractiveUiTest,
                                         /*is_new_profile=*/false,
                                         /*open_command_line_urls=*/false,
                                         &profile_2);
-  Browser* browser_2 = created_observer_1.Wait();
+  BrowserWindowInterface* browser_2 = created_observer_1.Wait();
   ASSERT_TRUE(browser_2);
   ASSERT_EQ(browser_2->GetProfile(), &profile_2);
 
@@ -101,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(MultiProfileSessionRestoreInteractiveUiTest,
       browser_2, url3, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
-  ASSERT_EQ(3, browser_2->tab_strip_model()->count());
+  ASSERT_EQ(3, browser_2->GetTabStripModel()->count());
 
   // 5. Close Profile 2's window while Profile 1 (browser()) remains open.
   {
@@ -121,12 +122,12 @@ IN_PROC_BROWSER_TEST_F(MultiProfileSessionRestoreInteractiveUiTest,
   ui_test_utils::BrowserCreatedObserver created_observer_2;
   profiles::SwitchToProfile(profile_2.GetPath(), /*always_create=*/false,
                             base::DoNothing());
-  Browser* new_browser_2 = created_observer_2.Wait();
+  BrowserWindowInterface* new_browser_2 = created_observer_2.Wait();
   ASSERT_TRUE(new_browser_2);
 
   // 7. Verify tab count:
   // Should open 1 clean tab (NTP) according to the profile's startup setting.
-  EXPECT_EQ(1, new_browser_2->tab_strip_model()->count())
+  EXPECT_EQ(1, new_browser_2->GetTabStripModel()->count())
       << "Launching a closed profile window unexpectedly restored "
       << (new_browser_2->tab_strip_model()->count() - 1)
       << " previous tabs despite On Startup being set to 'Open New Tab Page'.";
@@ -169,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(MultiProfileSessionRestoreInteractiveUiTest,
                                         /*is_new_profile=*/false,
                                         /*open_command_line_urls=*/false,
                                         &profile_2);
-  Browser* browser_2 = created_observer_1.Wait();
+  BrowserWindowInterface* browser_2 = created_observer_1.Wait();
   ASSERT_TRUE(browser_2);
 
   const GURL old_url1 = embedded_test_server()->GetURL("/title1.html");
@@ -179,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(MultiProfileSessionRestoreInteractiveUiTest,
       browser_2, old_url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
-  ASSERT_EQ(2, browser_2->tab_strip_model()->count());
+  ASSERT_EQ(2, browser_2->GetTabStripModel()->count());
 
   // Close Profile 2's window.
   {
@@ -193,15 +194,15 @@ IN_PROC_BROWSER_TEST_F(MultiProfileSessionRestoreInteractiveUiTest,
   ui_test_utils::BrowserCreatedObserver created_observer_2;
   profiles::SwitchToProfile(profile_2.GetPath(), /*always_create=*/false,
                             base::DoNothing());
-  Browser* new_browser_2 = created_observer_2.Wait();
+  BrowserWindowInterface* new_browser_2 = created_observer_2.Wait();
   ASSERT_TRUE(new_browser_2);
 
   // Should open 1 tab (the specific URL).
-  EXPECT_EQ(1, new_browser_2->tab_strip_model()->count())
+  EXPECT_EQ(1, new_browser_2->GetTabStripModel()->count())
       << "Launching a closed profile window unexpectedly restored "
-      << (new_browser_2->tab_strip_model()->count() - 1)
+      << (new_browser_2->GetTabStripModel()->count() - 1)
       << " previous tabs despite On Startup set to 'Open specific pages'.";
-  EXPECT_EQ(specific_url, new_browser_2->tab_strip_model()
+  EXPECT_EQ(specific_url, new_browser_2->GetTabStripModel()
                               ->GetActiveWebContents()
                               ->GetVisibleURL());
 }

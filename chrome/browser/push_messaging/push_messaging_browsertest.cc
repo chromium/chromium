@@ -268,7 +268,7 @@ class PushMessagingBrowserTestBase
   content::EvalJsResult RunScript(const std::string& script,
                                   content::WebContents* web_contents) {
     if (!web_contents) {
-      web_contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
+      web_contents = GetBrowser()->GetTabStripModel()->GetActiveWebContents();
     }
     return content::EvalJs(web_contents->GetPrimaryMainFrame(), script);
   }
@@ -279,7 +279,7 @@ class PushMessagingBrowserTestBase
 
   permissions::PermissionRequestManager* GetPermissionRequestManager() {
     return permissions::PermissionRequestManager::FromWebContents(
-        GetBrowser()->tab_strip_model()->GetActiveWebContents());
+        GetBrowser()->GetTabStripModel()->GetActiveWebContents());
   }
 
   // Calls should be wrapped in the ASSERT_NO_FATAL_FAILURE() macro.
@@ -389,7 +389,7 @@ class PushMessagingBrowserTestBase
     return "/push_messaging/test_no_manifest.html";
   }
 
-  virtual Browser* GetBrowser() const { return browser(); }
+  virtual BrowserWindowInterface* GetBrowser() const { return browser(); }
 
   gcm::GCMProfileServiceFactory::ScopedTestingFactoryInstaller
       scoped_testing_factory_installer_;
@@ -1414,7 +1414,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   // We'll need to specify the web_contents in which to eval script, since we're
   // going to run script in a background tab.
   content::WebContents* web_contents =
-      GetBrowser()->tab_strip_model()->GetActiveWebContents();
+      GetBrowser()->GetTabStripModel()->GetActiveWebContents();
 
   // Set the site engagement score for the site. Setting it to 10 means it
   // should have a budget of 4, enough for two non-shown notification, which
@@ -1518,7 +1518,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   // We'll need to specify the web_contents in which to eval script, since we're
   // going to run script in a background tab.
   content::WebContents* web_contents =
-      GetBrowser()->tab_strip_model()->GetActiveWebContents();
+      GetBrowser()->GetTabStripModel()->GetActiveWebContents();
 
   SetSiteEngagementScore(web_contents->GetLastCommittedURL(), 5.0);
 
@@ -1716,7 +1716,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTestBase,
   // We'll need to specify the web_contents in which to eval script, since we're
   // going to run script in a background tab.
   content::WebContents* web_contents =
-      GetBrowser()->tab_strip_model()->GetActiveWebContents();
+      GetBrowser()->GetTabStripModel()->GetActiveWebContents();
 
   // Initialize site engagement score to have no budget for silent pushes.
   SetSiteEngagementScore(web_contents->GetLastCommittedURL(), 0);
@@ -1795,7 +1795,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
                        PushEventNotificationWithoutEventWaitUntil) {
   content::WebContents* web_contents =
-      GetBrowser()->tab_strip_model()->GetActiveWebContents();
+      GetBrowser()->GetTabStripModel()->GetActiveWebContents();
 
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
   push_messaging::AppIdentifier app_identifier =
@@ -1877,7 +1877,7 @@ IN_PROC_BROWSER_TEST_P(PushMessagingPartitionedBrowserTest, CrossOriginFrame) {
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), kEmbedderURL));
 
-  auto* web_contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = GetBrowser()->GetTabStripModel()->GetActiveWebContents();
   LOG(ERROR) << web_contents->GetLastCommittedURL();
   auto* subframe =
       content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0u);
@@ -2735,15 +2735,18 @@ class PushMessagingIncognitoBrowserTest : public PushMessagingBrowserTestBase {
     prerender_helper_.RegisterServerRequestMonitor(https_server());
     PushMessagingBrowserTestBase::SetUpOnMainThread();
   }
-  Browser* GetBrowser() const override { return incognito_browser_; }
+  BrowserWindowInterface* GetBrowser() const override {
+    return incognito_browser_;
+  }
 
   content::WebContents* web_contents() {
-    return GetBrowser()->tab_strip_model()->GetActiveWebContents();
+    return GetBrowser()->GetTabStripModel()->GetActiveWebContents();
   }
 
  protected:
   content::test::PrerenderTestHelper prerender_helper_;
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged>
+      incognito_browser_ = nullptr;
 };
 
 // Regression test for https://crbug.com/40413606

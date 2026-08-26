@@ -489,14 +489,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
                                            chrome::ChromeUINewTabURLAsGURL()));
   EXPECT_EQ(1, incognito->GetTabStripModel()->count());
   EXPECT_TRUE(OpenOptionsPageFromAPI(options_spanning_extension, profile()));
-  Browser* regular = browser_created_observer->Wait();
+  BrowserWindowInterface* regular = browser_created_observer->Wait();
 
   // Opening the options page from an incognito window should open a new regular
   // profile window, which should have one tab open to the options page.
   ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
-  EXPECT_EQ(1, regular->tab_strip_model()->count());
+  EXPECT_EQ(1, regular->GetTabStripModel()->count());
   EXPECT_TRUE(content::WaitForLoadStop(
-      regular->tab_strip_model()->GetActiveWebContents()));
+      regular->GetTabStripModel()->GetActiveWebContents()));
   EXPECT_EQ(options_url, GetActiveUrl(regular));
 
   // Leave only incognito browser open.
@@ -512,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   EXPECT_EQ(1, incognito->GetTabStripModel()->count());
   // Because the OpenOptionsPage() call originates from an OTR window via, e.g.
   // the action menu, instead of initiated by the extension, the
-  // OpenOptionsPage() version that takes a Browser* is used.
+  // OpenOptionsPage() version that takes a BrowserWindowInterface* is used.
   EXPECT_TRUE(
       ExtensionTabUtil::OpenOptionsPage(options_spanning_extension, incognito));
   regular = browser_created_observer->Wait();
@@ -524,9 +524,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(regular, GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 
-  EXPECT_EQ(1, regular->tab_strip_model()->count());
+  EXPECT_EQ(1, regular->GetTabStripModel()->count());
   EXPECT_TRUE(content::WaitForLoadStop(
-      regular->tab_strip_model()->GetActiveWebContents()));
+      regular->GetTabStripModel()->GetActiveWebContents()));
   EXPECT_EQ(options_url, GetActiveUrl(regular));
 }
 

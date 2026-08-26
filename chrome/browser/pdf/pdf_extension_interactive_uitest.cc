@@ -14,6 +14,7 @@
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -106,8 +107,8 @@ class PDFExtensionInteractiveUITest : public base::test::WithFeatureOverride,
 
 class TabChangedWaiter : public TabStripModelObserver {
  public:
-  explicit TabChangedWaiter(Browser* browser) {
-    browser->tab_strip_model()->AddObserver(this);
+  explicit TabChangedWaiter(BrowserWindowInterface* browser) {
+    browser->GetTabStripModel()->AddObserver(this);
   }
   TabChangedWaiter(const TabChangedWaiter&) = delete;
   TabChangedWaiter& operator=(const TabChangedWaiter&) = delete;

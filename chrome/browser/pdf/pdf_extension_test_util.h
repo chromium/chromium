@@ -11,7 +11,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace content {
 class RenderFrameHost;
@@ -67,7 +67,7 @@ std::vector<content::RenderFrameHost*> GetPdfPluginFrames(
     content::WebContents* contents);
 
 // Counts the total number of unique PDF plugin processes.
-size_t CountPdfPluginProcesses(const Browser* browser);
+size_t CountPdfPluginProcesses(const BrowserWindowInterface* browser);
 
 // Ensures, inside the given `frame`, that a PDF has either finished
 // loading or prompted a password. The result indicates success if the PDF loads

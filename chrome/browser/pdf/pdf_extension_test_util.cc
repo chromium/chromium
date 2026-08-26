@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/pdf/common/pdf_util.h"
 #include "content/public/browser/render_frame_host.h"
@@ -98,10 +99,10 @@ std::vector<content::RenderFrameHost*> GetPdfPluginFrames(
   return plugin_frames;
 }
 
-size_t CountPdfPluginProcesses(const Browser* browser) {
+size_t CountPdfPluginProcesses(const BrowserWindowInterface* browser) {
   base::flat_set<content::RenderProcessHost*> pdf_processes;
 
-  const TabStripModel* tab_strip = browser->tab_strip_model();
+  const TabStripModel* tab_strip = browser->GetTabStripModel();
   for (int tab = 0; tab < tab_strip->count(); ++tab) {
     for (content::RenderFrameHost* plugin_frame :
          GetPdfPluginFrames(tab_strip->GetWebContentsAt(tab))) {

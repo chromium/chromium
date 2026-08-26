@@ -54,6 +54,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/reload_page_dialog_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -9695,11 +9696,11 @@ IN_PROC_BROWSER_TEST_F(WebRequestProxyingWebTransportCrashTest,
   ASSERT_TRUE(extension);
 
   // Open Incognito and navigate.
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       incognito_browser, embedded_test_server()->GetURL("/empty.html")));
   content::WebContents* web_contents =
-      incognito_browser->tab_strip_model()->GetActiveWebContents();
+      incognito_browser->GetTabStripModel()->GetActiveWebContents();
 
   // This utilizes a mix of fast-failing, hanging, and asynchronous network
   // rejections to blanket the teardown timeline, guaranteeing the IPC

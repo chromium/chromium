@@ -20,6 +20,7 @@
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -166,18 +167,18 @@ struct TabInfo {
               "embedding-done");
   }
 
-  raw_ptr<Browser> browser;
+  raw_ptr<BrowserWindowInterface> browser;
   raw_ptr<WebContents, AcrossTasksDanglingUntriaged> web_contents;
   int tab_strip_index;
   std::string capture_handle;  // Expected value for those who may observe.
 };
 
-TabInfo MakeTabInfoFromActiveTab(Browser* browser) {
+TabInfo MakeTabInfoFromActiveTab(BrowserWindowInterface* browser) {
   WebContents* const web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   // "POISON_VALUE" intentionally fails comparisons if unset when read.
   return TabInfo{browser, web_contents,
-                 browser->tab_strip_model()->active_index(), "POISON_VALUE"};
+                 browser->GetTabStripModel()->active_index(), "POISON_VALUE"};
 }
 
 }  // namespace
@@ -231,20 +232,20 @@ class CaptureHandleBrowserTest : public WebRtcTestBase {
 
   // Same as WebRtcTestBase::OpenTestPageInNewTab, but does not assume
   // a single embedded server is used for all pages.
-  WebContents* OpenTestPageInNewTab(Browser* browser,
+  WebContents* OpenTestPageInNewTab(BrowserWindowInterface* browser,
                                     const std::string& test_page,
                                     net::EmbeddedTestServer* server) const {
     chrome::AddTabAt(browser, GURL(url::kAboutBlankURL), -1, true);
     GURL url = server->GetURL(test_page);
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, url));
-    WebContents* new_tab = browser->tab_strip_model()->GetActiveWebContents();
+    WebContents* new_tab = browser->GetTabStripModel()->GetActiveWebContents();
     permissions::PermissionRequestManager::FromWebContents(new_tab)
         ->set_auto_response_for_test(
             permissions::PermissionRequestManager::ACCEPT_ALL);
     return new_tab;
   }
 
-  Browser* GetBrowser(BrowserType browser_type) {
+  BrowserWindowInterface* GetBrowser(BrowserType browser_type) {
     DCHECK(browser_type == BrowserType::kRegular ||
            browser_type == BrowserType::kIncognito);
 
@@ -260,7 +261,7 @@ class CaptureHandleBrowserTest : public WebRtcTestBase {
 
   TabInfo SetUpCapturingPage(bool start_capturing,
                              BrowserType browser_type = BrowserType::kRegular) {
-    Browser* const browser = GetBrowser(browser_type);
+    BrowserWindowInterface* const browser = GetBrowser(browser_type);
 
     OpenTestPageInNewTab(browser, kCapturingPageMain,
                          servers_[kCapturingServer].get());
@@ -285,7 +286,7 @@ class CaptureHandleBrowserTest : public WebRtcTestBase {
     const char* page = self_capture ? kCapturingPageMain : kCapturedPageMain;
     const int server_index = self_capture ? kCapturingServer : kCapturedServer;
 
-    Browser* const browser = GetBrowser(browser_type);
+    BrowserWindowInterface* const browser = GetBrowser(browser_type);
 
     auto* const web_contents =
         OpenTestPageInNewTab(browser, page, servers_[server_index].get());
@@ -327,7 +328,8 @@ class CaptureHandleBrowserTest : public WebRtcTestBase {
 
   // Incognito browser.
   // Note: The regular one is accessible via browser().
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged>
+      incognito_browser_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,

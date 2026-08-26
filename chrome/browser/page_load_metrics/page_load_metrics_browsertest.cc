@@ -4444,8 +4444,8 @@ IN_PROC_BROWSER_TEST_F(DesktopPaintTimingSliceBrowserTest,
   nav_params.disposition = WindowOpenDisposition::NEW_WINDOW;
   Navigate(&nav_params);
 
-  BrowserWindowInterface* new_browser = static_cast<Browser*>(
-      GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+  BrowserWindowInterface* new_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   PageLoadMetricsTestWaiter waiter(
       new_browser->GetTabStripModel()->GetActiveWebContents());
   waiter.AddPageExpectation(TimingField::kFirstContentfulPaint);
