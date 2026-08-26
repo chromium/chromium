@@ -22,8 +22,8 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -1111,16 +1111,14 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Visiting the site in incognito mode should always load the favicon.
-  Browser* incognito =
-      CreateBrowserWindow(BrowserWindowCreateParams(
-                              browser()->GetProfile()->GetPrimaryOTRProfile(
-                                  /*create_if_needed=*/true),
-                              /*from_user_gesture=*/true))
-          ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* incognito = CreateBrowserWindow(
+      BrowserWindowCreateParams(browser()->GetProfile()->GetPrimaryOTRProfile(
+                                    /*create_if_needed=*/true),
+                                /*from_user_gesture=*/true));
   AddBlankTabAndShow(incognito);
   {
     PendingTaskWaiter waiter(
-        incognito->tab_strip_model()->GetActiveWebContents());
+        incognito->GetTabStripModel()->GetActiveWebContents());
     ui_test_utils::NavigateToURLWithDisposition(
         incognito, url, WindowOpenDisposition::CURRENT_TAB,
         ui_test_utils::BROWSER_TEST_NO_WAIT);
