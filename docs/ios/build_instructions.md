@@ -422,7 +422,34 @@ for more information.
 
 ```shell
 $ third_party/blink/tools/run_web_tests.py -t Debug-iphonesimulator \
-    --platform ios
+    --platform ios --verbose
+```
+
+### Running Web Tests on Blink for tvOS
+
+Blink for tvOS currently supports running Web Tests only in the simulator
+environment. To prepare the simulator test environment, first build the
+blink_tests target, which provides content_shell and the other required
+binaries.
+
+```shell
+$ autoninja -C out/Debug-appletvsimulator blink_tests
+```
+
+When the blink_tests target is complete you can then run the test runner script
+(third_party/blink/tools/run_web_tests.py) as below. See [Web Tests](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_tests.md) document
+for more information.
+
+Once the build is complete, use
+[run_web_tests.py](https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/tools/run_web_tests.py)
+to run the Web Tests on the tvOS simulator. For additional information about
+Web Tests, see the
+[Web Tests](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_tests.md)
+document.
+
+```shell
+$ third_party/blink/tools/run_web_tests.py -t Debug-appletvsimulator \
+    --platform tvos --verbose
 ```
 
 ### Running on specific simulator
