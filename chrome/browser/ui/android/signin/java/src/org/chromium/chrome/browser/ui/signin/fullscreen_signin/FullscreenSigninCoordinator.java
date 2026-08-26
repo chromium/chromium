@@ -113,11 +113,6 @@ public class FullscreenSigninCoordinator implements IdentityManager.Observer {
 
         /** Returns {@code true} when the footer text should be displayed */
         boolean shouldDisplayFooterText();
-
-        /** Returns {@code true} if the preferred account prediction can be used for this flow. */
-        default boolean canUsePreferredAccount() {
-            return false;
-        }
     }
 
     private final FullscreenSigninMediator mMediator;

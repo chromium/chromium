@@ -18,7 +18,6 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.lenient;
@@ -67,8 +66,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.signin.ForcedSigninStatusProvider;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
@@ -126,7 +123,6 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
             new BaseActivityTestRule<>(SigninAndHistorySyncActivity.class);
 
     @Mock private HistorySyncHelper mHistorySyncHelperMock;
-    @Mock private AccountPreviewDataService mAccountPreviewDataServiceMock;
 
     private SigninAndHistorySyncActivity mActivity;
     private @SigninAccessPoint int mSigninAccessPoint = SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO;
@@ -835,82 +831,6 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         launchActivity(/* shouldReplaceProgressBars= */ true, config);
 
         // Verify that the fullscreen sign-in promo is shown with the specified account.
-        onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
-        onViewWaiting(withText(TestAccounts.ACCOUNT2.getFullName())).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT)
-    public void testFullscreenSigninWithPreferredAccount_preferredAccountEnabled() {
-        mSigninTestRule.addAccount(TestAccounts.ACCOUNT2);
-        when(mAccountPreviewDataServiceMock.getPreferredAccountOrDefault(any()))
-                .thenReturn(TestAccounts.ACCOUNT2);
-        IdentityServicesProvider.setAccountPreviewDataServiceForTesting(
-                mAccountPreviewDataServiceMock);
-
-        launchActivity();
-
-        // Since the flag is enabled and Account2 is preferred, it should default to Account2.
-        onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
-        onViewWaiting(withText(TestAccounts.ACCOUNT2.getFullName())).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT)
-    public void testFullscreenSigninWithPreferredAccount_noAccountsOnDevice() {
-        mSigninTestRule.removeAccount(TestAccounts.AADC_ADULT_ACCOUNT.getId());
-        IdentityServicesProvider.setAccountPreviewDataServiceForTesting(
-                mAccountPreviewDataServiceMock);
-
-        launchActivity();
-
-        // Since there are no accounts on device, the fullscreen sign-in promo is shown with no
-        // selected account.
-        onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
-        onView(withId(R.id.signin_fre_selected_account)).check(matches(not(isDisplayed())));
-        onView(withText(R.string.signin_add_account_to_device)).check(matches(isDisplayed()));
-        verify(mAccountPreviewDataServiceMock, never()).getPreferredAccountOrDefault(any());
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures(SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT)
-    public void testFullscreenSigninWithPreferredAccount_preferredAccountDisabled() {
-        mSigninTestRule.addAccount(TestAccounts.ACCOUNT2);
-        IdentityServicesProvider.setAccountPreviewDataServiceForTesting(
-                mAccountPreviewDataServiceMock);
-
-        launchActivity();
-
-        // Since the flag is disabled, it should default to the first account (AADC_ADULT_ACCOUNT).
-        onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
-        onViewWaiting(withText(TestAccounts.AADC_ADULT_ACCOUNT.getFullName()))
-                .check(matches(isDisplayed()));
-        verify(mAccountPreviewDataServiceMock, never()).getPreferredAccountOrDefault(any());
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT)
-    public void testWithSelectedAccountEmail_existingAccountAndDifferentPreferredAccount() {
-        mSigninTestRule.addAccount(TestAccounts.ACCOUNT2);
-        lenient()
-                .when(mAccountPreviewDataServiceMock.getPreferredAccountOrDefault(any()))
-                .thenReturn(TestAccounts.AADC_ADULT_ACCOUNT);
-        IdentityServicesProvider.setAccountPreviewDataServiceForTesting(
-                mAccountPreviewDataServiceMock);
-
-        FullscreenSigninAndHistorySyncConfig config =
-                getDefaultConfigBuilder()
-                        .selectedAccountEmail(TestAccounts.ACCOUNT2.getEmail())
-                        .build();
-
-        launchActivity(/* shouldReplaceProgressBars= */ true, config);
-
-        // Account2 is preselected via config, so it should be displayed even though
-        // AADC_ADULT_ACCOUNT is preferred.
         onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
         onViewWaiting(withText(TestAccounts.ACCOUNT2.getFullName())).check(matches(isDisplayed()));
     }

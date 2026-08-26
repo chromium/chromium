@@ -21,7 +21,6 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
-import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -55,8 +54,6 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -115,6 +112,9 @@ public class FullscreenSigninMediator
     private final ModalDialogManager mModalDialogManager;
     private final AccountManagerFacade mAccountManagerFacade;
     private @MonotonicNonNull SigninManager mSigninManager;
+
+    // TODO(crbug.com/532967032): Remove annotation once implementation is complete.
+    @SuppressWarnings("UnusedVariable")
     private @Nullable AccountPreviewDataService mAccountPreviewDataService;
 
     private @MonotonicNonNull ForcedSigninStatusProvider mForcedSigninStatusProvider;
@@ -312,21 +312,6 @@ public class FullscreenSigninMediator
                 IdentityServicesProvider.get().getAccountPreviewDataService(profile);
         mForcedSigninStatusProvider = ForcedSigninStatusProvider.getForProfile(profile);
         initializeProfileDataCache(profile);
-
-        // If no account was preselected or just added, set the preferred account as default
-        // before showing the UI. This is necessary to override the previously selected account
-        // in case updateAccount is called before the initial load completion.
-        if (isPreferredAccountEnabled()
-                && mConfig.selectedAccountEmail == null
-                && mPendingSelectedAccountEmail == null
-                && mAddedAccount == null) {
-            List<AccountInfo> accounts =
-                    AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts());
-            if (!accounts.isEmpty()) {
-                mDefaultAccount = mAccountPreviewDataService.getPreferredAccountOrDefault(accounts);
-                setSelectedAccount(mDefaultAccount);
-            }
-        }
 
         // 1. Update all fields.
         mIsSigninSupported = isSigninSupported(profile);
@@ -883,10 +868,7 @@ public class FullscreenSigninMediator
                 mDialogCoordinator.dismissDialog();
             }
         } else {
-            mDefaultAccount =
-                    isPreferredAccountEnabled()
-                            ? mAccountPreviewDataService.getPreferredAccountOrDefault(accounts)
-                            : accounts.get(0);
+            mDefaultAccount = accounts.get(0);
             mSelectedAccount =
                     mSelectedAccount == null
                             ? null
@@ -984,15 +966,5 @@ public class FullscreenSigninMediator
         boolean oldValue = sAnimationsEnabled;
         sAnimationsEnabled = false;
         ResettersForTesting.register(() -> sAnimationsEnabled = oldValue);
-    }
-
-    @EnsuresNonNullIf("mAccountPreviewDataService")
-    private boolean isPreferredAccountEnabled() {
-        // Checking the feature flag here is safe because canUsePreferredAccount() is only true for
-        // flows created after native initialization (FullscreenSigninAndHistorySyncCoordinator)
-        return mDelegate.canUsePreferredAccount()
-                && mAccountPreviewDataService != null
-                && SigninFeatureMap.isEnabled(
-                        SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT);
     }
 }
