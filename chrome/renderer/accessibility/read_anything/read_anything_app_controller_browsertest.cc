@@ -6514,3 +6514,9 @@ TEST_F(ReadAnythingAppControllerTest,
   // Verify that node ID 2 WAS added to displayed_nodes_pending_deletion_.
   EXPECT_TRUE(IsNodePendingDeletion(2));
 }
+
+TEST_F(ReadAnythingAppControllerTest, ScreenAIServiceReady_UpdatesModel) {
+  EXPECT_FALSE(model().is_screen_ai_service_ready());
+  controller().ScreenAIServiceReady();
+  EXPECT_TRUE(model().is_screen_ai_service_ready());
+}

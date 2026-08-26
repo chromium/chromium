@@ -1430,6 +1430,7 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
 }
 
 void ReadAnythingAppController::ScreenAIServiceReady() {
+  model_.set_is_screen_ai_service_ready(true);
   distiller_->ScreenAIServiceReady();
 }
 

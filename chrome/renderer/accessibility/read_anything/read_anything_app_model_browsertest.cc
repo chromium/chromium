@@ -57,6 +57,11 @@ TEST_F(ReadAnythingAppModelNoInitTest, IsReload_FalseBeforeTreeInitialization) {
   EXPECT_FALSE(model().IsReload());
 }
 
+TEST_F(ReadAnythingAppModelNoInitTest,
+       IsScreenAIServiceReady_FalseBeforeInitialization) {
+  EXPECT_FALSE(model().is_screen_ai_service_ready());
+}
+
 class ReadAnythingAppModelTest : public ChromeRenderViewTest {
  public:
   ReadAnythingAppModelTest() = default;
@@ -1304,6 +1309,12 @@ TEST_F(ReadAnythingAppModelTest, SetUkmSourceId_TreeDoesNotExistInitially) {
   // the active tree.
   ApplyAccessibilityUpdates(tree_id, {std::move(update)});
   EXPECT_EQ(model().GetUkmSourceId(), source_id);
+}
+
+TEST_F(ReadAnythingAppModelTest, IsScreenAIServiceReady_UpdatesState) {
+  EXPECT_FALSE(model().is_screen_ai_service_ready());
+  model().set_is_screen_ai_service_ready(true);
+  EXPECT_TRUE(model().is_screen_ai_service_ready());
 }
 
 class ReadAnythingAppModelReadabilityTest : public ReadAnythingAppModelTest {

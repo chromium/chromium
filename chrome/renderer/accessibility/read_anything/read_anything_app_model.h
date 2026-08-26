@@ -450,6 +450,13 @@ class ReadAnythingAppModel {
     screen2x_distiller_running_ = screen2x_distiller_running;
   }
 
+  bool is_screen_ai_service_ready() const {
+    return is_screen_ai_service_ready_;
+  }
+  void set_is_screen_ai_service_ready(bool is_screen_ai_service_ready) {
+    is_screen_ai_service_ready_ = is_screen_ai_service_ready;
+  }
+
   bool should_extract_anchors_from_tree_for_readability() const {
     return should_extract_anchors_from_tree_for_readability_;
   }
@@ -974,6 +981,9 @@ class ReadAnythingAppModel {
   // This boolean marks when distillation is in progress to avoid sending
   // new distillation requests during that time.
   bool screen2x_distiller_running_ = false;
+
+  // Whether the ScreenAI service is ready in the browser.
+  bool is_screen_ai_service_ready_ = false;
 
   // A mapping of a tree ID to a queue of pending updates on the active AXTree,
   // which will be unserialized once distillation completes.
