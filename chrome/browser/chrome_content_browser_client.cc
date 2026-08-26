@@ -149,6 +149,7 @@
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/preloading/preloading_utils.h"
+#include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/preloading/prerender/prerender_web_contents_delegate.h"
 #include "chrome/browser/preloading/search_preload/search_preload_features.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
@@ -1462,35 +1463,6 @@ ProfileSelections GetHumanProfileSelections() {
       .Build();
 }
 
-bool IsPrewarmUrl(const GURL& url, const url::Origin& dse_origin) {
-  const GURL prewarm_url = GURL(features::kPrewarmUrl.Get());
-  return prewarm_url.is_valid() && url == prewarm_url &&
-         dse_origin.IsSameOriginWith(prewarm_url);
-}
-
-bool IsDefaultSearchEngine(Profile* profile, const GURL& url) {
-  auto* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile);
-
-  if (!template_url_service) {
-    return false;
-  }
-
-  const TemplateURL* default_search_engine =
-      template_url_service->GetDefaultSearchProvider();
-
-  if (!default_search_engine) {
-    return false;
-  }
-
-  if (template_url_service->IsSearchResultsPageFromDefaultSearchProvider(url)) {
-    return true;
-  }
-
-  return IsPrewarmUrl(url,
-                      template_url_service->GetDefaultSearchProviderOrigin());
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 bool IsActorActingOnWebContents(WebContents* web_contents) {
   auto* actor_service =
@@ -2002,16 +1974,9 @@ bool ChromeContentBrowserClient::
     ShouldReuseAnyExistingProcessForNewMainFrameSiteInstance(
         content::BrowserContext* browser_context,
         const GURL& site_instance_original_url) {
-  // When `kProcessPerSiteForDSE` is disabled,
-  // `ProcessPerSiteUpToMainFrameThreshold` can be used for any site.
-  if (!base::FeatureList::IsEnabled(features::kProcessPerSiteForDSE)) {
-    return true;
-  }
-
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  CHECK(profile);
-
-  return IsDefaultSearchEngine(profile, site_instance_original_url);
+  return prerender_utils::
+      ShouldReuseAnyExistingProcessForNewMainFrameSiteInstance(
+          browser_context, site_instance_original_url);
 }
 
 bool ChromeContentBrowserClient::ShouldAllowProcessPerSiteForMultipleMainFrames(
@@ -3724,7 +3689,7 @@ bool ChromeContentBrowserClient::IsServiceWorkerSyntheticResponseAllowed(
     return false;
   }
 
-  if (!IsDefaultSearchEngine(profile, url)) {
+  if (!prerender_utils::IsDefaultSearchEngine(profile, url)) {
     return false;
   }
 
@@ -3743,7 +3708,7 @@ bool ChromeContentBrowserClient::IsServiceWorkerSyntheticResponseAllowed(
 
   // Prewarm page can be treated as a DSE. As we don't want to enable synthetic
   // response on the prewarm page, manually exclude it.
-  if (IsPrewarmUrl(url, dse_origin)) {
+  if (prerender_utils::IsPrewarmUrl(url, dse_origin)) {
     return false;
   }
 
@@ -3783,7 +3748,7 @@ ChromeContentBrowserClient::GetScriptInjectionPolicy(
   if (!profile || profile->IsSystemProfile()) {
     return blink::mojom::ScriptInjectionPolicy::kNone;
   }
-  if (IsDefaultSearchEngine(profile, url)) {
+  if (prerender_utils::IsDefaultSearchEngine(profile, url)) {
     return blink::mojom::ScriptInjectionPolicy::kNavigationProtection;
   }
   return blink::mojom::ScriptInjectionPolicy::kNone;

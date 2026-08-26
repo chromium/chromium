@@ -44,6 +44,7 @@ source_set("impl") {
     "//chrome/browser/search_engines",
     "//chrome/browser/task_manager",
     "//chrome/browser/ui",
+    "//chrome/common:chrome_features",
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/google/browser",
     "//components/tabs:impl",
