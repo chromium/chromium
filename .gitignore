@@ -47,6 +47,7 @@
 .cproject
 .dir-locals.el
 .emulator_sdk
+.env
 .gdb_history
 .gdbinit
 .jetskicli
