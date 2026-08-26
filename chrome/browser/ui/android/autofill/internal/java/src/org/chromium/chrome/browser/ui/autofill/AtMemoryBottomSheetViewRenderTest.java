@@ -151,6 +151,7 @@ public class AtMemoryBottomSheetViewRenderTest {
 
     @Test
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/535897013")
     public void testAtMemoryBottomSheetMainScreen() throws Exception {
         ContextThemeWrapper themeWrapper =
                 new ContextThemeWrapper(mActivity, R.style.Theme_BrowserUI_DayNight);
