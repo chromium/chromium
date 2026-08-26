@@ -41,13 +41,25 @@ public class LinkerTest {
     // FDs underpining anything, we have to fake the functions LibInfo is calling.
     @Implements(ParcelFileDescriptor.class)
     public static class ShadowParcelFileDescriptorForLibInfo extends ShadowParcelFileDescriptor {
+        private boolean mDetached;
+
         @Implementation
         public static ParcelFileDescriptor fromFd(int fd) {
             return Shadow.newInstanceOf(ParcelFileDescriptor.class);
         }
 
+        @Override
+        @Implementation
+        public ParcelFileDescriptor dup() {
+            return Shadow.newInstanceOf(ParcelFileDescriptor.class);
+        }
+
         @Implementation
         public int detachFd() {
+            if (mDetached) {
+                throw new IllegalStateException("Already detached");
+            }
+            mDetached = true;
             return 1023;
         }
     }
@@ -236,5 +248,26 @@ public class LinkerTest {
         // Unfortunately there does not seem to be an elegant way to set |mLoadAddress| without
         // extracting creation of mLocalLibInfo from ensureInitialized(). Hence no checks are
         // present here involving the exact value of |mLoadAddress|.
+    }
+
+    @Test
+    @SmallTest
+    public void testMultipleLibInfoFromAidlDoesNotInvalidateFd() {
+        Linker.LibInfo libInfo = new Linker.LibInfo();
+        libInfo.mLoadAddress = 1 << 12;
+        libInfo.mRelroFd = 1023;
+        IRelroLibInfo relros = libInfo.toAidl();
+        Assert.assertNotNull(relros.fd);
+
+        Linker.LibInfo remote1 = Linker.LibInfo.fromAidl(relros);
+        Assert.assertEquals(1023, remote1.mRelroFd);
+
+        // The original aidl relros.fd must not have been detached or closed so subsequent
+        // usages (e.g. sending to other child processes) remain valid.
+        Linker.LibInfo remote2 = Linker.LibInfo.fromAidl(relros);
+        Assert.assertEquals(1023, remote2.mRelroFd);
+
+        remote1.close();
+        remote2.close();
     }
 }
