@@ -8,6 +8,8 @@ source_set("coordinator") {
     "ambient_autofill_notice_coordinator.mm",
     "ambient_autofill_notice_mediator.h",
     "ambient_autofill_notice_mediator.mm",
+    "autofill_ai_private_inference_notice_coordinator.h",
+    "autofill_ai_private_inference_notice_coordinator.mm",
     "autofill_ai_private_inference_notice_mediator.h",
     "autofill_ai_private_inference_notice_mediator.mm",
     "autofill_ai_private_inference_notice_mutator.h",
@@ -18,6 +20,7 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
+    "//build:branding_buildflags",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",

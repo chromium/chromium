@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
 #import "ios/chrome/browser/autofill/authentication/coordinator/card_unmask_authentication_coordinator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/ambient_autofill_notice_coordinator.h"
+#import "ios/chrome/browser/autofill/autofill_ai/coordinator/autofill_ai_private_inference_notice_coordinator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/autofill_ai_save_entity_coordinator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/error_dialog/coordinator/autofill_ai_error_dialog_coordinator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/error_dialog/model/autofill_ai_error_dialog_context.h"
@@ -224,6 +225,8 @@ const char kChromeAppStoreUrl[] =
   ActorOverlayCoordinator* _actorOverlayCoordinator;
   AddContactsCoordinator* _addContactsCoordinator;
   AmbientAutofillNoticeCoordinator* _ambientAutofillNoticeCoordinator;
+  AutofillAIPrivateInferenceNoticeCoordinator*
+      _autofillAIPrivateInferenceNoticeCoordinator;
   AutofillAiErrorDialogCoordinator* _autofillAiErrorDialogCoordinator;
   AutofillAISaveEntityCoordinator* _autofillAISaveEntityCoordinator;
   AutofillEditProfileCoordinator* _autofillEditProfileCoordinator;
@@ -318,6 +321,7 @@ const char kChromeAppStoreUrl[] =
   [self dismissAutofillProgressDialog];
   [self dismissSaveEntityDialog];
   [self dismissAmbientAutofillNotice];
+  [self dismissAutofillAIPrivateInferenceNotice];
   [_paymentsScanCoordinator stop];
   _paymentsScanCoordinator = nil;
   [_paymentsSuggestionBottomSheetCoordinator stop];
@@ -936,13 +940,17 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)showAutofillAIPrivateInferenceNotice {
-  // TODO(crbug.com/552031299): Implement displaying of the private inference
-  // notice bottom sheet.
+  [_autofillAIPrivateInferenceNoticeCoordinator stop];
+  _autofillAIPrivateInferenceNoticeCoordinator =
+      [[AutofillAIPrivateInferenceNoticeCoordinator alloc]
+          initWithBaseViewController:_baseViewController
+                             browser:_browser];
+  [_autofillAIPrivateInferenceNoticeCoordinator start];
 }
 
 - (void)dismissAutofillAIPrivateInferenceNotice {
-  // TODO(crbug.com/552031299): Implement dismissal of the private inference
-  // notice bottom sheet.
+  [_autofillAIPrivateInferenceNoticeCoordinator stop];
+  _autofillAIPrivateInferenceNoticeCoordinator = nil;
 }
 
 #pragma mark - CobaltCommands
