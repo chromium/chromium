@@ -43,6 +43,9 @@ bool ShowDeepSearchTool();
 // Whether to enable the server side state.
 bool EnableComposeboxServerSideState();
 
+// Weather verbatim suggestion is enabled in AIM in composebox.
+bool IsComposeboxVerbatimSuggestionEnabled();
+
 // Whether to enable compact mode.
 bool IsComposeboxCompactModeEnabled();
 
@@ -60,6 +63,9 @@ BASE_DECLARE_FEATURE(kComposeboxDeepSearch);
 
 // Used to enable server side state in the composebox.
 BASE_DECLARE_FEATURE(kComposeboxServerSideState);
+
+// Used to enable verbatim suggestions in AIM.
+BASE_DECLARE_FEATURE(kComposeboxVerbatimSuggestionInAIM);
 
 // Used to force top input plate in the composebox.
 BASE_DECLARE_FEATURE(kComposeboxForceTop);

@@ -503,6 +503,11 @@ inline constexpr char kComposeboxServerSideStateName[] =
 inline constexpr char kComposeboxServerSideStateDescription[] =
     "When enabled, the server side state will be used in the composebox";
 
+inline constexpr char kComposeboxVerbatimSuggestionInAIMName[] =
+    "Enable verbatim suggestion in AIM in composebox";
+inline constexpr char kComposeboxVerbatimSuggestionInAIMDescription[] =
+    "When enabled, the verbatim suggestion will appear in AIM";
+
 inline constexpr char kConsistentLogoDoodleHeightName[] =
     "Consistent NTP Logo and Doodle Height";
 inline constexpr char kConsistentLogoDoodleHeightDescription[] =

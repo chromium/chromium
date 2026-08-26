@@ -2071,6 +2071,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "composebox-verbatim-suggestion-in-aim",
+    "owners": [ "radunitescu@google.com", "bling-search@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "composebox-voice-search-coherence",
     "owners": [ "jamesleung@google.com", "chrome-desktop-search@google.com"],
     "expiry_milestone": 160
