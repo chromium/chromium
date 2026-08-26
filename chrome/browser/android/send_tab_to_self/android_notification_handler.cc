@@ -174,7 +174,21 @@ void AndroidNotificationHandler::DisplayNewEntries(
                     kSendTabToSelfSupportAutoOpenInTabGrid))
           : nullptr;
 
-  OpenEntries(new_entries, target_web_contents, AutoOpenTrigger::kImmediate);
+  if (target_web_contents) {
+    // If there is a target tab (i.e. Chrome is active / in the foreground),
+    // open the entries in background tabs.
+    OpenEntriesInBackground(
+        new_entries, *target_web_contents,
+        AutoOpenOutcome::kTabsOpenedImmediatelyInBackground);
+  } else {
+    // Chrome is *not* in the foreground, so show notifications for the entries.
+    for (const SendTabToSelfEntry* entry : new_entries) {
+      ShowNotification(*entry);
+      // TODO(crbug.com/488072250): Record this only if kSendTabToSelfAutoOpen
+      // is enabled.
+      RecordAutoOpenOutcome(AutoOpenOutcome::kUnopenedImmediately);
+    }
+  }
 }
 
 void AndroidNotificationHandler::ShowNotification(
@@ -271,76 +285,52 @@ void AndroidNotificationHandler::CheckAndOpenPendingEntries() {
     return;
   }
 
-  OpenEntries(
+  OpenEntriesInBackground(
       send_tab_to_self_model_->GetUnopenedEntriesTargetedToLocalDevice(),
-      target_web_contents, AutoOpenTrigger::kOnActivation);
+      *target_web_contents,
+      AutoOpenOutcome::kTabsOpenedInBackgroundUponActivation);
 }
 
-// static
-AutoOpenOutcome AndroidNotificationHandler::GetAutoOpenOutcomeForTabsOpened(
-    AutoOpenTrigger trigger) {
-  switch (trigger) {
-    case AutoOpenTrigger::kImmediate:
-      return AutoOpenOutcome::kTabsOpenedImmediatelyInBackground;
-    case AutoOpenTrigger::kOnActivation:
-      return AutoOpenOutcome::kTabsOpenedInBackgroundUponActivation;
-  }
-}
-
-void AndroidNotificationHandler::OpenEntries(
+void AndroidNotificationHandler::OpenEntriesInBackground(
     base::span<const SendTabToSelfEntry* const> entries,
-    content::WebContents* target_web_contents,
-    AutoOpenTrigger trigger) {
-  // If there is a target tab (i.e. Chrome is active / in the foreground), open
-  // the entries in background tabs.
-  if (target_web_contents) {
-    int next_tabstrip_index = TabModel::kInvalidIndex;
-    // Insert tabs after the active tab, if available, preserving chronological
-    // order when opening multiple tabs simultaneously.
-    const TabModel* model =
-        TabModelList::GetTabModelForWebContents(target_web_contents);
-    if (model) {
-      const int active_index = model->GetActiveIndex();
-      if (active_index != TabModel::kInvalidIndex) {
-        next_tabstrip_index = active_index + 1;
-      }
+    content::WebContents& target_web_contents,
+    AutoOpenOutcome outcome) {
+  int next_tabstrip_index = TabModel::kInvalidIndex;
+  // Insert tabs after the active tab, if available, preserving chronological
+  // order when opening multiple tabs simultaneously.
+  const TabModel* model =
+      TabModelList::GetTabModelForWebContents(&target_web_contents);
+  if (model) {
+    const int active_index = model->GetActiveIndex();
+    if (active_index != TabModel::kInvalidIndex) {
+      next_tabstrip_index = active_index + 1;
+    }
+  }
+
+  std::string_view last_device_name;
+
+  for (const SendTabToSelfEntry* entry : entries) {
+    OpenEntryInBackground(*entry, target_web_contents, next_tabstrip_index);
+    RecordAutoOpenOutcome(outcome);
+
+    if (next_tabstrip_index != TabModel::kInvalidIndex) {
+      ++next_tabstrip_index;
     }
 
-    std::string_view last_device_name;
+    // Dismiss any system notification associated with this entry.
+    HideNotification(entry->GetGUID());
 
-    const AutoOpenOutcome outcome = GetAutoOpenOutcomeForTabsOpened(trigger);
-    for (const SendTabToSelfEntry* entry : entries) {
-      OpenEntry(*entry, *target_web_contents, next_tabstrip_index);
-      RecordAutoOpenOutcome(outcome);
+    last_device_name = entry->GetDeviceName();
+  }
 
-      if (next_tabstrip_index != TabModel::kInvalidIndex) {
-        ++next_tabstrip_index;
-      }
-
-      // Dismiss any system notification associated with this entry.
-      HideNotification(entry->GetGUID());
-
-      last_device_name = entry->GetDeviceName();
-    }
-
-    // Display an in-app banner for the most recent sender device if at least
-    // one tab was opened.
-    if (!last_device_name.empty()) {
-      ShowMessageBanner(last_device_name, entries.size(), target_web_contents);
-    }
-  } else {
-    // Chrome is *not* in the foreground, so show notifications for the entries.
-    // This cannot happen in the AutoOpenTrigger::kOnActivation case, where
-    // Chrome is by definition in the foreground.
-    CHECK_EQ(trigger, AutoOpenTrigger::kImmediate);
-    for (const SendTabToSelfEntry* entry : entries) {
-      ShowNotification(*entry);
-      RecordAutoOpenOutcome(AutoOpenOutcome::kUnopenedImmediately);
-    }
+  // Display an in-app banner for the most recent sender device if at least
+  // one tab was opened.
+  if (!last_device_name.empty()) {
+    ShowMessageBanner(last_device_name, entries.size(), &target_web_contents);
   }
 }
 
-void AndroidNotificationHandler::OpenEntry(
+void AndroidNotificationHandler::OpenEntryInBackground(
     const SendTabToSelfEntry& entry,
     content::WebContents& target_web_contents,
     int tabstrip_index) {

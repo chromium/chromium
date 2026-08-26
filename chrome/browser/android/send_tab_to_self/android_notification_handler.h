@@ -86,23 +86,18 @@ class AndroidNotificationHandler : public ReceivingUiHandler,
   // available.
   void CheckAndOpenPendingEntries();
 
-  enum class AutoOpenTrigger {
-    kImmediate,
-    kOnActivation,
-  };
-
-  void OpenEntries(base::span<const SendTabToSelfEntry* const> entries,
-                   content::WebContents* target_web_contents,
-                   AutoOpenTrigger trigger);
-
-  static AutoOpenOutcome GetAutoOpenOutcomeForTabsOpened(
-      AutoOpenTrigger trigger);
+  // Opens all the given entries in the context of `target_web_contents` as new
+  // background tabs and marks the entries as opened.
+  void OpenEntriesInBackground(
+      base::span<const SendTabToSelfEntry* const> entries,
+      content::WebContents& target_web_contents,
+      AutoOpenOutcome outcome);
 
   // Opens the given entry in the context of `target_web_contents` as a new
   // background tab and marks the entry as opened.
-  void OpenEntry(const SendTabToSelfEntry& entry,
-                 content::WebContents& target_web_contents,
-                 int tabstrip_index);
+  void OpenEntryInBackground(const SendTabToSelfEntry& entry,
+                             content::WebContents& target_web_contents,
+                             int tabstrip_index);
 
   const raw_ptr<SendTabToSelfModel> send_tab_to_self_model_;
 
