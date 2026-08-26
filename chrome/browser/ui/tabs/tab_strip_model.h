@@ -202,8 +202,6 @@ class TabStripModel {
   using reverse_iterator = std::reverse_iterator<TabIterator>;
   using const_reverse_iterator = std::reverse_iterator<TabIterator>;
 
-  // TODO(crbug.com/540829277): Remove this, and use std::optional<size_t> (or
-  // at least std::optional<int>) in its place.
   static constexpr int kNoTab = -1;
 
   TabStripModel() = delete;
