@@ -268,6 +268,14 @@
   }
 }
 
+- (void)turnOffLevelUp {
+  if (!_levelUpService) {
+    return;
+  }
+  _levelUpService->ResetAllTasksStatus();
+  [self.delegate levelUpMediatorWantsToBeDismissed:self];
+}
+
 // Updates the profile consumer with the primary identity credentials.
 - (void)updateProfileInfo {
   id<SystemIdentity> identity = _authService->GetPrimaryIdentity();

@@ -209,4 +209,46 @@ TEST_F(LevelUpServiceTest, TestPasswordCheckObserver) {
                    LevelUpTaskStatType::kPasswordsVerified));
 }
 
+// Tests that ResetAllTasksStatus clears task completion, stats, level, and
+// segmentation impressions prefs.
+TEST_F(LevelUpServiceTest, TestResetAllTasksStatus) {
+  // Complete tasks and increment stats.
+  service_->MarkTaskCompleted(TaskType::kTabGroups);
+  service_->MarkTaskCompleted(TaskType::kAutofill);
+  service_->MarkTaskCompleted(TaskType::kPinTabs);
+  EXPECT_EQ(2, service_->GetCurrentLevel());
+  EXPECT_TRUE(service_->IsTaskCompleted(TaskType::kTabGroups));
+
+  service_->IncrementStatValue(LevelUpTaskStatType::kTabsDecluttered, 5);
+  service_->IncrementStatValue(LevelUpTaskStatType::kTypingSaved, 20);
+  EXPECT_EQ(5, service_->GetStatValue(LevelUpTaskStatType::kTabsDecluttered));
+  EXPECT_EQ(20, service_->GetStatValue(LevelUpTaskStatType::kTypingSaved));
+
+  PrefService* prefs = profile_->GetPrefs();
+  prefs->SetInteger(
+      prefs::kIosMagicStackSegmentationLevelUpImpressionsSinceFreshness, 3);
+
+  // Reset task status.
+  service_->ResetAllTasksStatus();
+
+  // Verify level and completion state are reset.
+  EXPECT_EQ(1, service_->GetCurrentLevel());
+  EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kTabGroups));
+  EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kAutofill));
+  EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kPinTabs));
+
+  // Verify all stats are reset.
+  EXPECT_EQ(0, service_->GetStatValue(LevelUpTaskStatType::kTabsDecluttered));
+  EXPECT_EQ(0, service_->GetStatValue(LevelUpTaskStatType::kTypingSaved));
+  EXPECT_EQ(0, service_->GetStatValue(LevelUpTaskStatType::kPasswordsVerified));
+  EXPECT_EQ(
+      0, service_->GetStatValue(LevelUpTaskStatType::kPhotoSearchesPerformed));
+
+  // Verify segmentation impressions pref is reset.
+  EXPECT_EQ(
+      0,
+      prefs->GetInteger(
+          prefs::kIosMagicStackSegmentationLevelUpImpressionsSinceFreshness));
+}
+
 }  // namespace

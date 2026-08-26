@@ -48,6 +48,9 @@ class LevelUpService : public KeyedService {
   // Marks a task as completed.
   void MarkTaskCompleted(TaskType task_type);
 
+  // Resets all task completion status and stats.
+  void ResetAllTasksStatus();
+
   // Returns true if the task is completed.
   bool IsTaskCompleted(TaskType task_type) const;
 

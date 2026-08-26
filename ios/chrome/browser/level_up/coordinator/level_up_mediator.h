@@ -52,6 +52,9 @@ class IdentityManager;
 // Toggles the progress updates enabled status.
 - (void)toggleProgressUpdates;
 
+// Resets task status and turns off Level Up.
+- (void)turnOffLevelUp;
+
 // Disconnects the mediator by releasing observed objects and pointers.
 - (void)disconnect;
 

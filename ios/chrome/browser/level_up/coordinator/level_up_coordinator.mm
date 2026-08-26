@@ -123,6 +123,10 @@
   [self.mediator toggleProgressUpdates];
 }
 
+- (void)didTapTurnOffLevelUp:(LevelUpViewController*)controller {
+  [self.mediator turnOffLevelUp];
+}
+
 - (void)levelUpViewController:(LevelUpViewController*)controller
                    didTapTask:(LevelUpTask*)task {
   [self didTapTask:task];

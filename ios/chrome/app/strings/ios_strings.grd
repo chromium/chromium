@@ -4699,6 +4699,9 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_TAB_GROUPS" desc="Completion snackbar message for the Tab Groups task. [iOS only]">
         Tab Groups completed!
       </message>
+      <message name="IDS_IOS_LEVEL_UP_TURN_OFF_LEVEL_UP" desc="The context menu item to turn off Level Up. [iOS only]">
+        Turn off Level Up
+      </message>
       <message name="IDS_IOS_LEVEL_UP_TURN_OFF_PROGRESS_UPDATES" desc="The context menu item to turn off Level Up progress updates. [iOS only]">
         Turn off progress updates
       </message>

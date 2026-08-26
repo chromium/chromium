@@ -26,6 +26,9 @@
 // Called when the user toggles the progress updates menu item.
 - (void)didTapToggleProgressUpdates:(LevelUpViewController*)controller;
 
+// Called when the user taps the "Turn off Level Up" menu item.
+- (void)didTapTurnOffLevelUp:(LevelUpViewController*)controller;
+
 @end
 
 // View controller displaying Level Up bottom sheet.

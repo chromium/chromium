@@ -48,6 +48,7 @@ typedef NS_ENUM(NSInteger, Symbol) {
   SymbolAirplaneUp,
   SymbolAirplaneUpSpark,
   SymbolArrowClockWise,
+  SymbolArrowshapeUpSlash,
   SymbolBagSpark,
   SymbolBottomOmniboxOption,
   SymbolCamera,

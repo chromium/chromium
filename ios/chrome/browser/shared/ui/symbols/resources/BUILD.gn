@@ -16,6 +16,8 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/airplane_up_spark.symbolset/airplane.up.spark.cr.svg",
     "Assets.xcassets/arrow_clockwise.symbolset/Contents.json",
     "Assets.xcassets/arrow_clockwise.symbolset/arrow.clockwise.cr.svg",
+    "Assets.xcassets/arrowshape_up_slash.symbolset/Contents.json",
+    "Assets.xcassets/arrowshape_up_slash.symbolset/arrowshape.up.slash.svg",
     "Assets.xcassets/bag_spark.symbolset/Contents.json",
     "Assets.xcassets/bag_spark.symbolset/bag.spark.cr.svg",
     "Assets.xcassets/bottom_omnibox_option.symbolset/Contents.json",

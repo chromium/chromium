@@ -67,6 +67,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"airplane_up_spark", SymbolType::kCustom};
     case SymbolArrowClockWise:
       return {@"arrow_clockwise", SymbolType::kCustom};
+    case SymbolArrowshapeUpSlash:
+      return {@"arrowshape_up_slash", SymbolType::kCustom};
     case SymbolBagSpark:
       return {@"bag_spark", SymbolType::kCustom};
     case SymbolBottomOmniboxOption:

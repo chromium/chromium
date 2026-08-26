@@ -291,6 +291,19 @@ void LevelUpService::MarkTaskCompleted(TaskType task_type) {
   }
 }
 
+void LevelUpService::ResetAllTasksStatus() {
+  completed_tasks_.clear();
+  current_level_ = 1;
+  pref_service_->ClearPref(prefs::kLevelUpCompletedTasks);
+  pref_service_->SetInteger(prefs::kLevelUpHighestLevel, 1);
+  pref_service_->SetInteger(prefs::kLevelUpTabsDeclutteredStat, 0);
+  pref_service_->SetInteger(prefs::kLevelUpTypingSavedStat, 0);
+  pref_service_->SetInteger(prefs::kLevelUpPasswordsVerifiedStat, 0);
+  pref_service_->SetInteger(prefs::kLevelUpPhotoSearchesPerformedStat, 0);
+  pref_service_->SetInteger(
+      prefs::kIosMagicStackSegmentationLevelUpImpressionsSinceFreshness, 0);
+}
+
 bool LevelUpService::IsTaskCompleted(TaskType task_type) const {
   std::string storage_id = TaskTypeToString(task_type);
   return completed_tasks_.contains(storage_id);

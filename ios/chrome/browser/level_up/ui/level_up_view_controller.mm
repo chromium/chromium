@@ -206,7 +206,28 @@ const CGFloat kTasksCellHeight = 350.0;
                                                [weakSelf toggleProgressUpdates];
                                              }];
 
-  _menuButton.menu = [UIMenu menuWithTitle:@"" children:@[ toggleAction ]];
+  NSString* turnOffTitle =
+      l10n_util::GetNSString(IDS_IOS_LEVEL_UP_TURN_OFF_LEVEL_UP);
+  UIImage* turnOffImage = SymbolTemplateWithPointSize(
+      SymbolArrowshapeUpSlash, kSymbolAccessoryPointSize);
+  UIAction* turnOffAction = [UIAction actionWithTitle:turnOffTitle
+                                                image:turnOffImage
+                                           identifier:nil
+                                              handler:^(UIAction* action) {
+                                                // TODO(crbug.com/544808224):
+                                                // Use full new design with
+                                                // secondary confirmation sheet.
+                                                [weakSelf turnOffLevelUp];
+                                              }];
+  turnOffAction.attributes = UIMenuElementAttributesDestructive;
+
+  _menuButton.menu = [UIMenu menuWithTitle:@""
+                                  children:@[ toggleAction, turnOffAction ]];
+}
+
+// Calls the delegate to turn off Level Up.
+- (void)turnOffLevelUp {
+  [self.delegate didTapTurnOffLevelUp:self];
 }
 
 // Calls the delegate to toggle the progress updates.
