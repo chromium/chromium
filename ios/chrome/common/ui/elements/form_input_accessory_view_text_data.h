@@ -21,6 +21,8 @@
                     (NSString*)previousButtonAccessibilityLabel
                            manualFillButtonTitle:
                                (NSString*)manualFillButtonTitle
+                         atMemoryFullButtonTitle:
+                             (NSString*)atMemoryFullButtonTitle
               manualFillButtonAccessibilityLabel:
                   (NSString*)manualFillButtonAccessibilityLabel
       passwordManualFillButtonAccessibilityLabel:
@@ -31,6 +33,8 @@
            (NSString*)addressManualFillButtonAccessibilityLabel
       atMemoryManualFillButtonAccessibilityLabel:
           (NSString*)atMemoryManualFillButtonAccessibilityLabel
+            atMemoryFullButtonAccessibilityLabel:
+                (NSString*)atMemoryFullButtonAccessibilityLabel
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -58,6 +62,8 @@
     NSString* addressManualFillButtonAccessibilityLabel;
 @property(nonatomic, readonly)
     NSString* atMemoryManualFillButtonAccessibilityLabel;
+@property(nonatomic, readonly) NSString* atMemoryFullButtonTitle;
+@property(nonatomic, readonly) NSString* atMemoryFullButtonAccessibilityLabel;
 
 @end
 

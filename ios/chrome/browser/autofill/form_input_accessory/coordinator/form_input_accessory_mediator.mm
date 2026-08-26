@@ -21,6 +21,7 @@
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -82,6 +83,9 @@ namespace {
 // field type isn't recognized, it returns the provided default value.
 bool InputTriggersKeyboard(autofill::FormActivityParams::FieldType field_type,
                            bool default_value) {
+  if (field_type == autofill::FormActivityParams::FieldType::kContentEditable) {
+    return base::FeatureList::IsEnabled(kAutofillSupportContentEditableIos);
+  }
   static const auto triggers_keyboard =
       base::MakeFixedFlatSet<autofill::FormActivityParams::FieldType>({
           autofill::FormActivityParams::FieldType::kEmail,
@@ -549,6 +553,10 @@ bool IsStateless() {
       ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
   BOOL isSelectOne =
       params.field_type == autofill::FormActivityParams::FieldType::kSelectOne;
+  BOOL isContentEditable =
+      params.field_type ==
+      autofill::FormActivityParams::FieldType::kContentEditable;
+  self.consumer.contentEditable = isContentEditable;
 
   // Return early and reset if element is a picker.
   if (isSelectOne && !isDefaultViewEnabled) {
@@ -774,6 +782,7 @@ bool IsStateless() {
     self.webState = nullptr;
     self.provider = nil;
     self.consumer.atMemoryButtonHidden = YES;
+    self.consumer.contentEditable = NO;
   }
 }
 
@@ -782,6 +791,7 @@ bool IsStateless() {
 - (void)reset {
   _lastSeenParams = autofill::FormActivityParams();
   _hasLastSeenParams = NO;
+  self.consumer.contentEditable = NO;
   [self.consumer showAccessorySuggestions:@[]];
 
   [self.handler resetFormInputView];

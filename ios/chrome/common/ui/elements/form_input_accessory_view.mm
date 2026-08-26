@@ -131,8 +131,11 @@ const CGFloat kLargeKeyboardAccessoryHeight = 59;
 NSString* const kFormInputAccessoryViewAccessibilityID =
     @"kFormInputAccessoryViewAccessibilityID";
 
-NSString* const kFormInputAccessoryViewAtMemoryButtonAccessibilityIdentifier =
-    @"kFormInputAccessoryViewAtMemoryButtonAccessibilityIdentifier";
+NSString* const kFormInputAccessoryViewAtMemoryButtonAccessibilityID =
+    @"kFormInputAccessoryViewAtMemoryButtonAccessibilityID";
+
+NSString* const kFormInputAccessoryViewAtMemoryFullButtonAccessibilityID =
+    @"kFormInputAccessoryViewAtMemoryFullButtonAccessibilityID";
 
 NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
     @"kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID";
@@ -155,6 +158,8 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 @property(nonatomic, weak) UIButton* addressManualFillButton;
 
 @property(nonatomic, weak) UIButton* atMemoryManualFillButton;
+
+@property(nonatomic, weak) UIButton* atMemoryFullButton;
 
 @property(nonatomic, weak) UIView* leadingView;
 
@@ -191,8 +196,6 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   UIView* _backgroundView;
   // Whether we are using the large accessory view.
   BOOL _largeAccessoryViewEnabled;
-  // Whether the AtMemory button is hidden.
-  BOOL _atMemoryButtonHidden;
   // Whether we are using the small width accessory view.
   BOOL _smallWidthAccessoryViewEnabled;
   // Whether the current form factor is a tablet.
@@ -274,19 +277,6 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   }
 }
 
-- (void)setAtMemoryButtonHidden:(BOOL)atMemoryButtonHidden {
-  if (_atMemoryButtonHidden == atMemoryButtonHidden) {
-    return;
-  }
-  _atMemoryButtonHidden = atMemoryButtonHidden;
-  if (self.atMemoryManualFillButton) {
-    BOOL hideManualFillByCategoryButtons =
-        (_currentGroup !=
-         FormInputAccessoryViewSubitemGroup::kManualFillButtons);
-    self.atMemoryManualFillButton.hidden =
-        hideManualFillByCategoryButtons || _atMemoryButtonHidden;
-  }
-}
 
 - (void)setIsCompact:(BOOL)isCompact {
   if (_isCompact == isCompact) {
@@ -316,6 +306,11 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   self.addressManualFillButton.hidden = hideManualFillByCategoryButtons;
   self.atMemoryManualFillButton.hidden =
       hideManualFillByCategoryButtons || self.atMemoryButtonHidden;
+
+  BOOL hideAtMemoryButton =
+      (group != FormInputAccessoryViewSubitemGroup::kAtMemoryFullButton);
+  self.atMemoryFullButton.hidden =
+      hideAtMemoryButton || self.atMemoryButtonHidden;
 
   BOOL hideManualFillButton =
       (group != FormInputAccessoryViewSubitemGroup::kExpandButton);
@@ -734,6 +729,11 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
     atMemoryManualFillButton.hidden = YES;
     self.atMemoryManualFillButton = atMemoryManualFillButton;
 
+    UIButton* atMemoryFullButton =
+        [self createAtMemoryFullButtonWithText:textData];
+    atMemoryFullButton.hidden = YES;
+    self.atMemoryFullButton = atMemoryFullButton;
+
     if (_isTabletFormFactor) {
       _closeButton.hidden = YES;
     }
@@ -747,7 +747,7 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
     self.nextButton = nextButton;
 
     navigationView = [[UIStackView alloc] initWithArrangedSubviews:@[
-      previousButton, nextButton, atMemoryManualFillButton,
+      previousButton, nextButton, atMemoryManualFillButton, atMemoryFullButton,
       passwordManualFillButton, creditCardManualFillButton,
       addressManualFillButton, manualFillButton, _closeButton
     ]];
@@ -916,16 +916,51 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
       accessibilityLabel:textData.addressManualFillButtonAccessibilityLabel];
 }
 
-// Create the AtMemory manual fill button.
+// Create the AtMemory icon button.
 - (UIButton*)createAtMemoryManualFillButtonWithText:
     (FormInputAccessoryViewTextData*)textData {
-  // TODO(crbug.com/522326512): Verify this button action and accessibility.
   UIButton* button = [self
        createImageButton:self.atMemoryManualFillSymbol
                   action:@selector(atMemoryManualFillButtonTapped)
       accessibilityLabel:textData.atMemoryManualFillButtonAccessibilityLabel];
   button.accessibilityIdentifier =
-      kFormInputAccessoryViewAtMemoryButtonAccessibilityIdentifier;
+      kFormInputAccessoryViewAtMemoryButtonAccessibilityID;
+  return button;
+}
+
+// Create the AtMemory full button (icon + title).
+- (UIButton*)createAtMemoryFullButtonWithText:
+    (FormInputAccessoryViewTextData*)textData {
+  UIButton* button = [self createButton:YES];
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.image =
+      [self applySymbolTint:self.atMemoryManualFillSymbol];
+  buttonConfiguration.imagePadding = kManualFillTitlePadding;
+
+  NSString* title = textData.atMemoryFullButtonTitle ?: @"";
+  UIFont* font = [UIFont systemFontOfSize:kManualFillTitleFontSize
+                                   weight:UIFontWeightMedium];
+  NSDictionary* attributes;
+  if ([self isLiquidGlassEffectEnabled]) {
+    attributes = @{
+      NSFontAttributeName : font,
+      NSForegroundColorAttributeName : [UIColor colorNamed:kTextPrimaryColor]
+    };
+  } else {
+    attributes = @{NSFontAttributeName : font};
+  }
+  buttonConfiguration.attributedTitle =
+      [[NSAttributedString alloc] initWithString:title attributes:attributes];
+
+  button.configuration = buttonConfiguration;
+  [self setMinimumSizeForButton:button];
+  [button addTarget:self
+                action:@selector(atMemoryManualFillButtonTapped)
+      forControlEvents:UIControlEventTouchUpInside];
+  button.accessibilityLabel = textData.atMemoryFullButtonAccessibilityLabel;
+  button.accessibilityIdentifier =
+      kFormInputAccessoryViewAtMemoryFullButtonAccessibilityID;
   return button;
 }
 

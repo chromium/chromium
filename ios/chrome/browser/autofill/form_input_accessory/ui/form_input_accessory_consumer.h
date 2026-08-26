@@ -31,6 +31,9 @@
 // Hides or shows the AtMemory button.
 @property(nonatomic) BOOL atMemoryButtonHidden;
 
+// Whether the currently focused element is contenteditable.
+@property(nonatomic, assign, getter=isContentEditable) BOOL contentEditable;
+
 // Main type of the form suggestions.
 @property(nonatomic) autofill::FillingProduct mainFillingProduct;
 

@@ -12,7 +12,7 @@
 
 + (id<GREYMatcher>)atMemoryButton {
   return grey_accessibilityID(
-      kFormInputAccessoryViewAtMemoryButtonAccessibilityIdentifier);
+      kFormInputAccessoryViewAtMemoryButtonAccessibilityID);
 }
 
 + (id<GREYMatcher>)searchBar {

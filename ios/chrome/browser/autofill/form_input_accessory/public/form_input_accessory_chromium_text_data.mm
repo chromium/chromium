@@ -24,6 +24,9 @@ FormInputAccessoryViewTextData* ChromiumAccessoryViewTextData() {
                              manualFillButtonTitle:
                                  GetNSString(
                                      IDS_IOS_AUTOFILL_ACCNAME_ALL_AUTOFILL_DATA)
+                           atMemoryFullButtonTitle:
+                               GetNSString(
+                                   IDS_IOS_AUTOFILL_AI_FIND_AND_FILL_TITLE)
                 manualFillButtonAccessibilityLabel:
                     GetNSString(IDS_IOS_AUTOFILL_ACCNAME_AUTOFILL_DATA)
         passwordManualFillButtonAccessibilityLabel:
@@ -32,7 +35,8 @@ FormInputAccessoryViewTextData* ChromiumAccessoryViewTextData() {
           GetNSString(IDS_IOS_AUTOFILL_CREDIT_CARD_AUTOFILL_DATA)
          addressManualFillButtonAccessibilityLabel:
              GetNSString(IDS_IOS_AUTOFILL_ADDRESS_AUTOFILL_DATA)
-        // TODO(crbug.com/522326512): Verify this string.
         atMemoryManualFillButtonAccessibilityLabel:
-            GetNSString(IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_SUBTITLE)];
+            GetNSString(IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_SUBTITLE)
+              atMemoryFullButtonAccessibilityLabel:
+                  GetNSString(IDS_IOS_AUTOFILL_AI_FIND_AND_FILL_TITLE)];
 }

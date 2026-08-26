@@ -141,6 +141,7 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
 @synthesize navigationDelegate = _navigationDelegate;
 @synthesize passwordButtonHidden = _passwordButtonHidden;
 @synthesize atMemoryButtonHidden = _atMemoryButtonHidden;
+@synthesize contentEditable = _contentEditable;
 @synthesize mainFillingProduct = _mainFillingProduct;
 @synthesize currentFieldId = _currentFieldId;
 
@@ -240,10 +241,27 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
     }
   }
 
-  [self.formInputAccessoryView
-      showGroup:[self hasSingleManualFillButton:validSuggestions.count > 0]
-                    ? FormInputAccessoryViewSubitemGroup::kExpandButton
-                    : FormInputAccessoryViewSubitemGroup::kManualFillButtons];
+  FormInputAccessoryViewSubitemGroup group;
+  if (self.isContentEditable) {
+    // `contenteditable` support is expected to be enabled together with
+    // AtMemory. However, due to the fact that AtMemory may not be available
+    // because of eligibility checks, when a `contenteditable` element is
+    // focused, we might not be able to show the AtMemory full button. There is
+    // also incognito mode where AtMemory is not available for now. Currently,
+    // when a `contenteditable` element is focused, the keyboard accessory is
+    // showing manual fill buttons which can not really fill. Showing navigation
+    // buttons is a better fallback.
+    if (self.atMemoryButtonHidden) {
+      group = FormInputAccessoryViewSubitemGroup::kNavigationButtons;
+    } else {
+      group = FormInputAccessoryViewSubitemGroup::kAtMemoryFullButton;
+    }
+  } else if ([self hasSingleManualFillButton:validSuggestions.count > 0]) {
+    group = FormInputAccessoryViewSubitemGroup::kExpandButton;
+  } else {
+    group = FormInputAccessoryViewSubitemGroup::kManualFillButtons;
+  }
+  [self.formInputAccessoryView showGroup:group];
 
   if ([ManualFillUtil
           manualFillDataTypeFromFillingProduct:_mainFillingProduct] ==
@@ -331,6 +349,9 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
 #pragma mark - Getter
 
 - (BOOL)isFormAccessoryVisible {
+  if (self.isContentEditable) {
+    return !self.atMemoryButtonHidden;
+  }
   return !(self.addressButtonHidden && self.creditCardButtonHidden &&
            self.passwordButtonHidden && self.atMemoryButtonHidden &&
            self.formSuggestionView.suggestions.count == 0);
