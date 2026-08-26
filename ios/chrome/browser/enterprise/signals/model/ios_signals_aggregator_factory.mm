@@ -9,6 +9,8 @@
 #import <utility>
 #import <vector>
 
+#import "base/check.h"
+#import "base/functional/bind.h"
 #import "base/no_destructor.h"
 #import "components/device_signals/core/browser/signals_aggregator_impl.h"
 #import "components/device_signals/core/browser/signals_collector.h"
@@ -17,6 +19,8 @@
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/signals/model/ios_system_signals_collector.h"
 #import "ios/chrome/browser/enterprise/signals/model/profile_signals_collector_ios.h"
+#import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace {
@@ -85,7 +89,13 @@ IOSSignalsAggregatorFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   std::vector<std::unique_ptr<device_signals::SignalsCollector>> collectors;
 
-  collectors.push_back(std::make_unique<IOSSystemSignalsCollector>());
+  BrowserPolicyConnectorIOS* browser_policy_connector =
+      GetApplicationContext()->GetBrowserPolicyConnector();
+  CHECK(browser_policy_connector);
+  collectors.push_back(std::make_unique<IOSSystemSignalsCollector>(
+      base::BindRepeating(&BrowserPolicyConnectorIOS::GetDeviceAffiliationIds,
+                          base::Unretained(browser_policy_connector))));
+
   collectors.push_back(std::make_unique<ProfileSignalsCollectorIOS>(
       profile->GetPrefs(), profile->GetUserCloudPolicyManager(),
       enterprise::ProfileIdServiceFactoryIOS::GetForProfile(profile),

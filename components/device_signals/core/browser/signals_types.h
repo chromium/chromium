@@ -219,6 +219,7 @@ struct OsSignalsResponse : BaseSignalResponse {
   // Common to all platforms, not necessarily all being collected.
 
   std::string browser_version{};
+  std::vector<std::string> device_affiliation_ids{};
   std::optional<std::string> device_enrollment_domain = std::nullopt;
   std::string device_manufacturer{};
   std::string device_model{};
@@ -278,6 +279,7 @@ struct ProfileSignalsResponse : BaseSignalResponse {
   bool chrome_remote_desktop_app_blocked = false;
   std::optional<safe_browsing::PasswordProtectionTrigger>
       password_protection_warning_trigger = std::nullopt;
+  std::vector<std::string> profile_affiliation_ids{};
   std::optional<std::string> profile_enrollment_domain = std::nullopt;
   safe_browsing::SafeBrowsingState safe_browsing_protection_level =
       safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING;

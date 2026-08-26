@@ -6,7 +6,10 @@
 
 #import <memory>
 #import <unordered_set>
+#import <vector>
 
+#import "base/containers/flat_set.h"
+#import "base/functional/bind.h"
 #import "base/run_loop.h"
 #import "base/test/task_environment.h"
 #import "components/device_signals/core/browser/signals_types.h"
@@ -23,13 +26,17 @@
 namespace {
 
 constexpr char kFakeVendorId[] = "fake-vendor-id";
+constexpr char kFakeDeviceAffiliationId[] = "device-affiliation-id";
 
 class IOSSystemSignalsCollectorTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
     ios::provider::test::SetDeviceIdentifier(kFakeVendorId);
-    collector_ = std::make_unique<IOSSystemSignalsCollector>();
+    collector_ =
+        std::make_unique<IOSSystemSignalsCollector>(base::BindRepeating([] {
+          return base::flat_set<std::string>{kFakeDeviceAffiliationId};
+        }));
 
     mock_auth_module_ = OCMClassMock([ReauthenticationModule class]);
 
@@ -81,6 +88,8 @@ TEST_F(IOSSystemSignalsCollectorTest, GetOsSignals_Success) {
   EXPECT_EQ(os_signals.operating_system, "iOS");
   EXPECT_EQ(os_signals.vendor_id, kFakeVendorId);
   EXPECT_EQ(os_signals.browser_version, version_info::GetVersionNumber());
+  EXPECT_EQ(os_signals.device_affiliation_ids,
+            std::vector<std::string>({kFakeDeviceAffiliationId}));
   EXPECT_EQ(os_signals.screen_lock_secured,
             device_signals::SettingValue::ENABLED);
   EXPECT_EQ(os_signals.disk_encryption,

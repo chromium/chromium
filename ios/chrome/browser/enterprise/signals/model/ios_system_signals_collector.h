@@ -6,7 +6,10 @@
 #define IOS_CHROME_BROWSER_ENTERPRISE_SIGNALS_MODEL_IOS_SYSTEM_SIGNALS_COLLECTOR_H_
 
 #import <memory>
+#import <string>
 
+#import "base/containers/flat_set.h"
+#import "base/functional/callback.h"
 #import "base/memory/weak_ptr.h"
 #import "base/system/sys_info.h"
 #import "components/device_signals/core/browser/base_signals_collector.h"
@@ -14,7 +17,11 @@
 
 class IOSSystemSignalsCollector : public device_signals::BaseSignalsCollector {
  public:
-  IOSSystemSignalsCollector();
+  using DeviceAffiliationIdsCallback =
+      base::RepeatingCallback<base::flat_set<std::string>()>;
+
+  explicit IOSSystemSignalsCollector(
+      DeviceAffiliationIdsCallback device_affiliation_ids_callback);
   ~IOSSystemSignalsCollector() override;
 
   IOSSystemSignalsCollector(const IOSSystemSignalsCollector&) = delete;
@@ -33,7 +40,7 @@ class IOSSystemSignalsCollector : public device_signals::BaseSignalsCollector {
       base::OnceClosure done_closure,
       base::SysInfo::HardwareInfo hardware_info);
 
-
+  const DeviceAffiliationIdsCallback device_affiliation_ids_callback_;
   base::WeakPtrFactory<IOSSystemSignalsCollector> weak_factory_{this};
 };
 

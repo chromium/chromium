@@ -4,4 +4,6 @@ include_rules = [
   "+ios/chrome/browser/enterprise/identifiers",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/common/ui/reauthentication",
+  "+ios/chrome/browser/policy/model",
+  "+ios/chrome/browser/shared/model/application_context",
 ]

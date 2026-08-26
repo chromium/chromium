@@ -30,6 +30,7 @@
 
 namespace {
 constexpr char kFakeProfileEnrollmentDomain[] = "profile.domain.com";
+constexpr char kFakeProfileAffiliationId[] = "profile-affiliation-id";
 }  // namespace
 
 // Test fixture for ProfileSignalsCollectorIOS. It sets up a fake profile with
@@ -47,6 +48,7 @@ class ProfileSignalsCollectorIOSTest : public PlatformTest {
     enterprise_management::PolicyData profile_policy_data;
     profile_policy_data.set_managed_by(kFakeProfileEnrollmentDomain);
     profile_policy_data.set_request_token("test_profile_dm_token");
+    profile_policy_data.add_user_affiliation_ids(kFakeProfileAffiliationId);
 
     auto store = std::make_unique<policy::MockUserCloudPolicyStore>(
         policy::dm_protocol::GetChromeUserPolicyType());
@@ -110,10 +112,10 @@ TEST_F(ProfileSignalsCollectorIOSTest, IsSignalSupported) {
       collector_->IsSignalSupported(device_signals::SignalName::kOsSignals));
 }
 
-// Tests that `GetSignal()` correctly collects default profile signals,
-// including standard Safe Browsing protection level, enrollment domain, and
-// profile ID, when default preferences are configured.
-TEST_F(ProfileSignalsCollectorIOSTest, PopulateProfileSignals_DefaultValues) {
+// Tests that `GetSignal()` collects the expected signals for a managed
+// profile, including Safe Browsing state, enrollment domain, profile ID, and
+// affiliation IDs.
+TEST_F(ProfileSignalsCollectorIOSTest, PopulateProfileSignals_ManagedProfile) {
   // Set some prefs to verify they are collected.
   PrefService* prefs = profile_->GetPrefs();
   prefs->SetBoolean(prefs::kSafeBrowsingEnabled, true);
@@ -144,11 +146,36 @@ TEST_F(ProfileSignalsCollectorIOSTest, PopulateProfileSignals_DefaultValues) {
 
   // Verify Profile ID.
   EXPECT_TRUE(profile_signals.profile_id.has_value());
-
+  EXPECT_EQ(profile_signals.profile_affiliation_ids,
+            std::vector<std::string>({kFakeProfileAffiliationId}));
   // Verify other fields are initialized.
   EXPECT_FALSE(profile_signals.built_in_dns_client_enabled);
   EXPECT_FALSE(profile_signals.chrome_remote_desktop_app_blocked);
   EXPECT_FALSE(profile_signals.site_isolation_enabled);
+}
+
+// Test that missing policy data produces an empty affiliation ID list.
+TEST_F(ProfileSignalsCollectorIOSTest,
+       PopulateProfileSignals_NoPolicyHasEmptyAffiliationIds) {
+  policy::CloudPolicyStore* policy_store =
+      profile_->GetUserCloudPolicyManager()->core()->store();
+  ASSERT_NE(policy_store, nullptr);
+  policy_store->set_policy_data_for_testing(nullptr);
+
+  device_signals::SignalsAggregationRequest request;
+  device_signals::SignalsAggregationResponse response;
+  base::RunLoop run_loop;
+
+  collector_->GetSignal(device_signals::SignalName::kBrowserContextSignals,
+                        device_signals::UserPermission::kGranted, request,
+                        response, run_loop.QuitClosure());
+
+  run_loop.Run();
+
+  ASSERT_TRUE(response.profile_signals_response.has_value());
+  const device_signals::ProfileSignalsResponse& profile_signals =
+      response.profile_signals_response.value();
+  EXPECT_TRUE(profile_signals.profile_affiliation_ids.empty());
 }
 
 // Tests that `GetSignal()` collects the Enhanced Safe Browsing protection level

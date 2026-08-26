@@ -28,12 +28,17 @@ device_signals::SettingValue GetScreenLockSecured() {
 
 }  // namespace
 
-IOSSystemSignalsCollector::IOSSystemSignalsCollector()
+IOSSystemSignalsCollector::IOSSystemSignalsCollector(
+    DeviceAffiliationIdsCallback device_affiliation_ids_callback)
     : device_signals::BaseSignalsCollector({
           {device_signals::SignalName::kOsSignals,
            base::BindRepeating(&IOSSystemSignalsCollector::GetOsSignals,
                                base::Unretained(this))},
-      }) {}
+      }),
+      device_affiliation_ids_callback_(
+          std::move(device_affiliation_ids_callback)) {
+  CHECK(device_affiliation_ids_callback_);
+}
 
 IOSSystemSignalsCollector::~IOSSystemSignalsCollector() = default;
 
@@ -47,6 +52,10 @@ void IOSSystemSignalsCollector::GetOsSignals(
 
   signal_response->browser_version =
       std::string(version_info::GetVersionNumber());
+  const base::flat_set<std::string> device_affiliation_ids =
+      device_affiliation_ids_callback_.Run();
+  signal_response->device_affiliation_ids.assign(device_affiliation_ids.begin(),
+                                                 device_affiliation_ids.end());
   signal_response->operating_system = kIOSOperatingSystem;
   signal_response->vendor_id = ios::provider::GetDeviceIdentifier();
   device_signals::SettingValue screen_lock = GetScreenLockSecured();
