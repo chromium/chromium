@@ -407,6 +407,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
 
   for (int i = 0; i < kMaxScansPerDay; ++i) {
     delegate_->StartIntelligentScan("test", base::DoNothing());
+    histogram_tester_.ExpectBucketCount(
+        "SBClientPhishing.ServerSideModelQuotaCountOnLookup", i + 1, 1);
   }
   histogram_tester_.ExpectUniqueSample(
       "SBClientPhishing.ServerSideModelHitQuotaAtInquiryTime", false,
@@ -503,6 +505,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   // Fill up the quota.
   for (int i = 0; i < kMaxScansPerDay; ++i) {
     delegate_->StartIntelligentScan("test", base::DoNothing());
+    histogram_tester_.ExpectBucketCount(
+        "SBClientPhishing.ServerSideModelQuotaCountOnLookup", i + 1, 1);
   }
 
   // A scam warning should refund one quota.
@@ -515,6 +519,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   std::optional<base::UnguessableToken> token =
       delegate_->StartIntelligentScan("test rendered text", base::DoNothing());
   EXPECT_TRUE(token.has_value());
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ServerSideModelQuotaCountOnLookup", kMaxScansPerDay, 2);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,

@@ -1489,8 +1489,21 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.ServerSideModelQuotaCountOnLookup"
+    units="queries" expires_after="2027-08-24">
+  <owner>bcl@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the number of server-side model queries made in the current 24-hour
+    window for the user at the time a new server-side model lookup is initiated.
+    The count includes the current lookup. It does not include refunded quota
+    (i.e. from lookups which showed a warning). This is not recorded if the
+    lookup is rejected due to hitting the quota limit.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.ServerSideModelQuotaCountOnScamWarningShown"
-    units="queries" expires_after="2026-12-27">
+    units="queries" expires_after="2027-08-24">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
