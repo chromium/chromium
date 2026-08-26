@@ -247,15 +247,36 @@ export class SearchboxIconElement extends CrLitElement {
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
     if (changedProperties.has('match') || changedProperties.has('pageUrl')) {
+      // In Lit, setting properties synchronously within `willUpdate()` does not
+      // add them to `changedProperties` for the current update cycle. Track
+      // loading state transitions directly when computed URLs change.
+      const oldIconSrc = this.iconSrc_;
       this.iconSrc_ = this.computeIconSrc_();
+      if (this.iconSrc_ !== oldIconSrc) {
+        // If `iconSrc_` changes to a new truthy value, a new icon is being
+        // loaded.
+        this.iconLoading_ = !!this.iconSrc_;
+      }
+
+      const oldImageSrc = this.imageSrc_;
       this.imageSrc_ = this.computeImageSrc_();
+      if (this.imageSrc_ !== oldImageSrc) {
+        // If imageSrc_ changes to a new truthy value, a new image is being
+        // loaded.
+        this.imageLoading_ = !!this.imageSrc_;
+        this.imageError_ = false;
+      }
+
       this.isAnswer = this.computeIsAnswer_();
       this.isEnterpriseSearchAggregatorPeopleType =
           this.computeIsEnterpriseSearchAggregatorPeopleType_();
       this.isStarterPack = this.computeIsStarterPack_();
       this.isFeaturedEnterpriseSearch =
-          this.computeIsFeaturedEnterpriseSearch();
+          this.computeIsFeaturedEnterpriseSearch_();
       this.isWeatherAnswer = this.computeIsWeatherAnswer_();
       this.hasImage_ = this.computeHasImage_();
       this.maskImage = this.computeMaskImage_();
@@ -267,49 +288,32 @@ export class SearchboxIconElement extends CrLitElement {
           this.computeHasIconContainerBackground_();
     }
 
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-
     if (changedProperties.has('match') || changedProperties.has('pageUrl') ||
         changedProperties.has('defaultIcon') ||
         changedPrivateProperties.has('isTopChromeSearchbox_')) {
+      const oldFaviconImage = this.faviconImage_;
       this.faviconImage_ = this.computeFaviconImage_();
-    }
-
-    if (changedProperties.has('match') ||
-        changedPrivateProperties.has('faviconImage_') ||
-        changedPrivateProperties.has('isTopChromeSearchbox_')) {
+      if (this.faviconImage_ !== oldFaviconImage) {
+        // If `faviconImage_` changes to a new truthy value, a new favicon is
+        // being loaded.
+        this.faviconLoading_ = !!this.faviconImage_;
+        this.faviconError_ = false;
+      }
       this.faviconImageSrcSet_ = this.computeFaviconImageSrcSet_();
     }
 
-    if (changedPrivateProperties.has('faviconImage_')) {
-      // If `faviconImage_` changes to a new truthy value, a new favicon is
-      // being loaded.
-      this.faviconLoading_ = !!this.faviconImage_;
-      this.faviconError_ = false;
-    }
-
-    if (changedProperties.has('match') ||
+    if (changedProperties.has('match') || changedProperties.has('pageUrl') ||
+        changedProperties.has('defaultIcon') ||
         changedPrivateProperties.has('isLensSearchbox_') ||
+        changedPrivateProperties.has('isTopChromeSearchbox_') ||
         changedPrivateProperties.has('faviconImage_') ||
         changedPrivateProperties.has('faviconLoading_') ||
         changedPrivateProperties.has('faviconError_')) {
       this.showFaviconImage_ = this.computeShowFaviconImage_();
     }
 
-    if (changedPrivateProperties.has('iconSrc_')) {
-      // If iconSrc_ changes to a new truthy value, a new icon is being loaded.
-      this.iconLoading_ = !!this.iconSrc_;
-    }
-
-    if (changedPrivateProperties.has('imageSrc_')) {
-      // If imageSrc_ changes to a new truthy value, a new image is being
-      // loaded.
-      this.imageLoading_ = !!this.imageSrc_;
-      this.imageError_ = false;
-    }
-
-    if (changedPrivateProperties.has('imageSrc_') ||
+    if (changedProperties.has('match') ||
+        changedPrivateProperties.has('imageSrc_') ||
         changedPrivateProperties.has('imageError_')) {
       this.showImage_ = this.computeShowImage_();
     }
@@ -577,7 +581,7 @@ export class SearchboxIconElement extends CrLitElement {
     return this.match?.type === STARTER_PACK;
   }
 
-  private computeIsFeaturedEnterpriseSearch(): boolean {
+  private computeIsFeaturedEnterpriseSearch_(): boolean {
     return this.match?.type === FEATURED_ENTERPRISE_SEARCH;
   }
 }
