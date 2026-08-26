@@ -633,7 +633,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, InputInOmnibox) {
   EXPECT_TRUE(GetPageActionAccessor().GetVisible());
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  LocationBar* location_bar = browser_view->GetLocationBarView();
+  LocationBar* location_bar = browser_view->GetLocationBar();
   location_bar->GetOmniboxController()->edit_model()->SetInputInProgress(true);
   EXPECT_FALSE(GetPageActionAccessor().GetVisible());
 }
