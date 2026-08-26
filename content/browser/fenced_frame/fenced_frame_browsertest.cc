@@ -112,6 +112,31 @@ GURL GenerateAndVerifyPendingMappedURN(
   return pending_urn.value();
 }
 
+class BlockedNavigationDelegate : public WebContentsDelegate {
+ public:
+  explicit BlockedNavigationDelegate(WebContents* web_contents)
+      : web_contents_(web_contents) {
+    web_contents_->SetDelegate(this);
+  }
+
+  ~BlockedNavigationDelegate() override { web_contents_->SetDelegate(nullptr); }
+
+  void OnDidBlockNavigation(
+      WebContents* web_contents,
+      const GURL& blocked_url,
+      const GURL& initiator_url,
+      const url::Origin& initiator_origin,
+      blink::mojom::NavigationBlockedReason reason) override {
+    ++blocked_navigation_count_;
+  }
+
+  int blocked_navigation_count() const { return blocked_navigation_count_; }
+
+ private:
+  raw_ptr<WebContents> web_contents_;
+  int blocked_navigation_count_ = 0;
+};
+
 }  // namespace
 
 class FencedFrameBrowserTestBase : public ContentBrowserTest {
@@ -5586,6 +5611,45 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
     EXPECT_EQ(fenced_frame_url_1,
               fenced_frame->current_frame_host()->GetLastCommittedURL());
   }
+}
+
+// Tests that a fenced frame reporting a blocked redirect does not surface
+// blocked-redirect UI on the embedder's tab.
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
+                       DidBlockNavigationIgnoredFromFencedFrame) {
+  GURL main_url(https_server()->GetURL("a.test", "/hello.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+
+  EXPECT_TRUE(ExecJs(root,
+                     "var fenced_frame = document.createElement('fencedframe');"
+                     "document.body.appendChild(fenced_frame);"));
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* fenced_frame_root_node =
+      GetFencedFrameRootNode(root->child_at(0));
+
+  GURL fenced_frame_url(
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+  std::string navigate_script =
+      JsReplace("fenced_frame.config = new FencedFrameConfig($1);",
+                fenced_frame_url.spec());
+  NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+      fenced_frame_root_node, navigate_script);
+
+  BlockedNavigationDelegate delegate(web_contents());
+
+  // Simulate the fenced frame document reporting a blocked redirect.
+  fenced_frame_root_node->current_frame_host()->DidBlockNavigation(
+      main_url,
+      blink::mojom::NavigationBlockedReason::kRedirectWithNoUserGesture);
+  EXPECT_EQ(0, delegate.blocked_navigation_count());
+
+  // The embedder's primary main frame should still be able to report blocked
+  // redirects.
+  primary_main_frame_host()->DidBlockNavigation(
+      main_url,
+      blink::mojom::NavigationBlockedReason::kRedirectWithNoUserGesture);
+  EXPECT_EQ(1, delegate.blocked_navigation_count());
 }
 
 // Parameterized on whether the feature is enabled or not.

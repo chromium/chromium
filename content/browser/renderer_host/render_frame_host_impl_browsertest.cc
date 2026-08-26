@@ -214,6 +214,31 @@ class FirstPartySchemeContentBrowserClient
       trustmeifembeddingsecure_factory_;
 };
 
+class BlockedNavigationDelegate : public WebContentsDelegate {
+ public:
+  explicit BlockedNavigationDelegate(WebContents* web_contents)
+      : web_contents_(web_contents) {
+    web_contents_->SetDelegate(this);
+  }
+
+  ~BlockedNavigationDelegate() override { web_contents_->SetDelegate(nullptr); }
+
+  void OnDidBlockNavigation(
+      WebContents* web_contents,
+      const GURL& blocked_url,
+      const GURL& initiator_url,
+      const url::Origin& initiator_origin,
+      blink::mojom::NavigationBlockedReason reason) override {
+    ++blocked_navigation_count_;
+  }
+
+  int blocked_navigation_count() const { return blocked_navigation_count_; }
+
+ private:
+  raw_ptr<WebContents> web_contents_;
+  int blocked_navigation_count_ = 0;
+};
+
 }  // namespace
 
 // TODO(mlamouri): part of these tests were removed because they were dependent
@@ -10085,6 +10110,36 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithBFCache,
   EXPECT_EQ(ids.size(), 2u);
   EXPECT_TRUE(ContainsSurfaceIdOrNewer(ids, id_a));
   EXPECT_TRUE(ContainsSurfaceIdOrNewer(ids, id_b));
+}
+
+// Tests that DidBlockNavigation from a document that has been placed in the
+// back/forward cache does not surface blocked-redirect UI for the now-primary
+// page.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithBFCache,
+                       DidBlockNavigationIgnoredFromBackForwardCache) {
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
+
+  // Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = web_contents()->GetPrimaryMainFrame();
+
+  // Navigate to B, placing A in the back/forward cache.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
+
+  BlockedNavigationDelegate delegate(web_contents());
+
+  // Simulate the cached document reporting a blocked redirect after it has
+  // entered the back/forward cache.
+  rfh_a->DidBlockNavigation(
+      url_a, blink::mojom::NavigationBlockedReason::kRedirectWithNoUserGesture);
+  EXPECT_EQ(0, delegate.blocked_navigation_count());
+
+  // The active document should still be able to report blocked redirects.
+  web_contents()->GetPrimaryMainFrame()->DidBlockNavigation(
+      url_b, blink::mojom::NavigationBlockedReason::kRedirectWithNoUserGesture);
+  EXPECT_EQ(1, delegate.blocked_navigation_count());
 }
 
 class RenderFrameHostImplPrerenderBrowserTest

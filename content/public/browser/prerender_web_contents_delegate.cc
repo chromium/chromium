@@ -112,8 +112,8 @@ void PrerenderWebContentsDelegate::OnDidBlockNavigation(
     const GURL& initiator_url,
     const url::Origin& initiator_origin,
     blink::mojom::NavigationBlockedReason reason) {
-  // DCHECK against LifecycleState in RenderFrameHostImpl::DidBlockNavigation()
-  // ensures this is never called during prerendering.
+  // RenderFrameHostImpl::DidBlockNavigation() ignores notifications from
+  // non-active documents, so this is never called during prerendering.
   NOTREACHED();
 }
 
