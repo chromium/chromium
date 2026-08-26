@@ -104,5 +104,5 @@ crbug.com/550305489 [ iPad Device ] TabStripSharedGroupTestCase/testTabStripShar
 crbug.com/552121965 [ iOS26.5 iPad ] ChildWindowOpenByDOMTestCase/testWindowClosedWithoutName [ Failure ]
 
 # Gardening suppression 2026-08-26
-crbug.com/552774721 GeminiEGTest/testAcceptPromoAndConsent [ Failure ]
-crbug.com/552774721 GeminiEGTest/testAcceptPromoDeclineConsent [ Failure ]
+crbug.com/552774721 GeminiEGTest/testAcceptPromoAndConsent [ Pass Failure ]
+crbug.com/552774721 GeminiEGTest/testAcceptPromoDeclineConsent [ Pass Failure ]
