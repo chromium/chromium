@@ -1308,7 +1308,7 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
       new_window->GetType() == BrowserWindowInterface::TYPE_NORMAL) {
     // TODO(crbug.com/452431839) Make a new NewTabTypes value for
     // when new tabs are made because of an empty window.
-    chrome::NewTab(new_window, NewTabTypes::kNewTabCommand);
+    chrome::NewTab(new_window, NewTabTypes::kNoUserAction);
   }
 #endif
 

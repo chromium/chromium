@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/browser_tabstrip.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ui/browser.h"
@@ -43,11 +45,15 @@ content::WebContents* AddAndReturnTabAt(
     int idx,
     bool foreground,
     std::optional<tab_groups::TabGroupId> group,
-    bool pinned) {
+    bool pinned,
+    std::optional<NavigateParams::WindowAction> window_action) {
   const GURL resolved_url = url.is_empty() ? GetNewTabURL(browser) : url;
   NavigateParams params(browser, resolved_url, ui::PAGE_TRANSITION_TYPED);
   params.disposition = foreground ? WindowOpenDisposition::NEW_FOREGROUND_TAB
                                   : WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  if (window_action) {
+    params.window_action = window_action.value();
+  }
   params.tabstrip_index = idx;
   params.group = group;
   if (pinned) {
@@ -70,9 +76,10 @@ void AddTabAt(BrowserWindowInterface* browser,
               int idx,
               bool foreground,
               std::optional<tab_groups::TabGroupId> group,
-              bool pinned) {
+              bool pinned,
+              std::optional<NavigateParams::WindowAction> window_action) {
   /*void*/ AddAndReturnTabAt(browser, url, idx, foreground, std::move(group),
-                             pinned);
+                             pinned, window_action);
 }
 
 content::WebContents* AddSelectedTabWithURL(BrowserWindowInterface* browser,

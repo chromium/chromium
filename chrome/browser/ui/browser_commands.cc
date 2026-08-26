@@ -1386,15 +1386,23 @@ content::WebContents& NewTab(BrowserWindowInterface* browser,
       NewTabGroupingUserData::kNewTabGroupingUserDataKey,
       std::make_unique<NewTabGroupingUserData>(active_tab_group_id));
 
+  const NavigateParams::WindowAction window_action =
+      context == NewTabTypes::kNoUserAction
+          ? NavigateParams::WindowAction::kNoAction
+          : NavigateParams::WindowAction::kShowWindow;
+
   if (WindowFeatureController::From(browser)->SupportsWindowFeature(
           WindowFeatureController::WindowFeature::kFeatureTabStrip)) {
-    return *AddAndReturnTabAt(browser, GURL(), -1, true, std::nullopt);
+    return *AddAndReturnTabAt(browser, GURL(), -1, /*foreground=*/true,
+                              std::nullopt, /*pinned=*/false, window_action);
   }
 
   ScopedTabbedBrowserDisplayer displayer(browser->GetProfile());
   BrowserWindowInterface* displayer_browser =
       displayer.browser_window_interface();
-  auto* contents = AddAndReturnTabAt(displayer_browser, GURL(), -1, true);
+  auto* contents = AddAndReturnTabAt(displayer_browser, GURL(), -1,
+                                     /*foreground=*/true, std::nullopt,
+                                     /*pinned=*/false, window_action);
   displayer_browser->GetWindow()->Show();
   // The call to AddBlankTabAt above did not set the focus to the tab as its
   // window was not active, so we have to do it explicitly.

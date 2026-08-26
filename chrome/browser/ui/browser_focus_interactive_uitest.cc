@@ -75,6 +75,10 @@
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
@@ -258,6 +262,43 @@ class BrowserFocusTest : public InteractiveBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   constexpr static size_t kMaxIterations = 20;
 };
+
+// Test that adding a new foreground tab to a background (inactive) window
+// activates that window, while adding a background tab does not.
+IN_PROC_BROWSER_TEST_F(BrowserFocusTest,
+                       BackgroundWindowActivatedOnNewForegroundTab) {
+#if BUILDFLAG(IS_OZONE)
+  // TODO(crbug.com/430097333): Wayland doesn't support programmatic window
+  // activation. Re-enable when activation is supported.
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Wayland doesn't support programmatic window activation";
+  }
+#endif
+
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  EXPECT_TRUE(browser()->GetWindow()->IsActive());
+
+  // Create a second browser window and activate it.
+  BrowserWindowInterface* browser2 =
+      chrome::OpenEmptyWindow(browser()->GetProfile());
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser2));
+  EXPECT_TRUE(browser2->GetWindow()->IsActive());
+  EXPECT_FALSE(browser()->GetWindow()->IsActive());
+
+  // Adding a background tab to the inactive window should not activate it.
+  chrome::AddTabAt(browser(), GURL(chrome::kChromeUINewTabURL), -1,
+                   /*foreground=*/false);
+  EXPECT_FALSE(browser()->GetWindow()->IsActive());
+  EXPECT_TRUE(browser2->GetWindow()->IsActive());
+
+  // Adding a foreground tab to the inactive window should activate it.
+  ui_test_utils::BrowserActivationWaiter activation_waiter(browser());
+  chrome::AddTabAt(browser(), GURL(chrome::kChromeUINewTabURL), -1,
+                   /*foreground=*/true, std::nullopt, /*pinned=*/false,
+                   NavigateParams::WindowAction::kShowWindow);
+  activation_waiter.WaitForActivation();
+  EXPECT_TRUE(browser()->GetWindow()->IsActive());
+}
 
 IN_PROC_BROWSER_TEST_F(BrowserFocusTest, ClickingMovesFocus) {
   RunTestSequence(

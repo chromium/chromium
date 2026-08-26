@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsApiTest, MAYBE_TabGetLastFocusedWindow) {
 }
 
 // TODO(http://crbug.com/41237209): The Linux window manager behaves
-// differently, which complicates the test. A separate  test should
+// differently, which complicates the test. A separate test should
 // be written for it to avoid complicating this one.
 #if !BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(ExtensionTabsApiTest, WindowSetFocus) {
