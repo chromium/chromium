@@ -46,6 +46,8 @@ using allocator_shim::AllocatorDispatch;
 
 namespace allocator_shim {
 
+using partition_alloc::internal::base::span;
+
 namespace {
 
 using partition_alloc::internal::base::span;
@@ -377,7 +379,16 @@ void* PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
   if (address) {
     size_t usage = partition_alloc::PartitionRoot::GetUsableSize(address);
     size_t copy_size = usage > size ? size : usage;
-    PA_UNSAFE_TODO(memcpy(new_ptr, address, copy_size));
+    // SAFETY: `new_ptr` is a newly allocated buffer of at least `size` bytes.
+    // `address` is an active allocation of at least `usage` bytes.
+    // `copy_size` is the minimum of `size` and `usage`, ensuring we do not read
+    // or write out of bounds.
+    auto dst = PA_UNSAFE_BUFFERS(span(static_cast<uint8_t*>(new_ptr), size))
+                    .first(copy_size);
+    auto src =
+        PA_UNSAFE_BUFFERS(span(static_cast<const uint8_t*>(address), usage))
+            .first(copy_size);
+    dst.copy_from(src);
 
     partition_alloc::PartitionRoot::FreeInUnknownRoot<base_free_flags>(address);
   }
@@ -415,7 +426,16 @@ void* PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
   if (address) {
     size_t usage = partition_alloc::PartitionRoot::GetUsableSize(address);
     size_t copy_size = usage > size ? size : usage;
-    PA_UNSAFE_TODO(memcpy(new_ptr, address, copy_size));
+    // SAFETY: `new_ptr` is a newly allocated buffer of at least `size` bytes.
+    // `address` is an active allocation of at least `usage` bytes.
+    // `copy_size` is the minimum of `size` and `usage`, ensuring we do not read
+    // or write out of bounds.
+    auto dst = PA_UNSAFE_BUFFERS(span(static_cast<uint8_t*>(new_ptr), size))
+                   .first(copy_size);
+    auto src =
+        PA_UNSAFE_BUFFERS(span(static_cast<const uint8_t*>(address), usage))
+            .first(copy_size);
+    dst.copy_from(src);
 
     partition_alloc::PartitionRoot::FreeInUnknownRoot<base_free_flags>(address);
   }
