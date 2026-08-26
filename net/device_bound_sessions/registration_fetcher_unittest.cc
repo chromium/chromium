@@ -649,9 +649,15 @@ TEST_F(RegistrationTest, SigningKeyGenerationFailure) {
 }
 
 TEST_F(RegistrationTest, AttestationKeyGenerationFailure) {
-  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   unexportable_keys::MockUnexportableKeyService mock_service;
-  mock_service.DelegateToService(unexportable_key_service());
+
+  // Required because StartCreateTokenAndFetch concurrently calls both
+  // GenerateSigningKeySlowlyAsync and GenerateAttestationKeySlowlyAsync.
+  // Expecting it without invoking its callback is enough because the
+  // attestation failure immediately aborts the fetch flow, and omitting
+  // real service delegation prevents dispatching background tasks to the
+  // thread pool that could outlive the test.
+  EXPECT_CALL(mock_service, GenerateSigningKeySlowlyAsync);
 
   // Mock attestation key generation to fail
   EXPECT_CALL(mock_service, GenerateAttestationKeySlowlyAsync)
