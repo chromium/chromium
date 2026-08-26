@@ -4,7 +4,7 @@
 
 import 'chrome://settings/lazy_load.js';
 
-import type {CrShortcutInputElement, SettingsSuggestionsFromGeminiSubpageElement} from 'chrome://settings/lazy_load.js';
+import type {CrShortcutInputElement, SettingsSuggestionsFromGeminiPageElement} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, loadTimeData, ModelExecutionEnterprisePolicyValue, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {MetricsBrowserProxyImpl, SuggestionsFromGeminiAction} from 'chrome://settings/settings.js';
@@ -16,7 +16,7 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
-suite('SuggestionsFromGeminiSubpage', function() {
+suite('SuggestionsFromGeminiPage', function() {
   let openWindowProxy: TestOpenWindowProxy;
   let settingsPrefs: SettingsPrefsElement;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
@@ -44,9 +44,9 @@ suite('SuggestionsFromGeminiSubpage', function() {
   });
 
   async function setupPage():
-      Promise<SettingsSuggestionsFromGeminiSubpageElement> {
-    const page: SettingsSuggestionsFromGeminiSubpageElement =
-        document.createElement('settings-suggestions-from-gemini-subpage');
+      Promise<SettingsSuggestionsFromGeminiPageElement> {
+    const page: SettingsSuggestionsFromGeminiPageElement =
+        document.createElement('settings-suggestions-from-gemini-page');
 
     page.prefs = settingsPrefs.prefs!;
     page.setPrefValue(
@@ -75,8 +75,7 @@ suite('SuggestionsFromGeminiSubpage', function() {
 
     const userAction = await metricsBrowserProxy.whenCalled('recordAction');
     assertEquals(
-        'PersonalContext.Settings.ManageConnectedAppsClick',
-        userAction);
+        'PersonalContext.Settings.ManageConnectedAppsClick', userAction);
   });
 
   test('QualityLoggingRendersExpectedColumnsAndBullets', async function() {
@@ -188,9 +187,7 @@ suite('SuggestionsFromGeminiSubpage', function() {
         'recordSuggestionsFromGeminiAction');
     assertEquals(SuggestionsFromGeminiAction.TOGGLE_OFF, action);
     let userAction = await metricsBrowserProxy.whenCalled('recordAction');
-    assertEquals(
-        'PersonalContext.Settings.ToggledOff',
-        userAction);
+    assertEquals('PersonalContext.Settings.ToggledOff', userAction);
 
     metricsBrowserProxy.reset();
 
@@ -200,9 +197,7 @@ suite('SuggestionsFromGeminiSubpage', function() {
         'recordSuggestionsFromGeminiAction');
     assertEquals(SuggestionsFromGeminiAction.TOGGLE_ON, action);
     userAction = await metricsBrowserProxy.whenCalled('recordAction');
-    assertEquals(
-        'PersonalContext.Settings.ToggledOn',
-        userAction);
+    assertEquals('PersonalContext.Settings.ToggledOn', userAction);
   });
 
   test('AtMemoryTriggerSettingHidden', async function() {

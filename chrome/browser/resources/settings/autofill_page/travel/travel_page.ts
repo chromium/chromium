@@ -12,28 +12,28 @@
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import '/shared/settings/prefs/prefs.js';
-import './autofill_ai_entries_list.js';
-import './autofill_shared.css.js';
-import '../controls/settings_toggle_button.js';
-import '../settings_page/settings_subpage.js';
-import '../settings_shared.css.js';
+import '../../controls/settings_toggle_button.js';
+import '../../settings_page/settings_subpage.js';
+import '../../settings_shared.css.js';
+import '../autofill_ai_entries_list.js';
+import '../autofill_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AiEnterpriseFeaturePrefName} from '../ai_page/constants.js';
-import type {ModelExecutionEnterprisePolicyValue} from '../ai_page/constants.js';
-import {EntityTypeName} from '../autofill_ai_enums.mojom-webui.js';
-import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import {loadTimeData} from '../i18n_setup.js';
-import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
-import {MetricsBrowserProxyImpl, SuggestionsFromGeminiEntryPoint} from '../metrics_browser_proxy.js';
-import {routes} from '../route.js';
-import {Router} from '../router.js';
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import {AiEnterpriseFeaturePrefName} from '../../ai_page/constants.js';
+import type {ModelExecutionEnterprisePolicyValue} from '../../ai_page/constants.js';
+import {EntityTypeName} from '../../autofill_ai_enums.mojom-webui.js';
+import type {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
+import {loadTimeData} from '../../i18n_setup.js';
+import type {MetricsBrowserProxy} from '../../metrics_browser_proxy.js';
+import {MetricsBrowserProxyImpl, SuggestionsFromGeminiEntryPoint} from '../../metrics_browser_proxy.js';
+import {routes} from '../../route.js';
+import {Router} from '../../router.js';
+import {SettingsViewMixin} from '../../settings_page/settings_view_mixin.js';
+import {checkAutofillPoliciesAndModifyPrefIfNecessary} from '../policy_utils.js';
 
-import {checkAutofillPoliciesAndModifyPrefIfNecessary} from './policy_utils.js';
 import {getTemplate} from './travel_page.html.js';
 
 export interface SettingsTravelPageElement {
@@ -134,8 +134,8 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
     const addressAutofillOptInStatus =
         this.getPref<boolean>('autofill.profile_enabled').value;
     const ignoreAddressAutofill = this.autofillSettingsEnterprisePolicyEnabled_;
-      return !this.canEnableOrDisableAutofillAi_ ||
-          (!ignoreAddressAutofill && !addressAutofillOptInStatus);
+    return !this.canEnableOrDisableAutofillAi_ ||
+        (!ignoreAddressAutofill && !addressAutofillOptInStatus);
   }
 
   private computeTravelOptedIn_(): chrome.settingsPrivate.PrefObject<boolean> {

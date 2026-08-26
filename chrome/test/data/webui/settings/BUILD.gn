@@ -181,7 +181,7 @@ build_webui_tests("build") {
     "storage_access_site_list_entry_test.ts",
     "storage_access_site_list_test.ts",
     "storage_access_static_site_list_entry_test.ts",
-    "suggestions_from_gemini_subpage_test.ts",
+    "suggestions_from_gemini_page_test.ts",
     "sync_encryption_options_test.ts",
     "sync_account_control_test.ts",
     "sync_test_util.ts",

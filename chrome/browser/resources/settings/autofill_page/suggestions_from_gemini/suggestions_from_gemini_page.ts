@@ -6,27 +6,27 @@ import 'chrome://resources/cr_components/cr_shortcut_input/cr_shortcut_input.js'
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import '../settings_page/settings_subpage.js';
-import '../controls/settings_toggle_button.js';
-import '../icons.html.js';
-import '../settings_columned_section.css.js';
-import '../settings_shared.css.js';
-import './autofill_shared.css.js';
+import '../../controls/settings_toggle_button.js';
+import '../../icons.html.js';
+import '../../settings_columned_section.css.js';
+import '../../settings_page/settings_subpage.js';
+import '../../settings_shared.css.js';
+import '../autofill_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import {ModelExecutionEnterprisePolicyValue} from '../ai_page/constants.js';
-import {loadTimeData} from '../i18n_setup.js';
-import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
-import {MetricsBrowserProxyImpl, SuggestionsFromGeminiAction} from '../metrics_browser_proxy.js';
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import {ModelExecutionEnterprisePolicyValue} from '../../ai_page/constants.js';
+import type {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
+import {loadTimeData} from '../../i18n_setup.js';
+import type {MetricsBrowserProxy} from '../../metrics_browser_proxy.js';
+import {MetricsBrowserProxyImpl, SuggestionsFromGeminiAction} from '../../metrics_browser_proxy.js';
+import {SettingsViewMixin} from '../../settings_page/settings_view_mixin.js';
 
-import {getTemplate} from './suggestions_from_gemini_subpage.html.js';
+import {getTemplate} from './suggestions_from_gemini_page.html.js';
 
-const SettingsSuggestionsFromGeminiSubpageElementBase =
+const SettingsSuggestionsFromGeminiPageElementBase =
     SettingsViewMixin(PrefsMixin(PolymerElement));
 
 interface AtMemoryTriggerPrefValue {
@@ -36,10 +36,10 @@ interface AtMemoryTriggerPrefValue {
 
 const atMemoryTriggerPrefName = 'autofill.at_memory.trigger_info';
 
-export class SettingsSuggestionsFromGeminiSubpageElement extends
-    SettingsSuggestionsFromGeminiSubpageElementBase {
+export class SettingsSuggestionsFromGeminiPageElement extends
+    SettingsSuggestionsFromGeminiPageElementBase {
   static get is() {
-    return 'settings-suggestions-from-gemini-subpage';
+    return 'settings-suggestions-from-gemini-page';
   }
 
   static get template() {
@@ -138,11 +138,11 @@ export class SettingsSuggestionsFromGeminiSubpageElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-suggestions-from-gemini-subpage':
-        SettingsSuggestionsFromGeminiSubpageElement;
+    'settings-suggestions-from-gemini-page':
+        SettingsSuggestionsFromGeminiPageElement;
   }
 }
 
 customElements.define(
-    SettingsSuggestionsFromGeminiSubpageElement.is,
-    SettingsSuggestionsFromGeminiSubpageElement);
+    SettingsSuggestionsFromGeminiPageElement.is,
+    SettingsSuggestionsFromGeminiPageElement);
