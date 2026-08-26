@@ -302,6 +302,10 @@ BASE_FEATURE(kUrlScoringModel, enable_if(!IS_ANDROID));
 // are enabled.
 BASE_FEATURE(kOmniboxTouchDownTriggerForPrefetch, enable_if(IS_ANDROID));
 
+// If enabled, sets up an off-main-thread (OMT) input receiver on Android to
+// trigger prefetch requests immediately on touch down.
+BASE_FEATURE(kOmniboxPrefetchSelectedSuggestionsOmtAndroid, DISABLED);
+
 // Enables simultaneous prefetch and navigation on Enter KeyDown in Omnibox.
 BASE_FEATURE(kOmniboxSearchPrefetchOnEnterKeyDown, DISABLED);
 
@@ -514,6 +518,7 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kDiagnostics,
       &kForceAndroidRealbox,
       &kOmniboxTouchDownTriggerForPrefetch,
+      &kOmniboxPrefetchSelectedSuggestionsOmtAndroid,
       &kOmniboxAsyncViewInflation,
       &kOmniboxFuseboxAsyncInflation,
       &kRichAutocompletion,

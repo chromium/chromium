@@ -7856,6 +7856,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "omnibox-prefetch-selected-suggestions-omt-android",
+    "owners": [
+      "thesalsa@google.com",
+      "chrome-prerendering@google.com"
+    ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "omnibox-rich-autocompletion-promising",
     "owners": [ "manukh@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 140

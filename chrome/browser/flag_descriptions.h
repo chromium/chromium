@@ -3706,6 +3706,13 @@ inline constexpr char kOmniboxNumWebZpsMostVisitedUrlsDescription[] =
     "Controls presence/volume of Most Visited URLs shown in zero-prefix "
     "context on the Web";
 
+inline constexpr char kOmniboxPrefetchSelectedSuggestionsOmtAndroidName[] =
+    "Omnibox off-main-thread suggestion prefetch";
+inline constexpr char
+    kOmniboxPrefetchSelectedSuggestionsOmtAndroidDescription[] =
+        "Enables off-main-thread touch-down interception to trigger "
+        "prefetching of search suggestions on Android.";
+
 inline constexpr char kOmniboxSearchPrefetchOnEnterKeyDownName[] =
     "Omnibox search prefetch on Enter KeyDown";
 inline constexpr char kOmniboxSearchPrefetchOnEnterKeyDownDescription[] =

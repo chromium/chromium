@@ -6886,6 +6886,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxAsyncViewInflationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxAsyncViewInflation)},
 
+    {"omnibox-prefetch-selected-suggestions-omt-android",
+     flag_descriptions::kOmniboxPrefetchSelectedSuggestionsOmtAndroidName,
+     flag_descriptions::
+         kOmniboxPrefetchSelectedSuggestionsOmtAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         omnibox::kOmniboxPrefetchSelectedSuggestionsOmtAndroid)},
+
     {"omnibox-debounce-keyboard-visibility",
      flag_descriptions::kOmniboxDebounceKeyboardVisibilityName,
      flag_descriptions::kOmniboxDebounceKeyboardVisibilityDescription,

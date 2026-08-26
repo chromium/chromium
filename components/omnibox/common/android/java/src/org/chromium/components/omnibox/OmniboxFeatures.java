@@ -88,6 +88,11 @@ public class OmniboxFeatures {
                     OmniboxFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH,
                     FeatureState.ENABLED_IN_PROD);
 
+    public static final CachedFlag sPrefetchSelectedSuggestionsOmtAndroid =
+            newFlag(
+                    OmniboxFeatureList.OMNIBOX_PREFETCH_SELECTED_SUGGESTIONS_OMT_ANDROID,
+                    FeatureState.DISABLED);
+
     public static final CachedFlag sOmniboxSearchPrefetchOnEnterKeyDown =
             newFlag(
                     OmniboxFeatureList.OMNIBOX_SEARCH_PREFETCH_ON_ENTER_KEY_DOWN,
@@ -339,6 +344,14 @@ public class OmniboxFeatures {
      */
     public static boolean isTouchDownTriggerForPrefetchEnabled() {
         return sTouchDownTriggerForPrefetch.isEnabled();
+    }
+
+    /**
+     * Returns whether off-main-thread (OMT) prefetch of search suggestions upon touch down is
+     * enabled on Android.
+     */
+    public static boolean isPrefetchSelectedSuggestionsOmtAndroidEnabled() {
+        return sPrefetchSelectedSuggestionsOmtAndroid.isEnabled();
     }
 
     private static @Nullable Boolean sDebounceKeyboardVisibilityForTesting;

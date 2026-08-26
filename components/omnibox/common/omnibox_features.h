@@ -125,6 +125,10 @@ BASE_DECLARE_FEATURE(kUrlScoringModel);
 // suggestions and only controls whether the signal is sent.
 BASE_DECLARE_FEATURE(kOmniboxTouchDownTriggerForPrefetch);
 
+// Allows for off-main-thread (OMT) prefetch of search suggestions upon touch
+// down on Android.
+BASE_DECLARE_FEATURE(kOmniboxPrefetchSelectedSuggestionsOmtAndroid);
+
 // Enables simultaneous prefetch and navigation on Enter KeyDown in Omnibox.
 BASE_DECLARE_FEATURE(kOmniboxSearchPrefetchOnEnterKeyDown);
 
