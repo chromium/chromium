@@ -225,8 +225,6 @@ class PropertyTreeManager {
     kSyntheticFor2dAxisAlignment = 1 << 1
   };
 
-  struct CurrentEffectState;
-
   // This is public for WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS.
   // Note: EffectState holds direct references to property nodes. Ordinarily it
   // would be verboten to keep references to data controlled by PropertyTrees,
@@ -239,7 +237,6 @@ class PropertyTreeManager {
 
    public:
     EffectState() = default;
-    explicit EffectState(const CurrentEffectState&);
 
     // The effect state of the cc effect node. It's never nullptr.
     Member<const EffectPaintPropertyNode> effect;
@@ -295,26 +292,6 @@ class PropertyTreeManager {
       visitor->Trace(clip);
       visitor->Trace(transform);
     }
-  };
-
-  // For performance, the top of effect_stack_ is separated into current_
-  // which is stack allocated and allow raw pointers to avoid the overhead of
-  // Member<>.
-  struct CurrentEffectState {
-    STACK_ALLOCATED();
-
-   public:
-    CurrentEffectState() = default;
-    explicit CurrentEffectState(const EffectState&);
-
-    const EffectPaintPropertyNode* effect = nullptr;
-    const ClipPaintPropertyNode* clip = nullptr;
-    const TransformPaintPropertyNode* transform = nullptr;
-    int effect_id = 0;
-    CcEffectType effect_type = kEffect;
-    EffectState::Alignment may_be_2d_axis_misaligned_to_render_surface =
-        EffectState::kAligned;
-    bool contained_by_non_render_surface_synthetic_rounded_clip = false;
   };
 
  private:

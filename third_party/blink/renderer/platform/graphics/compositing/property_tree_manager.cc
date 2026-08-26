@@ -25,27 +25,6 @@
 
 namespace blink {
 
-PropertyTreeManager::EffectState::EffectState(const CurrentEffectState& other)
-    : effect(other.effect),
-      clip(other.clip),
-      transform(other.transform),
-      effect_id(other.effect_id),
-      may_be_2d_axis_misaligned_to_render_surface(
-          other.may_be_2d_axis_misaligned_to_render_surface),
-      contained_by_non_render_surface_synthetic_rounded_clip(
-          other.contained_by_non_render_surface_synthetic_rounded_clip) {}
-
-PropertyTreeManager::CurrentEffectState::CurrentEffectState(
-    const EffectState& other)
-    : effect(other.effect),
-      clip(other.clip),
-      transform(other.transform),
-      effect_id(other.effect_id),
-      may_be_2d_axis_misaligned_to_render_surface(
-          other.may_be_2d_axis_misaligned_to_render_surface),
-      contained_by_non_render_surface_synthetic_rounded_clip(
-          other.contained_by_non_render_surface_synthetic_rounded_clip) {}
-
 PropertyTreeManager::PropertyTreeManager(PropertyTreeManagerClient& client,
                                          cc::PropertyTrees& property_trees,
                                          cc::Layer& root_layer,
