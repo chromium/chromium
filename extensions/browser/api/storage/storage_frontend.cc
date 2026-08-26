@@ -647,7 +647,7 @@ void StorageFrontend::OnSettingsChanged(
     std::optional<api::storage::AccessLevel> access_level,
     base::Value changes) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  TRACE_EVENT1("browser", "SettingsObserver:OnSettingsChanged", "extension_id",
+  TRACE_EVENT1("browser", "StorageFrontend::OnSettingsChanged", "extension_id",
                extension_id);
 
   // Alias extension_id for investigation of shutdown hangs. crbug.com/1154997
@@ -673,6 +673,9 @@ void StorageFrontend::OnSettingsChanged(
   if (!has_event_changed_listener && !has_area_changed_event_listener) {
     return;
   }
+
+  base::ScopedUmaHistogramTimer timer(
+      "Extensions.Storage.OnSettingsChangedTime");
 
   api::storage::AccessLevel effective_access_level =
       access_level.has_value()

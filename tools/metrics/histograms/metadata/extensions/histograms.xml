@@ -4550,6 +4550,20 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.Storage.OnSettingsChangedTime" units="ms"
+    expires_after="2027-02-01">
+  <owner>nafisabedin@google.com</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Tracks the Browser UI thread execution time of
+    StorageFrontend::OnSettingsChanged when preparing and dispatching
+    chrome.storage change events to extensions with active listeners. Recorded
+    for each storage change notification that has at least one registered
+    listener.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.SyncBlockedByDefaultWebAppMigration" enum="Boolean"
     expires_after="2024-02-08">
   <owner>alancutter@chromium.org</owner>

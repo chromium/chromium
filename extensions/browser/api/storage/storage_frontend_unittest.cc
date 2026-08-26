@@ -392,4 +392,26 @@ TEST_F(ExtensionSettingsFrontendTest, SettingsQuotaExceededEmitsErrorMetric) {
       /*expected_bucket_count=*/1);
 }
 
+// Tests that OnSettingsChanged emits the execution time histogram.
+TEST_F(ExtensionSettingsFrontendTest,
+       OnSettingsChangedEmitsExecutionTimeHistogram) {
+  base::HistogramTester histogram_tester;
+
+  const std::string id = "ext";
+  scoped_refptr<const Extension> extension =
+      settings_test_util::AddExtensionWithId(browser_context(), id,
+                                             Manifest::Type::kExtension);
+
+  EventRouter* event_router = EventRouter::Get(browser_context());
+  event_router->listeners().AddListener(EventListener::CreateLazyListener(
+      "storage.onChanged", id, browser_context(), false, GURL(), std::nullopt));
+
+  SettingsChangedCallback callback = frontend_->GetObserver();
+  callback.Run(id, StorageAreaNamespace::kLocal, std::nullopt,
+               base::Value(true));
+
+  histogram_tester.ExpectTotalCount("Extensions.Storage.OnSettingsChangedTime",
+                                    1);
+}
+
 }  // namespace extensions
