@@ -54,8 +54,6 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
     private static final String EMPTY_PAGE =
             "<html><script>" + "</script><body>" + "</body></html>";
 
-    private static final String IFRAME_PARENT_PAGE = "<html><iframe></iframe><body></body></html>";
-
     private static final String GUM_JS =
             "navigator.mediaDevices.getUserMedia({video: true, audio: true})"
                     + ".then((_) => domAutomationController.send('success'))"

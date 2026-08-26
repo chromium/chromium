@@ -55,7 +55,6 @@ public class AwLayoutSizerTest {
     private static final int FIRST_CONTENT_WIDTH = 101;
     private static final int FIRST_CONTENT_HEIGHT = 389;
     private static final int SECOND_CONTENT_WIDTH = 103;
-    private static final int SECOND_CONTENT_HEIGHT = 397;
 
     private static final int SMALLER_CONTENT_SIZE = 25;
     private static final int AT_MOST_MEASURE_SIZE = 50;

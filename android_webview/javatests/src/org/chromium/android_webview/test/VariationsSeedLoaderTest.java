@@ -53,7 +53,6 @@ import java.util.concurrent.TimeoutException;
 @OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
 public class VariationsSeedLoaderTest extends AwParameterizedTest {
     private static final long CURRENT_TIME_MILLIS = 1234567890;
-    private static final long EXPIRED_TIMESTAMP = 0;
     private static final long TIMEOUT_MILLIS = 10000;
 
     // Needed for tests that test histograms, which rely on native code.

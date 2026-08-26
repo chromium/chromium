@@ -31,7 +31,6 @@ public class SslPreferencesTest extends AwParameterizedTest {
 
     private AwTestContainerView mTestContainerView;
     private TestAwContentsClient mContentsClient;
-    private AwTestContainerView mContainerView;
     private AwContents mAwContents;
     private EmbeddedTestServer mTestServer;
 

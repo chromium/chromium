@@ -41,9 +41,6 @@ public class AwPersistentOriginTrialTest extends AwParameterizedTest {
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
 
-    // Must match the native |origin_trials::kOriginTrialPrefKey|
-    private static final String ORIGIN_TRIAL_PREFERENCE_KEY = "origin_trials.persistent_trials";
-
     private static final String ORIGIN_TRIAL_HEADER = "Origin-Trial";
     private static final String CRITICAL_ORIGIN_TRIAL_HEADER = "Critical-Origin-Trial";
 
