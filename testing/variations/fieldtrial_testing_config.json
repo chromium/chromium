@@ -19254,6 +19254,21 @@
             ]
         }
     ],
+    "UiaDisconnectRootProviders": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UiaDisconnectRootProviders"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnexportableKeysSpareKeyPoolWindows": [
         {
             "platforms": [
