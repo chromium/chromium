@@ -78,6 +78,7 @@ class CONTENT_EXPORT LaunchedVideoCaptureDevice
       base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
           callback) = 0;
   virtual void RequestRefreshFrame() = 0;
+  virtual void InvalidateBuffers() = 0;
 
   // Methods for specific types of devices.
   virtual void SetDesktopCaptureWindowIdAsync(gfx::NativeViewId window_id,
