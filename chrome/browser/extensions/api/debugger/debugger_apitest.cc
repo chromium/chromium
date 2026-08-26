@@ -71,6 +71,7 @@
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -1410,6 +1411,37 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Tests that a trusted component extension is exempt from global screenshot
+// restrictions and can attach to the browser target even when enterprise
+// policy disables screenshots.
+IN_PROC_BROWSER_TEST_F(
+    SitePerProcessDebuggerExtensionApiTest,
+    BrowserTargetAllowedForTrustedExtensionWhenScreenshotsDisabled) {
+  profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots, true);
+
+  scoped_refptr<const Extension> component_trusted_extension =
+      ExtensionBuilder("Some Trusted Extension")
+          .SetID(extension_misc::kPerfettoUIExtensionId)
+          .SetLocation(mojom::ManifestLocation::kComponent)
+          .AddAPIPermission("debugger")
+          .Build();
+  PermissionsUpdater(profile()).InitializePermissions(
+      component_trusted_extension.get());
+
+  auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
+  attach_function->set_extension(component_trusted_extension.get());
+
+  EXPECT_TRUE(api_test_utils::RunFunction(
+      attach_function.get(), R"([{"targetId": "browser"}, "1.1"])", profile()))
+      << attach_function->GetError();
+
+  // Clean up and detach.
+  auto detach_function = base::MakeRefCounted<DebuggerDetachFunction>();
+  detach_function->set_extension(component_trusted_extension.get());
+  EXPECT_TRUE(api_test_utils::RunFunction(
+      detach_function.get(), R"([{"targetId": "browser"}])", profile()));
+}
+
 class DebuggerExtensionManagementPolicyTest
     : public ExtensionApiTestWithManagementPolicy {
  public:
@@ -1536,6 +1568,120 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionManagementPolicyTest,
   ASSERT_TRUE(NavigateToURL(web_contents(), url));
 
   ASSERT_TRUE(RunExtensionTest("debugger_policy_blocked_hosts")) << message_;
+}
+
+// Tests that a trusted component extension is exempt from the
+// policy_blocked_hosts check and can attach to the browser target even when
+// runtime blocked hosts are configured globally via enterprise policy (*).
+IN_PROC_BROWSER_TEST_F(
+    DebuggerExtensionManagementPolicyTest,
+    BrowserTargetAllowedForComponentTrustedExtensionWithPolicyBlockedHosts) {
+  // Set up runtime blocked hosts globally for all extensions.
+  {
+    ExtensionManagementPolicyUpdater pref(&policy_provider_);
+    pref.AddPolicyBlockedHost("*", "*://*");
+  }
+
+  scoped_refptr<const Extension> component_trusted_extension =
+      ExtensionBuilder("Some Trusted Extension")
+          .SetID(extension_misc::kPerfettoUIExtensionId)
+          .SetLocation(mojom::ManifestLocation::kComponent)
+          .AddAPIPermission("debugger")
+          .Build();
+  PermissionsUpdater(profile()).InitializePermissions(
+      component_trusted_extension.get());
+  // Verify that policy blocked hosts were populated from enterprise policy.
+  ASSERT_FALSE(component_trusted_extension->permissions_data()
+                   ->policy_blocked_hosts()
+                   .is_empty());
+
+  auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
+  attach_function->set_extension(component_trusted_extension.get());
+
+  EXPECT_TRUE(api_test_utils::RunFunction(
+      attach_function.get(), R"([{"targetId": "browser"}, "1.1"])", profile()))
+      << attach_function->GetError();
+
+  // Clean up and detach.
+  auto detach_function = base::MakeRefCounted<DebuggerDetachFunction>();
+  detach_function->set_extension(component_trusted_extension.get());
+  EXPECT_TRUE(api_test_utils::RunFunction(
+      detach_function.get(), R"([{"targetId": "browser"}])", profile()));
+}
+
+// Tests that an unpacked trusted extension is exempt from the
+// policy_blocked_hosts check when the allow unpacked switch is set.
+IN_PROC_BROWSER_TEST_F(
+    DebuggerExtensionManagementPolicyTest,
+    BrowserTargetAllowedForUnpackedTrustedExtensionWithFlagAndPolicyBlockedHosts) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ::switches::kAllowUnpackedPerfettoExtension);
+
+  // Set up runtime blocked hosts globally for all extensions.
+  {
+    ExtensionManagementPolicyUpdater pref(&policy_provider_);
+    pref.AddPolicyBlockedHost("*", "*://*");
+  }
+
+  scoped_refptr<const Extension> unpacked_trusted_extension =
+      ExtensionBuilder("Some Trusted Extension")
+          .SetID(extension_misc::kPerfettoUIExtensionId)
+          .SetLocation(mojom::ManifestLocation::kUnpacked)
+          .AddAPIPermission("debugger")
+          .Build();
+  PermissionsUpdater(profile()).InitializePermissions(
+      unpacked_trusted_extension.get());
+  // Verify that policy blocked hosts were populated from enterprise policy.
+  ASSERT_FALSE(unpacked_trusted_extension->permissions_data()
+                   ->policy_blocked_hosts()
+                   .is_empty());
+
+  auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
+  attach_function->set_extension(unpacked_trusted_extension.get());
+
+  EXPECT_TRUE(api_test_utils::RunFunction(
+      attach_function.get(), R"([{"targetId": "browser"}, "1.1"])", profile()))
+      << attach_function->GetError();
+
+  // Clean up and detach.
+  auto detach_function = base::MakeRefCounted<DebuggerDetachFunction>();
+  detach_function->set_extension(unpacked_trusted_extension.get());
+  EXPECT_TRUE(api_test_utils::RunFunction(
+      detach_function.get(), R"([{"targetId": "browser"}])", profile()));
+}
+
+// Tests that an unpacked extension without the command line flag is not
+// treated as trusted and cannot attach to the browser target when policy
+// blocked hosts are configured.
+IN_PROC_BROWSER_TEST_F(
+    DebuggerExtensionManagementPolicyTest,
+    BrowserTargetNotAllowedForUnpackedTrustedExtensionWithPolicyBlockedHosts) {
+  // Set up runtime blocked hosts globally for all extensions.
+  {
+    ExtensionManagementPolicyUpdater pref(&policy_provider_);
+    pref.AddPolicyBlockedHost("*", "*://*");
+  }
+
+  scoped_refptr<const Extension> unpacked_trusted_extension =
+      ExtensionBuilder("Some Trusted Extension")
+          .SetID(extension_misc::kPerfettoUIExtensionId)
+          .SetLocation(mojom::ManifestLocation::kUnpacked)
+          .AddAPIPermission("debugger")
+          .Build();
+  PermissionsUpdater(profile()).InitializePermissions(
+      unpacked_trusted_extension.get());
+  // Verify that policy blocked hosts were populated from enterprise policy.
+  ASSERT_FALSE(unpacked_trusted_extension->permissions_data()
+                   ->policy_blocked_hosts()
+                   .is_empty());
+
+  auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
+  attach_function->set_extension(unpacked_trusted_extension.get());
+
+  std::string actual_error = api_test_utils::RunFunctionAndReturnError(
+      attach_function.get(), R"([{"targetId": "browser"}, "1.1"])", profile());
+
+  EXPECT_EQ("Host access is restricted by policy.", actual_error);
 }
 
 }  // namespace extensions

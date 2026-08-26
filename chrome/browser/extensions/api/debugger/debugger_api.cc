@@ -956,11 +956,12 @@ ExtensionFunction::ResponseAction DebuggerAttachFunction::Run() {
   std::optional<Attach::Params> params = Attach::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  // Attaching the debugger grants raw CDP access, which cannot be safely
-  // restricted to specific hosts. Reject if the extension has any runtime
-  // blocked hosts configured by enterprise policy.
+  // Reject if an untrusted extension has any runtime blocked hosts configured
+  // by enterprise policy, because attaching the debugger grants raw CDP access
+  // that cannot be restricted to specific hosts.
   // Details: crbug.com/533240995
-  if (!extension()->permissions_data()->policy_blocked_hosts().is_empty()) {
+  if (!ExtensionIsTrusted(*extension()) &&
+      !extension()->permissions_data()->policy_blocked_hosts().is_empty()) {
     return RespondNow(Error(kDebuggerDisabledByPolicyBlockedHosts));
   }
 
@@ -982,10 +983,12 @@ ExtensionFunction::ResponseAction DebuggerAttachFunction::Run() {
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
 
-  // Attaching the debugger grants screenshot capabilities, so reject if
-  // screenshot capture is disabled globally by enterprise policy.
+  // Reject if an untrusted extension has screenshot capture disabled globally
+  // by enterprise policy, because attaching the debugger grants screenshot
+  // capabilities.
   // Details: crbug.com/533240995
-  if (profile->GetPrefs()->GetBoolean(prefs::kDisableScreenshots)) {
+  if (!ExtensionIsTrusted(*extension()) &&
+      profile->GetPrefs()->GetBoolean(prefs::kDisableScreenshots)) {
     return RespondNow(Error(kDebuggerDisabledByScreenshotPolicy));
   }
 
