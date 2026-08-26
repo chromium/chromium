@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
@@ -18,6 +19,8 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/views_switches.h"
 
 class DefaultBrowserModalDialogManagerInteractiveTest
     : public InteractiveBrowserTest,
@@ -33,6 +36,12 @@ class DefaultBrowserModalDialogManagerInteractiveTest
           GetParam() ? "modal_dialog_with_settings_illustration"
                      : "modal_dialog_without_settings_illustration"}});
     InteractiveBrowserTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        views::switches::kDisableInputEventActivationProtectionForTesting);
   }
 
   void TearDownOnMainThread() override {
@@ -141,6 +150,24 @@ IN_PROC_BROWSER_TEST_P(DefaultBrowserModalDialogManagerInteractiveTest,
         // updates and verify that no crash occurs.
         browser()->GetWindow()->SetBounds(gfx::Rect(10, 10, 800, 600));
       }),
+      VerifyHistogram(
+          GetParam() ? "DefaultBrowser.ModalDialogWithSettingsIllustration."
+                       "ShellIntegration.Interaction"
+                     : "DefaultBrowser.ModalDialogWithoutSettingsIllustration."
+                       "ShellIntegration.Interaction",
+          static_cast<int>(
+              default_browser::DefaultBrowserInteractionType::kDismissed),
+          1));
+}
+
+IN_PROC_BROWSER_TEST_P(DefaultBrowserModalDialogManagerInteractiveTest,
+                       CloseButtonDismissesTheDialog) {
+  RunTestSequence(
+      Do([this]() { ShowDialog(); }),
+      InAnyContext(WaitForShow(default_browser::kDefaultBrowserModalDialogId)),
+      InAnyContext(WaitForShow(views::BubbleFrameView::kCloseButtonElementId)),
+      InAnyContext(PressButton(views::BubbleFrameView::kCloseButtonElementId)),
+      InAnyContext(WaitForHide(default_browser::kDefaultBrowserModalDialogId)),
       VerifyHistogram(
           GetParam() ? "DefaultBrowser.ModalDialogWithSettingsIllustration."
                        "ShellIntegration.Interaction"

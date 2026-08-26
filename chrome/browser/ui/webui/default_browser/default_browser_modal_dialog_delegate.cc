@@ -63,6 +63,7 @@ std::unique_ptr<views::Widget> Show(Profile* profile,
   spec.wait_for_explicit_show = true;
   spec.modal_type = ui::mojom::ModalType::kWindow;
   spec.element_identifier = kDefaultBrowserModalDialogId;
+  spec.show_close_button = true;
 
   return webui_dialog::ChromeWebUIDialog::Show(
       parent, std::move(contents_wrapper), spec);
