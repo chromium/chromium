@@ -66,16 +66,41 @@ class ChromeScrollJankStdlib(TestSuite):
         SELECT
           id,
           ts,
-          dur
+          dur,
+          is_fully_captured
         FROM chrome_scrolls
         ORDER by id;
         """,
         out=Csv("""
-        "id","ts","dur"
-        1,1035865535981926,1255745000
-        2,1035866799527926,1358505000
-        3,1035868146266926,111786000
-        4,1035868607429926,1517121000
+        "id","ts","dur","is_fully_captured"
+        1,1035865535981926,1255745000,1
+        2,1035866799527926,1358505000,1
+        3,1035868146266926,111786000,1
+        4,1035868607429926,1517121000,1
+        """))
+
+  def test_chrome_scrolls_with_incomplete_scroll(self):
+    return DiffTestBlueprint(
+        trace=DataPath('scroll_offsets_trace_2.pftrace'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
+
+        SELECT
+          id,
+          ts,
+          dur,
+          is_fully_captured
+        FROM chrome_scrolls
+        ORDER by id;
+        """,
+        out=Csv("""
+        "id","ts","dur","is_fully_captured"
+        1,1349914859791,449060000,1
+        2,1350350536791,380658000,1
+        3,1350733521791,854717000,1
+        4,1351576834791,523443000,1
+        5,1352106787791,1128854000,1
+        6,1353232027791,140601000,0
         """))
 
   def test_chrome_scroll_input_offsets(self):

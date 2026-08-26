@@ -630,18 +630,60 @@ CREATE PERFETTO TABLE chrome_scrolls (
   -- The earliest timestamp of the EventLatency slice of the GESTURE_SCROLL_END type /
   -- the latest timestamp of the EventLatency slice of the GESTURE_SCROLL_UPDATE type for the
   -- corresponding scroll id.
-  gesture_scroll_end_ts TIMESTAMP
+  gesture_scroll_end_ts TIMESTAMP,
+  -- Whether the scroll is fully captured in the trace (i.e. did not start or end
+  -- mid-scroll). For the first scroll in the trace, this requires
+  -- FIRST_GESTURE_SCROLL_UPDATE to be present; for the last scroll, this requires
+  -- a corresponding gesture scroll end event to be present.
+  is_fully_captured BOOL
 ) AS
+WITH
+  scroll_updates_summary AS (
+    SELECT
+      scroll_id AS id,
+      min(ts) AS ts,
+      cast_int!(MAX(ts + dur) - MIN(ts)) AS dur,
+      MAX(event_type = 'FIRST_GESTURE_SCROLL_UPDATE') = 1 AS has_first_scroll_update,
+      LAG(scroll_id) OVER (ORDER BY scroll_id) AS prev_scroll_id,
+      LEAD(scroll_id) OVER (ORDER BY scroll_id) AS next_scroll_id
+    FROM chrome_gesture_scroll_updates
+    GROUP BY
+      scroll_id
+  ),
+  scroll_ends AS (
+    SELECT
+      ts
+    FROM chrome_event_latencies
+    WHERE
+      event_type IN ('GESTURE_SCROLL_END', 'INERTIAL_GESTURE_SCROLL_END')
+    UNION ALL
+    -- Gesture scroll end is not emitted in EventLatency slices.
+    SELECT
+      ts
+    FROM slice
+    WHERE
+      name = 'InputLatency::GestureScrollEnd'
+  )
 SELECT
-  scroll_id AS id,
-  min(ts) AS ts,
-  cast_int!(MAX(ts + dur) - MIN(ts)) AS dur,
+  s.id,
+  s.ts,
+  s.dur,
   -- TODO(b:389055670): Remove this once the UI doesn't rely on it.
   NULL AS gesture_scroll_begin_ts,
-  NULL AS gesture_scroll_end_ts
-FROM chrome_gesture_scroll_updates
-GROUP BY
-  scroll_id;
+  NULL AS gesture_scroll_end_ts,
+  (
+    (s.prev_scroll_id IS NOT NULL OR s.has_first_scroll_update)
+    AND (
+      s.next_scroll_id IS NOT NULL
+      OR EXISTS(
+        SELECT 1
+        FROM scroll_ends e
+        WHERE
+          e.ts >= s.ts
+      )
+    )
+  ) AS is_fully_captured
+FROM scroll_updates_summary s;
 
 -- Timestamps and durations for the critical path stages during scrolling.
 -- This table covers both the input-associated (before coalescing inputs into a
