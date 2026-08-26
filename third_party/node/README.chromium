@@ -253,26 +253,6 @@ Local Modifications:
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
-Name: ESLint JSDoc Plugin
-Short Name: eslint-plugin-jsdoc
-URL: https://www.npmjs.com/package/eslint-plugin-jsdoc
-Version: 50.2.2
-Update Mechanism: Manual
-License: BSD-3-Clause
-License File: node_modules/eslint-plugin-jsdoc/LICENSE
-Security Critical: no
-Shipped: no
-
-Description:
-JSDoc linting rules for ESLint.
-
-The ESLint checks are not shipped with Chrome and code are only linted with it.
-
-Local Modifications:
-(none)
-
--------------------- DEPENDENCY DIVIDER --------------------
-
 Name: ESLint Plugin TypeScript
 Short Name: @typescript-eslint/eslint-plugin
 URL: https://www.npmjs.com/package/@typescript-eslint/eslint-plugin
