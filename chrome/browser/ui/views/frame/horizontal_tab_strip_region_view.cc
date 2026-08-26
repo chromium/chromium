@@ -795,7 +795,6 @@ HorizontalTabStripRegionViewNew::HorizontalTabStripRegionViewNew(
         browser, TabStripControlButton::kButtonSize.width(),
         TabStripControlButton::kIconSize,
         TabStripControlButton::kButtonSize.width() / 2.0f);
-    new_tab_button->SetPaintTransparentForGlass(true);
     new_tab_button_ = AddChildView(std::move(new_tab_button));
     new_tab_button_->SetProperty(views::kCrossAxisAlignmentKey,
                                  views::LayoutAlignment::kCenter);

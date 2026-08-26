@@ -174,9 +174,6 @@ void TabStripFlatEdgeButton::NotifyWillInvokeAction() {
 }
 
 void TabStripFlatEdgeButton::OnPaintBackground(gfx::Canvas* canvas) {
-  if (paint_transparent_for_glass_ && features::IsGlassFrameEnabled()) {
-    return;
-  }
   const SkColor color = GetColorProvider()->GetColor(GetBackgroundColor());
 
   cc::PaintFlags flags;
@@ -232,15 +229,6 @@ void TabStripFlatEdgeButton::UpdateHighlightPathAndInkDrop() {
     views::InkDrop::Get(this)->GetInkDrop()->HostSizeChanged(size());
   }
 
-  SchedulePaint();
-}
-
-void TabStripFlatEdgeButton::SetPaintTransparentForGlass(
-    bool paint_transparent) {
-  if (paint_transparent_for_glass_ == paint_transparent) {
-    return;
-  }
-  paint_transparent_for_glass_ = paint_transparent;
   SchedulePaint();
 }
 
