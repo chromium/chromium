@@ -414,8 +414,16 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   EnsureTabDuplicateHistogramsMatchExpectations(expected_histograms);
 }
 
+// TODO(crbug.com/449230856): Consistently failing on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_AdditionalTabStatsObserverGetsInitiliazed \
+  DISABLED_AdditionalTabStatsObserverGetsInitiliazed
+#else
+#define MAYBE_AdditionalTabStatsObserverGetsInitiliazed \
+  AdditionalTabStatsObserverGetsInitiliazed
+#endif
 IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
-                       AdditionalTabStatsObserverGetsInitiliazed) {
+                       MAYBE_AdditionalTabStatsObserverGetsInitiliazed) {
   // Assert that the |TabStatsTracker| instance is initialized during the
   // creation of the main browser.
   ASSERT_TRUE(tab_stats_tracker_ != nullptr);
