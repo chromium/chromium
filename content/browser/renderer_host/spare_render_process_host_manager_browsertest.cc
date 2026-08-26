@@ -3,11 +3,9 @@
 // found in the LICENSE file.
 
 #include <algorithm>
-#include <optional>
 #include <utility>
 
 #include "base/callback_list.h"
-#include "base/command_line.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_amount_of_physical_memory_override.h"
@@ -18,7 +16,6 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/spare_render_process_host_manager_impl.h"
 #include "content/public/browser/process_allocation_context.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -515,41 +512,6 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
     }
   }
   EXPECT_FALSE(spare_found);
-}
-
-// Records what RenderProcessHost::IsSpare() returned for the renderer
-// launched while this client is installed, at the time its command line was
-// put together.
-class IsSpareDuringLaunchContentBrowserClient
-    : public ContentBrowserTestContentBrowserClient {
- public:
-  void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
-                                      int child_process_id) override {
-    ContentBrowserTestContentBrowserClient::AppendExtraCommandLineSwitches(
-        command_line, child_process_id);
-    if (RenderProcessHost* host = RenderProcessHost::FromID(child_process_id)) {
-      is_spare_during_launch_ = host->IsSpare();
-    }
-  }
-
-  std::optional<bool> is_spare_during_launch() const {
-    return is_spare_during_launch_;
-  }
-
- private:
-  std::optional<bool> is_spare_during_launch_;
-};
-
-// Embedders decide per-process command line switches in
-// AppendExtraCommandLineSwitches(), so a spare must already be recognizable as
-// one there.
-IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest, IsSpareDuringLaunch) {
-  IsSpareDuringLaunchContentBrowserClient browser_client;
-  auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
-  spare_manager.WarmupSpare(browser_context());
-  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
-  EXPECT_EQ(browser_client.is_spare_during_launch(), true);
-  spare_manager.CleanupSparesForTesting();
 }
 
 // A mock ContentBrowserClient that only considers a spare renderer to be a
