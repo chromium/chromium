@@ -283,10 +283,11 @@ public class SendTabToSelfTabCardLabelData extends PersistedTabData {
     public interface Natives {
         void markEntryActivated(
                 @JniType("Profile*") Profile profile,
-                String guid,
-                @ShareActivatedEntryPoint int entryPoint);
+                @JniType("std::string") String guid,
+                @JniType("send_tab_to_self::ShareActivatedEntryPoint") @ShareActivatedEntryPoint
+                        int entryPoint);
 
-        void onTabShown(Tab tab, String senderDeviceName);
+        void onTabShown(Tab tab, @JniType("std::string") String senderDeviceName);
     }
 
     public String getGuid() {

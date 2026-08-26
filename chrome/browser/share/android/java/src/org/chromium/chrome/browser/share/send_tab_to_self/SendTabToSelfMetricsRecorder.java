@@ -74,16 +74,22 @@ public class SendTabToSelfMetricsRecorder {
         void recordNotificationStatus(
                 @JniType("send_tab_to_self::NotificationStatus") @NotificationStatus int status);
 
-        void attachScrollObserver(WebContents webContents, boolean hasScrollPosition);
+        void attachScrollObserver(
+                @JniType("content::WebContents*") WebContents webContents,
+                boolean hasScrollPosition);
 
         void recordHasScrollPositionOnOpened(boolean hasScrollPosition);
 
-        void recordScrollPositionGenerationOutcome(@ScrollPositionGenerationOutcome int outcome);
+        void recordScrollPositionGenerationOutcome(
+                @JniType("send_tab_to_self::ScrollPositionGenerationOutcome")
+                        @ScrollPositionGenerationOutcome
+                        int outcome);
 
         void recordScrollPositionGenerationTime(long durationMs);
 
         void recordScrollPositionSelectorLength(int length);
 
-        void recordEntryPointInvoked(int entryPoint);
+        void recordEntryPointInvoked(
+                @JniType("send_tab_to_self::ShareEntryPoint") @ShareEntryPoint int entryPoint);
     }
 }

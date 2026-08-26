@@ -36,9 +36,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.SendTabToSelfTabCardLabelData;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
@@ -71,7 +71,8 @@ public class SendTabToSelfAndroidBridge {
     @FunctionalInterface
     public interface CommitConfirmationCallback {
         @CalledByNative
-        void onResult(@SendTabToSelfResult int result);
+        void onResult(
+                @JniType("send_tab_to_self::SendTabToSelfResult") @SendTabToSelfResult int result);
     }
 
     /**
@@ -322,7 +323,7 @@ public class SendTabToSelfAndroidBridge {
     }
 
     @CalledByNative
-    public static void onTabShown(Tab tab, String senderDeviceName) {
+    public static void onTabShown(Tab tab, @JniType("std::string") String senderDeviceName) {
         if (!ChromeFeatureList.sSendTabToSelfOpenNativeApp.isEnabled()) {
             return;
         }
@@ -336,7 +337,10 @@ public class SendTabToSelfAndroidBridge {
      * @param senderDeviceName The name of the device that sent the tab.
      */
     @CalledByNative
-    public static void attachTabLabel(Tab tab, String guid, String senderDeviceName) {
+    public static void attachTabLabel(
+            Tab tab,
+            @JniType("std::string") String guid,
+            @JniType("std::string") String senderDeviceName) {
         ThreadUtils.assertOnUiThread();
 
         if (tab == null || tab.getUserDataHost() == null || TextUtils.isEmpty(senderDeviceName)) {
@@ -359,7 +363,9 @@ public class SendTabToSelfAndroidBridge {
 
     @CalledByNative
     public static void showMessageBanner(
-            @Nullable WebContents webContents, String deviceName, int openedTabCount) {
+            @JniType("content::WebContents*") @Nullable WebContents webContents,
+            @JniType("std::string") String deviceName,
+            int openedTabCount) {
         assert openedTabCount > 0;
 
         // The tab or web page has been closed or destroyed.
@@ -680,21 +686,24 @@ public class SendTabToSelfAndroidBridge {
     public interface Natives {
         void sendTabToDevice(
                 @JniType("Profile*") Profile profile,
-                @Nullable WebContents webContents,
-                String targetDeviceSyncCacheGuid,
-                String url,
-                String title,
+                @JniType("content::WebContents*") @Nullable WebContents webContents,
+                @JniType("std::string") String targetDeviceSyncCacheGuid,
+                @JniType("std::string") String url,
+                @JniType("std::string") String title,
                 CommitConfirmationCallback commitConfirmation,
-                @ShareEntryPoint int entryPoint);
+                @JniType("send_tab_to_self::ShareEntryPoint") @ShareEntryPoint int entryPoint);
 
-        void markEntryOpened(@JniType("Profile*") Profile profile, String guid);
+        void markEntryOpened(
+                @JniType("Profile*") Profile profile, @JniType("std::string") String guid);
 
-        void dismissEntry(@JniType("Profile*") Profile profile, String guid);
+        void dismissEntry(
+                @JniType("Profile*") Profile profile, @JniType("std::string") String guid);
 
         void markEntryActivated(
                 @JniType("Profile*") Profile profile,
-                String guid,
-                @ShareActivatedEntryPoint int entryPoint);
+                @JniType("std::string") String guid,
+                @JniType("send_tab_to_self::ShareActivatedEntryPoint") @ShareActivatedEntryPoint
+                        int entryPoint);
 
         void fillWebContents(
                 @JniType("content::WebContents*") @Nullable WebContents webContents,
@@ -707,11 +716,12 @@ public class SendTabToSelfAndroidBridge {
         @Nullable
         @EntryPointDisplayReason
         Integer getEntryPointDisplayReason(
-                @JniType("Profile*") Profile profile, String url);
+                @JniType("Profile*") Profile profile, @JniType("std::string") String url);
 
         void recordTargetDeviceCount(
-                @ShareEntryPoint int entryPoint,
-                @EntryPointDisplayReason int displayReason,
+                @JniType("send_tab_to_self::ShareEntryPoint") @ShareEntryPoint int entryPoint,
+                @JniType("send_tab_to_self::EntryPointDisplayReason") @EntryPointDisplayReason
+                        int displayReason,
                 int deviceCount);
 
         long addDeviceInfoObserver(

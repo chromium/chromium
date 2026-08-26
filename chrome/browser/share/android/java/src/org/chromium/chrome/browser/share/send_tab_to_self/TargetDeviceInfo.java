@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.sync_device_info.FormFactor;
@@ -38,11 +39,11 @@ public class TargetDeviceInfo {
 
     @CalledByNative
     public static TargetDeviceInfo build(
-            String name,
-            String cacheGuid,
+            @JniType("std::string") String name,
+            @JniType("std::string") String cacheGuid,
             @FormFactor int formFactor,
             @OsType int osType,
-            String lastActiveTimeForDisplay) {
+            @JniType("std::u16string") String lastActiveTimeForDisplay) {
         return new TargetDeviceInfo(name, cacheGuid, formFactor, osType, lastActiveTimeForDisplay);
     }
 }

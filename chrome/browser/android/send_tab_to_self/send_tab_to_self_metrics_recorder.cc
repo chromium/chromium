@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/time/time.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_scroll_observer.h"
@@ -26,10 +25,8 @@ static void JNI_SendTabToSelfMetricsRecorder_RecordNotificationStatus(
 
 static void JNI_SendTabToSelfMetricsRecorder_AttachScrollObserver(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& j_web_contents,
+    content::WebContents* web_contents,
     jboolean has_scroll_position) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(j_web_contents);
   if (web_contents) {
     SendTabToSelfScrollObserver::CreateForWebContents(web_contents,
                                                       has_scroll_position);
@@ -45,9 +42,8 @@ static void JNI_SendTabToSelfMetricsRecorder_RecordHasScrollPositionOnOpened(
 static void
 JNI_SendTabToSelfMetricsRecorder_RecordScrollPositionGenerationOutcome(
     JNIEnv* env,
-    jint outcome) {
-  RecordScrollPositionGenerationOutcome(
-      static_cast<ScrollPositionGenerationOutcome>(outcome));
+    ScrollPositionGenerationOutcome outcome) {
+  RecordScrollPositionGenerationOutcome(outcome);
 }
 
 static void JNI_SendTabToSelfMetricsRecorder_RecordScrollPositionGenerationTime(
@@ -64,10 +60,8 @@ static void JNI_SendTabToSelfMetricsRecorder_RecordScrollPositionSelectorLength(
 
 static void JNI_SendTabToSelfMetricsRecorder_RecordEntryPointInvoked(
     JNIEnv* env,
-    int32_t entry_point) {
-  CHECK_LE(0, entry_point);
-  CHECK_LE(entry_point, static_cast<int>(ShareEntryPoint::kMaxValue));
-  RecordEntryPointInvoked(static_cast<ShareEntryPoint>(entry_point));
+    ShareEntryPoint entry_point) {
+  RecordEntryPointInvoked(entry_point);
 }
 
 }  // namespace send_tab_to_self
