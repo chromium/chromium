@@ -38,7 +38,8 @@ class LensRegionSearchControllerTest : public ChromeRenderViewHostTestHarness {
     NavigateAndCommit(GURL("about:blank"));
 
     CoreTabHelper::CreateForWebContents(web_contents());
-    controller_ = std::make_unique<LensRegionSearchController>();
+    controller_ =
+        std::make_unique<LensRegionSearchController>(unowned_user_data_host_);
     controller_->SetWebContentsForTesting(web_contents());
     controller_->SetEntryPointForTesting(
         lens::AmbientSearchEntryPoint::
@@ -52,6 +53,7 @@ class LensRegionSearchControllerTest : public ChromeRenderViewHostTestHarness {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  ui::UnownedUserDataHost unowned_user_data_host_;
   std::unique_ptr<LensRegionSearchController> controller_;
 };
 

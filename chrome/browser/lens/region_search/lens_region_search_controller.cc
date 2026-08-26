@@ -68,7 +68,17 @@ views::Widget* OpenLensRegionSearchInstructions(
 
 namespace lens {
 
-LensRegionSearchController::LensRegionSearchController() {
+DEFINE_USER_DATA(LensRegionSearchController);
+
+// static
+LensRegionSearchController* LensRegionSearchController::From(
+    BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
+LensRegionSearchController::LensRegionSearchController(
+    ui::UnownedUserDataHost& host)
+    : scoped_unowned_user_data_(host, *this) {
   weak_this_ = weak_factory_.GetWeakPtr();
 }
 

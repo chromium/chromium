@@ -274,9 +274,8 @@ void LensOverlayEntryPointController::InvokeAction(
     if (static_cast<page_actions::PageActionTrigger>(page_action_trigger) ==
             page_actions::PageActionTrigger::kKeyboard &&
         !lens::features::IsLensOverlayKeyboardSelectionEnabled()) {
-      active_tab->GetBrowserWindowInterface()
-          ->GetFeatures()
-          .lens_region_search_controller()
+      lens::LensRegionSearchController::From(
+          active_tab->GetBrowserWindowInterface())
           ->Start(active_tab->GetContents(), /*use_fullscreen_capture=*/true,
                   /*is_google_default_search_provider=*/true,
                   lens::AmbientSearchEntryPoint::

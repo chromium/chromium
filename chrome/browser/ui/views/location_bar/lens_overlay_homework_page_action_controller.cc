@@ -83,9 +83,7 @@ void LensOverlayHomeworkPageActionController::HandlePageActionEvent(
   // enabled, we want to open Lens Web in a new tab.
   if (is_from_keyboard &&
       !lens::features::IsLensOverlayKeyboardSelectionEnabled()) {
-    tab_->GetBrowserWindowInterface()
-        ->GetFeatures()
-        .lens_region_search_controller()
+    lens::LensRegionSearchController::From(tab_->GetBrowserWindowInterface())
         ->Start(tab_->GetContents(), /*use_fullscreen_capture=*/true,
                 /*is_google_default_search_provider=*/true,
                 lens::AmbientSearchEntryPoint::

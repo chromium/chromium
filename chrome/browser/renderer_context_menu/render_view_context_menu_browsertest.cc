@@ -2884,7 +2884,7 @@ class LensBrowserBaseTest : public InProcessBrowserTest {
     // Verify Lens Region Search Controller was created after using the menu
     // item.
     lens::LensRegionSearchController* const controller =
-        browser()->GetFeatures().lens_region_search_controller();
+        lens::LensRegionSearchController::From(browser());
     ASSERT_NE(controller, nullptr);
     ASSERT_TRUE(menu->lens_region_search_controller_started_for_testing());
     ASSERT_TRUE(controller->IsOverlayUIVisibleForTesting());
@@ -2898,7 +2898,7 @@ class LensBrowserBaseTest : public InProcessBrowserTest {
     // Verify Lens Region Search Controller was created after using the menu
     // item.
     lens::LensRegionSearchController* const controller =
-        browser()->GetFeatures().lens_region_search_controller();
+        lens::LensRegionSearchController::From(browser());
     ASSERT_NE(controller, nullptr);
     ASSERT_TRUE(menu->lens_region_search_controller_started_for_testing());
     ASSERT_FALSE(controller->IsOverlayUIVisibleForTesting());

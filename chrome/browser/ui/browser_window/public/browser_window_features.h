@@ -377,10 +377,6 @@ class BrowserWindowFeatures {
     return incognito_clear_browsing_data_dialog_coordinator_.get();
   }
 
-  lens::LensRegionSearchController* lens_region_search_controller() {
-    return lens_region_search_controller_.get();
-  }
-
   sessions::LiveTabContext* live_tab_context();
 
   // Returns the LocationBar for this browser window. Currently delegates to

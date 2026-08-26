@@ -452,7 +452,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
                                                                  browser);
 
   lens_region_search_controller_ =
-      std::make_unique<lens::LensRegionSearchController>();
+      GetUserDataFactory().CreateInstance<lens::LensRegionSearchController>(
+          *browser, browser->GetUnownedUserDataHost());
 
   // Must be before location_bar_model_.
   location_bar_model_delegate_ =

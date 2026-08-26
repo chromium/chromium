@@ -5301,7 +5301,7 @@ void RenderViewContextMenu::ExecRegionSearch(
           ? lens::AmbientSearchEntryPoint::
                 CONTEXT_MENU_SEARCH_REGION_WITH_GOOGLE_LENS
           : lens::AmbientSearchEntryPoint::CONTEXT_MENU_SEARCH_REGION_WITH_WEB;
-  browser->GetFeatures().lens_region_search_controller()->Start(
+  lens::LensRegionSearchController::From(browser)->Start(
       embedder_web_contents_, use_fullscreen_capture,
       is_google_default_search_provider, entry_point);
   lens_region_search_controller_started_for_testing_ = true;
