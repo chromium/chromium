@@ -112,6 +112,8 @@ extern const base::FeatureParam<int> kGlicReloadMaxLoadingTimeMs;
 
 BASE_DECLARE_FEATURE(kGlicContextualCueingV2AutoSubmit);
 
+BASE_DECLARE_FEATURE(kGlicMessageFirstFreForContextualCue);
+
 BASE_DECLARE_FEATURE(kGlicWebDragAndDropFileUpload);
 
 BASE_DECLARE_FEATURE(kGlicOptInImpressionMetrics);

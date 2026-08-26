@@ -178,6 +178,11 @@ void GlicCueTarget::InvokeGlic(contextual_cueing::CueActionData data,
                                           GlicPinTrigger::kContextualCue);
 
   if (should_autosubmit) {
+    if (!GlicEnabling::HasConsentedForProfile(glic_keyed_service_->profile()) &&
+        base::FeatureList::IsEnabled(
+            features::kGlicMessageFirstFreForContextualCue)) {
+      options.fre_override = mojom::FreOverride::kTrustFirstInline;
+    }
     glic_keyed_service_->InvokeWithAutoSubmit(
         InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), std::move(options));
   } else {
