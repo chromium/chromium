@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "base/token.h"
 #include "content/browser/renderer_host/media/video_capture_provider.h"
 #include "content/public/browser/video_capture_device_launcher.h"
@@ -46,13 +47,7 @@ class InProcessLaunchedVideoCaptureDevice : public LaunchedVideoCaptureDevice {
   void OnUtilizationReport(media::VideoCaptureFeedback feedback) override;
 
  private:
-  void SetDesktopCaptureWindowIdOnDeviceThread(
-      media::VideoCaptureDevice* device,
-      gfx::NativeViewId window_id,
-      base::OnceClosure done_cb);
-
-  std::unique_ptr<media::VideoCaptureDevice> device_;
-  const scoped_refptr<base::SingleThreadTaskRunner> device_task_runner_;
+  base::SequenceBound<std::unique_ptr<media::VideoCaptureDevice>> device_;
 };
 
 }  // namespace content
