@@ -2016,11 +2016,8 @@ public class VerticalTabListCoordinator {
                     mLastTouchPoint.set((int) e.getX(), (int) e.getY());
                 }
 
-                // Intercept mouse right-clicks. While setOnContextClickListener works for
-                // empty background space (where no child views capture the event), actual
-                // tab row child views swallow right-clicks internally without bubbling them
-                // up to the parent (recyclerView), causing
-                // recyclerView.setOnContextClickListener to be skipped.
+                // Intercept mouse right-clicks directly on child tab items before interactive
+                // sub-views (like buttons or click listeners) consume the touch sequence.
                 if ((e.getButtonState() & MotionEvent.BUTTON_SECONDARY) != 0) {
                     View childView = rv.findChildViewUnder(e.getX(), e.getY());
                     if (childView != null) {
@@ -2101,15 +2098,19 @@ public class VerticalTabListCoordinator {
     private View.OnContextClickListener createEmptySpaceContextClickListener(
             Activity activity, View targetView) {
         return v -> {
+            // If the click landed on an actual child item, onInterceptTouchEvent already
+            // handled it. Only show the empty space menu if there is no child view under the
+            // cursor.
             if (targetView instanceof RecyclerView rv) {
-                return handleContextMenuInteraction(
-                        activity, rv, mLastTouchPoint.x, mLastTouchPoint.y);
-            } else {
-                showEmptySpaceContextMenu(
-                        calculateTouchAnchor(targetView, mLastTouchPoint.x, mLastTouchPoint.y),
-                        activity);
-                return true;
+                View childView = rv.findChildViewUnder(mLastTouchPoint.x, mLastTouchPoint.y);
+                if (childView != null) {
+                    return true;
+                }
             }
+            showEmptySpaceContextMenu(
+                    calculateTouchAnchor(targetView, mLastTouchPoint.x, mLastTouchPoint.y),
+                    activity);
+            return true;
         };
     }
 
