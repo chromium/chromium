@@ -1033,6 +1033,7 @@ void ArcSessionManager::ResetArcState() {
   arc_sign_in_timer_.Stop();
   playstore_launcher_.reset();
   requirement_checker_.reset();
+  activation_necessity_checker_.reset();
 }
 
 void ArcSessionManager::AddObserver(ArcSessionManagerObserver* observer) {
@@ -1182,6 +1183,9 @@ void ArcSessionManager::AllowActivation(AllowActivationReason reason) {
   }
 
   activation_is_allowed_ = true;
+  // Cancel any pending necessity check since activation is now explicitly
+  // allowed.
+  activation_necessity_checker_.reset();
   if (state_ == State::READY) {
     StartArcForRegularBoot();
   }
