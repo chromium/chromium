@@ -532,7 +532,73 @@ FeatureList::GetRuntimeMutableFeatureState(
   return runtime_mutable_overrides_;
 }
 
-bool FeatureList::UpdateRuntimeMutableFeatureState(
+FeatureList::RuntimeMutableFeatureUpdate::RuntimeMutableFeatureUpdate(
+    internal::RuntimeMutableFeatureState& state_entry,
+    std::string_view field_trial_name,
+    std::string_view group_name,
+    OverrideState override_state)
+    : state_entry_(&state_entry),
+      field_trial_name_(field_trial_name),
+      group_name_(group_name),
+      override_state_(override_state) {}
+
+FeatureList::RuntimeMutableFeatureUpdate::RuntimeMutableFeatureUpdate(
+    RuntimeMutableFeatureUpdate&& other) noexcept
+    : state_entry_(other.state_entry_),
+      field_trial_name_(std::move(other.field_trial_name_)),
+      group_name_(std::move(other.group_name_)),
+      override_state_(other.override_state_),
+      stage_(std::exchange(other.stage_, Stage::kMovedFrom)) {}
+
+FeatureList::RuntimeMutableFeatureUpdate&
+FeatureList::RuntimeMutableFeatureUpdate::operator=(
+    RuntimeMutableFeatureUpdate&& other) noexcept {
+  if (this != &other) {
+    CHECK(stage_ == Stage::kPostMutationRun || stage_ == Stage::kMovedFrom);
+    state_entry_ = other.state_entry_;
+    field_trial_name_ = std::move(other.field_trial_name_);
+    group_name_ = std::move(other.group_name_);
+    override_state_ = other.override_state_;
+    stage_ = std::exchange(other.stage_, Stage::kMovedFrom);
+  }
+  return *this;
+}
+
+FeatureList::RuntimeMutableFeatureUpdate::~RuntimeMutableFeatureUpdate() {
+  CHECK(stage_ == Stage::kPostMutationRun || stage_ == Stage::kMovedFrom);
+}
+
+void FeatureList::RuntimeMutableFeatureUpdate::RunPreMutationCallback() {
+  CHECK_EQ(stage_, Stage::kInitial);
+  stage_ = Stage::kPreMutationRun;
+  if (!state_entry_->pre_mutation_callback.is_null()) {
+    state_entry_->pre_mutation_callback.Run(state_entry_->feature.get(),
+                                            field_trial_name_, group_name_,
+                                            override_state_);
+  }
+}
+
+void FeatureList::RuntimeMutableFeatureUpdate::UpdateState() {
+  CHECK_EQ(stage_, Stage::kPreMutationRun);
+  stage_ = Stage::kStateUpdated;
+  state_entry_->override_state = override_state_;
+  state_entry_->field_trial_name = field_trial_name_;
+  LogRuntimeMutabilityResult(state_entry_->feature.get().name,
+                             internal::RuntimeMutabilityResult::kSuccess);
+}
+
+void FeatureList::RuntimeMutableFeatureUpdate::RunPostMutationCallback() {
+  CHECK_EQ(stage_, Stage::kStateUpdated);
+  stage_ = Stage::kPostMutationRun;
+  if (!state_entry_->post_mutation_callback.is_null()) {
+    state_entry_->post_mutation_callback.Run(state_entry_->feature.get(),
+                                             field_trial_name_, group_name_,
+                                             override_state_);
+  }
+}
+
+std::optional<FeatureList::RuntimeMutableFeatureUpdate>
+FeatureList::PrepareRuntimeMutableFeatureStateUpdate(
     base::PassKey<variations::VariationsService>,
     std::string_view field_trial_name,
     std::string_view group_name,
@@ -545,16 +611,18 @@ bool FeatureList::UpdateRuntimeMutableFeatureState(
   // for enabled features).
   if (override_state != OVERRIDE_DISABLE_FEATURE) {
     LogRuntimeMutabilityResult(
-        feature_name, RuntimeMutabilityResult::kFailure_StateNotSupported);
-    return false;
+        feature_name,
+        internal::RuntimeMutabilityResult::kFailure_StateNotSupported);
+    return std::nullopt;
   }
 
   // Don't allow runtime mutability to override a feature that is already
   // overridden from the command line.
   if (IsFeatureOverriddenFromCommandLine(feature_name)) {
     LogRuntimeMutabilityResult(
-        feature_name, RuntimeMutabilityResult::kFailure_CommandLineOverride);
-    return false;
+        feature_name,
+        internal::RuntimeMutabilityResult::kFailure_CommandLineOverride);
+    return std::nullopt;
   }
 
   // Find the runtime override entry for the feature.
@@ -565,33 +633,16 @@ bool FeatureList::UpdateRuntimeMutableFeatureState(
     // has not been called for the feature, or because runtime mutability
     // has been disabled due to an early (pre-feature-list-initialization)
     // access.
-    LogRuntimeMutabilityResult(feature_name, RuntimeMutabilityResult::kFailure);
-    return false;
+    LogRuntimeMutabilityResult(feature_name,
+                               internal::RuntimeMutabilityResult::kFailure);
+    return std::nullopt;
   }
 
   // If we get here, the feature is registered for runtime mutability. The
   // feature pointer in the entry is guaranteed to be non-null and the feature
   // has its runtime mutability bits properly set.
-  auto& runtime_override_entry = it->second;
-  const auto& feature = runtime_override_entry.feature.get();
-
-  // Notify the pre-mutation callback.
-  if (!runtime_override_entry.pre_mutation_callback.is_null()) {
-    runtime_override_entry.pre_mutation_callback.Run(
-        feature, field_trial_name, group_name, override_state);
-  }
-
-  runtime_override_entry.override_state = override_state;
-  runtime_override_entry.field_trial_name = std::string(field_trial_name);
-
-  // Notify the post-mutation callback.
-  if (!runtime_override_entry.post_mutation_callback.is_null()) {
-    runtime_override_entry.post_mutation_callback.Run(
-        feature, field_trial_name, group_name, override_state);
-  }
-
-  LogRuntimeMutabilityResult(feature_name, RuntimeMutabilityResult::kSuccess);
-  return true;
+  return RuntimeMutableFeatureUpdate(it->second, field_trial_name, group_name,
+                                     override_state);
 }
 
 bool FeatureList::HasRuntimeMutabilityEnabledByFeatureName(
