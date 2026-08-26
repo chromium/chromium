@@ -53,7 +53,7 @@
     Send to your device
   </message>
   <message name="IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST" desc = "Text for a toast indicating that the tab was successfully sent to another device.">
-    Sent to Chrome on your <ph name="DEVICE_NAME">$1<ex>iPhone</ex></ph>.
+    Sent to Chrome on your <ph name="DEVICE_NAME">$1<ex>iPhone</ex></ph>
   </message>
   <message name="IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST_ANDROID" desc = "Text for a toast indicating that the tab was successfully sent to another device." formatter_data="android_java">
     Sent to Chrome on your <ph name="DEVICE_NAME">%1$s<ex>iPhone</ex></ph> • <ph name="USER_EMAIL">%2$s<ex>elisa.g.beckett@gmail.com</ex></ph>
