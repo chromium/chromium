@@ -90,10 +90,6 @@ void RecordGameDashboardScreenshotTakeSource(const std::string& app_id,
 
 void RecordGameDashboardEditControlsWithEmptyState(const std::string& app_id,
                                                    bool is_setup) {
-  base::UmaHistogramBoolean(
-      BuildGameDashboardHistogramName(
-          kGameDashboardEditControlsWithEmptyStateHistogram),
-      is_setup);
   ukm::builders::GameDashboard_EditControlsWithEmptyState(
       GameDashboardController::Get()->GetUkmSourceId(app_id))
       .SetEmpty(is_setup)

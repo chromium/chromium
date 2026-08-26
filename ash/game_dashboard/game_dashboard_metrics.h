@@ -23,7 +23,7 @@ inline constexpr char kGameDashboardRecordingStartSourceHistogram[] =
     "RecordingStartSource";
 inline constexpr char kGameDashboardScreenshotTakeSourceHistogram[] =
     "ScreenshotTakeSource";
-inline constexpr char kGameDashboardEditControlsWithEmptyStateHistogram[] =
+inline constexpr char kGameDashboardEditControlsWithEmptyStateEvent[] =
     "EditControlsWithEmptyState";
 
 inline constexpr char kGameDashboardToolbarClickToExpandStateHistogram[] =

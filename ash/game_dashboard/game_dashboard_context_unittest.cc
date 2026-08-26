@@ -200,7 +200,7 @@ void VerifyGameControlsEditControlsWithEmptyStateLastUkmEvent(
   EXPECT_GE(expect_entry_size, 1u);
   const auto ukm_entries =
       ukm_recorder.GetEntriesByName(BuildGameDashboardUkmEventName(
-          kGameDashboardEditControlsWithEmptyStateHistogram));
+          kGameDashboardEditControlsWithEmptyStateEvent));
   EXPECT_EQ(expect_entry_size, ukm_entries.size());
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       ukm_entries[expect_entry_size - 1],
@@ -1182,10 +1182,8 @@ TEST_F(GameDashboardContextTest, ZorderWithGameControls) {
       test_api_->GetToolbarWidget()->GetNativeView()));
 }
 
-TEST_F(GameDashboardContextTest,
-       RecordEditControlsWithEmptyStateHistogramTest) {
+TEST_F(GameDashboardContextTest, RecordEditControlsWithEmptyStateTest) {
   CreateGameWindow(/*is_arc_window=*/true);
-  base::HistogramTester histograms;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   // Game Controls is available, not empty, enabled and hint on.
@@ -1197,11 +1195,6 @@ TEST_F(GameDashboardContextTest,
   test_api_->OpenTheMainMenu();
   LeftClickOn(test_api_->GetMainMenuGameControlsDetailsButton());
 
-  const std::string histogram_name = BuildGameDashboardHistogramName(
-      kGameDashboardEditControlsWithEmptyStateHistogram);
-  std::map<bool, int> expected_histogram_values;
-  expected_histogram_values[false]++;
-  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
   VerifyGameControlsEditControlsWithEmptyStateLastUkmEvent(
       ukm_recorder, /*expect_entry_size=*/1u, /*expect_event_value=*/0);
 
@@ -1213,8 +1206,6 @@ TEST_F(GameDashboardContextTest,
           ArcGameControlsFlag::kEnabled | ArcGameControlsFlag::kEmpty));
   test_api_->OpenTheMainMenu();
   LeftClickOn(test_api_->GetMainMenuGameControlsDetailsButton());
-  expected_histogram_values[true]++;
-  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
   VerifyGameControlsEditControlsWithEmptyStateLastUkmEvent(
       ukm_recorder, /*expect_entry_size=*/2u, /*expect_event_value=*/1);
 }
