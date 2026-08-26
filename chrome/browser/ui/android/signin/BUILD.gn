@@ -293,6 +293,7 @@ android_library("javatests") {
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetRenderTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetTestUtil.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerModalDialogTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/SeamlessSigninTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncRenderTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncTest.java",

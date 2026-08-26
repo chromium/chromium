@@ -761,6 +761,7 @@ public class SeamlessSigninTest {
                                     mIdentityManager,
                                     mSigninManagerMock,
                                     mAccountPreviewDataServiceMock,
+                                    mActivityTestRule.getActivity().getModalDialogManager(),
                                     mBottomSheetController,
                                     mAccountPickerDelegateMock,
                                     AccountPickerBottomSheetTestUtil.getBottomSheetStrings(

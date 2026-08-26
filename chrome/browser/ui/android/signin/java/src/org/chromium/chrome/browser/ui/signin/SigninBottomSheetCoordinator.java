@@ -128,6 +128,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
                             signinManager.getIdentityManager(),
                             signinManager,
                             accountPreviewDataService,
+                            modalDialogManager,
                             bottomSheetController,
                             this,
                             bottomSheetStrings,
