@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -78,37 +79,6 @@ class FullWebUIOmniboxInteractiveTestBase
   ~FullWebUIOmniboxInteractiveTestBase() override = default;
 
  protected:
-  auto WaitForBrowserActive() {
-    return Do([this]() {
-      views::Widget* widget =
-          BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
-      if (!widget->IsActive()) {
-        base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-        class WidgetActivationWaiter : public views::WidgetObserver {
-         public:
-          WidgetActivationWaiter(views::Widget* widget,
-                                 base::OnceClosure quit_closure)
-              : quit_closure_(std::move(quit_closure)) {
-            observation_.Observe(widget);
-          }
-          void OnWidgetActivationChanged(views::Widget* widget,
-                                         bool active) override {
-            if (active) {
-              std::move(quit_closure_).Run();
-            }
-          }
-
-         private:
-          base::OnceClosure quit_closure_;
-          base::ScopedObservation<views::Widget, views::WidgetObserver>
-              observation_{this};
-        };
-        WidgetActivationWaiter waiter(widget, run_loop.QuitClosure());
-        run_loop.Run();
-      }
-    });
-  }
-
   auto GetActivePopupWebView() {
     return base::BindLambdaForTesting([&]() -> views::View* {
       auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
@@ -300,7 +270,11 @@ class FullWebUIOmniboxInteractiveTestBase
 
   auto OpenInitialTabAndFocusOmnibox(ui::ElementIdentifier tab_id,
                                      const GURL& url) {
-    return Steps(WaitForBrowserActive(), AddInstrumentedTab(tab_id, url),
+    return Steps(Do([this]() {
+                   ASSERT_TRUE(
+                       ui_test_utils::BringBrowserWindowToFront(browser()));
+                 }),
+                 AddInstrumentedTab(tab_id, url),
                  WaitForWebContentsReady(tab_id),
                  WaitForPopupTransitionLockout(), Do([this]() {
                    if (auto* popup_view = BrowserWindow::FromBrowser(browser())
@@ -520,6 +494,53 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, ClearAndSwitchTab) {
       // permanent URL of Tab 1 instead of an empty string.
       WaitForViewProperty(kOmniboxElementId, views::Textfield, Text,
                           u"chrome://version"));
+}
+
+// Verifies that opening multiple New Tab Pages (NTPs) consecutively focuses the
+// WebUI Omnibox input right away for each new tab, and that non-NTPs do not
+// have lingering focus.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
+                       OmniboxFocusDoesNotLingerAcrossTabs) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab3);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab4);
+
+  RunTestSequence(
+      // Open NTP Tab 1.
+      WaitForPopupTransitionLockout(),
+      AddInstrumentedTab(kTab1, GURL(chrome::kChromeUINewTabURL)),
+      WaitForWebContentsReady(kTab1),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      InAnyContext(
+          InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
+      // Ensure webui input is focused.
+      CheckWebUIInputFocus(true),
+
+      // Open NTP Tab 2.
+      UninstrumentWebContents(kPopupWebView),
+      AddInstrumentedTab(kTab2, GURL(chrome::kChromeUINewTabURL)),
+      WaitForWebContentsReady(kTab2),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      InAnyContext(
+          InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
+      // Ensure webui input is focused.
+      CheckWebUIInputFocus(true),
+
+      // Open non-NTP, expect focus to not linger.
+      UninstrumentWebContents(kPopupWebView),
+      AddInstrumentedTab(kTab3, GURL("about:blank")),
+      WaitForWebContentsReady(kTab3),
+      InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      // Ensure omnibox is not focused.
+      WaitForOmniboxFocus(false),
+
+      // Open a third NTP.
+      AddInstrumentedTab(kTab4, GURL(chrome::kChromeUINewTabURL)),
+      WaitForWebContentsReady(kTab4),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      InAnyContext(
+          InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
+      // Ensure webui input is focused.
+      CheckWebUIInputFocus(true));
 }
 
 // Verifies that clicking a match navigates to the suggestion.

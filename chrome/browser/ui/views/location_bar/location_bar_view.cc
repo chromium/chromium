@@ -1744,6 +1744,13 @@ void LocationBarView::OnPopupStateChanged(OmniboxPopupState old_state,
       }
       break;
     case OmniboxPopupState::kNone:
+      if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+        // When the popup is closed, remove focus from the location bar.
+        if (GetFocusManager()) {
+          GetFocusManager()->ClearFocus();
+        }
+        GetOmniboxController()->edit_model()->OnKillFocus();
+      }
       break;
   }
 
@@ -1841,6 +1848,14 @@ void LocationBarView::OnChanged() {
   TRACE_EVENT("omnibox", "LocationBarView::OnChanged");
   // Ensure that background colors get updated on tab-switch.
   RefreshBackground();
+
+  // In Full WebUI Omnibox popup mode, ensure the focus ring's visibility
+  // matches the final tab focus state on tab switches.
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup) &&
+      views::FocusRing::Get(this)) {
+    views::FocusRing::Get(this)->Refresh();
+  }
+
   location_icon_view_->Update(
       /*suppress_animations=*/false, GetOmniboxController()->IsPopupOpen());
   clear_all_button_->SetVisible(

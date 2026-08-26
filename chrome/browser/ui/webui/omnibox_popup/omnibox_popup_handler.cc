@@ -49,18 +49,14 @@ void OmniboxPopupHandler::ShowContextMenu(const gfx::Point& point) {
 
 void OmniboxPopupHandler::CloseUI() {
   if (embedder_) {
+    // NOTE: `embedder_->CloseUI()` transitions the popup state to `kNone`,
+    // which prompts `LocationBarView::OnPopupStateChanged()` to centrally clear
+    // Views focus and notify the edit model via `OnKillFocus()`.
     embedder_->CloseUI();
   }
-  // Transfer focus from the location bar to the active web tab DOM and notify
-  // the edit model that focus was killed so internal focus state and metrics
-  // trackers are updated.
-  if (controller_) {
-    if (controller_->client()) {
-      controller_->client()->FocusWebContents();
-    }
-    if (controller_->edit_model()) {
-      controller_->edit_model()->OnKillFocus();
-    }
+  // Return keyboard focus to the active webpage.
+  if (controller_ && controller_->client()) {
+    controller_->client()->FocusWebContents();
   }
 }
 

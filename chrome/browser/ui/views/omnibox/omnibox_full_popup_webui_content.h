@@ -41,7 +41,6 @@ class OmniboxFullPopupWebUIContent
 
   bool EscClosesUI() const override;
 
-  void CloseUI() override;
   void Clear() override;
 
  private:
