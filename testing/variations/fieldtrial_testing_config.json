@@ -1366,6 +1366,21 @@
             ]
         }
     ],
+    "AntivirusTelemetryForDownloads": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260826",
+                    "enable_features": [
+                        "AntivirusTelemetryForDownloads"
+                    ]
+                }
+            ]
+        }
+    ],
     "AperitifHelpers": [
         {
             "platforms": [
