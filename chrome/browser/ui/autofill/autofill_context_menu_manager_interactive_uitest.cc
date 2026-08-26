@@ -178,13 +178,14 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
 IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
                        TabMoveToOtherBrowserDoesNotCrash) {
   // Create another browser.
-  Browser* other_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* other_browser =
+      CreateBrowser(browser()->GetProfile());
 
   // Move the tab to the other browser.
-  other_browser->tab_strip_model()->InsertDetachedTabAt(
+  other_browser->GetTabStripModel()->InsertDetachedTabAt(
       0, browser()->GetTabStripModel()->DetachTabAtForInsertion(0),
       AddTabTypes::ADD_ACTIVE);
-  ASSERT_EQ(other_browser->tab_strip_model()->count(), 2);
+  ASSERT_EQ(other_browser->GetTabStripModel()->count(), 2);
 
   // Close the first browser.
   CloseBrowserSynchronously(browser());

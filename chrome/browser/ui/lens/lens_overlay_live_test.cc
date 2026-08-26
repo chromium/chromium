@@ -167,7 +167,7 @@ class LensOverlayLiveTest : public base::test::WithFeatureOverride,
   signin::test::SignInFunctions sign_in_functions =
       signin::test::SignInFunctions(
           base::BindLambdaForTesting(
-              [this]() -> Browser* { return this->browser(); }),
+              [this]() -> BrowserWindowInterface* { return this->browser(); }),
           base::BindLambdaForTesting(
               [this](int index,
                      const GURL& url,

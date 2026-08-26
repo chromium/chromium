@@ -72,6 +72,6 @@ void BrowserContentSettingBubbleModelDelegate::ShowLearnMorePage(
     default:
       return;
   }
-  chrome::AddSelectedTabWithURL(browser_->GetBrowserForMigrationOnly(),
-                                learn_more_url, ui::PAGE_TRANSITION_LINK);
+  chrome::AddSelectedTabWithURL(&*browser_, learn_more_url,
+                                ui::PAGE_TRANSITION_LINK);
 }

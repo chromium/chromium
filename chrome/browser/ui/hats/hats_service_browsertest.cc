@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
@@ -202,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, NoShowConsentNotGiven) {
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
   EXPECT_FALSE(HatsNextDialogCreated());
 
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   GetHatsService(incognito_browser)->LaunchSurvey(kHatsSurveyTriggerSettings);
   EXPECT_FALSE(HatsNextDialogCreated(incognito_browser));
 }
@@ -243,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
   EXPECT_FALSE(HatsNextDialogCreated());
 
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   auto trigger = MockSurveyWithRequestedBrowserType(
       incognito_browser, hats::SurveyConfig::RequestedBrowserType::kIncognito);
   GetHatsService(incognito_browser)->LaunchSurvey(trigger);
@@ -363,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
   base::HistogramTester histogram_tester;
 
   // A regular survey should not be shown in incognito
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   GetHatsService(incognito_browser)->LaunchSurvey(kHatsSurveyTriggerSettings);
   histogram_tester.ExpectUniqueSample(
       kHatsShouldShowSurveyReasonHistogram,
@@ -376,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
   SetMetricsConsent(true);
   base::HistogramTester histogram_tester;
 
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   auto trigger = MockSurveyWithRequestedBrowserType(
       incognito_browser, hats::SurveyConfig::RequestedBrowserType::kIncognito);
 
@@ -690,7 +691,7 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
   // Clear any existing survey metadata.
   GetHatsService()->SetSurveyMetadataForTesting({});
 
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   auto trigger = MockSurveyWithRequestedBrowserType(
       incognito_browser, hats::SurveyConfig::RequestedBrowserType::kIncognito);
 

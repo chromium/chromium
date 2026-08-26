@@ -69,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(
   // Terminate the first tab (at index 0).
   const int target_tab_index = 0;
   content::WebContents* web_contents_to_kill =
-      browser()->tab_strip_model()->GetWebContentsAt(target_tab_index);
+      browser()->GetTabStripModel()->GetWebContentsAt(target_tab_index);
   ASSERT_TRUE(web_contents_to_kill);
 
   // Open a new tab to make the first one hidden.
@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(
   // index and check its state.
   EXPECT_TRUE(base::test::RunUntil([&]() {
     content::WebContents* current_web_contents =
-        browser()->tab_strip_model()->GetWebContentsAt(target_tab_index);
+        browser()->GetTabStripModel()->GetWebContentsAt(target_tab_index);
     // It's possible for the WebContents to be briefly null during the swap.
     return current_web_contents && current_web_contents->WasDiscarded();
   }));
