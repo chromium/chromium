@@ -4,6 +4,8 @@
 
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/icons.html.js';
 
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import {assert} from '//resources/js/assert.js';
@@ -93,6 +95,11 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
 
   protected onPinnedVersionInput_(e: Event) {
     this.selectedPinnedVersion_ = (e.target as HTMLInputElement).value;
+  }
+
+  protected onClearPinnedVersionClick_() {
+    this.selectedPinnedVersion_ = '';
+    this.shadowRoot.querySelector<HTMLElement>('#pinnedVersionInput')?.focus();
   }
 
   protected getCurrentChannel_(): string {

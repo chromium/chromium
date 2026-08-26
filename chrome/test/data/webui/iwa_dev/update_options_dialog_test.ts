@@ -317,6 +317,56 @@ suite('<iwa-dev-update-options-dialog>', () => {
     assertFalse(dialog.$.dialog.open);
   });
 
+  test('clears pinned version when clear button is clicked', async () => {
+    await openDialog({
+      currentPinnedVersion: '1.0.0',
+    });
+    assertEquals('1.0.0', pinnedVersionInput.value);
+
+    const clearButton = dialog.shadowRoot.querySelector<HTMLElement>(
+        '#clearPinnedVersionButton');
+    assertTrue(!!clearButton);
+    assertEquals('Clear pinned version', clearButton.title);
+
+    clearButton.click();
+    await microtasksFinished();
+
+    assertEquals('', pinnedVersionInput.value);
+    assertEquals(pinnedVersionInput, dialog.shadowRoot.activeElement);
+    assertFalse(saveButton.hasAttribute('disabled'));
+    assertFalse(!!dialog.shadowRoot.querySelector('#clearPinnedVersionButton'));
+
+    const savePromise = eventToPromise('update-options-saved', dialog);
+    saveButton.click();
+
+    const saveEvent = await savePromise as CustomEvent<{
+                        pinnedVersion?: string | null,
+                      }>;
+    assertEquals(null, saveEvent.detail.pinnedVersion);
+  });
+
+  test('clear pinned version button is not visible when unpinned', async () => {
+    await openDialog({
+      currentPinnedVersion: null,
+    });
+    assertEquals('', pinnedVersionInput.value);
+    assertFalse(!!dialog.shadowRoot.querySelector('#clearPinnedVersionButton'));
+  });
+
+  test(
+      'disables clear pinned version button while fetching manifest',
+      async () => {
+        const callback = await createDialog(createAppInfo('default'), '1.0.0');
+        const clearButton = dialog.shadowRoot.querySelector<HTMLElement>(
+            '#clearPinnedVersionButton');
+        assertTrue(!!clearButton);
+        assertTrue(clearButton.hasAttribute('disabled'));
+
+        callback({success: {versions: [], channels: []}});
+        await microtasksFinished();
+        assertFalse(clearButton.hasAttribute('disabled'));
+      });
+
   test('closes dialog on cancel click', async () => {
     await openDialog();
 

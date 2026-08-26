@@ -13,3 +13,19 @@
   gap: 16px;
   min-height: 160px;
 }
+
+.input-container {
+  align-items: center;
+  display: flex;
+  position: relative;
+  width: 100%;
+}
+
+#clearPinnedVersionButton {
+  --cr-icon-button-size: 20px;
+  --cr-icon-button-icon-size: 14px;
+  inset-inline-end: 32px;
+  margin: 0;
+  position: absolute;
+  z-index: 1;
+}
