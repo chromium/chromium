@@ -6533,9 +6533,9 @@
             ],
             "experiments": [
                 {
-                    "name": "OmniboxDynamicColorRealboxDynamic",
+                    "name": "OmniboxDynamicColorAnimationRealboxDynamic_",
                     "params": {
-                        "Omnibox_DynamicAnimation": "false",
+                        "Omnibox_DynamicAnimation": "true",
                         "Omnibox_DynamicColorScheme": "true"
                     },
                     "enable_features": [
