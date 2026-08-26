@@ -128,6 +128,11 @@ MLMultiArray* CreateMultiArrayBackedByIOSurface(OperandDescriptor descriptor) {
   IOSurfaceRef surface =
       IOSurfaceCreate(base::apple::NSToCFPtrCast(iosurface_properties));
 
+  if (!surface) {
+    LOG(ERROR) << "[WebNN] Failed to allocate IOSurface.";
+    return nil;
+  }
+
   // Zero-initialize the IOSurface. Calling IOSurfaceLock/IOSurfaceUnlock
   // appears to be sufficient. https://crbug.com/40455843#comment18
   CHECK_EQ(IOSurfaceLock(surface, 0, NULL), KERN_SUCCESS);
@@ -165,17 +170,17 @@ TensorImplCoreml::Create(
       tensor_info->descriptor.PackedByteLength()));
 
   MLMultiArray* multi_array = nil;
-  if (tensor_info->descriptor.data_type() == OperandDataType::kFloat16) {
-    // TODO(https://crbug.com/333392274): Consider not using IOSurface when
-    // WebGPU interop is not requested.
-    multi_array = CreateMultiArrayBackedByIOSurface(tensor_info->descriptor);
-  } else if (tensor_info->usage.Has(MLTensorUsageFlags::kWebGpuInterop)) {
-    // TODO(https://crbug.com/333392274): Support WebGPU interop with more
-    // than just float16 tensors.
-    return base::unexpected(
-        mojom::Error::New(mojom::Error::Code::kUnknownError,
-                          "Interoperability with WebGPU is only supported "
-                          "when using float16 tensors."));
+  if (tensor_info->usage.Has(MLTensorUsageFlags::kWebGpuInterop)) {
+    if (tensor_info->descriptor.data_type() == OperandDataType::kFloat16) {
+      multi_array = CreateMultiArrayBackedByIOSurface(tensor_info->descriptor);
+    } else {
+      // TODO(https://crbug.com/333392274): Support WebGPU interop with more
+      // than just float16 tensors.
+      return base::unexpected(
+          mojom::Error::New(mojom::Error::Code::kUnknownError,
+                            "Interoperability with WebGPU is only supported "
+                            "when using float16 tensors."));
+    }
   } else {
     multi_array = CreateMultiArrayFromDescriptor(tensor_info->descriptor);
   }
