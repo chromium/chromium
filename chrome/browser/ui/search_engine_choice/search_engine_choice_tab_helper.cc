@@ -10,7 +10,6 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "components/regional_capabilities/regional_capabilities_metrics.h"
@@ -98,8 +97,7 @@ void SearchEngineChoiceTabHelper::MaybeShowDialog() {
   }
 
   regional_capabilities::SearchEngineChoiceScreenConditions conditions =
-      search_engine_choice_dialog_service->ComputeDialogConditions(
-          *browser->GetBrowserForMigrationOnly());
+      search_engine_choice_dialog_service->ComputeDialogConditions(*browser);
 
   search_engines::SearchEngineChoiceService* search_engine_choice_service =
       search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
@@ -112,5 +110,5 @@ void SearchEngineChoiceTabHelper::MaybeShowDialog() {
     return;
   }
 
-  SearchEngineChoiceDialog::Show(*browser->GetBrowserForMigrationOnly());
+  SearchEngineChoiceDialog::Show(*browser);
 }

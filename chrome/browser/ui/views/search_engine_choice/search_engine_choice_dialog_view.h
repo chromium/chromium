@@ -10,7 +10,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace views {
 class WebView;
@@ -24,7 +24,7 @@ class SearchEngineChoiceDialogView : public views::View {
 
  public:
   SearchEngineChoiceDialogView(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       std::optional<gfx::Size> boundary_dimensions_for_test,
       std::optional<double> zoom_factor_for_test);
   ~SearchEngineChoiceDialogView() override;
@@ -45,7 +45,7 @@ class SearchEngineChoiceDialogView : public views::View {
   void CloseView();
 
   raw_ptr<views::WebView> web_view_ = nullptr;
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
   const std::optional<gfx::Size> boundary_dimensions_for_test_;
   const std::optional<double> zoom_factor_for_test_;
   base::WeakPtrFactory<SearchEngineChoiceDialogView> weak_ptr_factory_{this};

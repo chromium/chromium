@@ -88,7 +88,8 @@ class MockSearchEngineChoiceDialogService
                 profile),
             *TemplateURLServiceFactory::GetForProfile(profile)) {
     ON_CALL(*this, RegisterDialog)
-        .WillByDefault([this](Browser& browser, base::OnceClosure callback) {
+        .WillByDefault([this](BrowserWindowInterface& browser,
+                              base::OnceClosure callback) {
           number_of_browsers_with_dialogs_open_++;
           return SearchEngineChoiceDialogService::RegisterDialog(
               browser, std::move(callback));
@@ -123,7 +124,10 @@ class MockSearchEngineChoiceDialogService
     return number_of_browsers_with_dialogs_open_;
   }
 
-  MOCK_METHOD(bool, RegisterDialog, (Browser&, base::OnceClosure), (override));
+  MOCK_METHOD(bool,
+              RegisterDialog,
+              (BrowserWindowInterface&, base::OnceClosure),
+              (override));
   MOCK_METHOD(void, NotifyChoiceMade, (int, bool, EntryPoint), (override));
 
  private:
@@ -193,7 +197,7 @@ class SearchEngineChoiceDialogBrowserTest : public InProcessBrowserTest {
   }
 
   // TODO(crbug.com/40277150): Make this function handle multiple browsers.
-  void QuitAndRestoreBrowser(Browser* browser) {
+  void QuitAndRestoreBrowser(BrowserWindowInterface* browser) {
     Profile* profile = browser->GetProfile();
     // Enable SessionRestore to last used pages.
     SessionStartupPref startup_pref(SessionStartupPref::LAST);
@@ -277,14 +281,14 @@ class SearchEngineChoiceDialogBrowserTest : public InProcessBrowserTest {
 
   // Unlike `CreateGuestBrowser()` which opens a blank tab, this opens a guest
   // profile and shows the Guest NTP.
-  Browser* CreateGuestBrowserAndLoadNTP() {
+  BrowserWindowInterface* CreateGuestBrowserAndLoadNTP() {
     base::test::TestFuture<BrowserWindowInterface*> browser_future;
     profiles::SwitchToGuestProfile(browser_future.GetCallback());
-    Browser* guest_browser = browser_future.Get()->GetBrowserForMigrationOnly();
+    BrowserWindowInterface* guest_browser = browser_future.Get();
     CHECK(guest_browser);
     EXPECT_TRUE(guest_browser->GetProfile()->IsGuestSession());
     content::WebContents* ntp_contents =
-        guest_browser->tab_strip_model()->GetActiveWebContents();
+        guest_browser->GetTabStripModel()->GetActiveWebContents();
     content::WaitForLoadStop(ntp_contents);
     CHECK(NewTabUI::IsNewTab(ntp_contents->GetURL()));
     return guest_browser;
@@ -653,8 +657,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   // PWA browsers should not show the dialog.
   BrowserWindowInterface* app_browser =
       web_app::LaunchWebAppBrowserAndWait(profile, app_id);
-  EXPECT_FALSE(
-      service->IsShowingDialog(*app_browser->GetBrowserForMigrationOnly()));
+  EXPECT_FALSE(service->IsShowingDialog(*app_browser));
 
   // The same URL in the regular browser shows the dialog.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
@@ -670,11 +673,10 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
       static_cast<MockSearchEngineChoiceDialogService*>(
           SearchEngineChoiceDialogServiceFactory::GetForProfile(profile));
 
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       CreateBrowserWindow(BrowserWindowCreateParams::CreateForApp(
-                              "Test", /*trusted_source=*/false, gfx::Rect(),
-                              profile, /*user_gesture=*/true))
-          ->GetBrowserForMigrationOnly();
+          "Test", /*trusted_source=*/false, gfx::Rect(), profile,
+          /*user_gesture=*/true));
   chrome::AddTabAt(app_browser, GURL(), -1, true);
   EXPECT_EQ(app_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
 
@@ -691,7 +693,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   observer.Wait();
 
   // Navigate() should have opened a new `TYPE_APP_POPUP` window.
-  Browser* app_popup_browser = params.browser->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* app_popup_browser = params.browser;
   EXPECT_EQ(app_popup_browser->GetType(),
             BrowserWindowInterface::Type::TYPE_APP_POPUP);
 
@@ -749,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   // Initial browser
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
 
-  Browser* first_guest_session = CreateGuestBrowserAndLoadNTP();
+  BrowserWindowInterface* first_guest_session = CreateGuestBrowserAndLoadNTP();
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
 
   auto* first_service = static_cast<MockSearchEngineChoiceDialogService*>(
@@ -767,7 +769,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   CloseBrowserSynchronously(first_guest_session);
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
 
-  Browser* second_guest_session = CreateGuestBrowserAndLoadNTP();
+  BrowserWindowInterface* second_guest_session = CreateGuestBrowserAndLoadNTP();
   auto* second_service = static_cast<MockSearchEngineChoiceDialogService*>(
       SearchEngineChoiceDialogServiceFactory::GetForProfile(
           second_guest_session->GetProfile()));
@@ -789,7 +791,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   // Initial browser
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
 
-  Browser* first_guest_session = CreateGuestBrowserAndLoadNTP();
+  BrowserWindowInterface* first_guest_session = CreateGuestBrowserAndLoadNTP();
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
 
   auto* first_service = static_cast<MockSearchEngineChoiceDialogService*>(
@@ -813,7 +815,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   CloseBrowserSynchronously(first_guest_session);
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
 
-  Browser* second_guest_session = CreateGuestBrowserAndLoadNTP();
+  BrowserWindowInterface* second_guest_session = CreateGuestBrowserAndLoadNTP();
   auto* second_service = static_cast<MockSearchEngineChoiceDialogService*>(
       SearchEngineChoiceDialogServiceFactory::GetForProfile(
           second_guest_session->GetProfile()));
@@ -837,7 +839,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   // Initial browser
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
 
-  Browser* guest_session = CreateGuestBrowserAndLoadNTP();
+  BrowserWindowInterface* guest_session = CreateGuestBrowserAndLoadNTP();
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   auto* first_service = static_cast<MockSearchEngineChoiceDialogService*>(
       SearchEngineChoiceDialogServiceFactory::GetForProfile(
@@ -867,7 +869,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
                        SearchEngineChoiceIsShownOnEachGuestSession) {
-  Browser* guest_session = CreateGuestBrowserAndLoadNTP();
+  BrowserWindowInterface* guest_session = CreateGuestBrowserAndLoadNTP();
   EXPECT_FALSE(guest_session->GetProfile()->GetPrefs()->HasPrefPath(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
   EXPECT_FALSE(guest_session->GetProfile()->GetPrefs()->HasPrefPath(
@@ -899,7 +901,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   // Initial browser
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
 
-  Browser* guest_session = CreateGuestBrowserAndLoadNTP();
+  BrowserWindowInterface* guest_session = CreateGuestBrowserAndLoadNTP();
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   auto* first_service = static_cast<MockSearchEngineChoiceDialogService*>(
       SearchEngineChoiceDialogServiceFactory::GetForProfile(
@@ -928,7 +930,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
 // it.
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
                        SearchEngineIsSavedBetweenGuestSessionsIfNeeded) {
-  Browser* guest_session = CreateGuestBrowserAndLoadNTP();
+  BrowserWindowInterface* guest_session = CreateGuestBrowserAndLoadNTP();
   auto* second_service = static_cast<MockSearchEngineChoiceDialogService*>(
       SearchEngineChoiceDialogServiceFactory::GetForProfile(
           guest_session->GetProfile()));

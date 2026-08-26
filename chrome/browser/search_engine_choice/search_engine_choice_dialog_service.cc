@@ -20,8 +20,8 @@
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.h"
@@ -49,22 +49,22 @@ using ::search_engines::SearchEngineChoiceScreenEvents;
 
 bool g_dialog_disabled_for_testing = false;
 
-bool IsBrowserTypeSupported(const Browser& browser) {
+bool IsBrowserTypeSupported(const BrowserWindowInterface& browser) {
   switch (browser.GetType()) {
-    case Browser::TYPE_NORMAL:
-    case Browser::TYPE_POPUP:
+    case BrowserWindowInterface::Type::TYPE_NORMAL:
+    case BrowserWindowInterface::Type::TYPE_POPUP:
       return true;
-    case Browser::TYPE_APP_POPUP:
-    case Browser::TYPE_PICTURE_IN_PICTURE:
-    case Browser::TYPE_APP:
-    case Browser::TYPE_DEVTOOLS:
+    case BrowserWindowInterface::Type::TYPE_APP_POPUP:
+    case BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE:
+    case BrowserWindowInterface::Type::TYPE_APP:
+    case BrowserWindowInterface::Type::TYPE_DEVTOOLS:
       return false;
   }
 }
 
 // Helper for `SearchEngineChoiceDialogService::BrowserRegistry` checks.
-bool HasOpenDialog(
-    const std::pair<raw_ref<Browser>, base::OnceClosure>& registration) {
+bool HasOpenDialog(const std::pair<raw_ref<BrowserWindowInterface>,
+                                   base::OnceClosure>& registration) {
   // If the OnceCallback is null, then the dialog has already been closed.
   return !registration.second.is_null();
 }
@@ -85,7 +85,7 @@ SearchEngineChoiceDialogService::BrowserRegistry::~BrowserRegistry() {
 }
 
 bool SearchEngineChoiceDialogService::BrowserRegistry::RegisterBrowser(
-    Browser& browser,
+    BrowserWindowInterface& browser,
     base::OnceClosure close_dialog_callback) {
   CHECK(close_dialog_callback);
   CHECK(!IsRegistered(browser));
@@ -102,21 +102,20 @@ bool SearchEngineChoiceDialogService::BrowserRegistry::RegisterBrowser(
 
 void SearchEngineChoiceDialogService::BrowserRegistry::OnBrowserClosed(
     BrowserWindowInterface* browser) {
-  Browser* browser_for_close = browser->GetBrowserForMigrationOnly();
-  if (!browser_for_close) {
+  if (!browser) {
     return;
   }
 
-  registered_browsers_.erase(CHECK_DEREF(browser_for_close));
+  registered_browsers_.erase(CHECK_DEREF(browser));
 }
 
 bool SearchEngineChoiceDialogService::BrowserRegistry::IsRegistered(
-    Browser& browser) const {
+    BrowserWindowInterface& browser) const {
   return registered_browsers_.contains(browser);
 }
 
 bool SearchEngineChoiceDialogService::BrowserRegistry::HasOpenDialog(
-    Browser& browser) const {
+    BrowserWindowInterface& browser) const {
   auto entry_iterator = registered_browsers_.find(browser);
   if (entry_iterator == registered_browsers_.end()) {
     // The browser is not known, so it never showed a dialog.
@@ -264,7 +263,7 @@ void SearchEngineChoiceDialogService::NotifyChoiceMade(
 }
 
 bool SearchEngineChoiceDialogService::RegisterDialog(
-    Browser& browser,
+    BrowserWindowInterface& browser,
     base::OnceClosure close_dialog_callback) {
   auto condition = ComputeDialogConditions(browser);
   SCOPED_CRASH_KEY_NUMBER("ChoiceService", "dialog_condition",
@@ -393,7 +392,7 @@ SearchEngineChoiceDialogService::ComputeProfileManagementFlowConditions()
 
 SearchEngineChoiceScreenConditions
 SearchEngineChoiceDialogService::ComputeDialogConditions(
-    Browser& browser) const {
+    BrowserWindowInterface& browser) const {
   if (g_dialog_disabled_for_testing) {
     return SearchEngineChoiceScreenConditions::kFeatureSuppressed;
   }
@@ -450,11 +449,13 @@ bool SearchEngineChoiceDialogService::CanSuppressPrivacySandboxPromo() const {
   return !choice_made_in_profile_picker_;
 }
 
-bool SearchEngineChoiceDialogService::IsShowingDialog(Browser& browser) const {
+bool SearchEngineChoiceDialogService::IsShowingDialog(
+    BrowserWindowInterface& browser) const {
   return browser_registry_.HasOpenDialog(browser);
 }
 
-bool SearchEngineChoiceDialogService::HasPendingDialog(Browser& browser) const {
+bool SearchEngineChoiceDialogService::HasPendingDialog(
+    BrowserWindowInterface& browser) const {
   return browser_registry_.HasOpenDialog(browser) ||
          regional_capabilities::IsEligible(ComputeDialogConditions(browser));
 }

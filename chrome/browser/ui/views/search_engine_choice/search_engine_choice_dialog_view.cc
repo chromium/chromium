@@ -12,10 +12,8 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -23,12 +21,14 @@
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "ui/base/base_window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace {
 
@@ -53,7 +53,7 @@ int GetWebViewCornerRadius() {
 
 // static
 void SearchEngineChoiceDialog::Show(
-    Browser& browser,
+    BrowserWindowInterface& browser,
     std::optional<gfx::Size> boundary_dimensions_for_test,
     std::optional<double> zoom_factor_for_test) {
   if (boundary_dimensions_for_test.has_value() ||
@@ -86,9 +86,9 @@ void SearchEngineChoiceDialog::Show(
       std::move(delegate), browser.GetWindow()->GetNativeWindow());
 }
 
-bool CanWindowHeightFitSearchEngineChoiceDialog(Browser& browser) {
-  int max_dialog_height = BrowserWindow::FromBrowser(&browser)
-                              ->GetWebContentsModalDialogHost()
+bool CanWindowHeightFitSearchEngineChoiceDialog(
+    BrowserWindowInterface& browser) {
+  int max_dialog_height = browser.GetWebContentsModalDialogHostForWindow()
                               ->GetMaximumDialogSize()
                               .height();
 
@@ -96,7 +96,7 @@ bool CanWindowHeightFitSearchEngineChoiceDialog(Browser& browser) {
 }
 
 SearchEngineChoiceDialogView::SearchEngineChoiceDialogView(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     std::optional<gfx::Size> boundary_dimensions_for_test,
     std::optional<double> zoom_factor_for_test)
     : browser_(browser),
@@ -137,12 +137,10 @@ void SearchEngineChoiceDialogView::Initialize() {
     preferred_dialog_height = boundary_dimensions_for_test_->height();
   }
 
-  int max_width = BrowserWindow::FromBrowser(browser_)
-                      ->GetWebContentsModalDialogHost()
+  int max_width = browser_->GetWebContentsModalDialogHostForWindow()
                       ->GetMaximumDialogSize()
                       .width();
-  int max_height = BrowserWindow::FromBrowser(browser_)
-                       ->GetWebContentsModalDialogHost()
+  int max_height = browser_->GetWebContentsModalDialogHostForWindow()
                        ->GetMaximumDialogSize()
                        .height();
 

@@ -14,7 +14,7 @@ namespace content {
 class WebContents;
 }
 
-class Browser;
+class BrowserWindowInterface;
 
 // Helper class which watches `web_contents` to determine whether there is an
 // appropriate opportunity to show the SearchEngineChoiceDialogView.
@@ -59,7 +59,7 @@ class SearchEngineChoiceDialog {
   // is used to be able to display the full content of the dialog in screenshot
   // tests. Leaving it empty will make the dialog use a zoom of 1.;
   static void Show(
-      Browser& browser,
+      BrowserWindowInterface& browser,
       std::optional<gfx::Size> boundary_dimensions_for_test = std::nullopt,
       std::optional<double> zoom_factor_for_test_ = std::nullopt);
 };
@@ -70,6 +70,7 @@ class SearchEngineChoiceDialog {
 // `chrome/browser/ui/views/`.
 // Returns whether the smallest height variant of the search engine choice
 // dialog can fit in the browser window or not.
-bool CanWindowHeightFitSearchEngineChoiceDialog(Browser& browser);
+bool CanWindowHeightFitSearchEngineChoiceDialog(
+    BrowserWindowInterface& browser);
 
 #endif  // CHROME_BROWSER_UI_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_TAB_HELPER_H_
