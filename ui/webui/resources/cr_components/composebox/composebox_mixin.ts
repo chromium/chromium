@@ -1251,7 +1251,9 @@ export const ComposeboxEmbedderMixin =
           if (token) {
             this.deleteFile(token, e.detail.fromUserAction);
           } else {
-            this.getSearchboxHandler().deleteTabContext(tabId);
+            if (this.tabSuggestions.some(t => t.tabId === tabId)) {
+              this.getSearchboxHandler().deleteTabContext(tabId);
+            }
           }
 
           this.aimThreadRestoredTabs =
@@ -2478,7 +2480,9 @@ export const ComposeboxEmbedderMixin =
                     return !currentTab || currentTab.url !== tab.url;
                   });
               closedOrNavigatedRestoredTabs.forEach(tab => {
-                this.getSearchboxHandler().deleteTabContext(tab.tabId);
+                if (tab.tabId) {
+                  this.getSearchboxHandler().deleteTabContext(tab.tabId);
+                }
               });
               this.aimThreadRestoredTabs =
                   this.aimThreadRestoredTabs.filter(tab => {

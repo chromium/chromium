@@ -762,9 +762,12 @@ void ContextualTasksPageHandler::OnReceivedUpdatedThreadContextLibrary(
                     tab_info->tab_id = item->get_tab()->tab_id;
                     tab_info->url = item->get_tab()->url;
                     tab_info->title = item->get_tab()->title;
-                    tab_info->tab_id =
+                    int32_t handle =
                         tabs::SessionMappedTabHandleFactory::GetInstance()
                             .GetHandleForSessionId(item->get_tab()->tab_id);
+                    if (handle != tabs::TabHandle::NullValue) {
+                      tab_info->tab_id = handle;
+                    }
                     tabs.push_back(std::move(tab_info));
                   }
                 }
