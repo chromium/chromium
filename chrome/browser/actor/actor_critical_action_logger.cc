@@ -32,6 +32,7 @@
 #include "components/actor/core/task_id.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/critical_actions/core/browser/critical_action_service.h"
+#include "components/critical_actions/core/browser/features.h"
 #include "components/feature_engagement/public/tracker.h"
 
 namespace actor {
@@ -138,6 +139,11 @@ void ActorCriticalActionLogger::LogAgentSelfReportedAction(
     int64_t navigation_id,
     TaskId actor_task_id,
     std::string metadata) {
+  if (!base::FeatureList::IsEnabled(
+          critical_actions::features::kCriticalActionHistory)) {
+    return;
+  }
+
   if (!profile) {
     return;
   }

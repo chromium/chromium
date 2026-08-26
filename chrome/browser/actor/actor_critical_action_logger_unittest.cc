@@ -333,6 +333,30 @@ TEST_F(ActorCriticalActionLoggerTest, FormFillingLoggingPreClickGating) {
       task_id, actor::ActorTask::StoppedReason::kTaskComplete);
 }
 
+TEST_F(ActorCriticalActionLoggerTest, SkipsLoggingWhenFeatureDisabled) {
+  base::test::ScopedFeatureList local_features;
+  local_features.InitAndDisableFeature(
+      critical_actions::features::kCriticalActionHistory);
+
+  TaskId task_id = actor_service().CreateTaskForTesting();
+  ActorTask* task = actor_service().GetTask(task_id);
+
+  PageTarget password_button;
+  AttemptLoginToolRequest request(CreateTabHandle(), password_button,
+                                  std::nullopt);
+  mojom::ActionResultPtr result = MakeOkResult();
+  result->attempt_login_status = mojom::AttemptLoginStatus::kPasswordManager;
+
+  ActorCriticalActionLogger::MaybeLogAction(*task, profile(), request, *result,
+                                             /*navigation_id=*/1001);
+
+  auto logged_actions = GetLoggedActions();
+  EXPECT_TRUE(logged_actions.empty());
+
+  actor_service().StopTaskForTesting(
+      task_id, actor::ActorTask::StoppedReason::kTaskComplete);
+}
+
 }  // namespace
 
 }  // namespace actor
