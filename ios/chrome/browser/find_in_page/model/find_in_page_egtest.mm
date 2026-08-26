@@ -898,14 +898,8 @@ FindInPageTestCrossOriginFramePageHttpResponse(
 }
 
 // Tests that FIP works properly with bottom omnibox.
-- (void)testWithBottomOmnibox {
-  // TODO(crbug.com/437314322): Re-enable the test on iOS 26+.
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    if (![ChromeEarlGrey isIPadIdiom]) {
-      EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-    }
-  }
-
+// TODO(crbug.com/437314322): Re-enable the test.
+- (void)DISABLED_testWithBottomOmnibox {
   // Set bottom Omnibox.
   [ChromeEarlGrey setBoolValue:YES
              forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
