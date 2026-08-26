@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
@@ -123,6 +124,9 @@ void SetTabIdIfMissing(optimization_guide::proto::Action& action,
     case optimization_guide::proto::Action::kActivateWindow:
     case optimization_guide::proto::Action::kYieldToUser:
     case optimization_guide::proto::Action::ACTION_NOT_SET:
+      break;
+    default:
+      NOTIMPLEMENTED();
       break;
   }
 }

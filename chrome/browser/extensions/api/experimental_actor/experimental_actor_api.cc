@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"
@@ -253,6 +254,9 @@ ExperimentalActorPerformActionsFunction::Run() {
       case optimization_guide::proto::Action::kLoadAndExtractContent:
       case optimization_guide::proto::Action::ACTION_NOT_SET:
         // No tab id to convert.
+        break;
+      default:
+        NOTIMPLEMENTED();
         break;
     }
   }
