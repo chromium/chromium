@@ -1687,9 +1687,7 @@ void BrowserActions::InitializeChromeMenuActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                bwi->GetFeatures()
-                    .browser_select_file_dialog_controller()
-                    ->OpenFile();
+                BrowserSelectFileDialogController::From(bwi)->OpenFile();
               },
               bwi))
           .SetActionId(kActionOpenFile)

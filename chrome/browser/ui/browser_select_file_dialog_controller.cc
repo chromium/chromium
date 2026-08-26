@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/page_navigator.h"
@@ -20,12 +21,22 @@
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 
+DEFINE_USER_DATA(BrowserSelectFileDialogController);
+
+// static
+BrowserSelectFileDialogController* BrowserSelectFileDialogController::From(
+    BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
 BrowserSelectFileDialogController::BrowserSelectFileDialogController(
     Profile* profile,
     TabStripModel* tab_strip_model,
     ui::BaseWindow* base_window,
-    content::PageNavigator* page_navigator)
-    : profile_(CHECK_DEREF(profile)),
+    content::PageNavigator* page_navigator,
+    ui::UnownedUserDataHost& host)
+    : scoped_unowned_user_data_(host, *this),
+      profile_(CHECK_DEREF(profile)),
       tab_strip_model_(CHECK_DEREF(tab_strip_model)),
       base_window_(CHECK_DEREF(base_window)),
       page_navigator_(CHECK_DEREF(page_navigator)) {}

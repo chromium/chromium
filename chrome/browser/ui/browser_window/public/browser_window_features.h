@@ -323,10 +323,6 @@ class BrowserWindowFeatures {
     return browser_command_controller_.get();
   }
 
-  BrowserSelectFileDialogController* browser_select_file_dialog_controller() {
-    return browser_select_file_dialog_controller_.get();
-  }
-
   ContentsBorderController* contents_border_controller() {
     return contents_border_controller_.get();
   }

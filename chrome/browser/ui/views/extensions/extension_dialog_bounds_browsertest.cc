@@ -39,10 +39,7 @@ class ExtensionDialogBoundsTest
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    browser()
-        ->GetFeatures()
-        .browser_select_file_dialog_controller()
-        ->OpenFile();
+    BrowserSelectFileDialogController::From(browser())->OpenFile();
   }
 
   void EnableDockedMagnifier() const {

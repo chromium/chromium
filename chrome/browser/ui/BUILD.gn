@@ -364,8 +364,10 @@ if (!is_android) {
   source_set("browser_select_file_dialog_controller") {
     public = [ "browser_select_file_dialog_controller.h" ]
     sources = [ "browser_select_file_dialog_controller.cc" ]
+    public_deps = [ "//ui/base/unowned_user_data" ]
     deps = [
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/select_file_policy",
       "//chrome/browser/ui/tabs:tab_strip",
       "//content/public/browser",

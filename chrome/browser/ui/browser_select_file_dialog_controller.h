@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
@@ -23,13 +24,22 @@ namespace ui {
 class BaseWindow;
 }
 
+class BrowserWindowInterface;
+
 class BrowserSelectFileDialogController
     : public ui::SelectFileDialog::Listener {
  public:
+  DECLARE_USER_DATA(BrowserSelectFileDialogController);
+
   BrowserSelectFileDialogController(Profile* profile,
                                     TabStripModel* tab_strip_model,
                                     ui::BaseWindow* base_window,
-                                    content::PageNavigator* page_navigator);
+                                    content::PageNavigator* page_navigator,
+                                    ui::UnownedUserDataHost& host);
+
+  // Returns the controller for `browser`, or null if it does not have one.
+  static BrowserSelectFileDialogController* From(
+      BrowserWindowInterface* browser);
 
   BrowserSelectFileDialogController(const BrowserSelectFileDialogController&) =
       delete;
@@ -41,6 +51,9 @@ class BrowserSelectFileDialogController
   void OpenFile();
 
  private:
+  ui::ScopedUnownedUserData<BrowserSelectFileDialogController>
+      scoped_unowned_user_data_;
+
   // SelectFileDialog::Listener:
   void FileSelected(const ui::SelectedFileInfo& file_info, int index) override;
   void FileSelectionCanceled() override;

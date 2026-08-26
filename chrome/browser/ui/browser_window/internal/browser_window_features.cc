@@ -719,9 +719,10 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   }
 
   browser_select_file_dialog_controller_ =
-      std::make_unique<BrowserSelectFileDialogController>(
-          browser->GetProfile(), browser->GetTabStripModel(),
-          BrowserWindow::FromBrowser(browser), browser);
+      GetUserDataFactory().CreateInstance<BrowserSelectFileDialogController>(
+          *browser, browser->GetProfile(), browser->GetTabStripModel(),
+          BrowserWindow::FromBrowser(browser), browser,
+          browser->GetUnownedUserDataHost());
 
   browser_ui_controller_ =
       GetUserDataFactory().CreateInstance<BrowserUiController>(

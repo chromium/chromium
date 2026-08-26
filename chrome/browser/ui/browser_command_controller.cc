@@ -1126,9 +1126,7 @@ void BrowserCommandController::HandleCommandWithDisposition(
 
     // Show various bits of UI
     case IDC_OPEN_FILE:
-      browser_->GetFeatures()
-          .browser_select_file_dialog_controller()
-          ->OpenFile();
+      BrowserSelectFileDialogController::From(browser_)->OpenFile();
       break;
     case IDC_CREATE_SHORTCUT:
       base::RecordAction(base::UserMetricsAction("CreateShortcut"));

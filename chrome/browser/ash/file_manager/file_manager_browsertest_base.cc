@@ -3757,10 +3757,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   // stores the navigation observer, which later could be used via the
   // `waitForSelectFileDialogNavigation` message.
   if (name == "runSelectFileDialog") {
-    browser()
-        ->GetFeatures()
-        .browser_select_file_dialog_controller()
-        ->OpenFile();
+    BrowserSelectFileDialogController::From(browser())->OpenFile();
 
     test_navigation_observer_ =
         std::make_unique<content::TestNavigationObserver>(
