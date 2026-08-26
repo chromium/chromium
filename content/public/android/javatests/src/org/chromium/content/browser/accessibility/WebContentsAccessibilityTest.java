@@ -6363,4 +6363,32 @@ public class WebContentsAccessibilityTest {
                 },
                 "Scroll forward action was not added after expanding content height");
     }
+
+    @Test
+    @SmallTest
+    public void testFocusableContainerWithAriaLabelAndTextChildrenIsLeaf() throws Throwable {
+        setupTestWithHTML(
+                """
+                <div id="ex1" tabindex="0" aria-label="Custom Graph Label">Default Text</div>
+                <div id="ex2" tabindex="0">Only Tabindex Text</div>
+                """);
+
+        int ex1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "ex1");
+        int ex2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "ex2");
+
+        AccessibilityNodeInfoCompat ex1NodeInfo = createAccessibilityNodeInfo(ex1Vvid);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, ex1NodeInfo);
+        Assert.assertEquals(
+                "Focusable div with aria-label and only text children should have 0 children",
+                0,
+                ex1NodeInfo.getChildCount());
+
+        AccessibilityNodeInfoCompat ex2NodeInfo = createAccessibilityNodeInfo(ex2Vvid);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, ex2NodeInfo);
+        Assert.assertEquals(
+                "Focusable div with only text children should have 0 children",
+                0,
+                ex2NodeInfo.getChildCount());
+    }
 }
+

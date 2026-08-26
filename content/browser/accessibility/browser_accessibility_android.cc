@@ -882,9 +882,13 @@ bool BrowserAccessibilityAndroid::ComputeIsLeaf() const {
     return false;
   }
 
-  // Focusable nodes with name from attribute should never drop children.
+  // Focusable nodes with name from attribute should never drop children, unless
+  // they only have static text children.
   if (HasState(ax::mojom::State::kFocusable) &&
       GetNameFrom() == ax::mojom::NameFrom::kAttribute) {
+    if (HasOnlyTextChildren() && !HasListMarkerChild()) {
+      return true;
+    }
     // We exclude menuItems and comboBoxMenuButtons to prevent double utterance.
     if (GetRole() != ax::mojom::Role::kMenuItem &&
         GetRole() != ax::mojom::Role::kComboBoxMenuButton &&

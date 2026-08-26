@@ -263,11 +263,11 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetFocusable) {
   EXPECT_FALSE(root_obj->IsLeaf());
   EXPECT_TRUE(root_obj->CanFireEvents());
   ui::BrowserAccessibility* para_obj = root_obj->PlatformGetChild(0);
-  EXPECT_FALSE(para_obj->IsLeaf());
+  EXPECT_TRUE(para_obj->IsLeaf());
   EXPECT_TRUE(para_obj->CanFireEvents());
   ui::BrowserAccessibility* text_obj = manager->GetFromID(111);
   EXPECT_TRUE(text_obj->IsLeaf());
-  EXPECT_TRUE(text_obj->CanFireEvents());
+  EXPECT_FALSE(text_obj->CanFireEvents());
   ui::BrowserAccessibility* updated =
       manager->RetargetBrowserAccessibilityForEvents(
           text_obj, RetargetEventType::RetargetEventTypeBlinkHover);
@@ -2312,4 +2312,110 @@ TEST_F(BrowserAccessibilityAndroidTest, TestSwitchStateDescription) {
   EXPECT_EQ(u"On", node_b->GetAndroidStateDescription());
 }
 
+TEST_F(BrowserAccessibilityAndroidTest,
+       TestIsLeafFocusableWithNameFromAttributeAndTextChildren) {
+  // Test case 1: Focusable container with aria-label (`NameFrom::kAttribute`)
+  // and static text child. It should be a leaf node (dropping static text
+  // child).
+  ui::AXNodeData text1;
+  text1.id = 11;
+  text1.role = ax::mojom::Role::kStaticText;
+  text1.SetName("Default Text");
+
+  ui::AXNodeData container1;
+  container1.id = 2;
+  container1.role = ax::mojom::Role::kGenericContainer;
+  container1.AddState(ax::mojom::State::kFocusable);
+  container1.SetName("Custom Graph Label");
+  container1.SetNameFrom(ax::mojom::NameFrom::kAttribute);
+  container1.child_ids = {text1.id};
+
+  // Test case 2: Focusable container with aria-label (`NameFrom::kAttribute`)
+  // and non-text child (e.g. button). It should NOT be a leaf node.
+  ui::AXNodeData button;
+  button.id = 12;
+  button.role = ax::mojom::Role::kButton;
+  button.SetName("Child Button");
+
+  ui::AXNodeData container2;
+  container2.id = 3;
+  container2.role = ax::mojom::Role::kGenericContainer;
+  container2.AddState(ax::mojom::State::kFocusable);
+  container2.SetName("Container with Button");
+  container2.SetNameFrom(ax::mojom::NameFrom::kAttribute);
+  container2.child_ids = {button.id};
+
+  // Test case 3: Focusable container without aria-label and only static text
+  // child. It should also be a leaf node.
+  ui::AXNodeData text3;
+  text3.id = 13;
+  text3.role = ax::mojom::Role::kStaticText;
+  text3.SetName("Only Tabindex Text");
+
+  ui::AXNodeData container3;
+  container3.id = 4;
+  container3.role = ax::mojom::Role::kGenericContainer;
+  container3.AddState(ax::mojom::State::kFocusable);
+  container3.child_ids = {text3.id};
+
+  // Test case 4: Focusable list item with aria-label (`NameFrom::kAttribute`)
+  // and list marker child. It should NOT be a leaf node (list marker child is
+  // not dropped).
+  ui::AXNodeData marker4;
+  marker4.id = 14;
+  marker4.role = ax::mojom::Role::kListMarker;
+  marker4.SetName("1. ");
+
+  ui::AXNodeData text4;
+  text4.id = 15;
+  text4.role = ax::mojom::Role::kStaticText;
+  text4.SetName("List item text");
+
+  ui::AXNodeData container4;
+  container4.id = 5;
+  container4.role = ax::mojom::Role::kListItem;
+  container4.AddState(ax::mojom::State::kFocusable);
+  container4.SetName("Custom Item Label");
+  container4.SetNameFrom(ax::mojom::NameFrom::kAttribute);
+  container4.child_ids = {marker4.id, text4.id};
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {container1.id, container2.id, container3.id,
+                    container4.id};
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          MakeAXTreeUpdateForTesting(root, container1, text1, container2,
+                                     button, container3, text3, container4,
+                                     marker4, text4),
+          node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  auto* node1 = static_cast<BrowserAccessibilityAndroid*>(
+      manager->GetFromID(container1.id));
+  ASSERT_NE(nullptr, node1);
+  EXPECT_TRUE(node1->IsLeaf());
+  EXPECT_EQ(0U, node1->PlatformChildCount());
+
+  auto* node2 = static_cast<BrowserAccessibilityAndroid*>(
+      manager->GetFromID(container2.id));
+  ASSERT_NE(nullptr, node2);
+  EXPECT_FALSE(node2->IsLeaf());
+  EXPECT_EQ(1U, node2->PlatformChildCount());
+
+  auto* node3 = static_cast<BrowserAccessibilityAndroid*>(
+      manager->GetFromID(container3.id));
+  ASSERT_NE(nullptr, node3);
+  EXPECT_TRUE(node3->IsLeaf());
+  EXPECT_EQ(0U, node3->PlatformChildCount());
+
+  auto* node4 = static_cast<BrowserAccessibilityAndroid*>(
+      manager->GetFromID(container4.id));
+  ASSERT_NE(nullptr, node4);
+  EXPECT_FALSE(node4->IsLeaf());
+  EXPECT_EQ(2U, node4->PlatformChildCount());
+}
+
 }  // namespace content
+
