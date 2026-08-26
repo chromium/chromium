@@ -39,6 +39,7 @@ import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.trusted.FileHandlingData;
 import androidx.browser.trusted.LaunchHandlerClientMode;
+import androidx.browser.trusted.sharing.ShareData;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -158,13 +159,14 @@ public class WebAppLaunchHandlerTest {
 
     private CustomTabIntentDataProvider createIntentDataProvider(
             @LaunchHandlerClientMode.ClientMode int clientMode, String url) {
-        return createIntentDataProvider(clientMode, url, null);
+        return createIntentDataProvider(clientMode, url, null, false);
     }
 
     private CustomTabIntentDataProvider createIntentDataProvider(
             @LaunchHandlerClientMode.ClientMode int clientMode,
             String url,
-            @Nullable Intent intent) {
+            @Nullable Intent intent,
+            boolean isTrusted) {
         CustomTabIntentDataProvider dataProvider = mock(CustomTabIntentDataProvider.class);
         when(dataProvider.getLaunchHandlerClientMode()).thenReturn(clientMode);
         when(dataProvider.getUrlToLoad()).thenReturn(url);
@@ -172,6 +174,7 @@ public class WebAppLaunchHandlerTest {
         when(dataProvider.getFileHandlingData()).thenReturn(mFileHandlingData);
         when(dataProvider.getSession()).thenReturn(mSessionMock);
         when(dataProvider.getIntent()).thenReturn(intent);
+        when(dataProvider.isTrustedIntent()).thenReturn(isTrusted);
         return dataProvider;
     }
 
@@ -229,6 +232,26 @@ public class WebAppLaunchHandlerTest {
             boolean expectedVerificationSuccess,
             boolean hasSpeculativeNavigation,
             @Nullable Intent intent) {
+        doTestHandleIntent(
+                clientMode,
+                url,
+                expectedLoadUrl,
+                expectedNotifyQueue,
+                expectedVerificationSuccess,
+                hasSpeculativeNavigation,
+                intent,
+                /* isTrusted= */ false);
+    }
+
+    private void doTestHandleIntent(
+            @LaunchHandlerClientMode.ClientMode int clientMode,
+            String url,
+            boolean expectedLoadUrl,
+            boolean expectedNotifyQueue,
+            boolean expectedVerificationSuccess,
+            boolean hasSpeculativeNavigation,
+            @Nullable Intent intent,
+            boolean isTrusted) {
         clearInvocations(mWebAppLaunchHandlerJniMock, mNavigationControllerMock);
         if (hasSpeculativeNavigation) {
             when(mTabProviderMock.getInitialTabCreationMode()).thenReturn(TabCreationMode.HIDDEN);
@@ -240,7 +263,7 @@ public class WebAppLaunchHandlerTest {
         WebAppLaunchHandler launchHandler = createWebAppLaunchHandler();
 
         CustomTabIntentDataProvider dataProvider =
-                createIntentDataProvider(clientMode, url, intent);
+                createIntentDataProvider(clientMode, url, intent, isTrusted);
 
         if (Objects.equals(url, INITIAL_URL)) {
             launchHandler.handleInitialIntent(dataProvider);
@@ -772,7 +795,8 @@ public class WebAppLaunchHandlerTest {
                 /* expectedNotifyQueue= */ true,
                 /* expectedVerificationSuccess= */ true,
                 /* hasSpeculativeNavigation= */ false,
-                intent);
+                intent,
+                /* isTrusted= */ false);
     }
 
     @Test
@@ -919,5 +943,55 @@ public class WebAppLaunchHandlerTest {
                 INITIAL_URL,
                 /* expectedLoadUrl= */ false,
                 /* expectedNotifyQueue= */ true);
+    }
+
+    @Test
+    public void testFilterShareData_StashedDataUsed() {
+        Intent intent = new Intent();
+        Uri fileUri = Uri.parse("content://com.example/file.jpg");
+        ShareData verifiedData = new ShareData("title", "text", Arrays.asList(fileUri));
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA, verifiedData.toBundle());
+
+        CustomTabIntentDataProvider dataProvider = mock(CustomTabIntentDataProvider.class);
+        when(dataProvider.getIntent()).thenReturn(intent);
+
+        ShareData result = WebAppLaunchHandler.filterShareData(dataProvider, mActivityMock, null);
+        Assert.assertNotNull(result);
+        Assert.assertEquals("title", result.title);
+        Assert.assertEquals(fileUri, result.uris.get(0));
+    }
+
+    @Test
+    public void testFilterShareData_RawDataFiltered() {
+        Intent intent = new Intent();
+        Uri authorizedUri = Uri.parse("content://com.example/authorized.jpg");
+        Uri unauthorizedUri = Uri.parse("content://com.example/unauthorized.jpg");
+        ShareData rawData =
+                new ShareData("title", "text", Arrays.asList(authorizedUri, unauthorizedUri));
+
+        CustomTabIntentDataProvider dataProvider = mock(CustomTabIntentDataProvider.class);
+        when(dataProvider.getIntent()).thenReturn(intent);
+        when(dataProvider.getShareData()).thenReturn(rawData);
+        when(dataProvider.getSession()).thenReturn(mSessionMock);
+
+        when(mActivityMock.checkUriPermission(
+                        eq(authorizedUri),
+                        anyInt(),
+                        anyInt(),
+                        eq(Intent.FLAG_GRANT_READ_URI_PERMISSION)))
+                .thenReturn(PackageManager.PERMISSION_GRANTED);
+        when(mActivityMock.checkUriPermission(
+                        eq(unauthorizedUri),
+                        anyInt(),
+                        anyInt(),
+                        eq(Intent.FLAG_GRANT_READ_URI_PERMISSION)))
+                .thenReturn(PackageManager.PERMISSION_DENIED);
+
+        ShareData result = WebAppLaunchHandler.filterShareData(dataProvider, mActivityMock, null);
+        Assert.assertNotNull(result);
+        Assert.assertEquals("title", result.title);
+        Assert.assertEquals(1, result.uris.size());
+        Assert.assertEquals(authorizedUri, result.uris.get(0));
     }
 }

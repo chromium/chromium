@@ -20,6 +20,7 @@ import android.app.ComponentCaller;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ProviderInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import android.os.Process;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.trusted.FileHandlingData;
 import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
+import androidx.browser.trusted.sharing.ShareData;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -361,5 +363,259 @@ public class LaunchIntentDispatcherTest {
         assertEquals(
                 false,
                 launchedIntent.hasExtra(CustomTabIntentDataProvider.EXTRA_VERIFIED_FILE_CAN_WRITE));
+    }
+
+    @Test
+    public void testShareTarget_CallerHasReadPermission_StashesVerifiedShareData() {
+        Uri fileUri = Uri.parse("content://com.example/shared_file.jpg");
+        ShareData shareData = new ShareData("share_title", "share_text", Arrays.asList(fileUri));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        IBinder sessionBinder = mock(IBinder.class);
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, sessionBinder);
+        intent.putExtra(TrustedWebActivityIntentBuilder.EXTRA_SHARE_DATA, shareData.toBundle());
+
+        doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
+
+        Activity spyActivity = spy(mActivity);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            ComponentCaller mockCaller = mock(ComponentCaller.class);
+            doReturn(Process.myUid() + 1).when(mockCaller).getUid();
+            doReturn(PackageManager.PERMISSION_GRANTED)
+                    .when(mockCaller)
+                    .checkContentUriPermission(
+                            eq(fileUri), eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+            doReturn(mockCaller).when(spyActivity).getInitialCaller();
+        } else {
+            mockSessionUid();
+            doReturn(PackageManager.PERMISSION_GRANTED)
+                    .when(spyActivity)
+                    .checkUriPermission(
+                            eq(fileUri),
+                            eq(TEST_PID),
+                            eq(TEST_UID),
+                            eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+        }
+
+        LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(intentCaptor.capture(), any());
+        Intent launchedIntent = intentCaptor.getValue();
+
+        Bundle stashedBundle =
+                launchedIntent.getBundleExtra(
+                        CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA);
+        ShareData stashedData = ShareData.fromBundle(stashedBundle);
+        assertEquals("share_title", stashedData.title);
+        assertEquals("share_text", stashedData.text);
+        assertEquals(1, stashedData.uris.size());
+        assertEquals(fileUri, stashedData.uris.get(0));
+    }
+
+    @Test
+    public void testShareTarget_CallerDeniedReadPermission_StashesEmptyUris() {
+        Uri fileUri = Uri.parse("content://com.example/secret_file.pdf");
+        ShareData shareData = new ShareData("share_title", "share_text", Arrays.asList(fileUri));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        IBinder sessionBinder = mock(IBinder.class);
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, sessionBinder);
+        intent.putExtra(TrustedWebActivityIntentBuilder.EXTRA_SHARE_DATA, shareData.toBundle());
+
+        doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
+
+        Activity spyActivity = spy(mActivity);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            ComponentCaller mockCaller = mock(ComponentCaller.class);
+            doReturn(Process.myUid() + 1).when(mockCaller).getUid();
+            doReturn(PackageManager.PERMISSION_DENIED)
+                    .when(mockCaller)
+                    .checkContentUriPermission(
+                            eq(fileUri), eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+            doReturn(mockCaller).when(spyActivity).getInitialCaller();
+        } else {
+            mockSessionUid();
+            doReturn(PackageManager.PERMISSION_DENIED)
+                    .when(spyActivity)
+                    .checkUriPermission(
+                            eq(fileUri),
+                            eq(TEST_PID),
+                            eq(TEST_UID),
+                            eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+        }
+
+        LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(intentCaptor.capture(), any());
+        Intent launchedIntent = intentCaptor.getValue();
+
+        Bundle stashedBundle =
+                launchedIntent.getBundleExtra(
+                        CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA);
+        ShareData stashedData = ShareData.fromBundle(stashedBundle);
+        assertEquals("share_title", stashedData.title);
+        assertEquals("share_text", stashedData.text);
+        assertEquals(0, stashedData.uris.size());
+    }
+
+    @Test
+    public void testShareTarget_NoExtrasIfNoShareData() {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
+
+        doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
+
+        Activity spyActivity = spy(mActivity);
+
+        LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(intentCaptor.capture(), any());
+        Intent launchedIntent = intentCaptor.getValue();
+
+        assertEquals(
+                false,
+                launchedIntent.hasExtra(CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA));
+    }
+
+    @Test
+    public void testShareTarget_StripsSpoofedVerifiedData() {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
+        ShareData spoofedData =
+                new ShareData("title", "text", Arrays.asList(Uri.parse("content://spoofed/data")));
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA, spoofedData.toBundle());
+
+        doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
+
+        Activity spyActivity = spy(mActivity);
+
+        LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(intentCaptor.capture(), any());
+        Intent launchedIntent = intentCaptor.getValue();
+
+        assertEquals(
+                false,
+                launchedIntent.hasExtra(CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA));
+    }
+
+    @Test
+    public void testShareTarget_MixedPermissions_StashesOnlyGranted() {
+        Uri grantedUri = Uri.parse("content://com.example/granted.jpg");
+        Uri deniedUri = Uri.parse("content://com.example/denied.jpg");
+        ShareData shareData =
+                new ShareData("share_title", "share_text", Arrays.asList(grantedUri, deniedUri));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        IBinder sessionBinder = mock(IBinder.class);
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, sessionBinder);
+        intent.putExtra(TrustedWebActivityIntentBuilder.EXTRA_SHARE_DATA, shareData.toBundle());
+
+        doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
+
+        Activity spyActivity = spy(mActivity);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            ComponentCaller mockCaller = mock(ComponentCaller.class);
+            doReturn(Process.myUid() + 1).when(mockCaller).getUid();
+            doReturn(PackageManager.PERMISSION_GRANTED)
+                    .when(mockCaller)
+                    .checkContentUriPermission(
+                            eq(grantedUri), eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+            doReturn(PackageManager.PERMISSION_DENIED)
+                    .when(mockCaller)
+                    .checkContentUriPermission(
+                            eq(deniedUri), eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+            doReturn(mockCaller).when(spyActivity).getInitialCaller();
+        } else {
+            mockSessionUid();
+            doReturn(PackageManager.PERMISSION_GRANTED)
+                    .when(spyActivity)
+                    .checkUriPermission(
+                            eq(grantedUri),
+                            eq(TEST_PID),
+                            eq(TEST_UID),
+                            eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+            doReturn(PackageManager.PERMISSION_DENIED)
+                    .when(spyActivity)
+                    .checkUriPermission(
+                            eq(deniedUri),
+                            eq(TEST_PID),
+                            eq(TEST_UID),
+                            eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+        }
+
+        LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(intentCaptor.capture(), any());
+        Intent launchedIntent = intentCaptor.getValue();
+
+        Bundle stashedBundle =
+                launchedIntent.getBundleExtra(
+                        CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA);
+        ShareData stashedData = ShareData.fromBundle(stashedBundle);
+        assertEquals("share_title", stashedData.title);
+        assertEquals("share_text", stashedData.text);
+        assertEquals(1, stashedData.uris.size());
+        assertEquals(grantedUri, stashedData.uris.get(0));
+    }
+
+    @Test
+    public void testShareTarget_InvalidUris_StashesEmptyUris() {
+        Uri fileUri = Uri.parse("file:///sdcard/file.jpg");
+        String authority = "org.chromium.chrome.testprovider";
+        Uri internalUri = Uri.parse("content://" + authority + "/file.txt");
+
+        PackageManager pm = mActivity.getPackageManager();
+        android.content.pm.PackageInfo packageInfo = new android.content.pm.PackageInfo();
+        packageInfo.packageName = mActivity.getPackageName();
+
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.packageName = mActivity.getPackageName();
+        providerInfo.authority = authority;
+
+        packageInfo.providers = new ProviderInfo[] {providerInfo};
+        org.robolectric.Shadows.shadowOf(pm).installPackage(packageInfo);
+
+        ShareData shareData =
+                new ShareData("share_title", "share_text", Arrays.asList(fileUri, internalUri));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        IBinder sessionBinder = mock(IBinder.class);
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, sessionBinder);
+        intent.putExtra(TrustedWebActivityIntentBuilder.EXTRA_SHARE_DATA, shareData.toBundle());
+
+        doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
+
+        Activity spyActivity = spy(mActivity);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            ComponentCaller mockCaller = mock(ComponentCaller.class);
+            doReturn(Process.myUid() + 1).when(mockCaller).getUid();
+            doReturn(PackageManager.PERMISSION_GRANTED)
+                    .when(mockCaller)
+                    .checkContentUriPermission(any(), eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+            doReturn(mockCaller).when(spyActivity).getInitialCaller();
+        } else {
+            mockSessionUid();
+            doReturn(PackageManager.PERMISSION_GRANTED)
+                    .when(spyActivity)
+                    .checkUriPermission(
+                            any(), anyInt(), anyInt(), eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+        }
+
+        LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(intentCaptor.capture(), any());
+        Intent launchedIntent = intentCaptor.getValue();
+
+        Bundle stashedBundle =
+                launchedIntent.getBundleExtra(
+                        CustomTabIntentDataProvider.EXTRA_VERIFIED_SHARE_DATA);
+        ShareData stashedData = ShareData.fromBundle(stashedBundle);
+        assertEquals("share_title", stashedData.title);
+        assertEquals("share_text", stashedData.text);
+        assertEquals(0, stashedData.uris.size());
     }
 }
