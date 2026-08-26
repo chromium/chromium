@@ -2883,6 +2883,12 @@ class GETnHandler(TypeHandler):
   if (!WaitForCmd()) {
     return;
   }
+
+  int expected_num_results = util_.GLGetNumValuesReturned(pname);
+  DCHECK(expected_num_results != 0) << pname;
+  result->SetNumResults(
+    std::min(result->GetNumResults(), expected_num_results));
+
   result->CopyResult(%(last_arg_name)s);
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (int32_t i = 0; i < result->GetNumResults(); ++i) {
@@ -5008,6 +5014,14 @@ class EnumBaseArgument(Argument):
       pass
     index = func.GetCmdArgs().index(self)
     return str(index + 1)
+
+  def GetValidNonCachedClientSideArg(self, _):
+    """Return a glGet pname so that GLES2Util::GLGetNumValuesReturned returns
+    1, but that is also not cached on the GLES2Implementation"""
+    return 'GL_COMPILE_STATUS'
+
+  def GetValidNonCachedClientSideCmdArg(self, func):
+    return self.GetValidNonCachedClientSideArg(func)
 
   def GetValidGLArg(self, func):
     """Gets a valid value for this argument."""

@@ -287,6 +287,34 @@ std::string GLES2Util::GetStringFramebufferParameter(uint32_t value) {
   return GLES2Util::GetQualifiedEnumString(nullptr, 0, value);
 }
 
+std::string GLES2Util::GetStringFramebufferPixelLocalStorageParameter(
+    uint32_t value) {
+  static const EnumToString string_table[] = {
+      {GL_MAX_PIXEL_LOCAL_STORAGE_PLANES_ANGLE,
+       "GL_MAX_PIXEL_LOCAL_STORAGE_PLANES_ANGLE"},
+      {GL_MAX_COMBINED_DRAW_BUFFERS_AND_PIXEL_LOCAL_STORAGE_PLANES_ANGLE,
+       "GL_MAX_COMBINED_DRAW_BUFFERS_AND_PIXEL_LOCAL_STORAGE_PLANES_ANGLE"},
+      {GL_PIXEL_LOCAL_STORAGE_ACTIVE_PLANES_ANGLE,
+       "GL_PIXEL_LOCAL_STORAGE_ACTIVE_PLANES_ANGLE"},
+      {GL_PIXEL_LOCAL_INTERNAL_FORMAT_ANGLE,
+       "GL_PIXEL_LOCAL_INTERNAL_FORMAT_ANGLE"},
+      {GL_PIXEL_LOCAL_TEXTURE_NAME_ANGLE, "GL_PIXEL_LOCAL_TEXTURE_NAME_ANGLE"},
+      {GL_PIXEL_LOCAL_TEXTURE_LEVEL_ANGLE,
+       "GL_PIXEL_LOCAL_TEXTURE_LEVEL_ANGLE"},
+      {GL_PIXEL_LOCAL_TEXTURE_LAYER_ANGLE,
+       "GL_PIXEL_LOCAL_TEXTURE_LAYER_ANGLE"},
+      {GL_PIXEL_LOCAL_USAGE_ANGLE, "GL_PIXEL_LOCAL_USAGE_ANGLE"},
+      {GL_PIXEL_LOCAL_CLEAR_VALUE_FLOAT_ANGLE,
+       "GL_PIXEL_LOCAL_CLEAR_VALUE_FLOAT_ANGLE"},
+      {GL_PIXEL_LOCAL_CLEAR_VALUE_INT_ANGLE,
+       "GL_PIXEL_LOCAL_CLEAR_VALUE_INT_ANGLE"},
+      {GL_PIXEL_LOCAL_CLEAR_VALUE_UNSIGNED_INT_ANGLE,
+       "GL_PIXEL_LOCAL_CLEAR_VALUE_UNSIGNED_INT_ANGLE"},
+  };
+  return GLES2Util::GetQualifiedEnumString(string_table,
+                                           std::size(string_table), value);
+}
+
 std::string GLES2Util::GetStringFramebufferTarget(uint32_t value) {
   static const EnumToString string_table[] = {
       {GL_FRAMEBUFFER, "GL_FRAMEBUFFER"},

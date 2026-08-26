@@ -34,6 +34,8 @@ static std::string GetStringFaceMode(uint32_t value);
 static std::string GetStringFaceType(uint32_t value);
 static std::string GetStringFramebufferAttachmentParameter(uint32_t value);
 static std::string GetStringFramebufferParameter(uint32_t value);
+static std::string GetStringFramebufferPixelLocalStorageParameter(
+    uint32_t value);
 static std::string GetStringFramebufferTarget(uint32_t value);
 static std::string GetStringGLState(uint32_t value);
 static std::string GetStringGetMaxIndexType(uint32_t value);
