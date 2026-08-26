@@ -798,7 +798,8 @@ IN_PROC_BROWSER_TEST_P(PolicyUITest, ReportButtonOTRProfile) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/442259475): Crashes on Android WebUI.
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 class PolicyPrecedenceUITest
     : public PolicyUITestBase,
       public ::testing::WithParamInterface<std::tuple<
@@ -900,7 +901,7 @@ INSTANTIATE_TEST_SUITE_P(PolicyPrecedenceUITestInstance,
                                           testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
 // TODO(https://crbug.com/1027135) Add tests to verify extension policies are
