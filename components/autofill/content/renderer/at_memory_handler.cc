@@ -137,6 +137,16 @@ size_t GetCaretOffset(const WebElement& field) {
   return static_cast<size_t>(begin);
 }
 
+size_t HashFieldValue(const WebElement& field) {
+  const WebString value = [&] {
+    if (auto form_control = field.DynamicTo<WebFormControlElement>()) {
+      return form_control.Value();
+    }
+    return field.TextContent();
+  }();
+  return base::FastHash(base::as_byte_span(value.Utf16()));
+}
+
 }  // namespace
 
 AtMemoryHandler::AtMemoryHandler(AutofillAgent* agent)
@@ -397,17 +407,9 @@ AtMemoryHandler::ExtractAskForValuesToFill(const WebElement& field) {
   }
   AskForValuesToFillInfo info = *it;
   last_at_memory_ask_for_values_to_fills_.erase(it);
-
-  const WebString value = [&] {
-    if (auto form_control = field.DynamicTo<WebFormControlElement>()) {
-      return form_control.Value();
-    }
-    return field.TextContent();
-  }();
-  if (info.value_hash != base::FastHash(base::as_byte_span(value.Utf16()))) {
+  if (info.value_hash != HashFieldValue(field)) {
     return std::nullopt;
   }
-
   return info;
 }
 
@@ -429,13 +431,6 @@ void AtMemoryHandler::MaybeUpdateAskForValuesToFill(
     last_at_memory_ask_for_values_to_fills_.pop_front();
   }
 
-  const WebString value = [&] {
-    if (auto form_control = field.DynamicTo<WebFormControlElement>()) {
-      return form_control.Value();
-    }
-    return field.TextContent();
-  }();
-
   WebLocalFrame* frame = field.GetDocument().GetFrame();
 
   last_at_memory_ask_for_values_to_fills_.push_back(AskForValuesToFillInfo{
@@ -443,7 +438,7 @@ void AtMemoryHandler::MaybeUpdateAskForValuesToFill(
       .caused_by_trigger_string =
           trigger_source ==
           AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
-      .value_hash = base::FastHash(base::as_byte_span(value.Utf16())),
+      .value_hash = HashFieldValue(field),
       .selection_range =
           frame ? frame->GetInputMethodController()->GetSelectionOffsets()
                 : WebRange()});
