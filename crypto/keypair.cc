@@ -117,11 +117,6 @@ PrivateKey PrivateKey::GenerateEcP384() {
 }
 
 // static
-PrivateKey PrivateKey::GenerateEcP521() {
-  return PrivateKey(GeneratePkey(EVP_pkey_ec_p521()));
-}
-
-// static
 PrivateKey PrivateKey::GenerateEd25519() {
   return PrivateKey(GeneratePkey(EVP_pkey_ed25519()));
 }
@@ -456,10 +451,6 @@ bool PrivateKey::IsEcP384() const {
   return EVP_PKEY_get_ec_curve_nid(key_.get()) == NID_secp384r1;
 }
 
-bool PrivateKey::IsEcP521() const {
-  return EVP_PKEY_get_ec_curve_nid(key_.get()) == NID_secp521r1;
-}
-
 PrivateKey::PrivateKey(bssl::UniquePtr<EVP_PKEY> key) : key_(std::move(key)) {}
 
 PublicKey::PublicKey(bssl::UniquePtr<EVP_PKEY> key, crypto::SubtlePassKey)
@@ -534,16 +525,6 @@ std::optional<PublicKey> PublicKey::FromEcP256Point(
 std::optional<PublicKey> PublicKey::FromEcP384Point(
     base::span<const uint8_t> p) {
   auto key = EVP_PKEYFromEcPoint(EVP_pkey_ec_p384(), p);
-  if (!key) {
-    return std::nullopt;
-  }
-  return PublicKey(std::move(key));
-}
-
-// static
-std::optional<PublicKey> PublicKey::FromEcP521Point(
-    base::span<const uint8_t> p) {
-  auto key = EVP_PKEYFromEcPoint(EVP_pkey_ec_p521(), p);
   if (!key) {
     return std::nullopt;
   }
@@ -723,10 +704,6 @@ bool PublicKey::IsEcP256() const {
 
 bool PublicKey::IsEcP384() const {
   return EVP_PKEY_get_ec_curve_nid(key_.get()) == NID_secp384r1;
-}
-
-bool PublicKey::IsEcP521() const {
-  return EVP_PKEY_get_ec_curve_nid(key_.get()) == NID_secp521r1;
 }
 
 PublicKey::PublicKey(bssl::UniquePtr<EVP_PKEY> key) : key_(std::move(key)) {}

@@ -42,7 +42,6 @@ class CRYPTO_EXPORT PrivateKey {
   // Generates a fresh, random elliptic curve key on the specified curve.
   static PrivateKey GenerateEcP256();
   static PrivateKey GenerateEcP384();
-  static PrivateKey GenerateEcP521();
 
   // Generates a fresh, random Ed25519 key.
   static PrivateKey GenerateEd25519();
@@ -210,7 +209,6 @@ class CRYPTO_EXPORT PrivateKey {
 
   bool IsEcP256() const;
   bool IsEcP384() const;
-  bool IsEcP521() const;
 
  private:
   explicit PrivateKey(bssl::UniquePtr<EVP_PKEY> key);
@@ -264,8 +262,6 @@ class CRYPTO_EXPORT PublicKey {
   static std::optional<PublicKey> FromEcP256Point(
       base::span<const uint8_t> point);
   static std::optional<PublicKey> FromEcP384Point(
-      base::span<const uint8_t> point);
-  static std::optional<PublicKey> FromEcP521Point(
       base::span<const uint8_t> point);
 
   // Imports an Ed25519 public key in RFC 8032 format.
@@ -349,7 +345,6 @@ class CRYPTO_EXPORT PublicKey {
 
   bool IsEcP256() const;
   bool IsEcP384() const;
-  bool IsEcP521() const;
 
  private:
   explicit PublicKey(bssl::UniquePtr<EVP_PKEY> key);

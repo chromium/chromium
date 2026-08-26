@@ -44,7 +44,6 @@ TEST(Keypair, GenerateAndRoundtripPrivateKey) {
   expect_roundtrip(PrivateKey::GenerateRsa2048());
   expect_roundtrip(PrivateKey::GenerateEcP256());
   expect_roundtrip(PrivateKey::GenerateEcP384());
-  expect_roundtrip(PrivateKey::GenerateEcP521());
   expect_roundtrip(PrivateKey::GenerateEd25519());
   expect_roundtrip(PrivateKey::GenerateX25519());
   expect_roundtrip(PrivateKey::GenerateMldsa44());
@@ -170,8 +169,6 @@ TEST(Keypair, PrivateKeyPredicates) {
   EXPECT_TRUE(p256.IsEc() && p256.IsEcP256());
   auto p384 = PrivateKey::GenerateEcP384();
   EXPECT_TRUE(p384.IsEc() && p384.IsEcP384());
-  auto p521 = PrivateKey::GenerateEcP521();
-  EXPECT_TRUE(p521.IsEc() && p521.IsEcP521());
   EXPECT_TRUE(PrivateKey::GenerateEd25519().IsEd25519());
   EXPECT_TRUE(PrivateKey::GenerateX25519().IsX25519());
   EXPECT_TRUE(PrivateKey::GenerateMldsa44().IsMldsa44());
@@ -186,8 +183,6 @@ TEST(Keypair, PublicKeyPredicates) {
   EXPECT_TRUE(p256.IsEc() && p256.IsEcP256());
   auto p384 = PublicKey::FromPrivateKey(PrivateKey::GenerateEcP384());
   EXPECT_TRUE(p384.IsEc() && p384.IsEcP384());
-  auto p521 = PublicKey::FromPrivateKey(PrivateKey::GenerateEcP521());
-  EXPECT_TRUE(p521.IsEc() && p521.IsEcP521());
   EXPECT_TRUE(
       PublicKey::FromPrivateKey(PrivateKey::GenerateEd25519()).IsEd25519());
   EXPECT_TRUE(
@@ -212,8 +207,6 @@ TEST(Keypair, X962UncompressedForm) {
   // uncompressed forms.
   expect_uncompressed_length(PrivateKey::GenerateEcP256(), 32 * 2 + 1);
   expect_uncompressed_length(PrivateKey::GenerateEcP384(), 48 * 2 + 1);
-  // 521 bits = 66 bytes per coordinate
-  expect_uncompressed_length(PrivateKey::GenerateEcP521(), 66 * 2 + 1);
 }
 
 TEST(Keypair, ImportUncompressed) {
@@ -235,16 +228,6 @@ TEST(Keypair, ImportUncompressed) {
     ASSERT_TRUE(p384_import);
     EXPECT_EQ(p384_pub.ToSubjectPublicKeyInfo(),
               p384_import->ToSubjectPublicKeyInfo());
-  }
-
-  {
-    auto p521_priv = PrivateKey::GenerateEcP521();
-    auto p521_pub = PublicKey::FromPrivateKey(p521_priv);
-    auto p521_import =
-        PublicKey::FromEcP521Point(p521_priv.ToUncompressedX962Point());
-    ASSERT_TRUE(p521_import);
-    EXPECT_EQ(p521_pub.ToSubjectPublicKeyInfo(),
-              p521_import->ToSubjectPublicKeyInfo());
   }
 }
 
