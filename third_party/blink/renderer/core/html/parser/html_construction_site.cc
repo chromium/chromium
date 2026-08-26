@@ -935,8 +935,8 @@ namespace {
 ProcessingInstruction* CreateProcessingInstructionFromToken(
     AtomicHTMLToken* token,
     Document& document) {
-  UseCounter::CountWebDXFeature(
-      document, WebDXFeature::kDRAFT_HTMLProcessingInstructions);
+  UseCounter::CountWebDXFeature(document,
+                                WebDXFeature::kHtmlProcessingInstructions);
   return MakeGarbageCollected<ProcessingInstruction>(
       document, token->ProcessingInstructionTarget(),
       token->ProcessingInstructionData());

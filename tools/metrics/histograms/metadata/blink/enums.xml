@@ -9210,8 +9210,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="438" label="FlexWrapBalance"/>
   <int value="439" label="TextFit"/>
   <int value="440" label="TextModules"/>
-  <int value="441" label="DRAFT_TemplateFor"/>
-  <int value="442" label="DRAFT_HTMLProcessingInstructions"/>
+  <int value="441" label="TemplateFor"/>
+  <int value="442" label="HtmlProcessingInstructions"/>
   <int value="443" label="DRAFT_HTMLSetterMethods"/>
   <int value="444" label="DRAFT_HTMLStreamMethods"/>
   <int value="445" label="CanvasHtml"/>
