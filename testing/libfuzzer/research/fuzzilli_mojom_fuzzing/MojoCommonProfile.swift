@@ -26,6 +26,9 @@ public let commonMojoBuiltins: [String: ILType] = [
 ]
 
 public let commonMojoCodeGenerators: [(CodeGenerator, Int)] = [
+    // mojo
+    (MojoObjectLiteralNoopGenerator, 1),
+
     // mojoBase
     (MojoString16Generator, 1),
 
@@ -113,6 +116,30 @@ extension ObjectGroup {
         methods: [:]
     )
 }
+
+//mojo
+/// A union in the Mojo JavaScript bindings is represented as an object literal
+/// with exactly one key-value pair, where the key is the union variant and the
+/// value is the variant's value (for example, in `big_buffer.mojom`, a
+/// BigBuffer holding a boolean is represented as `{"invalid_buffer": true}`).
+///
+/// Fuzzilli mutators randomly select instructions and variables to mutate. When
+/// an object literal is selected, Fuzzilli searches for a `CodeGenerator`
+/// registered for the `.objectLiteral` context. The builtin generators in this
+/// context modify properties or methods. Modifying an object literal that
+/// represents a union invalidates the union type instantiation, producing
+/// unhelpful mutations that are immediately rejected by the C++ validation
+/// layer.
+///
+/// However, `.objectLiteral` generators cannot simply be disabled: Fuzzilli
+/// crashes if it fails to find an applicable generator for an active context.
+/// Providing this no-op generator ensures Fuzzilli finds a valid generator to
+/// run without mutating and invalidating the union object literals. All the
+/// other `.objectLiteral` CodeGenerators are disabled.
+public let MojoObjectLiteralNoopGenerator = CodeGenerator(
+    "MojoObjectLiteralNoopGenerator",
+    inContext: .single(.objectLiteral)
+) { b in }
 
 // mojoBase
 public let MojoString16Generator = CodeGenerator(
