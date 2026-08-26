@@ -99,6 +99,7 @@ public class WebViewResizingHelper {
     private final View mResizingContent;
     private final @Px int mResizingFadeOffset;
     private final @Px int mMinHeight;
+    private final View.OnLayoutChangeListener mOnLayoutChangeListener;
 
     private @Nullable ThinWebView mThinWebView;
     private @Nullable WebContents mWebContents;
@@ -129,13 +130,14 @@ public class WebViewResizingHelper {
 
         mResizingContainer = new FrameLayout(mContext);
         mResizingContainer.setClipChildren(true);
-        mResizingContainer.addOnLayoutChangeListener(
+        mOnLayoutChangeListener =
                 CommonOnLayoutChangeListeners.createSizeChangedListener(
                         () -> {
                             if (!mIsViewportSizeFixed) {
                                 updateBounds();
                             }
-                        }));
+                        });
+        mResizingContainer.addOnLayoutChangeListener(mOnLayoutChangeListener);
 
         mResizingPlaceholder =
                 LayoutInflater.from(mContext)
@@ -196,10 +198,12 @@ public class WebViewResizingHelper {
             mInsetObserver.removeWindowInsetsAnimationListener(mInsetAnimationListener);
         }
         mWindowAndroid.removeActivityStateObserver(mActivityStateObserver);
+        mResizingContainer.removeOnLayoutChangeListener(mOnLayoutChangeListener);
     }
 
     /** Resets the helper to its initial state without resetting the WebContents. */
     public void reset() {
+        mAnimationHandler.forceFinishAnimation();
         mResizingContainer.removeAllViews();
         mResizingContainer.addView(mResizingPlaceholder);
         mResizingPlaceholder.setVisibility(View.INVISIBLE);

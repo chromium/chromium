@@ -107,6 +107,7 @@ public class WebViewResizingHelperUnitTest {
     public void testDestroy() {
         mHelper.destroy();
         verify(mMockInsetObserver).removeWindowInsetsAnimationListener(any());
+        verify(mMockWindowAndroid).removeActivityStateObserver(any());
     }
 
     @Test
