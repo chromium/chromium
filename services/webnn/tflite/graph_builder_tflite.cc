@@ -1647,7 +1647,9 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
       break;
     }
   }
-  operators_.emplace_back(operator_offset);
+  if (!operator_offset.IsNull()) {
+    operators_.emplace_back(operator_offset);
+  }
 
   return base::ok();
 }
@@ -3956,8 +3958,8 @@ auto GraphBuilderTflite::SerializeTransposeOperation(
     -> base::expected<OperatorOffset, std::string> {
   if (input_shape.empty()) {
     CHECK(permutation.empty());
-    return SerializeIdentityOperation(input_tensor_index, output_tensor_index,
-                                      input_shape);
+    return SerializeReshapeOperation(input_tensor_index, output_tensor_index,
+                                     input_shape);
   }
   const std::array<int32_t, 1> permutation_shape = {
       base::checked_cast<int32_t>(permutation.size())};
@@ -5374,6 +5376,14 @@ auto GraphBuilderTflite::SerializeElementWiseBinary(
 auto GraphBuilderTflite::SerializeElementWiseUnary(
     const mojom::ElementWiseUnary& op)
     -> base::expected<OperatorOffset, std::string> {
+  // Elide identity no-ops (or use a reshape pass-through for graph outputs).
+  if (op.kind == mojom::ElementWiseUnary::Kind::kIdentity) {
+    CHECK(context_properties_.data_type_limits.identity_input.Supports(
+        GetOperand(op.input_operand_id).descriptor));
+    return SerializeIdentityOperation(op.input_operand_id,
+                                      op.output_operand_id);
+  }
+
   ASSIGN_OR_RETURN(
       const TensorInfo& input_tensor_info,
       SerializeInputTensorInfo(op.input_operand_id, /*quantize_params=*/0,
@@ -5422,13 +5432,6 @@ auto GraphBuilderTflite::SerializeElementWiseUnary(
       CHECK(data_type_limits.floor_input.Supports(input_descriptor));
       return SerializeUnaryOperation(::tflite::BuiltinOperator_FLOOR,
                                      input_tensor_index, output_tensor_index);
-    }
-    case mojom::ElementWiseUnary::Kind::kIdentity: {
-      CHECK(context_properties_.data_type_limits.identity_input.Supports(
-          input_descriptor));
-      return SerializeIdentityOperation(input_tensor_info.index,
-                                        output_tensor_info.index,
-                                        input_tensor_info.dimensions);
     }
     case mojom::ElementWiseUnary::Kind::kLog: {
       CHECK(data_type_limits.log_input.Supports(input_descriptor));
@@ -5488,6 +5491,9 @@ auto GraphBuilderTflite::SerializeElementWiseUnary(
       CHECK(data_type_limits.erf_input.Supports(input_descriptor));
       return SerializeErf(input_tensor_info, output_tensor_info);
     }
+    case mojom::ElementWiseUnary::Kind::kIdentity:
+      // Handled above.
+      NOTREACHED();
   }
 }
 
@@ -7503,17 +7509,32 @@ auto GraphBuilderTflite::TransposeAndReshapeLayerNormalizationScaleBias(
   return reshape_tensor_index;
 }
 
-auto GraphBuilderTflite::SerializeIdentityOperation(
-    TensorIndex input_tensor_index,
-    TensorIndex output_tensor_index,
-    base::span<const int32_t> shape) -> OperatorOffset {
-  // Implement WebNN identity operation with TFLite reshape operator, the
-  // output shape is the same as input.
-  // TODO(crbug.com/336399247): Skip identity implementation with
-  // redirecting output tensor to input.
-  return SerializeReshapeOperation(input_tensor_index, output_tensor_index,
-                                   shape);
+auto GraphBuilderTflite::SerializeIdentityOperation(OperandId input_operand_id,
+                                                    OperandId output_operand_id)
+    -> base::expected<OperatorOffset, std::string> {
+  ASSIGN_OR_RETURN(
+      const TensorInfo input_tensor_info,
+      SerializeInputTensorInfo(input_operand_id, /*quantize_params=*/0,
+                               /*operation_supports_float16=*/true));
+  // Graph output tensors must be produced by an operator in the TFLite
+  // flatbuffer, so use a reshape pass-through.
+  if (std::ranges::contains(graph_info_->output_operands, output_operand_id)) {
+    ASSIGN_OR_RETURN(
+        const TensorInfo output_tensor_info,
+        SerializeOutputTensorInfo(output_operand_id, /*quantize_params=*/0,
+                                  /*operation_supports_float16=*/true));
+    return SerializeReshapeOperation(input_tensor_info.index,
+                                     output_tensor_info.index,
+                                     output_tensor_info.dimensions);
+  }
+
+  // Intermediate tensors are elided by redirecting the output operand to the
+  // input tensor.
+  operand_to_tensor_info_map_[output_operand_id] = input_tensor_info;
+  // No TFLite operator created for intermediate Identity operations.
+  return OperatorOffset{};  // null
 }
+
 auto GraphBuilderTflite::SerializeInstanceNormalization(
     const mojom::InstanceNormalization& instance_normalization)
     -> base::expected<OperatorOffset, std::string> {
@@ -9419,6 +9440,14 @@ auto GraphBuilderTflite::SerializeReshape(const mojom::Reshape& reshape)
 
 auto GraphBuilderTflite::SerializeReverse(const mojom::Reverse& reverse)
     -> base::expected<OperatorOffset, std::string> {
+  // Elide no-op reverse (or use a reshape pass-through for graph outputs).
+  if (reverse.axes.empty()) {
+    CHECK(context_properties_.data_type_limits.reverse_input.Supports(
+        GetOperand(reverse.input_operand_id).descriptor));
+    return SerializeIdentityOperation(reverse.input_operand_id,
+                                      reverse.output_operand_id);
+  }
+
   CHECK(context_properties_.data_type_limits.reverse_input.Supports(
       GetOperand(reverse.input_operand_id).descriptor));
 
@@ -9426,12 +9455,6 @@ auto GraphBuilderTflite::SerializeReverse(const mojom::Reverse& reverse)
                    SerializeInputTensorInfo(reverse.input_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo output_tensor_info,
                    SerializeOutputTensorInfo(reverse.output_operand_id));
-  // Don't reverse if the axes are empty.
-  if (reverse.axes.empty()) {
-    return SerializeIdentityOperation(input_tensor_info.index,
-                                      output_tensor_info.index,
-                                      output_tensor_info.dimensions);
-  }
 
   // The TFLite kernel of reverse only supports contiguous axes, so the input
   // tensor need to be reversed slice by slice.

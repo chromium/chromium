@@ -796,9 +796,12 @@ class GraphBuilderTflite final {
       const mojom::HardSigmoid& hard_sigmoid);
   base::expected<OperatorOffset, std::string> SerializeHardSwish(
       const mojom::HardSwish& hard_swish);
-  OperatorOffset SerializeIdentityOperation(TensorIndex input_tensor_index,
-                                            TensorIndex output_tensor_index,
-                                            base::span<const int32_t> shape);
+  // Returns Null OperatorOffset if the operation is elided, otherwise returns
+  // the OperatorOffset of the serialized operation.
+  base::expected<OperatorOffset, std::string> SerializeIdentityOperation(
+      OperandId input_operand_id,
+      OperandId output_operand_id);
+
   base::expected<OperatorOffset, std::string> SerializeInstanceNormalization(
       const mojom::InstanceNormalization& instance_normalization);
   base::expected<OperatorOffset, std::string> SerializeLayerNormalization(
