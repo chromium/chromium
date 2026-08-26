@@ -5,6 +5,8 @@
 #ifndef NET_DEVICE_BOUND_SESSIONS_DELETION_REASON_H_
 #define NET_DEVICE_BOUND_SESSIONS_DELETION_REASON_H_
 
+#include "base/metrics/histogram_functions.h"
+
 namespace net::device_bound_sessions {
 
 // Reasons for session termination.
@@ -27,6 +29,11 @@ enum class DeletionReason {
   kMaxValue = kDevTools,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionDeletionReason)
+
+inline void LogSessionDeletionReason(DeletionReason reason) {
+  base::UmaHistogramEnumeration("Net.DeviceBoundSessions.DeletionReason",
+                                reason);
+}
 
 }  // namespace net::device_bound_sessions
 

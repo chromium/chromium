@@ -9,6 +9,7 @@
 
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/process.h"
 #include "base/sequence_checker.h"
@@ -24,6 +25,7 @@
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
+#include "net/device_bound_sessions/deletion_reason.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
 
 namespace net::device_bound_sessions {
@@ -150,10 +152,15 @@ void SessionStoreImpl::OnDatabaseLoaded(LoadSessionsCallback callback,
   SessionsMap sessions;
   if (db_status == DBStatus::kSuccess) {
     std::vector<std::string> keys_to_delete;
+    std::map<std::string, proto::SiteSessions> sites_to_update;
     sessions = CreateSessionsFromLoadedData(session_data_->GetAllCached(),
-                                            keys_to_delete);
+                                            keys_to_delete, sites_to_update,
+                                            /*prune_expired_sessions=*/true);
     if (!keys_to_delete.empty()) {
       session_data_->DeleteData(keys_to_delete);
+    }
+    for (const auto& [site_str, site_proto] : sites_to_update) {
+      session_data_->UpdateData(site_str, site_proto);
     }
 
     // Schedule a task for original profiles to obtain all keys that were
@@ -178,7 +185,9 @@ void SessionStoreImpl::OnDatabaseLoaded(LoadSessionsCallback callback,
 // static
 SessionStore::SessionsMap SessionStoreImpl::CreateSessionsFromLoadedData(
     const std::map<std::string, proto::SiteSessions>& loaded_data,
-    std::vector<std::string>& keys_to_delete) {
+    std::vector<std::string>& keys_to_delete,
+    std::map<std::string, proto::SiteSessions>& sites_to_update,
+    bool prune_expired_sessions) {
   SessionsMap all_sessions;
   for (const auto& [site_str, site_proto] : loaded_data) {
     SchemefulSite site = net::SchemefulSite::Deserialize(site_str);
@@ -187,35 +196,41 @@ SessionStore::SessionsMap SessionStoreImpl::CreateSessionsFromLoadedData(
       continue;
     }
 
-    bool invalid_session_found = false;
     SessionsMap site_sessions;
+    std::vector<std::string> session_ids_to_prune;
     for (const auto& [session_id, session_proto] : site_proto.sessions()) {
-      if (!session_proto.has_wrapped_key() ||
-          session_proto.wrapped_key().empty()) {
-        invalid_session_found = true;
-        break;
+      auto session_or_error = Session::CreateFromProto(
+          session_proto, /*check_expiry=*/prune_expired_sessions);
+      if (!session_or_error.has_value()) {
+        LogSessionDeletionReason(session_or_error.error());
+        session_ids_to_prune.push_back(session_id);
+        continue;
       }
 
-      std::unique_ptr<Session> session =
-          Session::CreateFromProto(session_proto);
-      if (!session) {
-        invalid_session_found = true;
-        break;
+      std::unique_ptr<Session> session = std::move(session_or_error.value());
+      if (session->id().value() != session_id) {
+        // TODO(crbug.com/552483536): Replace with session pruning once we
+        // verify whether this discrepancy occurs in the wild.
+        base::debug::DumpWithoutCrashing();
       }
 
-      // Restored session entry has passed basic validation checks. Save it.
+      // Session is structurally valid and unexpired.
       site_sessions.emplace(SessionKey{site, session->id()},
                             std::move(session));
     }
 
-    // Remove the entire site entry from the DB if a single invalid session is
-    // found as it could be a sign of data corruption or external manipulation.
-    // Note: A session could also cease to be valid because the criteria for
-    // validity changed after a Chrome update. In this scenario, however, we
-    // would migrate that session rather than deleting the site sessions.
-    if (invalid_session_found) {
+    // If no valid sessions remain for this site, remove the entire site entry
+    // from the DB. Otherwise, update the DB entry if some sessions were pruned.
+    if (site_sessions.empty()) {
       keys_to_delete.push_back(site_str);
     } else {
+      if (!session_ids_to_prune.empty()) {
+        proto::SiteSessions updated_site_proto = site_proto;
+        for (const std::string& invalid_id : session_ids_to_prune) {
+          updated_site_proto.mutable_sessions()->erase(invalid_id);
+        }
+        sites_to_update[site_str] = std::move(updated_site_proto);
+      }
       all_sessions.merge(site_sessions);
     }
   }
@@ -360,13 +375,16 @@ SessionStore::SessionsMap SessionStoreImpl::GetAllSessions() const {
     return SessionsMap();
   }
 
-  std::vector<std::string> keys_to_delete;
-  SessionsMap all_sessions = CreateSessionsFromLoadedData(
-      session_data_->GetAllCached(), keys_to_delete);
   // We shouldn't find invalid keys at this point, they should have all been
-  // filtered out in the `LoadSessions` operations.
+  // filtered out in the `LoadSessions` operations. So, all session entries in
+  // the cache are expected to be valid.
+  std::vector<std::string> keys_to_delete;
+  std::map<std::string, proto::SiteSessions> sites_to_update;
+  SessionsMap all_sessions = CreateSessionsFromLoadedData(
+      session_data_->GetAllCached(), keys_to_delete, sites_to_update,
+      /*prune_expired_sessions=*/false);
   CHECK(keys_to_delete.empty());
-
+  CHECK(sites_to_update.empty());
   return all_sessions;
 }
 
@@ -455,13 +473,14 @@ void SessionStoreImpl::OnGetAllKeysForGarbageCollection(
 
   // Don't garbage collect keys that are still used, or were created after the
   // process started.
-  std::erase_if(all_key_ids, [&](unexportable_keys::UnexportableSigningKeyId
-                                     key_id) {
-    return known_wrapped_keys.contains(
-               key_service_->GetWrappedKey(key_id).value_or({})) ||
-           key_service_->GetCreationTime(key_id).value_or(base::Time::Now()) >=
-               base::Process::Current().CreationTime();
-  });
+  std::erase_if(
+      all_key_ids, [&](unexportable_keys::UnexportableSigningKeyId key_id) {
+        return known_wrapped_keys.contains(
+                   key_service_->GetWrappedKey(key_id).value_or({})) ||
+               key_service_->GetCreationTime(key_id).value_or(
+                   base::Time::Now()) >=
+                   base::Process::Current().CreationTime();
+      });
 
   base::UmaHistogramCounts100(
       base::StrCat({kGarbageCollectionHistogramPrefix, "UsedKeyCount"}),

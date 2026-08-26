@@ -120,6 +120,7 @@ proto::Session CreateSessionProto(std::string_view session_id,
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
   craving_proto->set_same_site(proto::CookieSameSite::LAX_MODE);
   craving_proto->set_source_scheme(proto::CookieSourceScheme::SECURE);
+  session_proto.set_wrapped_key("mock_wrapped_key");
   return session_proto;
 }
 
@@ -2188,10 +2189,10 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       "challenge", /*authorization=*/std::nullopt,
-      ProviderRegistrationParams{.provider_key = key_thumbprint,
-                                 .provider_url = kTestUrl,
-                                 .provider_session_id =
-                                     Session::Id(kSessionId)});
+      ProviderRegistrationParams{
+          .provider_key = key_thumbprint,
+          .provider_url = kTestUrl,
+          .provider_session_id = Session::Id(kSessionId)});
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),
       IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
@@ -2229,10 +2230,10 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       "challenge", /*authorization=*/std::nullopt,
-      ProviderRegistrationParams{.provider_key = "not_the_thumbprint",
-                                 .provider_url = kTestRefreshUrl,
-                                 .provider_session_id =
-                                     Session::Id(kSessionId)});
+      ProviderRegistrationParams{
+          .provider_key = "not_the_thumbprint",
+          .provider_url = kTestRefreshUrl,
+          .provider_session_id = Session::Id(kSessionId)});
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),
       IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
@@ -2344,10 +2345,10 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       "challenge", /*authorization=*/std::nullopt,
-      ProviderRegistrationParams{.provider_key = "key-thumbprint",
-                                 .provider_url = GURL("http:///"),
-                                 .provider_session_id =
-                                     Session::Id(kSessionId)});
+      ProviderRegistrationParams{
+          .provider_key = "key-thumbprint",
+          .provider_url = GURL("http:///"),
+          .provider_session_id = Session::Id(kSessionId)});
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),
       IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
@@ -2389,7 +2390,6 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
                                 SessionError::kInvalidFederatedSessionUrl, 1);
 }
 
-
 TEST_F(SessionServiceImplTestWithoutFederatedSessions,
        IgnoresFederatedRegistration) {
   // Create the provider session
@@ -2419,10 +2419,10 @@ TEST_F(SessionServiceImplTestWithoutFederatedSessions,
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       "challenge", /*authorization=*/std::nullopt,
-      ProviderRegistrationParams{.provider_key = key_thumbprint,
-                                 .provider_url = kTestUrl,
-                                 .provider_session_id =
-                                     Session::Id(kSessionId)});
+      ProviderRegistrationParams{
+          .provider_key = key_thumbprint,
+          .provider_url = kTestUrl,
+          .provider_session_id = Session::Id(kSessionId)});
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),
       IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
@@ -2918,8 +2918,9 @@ TEST_F(SessionServiceImplWithStoreTest, RequestDestroyedDuringAsyncKeyRestore) {
   EXPECT_CALL(store(), LoadSessions).Times(1);
   service().LoadSessionsAsync();
 
-  std::unique_ptr<Session> session =
-      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString));
+  ASSERT_OK_AND_ASSIGN(
+      std::unique_ptr<Session> session,
+      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString)));
   ASSERT_TRUE(session);
 
   SessionStore::SessionsMap session_map;
@@ -2970,8 +2971,9 @@ TEST_F(SessionServiceImplWithStoreTest,
   EXPECT_CALL(store(), LoadSessions).Times(1);
   service().LoadSessionsAsync();
 
-  std::unique_ptr<Session> session =
-      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString));
+  ASSERT_OK_AND_ASSIGN(
+      std::unique_ptr<Session> session,
+      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString)));
   ASSERT_TRUE(session);
 
   SessionStore::SessionsMap session_map;
@@ -3045,8 +3047,9 @@ TEST_F(SessionServiceImplWithStoreTest, SessionKeyRestoredOnUse) {
   EXPECT_CALL(store(), LoadSessions).Times(1);
   service().LoadSessionsAsync();
 
-  std::unique_ptr<Session> session =
-      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString));
+  ASSERT_OK_AND_ASSIGN(
+      std::unique_ptr<Session> session,
+      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString)));
   ASSERT_TRUE(session);
 
   SessionStore::SessionsMap session_map;
@@ -3092,8 +3095,9 @@ TEST_F(SessionServiceImplWithStoreTest, RecoveryFromTransientSigningError) {
   EXPECT_CALL(store(), LoadSessions).Times(1);
   service().LoadSessionsAsync();
 
-  std::unique_ptr<Session> session =
-      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString));
+  ASSERT_OK_AND_ASSIGN(
+      std::unique_ptr<Session> session,
+      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString)));
   ASSERT_TRUE(session);
 
   SessionStore::SessionsMap session_map;
@@ -3171,8 +3175,9 @@ TEST_F(SessionServiceImplWithStoreTest,
   EXPECT_CALL(store(), LoadSessions).Times(1);
   service().LoadSessionsAsync();
 
-  std::unique_ptr<Session> session =
-      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString));
+  ASSERT_OK_AND_ASSIGN(
+      std::unique_ptr<Session> session,
+      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString)));
   ASSERT_TRUE(session);
 
   SessionStore::SessionsMap session_map;
@@ -3199,8 +3204,9 @@ TEST_F(SessionServiceImplWithStoreTest,
   EXPECT_CALL(store(), LoadSessions).Times(1);
   service().LoadSessionsAsync();
 
-  std::unique_ptr<Session> session =
-      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString));
+  ASSERT_OK_AND_ASSIGN(
+      std::unique_ptr<Session> session,
+      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString)));
   ASSERT_TRUE(session);
 
   SessionStore::SessionsMap session_map;
@@ -3250,8 +3256,9 @@ TEST_F(SessionServiceImplWithStoreTest, FederatedRegistrationKeyUnrestored) {
   EXPECT_CALL(store(), LoadSessions).Times(1);
   service().LoadSessionsAsync();
 
-  std::unique_ptr<Session> session =
-      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString));
+  ASSERT_OK_AND_ASSIGN(
+      std::unique_ptr<Session> session,
+      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString)));
   ASSERT_TRUE(session);
 
   SessionStore::SessionsMap session_map;
@@ -3287,10 +3294,10 @@ TEST_F(SessionServiceImplWithStoreTest, FederatedRegistrationKeyUnrestored) {
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       "challenge", /*authorization=*/std::nullopt,
-      ProviderRegistrationParams{.provider_key = key_thumbprint,
-                                 .provider_url = kTestUrl,
-                                 .provider_session_id =
-                                     Session::Id(kSessionId)});
+      ProviderRegistrationParams{
+          .provider_key = key_thumbprint,
+          .provider_url = kTestUrl,
+          .provider_session_id = Session::Id(kSessionId)});
 
   // Mock persistent failure for RestoreSessionBindingKey
   EXPECT_CALL(
@@ -3350,8 +3357,9 @@ TEST_F(SessionServiceImplWithStoreTest,
   EXPECT_CALL(store(), LoadSessions).Times(1);
   service().LoadSessionsAsync();
 
-  std::unique_ptr<Session> provider_session =
-      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString));
+  ASSERT_OK_AND_ASSIGN(
+      std::unique_ptr<Session> provider_session,
+      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString)));
   ASSERT_TRUE(provider_session);
 
   SessionStore::SessionsMap session_map;
@@ -3379,10 +3387,10 @@ TEST_F(SessionServiceImplWithStoreTest,
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       "challenge", /*authorization=*/std::nullopt,
-      ProviderRegistrationParams{.provider_key = key_thumbprint,
-                                 .provider_url = kTestUrl,
-                                 .provider_session_id =
-                                     Session::Id(kSessionId)});
+      ProviderRegistrationParams{
+          .provider_key = key_thumbprint,
+          .provider_url = kTestUrl,
+          .provider_session_id = Session::Id(kSessionId)});
   EXPECT_CALL(
       store(),
       RestoreSessionBindingKey(
@@ -4067,8 +4075,9 @@ TEST_F(SessionServiceImplWithStoreTest,
       cookie_future.GetCallback(), std::nullopt);
   ASSERT_TRUE(cookie_future.Get().status.IsInclude());
 
-  std::unique_ptr<Session> session =
-      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString));
+  ASSERT_OK_AND_ASSIGN(
+      std::unique_ptr<Session> session,
+      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString)));
   ASSERT_TRUE(session);
 
   SessionStore::SessionsMap session_map;

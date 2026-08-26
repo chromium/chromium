@@ -103,6 +103,15 @@ class NET_EXPORT SessionStoreImpl : public SessionStore {
   FRIEND_TEST_ALL_PREFIXES(SessionStoreImplTest,
                            PruneLoadedEntryWithInvalidRefreshInitiator);
   FRIEND_TEST_ALL_PREFIXES(SessionStoreImplTest,
+                           LoadedEntryWithSessionIdMismatch);
+  FRIEND_TEST_ALL_PREFIXES(SessionStoreImplTest,
+                           PruneLoadedEntryWithExpiredSession);
+  FRIEND_TEST_ALL_PREFIXES(SessionStoreImplTest,
+                           PruneLoadedEntryWithAllExpiredSessions);
+  FRIEND_TEST_ALL_PREFIXES(
+      SessionStoreImplTest,
+      CreateSessionsFromLoadedDataKeepExpiredWhenPruneDisabled);
+  FRIEND_TEST_ALL_PREFIXES(SessionStoreImplTest,
                            SaveAndLoadSessionWithAttestationKey);
   FRIEND_TEST_ALL_PREFIXES(SessionStoreImplTest,
                            SaveSessionWithoutAttestationKey);
@@ -131,13 +140,17 @@ class NET_EXPORT SessionStoreImpl : public SessionStore {
                         DBStatus status);
 
   // Helper function called by `OnDatabaseLoaded` to prune out any invalid
-  // entries found in the data loaded from disk. Returns a map of valid
-  // session objects that is returned to the caller of `LoadSessions` via
-  // the provided callback. `keys_to_delete` represents the list of invalid
-  // keys that are deleted from the store.
+  // or expired entries found in the data loaded from disk. Returns a map of
+  // valid session objects that is returned to the caller of `LoadSessions` via
+  // the provided callback. `keys_to_delete` represents the list of site keys
+  // where no valid sessions remain, and `sites_to_update` contains updated site
+  // protos with invalid/expired sessions pruned. If `prune_expired_sessions` is
+  // false, expired sessions are not pruned.
   static SessionsMap CreateSessionsFromLoadedData(
       const std::map<std::string, proto::SiteSessions>& loaded_data,
-      std::vector<std::string>& keys_to_delete);
+      std::vector<std::string>& keys_to_delete,
+      std::map<std::string, proto::SiteSessions>& sites_to_update,
+      bool prune_expired_sessions);
 
   // Returns an instance of a `proto::Session` for `session_key` if found.
   std::optional<proto::Session> GetSessionProto(

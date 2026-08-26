@@ -230,26 +230,28 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
 }
 
 // static
-std::unique_ptr<Session> Session::CreateFromProto(const proto::Session& proto) {
+base::expected<std::unique_ptr<Session>, DeletionReason>
+Session::CreateFromProto(const proto::Session& proto, bool check_expiry) {
   if (!proto.has_id() || !proto.has_refresh_url() ||
       !proto.has_should_defer_when_expired() || !proto.has_expiry_time() ||
-      !proto.has_session_inclusion_rules() || !proto.cookie_cravings_size()) {
-    return nullptr;
+      !proto.has_session_inclusion_rules() || !proto.cookie_cravings_size() ||
+      !proto.has_wrapped_key() || proto.wrapped_key().empty()) {
+    return base::unexpected(DeletionReason::kInvalidSessionParams);
   }
 
   if (proto.id().empty()) {
-    return nullptr;
+    return base::unexpected(DeletionReason::kInvalidSessionParams);
   }
 
   GURL refresh(proto.refresh_url());
   if (!refresh.is_valid()) {
-    return nullptr;
+    return base::unexpected(DeletionReason::kInvalidSessionParams);
   }
 
   std::optional<SessionInclusionRules> inclusion_rules =
       SessionInclusionRules::CreateFromProto(proto.session_inclusion_rules());
   if (!inclusion_rules) {
-    return nullptr;
+    return base::unexpected(DeletionReason::kInvalidSessionParams);
   }
 
   std::vector<CookieCraving> cravings;
@@ -257,7 +259,7 @@ std::unique_ptr<Session> Session::CreateFromProto(const proto::Session& proto) {
     std::optional<CookieCraving> craving =
         CookieCraving::CreateFromProto(craving_proto);
     if (!craving.has_value()) {
-      return nullptr;
+      return base::unexpected(DeletionReason::kInvalidSessionParams);
     }
     cravings.push_back(std::move(*craving));
   }
@@ -270,15 +272,15 @@ std::unique_ptr<Session> Session::CreateFromProto(const proto::Session& proto) {
 
   auto expiry_date = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(proto.expiry_time()));
-  if (base::Time::Now() > expiry_date) {
-    return nullptr;
+  if (check_expiry && expiry_date <= base::Time::Now()) {
+    return base::unexpected(DeletionReason::kExpired);
   }
 
   std::vector<std::string> allowed_refresh_initiators;
   allowed_refresh_initiators.reserve(proto.allowed_refresh_initiators_size());
   for (const std::string& initiator : proto.allowed_refresh_initiators()) {
     if (!IsValidHostPattern(initiator)) {
-      return nullptr;
+      return base::unexpected(DeletionReason::kInvalidSessionParams);
     }
     allowed_refresh_initiators.emplace_back(initiator);
   }
@@ -291,12 +293,12 @@ std::unique_ptr<Session> Session::CreateFromProto(const proto::Session& proto) {
   //
   // Otherwise, we pass `AttestationMode::kNone` indicating no attestation key
   // is expected.
-  return base::WrapUnique(new Session(
+  return base::ok(base::WrapUnique(new Session(
       Id(proto.id()), std::move(refresh), std::move(*inclusion_rules),
       std::move(cravings), proto.should_defer_when_expired(), creation_date,
       expiry_date, std::move(allowed_refresh_initiators),
       proto.has_wrapped_attestation_key() ? AttestationMode::kRequired
-                                          : AttestationMode::kNone));
+                                          : AttestationMode::kNone)));
 }
 
 proto::Session Session::ToProto() const {

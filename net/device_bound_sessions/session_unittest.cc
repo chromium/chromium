@@ -277,13 +277,15 @@ TEST_F(SessionTest, ToFromProto) {
 
   // Convert to proto and validate contents.
   proto::Session sproto = session->ToProto();
+  sproto.set_wrapped_key("mock_wrapped_key");
   EXPECT_EQ(Session::Id(sproto.id()), session->id());
   EXPECT_EQ(sproto.refresh_url(), session->refresh_url().spec());
   EXPECT_EQ(sproto.should_defer_when_expired(),
             session->should_defer_when_expired());
 
   // Restore session from proto and validate contents.
-  std::unique_ptr<Session> restored = Session::CreateFromProto(sproto);
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> restored,
+                       Session::CreateFromProto(sproto));
   ASSERT_TRUE(restored);
   // Simulate unwrapping successfully.
   restored->set_unexportable_key_id(session->unexportable_key_id());
@@ -298,9 +300,11 @@ TEST_F(SessionTest, CreateFromProtoWithAttestationKey) {
   // Proto has wrapped_attestation_key -> restored session has key ID as
   // kKeyNotReady.
   proto::Session sproto = session->ToProto();
+  sproto.set_wrapped_key("mock_wrapped_key");
   sproto.set_wrapped_attestation_key("mock_wrapped_attestation_key");
 
-  std::unique_ptr<Session> restored = Session::CreateFromProto(sproto);
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> restored,
+                       Session::CreateFromProto(sproto));
   ASSERT_TRUE(restored);
   EXPECT_THAT(restored->maybe_unexportable_attestation_key_id(),
               ErrorIs(unexportable_keys::ServiceError::kKeyNotReady));
@@ -314,9 +318,11 @@ TEST_F(SessionTest, CreateFromProtoWithoutAttestationKey) {
   // Proto lacks wrapped_attestation_key -> restored session has key ID as
   // std::nullopt.
   proto::Session sproto = session->ToProto();
+  sproto.set_wrapped_key("mock_wrapped_key");
   sproto.clear_wrapped_attestation_key();
 
-  std::unique_ptr<Session> restored = Session::CreateFromProto(sproto);
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> restored,
+                       Session::CreateFromProto(sproto));
   ASSERT_TRUE(restored);
   EXPECT_THAT(restored->maybe_unexportable_attestation_key_id(),
               ValueIs(std::nullopt));
@@ -326,7 +332,8 @@ TEST_F(SessionTest, FailCreateFromInvalidProto) {
   // Empty proto.
   {
     proto::Session sproto;
-    EXPECT_FALSE(Session::CreateFromProto(sproto));
+    EXPECT_THAT(Session::CreateFromProto(sproto),
+                ErrorIs(DeletionReason::kInvalidSessionParams));
   }
 
   // Create a fully populated proto.
@@ -334,45 +341,59 @@ TEST_F(SessionTest, FailCreateFromInvalidProto) {
                        Session::CreateIfValid(CreateValidParams()));
   ASSERT_TRUE(session);
   proto::Session sproto = session->ToProto();
+  sproto.set_wrapped_key("mock_wrapped_key");
 
   // Missing fields.
   {
     proto::Session s(sproto);
     s.clear_id();
-    EXPECT_FALSE(Session::CreateFromProto(s));
+    EXPECT_THAT(Session::CreateFromProto(s),
+                ErrorIs(DeletionReason::kInvalidSessionParams));
   }
   {
     proto::Session s(sproto);
     s.clear_refresh_url();
-    EXPECT_FALSE(Session::CreateFromProto(s));
+    EXPECT_THAT(Session::CreateFromProto(s),
+                ErrorIs(DeletionReason::kInvalidSessionParams));
   }
   {
     proto::Session s(sproto);
     s.clear_should_defer_when_expired();
-    EXPECT_FALSE(Session::CreateFromProto(s));
+    EXPECT_THAT(Session::CreateFromProto(s),
+                ErrorIs(DeletionReason::kInvalidSessionParams));
   }
   {
     proto::Session s(sproto);
     s.clear_expiry_time();
-    EXPECT_FALSE(Session::CreateFromProto(s));
+    EXPECT_THAT(Session::CreateFromProto(s),
+                ErrorIs(DeletionReason::kInvalidSessionParams));
   }
   {
     proto::Session s(sproto);
     s.clear_session_inclusion_rules();
-    EXPECT_FALSE(Session::CreateFromProto(s));
+    EXPECT_THAT(Session::CreateFromProto(s),
+                ErrorIs(DeletionReason::kInvalidSessionParams));
+  }
+  {
+    proto::Session s(sproto);
+    s.clear_wrapped_key();
+    EXPECT_THAT(Session::CreateFromProto(s),
+                ErrorIs(DeletionReason::kInvalidSessionParams));
   }
 
   // Empty id.
   {
     proto::Session s(sproto);
     s.set_id("");
-    EXPECT_FALSE(Session::CreateFromProto(s));
+    EXPECT_THAT(Session::CreateFromProto(s),
+                ErrorIs(DeletionReason::kInvalidSessionParams));
   }
   // Invalid refresh URL.
   {
     proto::Session s(sproto);
     s.set_refresh_url("blank");
-    EXPECT_FALSE(Session::CreateFromProto(s));
+    EXPECT_THAT(Session::CreateFromProto(s),
+                ErrorIs(DeletionReason::kInvalidSessionParams));
   }
 
   // Expired
@@ -380,15 +401,41 @@ TEST_F(SessionTest, FailCreateFromInvalidProto) {
     proto::Session s(sproto);
     base::Time expiry_date = base::Time::Now() - base::Days(1);
     s.set_expiry_time(expiry_date.ToDeltaSinceWindowsEpoch().InMicroseconds());
-    EXPECT_FALSE(Session::CreateFromProto(s));
+    EXPECT_THAT(Session::CreateFromProto(s), ErrorIs(DeletionReason::kExpired));
   }
 
   // Invalid refresh initiator
   {
     proto::Session s(sproto);
     s.add_allowed_refresh_initiators("a.*.example.test");
-    EXPECT_FALSE(Session::CreateFromProto(s));
+    EXPECT_THAT(Session::CreateFromProto(s),
+                ErrorIs(DeletionReason::kInvalidSessionParams));
   }
+}
+
+TEST_F(SessionTest, CreateFromProtoExpired) {
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
+                       Session::CreateIfValid(CreateValidParams()));
+  ASSERT_TRUE(session);
+  proto::Session sproto = session->ToProto();
+  sproto.set_wrapped_key("mock_wrapped_key");
+
+  base::Time expiry_date = base::Time::Now() - base::Days(1);
+  sproto.set_expiry_time(
+      expiry_date.ToDeltaSinceWindowsEpoch().InMicroseconds());
+
+  // By default (check_expiry = true), expired session proto returns kExpired
+  // error.
+  EXPECT_THAT(Session::CreateFromProto(sproto),
+              ErrorIs(DeletionReason::kExpired));
+
+  // When check_expiry = false, expired session proto is deserialized
+  // successfully.
+  ASSERT_OK_AND_ASSIGN(
+      std::unique_ptr<Session> restored,
+      Session::CreateFromProto(sproto, /*check_expiry=*/false));
+  ASSERT_TRUE(restored);
+  EXPECT_EQ(restored->expiry_date(), expiry_date);
 }
 
 TEST_F(SessionTest, ToDisplay) {

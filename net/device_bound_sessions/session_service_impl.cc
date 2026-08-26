@@ -1210,8 +1210,7 @@ void SessionServiceImpl::DeleteSessionAndNotifyInternal(
     DeletionReason reason,
     SessionServiceImpl::SessionsMap::iterator it,
     SessionService::OnAccessCallback per_request_callback) {
-  base::UmaHistogramEnumeration("Net.DeviceBoundSessions.DeletionReason",
-                                reason);
+  LogSessionDeletionReason(reason);
 
   const auto& [session_key, session] = *it;
 
