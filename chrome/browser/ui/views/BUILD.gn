@@ -921,3 +921,92 @@ source_set("content_setting_bubble_contents") {
     "//ui/gfx/geometry",
   ]
 }
+
+source_set("certificate_selector") {
+  public = [ "certificate_selector.h" ]
+  sources = [ "certificate_selector.cc" ]
+  public_deps = [
+    "//base",
+    "//net",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/views",
+  ]
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser:certificate_viewer",
+    "//chrome/browser/glic",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/common",
+    "//components/constrained_window",
+    "//components/strings:components_strings",
+    "//components/web_modal",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/base/metadata",
+  ]
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/ash/certificate_provider",
+      "//extensions/browser",
+    ]
+  }
+}
+
+source_set("ssl_client_certificate_selector") {
+  public = [ "ssl_client_certificate_selector.h" ]
+  sources = [ "ssl_client_certificate_selector.cc" ]
+  public_deps = [
+    ":certificate_selector",
+    "//chrome/browser/ssl",
+    "//ui/views",
+  ]
+  deps = [
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
+    "//content/public/browser",
+    "//net",
+    "//ui/base",
+  ]
+}
+
+if (is_chromeos) {
+  source_set("platform_keys_certificate_selector_chromeos") {
+    public = [ "platform_keys_certificate_selector_chromeos.h" ]
+    sources = [ "platform_keys_certificate_selector_chromeos.cc" ]
+    public_deps = [
+      ":certificate_selector",
+      "//chrome/browser/ui:platform_keys_certificate_selector_chromeos",
+      "//net",
+      "//ui/views",
+    ]
+    deps = [
+      "//base",
+      "//chrome/app:generated_resources",
+      "//ui/base",
+      "//ui/gfx",
+    ]
+  }
+
+  source_set("external_protocol_handler_ash") {
+    sources = [ "external_protocol_handler_ash.cc" ]
+    deps = [
+      ":external_protocol_dialog",
+      "//base",
+      "//chrome/browser/ash/arc/intent_helper",
+      "//chrome/browser/ash/guest_os",
+      "//chrome/browser/chromeos/arc",
+      "//chrome/browser/external_protocol",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/views/web_apps:protocol_handler_picker_coordinator",
+      "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications/app_service",
+      "//chromeos/ash/components/browser_context_helper",
+      "//content/public/browser",
+      "//ui/aura",
+      "//url",
+    ]
+  }
+}

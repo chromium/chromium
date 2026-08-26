@@ -162,6 +162,30 @@ source_set("launch_dialogs") {
 }
 
 if (is_chromeos) {
+  source_set("protocol_handler_picker_coordinator") {
+    public = [ "protocol_handler_picker_coordinator.h" ]
+    sources = [ "protocol_handler_picker_coordinator.cc" ]
+    public_deps = [
+      ":protocol_handler_picker_dialog",
+      "//base",
+      "//components/services/app_service",
+      "//components/tabs:public",
+      "//ui/base/unowned_user_data",
+      "//ui/views",
+      "//url",
+    ]
+    deps = [
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:url_identity",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs:tabs_public",
+      "//content/public/browser",
+      "//ui/base",
+    ]
+  }
+
   source_set("protocol_handler_picker_dialog") {
     public = [ "protocol_handler_picker_dialog.h" ]
     sources = [ "protocol_handler_picker_dialog.cc" ]

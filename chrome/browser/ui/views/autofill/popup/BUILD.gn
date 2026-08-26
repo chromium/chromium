@@ -297,3 +297,26 @@ source_set("popup_row_with_button_view") {
     "//ui/events",
   ]
 }
+
+source_set("popup_at_memory_ai_disclosure_view") {
+  public = [ "popup_at_memory_ai_disclosure_view.h" ]
+  sources = [ "popup_at_memory_ai_disclosure_view.cc" ]
+  public_deps = [
+    ":popup",
+    ":popup_interactive_row_view",
+    "//base",
+    "//ui/base/metadata",
+  ]
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:chrome_pages",
+    "//chrome/browser/ui/autofill",
+    "//chrome/common",
+    "//components/strings:components_strings",
+    "//content/public/browser",
+    "//ui/accessibility:ax_enums_mojo",
+    "//ui/base",
+    "//ui/color",
+    "//ui/views",
+  ]
+}

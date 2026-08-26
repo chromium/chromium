@@ -653,7 +653,10 @@ if (!is_android) {
     }
 
     if (is_chromeos) {
-      deps += [ "//chrome/browser/apps/app_service" ]
+      deps += [
+        "//chrome/browser/apps/app_service",
+        "//chrome/browser/ui/views/web_apps:protocol_handler_picker_coordinator",
+      ]
     }
   }
 

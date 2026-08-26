@@ -32,6 +32,24 @@ if (toolkit_views) {
     ]
   }
 
+  source_set("web_app_content_settings_container") {
+    public = [ "web_app_content_settings_container.h" ]
+    sources = [ "web_app_content_settings_container.cc" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/ui/views/location_bar",
+      "//chrome/browser/ui/views/location_bar:icon_label_bubble",
+      "//skia",
+      "//ui/base/metadata",
+      "//ui/views",
+    ]
+    deps = [
+      "//chrome/browser/ui/browser_window",
+      "//ui/base",
+      "//ui/compositor",
+    ]
+  }
+
   source_set("test_support") {
     testonly = true
 
