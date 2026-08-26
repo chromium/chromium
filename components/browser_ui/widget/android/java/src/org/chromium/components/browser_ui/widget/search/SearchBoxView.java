@@ -5,12 +5,15 @@
 package org.chromium.components.browser_ui.widget.search;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -48,6 +51,10 @@ public class SearchBoxView extends LinearLayout {
     }
 
     private void setupView() {
+        setOrientation(HORIZONTAL);
+        setGravity(Gravity.CENTER_VERTICAL);
+        setDesktopMode(false);
+
         mSearchText = findViewById(R.id.search_text);
         mClearButton = findViewById(R.id.clear_text_button);
         mSearchLoupe = findViewById(R.id.search_loupe);
@@ -149,6 +156,39 @@ public class SearchBoxView extends LinearLayout {
             }
         } finally {
             mIsSettingFocus = false;
+        }
+    }
+
+    /**
+     * Updates the component's internal properties (padding, background, height) for desktop
+     * constraints.
+     */
+    public void setDesktopMode(boolean isDesktop) {
+        Resources res = getContext().getResources();
+
+        int paddingEndPx =
+                res.getDimensionPixelSize(
+                        isDesktop
+                                ? R.dimen.search_box_view_padding_horizontal_desktop
+                                : R.dimen.search_box_view_padding_end_default);
+        int paddingStartPx = res.getDimensionPixelSize(R.dimen.search_box_view_padding_start);
+        int backgroundRes =
+                isDesktop ? R.drawable.search_box_background : R.drawable.search_row_modern_bg;
+
+        setPaddingRelative(paddingStartPx, getPaddingTop(), paddingEndPx, getPaddingBottom());
+        setBackgroundResource(backgroundRes);
+
+        int heightPx =
+                res.getDimensionPixelSize(
+                        isDesktop
+                                ? R.dimen.search_box_view_height_desktop
+                                : R.dimen.search_box_view_height_default);
+        ViewGroup.LayoutParams params = getLayoutParams();
+        if (params != null) {
+            params.height = heightPx;
+            setLayoutParams(params);
+        } else {
+            setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, heightPx));
         }
     }
 }

@@ -439,6 +439,7 @@ android_library("unit_device_javatests") {
     "java/src/org/chromium/components/browser_ui/widget/promo/PromoCardImpressionTest.java",
     "java/src/org/chromium/components/browser_ui/widget/promo/PromoCardViewRenderTest.java",
     "java/src/org/chromium/components/browser_ui/widget/scrim/ScrimTest.java",
+    "java/src/org/chromium/components/browser_ui/widget/search/SearchBoxViewRenderTest.java",
   ]
   deps = [
     ":java",

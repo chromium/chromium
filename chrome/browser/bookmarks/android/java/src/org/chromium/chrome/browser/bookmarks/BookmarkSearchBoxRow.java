@@ -51,37 +51,19 @@ public class BookmarkSearchBoxRow extends LinearLayout {
      * @param isDesktop Whether the search box should use desktop styling.
      */
     public void updateDesktopMode(boolean isDesktop) {
+        mSearchBoxView.setDesktopMode(isDesktop);
+
         Resources res = getContext().getResources();
-        int heightPx =
-                res.getDimensionPixelSize(
-                        isDesktop
-                                ? R.dimen.bookmark_search_box_height_desktop
-                                : R.dimen.bookmark_search_box_height_default);
         int marginBottomPx =
                 res.getDimensionPixelSize(
                         isDesktop
                                 ? R.dimen.bookmark_search_box_bottom_margin_desktop
                                 : R.dimen.bookmark_search_box_bottom_margin_default);
-        int paddingEndPx =
-                res.getDimensionPixelSize(
-                        isDesktop
-                                ? R.dimen.bookmark_search_box_padding_horizontal_desktop
-                                : R.dimen.bookmark_search_box_padding_end_default);
-        int paddingStartPx = res.getDimensionPixelSize(R.dimen.bookmark_search_box_padding_start);
-        int backgroundRes =
-                isDesktop ? R.drawable.search_box_background : R.drawable.search_row_modern_bg;
 
         LinearLayout.LayoutParams params =
                 (LinearLayout.LayoutParams) mSearchBoxView.getLayoutParams();
-        params.height = heightPx;
         params.bottomMargin = marginBottomPx;
         mSearchBoxView.setLayoutParams(params);
-        mSearchBoxView.setPaddingRelative(
-                paddingStartPx,
-                mSearchBoxView.getPaddingTop(),
-                paddingEndPx,
-                mSearchBoxView.getPaddingBottom());
-        mSearchBoxView.setBackgroundResource(backgroundRes);
     }
 
     /** Returns the inner SearchBoxView widget. */

@@ -281,4 +281,12 @@ found in the LICENSE file.
     <dimen name="navigation_pane_header_padding_bottom">8dp</dimen>
     <dimen name="navigation_pane_divider_margin">8dp</dimen>
 
+    <dimen name="search_box_view_margin_end">16dp</dimen>
+
+    <!-- SearchBoxView Dimens -->
+    <dimen name="search_box_view_height_default">40dp</dimen>
+    <dimen name="search_box_view_height_desktop">48dp</dimen>
+    <dimen name="search_box_view_padding_end_default">0dp</dimen>
+    <dimen name="search_box_view_padding_horizontal_desktop">16dp</dimen>
+    <dimen name="search_box_view_padding_start">16dp</dimen>
 </resources>
