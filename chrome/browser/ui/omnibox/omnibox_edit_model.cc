@@ -1680,13 +1680,15 @@ bool OmniboxEditModel::OnAfterPossibleChange(
     view_->UpdatePopup();
   }
   if (allow_exact_keyword_match_) {
-    SetKeywordInfo(keyword_state_, keyword_, keyword_placeholder_,
-                   OmniboxEventProto::SPACE_IN_MIDDLE);
-    const TemplateURL* turl = controller_->client()
-                                  ->GetTemplateURLService()
-                                  ->GetTemplateURLForKeyword(keyword_);
-    EmitEnteredKeywordModeHistogram(OmniboxEventProto::SPACE_IN_MIDDLE, turl,
-                                    !user_text_.empty());
+    if (is_keyword_selected()) {
+      SetKeywordInfo(keyword_state_, keyword_, keyword_placeholder_,
+                     OmniboxEventProto::SPACE_IN_MIDDLE);
+      const TemplateURL* turl = controller_->client()
+                                    ->GetTemplateURLService()
+                                    ->GetTemplateURLForKeyword(keyword_);
+      EmitEnteredKeywordModeHistogram(OmniboxEventProto::SPACE_IN_MIDDLE, turl,
+                                      !user_text_.empty());
+    }
     allow_exact_keyword_match_ = false;
   }
 
@@ -3088,8 +3090,10 @@ bool OmniboxEditModel::ShouldAcceptKeywordAfterInsertingSpaceInMiddle(
   std::u16string keyword;
   base::TrimWhitespace(new_text.substr(0, space_position), base::TRIM_LEADING,
                        &keyword);
-  if (!autocomplete_controller()->keyword_provider()->GetTemplateUrlForText(
-          keyword, controller_->client()->GetTemplateURLService())) {
+  const TemplateURL* turl =
+      autocomplete_controller()->keyword_provider()->GetTemplateUrlForText(
+          keyword, controller_->client()->GetTemplateURLService());
+  if (!turl || turl->keyword() != keyword) {
     return false;
   }
 
