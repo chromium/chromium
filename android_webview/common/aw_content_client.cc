@@ -24,6 +24,7 @@
 #include "components/heap_profiling/in_process/child_process_snapshot_controller.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/heap_profiling/in_process/mojom/snapshot_controller.mojom.h"
+#include "components/services/heap_profiling/public/cpp/profiling_client.h"
 #include "components/version_info/version_info.h"
 #include "content/public/common/cdm_info.h"
 #include "content/public/common/content_features.h"
@@ -107,8 +108,22 @@ media::MediaDrmBridgeClient* AwContentClient::GetMediaDrmBridgeClient() {
 void AwContentClient::ExposeInterfacesToBrowser(
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     mojo::BinderMap* binders) {
-  // The ChildProcessSnapshotController allows the browser process tell the
-  // child process when to collect the samples into a snapshot.
+  // This creates a process-wide heap_profiling::ProfilingClient that listens
+  // for requests from the HeapProfilingService to start profiling the current
+  // process.
+  binders->Add<heap_profiling::mojom::ProfilingClient>(
+      base::BindRepeating(
+          [](mojo::PendingReceiver<heap_profiling::mojom::ProfilingClient>
+                 receiver) {
+            static base::NoDestructor<heap_profiling::ProfilingClient>
+                profiling_client;
+            profiling_client->BindToInterface(std::move(receiver));
+          }),
+      io_task_runner);
+
+  // Sets up the simplified in-process heap profiler. The
+  // ChildProcessSnapshotController allows the browser process tell the child
+  // process when to collect the samples into a snapshot.
   if (base::FeatureList::IsEnabled(features::kWebViewMemoryProfilingClient)) {
     const auto* heap_profiler_controller =
         heap_profiling::HeapProfilerController::GetInstance();

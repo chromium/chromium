@@ -9,6 +9,7 @@
 
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -18,7 +19,10 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "services/resource_coordinator/memory_instrumentation/queued_request_dispatcher.h"
+#include "services/resource_coordinator/memory_instrumentation/switches.h"
+#include "services/resource_coordinator/public/cpp/memory_instrumentation/client_process_impl.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer_proto.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/constants.mojom.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
@@ -38,10 +42,29 @@ namespace {
 
 memory_instrumentation::CoordinatorImpl* g_coordinator_impl;
 
+constexpr base::TimeDelta kHeapDumpTimeout = base::Seconds(60);
+
+// A wrapper classes that allows a string to be exported as JSON in a trace
+// event.
+class StringWrapper : public base::trace_event::ConvertableToTraceFormat {
+ public:
+  explicit StringWrapper(std::string&& json) : json_(std::move(json)) {}
+
+  void AppendAsTraceFormat(std::string* out) const override {
+    out->append(json_);
+  }
+
+  std::string json_;
+};
+
 }  // namespace
 
 CoordinatorImpl::CoordinatorImpl()
-    : next_dump_id_(0), client_process_timeout_(base::Seconds(15)) {
+    : next_dump_id_(0),
+      client_process_timeout_(base::Seconds(15)),
+      write_proto_heap_profile_(
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kUseHeapProfilingProtoWriter)) {
   DCHECK(!g_coordinator_impl);
   g_coordinator_impl = this;
   base::trace_event::MemoryDumpManager::GetInstance()->set_tracing_process_id(
@@ -55,6 +78,14 @@ CoordinatorImpl::~CoordinatorImpl() {
 // static
 CoordinatorImpl* CoordinatorImpl::GetInstance() {
   return g_coordinator_impl;
+}
+
+void CoordinatorImpl::RegisterHeapProfiler(
+    mojo::PendingRemote<mojom::HeapProfiler> profiler,
+    mojo::PendingReceiver<mojom::HeapProfilerHelper> helper_receiver) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  heap_profiler_.Bind(std::move(profiler));
+  heap_profiler_helper_receiver_.Bind(std::move(helper_receiver));
 }
 
 void CoordinatorImpl::RegisterClientProcess(
@@ -169,6 +200,33 @@ void CoordinatorImpl::RequestGlobalMemoryDumpAndAppendToTrace(
                                   base::BindOnce(adapter, std::move(callback)));
 }
 
+void CoordinatorImpl::GetVmRegionsForHeapProfiler(
+    const std::vector<base::ProcessId>& pids,
+    GetVmRegionsForHeapProfilerCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  uint64_t dump_guid = ++next_dump_id_;
+  std::unique_ptr<QueuedVmRegionRequest> request =
+      std::make_unique<QueuedVmRegionRequest>(dump_guid, std::move(callback));
+  in_progress_vm_region_requests_[dump_guid] = std::move(request);
+
+  std::vector<QueuedRequestDispatcher::ClientInfo> clients;
+  for (const auto& entry : clients_) {
+    const base::ProcessId pid = entry.first;
+    clients.emplace_back(entry.second->client.get(), pid,
+                         entry.second->process_type,
+                         entry.second->service_name);
+  }
+
+  QueuedVmRegionRequest* request_ptr =
+      in_progress_vm_region_requests_[dump_guid].get();
+  auto os_callback =
+      base::BindRepeating(&CoordinatorImpl::OnOSMemoryDumpForVMRegions,
+                          weak_ptr_factory_.GetWeakPtr(), dump_guid);
+  QueuedRequestDispatcher::SetUpAndDispatchVmRegionRequest(request_ptr, clients,
+                                                           pids, os_callback);
+  FinalizeVmRegionDumpIfAllManagersReplied(dump_guid);
+}
+
 void CoordinatorImpl::UnregisterClientProcess(base::ProcessId process_id) {
   QueuedRequest* request = GetCurrentRequest();
   if (request != nullptr) {
@@ -189,6 +247,28 @@ void CoordinatorImpl::UnregisterClientProcess(base::ProcessId process_id) {
       request->outcome = mojom::RequestOutcome::kProcessUnregistered;
     }
     FinalizeGlobalMemoryDumpIfAllManagersReplied();
+  }
+
+  for (auto& pair : in_progress_vm_region_requests_) {
+    QueuedVmRegionRequest* in_progress_request = pair.second.get();
+    auto it = in_progress_request->pending_responses.begin();
+    while (it != in_progress_request->pending_responses.end()) {
+      auto current = it++;
+      if (*current == process_id) {
+        in_progress_request->pending_responses.erase(current);
+      }
+    }
+  }
+
+  // Try to finalize all outstanding vm region requests.
+  for (auto& pair : in_progress_vm_region_requests_) {
+    // PostTask to avoid re-entrancy or modification of data-structure during
+    // iteration.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &CoordinatorImpl::FinalizeVmRegionDumpIfAllManagersReplied,
+            weak_ptr_factory_.GetWeakPtr(), pair.second->dump_guid));
   }
 
   size_t num_deleted = clients_.erase(process_id);
@@ -258,6 +338,23 @@ void CoordinatorImpl::OnQueuedRequestTimedOut(uint64_t dump_guid) {
   FinalizeGlobalMemoryDumpIfAllManagersReplied();
 }
 
+void CoordinatorImpl::OnHeapDumpTimeOut(uint64_t dump_guid) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  QueuedRequest* request = GetCurrentRequest();
+
+  // TODO(lalitm): add metrics for how often this happens.
+
+  // Only consider the current request timed out if we fired off this
+  // delayed callback in association with this request.
+  if (!request || request->dump_guid != dump_guid)
+    return;
+
+  // Fail all remaining dumps being waited upon and clear the vector.
+  if (request->heap_dump_in_progress) {
+    request->heap_dump_in_progress = false;
+    FinalizeGlobalMemoryDumpIfAllManagersReplied();
+  }
+}
 
 void CoordinatorImpl::PerformNextQueuedGlobalMemoryDump() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -288,6 +385,27 @@ void CoordinatorImpl::PerformNextQueuedGlobalMemoryDump() {
       base::BindOnce(&CoordinatorImpl::OnQueuedRequestTimedOut,
                      weak_ptr_factory_.GetWeakPtr(), request->dump_guid),
       client_process_timeout_);
+
+  if (request->args.add_to_trace && heap_profiler_) {
+    request->heap_dump_in_progress = true;
+
+    // We use level_of_detail == kBackground as a way of asking to anonymize the
+    // trace. The only way that PII gets leaked is if the full path is emitted
+    // for mapped files. Passing |strip_path_from_mapped_files| is all that is
+    // necessary to anonymize the trace.
+    bool strip_path_from_mapped_files =
+        request->args.level_of_detail == MemoryDumpLevelOfDetail::kBackground;
+    heap_profiler_->DumpProcessesForTracing(
+        strip_path_from_mapped_files, write_proto_heap_profile_,
+        base::BindOnce(&CoordinatorImpl::OnDumpProcessesForTracing,
+                       weak_ptr_factory_.GetWeakPtr(), request->dump_guid));
+
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&CoordinatorImpl::OnHeapDumpTimeOut,
+                       weak_ptr_factory_.GetWeakPtr(), request->dump_guid),
+        kHeapDumpTimeout);
+  }
 
   // Run the callback in case there are no client processes registered.
   FinalizeGlobalMemoryDumpIfAllManagersReplied();
@@ -358,6 +476,70 @@ void CoordinatorImpl::OnOSMemoryDumpResponse(uint64_t dump_guid,
   FinalizeGlobalMemoryDumpIfAllManagersReplied();
 }
 
+void CoordinatorImpl::OnOSMemoryDumpForVMRegions(uint64_t dump_guid,
+                                                 base::ProcessId process_id,
+                                                 mojom::RequestOutcome outcome,
+                                                 OSMemDumpMap os_dumps) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  auto request_it = in_progress_vm_region_requests_.find(dump_guid);
+  CHECK(request_it != in_progress_vm_region_requests_.end());
+
+  // TODO(crbug.com/450929521): Check the `outcome`?
+
+  QueuedVmRegionRequest* request = request_it->second.get();
+  auto it = request->pending_responses.find(process_id);
+  CHECK(it != request->pending_responses.end());
+  request->pending_responses.erase(it);
+  request->responses[process_id].os_dumps = std::move(os_dumps);
+
+  FinalizeVmRegionDumpIfAllManagersReplied(request->dump_guid);
+}
+
+void CoordinatorImpl::FinalizeVmRegionDumpIfAllManagersReplied(
+    uint64_t dump_guid) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  auto it = in_progress_vm_region_requests_.find(dump_guid);
+  if (it == in_progress_vm_region_requests_.end())
+    return;
+
+  if (!it->second->pending_responses.empty())
+    return;
+
+  QueuedRequestDispatcher::VmRegions results =
+      QueuedRequestDispatcher::FinalizeVmRegionRequest(it->second.get());
+  std::move(it->second->callback).Run(std::move(results));
+  in_progress_vm_region_requests_.erase(it);
+}
+
+void CoordinatorImpl::OnDumpProcessesForTracing(
+    uint64_t dump_guid,
+    std::vector<mojom::HeapProfileResultPtr> heap_profile_results) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  QueuedRequest* request = GetCurrentRequest();
+  if (!request || request->dump_guid != dump_guid) {
+    return;
+  }
+
+  request->heap_dump_in_progress = false;
+
+  for (auto& result : heap_profile_results) {
+    base::trace_event::TraceArguments args(
+        "dumps", std::make_unique<StringWrapper>(std::move(result->json)));
+
+    // Using the same id merges all of the heap dumps into a single detailed
+    // dump node in the UI.
+    TRACE_EVENT_API_ADD_TRACE_EVENT_WITH_PROCESS_ID(
+        TRACE_EVENT_PHASE_MEMORY_DUMP,
+        TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
+            base::trace_event::MemoryDumpManager::kTraceCategory),
+        "periodic_interval", dump_guid, result->pid, &args,
+        TRACE_EVENT_FLAG_HAS_ID);
+  }
+
+  FinalizeGlobalMemoryDumpIfAllManagersReplied();
+}
+
 void CoordinatorImpl::RemovePendingResponse(
     base::ProcessId process_id,
     QueuedRequest::PendingResponse::Type type) {
@@ -379,7 +561,8 @@ void CoordinatorImpl::FinalizeGlobalMemoryDumpIfAllManagersReplied() {
   DCHECK(!queued_memory_dump_requests_.empty());
 
   QueuedRequest* request = &queued_memory_dump_requests_.front();
-  if (!request->dump_in_progress || request->pending_responses.size() > 0) {
+  if (!request->dump_in_progress || request->pending_responses.size() > 0 ||
+      request->heap_dump_in_progress) {
     return;
   }
 

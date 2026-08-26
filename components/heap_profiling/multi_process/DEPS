@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/services/heap_profiling/heap_profiling_service.h",
+  "+components/services/heap_profiling/public",
+  "+content/public",
+  "+mojo/public",
+  "+services/resource_coordinator/public",
+  "+services/service_manager/public/cpp",
+]

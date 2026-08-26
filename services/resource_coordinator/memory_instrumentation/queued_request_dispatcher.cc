@@ -277,6 +277,89 @@ void QueuedRequestDispatcher::SetUpAndDispatch(
   }
 }
 
+// static
+void QueuedRequestDispatcher::SetUpAndDispatchVmRegionRequest(
+    QueuedVmRegionRequest* request,
+    const std::vector<ClientInfo>& clients,
+    const std::vector<base::ProcessId>& desired_pids,
+    const OsCallback& os_callback) {
+// On Linux, OS stats can only be dumped from a privileged process to
+// get around to sandboxing/selinux restrictions (see crbug.com/461788).
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  mojom::ClientProcess* browser_client = nullptr;
+  base::ProcessId browser_client_pid = 0;
+  for (const auto& client_info : clients) {
+    if (client_info.process_type == mojom::ProcessType::BROWSER) {
+      browser_client = client_info.client;
+      browser_client_pid = client_info.pid;
+      break;
+    }
+  }
+
+  if (!browser_client) {
+    DLOG(ERROR) << "Missing browser client.";
+    return;
+  }
+
+  request->pending_responses.insert(browser_client_pid);
+  request->responses[browser_client_pid].process_id = browser_client_pid;
+  auto callback = base::BindOnce(os_callback, browser_client_pid);
+  browser_client->RequestOSMemoryDump(mojom::MemoryMapOption::MODULES, {},
+                                      desired_pids, std::move(callback));
+#else
+  for (const auto& client_info : clients) {
+    if (std::ranges::contains(desired_pids, client_info.pid)) {
+      mojom::ClientProcess* client = client_info.client;
+      request->pending_responses.insert(client_info.pid);
+      request->responses[client_info.pid].process_id = client_info.pid;
+      request->responses[client_info.pid].service_name =
+          client_info.service_name;
+      client->RequestOSMemoryDump(mojom::MemoryMapOption::MODULES, {},
+                                  {base::kNullProcessId},
+                                  base::BindOnce(os_callback, client_info.pid));
+    }
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+}
+
+// static
+QueuedRequestDispatcher::VmRegions
+QueuedRequestDispatcher::FinalizeVmRegionRequest(
+    QueuedVmRegionRequest* request) {
+  VmRegions results;
+  for (auto& response : request->responses) {
+    const base::ProcessId& original_pid = response.second.process_id;
+
+    // |response| accumulates the replies received by each client process.
+    // On Linux, the browser process will provide all OS dumps. On non-Linux,
+    // each client process provides 1 OS dump, % the case where the client is
+    // disconnected mid dump.
+    OSMemDumpMap& extra_os_dumps = response.second.os_dumps;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    for (auto& kv : extra_os_dumps) {
+      auto pid = kv.first == base::kNullProcessId ? original_pid : kv.first;
+      DCHECK(results.find(pid) == results.end());
+      results.emplace(pid, std::move(kv.second->memory_maps));
+    }
+#else
+    // This can be empty if the client disconnects before providing both
+    // dumps. See UnregisterClientProcess().
+    DCHECK_LE(extra_os_dumps.size(), 1u);
+    for (auto& kv : extra_os_dumps) {
+      // When the OS dump comes from child processes, the pid is supposed to be
+      // not used. We know the child process pid at the time of the request and
+      // also wouldn't trust pids coming from child processes.
+      DCHECK_EQ(base::kNullProcessId, kv.first);
+
+      // Check we don't receive duplicate OS dumps for the same process.
+      DCHECK(results.find(original_pid) == results.end());
+
+      results.emplace(original_pid, std::move(kv.second->memory_maps));
+    }
+#endif
+  }
+  return results;
+}
 
 void QueuedRequestDispatcher::Finalize(QueuedRequest* request,
                                        TracingObserver* tracing_observer) {

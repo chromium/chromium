@@ -35,6 +35,7 @@ template("base_webview_instrumentation_apk") {
              "//components/android_autofill/browser/test_support:java",
              "//components/content_capture/android/test_support:java",
              "//components/embedder_support/android:util_java",
+             "//components/heap_profiling/multi_process:heap_profiling_java_test_support",
              "//components/policy/android:policy_java_test_support",
              "//content/public/android:content_java",
              "//third_party/androidx:androidx_annotation_annotation_java",

@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/services/heap_profiling/public",
+  "+services/tracing/public",
+  "+third_party/perfetto/include/perfetto/ext/tracing",
+  "+third_party/perfetto/protos/perfetto/trace",
+]

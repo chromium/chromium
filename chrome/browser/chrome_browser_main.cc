@@ -66,6 +66,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/profiling_host/chrome_browser_main_extra_parts_profiling.h"
 #include "chrome/browser/segmentation_platform/chrome_browser_main_extra_parts_segmentation_platform.h"
 #include "chrome/browser/sessions/chrome_serialized_navigation_driver.h"
 #include "chrome/browser/shell_integration.h"
@@ -832,6 +833,9 @@ std::unique_ptr<content::BrowserMainParts> ChromeBrowserMainParts::Create(
 
   main_parts->AddParts(
       std::make_unique<ChromeBrowserMainExtraPartsPerformanceManager>());
+
+  main_parts->AddParts(
+      std::make_unique<ChromeBrowserMainExtraPartsProfiling>());
 
   main_parts->AddParts(std::make_unique<ChromeBrowserMainExtraPartsMemory>());
 

@@ -1,0 +1,40 @@
+# Copyright 2017 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("heap_profiling") {
+  sources = [
+    "allocation.cc",
+    "allocation.h",
+    "connection_manager.cc",
+    "connection_manager.h",
+    "heap_profiling_service.cc",
+    "heap_profiling_service.h",
+    "json_exporter.cc",
+    "json_exporter.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/services/heap_profiling/public/mojom",
+    "//mojo/public/cpp/bindings",
+    "//services/resource_coordinator/public/mojom",
+  ]
+
+  deps = [
+    "//components/services/heap_profiling/public/cpp",
+    "//services/resource_coordinator/public/cpp:resource_coordinator_cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "json_exporter_unittest.cc" ]
+  deps = [
+    ":heap_profiling",
+    "//base",
+    "//base/test:test_support",
+    "//services/resource_coordinator/public/cpp:resource_coordinator_cpp",
+    "//testing/gtest",
+  ]
+}

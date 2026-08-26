@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Memory Internals</title>
+    <style type="text/css">
+      body {
+        font-family: sans-serif;
+      }
+      th {
+        border-bottom: 1px solid black;
+        padding: 5px;
+        text-align: start;
+      }
+      td {
+        padding: 5px;
+      }
+      #message {
+        font-style: italic;
+        margin-bottom: 1em;
+        padding: 5px;
+      }
+      .commands {
+        padding: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>Experimental memory internals</h3>
+    <div id="message"></div>
+
+    <div class="commands">
+      <button id="refresh">↺ Refresh process list</button>
+      <button id="save">⇩ Save dump</button>
+      <div id="save-dump-text"></div>
+    </div>
+
+    <div id="proclist">loading...</div>
+    <script type="module" src="memory_internals.js"></script>
+  </body>
+</html>
+

@@ -102,6 +102,10 @@ cast_source_set("common") {
     "//url",
   ]
 
+  if (!is_fuchsia) {
+    deps += [ "//components/services/heap_profiling/public/cpp" ]
+  }
+
   if (is_android || is_fuchsia) {
     deps += [ "//components/cdm/common" ]
   }

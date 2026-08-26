@@ -13,7 +13,7 @@ include_rules = [
   "+components/crash/android/java/src/org/chromium/components/crash/browser/ProcessExitReasonFromSystem.java",
   "+components/embedder_support/android/java",
   "+components/feature_engagement",
-  "+components/heap_profiling/in_process",
+  "+components/heap_profiling",
   "+components/keyed_service/content",
   "+components/google/core",
   "+components/js_injection",
@@ -23,6 +23,7 @@ include_rules = [
   "+components/payments/content/android/java/src/org/chromium/components/payments",
   "+components/prefs",
   "+components/sampling_profiler",
+  "+components/services/heap_profiling/public",
   "+components/url_formatter",
   "+components/version_info",
   # Only allow this header in spellchecking since allowing all of spellchecking

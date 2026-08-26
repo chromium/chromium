@@ -116,9 +116,36 @@ struct QueuedRequest {
   // this will only represent the last encountered error.
   mojom::RequestOutcome outcome = mojom::RequestOutcome::kSuccess;
   bool dump_in_progress = false;
+
+  // This field is set to |true| before a heap dump is requested, and set to
+  // |false| after the heap dump has been added to the trace.
+  bool heap_dump_in_progress = false;
+
   // The time we started handling the request (does not including queuing
   // time).
   base::TimeTicks start_time;
+};
+
+// Holds data for pending requests enqueued via GetVmRegionsForHeapProfiler().
+struct QueuedVmRegionRequest {
+  QueuedVmRegionRequest(
+      uint64_t dump_guid,
+      mojom::HeapProfilerHelper::GetVmRegionsForHeapProfilerCallback callback);
+  ~QueuedVmRegionRequest();
+  const uint64_t dump_guid;
+  mojom::HeapProfilerHelper::GetVmRegionsForHeapProfilerCallback callback;
+
+  struct Response {
+    Response();
+    ~Response();
+
+    base::ProcessId process_id = base::kNullProcessId;
+    OSMemDumpMap os_dumps;
+    std::optional<std::string> service_name;
+  };
+
+  std::set<base::ProcessId> pending_responses;
+  std::map<base::ProcessId, Response> responses;
 };
 
 }  // namespace memory_instrumentation

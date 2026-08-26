@@ -66,6 +66,8 @@
 #include "chromecast/public/cast_media_shlib.h"
 #include "chromecast/service/cast_service.h"
 #include "chromecast/ui/display_settings_manager_impl.h"
+#include "components/heap_profiling/multi_process/client_connection_manager.h"
+#include "components/heap_profiling/multi_process/supervisor.h"
 #include "components/input/switches.h"
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "components/prefs/pref_service.h"
@@ -248,6 +250,14 @@ void DeregisterKillOnAlarm() {
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+
+std::unique_ptr<heap_profiling::ClientConnectionManager>
+CreateClientConnectionManager(
+    base::WeakPtr<heap_profiling::Controller> controller_weak_ptr,
+    heap_profiling::Mode mode) {
+  return std::make_unique<heap_profiling::ClientConnectionManager>(
+      std::move(controller_weak_ptr), mode);
+}
 
 #if defined(USE_AURA)
 
@@ -528,6 +538,11 @@ void CastBrowserMainParts::PostCreateThreads() {
   media_connector_ = connector_->Clone();
   browser_service_ =
       std::make_unique<external_service_support::ExternalService>();
+  heap_profiling::Supervisor* supervisor =
+      heap_profiling::Supervisor::GetInstance();
+  supervisor->SetClientConnectionManagerConstructor(
+      &CreateClientConnectionManager);
+  supervisor->Start(base::NullCallback());
 }
 
 int CastBrowserMainParts::PreMainMessageLoopRun() {

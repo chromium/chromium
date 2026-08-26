@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/services/heap_profiling/public",
+  "+services/resource_coordinator/public",
+  "+services/service_manager",
+]

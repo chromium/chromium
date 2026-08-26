@@ -39,6 +39,8 @@ using ::testing::Property;
 using ::testing::Return;
 using ::testing::UnorderedElementsAre;
 
+using GetVmRegionsForHeapProfilerCallback = memory_instrumentation::
+    CoordinatorImpl::GetVmRegionsForHeapProfilerCallback;
 using RequestGlobalMemoryDumpAndAppendToTraceCallback = memory_instrumentation::
     CoordinatorImpl::RequestGlobalMemoryDumpAndAppendToTraceCallback;
 using RequestGlobalMemoryDumpCallback =
@@ -121,6 +123,12 @@ class CoordinatorImplTest : public testing::Test {
         MemoryDumpType::kExplicitlyTriggered,
         MemoryDumpLevelOfDetail::kDetailed, MemoryDumpDeterminism::kNone,
         std::move(callback));
+  }
+
+  void GetVmRegionsForHeapProfiler(
+      const std::vector<base::ProcessId>& pids,
+      GetVmRegionsForHeapProfilerCallback callback) {
+    coordinator_->GetVmRegionsForHeapProfiler(pids, std::move(callback));
   }
 
   void ReduceCoordinatorClientProcessTimeout() {
@@ -235,6 +243,24 @@ class MockGlobalMemoryDumpAndAppendToTraceCallback {
 
   RequestGlobalMemoryDumpAndAppendToTraceCallback Get() {
     return base::BindOnce(&MockGlobalMemoryDumpAndAppendToTraceCallback::Run,
+                          base::Unretained(this));
+  }
+};
+
+class MockGetVmRegionsForHeapProfilerCallback {
+ public:
+  MockGetVmRegionsForHeapProfilerCallback() = default;
+  MOCK_METHOD1(OnCall,
+               void(const base::flat_map<base::ProcessId,
+                                         std::vector<mojom::VmRegionPtr>>&));
+
+  void Run(base::flat_map<base::ProcessId, std::vector<mojom::VmRegionPtr>>
+               results) {
+    OnCall(results);
+  }
+
+  GetVmRegionsForHeapProfilerCallback Get() {
+    return base::BindOnce(&MockGetVmRegionsForHeapProfilerCallback::Run,
                           base::Unretained(this));
   }
 };
@@ -703,6 +729,99 @@ TEST_F(CoordinatorImplTest, GlobalMemoryDumpStruct) {
   run_loop.Run();
 }
 
+TEST_F(CoordinatorImplTest, VmRegionsForHeapProfiler) {
+  base::RunLoop run_loop;
+  // Not using a constexpr base::ProcessId because std:unordered_map<>
+  // and friends makes it too easy to accidentally odr-use this variable
+  // causing all sorts of compiler-toolchain divergent fun when trying
+  // to decide of the lambda capture is necessary.
+  static constexpr base::ProcessId kBrowserPid = 1;
+  static constexpr base::ProcessId kRendererPid = 2;
+
+  MockClientProcess browser_client(this, kBrowserPid,
+                                   mojom::ProcessType::BROWSER);
+  MockClientProcess renderer_client(this, kRendererPid,
+                                    mojom::ProcessType::RENDERER);
+
+// This ifdef is here to match the sandboxing behavior of the client.
+// On Linux, all memory dumps come from the browser client. On all other
+// platforms, they are expected to come from each individual client.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  EXPECT_CALL(
+      browser_client,
+      RequestOSMemoryDumpMock(
+          _, _, AllOf(Contains(kBrowserPid), Contains(kRendererPid)), _))
+      .WillOnce([](mojom::MemoryMapOption,
+                   const std::vector<mojom::MemDumpFlags>& flags,
+                   const std::vector<base::ProcessId>& pids,
+                   MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+        base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
+        results[kBrowserPid] = FillRawOSDump(kBrowserPid);
+        results[kRendererPid] = FillRawOSDump(kRendererPid);
+        std::move(callback).Run(mojom::RequestOutcome::kSuccess,
+                                std::move(results));
+      });
+  EXPECT_CALL(renderer_client, RequestOSMemoryDumpMock(_, _, _, _)).Times(0);
+#else
+  EXPECT_CALL(browser_client, RequestOSMemoryDumpMock(_, _, Contains(0), _))
+      .WillOnce([](mojom::MemoryMapOption,
+                   const std::vector<mojom::MemDumpFlags>& flags,
+                   const std::vector<base::ProcessId>& pids,
+                   MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+        base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
+        results[0] = FillRawOSDump(kBrowserPid);
+        std::move(callback).Run(mojom::RequestOutcome::kSuccess,
+                                std::move(results));
+      });
+  EXPECT_CALL(renderer_client, RequestOSMemoryDumpMock(_, _, Contains(0), _))
+      .WillOnce([](mojom::MemoryMapOption,
+                   const std::vector<mojom::MemDumpFlags>& flags,
+                   const std::vector<base::ProcessId>& pids,
+                   MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+        base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
+        results[0] = FillRawOSDump(kRendererPid);
+        std::move(callback).Run(mojom::RequestOutcome::kSuccess,
+                                std::move(results));
+      });
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+  MockGetVmRegionsForHeapProfilerCallback callback;
+  EXPECT_CALL(callback, OnCall(_))
+      .WillOnce(
+          [&run_loop](
+              const base::flat_map<base::ProcessId,
+                                   std::vector<mojom::VmRegionPtr>>& results) {
+            ASSERT_EQ(2U, results.size());
+
+            auto browser_it = results.find(kBrowserPid);
+            ASSERT_TRUE(browser_it != results.end());
+            auto renderer_it = results.find(kRendererPid);
+            ASSERT_TRUE(renderer_it != results.end());
+
+            const std::vector<mojom::VmRegionPtr>& browser_mmaps =
+                browser_it->second;
+            ASSERT_EQ(3u, browser_mmaps.size());
+            for (int i = 0; i < 3; i++) {
+              EXPECT_EQ(GetFakeAddrForVmRegion(kBrowserPid, i),
+                        browser_mmaps[i]->start_address);
+            }
+
+            const std::vector<mojom::VmRegionPtr>& renderer_mmaps =
+                renderer_it->second;
+            ASSERT_EQ(3u, renderer_mmaps.size());
+            for (int i = 0; i < 3; i++) {
+              EXPECT_EQ(GetFakeAddrForVmRegion(kRendererPid, i),
+                        renderer_mmaps[i]->start_address);
+            }
+            run_loop.Quit();
+          });
+
+  std::vector<base::ProcessId> pids;
+  pids.push_back(kBrowserPid);
+  pids.push_back(kRendererPid);
+  GetVmRegionsForHeapProfiler(pids, callback.Get());
+  run_loop.Run();
+}
 
 // RequestGlobalMemoryDump, as opposite to RequestGlobalMemoryDumpAndAddToTrace,
 // shouldn't add anything into the trace

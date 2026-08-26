@@ -1,0 +1,177 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_HEAP_PROFILING_MULTI_PROCESS_SUPERVISOR_H_
+#define COMPONENTS_HEAP_PROFILING_MULTI_PROCESS_SUPERVISOR_H_
+
+#include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
+#include "base/process/process.h"
+#include "base/thread_annotations.h"
+#include "base/threading/thread_checker.h"
+#include "components/services/heap_profiling/public/mojom/heap_profiling_client.mojom.h"
+#include "components/services/heap_profiling/public/mojom/heap_profiling_service.mojom.h"
+#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
+
+namespace heap_profiling {
+
+class ClientConnectionManager;
+class Controller;
+enum class Mode;
+
+// This class presents a single interface for both tests and embedders to use
+// the HeapProfilingService. This class is intended to be used from the
+// browser/privileged process of the embedder.
+//
+// This class must be accessed from the UI thread.
+//
+// Internally, this class:
+//   * Starts the HeapProfilingService.
+//   * Hooks up all the connections so that the appropriate processes get
+//     profiled.
+class Supervisor {
+ public:
+  static Supervisor* GetInstance();
+
+  Supervisor(const Supervisor&) = delete;
+  Supervisor& operator=(const Supervisor&) = delete;
+
+  // When this returns |false|, no method other than Start() or
+  // SetClientConnectionManagerConstructor() can be called.
+  bool HasStarted();
+
+  // Embedders can use this method to force the Supervisor to instantiate a
+  // ClientConnectionManager subclass during Start(). The function will be
+  // called on the UI thread.
+  using ClientConnectionManagerConstructor =
+      std::unique_ptr<ClientConnectionManager> (*)(
+          base::WeakPtr<Controller> controller_weak_ptr,
+          Mode mode);
+  void SetClientConnectionManagerConstructor(
+      ClientConnectionManagerConstructor constructor);
+
+  // Must be called at most once.
+  // The first method is a convenience method that calls the second with
+  // default parameters.
+  // Start is an asynchronous operation that must hop to the IO thread and then
+  // back to the UI thread. |callback| will be invoked on the UI thread after
+  // this is finished.
+  //
+  // This is a brief period of time when this object is in a semi-initialized
+  // state - when Start has been called, but the thread hops haven't finished.
+  // We avoid this side case by:
+  //   * Providing a |callback| for callers to use, if they need to do anything
+  //     shortly after Start().
+  //   * Relying on the assumption that in all other cases, the object is either
+  //     fully initialized or not initialized. There are DCHECKs to enforce this
+  //     assumption.
+  void Start(base::OnceClosure callback);
+  void Start(Mode mode,
+             mojom::StackMode stack_mode,
+             uint32_t sampling_rate,
+             base::OnceClosure callback);
+
+  // Stops profiling in all connected clients and tears down the supervisor
+  // process-wide state. |callback| is invoked on the UI thread with a boolean
+  // indicating whether profiling was successfully stopped.
+  void Stop(base::OnceCallback<void(bool)> callback);
+
+  Mode GetMode();
+
+  // Starts profiling the process with the given `pid`. Invokes
+  // `started_profiling_closure` if and when profiling starts successfully.
+  void StartManualProfiling(base::ProcessId pid,
+                            mojom::ProfilingService::AddProfilingClientCallback
+                                started_profiling_closure);
+
+  // Returns the pids of all profiled processes. The callback is posted on the
+  // UI thread.
+  using GetProfiledPidsCallback =
+      base::OnceCallback<void(std::vector<base::ProcessId> pids)>;
+  void GetProfiledPids(GetProfiledPidsCallback callback);
+
+  uint32_t GetSamplingRate();
+
+  using TraceFinishedCallback =
+      base::OnceCallback<void(bool success, std::string trace_json)>;
+
+  // This method must be called from the UI thread. |callback| will be called
+  // asynchronously on the UI thread.
+  //
+  // This function does the following:
+  //   1. Starts tracing with no categories enabled.
+  //   2. Requests and waits for memory_instrumentation service to dump to
+  //   trace.
+  //   3. Stops tracing.
+  void RequestTraceWithHeapDump(TraceFinishedCallback callback, bool anonymize);
+
+ private:
+  friend class base::NoDestructor<Supervisor>;
+
+  Supervisor();
+  ~Supervisor();
+
+  // Initialization stage 1: Register with the MemoryInstrumentationRegistry.
+  // `continue_on_io_thread` is a callback to the next stage, which must be
+  // bound to the IO thread.
+  void RegisterProfilerOnMemoryInfraThread(
+      base::OnceCallback<void(
+          mojo::PendingReceiver<memory_instrumentation::mojom::HeapProfiler>,
+          mojo::PendingRemote<
+              memory_instrumentation::mojom::HeapProfilerHelper>)>
+          continue_on_io_thread);
+
+  // Initialization stage 2: Launch the Service on the IO thread.
+  // `continue_on_ui_thread` is a callback to the next stage, which must be
+  // bound to the UI thread.
+  void LaunchServiceOnIOThread(
+      mojom::StackMode stack_mode,
+      uint32_t sampling_rate,
+      base::OnceCallback<void(base::WeakPtr<Controller>)> continue_on_ui_thread,
+      mojo::PendingReceiver<memory_instrumentation::mojom::HeapProfiler>
+          receiver,
+      mojo::PendingRemote<memory_instrumentation::mojom::HeapProfilerHelper>
+          remote_helper);
+
+  // Initialization stage 3: Save controller pointer and start the
+  // ClientConnectionManager.
+  void ControllerStartedOnUIThread(
+      Mode mode,
+      base::OnceClosure closure,
+      base::WeakPtr<Controller> controller_weak_ptr);
+
+  // Starts the ClientConnectionManager. Can be called multiple times.
+  void StartClientConnectionOnUIThread(Mode mode, base::OnceClosure closure);
+
+  void GetProfiledPidsOnIOThread(GetProfiledPidsCallback callback);
+
+  void StopOnIOThread(base::OnceCallback<void(bool)> callback);
+
+  // Bound to the IO thread.
+  std::unique_ptr<Controller> controller_;
+
+  THREAD_CHECKER(ui_thread_checker_);
+
+  // Bound to the UI thread.
+  std::unique_ptr<ClientConnectionManager> client_connection_manager_
+      GUARDED_BY_CONTEXT(ui_thread_checker_);
+  base::WeakPtr<Controller> controller_weak_ptr_
+      GUARDED_BY_CONTEXT(ui_thread_checker_);
+
+  ClientConnectionManagerConstructor constructor_ = nullptr;
+
+  bool started_ GUARDED_BY_CONTEXT(ui_thread_checker_) = false;
+  enum class InitializationState {
+    kNotInitialized,
+    kInitializing,
+    kInitialized
+  };
+  InitializationState initialization_state_ GUARDED_BY_CONTEXT(
+      ui_thread_checker_) = InitializationState::kNotInitialized;
+};
+
+}  // namespace heap_profiling
+
+#endif  // COMPONENTS_HEAP_PROFILING_MULTI_PROCESS_SUPERVISOR_H_

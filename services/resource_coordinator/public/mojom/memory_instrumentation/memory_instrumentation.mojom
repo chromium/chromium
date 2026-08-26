@@ -4,6 +4,7 @@
 
 module memory_instrumentation.mojom;
 
+import "mojo/public/mojom/base/big_string.mojom";
 import "mojo/public/mojom/base/process_id.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
@@ -339,6 +340,43 @@ interface ClientProcess {
       array<MemDumpFlags> flags,
       array<mojo_base.mojom.ProcessId> pids)
       => (RequestOutcome outcome, map<mojo_base.mojom.ProcessId, RawOSMemDump> dumps);
+};
+
+struct HeapProfileResult {
+  mojo_base.mojom.ProcessId pid;
+  mojo_base.mojom.BigString json;
+};
+
+// HeapProfilers expose a single interface to memory_instrumentation, allowing
+// the latter to query for heap dumps when necessary.
+//
+// This interface is NOT implemented in resource_coordinator but by the
+// profiling service in chrome/profiler. The profiling service registers itself
+// with the Coordinator (see RegisterHeapProfiler) and is invoked when a memory
+// dump is requested (via Coordinator::RequestGlobalMemoryDump).
+interface HeapProfiler {
+  // Dumps the memory log of all profiled processes into BigString's.
+  // The contents of each BigString is a JSON string compatible with
+  // TRACE_EVENT* macros. Processes that fail to dump will be omitted from
+  // |result|. When |strip_path_from_mapped_files| is true, only the base name
+  // of mapped files is emitted. This prevents usernames from sneaking into the
+  // trace.
+  // |strip_path_from_mapped_files| should only be true for traces that will be
+  // uploaded to the crash servers - this strips potential PII, but prevents
+  // symbolization of local builds.
+  // |write_proto| will additionally write proto heap profiles to traces.
+  DumpProcessesForTracing(
+      bool strip_path_from_mapped_files, bool write_proto)
+      => (array<HeapProfileResult> results);
+};
+
+// Implemented by resource_coordinator to provide additional information needed
+// by the HeapProfiler.
+interface HeapProfilerHelper {
+  // Broadcasts a RequestOSMemoryDump-only request for all registered client
+  // processes and retrieves only their memory maps.
+  GetVmRegionsForHeapProfiler(array<mojo_base.mojom.ProcessId> pids)
+      => (map<mojo_base.mojom.ProcessId, array<VmRegion>> vm_regions);
 };
 
 // The memory-infra service implements this interface. There is one instance for

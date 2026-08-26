@@ -51,7 +51,10 @@ source_set("memory_system") {
   is_heap_profiling_supported = !is_ios || use_allocator_shim
 
   if (is_heap_profiling_supported) {
-    deps += [ "//components/heap_profiling/in_process" ]
+    deps += [
+      "//components/heap_profiling/in_process",
+      "//components/services/heap_profiling/public/cpp",
+    ]
   }
 
   if (build_allocation_stack_trace_recorder) {

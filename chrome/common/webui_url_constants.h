@@ -211,6 +211,7 @@ inline constexpr char16_t kChromeUIManagementURL16[] = u"chrome://management";
 inline constexpr char kChromeUIMediaEngagementHost[] = "media-engagement";
 inline constexpr char kChromeUIMediaRouterInternalsHost[] =
     "media-router-internals";
+inline constexpr char kChromeUIMemoryInternalsHost[] = "memory-internals";
 inline constexpr char kChromeUIMetricsInternalsHost[] = "metrics-internals";
 inline constexpr char kChromeUINetExportHost[] = "net-export";
 inline constexpr char kChromeUINetInternalsHost[] = "net-internals";

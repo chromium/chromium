@@ -14,6 +14,7 @@
 #include "chrome/browser/metrics/perf/windowed_incognito_observer.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "components/services/heap_profiling/public/cpp/settings.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
 
