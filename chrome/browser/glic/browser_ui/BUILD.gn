@@ -191,6 +191,7 @@ source_set("glow_impl") {
       "tab_underline_view.cc",
     ]
     deps += [
+      "//chrome/browser/dictation",
       "//chrome/browser/glic/resources:browser_resources",
       "//chrome/browser/themes",
       "//chrome/browser/ui:ui_features",

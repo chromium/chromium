@@ -4,6 +4,7 @@
 
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -22,7 +23,10 @@ namespace dictation {
 class DictationKeyedServiceTest : public testing::Test {
  public:
   DictationKeyedServiceTest()
-      : scoped_feature_list_(CreateEnablingFeatureList()) {
+      : scoped_feature_list_(CreateEnablingFeatureList()),
+        tab_weak_factory_(&tab_) {
+    ON_CALL(tab_, GetWeakPtr())
+        .WillByDefault(testing::Return(tab_weak_factory_.GetWeakPtr()));
     profile_.GetPrefs()->SetBoolean(prefs::kPrefDictationOnboardingCompleted,
                                     true);
     service_ = std::make_unique<MockDictationKeyedService>(&profile_);
@@ -34,6 +38,7 @@ class DictationKeyedServiceTest : public testing::Test {
   TestingProfile profile_;
   base::test::ScopedFeatureList scoped_feature_list_;
   tabs::MockTabInterface tab_;
+  base::WeakPtrFactory<tabs::TabInterface> tab_weak_factory_;
   std::unique_ptr<MockDictationKeyedService> service_;
 };
 
@@ -135,6 +140,25 @@ TEST_F(DictationKeyedServiceTest, HotkeyManagerLifecycle) {
 
   profile_.GetPrefs()->SetInteger(prefs::kVoiceTypingSettings, 0);
   EXPECT_NE(service_->local_hotkey_manager_for_testing(), nullptr);
+}
+
+TEST_F(DictationKeyedServiceTest, TabChangedCallbackNotified) {
+  int callback_count = 0;
+  base::CallbackListSubscription subscription =
+      service_->AddDictationTabChangedCallback(base::BindLambdaForTesting(
+          [&callback_count](tabs::TabInterface* tab) { callback_count++; }));
+
+  EXPECT_EQ(callback_count, 1);
+  EXPECT_EQ(service_->GetActiveDictationTab(), nullptr);
+
+  service_->StartSessionForTesting(tab_, EmptyTarget(),
+                                   DictationSessionEntryPoint::kContextMenu);
+  EXPECT_EQ(callback_count, 2);
+  EXPECT_EQ(service_->GetActiveDictationTab(), &tab_);
+
+  service_->EndSession();
+  EXPECT_EQ(callback_count, 3);
+  EXPECT_EQ(service_->GetActiveDictationTab(), nullptr);
 }
 
 }  // namespace dictation

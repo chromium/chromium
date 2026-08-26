@@ -72,6 +72,9 @@ class TabUnderlineController
 
   void OnUserInputSubmitted();
 
+  // Called when the tab displaying the dictation session UI changes.
+  void OnDictationTabChanged(tabs::TabInterface* active_dictation_tab);
+
   // Types of updates to the tab underline UI effect given changes in relevant
   // triggering signals, including tab focus, glic sharing controls, pinned tabs
   // and the floaty panel.
@@ -102,6 +105,10 @@ class TabUnderlineController
     kContextualTask_TabInContext,
     kContextualTask_TabNotInContext,
 
+    // Dictation target tab changes.
+    kDictation_TabActive,
+    kDictation_TabInactive,
+
     kUserInputSubmitted,
   };
 
@@ -111,6 +118,7 @@ class TabUnderlineController
     kNone = 0,
     kGlic = 1 << 0,
     kContextualTasks = 1 << 1,
+    kDictation = 1 << 2,
   };
 
   void AddSource(UnderlineSource source);
@@ -134,16 +142,19 @@ class TabUnderlineController
   // Helper to observe contextual tasks if enabled and not already observing.
   void MaybeObserveContextualTasks();
 
+  // Helper to observe dictation if enabled and not already observing.
+  void MaybeObserveDictation();
+
   // Off to On. Throw away everything we have and start the animation from
   // the beginning.
-  void ShowAndAnimateUnderline(bool triggered_by_glic);
+  void ShowAndAnimateUnderline(UnderlineSource source);
 
-  void HideUnderline(bool triggered_by_glic);
+  void HideUnderline(UnderlineSource source);
 
   // Replay the animation without hiding and re-showing the view.
   void AnimateUnderline();
 
-  void ShowOrAnimatePinnedUnderline(bool triggered_by_glic);
+  void ShowOrAnimatePinnedUnderline();
 
   bool IsAnyGlicPanelShowing() const;
 
@@ -175,6 +186,7 @@ class TabUnderlineController
   base::CallbackListSubscription indicator_change_subscription_;
   base::CallbackListSubscription pinned_tabs_change_subscription_;
   base::CallbackListSubscription user_input_submitted_subscription_;
+  base::CallbackListSubscription dictation_tab_changed_subscription_;
 
   // Subscription for contextual tasks backend.
   base::ScopedObservation<contextual_tasks::ActiveTaskContextProvider,
