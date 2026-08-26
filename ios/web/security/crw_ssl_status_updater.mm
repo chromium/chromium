@@ -101,6 +101,7 @@ using web::SecurityStyle;
 
   if (!cert) {
     item->GetSSL().certificate = nullptr;
+    item->GetSSL().cert_status = CertStatus();
     if (!item->GetURL().SchemeIsCryptographic()) {
       // HTTP or other non-secure connection.
       item->GetSSL().security_style = web::SECURITY_STYLE_UNAUTHENTICATED;

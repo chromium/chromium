@@ -143,6 +143,8 @@ TEST_F(CRWSSLStatusUpdaterTest, Initialization) {
 TEST_F(CRWSSLStatusUpdaterTest, HttpItem) {
   AddNavigationItem(kHttpUrl);
   web::NavigationItem* item = nav_manager_->GetLastCommittedItem();
+  // Set a non-zero cert_status to verify it gets cleared for HTTP.
+  item->GetSSL().cert_status = net::CERT_STATUS_INVALID;
   // Make sure that item change callback was called.
   [[delegate_ expect] SSLStatusUpdater:ssl_status_updater_
       didChangeSSLStatusForNavigationItem:item];
@@ -154,6 +156,9 @@ TEST_F(CRWSSLStatusUpdaterTest, HttpItem) {
 
   // No certificate for http.
   EXPECT_FALSE(!!item->GetSSL().certificate);
+
+  // Certificate status should be cleared.
+  EXPECT_EQ(net::CertStatus(), item->GetSSL().cert_status);
 
   // Always normal content for http.
   EXPECT_EQ(web::SSLStatus::NORMAL_CONTENT, item->GetSSL().content_status);
