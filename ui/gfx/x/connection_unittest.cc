@@ -155,4 +155,14 @@ TEST(X11ConnectionTest, GetPropertyReplyValid) {
   EXPECT_EQ(reply->format, 32);
 }
 
+TEST(X11ConnectionTest, WmSupportsEwmhSync) {
+  Connection connection;
+  ASSERT_TRUE(connection.Ready());
+  // Calling GetWmName() and WmSupportsHint() immediately before event dispatch
+  // should work synchronously.
+  EXPECT_FALSE(connection.GetWmName().empty());
+  EXPECT_TRUE(
+      connection.WmSupportsHint(connection.GetAtom("_NET_ACTIVE_WINDOW")));
+}
+
 }  // namespace x11

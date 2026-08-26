@@ -255,7 +255,7 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
   // Indicates if the connection is able to sync with the WM, either because the
   // WM is on an allowlist or the connection successfully synced with the WM to
   // test support experimentally.
-  bool CanSyncWithWm() const;
+  bool CanSyncWithWm();
 
   // Returns the underlying socket's FD if the connection is valid, or -1
   // otherwise.
@@ -462,11 +462,9 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
   Atom GetAtom(const char* name) const;
 
   // Returns an empty string if there is no window manager or the WM is unnamed.
-  std::string GetWmName() const;
+  std::string GetWmName();
 
-  bool WmSupportsHint(Atom atom) const;
-
-  const std::map<std::string, std::string> GetXResources();
+  bool WmSupportsHint(Atom atom);
 
   // The viz compositor thread hangs a PlatformEventSource off the connection so
   // that it gets destroyed at the appropriate time.
@@ -551,7 +549,7 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
 
   void OnRootPropertyChanged(Atom property, const GetPropertyResponse& value);
 
-  bool WmSupportsEwmh() const;
+  bool WmSupportsEwmh();
 
   void AttemptSyncWithWm();
 
@@ -620,8 +618,6 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
 
   std::unique_ptr<PropertyCache> root_props_;
   std::unique_ptr<PropertyCache> wm_props_;
-
-  std::map<std::string, std::string> xresources_;
 };
 
 // Grab/release the X server connection within a scope. This can help avoid race

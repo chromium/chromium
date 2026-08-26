@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/x/atom_cache.h"
@@ -178,6 +179,46 @@ TEST_F(PropertyCacheTest, GetAs) {
   EXPECT_FALSE(value);
 
   connection()->SynchronizeForTest(true);
+}
+
+TEST_F(PropertyCacheTest, OnChangeCallback) {
+  auto atom = x11::GetAtom("DUMMY ATOM");
+  connection()->SetProperty(window(), atom, Atom::CARDINAL, 1234);
+
+  bool callback_fired = false;
+  auto on_change = [](bool* fired, Atom, const GetPropertyResponse&) {
+    *fired = true;
+  };
+
+  PropertyCache cache(connection(), window(), {atom},
+                      base::BindRepeating(on_change, &callback_fired));
+
+  // Calling Get() should not trigger the callback synchronously.
+  EXPECT_FALSE(callback_fired);
+  auto* value = cache.GetAs<uint32_t>(atom);
+  ASSERT_TRUE(value);
+  EXPECT_EQ(*value, 1234u);
+  EXPECT_FALSE(callback_fired);
+
+  // Dispatching responses/events will invoke the callback.
+  connection()->DispatchAll();
+  EXPECT_TRUE(callback_fired);
+}
+
+TEST_F(PropertyCacheTest, DestroyInCallback) {
+  auto atom = x11::GetAtom("DUMMY ATOM");
+  connection()->SetProperty(window(), atom, Atom::CARDINAL, 1234);
+
+  std::unique_ptr<PropertyCache> cache;
+  auto on_change = [](std::unique_ptr<PropertyCache>* cache_ptr, Atom,
+                      const GetPropertyResponse&) { cache_ptr->reset(); };
+
+  cache = std::make_unique<PropertyCache>(
+      connection(), window(), std::vector<Atom>{atom},
+      base::BindRepeating(on_change, &cache));
+
+  cache->Get(atom);
+  connection()->DispatchAll();
 }
 
 }  // namespace x11

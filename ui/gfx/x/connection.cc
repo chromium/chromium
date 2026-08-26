@@ -18,9 +18,7 @@
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/string_view_util.h"
 #include "base/threading/thread_local.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/switches.h"
@@ -98,18 +96,6 @@ Window GetWindowPropertyAsWindow(const GetPropertyResponse& value) {
     return *wm_window;
   }
   return Window::None;
-}
-
-std::map<std::string, std::string> ParseXResources(std::string_view resources) {
-  std::map<std::string, std::string> result;
-  base::StringPairs pairs;
-  base::SplitStringIntoKeyValuePairs(resources, ':', '\n', &pairs);
-  for (const auto& pair : pairs) {
-    auto key = base::TrimWhitespaceASCII(pair.first, base::TRIM_ALL);
-    auto value = base::TrimWhitespaceASCII(pair.second, base::TRIM_ALL);
-    result[std::string(key)] = std::string(value);
-  }
-  return result;
 }
 
 }  // namespace
@@ -202,7 +188,7 @@ Connection::Connection(const std::string& address)
   root_props_ = std::make_unique<PropertyCache>(
       this, default_root(),
       std::vector<Atom>{GetAtom("_NET_SUPPORTING_WM_CHECK"),
-                        GetAtom("_NET_SUPPORTED"), Atom::RESOURCE_MANAGER},
+                        GetAtom("_NET_SUPPORTED")},
       base::BindRepeating(&Connection::OnRootPropertyChanged,
                           base::Unretained(this)));
 }
@@ -336,7 +322,7 @@ Atom Connection::GetAtom(const char* name) const {
   return atom_cache_->GetAtom(name);
 }
 
-std::string Connection::GetWmName() const {
+std::string Connection::GetWmName() {
   if (WmSupportsEwmh()) {
     size_t size;
     if (const char* name =
@@ -349,19 +335,12 @@ std::string Connection::GetWmName() const {
   return std::string();
 }
 
-bool Connection::WmSupportsHint(Atom atom) const {
+bool Connection::WmSupportsHint(Atom atom) {
   if (WmSupportsEwmh()) {
     auto supported = root_props_->GetAsSpan<Atom>(GetAtom("_NET_SUPPORTED"));
     return std::ranges::contains(supported, atom);
   }
   return false;
-}
-
-const std::map<std::string, std::string> Connection::GetXResources() {
-  // Fetch the initial property value which will call `OnPropertyChanged` and
-  // populate `xresources_` if it is not already populated.
-  root_props_->Get(Atom::RESOURCE_MANAGER);
-  return xresources_;
 }
 
 Connection::Request::Request(ResponseCallback callback)
@@ -425,7 +404,7 @@ int Connection::GetFd() {
   return Ready() ? xcb_get_file_descriptor(XcbConnection()) : -1;
 }
 
-bool Connection::CanSyncWithWm() const {
+bool Connection::CanSyncWithWm() {
   // For some WMs, we don't need to experimentally sync with them to determine
   // sync support, so we can use WmSync right away. Openbox and GNOME Shell are
   // used in tests. The list may be expanded as nearly all WMs should work with
@@ -971,25 +950,30 @@ void Connection::OnRootPropertyChanged(Atom property,
     // when attempting to use WmSync.  Attempt to sync with the window manager
     // so we know which behavior WmSync should use.
     AttemptSyncWithWm();
-    wm_props_.reset();
     Window wm_window = GetWindowPropertyAsWindow(value);
-    if (wm_window != Window::None) {
-      wm_props_ = std::make_unique<PropertyCache>(
-          this, wm_window,
-          std::vector<Atom>{check_atom, GetAtom("_NET_WM_NAME")});
+    if (!wm_props_ || wm_props_->window() != wm_window) {
+      wm_props_.reset();
+      if (wm_window != Window::None) {
+        wm_props_ = std::make_unique<PropertyCache>(
+            this, wm_window,
+            std::vector<Atom>{check_atom, GetAtom("_NET_WM_NAME")});
+      }
     }
-  } else if (property == Atom::RESOURCE_MANAGER) {
-    xresources_ = ParseXResources(
-        base::as_string_view(PropertyCache::GetAsSpan<char>(value)));
   }
 }
 
-bool Connection::WmSupportsEwmh() const {
+bool Connection::WmSupportsEwmh() {
   Atom check_atom = GetAtom("_NET_SUPPORTING_WM_CHECK");
   Window wm_window = GetWindowPropertyAsWindow(root_props_->Get(check_atom));
 
-  if (!wm_props_) {
+  if (wm_window == Window::None) {
+    wm_props_.reset();
     return false;
+  }
+  if (!wm_props_ || wm_props_->window() != wm_window) {
+    wm_props_ = std::make_unique<PropertyCache>(
+        this, wm_window,
+        std::vector<Atom>{check_atom, GetAtom("_NET_WM_NAME")});
   }
   if (const Window* wm_check = wm_props_->GetAs<Window>(check_atom)) {
     return *wm_check == wm_window;

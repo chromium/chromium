@@ -38,6 +38,12 @@ class COMPONENT_EXPORT(X11) PropertyCache : public EventObserver {
 
   ~PropertyCache() override;
 
+  Window window() const { return window_; }
+
+  // Synchronously retrieves the cached property response, blocking if the
+  // initial response has not yet been received. Note that this method does not
+  // invoke `OnChangeCallback`; the callback is only invoked when property
+  // responses or change events are dispatched.
   const GetPropertyResponse& Get(Atom atom);
 
   template <typename T>

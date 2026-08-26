@@ -293,9 +293,11 @@ XCursorLoader::XCursorLoader(x11::Connection* connection,
   cursor_font_ = connection_->GenerateId<x11::Font>();
   connection_->OpenFont({cursor_font_, "cursor"});
 
-  // Fetch the initial property value which will call `OnPropertyChanged` and
-  // initialize `rm_xcursor_theme_`, `rm_xcursor_size_`, and `rm_xft_dpi_`.
-  rm_cache_.Get(x11::Atom::RESOURCE_MANAGER);
+  // Fetch the initial property value and initialize `rm_xcursor_theme_`,
+  // `rm_xcursor_size_`, and `rm_xft_dpi_`. Note that `PropertyCache::Get()`
+  // does not invoke `OnPropertyChanged()`.
+  OnPropertyChanged(x11::Atom::RESOURCE_MANAGER,
+                    rm_cache_.Get(x11::Atom::RESOURCE_MANAGER));
 
   if (auto pf_reply = pf_cookie.Sync())
     pict_format_ = GetRenderARGBFormat(*pf_reply.reply);
