@@ -6769,7 +6769,6 @@ crbug.com/432218257 [ Debug Mac13 ] jquery/event.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded/http/tests/worklet/animation-worklet-csp-eval.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded/printing/css2.1/page-break-after-000.html [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/overrides/can-edit-iframe-html.js [ Skip Timeout ]
-[ Debug Mac13 ] external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-ImageBitmap-Blob.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded-prefer-compositing/fast/scroll-behavior/no-erroneous-auto-scroll-pinch-zoom.html [ Skip Timeout ]
 # Will uncomment after crrev.com/c/5440693 lands
 #[ Debug Mac13 ] http/tests/devtools/elements/inspect-limited-children.js [ Skip Timeout ]
@@ -9362,3 +9361,9 @@ crbug.com/551134373 [ Linux ] external/wpt/html/semantics/scripting-1/the-templa
 
 # Gardener 2026-08-25
 crbug.com/552043107 [ Win11-arm64 ] virtual/media-foundation-for-clear-dcomp/media/track/track-cue-rendering-controls-fade-then-disable.html [ Failure ]
+
+# Gardener 2026-08-26
+crbug.com/552768634 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-ImageBitmap-Blob.html [ Failure Pass ]
+crbug.com/552768634 external/wpt/preload/subresource-integrity.html [ Failure Pass ]
+crbug.com/552768634 external/wpt/resource-timing/response-status-code.no-cors.html [ Failure Pass ]
+crbug.com/552768634 external/wpt/scroll-to-text-fragment/scroll-to-text-fragment-security-replacestate.sub.html [ Failure Pass ]
