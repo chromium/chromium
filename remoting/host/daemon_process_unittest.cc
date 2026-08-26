@@ -17,8 +17,12 @@
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "build/build_config.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/errors.h"
@@ -331,6 +335,68 @@ TEST_F(DaemonProcessTest, LaunchPeerConnectionProcess) {
   mojo::PendingRemote<mojom::PeerSession> peer_session_remote;
   daemon_process_->LaunchPeerSession(
       peer_session_remote.InitWithNewPipeAndPassReceiver());
+}
+
+TEST_F(DaemonProcessTest, GetDesktopSessionCreatesNewSession) {
+  InSequence s;
+  EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
+
+  StartDaemonProcess();
+
+  auto options1 = CreateSessionOptions();
+  options1->client_id = "user@domain.com";
+  daemon_process_->GetDesktopSession(mojo::NullReceiver(), mojo::NullRemote(),
+                                     std::move(options1));
+  EXPECT_EQ(desktop_sessions().size(), 1u);
+  EXPECT_EQ(0, desktop_sessions().begin()->second->id());
+
+  auto options2 = CreateSessionOptions();
+  options2->client_id = "user@domain.com";
+  daemon_process_->GetDesktopSession(mojo::NullReceiver(), mojo::NullRemote(),
+                                     std::move(options2));
+#if BUILDFLAG(IS_LINUX)
+  // On Linux, persistent sessions are reused.
+  EXPECT_EQ(desktop_sessions().size(), 1u);
+  EXPECT_EQ(0, desktop_sessions().begin()->second->id());
+#else
+  // On other platforms, persistent sessions are not supported; a new session is
+  // created.
+  EXPECT_EQ(desktop_sessions().size(), 2u);
+#endif
+}
+
+TEST_F(DaemonProcessTest, DesktopSessionClosesOnReceiverDisconnect) {
+  InSequence s;
+  EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
+#if !BUILDFLAG(IS_LINUX)
+  EXPECT_CALL(*daemon_process_, SendTerminalDisconnected(_, _, _, _));
+#endif
+
+  StartDaemonProcess();
+
+  mojo::Remote<mojom::DesktopSession> desktop_session_remote;
+  daemon_process_->GetDesktopSession(
+      desktop_session_remote.BindNewPipeAndPassReceiver(), mojo::NullRemote(),
+      CreateSessionOptions());
+  EXPECT_EQ(desktop_sessions().size(), 1u);
+
+  desktop_session_remote.reset();
+
+#if BUILDFLAG(IS_LINUX)
+  // Wait for the Mojo disconnect notification to be dispatched and processed.
+  base::test::TestFuture<void> disconnect_processed;
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
+      FROM_HERE, disconnect_processed.GetCallback());
+  EXPECT_TRUE(disconnect_processed.Wait());
+
+  // On Linux, the session persists across pipe disconnections.
+  EXPECT_EQ(desktop_sessions().size(), 1u);
+#else
+  // On other platforms, disconnecting the receiver immediately closes the
+  // session.
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return desktop_sessions().empty(); }));
+#endif
 }
 
 }  // namespace remoting

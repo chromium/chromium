@@ -130,6 +130,12 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   // `callback` is called once the cleanup has complete.
   virtual void Cleanup(base::OnceClosure callback);
 
+  // mojom::DesktopSessionManager implementation.
+  void GetDesktopSession(
+      mojo::PendingReceiver<mojom::DesktopSession> control_receiver,
+      mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote,
+      mojom::DesktopSessionOptionsPtr options) override;
+
   void CreateDesktopSession(
       int terminal_id,
       mojo::PendingReceiver<mojom::DesktopSession> control_receiver,
@@ -240,12 +246,6 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   }
 
  private:
-  // mojom::DesktopSessionManager implementation.
-  void GetDesktopSession(
-      mojo::PendingReceiver<mojom::DesktopSession> control_receiver,
-      mojo::PendingRemote<mojom::DesktopSessionEvents> events_remote,
-      mojom::DesktopSessionOptionsPtr options) override;
-
   // Launches a peer connection process and establishes an IPC channel with it.
   // Returns a pointer to the created handler, or nullptr if creation failed.
   PeerConnectionProcessHandler* LaunchPeerConnectionProcess();

@@ -18,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "remoting/base/auto_thread_task_runner.h"
@@ -272,7 +273,14 @@ void DaemonProcess::GetDesktopSession(
     mojom::DesktopSessionOptionsPtr options) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  std::string client_id = options->client_id;
+  // Persistent desktop sessions are only supported on Linux where CRD manages
+  // the virtual desktop environment (X11 / Wayland session) and closing the
+  // desktop process would terminate the user's running applications. On
+  // Windows, user sessions and applications are persisted natively by the OS,
+  // and the desktop process is purely a transient capture/input agent that is
+  // recreated per connection.
+#if BUILDFLAG(IS_LINUX)
+  const std::string& client_id = options->client_id;
   auto it = std::ranges::find_if(desktop_sessions_, [&](const auto& pair) {
     return !client_id.empty() && pair.second->client_id() == client_id;
   });
@@ -283,6 +291,7 @@ void DaemonProcess::GetDesktopSession(
                             std::move(events_remote), std::move(options));
     return;
   }
+#endif  // BUILDFLAG(IS_LINUX)
 
   int terminal_id = next_terminal_id_;
   CreateDesktopSession(terminal_id, std::move(control_receiver),
