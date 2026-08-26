@@ -457,7 +457,7 @@ ci.builder(
     # TODO(b/464370790): Move this to CI bucket when recipe development is complete.
     bucket = "ssci",
     description_html = "Triggers Crowbar workflows on chromium/src.",
-    executable = "recipe:infra/crowbar",
+    executable = "recipe:chromium/crowbar",
     # TODO(b/464370790): Make this a routine job (regular update) and CI
     # triggered job (after submitting a CL modifying Crowbar spec) in the prod
     # pool when recipe development is complete.
@@ -472,13 +472,6 @@ ci.builder(
         short_name = "ssci",
     ),
     contact_team_email = "chops-security-core@google.com",
-    properties = {
-        "repos": [
-            {
-                "repo": "https://chromium.googlesource.com/chromium/src",
-            },
-        ],
-    },
     service_account = "chromium-roller@chops-crowbar.iam.gserviceaccount.com",
     shadow_pool = None,
     shadow_service_account = None,
