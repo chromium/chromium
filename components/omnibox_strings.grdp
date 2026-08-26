@@ -438,6 +438,9 @@
   <message name="IDS_ACC_AUTOCOMPLETE_HISTORY" desc="Text for screenreaders describing a URL from history.">
     <ph name="LOCATION_TITLE">$2<ex>The Chromium Projects</ex></ph> <ph name="SHORT_URL">$1<ex>www.chromium.org</ex> location from history</ph>
   </message>
+  <message name="IDS_ACC_AUTOCOMPLETE_HISTORY_EMBEDDINGS" desc="Text for screenreaders describing a AI match URL from history.">
+    <ph name="LOCATION_TITLE">$2<ex>The Chromium Projects</ex></ph> <ph name="SHORT_URL">$1<ex>www.chromium.org</ex>, AI best match, location from history</ph>
+  </message>
   <message name="IDS_ACC_AUTOCOMPLETE_SEARCH_HISTORY" desc="Text for screenreaders describing a search from history.">
     <ph name="TEXT">$1<ex>dogs</ex></ph> search from history
   </message>

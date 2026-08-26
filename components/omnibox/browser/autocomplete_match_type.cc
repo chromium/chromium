@@ -158,11 +158,11 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
       0,                                     // STARTER_PACK
       0,                                     // TILE_MOST_VISITED_SITE
       0,                                     // TILE_REPEATABLE_QUERY
-      IDS_ACC_AUTOCOMPLETE_HISTORY,          // HISTORY_EMBEDDINGS
-      0,                                     // FEATURED_ENTERPRISE_SEARCH
-      0,                                     // HISTORY_EMBEDDINGS_ANSWER
-      0,                                     // TAB_GROUP
-      0,                                     // CROSS_DEVICE_TAB
+      IDS_ACC_AUTOCOMPLETE_HISTORY_EMBEDDINGS,  // HISTORY_EMBEDDINGS
+      0,                                        // FEATURED_ENTERPRISE_SEARCH
+      0,                                        // HISTORY_EMBEDDINGS_ANSWER
+      0,                                        // TAB_GROUP
+      0,                                        // CROSS_DEVICE_TAB
   });
   static_assert(std::size(message_ids) == AutocompleteMatchType::NUM_TYPES,
                 "message_ids must have NUM_TYPES elements");
