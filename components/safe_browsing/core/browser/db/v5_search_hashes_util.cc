@@ -35,29 +35,41 @@ std::optional<ParseFailure> EvaluateNetworkResult(int net_error,
   return std::nullopt;
 }
 
+std::optional<SubresourceFilterType> MapThreatTypeToSubresourceFilterType(
+    V5::ThreatType threat_type) {
+  switch (threat_type) {
+    case V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION:
+      return SubresourceFilterType::ABUSIVE;
+    case V5::ThreatType::BETTER_ADS_VIOLATION:
+      return SubresourceFilterType::BETTER_ADS;
+    default:
+      return std::nullopt;
+  }
+}
+
 void AddToSubresourceFilterMetadata(
     ThreatMetadata* subresource_filter_metadata,
     const V5::FullHash::FullHashDetail& detail) {
+  std::optional<SubresourceFilterType> filter_type =
+      MapThreatTypeToSubresourceFilterType(detail.threat_type());
+  if (!filter_type.has_value()) {
+    // Return early for threat types not related to subresource filter.
+    return;
+  }
+
   SubresourceFilterLevel level =
       std::ranges::contains(detail.attributes(), V5::ThreatAttribute::CANARY)
           ? SubresourceFilterLevel::WARN
           : SubresourceFilterLevel::ENFORCE;
-  if (detail.threat_type() == V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION) {
-    auto it = subresource_filter_metadata->subresource_filter_match.find(
-        SubresourceFilterType::ABUSIVE);
-    if (it == subresource_filter_metadata->subresource_filter_match.end() ||
-        level > it->second) {
-      subresource_filter_metadata
-          ->subresource_filter_match[SubresourceFilterType::ABUSIVE] = level;
-    }
-  } else if (detail.threat_type() == V5::ThreatType::BETTER_ADS_VIOLATION) {
-    auto it = subresource_filter_metadata->subresource_filter_match.find(
-        SubresourceFilterType::BETTER_ADS);
-    if (it == subresource_filter_metadata->subresource_filter_match.end() ||
-        level > it->second) {
-      subresource_filter_metadata
-          ->subresource_filter_match[SubresourceFilterType::BETTER_ADS] = level;
-    }
+  // Try adding it to the map.
+  auto [match_it, was_inserted] =
+      subresource_filter_metadata->subresource_filter_match.insert(
+          {filter_type.value(), level});
+  // If it was already there, pick the higher severity level of the old and new
+  // entries.
+  if (!was_inserted) {
+    SubresourceFilterLevel& existing_level = match_it->second;
+    existing_level = std::max(existing_level, level);
   }
 }
 
