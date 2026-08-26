@@ -3261,6 +3261,18 @@ recorded in the same way, even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram
+    name="Accessibility.ReadAnything.ListenToThisPage.AudioPlaybackStartedWithin5Seconds"
+    enum="Boolean" expires_after="2027-06-01">
+  <owner>martinglopez@google.com</owner>
+  <owner>chrome-irm-devs@google.com</owner>
+  <summary>
+    Records whether audio playback successfully started within 5 seconds after
+    the user selected the &quot;Listen to this page&quot; context menu item and
+    sustained continuous playback for at least 2 seconds.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.MainPanelSelectionOnOpen"
     enum="Boolean" expires_after="2027-01-01">
   <owner>gusmartin@google.com</owner>

@@ -459,6 +459,10 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
 }
 
 ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
+  if (listen_to_this_page_playback_state_ !=
+      ListenToThisPagePlaybackMetricState::kInactive) {
+    RecordListenToThisPagePlaybackMetric(/*successful_playback=*/false);
+  }
   OnReadAloudAudioStateChange(false);
 #if !BUILDFLAG(IS_CHROMEOS)
   content::TtsController::GetInstance()->RemoveUpdateLanguageStatusDelegate(
@@ -492,6 +496,10 @@ ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
 }
 
 void ReadAnythingUntrustedPageHandler::PrimaryPageChanged() {
+  if (listen_to_this_page_playback_state_ !=
+      ListenToThisPagePlaybackMetricState::kInactive) {
+    RecordListenToThisPagePlaybackMetric(/*successful_playback=*/false);
+  }
   SetUpPdfObserver();
   OnActiveAXTreeIDChanged();
 }
@@ -1062,8 +1070,33 @@ void ReadAnythingUntrustedPageHandler::OnLineFocusFeatureUsed() {
   }
 }
 
+void ReadAnythingUntrustedPageHandler::UpdateForListenToThisPage(
+    bool& playing) {
+  if (playing) {
+    if (listen_to_this_page_playback_state_ ==
+        ListenToThisPagePlaybackMetricState::kWaitingForAudioStart) {
+      listen_to_this_page_playback_state_ =
+          ListenToThisPagePlaybackMetricState::kWaitingForSustainedPlayback;
+      listen_to_this_page_playback_timer_.Start(
+          FROM_HERE, kListenToThisPagePlaybackSustainedDuration,
+          base::BindOnce(&ReadAnythingUntrustedPageHandler::
+                             RecordListenToThisPagePlaybackMetric,
+                         base::Unretained(this),
+                         /*successful_playback=*/true));
+    }
+  } else {
+    if (listen_to_this_page_playback_state_ ==
+        ListenToThisPagePlaybackMetricState::kWaitingForSustainedPlayback) {
+      RecordListenToThisPagePlaybackMetric(/*successful_playback=*/false);
+    }
+  }
+}
+
 void ReadAnythingUntrustedPageHandler::OnReadAloudAudioStateChange(
     bool playing) {
+  if (features::IsReadAnythingImprovedUiEnabled()) {
+    UpdateForListenToThisPage(playing);
+  }
   // Show the tab audio icon when read aloud is playing, and hide it when it
   // stops playing.
   content::WebContents* contents = !!pdf_observer_
@@ -1344,6 +1377,21 @@ void ReadAnythingUntrustedPageHandler::Activate(
   active_ = active;
   if (active_) {
     last_open_trigger_ = open_trigger;
+    if (features::IsReadAnythingImprovedUiEnabled() &&
+        open_trigger == ReadAnythingOpenTrigger::kListenToThisPageContextMenu) {
+      if (listen_to_this_page_playback_state_ !=
+          ListenToThisPagePlaybackMetricState::kInactive) {
+        RecordListenToThisPagePlaybackMetric(/*successful_playback=*/false);
+      }
+      listen_to_this_page_playback_state_ =
+          ListenToThisPagePlaybackMetricState::kWaitingForAudioStart;
+      listen_to_this_page_playback_timer_.Start(
+          FROM_HERE, kListenToThisPagePlaybackStartupTimeout,
+          base::BindOnce(&ReadAnythingUntrustedPageHandler::
+                             RecordListenToThisPagePlaybackMetric,
+                         base::Unretained(this),
+                         /*successful_playback=*/false));
+    }
     page_->OnReadingModeShown(
         static_cast<read_anything::mojom::ReadAnythingOpenTrigger>(
             open_trigger));
@@ -1356,6 +1404,11 @@ void ReadAnythingUntrustedPageHandler::Activate(
     RestoreSettingsFromPrefs();
   }
   if (!active && !tab_will_detach_) {
+    if (features::IsReadAnythingImprovedUiEnabled() &&
+        listen_to_this_page_playback_state_ !=
+            ListenToThisPagePlaybackMetricState::kInactive) {
+      RecordListenToThisPagePlaybackMetric(/*successful_playback=*/false);
+    }
     page_->OnReadingModeHidden(tab_->IsActivated());
 
     // When Reading mode is hidden (with immersive flag enabled), we need to
@@ -1659,6 +1712,27 @@ void ReadAnythingUntrustedPageHandler::RequestDomDistillerDistillation(
       read_anything::mojom::ReadAnythingDistillationState::
           kDistillationInProgress);
   distiller_delegate_->StartDistillation(dom_distiller_service, content);
+}
+
+void ReadAnythingUntrustedPageHandler::RecordListenToThisPagePlaybackMetric(
+    bool successful_playback) {
+  if (!features::IsReadAnythingImprovedUiEnabled() ||
+      listen_to_this_page_playback_state_ ==
+          ListenToThisPagePlaybackMetricState::kInactive) {
+    return;
+  }
+  listen_to_this_page_playback_timer_.Stop();
+  listen_to_this_page_playback_state_ =
+      ListenToThisPagePlaybackMetricState::kInactive;
+  base::UmaHistogramBoolean(
+      "Accessibility.ReadAnything.ListenToThisPage."
+      "AudioPlaybackStartedWithin5Seconds",
+      successful_playback);
+}
+
+void ReadAnythingUntrustedPageHandler::
+    RecordListenToThisPagePlaybackMetricForTesting(bool successful_playback) {
+  RecordListenToThisPagePlaybackMetric(successful_playback);
 }
 
 void ReadAnythingUntrustedPageHandler::RecordDistillationSchemeHistogram(

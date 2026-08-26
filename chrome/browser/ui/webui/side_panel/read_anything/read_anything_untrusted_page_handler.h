@@ -88,6 +88,12 @@ enum class ReadAnythingDistillationScheme {
 
 // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingDistillationScheme)
 
+enum class ListenToThisPagePlaybackMetricState {
+  kInactive = 0,
+  kWaitingForAudioStart,
+  kWaitingForSustainedPlayback,
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingWebContentsObserver
 //
@@ -184,6 +190,15 @@ class ReadAnythingUntrustedPageHandler :
   static constexpr base::TimeDelta kReadingModeHiddenAckTimeout =
       base::Seconds(2);
 
+  // The maximum amount of time for Read Aloud to start playing audio to
+  // consider a successful playback from the "Listen to this page" entry point.
+  static constexpr base::TimeDelta kListenToThisPagePlaybackStartupTimeout =
+      base::Seconds(5);
+  // The minimum amount of time that Read Aloud must play audio to consider a
+  // successful playback from the "Listen to this page" entry point.
+  static constexpr base::TimeDelta kListenToThisPagePlaybackSustainedDuration =
+      base::Seconds(2);
+
   void AccessibilityEventReceived(const ui::AXUpdatesAndEvents& details);
   void AccessibilityLocationChangesReceived(
       const ui::AXTreeID& tree_id,
@@ -270,6 +285,8 @@ class ReadAnythingUntrustedPageHandler :
   // ash::SessionObserver
   void OnLockStateChanged(bool locked) override;
 #endif
+
+  void RecordListenToThisPagePlaybackMetricForTesting(bool successful_playback);
 
  protected:
   void OnImageDataDownloaded(const ui::AXTreeID& target_tree_id,
@@ -408,6 +425,12 @@ class ReadAnythingUntrustedPageHandler :
   void OnAXTreeSnapshotReceived(const std::string& distilled_html,
                                 ui::AXTreeUpdate& snapshot);
 
+  // Updates the playback state for "Listen to this page" and starts/stops the
+  // timer for recording the Listen to this page playback metric.
+  void UpdateForListenToThisPage(bool& playing);
+
+  void RecordListenToThisPagePlaybackMetric(bool successful_playback);
+
   // The Reading Mode controller for both immersive and side-panel reading mode,
   // used when the immersive reading mode flag is enabled.
   raw_ptr<ReadAnythingController> read_anything_controller_;
@@ -503,6 +526,11 @@ class ReadAnythingUntrustedPageHandler :
   // is hidden.
   base::OneShotTimer reading_mode_hidden_ack_timer_;
   bool ack_timed_out_for_testing_ = false;
+
+  // Timer for tracking "Listen to this page" startup and sustained playback.
+  base::OneShotTimer listen_to_this_page_playback_timer_;
+  ListenToThisPagePlaybackMetricState listen_to_this_page_playback_state_ =
+      ListenToThisPagePlaybackMetricState::kInactive;
 
   // Hold DOM distiller distillation results.
   std::optional<std::string> dom_distiller_title_;
