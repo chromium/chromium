@@ -1990,63 +1990,6 @@ PA_NOINLINE void PartitionRoot::QuarantineForBrp(
 }
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
-// static
-void PartitionRoot::CheckMetadataIntegrity(const void* ptr) {
-  uintptr_t address = internal::ObjectInnerPtr2Addr(ptr);
-  if (!IsManagedByPartitionAlloc(address)) {
-    // Not managed by PA; cannot help to determine its integrity.
-    return;
-  }
-
-  const internal::ReservationOffsetTable& reservation_offset =
-      internal::ReservationOffsetTable::Get(address);
-  if (reservation_offset.IsManagedByDirectMap(address)) {
-    // OOB for direct-mapped allocations is likely immediate crash.
-    // No extra benefit from additional checks.
-    return;
-  }
-
-  PA_CHECK(reservation_offset.IsManagedByNormalBuckets(address));
-
-  auto* root = FromAddrInFirstSuperpage(address);
-  SlotSpanMetadata* slot_span = SlotSpanMetadata::FromAddr(address, root);
-  PA_CHECK(PartitionRoot::FromSlotSpanMetadata(slot_span) == root);
-
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
-    PA_BUILDFLAG(USE_PARTITION_COOKIE)
-  internal::SlotSpanStart slot_span_start =
-      SlotSpanMetadata::ToSlotSpanStart(slot_span, root);
-  size_t offset_in_slot_span = slot_span_start.offset(address);
-
-  auto* bucket = slot_span->bucket;
-  internal::UntaggedSlotStart untagged_slot_start =
-      slot_span_start.GetNthSlotStart(
-          bucket->GetSlotNumber(offset_in_slot_span), bucket->slot_size);
-#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
-        // PA_BUILDFLAG(USE_PARTITION_COOKIE)
-
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-  if (root->brp_enabled()) {
-    auto* in_slot_metadata = InSlotMetadataPointerFromSlotStartAndSize(
-        untagged_slot_start, slot_span->bucket->slot_size);
-    in_slot_metadata->EnsureAlive(untagged_slot_start, slot_span);
-  }
-#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-
-#if PA_BUILDFLAG(USE_PARTITION_COOKIE)
-  if (root->settings_.use_cookie) {
-    // Verify the cookie after the allocated region.
-    // If this assert fires, you probably corrupted memory.
-    const size_t usable_size = root->GetSlotUsableSize(slot_span);
-
-    uintptr_t cookie_address = untagged_slot_start.value() + usable_size;
-    internal::PartitionCookieCheckValue(
-        static_cast<const unsigned char*>(internal::TagAddr(cookie_address)),
-        usable_size);
-  }
-#endif  // PA_BUILDFLAG(USE_PARTITION_COOKIE)
-}
-
 PA_NOINLINE size_t
 PartitionRoot::GetSlotSizeForTesting(const void* object) const {
   auto slot_start = internal::SlotStart::Unchecked(object).Untag();

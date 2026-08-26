@@ -2683,31 +2683,6 @@ TEST_P(PartitionAllocTest, LostFreeSlotSpansBug) {
   EXPECT_TRUE(bucket->decommitted_slot_spans_head);
 }
 
-TEST_P(PartitionAllocTest, CheckMetadataIntegrityPass) {
-  char* const small_ptr =
-      static_cast<char*>(allocator.root()->Alloc(kTestAllocSize));
-  ASSERT_TRUE(small_ptr);
-
-  // Should not crash.
-  PartitionRoot::CheckMetadataIntegrity(small_ptr);
-  PartitionRoot::CheckMetadataIntegrity(
-      PA_UNSAFE_TODO(small_ptr + kTestAllocSize - 1));
-
-  allocator.root()->Free(small_ptr);
-
-  constexpr size_t kDirectMapSize = BucketIndexLookup::kMaxBucketSize + 1;
-  char* const large_ptr =
-      static_cast<char*>(allocator.root()->Alloc(kDirectMapSize));
-  ASSERT_TRUE(large_ptr);
-
-  // Should not crash.
-  PartitionRoot::CheckMetadataIntegrity(large_ptr);
-  PartitionRoot::CheckMetadataIntegrity(
-      PA_UNSAFE_TODO(large_ptr + kDirectMapSize - 1));
-
-  allocator.root()->Free(large_ptr);
-}
-
 #if PA_USE_DEATH_TESTS()
 
 // Unit tests that check if an allocation fails in "return null" mode,
@@ -2914,13 +2889,6 @@ TEST_P(PartitionAllocDeathTest, ImmediateDoubleFree) {
   EXPECT_TRUE(ptr);
   allocator.root()->Free(ptr);
   EXPECT_DEATH(allocator.root()->Free(ptr), "");
-  if (
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-      allocator.root()->brp_enabled() ||
-#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-      allocator.root()->settings_.use_cookie) {
-    EXPECT_DEATH(allocator.root()->CheckMetadataIntegrity(ptr), "");
-  }
 }
 
 // As above, but when this isn't the only slot in the span.
@@ -2931,13 +2899,6 @@ TEST_P(PartitionAllocDeathTest, ImmediateDoubleFree2ndSlot) {
   EXPECT_TRUE(ptr);
   allocator.root()->Free(ptr);
   EXPECT_DEATH(allocator.root()->Free(ptr), "");
-  if (
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-      allocator.root()->brp_enabled() ||
-#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-      allocator.root()->settings_.use_cookie) {
-    EXPECT_DEATH(allocator.root()->CheckMetadataIntegrity(ptr), "");
-  }
   allocator.root()->Free(ptr0);
 }
 
@@ -3099,8 +3060,6 @@ TEST_P(PartitionAllocDeathTest, OffByOneDetectionByCookie) {
   // Crash at `free()`, either by cookie check failure or InSlotMetadata
   // corruption.
   EXPECT_DEATH(allocator.root()->Free(array), "");
-  // It should also crash with `CheckMetadataIntegrity()`.
-  EXPECT_DEATH(allocator.root()->CheckMetadataIntegrity(array), "");
   // Restore integrity, otherwise the process will crash in TearDown().
   PA_UNSAFE_TODO(array[usable_size] = previous_value);
   allocator.root()->Free(array);
@@ -3125,8 +3084,6 @@ TEST_P(PartitionAllocDeathTest, OffByOneDetectionByCookieWithRealisticData) {
   // Crash at `free()`, either by cookie check failure or InSlotMetadata
   // corruption.
   EXPECT_DEATH(allocator.root()->Free(array), "");
-  // It should also crash with `CheckMetadataIntegrity()`.
-  EXPECT_DEATH(allocator.root()->CheckMetadataIntegrity(array), "");
   // Restore integrity, otherwise the process will crash in TearDown().
   PA_UNSAFE_TODO(array[usable_size] = previous_value);
   allocator.root()->Free(array);

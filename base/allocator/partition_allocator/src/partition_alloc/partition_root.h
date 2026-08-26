@@ -784,8 +784,6 @@ class alignas(internal::kPartitionCachelineSize)
   size_t MetadataOffset() const;
 #endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
 
-  PA_NOINLINE static void CheckMetadataIntegrity(const void* object);
-
   // Returns `slot_size` of the bucket for `requested_size` memory allocation.
   PA_NOINLINE size_t
   GetSlotSizeFromRequestedSizeForTesting(size_t requested_size) const;

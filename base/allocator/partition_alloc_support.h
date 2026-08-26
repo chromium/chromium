@@ -192,13 +192,6 @@ class BASE_EXPORT MemoryReclaimerSupport {
   bool has_pending_task_ = false;
 };
 
-// Utility function to detect Double-Free or Out-of-Bounds writes.
-// This function can be called to memory assumed to be valid.
-// If not, this may crash (not guaranteed).
-// This is useful if you want to investigate crashes at `free()`,
-// to know which point at execution it goes wrong.
-BASE_EXPORT void CheckHeapIntegrity(const void* ptr);
-
 // The function here is called right before crashing with
 // `DoubleFreeOrCorruptionDetected()`. We provide an address for the slot start
 // to the function, and it may use that for debugging purpose.

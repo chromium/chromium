@@ -1569,12 +1569,6 @@ std::string PartitionAllocSupport::ExtractDanglingPtrSignatureForTests(
 }
 #endif
 
-void CheckHeapIntegrity(const void* ptr) {
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  partition_alloc::PartitionRoot::CheckMetadataIntegrity(ptr);
-#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-}
-
 // The function here is called right before crashing with
 // `DoubleFreeOrCorruptionDetected()`. We provide an address for the slot start
 // to the function, and it may use that for debugging purpose.

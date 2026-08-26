@@ -4,18 +4,11 @@
 
 #include "base/memory/safety_checks.h"
 
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 #include "base/allocator/partition_alloc_support.h"
-#include "partition_alloc/partition_root.h"  // nogncheck
-#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 namespace base {
-
-void CheckHeapIntegrity(const void* ptr) {
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  partition_alloc::PartitionRoot::CheckMetadataIntegrity(ptr);
-#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-}
 
 void SetDoubleFreeOrCorruptionDetectedFn(void (*fn)(uintptr_t)) {
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
