@@ -69,6 +69,9 @@ public class SettingsMenuHelper {
      * @param activity The Activity hosting the menu.
      */
     public static void onCreateOptionsMenu(Menu menu, Activity activity) {
+        // SettingsInTab does not have a help icon / options menu.
+        if (SettingsInTab.isEnabled()) return;
+
         // By default, every screen in Settings shows a "Help & feedback" menu item.
         MenuItem help =
                 menu.add(
@@ -105,6 +108,10 @@ public class SettingsMenuHelper {
     public static void updateOptionsMenu(Toolbar toolbar, Activity activity, Delegate delegate) {
         Menu menu = toolbar.getMenu();
         menu.clear();
+
+        // SettingsInTab does not have a help icon / options menu.
+        if (SettingsInTab.isEnabled()) return;
+
         onCreateOptionsMenu(menu, activity);
 
         Fragment mainFragment = delegate.getMainFragment();

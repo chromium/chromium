@@ -1008,6 +1008,16 @@ public class SettingsSearchCoordinator
 
     /** Update the visibility of the help menu on the toolbar. */
     public void updateHelpMenuVisibility() {
+        // SettingsInTab does not show a help icon / options menu.
+        if (SettingsInTab.isEnabled()) {
+            ViewGroup menuView = (ViewGroup) getHelpMenuView();
+            if (menuView != null) {
+                menuView.setVisibility(View.GONE);
+            }
+            updateSearchUiWidth();
+            return;
+        }
+
         ViewGroup menuView = (ViewGroup) getHelpMenuView();
         if (menuView == null) {
             mHandler.post(this::updateHelpMenuVisibility);
@@ -1191,8 +1201,14 @@ public class SettingsSearchCoordinator
             int minGapPx = getPixelSize(R.dimen.settings_multi_column_pane_gap);
             int excessPx = detailPaneWidth - maxDetailWidthPx - minGapPx * 2;
             int gapPx = (excessPx > 0 ? excessPx / 2 : 0) + minGapPx;
-            View actionBar = requireViewById(R.id.action_bar);
-            int actionBarEndMargin = gapPx - getPixelSize(R.dimen.settings_menu_icon_margin);
+            Toolbar actionBar = requireViewById(R.id.action_bar);
+            // SettingsInTab does not have a menu icon, but Toolbar has an internal
+            // contentInsetEnd and padding that must be accounted for so the search box aligns
+            // with the preference items in the detail pane.
+            int actionBarEndMargin =
+                    SettingsInTab.isEnabled()
+                            ? gapPx - actionBar.getContentInsetEnd() - actionBar.getPaddingEnd()
+                            : gapPx - getPixelSize(R.dimen.settings_menu_icon_margin);
             updateView(actionBar, 0, actionBarEndMargin, LayoutParams.MATCH_PARENT);
             int searchUiWidth = detailPaneWidth - gapPx * 2 - getMenuWidth();
             updateView(searchBox, 0, 0, searchUiWidth);
@@ -1273,9 +1289,15 @@ public class SettingsSearchCoordinator
         if (isOnWideScreen) {
             int itemMargin = getPixelSize(R.dimen.settings_item_margin);
             margin += itemMargin;
-            // The menu icon on the right pushes the UI to left. Adjust the margin.
-            startMargin = margin + menuWidth - itemMargin;
-            endMargin = margin - (menuWidth - itemMargin);
+            if (menuWidth > 0) {
+                // The menu icon on the right pushes the UI to left. Adjust the margin.
+                startMargin = margin + menuWidth - itemMargin;
+                endMargin = margin - (menuWidth - itemMargin);
+            } else {
+                // SettingsInTab does not have a menu icon, so don't adjust the margin.
+                startMargin = margin;
+                endMargin = margin;
+            }
         } else {
             // On narrow screens (e.g. phone portrait mode), the search query container is
             // placed inside the toolbar (mActionBar) and requires extra end margin to avoid
@@ -1489,6 +1511,8 @@ public class SettingsSearchCoordinator
      * only when we are in the main Settings state, not during Search or Results.
      */
     private boolean shouldShowHelpMenu() {
+        if (SettingsInTab.isEnabled()) return false;
+
         return mFragmentState == FS_SETTINGS;
     }
 

@@ -2273,7 +2273,7 @@ public final class SafetyHubTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511289088
+    @Restriction(DeviceFormFactor.PHONE) // Tablets and desktops don't have a help button or menu.
     public void testHelpCenterArticle() {
         mSafetyHubFragmentTestRule.startSettingsActivity();
         var histogramWatcher =

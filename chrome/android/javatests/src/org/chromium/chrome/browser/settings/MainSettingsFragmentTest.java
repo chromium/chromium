@@ -1132,6 +1132,9 @@ public class MainSettingsFragmentTest {
     }
 
     private void waitForOptionsMenu() {
+        // SettingsInTab doesn't have an options / help menu.
+        if (SettingsInTab.isEnabled()) return;
+
         CriteriaHelper.pollUiThread(
                 () -> {
                     return mSettingsTestRule.getActivity().findViewById(R.id.menu_id_general_help)

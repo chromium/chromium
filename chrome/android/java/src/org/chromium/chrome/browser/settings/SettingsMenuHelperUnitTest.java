@@ -97,6 +97,17 @@ public class SettingsMenuHelperUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "sw600dp")
+    public void testCreateOptionsMenu_SettingsInTab() {
+        Menu menu = mock(Menu.class);
+
+        SettingsMenuHelper.onCreateOptionsMenu(menu, mActivity);
+
+        verify(menu, never()).add(anyInt(), anyInt(), anyInt(), anyInt());
+    }
+
+    @Test
     public void testPrepareOptionsMenu() {
         Menu menu = mock(Menu.class);
         MenuItem menuItem = mock(MenuItem.class);
@@ -186,6 +197,26 @@ public class SettingsMenuHelperUnitTest {
         SettingsMenuHelper.updateOptionsMenu(mToolbar, mActivity, mDelegate);
 
         assertFalse(fragment.mCreateOptionsMenuCalled);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "sw600dp")
+    public void testUpdateOptionsMenu_SettingsInTab() {
+        TestMenuFragment fragment = new TestMenuFragment(true);
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(fragment, "with_menu")
+                .commitNow();
+        when(mDelegate.getMainFragment()).thenReturn(fragment);
+
+        SettingsMenuHelper.updateOptionsMenu(mToolbar, mActivity, mDelegate);
+
+        Menu menu = mToolbar.getMenu();
+        assertEquals(0, menu.size());
+        assertFalse(fragment.mCreateOptionsMenuCalled);
+        assertFalse(fragment.mPrepareOptionsMenuCalled);
     }
 
     @Test

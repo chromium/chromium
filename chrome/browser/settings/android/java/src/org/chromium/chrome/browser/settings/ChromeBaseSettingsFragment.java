@@ -10,12 +10,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
 import androidx.annotation.StringRes;
-import androidx.core.view.MenuProvider;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.build.annotations.Initializer;
@@ -46,7 +42,6 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
     private SettingsCustomTabLauncher mCustomTabLauncher;
     private @Nullable PreferenceUpdateObserver mPreferenceUpdateObserver;
     private @Nullable Context mThemedContext;
-    private @Nullable MenuProvider mMenuProvider;
 
     @Override
     public void onAttach(Context context) {
@@ -129,52 +124,6 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
      */
     public SettingsCustomTabLauncher getCustomTabLauncher() {
         return mCustomTabLauncher;
-    }
-
-    /**
-     * Sets the {@link MenuProvider} for this fragment.
-     *
-     * <p>When {@link SettingsInTab} is enabled, Settings is hosted in a browser tab using a
-     * standalone {@link androidx.appcompat.widget.Toolbar} managed by {@link SettingsMenuHelper},
-     * rather than an Activity Action Bar. If a fragment uses AndroidX's modern {@link MenuProvider}
-     * API (e.g. via {@link androidx.core.view.MenuHost#addMenuProvider}) instead of overriding
-     * {@link #onCreateOptionsMenu} and {@link #onOptionsItemSelected}, call this method so the
-     * fragment's options menu callbacks are forwarded to the {@link MenuProvider}.
-     */
-    public void setMenuProvider(MenuProvider menuProvider) {
-        mMenuProvider = menuProvider;
-        setHasOptionsMenu(true);
-    }
-
-    /** Returns the {@link MenuProvider} for this fragment, if any. */
-    public @Nullable MenuProvider getMenuProvider() {
-        return mMenuProvider;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (mMenuProvider != null) {
-            mMenuProvider.onCreateMenu(menu, inflater);
-            return;
-        }
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        if (mMenuProvider != null) {
-            mMenuProvider.onPrepareMenu(menu);
-            return;
-        }
-        super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (mMenuProvider != null && mMenuProvider.onMenuItemSelected(item)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     /** Notifies the observer that the preferences have been updated. */
