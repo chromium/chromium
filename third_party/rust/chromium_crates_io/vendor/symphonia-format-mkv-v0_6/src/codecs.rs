@@ -339,7 +339,7 @@ fn get_codec_id(track: &TrackElement) -> Option<CodecId> {
 
         // Other Codecs
         _ => {
-            log::info!("unknown codec: {}", &track.codec_id);
+            log::info!("unknown codec: {}", track.codec_id);
             return None;
         }
     };

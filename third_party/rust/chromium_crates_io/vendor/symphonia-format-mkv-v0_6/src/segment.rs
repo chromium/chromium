@@ -316,7 +316,7 @@ impl SignedTrackTicks {
     /// Subtract the provided track ticks to `self`, returning `None` if an overflow occurred.
     #[inline]
     pub fn checked_sub_unsigned(self, other: TrackTicks) -> Option<Self> {
-        self.0.checked_add_unsigned(other.0).map(SignedTrackTicks)
+        self.0.checked_sub_unsigned(other.0).map(SignedTrackTicks)
     }
 
     /// Try to convert Segment ticks to Matroska ticks using the track timebase.
@@ -609,7 +609,7 @@ impl EbmlElement<MkvSchema> for AudioElement {
 
         // Populate missing to empty mandatory element defaults.
         let sampling_frequency = sampling_frequency.unwrap_or(8000.0);
-        let channels = channels.unwrap_or(NonZeroU64::new(1).unwrap());
+        let channels = channels.unwrap_or(NonZeroU64::new(1).expect("1 is non-zero"));
 
         // The output sampling frequency is a non-mandatory element. If it was present and not
         // empty, then use the contained value. If it was empty, then it defaults to the value of
@@ -930,10 +930,12 @@ impl EbmlElement<MkvSchema> for EbmlHeaderElement {
             }
         }
 
-        let version = version.unwrap_or(NonZeroU64::new(1).unwrap());
-        let read_version = read_version.unwrap_or(NonZeroU64::new(1).unwrap());
-        let doc_type_version = doc_type_version.unwrap_or(NonZeroU64::new(1).unwrap());
-        let doc_type_read_version = doc_type_read_version.unwrap_or(NonZeroU64::new(1).unwrap());
+        let version = version.unwrap_or(NonZeroU64::new(1).expect("1 is non-zero"));
+        let read_version = read_version.unwrap_or(NonZeroU64::new(1).expect("1 is non-zero"));
+        let doc_type_version =
+            doc_type_version.unwrap_or(NonZeroU64::new(1).expect("1 is non-zero"));
+        let doc_type_read_version =
+            doc_type_read_version.unwrap_or(NonZeroU64::new(1).expect("1 is non-zero"));
 
         // EbmlReadVersion must be <= EbmlVersion.
         if read_version > version {
@@ -1019,7 +1021,8 @@ impl EbmlElement<MkvSchema> for InfoElement {
         }
 
         // Populate missing or empty mandatory elements with defaults.
-        let timestamp_scale = timestamp_scale.unwrap_or(NonZeroU64::new(1_000_000).unwrap());
+        let timestamp_scale =
+            timestamp_scale.unwrap_or(NonZeroU64::new(1_000_000).expect("1_000_000 is non-zero"));
 
         Ok(Self {
             timestamp_scale,
@@ -1266,7 +1269,7 @@ impl TagsElement {
 
         /// Append tags to all items in the UID map.
         fn append_to_map_all(map: &mut UidMap, raw_tags: &Vec<RawTag>, target: &Target) {
-            for (_, item) in map.iter_mut() {
+            for item in map.values_mut() {
                 // Attempt to generate a standard tag for each raw tag using the last context for
                 // the current item, and push a new tag.
                 for raw in raw_tags {
@@ -1304,7 +1307,7 @@ impl TagsElement {
         let mut attachments: UidMap = Default::default();
 
         // Pre-populate maps using known track, edition, chapter, and attachment UIDs.
-        for (uid, _) in target_tags.iter() {
+        for uid in target_tags.keys() {
             let default = (media_target.clone(), Vec::new());
             match uid {
                 TargetUid::Track(uid) => tracks.insert(*uid, default),
@@ -1342,7 +1345,7 @@ impl TagsElement {
             // Append tags to targets.
             if let Some(targets) = tag.targets {
                 if !targets.uids.is_empty() {
-                    let target = ctx.target.unwrap();
+                    let target = ctx.target.expect("ctx.target is Some when tag.targets is Some");
 
                     // Append tags to specific to tracks, editions, chapters, or attachments.
                     for uid in targets.uids {

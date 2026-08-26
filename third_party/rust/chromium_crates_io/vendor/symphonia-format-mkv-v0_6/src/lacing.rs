@@ -32,11 +32,18 @@ fn parse_flags(flags: u8) -> Result<Lacing> {
 }
 
 fn read_ebml_sizes<R: ReadBytes>(mut reader: R, num_frames: usize) -> Result<Vec<u64>> {
-    let mut sizes = Vec::with_capacity(num_frames);
+    let mut sizes: Vec<u64> = Vec::with_capacity(num_frames);
     for _ in 0..num_frames {
         if let Some(last_size) = sizes.last().copied() {
             let delta = read_signed_vint(&mut reader)?;
-            sizes.push((last_size as i64 + delta) as u64)
+
+            // Do not allow the size to overflow or become negative.
+            let Some(size) = last_size.checked_add_signed(delta)
+            else {
+                return decode_error("mkv: laced size is invalid");
+            };
+
+            sizes.push(size)
         }
         else {
             let size = read_unsigned_vint(&mut reader)?;

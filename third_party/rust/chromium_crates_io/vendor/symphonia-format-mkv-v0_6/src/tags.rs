@@ -165,7 +165,7 @@ pub fn map_std_tag(raw: &RawTag, lower_ctx: &TagContext) -> Option<StandardTag> 
             "TRACK@REPLAYGAIN_GAIN" | "SONG@REPLAYGAIN_GAIN" => {
                 StandardTag::ReplayGainTrackGain(value)
             }
-            "TRACK@REPLAYGAIN_PEAK" | "SOME@REPLAYGAIN_PEAK" => {
+            "TRACK@REPLAYGAIN_PEAK" | "SONG@REPLAYGAIN_PEAK" => {
                 StandardTag::ReplayGainTrackPeak(value)
             }
 
@@ -506,7 +506,7 @@ fn map_title(value: Arc<String>, target: &str, variant: Variant) -> Option<Stand
 
 fn map_subtitle(value: Arc<String>, target: &str) -> Option<StandardTag> {
     let std = match target {
-        "PART" | "SESSION " => StandardTag::DiscSubtitle(value),
+        "PART" | "SESSION" => StandardTag::DiscSubtitle(value),
         "TRACK" => StandardTag::TrackSubtitle(value),
         _ => return None,
     };

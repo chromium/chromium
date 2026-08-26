@@ -536,7 +536,7 @@ impl<R: ReadEbml, S: EbmlSchema> EbmlIterator<R, S> {
             // parent element, then the parent element has ended. Return `None` in such a case.
             if parent_end.is_none() {
                 for ancestor in self.stack.iter().rev().skip(1) {
-                    if header.is_valid_at(ancestor.depth, ancestor.id).unwrap_or(false) {
+                    if header.is_valid_at(ancestor.depth + 1, ancestor.id).unwrap_or(false) {
                         // This element is a direct child of an ancestor. Iteration will be
                         // terminated to indicate the end of the parent element.
                         return Ok(None);
@@ -631,7 +631,10 @@ impl<R: ReadEbml, S: EbmlSchema> EbmlIterator<R, S> {
                 EbmlDataType::Unsigned => {
                     let size = element.data_size.ok_or(EbmlError::UnknownElementDataSize)? as usize;
                     match size {
-                        0 => Ok(None),
+                        0 => {
+                            self.discard_current();
+                            Ok(None)
+                        }
                         1..=8 => {
                             let mut buf = [0u8; 8];
                             self.reader.read_buf_exact(&mut buf[8 - size..])?;
@@ -675,7 +678,10 @@ impl<R: ReadEbml, S: EbmlSchema> EbmlIterator<R, S> {
                     let size = element.data_size.ok_or(EbmlError::UnknownElementDataSize)? as usize;
 
                     match size {
-                        0 => Ok(None),
+                        0 => {
+                            self.discard_current();
+                            Ok(None)
+                        }
                         1..=8 => {
                             let mut buf = [0u8; 8];
                             self.reader.read_buf_exact(&mut buf[8 - size..])?;
@@ -720,7 +726,10 @@ impl<R: ReadEbml, S: EbmlSchema> EbmlIterator<R, S> {
                 EbmlDataType::Float => {
                     let size = element.data_size.ok_or(EbmlError::UnknownElementDataSize)?;
                     match size {
-                        0 => Ok(None),
+                        0 => {
+                            self.discard_current();
+                            Ok(None)
+                        }
                         4 => {
                             let value = self.reader.read_be_f32()?;
                             self.discard_current();
@@ -790,7 +799,10 @@ impl<R: ReadEbml, S: EbmlSchema> EbmlIterator<R, S> {
                 EbmlDataType::String => {
                     let size = element.data_size.ok_or(EbmlError::UnknownElementDataSize)? as usize;
                     match size {
-                        0 => Ok(None),
+                        0 => {
+                            self.discard_current();
+                            Ok(None)
+                        }
                         _ => {
                             let data = self.reader.read_boxed_slice_exact(size)?;
                             self.discard_current();
@@ -854,9 +866,9 @@ impl<R: ReadEbml, S: EbmlSchema> EbmlIterator<R, S> {
                     if size > buf.len() {
                         return Err(EbmlError::BufferTooSmall);
                     }
-                    let read_len = self.reader.read_buf(&mut buf[..size])?;
+                    self.reader.read_buf_exact(&mut buf[..size])?;
                     self.discard_current();
-                    Ok(read_len)
+                    Ok(size)
                 }
                 _ => Err(EbmlError::UnexpectedElementDataType),
             },

@@ -273,7 +273,7 @@ impl<'s> MkvReader<'s> {
             info.timestamp_scale
                 .try_into()
                 .map_err(|_| Error::Unsupported("mkv: timestamp scale too large (report this)"))?,
-            NonZero::new(1_000_000_000).unwrap(),
+            NonZero::new(1_000_000_000).expect("1_000_000_000 is non-zero"),
         )
         .reduce();
 
@@ -439,9 +439,9 @@ impl<'s> MkvReader<'s> {
 
             // Convert the cue point's timestamp (Matroska ticks) into Segment ticks for the cluster
             // state.
-            // UNWRAP: The media information timestamp is always populated.
-            let timestamp =
-                target_cue_point.time.into_segment_ticks(self.media_info.time_base.unwrap());
+            let timestamp = target_cue_point.time.into_segment_ticks(
+                self.media_info.time_base.expect("media info time base always populated"),
+            );
 
             // Update the current cluster metadata.
             self.current_cluster =
@@ -604,8 +604,7 @@ impl FormatReader for MkvReader<'_> {
                     None => self.tracks.first(),
                 };
                 let track = track.ok_or(Error::SeekError(SeekErrorKind::InvalidTrack))?;
-                // UNWRAP: Track will always have a timebase.
-                let tb = track.time_base.unwrap();
+                let tb = track.time_base.expect("track always has a timebase");
                 let ts = match tb.calc_timestamp(time) {
                     Some(ts) => ts,
                     None => {
@@ -619,8 +618,7 @@ impl FormatReader for MkvReader<'_> {
             SeekTo::Timestamp { ts, track_id } => {
                 match self.tracks.iter().find(|t| t.id == track_id) {
                     Some(track) => {
-                        // UNWRAP: Track will always have a timebase.
-                        let tb = track.time_base.unwrap();
+                        let tb = track.time_base.expect("track always has a timebase");
                         self.seek_track_by_ts_atomic(track_id, tb, ts)
                     }
                     None => seek_error(SeekErrorKind::InvalidTrack),
