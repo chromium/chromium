@@ -2811,7 +2811,6 @@ crbug.com/494337166 external/wpt/webdriver/tests/classic/get_computed_role/get.p
 crbug.com/494337166 external/wpt/webdriver/tests/classic/get_element_css_value/get.py [ Failure ]
 crbug.com/494337166 external/wpt/webdriver/tests/classic/get_element_rect/get.py [ Failure ]
 crbug.com/494337166 [ Android ] external/wpt/webdriver/tests/classic/get_element_rect/user_prompts.py [ Failure ]
-crbug.com/494337166 external/wpt/webdriver/tests/classic/get_element_tag_name/get.py [ Failure ]
 crbug.com/494337166 external/wpt/webdriver/tests/classic/get_named_cookie/get.py [ Failure ]
 crbug.com/494337166 external/wpt/webdriver/tests/classic/get_page_source/source.py [ Failure ]
 crbug.com/494337166 external/wpt/webdriver/tests/classic/is_element_selected/selected.py [ Failure ]

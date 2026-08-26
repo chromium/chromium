@@ -124,7 +124,7 @@ Status ExecuteGetElementProperty(Session* session,
                                  const base::DictValue& params,
                                  std::unique_ptr<base::Value>* value);
 
-// Returns the lower case tag name of a given element.
+// Returns the qualified name of a given element.
 Status ExecuteGetElementTagName(Session* session,
                                 WebView* web_view,
                                 const std::string& element_id,

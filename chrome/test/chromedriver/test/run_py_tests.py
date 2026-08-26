@@ -902,6 +902,38 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual(unrenderedHeaderElement.GetComputedLabel(), '')
     self.assertEqual(unrenderedHeaderElement.GetComputedRole(), 'none')
 
+  def testGetElementTagNamePreservesQualifiedName(self):
+    self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
+
+    html_element, parsed_svg_element = self._driver.ExecuteScript("""
+      document.body.innerHTML =
+          '<INPUT><svg><linearGradient></linearGradient></svg>';
+      return [
+        document.body.firstElementChild,
+        document.querySelector('svg').firstElementChild,
+      ];
+    """)
+    # HTML parsing normalizes uppercase tag names to lowercase.
+    self.assertEqual('input', html_element.GetTagName())
+    self.assertEqual('linearGradient', parsed_svg_element.GetTagName())
+
+    script_created_svg_element = self._driver.ExecuteScript("""
+      const element = document.createElementNS(
+          'http://www.w3.org/2000/svg', 'textPath');
+      document.body.appendChild(element);
+      return element;
+    """)
+    self.assertEqual('textPath', script_created_svg_element.GetTagName())
+
+    prefixed_svg_element = self._driver.ExecuteScript("""
+      const element = document.createElementNS(
+          'http://www.w3.org/2000/svg', 'SvG:linearGradient');
+      document.body.appendChild(element);
+      return element;
+    """)
+    self.assertEqual('SvG:linearGradient',
+                     prefixed_svg_element.GetTagName())
+
   def testLoadUrl(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
 
