@@ -1646,9 +1646,13 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
 #endif
 }
 
-// TODO(crbug.com/538459286): Flaky on MSan due to clipboard synchronization
-// timeouts.
-#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS) && !defined(MEMORY_SANITIZER)
+class WebUIToolbarViewsLocationBarClipboardInteractiveUiTest
+    : public WebUIToolbarViewsLocationBarInteractiveUiTest {
+ private:
+  content::BrowserTestClipboardScope test_clipboard_scope_;
+};
+
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CopyTextFromWebUIOmnibox CopyTextFromWebUIOmnibox
 #define MAYBE_CopyUrlFromWebUIOmnibox CopyUrlFromWebUIOmnibox
 #define MAYBE_CutUrlFromWebUIOmnibox CutUrlFromWebUIOmnibox
@@ -1667,7 +1671,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
   DISABLED_CopyPartialUrlFromWebUIOmnibox
 #endif
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarClipboardInteractiveUiTest,
                        MAYBE_CopyTextFromWebUIOmnibox) {
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
   const char kAdjustTextScript[] = R"(
@@ -1687,32 +1691,36 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarClipboardInteractiveUiTest,
                        MAYBE_CopyUrlFromWebUIOmnibox) {
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
   const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
-  RunTestSequence(RunClipboardSetTest(kClipboardOp::kCopy, initial_url,
-                                      "title1",
-                                      "(el) => { el.focus(); el.select(); }",
-                                      "el => el.adjustedCopyResult !== null",
-                                      base::UTF8ToUTF16(initial_url.spec())));
+  RunTestSequence(RunClipboardSetTest(
+      kClipboardOp::kCopy, initial_url, "title1",
+      "(el) => { el.focus(); el.select(); }",
+      base::StringPrintf("el => el.adjustedCopyResult?.adjustedText === '%s'",
+                         initial_url.spec().c_str()),
+      base::UTF8ToUTF16(initial_url.spec())));
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarClipboardInteractiveUiTest,
                        MAYBE_CutUrlFromWebUIOmnibox) {
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
   const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
-  RunTestSequence(RunClipboardSetTest(kClipboardOp::kCut, initial_url, "title1",
-                                      "(el) => { el.focus(); el.select(); }",
-                                      "el => el.adjustedCopyResult !== null",
-                                      base::UTF8ToUTF16(initial_url.spec())),
+  RunTestSequence(RunClipboardSetTest(
+                      kClipboardOp::kCut, initial_url, "title1",
+                      "(el) => { el.focus(); el.select(); }",
+                      base::StringPrintf(
+                          "el => el.adjustedCopyResult?.adjustedText === '%s'",
+                          initial_url.spec().c_str()),
+                      base::UTF8ToUTF16(initial_url.spec())),
                   WaitForJsResultAt(WebUIToolbarId(), kTextInputDeepQuery,
                                     "el => el.value === ''"));
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarClipboardInteractiveUiTest,
                        MAYBE_CopyJavascriptFromWebUIOmnibox) {
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
   const char kAdjustTextTemplate[] = R"(
@@ -1734,35 +1742,39 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarClipboardInteractiveUiTest,
                        MAYBE_CopyChromeUrlFromWebUIOmnibox) {
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
   const std::string chrome_url_to_copy = "chrome://version/";
-  RunTestSequence(RunClipboardSetTest(kClipboardOp::kCopy,
-                                      GURL("chrome://version/"), "version",
-                                      "(el) => { el.focus(); el.select(); }",
-                                      "el => el.adjustedCopyResult !== null",
-                                      base::UTF8ToUTF16(chrome_url_to_copy)));
+  RunTestSequence(RunClipboardSetTest(
+      kClipboardOp::kCopy, GURL("chrome://version/"), "version",
+      "(el) => { el.focus(); el.select(); }",
+      base::StringPrintf("el => el.adjustedCopyResult?.adjustedText === '%s'",
+                         chrome_url_to_copy.c_str()),
+      base::UTF8ToUTF16(chrome_url_to_copy)));
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarClipboardInteractiveUiTest,
                        MAYBE_CopyPartialUrlFromWebUIOmnibox) {
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
   const GURL initial_url =
       embedded_test_server()->GetURL("a.test", "/title1.html");
+  const std::string expected_text = initial_url.GetWithEmptyPath().spec();
   RunTestSequence(RunClipboardSetTest(
       kClipboardOp::kCopy, initial_url, "title1",
       R"(
         (el) => {
           el.focus();
+          el.adjustedCopyResult = null;
           const slashIndex = el.value.indexOf('/');
           const selectEnd = slashIndex !== -1 ? slashIndex + 1 : el.value.length;
           el.setSelectionRange(0, selectEnd);
         }
       )",
-      "el => el.adjustedCopyResult !== null",
-      base::UTF8ToUTF16(initial_url.GetWithEmptyPath().spec())));
+      base::StringPrintf("el => el.adjustedCopyResult?.adjustedText === '%s'",
+                         expected_text.c_str()),
+      base::UTF8ToUTF16(expected_text)));
 #endif
 }
 
