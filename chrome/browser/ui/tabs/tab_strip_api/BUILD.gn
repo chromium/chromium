@@ -8,6 +8,7 @@ source_set("tab_strip_api") {
   public_deps = [
     "//components/browser_apis/tab_strip:mojom_experiment",
     "//components/browser_apis/tab_strip:service",
+    "//ui/base/unowned_user_data",
   ]
 }
 
@@ -16,6 +17,7 @@ source_set("impl") {
 
   deps = [
     ":tab_strip_api",
+    "//chrome/browser/ui/browser_window",
     "//components/browser_apis/tab_strip:service",
     "//components/browser_apis/tab_strip/adapters",
   ]

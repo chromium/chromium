@@ -541,9 +541,12 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
           browser->GetSessionID(), profile, app_browser_controller_.get(),
           tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile));
 
-  tab_strip_service_feature_ = std::make_unique<TabStripServiceFeature>(
-      std::make_unique<tabs_api::tab_strip_model::TabStripModelInjector>(
-          browser, tab_strip_model_));
+  tab_strip_service_feature_ =
+      GetUserDataFactory().CreateInstance<TabStripServiceFeature>(
+          *browser,
+          std::make_unique<tabs_api::tab_strip_model::TabStripModelInjector>(
+              browser, tab_strip_model_),
+          browser->GetUnownedUserDataHost());
 
   tab_strip_ui_controller_ =
       GetUserDataFactory().CreateInstance<tabs_api::TabStripUIControllerImpl>(

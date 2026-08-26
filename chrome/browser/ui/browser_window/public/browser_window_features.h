@@ -455,11 +455,6 @@ class BrowserWindowFeatures {
 
   TabStripModel* tab_strip_model() { return tab_strip_model_; }
 
-  // Only fetch the tab_strip_service to register a pending receiver.
-  TabStripServiceFeature* tab_strip_service_feature() {
-    return tab_strip_service_feature_.get();
-  }
-
   TabsFromOtherDevicesSidePanelCoordinator*
   tabs_from_other_devices_side_panel_coordinator() {
     return tabs_from_other_devices_side_panel_coordinator_.get();

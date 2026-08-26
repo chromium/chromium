@@ -14,7 +14,7 @@ namespace tabs_api {
 namespace {
 
 TabStripService* GetTabStripService(BrowserWindowInterface* browser) {
-  auto* feature = browser->GetFeatures().tab_strip_service_feature();
+  auto* feature = TabStripServiceFeature::From(browser);
   return feature ? feature->GetTabStripService() : nullptr;
 }
 

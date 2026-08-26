@@ -84,10 +84,7 @@ class VerticalTabsBrowserTestMixin : public T {
   }
 
   tabs_api::TabStripService* tab_strip_service() {
-    return T::browser()
-        ->GetFeatures()
-        .tab_strip_service_feature()
-        ->GetTabStripService();
+    return TabStripServiceFeature::From(T::browser())->GetTabStripService();
   }
 
   virtual const std::vector<base::test::FeatureRefAndParams>

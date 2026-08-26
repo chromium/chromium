@@ -9,6 +9,9 @@
 #include "components/browser_apis/tab_strip/tab_strip_experiment_api.mojom.h"
 #include "components/browser_apis/tab_strip/tab_strip_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+class BrowserWindowInterface;
 
 namespace tabs_api {
 class PlatformAdaptersProvider;
@@ -18,9 +21,15 @@ class PlatformAdaptersProvider;
 // or the native interface.
 class TabStripServiceFeature {
  public:
-  explicit TabStripServiceFeature(
-      std::unique_ptr<tabs_api::PlatformAdaptersProvider> provider);
+  DECLARE_USER_DATA(TabStripServiceFeature);
+
+  TabStripServiceFeature(
+      std::unique_ptr<tabs_api::PlatformAdaptersProvider> provider,
+      ui::UnownedUserDataHost& host);
   ~TabStripServiceFeature();
+
+  // Returns the feature for `browser`, or null if it does not have one.
+  static TabStripServiceFeature* From(BrowserWindowInterface* browser);
 
   void Accept(mojo::PendingReceiver<tabs_api::mojom::TabStripService> client);
   void AcceptExperimental(
@@ -29,6 +38,8 @@ class TabStripServiceFeature {
 
  private:
   std::unique_ptr<tabs_api::TabStripService> tab_strip_service_;
+
+  ui::ScopedUnownedUserData<TabStripServiceFeature> scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TAB_STRIP_SERVICE_FEATURE_H_

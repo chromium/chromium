@@ -905,9 +905,7 @@ TabSearchPageHandler::GetRecentlyClosedTab(sessions::tab_restore::Tab* tab,
 
 tabs_api::TabStripService* TabSearchPageHandler::GetTabStripService(
     BrowserWindowInterface* browser) const {
-  return browser->GetFeatures()
-      .tab_strip_service_feature()
-      ->GetTabStripService();
+  return TabStripServiceFeature::From(browser)->GetTabStripService();
 }
 
 void TabSearchPageHandler::OnTabEvents(
