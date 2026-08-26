@@ -361,7 +361,7 @@ bool TryVacuum(sql::Database& db,
     LogVacuumEvent(VacuumEvent::kCheckpointFailed);
     return false;
   }
-  bool success = db.Execute("VACUUM");
+  bool success = db.Vacuum();
   LogVacuumEvent(success ? VacuumEvent::kSucceeded : VacuumEvent::kFailed);
   return success;
 }
