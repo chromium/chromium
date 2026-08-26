@@ -40,6 +40,10 @@ source_set("test_support") {
     "interaction_test_util_web_ui.cc",
     "interaction_test_util_web_ui.h",
   ]
+  deps = []
+  if (!is_android) {
+    deps += [ "//ui/views/controls/webview" ]
+  }
   public_deps = [
     ":tracked_element",
     "//ui/base:test_support",

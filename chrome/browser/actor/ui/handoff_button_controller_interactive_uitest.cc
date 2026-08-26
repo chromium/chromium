@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/actor/ui/handoff_button_controller.h"
+
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -11,7 +13,6 @@
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/actor/ui/actor_ui_interactive_browser_test.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
-#include "chrome/browser/actor/ui/handoff_button_controller.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -19,8 +20,10 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/test/split_view_browser_test_mixin.h"
@@ -70,8 +73,8 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
   }
 
   auto ClearOmniboxFocus() {
-    return WithView(kOmniboxElementId, [](OmniboxViewViews* omnibox_view) {
-      omnibox_view->GetFocusManager()->ClearFocus();
+    return WithView(kBrowserViewElementId, [](BrowserView* browser_view) {
+      browser_view->GetFocusManager()->ClearFocus();
     });
   }
 
@@ -160,19 +163,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
             return tabs::TabInterface::GetFromContents(web_contents) != nullptr;
           })),
       InAnyContext(ActivateSurface(kMovedTabId)),
-      InAnyContext(WithElement(
-          kOmniboxElementId,
-          [](::ui::TrackedElement* el) {
-            // 1. Cast to the framework-specific element type
-            auto* tracked_element_views = el->AsA<views::TrackedElementViews>();
-            if (tracked_element_views) {
-              // 2. Get the raw view pointer from it
-              auto* omnibox_view = tracked_element_views->view();
-              if (omnibox_view) {
-                omnibox_view->GetFocusManager()->ClearFocus();
-              }
-            }
-          })),
+      InAnyContext(ClearOmniboxFocus()),
       InAnyContext(
           WaitForShow(HandoffButtonController::kHandoffButtonElementId)));
 }
@@ -423,12 +414,13 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonSplitViewTest,
       // Check that both Handoff Buttons hide.
       WaitForState(kVisibleHandoffButtonCountState, 0),
       // Clear focus in Left Pane
-      InContext(left_pane_context_,
-                WithView(kOmniboxElementId,
-                         [](OmniboxViewViews* view) {
-                           view->RevertAll();
-                           view->GetFocusManager()->ClearFocus();
-                         })),
+      InContext(
+          left_pane_context_,
+          WithView(kBrowserViewElementId,
+                   [](BrowserView* view) {
+                     view->GetLocationBar()->GetOmniboxView()->RevertAll();
+                     view->GetFocusManager()->ClearFocus();
+                   })),
       InContext(left_pane_context_,
                 FocusElement(ContentsWebView::kContentsWebViewElementId)),
       // Check that both Handoff Buttons re-show.
@@ -439,12 +431,13 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonSplitViewTest,
       // Check that both Handoff Buttons hide.
       WaitForState(kVisibleHandoffButtonCountState, 0),
       // Clear focus in Right Pane
-      InContext(right_pane_context_,
-                WithView(kOmniboxElementId,
-                         [](OmniboxViewViews* view) {
-                           view->RevertAll();
-                           view->GetFocusManager()->ClearFocus();
-                         })),
+      InContext(
+          right_pane_context_,
+          WithView(kBrowserViewElementId,
+                   [](BrowserView* view) {
+                     view->GetLocationBar()->GetOmniboxView()->RevertAll();
+                     view->GetFocusManager()->ClearFocus();
+                   })),
       InContext(right_pane_context_,
                 FocusElement(ContentsWebView::kContentsWebViewElementId)),
       // Check that both Handoff Buttons re-show.
