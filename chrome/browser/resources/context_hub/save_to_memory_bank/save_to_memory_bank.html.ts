@@ -60,19 +60,23 @@ export function getHtml(this: SaveToMemoryBankElement) {
             </div>
             <div class="combobox-container">
               ${
-      this.isAddingCollection ? html`
+      this.isAddingCollection ?
+          html`
                 <cr-input class="collection-input"
+                    autofocus
                     placeholder="New collection..."
                     .value="${this.newCollectionInput}"
                     @value-changed="${this.onNewCollectionValueChanged}"
+                    @blur="${this.onNewCollectionBlur}"
                     @keydown="${this.onNewCollectionKeydown}">
                 </cr-input>
               ` :
-                                html`
+          html`
                 <select class="md-select" .value="${this.collection}"
                     @change="${this.onCollectionChange}">
                   ${this.collections.map(col => html`
-                    <option value="${col}">${col}</option>
+                    <option value="${col}" ?selected="${
+                        col === this.collection}">${col}</option>
                   `)}
                 </select>
               `}
@@ -101,9 +105,12 @@ export function getHtml(this: SaveToMemoryBankElement) {
               `)}
               ${
       this.isCreatingCustomTag ? html`
-                <cr-input class="tag-input" placeholder="Add tag..."
+                <cr-input class="tag-input"
+                    autofocus
+                    placeholder="Add tag..."
                     .value="${this.newTagInput}"
                     @value-changed="${this.onNewTagValueChanged}"
+                    @blur="${this.onNewTagBlur}"
                     @keydown="${this.onNewTagKeydown}">
                 </cr-input>
               ` :

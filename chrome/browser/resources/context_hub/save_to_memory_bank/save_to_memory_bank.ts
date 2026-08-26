@@ -9,6 +9,7 @@ import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_textarea/cr_textarea.js';
 import '//resources/cr_elements/icons.html.js';
 
+import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {browserProxyFactory} from '../context_hub.mojom-webui.js';
@@ -95,50 +96,84 @@ export class SaveToMemoryBankElement extends CrLitElement {
     this.collection = (e.target as HTMLSelectElement).value;
   }
 
-  protected onAddCollectionClick() {
-    this.isAddingCollection = !this.isAddingCollection;
+  protected async onAddCollectionClick() {
+    this.isAddingCollection = true;
     this.newCollectionInput = '';
+    await this.updateComplete;
+    this.shadowRoot?.querySelector<CrInputElement>('.collection-input')
+        ?.focus();
   }
 
   protected onNewCollectionValueChanged(e: CustomEvent<{value: string}>) {
     this.newCollectionInput = e.detail.value;
   }
 
+  private commitNewCollection_() {
+    const trimmed = this.newCollectionInput.trim();
+    if (trimmed) {
+      const existing =
+          this.collections.find(c => c.toLowerCase() === trimmed.toLowerCase());
+      if (existing) {
+        this.collection = existing;
+      } else {
+        this.collections = [...this.collections, trimmed];
+        this.collection = trimmed;
+      }
+    }
+    this.newCollectionInput = '';
+    this.isAddingCollection = false;
+  }
+
+  protected onNewCollectionBlur() {
+    if (this.isAddingCollection) {
+      this.commitNewCollection_();
+    }
+  }
+
   protected onNewCollectionKeydown(e: KeyboardEvent) {
     if (e.key === 'Enter') {
-      const trimmed = this.newCollectionInput.trim();
-      if (trimmed) {
-        if (!this.collections.includes(trimmed)) {
-          this.collections = [...this.collections, trimmed];
-        }
-        this.collection = trimmed;
-        this.newCollectionInput = '';
-        this.isAddingCollection = false;
-      }
+      e.preventDefault();
+      this.commitNewCollection_();
     } else if (e.key === 'Escape') {
+      e.preventDefault();
       this.isAddingCollection = false;
       this.newCollectionInput = '';
     }
   }
 
-  protected onAddTagClick() {
-    this.isCreatingCustomTag = !this.isCreatingCustomTag;
+  protected async onAddTagClick() {
+    this.isCreatingCustomTag = true;
     this.newTagInput = '';
+    await this.updateComplete;
+    this.shadowRoot?.querySelector<CrInputElement>('.tag-input')?.focus();
   }
 
   protected onNewTagValueChanged(e: CustomEvent<{value: string}>) {
     this.newTagInput = e.detail.value;
   }
 
+  private commitNewTag_() {
+    const trimmed = this.newTagInput.trim();
+    if (trimmed &&
+        !this.tags.some(t => t.toLowerCase() === trimmed.toLowerCase())) {
+      this.tags = [...this.tags, trimmed];
+    }
+    this.newTagInput = '';
+    this.isCreatingCustomTag = false;
+  }
+
+  protected onNewTagBlur() {
+    if (this.isCreatingCustomTag) {
+      this.commitNewTag_();
+    }
+  }
+
   protected onNewTagKeydown(e: KeyboardEvent) {
     if (e.key === 'Enter') {
-      const trimmed = this.newTagInput.trim();
-      if (trimmed && !this.tags.includes(trimmed)) {
-        this.tags = [...this.tags, trimmed];
-        this.newTagInput = '';
-        this.isCreatingCustomTag = false;
-      }
+      e.preventDefault();
+      this.commitNewTag_();
     } else if (e.key === 'Escape') {
+      e.preventDefault();
       this.isCreatingCustomTag = false;
       this.newTagInput = '';
     }
@@ -161,6 +196,12 @@ export class SaveToMemoryBankElement extends CrLitElement {
   }
 
   protected async onSaveClick() {
+    if (this.isAddingCollection && this.newCollectionInput.trim()) {
+      this.commitNewCollection_();
+    }
+    if (this.isCreatingCustomTag && this.newTagInput.trim()) {
+      this.commitNewTag_();
+    }
     const {success} =
         await browserProxyFactory.getInstance().handler.saveMemoryBankEntry({
           note: this.note || null,
