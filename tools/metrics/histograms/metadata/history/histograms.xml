@@ -2753,7 +2753,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.VisitedLinks.WebView.LookupCollisionCount"
+<histogram name="History.VisitedLinks.WebView.LookupCollisionCount2"
     units="collisions" expires_after="2027-07-21">
   <owner>tiffanysong@google.com</owner>
   <owner>kyraseevers@chromium.org</owner>
@@ -2762,8 +2762,7 @@ chromium-metrics-reviews@google.com.
     using a static constant salt, meaning the database loses the natural entropy
     of Chrome's randomized salt scheme. This metric monitors if the static salt
     causes hash clustering by recording the collision count for each visited
-    link lookup. Recorded on every visited link lookup in Android WebView when
-    the pseudo-partitioned database is enabled.
+    link lookup. Recorded on every visited link lookup in Android WebView.
   </summary>
 </histogram>
 
