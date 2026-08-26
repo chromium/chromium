@@ -6,8 +6,12 @@ source_set("controllers") {
   sources = [
     "bookmark_bar_ui_client.h",
     "bookmark_bar_ui_controller.h",
+    "bookmark_bar_ui_controller_injector.h",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "adapters",
+    "//base",
+  ]
 }
 
 source_set("impl") {
@@ -17,7 +21,32 @@ source_set("impl") {
   ]
   public_deps = [ ":controllers" ]
   deps = [
+    "adapters:impl",
     "//base",
-    "//chrome/browser/ui/browser_window",
+    "//components/bookmarks/common",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "desktop_bookmark_bar_ui_controller_injector.cc",
+      "desktop_bookmark_bar_ui_controller_injector.h",
+    ]
+    deps += [
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/browser_window",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "bookmark_bar_ui_controller_impl_unittest.cc" ]
+  deps = [
+    ":controllers",
+    ":impl",
+    "//base",
+    "//components/bookmarks/common",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

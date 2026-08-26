@@ -1661,25 +1661,7 @@ void BookmarkBarView::Init() {
   // We'll re-enable when the model is loaded.
   all_bookmarks_button_->SetEnabled(false);
 
-  profile_pref_registrar_.Init(browser_->GetProfile()->GetPrefs());
-  profile_pref_registrar_.Add(
-      bookmarks::prefs::kShowAppsShortcutInBookmarkBar,
-      base::BindRepeating(
-          &BookmarkBarView::OnAppsPageShortcutVisibilityPrefChanged,
-          base::Unretained(this)));
 
-  profile_pref_registrar_.Add(
-      bookmarks::prefs::kShowTabGroupsInBookmarkBar,
-      base::BindRepeating(&BookmarkBarView::OnTabGroupsVisibilityPrefChanged,
-                          base::Unretained(this)));
-
-  profile_pref_registrar_.Add(
-      bookmarks::prefs::kShowManagedBookmarksInBookmarkBar,
-      base::BindRepeating(&BookmarkBarView::OnShowManagedBookmarksPrefChanged,
-                          base::Unretained(this)));
-
-  apps_page_shortcut_->SetVisible(
-      chrome::ShouldShowAppsShortcutInBookmarkBar(browser_->GetProfile()));
 
   bookmarks_separator_view_ =
       AddChildView(std::make_unique<ButtonSeparatorView>());
@@ -2259,8 +2241,7 @@ bool BookmarkBarView::UpdateOtherAndManagedButtonsVisibility() {
 
   bool show_managed = bookmark_service_->GetChildrenCount(
                           BookmarkParentFolder::ManagedFolder()) &&
-                      browser_->GetProfile()->GetPrefs()->GetBoolean(
-                          bookmarks::prefs::kShowManagedBookmarksInBookmarkBar);
+                      managed_bookmarks_pref_visible_;
   bool update_managed = show_managed != managed_bookmarks_button_->GetVisible();
   if (update_managed) {
     managed_bookmarks_button_->SetVisible(show_managed);
@@ -2273,11 +2254,9 @@ void BookmarkBarView::UpdateBookmarksSeparatorVisibility() {
   bookmarks_separator_view_->SetVisible(all_bookmarks_button_->GetVisible());
 }
 
-void BookmarkBarView::OnAppsPageShortcutVisibilityPrefChanged() {
+void BookmarkBarView::SetAppsPageShortcutVisibility(bool visible) {
   DCHECK(apps_page_shortcut_);
   // Only perform layout if required.
-  bool visible =
-      chrome::ShouldShowAppsShortcutInBookmarkBar(browser_->GetProfile());
   if (apps_page_shortcut_->GetVisible() == visible) {
     return;
   }
@@ -2286,19 +2265,12 @@ void BookmarkBarView::OnAppsPageShortcutVisibilityPrefChanged() {
   LayoutAndPaint();
 }
 
-void BookmarkBarView::OnTabGroupsVisibilityPrefChanged() {
-  // Incognito browsers also get triggered if the associated regular profile
-  // browser is triggered. Early return because incognito has no
-  // `saved_tab_group_bar_`.
-  if (!tab_groups::SavedTabGroupUtils::IsEnabledForProfile(
-          browser_->GetProfile())) {
+void BookmarkBarView::SetSavedTabGroupsVisibility(bool visible) {
+  if (!saved_tab_group_bar_) {
     return;
   }
 
-  DCHECK(saved_tab_group_bar_);
   // Only perform layout if required.
-  bool visible =
-      chrome::ShouldShowTabGroupsInBookmarkBar(browser_->GetProfile());
   if (saved_tab_group_bar_->GetVisible() == visible) {
     return;
   }
@@ -2306,7 +2278,8 @@ void BookmarkBarView::OnTabGroupsVisibilityPrefChanged() {
   LayoutAndPaint();
 }
 
-void BookmarkBarView::OnShowManagedBookmarksPrefChanged() {
+void BookmarkBarView::SetManagedBookmarksFolderVisibility(bool visible) {
+  managed_bookmarks_pref_visible_ = visible;
   if (UpdateOtherAndManagedButtonsVisibility()) {
     LayoutAndPaint();
   }

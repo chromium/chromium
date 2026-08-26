@@ -175,6 +175,7 @@ source_set("unit_tests") {
 
   deps = [
     ":bookmarks",
+    "controllers:unit_tests",
     "//base",
     "//base/test:test_support",
     "//chrome/app:command_ids",

@@ -9,11 +9,12 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_controller.h"
 
-class BrowserWindowInterface;
+class BookmarkBarUIControllerInjector;
 
 class BookmarkBarUIControllerImpl : public BookmarkBarUIController {
  public:
-  explicit BookmarkBarUIControllerImpl(BrowserWindowInterface* browser);
+  explicit BookmarkBarUIControllerImpl(
+      std::unique_ptr<BookmarkBarUIControllerInjector> injector);
   BookmarkBarUIControllerImpl(const BookmarkBarUIControllerImpl&) = delete;
   BookmarkBarUIControllerImpl& operator=(const BookmarkBarUIControllerImpl&) =
       delete;
@@ -23,7 +24,11 @@ class BookmarkBarUIControllerImpl : public BookmarkBarUIController {
   void Bind(BookmarkBarUIClient* client) override;
 
  private:
-  raw_ptr<BrowserWindowInterface> browser_;
+  void OnAppsPageShortcutVisibilityPrefChanged();
+  void OnTabGroupsVisibilityPrefChanged();
+  void OnShowManagedBookmarksPrefChanged();
+
+  std::unique_ptr<BookmarkBarUIControllerInjector> injector_;
   raw_ptr<BookmarkBarUIClient> client_ = nullptr;
 };
 

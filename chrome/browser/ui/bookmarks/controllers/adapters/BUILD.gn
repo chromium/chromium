@@ -1,0 +1,30 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("adapters") {
+  sources = [ "bookmark_bar_prefs_adapter.h" ]
+  public_deps = [ "//base" ]
+}
+
+source_set("impl") {
+  sources = []
+  deps = [
+    ":adapters",
+    "//base",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "desktop_bookmark_bar_prefs_adapter.cc",
+      "desktop_bookmark_bar_prefs_adapter.h",
+    ]
+    deps += [
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/bookmarks",
+      "//chrome/browser/ui/tabs/saved_tab_groups",
+      "//components/bookmarks/common",
+      "//components/prefs",
+    ]
+  }
+}

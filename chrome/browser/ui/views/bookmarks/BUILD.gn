@@ -186,6 +186,7 @@ source_set("unit_tests") {
     "//chrome/browser/bookmarks",
     "//chrome/browser/bookmarks:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/bookmarks/controllers:impl",
     "//chrome/browser/ui/page_action:test_support",
     "//chrome/test:test_support",
     "//components/bookmarks/managed",

@@ -4,8 +4,13 @@
 
 #include "chrome/browser/ui/ui_controller_factory.h"
 
-#include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_controller_impl.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_controller_impl.h"
+#include "chrome/browser/ui/bookmarks/controllers/desktop_bookmark_bar_ui_controller_injector.h"
+#endif
 
 DEFINE_USER_DATA(UIControllerFactory);
 
@@ -23,5 +28,11 @@ UIControllerFactory::~UIControllerFactory() = default;
 
 std::unique_ptr<BookmarkBarUIController>
 UIControllerFactory::CreateBookmarkBarController() {
-  return std::make_unique<BookmarkBarUIControllerImpl>(browser_);
+#if !BUILDFLAG(IS_ANDROID)
+  auto injector =
+      std::make_unique<DesktopBookmarkBarUIControllerInjector>(browser_);
+  return std::make_unique<BookmarkBarUIControllerImpl>(std::move(injector));
+#else
+  return nullptr;
+#endif
 }
