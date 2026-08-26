@@ -310,44 +310,51 @@ IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_WebSignInAndSignOut) {
   EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
 }
 
-
-
-// In "Sync paused" state, when the primary account is invalid, turns off sync
-// from settings. Checks that the account is removed from Chrome.
-// Regression test for https://crbug.com/40710922
-IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync, MANUAL_TurnOffSyncWhenPaused) {
+// In "Sync paused" or "Signin pending" state, when the primary account is
+// invalid, signs out of Chrome from settings. Checks that the account is
+// removed from Chrome. Regression test for https://crbug.com/40710922
+IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_ChromeSignOutWhenPending) {
   std::optional<TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
   CHECK(test_account.has_value());
-  sign_in_functions.TurnOnSync(*test_account, 0);
+  sign_in_functions.SignInFromSettingsWithSyncChoice(
+      *test_account, 0,
+      SignInFunctions::SyncChoice::kAcceptAllOptionalDataTypesSync);
 
-  // Get in sync paused state.
+  // Get in sync paused or signin pending state.
   sign_in_functions.SignOutFromWeb();
 
+  signin::ConsentLevel consent_level =
+      GetParam() ? signin::ConsentLevel::kSignin : signin::ConsentLevel::kSync;
   const CoreAccountInfo& primary_account =
-      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
+      identity_manager()->GetPrimaryAccountInfo(consent_level);
   EXPECT_FALSE(primary_account.IsEmpty());
   EXPECT_TRUE(gaia::AreEmailsSame(test_account->user, primary_account.email));
-  EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
+  EXPECT_EQ(sync_service()->IsSyncFeatureEnabled(), !GetParam());
   EXPECT_TRUE(
       identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
           primary_account.account_id));
+  EXPECT_EQ(signin_util::GetSignedInState(identity_manager()),
+            GetParam() ? signin_util::SignedInState::kSignInPending
+                       : signin_util::SignedInState::kSyncPaused);
 
-  // Turn off sync.
-  GURL settings_url("chrome://settings");
-  ASSERT_TRUE(AddTabAtIndex(0, settings_url,
-                            ui::PageTransition::PAGE_TRANSITION_TYPED));
-  SignInTestObserver observer(identity_manager(), account_reconcilor());
-  auto* settings_tab = browser()->GetTabStripModel()->GetActiveWebContents();
-  EXPECT_TRUE(content::ExecJs(
-      settings_tab,
-      base::StringPrintf(
-          kSettingsScriptWrapperFormat,
-          "settings.SyncBrowserProxyImpl.getInstance().signOut(false)")));
-  observer.WaitForAccountChanges(0, PrimaryAccountWait::kWaitForCleared);
-
+  if (GetParam()) {
+    sign_in_functions.SignOut();
+  } else {
+    GURL settings_url("chrome://settings");
+    ASSERT_TRUE(AddTabAtIndex(0, settings_url,
+                              ui::PageTransition::PAGE_TRANSITION_TYPED));
+    SignInTestObserver observer(identity_manager(), account_reconcilor());
+    auto* settings_tab = browser()->GetTabStripModel()->GetActiveWebContents();
+    EXPECT_TRUE(content::ExecJs(
+        settings_tab,
+        base::StringPrintf(
+            kSettingsScriptWrapperFormat,
+            "settings.SyncBrowserProxyImpl.getInstance().signOut(false)")));
+    observer.WaitForAccountChanges(0, PrimaryAccountWait::kWaitForCleared);
+  }
   EXPECT_FALSE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   // Wait until the signin manager clears the invalid token.
   AccountsRemovedWaiter accounts_removed_waiter(identity_manager());

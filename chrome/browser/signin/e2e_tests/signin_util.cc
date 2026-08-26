@@ -209,10 +209,20 @@ void SignInFunctions::SignOut() {
 #if !BUILDFLAG(ENABLE_DICE_SUPPORT)
   NOTREACHED();
 #else
+  signin::IdentityManager* id_manager = identity_manager(browser_.Run());
+  const CoreAccountId primary_account_id =
+      id_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  const bool needs_reauth =
+      !id_manager->HasAccountWithRefreshToken(primary_account_id) ||
+      id_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          primary_account_id);
+
   GURL url = GURL(chrome::kChromeUISignoutConfirmationURL);
   content::TestNavigationObserver nav_observer(url);
   nav_observer.StartWatchingNewWebContents();
 
+  SignInTestObserver clear_observer(
+      id_manager, account_reconcilor(browser_.Run()), ConsentLevel::kSignin);
   auto* signin_view_controller =
       browser_.Run()->GetFeatures().signin_view_controller();
   signin_view_controller->SignoutOrReauthWithPrompt(
@@ -221,21 +231,20 @@ void SignInFunctions::SignOut() {
       signin_metrics::SourceForRefreshTokenOperation::
           kUserMenu_SignOutAllAccounts);
 
-  nav_observer.Wait();
+  if (!needs_reauth) {
+    nav_observer.Wait();
 
-  CHECK(signin_view_controller->ShowsModalDialog());
-  SignoutConfirmationUI* signout_confirmation_ui =
-      SignoutConfirmationUI::GetForTesting(  // IN-TEST
-          signin_view_controller
-              ->GetModalDialogWebContentsForTesting());  // IN-TEST
-  TestSignoutConfirmationHandlerWaiter handler_observer(
-      signout_confirmation_ui);
-  handler_observer.Wait();
+    CHECK(signin_view_controller->ShowsModalDialog());
+    SignoutConfirmationUI* signout_confirmation_ui =
+        SignoutConfirmationUI::GetForTesting(  // IN-TEST
+            signin_view_controller
+                ->GetModalDialogWebContentsForTesting());  // IN-TEST
+    TestSignoutConfirmationHandlerWaiter handler_observer(
+        signout_confirmation_ui);
+    handler_observer.Wait();
 
-  SignInTestObserver clear_observer(identity_manager(browser_.Run()),
-                                    account_reconcilor(browser_.Run()),
-                                    ConsentLevel::kSignin);
-  signout_confirmation_ui->AcceptDialogForTesting();  // IN-TEST
+    signout_confirmation_ui->AcceptDialogForTesting();  // IN-TEST
+  }
 
   clear_observer.WaitForAccountChanges(0, PrimaryAccountWait::kWaitForCleared);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
