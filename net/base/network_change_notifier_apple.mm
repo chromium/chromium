@@ -159,11 +159,13 @@ base::DictValue NetLogOsConfigChangedParams(
 
 }  // namespace
 
+#if defined(COMPILE_OLD_NOTIFIER_IMPL)
 static bool CalculateReachability(SCNetworkConnectionFlags flags) {
   bool reachable = flags & kSCNetworkFlagsReachable;
   bool connection_required = flags & kSCNetworkFlagsConnectionRequired;
   return reachable && !connection_required;
 }
+#endif  // defined(COMPILE_OLD_NOTIFIER_IMPL)
 
 NetworkChangeNotifierApple::NetworkChangeNotifierApple()
     : NetworkChangeNotifier(NetworkChangeCalculatorParamsMac()),
@@ -248,6 +250,7 @@ void NetworkChangeNotifierApple::Forwarder::Init() {
   net_config_watcher_->SetInitialConnectionType();
 }
 
+#if defined(COMPILE_OLD_NOTIFIER_IMPL)
 // static
 NetworkChangeNotifier::ConnectionType
 NetworkChangeNotifierApple::CalculateConnectionType(
@@ -322,6 +325,7 @@ NetworkChangeNotifierApple::CalculateConnectionType(
   return ConnectionTypeFromInterfaces();
 #endif
 }
+#endif  // defined(COMPILE_OLD_NOTIFIER_IMPL)
 
 void NetworkChangeNotifierApple::Forwarder::StartReachabilityNotifications() {
   net_config_watcher_->StartReachabilityNotifications();
@@ -529,6 +533,7 @@ void NetworkChangeNotifierApple::CleanUpOnNotifierThread() {
 #endif  // BUILDFLAG(IS_MAC)
 }
 
+#if defined(COMPILE_OLD_NOTIFIER_IMPL)
 // static
 void NetworkChangeNotifierApple::ReachabilityCallback(
     SCNetworkReachabilityRef target,
@@ -560,6 +565,7 @@ void NetworkChangeNotifierApple::ReachabilityCallback(
   NotifyObserversOfIPAddressChange();
 #endif  // BUILDFLAG(IS_IOS)
 }
+#endif  // defined(COMPILE_OLD_NOTIFIER_IMPL)
 
 bool NetworkChangeNotifierApple::ShouldUseNetworkPathMonitor() const {
   return base::FeatureList::IsEnabled(

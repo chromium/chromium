@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/network_change_notifier_apple_buildflags.h"
 #include "net/base/network_config_watcher_apple.h"
 #include "net/base/network_interfaces.h"
 #include "net/log/net_log_with_source.h"
@@ -64,8 +65,10 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierApple
   friend class NetworkChangeNotifierApplePathMonitorTest;
 #endif
 
+#if defined(COMPILE_OLD_NOTIFIER_IMPL)
   // Called on the main thread on startup, afterwards on the notifier thread.
   static ConnectionType CalculateConnectionType(SCNetworkConnectionFlags flags);
+#endif  // defined(COMPILE_OLD_NOTIFIER_IMPL)
 
   // Methods directly called by the NetworkConfigWatcherApple::Delegate:
   void StartReachabilityNotifications();
@@ -76,9 +79,11 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierApple
 
   void SetInitialConnectionType();
 
+#if defined(COMPILE_OLD_NOTIFIER_IMPL)
   static void ReachabilityCallback(SCNetworkReachabilityRef target,
                                    SCNetworkConnectionFlags flags,
                                    void* notifier);
+#endif  // defined(COMPILE_OLD_NOTIFIER_IMPL)
 
   static NetworkChangeCalculatorParams NetworkChangeCalculatorParamsMac();
 
