@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/ash/test_util.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
@@ -15,6 +14,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "ui/base/base_window.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace {
@@ -29,8 +29,9 @@ class TabletModePageBehaviorTest : public ChromeOSBrowserUITest {
 
   ~TabletModePageBehaviorTest() override = default;
 
-  content::WebContents* GetActiveWebContents(Browser* browser) const {
-    return browser->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* GetActiveWebContents(
+      BrowserWindowInterface* browser) const {
+    return browser->GetTabStripModel()->GetActiveWebContents();
   }
 
   blink::web_pref::WebPreferences GetWebKitPreferences(
@@ -78,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(TabletModePageBehaviorTest,
   ValidateWebPrefs(web_contents, true /* tablet_mode_enabled */);
 
   // Any newly added pages should have the correct tablet mode prefs.
-  Browser* browser_2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser_2 = CreateBrowser(browser()->GetProfile());
   auto* web_contents_2 = GetActiveWebContents(browser_2);
   ASSERT_TRUE(web_contents_2);
   ValidateWebPrefs(web_contents_2, true /* tablet_mode_enabled */);
@@ -112,8 +113,7 @@ IN_PROC_BROWSER_TEST_F(TabletModePageBehaviorTest, ExcludeHostedApps) {
       "test_browser_app", /*trusted_source=*/true, gfx::Rect(),
       browser()->GetProfile(), /*user_gesture=*/true);
   params.initial_show_state = ui::mojom::WindowShowState::kDefault;
-  Browser* browser =
-      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
   AddBlankTabAndShow(browser);
 
   ASSERT_EQ(browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
