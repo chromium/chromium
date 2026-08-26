@@ -9,6 +9,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/testing/scoped_block_swizzler.h"
@@ -335,7 +336,9 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
               LogoToFakeboxPadding(SearchEngineLogoState::kLogo));
     EXPECT_EQ(kDoodleToFakeboxPaddingTight,
               LogoToFakeboxPadding(SearchEngineLogoState::kDoodle));
-    EXPECT_EQ(kQuickActionsTopPaddingTight, QuickActionsTopPadding());
+    EXPECT_EQ(
+        kQuickActionsTopPadding - ntp_header::kScrolledToTopOmniboxBottomMargin,
+        QuickActionsTopPadding());
     EXPECT_EQ(kMostVisitedTopPaddingTight, MostVisitedTopPadding());
     EXPECT_EQ(kReducedModuleSpacing, ReducedModuleSpacing());
   }
@@ -357,7 +360,9 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
               LogoToFakeboxPadding(SearchEngineLogoState::kLogo));
     EXPECT_EQ(kDoodleToFakeboxPaddingMedium,
               LogoToFakeboxPadding(SearchEngineLogoState::kDoodle));
-    EXPECT_EQ(kQuickActionsTopPaddingMedium, QuickActionsTopPadding());
+    EXPECT_EQ(
+        kQuickActionsTopPadding - ntp_header::kScrolledToTopOmniboxBottomMargin,
+        QuickActionsTopPadding());
     EXPECT_EQ(kMostVisitedTopPaddingMedium, MostVisitedTopPadding());
     EXPECT_EQ(kReducedModuleSpacing, ReducedModuleSpacing());
   }
@@ -379,7 +384,9 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
               LogoToFakeboxPadding(SearchEngineLogoState::kLogo));
     EXPECT_EQ(kDoodleToFakeboxPaddingPreferred,
               LogoToFakeboxPadding(SearchEngineLogoState::kDoodle));
-    EXPECT_EQ(kQuickActionsTopPaddingPreferred, QuickActionsTopPadding());
+    EXPECT_EQ(
+        kQuickActionsTopPadding - ntp_header::kScrolledToTopOmniboxBottomMargin,
+        QuickActionsTopPadding());
     EXPECT_EQ(kMostVisitedTopPaddingPreferred, MostVisitedTopPadding());
     EXPECT_EQ(kReducedModuleSpacing, ReducedModuleSpacing());
   }

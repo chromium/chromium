@@ -163,6 +163,7 @@ void SetUpButtonWithNewFeatureBadge(UIButton* button,
 namespace content_suggestions {
 
 const CGFloat kHintTextScale = 0.15;
+const CGFloat kHintTextScaleUICleanup = 0.0;
 const CGFloat kReturnToRecentTabSectionBottomMargin = 25;
 
 // Tight Padding Arm.
@@ -170,7 +171,6 @@ const CGFloat kLogoTopPaddingTight = 24.0;
 const CGFloat kLogoToFakeboxPaddingTight = 32.0;
 const CGFloat kDoodleTopPaddingTight = 16.0;
 const CGFloat kDoodleToFakeboxPaddingTight = 16.0;
-const CGFloat kQuickActionsTopPaddingTight = 12.0;
 const CGFloat kMostVisitedTopPaddingTight = 32.0;
 
 // Medium Padding Arm.
@@ -178,7 +178,6 @@ const CGFloat kLogoTopPaddingMedium = 36.0;
 const CGFloat kLogoToFakeboxPaddingMedium = 36.0;
 const CGFloat kDoodleTopPaddingMedium = 24.0;
 const CGFloat kDoodleToFakeboxPaddingMedium = 24.0;
-const CGFloat kQuickActionsTopPaddingMedium = 12.0;
 const CGFloat kMostVisitedTopPaddingMedium = 36.0;
 
 // Preferred Padding Arm.
@@ -186,15 +185,15 @@ const CGFloat kLogoTopPaddingPreferred = 48.0;
 const CGFloat kLogoToFakeboxPaddingPreferred = 36.0;
 const CGFloat kDoodleTopPaddingPreferred = 36.0;
 const CGFloat kDoodleToFakeboxPaddingPreferred = 24.0;
-const CGFloat kQuickActionsTopPaddingPreferred = 12.0;
 const CGFloat kMostVisitedTopPaddingPreferred = 36.0;
 
 // Control Padding.
-const CGFloat kQuickActionsTopPaddingControl = 8.0;
-const CGFloat kMostVisitedTopPaddingControl = 20.0;
+const CGFloat kQuickActionsTopPaddingControl = 3.0;
+const CGFloat kMostVisitedTopPaddingControl = 19.0;
 const CGFloat kReducedModuleSpacingControl = 14.0;
 
 // Shared spacing constants.
+const CGFloat kQuickActionsTopPadding = 12.0;
 const CGFloat kReducedModuleSpacing = 12.0;
 const CGFloat kReducedModuleSpacingRegularXRegular = 14.0;
 
@@ -409,11 +408,16 @@ CGFloat LogoToFakeboxPadding(SearchEngineLogoState logo_state) {
 CGFloat QuickActionsTopPadding() {
   switch (GetNewTabPageUICleanupVariation()) {
     case NTPUICleanupVariation::kTightPadding:
-      return kQuickActionsTopPaddingTight;
     case NTPUICleanupVariation::kMediumPadding:
-      return kQuickActionsTopPaddingMedium;
     case NTPUICleanupVariation::kPreferredPadding:
-      return kQuickActionsTopPaddingPreferred;
+      // When NTP Redesign is enabled, Quick Actions is constrained directly to
+      // the fakebox, so the intended 12pt padding is used. Otherwise, subtract
+      // `ntp_header::kScrolledToTopOmniboxBottomMargin` from the intended
+      // padding to offset the header view's bottom margin.
+      return IsNTPRedesignEnabled()
+                 ? kQuickActionsTopPadding
+                 : (kQuickActionsTopPadding -
+                    ntp_header::kScrolledToTopOmniboxBottomMargin);
     case NTPUICleanupVariation::kFakeboxBackgroundAndShadow:
     case NTPUICleanupVariation::kDisabled:
       return kQuickActionsTopPaddingControl;

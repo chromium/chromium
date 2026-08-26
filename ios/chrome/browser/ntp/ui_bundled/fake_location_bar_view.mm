@@ -23,9 +23,9 @@ constexpr CGFloat kFakeboxHighlightDuration = 0.4;
 constexpr CGFloat kFakeboxHighlightAlpha = 0.06;
 
 // Fakebox shadow parameters for NTP UI cleanup.
-constexpr CGFloat kFakeboxShadowRadius = 12.0;
-constexpr CGFloat kFakeboxShadowVerticalOffset = 2.0;
-constexpr CGFloat kFakeboxShadowOpacity = 0.15;
+constexpr CGFloat kFakeboxShadowRadius = 14.0;
+constexpr CGFloat kFakeboxShadowVerticalOffset = 3.0;
+constexpr CGFloat kFakeboxShadowOpacity = 0.16;
 
 // Returns whether the fakebox background color and shadow should be applied.
 bool ShouldApplyFakeboxBackgroundAndShadow() {
