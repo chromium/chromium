@@ -99,10 +99,6 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
     static final String PREF_LOYALTY_CARDS = "loyalty_cards";
     static final String PREF_WALLET_REMINDER_NOTICE = "wallet_reminder_notice";
 
-    // TODO(crbug.com/548004948): Update wallet reminder URLs with query params.
-    private static final String WALLET_PAYMENT_METHODS_URL =
-            "https://wallet.google.com/wallet/paymentmethods";
-
     @VisibleForTesting
     static final String PREF_FINANCIAL_ACCOUNTS_MANAGEMENT = "financial_accounts_management";
 
@@ -543,20 +539,22 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                         view ->
                                 CustomTabActivity.showInfoPage(
                                         getActivity(),
-                                        GoogleWalletLauncher.GOOGLE_WALLET_SETTINGS_URL));
+                                        AutofillPaymentMethodsConstants.WALLET_SETTINGS_URL));
         ChromeClickableSpan paymentMethodsLink =
                 new ChromeClickableSpan(
                         getContext(),
                         view ->
                                 CustomTabActivity.showInfoPage(
-                                        getActivity(), WALLET_PAYMENT_METHODS_URL));
+                                        getActivity(),
+                                        AutofillPaymentMethodsConstants
+                                                .WALLET_PAYMENT_METHODS_URL));
         ChromeClickableSpan passesLink =
                 new ChromeClickableSpan(
                         getContext(),
                         view ->
                                 CustomTabActivity.showInfoPage(
                                         getActivity(),
-                                        GoogleWalletLauncher.GOOGLE_WALLET_PASSES_URL));
+                                        AutofillPaymentMethodsConstants.WALLET_PASSES_URL));
 
         SpannableString summary =
                 SpanApplier.applySpans(

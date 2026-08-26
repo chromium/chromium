@@ -46,11 +46,6 @@ public class GoogleWalletLauncher {
     @VisibleForTesting
     public static final String GOOGLE_WALLET_PASSES_URL = "https://wallet.google.com/wallet/passes";
 
-    // Google Wallet URL for settings.
-    @VisibleForTesting
-    public static final String GOOGLE_WALLET_SETTINGS_URL =
-            "https://wallet.google.com/wallet/settings";
-
     // Google Wallet URL for manage passes settings.
     @VisibleForTesting
     public static final String GOOGLE_WALLET_MANAGE_PASSES_DATA_URL =
