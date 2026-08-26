@@ -162,7 +162,7 @@ class PrefetchContainerTestBase : public PrefetchingMetricsTestBase,
   std::unique_ptr<const PrefetchRequest> CreateBrowserContextPrefetchRequest(
       const GURL& prefetch_url,
       const net::HttpRequestHeaders& additional_headers = {},
-      bool should_append_additional_headers = true) {
+      bool should_append_variations_header = true) {
     return PrefetchRequest::CreateBrowserInitiatedWithoutWebContents(
         browser_context(), prefetch_url,
         PrefetchType(PreloadingTriggerType::kEmbedder,
@@ -177,7 +177,7 @@ class PrefetchContainerTestBase : public PrefetchingMetricsTestBase,
             /*planned_max_preloading_type=*/content::PreloadingType::kPrefetch),
         /*attempt=*/nullptr, additional_headers,
         /*request_status_listener=*/nullptr, base::Minutes(10),
-        should_append_additional_headers,
+        should_append_variations_header,
         /*should_disable_block_until_head_timeout=*/false,
         /*should_bypass_http_cache=*/false);
   }
@@ -299,8 +299,9 @@ TEST_P(PrefetchContainerXClientDataHeaderTest,
       {"1"}, {"2"});
 
   auto request = MakeInitialResourceRequestForPrefetch(
-      *CreateBrowserContextPrefetchRequest(kTestEligibleUrl, additional_headers,
-                                           false),
+      *CreateBrowserContextPrefetchRequest(
+          kTestEligibleUrl, additional_headers,
+          /*should_append_variations_header=*/false),
       /*is_decoy=*/false);
 
   EXPECT_TRUE(request->headers.HasHeader(variations::kClientDataHeader));
