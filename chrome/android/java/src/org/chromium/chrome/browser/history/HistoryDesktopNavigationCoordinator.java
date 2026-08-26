@@ -20,11 +20,6 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 /** Coordinator for the history desktop navigation pane. */
 @NullMarked
 public class HistoryDesktopNavigationCoordinator {
-    private final Context mContext;
-    private final View mView;
-    private final ModelList mModelList;
-    private final SimpleRecyclerViewAdapter mAdapter;
-    private final RecyclerView mRecyclerView;
     private @Nullable HistoryDesktopNavigationMediator mMediator;
 
     /**
@@ -41,19 +36,18 @@ public class HistoryDesktopNavigationCoordinator {
             View navigationPane,
             Runnable onHistoryClicked,
             Runnable onTabsFromOtherDevicesClicked) {
-        mContext = context;
-        mView = navigationPane;
-        mModelList = new ModelList();
+        ModelList modelList = new ModelList();
 
-        mAdapter = NavigationPaneAdapterFactory.createAdapter(mContext, mModelList);
+        SimpleRecyclerViewAdapter adapter =
+                NavigationPaneAdapterFactory.createAdapter(context, modelList);
 
-        mRecyclerView = mView.findViewById(R.id.navigation_recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-        mRecyclerView.setAdapter(mAdapter);
+        RecyclerView recyclerView = navigationPane.findViewById(R.id.navigation_recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        recyclerView.setAdapter(adapter);
 
         mMediator =
                 new HistoryDesktopNavigationMediator(
-                        mContext, mModelList, onHistoryClicked, onTabsFromOtherDevicesClicked);
+                        context, modelList, onHistoryClicked, onTabsFromOtherDevicesClicked);
     }
 
     /** Destroys the coordinator and its resources. */

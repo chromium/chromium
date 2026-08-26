@@ -328,7 +328,7 @@ public class HistoryManager
         mRootView.addView(mContentView);
         mSelectableListLayout
                 .getHandleBackPressChangedSupplier()
-                .addSyncObserverAndPostIfNonNull((x) -> onBackPressStateChanged());
+                .addSyncObserverAndPostIfNonNull(_ -> onBackPressStateChanged());
 
         onBackPressStateChanged(); // Initialize back press State.
         mContentManager.maybeQueryApps();
@@ -516,7 +516,7 @@ public class HistoryManager
         ImageButton dismissButton =
                 placeholderView.findViewById(R.id.close_history_placeholder_button);
         if (mIsSeparateActivity) {
-            dismissButton.setOnClickListener(v -> mActivity.finish());
+            dismissButton.setOnClickListener(_ -> mActivity.finish());
         } else {
             dismissButton.setVisibility(View.GONE);
         }

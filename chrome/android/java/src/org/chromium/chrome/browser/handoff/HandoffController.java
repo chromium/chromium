@@ -65,7 +65,7 @@ public class HandoffController implements Destroyable {
     private final Delegate mDelegate;
     private final ActivityTabTabObserver mActivityTabTabObserver;
     private final Callback<@Nullable Tab> mCurrentTabObserver =
-            tab -> updateHandoffState(HandoffEnableTrigger.TAB_SWITCH);
+            _ -> updateHandoffState(HandoffEnableTrigger.TAB_SWITCH);
 
     private @Nullable GURL mTabLastUrlSeen;
 

@@ -326,7 +326,6 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         return R.layout.date_view;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void onQueryHistoryComplete(List<HistoryItem> items, boolean hasMorePotentialMatches) {
         // Return early if the results are returned after the activity/native page is
@@ -348,8 +347,8 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
         rebuildItemList();
 
-        boolean isEmpty = items.size() > 0 || mHistorySyncPromoVisible;
-        if ((!mAreHeadersInitialized && isEmpty && !mIsSearching)
+        boolean hasVisibleContent = !items.isEmpty() || mHistorySyncPromoVisible;
+        if ((!mAreHeadersInitialized && hasVisibleContent && !mIsSearching)
                 || (mIsSearching && mShowAppFilter)
                 || mIsLargeFormFactorDevice) {
             setHeaders();
@@ -488,7 +487,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
                                 .inflate(
                                         R.layout.history_clear_browsing_data_header, parent, false);
         Button clearBrowsingDataButton = viewGroup.findViewById(R.id.clear_browsing_data_button);
-        clearBrowsingDataButton.setOnClickListener(v -> mManager.onClearBrowsingDataClicked());
+        clearBrowsingDataButton.setOnClickListener(_ -> mManager.onClearBrowsingDataClicked());
         return viewGroup;
     }
 
@@ -499,7 +498,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
                                 .inflate(R.layout.open_full_chrome_history_header, parent, true);
         Button clearBrowsingDataButton =
                 viewGroup.findViewById(R.id.open_full_chrome_history_button);
-        clearBrowsingDataButton.setOnClickListener(v -> mManager.onOpenFullChromeHistoryClicked());
+        clearBrowsingDataButton.setOnClickListener(_ -> mManager.onOpenFullChromeHistoryClicked());
         return viewGroup;
     }
 
@@ -510,7 +509,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
                         LayoutInflater.from(mManager.getContext())
                                 .inflate(R.layout.app_history_filter, parent, true);
         mAppFilterChip = historyAppFilterContainer.findViewById(R.id.app_history_filter_chip);
-        mAppFilterChip.setOnClickListener(v -> mManager.onAppFilterClicked());
+        mAppFilterChip.setOnClickListener(_ -> mManager.onAppFilterClicked());
         mAppFilterChip.getPrimaryTextView().setText(R.string.history_filter_by_app);
         mAppFilterChip.addDropdownIcon();
         return historyAppFilterContainer;
@@ -553,15 +552,14 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         Button negativeButton = view.findViewById(R.id.finds_promo_negative_button);
         View closeButton = view.findViewById(R.id.finds_promo_close_button);
         positiveButton.setOnClickListener(
-                v -> {
-                    FindsUtils.acceptOptIn(
-                            context,
-                            assumeNonNull(mProfile),
-                            assumeNonNull(mSnackbarManager),
-                            () -> dismissFindsOptInPromo());
-                });
-        negativeButton.setOnClickListener(v -> dismissFindsOptInPromo());
-        closeButton.setOnClickListener(v -> dismissFindsOptInPromo());
+                _ ->
+                        FindsUtils.acceptOptIn(
+                                context,
+                                assumeNonNull(mProfile),
+                                assumeNonNull(mSnackbarManager),
+                                this::dismissFindsOptInPromo));
+        negativeButton.setOnClickListener(_ -> dismissFindsOptInPromo());
+        closeButton.setOnClickListener(_ -> dismissFindsOptInPromo());
         return view;
     }
 
@@ -627,8 +625,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private CharSequence getPrivacyDisclaimerClickableSpanString(
             Context context, @StringRes int resId) {
         var s = context.getString(resId);
-        var link =
-                new ChromeClickableSpan(context, (v) -> mManager.onPrivacyDisclaimerLinkClicked());
+        var link = new ChromeClickableSpan(context, _ -> mManager.onPrivacyDisclaimerLinkClicked());
         return SpanApplier.applySpans(s, new SpanApplier.SpanInfo("<link>", "</link>", link));
     }
 
@@ -976,16 +973,14 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private HistoryItem createClusterHead(List<HistoryItem> cluster, long clusterId) {
         HistoryItem template = cluster.get(0);
         String expansionKey = CLUSTER_EXPANSION_KEY_PREFIX + clusterId;
-        HistoryItem head =
-                template.toBuilder()
-                        .setTitle(template.getDomain())
-                        .setIsClusterHead(true)
-                        .setSubItems(new ArrayList<>(cluster))
-                        .setClusterId(clusterId)
-                        .setIsExpanded(mExpandedClusterKeys.contains(expansionKey))
-                        .setHistoryManager(mManager)
-                        .build();
-        return head;
+        return template.toBuilder()
+                .setTitle(template.getDomain())
+                .setIsClusterHead(true)
+                .setSubItems(new ArrayList<>(cluster))
+                .setClusterId(clusterId)
+                .setIsExpanded(mExpandedClusterKeys.contains(expansionKey))
+                .setHistoryManager(mManager)
+                .build();
     }
 
     private String getExpansionKey(HistoryItem item) {
