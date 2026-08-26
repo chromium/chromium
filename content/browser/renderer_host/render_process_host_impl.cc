@@ -1847,6 +1847,8 @@ RenderProcessHostImpl::~RenderProcessHostImpl() {
   // "Browser.RenderProcessHostImpl"
   TRACE_EVENT_END("shutdown", tracing_track_,
                   ChromeTrackEvent::kRenderProcessHost, *this);
+
+  ClearAllUserData();
 }
 
 bool RenderProcessHostImpl::Init() {

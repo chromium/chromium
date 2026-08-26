@@ -99,6 +99,7 @@ MockRenderProcessHost::~MockRenderProcessHost() {
       observer.RenderProcessHostDestroyed(this);
     RenderProcessHostImpl::UnregisterHost(GetID());
   }
+  ClearAllUserData();
 }
 
 void MockRenderProcessHost::SimulateCrash() {
