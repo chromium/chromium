@@ -37,6 +37,7 @@ id<GREYMatcher> CardUnmaskAuthenticationSelectionSendButton() {
   return grey_allOf(
       chrome_test_util::ButtonWithAccessibilityLabelId(
           IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL_SEND),
+      grey_userInteractionEnabled(),
       grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
 }
 
