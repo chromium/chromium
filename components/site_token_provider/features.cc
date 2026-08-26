@@ -17,4 +17,8 @@ const base::FeatureParam<std::string> kSiteTokenOAuth2Scope{
 const base::FeatureParam<std::string> kSiteTokenEndpointUrl{
     &kSiteTokenProviderEnabled, "site_token_endpoint_url", ""};
 
+// List of domains that are allowed to use site tokens. Configured via Finch.
+const base::FeatureParam<std::string> kSiteTokenAllowlist{
+    &kSiteTokenProviderEnabled, "site_token_allowlist", ""};
+
 }  // namespace site_token_provider::features

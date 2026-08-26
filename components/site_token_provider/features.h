@@ -6,12 +6,14 @@
 #define COMPONENTS_SITE_TOKEN_PROVIDER_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace site_token_provider::features {
 
 BASE_DECLARE_FEATURE(kSiteTokenProviderEnabled);
 
 extern const base::FeatureParam<std::string> kSiteTokenOAuth2Scope;
+extern const base::FeatureParam<std::string> kSiteTokenAllowlist;
 
 extern const base::FeatureParam<std::string> kSiteTokenEndpointUrl;
 

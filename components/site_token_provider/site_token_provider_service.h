@@ -39,6 +39,11 @@ class SiteTokenProviderService : public KeyedService,
   // Returns the site token for `domain` if one exists.
   virtual std::string GetTokenForDomain(std::string_view domain) const;
 
+  // Populates the internal token cache directly for testing purposes.
+  void SetTokenForTesting(std::string_view domain, std::string token);
+
+  base::WeakPtr<SiteTokenProviderService> GetWeakPtr();
+
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;

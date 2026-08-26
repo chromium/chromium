@@ -12,6 +12,7 @@ source_set("site_token_provider") {
   sources = [
     "features.cc",
     "features.h",
+    "site_token_constants.h",
     "site_token_provider.cc",
     "site_token_provider.h",
     "site_token_provider_service.cc",
