@@ -18,9 +18,6 @@ class PrefService;
 - (instancetype)initWithPrefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 
-// Shuts down the preference service.
-- (void)shutDown;
-
 @end
 
 NS_ASSUME_NONNULL_END

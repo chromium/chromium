@@ -10,7 +10,6 @@
 #import "base/files/file_path.h"
 #import "base/memory/ptr_util.h"
 #import "base/path_service.h"
-#import "base/strings/sys_string_conversions.h"
 #import "base/threading/thread_restrictions.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/pref_registry/pref_registry_syncable.h"
@@ -43,23 +42,16 @@ namespace {
 
 const char kPreferencesFilename[] =
     FILE_PATH_LITERAL("ChromeWebViewPreferences");
-const char kProfilesDirname[] = FILE_PATH_LITERAL("Profiles");
 }
 
 namespace ios_web_view {
 
 WebViewBrowserState::WebViewBrowserState(
     bool off_the_record,
-    WebViewBrowserState* recording_browser_state /* = nullptr */,
-    NSString* storage_identifier /* = nil */)
+    WebViewBrowserState* recording_browser_state /* = nullptr */)
     : web::BrowserState(),
       off_the_record_(off_the_record),
       download_manager_(std::make_unique<WebViewDownloadManager>(this)) {
-  if (storage_identifier) {
-    webkit_storage_id_ = base::Uuid::ParseCaseInsensitive(
-        base::SysNSStringToUTF8(storage_identifier));
-    CHECK(webkit_storage_id_.is_valid(), base::NotFatalUntil::M156);
-  }
   // A recording browser state must not be associated with another recording
   // browser state. An off the record browser state must be associated with
   // a recording browser state.
@@ -81,10 +73,6 @@ WebViewBrowserState::WebViewBrowserState(
     base::ScopedAllowBlocking allow_blocking;
 
     CHECK(base::PathService::Get(base::DIR_APP_DATA, &path_));
-    if (storage_identifier) {
-      path_ = path_.Append(kProfilesDirname)
-                  .Append(base::SysNSStringToUTF8(storage_identifier));
-    }
 
     auto pair = web::CreateSystemCookieStore(this);
     cookie_store_handle_ = std::move(pair.second);
@@ -161,10 +149,6 @@ base::FilePath WebViewBrowserState::GetStatePath() const {
 
 net::URLRequestContextGetter* WebViewBrowserState::GetRequestContext() {
   return request_context_getter_.get();
-}
-
-const base::Uuid& WebViewBrowserState::GetWebKitStorageID() const {
-  return webkit_storage_id_;
 }
 
 }  // namespace ios_web_view
