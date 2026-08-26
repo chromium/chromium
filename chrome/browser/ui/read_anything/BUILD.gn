@@ -62,7 +62,6 @@ source_set("read_anything") {
     "//chrome/browser:primitives",
     "//chrome/browser/dom_distiller",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui/user_education:mojo_bindings",
     "//chrome/browser/ui/webui_browser:headers",
     "//chrome/common",
     "//chrome/common/read_anything:mojo_bindings",
