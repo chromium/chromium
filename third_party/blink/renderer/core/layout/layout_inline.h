@@ -215,7 +215,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   PhysicalRect DebugRect() const override;
 
  protected:
-  void WillBeDestroyed() override;
+  void WillBeDestroyed(const ComputedStyle*) override;
 
   void InLayoutNGInlineFormattingContextWillChange(bool) final;
 

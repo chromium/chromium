@@ -67,10 +67,10 @@ void LayoutSVGResourcePattern::RemoveAllClientsFromCache() {
   MarkAllClientsForInvalidation(kPaintInvalidation);
 }
 
-void LayoutSVGResourcePattern::WillBeDestroyed() {
+void LayoutSVGResourcePattern::WillBeDestroyed(const ComputedStyle* style) {
   NOT_DESTROYED();
   To<SVGPatternElement>(*GetElement()).InvalidateDependentPatterns();
-  LayoutSVGResourcePaintServer::WillBeDestroyed();
+  LayoutSVGResourcePaintServer::WillBeDestroyed(style);
 }
 
 void LayoutSVGResourcePattern::StyleDidChange(

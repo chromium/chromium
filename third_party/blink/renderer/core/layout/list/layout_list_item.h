@@ -55,7 +55,7 @@ class CORE_EXPORT LayoutListItem final : public LayoutBlockFlow {
                       const ComputedStyle& new_style,
                       const StyleChangeContext&) override;
   void SubtreeDidChange() final;
-  void WillBeDestroyed() override;
+  void WillBeDestroyed(const ComputedStyle*) override;
 
   ListItemOrdinal ordinal_;
 };

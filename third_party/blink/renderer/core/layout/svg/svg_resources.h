@@ -70,7 +70,7 @@ class SVGResources {
   static void UpdateEffects(LayoutObject&,
                             StyleDifference,
                             const ComputedStyle* old_style);
-  static void ClearEffects(const LayoutObject&);
+  static void ClearEffects(const LayoutObject&, const ComputedStyle* style);
   static void UpdatePaints(const LayoutObject&,
                            const ComputedStyle* old_style,
                            const ComputedStyle& style);

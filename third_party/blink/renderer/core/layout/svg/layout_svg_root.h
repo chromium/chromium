@@ -165,7 +165,7 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   void PaintReplaced(const PaintInfo&,
                      const PhysicalOffset& paint_offset) const override;
 
-  void WillBeDestroyed() override;
+  void WillBeDestroyed(const ComputedStyle*) override;
   void StyleDidChange(StyleDifference,
                       const ComputedStyle* old_style,
                       const ComputedStyle& new_style,

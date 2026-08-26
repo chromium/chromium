@@ -75,7 +75,7 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   void Trace(Visitor*) const override;
 
   void LayoutRoot();
-  void WillBeDestroyed() override;
+  void WillBeDestroyed(const ComputedStyle*) override;
 
   // hitTest() will update layout, style and compositing first while
   // hitTestNoLifecycleUpdate() does not.

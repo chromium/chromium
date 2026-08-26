@@ -101,10 +101,10 @@ gfx::RectF LayoutSVGModelObject::LocalBoundingBoxRectForAccessibility(
   return DecoratedBoundingBox();
 }
 
-void LayoutSVGModelObject::WillBeDestroyed() {
+void LayoutSVGModelObject::WillBeDestroyed(const ComputedStyle* style) {
   NOT_DESTROYED();
-  SVGResources::ClearEffects(*this);
-  LayoutObject::WillBeDestroyed();
+  SVGResources::ClearEffects(*this, style);
+  LayoutObject::WillBeDestroyed(style);
 }
 
 bool LayoutSVGModelObject::MapToVisualRectInAncestorSpaceInternal(

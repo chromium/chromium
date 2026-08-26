@@ -57,7 +57,7 @@ class LayoutSVGTransformableContainer : public LayoutSVGContainer {
                       const ComputedStyle* old_style,
                       const ComputedStyle& new_style,
                       const StyleChangeContext&) override;
-  void WillBeDestroyed() override;
+  void WillBeDestroyed(const ComputedStyle*) override;
   SVGTransformChange UpdateLocalTransform(
       const gfx::RectF& reference_box) override;
 

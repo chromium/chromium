@@ -63,7 +63,7 @@ class LayoutSVGBlock : public LayoutBlockFlow {
   SVGElement* GetElement() const;
 
  protected:
-  void WillBeDestroyed() override;
+  void WillBeDestroyed(const ComputedStyle*) override;
   void InsertedIntoTree() override;
   void WillBeRemovedFromTree() override;
 

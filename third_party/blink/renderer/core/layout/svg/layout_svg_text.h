@@ -62,7 +62,7 @@ class LayoutSVGText final : public LayoutSVGBlock {
                       const ComputedStyle* old_style,
                       const ComputedStyle& new_style,
                       const StyleChangeContext&) override;
-  void WillBeDestroyed() override;
+  void WillBeDestroyed(const ComputedStyle*) override;
   bool NodeAtPoint(HitTestResult& result,
                    const HitTestLocation& hit_test_location,
                    const PhysicalOffset& accumulated_offset,

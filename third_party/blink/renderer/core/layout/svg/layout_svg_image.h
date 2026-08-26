@@ -81,7 +81,7 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
                       const ComputedStyle* old_style,
                       const ComputedStyle& new_style,
                       const StyleChangeContext&) override;
-  void WillBeDestroyed() override;
+  void WillBeDestroyed(const ComputedStyle*) override;
 
  private:
   gfx::RectF StrokeBoundingBox() const override {

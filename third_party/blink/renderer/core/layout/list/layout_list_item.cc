@@ -18,11 +18,11 @@ LayoutListItem::LayoutListItem(Element* element) : LayoutBlockFlow(element) {
   View()->AddLayoutListItem();
 }
 
-void LayoutListItem::WillBeDestroyed() {
+void LayoutListItem::WillBeDestroyed(const ComputedStyle* style) {
   NOT_DESTROYED();
   if (View())
     View()->RemoveLayoutListItem();
-  LayoutBlockFlow::WillBeDestroyed();
+  LayoutBlockFlow::WillBeDestroyed(style);
 }
 
 void LayoutListItem::InsertedIntoTree() {

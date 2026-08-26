@@ -28,7 +28,7 @@ class LayoutInlineListItem final : public LayoutInline {
   void UpdateCounterStyle();
 
  private:
-  void WillBeDestroyed() override;
+  void WillBeDestroyed(const ComputedStyle*) override;
   const char* GetName() const override;
   bool IsInlineListItem() const final {
     NOT_DESTROYED();

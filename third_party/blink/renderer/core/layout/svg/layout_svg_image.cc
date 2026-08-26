@@ -84,11 +84,11 @@ void LayoutSVGImage::StyleDidChange(
                                        style_change_context);
 }
 
-void LayoutSVGImage::WillBeDestroyed() {
+void LayoutSVGImage::WillBeDestroyed(const ComputedStyle* style) {
   NOT_DESTROYED();
   image_resource_->Shutdown();
 
-  LayoutSVGModelObject::WillBeDestroyed();
+  LayoutSVGModelObject::WillBeDestroyed(style);
 }
 
 gfx::SizeF LayoutSVGImage::CalculateObjectSize() const {

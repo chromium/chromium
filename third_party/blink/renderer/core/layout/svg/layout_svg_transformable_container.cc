@@ -130,11 +130,12 @@ void LayoutSVGTransformableContainer::StyleDidChange(
       TransformHelper::DependsOnReferenceBox(new_style));
 }
 
-void LayoutSVGTransformableContainer::WillBeDestroyed() {
+void LayoutSVGTransformableContainer::WillBeDestroyed(
+    const ComputedStyle* style) {
   if (IsA<SVGUseElement>(GetElement())) {
-    SVGResources::ClearPaints(*this, Style());
+    SVGResources::ClearPaints(*this, style);
   }
-  LayoutSVGContainer::WillBeDestroyed();
+  LayoutSVGContainer::WillBeDestroyed(style);
 }
 
 }  // namespace blink

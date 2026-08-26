@@ -44,10 +44,10 @@ SVGElement* LayoutSVGBlock::GetElement() const {
   return To<SVGElement>(LayoutObject::GetNode());
 }
 
-void LayoutSVGBlock::WillBeDestroyed() {
+void LayoutSVGBlock::WillBeDestroyed(const ComputedStyle* style) {
   NOT_DESTROYED();
-  SVGResources::ClearEffects(*this);
-  LayoutBlockFlow::WillBeDestroyed();
+  SVGResources::ClearEffects(*this, style);
+  LayoutBlockFlow::WillBeDestroyed(style);
 }
 
 void LayoutSVGBlock::InsertedIntoTree() {

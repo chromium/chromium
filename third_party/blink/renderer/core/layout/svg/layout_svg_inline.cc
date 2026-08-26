@@ -190,11 +190,11 @@ void LayoutSVGInline::Paint(const PaintInfo& paint_info) const {
   CHECK(paint_info.IsRenderingResourceSubtree());
 }
 
-void LayoutSVGInline::WillBeDestroyed() {
+void LayoutSVGInline::WillBeDestroyed(const ComputedStyle* style) {
   NOT_DESTROYED();
-  SVGResources::ClearEffects(*this);
-  SVGResources::ClearPaints(*this, Style());
-  LayoutInline::WillBeDestroyed();
+  SVGResources::ClearEffects(*this, style);
+  SVGResources::ClearPaints(*this, style);
+  LayoutInline::WillBeDestroyed(style);
 }
 
 void LayoutSVGInline::StyleDidChange(

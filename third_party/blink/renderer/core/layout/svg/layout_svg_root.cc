@@ -252,10 +252,10 @@ void LayoutSVGRoot::PaintReplaced(const PaintInfo& paint_info,
   SVGRootPainter(*this).PaintReplaced(paint_info, paint_offset);
 }
 
-void LayoutSVGRoot::WillBeDestroyed() {
+void LayoutSVGRoot::WillBeDestroyed(const ComputedStyle* style) {
   NOT_DESTROYED();
-  SVGResources::ClearEffects(*this);
-  LayoutReplaced::WillBeDestroyed();
+  SVGResources::ClearEffects(*this, style);
+  LayoutReplaced::WillBeDestroyed(style);
 }
 
 bool LayoutSVGRoot::IntrinsicSizeIsFontMetricsDependent() const {

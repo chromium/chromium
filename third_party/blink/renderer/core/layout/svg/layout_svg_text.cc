@@ -71,10 +71,10 @@ void LayoutSVGText::StyleDidChange(
   }
 }
 
-void LayoutSVGText::WillBeDestroyed() {
+void LayoutSVGText::WillBeDestroyed(const ComputedStyle* style) {
   NOT_DESTROYED();
-  SVGResources::ClearPaints(*this, Style());
-  LayoutSVGBlock::WillBeDestroyed();
+  SVGResources::ClearPaints(*this, style);
+  LayoutSVGBlock::WillBeDestroyed(style);
 }
 
 const char* LayoutSVGText::GetName() const {

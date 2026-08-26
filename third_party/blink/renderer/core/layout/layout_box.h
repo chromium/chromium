@@ -1158,7 +1158,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   virtual OverflowClipAxes ComputeOverflowClipAxes() const;
 
-  void WillBeDestroyed() override;
+  void WillBeDestroyed(const ComputedStyle*) override;
 
   void InsertedIntoTree() override;
   void WillBeRemovedFromTree() override;

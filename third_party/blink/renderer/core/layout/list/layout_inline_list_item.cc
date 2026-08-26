@@ -16,12 +16,12 @@ LayoutInlineListItem::LayoutInlineListItem(Element* element)
   View()->AddLayoutListItem();
 }
 
-void LayoutInlineListItem::WillBeDestroyed() {
+void LayoutInlineListItem::WillBeDestroyed(const ComputedStyle* style) {
   NOT_DESTROYED();
   if (View()) {
     View()->RemoveLayoutListItem();
   }
-  LayoutInline::WillBeDestroyed();
+  LayoutInline::WillBeDestroyed(style);
 }
 
 const char* LayoutInlineListItem::GetName() const {

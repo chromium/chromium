@@ -371,7 +371,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 #endif
 
  protected:
-  void WillBeDestroyed() override;
+  void WillBeDestroyed(const ComputedStyle*) override;
 
   // Explicitly override so that we don't call LayoutObject::StyleWillChange.
   void StyleWillChange(StyleDifference,

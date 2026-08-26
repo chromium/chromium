@@ -120,7 +120,7 @@ class CORE_EXPORT LayoutTextFragment : public LayoutText {
 
  protected:
   friend class LayoutObjectFactory;
-  void WillBeDestroyed() override;
+  void WillBeDestroyed(const ComputedStyle*) override;
 
  private:
   void InsertedIntoTree() final {

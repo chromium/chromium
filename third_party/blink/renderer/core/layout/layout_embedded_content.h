@@ -115,7 +115,7 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
   void CountSvgFilterPaint() const;
 
  private:
-  void WillBeDestroyed() final;
+  void WillBeDestroyed(const ComputedStyle*) final;
 
   bool NodeAtPointOverEmbeddedContentView(
       HitTestResult&,

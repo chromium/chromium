@@ -82,12 +82,12 @@ void LayoutTextFragment::Trace(Visitor* visitor) const {
   LayoutText::Trace(visitor);
 }
 
-void LayoutTextFragment::WillBeDestroyed() {
+void LayoutTextFragment::WillBeDestroyed(const ComputedStyle* style) {
   NOT_DESTROYED();
   if (is_remaining_text_layout_object_ && first_letter_pseudo_element_)
     first_letter_pseudo_element_->ClearRemainingTextLayoutObject();
   first_letter_pseudo_element_ = nullptr;
-  LayoutText::WillBeDestroyed();
+  LayoutText::WillBeDestroyed(style);
 }
 
 String LayoutTextFragment::CompleteText() const {

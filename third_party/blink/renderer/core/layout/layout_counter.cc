@@ -72,12 +72,12 @@ void LayoutCounter::Trace(Visitor* visitor) const {
   LayoutText::Trace(visitor);
 }
 
-void LayoutCounter::WillBeDestroyed() {
+void LayoutCounter::WillBeDestroyed(const ComputedStyle* style) {
   NOT_DESTROYED();
   if (View()) {
     View()->RemoveLayoutCounter();
   }
-  LayoutText::WillBeDestroyed();
+  LayoutText::WillBeDestroyed(style);
 }
 
 String LayoutCounter::GenerateCounterText(Vector<int> counter_values,

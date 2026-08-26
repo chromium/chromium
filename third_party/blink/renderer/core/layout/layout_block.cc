@@ -90,14 +90,14 @@ void LayoutBlock::Trace(Visitor* visitor) const {
   LayoutBox::Trace(visitor);
 }
 
-void LayoutBlock::WillBeDestroyed() {
+void LayoutBlock::WillBeDestroyed(const ComputedStyle* style) {
   NOT_DESTROYED();
 
   if (LocalFrame* frame = GetFrame()) {
     frame->Selection().LayoutBlockWillBeDestroyed(*this);
     frame->GetPage()->GetDragCaret().LayoutBlockWillBeDestroyed(*this);
   }
-  LayoutBox::WillBeDestroyed();
+  LayoutBox::WillBeDestroyed(style);
 }
 
 // Compute a local version of the "font size scale factor" used by SVG

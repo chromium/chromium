@@ -61,7 +61,7 @@ class LayoutSVGResourcePattern final : public LayoutSVGResourcePaintServer {
   }
 
  private:
-  void WillBeDestroyed() override;
+  void WillBeDestroyed(const ComputedStyle*) override;
   void StyleDidChange(StyleDifference,
                       const ComputedStyle* old_style,
                       const ComputedStyle& new_style,

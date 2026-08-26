@@ -71,7 +71,7 @@ class LayoutCounter : public LayoutText {
   }
 
  protected:
-  void WillBeDestroyed() override;
+  void WillBeDestroyed(const ComputedStyle*) override;
 
  private:
   bool IsCounter() const final {

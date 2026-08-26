@@ -107,10 +107,10 @@ LayoutBoxModelObject::LayoutBoxModelObject(ContainerNode* node)
 
 LayoutBoxModelObject::~LayoutBoxModelObject() = default;
 
-void LayoutBoxModelObject::WillBeDestroyed() {
+void LayoutBoxModelObject::WillBeDestroyed(const ComputedStyle* style) {
   NOT_DESTROYED();
 
-  LayoutObject::WillBeDestroyed();
+  LayoutObject::WillBeDestroyed(style);
 
   if (HasLayer())
     DestroyLayer();

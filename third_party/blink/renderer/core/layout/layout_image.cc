@@ -64,12 +64,12 @@ void LayoutImage::Trace(Visitor* visitor) const {
   LayoutReplaced::Trace(visitor);
 }
 
-void LayoutImage::WillBeDestroyed() {
+void LayoutImage::WillBeDestroyed(const ComputedStyle* style) {
   NOT_DESTROYED();
   DCHECK(image_resource_);
   image_resource_->Shutdown();
 
-  LayoutReplaced::WillBeDestroyed();
+  LayoutReplaced::WillBeDestroyed(style);
 }
 
 void LayoutImage::InsertedIntoTree() {

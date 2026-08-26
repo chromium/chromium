@@ -185,7 +185,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   LayoutBlockFlow* NearestInnerBlockWithFirstLine();
 
  protected:
-  void WillBeDestroyed() override;
+  void WillBeDestroyed(const ComputedStyle*) override;
 
  public:
   void Paint(const PaintInfo&) const override;

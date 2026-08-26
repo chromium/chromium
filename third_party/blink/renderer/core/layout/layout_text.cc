@@ -255,7 +255,7 @@ void LayoutText::RemoveAndDestroyTextBoxes() {
   DeleteTextBoxes();
 }
 
-void LayoutText::WillBeDestroyed() {
+void LayoutText::WillBeDestroyed(const ComputedStyle* style) {
   NOT_DESTROYED();
 
   if (SecureTextTimer* timer = GetSecureTextTimers().Take(this))

@@ -53,7 +53,7 @@ void LayoutQuote::Trace(Visitor* visitor) const {
   LayoutInline::Trace(visitor);
 }
 
-void LayoutQuote::WillBeDestroyed() {
+void LayoutQuote::WillBeDestroyed(const ComputedStyle* style) {
   NOT_DESTROYED();
   if (scope_) {
     GetDocument()
@@ -62,7 +62,7 @@ void LayoutQuote::WillBeDestroyed() {
         .UpdateOutermostDirtyScope(scope_);
     scope_->DetachItem(*this);
   }
-  LayoutInline::WillBeDestroyed();
+  LayoutInline::WillBeDestroyed(style);
 }
 
 void LayoutQuote::WillBeRemovedFromTree() {

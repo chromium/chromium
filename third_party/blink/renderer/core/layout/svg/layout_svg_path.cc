@@ -98,10 +98,10 @@ void LayoutSVGPath::StyleDidChange(
   }
 }
 
-void LayoutSVGPath::WillBeDestroyed() {
+void LayoutSVGPath::WillBeDestroyed(const ComputedStyle* style) {
   NOT_DESTROYED();
-  SVGResources::ClearMarkers(*this, Style());
-  LayoutSVGShape::WillBeDestroyed();
+  SVGResources::ClearMarkers(*this, style);
+  LayoutSVGShape::WillBeDestroyed(style);
 }
 
 bool LayoutSVGPath::CalculateGeometryDependsOnViewport() const {

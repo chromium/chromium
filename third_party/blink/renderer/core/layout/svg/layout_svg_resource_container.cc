@@ -186,11 +186,11 @@ void LayoutSVGResourceContainer::InvalidateClientsIfActiveResource() {
   GetDocument().ScheduleSVGResourceInvalidation(*resource);
 }
 
-void LayoutSVGResourceContainer::WillBeDestroyed() {
+void LayoutSVGResourceContainer::WillBeDestroyed(const ComputedStyle* style) {
   NOT_DESTROYED();
   // The resource is being torn down.
   InvalidateClientsIfActiveResource();
-  LayoutSVGHiddenContainer::WillBeDestroyed();
+  LayoutSVGHiddenContainer::WillBeDestroyed(style);
 }
 
 void LayoutSVGResourceContainer::StyleDidChange(

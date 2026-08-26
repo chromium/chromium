@@ -82,7 +82,7 @@ class LayoutSVGModelObject : public LayoutObject {
 
  protected:
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
-  void WillBeDestroyed() override;
+  void WillBeDestroyed(const ComputedStyle*) override;
 
   void InsertedIntoTree() override;
   void WillBeRemovedFromTree() override;

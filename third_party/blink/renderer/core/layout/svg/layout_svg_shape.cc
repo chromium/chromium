@@ -132,10 +132,10 @@ void LayoutSVGShape::StyleDidChange(
   }
 }
 
-void LayoutSVGShape::WillBeDestroyed() {
+void LayoutSVGShape::WillBeDestroyed(const ComputedStyle* style) {
   NOT_DESTROYED();
-  SVGResources::ClearPaints(*this, Style());
-  LayoutSVGModelObject::WillBeDestroyed();
+  SVGResources::ClearPaints(*this, style);
+  LayoutSVGModelObject::WillBeDestroyed(style);
 }
 
 void LayoutSVGShape::ClearPath() {

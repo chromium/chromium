@@ -58,7 +58,7 @@ class CORE_EXPORT LayoutHTMLCanvas final : public LayoutReplaced {
     return "LayoutHTMLCanvas";
   }
 
-  void WillBeDestroyed() override;
+  void WillBeDestroyed(const ComputedStyle*) override;
 
   void Trace(Visitor*) const override;
 

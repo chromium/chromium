@@ -56,7 +56,7 @@ class CORE_EXPORT LayoutProgress : public LayoutBlockFlow {
   }
 
  protected:
-  void WillBeDestroyed() override;
+  void WillBeDestroyed(const ComputedStyle*) override;
   bool IsProgress() const final {
     NOT_DESTROYED();
     return true;

@@ -584,14 +584,14 @@ bool LayoutBox::TransformsChangeMayRequireLayout() const {
   return false;
 }
 
-void LayoutBox::WillBeDestroyed() {
+void LayoutBox::WillBeDestroyed(const ComputedStyle* style) {
   NOT_DESTROYED();
 
   ShapeOutsideInfo::RemoveInfo(*this);
 
   DisassociatePhysicalFragments();
 
-  LayoutBoxModelObject::WillBeDestroyed();
+  LayoutBoxModelObject::WillBeDestroyed(style);
 }
 
 void LayoutBox::DisassociatePhysicalFragments() {

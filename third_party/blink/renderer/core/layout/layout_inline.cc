@@ -110,14 +110,14 @@ LayoutInline* LayoutInline::CreateAnonymous(Document& document) {
   return layout_inline;
 }
 
-void LayoutInline::WillBeDestroyed() {
+void LayoutInline::WillBeDestroyed(const ComputedStyle* style) {
   NOT_DESTROYED();
   if (FirstInlineFragmentItemIndex()) {
     FragmentItems::LayoutObjectWillBeDestroyed(*this);
     ClearFirstInlineFragmentItemIndex();
   }
 
-  LayoutBoxModelObject::WillBeDestroyed();
+  LayoutBoxModelObject::WillBeDestroyed(style);
 }
 
 void LayoutInline::ClearFirstInlineFragmentItemIndex() {

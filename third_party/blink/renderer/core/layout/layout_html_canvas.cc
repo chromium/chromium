@@ -122,9 +122,9 @@ void LayoutHTMLCanvas::StyleDidChange(
   To<HTMLCanvasElement>(GetNode())->StyleDidChange(old_style, new_style);
 }
 
-void LayoutHTMLCanvas::WillBeDestroyed() {
+void LayoutHTMLCanvas::WillBeDestroyed(const ComputedStyle* style) {
   NOT_DESTROYED();
-  LayoutReplaced::WillBeDestroyed();
+  LayoutReplaced::WillBeDestroyed(style);
   To<HTMLCanvasElement>(GetNode())->LayoutObjectDestroyed();
 }
 

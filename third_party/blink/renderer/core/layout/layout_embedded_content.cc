@@ -55,12 +55,12 @@ LayoutEmbeddedContent::LayoutEmbeddedContent(HTMLFrameOwnerElement* element)
   SetInline(false);
 }
 
-void LayoutEmbeddedContent::WillBeDestroyed() {
+void LayoutEmbeddedContent::WillBeDestroyed(const ComputedStyle* style) {
   NOT_DESTROYED();
   if (auto* frame_owner = GetFrameOwnerElement())
     frame_owner->SetEmbeddedContentView(nullptr);
 
-  LayoutReplaced::WillBeDestroyed();
+  LayoutReplaced::WillBeDestroyed(style);
 
   ClearNode();
 }

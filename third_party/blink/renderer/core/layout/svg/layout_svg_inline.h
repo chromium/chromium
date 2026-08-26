@@ -74,7 +74,7 @@ class LayoutSVGInline : public LayoutInline {
   void Paint(const PaintInfo&) const final;
 
  private:
-  void WillBeDestroyed() final;
+  void WillBeDestroyed(const ComputedStyle*) final;
   void StyleDidChange(StyleDifference,
                       const ComputedStyle* old_style,
                       const ComputedStyle& new_style,
