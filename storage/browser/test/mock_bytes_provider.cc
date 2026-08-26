@@ -56,7 +56,13 @@ void MockBytesProvider::RequestAsFile(uint64_t source_offset,
                                             static_cast<size_t>(source_size)))
                     .value_or(0)));
   EXPECT_TRUE(file.Flush());
-  std::move(callback).Run(file_modification_time_);
+  if (!file_modification_time_) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  base::File::Info info;
+  EXPECT_TRUE(file.GetInfo(&info));
+  std::move(callback).Run(info.last_modified);
 }
 
 }  // namespace storage

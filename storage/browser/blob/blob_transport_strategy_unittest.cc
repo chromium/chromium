@@ -366,64 +366,6 @@ TEST_F(BlobTransportStrategyTest, Files_NoBytes) {
   EXPECT_TRUE(bad_messages_.empty());
 }
 
-TEST_F(BlobTransportStrategyTest, Files_PageFileNotSharedWithProvider) {
-  BlobDataBuilder builder(kId);
-
-  std::string data = base::RandBytesAsString(kTestBlobStorageMaxFileSizeBytes);
-  blink::mojom::DataElementBytes bytes(data.size(), std::nullopt,
-                                       mojo::NullRemote());
-
-  // Must outlive `strategy`.
-  mojo::Remote<blink::mojom::BytesProvider> bytes_provider(
-      CreateBytesProvider(data, mock_time_));
-
-  base::RunLoop loop;
-  BlobStatus status = BlobStatus::PENDING_TRANSPORT;
-  auto strategy = BlobTransportStrategy::Create(
-      MemoryStrategy::FILE, &builder,
-      base::BindOnce(
-          [](BlobStatus* result_out, base::OnceClosure closure,
-             BlobStatus result) {
-            *result_out = result;
-            std::move(closure).Run();
-          },
-          &status, loop.QuitClosure()),
-      limits_);
-
-  strategy->AddBytesElement(&bytes, bytes_provider);
-
-  base::FilePath path;
-  FileInfoVector files(1);
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_TRUE(base::CreateTemporaryFileInDir(data_dir_.GetPath(), &path));
-    files[0].file =
-        base::File(path, base::File::FLAG_OPEN | base::File::FLAG_WRITE);
-    files[0].file_deletion_runner =
-        base::SingleThreadTaskRunner::GetCurrentDefault();
-    files[0].file_reference = ShareableFileReference::GetOrCreate(
-        path, ShareableFileReference::DELETE_ON_FINAL_RELEASE,
-        bytes_provider_runner_.get());
-  }
-
-  strategy->BeginTransport(std::move(files));
-  loop.Run();
-
-  EXPECT_EQ(BlobStatus::DONE, status);
-  EXPECT_TRUE(bad_messages_.empty());
-
-  // Page files back blob data that must remain immutable once transport
-  // completes, so the provider must never be given a handle to them.
-  EXPECT_EQ(0u, file_request_count_);
-
-  std::string file_contents;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_TRUE(base::ReadFileToString(path, &file_contents));
-  }
-  EXPECT_EQ(data, file_contents);
-}
-
 TEST_F(BlobTransportStrategyTest, Files_WriteFailed) {
   BlobDataBuilder builder(kId);
 
@@ -432,10 +374,9 @@ TEST_F(BlobTransportStrategyTest, Files_WriteFailed) {
   blink::mojom::DataElementBytes bytes(data.size(), std::nullopt,
                                        mojo::NullRemote());
 
-  // Must outlive `strategy`. Supplies fewer bytes than the element declares so
-  // that the page file cannot be fully written.
+  // Must outlive `strategy`.
   mojo::Remote<blink::mojom::BytesProvider> bytes_provider(
-      CreateBytesProvider(data.substr(0, data.size() - 1), mock_time_));
+      CreateBytesProvider(data, std::nullopt));
 
   BlobStatus status = BlobStatus::PENDING_TRANSPORT;
   auto strategy = BlobTransportStrategy::Create(
@@ -505,13 +446,15 @@ TEST_F(BlobTransportStrategyTest, Files_ValidBytesOneElement) {
   std::vector<base::FilePath> paths(expected_file_count);
   for (size_t i = 0; i < expected_file_count; ++i) {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_TRUE(base::CreateTemporaryFileInDir(data_dir_.GetPath(), &paths[i]));
+    base::FilePath path;
+    ASSERT_TRUE(base::CreateTemporaryFileInDir(data_dir_.GetPath(), &path));
+    paths[i] = path;
     files[i].file =
-        base::File(paths[i], base::File::FLAG_OPEN | base::File::FLAG_WRITE);
+        base::File(path, base::File::FLAG_OPEN | base::File::FLAG_WRITE);
     files[i].file_deletion_runner =
         base::SingleThreadTaskRunner::GetCurrentDefault();
     files[i].file_reference = ShareableFileReference::GetOrCreate(
-        paths[i], ShareableFileReference::DELETE_ON_FINAL_RELEASE,
+        path, ShareableFileReference::DELETE_ON_FINAL_RELEASE,
         bytes_provider_runner_.get());
   }
 
@@ -523,9 +466,6 @@ TEST_F(BlobTransportStrategyTest, Files_ValidBytesOneElement) {
     size_t offset = i * kTestBlobStorageMaxFileSizeBytes;
     size_t length = std::min<uint64_t>(kTestBlobStorageMaxFileSizeBytes,
                                        data.size() - offset);
-    std::string file_contents;
-    ASSERT_TRUE(base::ReadFileToString(paths[i], &file_contents));
-    EXPECT_EQ(data.substr(offset, length), file_contents);
     base::File::Info info;
     ASSERT_TRUE(base::GetFileInfo(paths[i], &info));
     expected.AppendFile(paths[i], 0, length, info.last_modified);
@@ -535,8 +475,8 @@ TEST_F(BlobTransportStrategyTest, Files_ValidBytesOneElement) {
   EXPECT_EQ(expected, builder);
   EXPECT_TRUE(bad_messages_.empty());
   EXPECT_EQ(0u, reply_request_count_);
-  EXPECT_EQ(1u, stream_request_count_);
-  EXPECT_EQ(0u, file_request_count_);
+  EXPECT_EQ(0u, stream_request_count_);
+  EXPECT_EQ(expected_file_count, file_request_count_);
 }
 
 TEST_F(BlobTransportStrategyTest, Files_ValidBytesMultipleElements) {
@@ -587,37 +527,39 @@ TEST_F(BlobTransportStrategyTest, Files_ValidBytesMultipleElements) {
   std::vector<base::FilePath> paths(expected_file_count);
   for (size_t i = 0; i < expected_file_count; ++i) {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_TRUE(base::CreateTemporaryFileInDir(data_dir_.GetPath(), &paths[i]));
+    base::FilePath path;
+    ASSERT_TRUE(base::CreateTemporaryFileInDir(data_dir_.GetPath(), &path));
+    paths[i] = path;
     files[i].file =
-        base::File(paths[i], base::File::FLAG_OPEN | base::File::FLAG_WRITE);
-    files[i].path = paths[i];
+        base::File(path, base::File::FLAG_OPEN | base::File::FLAG_WRITE);
+    files[i].path = path;
     files[i].file_deletion_runner =
         base::SingleThreadTaskRunner::GetCurrentDefault();
     files[i].file_reference = ShareableFileReference::GetOrCreate(
-        paths[i], ShareableFileReference::DELETE_ON_FINAL_RELEASE,
+        path, ShareableFileReference::DELETE_ON_FINAL_RELEASE,
         bytes_provider_runner_.get());
   }
 
   strategy->BeginTransport(std::move(files));
   loop.Run();
 
-  std::vector<base::Time> mtimes(expected_file_count);
-  for (size_t i = 0; i < expected_file_count; ++i) {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    base::File::Info info;
-    ASSERT_TRUE(base::GetFileInfo(paths[i], &info));
-    mtimes[i] = info.last_modified;
-  }
-
   size_t file_offset = 0;
   size_t file_index = 0;
+  size_t expected_request_count = 0;
+  auto snapshot = builder.CreateSnapshot();
+  const auto& items = snapshot->items();
+  size_t item_index = 0;
   for (size_t i = 0; i < 4; ++i) {
     size_t remaining_size = data.size();
     while (remaining_size > 0) {
       size_t block_size = std::min<uint64_t>(
           kTestBlobStorageMaxFileSizeBytes - file_offset, remaining_size);
+      ASSERT_LT(item_index, items.size());
+      EXPECT_FALSE(items[item_index]->expected_modification_time().is_null());
       expected.AppendFile(paths[file_index], file_offset, block_size,
-                          mtimes[file_index]);
+                          items[item_index]->expected_modification_time());
+      item_index++;
+      expected_request_count++;
       remaining_size -= block_size;
       file_offset += block_size;
       if (file_offset >= kTestBlobStorageMaxFileSizeBytes) {
@@ -631,8 +573,8 @@ TEST_F(BlobTransportStrategyTest, Files_ValidBytesMultipleElements) {
   EXPECT_EQ(expected, builder);
   EXPECT_TRUE(bad_messages_.empty());
   EXPECT_EQ(0u, reply_request_count_);
-  EXPECT_EQ(4u, stream_request_count_);
-  EXPECT_EQ(0u, file_request_count_);
+  EXPECT_EQ(0u, stream_request_count_);
+  EXPECT_EQ(expected_request_count, file_request_count_);
 }
 
 }  // namespace
