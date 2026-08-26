@@ -140,10 +140,6 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
     }
   }
 
-  protected onDisableExtensionClick_() {
-    this.fire('refresh-pref', 'default_search_provider.enabled');
-  }
-
   protected onManageSearchEnginesClick_() {
     this.browserProxy_.recordSearchEnginesPageHistogram(
         SearchEnginesInteractions.SUBPAGE_NAVIGATED);

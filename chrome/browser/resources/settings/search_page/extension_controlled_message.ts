@@ -75,7 +75,6 @@ export class ExtensionControlledMessageElement extends
     assert(this.extensionCanBeDisabled);
     ExtensionControlBrowserProxyImpl.getInstance().disableExtension(
         this.extensionId);
-    this.fire('disable-extension-click');
   }
 }
 

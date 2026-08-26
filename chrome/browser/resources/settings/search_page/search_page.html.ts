@@ -59,8 +59,8 @@ export function getHtml(this: SettingsSearchPageElement) {
               extension-name="${
                   this.defaultSearchProviderDataPref_?.controlledByName}"
               ?extension-can-be-disabled="${
-                  !!this.defaultSearchProviderDataPref_?.extensionCanBeDisabled}"
-              @disable-extension-click="${this.onDisableExtensionClick_}">
+                  !!this.defaultSearchProviderDataPref_
+                      ?.extensionCanBeDisabled}">
           </extension-controlled-message>
         </div>
       ` : html`
@@ -71,8 +71,8 @@ export function getHtml(this: SettingsSearchPageElement) {
               extension-name="${
                   this.defaultSearchProviderDataPref_?.controlledByName}"
               ?extension-can-be-disabled="${
-                  !!this.defaultSearchProviderDataPref_?.extensionCanBeDisabled}"
-              @disable-extension-click="${this.onDisableExtensionClick_}">
+                  !!this.defaultSearchProviderDataPref_
+                      ?.extensionCanBeDisabled}">
           </extension-controlled-indicator>
         </div>
       `}
