@@ -6266,6 +6266,12 @@ inline constexpr char kGestureUserEducationBackSwipeName[] =
 inline constexpr char kGestureUserEducationBackSwipeDescription[] =
     "Enables gesture user education for back swipe.";
 
+inline constexpr char kGooglePayViaAndroidIntentsName[] =
+    "Google Pay via Android intents";
+inline constexpr char kGooglePayViaAndroidIntentsDescription[] =
+    "When enabled, use Android intents for Google Pay payment methods "
+    "(https://google.com/pay and https://pay.google.com/authentication).";
+
 inline constexpr char kGridTabSwitcherSurfaceColorUpdateName[] =
     "Grid tab switcher surface color update";
 inline constexpr char kGridTabSwitcherSurfaceColorUpdateDescription[] =

@@ -13926,6 +13926,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSigninButtonProfileMenuName,
      flag_descriptions::kSigninButtonProfileMenuDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(switches::kSigninButtonProfileMenu)},
+
+    {"google-pay-via-android-intents",
+     flag_descriptions::kGooglePayViaAndroidIntentsName,
+     flag_descriptions::kGooglePayViaAndroidIntentsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(payments::android::kGooglePayViaAndroidIntents)},
 #endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

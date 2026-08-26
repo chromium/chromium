@@ -8171,6 +8171,7 @@ from previous Chrome versions.
   <int value="-2029381098" label="CompressionDictionaryTTL:enabled"/>
   <int value="-2029060782" label="ToolbarProgressBarRefactor:disabled"/>
   <int value="-2028961033" label="SanitizerAPIv0:disabled"/>
+  <int value="-2028458442" label="GooglePayViaAndroidIntents:disabled"/>
   <int value="-2028402892" label="EnableIkev2Vpn:enabled"/>
   <int value="-2028336995" label="VirtualKeyboardDarkMode:disabled"/>
   <int value="-2028232016" label="spurious-power-button-lid-angle-change"/>
@@ -15282,6 +15283,7 @@ from previous Chrome versions.
   <int value="178825651" label="OmniboxNumWebZpsRecentSearches:enabled"/>
   <int value="179083323" label="HelpAppBackgroundPage:disabled"/>
   <int value="179491176" label="partition-visited-link-database:enabled"/>
+  <int value="179708552" label="GooglePayViaAndroidIntents:enabled"/>
   <int value="179871410" label="ui-debug-tools:disabled"/>
   <int value="180074362" label="memory-pressure-thresholds"/>
   <int value="180414503"
