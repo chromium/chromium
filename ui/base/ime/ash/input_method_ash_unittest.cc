@@ -28,6 +28,7 @@
 #include "ui/base/ime/ash/mock_ime_engine_handler.h"
 #include "ui/base/ime/ash/mock_input_method_manager.h"
 #include "ui/base/ime/ash/text_input_method.h"
+#include "ui/base/ime/ash/text_input_target.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/events.h"
@@ -65,6 +66,21 @@ uint32_t GetOffsetInUTF16(const std::u16string& utf16_string,
   }
   return char_iterator.array_pos();
 }
+
+class SelfDeletingTextInputClient : public ui::DummyTextInputClient {
+ public:
+  explicit SelfDeletingTextInputClient(InputMethodAsh* input_method)
+      : ui::DummyTextInputClient(ui::TEXT_INPUT_TYPE_TEXT),
+        input_method_(input_method) {}
+
+  void SetCompositionText(const CompositionText& composition) override {
+    input_method_->DetachTextInputClient(this);
+    delete this;
+  }
+
+ private:
+  raw_ptr<InputMethodAsh> input_method_;
+};
 
 }  // namespace
 
@@ -1032,6 +1048,24 @@ TEST_F(InputMethodAshTest, ConfirmComposition_SetCompositionRange) {
 
   EXPECT_EQ(u"ab", confirmed_text_.text);
   EXPECT_TRUE(composition_text_.text.empty());
+}
+
+TEST_F(InputMethodAshTest,
+       ConfirmComposition_ClientDestroyedInSetCompositionText) {
+  auto* client = new SelfDeletingTextInputClient(input_method_ash_.get());
+  input_method_ash_->SetFocusedTextInputClient(client);
+
+  ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE);
+  input_method_ash_->DispatchKeyEvent(&event);
+
+  CompositionText comp;
+  comp.text = u"hello";
+  (static_cast<TextInputTarget*>(input_method_ash_.get()))
+      ->UpdateCompositionText(comp, comp.text.length(), /*visible=*/true);
+
+  input_method_ash_->ConfirmComposition(/*reset_engine=*/true);
+
+  EXPECT_EQ(nullptr, input_method_ash_->GetTextInputClient());
 }
 
 TEST_F(InputMethodAshTest, SetAutocorrectRange_SuccessfulSet) {
