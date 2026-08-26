@@ -386,6 +386,13 @@ std::string BuildQueryPostData(const std::u16string& text_query,
   if (!text_query.empty()) {
     lookup.Set("query", text_query);
   }
+  if (!options.client_ids.empty()) {
+    base::ListValue client_ids_list;
+    for (const std::string& client_id : options.client_ids) {
+      client_ids_list.Append(client_id);
+    }
+    lookup.Set("client_id", std::move(client_ids_list));
+  }
   lookup_list.Append(std::move(lookup));
 
   request.Set("lookup", std::move(lookup_list));

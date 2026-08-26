@@ -28,6 +28,8 @@ namespace history {
 // TODO(msramek): This class might need its own set of tests.
 class FakeWebHistoryService : public WebHistoryService {
  public:
+  static constexpr char kDefaultClientId[] = "default_client_id";
+
   FakeWebHistoryService();
 
   FakeWebHistoryService(const FakeWebHistoryService&) = delete;
@@ -43,7 +45,8 @@ class FakeWebHistoryService : public WebHistoryService {
   // Adds a fake visit.
   void AddSyncedVisit(const std::string& url,
                       base::Time timestamp,
-                      const std::string& icon_url = std::string(""));
+                      const std::string& icon_url = std::string(""),
+                      const std::string& client_id = kDefaultClientId);
 
   // Clears all fake visits.
   void ClearSyncedVisits();
@@ -60,10 +63,18 @@ class FakeWebHistoryService : public WebHistoryService {
   struct Visit {
     Visit(const std::string& url,
           base::Time timestamp,
-          const std::string& icon_url);
+          const std::string& icon_url,
+          const std::string& client_id = kDefaultClientId);
+    Visit(const Visit&);
+    Visit& operator=(const Visit&);
+    Visit(Visit&&) noexcept;
+    Visit& operator=(Visit&&) noexcept;
+    ~Visit();
+
     std::string url;
     base::Time timestamp;
     std::string icon_url;
+    std::string client_id;
   };
 
   // Returns up to `count` results from `visits_` between `begin` and `end`.
@@ -76,6 +87,7 @@ class FakeWebHistoryService : public WebHistoryService {
       base::Time begin,
       base::Time end,
       size_t count,
+      const std::vector<std::string>& client_ids,
       bool* more_results_left);
 
  private:

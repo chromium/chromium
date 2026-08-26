@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -40,10 +41,12 @@ class TestRequest : public WebHistoryService::Request {
  public:
   TestRequest(WebHistoryService::CompletionCallback callback,
               int response_code,
-              const std::string& response_body)
+              const std::string& response_body,
+              std::string* last_post_data = nullptr)
       : callback_(std::move(callback)),
         response_code_(response_code),
-        response_body_(response_body) {}
+        response_body_(response_body),
+        last_post_data_(last_post_data) {}
 
   TestRequest(const TestRequest&) = delete;
   TestRequest& operator=(const TestRequest&) = delete;
@@ -56,6 +59,9 @@ class TestRequest : public WebHistoryService::Request {
   const std::string& GetResponseBody() const override { return response_body_; }
   void SetPostData(const std::string& post_data) override {
     post_data_ = post_data;
+    if (last_post_data_) {
+      *last_post_data_ = post_data;
+    }
   }
   void SetPostDataAndType(const std::string& post_data,
                           const std::string& mime_type) override {
@@ -73,6 +79,7 @@ class TestRequest : public WebHistoryService::Request {
   const int response_code_;
   const std::string response_body_;
   std::string post_data_;
+  raw_ptr<std::string> last_post_data_;
 };
 
 // A testing web history service that does extra checks and creates a
@@ -98,6 +105,7 @@ class TestingWebHistoryService : public WebHistoryService {
   }
 
   const GURL& last_request_url() const { return last_request_url_; }
+  const std::string& last_post_data() const { return last_post_data_; }
 
   using WebHistoryService::server_version_info_for_test;
 
@@ -109,13 +117,14 @@ class TestingWebHistoryService : public WebHistoryService {
       override {
     last_request_url_ = url;
     return std::make_unique<TestRequest>(std::move(callback), response_code_,
-                                         response_body_);
+                                         response_body_, &last_post_data_);
   }
 
  private:
   int response_code_ = net::HTTP_OK;
   std::string response_body_;
   GURL last_request_url_;
+  std::string last_post_data_;
 };
 
 }  // namespace
@@ -365,12 +374,30 @@ TEST_P(WebHistoryServiceTest, QueryHistoryUrlConstruction) {
   options.begin_time = base::Time::FromMillisecondsSinceUnixEpoch(12345000);
   options.end_time = base::Time::FromMillisecondsSinceUnixEpoch(67890000);
   options.max_count = 50;
+  options.client_ids = {"client_1", "client_2"};
 
   QueryHistorySynchronous("search term", options);
 
   const GURL& url = web_history_service_.last_request_url();
   if (IsNewAPIEnabled()) {
     EXPECT_TRUE(url.query().empty());
+    std::optional<base::DictValue> request_data =
+        base::JSONReader::ReadDict(web_history_service_.last_post_data(),
+                                   base::JSON_PARSE_RFC);
+    ASSERT_TRUE(request_data);
+    const base::ListValue* lookup_list = request_data->FindList("lookup");
+    ASSERT_TRUE(lookup_list && !lookup_list->empty());
+    const base::DictValue* lookup = lookup_list->front().GetIfDict();
+    ASSERT_TRUE(lookup);
+    EXPECT_EQ(50, lookup->FindInt("max_num_results"));
+    EXPECT_EQ("12345000000", *lookup->FindString("min_timestamp_usec"));
+    EXPECT_EQ("67889999999", *lookup->FindString("max_timestamp_usec"));
+    EXPECT_EQ("search term", *lookup->FindString("query"));
+    const base::ListValue* client_ids = lookup->FindList("client_id");
+    ASSERT_TRUE(client_ids);
+    ASSERT_EQ(2u, client_ids->size());
+    EXPECT_EQ("client_1", client_ids->front().GetString());
+    EXPECT_EQ("client_2", client_ids->back().GetString());
   } else {
     EXPECT_NE(std::string::npos, url.query().find("min=12345000000"));
     // end_time is inclusive, so 1us is subtracted.

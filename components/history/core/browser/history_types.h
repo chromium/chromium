@@ -445,6 +445,10 @@ struct QueryOptions {
   // If true, the query will restrict visits to only those known to sync.
   bool restrict_to_synced_urls = false;
 
+  // If not empty, search results will be restricted to visits originating from
+  // these client IDs.
+  std::vector<std::string> client_ids;
+
   // Helpers to get the effective parameters values, since a value of 0 means
   // "unspecified".
   int EffectiveMaxCount() const;
