@@ -42,6 +42,7 @@ class AXAuraObjWrapper;
 class AXVirtualView;
 class ScopedAccessibilityEventBlocker;
 class View;
+class ViewAccessibilityAXTreeSource;
 class Widget;
 
 using RoleCallbackList = base::RepeatingCallbackList<void(ax::mojom::Role)>;
@@ -570,6 +571,9 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // noticeable; the screen reader may say something like "Alert: hello"
   // instead of just "hello", and may interrupt any existing text being spoken.
   // However, the screen reader may also treat the two calls the same.
+  // With ViewsAX, both methods use the same serialized ARIA notification
+  // pipeline as web content.
+  // TODO(crbug.com/40672441): Clean this up once ViewsAX is enabled by default.
   // AnnounceText() is a deprecated alias for AnnounceAlert().
   // TODO(crbug.com/40287811) - Migrate all callers of AnnounceText() to
   // one of the other two methods.
@@ -843,6 +847,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   FRIEND_TEST_ALL_PREFIXES(ViewTest,
                            WidgetObserverViewWidgetClosedViewReparented);
   friend class ScopedAccessibilityEventBlocker;
+  friend class ViewAccessibilityAXTreeSource;
 
   // Fully initialize the cache.
   void CompleteCacheInitializationRecursive();
@@ -868,6 +873,12 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
                                  const std::optional<std::vector<int>>& value);
 
   void SetBlockNotifyEvents(bool block);
+
+  void Announce(std::u16string_view text,
+                ax::mojom::AriaNotificationPriority priority);
+  void AddAriaNotification(std::u16string_view text,
+                           ax::mojom::AriaNotificationPriority priority);
+  void ClearPendingAriaNotifications();
 
   ui::AXAttributeChangedCallbacks* GetOrCreateAXAttributeChangedCallbacks();
 

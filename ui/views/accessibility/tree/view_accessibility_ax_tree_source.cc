@@ -177,6 +177,7 @@ void ViewAccessibilityAXTreeSource::SerializeNode(
     return;
   }
   node->GetAccessibleNodeData(out_data);
+  node->ClearPendingAriaNotifications();
 }
 
 std::string ViewAccessibilityAXTreeSource::ToString(ViewAccessibility* root,

@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -1108,6 +1109,121 @@ TEST_F(WidgetAXManagerTest,
   gfx::NativeViewAccessible expected = browser_node->GetNativeViewAccessible();
   EXPECT_NE(expected, gfx::NativeViewAccessible());
   EXPECT_EQ(expected, manager()->GetNativeViewAccessibleForId(child_id));
+}
+
+TEST_F(WidgetAXManagerTest, AnnouncementsAreSerialized) {
+  ui::ScopedAXModeSetter enable_accessibility(ui::AXMode::kNativeAPIs);
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+  widget()->Show();
+
+  auto* child = widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  child->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  api.WaitForNextSerialization();
+
+  std::vector<std::pair<ui::AXEventGenerator::Event, ui::AXNodeID>>
+      generated_events;
+  api.ax_tree_manager()->SetGeneratedEventCallbackForTesting(
+      base::BindLambdaForTesting(
+          [&generated_events](ui::BrowserAccessibilityManager*,
+                              ui::AXEventGenerator::Event event_type,
+                              ui::AXNodeID node_id) {
+            if (event_type ==
+                ui::AXEventGenerator::Event::ARIA_NOTIFICATIONS_POSTED) {
+              generated_events.emplace_back(event_type, node_id);
+            }
+          }));
+
+  ASSERT_TRUE(manager()->CanFireAccessibilityEvents());
+  ASSERT_TRUE(api.ax_tree_manager()->CanFireEvents());
+  child->GetViewAccessibility().AnnounceAlert(u"Alert announcement");
+  child->GetViewAccessibility().AnnouncePolitely(u"Polite announcement");
+
+  ui::AXNodeData pending_data;
+  widget()->GetRootView()->GetViewAccessibility().GetAccessibleNodeData(
+      &pending_data);
+  EXPECT_EQ(
+      pending_data.GetStringListAttribute(
+          ax::mojom::StringListAttribute::kAriaNotificationAnnouncements),
+      (std::vector<std::string>{"Alert announcement", "Polite announcement"}));
+
+  api.WaitForNextSerialization();
+
+  const ui::AXNodeID root_id = GetUniqueId(widget()->GetRootView());
+  ui::BrowserAccessibility* browser_node =
+      api.ax_tree_manager()->GetFromID(root_id);
+  ASSERT_NE(browser_node, nullptr);
+  EXPECT_EQ(
+      browser_node->GetStringListAttribute(
+          ax::mojom::StringListAttribute::kAriaNotificationAnnouncements),
+      (std::vector<std::string>{"Alert announcement", "Polite announcement"}));
+  EXPECT_EQ(
+      browser_node->GetIntListAttribute(
+          ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties),
+      (std::vector<int32_t>{
+          static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kHigh),
+          static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kNormal)}));
+  EXPECT_EQ(
+      browser_node->GetIntListAttribute(
+          ax::mojom::IntListAttribute::kAriaNotificationInterruptProperties),
+      (std::vector<int32_t>{
+          static_cast<int32_t>(ax::mojom::AriaNotificationInterrupt::kNone),
+          static_cast<int32_t>(ax::mojom::AriaNotificationInterrupt::kNone)}));
+  EXPECT_EQ(browser_node->GetStringListAttribute(
+                ax::mojom::StringListAttribute::kAriaNotificationTypes),
+            (std::vector<std::string>{"", ""}));
+  EXPECT_TRUE(api.last_serialization().events.empty());
+  EXPECT_EQ(
+      generated_events,
+      (std::vector<std::pair<ui::AXEventGenerator::Event, ui::AXNodeID>>{
+          {ui::AXEventGenerator::Event::ARIA_NOTIFICATIONS_POSTED, root_id}}));
+
+  ui::AXNodeData cleared_data;
+  widget()->GetRootView()->GetViewAccessibility().GetAccessibleNodeData(
+      &cleared_data);
+  EXPECT_FALSE(cleared_data.HasStringListAttribute(
+      ax::mojom::StringListAttribute::kAriaNotificationAnnouncements));
+
+  child->GetViewAccessibility().AnnounceAlert(u"Alert announcement");
+  api.WaitForNextSerialization();
+
+  EXPECT_EQ(browser_node->GetStringListAttribute(
+                ax::mojom::StringListAttribute::kAriaNotificationAnnouncements),
+            (std::vector<std::string>{"Alert announcement"}));
+  ASSERT_EQ(generated_events.size(), 2u);
+  EXPECT_EQ(
+      generated_events.back(),
+      std::make_pair(ui::AXEventGenerator::Event::ARIA_NOTIFICATIONS_POSTED,
+                     root_id));
+}
+
+TEST_F(WidgetAXManagerTest, AnnouncementsAreDroppedWhenDisabled) {
+  WidgetAXManagerTestApi api(manager());
+  widget()->Show();
+
+  auto* child = widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  child->GetViewAccessibility().AnnounceAlert(u"Stale announcement");
+
+  std::vector<ui::AXEventGenerator::Event> generated_events;
+  api.ax_tree_manager()->SetGeneratedEventCallbackForTesting(
+      base::BindLambdaForTesting(
+          [&generated_events](ui::BrowserAccessibilityManager*,
+                              ui::AXEventGenerator::Event event_type,
+                              ui::AXNodeID) {
+            if (event_type ==
+                ui::AXEventGenerator::Event::ARIA_NOTIFICATIONS_POSTED) {
+              generated_events.push_back(event_type);
+            }
+          }));
+
+  api.Enable();
+
+  ui::BrowserAccessibility* browser_root =
+      api.ax_tree_manager()->GetFromID(GetUniqueId(widget()->GetRootView()));
+  ASSERT_NE(browser_root, nullptr);
+  EXPECT_FALSE(browser_root->HasStringListAttribute(
+      ax::mojom::StringListAttribute::kAriaNotificationAnnouncements));
+  EXPECT_TRUE(generated_events.empty());
 }
 
 TEST_F(WidgetAXManagerTest,
