@@ -20,6 +20,7 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/device_reauth/device_reauth_metrics_util.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
+#include "components/password_manager/core/browser/password_store/actionable_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -414,7 +415,6 @@ enum class SignInState {
   kSyncing = 2,
 };
 
-
 // Represents different user interactions related to adding credential from the
 // setting. These values are persisted to logs. Entries should not be renumbered
 // and numeric values should never be reused. Always keep this enum in sync with
@@ -706,10 +706,13 @@ void LogGeneralUIDismissalReason(UIDismissalReason reason);
 // user-state-specific histogram.
 // If `log_adoption_metric` is true, additional histogram is recorded to
 // measure adoption among new users of password manager.
+// If `saving_blocked_error` is set, additional histogram
+// PasswordManager.SaveUIDismissalReason.{PasswordStoreError} is recorded.
 void LogSaveUIDismissalReason(
     UIDismissalReason reason,
     std::optional<features_util::PasswordAccountStorageUserState> user_state,
-    bool log_adoption_metric);
+    bool log_adoption_metric,
+    std::optional<ActionableError> saving_blocked_error = std::nullopt);
 
 // Log the |reason| a user dismissed the update password bubble.
 void LogUpdateUIDismissalReason(UIDismissalReason reason);

@@ -511,8 +511,9 @@ void SaveUpdatePasswordMessageDelegate::HandleMessageDismissed(
     return;
   }
 
-  // TODO(crbug.com/483651031): Record metrics for the message when the trusted
-  // vault key retrieval flow is in progress.
+  // Record metrics.
+  RecordDismissalReasonMetrics(
+      MessageDismissReasonToPasswordManagerUIDismissalReason(dismiss_reason));
 
   // If the message was dismissed before the trusted vault key retrieval flow
   // was completed, do not clear the state.
@@ -520,13 +521,9 @@ void SaveUpdatePasswordMessageDelegate::HandleMessageDismissed(
     return;
   }
 
-  // Record metrics and cleanup state.
-  RecordDismissalReasonMetrics(
-      MessageDismissReasonToPasswordManagerUIDismissalReason(dismiss_reason));
-
-  // If Device Lock UI needs to be shown and can be (i.e. WindowAndroid is
-  // available), these lines are handled in the `SolveTrustedVaultCheck`
-  // callback.
+  // Clean up the state. If Device Lock UI needs to be shown and can be (i.e.
+  // WindowAndroid is available), these lines are handled in the
+  // `SolveTrustedVaultCheck` callback.
   if (!(device_lock_bridge_->ShouldShowDeviceLockUi() &&
         web_contents_->GetNativeView()->GetWindowAndroid())) {
     ClearState();
@@ -546,20 +543,17 @@ void SaveUpdatePasswordMessageDelegate::CreatePasswordEditDialog() {
 
 void SaveUpdatePasswordMessageDelegate::HandleDialogDismissed(
     bool dialog_accepted) {
-  // TODO(crbug.com/483651031): Record metrics for the dialog when the trusted
-  // vault key retrieval flow is in progress.
-
   password_edit_dialog_.reset();
+
+  RecordDismissalReasonMetrics(
+      dialog_accepted ? password_manager::metrics_util::CLICKED_ACCEPT
+                      : password_manager::metrics_util::CLICKED_CANCEL);
 
   // If the dialog was dismissed before the trusted vault key retrieval flow was
   // completed, do not clear the state.
   if (waiting_for_unlocking_trusted_vault_) {
     return;
   }
-
-  RecordDismissalReasonMetrics(
-      dialog_accepted ? password_manager::metrics_util::CLICKED_ACCEPT
-                      : password_manager::metrics_util::CLICKED_CANCEL);
 
   // If Device Lock UI needs to be shown and can be (i.e. WindowAndroid is
   // available), these lines are handled in the `SolveTrustedVaultCheck`
@@ -628,9 +622,15 @@ void SaveUpdatePasswordMessageDelegate::RecordDismissalReasonMetrics(
     password_manager::metrics_util::LogUpdateUIDismissalReason(
         ui_dismissal_reason);
   } else {
+    std::optional<password_manager::ActionableError> saving_blocked_error;
+    if (password_manager_util::IsSavingBlockedByTrustedVaultError(
+            passwords_state_.client(), passwords_state_.form_manager())) {
+      saving_blocked_error =
+          password_manager::ActionableError::kTrustedVaultKeyNeeded;
+    }
     password_manager::metrics_util::LogSaveUIDismissalReason(
         ui_dismissal_reason, /*user_state=*/std::nullopt,
-        /*log_adoption_metric=*/false);
+        /*log_adoption_metric=*/false, saving_blocked_error);
   }
   if (auto* recorder = passwords_state_.form_manager()->GetMetricsRecorder()) {
     recorder->RecordUIDismissalReason(ui_dismissal_reason);

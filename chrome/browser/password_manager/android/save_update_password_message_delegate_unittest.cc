@@ -729,6 +729,47 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
                          kPasswordSavePrompt));
   TriggerActionClick();
   EXPECT_EQ(nullptr, GetMessageWrapper());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveUIDismissalReason.TrustedVaultError",
+      password_manager::metrics_util::CLICKED_ACCEPT, 1);
+}
+
+// Tests that the dismissal reason is recorded to the trusted vault error metric
+// when the user dismisses the prompt while saving is blocked by a trusted vault
+// error.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       DontSaveOnDismissWithTrustedVaultError) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordSaveInContextErrorResolution);
+  std::unique_ptr<password_manager::FakePasswordStoreBackend>
+      fake_account_backend =
+          std::make_unique<password_manager::FakePasswordStoreBackend>();
+  fake_account_backend->ReturnErrorOnRequest(
+      password_manager::PasswordStoreBackendError(
+          password_manager::PasswordStoreBackendErrorType::
+              kKeyRetrievalRequired));
+  scoped_refptr<password_manager::PasswordStore> account_store =
+      base::MakeRefCounted<password_manager::PasswordStore>(
+          std::move(fake_account_backend));
+  account_store->Init();
+  ON_CALL(*GetClient(), GetAccountPasswordStore())
+      .WillByDefault(Return(account_store.get()));
+
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EXPECT_CALL(*form_manager, Save()).Times(0);
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
+                 /*update_password=*/false);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  EXPECT_CALL(*helper_bridge(), StartTrustedVaultKeyRetrievalFlow).Times(0);
+  DismissMessage(messages::DismissReason::GESTURE);
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveUIDismissalReason.TrustedVaultError",
+      password_manager::metrics_util::CLICKED_CANCEL, 1);
 }
 
 // Tests that the password is saved after trusted vault key is retrieved.
@@ -1810,7 +1851,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
             GetMessageWrapper()->GetDescription());
   DismissMessage(messages::DismissReason::UNKNOWN);
 }
-
 
 // Tests `IsUsingAccountStorage` returns false if the credential being
 // updated comes from the local storage, despite the user being signed in,

@@ -488,6 +488,37 @@ INSTANTIATE_TEST_SUITE_P(
             /*success=*/false,
         },
     }));
+
+TEST(PasswordManagerMetricsUtil,
+     LogSaveUIDismissalReasonWithSavingBlockedError) {
+  base::HistogramTester histogram_tester;
+
+  LogSaveUIDismissalReason(
+      CLICKED_ACCEPT, /*user_state=*/std::nullopt,
+      /*log_adoption_metric=*/false,
+      /*saving_blocked_error=*/ActionableError::kTrustedVaultKeyNeeded);
+  LogSaveUIDismissalReason(
+      CLICKED_ACCEPT, /*user_state=*/std::nullopt,
+      /*log_adoption_metric=*/false,
+      /*saving_blocked_error=*/ActionableError::kSignInNeeded);
+  LogSaveUIDismissalReason(
+      CLICKED_ACCEPT, /*user_state=*/std::nullopt,
+      /*log_adoption_metric=*/false,
+      /*saving_blocked_error=*/ActionableError::kNeedsPassphrase);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveUIDismissalReason.TrustedVaultError", CLICKED_ACCEPT,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveUIDismissalReason.PendingSignInError",
+      CLICKED_ACCEPT, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveUIDismissalReason.PassphraseRequiredError",
+      CLICKED_ACCEPT, 1);
+  histogram_tester.ExpectBucketCount("PasswordManager.SaveUIDismissalReason",
+                                     CLICKED_ACCEPT, 3);
+}
+
 }  // namespace
 
 }  // namespace password_manager::metrics_util

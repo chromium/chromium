@@ -160,7 +160,7 @@ void LeakDialogMetricsRecorder::LogLeakDialogTypeAndDismissalReason(
 
   // The entire event is made up of these two fields, so we can build and
   // record it in one step.
-  ukm ::builders::PasswordManager_LeakWarningDialog ukm_builder(source_id_);
+  ukm::builders::PasswordManager_LeakWarningDialog ukm_builder(source_id_);
   ukm_builder.SetPasswordLeakDetectionDialogType(static_cast<int64_t>(type_));
   ukm_builder.SetPasswordLeakDetectionDialogDismissalReason(
       static_cast<int64_t>(reason));
@@ -188,7 +188,8 @@ void LogSaveUIDismissalReason(
     std::optional<
         password_manager::features_util::PasswordAccountStorageUserState>
         user_state,
-    bool log_adoption_metric) {
+    bool log_adoption_metric,
+    std::optional<ActionableError> saving_blocked_error) {
   base::UmaHistogramEnumeration("PasswordManager.SaveUIDismissalReason", reason,
                                 NUM_UI_RESPONSES);
 
@@ -204,6 +205,31 @@ void LogSaveUIDismissalReason(
     base::UmaHistogramEnumeration(
         "PasswordManager.SaveUIDismissalReason.UsersWithNoCredentials", reason,
         NUM_UI_RESPONSES);
+  }
+
+  if (saving_blocked_error.has_value()) {
+    switch (saving_blocked_error.value()) {
+      case ActionableError::kTrustedVaultKeyNeeded:
+        base::UmaHistogramEnumeration(
+            "PasswordManager.SaveUIDismissalReason.TrustedVaultError", reason,
+            NUM_UI_RESPONSES);
+        break;
+      case ActionableError::kSignInNeeded:
+        base::UmaHistogramEnumeration(
+            "PasswordManager.SaveUIDismissalReason.PendingSignInError", reason,
+            NUM_UI_RESPONSES);
+        break;
+      case ActionableError::kNeedsPassphrase:
+        base::UmaHistogramEnumeration(
+            "PasswordManager.SaveUIDismissalReason.PassphraseRequiredError",
+            reason, NUM_UI_RESPONSES);
+        break;
+      case ActionableError::kNoError:
+      case ActionableError::kInactionable:
+      case ActionableError::kInactionableTemporaryError:
+      case ActionableError::kKeychainError:
+        break;
+    }
   }
 }
 

@@ -3872,6 +3872,24 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.SaveUIDismissalReason.{PasswordStoreError}"
+    enum="PasswordManagerUIDismissalReason" expires_after="2027-01-31">
+  <owner>izuzic@google.com</owner>
+  <owner>anki-team@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Why was the save password UI (bubble, message or infobar) closed? Recorded
+    when saving is blocked by {PasswordStoreError}.
+  </summary>
+  <token key="PasswordStoreError">
+    <variant name="PassphraseRequiredError"
+        summary="a custom passphrase error"/>
+    <variant name="PendingSignInError" summary="a pending sign-in error"/>
+    <variant name="TrustedVaultError"
+        summary="a trusted vault key retrieval error"/>
+  </token>
+</histogram>
+
 <histogram name="PasswordManager.SaveUIDismissalReason{UserSyncingType}"
     enum="PasswordManagerUIDismissalReason" expires_after="2027-01-31">
   <owner>treib@chromium.org</owner>

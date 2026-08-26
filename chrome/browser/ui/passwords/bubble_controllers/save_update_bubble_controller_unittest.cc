@@ -849,3 +849,18 @@ TEST_F(SaveUpdateBubbleControllerTest, OnTrustedVaultUnlockClicked) {
   EXPECT_CALL(*delegate(), SavePasswordAfterTrustedVaultErrorResolution());
   controller()->OnTrustedVaultUnlockClicked();
 }
+
+TEST_F(SaveUpdateBubbleControllerTest,
+       LogSaveUIDismissalReasonWhenBlockedByTrustedVaultError) {
+  base::HistogramTester histogram_tester;
+  PretendPasswordWaiting();
+  EXPECT_CALL(*delegate(), IsSavingBlockedByTrustedVaultError())
+      .WillRepeatedly(Return(true));
+
+  controller()->OnSaveClicked();
+  DestroyModelAndVerifyControllerExpectations();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveUIDismissalReason.TrustedVaultError",
+      static_cast<int>(password_manager::metrics_util::CLICKED_ACCEPT), 1);
+}
