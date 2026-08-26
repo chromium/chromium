@@ -17,7 +17,6 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_init_state.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -31,6 +30,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/base_window.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
@@ -146,10 +146,10 @@ class KioskTroubleshootingToolsTest : public MixinBasedInProcessBrowserTest {
         /*alt=*/true, /*command=*/false);
   }
 
-  Browser& OpenForAppPopupBrowser() const {
+  BrowserWindowInterface& OpenForAppPopupBrowser() const {
     CurrentProfile().GetPrefs()->SetBoolean(
         ash::prefs::kNewWindowsInKioskAllowed, true);
-    Browser& popup_browser = CreatePopupBrowser(
+    BrowserWindowInterface& popup_browser = CreatePopupBrowser(
         CurrentProfile(),
         BrowserInitState::From(browser())->create_params().app_name, GURL());
     EXPECT_FALSE(DidKioskCloseNewWindow());
@@ -359,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest, SwitchWindowsDisallowed) {
   // Enable another feature to allow opening two popup browsers to make sure
   // that switching between windows is still not available if the
   // troubleshooting policy is disabled.
-  Browser& new_browser = OpenForAppPopupBrowser();
+  BrowserWindowInterface& new_browser = OpenForAppPopupBrowser();
 
   // When new window is opened, it becomes active.
   EXPECT_TRUE(new_browser.GetWindow()->IsActive());
@@ -413,7 +413,8 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
 IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
                        NewDisallowedWindowShouldBeHiddenIfNoNavigationHappens) {
   // Explicitly open a new window to make sure it will be hidden.
-  Browser& browser = CreateRegularBrowser(CurrentProfile(), GURL());
+  BrowserWindowInterface& browser =
+      CreateRegularBrowser(CurrentProfile(), GURL());
   EXPECT_TRUE(DidKioskHideNewWindow(&browser));
 
   histogram.ExpectTotalCount(chromeos::kKioskNewBrowserWindowHistogram, 0);

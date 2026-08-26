@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_install_util.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -38,6 +37,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/base_window.h"
 
 namespace ash {
 
@@ -169,7 +169,8 @@ IN_PROC_BROWSER_TEST_F(NewWindowsInKioskAllowedTest, CloseBrowserIfReOpen) {
   ASSERT_TRUE(GetPolicyValueInPrefs(CurrentProfile()));
 
   EXPECT_EQ(VisibleBrowserCount(), 1u);
-  Browser& browser = CreateRegularBrowser(CurrentProfile(), GURL());
+  BrowserWindowInterface& browser =
+      CreateRegularBrowser(CurrentProfile(), GURL());
   ASSERT_TRUE(DidKioskHideNewWindow(&browser));
   EXPECT_EQ(VisibleBrowserCount(), 1u);
   ASSERT_FALSE(browser.GetWindow()->IsVisible());
@@ -184,11 +185,10 @@ IN_PROC_BROWSER_TEST_P(NewWindowsInKioskAllowedTest, AllowsNewPopupWindows) {
   ASSERT_TRUE(GetPolicyValueInPrefs(profile));
 
   EXPECT_EQ(VisibleBrowserCount(), 1u);
-  Browser& initial_browser =
-      CHECK_DEREF(GetLastActiveBrowserWindowInterfaceWithAnyProfile()
-                      ->GetBrowserForMigrationOnly());
+  BrowserWindowInterface& initial_browser =
+      CHECK_DEREF(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 
-  Browser& popup =
+  BrowserWindowInterface& popup =
       CreatePopupBrowser(profile, WebAppWindowName(TheKioskWebApp()), url());
 
   ASSERT_FALSE(DidKioskCloseNewWindow());
@@ -210,7 +210,8 @@ IN_PROC_BROWSER_TEST_P(NewWindowsInKioskAllowedTest,
   ASSERT_TRUE(GetPolicyValueInPrefs(CurrentProfile()));
 
   EXPECT_EQ(VisibleBrowserCount(), 1u);
-  Browser& browser = CreateRegularBrowser(CurrentProfile(), url());
+  BrowserWindowInterface& browser =
+      CreateRegularBrowser(CurrentProfile(), url());
   ASSERT_TRUE(DidKioskHideNewWindow(&browser));
   EXPECT_EQ(VisibleBrowserCount(), 1u);
 }
@@ -248,7 +249,8 @@ IN_PROC_BROWSER_TEST_P(NewWindowsInKioskDisallowedTest,
 
   EXPECT_EQ(VisibleBrowserCount(), 1u);
 
-  Browser& browser = CreateRegularBrowser(CurrentProfile(), url());
+  BrowserWindowInterface& browser =
+      CreateRegularBrowser(CurrentProfile(), url());
   ASSERT_TRUE(DidKioskHideNewWindow(&browser));
   EXPECT_EQ(VisibleBrowserCount(), 1u);
 }
@@ -259,7 +261,7 @@ IN_PROC_BROWSER_TEST_P(NewWindowsInKioskDisallowedTest,
 
   EXPECT_EQ(VisibleBrowserCount(), 1u);
 
-  Browser& popup = CreatePopupBrowser(
+  BrowserWindowInterface& popup = CreatePopupBrowser(
       CurrentProfile(), WebAppWindowName(TheKioskWebApp()), url());
   ASSERT_TRUE(DidKioskHideNewWindow(&popup));
   EXPECT_EQ(VisibleBrowserCount(), 1u);

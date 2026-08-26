@@ -56,6 +56,7 @@
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/base_window.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "url/gurl.h"
@@ -99,7 +100,7 @@ class SessionInitializedWaiter : public KioskAppManagerObserver {
 // Waits for the browser window to be hidden or destroyed.
 class TestBrowserHiddenWaiter : public views::WidgetObserver {
  public:
-  explicit TestBrowserHiddenWaiter(Browser* browser) {
+  explicit TestBrowserHiddenWaiter(BrowserWindowInterface* browser) {
     EXPECT_TRUE(browser->GetWindow()->IsVisible());
     widget_observation_.Observe(
         BrowserView::GetBrowserViewForBrowser(browser)->GetWidget());
@@ -125,18 +126,20 @@ class TestBrowserHiddenWaiter : public views::WidgetObserver {
   base::test::TestFuture<void> future_;
 };
 
-content::WebContents* GetActiveWebContents(const Browser& browser) {
-  return browser.tab_strip_model()->GetActiveWebContents();
+content::WebContents* GetActiveWebContents(
+    const BrowserWindowInterface& browser) {
+  return browser.GetTabStripModel()->GetActiveWebContents();
 }
 
-void AddWebContentsToBrowser(Browser& browser, Profile& profile) {
+void AddWebContentsToBrowser(BrowserWindowInterface& browser,
+                             Profile& profile) {
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(&profile));
 
-  browser.tab_strip_model()->AddWebContents(std::move(web_contents), -1,
-                                            ui::PAGE_TRANSITION_FIRST,
-                                            AddTabTypes::ADD_ACTIVE);
+  browser.GetTabStripModel()->AddWebContents(std::move(web_contents), -1,
+                                             ui::PAGE_TRANSITION_FIRST,
+                                             AddTabTypes::ADD_ACTIVE);
 }
 
 void TriggerNavigationToUrl(content::WebContents* web_contents,
@@ -330,7 +333,7 @@ bool DidKioskCloseNewWindow() {
   return new_window_closed.Take();
 }
 
-bool DidKioskHideNewWindow(Browser* browser) {
+bool DidKioskHideNewWindow(BrowserWindowInterface* browser) {
   return TestBrowserHiddenWaiter(browser).WaitUntilHidden();
 }
 
@@ -395,10 +398,11 @@ AccountId CreateDeviceLocalAccountId(std::string_view account_id,
       policy::GenerateDeviceLocalAccountUserId(account_id, type)));
 }
 
-Browser& CreateRegularBrowser(Profile& profile, const GURL& url) {
+BrowserWindowInterface& CreateRegularBrowser(Profile& profile,
+                                             const GURL& url) {
   BrowserWindowCreateParams params(&profile, /*from_user_gesture=*/true);
-  Browser& browser = CHECK_DEREF(
-      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly());
+  BrowserWindowInterface& browser =
+      CHECK_DEREF(CreateBrowserWindow(std::move(params)));
   browser.GetWindow()->Show();
 
   AddWebContentsToBrowser(browser, profile);
@@ -407,17 +411,17 @@ Browser& CreateRegularBrowser(Profile& profile, const GURL& url) {
   return browser;
 }
 
-Browser& CreatePopupBrowser(Profile& profile,
-                            const std::string& app_name,
-                            const GURL& url) {
+BrowserWindowInterface& CreatePopupBrowser(Profile& profile,
+                                           const std::string& app_name,
+                                           const GURL& url) {
   BrowserWindowCreateParams params =
       BrowserWindowCreateParams::CreateForAppPopup(
           app_name,
           /*trusted_source=*/true,
           /*window_bounds=*/gfx::Rect(), &profile,
           /*user_gesture=*/true);
-  Browser& browser = CHECK_DEREF(
-      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly());
+  BrowserWindowInterface& browser =
+      CHECK_DEREF(CreateBrowserWindow(std::move(params)));
   browser.GetWindow()->Show();
 
   AddWebContentsToBrowser(browser, profile);
