@@ -5,7 +5,7 @@
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
 import {hexColorToSkColor} from '//resources/js/color_utils.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {BrowserProxyImpl, PageActionId, PageActionTrigger} from 'chrome://webui-toolbar.top-chrome/app.js';
@@ -293,4 +293,94 @@ suite('PageActionIconTest', function() {
     button.dispatchEvent(new PointerEvent('pointercancel'));
     assertTrue(cancelFired);
   });
+
+  test('Does not animate label without text', async function() {
+    icon.state = {
+      ...createBaseState(),
+      text: '',
+      shouldShowChip: false,
+      shouldAnimateChipOut: true,
+    };
+    await microtasksFinished();
+    assertFalse(icon.$.button.hasAttribute('animates-label'));
+    assertFalse(icon.$.button.hasAttribute('has-label'));
+  });
+
+  test(
+      'Does not animate label on initial mount in collapsed state',
+      async function() {
+        const newIcon = document.createElement('page-action-icon');
+        newIcon.state = {
+          ...createBaseState(),
+          text: 'Chip text',
+          shouldShowChip: false,
+          shouldAnimateChipOut: true,
+        };
+        document.body.appendChild(newIcon);
+        await microtasksFinished();
+        assertFalse(newIcon.$.button.hasAttribute('animates-label'));
+        assertFalse(newIcon.$.button.hasAttribute('has-label'));
+      });
+
+  test('Animates label when expanding chip', async function() {
+    icon.state = {
+      ...createBaseState(),
+      text: 'Chip text',
+      shouldShowChip: true,
+      shouldAnimateChipIn: true,
+    };
+    await microtasksFinished();
+    assertTrue(icon.$.button.hasAttribute('animates-label'));
+    assertTrue(icon.$.button.hasAttribute('has-label'));
+  });
+
+  test('Animates label when collapsing from active chip', async function() {
+    icon.state = {
+      ...createBaseState(),
+      text: 'Chip text',
+      shouldShowChip: true,
+      shouldAnimateChipIn: true,
+    };
+    await microtasksFinished();
+    assertTrue(icon.$.button.hasAttribute('animates-label'));
+    assertTrue(icon.$.button.hasAttribute('has-label'));
+
+    // Collapse chip
+    icon.state = {
+      ...icon.state,
+      shouldShowChip: false,
+      shouldAnimateChipOut: true,
+    };
+    await microtasksFinished();
+    assertTrue(icon.$.button.hasAttribute('animates-label'));
+    assertFalse(icon.$.button.hasAttribute('has-label'));
+  });
+
+  test(
+      'Does not animate label when switching to different action id',
+      async function() {
+        icon.state = {
+          ...createBaseState(),
+          pageActionId: PageActionId.kActionAiMode,
+          text: 'AI Mode',
+          shouldShowChip: true,
+          shouldAnimateChipIn: true,
+        };
+        await microtasksFinished();
+        assertTrue(icon.$.button.hasAttribute('animates-label'));
+        assertTrue(icon.$.button.hasAttribute('has-label'));
+
+        // Update state to a different action ID that is collapsed (e.g.
+        // Bookmark)
+        icon.state = {
+          ...createBaseState(),
+          pageActionId: PageActionId.kActionBookmarkThisTab,
+          text: 'Bookmark this tab',
+          shouldShowChip: false,
+          shouldAnimateChipOut: true,
+        };
+        await microtasksFinished();
+        assertFalse(icon.$.button.hasAttribute('animates-label'));
+        assertFalse(icon.$.button.hasAttribute('has-label'));
+      });
 });

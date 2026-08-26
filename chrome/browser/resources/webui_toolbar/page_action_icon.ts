@@ -71,23 +71,19 @@ export class PageActionIconElement extends CrLitElement {
   protected accessor chipStyleOverride_: string|null = null;
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private wasShowingChip_: boolean = false;
 
   override focus() {
     this.$.button.focus();
   }
 
-  protected shouldShowLabel_(): boolean {
-    return this.state.shouldShowChip && !!this.state.text;
-  }
-
-  protected shouldAnimate_(): boolean {
-    return this.state.shouldShowChip ? this.state.shouldAnimateChipIn :
-                                       this.state.shouldAnimateChipOut;
-  }
-
   override willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
     if (changedProperties.has('state')) {
+      const oldState = changedProperties.get('state');
+      this.wasShowingChip_ =
+          oldState?.pageActionId === this.state.pageActionId &&
+          (oldState?.shouldShowChip ?? false);
       if (this.state.backgroundColorOverride) {
         this.chipStyleOverride_ = `--toolbar-chip-bg-color: ${
             skColorToRgba(this.state.backgroundColorOverride)};`;
@@ -95,6 +91,19 @@ export class PageActionIconElement extends CrLitElement {
         this.chipStyleOverride_ = null;
       }
     }
+  }
+
+  protected shouldShowLabel_(): boolean {
+    return this.state.shouldShowChip && !!this.state.text;
+  }
+
+  protected shouldAnimate_(): boolean {
+    if (!this.state.text) {
+      return false;
+    }
+    return this.state.shouldShowChip ?
+        this.state.shouldAnimateChipIn :
+        (this.wasShowingChip_ && this.state.shouldAnimateChipOut);
   }
 
   override updated(changedProperties: PropertyValues<this>): void {

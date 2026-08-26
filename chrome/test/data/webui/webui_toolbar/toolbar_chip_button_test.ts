@@ -115,4 +115,26 @@ suite('ToolbarChipButtonTest', function() {
     assertEquals(1, suffixSlot.assignedNodes().length);
     assertEquals(suffixIcon, suffixSlot.assignedNodes()[0]);
   });
+
+  test('CollapsesGapAndLabelWithoutHasLabel', async function() {
+    const prefixIcon = document.createElement('div');
+    prefixIcon.slot = 'prefix-icon';
+    const content = document.createElement('span');
+    content.textContent = 'button label';
+    element.appendChild(prefixIcon);
+    element.appendChild(content);
+    element.style.setProperty('--toolbar-chip-icon-label-gap', '8px');
+    await microtasksFinished();
+
+    assertEquals('0px', window.getComputedStyle(element.$.button).gap);
+    assertEquals('0px', window.getComputedStyle(content).maxWidth);
+    assertEquals('0', window.getComputedStyle(content).opacity);
+
+    element.toggleAttribute('has-label', true);
+    await microtasksFinished();
+
+    assertEquals('8px', window.getComputedStyle(element.$.button).gap);
+    assertEquals('none', window.getComputedStyle(content).maxWidth);
+    assertEquals('1', window.getComputedStyle(content).opacity);
+  });
 });

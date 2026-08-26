@@ -62,7 +62,7 @@
   font-family: inherit;
   font-size: inherit;
   font-weight: inherit;
-  gap: var(--toolbar-chip-icon-label-gap);
+  gap: 0;
   height: var(--toolbar-chip-height);
   justify-content: center;
   min-width: var(--toolbar-chip-height);
@@ -182,6 +182,7 @@
                         var(--color-toolbar-background-subtle-emphasis));
   border-radius: var(--toolbar-chip-border-radius);
   color: inherit;
+  gap: var(--toolbar-chip-icon-label-gap);
 
   /* Add extra padding to move button text away from rounded corners */
   --label-side-spacing: calc(round(down, var(--toolbar-chip-height) / 4, 1px));
@@ -232,12 +233,6 @@
           var(--ease-out-cubic-bezier);
 }
 
-/* When the label is hidden, collapse the flex gap between the icon and the
- * text so there is no lingering empty space inside the circular button. */
-:host([animates-label]:not([has-label])) #button {
-  gap: 0;
-}
-
 /* Target the label text (the slotted element that does not have a specific
  * "slot" attribute). When the chip expands, this transitions the text from 0
  * width and opacity up to its intrinsic max-content width and full opacity. */
@@ -252,9 +247,10 @@
 }
 
 /* When the label is hidden, crush its width and opacity to 0. */
-:host([animates-label]:not([has-label])) ::slotted(:not([slot])) {
+:host(:not([has-label])) ::slotted(:not([slot])) {
   max-width: 0;
   opacity: 0;
+  overflow: hidden;
 }
 
 #button:disabled {
