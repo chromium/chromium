@@ -99,7 +99,15 @@ def run_tests_with_orchestrate(
         logs_dir = '/tmp/'
 
     config_json = os.path.join(SCRIPT_DIR, 'orchestrate.json')
-    overrides = {'emulator': {'package_archives': packages}}
+    overrides = {
+        'emulator': {
+            'package_archives': packages,
+            'build_ids': [
+                os.path.join(os.path.dirname(pkg), 'ids.txt')
+                for pkg in packages
+            ],
+        }
+    }
     overrides_str = json.dumps(overrides)
 
     orchestrate_bin = os.path.join(common.SDK_TOOLS_DIR, 'orchestrate')
