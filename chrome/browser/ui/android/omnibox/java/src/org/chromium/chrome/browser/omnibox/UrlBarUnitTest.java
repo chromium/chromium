@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.ArgumentMatchers.any;
@@ -1780,14 +1779,5 @@ public class UrlBarUnitTest {
         // SUPER_LONG_URL should still be truncated for performance.
         assertTrue(spanStart > NUMBER_OF_VISIBLE_CHARACTERS);
         assertEquals(SUPER_LONG_URL.length() - (MAX_DISPLAYABLE_LENGTH / 2), spanEnd);
-    }
-
-    @Test
-    public void testSetTextWithTruncation_identicalText_noReset() {
-        mUrlBar.setText("hello");
-        Editable textBefore = mUrlBar.getText();
-        mUrlBar.setTextWithTruncation("hello", UrlBar.ScrollType.SCROLL_TO_TLD, 5);
-        Editable textAfter = mUrlBar.getText();
-        assertSame(textBefore, textAfter);
     }
 }
