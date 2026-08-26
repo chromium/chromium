@@ -60,6 +60,7 @@ import {
 } from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {IconType} from '/shared/icon_handle.mojom-webui.js';
 import type {OmniboxAction, LocationBarState, PageActionState, PermissionChipState, PermissionDashboardState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
+import type {OverflowMenuItem} from '/shared/toolbar_ui_api.mojom-webui.js';
 import {PermissionChipElement} from '/shared/permission_chip.js';
 import type {PermissionDashboardElement} from '/shared/permission_dashboard.js';
 
@@ -171,6 +172,7 @@ const TRACKED_ELEMENTS: Array<{selector: string, id: string}> = [
   {selector: '#split-tabs', id: 'kToolbarSplitTabsToolbarButtonElementId'},
   {selector: '#location-bar', id: 'kLocationBarElementId'},
   {selector: '#home', id: 'kToolbarHomeButtonElementId'},
+  {selector: '#overflow', id: 'kToolbarOverflowButtonElementId'},
   {selector: '#app-menu', id: 'kToolbarAppMenuButtonElementId'},
   {selector: '#avatar', id: 'kToolbarAvatarButtonElementId'},
   {selector: '#battery-saver', id: 'kToolbarBatterySaverButtonElementId'},
@@ -487,6 +489,10 @@ export class ToolbarAppElement extends AppElementBase {
       () => void = () => this.scheduleLayoutResponsiveControls_();
 
   private isRtl_: boolean = loadTimeData.getString('textdirection') === 'rtl';
+
+  get browserProxyForTesting(): BrowserProxy {
+    return this.browserProxy_;
+  }
 
   protected readonly initialBootSnapshot_: {
     backButtonEnabled: boolean,
@@ -929,6 +935,18 @@ export class ToolbarAppElement extends AppElementBase {
                 [locationBar, ...buttons] :
                 [...buttons, locationBar])
         .filter((el): el is ResponsiveControl&HTMLElement => el !== null);
+  }
+
+  /**
+   * Returns information on all controls that are currently hidden due to
+   * overflow and should therefore be displayed on the overflow menu.
+   */
+  getOverflowedMenuItems(): OverflowMenuItem[] {
+    const overflowControls: OverflowMenuItem[] = [];
+    for (const control of this.getResponsiveControls()) {
+      overflowControls.push(...control.controlsToAddToOverflowMenu());
+    }
+    return overflowControls;
   }
 
   /**

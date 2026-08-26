@@ -25,6 +25,9 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
     return new Promise<never>(() => {});
   }
   showContextMenu() {}
+  showOverflowMenu() {
+    return Promise.resolve({result: {}});
+  }
   onOmniboxAction() {
     return new Promise<never>(() => {});
   }

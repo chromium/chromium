@@ -528,6 +528,7 @@ WebUIToolbarUI::GetKnownElementIdentifiers() {
        kToolbarHomeButtonElementId,
        kToolbarBackButtonElementId,
        kToolbarForwardButtonElementId,
+       kToolbarOverflowButtonElementId,
        kSharedTabGroupFeedbackElementId,
        kToolbarAppMenuButtonElementId,
        kSharedTabGroupCommentsActionElementId,

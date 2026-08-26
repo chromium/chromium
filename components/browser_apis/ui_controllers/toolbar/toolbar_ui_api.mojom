@@ -10,6 +10,7 @@ import "components/content_settings/core/common/content_settings_types.mojom";
 import "ui/base/dragdrop/mojom/drag_drop_types.mojom";
 import "ui/base/mojom/menu_source_type.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/webui/resources/js/tracked_element/tracked_element.mojom";
 import "mojo/public/mojom/base/empty.mojom";
 import "mojo/public/mojom/base/error.mojom";
 import "mojo/public/mojom/base/string16.mojom";
@@ -41,6 +42,20 @@ struct AdjustOmniboxTextForCopyResult {
   mojo_base.mojom.String16? page_title;
 };
 
+// Information about a control that is hidden due to overflow, and should be
+// shown on the overflow button's pulldown menu.
+struct OverflowMenuItem {
+  // TrackedElementIdentifier of the item. This is checked in the browser
+  // against a list of ui::ElementIdentifiers that can overflow, to determine
+  // the icon and string shown in the menu, and what to do when the item is
+  // clicked. Unknown IDs or those of elements that can't overflow result in
+  // an exception.
+  tracked_element.mojom.TrackedElementIdentifier id;
+
+  // Whether the menu item should be enabled or greyed out.
+  bool is_enabled;
+};
+
 // ToolbarUIService defines methods to be called from the WebUI to the
 // browser-side to drive UI logic.
 interface ToolbarUIService {
@@ -58,6 +73,13 @@ interface ToolbarUIService {
   ShowContextMenu(ContextMenuType menu_type,
                   gfx.mojom.RectF bounds_in_css_pixels,
                   ui.mojom.MenuSourceType source);
+
+  // Displays the overflow menu with the provided list of overflow control
+  // items at the provided bounding rectangle in CSS pixels.
+  ShowOverflowMenu(array<OverflowMenuItem> controls,
+                   gfx.mojom.RectF bounds_in_css_pixels,
+                   ui.mojom.MenuSourceType source)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Handles user interaction with the omnibox
   OnOmniboxAction(OmniboxAction action)

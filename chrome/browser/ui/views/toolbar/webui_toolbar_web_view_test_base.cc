@@ -49,6 +49,31 @@ ToolbarView* WebUIToolbarWebViewTestBase::GetToolbarView() {
   return BrowserView::GetBrowserViewForBrowser(browser())->toolbar();
 }
 
+WebUIToolbarWebView* WebUIToolbarWebViewTestBase::GetWebUIToolbar() {
+  return GetToolbarView()->GetWebUIToolbarViewForTesting();
+}
+
+content::WebContents* WebUIToolbarWebViewTestBase::GetWebUIWebContents() {
+  return GetWebUIToolbar()->GetWebContents();
+}
+
+content::EvalJsResult WebUIToolbarWebViewTestBase::SetSpacerWidth(int width) {
+  return content::EvalJs(GetWebUIWebContents(), content::JsReplace(
+                                                    R"((() => {
+        const app = document.querySelector('toolbar-app');
+        let spacer = app.shadowRoot.querySelector('#test-spacer');
+        if (!spacer) {
+          spacer = document.createElement('div');
+          spacer.id = 'test-spacer';
+          spacer.style.flexShrink = '0';
+          app.shadowRoot.appendChild(spacer);
+        }
+        spacer.style.width = $1 + 'px';
+        return true;
+      })();)",
+                                                    width));
+}
+
 WebUIToolbarWebViewTestBase::WebUIToolbarWebViewTestBase(
     const std::vector<base::test::FeatureRef>& enabled,
     const std::vector<base::test::FeatureRef>& disabled) {

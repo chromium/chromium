@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/toolbar/webui_back_forward_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_battery_saver_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_home_control.h"
+#include "chrome/browser/ui/views/toolbar/webui_overflow_button.h"
 #include "chrome/browser/ui/views/toolbar/webui_performance_intervention_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/webui_reload_control.h"
@@ -47,6 +48,7 @@ class BrowserWindowInterface;
 class ExtensionsContainerViews;
 class MediaToolbarButton;
 class WebUILocationBar;
+class WebUIOverflowButton;
 class WebUIToolbarUI;
 class WebUIToolbarInternalWebView;
 
@@ -124,6 +126,8 @@ class WebUIToolbarControlDelegate {
   virtual void OnFocusRequested(
       toolbar_ui_api::mojom::FocusRequestTarget target) = 0;
 
+  virtual void OverflowButtonClicked(ui::ElementIdentifier identifier) = 0;
+
   virtual std::optional<GURL> ConsumeDroppedUrl(
       const gfx::PointF& drop_position) = 0;
 
@@ -169,6 +173,9 @@ class WebUIToolbarWebView
   const WebUIAppMenuControl* GetAppMenuControl() const {
     return &app_menu_control_;
   }
+  WebUIOverflowButton& overflow_button_for_testing() {
+    return overflow_button_;
+  }
 
   void SetIsMaximizedOrFullscreen(bool maximized_or_fullscreen);
   void SetBackForwardEnabled(int command_id, bool enabled);
@@ -194,6 +201,12 @@ class WebUIToolbarWebView
   void HandleContextMenu(toolbar_ui_api::mojom::ContextMenuType menu_type,
                          const gfx::RectF& bounds_in_css_pixels,
                          ui::mojom::MenuSourceType source) override;
+  void ShowOverflowMenu(
+      std::vector<toolbar_ui_api::mojom::OverflowMenuItemPtr> controls,
+      const gfx::RectF& bounds_in_css_pixels,
+      ui::mojom::MenuSourceType source,
+      toolbar_ui_api::mojom::ToolbarUIService::ShowOverflowMenuCallback
+          callback) override;
   void ShowContentSettingsBubble(
       ::toolbar_ui_api::mojom::ContentSettingImageType type,
       bool is_pointer_interaction,
@@ -550,6 +563,11 @@ class WebUIToolbarWebView
   bool RuleEnabledPredicate(int current_flex_order,
                             const views::SizeBounds& bounds);
 
+  // Converts bounding rectangle coordinates in CSS pixels relative to the
+  // viewport origin into absolute screen rectangle coordinates in DIPs.
+  gfx::Rect ConvertBoundsFromCssPixelsToScreenCoords(
+      const gfx::RectF& bounds_in_css_pixels) const;
+
   // Whether all controls are being managed by WebUI.
   const bool is_webui_toolbar_fully_enabled_ =
       features::IsWebUIToolbarFullyEnabled();
@@ -596,6 +614,7 @@ class WebUIToolbarWebView
   WebUIBackForwardControl back_control_;
   WebUIBackForwardControl forward_control_;
   WebUIPinnedToolbarActions pinned_toolbar_actions_;
+  WebUIOverflowButton overflow_button_;
 
   raw_ptr<const base::TickClock> clock_;
   base::OnceClosure did_first_non_empty_paint_callback_;

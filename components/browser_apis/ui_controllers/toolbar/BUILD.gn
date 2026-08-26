@@ -72,6 +72,7 @@ mojom("mojom") {
     "//ui/base/dragdrop/mojom",
     "//ui/base/mojom:ui_base_types",
     "//ui/gfx/geometry/mojom",
+    "//ui/webui/resources/js/tracked_element:mojo_bindings",
     "//url/mojom:url_mojom_gurl",
   ]
 

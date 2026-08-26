@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from '//resources/js/assert.js';
+import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import type {OverflowMenuItem} from '/shared/toolbar_ui_api.mojom-webui.js';
 
 import type {ToolbarAppElement} from './app.js';
 import type {ResponsiveControl} from './responsive_control.js';
@@ -19,7 +22,7 @@ export interface OverflowableButton {
   setToMinWidth(): void;
   expandUpToPreferredWidth(): void;
   setToPreferredWidth(): void;
-  controlsToAddToOverflowMenu(): string[];
+  controlsToAddToOverflowMenu(): OverflowMenuItem[];
 }
 
 /**
@@ -33,6 +36,11 @@ export interface OverflowableButton {
  * take part in layout at all. It does not handle hiding the button if
  * `shouldBeShown` is false - that's currently expected to be done by the
  * child class.
+ *
+ * This class is primarily designed to be used in combination with
+ * cr-icon-buttons. It expects the CrLitElement to be the ancestor of an
+ * element with the id "button". It's that element whose disabled state is
+ * checked to determine if the button should be enabled on the overflow menu.
  */
 export const OverflowableButtonMixin =
     <T extends Constructor<CrLitElement>>(superClass: T): T&
@@ -84,11 +92,29 @@ export const OverflowableButtonMixin =
           this.toggleAttribute('overflow-display-none', false);
         }
 
-        controlsToAddToOverflowMenu(): string[] {
-          return (this.shouldBeShown() &&
-                  this.hasAttribute('overflow-display-none')) ?
-              [this.id] :
-              [];
+        controlsToAddToOverflowMenu(): OverflowMenuItem[] {
+          // If this element is hidden or has not overflowed, nothing to add to
+          // the overflow menu.
+          if (!this.shouldBeShown() ||
+              !this.hasAttribute('overflow-display-none')) {
+            return [];
+          }
+
+          // Otherwise, return information about this button. Even disabled
+          // buttons should be shown on the menu, if they've overflowed.
+          //
+          // Check the button element contained within this, if there is one.
+          // Fall back to `this` if no such element exists. Shouldn't happen,
+          // but makes the TypeScript compiler happy.
+          const innerControl =
+              this.shadowRoot?.querySelector('#button') || this;
+          const id = TrackedElementManager.getElementId(this);
+          assert(
+              id, `No TrackedElementIdentifier found for element ${this.id}`);
+          return [{
+            id,
+            isEnabled: !innerControl.hasAttribute('disabled'),
+          }];
         }
 
         override updated(changedProperties: PropertyValues<this>) {

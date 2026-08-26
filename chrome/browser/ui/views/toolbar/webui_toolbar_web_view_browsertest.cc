@@ -2474,13 +2474,7 @@ class WebUIToolbarWebViewBrowserTest : public WebUIToolbarWebViewTestBase {
     });
   }
 
-  WebUIToolbarWebView* GetWebUIToolbar() {
-    return GetToolbarView()->GetWebUIToolbarViewForTesting();
-  }
 
-  content::WebContents* GetWebUIWebContents() {
-    return GetWebUIToolbar()->GetWebContents();
-  }
 };
 
 class WebUIAppMenuBrowserTest : public WebUIToolbarWebViewBrowserTest {
@@ -5948,35 +5942,6 @@ class WebUIToolbarFullyEnabledBrowserTest
                               "JSON.stringify(window.__caughtJsErrors)")
                   .ExtractString(),
               "[]");
-  }
-
-  // Sets the size of a test-only element on the toolbar-app with the provided
-  // size, which should cause responsive controls to be asynchronously laid out
-  // to accommodate it. Does not wait for that layout to occur. Adds the element
-  // on the first call, and resizes it on subsequent calls.
-  //
-  // This is more flexible than resizing the window due to the window having a
-  // min size. It also provides test coverage that adding/sizing
-  // non-ResponsiveControls to the toolbar-app correctly causes
-  // layoutResponsiveControls() to be invoked.
-  //
-  // Note that first adding the spacer will likely add some extra
-  // margins/padding in addition to `width`.
-  [[nodiscard]] content::EvalJsResult SetSpacerWidth(int width) {
-    return content::EvalJs(GetWebUIWebContents(), content::JsReplace(
-                                                      R"((() => {
-          const app = document.querySelector('toolbar-app');
-          let spacer = app.shadowRoot.querySelector('#test-spacer');
-          if (!spacer) {
-            spacer = document.createElement('div');
-            spacer.id = 'test-spacer';
-            spacer.style.flexShrink = '0';
-            app.shadowRoot.appendChild(spacer);
-          }
-          spacer.style.width = $1 + 'px';
-          return true;
-        })();)",
-                                                      width));
   }
 
   // Sizing information about an individual ResponsiveControl, along with its

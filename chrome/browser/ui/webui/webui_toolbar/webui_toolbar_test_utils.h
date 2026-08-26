@@ -69,6 +69,14 @@ class MockToolbarUIServiceDelegate
                const gfx::RectF&,
                ui::mojom::MenuSourceType),
               (override));
+  MOCK_METHOD(
+      void,
+      ShowOverflowMenu,
+      (std::vector<toolbar_ui_api::mojom::OverflowMenuItemPtr>,
+       const gfx::RectF&,
+       ui::mojom::MenuSourceType,
+       toolbar_ui_api::mojom::ToolbarUIService::ShowOverflowMenuCallback),
+      (override));
   MOCK_METHOD(void,
               ShowContentSettingsBubble,
               (::toolbar_ui_api::mojom::ContentSettingImageType type,
