@@ -870,11 +870,9 @@ Status ExecuteGetElementTagName(Session* session,
   args.Append(CreateElement(element_id, session->w3c_compliant));
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
-      "function(elem) {"
-      "  return elem.prefix ? elem.prefix + ':' + elem.localName"
-      "                     : elem.localName;"
-      "}",
-      args, value);
+      "function(elem) { return elem.tagName.toLowerCase() }",
+      args,
+      value);
 }
 
 Status ExecuteIsElementSelected(Session* session,

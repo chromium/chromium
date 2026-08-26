@@ -31,9 +31,6 @@ class WebElement(object):
   def GetText(self):
     return self._Execute(Command.GET_ELEMENT_TEXT)
 
-  def GetTagName(self):
-    return self._Execute(Command.GET_ELEMENT_TAG_NAME)
-
   def GetAttribute(self,name):
     return self._Execute(Command.GET_ELEMENT_ATTRIBUTE, {'name': name})
 
