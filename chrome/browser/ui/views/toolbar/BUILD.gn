@@ -569,7 +569,6 @@ if (toolkit_views) {
       "//chrome/browser/ui/toolbar/pinned_toolbar",
       "//chrome/browser/ui/views:layout_provider",
       "//chrome/browser/ui/views/frame",
-      "//chrome/browser/ui/views/frame:test_with_browser_view",
       "//chrome/browser/ui/waap",
       "//chrome/common:buildflags",
       "//chrome/test:test_support",

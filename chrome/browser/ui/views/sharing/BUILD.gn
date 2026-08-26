@@ -79,7 +79,6 @@ source_set("unit_tests") {
     "//chrome/browser/sharing:impl",
     "//chrome/browser/sharing/sms",
     "//chrome/browser/ui/views/controls",
-    "//chrome/browser/ui/views/frame:test_with_browser_view",
     "//chrome/test:test_support",
     "//components/sharing_message",
     "//components/sync_device_info",

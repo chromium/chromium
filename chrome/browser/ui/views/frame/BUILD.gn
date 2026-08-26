@@ -50,43 +50,6 @@ if (is_chromeos) {
   }
 }
 
-if (toolkit_views) {
-  source_set("test_with_browser_view") {
-    testonly = true
-
-    sources = [
-      "test_with_browser_view.cc",
-      "test_with_browser_view.h",
-    ]
-
-    public_deps = [
-      "//chrome/browser/media/router:media_router_feature",
-      "//chrome/test:test_support",
-    ]
-
-    deps = [
-      "//base",
-      "//chrome/browser/autocomplete",
-      "//chrome/browser/extensions",
-      "//chrome/browser/search_engines",
-      "//chrome/browser/signin",
-      "//chrome/browser/ui/tabs:tab_strip",
-      "//chrome/browser/ui/views",
-      "//components/omnibox/browser",
-      "//components/omnibox/browser:test_support",
-      "//components/signin/public/base:test_support",
-      "//extensions/browser",
-    ]
-
-    if (is_chromeos) {
-      deps += [
-        "//chrome/browser/ash/input_method",
-        "//ui/base/ime/ash",
-      ]
-    }
-  }
-}
-
 static_library("test_support") {
   testonly = true
 

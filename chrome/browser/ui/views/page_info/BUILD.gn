@@ -141,7 +141,6 @@ source_set("unit_tests") {
     "//chrome/browser/content_settings",
     "//chrome/browser/privacy_sandbox:test_support",
     "//chrome/browser/ui/hats:test_support",
-    "//chrome/browser/ui/views/frame:test_with_browser_view",
     "//chrome/browser/usb",
     "//chrome/test:test_support",
     "//components/media_effects/test:test_support",
