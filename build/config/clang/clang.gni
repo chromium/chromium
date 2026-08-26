@@ -33,6 +33,8 @@ default_clang_base_path = "//third_party/llvm-build/Release+Asserts"
 # Platforms not in this list *may* work with clang modules, but we don't
 # guarantee it, and we don't test them on CI/CQ with modules, so breakages may
 # occur.
+# RISC-V is currently not supported for example.
+# https://ci.chromium.org/ui/p/chromium/builders/ci/android-cronet-riscv64-dbg/198062/overview
 android_supported_cpus = [
   "arm",
   "arm64",
