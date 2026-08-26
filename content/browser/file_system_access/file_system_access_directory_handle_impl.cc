@@ -962,8 +962,14 @@ FileSystemAccessDirectoryHandleImpl::GetChildURL(
         blink::mojom::FileSystemAccessStatus::kInvalidModificationError);
   }
 #else
+  // OPFS uses kFileSystemTypeTemporary, where names are virtual path
+  // components. StringToFilePath() preserves their bytes on POSIX, avoiding
+  // locale-dependent native conversion through FromUTF8Unsafe().
   base::FilePath child_path =
-      parent.virtual_path().Append(base::FilePath::FromUTF8Unsafe(basename));
+      parent.type() == storage::kFileSystemTypeTemporary
+          ? parent.virtual_path().Append(storage::StringToFilePath(basename))
+          : parent.virtual_path().Append(
+                base::FilePath::FromUTF8Unsafe(basename));
 #endif
   *result = CreateChildURL(child_path);
   return file_system_access_error::Ok();
@@ -989,8 +995,14 @@ FileSystemAccessEntryPtr FileSystemAccessDirectoryHandleImpl::CreateEntry(
     HandleType handle_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::string name =
-      !display_name.empty() ? display_name : basename.AsUTF8Unsafe();
+  std::string name = display_name;
+  if (name.empty()) {
+    // OPFS names are virtual path components, so avoid locale-dependent native
+    // path conversion when no display name is provided.
+    name = url.type() == storage::kFileSystemTypeTemporary
+               ? storage::FilePathToString(basename.path())
+               : basename.AsUTF8Unsafe();
+  }
   if (handle_type == HandleType::kDirectory) {
     return FileSystemAccessEntry::New(
         FileSystemAccessHandle::NewDirectory(

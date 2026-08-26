@@ -18,6 +18,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_locale.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -968,6 +969,80 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, GetChildURL_CustomBucket) {
   EXPECT_TRUE(file_url.bucket());
   EXPECT_EQ(file_url.bucket().value(), custom_bucket);
 }
+
+#if BUILDFLAG(IS_LINUX)
+TEST_F(FileSystemAccessDirectoryHandleImplTest,
+       GetChildURL_NonAsciiNameInCLocale) {
+  const base::FilePath parent_path("probe");
+  storage::FileSystemURL parent_url =
+      file_system_context_->CreateCrackedFileSystemURL(
+          test_src_storage_key_, storage::kFileSystemTypeTemporary,
+          parent_path);
+  parent_url.SetBucket(storage::BucketLocator(
+      storage::BucketId(1), test_src_storage_key_, /*is_default=*/true));
+  auto handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
+      manager_.get(), kBindingContext, parent_url,
+      FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
+                                                     allow_grant_));
+
+  storage::FileSystemURL child_url;
+  {
+    base::ScopedLocale locale("C");
+    ASSERT_EQ(handle->GetChildURL("テスト用の本", &child_url)->file_error,
+              base::File::FILE_OK);
+  }
+  EXPECT_NE(child_url, parent_url);
+  EXPECT_EQ(child_url.virtual_path(), base::FilePath("probe/テスト用の本"));
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplTest,
+       GetEntries_PreservesNonAsciiOPFSName) {
+  constexpr char kDirectoryName[] = "テスト用の本";
+
+  storage::FileSystemURL root_url =
+      file_system_context_->CreateCrackedFileSystemURL(
+          test_src_storage_key_, storage::kFileSystemTypeTemporary,
+          base::FilePath());
+  root_url.SetBucket(storage::BucketLocator(
+      storage::BucketId(1), test_src_storage_key_, /*is_default=*/true));
+  auto handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
+      manager_.get(), kBindingContext, root_url,
+      FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
+                                                     allow_grant_));
+
+  std::vector<blink::mojom::FileSystemAccessEntryPtr> entries;
+  blink::mojom::FileSystemAccessErrorPtr result;
+  {
+    base::ScopedLocale locale("C");
+
+    base::test::TestFuture<
+        blink::mojom::FileSystemAccessErrorPtr,
+        mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>>
+        create_future;
+    handle->GetDirectory(kDirectoryName, /*create=*/true,
+                         create_future.GetCallback());
+    ASSERT_EQ(create_future.Get<0>()->status,
+              blink::mojom::FileSystemAccessStatus::kOk);
+    ASSERT_TRUE(create_future.Get<1>().is_valid());
+
+    base::RunLoop loop;
+    mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryEntriesListener>
+        listener;
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<TestFileSystemAccessDirectoryEntriesListener>(
+            &entries, &result, loop.QuitClosure()),
+        listener.InitWithNewPipeAndPassReceiver());
+    handle->GetEntries(std::move(listener));
+    loop.Run();
+  }
+
+  ASSERT_TRUE(result);
+  ASSERT_EQ(result->status, blink::mojom::FileSystemAccessStatus::kOk);
+  ASSERT_EQ(entries.size(), 1u);
+  ASSERT_TRUE(entries[0]->entry_handle->is_directory());
+  EXPECT_EQ(entries[0]->name, kDirectoryName);
+}
+#endif  // BUILDFLAG(IS_LINUX)
 
 // Tests for `FileSystemAccessDirectoryHandleImpl::GetPermissionStatus()`.
 class FileSystemAccessDirectoryHandleImplGetPermissionStatusTest
