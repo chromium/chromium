@@ -2676,6 +2676,9 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
                     actual_process_lock.embedder_isolation_info())
                 .WithSandbox(actual_process_lock.is_sandboxed())
                 .WithUniqueSandboxId(actual_process_lock.unique_sandbox_id())
+                .WithIsAdTaggedForSiteKeying(
+                    actual_process_lock.agent_cluster_key().oac_status() ==
+                    AgentClusterKey::OACStatus::kSiteKeyedByDefault)
                 .WithCrossOriginIsolationKey(
                     actual_process_lock.agent_cluster_key()
                         .GetCrossOriginIsolationKey())));

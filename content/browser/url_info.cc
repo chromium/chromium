@@ -6,7 +6,9 @@
 
 #include <sstream>
 
+#include "base/feature_list.h"
 #include "content/browser/isolation_context.h"
+#include "content/public/common/content_features.h"
 
 namespace content {
 
@@ -31,7 +33,7 @@ UrlInfo::UrlInfo(const UrlInfoInit& init)
       storage_partition_config(init.storage_partition_config_),
       web_exposed_isolation_info(init.web_exposed_isolation_info_),
       embedder_isolation_info(init.embedder_isolation_info_),
-      is_ad_tagged_by_host_filter(init.is_ad_tagged_by_host_filter_),
+      is_ad_tagged_for_site_keying(init.is_ad_tagged_for_site_keying_),
       cross_origin_isolation_key(init.cross_origin_isolation_key_),
       process_selection_user_data(init.process_selection_user_data_) {
   DCHECK(init.is_sandboxed_ ||
@@ -64,6 +66,10 @@ bool UrlInfo::IsIsolated() const {
 
 bool UrlInfo::RequestsOriginKeyedProcess(
     const IsolationContext& context) const {
+  if (is_ad_tagged_for_site_keying && !oac_header_request.has_value() &&
+      base::FeatureList::IsEnabled(features::kExcludeAdsFromOriginIsolation)) {
+    return false;
+  }
   // An origin-keyed process should be used if (1) the UrlInfo requires it or
   // (2) the UrlInfo would have used an origin agent cluster based on the lack
   // of header, and the given IsolationContext is in a mode that uses
@@ -81,7 +87,7 @@ void UrlInfo::WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const {
   }
   proto->set_is_sandboxed(is_sandboxed);
   proto->set_is_pdf(embedder_isolation_info.is_pdf());
-  proto->set_matches_ad_filter_with_host(is_ad_tagged_by_host_filter);
+  proto->set_is_ad_tagged_for_site_keying(is_ad_tagged_for_site_keying);
   proto->set_is_coop_isolation_requested(is_coop_isolation_requested);
   int origin_isolation_request = 0;
   if (oac_header_request &&
@@ -123,7 +129,7 @@ UrlInfoInit::UrlInfoInit(const UrlInfo& base)
       storage_partition_config_(base.storage_partition_config),
       web_exposed_isolation_info_(base.web_exposed_isolation_info),
       embedder_isolation_info_(base.embedder_isolation_info),
-      is_ad_tagged_by_host_filter_(base.is_ad_tagged_by_host_filter),
+      is_ad_tagged_for_site_keying_(base.is_ad_tagged_for_site_keying),
       cross_origin_isolation_key_(base.cross_origin_isolation_key),
       process_selection_user_data_(base.process_selection_user_data) {}
 
@@ -179,9 +185,9 @@ UrlInfoInit& UrlInfoInit::WithEmbedderIsolationInfo(
   return *this;
 }
 
-UrlInfoInit& UrlInfoInit::WithIsAdTaggedByHostFilter(
-    bool is_ad_tagged_by_host_filter) {
-  is_ad_tagged_by_host_filter_ = is_ad_tagged_by_host_filter;
+UrlInfoInit& UrlInfoInit::WithIsAdTaggedForSiteKeying(
+    bool is_ad_tagged_for_site_keying) {
+  is_ad_tagged_for_site_keying_ = is_ad_tagged_for_site_keying;
   return *this;
 }
 

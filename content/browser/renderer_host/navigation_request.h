@@ -1916,6 +1916,11 @@ class CONTENT_EXPORT NavigationRequest
     return initiator_state_token_to_commit_;
   }
 
+  // Returns true if this navigation is for a subframe inside an ancestor ad
+  // frame tree that has site-keyed OAC status by default, and this navigation's
+  // origin is same-site to that ancestor ad frame.
+  bool HasSameSiteAdAncestor();
+
  private:
   friend class NavigationRequestTest;
   FRIEND_TEST_ALL_PREFIXES(

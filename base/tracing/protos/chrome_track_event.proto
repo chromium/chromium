@@ -427,7 +427,7 @@ message UrlInfo {
   optional bool is_prefetch_with_cross_site_contamination = 7;
   optional WebExposedIsolationInfo web_exposed_isolation_info = 8;
   optional string storage_partition_config = 9;
-  optional bool matches_ad_filter_with_host = 10;
+  optional bool is_ad_tagged_for_site_keying = 10;
 }
 
 // Next ID: 7

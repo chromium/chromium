@@ -4103,6 +4103,45 @@ bool NavigationRequest::IsAdTaggedByHostFilter() const {
   return ad_status_ == AdStatus::kAdTaggedByHostFilter;
 }
 
+bool NavigationRequest::HasSameSiteAdAncestor() {
+  if (!base::FeatureList::IsEnabled(features::kExcludeAdsFromOriginIsolation)) {
+    return false;
+  }
+
+  std::optional<url::Origin> target_origin =
+      state_ < WILL_PROCESS_RESPONSE ? GetTentativeOriginAtRequestTime()
+                                     : GetOriginToCommit();
+  if (!target_origin.has_value()) {
+    return false;
+  }
+
+  for (RenderFrameHostImpl* ancestor_rfh = frame_tree_node_->parent();
+       ancestor_rfh; ancestor_rfh = ancestor_rfh->GetParent()) {
+    if (!ancestor_rfh->IsAdFrame()) {
+      continue;
+    }
+
+    // Check if the ancestor was forced site-keyed by default. Under
+    // OriginKeyedProcessesByDefault, kSiteKeyedByDefault is assigned to an ad
+    // frame only when its URL matched the ad host filter list (which excludes
+    // script-tagged ads).
+    const SiteInfo& ancestor_site_info =
+        ancestor_rfh->GetSiteInstance()->GetSiteInfo();
+    if (ancestor_site_info.agent_cluster_key().oac_status() !=
+        AgentClusterKey::OACStatus::kSiteKeyedByDefault) {
+      continue;
+    }
+
+    const url::Origin& ancestor_origin = ancestor_rfh->GetLastCommittedOrigin();
+    if (net::SchemefulSite::IsSameSite(ancestor_origin,
+                                       target_origin.value())) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 void NavigationRequest::CheckForIsolationOptIn(const GURL& url) {
   // Check whether an origin-keyed agent cluster is explicitly requested, either
   // opting in or out, before attempting to isolate it. If an explicit request
@@ -4164,7 +4203,7 @@ void NavigationRequest::AddOriginAgentClusterStateIfNecessary(
   }
 
   if (!oac_isolation_state.has_value() && response() &&
-      IsAdTaggedByHostFilter() &&
+      (IsAdTaggedByHostFilter() || HasSameSiteAdAncestor()) &&
       SiteIsolationPolicy::AreOriginAgentClustersEnabledByDefault(
           isolation_context.browser_context()) &&
       SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
@@ -4598,8 +4637,15 @@ UrlInfo NavigationRequest::GetUrlInfo() {
   url_info_init.WithOACHeaderRequest(oac_header_request)
       .WithCOOPSiteIsolation(ShouldRequestSiteIsolationForCOOP())
       .WithWebExposedIsolationInfo(web_exposed_isolation_info)
-      .WithEmbedderIsolationInfo(embedder_isolation_info_)
-      .WithIsAdTaggedByHostFilter(response() && IsAdTaggedByHostFilter());
+      .WithEmbedderIsolationInfo(embedder_isolation_info_);
+
+  if (base::FeatureList::IsEnabled(features::kExcludeAdsFromOriginIsolation)) {
+    // When excluding ads from origin isolation, an ad navigation is treated as
+    // site-keyed either if its URL matches the ad host filter list, or if it is
+    // same-site to an ancestor ad frame that was forced site-keyed.
+    url_info_init.WithIsAdTaggedForSiteKeying(
+        (response() && IsAdTaggedByHostFilter()) || HasSameSiteAdAncestor());
+  }
 
   // Compute the CrossOriginIsolationKey for the navigation.
   std::optional<AgentClusterKey::CrossOriginIsolationKey>
