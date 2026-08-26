@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/json/json_reader.h"
+#include "base/task/bind_post_task.h"
 #include "base/values.h"
 #include "components/enterprise/device_trust/core/attestation/attestation_service.h"
 #include "components/enterprise/device_trust/core/attestation/attestation_utils.h"
@@ -74,7 +75,8 @@ void DeviceTrustService::BuildChallengeResponse(
     const std::string& serialized_challenge,
     const std::set<DTCPolicyLevel>& levels,
     DeviceTrustCallback callback) {
-  OnChallengeParsed(levels, std::move(callback),
+  OnChallengeParsed(levels,
+                    base::BindPostTaskToCurrentDefault(std::move(callback)),
                     ParseJsonChallenge(serialized_challenge));
 }
 

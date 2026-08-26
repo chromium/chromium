@@ -8,6 +8,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/base64.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -146,6 +147,7 @@ class DeviceTrustServiceTest : public testing::Test,
         serialized_signed_challenge, levels_,
         /*callback=*/future.GetCallback());
 
+    EXPECT_FALSE(future.IsReady());
     const DeviceTrustResponse& dt_response = future.Get();
     EXPECT_TRUE(dt_response.challenge_response.empty());
     EXPECT_EQ(dt_response.error, DeviceTrustError::kFailedToParseChallenge);
@@ -204,6 +206,7 @@ TEST_P(DeviceTrustServiceTest, BuildChallengeResponse) {
       kJsonChallenge, levels_,
       /*callback=*/future.GetCallback());
 
+  EXPECT_FALSE(future.IsReady());
   const DeviceTrustResponse& dt_response = future.Get();
   EXPECT_EQ(dt_response.challenge_response,
             attestation_response.challenge_response);
@@ -253,6 +256,47 @@ TEST_P(DeviceTrustServiceTest, AttestationFailure) {
   EXPECT_EQ(dt_response.attestation_result, attestation_response.result_code);
 
   histogram_tester_.ExpectUniqueSample(kResultHistogramName, result_code, 1);
+}
+
+TEST_P(DeviceTrustServiceTest, BuildChallengeResponseCallbackCanDeleteService) {
+  CreateService();
+
+  EXPECT_CALL(*mock_signals_service_, CollectSignals(_))
+      .WillOnce([](SignalsService::CollectSignalsCallback callback) {
+        std::move(callback).Run(base::DictValue());
+      });
+
+  const AttestationResponse attestation_response = {
+      kAttestationResponse, DTAttestationResult::kSuccess};
+  EXPECT_CALL(*mock_attestation_service_,
+              BuildChallengeResponseForVAChallenge(_, _, _, _))
+      .WillOnce([&attestation_response](
+                    const std::string&, const base::DictValue&,
+                    const std::set<DTCPolicyLevel>&,
+                    AttestationService::AttestationCallback callback) {
+        std::move(callback).Run(attestation_response);
+      });
+
+  base::test::TestFuture<void> callback_run;
+  device_trust_service_->BuildChallengeResponse(
+      kJsonChallenge, levels_,
+      base::BindOnce(
+          [](std::unique_ptr<DeviceTrustService>* service,
+             raw_ptr<MockSignalsService>* mock_signals,
+             raw_ptr<MockAttestationService>* mock_attestation,
+             base::OnceClosure callback_run, const DeviceTrustResponse&) {
+            // Clear raw_ptrs before destroying the service that owns them.
+            *mock_signals = nullptr;
+            *mock_attestation = nullptr;
+            service->reset();
+            std::move(callback_run).Run();
+          },
+          &device_trust_service_, &mock_signals_service_,
+          &mock_attestation_service_, callback_run.GetCallback()));
+
+  EXPECT_NE(device_trust_service_, nullptr);
+  EXPECT_TRUE(callback_run.Wait());
+  EXPECT_EQ(device_trust_service_, nullptr);
 }
 
 TEST_P(DeviceTrustServiceTest, EmptyJson) {
