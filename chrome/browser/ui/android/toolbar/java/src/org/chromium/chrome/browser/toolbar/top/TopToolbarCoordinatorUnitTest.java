@@ -41,6 +41,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
@@ -413,5 +414,20 @@ public class TopToolbarCoordinatorUnitTest {
 
         mCoordinator.setGlicPanelIsOpen(false);
         verify(mToolbarLayout).setGlicPanelIsOpen(false);
+    }
+
+    @Test
+    public void testGetTopControlVisibility() {
+        when(mBrowserControlsVisibilityManager.getControlsPosition())
+                .thenReturn(ControlsPosition.TOP);
+        assertEquals(
+                TopControlsStacker.TopControlVisibility.VISIBLE,
+                mCoordinator.getTopControlVisibility());
+
+        when(mBrowserControlsVisibilityManager.getControlsPosition())
+                .thenReturn(ControlsPosition.BOTTOM);
+        assertEquals(
+                TopControlsStacker.TopControlVisibility.HIDDEN,
+                mCoordinator.getTopControlVisibility());
     }
 }

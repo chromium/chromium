@@ -411,6 +411,7 @@ public abstract class ChromeFeatureList {
     public static final String BOTTOM_SHEET_TYPES = "BottomSheetTypes";
     public static final String BROWSER_CONTROLS_DEBUGGING = "BrowserControlsDebugging";
     public static final String BROWSER_CONTROLS_EARLY_RESIZE = "BrowserControlsEarlyResize";
+    public static final String BROWSER_CONTROLS_HIDING_TOKEN = "BrowserControlsHidingToken";
     public static final String BROWSER_CONTROLS_PERSISTS_ON_CVH = "BrowserControlsPersistsOnCvh";
     public static final String BROWSER_CONTROLS_RENDER_DRIVEN_SHOW_CONSTRAINT =
             "BrowserControlsRenderDrivenShowConstraint";
@@ -1012,6 +1013,8 @@ public abstract class ChromeFeatureList {
                     BOTTOM_SHEET_ON_DESKTOP_WINDOWING, false, /* defaultValueInTests= */ false);
     public static final CachedFlag sBrowserControlsDebugging =
             newCachedFlag(BROWSER_CONTROLS_DEBUGGING, false);
+    public static final CachedFlag sBrowserControlsHidingToken =
+            newCachedFlag(BROWSER_CONTROLS_HIDING_TOKEN, /* defaultValue= */ true);
     public static final CachedFlag sCacheIsGoogleSigned =
             newCachedFlag(CACHE_IS_GOOGLE_SIGNED, false, /* defaultValueInTests= */ true);
     public static final CachedFlag sCacheIsMultiInstanceApi31Enabled =
@@ -1501,6 +1504,7 @@ public abstract class ChromeFeatureList {
                     sBottomSheetAsBrowserControls,
                     sBottomSheetOnDesktopWindowing,
                     sBrowserControlsDebugging,
+                    sBrowserControlsHidingToken,
                     sCacheIsGoogleSigned,
                     sCacheIsMultiInstanceApi31Enabled,
                     sCctAdaptiveButton,

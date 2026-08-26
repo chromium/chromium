@@ -27,6 +27,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.BlackHoleEventFilter;
 import org.chromium.chrome.browser.compositor.scene_layer.ToolbarSwipeSceneLayer;
@@ -111,7 +112,7 @@ public class ToolbarSwipeLayout extends Layout {
     private final BlackHoleEventFilter mBlackHoleEventFilter;
     private @Nullable ToolbarSwipeSceneLayer mSceneLayer;
 
-    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
 
     // This is a work around for crbug.com/40233431. We need to call switch to tab after
     // ToolbarSwipeLayout is shown when it's switching to a tab.
@@ -133,7 +134,7 @@ public class ToolbarSwipeLayout extends Layout {
             Context context,
             LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost,
-            BrowserControlsStateProvider browserControlsStateProvider,
+            BrowserControlsVisibilityManager browserControlsVisibilityManager,
             LayoutManager layoutManager,
             ToolbarThemeColorProvider toolbarColorProvider,
             NonNullObservableSupplier<Integer> bottomControlsOffsetSupplier,
@@ -143,7 +144,7 @@ public class ToolbarSwipeLayout extends Layout {
         super(context, updateHost, renderHost);
         mControlView = controlContainer instanceof View ? (View) controlContainer : null;
         mBlackHoleEventFilter = new BlackHoleEventFilter(context);
-        mBrowserControlsStateProvider = browserControlsStateProvider;
+        mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
         Resources res = context.getResources();
         final float pxToDp = 1.0f / res.getDisplayMetrics().density;
         mCommitDistanceFromEdge = res.getDimension(R.dimen.toolbar_swipe_commit_distance) * pxToDp;
@@ -164,7 +165,7 @@ public class ToolbarSwipeLayout extends Layout {
                             layoutManager,
                             CallbackUtils.emptyCallback(),
                             mLeftTabSupplier,
-                            mBrowserControlsStateProvider,
+                            mBrowserControlsVisibilityManager,
                             mRenderHost::getResourceManager,
                             toolbarColorProvider,
                             bottomControlsOffsetSupplier,
@@ -182,7 +183,7 @@ public class ToolbarSwipeLayout extends Layout {
                             layoutManager,
                             CallbackUtils.emptyCallback(),
                             mRightTabSupplier,
-                            mBrowserControlsStateProvider,
+                            mBrowserControlsVisibilityManager,
                             mRenderHost::getResourceManager,
                             toolbarColorProvider,
                             bottomControlsOffsetSupplier,
@@ -558,7 +559,7 @@ public class ToolbarSwipeLayout extends Layout {
                 mLeftToolbarOverlay.setXOffset(leftX * dpToPx);
             }
             mLeftTab.setX(leftX);
-            mLeftTab.setY(mBrowserControlsStateProvider.getContentOffset() / dpToPx);
+            mLeftTab.setY(mBrowserControlsVisibilityManager.getContentOffset() / dpToPx);
             needUpdate = updateSnap(dt, mLeftTab) || needUpdate;
         } else if (mLeftToolbarOverlay != null) {
             mLeftToolbarOverlay.setManualVisibility(false);
@@ -571,7 +572,7 @@ public class ToolbarSwipeLayout extends Layout {
                 mRightToolbarOverlay.setXOffset(rightX * dpToPx);
             }
             mRightTab.setX(rightX);
-            mRightTab.setY(mBrowserControlsStateProvider.getContentOffset() / dpToPx);
+            mRightTab.setY(mBrowserControlsVisibilityManager.getContentOffset() / dpToPx);
             needUpdate = updateSnap(dt, mRightTab) || needUpdate;
         } else if (mRightToolbarOverlay != null) {
             mRightToolbarOverlay.setManualVisibility(false);

@@ -25,7 +25,7 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.hub.HubLayout;
@@ -188,7 +188,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
             NonNullObservableSupplier<Integer> bottomControlsOffsetSupplier) {
         Context context = mHost.getContext();
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
-        BrowserControlsStateProvider browserControlsStateProvider =
+        BrowserControlsVisibilityManager browserControlsVisibilityManager =
                 mHost.getBrowserControlsManager();
 
         // Build Layouts
@@ -197,7 +197,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
                         context,
                         this,
                         renderHost,
-                        browserControlsStateProvider,
+                        browserControlsVisibilityManager,
                         this,
                         toolbarThemeColorProvider,
                         bottomControlsOffsetSupplier,

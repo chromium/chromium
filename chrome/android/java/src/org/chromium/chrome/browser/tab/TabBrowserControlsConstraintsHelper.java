@@ -17,6 +17,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsOffsetTagModifications;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
@@ -77,6 +78,18 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
         TabBrowserControlsConstraintsHelper helper = safeGet(tab);
         if (helper == null) return null;
         return helper.mVisibilityDelegate;
+    }
+
+    /**
+     * Re-creates the {@link BrowserControlsVisibilityDelegate} for this tab from the current {@link
+     * TabDelegateFactory} (e.g. when the delegate factory is replaced).
+     *
+     * @param tab Tab object.
+     */
+    public static void updateVisibilityDelegate(@Nullable Tab tab) {
+        TabBrowserControlsConstraintsHelper helper = safeGet(tab);
+        if (helper == null) return;
+        helper.updateVisibilityDelegate();
     }
 
     /**
@@ -252,7 +265,11 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
         generateOffsetTags(constraints);
 
         if (current == BrowserControlsState.SHOWN || constraints == BrowserControlsState.SHOWN) {
-            mTab.willShowBrowserControls();
+            // Detached tabs should not trigger showing browser controls.
+            if (!ChromeFeatureList.sBrowserControlsHidingToken.isEnabled()
+                    || !mTab.isDetachedFromActivity()) {
+                mTab.willShowBrowserControls();
+            }
         }
 
         BrowserControlsOffsetTagModifications offsetTagModifications =

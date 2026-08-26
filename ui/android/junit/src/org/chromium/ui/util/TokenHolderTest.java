@@ -54,6 +54,19 @@ public class TokenHolderTest {
     }
 
     @Test
+    public void releaseToken_invalidTokenNoOp() {
+        mHolder.releaseToken(TokenHolder.INVALID_TOKEN);
+        assertFalse(mHolder.hasTokens());
+        verify(mCallback, never()).run();
+
+        mHolder.acquireToken();
+        clearInvocations(mCallback);
+        mHolder.releaseToken(TokenHolder.INVALID_TOKEN);
+        assertTrue(mHolder.hasTokens());
+        verify(mCallback, never()).run();
+    }
+
+    @Test
     public void callbackIsCalled_whenTokensBecomeEmptyOrNotEmpty() {
         int token1 = mHolder.acquireToken();
         verify(mCallback).run();

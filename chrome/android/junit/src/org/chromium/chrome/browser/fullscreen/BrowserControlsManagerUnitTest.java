@@ -9,6 +9,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -1014,5 +1015,61 @@ public class BrowserControlsManagerUnitTest {
                 new BrowserControlsOffsetTagDefinitions(
                         new BrowserControlsOffsetTags(null, null, null), expectedConstraints);
         mWebContentsInOrder.verify(mWebContents).updateOffsetTagDefinitions(expectedDefinitions);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.BROWSER_CONTROLS_HIDING_TOKEN)
+    @SuppressWarnings("DirectInvocationOnMock")
+    public void testSetTab_skipsTransientControlsWhenHidingTokensActive() {
+        remakeWithoutSpy();
+        Tab newTab = Mockito.mock(Tab.class);
+        when(newTab.isUserInteractable()).thenReturn(true);
+        when(newTab.getUserDataHost()).thenReturn(mUserDataHost);
+        when(newTab.getContentView()).thenReturn(mContentView);
+
+        mBrowserControlsManager.hideAndroidControlsAndClearOldToken(
+                org.chromium.ui.util.TokenHolder.INVALID_TOKEN);
+        assertTrue(mBrowserControlsManager.hasHidingTokens());
+
+        // Switching tabs while hiding tokens are active should keep controls hidden.
+        mActivityTabProvider.setForTesting(newTab);
+        assertEquals(View.INVISIBLE, mContainerView.getVisibility());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.BROWSER_CONTROLS_HIDING_TOKEN)
+    @SuppressWarnings("DirectInvocationOnMock")
+    public void testOnActivityStateStarted_skipsTransientControlsWhenHidingTokensActive() {
+        remakeWithoutSpy();
+        mBrowserControlsManager.hideAndroidControlsAndClearOldToken(
+                org.chromium.ui.util.TokenHolder.INVALID_TOKEN);
+        assertTrue(mBrowserControlsManager.hasHidingTokens());
+
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STARTED);
+        ShadowLooper.idleMainLooper();
+
+        assertEquals(View.INVISIBLE, mContainerView.getVisibility());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.BROWSER_CONTROLS_HIDING_TOKEN)
+    @SuppressWarnings("DirectInvocationOnMock")
+    public void testScheduleVisibilityUpdate_immediateHideWithHidingToken() {
+        remakeWithoutSpy();
+        assertEquals(View.VISIBLE, mContainerView.getVisibility());
+
+        // Acquiring a hiding token should immediately set the container view to INVISIBLE
+        // without waiting for main looper idle.
+        mBrowserControlsManager.hideAndroidControlsAndClearOldToken(TokenHolder.INVALID_TOKEN);
+        assertTrue(mBrowserControlsManager.hasHidingTokens());
+        assertEquals(View.INVISIBLE, mContainerView.getVisibility());
+    }
+
+    @Test
+    @SuppressWarnings("DirectInvocationOnMock")
+    public void testReleaseAndroidControlsHidingToken_invalidTokenNoOp() {
+        remakeWithoutSpy();
+        mBrowserControlsManager.releaseAndroidControlsHidingToken(TokenHolder.INVALID_TOKEN);
+        assertFalse(mBrowserControlsManager.hasHidingTokens());
     }
 }

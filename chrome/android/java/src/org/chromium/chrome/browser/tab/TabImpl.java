@@ -2519,6 +2519,10 @@ class TabImpl implements Tab, TabInternal {
         mDelegateFactory = factory;
 
         updateWebContentsDelegate();
+        if (ChromeFeatureList.sBrowserControlsHidingToken.isEnabled()) {
+            // Immediately recreate the visibility delegate when the delegate factory changes.
+            TabBrowserControlsConstraintsHelper.updateVisibilityDelegate(this);
+        }
 
         WebContents webContents = getWebContents();
         if (webContents != null) {

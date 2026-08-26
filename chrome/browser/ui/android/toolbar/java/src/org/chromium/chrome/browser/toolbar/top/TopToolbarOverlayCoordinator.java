@@ -14,7 +14,7 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
@@ -51,7 +51,7 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
             LayoutManager layoutManager,
             Callback<ClipDrawableProgressBar.DrawingInfo> progressInfoCallback,
             NullableObservableSupplier<Tab> tabSupplier,
-            BrowserControlsStateProvider browserControlsStateProvider,
+            BrowserControlsVisibilityManager browserControlsVisibilityManager,
             Supplier<ResourceManager> resourceManagerSupplier,
             ToolbarThemeColorProvider toolbarThemeColorProvider,
             NonNullObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,
@@ -73,7 +73,7 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
                         .with(TopToolbarOverlayProperties.X_OFFSET, 0)
                         .with(
                                 TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET,
-                                browserControlsStateProvider.getContentOffset())
+                                browserControlsVisibilityManager.getContentOffset())
                         .with(TopToolbarOverlayProperties.ANONYMIZE, false)
                         .with(TopToolbarOverlayProperties.SHOW_SHADOW, true)
                         .build();
@@ -88,7 +88,7 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
                         layoutManager,
                         progressInfoCallback,
                         tabSupplier,
-                        browserControlsStateProvider,
+                        browserControlsVisibilityManager,
                         toolbarThemeColorProvider,
                         bottomToolbarControlsOffsetSupplier,
                         suppressToolbarSceneLayerSupplier,

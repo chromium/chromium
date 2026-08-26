@@ -74,7 +74,12 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     private final Activity mActivity;
     private final BrowserStateBrowserControlsVisibilityDelegate mBrowserVisibilityDelegate;
     @ControlsPosition private int mControlsPosition;
-    private final TokenHolder mHidingTokenHolder = new TokenHolder(this::scheduleVisibilityUpdate);
+    private final TokenHolder mHidingTokenHolder =
+            new TokenHolder(
+                    () ->
+                            scheduleVisibilityUpdate(
+                                    /* immediate= */ ChromeFeatureList.sBrowserControlsHidingToken
+                                            .isEnabled()));
 
     /**
      * An observable for browser controls being at its minimum height or not. This is as good as the
@@ -814,10 +819,16 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     }
 
     /**
-     * Utility routine for ensuring visibility updates are synchronized with animation, preventing
-     * message loop stalls due to untimely invalidation.
+     * Utility routine for updating controls container visibility.
+     *
+     * <p>When driven by scrolling, visibility updates are synchronized with animation via {@link
+     * View#postOnAnimation} to prevent message loop stalls due to untimely invalidation. When
+     * explicitly requested via `immediate` (e.g. when hiding via hiding tokens), updates are
+     * applied immediately to avoid a flash of the Android view before the next animation frame.
+     *
+     * @param immediate Whether the update should be run immediately.
      */
-    private void scheduleVisibilityUpdate() {
+    private void scheduleVisibilityUpdate(boolean immediate) {
         if (mControlContainer == null) {
             return;
         }
@@ -826,7 +837,15 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             return;
         }
         mControlContainer.getView().removeCallbacks(mUpdateVisibilityRunnable);
-        mControlContainer.getView().postOnAnimation(mUpdateVisibilityRunnable);
+        if (immediate) {
+            mUpdateVisibilityRunnable.run();
+        } else {
+            mControlContainer.getView().postOnAnimation(mUpdateVisibilityRunnable);
+        }
+    }
+
+    private void scheduleVisibilityUpdate() {
+        scheduleVisibilityUpdate(/* immediate= */ false);
     }
 
     /**
@@ -850,6 +869,12 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     @Override
     public void releaseAndroidControlsHidingToken(int token) {
         mHidingTokenHolder.releaseToken(token);
+    }
+
+    @Override
+    @VisibleForTesting
+    public boolean hasHidingTokens() {
+        return mHidingTokenHolder.hasTokens();
     }
 
     @EnsuresNonNullIf({"mControlContainer"})

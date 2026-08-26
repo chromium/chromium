@@ -327,6 +327,9 @@ public class CustomTabToolbarCoordinator {
         } else {
             mBrowserControlsVisibilityManager.releaseAndroidControlsHidingToken(
                     mControlsHidingToken);
+            if (ChromeFeatureList.sBrowserControlsHidingToken.isEnabled()) {
+                mControlsHidingToken = TokenHolder.INVALID_TOKEN;
+            }
         }
     }
 
