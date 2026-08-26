@@ -20,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/site_exclusion_detail.h"
+#include "chrome/browser/contextual_tasks/smart_tab_sharing_metrics.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
@@ -795,6 +797,12 @@ ContextualTasksContextService::GetAllEligibleTabs(
                 base::StringPrintf("Removing %s from relevant set as it is not "
                                    "valid e.g. it is NTP, internal page, etc.",
                                    url.spec()));
+            if (url.is_valid() && !url.IsAboutBlank() &&
+                (url.SchemeIsHTTPOrHTTPS() || url.SchemeIsFile()) &&
+                !search::IsNTPOrRelatedURL(url, profile_)) {
+              LogTabFilterReason(
+                  SmartTabSharingFilterReason::kDomainDenylisted);
+            }
             continue;
           }
 
@@ -804,6 +812,7 @@ ContextualTasksContextService::GetAllEligibleTabs(
                 base::StringPrintf("Removing %s from relevant set as it is a "
                                    "Google Search URL.",
                                    url.spec()));
+            LogTabFilterReason(SmartTabSharingFilterReason::kDomainDenylisted);
             continue;
           }
           if (!ShouldAddTabToSelection(web_contents)) {
@@ -1132,6 +1141,9 @@ void ContextualTasksContextService::OnAllTabsScored(
     if (score >=
         options.min_model_score.value_or(kTabSelectionScoreThreshold.Get())) {
       scored_relevant_tabs.emplace_back(score, web_contents);
+      LogTabFilterReason(SmartTabSharingFilterReason::kNotFiltered);
+    } else {
+      LogTabFilterReason(SmartTabSharingFilterReason::kLowRelevance);
     }
 
     // Recording signals and scores for analysis.
@@ -1205,6 +1217,11 @@ bool ContextualTasksContextService::ShouldAddTabToSelection(
                    visibility_score >= 0.0;
   }
 
+  if (is_sensitive) {
+    LogTabFilterReason(SmartTabSharingFilterReason::kSensitiveContent);
+    return false;
+  }
+
   // Get whether it's eligible for server upload.
   bool is_eligible_for_server_upload = true;
   if (page_content_extraction_service_) {
@@ -1214,7 +1231,12 @@ bool ContextualTasksContextService::ShouldAddTabToSelection(
             .value_or(true);
   }
 
-  return is_eligible_for_server_upload && !is_sensitive;
+  if (!is_eligible_for_server_upload) {
+    LogTabFilterReason(SmartTabSharingFilterReason::kDomainDenylisted);
+    return false;
+  }
+
+  return true;
 }
 
 void ContextualTasksContextService::OnConversationThreadEmbeddingReady(

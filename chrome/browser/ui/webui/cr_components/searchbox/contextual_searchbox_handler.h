@@ -78,6 +78,7 @@ namespace contextual_tasks {
 class ActiveTaskContextProvider;
 class ContextualTasksContextService;
 class DesktopQueryContextualizerDelegate;
+class ContextualTasksUIInterface;
 }  // namespace contextual_tasks
 
 namespace lens {
@@ -382,6 +383,9 @@ class ContextualSearchboxHandler
                        const WindowOpenDisposition disposition,
                        base::OnceCallback<void(content::NavigationHandle&)>
                            navigation_handle_callback);
+
+  virtual contextual_tasks::ContextualTasksUIInterface*
+  GetContextualTasksUiInterface();
 
   void ContextualizeQueryAndOpenUrl(
       const std::string& query_text,

@@ -26526,6 +26526,29 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="Suspend"/>
 </enum>
 
+<enum name="SmartTabSharingFilterReason">
+  <int value="0" label="Not Filtered (Included)"/>
+  <int value="1" label="Filtered - Sensitive Content (L2C)"/>
+  <int value="2" label="Filtered - Domain Denylisted"/>
+  <int value="3" label="Filtered - Low Relevance Score"/>
+</enum>
+
+<enum name="SmartTabSharingPromoAction">
+  <int value="0" label="Promo Shown"/>
+  <int value="1" label="Promo Accepted / Turned On"/>
+  <int value="2" label="Promo Dismissed / Not Now"/>
+</enum>
+
+<enum name="SmartTabSharingSurface">
+  <int value="0" label="Omnibox Composebox"/>
+  <int value="1" label="Contextual Searchbox"/>
+</enum>
+
+<enum name="SmartTabSharingToggleState">
+  <int value="0" label="Toggled Off"/>
+  <int value="1" label="Toggled On"/>
+</enum>
+
 <enum name="SnapshotOperationResult">
   <int value="0" label="Success">Operation succeeded</int>
   <int value="1" label="Partial Sucess">Operation suceeded partially</int>

@@ -17,6 +17,7 @@ source_set("searchbox") {
     "searchbox_utils.h",
   ]
   public_deps = [
+    "//chrome/browser/contextual_tasks",
     "//components/contextual_search/footprints/public",
     "//components/tabs:public",
     "//third_party/omnibox_proto",

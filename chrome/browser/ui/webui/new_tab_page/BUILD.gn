@@ -80,6 +80,7 @@ source_set("impl") {
     "//chrome/browser:buildflags",
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/contextual_search",
+    "//chrome/browser/contextual_tasks",
     "//chrome/browser/desktop_to_mobile_promos:utils",
     "//chrome/browser/enterprise",
     "//chrome/browser/new_tab_page",

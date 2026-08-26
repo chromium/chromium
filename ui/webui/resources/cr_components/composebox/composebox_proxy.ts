@@ -82,6 +82,7 @@ export class ComposeboxProxyImpl implements ComposeboxProxy {
     return this.searchboxCallbackRouter.updateSmartTabSharingActive.addListener(
         callback);
   }
+
   // </if>
 
   static getInstance(): ComposeboxProxyImpl {

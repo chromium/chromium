@@ -974,6 +974,67 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
+<histogram name="ContextualSearch.SmartTabSharing.MenuOptionClicked"
+    enum="SmartTabSharingToggleState" expires_after="2027-07-22">
+  <owner>kiehl@google.com</owner>
+  <owner>chrome-search-ai@google.com</owner>
+  <summary>
+    Recorded when a user explicitly toggles the Smart Tab Sharing menu option ON
+    or OFF.
+  </summary>
+</histogram>
+
+<histogram name="ContextualSearch.SmartTabSharing.MenuOptionShown"
+    enum="SmartTabSharingSurface" expires_after="2027-07-22">
+  <owner>kiehl@google.com</owner>
+  <owner>chrome-search-ai@google.com</owner>
+  <summary>
+    Recorded when the Smart Tab Sharing option is rendered inside the Composebox
+    menu.
+  </summary>
+</histogram>
+
+<histogram name="ContextualSearch.SmartTabSharing.OptOutMidThread"
+    enum="Boolean" expires_after="2027-07-22">
+  <owner>kiehl@google.com</owner>
+  <owner>chrome-search-ai@google.com</owner>
+  <summary>
+    Records true when the user explicitly turns OFF Smart Tab Sharing mid-thread
+    after having already submitted queries with it ON, and false when they
+    submit another query with it still ON mid-thread.
+  </summary>
+</histogram>
+
+<histogram name="ContextualSearch.SmartTabSharing.PromoInteraction"
+    enum="SmartTabSharingPromoAction" expires_after="2027-07-22">
+  <owner>kiehl@google.com</owner>
+  <owner>chrome-search-ai@google.com</owner>
+  <summary>
+    Tracks user interaction with the FRE IPH or the in-thread &quot;try-it&quot;
+    promo (Shown, Turned On, Dismissed/Not Now).
+  </summary>
+</histogram>
+
+<histogram name="ContextualSearch.SmartTabSharing.TabFilterReason"
+    enum="SmartTabSharingFilterReason" expires_after="2027-07-22">
+  <owner>kiehl@google.com</owner>
+  <owner>chrome-search-ai@google.com</owner>
+  <summary>
+    Recorded for each open tab evaluated by the on-device model to categorize
+    why it was included or filtered out.
+  </summary>
+</histogram>
+
+<histogram name="ContextualSearch.SmartTabSharing.ThreadWithTabsSubmitted"
+    enum="Boolean" expires_after="2027-07-22">
+  <owner>kiehl@google.com</owner>
+  <owner>chrome-search-ai@google.com</owner>
+  <summary>
+    Records true if the current AIM thread had Smart Tab Sharing active (toggled
+    ON) upon query submission, and false if it was inactive (toggled OFF).
+  </summary>
+</histogram>
+
 <histogram name="ContextualSearch.TabContextAdded.V2.{ContextualSearchSource}"
     units="count" expires_after="2027-02-14">
   <owner>hujasonx@google.com</owner>

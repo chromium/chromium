@@ -23,7 +23,7 @@ import type {InputState} from '//resources/mojo/components/omnibox/composebox/co
 import {InputType, ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {getLoadTimeBoolean, recordBoolean, recordContextAdditionMethod, TabUploadOrigin} from './common.js';
+import {getLoadTimeBoolean, recordBoolean, recordContextAdditionMethod, recordEnumerationValue, SmartTabSharingSurface, TabUploadOrigin} from './common.js';
 import {getCss} from './contextual_action_menu.css.js';
 import {getHtml} from './contextual_action_menu.html.js';
 import {WindowProxy} from './window_proxy.js';
@@ -142,6 +142,7 @@ export class ContextualActionMenuElement extends
         type: Boolean,
         attribute: 'unbounded-menu-enabled',
       },
+      isOpen_: {type: Boolean},
     };
   }
 
@@ -199,6 +200,8 @@ export class ContextualActionMenuElement extends
   private anchor_: HTMLElement|null = null;
   private wasShareTabsTriggerShown_: boolean = false;
   private wasShareTabsFlyoutOpen_: boolean = false;
+  private wasSmartTabSharingOptionShown_: boolean = false;
+  private accessor isOpen_: boolean = false;
 
   protected get supportedTools_(): Map<ToolMode, {
     icon: string,
@@ -324,7 +327,7 @@ export class ContextualActionMenuElement extends
       }
     }
 
-    const isShownNow = this.open &&
+    const isShownNow = this.isOpen_ &&
         this.isInputTypeAllowed_(InputType.kBrowserTab) &&
         this.contextManagementInComposeboxEnabled &&
         (this.tabSuggestions?.length > 0 || this.smartTabSharingActive) &&
@@ -345,6 +348,28 @@ export class ContextualActionMenuElement extends
           'ContextualSearch.AddTabsFlyout.Shown.' + this.metricsSource_, true);
     }
     this.wasShareTabsFlyoutOpen_ = isFlyoutOpenNow;
+
+    const isOptionVisibleDirectly = this.isOpen_ &&
+        this.smartTabSharingVisible && this.smartTabSharingActive;
+    const isOptionVisibleInFlyout =
+        isFlyoutOpenNow && this.smartTabSharingVisible;
+
+    if ((isOptionVisibleDirectly || isOptionVisibleInFlyout) &&
+        !this.wasSmartTabSharingOptionShown_) {
+      let surface: SmartTabSharingSurface|null = null;
+      if (this.metricsSource_ === 'NewTabPage' ||
+          this.metricsSource_ === 'Omnibox') {
+        surface = SmartTabSharingSurface.OMNIBOX_COMPOSEBOX;
+      } else if (this.metricsSource_ === 'ContextualTasks') {
+        surface = SmartTabSharingSurface.CONTEXTUAL_SEARCHBOX;
+      }
+      if (surface !== null) {
+        recordEnumerationValue(
+            'ContextualSearch.SmartTabSharing.MenuOptionShown', surface,
+            SmartTabSharingSurface.MAX_VALUE + 1);
+        this.wasSmartTabSharingOptionShown_ = true;
+      }
+    }
   }
   get open(): boolean {
     return this.$.menu.open;
@@ -437,6 +462,7 @@ export class ContextualActionMenuElement extends
   }
 
   showAt(anchor: HTMLElement) {
+    this.wasSmartTabSharingOptionShown_ = false;
     this.shouldResetFlyoutScroll_ = true;
     this.anchor_ = anchor;
     const rect = anchor.getBoundingClientRect();
@@ -456,6 +482,7 @@ export class ContextualActionMenuElement extends
       anchorAlignmentY: AnchorAlignment.AFTER_END,
       noOffset: true,
     });
+    this.isOpen_ = true;
     const iconElement = anchor.querySelector('#entrypointIcon') || anchor;
     const iconRect = iconElement.getBoundingClientRect();
 
@@ -1255,6 +1282,8 @@ export class ContextualActionMenuElement extends
     this.$.menu.style.removeProperty('--contextual-menu-max-height');
     this.wasShareTabsTriggerShown_ = false;
     this.wasShareTabsFlyoutOpen_ = false;
+    this.wasSmartTabSharingOptionShown_ = false;
+    this.isOpen_ = false;
     this.fire('close');
   }
 
