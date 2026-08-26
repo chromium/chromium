@@ -228,6 +228,7 @@
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/pointer/pointer_device.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_provider_key.h"
@@ -12615,7 +12616,20 @@ void WebContentsImpl::SetVisibilityForChildViews(bool visible) {
   GetPrimaryMainFrame()->SetVisibilityForChildViews(visible);
 }
 
+void WebContentsImpl::ScheduleColorRelatedStateChanges() {
+  if (color_related_state_change_scheduled_) {
+    return;
+  }
+  color_related_state_change_scheduled_ = true;
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WebContentsImpl::HandleColorRelatedStateChanges,
+                     weak_factory_.GetWeakPtr()));
+}
+
 void WebContentsImpl::HandleColorRelatedStateChanges() {
+  color_related_state_change_scheduled_ = false;
+
   // This can be reached re-entrantly during ~WebContentsImpl, after the
   // primary main frame has begun being destroyed. Bail out before
   // dereferencing it via GetPrimaryMainFrame() below.
@@ -12656,7 +12670,11 @@ void WebContentsImpl::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::OnNativeThemeUpdated");
   DCHECK_EQ(observed_theme, ui::NativeTheme::GetInstanceForWeb());
 
-  HandleColorRelatedStateChanges();
+  if (base::FeatureList::IsEnabled(features::kThemeChangeOptimization)) {
+    ScheduleColorRelatedStateChanges();
+  } else {
+    HandleColorRelatedStateChanges();
+  }
 
   const auto caret_blink_interval = observed_theme->caret_blink_interval();
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
@@ -12703,7 +12721,11 @@ void WebContentsImpl::OnColorProviderChanged() {
 
   observers_.NotifyObservers(&WebContentsObserver::OnColorProviderChanged);
 
-  HandleColorRelatedStateChanges();
+  if (base::FeatureList::IsEnabled(features::kThemeChangeOptimization)) {
+    ScheduleColorRelatedStateChanges();
+  } else {
+    HandleColorRelatedStateChanges();
+  }
 }
 
 const ui::ColorProvider& WebContentsImpl::GetColorProvider() const {

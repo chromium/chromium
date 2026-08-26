@@ -1721,6 +1721,8 @@ class CONTENT_EXPORT WebContentsImpl
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest,
                            OnColorProviderChangedNoOpDuringDestruction);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest,
+                           ColorRelatedStateChangesCoalesced);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest,
                            OnNativeThemeUpdatedNoOpDuringDestruction);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest, NoJSMessageOnInterstitials);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest, UpdateTitle);
@@ -2180,6 +2182,7 @@ class CONTENT_EXPORT WebContentsImpl
   // `NativeTheme` or `ColorProviderSource` are updated. Updates color maps
   // and/or calls `NotifyPreferencesChanged()` as needed.
   void HandleColorRelatedStateChanges();
+  void ScheduleColorRelatedStateChanges();
 
   // implements SlowWebPreferenceCacheObserver
   void OnSlowWebPreferenceChanged() override;
@@ -2921,6 +2924,8 @@ class CONTENT_EXPORT WebContentsImpl
   void EmitTracingSlice(const std::string& name);
 
   bool opt_out_frame_eviction_ = false;
+
+  bool color_related_state_change_scheduled_ = false;
 
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};
