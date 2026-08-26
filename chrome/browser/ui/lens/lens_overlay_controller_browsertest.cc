@@ -91,8 +91,7 @@
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
-#include "chrome/browser/ui/views/page_action/page_action_container_view.h"
-#include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_header.h"
@@ -992,14 +991,12 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
 
   void CloseOverlayAndWaitForOff(LensOverlayController* controller,
                                  LensOverlayDismissalSource dismissal_source) {
-    // TODO(crbug.com/404941800): This uses a roundabout way to close the UI.
-    // It has to go through the LensOverlayController because the search
-    // controller doesn't have proper state management. Use search controller
-    // directly once it has its own state for properly determining kOff.
-    LensSearchController::From(controller->GetTabInterface())
-        ->CloseLensAsync(dismissal_source);
-    ASSERT_TRUE(base::test::RunUntil(
-        [&]() { return controller->state() == State::kOff; }));
+    auto* search_controller =
+        LensSearchController::From(controller->GetTabInterface());
+    search_controller->CloseLensAsync(dismissal_source);
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return controller->state() == State::kOff && search_controller->IsOff();
+    }));
   }
 
   // Helper to get a test context menu on the active tab.
@@ -4839,15 +4836,12 @@ class LensOverlayControllerEntrypointsBrowserTest
                                     IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
 
     // Verify omnibox (location bar) icon matches expected visibility.
-    auto* location_bar =
-        BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
-    location_bar->omnibox_view()->RequestFocus();
-    views::View* omnibox_entrypoint =
-        location_bar->page_action_container()->GetPageActionView(
-            kActionSidePanelShowLensOverlayResults);
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return omnibox_entrypoint->GetVisible() == expected_visible;
-    }));
+    BrowserWindow::FromBrowser(browser())->GetLocationBar()->FocusLocation(
+        /*is_user_initiated=*/false, /*clear_focus_if_failed=*/false);
+    page_actions::PageActionTestAccessor omnibox_entrypoint(
+        browser(), kActionSidePanelShowLensOverlayResults);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return omnibox_entrypoint.GetVisible() == expected_visible; }));
 
     // Verify three dot menu entrypoint matches expected visibility.
     EXPECT_EQ(
@@ -5513,14 +5507,12 @@ class LensOverlayControllerBrowserPDFTest
 
   void CloseOverlayAndWaitForOff(LensOverlayController* controller,
                                  LensOverlayDismissalSource dismissal_source) {
-    // TODO(crbug.com/404941800): This uses a roundabout way to close the UI.
-    // It has to go through the LensOverlayController because the search
-    // controller doesn't have proper state management. Use search controller
-    // directly once it has its own state for properly determining kOff.
-    LensSearchController::From(controller->GetTabInterface())
-        ->CloseLensAsync(dismissal_source);
-    ASSERT_TRUE(base::test::RunUntil(
-        [&]() { return controller->state() == State::kOff; }));
+    auto* search_controller =
+        LensSearchController::From(controller->GetTabInterface());
+    search_controller->CloseLensAsync(dismissal_source);
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return controller->state() == State::kOff && search_controller->IsOff();
+    }));
   }
 
  private:
