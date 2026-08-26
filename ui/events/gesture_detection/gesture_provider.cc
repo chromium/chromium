@@ -417,7 +417,9 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
 
     snap_scroll_controller_.UpdateSnapScrollMode(
         distance_x, distance_y, EffectiveSlopDistance(e2, config_));
-    if (snap_scroll_controller_.IsSnappingScrolls()) {
+    if (!base::FeatureList::IsEnabled(
+            features::kApplyScrollRailingInRenderer) &&
+        snap_scroll_controller_.IsSnappingScrolls()) {
       if (snap_scroll_controller_.IsSnapHorizontal())
         distance_y = 0;
       else
@@ -469,7 +471,9 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
                const MotionEvent& e2,
                float velocity_x,
                float velocity_y) override {
-    if (snap_scroll_controller_.IsSnappingScrolls()) {
+    if (!base::FeatureList::IsEnabled(
+            features::kApplyScrollRailingInRenderer) &&
+        snap_scroll_controller_.IsSnappingScrolls()) {
       if (snap_scroll_controller_.IsSnapHorizontal()) {
         velocity_y = 0;
       } else {

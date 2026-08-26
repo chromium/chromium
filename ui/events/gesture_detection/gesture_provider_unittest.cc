@@ -14,10 +14,12 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/gesture_detection/gesture_event_data.h"
 #include "ui/events/test/motion_event_test_utils.h"
@@ -707,6 +709,67 @@ TEST_F(GestureProviderTest, GestureFlingAndCancelLongPress) {
       GetMostRecentGestureEvent().details.bounding_box_f());
 }
 
+TEST_F(GestureProviderTest, FlingWithApplyScrollRailingInRenderer) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kApplyScrollRailingInRenderer);
+
+  base::TimeTicks event_time = TimeTicks::Now();
+  base::TimeDelta delta_time = base::Milliseconds(10);
+
+  // Send a diagonal swipe that would trigger vertical snapping in the browser.
+  MockMotionEvent event =
+      ObtainMotionEvent(event_time, MotionEvent::Action::DOWN, 0, 0);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  event = ObtainMotionEvent(event_time + delta_time, MotionEvent::Action::MOVE,
+                            20, 100);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  event = ObtainMotionEvent(event_time + delta_time * 2,
+                            MotionEvent::Action::UP, 40, 200);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  EXPECT_EQ(EventType::kScrollFlingStart, GetMostRecentGestureEventType());
+  // When ApplyScrollRailingInRenderer is enabled, velocity_x should not be
+  // zeroed.
+  EXPECT_GT(GetMostRecentGestureEvent().details.velocity_x(), 0);
+  EXPECT_GT(GetMostRecentGestureEvent().details.velocity_y(), 0);
+}
+
+TEST_F(GestureProviderTest, ScrollWithApplyScrollRailingInRenderer) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kApplyScrollRailingInRenderer);
+
+  const float delta_x = 20;
+  const float delta_y = 100;
+  const float touch_slop = GetTapSlop();
+
+  base::TimeTicks event_time = TimeTicks::Now();
+  base::TimeDelta delta_time = base::Milliseconds(10);
+
+  MockMotionEvent event =
+      ObtainMotionEvent(event_time, MotionEvent::Action::DOWN, 0, 0);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  event = ObtainMotionEvent(event_time + delta_time, MotionEvent::Action::MOVE,
+                            delta_x, delta_y);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  EXPECT_EQ(EventType::kGestureScrollUpdate, GetMostRecentGestureEventType());
+  GestureEventData gesture = GetMostRecentGestureEvent();
+
+  // When ApplyScrollRailingInRenderer is enabled, browser-side railing is
+  // bypassed so horizontal delta is preserved (not zeroed). The resulting
+  // delta along each axis accounts for touch slop subtraction.
+  EXPECT_GE(gesture.details.scroll_x(), delta_x - touch_slop);
+  EXPECT_LE(gesture.details.scroll_x(), delta_x);
+
+  EXPECT_GE(gesture.details.scroll_y(), delta_y - touch_slop);
+  EXPECT_LE(gesture.details.scroll_y(), delta_y);
+}
+
 // Verify that for a normal scroll the following events are sent:
 // - EventType::kGestureScrollBegin
 // - EventType::kGestureScrollUpdate
@@ -1124,8 +1187,13 @@ TEST_F(GestureProviderTest, ScrollUpdateValues) {
   EXPECT_EQ(kFakeCoordY - delta_y + raw_offset_y, gesture.raw_y);
   EXPECT_EQ(1, gesture.details.touch_points());
 
-  // No horizontal delta because of snapping.
-  EXPECT_EQ(0, gesture.details.scroll_x());
+  // Horizontal delta is preserved when railing in renderer is enabled;
+  // otherwise it is zeroed by browser-side snapping.
+  if (base::FeatureList::IsEnabled(features::kApplyScrollRailingInRenderer)) {
+    EXPECT_EQ(-delta_x / 2, gesture.details.scroll_x());
+  } else {
+    EXPECT_EQ(0, gesture.details.scroll_x());
+  }
   EXPECT_EQ(-delta_y / 2, gesture.details.scroll_y());
   EXPECT_EQ(primary_unique_touch_event_id,
             gesture.details.primary_unique_touch_event_id());
@@ -1187,8 +1255,13 @@ TEST_F(GestureProviderTest, FractionalScroll) {
     EXPECT_GE(gesture.details.scroll_y(), (int)delta_y);
     EXPECT_LE(gesture.details.scroll_y(), ((int)delta_y) + 1);
 
-    // And that there has been no horizontal motion at all.
-    EXPECT_EQ(0, gesture.details.scroll_x());
+    // Horizontal motion is preserved when railing in renderer is enabled;
+    // otherwise there is no horizontal motion due to browser snapping.
+    if (base::FeatureList::IsEnabled(features::kApplyScrollRailingInRenderer)) {
+      EXPECT_NEAR(delta_x, gesture.details.scroll_x(), 0.001f);
+    } else {
+      EXPECT_EQ(0, gesture.details.scroll_x());
+    }
 
     // Verify unconstrained deltas are NOT zeroed.
     EXPECT_NEAR(delta_x, gesture.details.scroll_x_unconstrained(), 0.001f);
@@ -1201,8 +1274,12 @@ TEST_F(GestureProviderTest, FractionalScroll) {
 TEST_F(GestureProviderTest, ScrollBeginValues) {
   const float delta_x = 14;
   const float delta_y = 48;
-  // These are the deltas after subtracting slop region and railing.
-  const float delta_x_hint = 0;
+  // These are the deltas after subtracting the slop region (and applying
+  // browser railing if ApplyScrollRailingInRenderer is disabled).
+  const float delta_x_hint =
+      base::FeatureList::IsEnabled(features::kApplyScrollRailingInRenderer)
+          ? 11.76f
+          : 0;
   const float delta_y_hint = 40.32f;
 
   const base::TimeTicks event_time = TimeTicks::Now();
@@ -1233,7 +1310,12 @@ TEST_F(GestureProviderTest, ScrollBeginValues) {
 
   const GestureEventData* scroll_begin_gesture = GetActiveScrollBeginEvent();
   ASSERT_TRUE(scroll_begin_gesture);
-  EXPECT_EQ(delta_x_hint, scroll_begin_gesture->details.scroll_x_hint());
+  if (base::FeatureList::IsEnabled(features::kApplyScrollRailingInRenderer)) {
+    EXPECT_NEAR(delta_x_hint, scroll_begin_gesture->details.scroll_x_hint(),
+                0.001f);
+  } else {
+    EXPECT_EQ(delta_x_hint, scroll_begin_gesture->details.scroll_x_hint());
+  }
   EXPECT_EQ(delta_y_hint, scroll_begin_gesture->details.scroll_y_hint());
   EXPECT_EQ(primary_unique_touch_event_id,
             scroll_begin_gesture->details.primary_unique_touch_event_id());

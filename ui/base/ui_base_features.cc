@@ -238,6 +238,9 @@ BASE_FEATURE(kFocusFollowsCursor, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDragDropOnlySynthesizeHttpOrHttpsUrlsFromText,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables applying scroll railing in the renderer.
+BASE_FEATURE(kApplyScrollRailingInRenderer, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_CHROMEOS)
 bool IsImprovedKeyboardShortcutsEnabled() {
   // TODO(crbug.com/40203434): Remove this once kDeviceI18nShortcutsEnabled
