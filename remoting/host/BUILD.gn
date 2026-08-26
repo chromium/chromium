@@ -799,6 +799,8 @@ static_library("common") {
       "keyboard_layout_monitor_win.cc",
       "pairing_registry_delegate_win.cc",
       "pairing_registry_delegate_win.h",
+      "remote_client_cert_store.cc",
+      "remote_client_cert_store.h",
       "sas_injector_win.cc",
       "touch_injector_win.cc",
       "touch_injector_win.h",
@@ -1066,6 +1068,7 @@ source_set("unit_tests") {
     sources += [
       "clipboard_win_unittest.cc",
       "pairing_registry_delegate_win_unittest.cc",
+      "remote_client_cert_store_unittest.cc",
       "touch_injector_win_unittest.cc",
     ]
     deps += [ "//remoting/host/win:unit_tests" ]
