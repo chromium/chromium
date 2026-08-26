@@ -11,6 +11,7 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/personal_context/core/personal_context_service.h"
 #import "components/subscription_eligibility/subscription_eligibility_service.h"
+#import "ios/chrome/browser/autofill/model/autofill_log_router_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/personal_context/model/ios_personal_context_eligibility_service_factory.h"
@@ -22,6 +23,7 @@
 namespace {
 using autofill::AtMemoryQueryService;
 using autofill::AutofillDataProvider;
+using autofill::AutofillLogRouterFactory;
 using autofill::PersonalDataManagerFactory;
 using personal_context::PersonalContextEligibilityService;
 using personal_context::PersonalContextService;
@@ -44,6 +46,7 @@ IOSAtMemoryQueryServiceFactory* IOSAtMemoryQueryServiceFactory::GetInstance() {
 IOSAtMemoryQueryServiceFactory::IOSAtMemoryQueryServiceFactory()
     : ProfileKeyedServiceFactoryIOS("AtMemoryQueryService",
                                     ProfileSelection::kNoInstanceInIncognito) {
+  DependsOn(AutofillLogRouterFactory::GetInstance());
   DependsOn(PersonalDataManagerFactory::GetInstance());
   DependsOn(IOSAutofillEntityDataManagerFactory::GetInstance());
   DependsOn(IOSPersonalContextServiceFactory::GetInstance());
@@ -80,5 +83,5 @@ IOSAtMemoryQueryServiceFactory::BuildServiceInstanceFor(
       std::move(data_provider), personal_context_service,
       GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
       personal_context_eligibility_service, subscription_eligibility_service,
-      profile->GetPrefs());
+      profile->GetPrefs(), AutofillLogRouterFactory::GetForProfile(profile));
 }

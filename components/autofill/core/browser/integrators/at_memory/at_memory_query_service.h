@@ -39,6 +39,8 @@ namespace autofill {
 
 class AutofillClient;
 class AutofillDataProvider;
+class LogManager;
+class LogRouter;
 
 // Service for querying AtMemory suggestions. Owned by the Profile, one per
 // profile.
@@ -78,7 +80,8 @@ class AtMemoryQueryService : public KeyedService {
           personal_context_eligibility_service,
       subscription_eligibility::SubscriptionEligibilityService*
           subscription_eligibility_service,
-      PrefService* pref_service);
+      PrefService* pref_service,
+      LogRouter* log_router);
   AtMemoryQueryService(const AtMemoryQueryService&) = delete;
   AtMemoryQueryService& operator=(const AtMemoryQueryService&) = delete;
   ~AtMemoryQueryService() override;
@@ -134,6 +137,7 @@ class AtMemoryQueryService : public KeyedService {
                                  FetchUnmaskedPiiEntitiesCallback callback,
                                  bool auth_succeeded);
 
+  std::unique_ptr<LogManager> log_manager_;
   std::unique_ptr<AutofillDataProvider> data_provider_;
   raw_ptr<personal_context::PersonalContextService> personal_context_service_ =
       nullptr;

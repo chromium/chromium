@@ -16,7 +16,8 @@ MockAtMemoryQueryService::MockAtMemoryQueryService()
                            /*locale=*/"",
                            /*personal_context_eligibility_service=*/nullptr,
                            /*subscription_eligibility_service=*/nullptr,
-                           /*pref_service=*/nullptr) {}
+                           /*pref_service=*/nullptr,
+                           /*log_router=*/nullptr) {}
 
 MockAtMemoryQueryService::~MockAtMemoryQueryService() = default;
 

@@ -32,9 +32,13 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/at_memory/at_memory_eligibility_metrics_tracker.h"
 #include "components/autofill/core/browser/integrators/at_memory/at_memory_string_filtering_util.h"
+#include "components/autofill/core/browser/integrators/at_memory/logging_util.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_internals/log_message.h"
+#include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/personal_context/core/personal_context_debug_features.h"
@@ -691,8 +695,10 @@ AtMemoryQueryService::AtMemoryQueryService(
         personal_context_eligibility_service,
     subscription_eligibility::SubscriptionEligibilityService*
         subscription_eligibility_service,
-    PrefService* pref_service)
-    : data_provider_(std::move(data_provider)),
+    PrefService* pref_service,
+    LogRouter* log_router)
+    : log_manager_(LogManager::Create(log_router, base::NullCallback())),
+      data_provider_(std::move(data_provider)),
       personal_context_service_(personal_context_service),
       locale_(locale),
       eligibility_metrics_tracker_(personal_context_eligibility_service,
@@ -836,6 +842,8 @@ void AtMemoryQueryService::OnPersonalContextRetrieved(
   if (response.has_autofill_fetch_plan()) {
     const personal_context::proto::AutofillFetchPlan& plan =
         response.autofill_fetch_plan();
+    LOG_AF(*log_manager_) << LoggingScope::kAtMemory << LogMessage::kAtMemory
+                          << "Evaluating Autofill fetch plan:" << Br{} << plan;
     if (!plan.fetch_specifications().empty()) {
       fetch_specifications = base::ToVector(plan.fetch_specifications());
       local_data_types = base::ToVector(
@@ -878,6 +886,7 @@ void AtMemoryQueryService::OnLocalDataRetrieved(
       !fetch_specifications.empty()
           ? FilterResults(std::move(local_results), fetch_specifications)
           : std::move(local_results);
+
   std::vector<MemorySearchResult> ranked_results =
       RankResults(std::move(filtered_local_results), std::move(remote_results));
   DeduplicateResults(ranked_results);

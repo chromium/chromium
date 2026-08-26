@@ -816,6 +816,8 @@ static_library("browser") {
     "integrators/at_memory/at_memory_query_service.h",
     "integrators/at_memory/at_memory_string_filtering_util.cc",
     "integrators/at_memory/at_memory_string_filtering_util.h",
+    "integrators/at_memory/logging_util.cc",
+    "integrators/at_memory/logging_util.h",
     "integrators/at_memory/memory_data_type.h",
     "integrators/at_memory/memory_data_type_util.cc",
     "integrators/at_memory/memory_data_type_util.h",
