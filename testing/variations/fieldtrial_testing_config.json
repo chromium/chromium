@@ -10757,6 +10757,21 @@
             ]
         }
     ],
+    "IOSBackendPromoCustomUI": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSBackendPromoCustomUI"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSBackendPromoServiceIntegration": [
         {
             "platforms": [

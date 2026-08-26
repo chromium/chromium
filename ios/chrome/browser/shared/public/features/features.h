@@ -923,6 +923,12 @@ BASE_DECLARE_FEATURE(kIOSBackendPromoServiceIntegration);
 // Returns true if kIOSBackendPromoServiceIntegration is enabled.
 bool IsIOSBackendPromoServiceIntegrationEnabled();
 
+// Feature flag to enable Backend Promo Custom UI presentation.
+BASE_DECLARE_FEATURE(kIOSBackendPromoCustomUI);
+
+// Returns true if kIOSBackendPromoCustomUI is enabled.
+bool IsIOSBackendPromoCustomUIEnabled();
+
 // Feature flag to enable the use of UIGraphicsImageRenderer for fallback icons.
 BASE_DECLARE_FEATURE(kUseUIGraphicsImageRendererForFallbackIcons);
 

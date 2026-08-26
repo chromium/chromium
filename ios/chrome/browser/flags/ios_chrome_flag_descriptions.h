@@ -1005,6 +1005,11 @@ inline constexpr char kIOSActorToolsName[] = "iOS Actor Tools";
 inline constexpr char kIOSActorToolsDescription[] =
     "Enables all actor tools on iOS.";
 
+inline constexpr char kIOSBackendPromoCustomUIName[] =
+    "IOS Backend Promo Custom UI";
+inline constexpr char kIOSBackendPromoCustomUIDescription[] =
+    "Enables custom UI presentation for Backend Promo (GNP) messages.";
+
 inline constexpr char kIOSBackendPromoServiceIntegrationName[] =
     "IOS Backend Promo Service Integration";
 inline constexpr char kIOSBackendPromoServiceIntegrationDescription[] =

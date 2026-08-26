@@ -1155,6 +1155,12 @@ bool IsIOSBackendPromoServiceIntegrationEnabled() {
   return base::FeatureList::IsEnabled(kIOSBackendPromoServiceIntegration);
 }
 
+BASE_FEATURE(kIOSBackendPromoCustomUI, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsIOSBackendPromoCustomUIEnabled() {
+  return base::FeatureList::IsEnabled(kIOSBackendPromoCustomUI);
+}
+
 BASE_FEATURE(kUseUIGraphicsImageRendererForFallbackIcons,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
