@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.extensions.api.messaging;
 
+import android.os.Bundle;
 import android.os.RemoteException;
 
 import androidx.annotation.VisibleForTesting;
@@ -18,6 +19,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -182,7 +184,12 @@ public class NativeMessageAndroidPort {
     private void send(String message) {
         assert mRemotePort != null;
         try {
-            mRemotePort.postMessage(message);
+            // TODO(crbug.com/515159909): Handle messages that exceed Binder transaction size limits
+            // by putting them into SharedMemory instead of byte[].
+            MessagePayload payload = new MessagePayload();
+            payload.setInlineBytes(message.getBytes(StandardCharsets.UTF_8));
+            Bundle extras = new Bundle();
+            mRemotePort.postMessage(payload, extras);
         } catch (RemoteException e) {
             Log.w(TAG, "Failed to post message to external app", e);
             closeChannel("Error when communicating with the native messaging host.");
@@ -217,14 +224,19 @@ public class NativeMessageAndroidPort {
         // IExtensionNativeMessageCallback.onMessage implementation. Called on a
         // binder thread so post a task to the UI thread where `mPort` lives.
         @Override
-        public void onMessage(String message) {
-            if (message != null) {
-                ThreadUtils.postOnUiThread(
-                        () -> {
-                            if (mPort != null) {
-                                mPort.postMessageFromApp(message);
-                            }
-                        });
+        public void onMessage(MessagePayload payload, Bundle extras) {
+            if (payload != null) {
+                // TODO(crbug.com/515159909): Support extracting messages from SharedMemory.
+                byte[] messageBytes = payload.getInlineBytes();
+                if (messageBytes != null) {
+                    String message = new String(messageBytes, StandardCharsets.UTF_8);
+                    ThreadUtils.postOnUiThread(
+                            () -> {
+                                if (mPort != null) {
+                                    mPort.postMessageFromApp(message);
+                                }
+                            });
+                }
             }
         }
 

@@ -16,6 +16,7 @@ android_aidl("aidl") {
     "java/src/org/chromium/chrome/browser/extensions/api/messaging/IExtensionNativeMessageCallback.aidl",
     "java/src/org/chromium/chrome/browser/extensions/api/messaging/IExtensionNativeMessagePort.aidl",
     "java/src/org/chromium/chrome/browser/extensions/api/messaging/IExtensionNativeMessageService.aidl",
+    "java/src/org/chromium/chrome/browser/extensions/api/messaging/MessagePayload.aidl",
   ]
 }
 

@@ -34,6 +34,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.profiles.Profile;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,17 +86,26 @@ public class NativeMessageAndroidPortTest {
         }
 
         @Override
-        public void postMessage(String message) throws RemoteException {
+        public void postMessage(MessagePayload payload, Bundle extras) throws RemoteException {
             if (shouldThrowOnPostMessage || receivedMessages.size() == failAfterMessageCount) {
                 throw new DeadObjectException("Target process is dead.");
             }
-            receivedMessages.add(message);
+            byte[] bytes = payload.getInlineBytes();
+            if (bytes != null) {
+                receivedMessages.add(new String(bytes, StandardCharsets.UTF_8));
+            }
         }
 
         @Override
         public void disconnect() {
             isDisconnected = true;
         }
+    }
+
+    private static MessagePayload createPayload(String message) {
+        MessagePayload payload = new MessagePayload();
+        payload.setInlineBytes(message.getBytes(StandardCharsets.UTF_8));
+        return payload;
     }
 
     private static class TestPortObserver
@@ -184,7 +194,7 @@ public class NativeMessageAndroidPortTest {
         Assert.assertEquals(List.of("msg_1", "msg_2"), createdPorts.get(0).receivedMessages);
 
         // 4. Test bidirectional reply from the app.
-        createdPorts.get(0).callback.onMessage("reply_from_app");
+        createdPorts.get(0).callback.onMessage(createPayload("reply_from_app"), new Bundle());
         RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertEquals(List.of("reply_from_app"), portObserver.receivedMessages);
     }
@@ -227,7 +237,7 @@ public class NativeMessageAndroidPortTest {
         Assert.assertTrue(createdPorts.get(0).receivedMessages.isEmpty());
 
         // 4. App replies specifically to port 2.
-        createdPorts.get(1).callback.onMessage("reply_to_port2");
+        createdPorts.get(1).callback.onMessage(createPayload("reply_to_port2"), new Bundle());
         RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertEquals(List.of("reply_to_port2"), port2Observer.receivedMessages);
     }
@@ -406,7 +416,7 @@ public class NativeMessageAndroidPortTest {
                 .thenAnswer(
                         invocation -> {
                             IExtensionNativeMessageCallback callback = invocation.getArgument(0);
-                            callback.onMessage("synchronous_msg");
+                            callback.onMessage(createPayload("synchronous_msg"), new Bundle());
                             return new FakeNativeMessagePort(callback);
                         });
 

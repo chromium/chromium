@@ -19,7 +19,9 @@ import org.chromium.chrome.browser.extensions.api.messaging.IBrowserNativeMessag
 import org.chromium.chrome.browser.extensions.api.messaging.IExtensionNativeMessageCallback;
 import org.chromium.chrome.browser.extensions.api.messaging.IExtensionNativeMessagePort;
 import org.chromium.chrome.browser.extensions.api.messaging.IExtensionNativeMessageService;
+import org.chromium.chrome.browser.extensions.api.messaging.MessagePayload;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -65,6 +67,12 @@ public class EchoService extends Service {
         return reply.toString();
     }
 
+    private static MessagePayload createPayload(String message) {
+        MessagePayload payload = new MessagePayload();
+        payload.setInlineBytes(message.getBytes(StandardCharsets.UTF_8));
+        return payload;
+    }
+
     private void onExtensionUnloaded(String extensionId) {
         mSessions.remove(extensionId);
         mUnloadedExtensions.add(extensionId);
@@ -74,7 +82,9 @@ public class EchoService extends Service {
         if (waiters != null) {
             for (IExtensionNativeMessageCallback waiter : waiters) {
                 try {
-                    waiter.onMessage(createStatusReply("unloaded", extensionId));
+                    waiter.onMessage(
+                            createPayload(createStatusReply("unloaded", extensionId)),
+                            new Bundle());
                 } catch (JSONException | RemoteException e) {
                     Log.e(TAG, "Failed to notify unload waiter for " + extensionId, e);
                 }
@@ -105,7 +115,9 @@ public class EchoService extends Service {
                     if (extensionConnectedWaiters != null) {
                         for (IExtensionNativeMessageCallback waiter : extensionConnectedWaiters) {
                             try {
-                                waiter.onMessage(createStatusReply("loaded", extensionId));
+                                waiter.onMessage(
+                                        createPayload(createStatusReply("loaded", extensionId)),
+                                        new Bundle());
                             } catch (JSONException | RemoteException e) {
                                 Log.e(TAG, "Failed to notify load waiter for " + extensionId, e);
                             }
@@ -164,7 +176,12 @@ public class EchoService extends Service {
         }
 
         @Override
-        public void postMessage(String messageJson) {
+        public void postMessage(MessagePayload payload, Bundle extras) {
+            byte[] messageBytes = payload.getInlineBytes();
+            if (messageBytes == null) {
+                return;
+            }
+            String messageJson = new String(messageBytes, StandardCharsets.UTF_8);
             Log.d(TAG, "Port %d received message: %s", mPortId, messageJson);
             try {
                 JSONObject input = new JSONObject(messageJson);
@@ -177,7 +194,8 @@ public class EchoService extends Service {
                 if ("waitForExtensionConnected".equalsIgnoreCase(input.optString("request"))) {
                     String targetId = input.getString("extensionId");
                     if (mSessions.containsKey(targetId)) {
-                        mCallback.onMessage(createStatusReply("loaded", targetId));
+                        mCallback.onMessage(
+                                createPayload(createStatusReply("loaded", targetId)), new Bundle());
                     } else {
                         mExtensionConnectedWaiters
                                 .computeIfAbsent(
@@ -196,7 +214,9 @@ public class EchoService extends Service {
                 if ("waitForExtensionUnloaded".equalsIgnoreCase(input.optString("request"))) {
                     String targetId = input.getString("extensionId");
                     if (mUnloadedExtensions.contains(targetId)) {
-                        mCallback.onMessage(createStatusReply("unloaded", targetId));
+                        mCallback.onMessage(
+                                createPayload(createStatusReply("unloaded", targetId)),
+                                new Bundle());
                     } else {
                         mUnloadWaiters
                                 .computeIfAbsent(
@@ -215,12 +235,14 @@ public class EchoService extends Service {
 
                 // Edge Case 2: sendInvalidResponse -> malformed JSON
                 if (input.optBoolean("sendInvalidResponse", false)) {
-                    mCallback.onMessage("{");
+                    MessagePayload invalidPayload = new MessagePayload();
+                    invalidPayload.setInlineBytes("{".getBytes(StandardCharsets.UTF_8));
+                    mCallback.onMessage(invalidPayload, new Bundle());
                     return;
                 }
 
-                // TODO(crbug.com/515159909): handle messages that would exceed the size threshold
-                // of TransactionTooLargeException.
+                // TODO(crbug.com/515159909): Handle messages that would exceed the size threshold
+                // of TransactionTooLargeException by using SharedMemory instead of byte[].
                 // The edge case optBoolean is "bigMessageTest"
 
                 mMessageNumber++;
@@ -232,7 +254,9 @@ public class EchoService extends Service {
                     reply.put("isVerified", mIsVerified);
                 }
 
-                mCallback.onMessage(reply.toString());
+                MessagePayload replyPayload = new MessagePayload();
+                replyPayload.setInlineBytes(reply.toString().getBytes(StandardCharsets.UTF_8));
+                mCallback.onMessage(replyPayload, new Bundle());
             } catch (JSONException e) {
                 Log.e(TAG, "Failed to parse incoming message as JSON", e);
             } catch (RemoteException e) {

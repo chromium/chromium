@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.extensions.api.messaging;
 
+import android.os.Bundle;
+import org.chromium.chrome.browser.extensions.api.messaging.MessagePayload;
+
 // Represents the pipeline from the external Android app to the browser for one
 // chrome.runtime.Port object or one chrome.runtime.sendNativeMessage call.
 oneway interface IExtensionNativeMessageCallback {
   // Called when the external Android app sends the extension a message
-  // through this port. `message` must be a JSON-serialized string.
-  void onMessage(String message);
+  // through this port. `payload` contains the message data. `extras` may
+  // contain message metadata.
+  void onMessage(in MessagePayload payload, in Bundle extras);
 
   // Called when the external Android app disconnects this port.
   void onDisconnect();
