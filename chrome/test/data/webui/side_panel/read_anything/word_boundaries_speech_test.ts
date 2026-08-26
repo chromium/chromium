@@ -3,54 +3,33 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import type {AppElement, WordBoundaryState} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {AudioBrowserProxyImpl, ContentBrowserProxyImpl, ContentController, ContentType, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VisualBrowserProxyImpl, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement, VoiceLanguageController, WordBoundaries, WordBoundaryState} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ContentType, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, createSpeechSynthesisVoice, emitEvent, setContent, setupBasicSpeech} from './common.js';
-import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
-import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
-import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
-import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
-import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
+import {createSpeechSynthesisVoice, emitEvent, setContent, setupAppTestEnvironment, setupBasicSpeech} from './common.js';
+import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
 
 suite('WordBoundariesUsedForSpeech', () => {
   let app: AppElement;
   let wordBoundaries: WordBoundaries;
-  let speechController: SpeechController;
   let voiceLanguageController: VoiceLanguageController;
   let readAloudModel: TestReadAloudModelBrowserProxy;
 
   setup(async () => {
-    // Clearing the DOM should always be done first.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    ContentBrowserProxyImpl.setInstance(new TestContentBrowserProxy());
-    AudioBrowserProxyImpl.setInstance(new TestAudioBrowserProxy());
-    VisualBrowserProxyImpl.setInstance(new TestVisualBrowserProxy());
-
-    readAloudModel = new TestReadAloudModelBrowserProxy();
-    setInstance(readAloudModel);
+    const result = await setupAppTestEnvironment();
+    app = result.app;
+    readAloudModel = result.readAloudModel;
+    voiceLanguageController = result.voiceLanguageController;
+    wordBoundaries = result.wordBoundaries;
     readAloudModel.setInitialized(true);
-
-    const speech = new TestSpeechBrowserProxy();
-    SpeechBrowserProxyImpl.setInstance(speech);
-    voiceLanguageController = new VoiceLanguageController();
-    VoiceLanguageController.setInstance(voiceLanguageController);
-    wordBoundaries = new WordBoundaries();
-    WordBoundaries.setInstance(wordBoundaries);
-    speechController = new SpeechController();
-    SpeechController.setInstance(speechController);
-    const contentController = new ContentController();
-    ContentController.setInstance(contentController);
-
-    app = await createApp();
-    setupBasicSpeech(speech);
+    setupBasicSpeech(result.speech);
 
     const node =
         setContent('This is a link. This is another link.', readAloudModel);
     app.$.container.appendChild(node);
-    contentController.setState(ContentType.HAS_CONTENT);
+    result.contentController.setState(ContentType.HAS_CONTENT);
   });
 
   test(

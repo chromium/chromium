@@ -1,18 +1,16 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {AudioBrowserProxyImpl, BrowserProxy, ContentBrowserProxyImpl, ContentPositionSource, MAX_SPEECH_LENGTH, NodeStore, ReadAloudHighlighter, ReadAloudNode, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, VisualBrowserProxyImpl, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {Segment, SpeechListener} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ContentPositionSource, MAX_SPEECH_LENGTH, ReadAloudHighlighter, ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {NodeStore, Segment, SpeechController, SpeechListener, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGE, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createSpeechErrorEvent, createSpeechSynthesisVoice, createWordBoundaryEvent, mockMetrics, setContent} from './common.js';
-import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
-import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
-import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
+import {createSpeechErrorEvent, createSpeechSynthesisVoice, createWordBoundaryEvent, setContent, setupTestEnvironment} from './common.js';
+import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
-import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
-import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
+import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
+import type {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
+import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('SpeechController', () => {
   let audioBrowserProxy: TestAudioBrowserProxy;
@@ -29,7 +27,6 @@ suite('SpeechController', () => {
   let nodeStore: NodeStore;
   let highlighter: ReadAloudHighlighter;
   let voiceLanguageController: VoiceLanguageController;
-  let selectionController: SelectionController;
   let readAloudModel: TestReadAloudModelBrowserProxy;
 
   function onPlayPauseToggle(text: string): HTMLElement {
@@ -41,19 +38,24 @@ suite('SpeechController', () => {
   }
 
   setup(() => {
-    // Clearing the DOM should always be done first.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
-    audioBrowserProxy = new TestAudioBrowserProxy();
-    AudioBrowserProxyImpl.setInstance(audioBrowserProxy);
-    visualBrowserProxy = new TestVisualBrowserProxy();
-    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
-    ContentBrowserProxyImpl.setInstance(new TestContentBrowserProxy());
-    speech = new TestSpeechBrowserProxy();
+    const result = setupTestEnvironment();
+    audioBrowserProxy = result.audioBrowserProxy;
+    visualBrowserProxy = result.visualBrowserProxy;
+    speech = result.speech;
+    metrics = result.metrics;
+    readAloudModel = result.readAloudModel;
+    voiceLanguageController = result.voiceLanguageController;
+    nodeStore = result.nodeStore;
+    wordBoundaries = result.wordBoundaries;
+    highlighter = result.highlighter;
+    speechController = result.speechController;
+
+    readAloudModel.setInitialized(true);
     speech.setVoices(
         [createSpeechSynthesisVoice({lang: 'en', name: 'Google Alpaca'})]);
-    SpeechBrowserProxyImpl.setInstance(speech);
-    metrics = mockMetrics();
+    voiceLanguageController.setUserPreferredVoice(
+        createSpeechSynthesisVoice({lang: 'en', name: 'Google Alpaca'}));
+
     isSpeechActiveChanged = false;
     isAudioCurrentlyPlayingChanged = false;
     onPreviewVoicePlaying = false;
@@ -82,23 +84,6 @@ suite('SpeechController', () => {
 
       onWordBoundary() {},
     };
-
-    readAloudModel = new TestReadAloudModelBrowserProxy();
-    setInstance(readAloudModel);
-    readAloudModel.setInitialized(true);
-    voiceLanguageController = new VoiceLanguageController();
-    voiceLanguageController.setUserPreferredVoice(
-        createSpeechSynthesisVoice({lang: 'en', name: 'Google Alpaca'}));
-    VoiceLanguageController.setInstance(voiceLanguageController);
-    nodeStore = new NodeStore();
-    NodeStore.setInstance(nodeStore);
-    wordBoundaries = new WordBoundaries();
-    WordBoundaries.setInstance(wordBoundaries);
-    highlighter = new ReadAloudHighlighter();
-    ReadAloudHighlighter.setInstance(highlighter);
-    selectionController = new SelectionController();
-    SelectionController.setInstance(selectionController);
-    speechController = new SpeechController();
     speechController.addListener(speechListener);
     speech.reset();
     audioBrowserProxy.reset();

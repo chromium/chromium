@@ -3,19 +3,17 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import type {AppElement, LanguageToastElement, SpEmptyStateElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {AppStyleUpdater, AudioBrowserProxyImpl, BrowserProxy, ContentBrowserProxyImpl, ContentController, ContentType, LineFocusController, LineFocusMovement, LineFocusStyle, NodeStore, ReadAloudNode, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VisualBrowserProxyImpl, VoiceClientSideStatusCode, VoiceLanguageController, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement, ContentController, LanguageToastElement, NodeStore, SpeechController, SpEmptyStateElement, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AppStyleUpdater, ContentType, LineFocusController, LineFocusMovement, LineFocusStyle, ReadAloudNode, ToolbarEvent, VoiceClientSideStatusCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertLT, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
 import {microtasksFinished, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, emitEvent, mockMetrics, setContent, setupBasicSpeech} from './common.js';
-import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
-import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
-import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
-import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
-import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
-import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
+import {createApp, emitEvent, setContent, setupAppTestEnvironment, setupBasicSpeech} from './common.js';
+import type {TestContentBrowserProxy} from './test_content_browser_proxy.js';
+import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
+import type {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
+import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('AppContent', () => {
   let app: AppElement;
@@ -23,7 +21,6 @@ suite('AppContent', () => {
   let contentController: ContentController;
   let emptyState: SpEmptyStateElement;
   let speechController: SpeechController;
-  let voiceLanguageController: VoiceLanguageController;
   let nodeStore: NodeStore;
   let notificationManager: VoiceNotificationManager;
   let readAloudModel: TestReadAloudModelBrowserProxy;
@@ -37,39 +34,17 @@ suite('AppContent', () => {
   }
 
   setup(async () => {
-    // Clearing the DOM should always be done first.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    window.scrollTo(0, 0);
-
-    BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
-    visualBrowserProxy = new TestVisualBrowserProxy();
-    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
-    contentBrowserProxy = new TestContentBrowserProxy();
-    ContentBrowserProxyImpl.setInstance(contentBrowserProxy);
-    AudioBrowserProxyImpl.setInstance(new TestAudioBrowserProxy());
-    speech = new TestSpeechBrowserProxy();
-    SpeechBrowserProxyImpl.setInstance(speech);
-    mockMetrics();
-
-    readAloudModel = new TestReadAloudModelBrowserProxy();
-    setInstance(readAloudModel);
-
-    nodeStore = new NodeStore();
-    NodeStore.setInstance(nodeStore);
-    SelectionController.setInstance(new SelectionController());
-    notificationManager = new VoiceNotificationManager();
-    VoiceNotificationManager.setInstance(notificationManager);
-    voiceLanguageController = new VoiceLanguageController();
-    VoiceLanguageController.setInstance(voiceLanguageController);
-    lineFocusController = new LineFocusController();
-    LineFocusController.setInstance(lineFocusController);
-
-    speechController = new SpeechController();
-    SpeechController.setInstance(speechController);
-    contentController = new ContentController();
-    ContentController.setInstance(contentController);
-
-    app = await createApp();
+    const result = await setupAppTestEnvironment();
+    app = result.app;
+    contentBrowserProxy = result.contentBrowserProxy;
+    contentController = result.contentController;
+    speechController = result.speechController;
+    nodeStore = result.nodeStore;
+    notificationManager = result.notificationManager;
+    readAloudModel = result.readAloudModel;
+    speech = result.speech;
+    lineFocusController = result.lineFocusController;
+    visualBrowserProxy = result.visualBrowserProxy;
     emptyState =
         app.shadowRoot.querySelector<SpEmptyStateElement>('sp-empty-state')!;
     setupBasicSpeech(speech);

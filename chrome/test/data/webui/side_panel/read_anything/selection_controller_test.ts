@@ -2,20 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AudioBrowserProxyImpl, BrowserProxy, ContentBrowserProxyImpl, NodeStore, SelectionController, VisualBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {NodeStore, SelectionController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
-import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
-import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
-import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
+import {setupTestEnvironment} from './common.js';
+import type {TestContentBrowserProxy} from './test_content_browser_proxy.js';
 
 suite('SelectionController', () => {
   let selectionController: SelectionController;
   let nodeStore: NodeStore;
-  let audioProxy: TestAudioBrowserProxy;
   let contentBrowserProxy: TestContentBrowserProxy;
-  let visualBrowserProxy: TestVisualBrowserProxy;
 
   const parentIds = [100, 200, 300, 400];
   const textNodeIds = [3, 5, 7, 9];
@@ -44,19 +40,10 @@ suite('SelectionController', () => {
   }
 
   setup(() => {
-    // Clearing the DOM should always be done first.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
-    audioProxy = new TestAudioBrowserProxy();
-    AudioBrowserProxyImpl.setInstance(audioProxy);
-    contentBrowserProxy = new TestContentBrowserProxy();
-    ContentBrowserProxyImpl.setInstance(contentBrowserProxy);
-    visualBrowserProxy = new TestVisualBrowserProxy();
-    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
-    nodeStore = new NodeStore();
-    NodeStore.setInstance(nodeStore);
-    selectionController = new SelectionController();
-    SelectionController.setInstance(selectionController);
+    const result = setupTestEnvironment();
+    contentBrowserProxy = result.contentBrowserProxy;
+    nodeStore = result.nodeStore;
+    selectionController = result.selectionController;
   });
 
   suite('onSelectionChange', () => {

@@ -5,29 +5,28 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {AudioBrowserProxyImpl, BrowserProxy, ContentBrowserProxyImpl, ContentController, LineFocusController, LineFocusMovement, LineFocusStyle, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VisualBrowserProxyImpl, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {LineFocusMovement, LineFocusStyle, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {LineFocusController, SpeechController, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {hasStyle, microtasksFinished, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, createSpeechSynthesisVoice, emitEvent, mockMetrics, setContent, setupBasicSpeech} from './common.js';
-import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
-import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
-import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
+import {createApp, createSpeechSynthesisVoice, emitEvent, setContent, setupAppTestEnvironment, setupBasicSpeech} from './common.js';
+import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
-import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
-import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
+import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
+import type {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
+import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('AppReceivesToolbarChanges', () => {
   let app: AppElement;
-  let speech: TestSpeechBrowserProxy;
-  let metrics: TestMetricsBrowserProxy;
-  let voiceLanguageController: VoiceLanguageController;
-  let speechController: SpeechController;
-  let lineFocusController: LineFocusController;
-  let readAloudModel: TestReadAloudModelBrowserProxy;
-  let visualBrowserProxy: TestVisualBrowserProxy;
   let audioBrowserProxy: TestAudioBrowserProxy;
+  let lineFocusController: LineFocusController;
+  let metrics: TestMetricsBrowserProxy;
+  let readAloudModel: TestReadAloudModelBrowserProxy;
+  let speech: TestSpeechBrowserProxy;
+  let speechController: SpeechController;
+  let visualBrowserProxy: TestVisualBrowserProxy;
+  let voiceLanguageController: VoiceLanguageController;
 
   function containerLetterSpacing(): number {
     return +window.getComputedStyle(app.$.container)
@@ -88,27 +87,16 @@ suite('AppReceivesToolbarChanges', () => {
   }
 
   setup(async () => {
-    // Clearing the DOM should always be done first.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
-    speech = new TestSpeechBrowserProxy();
-    SpeechBrowserProxyImpl.setInstance(speech);
-    visualBrowserProxy = new TestVisualBrowserProxy();
-    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
-    audioBrowserProxy = new TestAudioBrowserProxy();
-    AudioBrowserProxyImpl.setInstance(audioBrowserProxy);
-    ContentBrowserProxyImpl.setInstance(new TestContentBrowserProxy());
-    ContentController.setInstance(new ContentController());
-    metrics = mockMetrics();
-    readAloudModel = new TestReadAloudModelBrowserProxy();
-    setInstance(readAloudModel);
-    voiceLanguageController = new VoiceLanguageController();
-    VoiceLanguageController.setInstance(voiceLanguageController);
-    speechController = new SpeechController();
-    SpeechController.setInstance(speechController);
-    lineFocusController = new LineFocusController();
-    LineFocusController.setInstance(lineFocusController);
-    app = await createApp();
+    const result = await setupAppTestEnvironment();
+    app = result.app;
+    audioBrowserProxy = result.audioBrowserProxy;
+    lineFocusController = result.lineFocusController;
+    metrics = result.metrics;
+    readAloudModel = result.readAloudModel;
+    speech = result.speech;
+    speechController = result.speechController;
+    visualBrowserProxy = result.visualBrowserProxy;
+    voiceLanguageController = result.voiceLanguageController;
   });
 
   test('on letter spacing change container letter spacing updated', () => {

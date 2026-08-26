@@ -7,24 +7,24 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {AudioBrowserProxyImpl, ContentBrowserProxyImpl, ContentController, ContentType, HIGHLIGHTED_LINK_CLASS, LOG_EMPTY_DELAY_MS, MIN_MS_TO_READ, NodeStore, previousReadHighlightClass, ReadAloudNode, SpeechBrowserProxyImpl, SpeechController, VisualBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {ContentListener} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ContentType, HIGHLIGHTED_LINK_CLASS, LOG_EMPTY_DELAY_MS, MIN_MS_TO_READ, previousReadHighlightClass, ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {ContentController, ContentListener, NodeStore, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {mockMetrics, stubAnimationFrame} from './common.js';
-import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
-import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
+import {setupTestEnvironment, stubAnimationFrame} from './common.js';
+import type {TestContentBrowserProxy} from './test_content_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
-import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
+import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
+import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('ContentController', () => {
   let contentController: ContentController;
   let nodeStore: NodeStore;
   let speechController: SpeechController;
   let metrics: TestMetricsBrowserProxy;
+  let readAloudModel: TestReadAloudModelBrowserProxy;
   let listener: ContentListener;
   let receivedContentStateChange: boolean;
   let receivedNewPageDrawn: boolean;
@@ -33,22 +33,14 @@ suite('ContentController', () => {
   let visualBrowserProxy: TestVisualBrowserProxy;
 
   setup(() => {
-    // Clearing the DOM should always be done first.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    contentBrowserProxy = new TestContentBrowserProxy();
-    ContentBrowserProxyImpl.setInstance(contentBrowserProxy);
-    visualBrowserProxy = new TestVisualBrowserProxy();
-    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
-    AudioBrowserProxyImpl.setInstance(new TestAudioBrowserProxy());
-
-    metrics = mockMetrics();
-    nodeStore = new NodeStore();
-    NodeStore.setInstance(nodeStore);
-    SpeechBrowserProxyImpl.setInstance(new TestSpeechBrowserProxy());
-    speechController = new SpeechController();
-    SpeechController.setInstance(speechController);
-    contentController = new ContentController();
+    const result = setupTestEnvironment();
+    contentBrowserProxy = result.contentBrowserProxy;
+    visualBrowserProxy = result.visualBrowserProxy;
+    metrics = result.metrics;
+    readAloudModel = result.readAloudModel;
+    nodeStore = result.nodeStore;
+    speechController = result.speechController;
+    contentController = result.contentController;
 
     receivedContentStateChange = false;
     receivedNewPageDrawn = false;
@@ -239,10 +231,15 @@ suite('ContentController', () => {
     let node: HTMLElement;
 
     setup(() => {
+      const text = 'One swing ahead of the sword';
       node = document.createElement('p');
-      const text = document.createTextNode('One swing ahead of the sword');
-      node.appendChild(text);
-      document.body.appendChild(node);
+      node.textContent = text;
+      nodeStore.setDomNode(node, rootId);
+      const segments = [
+        {node: ReadAloudNode.create(node)!, start: 0, length: text.length},
+      ];
+      readAloudModel.setCurrentTextSegments(segments);
+      readAloudModel.setCurrentTextContent(text);
       contentBrowserProxy.rootId = rootId;
       contentBrowserProxy.activeDistillationMethod =
           contentBrowserProxy.distillationTypeScreen2x;

@@ -4,15 +4,149 @@
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import type {AppElement, SettingsPrefs} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {DEFAULT_SETTINGS, MetricsBrowserProxyImpl, NodeStore, playFromSelectionTimeout, ReadAloudNode, ReadAnythingLogger, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AudioBrowserProxyImpl, BrowserProxy, ContentBrowserProxyImpl, ContentController, DEFAULT_SETTINGS, LineFocusController, MetricsBrowserProxyImpl, NodeStore, playFromSelectionTimeout, ReadAloudHighlighter, ReadAloudNode, ReadAloudNodeStore, ReadAnythingLogger, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, TextSegmenter, ToolbarEvent, VisualBrowserProxyImpl, VoiceLanguageController, VoiceNotificationManager, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {Segment} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertNotDeepEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
+import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
+import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
-import type {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
+import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
+import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
+import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
+
+export interface TestSetupResult {
+  audioBrowserProxy: TestAudioBrowserProxy;
+  browserProxy: TestColorUpdaterBrowserProxy;
+  contentBrowserProxy: TestContentBrowserProxy;
+  contentController: ContentController;
+  highlighter: ReadAloudHighlighter;
+  lineFocusController: LineFocusController;
+  logger: ReadAnythingLogger;
+  metrics: TestMetricsBrowserProxy;
+  nodeStore: NodeStore;
+  notificationManager: VoiceNotificationManager;
+  readAloudModel: TestReadAloudModelBrowserProxy;
+  readAloudNodeStore: ReadAloudNodeStore;
+  selectionController: SelectionController;
+  speech: TestSpeechBrowserProxy;
+  speechController: SpeechController;
+  textSegmenter: TextSegmenter;
+  visualBrowserProxy: TestVisualBrowserProxy;
+  voiceLanguageController: VoiceLanguageController;
+  wordBoundaries: WordBoundaries;
+}
+
+export interface AppTestSetupResult extends TestSetupResult {
+  app: AppElement;
+}
+
+export interface AppTestFlags {
+  readAnythingImprovedUiEnabled?: boolean;
+  lineFocusEnabled?: boolean;
+}
+
+// Initializes all singletons, mocks, and controllers in their strict
+// dependency order without creating an AppElement.
+export function setupTestEnvironment(flags?: AppTestFlags): TestSetupResult {
+  // Clearing the DOM must always be done first.
+  document.body.innerHTML = window.trustedTypes!.emptyHTML;
+  window.scrollTo(0, 0);
+
+  // Browser Proxies: no dependencies.
+  const browserProxy = new TestColorUpdaterBrowserProxy();
+  BrowserProxy.setInstance(browserProxy);
+  const visualBrowserProxy = new TestVisualBrowserProxy();
+  if (flags?.readAnythingImprovedUiEnabled !== undefined) {
+    visualBrowserProxy.readAnythingImprovedUiEnabled =
+        flags.readAnythingImprovedUiEnabled;
+  }
+  if (flags?.lineFocusEnabled !== undefined) {
+    visualBrowserProxy.lineFocusEnabled = flags.lineFocusEnabled;
+  }
+  VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
+  const contentBrowserProxy = new TestContentBrowserProxy();
+  ContentBrowserProxyImpl.setInstance(contentBrowserProxy);
+  const audioBrowserProxy = new TestAudioBrowserProxy();
+  AudioBrowserProxyImpl.setInstance(audioBrowserProxy);
+  const speech = new TestSpeechBrowserProxy();
+  SpeechBrowserProxyImpl.setInstance(speech);
+
+  // These depend on browser proxies only.
+  const metrics = mockMetrics();
+  const logger = ReadAnythingLogger.getInstance();
+  const readAloudModel = new TestReadAloudModelBrowserProxy();
+  setInstance(readAloudModel);
+  const nodeStore = new NodeStore();
+  NodeStore.setInstance(nodeStore);
+  const readAloudNodeStore = new ReadAloudNodeStore();
+  ReadAloudNodeStore.setInstance(readAloudNodeStore);
+  const notificationManager = new VoiceNotificationManager();
+  VoiceNotificationManager.setInstance(notificationManager);
+  const wordBoundaries = new WordBoundaries();
+  WordBoundaries.setInstance(wordBoundaries);
+  const textSegmenter = new TextSegmenter();
+  TextSegmenter.setInstance(textSegmenter);
+
+  // Controllers that only depend on the above 2 section.
+  const selectionController = new SelectionController();
+  SelectionController.setInstance(selectionController);
+  const voiceLanguageController = new VoiceLanguageController();
+  VoiceLanguageController.setInstance(voiceLanguageController);
+
+  // Depends on VoiceLanguageController.
+  const highlighter = new ReadAloudHighlighter();
+  ReadAloudHighlighter.setInstance(highlighter);
+
+  // Depends on ReadAloudHighlighter.
+  const speechController = new SpeechController();
+  SpeechController.setInstance(speechController);
+
+  // Controllers that depend on SpeechController.
+  const lineFocusController = new LineFocusController();
+  LineFocusController.setInstance(lineFocusController);
+  const contentController = new ContentController();
+  ContentController.setInstance(contentController);
+
+  return {
+    audioBrowserProxy,
+    browserProxy,
+    contentBrowserProxy,
+    contentController,
+    highlighter,
+    lineFocusController,
+    logger,
+    metrics,
+    nodeStore,
+    notificationManager,
+    readAloudModel,
+    readAloudNodeStore,
+    selectionController,
+    speech,
+    speechController,
+    textSegmenter,
+    visualBrowserProxy,
+    voiceLanguageController,
+    wordBoundaries,
+  };
+}
+
+// Initializes all singletons, mocks, and controllers in their strict
+// dependency order and creates the AppElement for tests that require
+// the full Read Anything app environment.
+export async function setupAppTestEnvironment(flags?: AppTestFlags):
+    Promise<AppTestSetupResult> {
+  const result = setupTestEnvironment(flags);
+  const app = await createApp();
+
+  return {
+    app,
+    ...result,
+  };
+}
 
 export const TEST_RANDOM_VALUE_SETTINGS: SettingsPrefs = {
   letterSpacing: 101,
