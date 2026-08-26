@@ -14,7 +14,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
@@ -1978,14 +1977,7 @@ public class LocationBarMediatorUnitTest {
 
         assertTrue(mMediator.isUrlBarFocused());
         verify(mStatusCoordinator).setShouldAnimateIconChanges(true);
-        verify(mUrlCoordinator)
-                .setUrlBarData(
-                        any(),
-                        eq(UrlBar.ScrollType.SCROLL_TO_BEGINNING),
-                        eq(
-                                expectDesktopMode
-                                        ? TextSelection.SELECT_ALL
-                                        : TextSelection.SELECT_END));
+        verify(mUrlCoordinator).beginInput(any());
         verify(mUrlCoordinator).onUrlFocusChange(true);
 
         mMediator.finishUrlFocusChange(true, true);
@@ -2243,8 +2235,7 @@ public class LocationBarMediatorUnitTest {
         mMediator.onUrlFocusChange(true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        inOrder.verify(mUrlCoordinator)
-                .setUrlBarData(argThat(data -> data.displayText.isEmpty()), anyInt(), any());
+        inOrder.verify(mUrlCoordinator).beginInput(any());
         inOrder.verify(mLocationBarLayout).setDeleteButtonVisibility(false);
         inOrder.verify(mLocationBarLayout, never()).setDeleteButtonVisibility(true);
     }
@@ -2264,9 +2255,7 @@ public class LocationBarMediatorUnitTest {
         mMediator.onUrlFocusChange(true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        inOrder.verify(mUrlCoordinator)
-                .setUrlBarData(
-                        argThat(data -> "google.com".equals(data.displayText)), anyInt(), any());
+        inOrder.verify(mUrlCoordinator).beginInput(any());
         inOrder.verify(mLocationBarLayout).setDeleteButtonVisibility(true);
         inOrder.verify(mLocationBarLayout, never()).setDeleteButtonVisibility(false);
     }
@@ -2645,9 +2634,9 @@ public class LocationBarMediatorUnitTest {
                 OmniboxFocusReason.TAP_AFTER_FOCUS_FROM_KEYBOARD,
                 mSessionState.getAutocompleteInput().getFocusReason());
 
-        // beginOrResumeInput(false) should have been called, which calls
-        // mAutocompleteCoordinator.beginInput again.
-        verify(mAutocompleteCoordinator, times(2)).beginInput(any());
+        // In the streamlined architecture, onTouchAfterFocus transitions state without
+        // calling beginOrResumeInput again.
+        verify(mAutocompleteCoordinator, times(1)).beginInput(any());
     }
 
     @Test
@@ -4499,6 +4488,19 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
+    public void testShowUrlBarCursorWithoutFocusAnimations_activeSession_preservesExistingInput() {
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        mSessionState.getAutocompleteInput().setUserText("active text", TextSelection.SELECT_END);
+        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+        assertTrue(mSessionState.isSessionActive());
+
+        mMediator.showUrlBarCursorWithoutFocusAnimations();
+
+        assertEquals("active text", mSessionState.getAutocompleteInput().getUserText());
+    }
+
+    @Test
     public void testBeginInput_fromUnanimatedFocus_transitionsToEnabledAndShowsScrim() {
         OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
@@ -4839,8 +4841,8 @@ public class LocationBarMediatorUnitTest {
         AutocompleteInput input = new AutocompleteInput();
         mMediator.beginInput(input);
 
-        // Verify setUrlBarData is called only once.
-        verify(mUrlCoordinator, times(1)).setUrlBarData(any(), anyInt(), any());
+        // Verify beginInput is called only once.
+        verify(mUrlCoordinator, times(1)).beginInput(any());
     }
 
     @Test

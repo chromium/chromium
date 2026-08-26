@@ -848,8 +848,9 @@ class LocationBarMediator
         // Do not go to standby for existing NTPs that have already been unfocused.
         FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
         if (session != null
-                && session.getAutocompleteInput().getAutocompleteState()
-                        == AutocompleteState.DISABLED) {
+                && (session.isSessionActive()
+                        || session.getAutocompleteInput().getAutocompleteState()
+                                == AutocompleteState.DISABLED)) {
             return;
         }
 
@@ -1498,7 +1499,7 @@ class LocationBarMediator
                                     displayTextSelection,
                                     mUrlCoordinator.getTextWithoutAutocomplete(),
                                     mCurrentInput.getUserText());
-                    if (!editingTextSelection.isCollapsed()) {
+                    if (!editingTextSelection.isCollapsed() && !userTextDiffersFromInitial()) {
                         mCurrentInput.setSelection(editingTextSelection);
                     }
 
@@ -1522,14 +1523,6 @@ class LocationBarMediator
                 });
 
         connectObservers();
-
-        UrlBarData data = getUrlBarDataForCurrentInput(mCurrentInput);
-        // We use SCROLL_TO_BEGINNING to match the scroll type used when UrlBarMediator
-        // begins input (in pushCurrentInputToModel()). This alignment allows the
-        // early-return optimization in UrlBarMediator.setUrlBarData() to recognize
-        // the updates as equivalent and skip redundant view updates.
-        mUrlCoordinator.setUrlBarData(
-                data, UrlBar.ScrollType.SCROLL_TO_BEGINNING, mCurrentInput.getSelection());
         updateButtonVisibility();
 
         // Serve the cached suggestions while we wait for Profile.
@@ -1796,7 +1789,7 @@ class LocationBarMediator
             // because different focus change causes need to be handled differently. E.g., defocus
             // via scrim click should not detach the session, while defocus via tab change should.
         } else {
-            if (displayStateEquals(DisplayState.DRAFTING) && userTextDiffersFromInitial()) {
+            if (userTextDiffersFromInitial()) {
                 enterDraftingNoFocus();
             } else if (!displayStateEquals(DisplayState.DRAFTING_NO_FOCUS)) {
                 endInput();
@@ -3036,6 +3029,30 @@ class LocationBarMediator
         var state = FuseboxSessionState.from(mLocationBarDataProvider);
         if (state == null) return;
 
+        // Guard against rapid typing into the NTP fakebox during focus transition.
+        // When typing begins in the fakebox (e.g. software keyboard or touch focus), the fakebox
+        // text watcher initiates focus transfer to the Omnibox. If the user continues typing before
+        // the Android window manager completes focus transfer to UrlBar, additional FAKE_BOX_TAP
+        // beginInput() events may arrive while mUrlHasFocus is already true. Instead of ignoring or
+        // restarting the input session, forward the accumulated user text to UrlBar and
+        // Autocomplete.
+        if (mUrlHasFocus
+                && mCurrentInput != null
+                && !TextUtils.isEmpty(mCurrentInput.getUserText())
+                && input.getFocusReason() == OmniboxFocusReason.FAKE_BOX_TAP) {
+            String newText = input.getUserText();
+            if (!TextUtils.isEmpty(newText)
+                    && !TextUtils.equals(newText, mCurrentInput.getUserText())
+                    && newText.length() > mCurrentInput.getUserText().length()) {
+                mUrlCoordinator.setUrlBarData(
+                        UrlBarData.forNonUrlText(newText),
+                        ScrollType.SCROLL_TO_BEGINNING,
+                        TextSelection.SELECT_END);
+                onUrlTextChanged(newText);
+            }
+            return;
+        }
+
         state.applyAutocompleteInput(input);
 
         if (!mUrlHasFocus) {
@@ -3371,7 +3388,7 @@ class LocationBarMediator
         mCurrentInput
                 .setFocusReason(OmniboxFocusReason.TAP_AFTER_FOCUS_FROM_KEYBOARD)
                 .setAutocompleteState(AutocompleteState.ENABLED);
-        beginOrResumeInput(/* activateNewSession= */ false);
+        handleUrlFocusAnimation(/* hasFocus= */ true);
     }
 
     // BackPressHandler implementation.

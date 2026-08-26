@@ -107,9 +107,10 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
     /** Signals that the Omnibox input session has ended. */
     void endInput() {
         if (!isInInputSession()) return;
-        var data = UrlBarData.forUrl(mCurrentInput.getPageUrl());
-        setUrlBarData(data, ScrollType.SCROLL_TO_TLD, TextSelection.SELECT_END);
+        var pageUrl = mCurrentInput.getPageUrl();
         mCurrentInput = null;
+        var data = UrlBarData.forUrl(pageUrl);
+        setUrlBarData(data, ScrollType.SCROLL_TO_TLD, TextSelection.SELECT_END);
     }
 
     /* package */ void pushCurrentInputToModel() {
@@ -133,7 +134,7 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
     }
 
     @EnsuresNonNullIf("mCurrentInput")
-    private boolean isInInputSession() {
+    /* package */ boolean isInInputSession() {
         return mCurrentInput != null;
     }
 

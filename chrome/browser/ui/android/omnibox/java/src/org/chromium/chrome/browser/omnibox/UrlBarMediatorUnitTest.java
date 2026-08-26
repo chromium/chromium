@@ -41,7 +41,9 @@ import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.search_engines.settings.SiteSearchSettings;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisColorSpan;
 import org.chromium.components.omnibox.TextSelection;
@@ -696,6 +698,25 @@ public class UrlBarMediatorUnitTest {
         assertFalse(
                 mMediator.setUrlBarData(
                         empty2, UrlBar.ScrollType.SCROLL_TO_TLD, TextSelection.SELECT_END));
+    }
+
+    @Test
+    public void endInput_clearsSessionBeforeResettingText() {
+        var session = new FuseboxSessionState();
+        var input = new AutocompleteInput(OmniboxFocusReason.DEFAULT_WITH_HARDWARE_KEYBOARD);
+        input.setUserText("typed text", TextSelection.SELECT_END);
+        session.applyAutocompleteInput(input);
+
+        doReturn(UrlBarData.forNonUrlText("typed text"))
+                .when(mDelegate)
+                .getUrlBarDataForCurrentInput();
+        mModel.set(UrlBarProperties.DELEGATE, mDelegate);
+
+        mMediator.beginInput(session);
+        assertTrue(mMediator.isInInputSession());
+
+        mMediator.endInput();
+        assertFalse(mMediator.isInInputSession());
     }
 
     private static SpannableStringBuilder spannable(String text) {
