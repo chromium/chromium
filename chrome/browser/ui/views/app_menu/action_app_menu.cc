@@ -187,7 +187,7 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
           menu_item->SetMinorText(accel.GetShortcutText());
         }
         // Recursively populate the menu item with the ActionItem's children.
-        PopulateMenu(menu_item, child_ptr);
+        PopulateMenu(menu_item, child_base);
       }
 
       // Set the border radius depending on the position a menu item has in

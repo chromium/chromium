@@ -113,6 +113,39 @@ TEST_F(ActionAppMenuTest, PopulatesRecentTabsSubmenu) {
   menu.CloseMenu();
 }
 
+TEST_F(ActionAppMenuTest, PopulatesStaticSubmenus) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  // Passwords and autofill submenu.
+  views::MenuItemView* password_item =
+      root->GetMenuItemByID(kActionPasswordsAndAutofillSubmenu);
+  ASSERT_TRUE(password_item);
+  EXPECT_TRUE(password_item->HasSubmenu());
+  EXPECT_NE(root->GetMenuItemByID(kActionShowPasswordManager), nullptr);
+  EXPECT_NE(root->GetMenuItemByID(kActionShowPaymentMethods), nullptr);
+
+  // Extensions submenu.
+  views::MenuItemView* extensions_item =
+      root->GetMenuItemByID(kActionExtensionsSubmenu);
+  ASSERT_TRUE(extensions_item);
+  EXPECT_TRUE(extensions_item->HasSubmenu());
+  EXPECT_NE(root->GetMenuItemByID(kActionExtensionsSubmenuManageExtensions),
+            nullptr);
+  EXPECT_NE(root->GetMenuItemByID(kActionExtensionsSubmenuVisitChromeWebStore),
+            nullptr);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
 TEST_F(ActionAppMenuTest, PopulatesTextAndIconOverrides) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
