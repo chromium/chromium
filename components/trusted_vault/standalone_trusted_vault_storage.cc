@@ -357,6 +357,107 @@ const UserVault* StandaloneTrustedVaultStorage::FindUserVaultImpl(
   return nullptr;
 }
 
+const LocalDeviceRegistrationInfo&
+StandaloneTrustedVaultStorage::GetLocalDeviceRegistrationInfo(
+    const GaiaId& gaia_id) const {
+  return GetUserVault(gaia_id).local_device_registration_info();
+}
+
+void StandaloneTrustedVaultStorage::MutateLocalDeviceRegistrationInfo(
+    const GaiaId& gaia_id,
+    base::FunctionRef<void(LocalDeviceRegistrationInfo&)> mutator) {
+  MutateUserVault(gaia_id, [&](UserVault& user_vault) {
+    mutator(*user_vault.mutable_local_device_registration_info());
+  });
+}
+
+const ICloudKeychainRegistrationInfo&
+StandaloneTrustedVaultStorage::GetICloudKeychainRegistrationInfo(
+    const GaiaId& gaia_id) const {
+  return GetUserVault(gaia_id).icloud_keychain_registration_info();
+}
+
+void StandaloneTrustedVaultStorage::MutateICloudKeychainRegistrationInfo(
+    const GaiaId& gaia_id,
+    base::FunctionRef<void(ICloudKeychainRegistrationInfo&)> mutator) {
+  MutateUserVault(gaia_id, [&](UserVault& user_vault) {
+    mutator(*user_vault.mutable_icloud_keychain_registration_info());
+  });
+}
+
+bool StandaloneTrustedVaultStorage::
+    GetLastRegistrationReturnedLocalDataObsolete(const GaiaId& gaia_id) const {
+  const UserVault* user_vault = FindUserVault(gaia_id);
+  return user_vault &&
+         user_vault->last_registration_returned_local_data_obsolete();
+}
+
+void StandaloneTrustedVaultStorage::
+    SetLastRegistrationReturnedLocalDataObsolete(const GaiaId& gaia_id,
+                                                 bool obsolete) {
+  MutateUserVault(gaia_id, [&](UserVault& user_vault) {
+    user_vault.set_last_registration_returned_local_data_obsolete(obsolete);
+  });
+}
+
+std::vector<std::vector<uint8_t>> StandaloneTrustedVaultStorage::GetVaultKeys(
+    const GaiaId& gaia_id) const {
+  const UserVault* user_vault = FindUserVault(gaia_id);
+  return user_vault ? GetAllVaultKeys(*user_vault)
+                    : std::vector<std::vector<uint8_t>>();
+}
+
+int StandaloneTrustedVaultStorage::GetLastKeyVersion(
+    const GaiaId& gaia_id) const {
+  const UserVault* user_vault = FindUserVault(gaia_id);
+  return user_vault ? user_vault->last_vault_key_version() : 0;
+}
+
+void StandaloneTrustedVaultStorage::SetVaultKeys(
+    const GaiaId& gaia_id,
+    const std::vector<std::vector<uint8_t>>& keys,
+    int last_key_version) {
+  MutateUserVault(gaia_id, [&](UserVault& user_vault) {
+    user_vault.set_last_vault_key_version(last_key_version);
+    user_vault.set_keys_marked_as_stale_by_consumer(false);
+    user_vault.clear_vault_key();
+    for (const std::vector<uint8_t>& key : keys) {
+      AssignBytesToProtoString(
+          key, user_vault.add_vault_key()->mutable_key_material());
+    }
+  });
+}
+
+bool StandaloneTrustedVaultStorage::GetKeysMarkedAsStaleByConsumer(
+    const GaiaId& gaia_id) const {
+  const UserVault* user_vault = FindUserVault(gaia_id);
+  return user_vault && user_vault->keys_marked_as_stale_by_consumer();
+}
+
+void StandaloneTrustedVaultStorage::SetKeysMarkedAsStaleByConsumer(
+    const GaiaId& gaia_id,
+    bool stale) {
+  MutateUserVault(gaia_id, [&](UserVault& user_vault) {
+    user_vault.set_keys_marked_as_stale_by_consumer(stale);
+  });
+}
+
+int64_t StandaloneTrustedVaultStorage::GetLastFailedRequestMillis(
+    const GaiaId& gaia_id) const {
+  const UserVault* user_vault = FindUserVault(gaia_id);
+  return user_vault ? user_vault->last_failed_request_millis_since_unix_epoch()
+                    : 0;
+}
+
+void StandaloneTrustedVaultStorage::SetLastFailedRequestMillis(
+    const GaiaId& gaia_id,
+    int64_t last_failed_request_millis) {
+  MutateUserVault(gaia_id, [&](UserVault& user_vault) {
+    user_vault.set_last_failed_request_millis_since_unix_epoch(
+        last_failed_request_millis);
+  });
+}
+
 // static
 bool StandaloneTrustedVaultStorage::HasNonConstantKey(
     const UserVault& per_user_vault) {
