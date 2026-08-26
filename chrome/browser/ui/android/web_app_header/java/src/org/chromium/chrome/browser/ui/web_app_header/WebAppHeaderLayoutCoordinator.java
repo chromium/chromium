@@ -360,6 +360,7 @@ public class WebAppHeaderLayoutCoordinator
     }
 
     @Override
+    @SuppressWarnings("SetTextColorAndSetTextSizeCheck")
     public void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
@@ -777,6 +778,11 @@ public class WebAppHeaderLayoutCoordinator
         return fadeOutAnimation;
     }
 
+    // This helps ensure that the presubmit warning to set a pre-defined text appearance
+    // no longer occurs, as the origin text is set according to the theme color, and
+    // a predefined text appearance style cannot be used in a dynamic context like this.
+    // Same for wherever else mAppOriginView.setTextColor() is called in this file.
+    @SuppressWarnings("SetTextColorAndSetTextSizeCheck")
     private void setTextThemeColor() {
         if (mAppOriginView == null) return;
 
