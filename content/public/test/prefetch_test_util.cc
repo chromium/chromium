@@ -43,6 +43,7 @@ class TestPrefetchWatcherImpl {
   std::map<PrefetchKey, base::WeakPtr<PrefetchContainer>>
       response_completed_prefetches_;
   std::map<PrefetchKey, base::OnceClosure> response_completed_quit_closures_;
+  std::map<GURL, base::OnceClosure> url_response_completed_quit_closures_;
 
   std::optional<PrefetchContainerIdForTesting>
       prefetch_container_id_for_testing_used_in_last_navigation_;
@@ -74,6 +75,12 @@ void TestPrefetchWatcherImpl::OnPrefetchResponseCompleted(
     response_completed_quit_closures_.erase(key);
     std::move(quit_closure).Run();
   }
+  if (url_response_completed_quit_closures_.contains(key.url())) {
+    auto quit_closure =
+        std::move(url_response_completed_quit_closures_[key.url()]);
+    url_response_completed_quit_closures_.erase(key.url());
+    std::move(quit_closure).Run();
+  }
 }
 
 void TestPrefetchWatcherImpl::OnPrefetchInterceptionCompleted(
@@ -86,7 +93,30 @@ PrefetchContainerIdForTesting
 TestPrefetchWatcherImpl::WaitUntilPrefetchResponseCompleted(
     const std::optional<blink::DocumentToken>& document_token,
     const GURL& url) {
-  return WaitUntilPrefetchResponseCompleted(PrefetchKey(document_token, url));
+  if (document_token.has_value()) {
+    return WaitUntilPrefetchResponseCompleted(PrefetchKey(document_token, url));
+  }
+
+  for (const auto& [completed_key, container] :
+       response_completed_prefetches_) {
+    if (completed_key.url() == url) {
+      return GetContainerIdForTesting(container.get());
+    }
+  }
+
+  CHECK(!url_response_completed_quit_closures_.contains(url));
+  base::RunLoop loop;
+  url_response_completed_quit_closures_.emplace(url, loop.QuitClosure());
+  loop.Run();
+
+  for (const auto& [completed_key, container] :
+       response_completed_prefetches_) {
+    if (completed_key.url() == url) {
+      return GetContainerIdForTesting(container.get());
+    }
+  }
+
+  return InvalidPrefetchContainerIdForTesting;
 }
 
 PrefetchContainerIdForTesting

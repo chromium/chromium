@@ -16,6 +16,7 @@ if (!is_android) {
       "gws_hp_page_load_metrics_observer_browsertest.cc",
       "gws_page_load_metrics_observer_browsertest.cc",
       "navigation_initiator_page_load_metrics_observer_browsertest.cc",
+      "preload_serving_metrics_page_load_metrics_observer_browsertest.cc",
       "prerender_page_load_metrics_observer_browsertest.cc",
       "use_counter_page_load_metrics_observer_browsertest.cc",
     ]
