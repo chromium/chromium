@@ -1664,6 +1664,10 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
 
 - (void)updateSelectedCollectionViewItemRingAndBringIntoView:
     (BOOL)shouldBringItemIntoView {
+  if (_mode == TabGridMode::kSelection) {
+    return;
+  }
+
   // Deselects all the collection view items.
   NSArray<NSIndexPath*>* indexPathsForSelectedItems =
       [self.collectionView indexPathsForSelectedItems];
