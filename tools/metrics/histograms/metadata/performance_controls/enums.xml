@@ -38,6 +38,38 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Enabled"/>
 </enum>
 
+<!-- LINT.IfChange(CpuPerformanceTierOverridePair) -->
+
+<enum name="CpuPerformanceTierOverridePair">
+  <int value="0" label="Unknown to Unknown"/>
+  <int value="1" label="Unknown to Low"/>
+  <int value="2" label="Unknown to Mid"/>
+  <int value="3" label="Unknown to High"/>
+  <int value="4" label="Unknown to Ultra"/>
+  <int value="5" label="Low to Unknown"/>
+  <int value="6" label="Low to Low"/>
+  <int value="7" label="Low to Mid"/>
+  <int value="8" label="Low to High"/>
+  <int value="9" label="Low to Ultra"/>
+  <int value="10" label="Mid to Unknown"/>
+  <int value="11" label="Mid to Low"/>
+  <int value="12" label="Mid to Mid"/>
+  <int value="13" label="Mid to High"/>
+  <int value="14" label="Mid to Ultra"/>
+  <int value="15" label="High to Unknown"/>
+  <int value="16" label="High to Low"/>
+  <int value="17" label="High to Mid"/>
+  <int value="18" label="High to High"/>
+  <int value="19" label="High to Ultra"/>
+  <int value="20" label="Ultra to Unknown"/>
+  <int value="21" label="Ultra to Low"/>
+  <int value="22" label="Ultra to Mid"/>
+  <int value="23" label="Ultra to High"/>
+  <int value="24" label="Ultra to Ultra"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/metrics/cpu_performance_metrics_provider.h:CpuPerformanceTierOverridePair) -->
+
 <enum name="InterventionBubbleActionType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Ignore"/>

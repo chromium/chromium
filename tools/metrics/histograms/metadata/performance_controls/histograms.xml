@@ -52,6 +52,28 @@ each histogram. Maybe add here or add a new performance controls one
   </summary>
 </histogram>
 
+<histogram name="PerformanceControls.CpuPerformanceTier.PolicyOverride"
+    enum="CpuPerformanceTierOverridePair" expires_after="2027-06-30">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs the pair of the nominal hardware CPU performance tier and the
+    overridden tier when an enterprise policy override is active. No metric is
+    logged if no override is set.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceControls.CpuPerformanceTier.UserOverride"
+    enum="CpuPerformanceTierOverridePair" expires_after="2027-06-30">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs the pair of the nominal hardware CPU performance tier and the
+    overridden tier when a user-selected override is active. No metric is logged
+    if no override is set.
+  </summary>
+</histogram>
+
 <histogram
     name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.BubbleAction"
     enum="InterventionBubbleActionType" expires_after="2026-11-29">

@@ -40,6 +40,7 @@
 #include "chrome/browser/metrics/chrome_metrics_extensions_helper.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
+#include "chrome/browser/metrics/cpu_performance_metrics_provider.h"
 #include "chrome/browser/metrics/desktop_platform_features_metrics_provider.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service_factory.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_metrics_provider.h"
@@ -916,6 +917,9 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<performance_manager::MetricsProviderCommon>());
+
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<metrics::CpuPerformanceMetricsProvider>());
 
 #if BUILDFLAG(IS_WIN)
   metrics_service_->RegisterMetricsProvider(
