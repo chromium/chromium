@@ -724,7 +724,14 @@ class AudioStartObserver : public content::WebContentsObserver {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest, AddObserverAudibleTab) {
+// TODO(crbug.com/449389404): Consistently failing on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_AddObserverAudibleTab DISABLED_AddObserverAudibleTab
+#else
+#define MAYBE_AddObserverAudibleTab AddObserverAudibleTab
+#endif
+IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
+                       MAYBE_AddObserverAudibleTab) {
   // Set up the embedded test server to serve the test javascript file.
   embedded_test_server()->ServeFilesFromSourceDirectory(
       media::GetTestDataPath());
