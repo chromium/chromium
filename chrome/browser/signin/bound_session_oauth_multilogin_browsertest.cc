@@ -313,6 +313,9 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginPrototypeTest,
   const std::string email_1 = "user1@gmail.com";
   const GaiaId::Literal fake_gaia_id_1("fake-gaia-id-1");
   const std::string refresh_token_1 = "refresh-token-1";
+  fake_gaia_mixin().SetupFakeGaiaForLogin(email_1, fake_gaia_id_1,
+                                          refresh_token_1);
+  ASSERT_TRUE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_1));
   const AccountInfo account_info_1 = signin::MakeAccountAvailable(
       &identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
@@ -331,6 +334,9 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginPrototypeTest,
   const std::string email_2 = "user2@gmail.com";
   const GaiaId::Literal fake_gaia_id_2("fake-gaia-id-2");
   const std::string refresh_token_2 = "refresh-token-2";
+  fake_gaia_mixin().SetupFakeGaiaForLogin(email_2, fake_gaia_id_2,
+                                          refresh_token_2);
+  ASSERT_TRUE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_2));
   const AccountInfo account_info_2 = signin::MakeAccountAvailable(
       &identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
@@ -355,10 +361,6 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginPrototypeTest,
   // - make OAML return reuse bound session response,
   // - make `RotateBoundCookies` return success (to ensure the session is not
   // terminated).
-  fake_gaia_mixin().SetupFakeGaiaForLogin(email_1, fake_gaia_id_1,
-                                          refresh_token_1);
-  fake_gaia_mixin().SetupFakeGaiaForLogin(email_2, fake_gaia_id_2,
-                                          refresh_token_2);
   FakeGaia::Configuration config;
   config.session_sid_cookie = "fake_sid";
   config.session_lsid_cookie = "fake_lsid";
@@ -420,6 +422,9 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPrototypeNewSessionTest,
                        StartsNewBoundSession) {
   const UnexportableSigningKeyId key_id = GenerateNewSigningKey();
   const std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
+  fake_gaia_mixin().SetupFakeGaiaForLoginWithDefaults();
+  ASSERT_TRUE(
+      fake_gaia().HasAccessTokenForAuthToken(FakeGaiaMixin::kFakeRefreshToken));
   signin::MakeAccountAvailable(
       &identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
@@ -440,7 +445,6 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPrototypeNewSessionTest,
   // This makes sure that eventually OAML will return bound cookies, at the same
   // time `/ListAccounts` WON'T return primary account triggering OAML - it
   // simulates similar scenario to cookies being cleared.
-  fake_gaia_mixin().SetupFakeGaiaForLoginWithDefaults();
   FakeGaia::Configuration config;
   config.spec_compliant_device_bound_session = GetParam();
   config.session_sid_cookie = "fake_sid";
@@ -498,6 +502,9 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPrototypeNewSessionTest,
                        DoesNotStartYoutubeSession) {
   const UnexportableSigningKeyId key_id = GenerateNewSigningKey();
   const std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
+  fake_gaia_mixin().SetupFakeGaiaForLoginWithDefaults();
+  ASSERT_TRUE(
+      fake_gaia().HasAccessTokenForAuthToken(FakeGaiaMixin::kFakeRefreshToken));
   signin::MakeAccountAvailable(
       &identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
@@ -518,7 +525,6 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPrototypeNewSessionTest,
   // This makes sure that eventually OAML will return bound cookies, at the same
   // time `/ListAccounts` WON'T return primary account triggering OAML - it
   // simulates similar scenario to cookies being cleared.
-  fake_gaia_mixin().SetupFakeGaiaForLoginWithDefaults();
   FakeGaia::Configuration config;
   config.spec_compliant_device_bound_session = GetParam();
   config.session_sid_cookie = "fake_sid";
@@ -585,6 +591,8 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPrototypeNewSessionTest,
   const std::string email = "user1@gmail.com";
   const GaiaId::Literal fake_gaia_id("fake-gaia-id-1");
   const std::string refresh_token = "refresh-token-1";
+  fake_gaia_mixin().SetupFakeGaiaForLogin(email, fake_gaia_id, refresh_token);
+  ASSERT_TRUE(fake_gaia().HasAccessTokenForAuthToken(refresh_token));
   const AccountInfo account_info = signin::MakeAccountAvailable(
       &identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
@@ -612,7 +620,6 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPrototypeNewSessionTest,
   // - make OAML eventually return the bound cookies,
   // - make `RotateBoundCookies` return success (to ensure the session is not
   // terminated).
-  fake_gaia_mixin().SetupFakeGaiaForLogin(email, fake_gaia_id, refresh_token);
   FakeGaia::Configuration config;
   config.spec_compliant_device_bound_session = GetParam();
   config.session_sid_cookie = "fake_sid";
@@ -831,6 +838,9 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
   const std::string email_1 = "user1@gmail.com";
   const GaiaId::Literal fake_gaia_id_1("fake-gaia-id-1");
   const std::string refresh_token_1 = "refresh-token-1";
+  fake_gaia_mixin().SetupFakeGaiaForLogin(email_1, fake_gaia_id_1,
+                                          refresh_token_1);
+  ASSERT_TRUE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_1));
   const AccountInfo account_info_1 = signin::MakeAccountAvailable(
       &identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
@@ -849,6 +859,9 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
   const std::string email_2 = "user2@gmail.com";
   const GaiaId::Literal fake_gaia_id_2("fake-gaia-id-2");
   const std::string refresh_token_2 = "refresh-token-2";
+  fake_gaia_mixin().SetupFakeGaiaForLogin(email_2, fake_gaia_id_2,
+                                          refresh_token_2);
+  ASSERT_TRUE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_2));
   const AccountInfo account_info_2 = signin::MakeAccountAvailable(
       &identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
@@ -861,13 +874,6 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
       account_info_2.GetAccountId()));
 
   ASSERT_FALSE(identity_manager().AllBoundTokensShareSameBindingKey());
-
-  fake_gaia_mixin().SetupFakeGaiaForLogin(email_1, fake_gaia_id_1,
-                                          refresh_token_1);
-  ASSERT_TRUE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_1));
-  fake_gaia_mixin().SetupFakeGaiaForLogin(email_2, fake_gaia_id_2,
-                                          refresh_token_2);
-  ASSERT_TRUE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_2));
 
   // This makes sure that OAML will return a given error. At the same
   // time, `/ListAccounts` WON'T return accounts, which will trigger OAML -
@@ -916,6 +922,9 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
   const std::string email_1 = "user1@gmail.com";
   const GaiaId::Literal fake_gaia_id_1("fake-gaia-id-1");
   const std::string refresh_token_1 = "refresh-token-1";
+  fake_gaia_mixin().SetupFakeGaiaForLogin(email_1, fake_gaia_id_1,
+                                          refresh_token_1);
+  ASSERT_TRUE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_1));
   const AccountInfo account_info_1 = signin::MakeAccountAvailable(
       &identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
@@ -934,6 +943,9 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
   const std::string email_2 = "user2@gmail.com";
   const GaiaId::Literal fake_gaia_id_2("fake-gaia-id-2");
   const std::string refresh_token_2 = "refresh-token-2";
+  fake_gaia_mixin().SetupFakeGaiaForLogin(email_2, fake_gaia_id_2,
+                                          refresh_token_2);
+  ASSERT_TRUE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_2));
   const AccountInfo account_info_2 = signin::MakeAccountAvailable(
       &identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
@@ -946,13 +958,6 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
       account_info_2.GetAccountId()));
 
   ASSERT_TRUE(identity_manager().AllBoundTokensShareSameBindingKey());
-
-  fake_gaia_mixin().SetupFakeGaiaForLogin(email_1, fake_gaia_id_1,
-                                          refresh_token_1);
-  ASSERT_TRUE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_1));
-  fake_gaia_mixin().SetupFakeGaiaForLogin(email_2, fake_gaia_id_2,
-                                          refresh_token_2);
-  ASSERT_TRUE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_2));
 
   // This makes sure that OAML will return a given error. At the same
   // time, `/ListAccounts` WON'T return accounts, which will trigger OAML -
@@ -1031,6 +1036,9 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
                        StartsNewBoundSession) {
   const UnexportableSigningKeyId key_id = GenerateNewSigningKey();
   const std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
+  fake_gaia_mixin().SetupFakeGaiaForLoginWithDefaults();
+  ASSERT_TRUE(
+      fake_gaia().HasAccessTokenForAuthToken(FakeGaiaMixin::kFakeRefreshToken));
   signin::MakeAccountAvailable(
       &identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
@@ -1058,7 +1066,6 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
   // This makes sure that eventually OAML will return bound cookies, at the same
   // time `/ListAccounts` WON'T return primary account triggering OAML - it
   // simulates similar scenario to cookies being cleared.
-  fake_gaia_mixin().SetupFakeGaiaForLoginWithDefaults();
   FakeGaia::Configuration config;
   config.session_sid_cookie = "fake_sid";
   config.session_lsid_cookie = "fake_lsid";
@@ -1123,16 +1130,13 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
                 net::SchemefulSite::Deserialize("https://google.com")))));
 }
 
-// TODO(crbug.com/544649705): Flaky on mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_StartsMultipleSessions DISABLED_StartsMultipleSessions
-#else
-#define MAYBE_StartsMultipleSessions StartsMultipleSessions
-#endif
 IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
-                       MAYBE_StartsMultipleSessions) {
+                       StartsMultipleSessions) {
   const UnexportableSigningKeyId key_id = GenerateNewSigningKey();
   const std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
+  fake_gaia_mixin().SetupFakeGaiaForLoginWithDefaults();
+  ASSERT_TRUE(
+      fake_gaia().HasAccessTokenForAuthToken(FakeGaiaMixin::kFakeRefreshToken));
   signin::MakeAccountAvailable(
       &identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
@@ -1160,7 +1164,6 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
   // This makes sure that eventually OAML will return bound cookies, at the same
   // time `/ListAccounts` WON'T return primary account triggering OAML - it
   // simulates similar scenario to cookies being cleared.
-  fake_gaia_mixin().SetupFakeGaiaForLoginWithDefaults();
   FakeGaia::Configuration config;
   config.session_sid_cookie = "fake_sid";
   config.session_lsid_cookie = "fake_lsid";
@@ -1241,6 +1244,9 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
   const std::string email_1 = "user1@gmail.com";
   const GaiaId::Literal fake_gaia_id_1("fake-gaia-id-1");
   const std::string refresh_token_1 = "refresh-token-1";
+  fake_gaia_mixin().SetupFakeGaiaForLogin(email_1, fake_gaia_id_1,
+                                          refresh_token_1);
+  ASSERT_TRUE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_1));
   const AccountInfo account_info_1 = signin::MakeAccountAvailable(
       &identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
@@ -1259,6 +1265,9 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
   const std::string email_2 = "user2@gmail.com";
   const GaiaId::Literal fake_gaia_id_2("fake-gaia-id-2");
   const std::string refresh_token_2 = "refresh-token-2";
+  fake_gaia_mixin().SetupFakeGaiaForLogin(email_2, fake_gaia_id_2,
+                                          refresh_token_2);
+  ASSERT_TRUE(fake_gaia().HasAccessTokenForAuthToken(refresh_token_2));
   const AccountInfo account_info_2 = signin::MakeAccountAvailable(
       &identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
@@ -1276,10 +1285,6 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
   // - make OAML return reuse bound session response,
   // - make `RotateBoundCookies` return success (to ensure the session is not
   // terminated).
-  fake_gaia_mixin().SetupFakeGaiaForLogin(email_1, fake_gaia_id_1,
-                                          refresh_token_1);
-  fake_gaia_mixin().SetupFakeGaiaForLogin(email_2, fake_gaia_id_2,
-                                          refresh_token_2);
   FakeGaia::Configuration config;
   config.session_sid_cookie = "fake_sid";
   config.session_lsid_cookie = "fake_lsid";
@@ -1372,6 +1377,9 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
                        OverrideExistingSession) {
   const UnexportableSigningKeyId key_id = GenerateNewSigningKey();
   const std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
+  fake_gaia_mixin().SetupFakeGaiaForLoginWithDefaults();
+  ASSERT_TRUE(
+      fake_gaia().HasAccessTokenForAuthToken(FakeGaiaMixin::kFakeRefreshToken));
   signin::MakeAccountAvailable(
       &identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
@@ -1389,7 +1397,6 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
   // This makes sure that eventually OAML will return bound cookies, at the same
   // time `/ListAccounts` WON'T return primary account triggering OAML - it
   // simulates similar scenario to cookies being cleared.
-  fake_gaia_mixin().SetupFakeGaiaForLoginWithDefaults();
   FakeGaia::Configuration config;
   config.session_sid_cookie = "fake_sid";
   config.session_lsid_cookie = "fake_lsid";
@@ -1499,6 +1506,9 @@ IN_PROC_BROWSER_TEST_F(
     StartsNewBoundSession) {
   const UnexportableSigningKeyId key_id = GenerateNewSigningKey();
   const std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
+  fake_gaia_mixin().SetupFakeGaiaForLoginWithDefaults();
+  ASSERT_TRUE(
+      fake_gaia().HasAccessTokenForAuthToken(FakeGaiaMixin::kFakeRefreshToken));
   signin::MakeAccountAvailable(
       &identity_manager(),
       signin::AccountAvailabilityOptionsBuilder()
@@ -1520,7 +1530,6 @@ IN_PROC_BROWSER_TEST_F(
   // This makes sure that eventually OAML will return bound cookies, at the same
   // time `/ListAccounts` WON'T return primary account triggering OAML - it
   // simulates similar scenario to cookies being cleared.
-  fake_gaia_mixin().SetupFakeGaiaForLoginWithDefaults();
   FakeGaia::Configuration config;
   config.session_sid_cookie = "fake_sid";
   config.session_lsid_cookie = "fake_lsid";
