@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
@@ -25,6 +26,7 @@
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
@@ -496,6 +498,11 @@ std::unique_ptr<PopupNoticeView> CreateAutofillAiPrivateInferenceNoticeView(
         }
         if (auto* const client = ContentAutofillClient::FromWebContents(
                 controller->GetWebContents())) {
+          if (PrefService* const prefs = client->GetPrefs()) {
+            prefs->SetTime(
+                prefs::kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp,
+                base::Time::Now());
+          }
           client->ShowAutofillSettings(
               SuggestionType::kAutofillAiPrivateInferenceNotice);
         }

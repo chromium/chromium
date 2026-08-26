@@ -1609,12 +1609,18 @@ void ChromeAutofillClient::ShowAutofillAiPrivateInferenceNotice() {
             AutofillMetrics::PopupNoticeInteractions::kDismissed);
       });
   base::RepeatingClosure secondary_action_callback = base::BindRepeating(
-      [](content::WebContents* web_contents) {
+      [](base::WeakPtr<AutofillClient> client,
+         content::WebContents* web_contents) {
+        if (client && client->GetPrefs()) {
+          client->GetPrefs()->SetTime(
+              prefs::kAutofillAiPrivateInferenceNoticeAcknowledgedTimestamp,
+              base::Time::Now());
+        }
         AutofillMetrics::LogAutofillAiPrivateInferenceNoticeInteraction(
             AutofillMetrics::PopupNoticeInteractions::kLinkButtonClicked);
         ShowAutofillSettingsPage(web_contents);
       },
-      web_contents());
+      GetWeakPtr(), web_contents());
   GetAutofillMessageController()->Show(
       AutofillMessageModel::CreateForPrivateInferenceNotice(
           std::move(action_callback), std::move(dismiss_callback),
