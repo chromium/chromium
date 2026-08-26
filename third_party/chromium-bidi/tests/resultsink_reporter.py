@@ -23,7 +23,7 @@ class ResultSinkReporter:
     def __init__(self):
         self.sink_data = self._get_sink_data()
         self.pending_results = []
-        self.batch_size = 50
+        self.batch_size = 1
 
     def _get_sink_data(self):
         luci_context = os.environ.get("LUCI_CONTEXT")

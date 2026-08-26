@@ -31,10 +31,7 @@ import {
   WARMUP_ITERATIONS,
   BENCHMARK_HTML,
 } from './benchmark-utils.mjs';
-import {
-  installAndGetChromePath,
-  getBidiMapperPath,
-} from './path-getter/path-getter.mjs';
+import {getChromePath, getBidiMapperPath} from './path-getter/path-getter.mjs';
 
 async function runBenchmarkRun(launchOptions, chromePath) {
   const browser = await puppeteer.launch({
@@ -114,7 +111,7 @@ async function main() {
     }
   }
 
-  const chromePath = installAndGetChromePath(true);
+  const chromePath = getChromePath();
   const bidiMapperPath = getBidiMapperPath();
   console.log(`Using Chrome: ${chromePath}`);
   console.log(`Using BiDi Mapper: ${bidiMapperPath}`);

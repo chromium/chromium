@@ -56,7 +56,25 @@ def main():
     if node_args and node_args[0] == "--":
         node_args = node_args[1:]
 
-    cmd = [sys.executable, args.node_py] + node_args
+    node_dir = os.path.dirname(os.path.abspath(args.node_py))
+    sys.path.insert(0, node_dir)
+    import glob
+    import node
+
+    node_bin = node.GetBinaryPath()
+
+    expanded_node_args = []
+    for arg in node_args:
+        if "*" in arg:
+            matches = glob.glob(arg, recursive=True)
+            if matches:
+                expanded_node_args.extend(matches)
+            else:
+                expanded_node_args.append(arg)
+        else:
+            expanded_node_args.append(arg)
+
+    cmd = [node_bin] + expanded_node_args
     return subprocess.call(cmd)
 
 

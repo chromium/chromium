@@ -15,7 +15,26 @@
 
 # Top-level GN build file for chromium-bidi
 
+import("//build/config/chrome_build.gni")
 import("//testing/test.gni")
+
+if (is_mac) {
+  if (is_chrome_branded) {
+    _browser_binary = "Google Chrome.app/Contents/MacOS/Google Chrome"
+  } else {
+    _browser_binary = "Chromium.app/Contents/MacOS/Chromium"
+  }
+} else if (is_win) {
+  _browser_binary = "chrome.exe"
+} else {
+  _browser_binary = "chrome"
+}
+
+if (is_win) {
+  _chromedriver_binary = "chromedriver.exe"
+} else {
+  _chromedriver_binary = "chromedriver"
+}
 
 group("default") {
   testonly = true
@@ -59,10 +78,15 @@ script_test("webdriver_bidi_e2e_tests") {
     "@WrappedPath(gen)",
     "--node-py",
     "@WrappedPath(../../third_party/node/node.py)",
+    "--browser-bin",
+    "@WrappedPath(${_browser_binary})",
+    "--chromedriver-bin",
+    "@WrappedPath(${_chromedriver_binary})",
     "--",
   ]
 
   data = [
+    ".vpython3",
     "pytest.ini",
     "tests/",
     "tools/",

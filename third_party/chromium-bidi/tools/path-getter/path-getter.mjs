@@ -15,84 +15,34 @@
  * limitations under the License.
  */
 
-import {execSync} from 'child_process';
 import {join} from 'path';
 
-import {Browser, computeSystemExecutablePath} from '@puppeteer/browsers';
-
 /**
- * Either return a value of `BROWSER_BIN` environment variable or gets the path
- * to the browser specified in `CHANNEL` environment variable if specified. If
- * no channel or browser bin is provided in environment variable,
- * returns defined in `.browser` file, downloading the required version if
- * needed. If `HEADLESS` environment variable is set to `old`, downloads the
- * Headless Shell instead of the Chrome binary.
+ * Returns the browser binary path from BROWSER_BIN environment variable.
+ * Throws if BROWSER_BIN is not set.
  * @return {string}
  */
-export function installAndGetChromePath(isHeadlessShell = false) {
-  // Old headless means "headless shell", which is implemented in a separate
-  // binary: https://developer.chrome.com/blog/chrome-headless-shell.
-  isHeadlessShell = isHeadlessShell || process.env.HEADLESS === 'old';
-
+export function getChromePath() {
   if (process.env.BROWSER_BIN) {
     return process.env.BROWSER_BIN;
   }
-
-  const channel = getChannel();
-
-  if (channel === 'local') {
-    const commandArray = [
-      process.env.PYTHON || 'python3',
-      join('tools', 'node.py'),
-      join('tools', 'install-browser.mjs'),
-    ];
-    if (isHeadlessShell) {
-      commandArray.push('--chrome-headless-shell');
-    }
-    return execSync(commandArray.join(' ')).toString().trim();
-  }
-  if (isHeadlessShell) {
-    throw new Error(
-      'Auto download of headless shell is supported only for ' +
-        '`local` channel. Either use `CHANNEL=local` or set `BROWSER_BIN` ' +
-        'environment variable to the path of the headless shell binary.',
-    );
-  }
-
-  return computeSystemExecutablePath({
-    browser: Browser.CHROME,
-    channel,
-  });
+  throw new Error(
+    'The BROWSER_BIN environment variable or --browser-bin argument must be provided.',
+  );
 }
 
 /**
- * Either return a value of `CHROMEDRIVER_BIN` environment variable or gets the
- * path to the ChromeDriver for the browser version defined in `.browser` file,
- * downloading the required version if needed. Throws an error if the channel is
- * not `local` and the `CHROMEDRIVER_BIN` environment variable is not set.
+ * Returns the ChromeDriver binary path from CHROMEDRIVER_BIN environment variable.
+ * Throws if CHROMEDRIVER_BIN is not set.
  * @return {string}
  */
-export function installAndGetChromeDriverPath() {
+export function getChromeDriverPath() {
   if (process.env.CHROMEDRIVER_BIN) {
     return process.env.CHROMEDRIVER_BIN;
   }
-
-  if (getChannel() !== 'local') {
-    throw new Error(
-      'Auto download of chromedriver is supported only for `local` channel. Either use `CHANNEL=local` or set `CHROMEDRIVER_BIN` environment variable to the path of the chromedriver binary matching required Chrome channel.',
-    );
-  }
-
-  return execSync(
-    [
-      process.env.PYTHON || 'python3',
-      join('tools', 'node.py'),
-      join('tools', 'install-browser.mjs'),
-      '--chromedriver',
-    ].join(' '),
-  )
-    .toString()
-    .trim();
+  throw new Error(
+    'The CHROMEDRIVER_BIN environment variable or --chromedriver-bin argument must be provided.',
+  );
 }
 
 /**
@@ -101,8 +51,4 @@ export function installAndGetChromeDriverPath() {
  */
 export function getBidiMapperPath() {
   return join('out', 'Default', 'gen', 'src', 'mapperTab.js');
-}
-
-function getChannel() {
-  return process.env.CHANNEL || 'local';
 }
