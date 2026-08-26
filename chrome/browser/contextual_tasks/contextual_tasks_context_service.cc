@@ -669,14 +669,10 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
     return;
   }
 
-  auto log_entry = std::make_unique<optimization_guide::ModelQualityLogEntry>(
-      optimization_guide_keyed_service_->GetModelQualityLogsUploaderService()
-          ->GetWeakPtr());
+  auto quality_log = std::make_unique<
+      optimization_guide::proto::ContextualTasksContextQuality>();
 
   passage_embeddings::Embedding query_embedding = embeddings[0];
-  auto* quality_log = log_entry->log_ai_data_request()
-                          ->mutable_contextual_tasks_context()
-                          ->mutable_quality();
   quality_log->set_embedding_model_version(
       embedder_model_version_.value_or(-1));
   quality_log->set_tab_selection_model_version(-1);
@@ -688,13 +684,14 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
     }
   }
 
+  auto* quality_log_ptr = quality_log.get();
   SelectRelevantTabs(
       query, options, query_embedding, active_tab_at_query_time,
       all_eligible_tabs, explicit_urls,
       base::BindOnce(&ContextualTasksContextService::OnRelevantTabsSelected,
                      weak_ptr_factory_.GetWeakPtr(), query, options, start_time,
-                     explicit_urls, request_id, std::move(log_entry)),
-      quality_log);
+                     explicit_urls, request_id, std::move(quality_log)),
+      quality_log_ptr);
 }
 
 void ContextualTasksContextService::OnRelevantTabsSelected(
@@ -703,14 +700,12 @@ void ContextualTasksContextService::OnRelevantTabsSelected(
     base::TimeTicks start_time,
     const std::vector<GURL>& explicit_urls,
     int64_t request_id,
-    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry,
+    std::unique_ptr<optimization_guide::proto::ContextualTasksContextQuality>
+        quality_log,
     std::vector<base::WeakPtr<content::WebContents>> relevant_tabs) {
   auto request_it = pending_requests_.find(request_id);
   if (request_it == pending_requests_.end()) {
     // We had timed out already and the callback was already invoked.
-    if (log_entry) {
-      optimization_guide::ModelQualityLogEntry::Drop(std::move(log_entry));
-    }
     return;
   }
 
@@ -740,15 +735,14 @@ void ContextualTasksContextService::OnRelevantTabsSelected(
         std::set<GURL>(explicit_urls.begin(), explicit_urls.end()));
   }
 
-  if (!ShouldLogContextualTasksContextQuality() || !log_entry ||
-      log_entry->log_ai_data_request()
-              ->contextual_tasks_context()
-              .quality()
-              .eligible_tabs()
-              .size() == 0) {
-    // Explicitly drop when we don't want to log. Otherwise, the destructor of
-    // the log entry will trigger an upload.
-    optimization_guide::ModelQualityLogEntry::Drop(std::move(log_entry));
+  if (ShouldLogContextualTasksContextQuality() && quality_log &&
+      quality_log->eligible_tabs().size() > 0) {
+    auto log_entry = std::make_unique<optimization_guide::ModelQualityLogEntry>(
+        optimization_guide_keyed_service_->GetModelQualityLogsUploaderService()
+            ->GetWeakPtr());
+    *log_entry->log_ai_data_request()
+         ->mutable_contextual_tasks_context()
+         ->mutable_quality() = std::move(*quality_log);
   }
 
   std::move(callback).Run(std::move(relevant_tabs));
@@ -1290,13 +1284,9 @@ void ContextualTasksContextService::OnConversationThreadEmbeddingReady(
     return;
   }
 
-  auto log_entry = std::make_unique<optimization_guide::ModelQualityLogEntry>(
-      optimization_guide_keyed_service_->GetModelQualityLogsUploaderService()
-          ->GetWeakPtr());
+  auto quality_log = std::make_unique<
+      optimization_guide::proto::ContextualTasksContextQuality>();
 
-  auto* quality_log = log_entry->log_ai_data_request()
-                          ->mutable_contextual_tasks_context()
-                          ->mutable_quality();
   quality_log->set_embedding_model_version(
       embedder_model_version_.value_or(-1));
   quality_log->set_tab_selection_model_version(-1);
@@ -1308,14 +1298,15 @@ void ContextualTasksContextService::OnConversationThreadEmbeddingReady(
     }
   }
 
+  auto* quality_log_ptr = quality_log.get();
   SelectRelevantTabsForConversationThread(
       conversation_thread, options, embeddings, context_tab_at_query_time,
       all_eligible_tabs, explicit_urls,
       base::BindOnce(&ContextualTasksContextService::OnRelevantTabsSelected,
                      weak_ptr_factory_.GetWeakPtr(), conversation_thread.query,
                      options, start_time, explicit_urls, request_id,
-                     std::move(log_entry)),
-      quality_log);
+                     std::move(quality_log)),
+      quality_log_ptr);
 }
 
 void ContextualTasksContextService::SelectRelevantTabsForConversationThread(

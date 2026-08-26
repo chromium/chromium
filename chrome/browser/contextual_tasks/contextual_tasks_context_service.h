@@ -210,7 +210,8 @@ class ContextualTasksContextService
       base::TimeTicks start_time,
       const std::vector<GURL>& explicit_urls,
       int64_t request_id,
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry,
+      std::unique_ptr<optimization_guide::proto::ContextualTasksContextQuality>
+          quality_log,
       std::vector<base::WeakPtr<content::WebContents>> relevant_tabs);
 
   // Intermediate state for asynchronous scoring.
