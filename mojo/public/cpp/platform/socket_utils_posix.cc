@@ -115,31 +115,29 @@ ssize_t SocketRecvmsg(base::PlatformFile socket,
     return result;
   }
 
-  // Undocumented behavior: the MSG_CTRUNC flag can occur under FD exhaustion.
-  const bool missing_fds = msg.msg_flags & MSG_CTRUNC;
-  if (msg.msg_controllen != 0) {
-    descriptors->clear();
-    for (cmsghdr* cmsg = CMSG_FIRSTHDR(&msg); cmsg;
-         cmsg = UNSAFE_TODO(CMSG_NXTHDR(&msg, cmsg))) {
-      if (cmsg->cmsg_level == SOL_SOCKET && cmsg->cmsg_type == SCM_RIGHTS) {
-        size_t payload_length = cmsg->cmsg_len - CMSG_LEN(0);
-        DCHECK_EQ(payload_length % sizeof(int), 0u);
-        size_t num_fds = payload_length / sizeof(int);
-        const int* fds = reinterpret_cast<int*>(UNSAFE_TODO(CMSG_DATA(cmsg)));
-        for (size_t i = 0; i < num_fds; ++i) {
-          base::ScopedFD fd(UNSAFE_TODO(fds[i]));
-          DCHECK(fd.is_valid());
-          // If some FDs are missing, this loop is necessary to release the ones
-          // that were successfully received.
-          if (!missing_fds) {
-            descriptors->emplace_back(std::move(fd));
-          }
-        }
+  if (msg.msg_controllen == 0) {
+    return result;
+  }
+
+  DCHECK(!(msg.msg_flags & MSG_CTRUNC));
+
+  descriptors->clear();
+  for (cmsghdr* cmsg = CMSG_FIRSTHDR(&msg); cmsg;
+       cmsg = UNSAFE_TODO(CMSG_NXTHDR(&msg, cmsg))) {
+    if (cmsg->cmsg_level == SOL_SOCKET && cmsg->cmsg_type == SCM_RIGHTS) {
+      size_t payload_length = cmsg->cmsg_len - CMSG_LEN(0);
+      DCHECK_EQ(payload_length % sizeof(int), 0u);
+      size_t num_fds = payload_length / sizeof(int);
+      const int* fds = reinterpret_cast<int*>(UNSAFE_TODO(CMSG_DATA(cmsg)));
+      for (size_t i = 0; i < num_fds; ++i) {
+        base::ScopedFD fd(UNSAFE_TODO(fds[i]));
+        DCHECK(fd.is_valid());
+        descriptors->emplace_back(std::move(fd));
       }
     }
   }
 
-  return missing_fds ? 0 : result;
+  return result;
 }
 
 bool AcceptSocketConnection(base::PlatformFile server_fd,

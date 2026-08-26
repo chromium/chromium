@@ -526,11 +526,10 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
     // of the message.
     kOK,
     // The message could not be deserialized because |buffer| does not contain
-    // enough data. |size_hint| contains the amount of data missing. The missing
-    // data is expected to be received in a subsequent message.
+    // enough data. |size_hint| contains the amount of data missing.
     kNotEnoughData,
     // The message has associated handles that were not transferred in this
-    // message and should be received in a subsequent message.
+    // message.
     kMissingHandles,
     // An error occurred during processing.
     kError,
