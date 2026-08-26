@@ -1,0 +1,18 @@
+{
+  "inherits": [
+    {
+      "path": "components/webapps/_agents/_harness/skills.json"
+    }
+  ],
+  "entries": [
+    {
+      "path": "components/webapps/_agents/skills/webapps-harness"
+    },
+    {
+      "path": "chrome/browser/web_applications/docs/skills/create-web-applications-browsertest"
+    },
+    {
+      "path": "chrome/browser/web_applications/docs/skills/create-web-applications-unittest"
+    }
+  ]
+}

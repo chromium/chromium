@@ -1,0 +1,2 @@
+# Marker file enabling automatic markdown formatting via depot_tools `git cl format`.
+wrap = 80

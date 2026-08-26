@@ -1,0 +1,10 @@
+{
+  "entries": [
+    {
+      "path": "components/webapps/_agents/_harness/skills/harness-doc-writer"
+    },
+    {
+      "path": "components/webapps/_agents/_harness/skills/harness-updater"
+    }
+  ]
+}

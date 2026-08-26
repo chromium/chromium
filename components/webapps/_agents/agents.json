@@ -1,0 +1,12 @@
+{
+  "inherits": [
+    {
+      "path": "components/webapps/_agents/_harness/agents.json"
+    }
+  ],
+  "entries": [
+    {
+      "path": "components/webapps/_agents/agents"
+    }
+  ]
+}
