@@ -1080,40 +1080,6 @@ TYPED_TEST(SequenceBoundTest, AsyncCallIgnoreResultWithArgsThen) {
   }
 }
 
-// TODO(crbug.com/40245687): Maybe use the nocompile harness here instead
-// of being "clever"...
-TYPED_TEST(SequenceBoundTest, NoCompileTests) {
-  // TODO(crbug.com/40245687): Test calling WithArgs() on a method that
-  // takes no arguments.
-  //
-  // Given:
-  //   class C {
-  //     void F();
-  //   };
-  //
-  // Then:
-  //   SequenceBound<C> s(...);
-  //   s.AsyncCall(&C::F).WithArgs(...);
-  //
-  // should not compile.
-  //
-  // TODO(crbug.com/40245687): Test calling Then() before calling
-  // WithArgs().
-  //
-  // Given:
-  //   class C {
-  //     void F(int);
-  //   };
-  //
-  // Then:
-  //   SequenceBound<C> s(...);
-  //   s.AsyncCall(&C::F).Then(...).WithArgs(...);
-  //
-  // should not compile.
-  //
-  // TODO(crbug.com/40245687): Add no-compile tests for converting
-  // between SequenceBound<T> and SequenceBound<std::unique_ptr<T>>.
-}
 #undef SequenceBound
 
 class SequenceBoundDeathTest : public ::testing::Test {
