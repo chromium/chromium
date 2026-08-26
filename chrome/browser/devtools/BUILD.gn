@@ -559,6 +559,7 @@ source_set("unit_tests") {
   if (enable_devtools_frontend) {
     sources += [
       "aida_client_unittest.cc",
+      "devtools_availability_checker_unittest.cc",
       "devtools_contents_resizing_strategy_unittest.cc",
       "devtools_file_helper_unittest.cc",
       "devtools_file_system_indexer_unittest.cc",
@@ -582,7 +583,6 @@ source_set("unit_tests") {
       "device/android_device_manager_unittest.cc",
       "device/devtools_device_discovery_unittest.cc",
       "device/usb/android_rsa_unittest.cc",
-      "devtools_availability_checker_unittest.cc",
       "protocol/cast_handler_unittest.cc",
       "serialize_host_descriptions_unittest.cc",
     ]

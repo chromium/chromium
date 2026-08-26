@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_policy_dialog.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/widget/widget.h"
@@ -36,17 +38,17 @@ class TestObserverImpl : public DevToolsPolicyDialog::TestObserver {
   base::OnceClosure quit_closure_;
 };
 
-class DevToolsPolicyDialogTest : public InProcessBrowserTest {
+class DevToolsPolicyDialogTest : public PlatformBrowserTest {
  public:
   DevToolsPolicyDialogTest() = default;
   ~DevToolsPolicyDialogTest() override = default;
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    PlatformBrowserTest::SetUpOnMainThread();
     DevToolsPolicyDialog::SetTestObserver(&observer_);
   }
   void TearDownOnMainThread() override {
     DevToolsPolicyDialog::SetTestObserver(nullptr);
-    InProcessBrowserTest::TearDownOnMainThread();
+    PlatformBrowserTest::TearDownOnMainThread();
   }
 
  protected:
@@ -55,7 +57,7 @@ class DevToolsPolicyDialogTest : public InProcessBrowserTest {
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(DevToolsPolicyDialogTest, ShowDialogOnce) {
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = chrome_test_utils::GetActiveWebContents(this);
   DevToolsPolicyDialog::Show(web_contents);
   EXPECT_EQ(1, observer_.shown_count());
   // Trying to show it again on the same WebContents should not create a new
@@ -65,12 +67,16 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyDialogTest, ShowDialogOnce) {
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsPolicyDialogTest, ShowDialogOnTwoWebContents) {
-  auto* web_contents1 = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents1 = chrome_test_utils::GetActiveWebContents(this);
   DevToolsPolicyDialog::Show(web_contents1);
   EXPECT_EQ(1, observer_.shown_count());
+
   // Open a new tab.
-  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
-  auto* web_contents2 = browser()->tab_strip_model()->GetWebContentsAt(1);
+  auto* tab_list = TabListInterface::From(GetBrowserWindowInterface());
+  ASSERT_TRUE(tab_list);
+  auto* tab2 = tab_list->OpenTab(GURL("about:blank"), 1);
+  ASSERT_TRUE(tab2);
+  auto* web_contents2 = tab2->GetContents();
   ASSERT_NE(web_contents1, web_contents2);
   DevToolsPolicyDialog::Show(web_contents2);
   EXPECT_EQ(2, observer_.shown_count());
@@ -78,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyDialogTest, ShowDialogOnTwoWebContents) {
 
 #if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(DevToolsPolicyDialogTest, ShowDialogTwice) {
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = chrome_test_utils::GetActiveWebContents(this);
   DevToolsPolicyDialog::Show(web_contents);
   EXPECT_EQ(1, observer_.shown_count());
   DevToolsPolicyDialog::TestOnlyCloseDialog(web_contents);
@@ -89,14 +95,19 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyDialogTest, ShowDialogTwice) {
 
 IN_PROC_BROWSER_TEST_F(DevToolsPolicyDialogTest,
                        DialogCleanedUpOnWebContentsDestruction) {
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = chrome_test_utils::GetActiveWebContents(this);
   DevToolsPolicyDialog::Show(web_contents);
   EXPECT_EQ(1u, DevToolsPolicyDialog::GetCurrentDialogsSizeForTesting());
 
   base::RunLoop run_loop;
   observer_.SetQuitClosure(run_loop.QuitClosure());
-  browser()->tab_strip_model()->CloseWebContentsAt(0,
-                                                   TabCloseTypes::CLOSE_NONE);
+
+  auto* tab_list = TabListInterface::From(GetBrowserWindowInterface());
+  ASSERT_TRUE(tab_list);
+  auto* tab = tab_list->GetTab(0);
+  ASSERT_TRUE(tab);
+  tab_list->CloseTab(tab->GetHandle());
+
   run_loop.Run();
 
   EXPECT_EQ(0u, DevToolsPolicyDialog::GetCurrentDialogsSizeForTesting());

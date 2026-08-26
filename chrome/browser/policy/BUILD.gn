@@ -6,6 +6,7 @@ import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/on_device_translation/buildflags/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//components/signin/features.gni")
+import("//content/browser/devtools/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
@@ -855,12 +856,7 @@ source_set("unit_tests") {
   }
 
   if (!is_android) {
-    sources += [
-      "developer_tools_availability_list_policy_handler_unittest.cc",
-      "developer_tools_policy_checker_factory_unittest.cc",
-      "developer_tools_policy_checker_unittest.cc",
-      "policy_path_parser_unittest.cc",
-    ]
+    sources += [ "policy_path_parser_unittest.cc" ]
     deps += [ ":path_parser" ]
   }
 
@@ -880,8 +876,13 @@ source_set("unit_tests") {
     ]
   }
 
-  if (!is_android || enable_desktop_android_extensions) {
-    sources += [ "developer_tools_policy_handler_unittest.cc" ]
+  if (enable_devtools_frontend) {
+    sources += [
+      "developer_tools_availability_list_policy_handler_unittest.cc",
+      "developer_tools_policy_checker_factory_unittest.cc",
+      "developer_tools_policy_checker_unittest.cc",
+      "developer_tools_policy_handler_unittest.cc",
+    ]
   }
 
   if (is_android) {
@@ -1052,6 +1053,10 @@ source_set("policy") {
     ]
   }
 
+  if (enable_devtools_frontend) {
+    public += [ "developer_tools_availability_list_policy_handler.h" ]
+  }
+
   if (enterprise_client_certificates) {
     public_deps += [ "//components/enterprise/client_certificates/core" ]
   }
@@ -1122,10 +1127,7 @@ source_set("policy") {
   }
 
   if (is_linux || is_win || is_mac || is_chromeos) {
-    public += [
-      "battery_saver_policy_handler.h",
-      "developer_tools_availability_list_policy_handler.h",
-    ]
+    public += [ "battery_saver_policy_handler.h" ]
   }
 
   if (is_linux || is_win || is_mac) {
@@ -1341,6 +1343,10 @@ source_set("impl") {
     deps += [ "//chrome/browser/pdf:pdf_pref_names" ]
   }
 
+  if (enable_devtools_frontend) {
+    sources += [ "developer_tools_availability_list_policy_handler.cc" ]
+  }
+
   if (safe_browsing_mode != 0) {
     deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
   }
@@ -1496,10 +1502,7 @@ source_set("impl") {
   }
 
   if (is_linux || is_win || is_mac || is_chromeos) {
-    sources += [
-      "battery_saver_policy_handler.cc",
-      "developer_tools_availability_list_policy_handler.cc",
-    ]
+    sources += [ "battery_saver_policy_handler.cc" ]
   }
 
   if (is_linux || is_win || is_mac) {

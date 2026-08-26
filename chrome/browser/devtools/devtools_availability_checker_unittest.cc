@@ -6,7 +6,6 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
-#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
@@ -14,6 +13,10 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "extensions/buildflags/buildflags.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -22,9 +25,10 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "components/webapps/common/web_app_id.h"
 #endif
@@ -140,7 +144,6 @@ TEST_F(DevToolsAvailabilityCheckerTest,
   EXPECT_TRUE(IsInspectionAllowed(profile_.get(), web_contents_.get()));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DevToolsAvailabilityCheckerTest,
        UrlBlockedWhenNotOnAllowlistAndBlocklistIsEmpty) {
   base::ListValue allowlist;
@@ -154,7 +157,6 @@ TEST_F(DevToolsAvailabilityCheckerTest,
       ->NavigateAndCommit(GURL("https://example.com/page"));
   EXPECT_FALSE(IsInspectionAllowed(profile_.get(), web_contents_.get()));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(DevToolsAvailabilityCheckerTest, DeveloperToolsDisallowedByPolicy) {
   profile_->GetPrefs()->SetInteger(
@@ -166,6 +168,13 @@ TEST_F(DevToolsAvailabilityCheckerTest, DeveloperToolsDisallowedByPolicy) {
   EXPECT_FALSE(IsInspectionAllowed(profile_.get(), web_contents_.get()));
 }
 
+TEST_F(DevToolsAvailabilityCheckerTest, IsInspectionAllowedNullWebContents) {
+  // Passing nullptr for WebContents should default to allowed.
+  EXPECT_TRUE(IsInspectionAllowed(profile_.get(),
+                                  static_cast<content::WebContents*>(nullptr)));
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 TEST_F(DevToolsAvailabilityCheckerTest, ExtensionAllowedByPolicy) {
   base::ListValue allowlist;
   allowlist.Append("abc");
@@ -279,12 +288,6 @@ TEST_F(DevToolsAvailabilityCheckerTest, ExtensionForceInstalledButAllowlisted) {
   EXPECT_TRUE(IsInspectionAllowed(profile_.get(), extension.get()));
 }
 
-TEST_F(DevToolsAvailabilityCheckerTest, IsInspectionAllowedNullWebContents) {
-  // Passing nullptr for WebContents should default to allowed.
-  EXPECT_TRUE(IsInspectionAllowed(profile_.get(),
-                                  static_cast<content::WebContents*>(nullptr)));
-}
-
 TEST_F(DevToolsAvailabilityCheckerTest, IsInspectionAllowedNullExtension) {
   // Passing nullptr for Extension should default to allowed.
   EXPECT_TRUE(IsInspectionAllowed(
@@ -317,6 +320,7 @@ TEST_F(DevToolsAvailabilityCheckerTest,
   EXPECT_FALSE(IsInspectionAllowed(
       profile_.get(), static_cast<extensions::Extension*>(nullptr)));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 TEST_F(DevToolsAvailabilityCheckerTest, NoPolicy_DefaultAllowed) {
   // By default, devtools are allowed.

@@ -24,6 +24,7 @@ example_value:
 supported_on:
 - chrome.*:147-
 - chrome_os:147-
+- android:154-
 features:
   dynamic_refresh: true
   per_profile: true

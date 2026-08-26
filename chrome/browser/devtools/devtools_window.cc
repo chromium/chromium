@@ -2294,7 +2294,7 @@ void DevToolsWindow::DidFinishNavigation(
     return;
   }
   if (!AllowDevToolsFor(profile_, web_contents())) {
-    main_web_contents_->ClosePage();
+    CloseWindow();
   }
 }
 

@@ -148,6 +148,7 @@
 #include "components/variations/pref_names.h"
 #include "components/variations/service/variations_service.h"
 #include "components/version_info/channel.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
@@ -165,7 +166,6 @@
 #include "chrome/browser/download/download_dir_policy_handler.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/policy/battery_saver_policy_handler.h"
-#include "chrome/browser/policy/developer_tools_availability_list_policy_handler.h"
 #include "chrome/browser/policy/local_sync_policy_handler.h"
 #include "chrome/browser/policy/managed_account_policy_handler.h"
 #include "chrome/browser/web_applications/policy/web_app_settings_policy_handler.h"
@@ -178,6 +178,10 @@
 #include "components/search_engines/enterprise/search_aggregator_policy_handler.h"
 #include "components/search_engines/enterprise/site_search_policy_handler.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
+#include "chrome/browser/policy/developer_tools_availability_list_policy_handler.h"
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_policy_handler.h"
@@ -2736,7 +2740,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 
   handlers->AddHandler(std::make_unique<IsolateOriginsPolicyHandler>());
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
   handlers->AddHandler(
       std::make_unique<DeveloperToolsAvailabilityListPolicyHandler>(
           key::kDeveloperToolsAvailabilityAllowlist,
@@ -2746,7 +2750,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::make_unique<DeveloperToolsAvailabilityListPolicyHandler>(
           key::kDeveloperToolsAvailabilityBlocklist,
           prefs::kDeveloperToolsAvailabilityBlocklist));
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
 
   handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
       key::kGenAILocalFoundationalModelSettings,

@@ -307,26 +307,23 @@ void DisallowDevToolsForForceInstalledExtensions(
                            kDisallowedForForceInstalledExtensions));
 }
 
-void DisallowDevTools(BrowserWindowInterface* browser) {
-  browser->GetProfile()->GetPrefs()->SetInteger(
-      prefs::kDevToolsAvailability,
-      static_cast<int>(
-          policy::DeveloperToolsAvailability::kDisallowed));
-}
-
 void AllowDevTools(BrowserWindowInterface* browser) {
   browser->GetProfile()->GetPrefs()->SetInteger(
       prefs::kDevToolsAvailability,
-      static_cast<int>(
-          policy::DeveloperToolsAvailability::kAllowed));
+      static_cast<int>(policy::DeveloperToolsAvailability::kAllowed));
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+void DisallowDevTools(BrowserWindowInterface* browser) {
+  browser->GetProfile()->GetPrefs()->SetInteger(
+      prefs::kDevToolsAvailability,
+      static_cast<int>(policy::DeveloperToolsAvailability::kDisallowed));
 }
 
 scoped_refptr<DevToolsAgentHost> GetOrCreateDevToolsHostForWebContents(
     WebContents* wc) {
   return content::DevToolsAgentHost::GetOrCreateForTab(wc);
 }
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 }  // namespace
 
@@ -398,14 +395,17 @@ class DevToolsTest : public PlatformBrowserTest {
     ASSERT_TRUE(content::NavigateToURL(GetInspectedTab(), url));
   }
 
-  void OpenDevToolsWindow(const std::string& test_page, bool is_docked) {
-    LoadTestPage(test_page);
-
-    window_ = DevToolsWindowTesting::OpenDevToolsWindowSync(GetInspectedTab(),
-                                                            is_docked);
+  void OpenDevToolsWindow(content::WebContents* web_contents, bool is_docked) {
+    window_ =
+        DevToolsWindowTesting::OpenDevToolsWindowSync(web_contents, is_docked);
     DevToolsWindowTesting::Get(window_.get())
         ->SetCloseCallback(
             base::BindLambdaForTesting([this]() { window_ = nullptr; }));
+  }
+
+  void OpenDevToolsWindow(const std::string& test_page, bool is_docked) {
+    LoadTestPage(test_page);
+    OpenDevToolsWindow(GetInspectedTab(), is_docked);
   }
 
   WebContents* GetInspectedTab() { return GetWebContentsAt(0); }
@@ -2905,8 +2905,6 @@ IN_PROC_BROWSER_TEST_F(RemoteDebuggingTest, DiscoveryPage) {
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-
 IN_PROC_BROWSER_TEST_F(DevToolsTest, PolicyDisallowed) {
   DisallowDevTools(browser_window_interface());
   ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), GURL("about:blank")));
@@ -2962,6 +2960,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, PolicyDisallowedDetachesAttachedClient) {
   EXPECT_TRUE(client.closed());
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 using ManifestLocation = extensions::mojom::ManifestLocation;
 class DevToolsDisallowedForForceInstalledExtensionsPolicyTest
     : public extensions::ExtensionBrowserTest {
@@ -3741,8 +3740,9 @@ IN_PROC_BROWSER_TEST_F(KeepAliveDevToolsTest, KeepsAliveUntilBrowserClose) {
       KeepAliveOrigin::REMOTE_DEBUGGING));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-class DevToolsPolicyTest : public InProcessBrowserTest {
+class DevToolsPolicyTest : public DevToolsTest {
  protected:
   DevToolsPolicyTest() {
     provider_.SetDefaultReturns(
@@ -3751,15 +3751,10 @@ class DevToolsPolicyTest : public InProcessBrowserTest {
   }
 
   void SetUpInProcessBrowserTestFixture() override {
+    DevToolsTest::SetUpInProcessBrowserTestFixture();
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
   }
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
-
- private:
-  // TODO(https://crbug.com/423465927): Explore a better approach to make the
-  // existing tests run with the prewarm feature enabled.
-  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
-      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
 };
 
 IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, OpenBlockedDevTools) {
@@ -3770,7 +3765,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, OpenBlockedDevTools) {
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
                base::Value(std::move(blocklist)), nullptr);
   provider_.UpdateChromePolicy(policies);
-  WebContents* wc = browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* wc = chrome_test_utils::GetActiveWebContents(this);
   Profile* profile = Profile::FromBrowserContext(wc->GetBrowserContext());
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !DevToolsWindow::AllowDevToolsFor(profile, wc); }));
@@ -3792,7 +3787,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, BlockedDevToolsCreationFails) {
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
                base::Value(std::move(blocklist)), nullptr);
   provider_.UpdateChromePolicy(policies);
-  WebContents* wc = browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* wc = chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !DevToolsWindow::AllowDevToolsFor(
         Profile::FromBrowserContext(wc->GetBrowserContext()), wc);
@@ -3800,7 +3795,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, BlockedDevToolsCreationFails) {
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, IframeBlocked) {
-  ASSERT_TRUE(embedded_test_server()->Start());
   GURL main_url(
       embedded_test_server()->GetURL("/devtools/page_with_iframe.html"));
   GURL iframe_url(embedded_test_server()->GetURL("/devtools/iframe.html"));
@@ -3821,18 +3815,16 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, IframeBlocked) {
   provider_.UpdateChromePolicy(policies);
   base::RunLoop().RunUntilIdle();
 
+  WebContents* web_contents = chrome_test_utils::GetActiveWebContents(this);
   // Navigate to the main page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-
-  WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents, main_url));
 
   // Check that devtools are allowed for the main page.
-  EXPECT_TRUE(
-      DevToolsWindow::AllowDevToolsFor(browser()->GetProfile(), web_contents));
+  EXPECT_TRUE(DevToolsWindow::AllowDevToolsFor(
+      chrome_test_utils::GetProfile(this), web_contents));
 
   // Try to open devtools and verify it's opened.
-  DevToolsWindowTesting::OpenDevToolsWindowSync(web_contents, false);
+  OpenDevToolsWindow(web_contents, false);
   auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
   EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 
@@ -3841,11 +3833,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, IframeBlocked) {
   content::RenderFrameHost* iframe_host =
       content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(iframe_host);
-  EXPECT_FALSE(IsInspectionAllowed(browser()->GetProfile(), iframe_host->GetLastCommittedURL()));
+  EXPECT_FALSE(IsInspectionAllowed(chrome_test_utils::GetProfile(this),
+                                   iframe_host->GetLastCommittedURL()));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, IframeOnAllowlistAndBlocklist) {
-  ASSERT_TRUE(embedded_test_server()->Start());
   GURL main_url(
       embedded_test_server()->GetURL("/devtools/page_with_iframe.html"));
   GURL iframe_url(embedded_test_server()->GetURL("/devtools/iframe.html"));
@@ -3872,25 +3864,22 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, IframeOnAllowlistAndBlocklist) {
   provider_.UpdateChromePolicy(policies);
   base::RunLoop().RunUntilIdle();
 
+  WebContents* web_contents = chrome_test_utils::GetActiveWebContents(this);
   // Navigate to the main page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-
-  WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents, main_url));
 
   // Check that devtools are allowed.
-  EXPECT_TRUE(
-      DevToolsWindow::AllowDevToolsFor(browser()->GetProfile(), web_contents));
+  EXPECT_TRUE(DevToolsWindow::AllowDevToolsFor(
+      chrome_test_utils::GetProfile(this), web_contents));
 
   // Try to open devtools and verify it's opened.
-  DevToolsWindowTesting::OpenDevToolsWindowSync(web_contents, false);
+  OpenDevToolsWindow(web_contents, false);
   auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
   EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest,
                        IframeNavigatedToBlocklistedUrlDoesNotCloseDevTools) {
-  ASSERT_TRUE(embedded_test_server()->Start());
   GURL main_url(
       embedded_test_server()->GetURL("/devtools/page_with_iframe.html"));
   GURL iframe_url(embedded_test_server()->GetURL("/devtools/iframe.html"));
@@ -3919,22 +3908,18 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest,
   provider_.UpdateChromePolicy(policies);
   base::RunLoop().RunUntilIdle();
 
+  WebContents* web_contents = chrome_test_utils::GetActiveWebContents(this);
   // Navigate to the main page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents, main_url));
 
   // Check that devtools are allowed and open them.
-  EXPECT_TRUE(
-      DevToolsWindow::AllowDevToolsFor(browser()->GetProfile(), web_contents));
-  DevToolsWindow::OpenDevToolsWindow(web_contents,
-                                     DevToolsOpenedByAction::kUnknown);
+  EXPECT_TRUE(DevToolsWindow::AllowDevToolsFor(
+      chrome_test_utils::GetProfile(this), web_contents));
+  OpenDevToolsWindow(web_contents, false);
   auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
   EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 
   // Navigate iframe to a blocklisted URL.
-  DevToolsWindow* window = DevToolsWindow::FindDevToolsWindow(agent_host.get());
-  ASSERT_TRUE(window);
   content::TestNavigationObserver nav_observer(web_contents);
   content::RenderFrameHost* iframe_host =
       content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
@@ -3951,11 +3936,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest,
   content::RenderFrameHost* new_iframe_host =
       content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(new_iframe_host);
-  EXPECT_FALSE(IsInspectionAllowed(browser()->GetProfile(), new_iframe_host->GetLastCommittedURL()));
+  EXPECT_FALSE(IsInspectionAllowed(chrome_test_utils::GetProfile(this),
+                                   new_iframe_host->GetLastCommittedURL()));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, IframeBlockedBecauseNotOnAllowlist) {
-  ASSERT_TRUE(embedded_test_server()->Start());
   GURL main_url(
       embedded_test_server()->GetURL("/devtools/page_with_iframe.html"));
   GURL iframe_url(embedded_test_server()->GetURL("/devtools/iframe.html"));
@@ -3973,18 +3958,16 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, IframeBlockedBecauseNotOnAllowlist) {
   provider_.UpdateChromePolicy(policies);
   base::RunLoop().RunUntilIdle();
 
+  WebContents* web_contents = chrome_test_utils::GetActiveWebContents(this);
   // Navigate to the main page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-
-  WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents, main_url));
 
   // Check that devtools are allowed because main frame is on allowlist.
-  EXPECT_TRUE(
-      DevToolsWindow::AllowDevToolsFor(browser()->GetProfile(), web_contents));
+  EXPECT_TRUE(DevToolsWindow::AllowDevToolsFor(
+      chrome_test_utils::GetProfile(this), web_contents));
 
   // Try to open devtools and verify it's opened.
-  DevToolsWindowTesting::OpenDevToolsWindowSync(web_contents, false);
+  OpenDevToolsWindow(web_contents, false);
   auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
   EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 
@@ -3993,12 +3976,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, IframeBlockedBecauseNotOnAllowlist) {
   content::RenderFrameHost* iframe_host =
       content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(iframe_host);
-  EXPECT_FALSE(IsInspectionAllowed(browser()->GetProfile(), iframe_host->GetLastCommittedURL()));
+  EXPECT_FALSE(IsInspectionAllowed(chrome_test_utils::GetProfile(this),
+                                   iframe_host->GetLastCommittedURL()));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest,
                        AddingNonAllowlistedIframeDoesNotCloseDevTools) {
-  ASSERT_TRUE(embedded_test_server()->Start());
   GURL main_url(embedded_test_server()->GetURL("/title1.html"));
   GURL non_allowlisted_url(
       embedded_test_server()->GetURL("/devtools/iframe.html"));
@@ -4016,17 +3999,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest,
 
   provider_.UpdateChromePolicy(policies);
 
+  WebContents* web_contents = chrome_test_utils::GetActiveWebContents(this);
   // Navigate to the allowlisted main page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-
-  WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents, main_url));
 
   // Check that devtools are allowed and open them.
-  EXPECT_TRUE(
-      DevToolsWindow::AllowDevToolsFor(browser()->GetProfile(), web_contents));
-  DevToolsWindow::OpenDevToolsWindow(web_contents,
-                                     DevToolsOpenedByAction::kUnknown);
+  EXPECT_TRUE(DevToolsWindow::AllowDevToolsFor(
+      chrome_test_utils::GetProfile(this), web_contents));
+  OpenDevToolsWindow(web_contents, false);
   auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
   DevToolsWindow* window = DevToolsWindow::FindDevToolsWindow(agent_host.get());
   ASSERT_TRUE(window);
@@ -4045,20 +4025,20 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest,
   EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 
   // Verify that DevTools can still be reopened (if it were closed).
-  EXPECT_TRUE(
-      DevToolsWindow::AllowDevToolsFor(browser()->GetProfile(), web_contents));
+  EXPECT_TRUE(DevToolsWindow::AllowDevToolsFor(
+      chrome_test_utils::GetProfile(this), web_contents));
 
   // Verify that attaching to the non-allowlisted iframe fails.
   content::RenderFrameHost* iframe_host =
       content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(iframe_host);
-  EXPECT_FALSE(IsInspectionAllowed(browser()->GetProfile(), iframe_host->GetLastCommittedURL()));
+  EXPECT_FALSE(IsInspectionAllowed(chrome_test_utils::GetProfile(this),
+                                   iframe_host->GetLastCommittedURL()));
 }
 
 IN_PROC_BROWSER_TEST_F(
     DevToolsPolicyTest,
     PageWithBlocklistedIframeDoesNotBlockDevToolsForMainFrame) {
-  ASSERT_TRUE(embedded_test_server()->Start());
   GURL blocked_url(embedded_test_server()->GetURL("/title1.html"));
 
   base::ListValue blocklist;
@@ -4072,11 +4052,11 @@ IN_PROC_BROWSER_TEST_F(
   provider_.UpdateChromePolicy(policies);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/devtools/empty.html")));
-  EXPECT_TRUE(
-      DevToolsWindow::AllowDevToolsFor(browser()->GetProfile(), web_contents));
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("/devtools/empty.html")));
+  EXPECT_TRUE(DevToolsWindow::AllowDevToolsFor(
+      chrome_test_utils::GetProfile(this), web_contents));
 
   content::TestNavigationObserver nav_observer(web_contents);
   ASSERT_TRUE(content::ExecJs(web_contents->GetPrimaryMainFrame(),
@@ -4087,17 +4067,17 @@ IN_PROC_BROWSER_TEST_F(
                                   "document.body.appendChild(iframe);"));
   nav_observer.Wait();
 
-  EXPECT_TRUE(
-      DevToolsWindow::AllowDevToolsFor(browser()->GetProfile(), web_contents));
+  EXPECT_TRUE(DevToolsWindow::AllowDevToolsFor(
+      chrome_test_utils::GetProfile(this), web_contents));
 
   content::RenderFrameHost* iframe_host =
       content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(iframe_host);
-  EXPECT_FALSE(IsInspectionAllowed(browser()->GetProfile(), iframe_host->GetLastCommittedURL()));
+  EXPECT_FALSE(IsInspectionAllowed(chrome_test_utils::GetProfile(this),
+                                   iframe_host->GetLastCommittedURL()));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, AllowlistedUrlStaysOpenOnReload) {
-  ASSERT_TRUE(embedded_test_server()->Start());
   GURL main_url(embedded_test_server()->GetURL("/devtools/empty.html"));
 
   // Allowlist allowed URL.
@@ -4112,15 +4092,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, AllowlistedUrlStaysOpenOnReload) {
   provider_.UpdateChromePolicy(policies);
   base::RunLoop().RunUntilIdle();
 
+  WebContents* web_contents = chrome_test_utils::GetActiveWebContents(this);
   // Navigate to the main page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents, main_url));
 
   // Check that devtools are allowed and open them.
-  EXPECT_TRUE(
-      DevToolsWindow::AllowDevToolsFor(browser()->GetProfile(), web_contents));
-  DevToolsWindowTesting::OpenDevToolsWindowSync(web_contents, false);
+  EXPECT_TRUE(DevToolsWindow::AllowDevToolsFor(
+      chrome_test_utils::GetProfile(this), web_contents));
+  OpenDevToolsWindow(web_contents, false);
   auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
   EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 
@@ -4134,11 +4113,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, AllowlistedUrlStaysOpenOnReload) {
 
 class DevToolsPolicyBFCacheTest : public DevToolsPolicyTest {
  public:
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    DevToolsPolicyTest::SetUpOnMainThread();
-  }
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
@@ -4152,7 +4126,6 @@ class DevToolsPolicyBFCacheTest : public DevToolsPolicyTest {
 
 IN_PROC_BROWSER_TEST_F(DevToolsPolicyBFCacheTest,
                        AllowlistedUrlStaysAllowedAfterBFCache) {
-  ASSERT_TRUE(embedded_test_server()->Start());
   GURL main_url(
       embedded_test_server()->GetURL("a.com", "/devtools/empty.html"));
   GURL other_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -4169,26 +4142,26 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyBFCacheTest,
   provider_.UpdateChromePolicy(policies);
   base::RunLoop().RunUntilIdle();
 
+  WebContents* web_contents = chrome_test_utils::GetActiveWebContents(this);
   // Navigate to the main page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents, main_url));
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
 
   // Check that devtools are allowed and open them.
-  EXPECT_TRUE(
-      DevToolsWindow::AllowDevToolsFor(browser()->GetProfile(), web_contents));
-  DevToolsWindowTesting::OpenDevToolsWindowSync(web_contents, false);
+  EXPECT_TRUE(DevToolsWindow::AllowDevToolsFor(
+      chrome_test_utils::GetProfile(this), web_contents));
+  OpenDevToolsWindow(web_contents, false);
   auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
   EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 
   // Navigate to other URL (not allowlisted).
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), other_url));
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents, other_url));
   EXPECT_EQ(main_frame->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
   // DevTools window should be closed now because the new page is not
   // allowlisted.
-  EXPECT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !DevToolsWindow::FindDevToolsWindow(agent_host.get()); }));
 
   // Go back to the allowlisted URL.
   web_contents->GetController().GoBack();
@@ -4197,12 +4170,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyBFCacheTest,
 
   // Check that devtools are allowed again for the allowlisted URL and open
   // them.
-  EXPECT_TRUE(
-      DevToolsWindow::AllowDevToolsFor(browser()->GetProfile(), web_contents));
-  DevToolsWindowTesting::OpenDevToolsWindowSync(web_contents, false);
+  EXPECT_TRUE(DevToolsWindow::AllowDevToolsFor(
+      chrome_test_utils::GetProfile(this), web_contents));
+  OpenDevToolsWindow(web_contents, false);
   EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 class DevToolsExtensionHostsPolicyTest : public DevToolsExtensionTest {

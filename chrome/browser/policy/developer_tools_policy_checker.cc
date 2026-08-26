@@ -45,14 +45,12 @@ DeveloperToolsPolicyChecker::GetDevToolsAvailabilityForUrl(
     return DevToolsAvailability::kAllowed;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
   if (!pref_service_->GetList(prefs::kDeveloperToolsAvailabilityAllowlist)
            .empty() &&
       pref_service_->GetList(prefs::kDeveloperToolsAvailabilityBlocklist)
           .empty()) {
     return DevToolsAvailability::kDisallowed;
   }
-#endif
 
   if (url_state == URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
     return DevToolsAvailability::kDisallowed;

@@ -11,6 +11,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/common/buildflags.h"
 
 namespace policy {
 
@@ -51,14 +52,11 @@ DeveloperToolsPolicyCheckerFactory::BuildServiceInstanceForBrowserContext(
 
 void DeveloperToolsPolicyCheckerFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  // Prefs are registered here on all platforms, but used only on Desktop.
-  // TODO(crbug.com/442892562) Add implementation for mobile.
   registry->RegisterIntegerPref(
       prefs::kDevToolsAvailability,
       static_cast<int>(DeveloperToolsAvailability::
                            kDisallowedForForceInstalledExtensions));
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
   registry->RegisterListPref(prefs::kDeveloperToolsAvailabilityAllowlist);
   registry->RegisterListPref(prefs::kDeveloperToolsAvailabilityBlocklist);
 #endif
