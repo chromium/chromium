@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/horizontal_tab_strip_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -197,6 +198,12 @@ TabStripView::TabStripView(TabCollectionNode* collection_node)
   SetScrollViewProperties(unpinned_tabs_scroll_view_);
 
   if (!IsVerticalOrientation(collection_node_)) {
+    unpinned_tab_scroll_type_recorder_ =
+        std::make_unique<tabs::UnpinnedTabScrollTypeRecorder>(
+            unpinned_tabs_scroll_view_);
+    unpinned_tab_scrollable_state_recorder_ =
+        std::make_unique<tabs::UnpinnedTabScrollableStateRecorder>(
+            unpinned_tabs_scroll_view_);
     tab_scroll_button_container_ =
         AddChildView(std::make_unique<TabScrollButtonContainer>(
             collection_node_->GetController()->GetBrowserView()->browser()));

@@ -44,6 +44,9 @@ class TabScrollButtonContainer : public views::View,
   bool IsPositionInWindowCaption(const gfx::Point& p);
   void SetScrollView(views::ScrollView* scroll_view);
 
+  // views::View:
+  void VisibilityChanged(views::View* starting_from, bool is_visible) override;
+
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(
       views::View* source,

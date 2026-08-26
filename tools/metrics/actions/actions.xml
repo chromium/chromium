@@ -17374,6 +17374,22 @@ should be able to be added at any place in this file.
   <description>User pressed the Home button.</description>
 </action>
 
+<action name="HorizontalTabStrip.ScrollButtons.Hidden">
+  <owner>dominicaustria@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the scroll buttons in the horizontal tab strip become hidden.
+  </description>
+</action>
+
+<action name="HorizontalTabStrip.ScrollButtons.Visible">
+  <owner>dominicaustria@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the scroll buttons in the horizontal tab strip become visible.
+  </description>
+</action>
+
 <action name="HostedAppMenuButtonButton_Clicked">
   <owner>xdai@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
@@ -52413,6 +52429,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SystemContextMenu_TabScrollButtons_Pinned">
+  <owner>dominicaustria@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    The user opened the system frame context menu and selected the menu item to
+    pin the tab scroll buttons.
+  </description>
+</action>
+
+<action name="SystemContextMenu_TabScrollButtons_Unpinned">
+  <owner>dominicaustria@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    The user opened the system frame context menu and selected the menu item to
+    unpin the tab scroll buttons.
+  </description>
+</action>
+
 <action name="Tab.PinnedTabToastClosedAfterConfirmation">
   <owner>dljames@google.com</owner>
   <owner>chrome-desktop-ui@google.com</owner>
@@ -54174,6 +54208,15 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the user drops a link into the split tab drop target if the
     nudge had previously been shown during the drag.
+  </description>
+</action>
+
+<action name="TabScrollButton.ContextMenu.Unpinned">
+  <owner>dominicaustria@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    The user opened the tab scroll button context menu and unpinned the tab
+    scroll buttons.
   </description>
 </action>
 

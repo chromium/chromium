@@ -19,6 +19,11 @@ class PinnedTabContainerView;
 class UnpinnedTabContainerView;
 class TabScrollButtonContainer;
 
+namespace tabs {
+class UnpinnedTabScrollTypeRecorder;
+class UnpinnedTabScrollableStateRecorder;
+}  // namespace tabs
+
 namespace views {
 class ScrollView;
 class Separator;
@@ -97,6 +102,10 @@ class TabStripView final : public views::View,
   }
   views::View* GetPrimaryScrollTargetForTesting() const;
   views::View* GetSecondaryScrollTargetForTesting() const;
+  tabs::UnpinnedTabScrollableStateRecorder*
+  unpinned_tab_scrollable_state_recorder_for_testing() {
+    return unpinned_tab_scrollable_state_recorder_.get();
+  }
 
  private:
   class TargetViewsTracker;
@@ -150,6 +159,13 @@ class TabStripView final : public views::View,
   bool has_reported_time_mouse_entered_to_switch_ = false;
 
   std::unique_ptr<TargetViewsTracker> target_views_tracker_;
+  // Records the type of scroll that the user does on the unpinned tabs.
+  std::unique_ptr<tabs::UnpinnedTabScrollTypeRecorder>
+      unpinned_tab_scroll_type_recorder_;
+  // Records, every five minutes, whether the unpinned tabs are scrollable
+  // or not.
+  std::unique_ptr<tabs::UnpinnedTabScrollableStateRecorder>
+      unpinned_tab_scrollable_state_recorder_;
 
   base::CallbackListSubscription node_destroyed_subscription_;
   base::CallbackListSubscription paint_as_active_subscription_;

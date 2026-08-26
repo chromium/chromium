@@ -298,6 +298,15 @@ void SystemMenuModelDelegate::ExecuteCommand(int command_id, int event_flags) {
                     : "SystemContextMenu_TabSearch_Pinned"));
       break;
     }
+    case IDC_TAB_SCROLL_BUTTONS_TOGGLE_PIN: {
+      PrefService* prefs = browser_->GetProfile()->GetPrefs();
+      const bool is_pinned =
+          prefs->GetBoolean(prefs::kTabScrollButtonsPinnedToTabstrip);
+      base::RecordAction(base::UserMetricsAction(
+          is_pinned ? "SystemContextMenu_TabScrollButtons_Unpinned"
+                    : "SystemContextMenu_TabScrollButtons_Pinned"));
+      break;
+    }
   }
   chrome::ExecuteCommand(browser_, command_id);
 }

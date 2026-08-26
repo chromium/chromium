@@ -5,6 +5,9 @@
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 
 #include "base/i18n/base_i18n_switches.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -12,6 +15,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/horizontal_tab_strip_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
@@ -408,10 +412,16 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
                        ScrollButtonsShowOnTabsOverflowAndHideWhenTabsFitAgain) {
+  base::UserActionTester user_action_tester;
   AddTabsUntilScrollable();
   RunTestSequence(
       EnsurePresent(kTabStripRegionElementId),
       WaitForShow(TabScrollButtonContainer::kTabScrollButtonContainer),
+      Do([&user_action_tester]() {
+        EXPECT_GE(user_action_tester.GetActionCount(
+                      "HorizontalTabStrip.ScrollButtons.Visible"),
+                  1);
+      }),
       Do([this]() {
         auto* const model = browser()->GetTabStripModel();
         while (model->count() > 1) {
@@ -419,7 +429,12 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
                                     TabCloseTypes::CLOSE_USER_GESTURE);
         }
       }),
-      WaitForHide(TabScrollButtonContainer::kTabScrollButtonContainer));
+      WaitForHide(TabScrollButtonContainer::kTabScrollButtonContainer),
+      Do([&user_action_tester]() {
+        EXPECT_GE(user_action_tester.GetActionCount(
+                      "HorizontalTabStrip.ScrollButtons.Hidden"),
+                  1);
+      }));
 }
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
@@ -464,6 +479,8 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
                        ClickHorizontalScrollButtons) {
+  base::HistogramTester histogram_tester;
+
   // We set the window size and number of tabs explicitly so that
   // first and last tabs are scrolled into and out of view.
   BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->SetBounds(
@@ -502,7 +519,105 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
       // We should be in previous state.
       PressButton(TabScrollButtonContainer::kStartScrollButton),
       WaitForState(kFirstTabVisibleObserver, true),
-      WaitForState(kLastTabVisibleObserver, false));
+      WaitForState(kLastTabVisibleObserver, false), Do([&histogram_tester]() {
+        histogram_tester.ExpectBucketCount(
+            "TabStrip.Horizontal.ScrollSource",
+            tabs::HorizontalTabStripScrollSource::kButtons, 2);
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
+                       DirectScrollLogsScrollSourceHistogram) {
+  base::HistogramTester histogram_tester;
+  AddTabsUntilScrollable(10);
+
+  RunTestSequence(
+      EnsurePresent(kTabStripRegionElementId),
+      WaitForShow(TabScrollButtonContainer::kTabScrollButtonContainer),
+      Do([this]() {
+        BrowserView* const browser_view =
+            BrowserView::GetBrowserViewForBrowser(browser());
+        views::View* const unpinned_container =
+            tab_strip_view()->GetUnpinnedTabsContainer();
+        const gfx::Point location = views::View::ConvertPointToTarget(
+            unpinned_container, browser_view->GetWidget()->GetRootView(),
+            unpinned_container->GetLocalBounds().CenterPoint());
+        ui::MouseWheelEvent wheel_event(
+            gfx::Vector2d(0, -ui::MouseWheelEvent::kWheelDelta), location,
+            gfx::Point(), base::TimeTicks::Now(), /*flags=*/0,
+            /*changed_button_flags=*/0);
+        browser_view->GetWidget()->GetRootView()->OnMouseWheel(wheel_event);
+      }),
+      Do([&histogram_tester]() {
+  // On Linux, mouse wheel events over the horizontal tab strip are
+  // intercepted by BrowserRootView to switch tabs
+  // (kScrollEventChangesTab).
+#if BUILDFLAG(IS_LINUX)
+        constexpr int kExpectedCount = 0;
+#else
+        constexpr int kExpectedCount = 1;
+#endif
+        histogram_tester.ExpectBucketCount(
+            "TabStrip.Horizontal.ScrollSource",
+            tabs::HorizontalTabStripScrollSource::kTouchpadOrMouseWheel,
+            kExpectedCount);
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
+                       GestureScrollLogsScrollSourceHistogram) {
+  base::HistogramTester histogram_tester;
+  AddTabsUntilScrollable(10);
+
+  RunTestSequence(
+      EnsurePresent(kTabStripRegionElementId),
+      WaitForShow(TabScrollButtonContainer::kTabScrollButtonContainer),
+      Do([this]() {
+        BrowserView* const browser_view =
+            BrowserView::GetBrowserViewForBrowser(browser());
+        views::View* const unpinned_container =
+            tab_strip_view()->GetUnpinnedTabsContainer();
+        const gfx::Point location = views::View::ConvertPointToTarget(
+            unpinned_container, browser_view->GetWidget()->GetRootView(),
+            unpinned_container->GetLocalBounds().CenterPoint());
+
+        ui::GestureEventDetails details(ui::EventType::kGestureScrollBegin);
+        ui::GestureEvent gesture_event(location.x(), location.y(), /*flags=*/0,
+                                       base::TimeTicks::Now(), details);
+        browser_view->GetWidget()->OnGestureEvent(&gesture_event);
+      }),
+      Do([&histogram_tester]() {
+        histogram_tester.ExpectBucketCount(
+            "TabStrip.Horizontal.ScrollSource",
+            tabs::HorizontalTabStripScrollSource::kTouchpadOrMouseWheel, 1);
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
+                       ScrollableHistogramLogsIsScrollableState) {
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  tab_strip_view()
+      ->unpinned_tab_scrollable_state_recorder_for_testing()
+      ->SetTaskRunnerForTesting(task_runner);
+  base::HistogramTester histogram_tester;
+
+  RunTestSequence(
+      EnsurePresent(kTabStripRegionElementId),
+      // Fast forward 5 minutes when tabs fit (not scrollable).
+      Do([&task_runner, &histogram_tester]() {
+        task_runner->FastForwardBy(base::Minutes(5));
+        histogram_tester.ExpectBucketCount("TabStrip.Horizontal.IsScrollable",
+                                           false, 1);
+      }),
+      // Add tabs until scrollable.
+      Do([this]() { AddTabsUntilScrollable(10); }),
+      WaitForShow(TabScrollButtonContainer::kTabScrollButtonContainer),
+      // Fast forward 5 minutes when tabs overflow (scrollable).
+      Do([&task_runner, &histogram_tester]() {
+        task_runner->FastForwardBy(base::Minutes(5));
+        histogram_tester.ExpectBucketCount("TabStrip.Horizontal.IsScrollable",
+                                           true, 1);
+      }));
 }
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
@@ -534,6 +649,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
 #endif
 IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
                        MAYBE_UnpinScrollButtonsFromContextMenu) {
+  base::UserActionTester user_action_tester;
   AddTabsUntilScrollable(10);
 
   RunTestSequence(
@@ -549,7 +665,11 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
             return browser()->GetProfile()->GetPrefs()->GetBoolean(
                 prefs::kTabScrollButtonsPinnedToTabstrip);
           },
-          false));
+          false),
+      Do([&user_action_tester]() {
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+                         "TabScrollButton.ContextMenu.Unpinned"));
+      }));
 }
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewRTLInteractiveUiTest,
