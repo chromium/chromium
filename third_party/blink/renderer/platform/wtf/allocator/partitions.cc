@@ -76,7 +76,7 @@ namespace {
 // `Partitions::DumpMemoryStats`. This involves traversing the free list which
 // is expensive.
 BASE_FEATURE(kPartitionsDumpPopulateDiscardableBytes,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Reads feature configuration and returns a suitable
 // `PartitionOptions`.

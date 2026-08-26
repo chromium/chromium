@@ -59,7 +59,7 @@ namespace {
 // `MallocDumpProvider::OnMemoryDump`. This involves traversing the free list
 // which is expensive.
 BASE_FEATURE(kMallocDumpProviderPopulateDiscardableBytes,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #if BUILDFLAG(IS_WIN)
