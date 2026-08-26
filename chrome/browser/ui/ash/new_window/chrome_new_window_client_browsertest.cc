@@ -26,6 +26,7 @@
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/base_window.h"
 #include "url/gurl.h"
 
 namespace {
@@ -54,10 +55,8 @@ void CreateAndStartUserSession(const AccountId& account_id) {
 }
 
 // Give the underlying function a clearer name.
-Browser* GetLastActiveBrowser() {
-  BrowserWindowInterface* bwi =
-      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
-  return bwi ? bwi->GetBrowserForMigrationOnly() : nullptr;
+BrowserWindowInterface* GetLastActiveBrowser() {
+  return GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
 }
 
 }  // namespace
@@ -74,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest,
   CreateAndStartUserSession(
       AccountId::FromUserEmailGaiaId(kTestUserName1, kTestUser1GaiaId));
   Profile* profile1 = ProfileManager::GetActiveUserProfile();
-  Browser* browser1 = CreateBrowser(profile1);
+  BrowserWindowInterface* browser1 = CreateBrowser(profile1);
   // The newly created window should be created for the current active profile.
   ChromeNewWindowClient::Get()->NewWindow(
       /*incognito=*/false,
@@ -87,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest,
   Profile* profile2 = ProfileManager::GetActiveUserProfile();
   EXPECT_NE(profile1, profile2);
 
-  Browser* browser2 = CreateBrowser(profile2);
+  BrowserWindowInterface* browser2 = CreateBrowser(profile2);
   // The newly created window should be created for the current active window's
   // profile, which is |profile2|.
   ChromeNewWindowClient::Get()->NewWindow(
@@ -149,14 +148,14 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest, IncognitoForced) {
       profile->GetPrefs(), policy::IncognitoModeAvailability::kForced);
 
   // Deactivating the current normal profile browser
-  Browser* regular_browser = GetLastActiveBrowser();
+  BrowserWindowInterface* regular_browser = GetLastActiveBrowser();
   regular_browser->GetWindow()->Deactivate();
 
   // NewTab should open a new browser window in Incognito
   ChromeNewWindowClient::Get()->NewTab();
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
-  Browser* incognito_browser = GetLastActiveBrowser();
+  BrowserWindowInterface* incognito_browser = GetLastActiveBrowser();
   EXPECT_TRUE(incognito_browser->GetProfile()->IsIncognitoProfile());
 
   // After deactivating browsers, NewTab should open a new Incognito Tab only
@@ -164,5 +163,5 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest, IncognitoForced) {
   regular_browser->GetWindow()->Deactivate();
   ChromeNewWindowClient::Get()->NewTab();
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
-  EXPECT_EQ(2, incognito_browser->tab_strip_model()->count());
+  EXPECT_EQ(2, incognito_browser->GetTabStripModel()->count());
 }

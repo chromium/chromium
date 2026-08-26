@@ -39,8 +39,7 @@
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"
 #include "chromeos/ash/components/geolocation/location_fetcher.h"
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
@@ -184,7 +183,8 @@ class PersonalizationAppTimeOfDayBrowserTest
     time_of_day_scheduler_ = nullptr;
   }
 
-  content::WebContents* LaunchAppAtWallpaperSubpage(Browser** browser) {
+  content::WebContents* LaunchAppAtWallpaperSubpage(
+      BrowserWindowInterface** browser) {
     apps::AppLaunchParams launch_params =
         LaunchParamsForApp(ash::SystemWebAppType::PERSONALIZATION);
     launch_params.override_url =
@@ -304,7 +304,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(PersonalizationAppTimeOfDayBrowserTest,
                        ShowsExpectedImageTypesAtCheckpoints) {
-  Browser* browser;
+  BrowserWindowInterface* browser = nullptr;
   auto* web_contents = LaunchAppAtWallpaperSubpage(&browser);
 
   {

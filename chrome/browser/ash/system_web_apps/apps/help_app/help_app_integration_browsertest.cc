@@ -43,9 +43,8 @@
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
@@ -75,6 +74,7 @@
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/base_window.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/scoped_set_idle_state.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2MinWindowSize) {
 // the screen.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2DefaultWindowBounds) {
   WaitForTestSystemAppInstall();
-  Browser* browser;
+  BrowserWindowInterface* browser = nullptr;
   LaunchApp(SystemWebAppType::HELP, &browser);
   gfx::Rect work_area =
       display::Screen::Get()->GetDisplayForNewWindows().work_area();
@@ -502,7 +502,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2NavigateOnRelaunch) {
   // There should initially be a single browser window.
   EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
-  Browser* browser;
+  BrowserWindowInterface* browser = nullptr;
   content::WebContents* web_contents =
       LaunchApp(SystemWebAppType::HELP, &browser);
 
@@ -877,7 +877,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                                 "javascript:alert('Hello World')"};
   for (const std::string& test_url : invalid_urls) {
     // Launch a new Help app window per test URL.
-    Browser* help_app_browser;
+    BrowserWindowInterface* help_app_browser = nullptr;
     content::WebContents* web_contents =
         LaunchApp(SystemWebAppType::HELP, &help_app_browser);
 

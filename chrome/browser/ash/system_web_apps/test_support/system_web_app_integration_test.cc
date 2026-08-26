@@ -7,8 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -19,6 +18,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
+#include "ui/base/base_window.h"
 
 namespace ash {
 
@@ -40,7 +40,7 @@ void SystemWebAppIntegrationTest::ExpectSystemWebAppValid(
   // browser window's title is set before the page loads.
   // TODO(crbug.com/40140789): This isn't a strong guarantee that we check the
   // title before the page loads. We should improve this.
-  Browser* app_browser;
+  BrowserWindowInterface* app_browser = nullptr;
   LaunchAppWithoutWaiting(app_type, &app_browser);
 
   webapps::AppId app_id =
@@ -57,7 +57,7 @@ void SystemWebAppIntegrationTest::ExpectSystemWebAppValid(
       app_id, web_app::ExternalInstallSource::kSystemInstalled));
 
   content::WebContents* web_contents =
-      app_browser->tab_strip_model()->GetActiveWebContents();
+      app_browser->GetTabStripModel()->GetActiveWebContents();
 
   // The opened window should be showing the url with attached WebUI.
   EXPECT_EQ(url, web_contents->GetVisibleURL());

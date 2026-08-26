@@ -20,6 +20,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/base_window.h"
 #include "ui/display/types/display_constants.h"
 
 using BrowserShortcutShelfItemControllerTest = InProcessBrowserTest;
@@ -48,10 +49,9 @@ IN_PROC_BROWSER_TEST_F(BrowserShortcutShelfItemControllerTest, AppMenu) {
   EXPECT_EQ(u"about:blank", items[0].title);
 
   // Browsers are not listed in the menu if their windows have not been shown.
-  Browser* browser1 =
-      CreateBrowserWindow(BrowserWindowCreateParams(browser()->GetProfile(),
-                                                    /*from_user_gesture=*/true))
-          ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* browser1 = CreateBrowserWindow(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
   EXPECT_FALSE(browser1->GetWindow()->IsVisible());
   EXPECT_EQ(2U, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(1U, GetAppMenuItems(controller, ui::EF_NONE).size());
@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(BrowserShortcutShelfItemControllerTest, AppMenu) {
   // Browsers shown with no active tab appear as "New Tab" without crashing.
   browser1->GetWindow()->Show();
   EXPECT_TRUE(browser1->GetWindow()->IsVisible());
-  EXPECT_FALSE(browser1->tab_strip_model()->GetActiveWebContents());
+  EXPECT_FALSE(browser1->GetTabStripModel()->GetActiveWebContents());
   EXPECT_EQ(2U, GlobalBrowserCollection::GetInstance()->GetSize());
   items = GetAppMenuItems(controller, ui::EF_NONE);
   ASSERT_EQ(2U, items.size());
@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(BrowserShortcutShelfItemControllerTest, AppMenu) {
   AddBlankTabAndShow(browser1);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser1, GURL("data:text/html,<title>2</title>")));
-  EXPECT_EQ(1, browser1->tab_strip_model()->active_index());
+  EXPECT_EQ(1, browser1->GetTabStripModel()->active_index());
   items = GetAppMenuItems(controller, ui::EF_NONE);
   ASSERT_EQ(2U, items.size());
   EXPECT_EQ(u"0", items[0].title);

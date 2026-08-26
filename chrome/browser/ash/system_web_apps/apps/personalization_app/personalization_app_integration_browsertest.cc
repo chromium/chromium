@@ -138,7 +138,8 @@ class PersonalizationAppIntegrationBrowserTest
 
   // Launch the app at the wallpaper subpage to avoid a redirect while loading
   // the app.
-  content::WebContents* LaunchAppAtWallpaperSubpage(Browser** browser) {
+  content::WebContents* LaunchAppAtWallpaperSubpage(
+      BrowserWindowInterface** browser) {
     apps::AppLaunchParams launch_params =
         LaunchParamsForApp(ash::SystemWebAppType::PERSONALIZATION);
     launch_params.override_url =
@@ -165,7 +166,7 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationBrowserTest,
 IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationBrowserTest,
                        PersonalizationAppWidgetIsTransparent) {
   WaitForTestSystemAppInstall();
-  Browser* browser;
+  BrowserWindowInterface* browser = nullptr;
   content::WebContents* web_contents = LaunchAppAtWallpaperSubpage(&browser);
 
   CallMakeTransparent(web_contents);
@@ -180,7 +181,7 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationBrowserTest,
 IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationBrowserTest,
                        PersonalizationAppDisablesWindowBackdrop) {
   WaitForTestSystemAppInstall();
-  Browser* browser;
+  BrowserWindowInterface* browser = nullptr;
   content::WebContents* web_contents = LaunchAppAtWallpaperSubpage(&browser);
   aura::Window* window = web_contents->GetTopLevelNativeWindow();
 

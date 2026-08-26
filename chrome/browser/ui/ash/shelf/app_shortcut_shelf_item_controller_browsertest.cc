@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(AppShortcutShelfItemControllerBrowserTest,
   EXPECT_EQ(3u, GetAppMenuItems(0).size());
 
   // Open a new tab in an existing app browser. There are still 3 window items.
-  AddBlankTabAndShow(app_browser1->GetBrowserForMigrationOnly());
+  AddBlankTabAndShow(app_browser1);
   EXPECT_EQ(3u, GetAppMenuItems(0).size());
 
   // Clicking the first item in the menu should activate the first app window.
@@ -162,8 +162,7 @@ IN_PROC_BROWSER_TEST_F(AppShortcutShelfItemControllerBrowserTest,
   EXPECT_EQ(4u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
 
   // Open a new app tab in an existing app browser.
-  chrome::NewTab(app_browser1->GetBrowserForMigrationOnly(),
-                 NewTabTypes::kNoUserAction);
+  chrome::NewTab(app_browser1, NewTabTypes::kNoUserAction);
   EXPECT_EQ(5u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
 
   // Clicking the third item in the menu should activate the first tab in the

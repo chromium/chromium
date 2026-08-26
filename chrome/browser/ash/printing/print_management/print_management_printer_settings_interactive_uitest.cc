@@ -115,8 +115,7 @@ class PrintManagementInteractiveUiTest : public InteractiveAshTest {
       // The test always starts from an empty state so the Print Management app
       // will always be the first browser.
       ASSERT_FALSE(GlobalBrowserCollection::GetInstance()->IsEmpty());
-      chrome::Reload(GetLastActiveBrowserWindowInterfaceWithAnyProfile()
-                         ->GetBrowserForMigrationOnly(),
+      chrome::Reload(GetLastActiveBrowserWindowInterfaceWithAnyProfile(),
                      WindowOpenDisposition::CURRENT_TAB);
     });
   }

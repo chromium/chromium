@@ -34,8 +34,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
@@ -131,7 +130,8 @@ class PersonalizationAppWallpaperInfoBrowserTest
     SystemWebAppBrowserTestBase::TearDownOnMainThread();
   }
 
-  content::WebContents* LaunchAppAtWallpaperSubpage(Browser** browser) {
+  content::WebContents* LaunchAppAtWallpaperSubpage(
+      BrowserWindowInterface** browser) {
     apps::AppLaunchParams launch_params =
         LaunchParamsForApp(ash::SystemWebAppType::PERSONALIZATION);
     launch_params.override_url =

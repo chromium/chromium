@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -68,7 +69,7 @@ apps::AppLaunchParams SystemWebAppBrowserTestBase::LaunchParamsForApp(
 content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(
     apps::AppLaunchParams&& params,
     bool wait_for_load,
-    Browser** out_browser) {
+    BrowserWindowInterface** out_browser) {
   content::TestNavigationObserver navigation_observer(GetStartUrl(params));
   navigation_observer.StartWatchingNewWebContents();
 
@@ -98,13 +99,11 @@ content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(
   }
 
   if (out_browser) {
-    BrowserWindowInterface* target_browser =
+    *out_browser =
         web_contents
             ? GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
                   web_contents)
             : nullptr;
-    *out_browser =
-        target_browser ? target_browser->GetBrowserForMigrationOnly() : nullptr;
   }
 
   return web_contents;
@@ -112,25 +111,25 @@ content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(
 
 content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(
     apps::AppLaunchParams&& params,
-    Browser** browser) {
-  return LaunchApp(std::move(params), /* wait_for_load */ true, browser);
+    BrowserWindowInterface** browser) {
+  return LaunchApp(std::move(params), /*wait_for_load=*/true, browser);
 }
 
 content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(
     SystemWebAppType type,
-    Browser** browser) {
+    BrowserWindowInterface** browser) {
   return LaunchApp(LaunchParamsForApp(type), browser);
 }
 
 content::WebContents* SystemWebAppBrowserTestBase::LaunchAppWithoutWaiting(
     apps::AppLaunchParams&& params,
-    Browser** browser) {
-  return LaunchApp(std::move(params), /* wait_for_load */ false, browser);
+    BrowserWindowInterface** browser) {
+  return LaunchApp(std::move(params), /*wait_for_load=*/false, browser);
 }
 
 content::WebContents* SystemWebAppBrowserTestBase::LaunchAppWithoutWaiting(
     SystemWebAppType type,
-    Browser** browser) {
+    BrowserWindowInterface** browser) {
   return LaunchAppWithoutWaiting(LaunchParamsForApp(type), browser);
 }
 

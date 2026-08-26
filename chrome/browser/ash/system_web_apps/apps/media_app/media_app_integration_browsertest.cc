@@ -44,9 +44,7 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_init_state.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -527,8 +525,9 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchPdfMulti) {
   WaitForBrowserCount(3);  // 1 extra for the browser test browser.
   EXPECT_EQ(3u, GlobalBrowserCollection::GetInstance()->GetSize());
 
-  Browser* const pdf_img_browser = browser_created_observer.Wait();
-  Browser* const pdf_tall_browser =
+  BrowserWindowInterface* const pdf_img_browser =
+      browser_created_observer.Wait();
+  BrowserWindowInterface* const pdf_tall_browser =
       ui_test_utils::GetBrowserNotInSet({browser(), pdf_img_browser});
 
   content::TitleWatcher watcher1(

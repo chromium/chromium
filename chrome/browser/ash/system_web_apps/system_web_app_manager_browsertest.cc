@@ -48,7 +48,7 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -89,6 +89,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/base/base_window.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/scoped_set_idle_state.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
@@ -121,7 +122,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTestBasicInstall, Install) {
 
   // Don't wait for page load because we want to verify AppController identifies
   // the System Web App before when the app loads.
-  Browser* app_browser;
+  BrowserWindowInterface* app_browser = nullptr;
   LaunchAppWithoutWaiting(GetAppType(), &app_browser);
 
   webapps::AppId app_id =
@@ -160,7 +161,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest,
 
   // Don't wait for page load because we want to verify the toolbar is hidden
   // when the window first opens.
-  Browser* app_browser;
+  BrowserWindowInterface* app_browser = nullptr;
   LaunchAppWithoutWaiting(GetAppType(), &app_browser);
 
   // In scope, the toolbar should not be visible.
@@ -170,7 +171,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest,
   // Out of scope chrome:// URL.
   GURL out_of_scope_chrome_page("chrome://foo");
   content::NavigateToURLBlockUntilNavigationsComplete(
-      app_browser->tab_strip_model()->GetActiveWebContents(),
+      app_browser->GetTabStripModel()->GetActiveWebContents(),
       out_of_scope_chrome_page, 1);
   EXPECT_TRUE(web_app::AppBrowserController::From(app_browser)
                   ->ShouldShowCustomTabBar());
@@ -927,7 +928,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerHasTabStripWithNewTabButtonTest,
                        ShouldHaveTabStripWithNewTabButton) {
   WaitForTestSystemAppInstall();
 
-  Browser* browser;
+  BrowserWindowInterface* browser = nullptr;
   EXPECT_TRUE(LaunchApp(GetAppType(), &browser));
   EXPECT_TRUE(web_app::AppBrowserController::From(browser)->has_tab_strip());
   EXPECT_FALSE(
@@ -948,7 +949,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerHasTabStripWithHiddenNewTabButtonTest,
                        HasTabStripWithNoNewTabButton) {
   WaitForTestSystemAppInstall();
 
-  Browser* browser;
+  BrowserWindowInterface* browser = nullptr;
   EXPECT_TRUE(LaunchApp(GetAppType(), &browser));
   EXPECT_TRUE(web_app::AppBrowserController::From(browser)->has_tab_strip());
   EXPECT_TRUE(
@@ -969,7 +970,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerHasNoTabStripWithNewTabButtonTest,
                        HasNoTabStripWithNoNewTabButton) {
   WaitForTestSystemAppInstall();
 
-  Browser* browser;
+  BrowserWindowInterface* browser = nullptr;
   EXPECT_TRUE(LaunchApp(GetAppType(), &browser));
   EXPECT_FALSE(web_app::AppBrowserController::From(browser)->has_tab_strip());
   EXPECT_TRUE(
@@ -991,7 +992,7 @@ IN_PROC_BROWSER_TEST_P(
     HasNoTabStripWithNoNewTabButton) {
   WaitForTestSystemAppInstall();
 
-  Browser* browser;
+  BrowserWindowInterface* browser = nullptr;
   EXPECT_TRUE(LaunchApp(GetAppType(), &browser));
   EXPECT_FALSE(web_app::AppBrowserController::From(browser)->has_tab_strip());
   EXPECT_TRUE(
@@ -1015,7 +1016,7 @@ class SystemWebAppManagerDefaultBoundsTest
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerDefaultBoundsTest, HasDefaultBounds) {
   WaitForTestSystemAppInstall();
 
-  Browser* browser;
+  BrowserWindowInterface* browser = nullptr;
   EXPECT_TRUE(LaunchApp(GetAppType(), &browser));
   EXPECT_EQ(kDefaultBounds,
             web_app::AppBrowserController::From(browser)->GetDefaultBounds());
@@ -1221,7 +1222,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerChromeUntrustedTest, Install) {
 
   // Don't wait for page load because we want to verify AppController identifies
   // the System Web App before the app loads.
-  Browser* app_browser;
+  BrowserWindowInterface* app_browser = nullptr;
   LaunchAppWithoutWaiting(GetAppType(), &app_browser);
 
   webapps::AppId app_id =
@@ -1530,7 +1531,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerShortcutTest, ShortcutUrl) {
       GetManager()
           .GetAppIdForSystemApp(SystemWebAppType::SHORTCUT_CUSTOMIZATION)
           .value();
-  Browser* browser;
+  BrowserWindowInterface* browser = nullptr;
   content::WebContents* web_contents =
       LaunchApp(SystemWebAppType::SHORTCUT_CUSTOMIZATION, &browser);
   EXPECT_TRUE(web_contents);
@@ -1808,7 +1809,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppAccessibilityTest,
   WaitForTestSystemAppInstall();
 
   // Launch the app so it shows up in shelf.
-  Browser* app_browser;
+  BrowserWindowInterface* app_browser = nullptr;
   gfx::NativeWindow app_window;
 
   chromevox_test_utils.sm()->Call([&]() {
