@@ -190,6 +190,21 @@
             ]
         }
     ],
+    "AccessibilityGoogleTtsAutomaticReconnect": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260825",
+                    "enable_features": [
+                        "AccessibilityGoogleTtsAutomaticReconnect"
+                    ]
+                }
+            ]
+        }
+    ],
     "AccessibilityHandleOccludingViews": [
         {
             "platforms": [
