@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "components/webauthn/core/browser/import/import_processing_result.h"
 #include "components/webauthn/core/browser/import/imported_passkey_checker.h"
 #include "components/webauthn/core/browser/import/passkey_import_candidate.h"
@@ -24,7 +25,8 @@ ImportedPasskeyInfo CandidateToImportedPasskeyInfo(
     ImportedPasskeyStatus status) {
   return {.rp_id = candidate.rp_id,
           .user_name = candidate.user_name,
-          .status = status};
+          .status = status,
+          .exporter_creation_time = candidate.exporter_creation_time};
 }
 
 sync_pb::WebauthnCredentialSpecifics CandidateToSpecifics(
@@ -39,7 +41,6 @@ sync_pb::WebauthnCredentialSpecifics CandidateToSpecifics(
   passkey.set_rp_id(candidate.rp_id);
   passkey.set_user_name(candidate.user_name);
   passkey.set_user_display_name(candidate.user_display_name);
-  passkey.set_creation_time(candidate.creation_time);
   return passkey;
 }
 
@@ -150,7 +151,9 @@ void PasskeyImporter::ProcessPasskeys(
 void PasskeyImporter::ImportPasskeys(
     std::vector<int> selected_conflicting_passkey_ids,
     base::OnceCallback<void(int)> passkeys_imported_callback) {
+  int64_t time_now = base::Time::Now().InMillisecondsSinceUnixEpoch();
   for (sync_pb::WebauthnCredentialSpecifics& passkey : valid_passkeys_) {
+    passkey.set_creation_time(time_now);
     passkey_model_->CreatePasskey(passkey);
   }
 
@@ -158,7 +161,10 @@ void PasskeyImporter::ImportPasskeys(
   for (int incoming_passkey_id : selected_conflicting_passkey_ids) {
     CHECK_LT(static_cast<size_t>(incoming_passkey_id),
              conflicting_passkey_cache_size);
-    passkey_model_->CreatePasskey(conflicting_passkeys_[incoming_passkey_id]);
+    sync_pb::WebauthnCredentialSpecifics& passkey =
+        conflicting_passkeys_[incoming_passkey_id];
+    passkey.set_creation_time(time_now);
+    passkey_model_->CreatePasskey(passkey);
   }
 
   size_t imported_passkeys_count = valid_passkeys_.size() +

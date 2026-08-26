@@ -97,7 +97,7 @@ import Foundation
                 username: basicAuth.userName?.value ?? "",
                 password: basicAuth.password?.value ?? "",
                 note: note,
-                creationDate: nil
+                creationDate: item.created
               ))
           case .passkey(let passkey):
             stats.passkeyCount += 1
@@ -135,7 +135,7 @@ import Foundation
                 userDisplayName: passkey.userDisplayName,
                 userId: passkey.userHandle,
                 privateKey: passkey.key,
-                creationDate: nil,
+                creationDate: item.created,
                 hmacSecret: hmacSecret,
                 hmacSecretAlgorithm: hmacSecretAlgorithm,
                 largeBlob: largeBlob,

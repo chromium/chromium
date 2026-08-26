@@ -36,7 +36,7 @@
 // Private key of a passkey, unencrypted.
 @property(nonatomic, copy) NSData* privateKey;
 
-// Creation date of the credential.
+// Creation date of the credential in the exporting password manager.
 @property(nonatomic, copy) NSDate* creationDate;
 
 // 32-byte secret used for the WebAuthn PRF / CTAP2.1 hmac-secret extension.

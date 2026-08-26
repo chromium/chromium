@@ -65,7 +65,6 @@ PasskeyImportCandidate CreateCandidate(const std::string& rp_id,
   candidate.user_id = std::vector<uint8_t>(user_id.begin(), user_id.end());
   candidate.private_key =
       crypto::keypair::PrivateKey::GenerateEcP256().ToPrivateKeyInfo();
-  candidate.creation_time = 1234567890;
   return candidate;
 }
 
@@ -92,7 +91,8 @@ class PasskeyImporterTest : public testing::Test {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestPasskeyModel> passkey_model_;
   std::unique_ptr<PasskeyImporter> passkey_importer_;
   base::HistogramTester histogram_tester_;
@@ -169,6 +169,22 @@ TEST_F(PasskeyImporterTest, ImportsValidPasskeys) {
       SizeIs(2));
   histogram_tester_.ExpectUniqueSample(
       "WebAuthentication.CredentialExchange.PasskeysImportedCount", 2, 1);
+}
+
+TEST_F(PasskeyImporterTest, SetsCreationTimeToCurrentTimeOnImport) {
+  base::Time time_now = base::Time::Now();
+  PasskeyImportCandidate candidate = CreateCandidate(kRpId, kUserId);
+  candidate.exporter_creation_time = time_now - base::Days(10);
+
+  std::ignore = StartImport({candidate});
+  std::ignore = FinishImport(/*selected_passkey_ids=*/{});
+
+  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
+      passkey_model_->GetPasskeys(PasskeyModel::AnyRp(),
+                                  PasskeyModel::ShadowedCredentials::kInclude);
+  ASSERT_THAT(passkeys, SizeIs(1));
+  EXPECT_EQ(passkeys[0].creation_time(),
+            time_now.InMillisecondsSinceUnixEpoch());
 }
 
 TEST_F(PasskeyImporterTest, ImportsIncomingConflictingPasskey) {

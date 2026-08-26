@@ -251,7 +251,6 @@ constexpr int kSupportedCredentialTypesCount = 2;
     return {};
   }
 
-  int64_t timeNow = base::Time::Now().InMillisecondsSinceUnixEpoch();
   std::vector<webauthn::PasskeyImportCandidate> passkeys;
 
   for (CredentialExchangePasskey* passkey : _passkeys) {
@@ -286,7 +285,10 @@ constexpr int kSupportedCredentialTypesCount = 2;
         .user_id = base::ToVector(base::apple::NSDataToSpan(passkey.userId)),
         .private_key =
             base::ToVector(base::apple::NSDataToSpan(passkey.privateKey)),
-        .creation_time = timeNow,
+        .exporter_creation_time =
+            passkey.creationDate
+                ? std::optional(base::Time::FromNSDate(passkey.creationDate))
+                : std::nullopt,
         .hmac_secret = std::move(hmacSecret),
         .hmac_secret_algorithm = std::move(hmacSecretAlgorithm),
         .large_blob = std::move(largeBlob),

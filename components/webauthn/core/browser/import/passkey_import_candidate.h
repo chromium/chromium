@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
+
 namespace webauthn {
 
 // Represents a candidate passkey that is about to be imported.
@@ -21,7 +23,7 @@ struct PasskeyImportCandidate {
   std::vector<uint8_t> credential_id;
   std::vector<uint8_t> user_id;
   std::vector<uint8_t> private_key;
-  int64_t creation_time = 0;
+  std::optional<base::Time> exporter_creation_time;
   std::vector<uint8_t> hmac_secret;
   std::optional<std::string> hmac_secret_algorithm;
   std::optional<std::vector<uint8_t>> large_blob;

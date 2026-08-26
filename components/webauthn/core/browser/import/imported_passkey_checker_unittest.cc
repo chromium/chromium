@@ -24,7 +24,6 @@ PasskeyImportCandidate CreateValidPasskey() {
       .user_id = base::RandBytesAsVector(passkey_model_utils::kUserIdMaxLength),
       .private_key =
           crypto::keypair::PrivateKey::GenerateEcP256().ToPrivateKeyInfo(),
-      .creation_time = 1234567890,
   };
 }
 

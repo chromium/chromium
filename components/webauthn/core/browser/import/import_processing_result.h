@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_WEBAUTHN_CORE_BROWSER_IMPORT_IMPORT_PROCESSING_RESULT_H_
 #define COMPONENTS_WEBAUTHN_CORE_BROWSER_IMPORT_IMPORT_PROCESSING_RESULT_H_
 
-#include <stdint.h>
-
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "components/webauthn/core/browser/import/imported_passkey_checker.h"
 
 namespace webauthn {
@@ -19,6 +19,7 @@ struct ImportedPasskeyInfo {
   std::string rp_id;
   std::string user_name;
   ImportedPasskeyStatus status;
+  std::optional<base::Time> exporter_creation_time;
 };
 
 // Results of initial processing of to-be imported passkeys.
