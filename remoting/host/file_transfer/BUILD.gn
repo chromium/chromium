@@ -25,6 +25,10 @@ source_set("file_transfer") {
     ]
     deps += [
       "//ipc",
+      "//mojo/core/embedder",
+      "//mojo/public/cpp/bindings",
+      "//mojo/public/cpp/platform",
+      "//mojo/public/cpp/system",
       "//remoting/host:common",
       "//remoting/host/base",
       "//remoting/host/mojom",
@@ -90,11 +94,9 @@ source_set("common") {
       "ensure_user_mac.cc",
     ]
   } else if (is_win) {
-    public += [ "file_chooser_common_win.h" ]
     sources += [
       "directory_helpers_win.cc",
       "ensure_user_win.cc",
-      "file_chooser_common_win.cc",
     ]
   } else if (is_chromeos) {
     sources += [

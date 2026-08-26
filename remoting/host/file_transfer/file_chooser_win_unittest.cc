@@ -4,103 +4,117 @@
 
 #include "remoting/host/file_transfer/file_chooser.h"
 
-#include <cstdint>
-#include <vector>
+#include <memory>
+#include <utility>
 
-#include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "mojo/public/cpp/bindings/message.h"
-#include "remoting/host/file_transfer/file_chooser_common_win.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/protocol/file_transfer_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
 
+namespace {
+
+using FileChooserResult = ::remoting::FileChooser::Result;
+
+class FakeFileChooser : public mojom::FileChooser {
+ public:
+  explicit FakeFileChooser(mojo::PendingReceiver<mojom::FileChooser> receiver)
+      : receiver_(this, std::move(receiver)) {}
+
+  void SetResult(FileChooserResult result) { result_ = std::move(result); }
+
+  void OpenFile(OpenFileCallback callback) override {
+    std::move(callback).Run(result_);
+  }
+
+ private:
+  mojo::Receiver<mojom::FileChooser> receiver_;
+  FileChooserResult result_;
+};
+
+}  // namespace
+
 class FileChooserWinTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(FileChooserWinTest, ParseValidSuccessResponse) {
+TEST_F(FileChooserWinTest, OpenFileSuccess) {
+  mojo::Remote<mojom::FileChooser> remote;
+  FakeFileChooser server(remote.BindNewPipeAndPassReceiver());
+
   base::FilePath test_path(FILE_PATH_LITERAL("C:\\test\\file.txt"));
-  FileChooser::Result input(test_path);
-  mojo::Message serialized_message =
-      mojom::FileChooserResult::SerializeAsMessage(&input);
+  server.SetResult(FileChooserResult(test_path));
 
-  FileChooser::Result result =
-      ParseFileChooserResponse(serialized_message.data_as_span());
+  base::RunLoop run_loop;
+  FileChooserResult actual_result;
+  remote->OpenFile(base::BindOnce(
+      [](base::OnceClosure quit_closure, FileChooserResult* out_result,
+         const FileChooserResult& result) {
+        *out_result = result;
+        std::move(quit_closure).Run();
+      },
+      run_loop.QuitClosure(), &actual_result));
 
-  ASSERT_TRUE(result.is_success());
-  EXPECT_EQ(result.success(), test_path);
+  run_loop.Run();
+
+  ASSERT_TRUE(actual_result.is_success());
+  EXPECT_EQ(actual_result.success(), test_path);
 }
 
-TEST_F(FileChooserWinTest, ParseValidErrorResponse) {
+TEST_F(FileChooserWinTest, OpenFileCanceled) {
+  mojo::Remote<mojom::FileChooser> remote;
+  FakeFileChooser server(remote.BindNewPipeAndPassReceiver());
+
   protocol::FileTransfer_Error error = MakeFileTransferError(
       FROM_HERE, protocol::FileTransfer_Error_Type_CANCELED);
-  FileChooser::Result input(error);
-  mojo::Message serialized_message =
-      mojom::FileChooserResult::SerializeAsMessage(&input);
+  server.SetResult(FileChooserResult(error));
 
-  FileChooser::Result result =
-      ParseFileChooserResponse(serialized_message.data_as_span());
+  base::RunLoop run_loop;
+  FileChooserResult actual_result;
+  remote->OpenFile(base::BindOnce(
+      [](base::OnceClosure quit_closure, FileChooserResult* out_result,
+         const FileChooserResult& result) {
+        *out_result = result;
+        std::move(quit_closure).Run();
+      },
+      run_loop.QuitClosure(), &actual_result));
 
-  ASSERT_TRUE(result.is_error());
-  EXPECT_EQ(result.error().type(), protocol::FileTransfer_Error_Type_CANCELED);
+  run_loop.Run();
+
+  ASSERT_TRUE(actual_result.is_error());
+  EXPECT_EQ(actual_result.error().type(),
+            protocol::FileTransfer_Error_Type_CANCELED);
 }
 
-TEST_F(FileChooserWinTest, RejectMalformedHeaderWithInvalidNumBytes) {
-  // Vector A: 8-byte V0 header with num_bytes (0x28 = 40) larger than buffer.
-  const uint8_t malformed_bytes[8] = {0x28, 0x00, 0x00, 0x00,
-                                      0x00, 0x00, 0x00, 0x00};
-  FileChooser::Result result = ParseFileChooserResponse(malformed_bytes);
+TEST_F(FileChooserWinTest, DisconnectHandled) {
+  mojo::Remote<mojom::FileChooser> remote;
+  auto server =
+      std::make_unique<FakeFileChooser>(remote.BindNewPipeAndPassReceiver());
 
-  ASSERT_TRUE(result.is_error());
-  EXPECT_EQ(result.error().type(),
-            protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR);
-}
+  base::RunLoop run_loop;
+  bool disconnected = false;
+  remote.set_disconnect_handler(base::BindOnce(
+      [](base::OnceClosure quit_closure, bool* out_disconnected) {
+        *out_disconnected = true;
+        std::move(quit_closure).Run();
+      },
+      run_loop.QuitClosure(), &disconnected));
 
-TEST_F(FileChooserWinTest, RejectMalformedHeaderWithV2PayloadPointerOOB) {
-  // Vector B: 48-byte V2 header with payload offset pointing outside buffer.
-  uint8_t malformed_bytes[48] = {0};
-  // num_bytes = 48
-  malformed_bytes[0] = 48;
-  // version = 2
-  malformed_bytes[4] = 2;
-  // payload offset pointing 0x1000 bytes away
-  malformed_bytes[32] = 0x00;
-  malformed_bytes[33] = 0x10;
-  malformed_bytes[40] = 0x00;
-  malformed_bytes[41] = 0x10;
+  // Simulate process termination/crash before responding.
+  server.reset();
 
-  FileChooser::Result result = ParseFileChooserResponse(malformed_bytes);
+  run_loop.Run();
 
-  ASSERT_TRUE(result.is_error());
-  EXPECT_EQ(result.error().type(),
-            protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR);
-}
-
-TEST_F(FileChooserWinTest, RejectEmptyBuffer) {
-  FileChooser::Result result =
-      ParseFileChooserResponse(base::span<const uint8_t>());
-
-  ASSERT_TRUE(result.is_error());
-  EXPECT_EQ(result.error().type(),
-            protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR);
-}
-
-TEST_F(FileChooserWinTest, RejectTruncatedHeaders) {
-  // Test various truncated buffer sizes smaller than full Mojo message headers.
-  for (size_t size : {1, 4, 7, 16, 24}) {
-    std::vector<uint8_t> truncated_bytes(size, 0);
-    FileChooser::Result result = ParseFileChooserResponse(truncated_bytes);
-
-    ASSERT_TRUE(result.is_error()) << "Failed for size: " << size;
-    EXPECT_EQ(result.error().type(),
-              protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR)
-        << "Failed for size: " << size;
-  }
+  EXPECT_TRUE(disconnected);
 }
 
 }  // namespace remoting

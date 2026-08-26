@@ -7,21 +7,28 @@
 #include <shlobj.h>
 #include <wrl/client.h>
 
-#include <cstdio>
 #include <cstdlib>
+#include <utility>
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_executor.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/timer/timer.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_com_initializer.h"
-#include "mojo/public/cpp/bindings/message.h"
+#include "mojo/core/embedder/scoped_ipc_support.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/platform/platform_channel.h"
+#include "mojo/public/cpp/platform/platform_channel_endpoint.h"
+#include "mojo/public/cpp/system/invitation.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/host/file_transfer/file_chooser.h"
-#include "remoting/host/file_transfer/file_chooser_common_win.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/win/core_resource.h"
 #include "remoting/protocol/file_transfer_helpers.h"
@@ -128,51 +135,71 @@ FileChooser::Result ShowFileChooser() {
   return base::FilePath(path.get());
 }
 
+class FileChooserImpl : public mojom::FileChooser {
+ public:
+  FileChooserImpl(mojo::PendingReceiver<mojom::FileChooser> receiver,
+                  base::OnceClosure on_done)
+      : receiver_(this, std::move(receiver)), on_done_(std::move(on_done)) {
+    receiver_.set_disconnect_handler(
+        base::BindOnce(&FileChooserImpl::OnDisconnect, base::Unretained(this)));
+  }
+
+  FileChooserImpl(const FileChooserImpl&) = delete;
+  FileChooserImpl& operator=(const FileChooserImpl&) = delete;
+
+  ~FileChooserImpl() override = default;
+
+  // mojom::FileChooser implementation.
+  void OpenFile(OpenFileCallback callback) override {
+    base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})
+        ->PostTaskAndReplyWithResult(
+            FROM_HERE, base::BindOnce(&ShowFileChooser), std::move(callback));
+  }
+
+ private:
+  void OnDisconnect() {
+    if (on_done_) {
+      std::move(on_done_).Run();
+    }
+  }
+
+  mojo::Receiver<mojom::FileChooser> receiver_;
+  base::OnceClosure on_done_;
+};
+
 }  // namespace
 
 int FileChooserMain() {
+  base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams("FileChooser");
 
   base::win::ScopedCOMInitializer com;
 
-  FileChooser::Result result = ShowFileChooser();
+  mojo::core::ScopedIPCSupport ipc_support(
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);
 
-  mojo::Message serialized_message =
-      mojom::FileChooserResult::SerializeAsMessage(&result);
-
-  // Highly unlikely, but we want to know if it happens.
-  if (serialized_message.data_num_bytes() > kFileChooserPipeBufferSize) {
-    FileChooser::Result error_result(protocol::MakeFileTransferError(
-        FROM_HERE, protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR));
-    serialized_message =
-        mojom::FileChooserResult::SerializeAsMessage(&error_result);
-  }
-
-  HANDLE stdout_handle = GetStdHandle(STD_OUTPUT_HANDLE);
-  if (stdout_handle == INVALID_HANDLE_VALUE) {
-    PLOG(ERROR) << "Could not get stdout handle";
+  mojo::PlatformChannelEndpoint endpoint =
+      mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(
+          *base::CommandLine::ForCurrentProcess());
+  if (!endpoint.is_valid()) {
+    LOG(ERROR) << "Invalid Mojo channel endpoint.";
     return EXIT_FAILURE;
   }
 
-  DWORD bytes_written;
-  if (!WriteFile(stdout_handle, serialized_message.data(),
-                 serialized_message.data_num_bytes(), &bytes_written,
-                 nullptr)) {
-    PLOG(ERROR) << "Failed to write file chooser result";
-  }
-
-  // While the pipe buffer is expected to be at least
-  // kFileChooserPipeBufferSize, the parent process sets it to non-blocking just
-  // in case. Check that all bytes were written successfully, and return an
-  // error code if not to signal the parent that it shouldn't try to parse the
-  // output.
-  if (bytes_written != serialized_message.data_num_bytes()) {
-    LOG(ERROR) << "Failed to write all bytes to pipe. (Buffer full?) Expected: "
-               << serialized_message.data_num_bytes()
-               << " Actual: " << bytes_written;
+  auto invitation = mojo::IncomingInvitation::Accept(std::move(endpoint));
+  mojo::ScopedMessagePipeHandle pipe = invitation.ExtractMessagePipe(0);
+  if (!pipe.is_valid()) {
+    LOG(ERROR) << "Invalid Mojo message pipe.";
     return EXIT_FAILURE;
   }
 
+  base::RunLoop run_loop;
+  FileChooserImpl file_chooser(
+      mojo::PendingReceiver<mojom::FileChooser>(std::move(pipe)),
+      run_loop.QuitClosure());
+
+  run_loop.Run();
   return EXIT_SUCCESS;
 }
 

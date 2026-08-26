@@ -418,13 +418,17 @@ interface FileReader {
 // file to download to the client machine using a file picker dialog.
 // |filepath| is populated if the user selected a file from the dialog,
 // otherwise |error| indicates why the operation failed.
-// This message is serialized in a child process which is running in the current
-// user context, sent over STDIO as a stream of bytes, then deserialized in the
-// parent process which is the high-privilege desktop integration process.
 [EnableIf=is_win]
 union FileChooserResult {
   mojo_base.mojom.FilePath filepath;
   FileTransferError error;
+};
+
+// Interface implemented by the low-privilege file chooser child process.
+[EnableIf=is_win]
+interface FileChooser {
+  // Displays the open-file dialog and returns the user's selection or an error.
+  OpenFile() => (FileChooserResult result);
 };
 
 // Error information for file transfer operations.
