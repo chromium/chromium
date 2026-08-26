@@ -223,7 +223,6 @@ class GlicPasswordChangeActuatorTest : public ChromeRenderViewHostTestHarness {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
         std::make_unique<FakeProfileManager>(temp_dir_.GetPath()));
-    glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
     ChromeRenderViewHostTestHarness::SetUp();
 
     tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
@@ -284,7 +283,6 @@ class GlicPasswordChangeActuatorTest : public ChromeRenderViewHostTestHarness {
     web_contents()->SetDelegate(nullptr);
     ChromeRenderViewHostTestHarness::TearDown();
     TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
-    glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
   }
 
   std::unique_ptr<KeyedService> CreateMockGlicService(
@@ -347,6 +345,8 @@ class GlicPasswordChangeActuatorTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting
+      scoped_glic_bypass_;
   base::ScopedTempDir temp_dir_;
   autofill::test::AutofillUnitTestEnvironment autofill_environment_{
       {.disable_server_communication = true}};

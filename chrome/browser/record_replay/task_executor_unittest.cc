@@ -75,13 +75,8 @@ MATCHER_P2(HasPromptAndTargetTab, expected_prompt, expected_tab, "") {
 
 class TaskExecutorTest : public testing::Test {
  public:
-  TaskExecutorTest() : profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
-  }
-
-  ~TaskExecutorTest() override {
-    glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
-  }
+  TaskExecutorTest() : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+  ~TaskExecutorTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
@@ -123,6 +118,8 @@ class TaskExecutorTest : public testing::Test {
   void ClearMockService() { mock_service_ = nullptr; }
 
  private:
+  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting
+      scoped_glic_bypass_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   glic::GlicProfileManager glic_profile_manager_;
