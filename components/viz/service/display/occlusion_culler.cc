@@ -349,10 +349,9 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
       continue;
     }
 
-    auto quad_list_end = pass->quad_list.end();
     cc::Region occlusion_in_quad_content_space;
 
-    for (auto quad = pass->quad_list.begin(); quad != quad_list_end;) {
+    for (auto quad = pass->quad_list.begin(); quad != pass->quad_list.end();) {
       // Sanity check: we should not have a Compositor
       // CompositorRenderPassDrawQuad here.
       DCHECK_NE(quad->material, DrawQuad::Material::kCompositorRenderPass);

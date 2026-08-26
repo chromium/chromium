@@ -508,6 +508,16 @@ ListContainerHelper::Iterator::Iterator(CharAllocator* container,
 
 ListContainerHelper::Iterator::~Iterator() = default;
 
+bool ListContainerHelper::Iterator::operator==(
+    const ListContainerHelper::Iterator& other) const {
+  return index_ == other.index_ && PositionInCharAllocator::operator==(other);
+}
+
+bool ListContainerHelper::Iterator::operator!=(
+    const ListContainerHelper::Iterator& other) const {
+  return !(*this == other);
+}
+
 size_t ListContainerHelper::Iterator::index() const {
   return index_;
 }

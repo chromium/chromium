@@ -77,6 +77,9 @@ class CC_BASE_EXPORT ListContainerHelper final {
              size_t index);
     ~Iterator();
 
+    bool operator==(const Iterator& other) const;
+    bool operator!=(const Iterator& other) const;
+
     size_t index() const;
 
    protected:
