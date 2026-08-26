@@ -43,8 +43,7 @@ void MemorySaverBubbleController::InvokeAction(BrowserWindowInterface* bwi,
   CHECK(item == action_item_);
 
   // Open the dialog bubble.
-  BrowserView* browser_view =
-      BrowserView::GetBrowserViewForBrowser(bwi->GetBrowserForMigrationOnly());
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(bwi);
   CHECK_NE(browser_view, nullptr);
   auto anchor =
       browser_view->toolbar_button_provider()->GetBubbleAnchor(std::nullopt);
