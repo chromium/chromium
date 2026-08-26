@@ -1701,32 +1701,11 @@ public class ManageSyncSettingsTest {
 
     @Test
     @SmallTest
-    public void testSearchReadingList_signedIn() {
-        mSettingsSearchTestRule.startSettingsActivity();
-        mSyncTestRule.setUpAccountAndSignInForTesting();
-
-        onView(withId(R.id.search_box)).perform(click());
-        onView(withId(R.id.search_query)).perform(replaceText("reading list"));
-
-        onViewWaiting(withText(R.string.account_section_reading_list_toggle)).perform(click());
-
-        onView(
-                        allOf(
-                                withText(R.string.account_settings_title),
-                                withParent(withId(R.id.action_bar))))
-                .check(matches(isDisplayed()));
-
-        onView(highlighted(withText(R.string.account_section_reading_list_toggle)))
-                .check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
-    public void testSearchReadingList_signedOut() {
+    public void testSearchHistoryAndTabs_signedOut() {
         mSettingsSearchTestRule.startSettingsActivity();
 
         onView(withId(R.id.search_box)).perform(click());
-        onView(withId(R.id.search_query)).perform(replaceText("reading list"));
+        onView(withId(R.id.search_query)).perform(replaceText("history and tabs"));
 
         onViewWaiting(withText(R.string.search_in_settings_no_match)).check(matches(isDisplayed()));
     }
