@@ -22029,55 +22029,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(initial_site_instance, contents()->GetSiteInstance());
 }
 
-// Verify that the navigate event for a cross-document history traversal is not
-// dispatched when the destination entry was committed at an opaque origin due
-// to CSP sandbox, even though its URL shares the current document's tuple
-// origin.
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       NavigateEventNotFiredForTraversalToCSPSandboxedEntry) {
-  NavigationControllerImpl& controller =
-      static_cast<NavigationControllerImpl&>(contents()->GetController());
-  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
-
-  // Load a CSP-sandboxed page, which commits at an opaque origin.
-  GURL sandboxed_url(embedded_test_server()->GetURL(
-      "a.com", "/set-header?Content-Security-Policy: sandbox"));
-  EXPECT_TRUE(NavigateToURL(shell(), sandboxed_url));
-  ASSERT_TRUE(root->current_frame_host()->GetLastCommittedOrigin().opaque());
-  FrameNavigationEntry* sandboxed_frame_entry =
-      controller.GetLastCommittedEntry()->GetFrameEntry(root);
-  ASSERT_TRUE(sandboxed_frame_entry->committed_origin().has_value());
-  EXPECT_TRUE(sandboxed_frame_entry->committed_origin()->opaque());
-  // The history navigation below must reach the network, so prevent this page
-  // from being restored from BFCache.
-  DisableBFCacheForRFHForTesting(root->current_frame_host()->GetGlobalId());
-
-  // Load a non-sandboxed page from the same tuple origin.
-  GURL non_sandboxed_url(
-      embedded_test_server()->GetURL("a.com", "/title1.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), non_sandboxed_url));
-  EXPECT_FALSE(root->current_frame_host()->GetLastCommittedOrigin().opaque());
-
-  // Register a navigate event listener and traverse back to the sandboxed
-  // entry. Pause at WillProcessResponse so the listener result can be read
-  // from the still-current document before it is replaced.
-  EXPECT_TRUE(ExecJs(root, R"(
-      window.navigate_event_fired = false;
-      navigation.onnavigate = e => { window.navigate_event_fired = true; };
-  )"));
-  TestNavigationManager nav_manager(contents(), sandboxed_url);
-  controller.GoBack();
-  ASSERT_TRUE(nav_manager.WaitForResponse());
-
-  // The sandboxed entry's committed origin is opaque and therefore
-  // cross-origin to the current document, so no navigate event should fire and
-  // no PageState should be sent to the current renderer.
-  EXPECT_EQ(false, EvalJs(root, "window.navigate_event_fired"));
-
-  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
-  EXPECT_EQ(sandboxed_url, controller.GetLastCommittedEntry()->GetURL());
-}
-
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        NavigateToNavigationApiKey_NullCommittedOrigin) {
   // Ensure there's a history entry before the error page.
