@@ -800,54 +800,50 @@ source_set("unit_tests") {
   ]
 }
 
-# TODO(https://crbug.com/356905053): Gradually include more of these sources
-# in the desktop-android build.
-if (enable_extensions) {
-  fuzzer_test("extension_fuzzer") {
-    sources = [ "extension_fuzzer.cc" ]
-    deps = [
-      ":common",
-      "//base",
-    ]
-  }
+fuzzer_test("extension_fuzzer") {
+  sources = [ "extension_fuzzer.cc" ]
+  deps = [
+    ":common",
+    "//base",
+  ]
+}
 
-  fuzzer_test("extension_manifest_fuzzer") {
-    sources = [ "manifest_fuzzer.cc" ]
-    deps = [
-      ":common",
-      "//base",
-      "//content/public/common",
-      "//content/test:test_support",
-      "//extensions:test_support",
-    ]
-  }
+fuzzer_test("extension_manifest_fuzzer") {
+  sources = [ "manifest_fuzzer.cc" ]
+  deps = [
+    ":common",
+    "//base",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//extensions:test_support",
+  ]
+}
 
-  fuzzer_test("extension_url_pattern_fuzzer") {
-    sources = [ "url_pattern_fuzzer.cc" ]
-    deps = [
-      ":common",
-      "//base",
-    ]
-  }
+fuzzer_test("extension_url_pattern_fuzzer") {
+  sources = [ "url_pattern_fuzzer.cc" ]
+  deps = [
+    ":common",
+    "//base",
+  ]
+}
 
-  fuzzer_test("extension_csp_validator_fuzzer") {
-    sources = [ "csp_validator_fuzzer.cc" ]
-    deps = [
-      ":common",
-      "//base",
-      "//third_party/icu/fuzzers:fuzzer_support",
-    ]
-  }
+fuzzer_test("extension_csp_validator_fuzzer") {
+  sources = [ "csp_validator_fuzzer.cc" ]
+  deps = [
+    ":common",
+    "//base",
+    "//third_party/icu/fuzzers:fuzzer_support",
+  ]
+}
 
-  fuzzer_test("extension_api_scripts_internal_serialization_fuzzer") {
-    sources = [ "api/scripts_internal/script_serialization_fuzzer.cc" ]
-    deps = [
-      ":common",
-      "//base",
-      "//extensions:test_support",
-      "//extensions/common/api",
-      "//third_party/abseil-cpp:absl",
-      "//third_party/icu/fuzzers:fuzzer_support",
-    ]
-  }
+fuzzer_test("extension_api_scripts_internal_serialization_fuzzer") {
+  sources = [ "api/scripts_internal/script_serialization_fuzzer.cc" ]
+  deps = [
+    ":common",
+    "//base",
+    "//extensions:test_support",
+    "//extensions/common/api",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/icu/fuzzers:fuzzer_support",
+  ]
 }

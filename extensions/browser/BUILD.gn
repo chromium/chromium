@@ -1324,37 +1324,33 @@ if (enable_desktop_android_extensions) {
   }
 }
 
-# TODO(https://crbug.com/356905053): Gradually include more of these sources
-# in the desktop-android build.
-if (enable_extensions) {
-  fuzzer_test("extension_file_highlighter_fuzzer") {
-    sources = [ "file_highlighter_fuzzer.cc" ]
-    deps = [
-      ":browser",
-      "//base",
-    ]
-  }
+fuzzer_test("extension_file_highlighter_fuzzer") {
+  sources = [ "file_highlighter_fuzzer.cc" ]
+  deps = [
+    ":browser",
+    "//base",
+  ]
+}
 
-  fuzzer_test("extension_web_request_form_data_parser_fuzzer") {
-    sources = [ "api/web_request/form_data_parser_fuzzer.cc" ]
-    deps = [
-      ":browser",
-      "//base",
-      "//net",
-    ]
-  }
+fuzzer_test("extension_web_request_form_data_parser_fuzzer") {
+  sources = [ "api/web_request/form_data_parser_fuzzer.cc" ]
+  deps = [
+    ":browser",
+    "//base",
+    "//net",
+  ]
+}
 
-  fuzzer_test("extension_declarative_net_request_indexed_rule_fuzzer") {
-    sources = [ "api/declarative_net_request/indexed_rule_fuzzer.cc" ]
-    deps = [
-      ":browser",
-      "//base",
-      "//extensions/common",
-      "//extensions/common/api",
-      "//third_party/abseil-cpp:absl",
-      "//url",
-    ]
-  }
+fuzzer_test("extension_declarative_net_request_indexed_rule_fuzzer") {
+  sources = [ "api/declarative_net_request/indexed_rule_fuzzer.cc" ]
+  deps = [
+    ":browser",
+    "//base",
+    "//extensions/common",
+    "//extensions/common/api",
+    "//third_party/abseil-cpp:absl",
+    "//url",
+  ]
 }
 
 proto_library("cws_item_service_proto") {
