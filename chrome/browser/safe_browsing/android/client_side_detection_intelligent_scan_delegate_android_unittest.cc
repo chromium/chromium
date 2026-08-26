@@ -15,7 +15,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
-#include "components/optimization_guide/core/model_execution/test/fake_model_broker.h"
+#include "components/optimization_guide/core/model_execution/test/fake_model_broker_android.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/core/model_execution/test/substitution_builder.h"
@@ -34,7 +34,7 @@ namespace safe_browsing {
 namespace {
 using base::test::EqualsProto;
 using optimization_guide::FakeAdaptationAsset;
-using optimization_guide::FakeModelBroker;
+using optimization_guide::FakeModelBrokerAndroid;
 using optimization_guide::proto::ModelExecutionFeature;
 using optimization_guide::proto::OnDeviceModelExecutionFeatureConfig;
 using ::testing::_;
@@ -97,13 +97,13 @@ class ClientSideDetectionIntelligentScanDelegateAndroidTestBase
       std::string response) {
     SetEnhancedProtectionPrefForTests(&pref_service_,
                                       is_enhanced_protection_enabled);
-    fake_broker_ =
-        std::make_unique<FakeModelBroker>(FakeModelBroker::Options{});
+    fake_broker_ = std::make_unique<FakeModelBrokerAndroid>(
+        FakeModelBrokerAndroid::Options{});
     if (asset_feature ==
         ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION) {
       fake_broker_->UpdateModelAdaptation(fake_asset_);
     }
-    fake_broker_->settings().set_execute_result({response});
+    fake_broker_->java_helper().settings().SetExecuteResult({response});
     auto model_broker_client =
         std::make_unique<optimization_guide::ModelBrokerClient>(
             fake_broker_->BindAndPassRemote(), nullptr);
@@ -118,7 +118,7 @@ class ClientSideDetectionIntelligentScanDelegateAndroidTestBase
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   FakeAdaptationAsset fake_asset_{{.config = FeatureConfig()}};
-  std::unique_ptr<FakeModelBroker> fake_broker_;
+  std::unique_ptr<FakeModelBrokerAndroid> fake_broker_;
   NiceMock<optimization_guide::MockRemoteModelExecutor> remote_model_executor_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<ClientSideDetectionIntelligentScanDelegateAndroid> delegate_;
@@ -772,7 +772,7 @@ TEST_F(
   // Create delegate without providing the model.
   CreateDelegate(/*is_enhanced_protection_enabled=*/true,
                  ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST);
-  fake_broker_->settings().set_execute_result(
+  fake_broker_->java_helper().settings().SetExecuteResult(
       {"{\"brand\": \"test_brand\", \"intent\": \"test_intent\"}"});
 
   base::test::TestFuture<IntelligentScanResult> future1;
@@ -811,7 +811,7 @@ TEST_F(
   // Create delegate without providing the model.
   CreateDelegate(/*is_enhanced_protection_enabled=*/true,
                  ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST);
-  fake_broker_->settings().set_execute_result(
+  fake_broker_->java_helper().settings().SetExecuteResult(
       {"{\"brand\": \"test_brand\", \"intent\": \"test_intent\"}"});
 
   base::test::TestFuture<IntelligentScanResult> future1;
