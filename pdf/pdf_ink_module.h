@@ -298,16 +298,16 @@ class PdfInkModule {
   // Event handlers. Returns whether the event was handled or not.
   bool OnKeyDown(const blink::WebKeyboardEvent& event);
   bool OnMouseDown(const blink::WebMouseEvent& event);
-  bool OnMouseUp(const blink::WebMouseEvent& event);
   bool OnMouseMove(const blink::WebMouseEvent& event);
+  bool OnMouseUp(const blink::WebMouseEvent& event);
   bool OnTouchStart(const blink::WebTouchEvent& event);
-  bool OnTouchEnd(const blink::WebTouchEvent& event);
   bool OnTouchMove(const blink::WebTouchEvent& event);
+  bool OnTouchEnd(const blink::WebTouchEvent& event);
 
   // Dedicated handlers for eraser tip events from stylus devices.
   bool OnEraserTipTouchStart(const blink::WebTouchEvent& event);
-  bool OnEraserTipTouchEnd(const blink::WebTouchEvent& event);
   bool OnEraserTipTouchMove(const blink::WebTouchEvent& event);
+  bool OnEraserTipTouchEnd(const blink::WebTouchEvent& event);
 
   // Helper for event handlers above that deals with potentially missing events.
   // Can only be called when is_drawing_stroke() returns true.

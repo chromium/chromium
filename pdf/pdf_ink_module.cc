@@ -521,26 +521,6 @@ bool PdfInkModule::OnMouseDown(const blink::WebMouseEvent& event) {
                      /*properties=*/nullptr);
 }
 
-bool PdfInkModule::OnMouseUp(const blink::WebMouseEvent& event) {
-  CHECK_EQ(InkAnnotationMode::kDraw, mode_);
-
-  if (event.button != blink::WebPointerProperties::Button::kLeft) {
-    return false;
-  }
-
-  gfx::PointF position = event.PositionInWidget();
-  if (is_text_highlighting()) {
-    return FinishTextHighlight(position, /*is_multi_click=*/false,
-                               ink::StrokeInput::ToolType::kMouse);
-  }
-
-  return is_drawing_stroke()
-             ? FinishStroke(position, event.TimeStamp(),
-                            ink::StrokeInput::ToolType::kMouse,
-                            /*properties=*/nullptr)
-             : FinishEraseStroke(position, ink::StrokeInput::ToolType::kMouse);
-}
-
 bool PdfInkModule::OnMouseMove(const blink::WebMouseEvent& event) {
   CHECK_EQ(InkAnnotationMode::kDraw, mode_);
 
@@ -606,38 +586,24 @@ bool PdfInkModule::OnMouseMove(const blink::WebMouseEvent& event) {
       state.input_last_event_position.value(), base::TimeTicks::Now()));
 }
 
-bool PdfInkModule::OnEraserTipTouchStart(const blink::WebTouchEvent& event) {
+bool PdfInkModule::OnMouseUp(const blink::WebMouseEvent& event) {
   CHECK_EQ(InkAnnotationMode::kDraw, mode_);
-  CHECK_EQ(event.touches_length, 1u);
 
-  constexpr auto tool_type = ink::StrokeInput::ToolType::kStylus;
-  MaybeRecordPenInput(tool_type);
-
-  const blink::WebTouchPoint& touch_point = event.touches[0];
-  gfx::PointF position = touch_point.PositionInWidget();
-
-  // Finish any in-progress stroke or text highlight before switching to erase.
-  if (is_drawing_stroke()) {
-    saved_brush_type_for_eraser_tip_ = drawing_stroke_state().brush_type;
-    DrawingStrokeState& state = drawing_stroke_state();
-    if (state.start_time.has_value()) {
-      CHECK(state.input_last_event.has_value());
-      const EventDetails& input_last_event = state.input_last_event.value();
-      FinishStroke(input_last_event.position, input_last_event.timestamp,
-                   input_last_event.tool_type, /*properties=*/nullptr);
-    }
-  } else if (is_text_highlighting()) {
-    saved_brush_type_for_eraser_tip_ = PdfInkBrush::Type::kHighlighter;
-    const EventDetails& input_last_event =
-        text_highlight_state().input_last_event;
-    FinishTextHighlight(input_last_event.position, /*is_multi_click=*/false,
-                        input_last_event.tool_type);
+  if (event.button != blink::WebPointerProperties::Button::kLeft) {
+    return false;
   }
 
-  if (!is_erasing_stroke()) {
-    current_tool_state_.emplace<EraserState>();
+  gfx::PointF position = event.PositionInWidget();
+  if (is_text_highlighting()) {
+    return FinishTextHighlight(position, /*is_multi_click=*/false,
+                               ink::StrokeInput::ToolType::kMouse);
   }
-  return StartEraseStroke(position, tool_type);
+
+  return is_drawing_stroke()
+             ? FinishStroke(position, event.TimeStamp(),
+                            ink::StrokeInput::ToolType::kMouse,
+                            /*properties=*/nullptr)
+             : FinishEraseStroke(position, ink::StrokeInput::ToolType::kMouse);
 }
 
 bool PdfInkModule::OnTouchStart(const blink::WebTouchEvent& event) {
@@ -676,27 +642,28 @@ bool PdfInkModule::OnTouchStart(const blink::WebTouchEvent& event) {
   return StartStroke(position, event.TimeStamp(), tool_type, &touch_point);
 }
 
-bool PdfInkModule::OnEraserTipTouchEnd(const blink::WebTouchEvent& event) {
+bool PdfInkModule::OnTouchMove(const blink::WebTouchEvent& event) {
   CHECK_EQ(InkAnnotationMode::kDraw, mode_);
-  CHECK_EQ(event.touches_length, 1u);
 
-  constexpr auto tool_type = ink::StrokeInput::ToolType::kStylus;
+  if (event.touches_length != 1) {
+    return false;
+  }
+
+  ink::StrokeInput::ToolType tool_type = GetToolTypeFromTouchEvent(event);
   MaybeRecordPenInput(tool_type);
+  if (ShouldIgnoreTouchInput(tool_type)) {
+    return false;
+  }
 
   const blink::WebTouchPoint& touch_point = event.touches[0];
   gfx::PointF position = touch_point.PositionInWidget();
-
-  bool result = FinishEraseStroke(position, tool_type);
-
-  // Restore the previous brush type after eraser tip action completes.
-  if (saved_brush_type_for_eraser_tip_.has_value()) {
-    current_tool_state_.emplace<DrawingStrokeState>();
-    drawing_stroke_state().brush_type =
-        saved_brush_type_for_eraser_tip_.value();
-    saved_brush_type_for_eraser_tip_.reset();
-    MaybeSetCursor();
+  if (is_text_highlighting()) {
+    return ContinueTextHighlight(position);
   }
-  return result;
+  if (is_drawing_stroke()) {
+    return ContinueStroke(position, event.TimeStamp(), tool_type, &touch_point);
+  }
+  return ContinueEraseStroke(position, tool_type);
 }
 
 bool PdfInkModule::OnTouchEnd(const blink::WebTouchEvent& event) {
@@ -723,6 +690,40 @@ bool PdfInkModule::OnTouchEnd(const blink::WebTouchEvent& event) {
   return FinishEraseStroke(position, tool_type);
 }
 
+bool PdfInkModule::OnEraserTipTouchStart(const blink::WebTouchEvent& event) {
+  CHECK_EQ(InkAnnotationMode::kDraw, mode_);
+  CHECK_EQ(event.touches_length, 1u);
+
+  constexpr auto tool_type = ink::StrokeInput::ToolType::kStylus;
+  MaybeRecordPenInput(tool_type);
+
+  const blink::WebTouchPoint& touch_point = event.touches[0];
+  gfx::PointF position = touch_point.PositionInWidget();
+
+  // Finish any in-progress stroke or text highlight before switching to erase.
+  if (is_drawing_stroke()) {
+    saved_brush_type_for_eraser_tip_ = drawing_stroke_state().brush_type;
+    DrawingStrokeState& state = drawing_stroke_state();
+    if (state.start_time.has_value()) {
+      CHECK(state.input_last_event.has_value());
+      const EventDetails& input_last_event = state.input_last_event.value();
+      FinishStroke(input_last_event.position, input_last_event.timestamp,
+                   input_last_event.tool_type, /*properties=*/nullptr);
+    }
+  } else if (is_text_highlighting()) {
+    saved_brush_type_for_eraser_tip_ = PdfInkBrush::Type::kHighlighter;
+    const EventDetails& input_last_event =
+        text_highlight_state().input_last_event;
+    FinishTextHighlight(input_last_event.position, /*is_multi_click=*/false,
+                        input_last_event.tool_type);
+  }
+
+  if (!is_erasing_stroke()) {
+    current_tool_state_.emplace<EraserState>();
+  }
+  return StartEraseStroke(position, tool_type);
+}
+
 bool PdfInkModule::OnEraserTipTouchMove(const blink::WebTouchEvent& event) {
   CHECK_EQ(InkAnnotationMode::kDraw, mode_);
   CHECK_EQ(event.touches_length, 1u);
@@ -738,28 +739,27 @@ bool PdfInkModule::OnEraserTipTouchMove(const blink::WebTouchEvent& event) {
   return false;
 }
 
-bool PdfInkModule::OnTouchMove(const blink::WebTouchEvent& event) {
+bool PdfInkModule::OnEraserTipTouchEnd(const blink::WebTouchEvent& event) {
   CHECK_EQ(InkAnnotationMode::kDraw, mode_);
+  CHECK_EQ(event.touches_length, 1u);
 
-  if (event.touches_length != 1) {
-    return false;
-  }
-
-  ink::StrokeInput::ToolType tool_type = GetToolTypeFromTouchEvent(event);
+  constexpr auto tool_type = ink::StrokeInput::ToolType::kStylus;
   MaybeRecordPenInput(tool_type);
-  if (ShouldIgnoreTouchInput(tool_type)) {
-    return false;
-  }
 
   const blink::WebTouchPoint& touch_point = event.touches[0];
   gfx::PointF position = touch_point.PositionInWidget();
-  if (is_text_highlighting()) {
-    return ContinueTextHighlight(position);
+
+  bool result = FinishEraseStroke(position, tool_type);
+
+  // Restore the previous brush type after eraser tip action completes.
+  if (saved_brush_type_for_eraser_tip_.has_value()) {
+    current_tool_state_.emplace<DrawingStrokeState>();
+    drawing_stroke_state().brush_type =
+        saved_brush_type_for_eraser_tip_.value();
+    saved_brush_type_for_eraser_tip_.reset();
+    MaybeSetCursor();
   }
-  if (is_drawing_stroke()) {
-    return ContinueStroke(position, event.TimeStamp(), tool_type, &touch_point);
-  }
-  return ContinueEraseStroke(position, tool_type);
+  return result;
 }
 
 void PdfInkModule::MaybeFinishStrokeForMissingMouseUpEvent() {
