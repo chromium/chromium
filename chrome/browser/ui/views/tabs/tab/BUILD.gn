@@ -69,6 +69,7 @@ source_set("impl") {
     "//chrome/browser/ui/views:dotted_icon",
     "//chrome/browser/ui/views/frame",
     "//chrome/browser/ui/views/permissions/chip",
+    "//chrome/browser/ui/views/tabs:base",
     "//chrome/browser/ui/views/tabs/hovercard",
     "//chrome/browser/ui/window_metadata",
     "//chrome/common",

@@ -28,6 +28,7 @@ source_set("dragging") {
     ":tab_drag_target",
     "//base",
     "//chrome/browser/ui/views",
+    "//chrome/browser/ui/views/tabs:base",
     "//components/saved_tab_groups/public",
     "//components/tab_groups",
     "//components/webapps/common",

@@ -2647,7 +2647,6 @@ static_library("ui") {
       "views/tabs/tab.h",
       "views/tabs/tab_container.cc",
       "views/tabs/tab_container.h",
-      "views/tabs/tab_container_controller.h",
       "views/tabs/tab_container_impl.cc",
       "views/tabs/tab_container_impl.h",
       "views/tabs/tab_group_header.cc",
@@ -2660,31 +2659,20 @@ static_library("ui") {
       "views/tabs/tab_group_underline.h",
       "views/tabs/tab_group_views.cc",
       "views/tabs/tab_group_views.h",
-      "views/tabs/tab_layout_state.cc",
-      "views/tabs/tab_layout_state.h",
       "views/tabs/tab_slot_animation_delegate.cc",
       "views/tabs/tab_slot_animation_delegate.h",
-      "views/tabs/tab_slot_controller.h",
-      "views/tabs/tab_slot_view.cc",
-      "views/tabs/tab_slot_view.h",
       "views/tabs/tab_strip.cc",
       "views/tabs/tab_strip.h",
       "views/tabs/tab_strip_action_container.cc",
       "views/tabs/tab_strip_action_container.h",
       "views/tabs/tab_strip_control_button.cc",
       "views/tabs/tab_strip_control_button.h",
-      "views/tabs/tab_strip_controller.h",
-      "views/tabs/tab_strip_layout.cc",
-      "views/tabs/tab_strip_layout.h",
       "views/tabs/tab_strip_layout_helper.cc",
       "views/tabs/tab_strip_layout_helper.h",
-      "views/tabs/tab_strip_layout_types.h",
       "views/tabs/tab_strip_nudge_button.cc",
       "views/tabs/tab_strip_nudge_button.h",
       "views/tabs/tab_style_views.cc",
       "views/tabs/tab_style_views.h",
-      "views/tabs/tab_width_constraints.cc",
-      "views/tabs/tab_width_constraints.h",
       "views/tabs/vertical_tab_style_views.cc",
       "views/tabs/vertical_tab_style_views.h",
       "views/tabs/z_orderable_tab_container_element.cc",
@@ -2945,6 +2933,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/storage:impl",
       "//chrome/browser/ui/views/tab_contents",
       "//chrome/browser/ui/views/tab_sharing",
+      "//chrome/browser/ui/views/tabs:base",
+      "//chrome/browser/ui/views/tabs:base_impl",
       "//chrome/browser/ui/views/tabs/common",
       "//chrome/browser/ui/views/tabs/dragging",
       "//chrome/browser/ui/views/tabs/dragging:impl",
@@ -3214,7 +3204,6 @@ static_library("ui") {
       # - c/b/ui/views/frame/themed_background.h
       # - c/b/ui/views/frame/vertical_tab_strip_region_view.h
       # - c/b/ui/views/tabs/tab_group_style.h
-      # - c/b/ui/views/tabs/tab_slot_view.h
       # - c/b/ui/views/tabs/tab_style_views.h
       # - c/b/ui/views/tabs/vertical_tab_style_views.h
       "//chrome/browser/ui/views/tabs/common:impl",
@@ -3223,7 +3212,6 @@ static_library("ui") {
       # following headers get componentized:
       # - c/b/ui/views/frame/browser_view.h
       # - c/b/ui/views/tabs/tab.h
-      # - c/b/ui/views/tabs/tab_slot_controller.h
       "//chrome/browser/ui/views/tabs/tab:impl",
 
       # TODO(crbug.com/451609048): Remove this circular dependency when the
@@ -3231,14 +3219,12 @@ static_library("ui") {
       # - c/b/ui/views/tabs/tab_strip_control_button.h
       "//chrome/browser/ui/views/tabs/horizontal",
 
-      # TODO(crbug.com/451609048): Remove this circular dependency when the
-      # following header gets componentized:
-      # - c/b/ui/views/tabs/tab_slot_controller.h
+      # TODO(crbug.com/451609048): Remove this circular dependency - no
+      # blockers.
       "//chrome/browser/ui/views/tabs/hovercard",
 
-      # TODO(crbug.com/451609048): Remove this circular dependency when the
-      # following header gets componentized:
-      # - c/b/ui/views/tabs/tab_slot_view.h
+      # TODO(crbug.com/451609048): Remove this circular dependency - no
+      # blockers.
       "//chrome/browser/ui/views/tabs/dragging",
 
       # TODO(crbug.com/451609048): Remove this circular dependency when the
@@ -3246,7 +3232,6 @@ static_library("ui") {
       # - c/b/ui/browser_commands.h
       # - c/b/ui/views/frame/browser_view.h
       # - c/b/ui/views/tabs/tab.h
-      # - c/b/ui/views/tabs/tab_slot_view.h
       # - c/b/ui/views/tabs/tab_strip.h
       "//chrome/browser/ui/views/tabs/dragging:impl",
 
@@ -3272,7 +3257,6 @@ static_library("ui") {
       # - c/b/ui/views/frame/themed_background.h
       # - c/b/ui/views/frame/vertical_tab_strip_region_view.h
       # - c/b/ui/views/tabs/new_tab_button.h
-      # - c/b/ui/views/tabs/tab_slot_view.h
       "//chrome/browser/ui/views/tabs/vertical:impl",
 
       # TODO(crbug.com/512979192): Remove this circular dependency when the

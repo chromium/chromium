@@ -1,0 +1,53 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(toolkit_views)
+
+source_set("base") {
+  sources = [
+    "tab_container_controller.h",
+    "tab_layout_state.h",
+    "tab_slot_controller.h",
+    "tab_slot_view.h",
+    "tab_strip_controller.h",
+    "tab_strip_layout.h",
+    "tab_strip_layout_types.h",
+    "tab_width_constraints.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/views/tabs/shared",
+    "//components/split_tabs",
+    "//components/tab_groups",
+    "//skia",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/gfx/geometry",
+    "//ui/gfx/range",
+    "//ui/views",
+  ]
+}
+
+source_set("base_impl") {
+  sources = [
+    "tab_layout_state.cc",
+    "tab_slot_view.cc",
+    "tab_strip_layout.cc",
+    "tab_width_constraints.cc",
+  ]
+
+  deps = [
+    ":base",
+    "//chrome/browser/ui/tabs",
+    "//components/split_tabs",
+    "//ui/base/metadata",
+    "//ui/gfx/animation",
+    "//ui/gfx/geometry",
+  ]
+}
