@@ -12,16 +12,16 @@ include_rules = [
   # And any browser dependencies required for a ProfileKeyedService.
   "+chrome/browser/profiles",
 
-  # Required for getting a `signin::IdentityManager`.
-  "+chrome/browser/signin",
-
   # Required for getting the feedback dialog UI used for Scanner.
   "+chrome/browser/ui/webui/ash/scanner_feedback_dialog",
 ]
 
 specific_include_rules = {
-  # Allow ProfileKeyedServiceFactory to depend on browser_process for now.
+  # Allow the ProfileKeyedServiceFactory to depend on browser_process and the
+  # IdentityManagerFactory for now; the service itself only takes the resulting
+  # signin::IdentityManager via its constructor.
   "scanner_keyed_service_factory\\.cc": [
     "+chrome/browser/browser_process.h",
+    "+chrome/browser/signin/identity_manager_factory.h",
   ],
 }
