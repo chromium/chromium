@@ -6,6 +6,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -107,21 +108,17 @@ TEST_P(BrowserAccessibilityCocoaTest, TestHasDefaultAction) {
   ui::AXTreeUpdate update;
   update.root_id = root.id;
   update.nodes.push_back(root);
-  ui::AXTree tree(update);
 
   TestAXNodeIdDelegate node_id_delegate;
   std::unique_ptr<MockBrowserAccessibilityManagerMac> mock_manager =
       std::make_unique<MockBrowserAccessibilityManagerMac>(
           update, node_id_delegate, nullptr);
 
-  std::unique_ptr<BrowserAccessibility> accessibility =
-      BrowserAccessibility::Create(mock_manager.get(), tree.root());
-
-  ui::AXPlatformNodeMac* platform_node = static_cast<ui::AXPlatformNodeMac*>(
-      AXPlatformNodeMac::GetFromUniqueId(root.id));
+  BrowserAccessibility* accessibility =
+      mock_manager->GetBrowserAccessibilityRoot();
   BrowserAccessibilityCocoa* node =
-      [[BrowserAccessibilityCocoa alloc] initWithObject:accessibility.get()
-                                       withPlatformNode:platform_node];
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          accessibility->GetNativeViewAccessible().Get());
 
   EXPECT_CALL(*mock_manager, DoDefaultAction(::testing::Ref(*accessibility)))
       .Times(1);
@@ -150,21 +147,17 @@ TEST_P(BrowserAccessibilityCocoaTest, TestNoDefaultAction) {
   ui::AXTreeUpdate update;
   update.root_id = root.id;
   update.nodes.push_back(root);
-  ui::AXTree tree(update);
 
   TestAXNodeIdDelegate node_id_delegate;
   std::unique_ptr<MockBrowserAccessibilityManagerMac> mock_manager =
       std::make_unique<MockBrowserAccessibilityManagerMac>(
           update, node_id_delegate, nullptr);
 
-  std::unique_ptr<BrowserAccessibility> accessibility =
-      BrowserAccessibility::Create(mock_manager.get(), tree.root());
-
-  ui::AXPlatformNodeMac* platform_node = static_cast<ui::AXPlatformNodeMac*>(
-      AXPlatformNodeMac::GetFromUniqueId(root.id));
+  BrowserAccessibility* accessibility =
+      mock_manager->GetBrowserAccessibilityRoot();
   BrowserAccessibilityCocoa* node =
-      [[BrowserAccessibilityCocoa alloc] initWithObject:accessibility.get()
-                                       withPlatformNode:platform_node];
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          accessibility->GetNativeViewAccessible().Get());
 
   EXPECT_CALL(*mock_manager, DoDefaultAction(::testing::Ref(*accessibility)))
       .Times(0);
