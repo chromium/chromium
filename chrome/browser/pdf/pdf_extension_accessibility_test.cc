@@ -1157,6 +1157,12 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTreeDumpTest,
              /*expected_subtext=*/"Page 1");
 }
 
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTreeDumpTest,
+                       HeadingHeuristicsVariableSize) {
+  RunPDFTest(FILE_PATH_LITERAL("heading-heuristics-variable-size.pdf"),
+             /*expected_subtext=*/"Page 1");
+}
+
 // This test suite contains simple tests for the PDF OCR feature.
 class PdfOcrUmaTest : public PDFExtensionAccessibilityTest,
                       public ::testing::WithParamInterface<bool> {

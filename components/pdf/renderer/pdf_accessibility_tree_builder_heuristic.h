@@ -114,8 +114,12 @@ class PdfAccessibilityTreeBuilderHeuristic {
   void BuildPageTree();
 
  private:
-  ui::AXNodeData* CreateBlockLevelNode(float font_size,
-                                       const HeuristicThresholds& thresholds);
+  ui::AXNodeData* CreateBlockLevelNode(
+      const chrome_pdf::AccessibilityTextRunInfo& current_run,
+      const chrome_pdf::AccessibilityTextRunInfo* next_run,
+      base::span<const chrome_pdf::AccessibilityCharInfo> current_run_chars,
+      const HeuristicThresholds& thresholds,
+      HeadingClassifier* out_heading_classifier);
 
   void AddTextToAXNode(size_t start_text_run_index,
                        uint32_t end_text_run_index,

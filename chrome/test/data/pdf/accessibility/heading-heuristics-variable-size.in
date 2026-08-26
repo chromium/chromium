@@ -6,7 +6,7 @@
 endobj
 {{object 2 0}} <<
   /Type /Pages
-  /MediaBox [0 0 300 440]
+  /MediaBox [0 0 300 300]
   /Count 1
   /Kids [3 0 R]
 >>
@@ -80,84 +80,66 @@ endobj
 >>
 stream
 BT
+/F1 16 Tf
+1 0 0 1 10 250 Tm
+(Large Font Size Heading) Tj
+ET
+BT
 /F1 10 Tf
-1 0 0 1 10 400 Tm
+1 0 0 1 10 230 Tm
 (This is body text line one.) Tj
 ET
 BT
 /F1 10 Tf
-1 0 0 1 10 380 Tm
+1 0 0 1 10 210 Tm
 (This is body text line two.) Tj
 ET
 BT
-/F1 10 Tf
-1 0 0 1 10 360 Tm
-(This is body text line three.) Tj
+/F4 11 Tf
+1 0 0 1 10 170 Tm
+(Medium Bold Heading) Tj
 ET
 BT
 /F1 10 Tf
-1 0 0 1 10 340 Tm
-(This is body text line four.) Tj
+1 0 0 1 10 150 Tm
+(Body text below medium bold heading.) Tj
 ET
 BT
-/F2 10 Tf
-1 0 0 1 10 300 Tm
-(Heading By Weight) Tj
-ET
-BT
-/F1 10 Tf
-1 0 0 1 10 280 Tm
-(Body text below weight heading.) Tj
-ET
-BT
-/F1 10 Tf
-1 0 0 1 10 260 Tm
-(More body text below weight heading.) Tj
-ET
-BT
-/F3 10 Tf
-1 0 0 1 10 220 Tm
-(Heading By Name) Tj
-ET
-BT
-/F1 10 Tf
-1 0 0 1 10 200 Tm
-(Body text below name heading.) Tj
-ET
-BT
-/F1 10 Tf
-1 0 0 1 10 180 Tm
-(More body text below name heading.) Tj
-ET
-BT
-/F4 10 Tf
-1 0 0 1 10 140 Tm
-(ALL CAPS BOLD HEADING) Tj
+/F3 11 Tf
+1 0 0 1 10 120 Tm
+(Medium Font Name Heading) Tj
 ET
 BT
 /F1 10 Tf
 1 0 0 1 10 100 Tm
-(ALL CAPS NORMAL HEADING) Tj
+(Body text below medium name heading.) Tj
+ET
+BT
+/F1 11 Tf
+1 0 0 1 10 70 Tm
+(MEDIUM ALL CAPS HEADING) Tj
 ET
 BT
 /F1 10 Tf
-1 0 0 1 10 60 Tm
+1 0 0 1 10 50 Tm
 (Body text with ) Tj
-/F4 10 Tf
+/F4 11 Tf
 (inline bold text) Tj
 /F1 10 Tf
 ( in a paragraph.) Tj
 ET
 BT
 /F1 10 Tf
-1 0 0 1 10 40 Tm
+1 0 0 1 10 30 Tm
 (Body text with ) Tj
+/F1 11 Tf
 (INLINE ALL CAPS TEXT) Tj
+/F1 10 Tf
 ( in a paragraph.) Tj
 ET
 BT
 /F1 10 Tf
-1 0 0 1 10 20 Tm
+1 0 0 1 10 10 Tm
 (Trailing body text.) Tj
 ET
 endstream

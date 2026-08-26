@@ -1,0 +1,168 @@
+%PDF-1.7
+% ò¤ô
+1 0 obj <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+2 0 obj <<
+  /Type /Pages
+  /MediaBox [0 0 300 300]
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+3 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 4 0 R % Normal font, Times-Roman
+      /F2 5 0 R % Semi-bold font by weight (600), name: MySemiBoldFont
+      /F3 7 0 R % Font with heading name: Helvetica-Semibold, weight 400
+      /F4 9 0 R % Bold font: MyBoldFont, weight 700
+    >>
+  >>
+  /Contents 11 0 R
+>>
+endobj
+4 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Times-Roman
+>>
+endobj
+5 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /MySemiBoldFont
+  /FontDescriptor 6 0 R
+>>
+endobj
+6 0 obj <<
+  /Type /FontDescriptor
+  /FontName /MySemiBoldFont
+  /FontWeight 600
+  /StemV 80
+  /Flags 0
+>>
+endobj
+7 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Helvetica-Semibold
+  /FontDescriptor 8 0 R
+>>
+endobj
+8 0 obj <<
+  /Type /FontDescriptor
+  /FontName /Helvetica-Semibold
+  /FontWeight 400
+  /Flags 0
+>>
+endobj
+9 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /MyBoldFont
+  /FontDescriptor 10 0 R
+>>
+endobj
+10 0 obj <<
+  /Type /FontDescriptor
+  /FontName /MyBoldFont
+  /FontWeight 700
+  /StemV 120
+  /Flags 0
+>>
+endobj
+11 0 obj <<
+  /Length 831
+>>
+stream
+BT
+/F1 16 Tf
+1 0 0 1 10 250 Tm
+(Large Font Size Heading) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 10 230 Tm
+(This is body text line one.) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 10 210 Tm
+(This is body text line two.) Tj
+ET
+BT
+/F4 11 Tf
+1 0 0 1 10 170 Tm
+(Medium Bold Heading) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 10 150 Tm
+(Body text below medium bold heading.) Tj
+ET
+BT
+/F3 11 Tf
+1 0 0 1 10 120 Tm
+(Medium Font Name Heading) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 10 100 Tm
+(Body text below medium name heading.) Tj
+ET
+BT
+/F1 11 Tf
+1 0 0 1 10 70 Tm
+(MEDIUM ALL CAPS HEADING) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 10 50 Tm
+(Body text with ) Tj
+/F4 11 Tf
+(inline bold text) Tj
+/F1 10 Tf
+( in a paragraph.) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 10 30 Tm
+(Body text with ) Tj
+/F1 11 Tf
+(INLINE ALL CAPS TEXT) Tj
+/F1 10 Tf
+( in a paragraph.) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 10 10 Tm
+(Trailing body text.) Tj
+ET
+endstream
+endobj
+xref
+0 12
+0000000000 65535 f 
+0000000015 00000 n 
+0000000068 00000 n 
+0000000157 00000 n 
+0000000507 00000 n 
+0000000585 00000 n 
+0000000690 00000 n 
+0000000804 00000 n 
+0000000913 00000 n 
+0000001019 00000 n 
+0000001121 00000 n 
+0000001233 00000 n 
+trailer <<
+  /Root 1 0 R
+  /Size 12
+>>
+startxref
+2118
+%%EOF

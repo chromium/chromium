@@ -7,7 +7,7 @@
 endobj
 2 0 obj <<
   /Type /Pages
-  /MediaBox [0 0 300 300]
+  /MediaBox [0 0 300 440]
   /Count 1
   /Kids [3 0 R]
 >>
@@ -58,7 +58,6 @@ endobj
   /Type /FontDescriptor
   /FontName /Helvetica-Semibold
   /FontWeight 400
-  /StemV 80
   /Flags 0
 >>
 endobj
@@ -78,52 +77,88 @@ endobj
 >>
 endobj
 11 0 obj <<
-  /Length 565
+  /Length 1074
 >>
 stream
 BT
 /F1 10 Tf
-1 0 0 1 10 250 Tm
+1 0 0 1 10 400 Tm
 (This is body text line one.) Tj
 ET
 BT
 /F1 10 Tf
-1 0 0 1 10 230 Tm
+1 0 0 1 10 380 Tm
 (This is body text line two.) Tj
 ET
 BT
-/F2 12 Tf
-1 0 0 1 10 190 Tm
+/F1 10 Tf
+1 0 0 1 10 360 Tm
+(This is body text line three.) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 10 340 Tm
+(This is body text line four.) Tj
+ET
+BT
+/F2 10 Tf
+1 0 0 1 10 300 Tm
 (Heading By Weight) Tj
 ET
 BT
 /F1 10 Tf
-1 0 0 1 10 170 Tm
+1 0 0 1 10 280 Tm
 (Body text below weight heading.) Tj
 ET
 BT
-/F3 12 Tf
-1 0 0 1 10 130 Tm
+/F1 10 Tf
+1 0 0 1 10 260 Tm
+(More body text below weight heading.) Tj
+ET
+BT
+/F3 10 Tf
+1 0 0 1 10 220 Tm
 (Heading By Name) Tj
 ET
 BT
 /F1 10 Tf
-1 0 0 1 10 110 Tm
+1 0 0 1 10 200 Tm
 (Body text below name heading.) Tj
 ET
 BT
-/F4 12 Tf
-1 0 0 1 10 70 Tm
+/F1 10 Tf
+1 0 0 1 10 180 Tm
+(More body text below name heading.) Tj
+ET
+BT
+/F4 10 Tf
+1 0 0 1 10 140 Tm
 (ALL CAPS BOLD HEADING) Tj
 ET
 BT
-/F1 12 Tf
-1 0 0 1 10 50 Tm
+/F1 10 Tf
+1 0 0 1 10 100 Tm
 (ALL CAPS NORMAL HEADING) Tj
 ET
 BT
 /F1 10 Tf
-1 0 0 1 10 30 Tm
+1 0 0 1 10 60 Tm
+(Body text with ) Tj
+/F4 10 Tf
+(inline bold text) Tj
+/F1 10 Tf
+( in a paragraph.) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 10 40 Tm
+(Body text with ) Tj
+(INLINE ALL CAPS TEXT) Tj
+( in a paragraph.) Tj
+ET
+BT
+/F1 10 Tf
+1 0 0 1 10 20 Tm
 (Trailing body text.) Tj
 ET
 endstream
@@ -139,13 +174,13 @@ xref
 0000000690 00000 n 
 0000000804 00000 n 
 0000000913 00000 n 
-0000001031 00000 n 
-0000001133 00000 n 
-0000001245 00000 n 
+0000001019 00000 n 
+0000001121 00000 n 
+0000001233 00000 n 
 trailer <<
   /Root 1 0 R
   /Size 12
 >>
 startxref
-1864
+2362
 %%EOF
