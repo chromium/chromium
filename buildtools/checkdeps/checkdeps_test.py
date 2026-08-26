@@ -287,9 +287,12 @@ class CheckDepsTest(unittest.TestCase):
     import sys
 
     with tempfile.TemporaryDirectory() as temp_dir:
+      subprocess.check_call(['git', 'init', '-q', temp_dir])
       deps_path = os.path.join(temp_dir, 'DEPS')
       with open(deps_path, 'w') as f:
-        f.write('include_rules = ["+foo\\."]\n')
+        # Include expressions that trigger a SyntaxWarning in Python 3.11
+        # ("is" with a literal) and Python 3.12+ (invalid escape sequence).
+        f.write('x = (1 is 1)\ninclude_rules = ["+foo\\."]\n')
 
       script_path = os.path.join(
           self.deps_checker.base_directory, 'buildtools', 'checkdeps',
@@ -297,13 +300,19 @@ class CheckDepsTest(unittest.TestCase):
 
       # Run without flag
       res_no_flag = subprocess.run(
-          [sys.executable, script_path, temp_dir],
+          [sys.executable, script_path, '--root', temp_dir],
           capture_output=True, text=True)
 
       # Run with flag
       res_with_flag = subprocess.run(
-          [sys.executable, script_path, '--suppress-syntax-warnings', temp_dir],
+          [sys.executable, script_path, '--root', temp_dir,
+           '--suppress-syntax-warnings'],
           capture_output=True, text=True)
+
+      # Verify that without the flag, the DEPS filename is shown instead of
+      # <string>.
+      self.assertIn(os.path.normcase(deps_path), res_no_flag.stderr)
+      self.assertNotIn('<string>', res_no_flag.stderr)
 
       # Verify that with the flag, there are no SyntaxWarnings.
       self.assertNotIn('SyntaxWarning', res_with_flag.stderr)

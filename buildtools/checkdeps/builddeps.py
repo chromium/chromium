@@ -121,7 +121,8 @@ def _ParseDepsMemoize(dir_path, under_test, verbose):
       os.path.basename(dir_path) == 'checkdeps'):
     try:
       with open(deps_file_path) as file:
-        exec(file.read(), global_scope, local_scope)
+        code = compile(file.read(), os.path.normcase(deps_file_path), 'exec')
+      exec(code, global_scope, local_scope)
     except Exception as e:
       print(' Error reading %s: %s' % (deps_file_path, str(e)))
       raise
