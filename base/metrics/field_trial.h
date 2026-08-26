@@ -284,6 +284,8 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   FRIEND_TEST_ALL_PREFIXES(FieldTrialListTest, ClearParamsFromSharedMemory);
   FRIEND_TEST_ALL_PREFIXES(FieldTrialListTest,
                            TestGetRandomizedFieldTrialCount);
+  FRIEND_TEST_ALL_PREFIXES(FieldTrialListTest,
+                           GetParamsFromSharedMemory_Overflow);
   FRIEND_TEST_ALL_PREFIXES(FieldTrialTest, SetLowAnonymity);
 
   // MATCHER(CompareActiveGroupToFieldTrialMatcher, "")
@@ -668,6 +670,8 @@ class BASE_EXPORT FieldTrialList {
   FRIEND_TEST_ALL_PREFIXES(FieldTrialListTest, CheckReadOnlySharedMemoryRegion);
   FRIEND_TEST_ALL_PREFIXES(FieldTrialListTest,
                            GetActiveFieldTrialGroups_RuntimeOverrides);
+  FRIEND_TEST_ALL_PREFIXES(FieldTrialListTest,
+                           GetParamsFromSharedMemory_Overflow);
   FRIEND_TEST_ALL_PREFIXES(TestFeatureVisitor, FeatureHasParams);
 
   // Required so that |FieldTrialListIncludingLowAnonymity| can expose APIs from

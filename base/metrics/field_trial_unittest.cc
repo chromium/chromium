@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <limits>
 #include <memory>
 #include <set>
 #include <string_view>
@@ -1363,6 +1364,37 @@ TEST_F(FieldTrialListTest, GetActiveFieldTrialGroups_RuntimeOverrides) {
 
   // Clean up.
   base::RuntimeFieldTrialOverrides::GetInstance()->ResetForTesting();
+}
+
+TEST_F(FieldTrialListTest, GetParamsFromSharedMemory_Overflow) {
+  test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithEmptyFeatureAndFieldTrialLists();
+
+  const char* trial_name = "Trial";
+  const char* group_name = "Group";
+  scoped_refptr<FieldTrial> trial =
+      FieldTrialList::CreateFieldTrial(trial_name, group_name);
+  ASSERT_TRUE(trial);
+
+  FieldTrialList::InstantiateFieldTrialAllocatorIfNeeded();
+  FieldTrialList::FieldTrialAllocator* allocator =
+      FieldTrialList::GetInstance()->field_trial_allocator_.get();
+  ASSERT_TRUE(allocator);
+
+  FieldTrial::FieldTrialRef ref = trial->ref_;
+  ASSERT_NE(ref, FieldTrialList::FieldTrialAllocator::kReferenceNull);
+
+  internal::FieldTrialEntry* entry =
+      allocator->GetAsObject<internal::FieldTrialEntry>(ref);
+  ASSERT_TRUE(entry);
+
+  // Set pickle_size to a value that will overflow when added to
+  // sizeof(FieldTrialEntry).
+  entry->pickle_size = std::numeric_limits<uint64_t>::max() - 8;
+
+  FieldTrialParams params;
+  // This should return false and not crash.
+  EXPECT_FALSE(FieldTrialList::GetParamsFromSharedMemory(trial.get(), &params));
 }
 
 TEST_F(FieldTrialTest, TestAllParamsToString) {
