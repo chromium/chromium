@@ -32,9 +32,13 @@ constexpr gfx::NativeViewId kNoWindowId = 0;
 
 TabSharingUIAndroid::TabSharingUIAndroid(
     content::WebContents* capturer_web_contents,
-    const content::DesktopMediaID& media_id)
-    : capturer_web_contents_(capturer_web_contents->GetWeakPtr()),
-      media_id_(media_id) {}
+    const content::DesktopMediaID& media_id,
+    bool app_preferred_current_tab)
+    : capturer_web_contents_(capturer_web_contents
+                                 ? capturer_web_contents->GetWeakPtr()
+                                 : nullptr),
+      media_id_(media_id),
+      app_preferred_current_tab_(app_preferred_current_tab) {}
 
 TabSharingUIAndroid::~TabSharingUIAndroid() {
   StopSharing();
@@ -122,7 +126,8 @@ gfx::NativeViewId TabSharingUIAndroid::OnStarted(
       JNIEnv* env = base::android::AttachCurrentThread();
       java_bridge_ = Java_TabSharingUIBridge_create(
           env, reinterpret_cast<intptr_t>(this), capturer_web_contents_.get(),
-          web_contents);
+          web_contents, !source_callback_.is_null(),
+          app_preferred_current_tab_);
     }
   } else {
     StopSharing();

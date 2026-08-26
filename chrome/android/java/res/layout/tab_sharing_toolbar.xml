@@ -42,16 +42,29 @@ found in the LICENSE file.
             tools:text="Sharing this tab to example.com"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
             android:gravity="center"
             android:textColorLink="@macro/default_text_color_link"
             android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/tab_sharing_share_instead_button"
+            style="@style/TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginEnd="8dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:text="@string/tab_sharing_toolbar_share_this_tab_instead"
+            android:visibility="gone" />
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/tab_sharing_stop_button"
             style="@style/FilledButton"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:layout_marginStart="12dp"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:paddingStart="24dp"

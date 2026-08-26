@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.media;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
@@ -47,7 +49,7 @@ public class TabSharingUIBridgeTest {
         TabSharingUIBridgeJni.setInstanceForTesting(mNativeMock);
         MediaCaptureDevicesDispatcherAndroidJni.setInstanceForTesting(mMediaCaptureJniMock);
         TabSharingUIManager.getInstance().addObserver(mManagerObserver);
-        mBridge = TabSharingUIBridge.create(NATIVE_PTR, mCapturer, mCapturee);
+        mBridge = TabSharingUIBridge.create(NATIVE_PTR, mCapturer, mCapturee, true, false);
     }
 
     @After
@@ -97,5 +99,16 @@ public class TabSharingUIBridgeTest {
         // Simulating capturer destruction should trigger stopSharing().
         observer.webContentsDestroyed();
         verify(mNativeMock).stopSharing(NATIVE_PTR);
+    }
+
+    @Test
+    public void testCapabilityGettersAndPostDestroySafety() {
+        assertTrue(mBridge.isSourceSwitchingSupported());
+        assertFalse(mBridge.appPreferredCurrentTab());
+
+        mBridge.destroy();
+        mBridge.stopSharing();
+        mBridge.changeSource(mCapturee);
+        mBridge = null;
     }
 }

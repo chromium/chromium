@@ -167,6 +167,13 @@ public class MediaCaptureDevicesDispatcherAndroid {
         TabSharingUIManager.getInstance().stopSharingByCapturerTab(webContents);
     }
 
+    public static boolean shouldFilterWebContents(
+            @Nullable WebContents capturer, @Nullable WebContents target) {
+        if (capturer == null || target == null) return true;
+        return MediaCaptureDevicesDispatcherAndroidJni.get()
+                .shouldFilterWebContents(capturer, target);
+    }
+
     @VisibleForTesting
     @NativeMethods
     public interface Natives {
@@ -183,5 +190,9 @@ public class MediaCaptureDevicesDispatcherAndroid {
         void notifyStopped(@JniType("content::WebContents*") WebContents webContents);
 
         void notifyDisplayMediaStopped(@JniType("content::WebContents*") WebContents webContents);
+
+        boolean shouldFilterWebContents(
+                @JniType("content::WebContents*") WebContents capturer,
+                @JniType("content::WebContents*") WebContents target);
     }
 }

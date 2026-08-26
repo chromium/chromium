@@ -32,6 +32,7 @@ public class TabSharingToolbarViewBinderTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Runnable mStopListener;
+    @Mock private Runnable mShareInsteadListener;
 
     private View mView;
     private PropertyModel mModel;
@@ -62,5 +63,30 @@ public class TabSharingToolbarViewBinderTest {
         View stopButton = mView.findViewById(R.id.tab_sharing_stop_button);
         stopButton.performClick();
         verify(mStopListener).run();
+    }
+
+    @Test
+    public void testShareInsteadBinding() {
+        mModel.set(TabSharingToolbarProperties.SHARE_INSTEAD_BUTTON_VISIBLE, true);
+        View shareButton = mView.findViewById(R.id.tab_sharing_share_instead_button);
+        assertEquals(View.VISIBLE, shareButton.getVisibility());
+
+        mModel.set(TabSharingToolbarProperties.SHARE_INSTEAD_CLICK_LISTENER, mShareInsteadListener);
+        shareButton.performClick();
+        verify(mShareInsteadListener).run();
+    }
+
+    @Test
+    public void testPropertiesAndNullListeners() {
+        mModel.set(TabSharingToolbarProperties.SHARE_INSTEAD_BUTTON_VISIBLE, false);
+        View shareButton = mView.findViewById(R.id.tab_sharing_share_instead_button);
+        assertEquals(View.GONE, shareButton.getVisibility());
+
+        mModel.set(TabSharingToolbarProperties.STOP_SHARING_CLICK_LISTENER, null);
+        View stopButton = mView.findViewById(R.id.tab_sharing_stop_button);
+        stopButton.performClick();
+
+        mModel.set(TabSharingToolbarProperties.SHARE_INSTEAD_CLICK_LISTENER, null);
+        shareButton.performClick();
     }
 }

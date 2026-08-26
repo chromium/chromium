@@ -365,8 +365,11 @@ void CreateMediaStreamCaptureIndicatorUI(
   if (base::FeatureList::IsEnabled(features::kUserMediaScreenCapturing) &&
       display_notification &&
       media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) {
-    notification_ui =
-        std::make_unique<TabSharingUIAndroid>(web_contents, media_id);
+    const bool app_preferred_current_tab =
+        video_type ==
+        blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB;
+    notification_ui = std::make_unique<TabSharingUIAndroid>(
+        web_contents, media_id, app_preferred_current_tab);
   }
 #else
   // If required, register to display the notification for stream capture.

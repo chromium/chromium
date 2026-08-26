@@ -15,12 +15,14 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
+import org.chromium.url.GURL;
 
 /** Mediator for the TabSharingToolbar. */
 @NullMarked
@@ -99,13 +101,42 @@ class TabSharingToolbarMediator {
                 new ActivityTabProvider.ActivityTabTabObserver(tabProvider, true) {
                     @Override
                     protected void onObservingDifferentTab(@Nullable Tab tab) {
-                        updateStatus(tab);
+                        updateToolbarForTab(tab);
+                    }
+
+                    @Override
+                    public void onContentChanged(Tab tab) {
+                        updateToolbarForTab(tab);
+                    }
+
+                    @Override
+                    public void onPageLoadFinished(Tab tab, GURL url) {
+                        updateToolbarForTab(tab);
+                    }
+
+                    @Override
+                    public void onUrlUpdated(Tab tab) {
+                        updateToolbarForTab(tab);
                     }
                 };
 
         mModel.set(TabSharingToolbarProperties.STOP_SHARING_CLICK_LISTENER, this::stopSharing);
+        mModel.set(
+                TabSharingToolbarProperties.SHARE_INSTEAD_CLICK_LISTENER,
+                this::changeSourceToCurrentTab);
 
-        updateStatus(mTabProvider.get());
+        updateToolbarForTab(mTabProvider.get());
+    }
+
+    /**
+     * Updates the toolbar status text and the "Share this tab instead" button visibility based on
+     * the currently active tab.
+     *
+     * @param tab The currently active {@link Tab}, or null if no tab is selected.
+     */
+    private void updateToolbarForTab(@Nullable Tab tab) {
+        updateStatus(tab);
+        updateShareInsteadButtonVisibility(tab);
     }
 
     private void updateStatus(@Nullable Tab currentTab) {
@@ -121,6 +152,32 @@ class TabSharingToolbarMediator {
         } else {
             mModel.set(TabSharingToolbarProperties.STATUS_TEXT, mOtherTabsStatus);
         }
+    }
+
+    private void updateShareInsteadButtonVisibility(@Nullable Tab currentTab) {
+        mModel.set(
+                TabSharingToolbarProperties.SHARE_INSTEAD_BUTTON_VISIBLE,
+                shouldShowShareInsteadButton(currentTab));
+    }
+
+    private boolean shouldShowShareInsteadButton(@Nullable Tab currentTab) {
+        if (!mBridge.isSourceSwitchingSupported() || currentTab == null) {
+            return false;
+        }
+
+        WebContents webContents = currentTab.getWebContents();
+        if (webContents == null || webContents == mCapturee) {
+            return false;
+        }
+
+        if (webContents == mCapturer) {
+            // Prevent recursive "infinite mirror" video capture on the capturer tab (e.g. video
+            // meeting) unless the capturing application explicitly requested self-capture via the
+            // preferCurrentTab constraint.
+            return mBridge.appPreferredCurrentTab();
+        }
+
+        return isTabPickable(currentTab);
     }
 
     private ClickableSpan buildClickToNavigateToTabSpan(WebContents webContents) {
@@ -149,6 +206,30 @@ class TabSharingToolbarMediator {
 
     private void stopSharing() {
         mBridge.stopSharing();
+    }
+
+    private void changeSourceToCurrentTab() {
+        if (MediaCaptureDevicesDispatcherAndroid.isSourceSwitchingInProgress(
+                mBridge.getCapturer())) {
+            return;
+        }
+        Tab currentTab = mTabProvider.get();
+        if (currentTab != null && currentTab.getWebContents() != null) {
+            mBridge.changeSource(currentTab.getWebContents());
+        }
+    }
+
+    private boolean isTabPickable(Tab tab) {
+        if (tab.isNativePage() || NativePage.isChromePageUrl(tab.getUrl(), tab.isIncognito())) {
+            return false;
+        }
+        final WebContents webContents = tab.getWebContents();
+        if (webContents == null) {
+            return false;
+        }
+
+        return !MediaCaptureDevicesDispatcherAndroid.shouldFilterWebContents(
+                mBridge.getCapturer(), webContents);
     }
 
     /** Cleans up resources. */

@@ -6447,6 +6447,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TAB_SHARING_TOOLBAR_STOP_SHARING" desc="Text displayed on the button to stop tab sharing.">
         Stop sharing
       </message>
+      <message name="IDS_TAB_SHARING_TOOLBAR_SHARE_THIS_TAB_INSTEAD" desc="Button text to share the current tab instead of the previously shared one.">
+        Share this tab instead
+      </message>
 
       <!-- Sharing Hub -->
       <message name="IDS_SHARING_HUB_STORAGE_DISABLED_TEXT" desc="Text to show when storage permission is disabled.">
