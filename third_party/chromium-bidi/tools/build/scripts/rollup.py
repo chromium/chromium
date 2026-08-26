@@ -49,7 +49,7 @@ def main():
         "--format",
         "iife",
         "--environment",
-        f"GEN_DIR:{args.gen_dir}",
+        f"GEN_DIR:{os.path.abspath(args.gen_dir)}",
     ]
 
     result = subprocess.run(cmd, cwd=repo_root, capture_output=True, text=True)

@@ -25,7 +25,13 @@ template("bidi_foundation_module") {
 
   # First: node runner type-checking (no JS output emit)
   ts_library(_node_type_check_target) {
-    forward_variables_from(invoker, "*", [ "visibility", "deps", "node_es_libs" ])
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "visibility",
+                             "deps",
+                             "node_es_libs",
+                           ])
     if (defined(invoker.deps)) {
       # Node typecheck should reference node typecheck deps
       deps = []
@@ -38,20 +44,25 @@ template("bidi_foundation_module") {
     if (defined(invoker.node_es_libs)) {
       es_libs = invoker.node_es_libs
     } else {
-      es_libs = [ "es2023" ] # No DOM libs for pure Node runtimes
+      es_libs = [ "es2023" ]  # No DOM libs for pure Node runtimes
     }
     no_emit = true
   }
 
   # Second: main browser compilation target
   ts_library(target_name) {
-    forward_variables_from(invoker, "*", [ "visibility", "node_es_libs" ])
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "visibility",
+                             "node_es_libs",
+                           ])
 
     es_target = "es2023"
     es_libs = [
       "dom",
       "dom.iterable",
-      "es2023", # Include full standard ES2023 library types
+      "es2023",  # Include full standard ES2023 library types
     ]
 
     visibility = [ ":*" ]
@@ -68,29 +79,32 @@ template("bidi_foundation_module") {
 template("bidi_bundle") {
   action(target_name) {
     script = "../tools/build/scripts/rollup.py"
-    
-    forward_variables_from(invoker, [
-      "entrypoint",
-      "deps",
-      "output_file",
-    ])
-    
+
+    forward_variables_from(invoker,
+                           [
+                             "entrypoint",
+                             "deps",
+                             "output_file",
+                           ])
+
     inputs = [
       "../rollup.config.mjs",
       entrypoint,
     ]
-    
-    outputs = [
-      output_file
-    ]
+
+    outputs = [ output_file ]
 
     data = outputs
-    
+
     args = [
-      "--config", rebase_path("../rollup.config.mjs", root_build_dir),
-      "--entrypoint", rebase_path(entrypoint, root_build_dir),
-      "--output", rebase_path(output_file, root_build_dir),
-      "--gen-dir", rebase_path(root_gen_dir, "//"),
+      "--config",
+      rebase_path("../rollup.config.mjs", root_build_dir),
+      "--entrypoint",
+      rebase_path(entrypoint, root_build_dir),
+      "--output",
+      rebase_path(output_file, root_build_dir),
+      "--gen-dir",
+      rebase_path(root_gen_dir, root_build_dir),
     ]
   }
 }
