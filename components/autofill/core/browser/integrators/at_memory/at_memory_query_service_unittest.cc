@@ -2373,14 +2373,41 @@ TEST_F(AtMemoryQueryServiceTest, LogsFetchPlanWhenReceived) {
   response.set_query_classification(
       AtMemoryQueryResponse::QUERY_CLASSIFICATION_AT_MEMORY);
   AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
-  AutofillFetchSpecification* spec = plan->add_fetch_specifications();
-  spec->set_data_type(personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
+
+  AutofillFetchSpecification* spec1 = plan->add_fetch_specifications();
+  spec1->set_data_type(personal_context::proto::MEMORY_DATA_TYPE_VEHICLE_MAKE);
+  AutofillFetchSpecification::Filter* filter1 = spec1->add_filters();
+  filter1->add_data_types(
+      personal_context::proto::MEMORY_DATA_TYPE_VEHICLE_MAKE);
+  filter1->mutable_string_filter()->set_value("BMW");
+  filter1->mutable_string_filter()->set_mode(
+      personal_context::proto::AutofillFetchSpecification::StringFilter::
+          STRING_FILTER_MODE_EXACT);
+
+  AutofillFetchSpecification* spec2 = plan->add_fetch_specifications();
+  spec2->set_data_type(
+      personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_NUMBER);
+  AutofillFetchSpecification::Filter* filter2 = spec2->add_filters();
+  filter2->add_data_types(
+      personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_NUMBER);
+  filter2->mutable_string_filter()->set_value("ABC");
+  filter2->mutable_string_filter()->set_mode(
+      personal_context::proto::AutofillFetchSpecification::StringFilter::
+          STRING_FILTER_MODE_SUBSTRING);
 
   StubFetchContextResponse(std::move(response));
 
   EXPECT_CALL(receiver, LogEntry).WillOnce([](const base::DictValue& entry) {
-    EXPECT_THAT(entry.DebugString(),
-                HasSubstr("Evaluating Autofill fetch plan"));
+    const std::string log_str = entry.DebugString();
+    EXPECT_THAT(log_str, HasSubstr("Evaluating Autofill fetch plan"));
+    EXPECT_THAT(log_str, HasSubstr("VehicleMake"));
+    EXPECT_THAT(log_str, HasSubstr("BMW"));
+    EXPECT_THAT(log_str, HasSubstr("EXACT"));
+
+    EXPECT_THAT(log_str, HasSubstr("PassportNumber"));
+    EXPECT_THAT(log_str, HasSubstr("\"data-pii\": \"true\""));
+    EXPECT_THAT(log_str, HasSubstr("\"value\": \"ABC\""));
+    EXPECT_THAT(log_str, HasSubstr("SUBSTRING"));
   });
 
   TestFuture<MemorySearchResults> future;

@@ -80,6 +80,9 @@ MemoryDataType AttributeTypeToMemoryDataType(AttributeType type);
 // Returns the localized name of the entry type.
 std::u16string GetMemoryDataTypeNameForI18n(MemoryDataType type);
 
+// Returns a human-readable string representation of MemoryDataType.
+std::string_view MemoryDataTypeToStringView(MemoryDataType type);
+
 // Converts an `AtMemoryQueryResponse` proto into a list of
 // `MemorySearchResult.`
 std::vector<MemorySearchResult> ExtractRemoteResults(
