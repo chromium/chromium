@@ -28,6 +28,7 @@
 #include "absl/base/config.h"
 #include "absl/base/macros.h"
 #include "absl/strings/cord.h"
+#include "absl/strings/internal/str_format/constexpr_parser.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/span.h"

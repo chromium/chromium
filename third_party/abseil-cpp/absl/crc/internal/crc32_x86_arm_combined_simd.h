@@ -20,6 +20,10 @@
 
 #include "absl/base/config.h"
 
+#ifdef __SSE4_2__
+#include <immintrin.h>
+#endif
+
 // -------------------------------------------------------------------------
 // Many x86 and ARM machines have CRC acceleration hardware.
 // We can do a faster version of Extend() on such machines.

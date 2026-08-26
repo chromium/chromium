@@ -12,10 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#if defined(_MSC_VER)
-#include <winsock2.h>  // for timeval
-#endif
-
 #include "absl/base/config.h"
 
 // For feature testing and determining which headers can be included.
@@ -43,6 +39,10 @@
 #include "absl/random/random.h"
 #include "absl/strings/str_format.h"
 #include "absl/time/time.h"
+
+#if defined(_MSC_VER)
+#include <winsock2.h>  // for timeval
+#endif
 
 namespace {
 

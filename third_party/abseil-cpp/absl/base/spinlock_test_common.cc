@@ -16,6 +16,7 @@
 // spinlock.  If the spinlock is working properly, all elements of the
 // array should be equal at the end of the test.
 
+#include <cstddef>
 #include <cstdint>
 #include <limits>
 #include <mutex>  // NOLINT(build/c++11)

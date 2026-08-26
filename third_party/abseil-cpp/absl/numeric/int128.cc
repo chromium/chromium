@@ -17,12 +17,16 @@
 #include <stddef.h>
 
 #include <cassert>
+#include <cstdint>
 #include <iomanip>
+#include <ios>
+#include <limits>
 #include <ostream>  // NOLINT(readability/streams)
 #include <sstream>
 #include <string>
 #include <type_traits>
 
+#include "absl/base/attributes.h"
 #include "absl/base/optimization.h"
 #include "absl/numeric/bits.h"
 

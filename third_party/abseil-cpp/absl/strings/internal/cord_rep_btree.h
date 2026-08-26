@@ -15,8 +15,11 @@
 #ifndef ABSL_STRINGS_INTERNAL_CORD_REP_BTREE_H_
 #define ABSL_STRINGS_INTERNAL_CORD_REP_BTREE_H_
 
+#include <algorithm>
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <iosfwd>
 
 #include "absl/base/config.h"

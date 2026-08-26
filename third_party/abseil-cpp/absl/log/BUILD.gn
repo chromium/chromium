@@ -334,8 +334,10 @@ absl_test("log_format_test") {
   deps = [
     ":check",
     ":log",
+    ":log_entry",
     ":scoped_mock_log",
     "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/log/internal:test_matchers",
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/strings:str_format",
@@ -358,10 +360,12 @@ absl_test("log_sink_test") {
   sources = [ "log_sink_test.cc" ]
   deps = [
     ":log",
+    ":log_entry",
     ":log_sink",
     ":log_sink_registry",
     ":scoped_mock_log",
     "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:log_severity",
     "//third_party/abseil-cpp/absl/log/internal:test_actions",
     "//third_party/abseil-cpp/absl/log/internal:test_helpers",
     "//third_party/abseil-cpp/absl/log/internal:test_matchers",
@@ -395,8 +399,10 @@ absl_test("log_modifier_methods_test") {
   sources = [ "log_modifier_methods_test.cc" ]
   deps = [
     ":log",
+    ":log_entry",
     ":log_sink",
     ":scoped_mock_log",
+    "//third_party/abseil-cpp/absl/base:log_severity",
     "//third_party/abseil-cpp/absl/log/internal:test_actions",
     "//third_party/abseil-cpp/absl/log/internal:test_helpers",
     "//third_party/abseil-cpp/absl/log/internal:test_matchers",
@@ -412,6 +418,7 @@ absl_test("scoped_mock_log_test") {
   deps = [
     ":globals",
     ":log",
+    ":log_entry",
     ":scoped_mock_log",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:log_severity",

@@ -705,6 +705,18 @@ TEST(Demangle, Float128x) {
   EXPECT_STREQ("S::operator _Float128x()", tmp);
 }
 
+TEST(Demangle, InvalidFloatNWidth) {
+  char tmp[80];
+
+  // A negative or overflowed _FloatN width is not printable, so render it as
+  // "?" like the sibling _BitInt path instead of emitting garbage bytes.
+  EXPECT_TRUE(Demangle("_ZNK1ScvDFn3_Ev", tmp, sizeof(tmp)));
+  EXPECT_STREQ("S::operator _Float?()", tmp);
+
+  EXPECT_TRUE(Demangle("_ZNK1ScvDF2147483648_Ev", tmp, sizeof(tmp)));
+  EXPECT_STREQ("S::operator _Float?()", tmp);
+}
+
 TEST(Demangle, Bfloat16) {
   char tmp[80];
 

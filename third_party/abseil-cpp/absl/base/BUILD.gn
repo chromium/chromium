@@ -29,7 +29,6 @@ absl_source_set("cpu_detect") {
 }
 
 absl_source_set("hardening") {
-  sources = [ "internal/hardening.cc" ]
   public = [ "internal/hardening.h" ]
   visibility = [ "//third_party/abseil-cpp/absl/*" ]
   deps = [
@@ -491,6 +490,7 @@ absl_test("log_severity_test") {
     "//third_party/abseil-cpp/absl/flags:flag_internal",
     "//third_party/abseil-cpp/absl/flags:marshalling",
     "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/strings:string_view",
   ]
 }
 

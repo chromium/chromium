@@ -655,8 +655,8 @@ class BlockedInfo {
 // 1) one bit that stores whether we have infoz.
 // 2) kBlockedElementsBitCount bits that stores number of blocked elements in
 //    the table.
-// 3) PerTableSeed::kBitCount bits for the seed. (For SOO tables, the lowest
-//    bit of the seed is repurposed to track if sampling has been tried).
+// 3) kSeedBitCount bits for the seed. (For SOO tables, the lowest bit of the
+//    seed is repurposed to track if sampling has been tried).
 template <HashtableCapacityStorageMode StorageMode>
 class HashtableInlineDataImpl {
   // The number of bits in the seed. It is big enough to ensure
@@ -2274,6 +2274,15 @@ class raw_hash_set {
   constexpr static bool kIsDefaultHash =
       std::is_same_v<hasher, absl::Hash<key_type>> ||
       std::is_same_v<hasher, absl::container_internal::StringHash>;
+  // For non-default hashers it is required to have low bits entropy because
+  // (a) in such cases, the seed is xor'ed with the hash value rather than being
+  // used as a seed for the hash function, (b) the seed has low bits that are
+  // all 0s, and (c) we require random iteration order for small tables.
+  // In ToPublicSeed we shift the seed by kCapacityBitStoredInDataCount as
+  // performance optimization for default hashers. For non-default hashers, we
+  // shift it back.
+  constexpr static size_t kSeedShift =
+      kIsDefaultHash ? 0 : HashtableInlineData::kCapacityBitStoredInDataCount;
 
   // TODO(b/289225379): we could add extra SOO space inside raw_hash_set
   // after CommonFields to allow inlining larger slot_types (e.g. std::string),
@@ -3505,12 +3514,13 @@ class raw_hash_set {
   }
   template <class K>
   ABSL_ATTRIBUTE_ALWAYS_INLINE size_t hash_of(const K& key) const {
-    return HashElement<hasher, kIsDefaultHash>{hash_ref(),
-                                               common().seed().seed()}(key);
+    return HashElement<hasher, kIsDefaultHash, kSeedShift>{
+        hash_ref(), common().seed().seed()}(key);
   }
   ABSL_ATTRIBUTE_ALWAYS_INLINE size_t hash_of(slot_type* slot) const {
     return PolicyTraits::apply(
-        HashElement<hasher, kIsDefaultHash>{hash_ref(), common().seed().seed()},
+        HashElement<hasher, kIsDefaultHash, kSeedShift>{hash_ref(),
+                                                        common().seed().seed()},
         PolicyTraits::element(slot));
   }
 
@@ -3649,9 +3659,10 @@ class raw_hash_set {
         GrowSooTableToNextCapacityAndPrepareInsert<
             kUseMemcpy ? OptimalMemcpySizeForSooSlotTransfer(sizeof(slot_type))
                        : 0,
-            kUseMemcpy>(common(), GetPolicyFunctions(),
-                        HashKey<hasher, K, kIsDefaultHash>{hash_ref(), key},
-                        force_sampling));
+            kUseMemcpy>(
+            common(), GetPolicyFunctions(),
+            HashKey<hasher, K, kIsDefaultHash, kSeedShift>{hash_ref(), key},
+            force_sampling));
     return {slot, true};
   }
 
@@ -3667,10 +3678,11 @@ class raw_hash_set {
         return {single_slot(), false};
       }
     }
-    return {to_slot(PrepareInsertSmallNonSoo(
-                common(), GetPolicyFunctions(),
-                HashKey<hasher, K, kIsDefaultHash>{hash_ref(), key})),
-            true};
+    return {
+        to_slot(PrepareInsertSmallNonSoo(
+            common(), GetPolicyFunctions(),
+            HashKey<hasher, K, kIsDefaultHash, kSeedShift>{hash_ref(), key})),
+        true};
   }
 
   template <class K>
@@ -3698,15 +3710,15 @@ class raw_hash_set {
       auto mask_empty = g.MaskEmpty();
       if (ABSL_PREDICT_TRUE(mask_empty)) {
         size_t target_group_offset = seq.offset();
-        void* slot =
-            SwisstableGenerationsEnabled()
-                ? PrepareInsertLargeGenerationsEnabled(
-                      common(), GetPolicyFunctions(), hash, mask_empty,
-                      FindInfo{target_group_offset, seq.index()},
-                      HashKey<hasher, K, kIsDefaultHash>{hash_ref(), key})
-                : PrepareInsertLarge(
-                      common(), GetPolicyFunctions(), hash, mask_empty,
-                      FindInfo{target_group_offset, seq.index()});
+        void* slot = SwisstableGenerationsEnabled()
+                         ? PrepareInsertLargeGenerationsEnabled(
+                               common(), GetPolicyFunctions(), hash, mask_empty,
+                               FindInfo{target_group_offset, seq.index()},
+                               HashKey<hasher, K, kIsDefaultHash, kSeedShift>{
+                                   hash_ref(), key})
+                         : PrepareInsertLarge(
+                               common(), GetPolicyFunctions(), hash, mask_empty,
+                               FindInfo{target_group_offset, seq.index()});
         return {to_slot(slot), true};
       }
       seq.next();
@@ -4007,7 +4019,8 @@ class raw_hash_set {
         // for standard layout and alignof(Hash) <= alignof(CommonFields).
         std::is_empty_v<hasher> ? &GetRefForEmptyClass
                                 : &raw_hash_set::get_hash_ref_fn,
-        PolicyTraits::template get_hash_slot_fn<hasher, kIsDefaultHash>(),
+        PolicyTraits::template get_hash_slot_fn<hasher, kIsDefaultHash,
+                                                kSeedShift>(),
         PolicyTraits::transfer_uses_memcpy()
             ? TransferNRelocatable<sizeof(slot_type)>
             : &raw_hash_set::transfer_n_slots_fn,

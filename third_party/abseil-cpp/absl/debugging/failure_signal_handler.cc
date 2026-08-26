@@ -16,7 +16,20 @@
 
 #include "absl/debugging/failure_signal_handler.h"
 
+#include <algorithm>
+#include <atomic>
+#include <cerrno>
+#include <csignal>
+#include <cstdio>
+#include <cstring>
+#include <ctime>
+
+#include "absl/base/attributes.h"
 #include "absl/base/config.h"
+#include "absl/base/internal/raw_logging.h"
+#include "absl/base/internal/sysinfo.h"
+#include "absl/debugging/internal/examine_stack.h"
+#include "absl/debugging/stacktrace.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -40,20 +53,6 @@
 #ifdef __linux__
 #include <sys/prctl.h>
 #endif
-
-#include <algorithm>
-#include <atomic>
-#include <cerrno>
-#include <csignal>
-#include <cstdio>
-#include <cstring>
-#include <ctime>
-
-#include "absl/base/attributes.h"
-#include "absl/base/internal/raw_logging.h"
-#include "absl/base/internal/sysinfo.h"
-#include "absl/debugging/internal/examine_stack.h"
-#include "absl/debugging/stacktrace.h"
 
 #if !defined(_WIN32) && !defined(__wasi__)
 #define ABSL_HAVE_SIGACTION

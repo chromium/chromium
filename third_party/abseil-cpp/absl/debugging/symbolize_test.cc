@@ -13,23 +13,14 @@
 // limitations under the License.
 
 #include "absl/debugging/symbolize.h"
+
 #include <cstddef>
-
-#include "absl/debugging/internal/symbolize.h"
-#include "absl/strings/str_format.h"
-
-#ifdef __EMSCRIPTEN__
-#include <emscripten.h>
-#endif
-
-#ifndef _WIN32
-#include <fcntl.h>
-#include <sys/mman.h>
-#endif
-
+#include <cstdint>
 #include <cstring>
 #include <iostream>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
@@ -41,10 +32,21 @@
 #include "absl/base/optimization.h"
 #include "absl/cleanup/cleanup.h"
 #include "absl/debugging/internal/stack_consumption.h"
+#include "absl/debugging/internal/symbolize.h"
 #include "absl/log/check.h"
 #include "absl/log/log.h"
 #include "absl/memory/memory.h"
+#include "absl/strings/str_format.h"
 #include "absl/strings/string_view.h"
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
+#ifndef _WIN32
+#include <fcntl.h>
+#include <sys/mman.h>
+#endif
 
 #if defined(MAP_ANON) && !defined(MAP_ANONYMOUS)
 #define MAP_ANONYMOUS MAP_ANON

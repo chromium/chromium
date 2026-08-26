@@ -24,6 +24,9 @@
 #include <type_traits>
 
 #include "absl/base/config.h"
+#include "absl/base/internal/endian.h"
+#include "absl/base/optimization.h"
+#include "absl/numeric/bits.h"
 
 #ifdef ABSL_INTERNAL_HAVE_SSE2
 #include <emmintrin.h>
@@ -40,10 +43,6 @@
 #ifdef ABSL_INTERNAL_HAVE_ARM_NEON
 #include <arm_neon.h>
 #endif
-
-#include "absl/base/optimization.h"
-#include "absl/numeric/bits.h"
-#include "absl/base/internal/endian.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN

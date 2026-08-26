@@ -16,12 +16,16 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <cstdio>
+#include <string>
 #include <vector>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "absl/base/attributes.h"
 #include "absl/strings/str_cat.h"
 
 using ::testing::Ge;

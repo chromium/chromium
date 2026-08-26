@@ -1435,9 +1435,9 @@ class TupleMatcher {
   template <typename Tuple>
   bool MatchAndExplain(const Tuple& p,
                        testing::MatchResultListener* /* listener */) const {
-    static_assert(std::tuple_size<Tuple>::value == sizeof...(M));
+    static_assert(std::tuple_size_v<Tuple> == sizeof...(M));
     return MatchAndExplainImpl(
-        p, std::make_index_sequence<std::tuple_size<Tuple>::value>{});
+        p, std::make_index_sequence<std::tuple_size_v<Tuple>>{});
   }
 
   // For the matcher concept. Left empty as we don't really need the diagnostics
@@ -1450,8 +1450,7 @@ class TupleMatcher {
   bool MatchAndExplainImpl(const Tuple& p, std::index_sequence<Is...>) const {
     // Using std::min as a simple variadic "and".
     return std::min(
-        {true, testing::SafeMatcherCast<
-                   const typename std::tuple_element<Is, Tuple>::type&>(
+        {true, testing::SafeMatcherCast<const std::tuple_element_t<Is, Tuple>&>(
                    std::get<Is>(matchers_))
                    .Matches(std::get<Is>(p))...});
   }

@@ -160,12 +160,12 @@ ABSL_NAMESPACE_END
 // See `ABSL_OPTION_HARDENED` in `absl/base/options.h` for more information on
 // hardened mode.
 #if (ABSL_OPTION_HARDENED == 1 || ABSL_OPTION_HARDENED == 2) && defined(NDEBUG)
- #define ABSL_HARDENING_ASSERT(expr)    \
-   do {                                 \
-     if (!ABSL_PREDICT_TRUE((expr))) {  \
-       ABSL_INTERNAL_HARDENING_ABORT(); \
-     }                                  \
-   } while (false)
+#define ABSL_HARDENING_ASSERT(expr)    \
+  do {                                 \
+    if (!ABSL_PREDICT_TRUE((expr))) {  \
+      ABSL_INTERNAL_HARDENING_ABORT(); \
+    }                                  \
+  } while (false)
 #else
 #define ABSL_HARDENING_ASSERT(expr) ABSL_ASSERT(expr)
 #endif
@@ -245,7 +245,7 @@ ABSL_NAMESPACE_END
 // Note: go/cpp-inliner is Google-internal service for automated refactoring.
 // While open-source users do not have access to this service, the macro is
 // provided for compatibility.
-#if ABSL_HAVE_CPP_ATTRIBUTE(clang::annotate)
+#if ABSL_HAVE_CPP_ATTRIBUTE(clang::annotate) && !defined(__NVCC__)
 #define ABSL_REFACTOR_INLINE                                                \
   _Pragma("clang diagnostic push") /* Avoid errors on using-declarations */ \
       _Pragma("clang diagnostic ignored \"-Wcxx-attribute-extension\"")     \

@@ -34,11 +34,13 @@
 #include <cstddef>
 #include <initializer_list>
 #include <iterator>
+#include <string>
 #include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
+#include "absl/base/attributes.h"
 #include "absl/base/macros.h"
 #include "absl/base/port.h"
 #include "absl/meta/type_traits.h"

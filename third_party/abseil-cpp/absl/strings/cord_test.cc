@@ -38,7 +38,6 @@
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/internal/endian.h"
-#include "absl/base/internal/hardening.h"
 #include "absl/base/macros.h"
 #include "absl/base/no_destructor.h"
 #include "absl/base/options.h"
@@ -2816,7 +2815,6 @@ TEST_P(CordTest, Hardening) {
   }());
   if (!test_hardening) return;
 
-  absl::base_internal::ScopedSetAbslHardeningForTesting hardener(true);
   EXPECT_DEATH_IF_SUPPORTED(cord[5], "");
   EXPECT_DEATH_IF_SUPPORTED(*cord.chunk_end(), "");
   EXPECT_DEATH_IF_SUPPORTED(static_cast<void>(cord.chunk_end()->empty()), "");
@@ -3414,69 +3412,3 @@ TEST(CordThreeWayComparisonTest, CompareCordsAndStringViews) {
             std::strong_ordering::greater);
 #endif
 }
-
-#if defined(GTEST_HAS_DEATH_TEST) && defined(ABSL_INTERNAL_CORD_HAVE_SANITIZER)
-
-// Returns an expected poison / uninitialized death message expression.
-const char* MASanDeathExpr() {
-  return "(use-after-poison|use-of-uninitialized-value)";
-}
-
-TEST(CordSanitizerTest, SanitizesEmptyCord) {
-  absl::Cord cord;
-  const char* data = cord.Flatten().data();
-  EXPECT_DEATH(EXPECT_EQ(data[0], 0), MASanDeathExpr());
-}
-
-TEST(CordSanitizerTest, SanitizesSmallCord) {
-  absl::Cord cord("Hello");
-  const char* data = cord.Flatten().data();
-  EXPECT_DEATH(EXPECT_EQ(data[5], 0), MASanDeathExpr());
-}
-
-TEST(CordSanitizerTest, SanitizesCordOnSetSSOValue) {
-  absl::Cord cord("String that is too big to be an SSO value");
-  cord = "Hello";
-  const char* data = cord.Flatten().data();
-  EXPECT_DEATH(EXPECT_EQ(data[5], 0), MASanDeathExpr());
-}
-
-TEST(CordSanitizerTest, SanitizesCordOnCopyCtor) {
-  absl::Cord src("hello");
-  absl::Cord dst(src);
-  const char* data = dst.Flatten().data();
-  EXPECT_DEATH(EXPECT_EQ(data[5], 0), MASanDeathExpr());
-}
-
-TEST(CordSanitizerTest, SanitizesCordOnMoveCtor) {
-  absl::Cord src("hello");
-  absl::Cord dst(std::move(src));
-  const char* data = dst.Flatten().data();
-  EXPECT_DEATH(EXPECT_EQ(data[5], 0), MASanDeathExpr());
-}
-
-TEST(CordSanitizerTest, SanitizesCordOnAssign) {
-  absl::Cord src("hello");
-  absl::Cord dst;
-  dst = src;
-  const char* data = dst.Flatten().data();
-  EXPECT_DEATH(EXPECT_EQ(data[5], 0), MASanDeathExpr());
-}
-
-TEST(CordSanitizerTest, SanitizesCordOnMoveAssign) {
-  absl::Cord src("hello");
-  absl::Cord dst;
-  dst = std::move(src);
-  const char* data = dst.Flatten().data();
-  EXPECT_DEATH(EXPECT_EQ(data[5], 0), MASanDeathExpr());
-}
-
-TEST(CordSanitizerTest, SanitizesCordOnSsoAssign) {
-  absl::Cord src("hello");
-  absl::Cord dst("String that is too big to be an SSO value");
-  dst = src;
-  const char* data = dst.Flatten().data();
-  EXPECT_DEATH(EXPECT_EQ(data[5], 0), MASanDeathExpr());
-}
-
-#endif  // GTEST_HAS_DEATH_TEST && ABSL_INTERNAL_CORD_HAVE_SANITIZER

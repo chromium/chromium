@@ -83,6 +83,7 @@
 #include "absl/base/port.h"
 #include "absl/strings/ascii.h"
 #include "absl/strings/escaping.h"
+#include "absl/strings/has_absl_stringify.h"
 #include "absl/strings/internal/stringify_sink.h"
 #include "absl/strings/numbers.h"
 #include "absl/strings/str_cat.h"

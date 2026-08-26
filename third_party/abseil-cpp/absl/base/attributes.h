@@ -782,22 +782,20 @@ struct AbslInternal_YouForgotToExplicitlyInitializeAField {
 
 // ABSL_CONST_INIT
 //
-// A variable declaration annotated with the `ABSL_CONST_INIT` attribute will
-// not compile (on supported platforms) unless the variable has a constant
-// initializer. This is useful for variables with static and thread storage
-// duration, because it guarantees that they will not suffer from the so-called
-// "static init order fiasco".
+// A variable declared with `ABSL_CONST_INIT` will not compile (on supported
+// platforms) unless the variable has a constant initializer. This is useful for
+// variables with static and thread storage duration, because it guarantees that
+// they will not suffer from the so-called "static init order fiasco".
 //
-// This attribute must be placed on the initializing declaration of the
-// variable. Some compilers will give a -Wmissing-constinit warning when this
-// attribute is placed on some other declaration but missing from the
-// initializing declaration.
+// `ABSL_CONST_INIT` must be placed on the initializing declaration
+// (i.e. definition) of the variable. Some compilers will give a
+// `-Wmissing-constinit` warning when it is placed on some other
+// declaration but missing from the initializing declaration.
 //
-// In some cases (notably with thread_local variables), `ABSL_CONST_INIT` can
-// also be used in a non-initializing declaration to tell the compiler that a
-// variable is already initialized, reducing overhead that would otherwise be
-// incurred by a hidden guard variable. Thus annotating all declarations with
-// this attribute is recommended to potentially enhance optimization.
+// For thread_local variables, placing `ABSL_CONST_INIT` on the non-initializing
+// declaration tells the compiler that the variable is already initialized,
+// reducing overhead that would otherwise be incurred by a hidden guard
+// variable.
 //
 // Example:
 //
@@ -809,9 +807,10 @@ struct AbslInternal_YouForgotToExplicitlyInitializeAField {
 //   ABSL_CONST_INIT MyType MyClass::my_var = MakeMyType(...);
 //
 // For code or headers that are assured to only build with C++20 and up, prefer
-// just using the standard `constinit` keyword directly over this macro.
+// using the standard `constinit` keyword directly over this macro.
 //
-// Note that this attribute is redundant if the variable is declared constexpr.
+// Note that `ABSL_CONST_INIT` must not be used on a variable declared
+// constexpr.
 #if defined(__cpp_constinit) && __cpp_constinit >= 201907L
 #define ABSL_CONST_INIT constinit
 #elif ABSL_HAVE_CPP_ATTRIBUTE(clang::require_constant_initialization)

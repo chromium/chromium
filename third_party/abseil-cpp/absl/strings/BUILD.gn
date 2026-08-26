@@ -224,7 +224,10 @@ absl_test("utf8_test") {
 
 absl_test("string_constant_test") {
   sources = [ "internal/string_constant_test.cc" ]
-  deps = [ ":strings" ]
+  deps = [
+    ":string_view",
+    ":strings",
+  ]
 }
 
 absl_test("string_view_test") {
@@ -319,6 +322,7 @@ absl_test("cord_data_edge_test") {
   deps = [
     ":cord_internal",
     ":cord_rep_test_util",
+    ":string_view",
     ":strings",
     "//third_party/abseil-cpp/absl/base:config",
   ]
@@ -334,6 +338,7 @@ absl_test("cord_rep_btree_test") {
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
     "//third_party/abseil-cpp/absl/cleanup",
+    "//third_party/abseil-cpp/absl/types:span",
   ]
 }
 
@@ -368,6 +373,7 @@ absl_test("cord_rep_crc_test") {
     ":cord_internal",
     ":cord_rep_test_util",
     "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/crc:crc32c",
     "//third_party/abseil-cpp/absl/crc:crc_cord_state",
   ]
 }
@@ -434,6 +440,7 @@ absl_source_set("cordz_handle") {
   visibility = [ "//third_party/abseil-cpp/absl/*" ]
   deps = [
     "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:no_destructor",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
     "//third_party/abseil-cpp/absl/synchronization",
@@ -569,10 +576,12 @@ absl_test("cordz_info_statistics_test") {
     ":cordz_statistics",
     ":cordz_update_scope",
     ":cordz_update_tracker",
+    ":string_view",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/crc:crc_cord_state",
     "//third_party/abseil-cpp/absl/synchronization",
     "//third_party/abseil-cpp/absl/synchronization:thread_pool",
+    "//third_party/abseil-cpp/absl/time",
   ]
 }
 
@@ -584,6 +593,7 @@ absl_test("cordz_sample_token_test") {
     ":cordz_info",
     ":cordz_sample_token",
     ":cordz_test_helpers",
+    ":cordz_update_tracker",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/memory",
     "//third_party/abseil-cpp/absl/random",
@@ -615,6 +625,7 @@ absl_source_set("cord_rep_test_util") {
     ":strings",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
+    "//third_party/abseil-cpp/absl/types:span",
   ]
 }
 
@@ -625,6 +636,7 @@ absl_source_set("cordz_test_helpers") {
   deps = [
     ":cord",
     ":cord_internal",
+    ":cordz_functions",
     ":cordz_info",
     ":cordz_sample_token",
     ":cordz_statistics",
@@ -646,7 +658,6 @@ absl_test("cord_buffer_test") {
     ":cord_rep_test_util",
     ":string_view",
     "//third_party/abseil-cpp/absl/base:config",
-    "//third_party/abseil-cpp/absl/base:hardening",
     "//third_party/abseil-cpp/absl/types:span",
   ]
 }
@@ -667,7 +678,6 @@ absl_test("cord_test") {
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:endian",
-    "//third_party/abseil-cpp/absl/base:hardening",
     "//third_party/abseil-cpp/absl/base:no_destructor",
     "//third_party/abseil-cpp/absl/container:fixed_array",
     "//third_party/abseil-cpp/absl/functional:function_ref",
@@ -809,6 +819,7 @@ absl_test("charconv_parse_test") {
     "internal/charconv_parse_test.cc",
   ]
   deps = [
+    ":string_view",
     ":strings",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/log:check",
@@ -883,6 +894,7 @@ absl_test("str_format_test") {
   deps = [
     ":cord",
     ":str_format",
+    ":str_format_internal",
     ":string_view",
     ":strings",
     "//third_party/abseil-cpp/absl/base:config",
@@ -913,12 +925,19 @@ absl_test("str_format_arg_test") {
 
 absl_test("str_format_bind_test") {
   sources = [ "internal/str_format/bind_test.cc" ]
-  deps = [ ":str_format_internal" ]
+  deps = [
+    ":str_format_internal",
+    ":string_view",
+    "//third_party/abseil-cpp/absl/types:span",
+  ]
 }
 
 absl_test("str_format_checker_test") {
   sources = [ "internal/str_format/checker_test.cc" ]
-  deps = [ ":str_format" ]
+  deps = [
+    ":str_format",
+    ":string_view",
+  ]
 }
 
 absl_test("str_format_convert_test") {
@@ -928,10 +947,12 @@ absl_test("str_format_convert_test") {
     ":str_format_internal",
     ":string_view",
     ":strings",
+    "//third_party/abseil-cpp/absl/base",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
     "//third_party/abseil-cpp/absl/log",
+    "//third_party/abseil-cpp/absl/log:absl_check",
     "//third_party/abseil-cpp/absl/numeric:int128",
     "//third_party/abseil-cpp/absl/types:span",
   ]
@@ -1004,6 +1025,7 @@ absl_test("generic_printer_test") {
   deps = [
     ":generic_printer",
     ":str_format",
+    ":string_view",
     ":strings",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",

@@ -1645,7 +1645,11 @@ static bool ParseBuiltinType(State *state) {
       return false;
     }
     MaybeAppend(state, "_Float");
-    MaybeAppendDecimal(state, number);
+    if (number >= 0) {
+      MaybeAppendDecimal(state, number);
+    } else {
+      MaybeAppend(state, "?");  // the best we can do for an invalid width
+    }
     if (ParseOneCharToken(state, 'x')) {
       MaybeAppend(state, "x");
       return true;

@@ -17,12 +17,6 @@
 
 #include <string.h>
 
-#ifdef _MSC_VER
-#include <winsock2.h>  // For timeval
-#else
-#include <sys/time.h>
-#endif
-
 #include <cstddef>
 #include <cstdint>
 #include <limits>
@@ -41,6 +35,12 @@
 #include "absl/time/civil_time.h"
 #include "absl/time/time.h"
 #include "absl/types/span.h"
+
+#ifdef _MSC_VER
+#include <winsock2.h>  // For timeval
+#else
+#include <sys/time.h>
+#endif
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN

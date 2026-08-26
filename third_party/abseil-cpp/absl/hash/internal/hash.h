@@ -19,11 +19,6 @@
 #ifndef ABSL_HASH_INTERNAL_HASH_H_
 #define ABSL_HASH_INTERNAL_HASH_H_
 
-#ifdef __APPLE__
-#include <Availability.h>
-#include <TargetConditionals.h>
-#endif
-
 // We include config.h here to make sure that ABSL_INTERNAL_CPLUSPLUS_LANG is
 // defined.
 #include "absl/base/config.h"
@@ -89,6 +84,11 @@
 #include "absl/types/optional.h"
 #include "absl/types/variant.h"
 #include "absl/utility/utility.h"
+
+#ifdef __APPLE__
+#include <Availability.h>
+#include <TargetConditionals.h>
+#endif
 
 #if defined(__cpp_lib_filesystem) && __cpp_lib_filesystem >= 201703L && \
     !defined(__XTENSA__)

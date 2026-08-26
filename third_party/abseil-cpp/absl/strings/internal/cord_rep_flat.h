@@ -15,9 +15,11 @@
 #ifndef ABSL_STRINGS_INTERNAL_CORD_REP_FLAT_H_
 #define ABSL_STRINGS_INTERNAL_CORD_REP_FLAT_H_
 
+#include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <memory>
 
 #include "absl/base/config.h"

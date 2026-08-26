@@ -16,12 +16,6 @@
 
 #include <fcntl.h>
 
-#ifndef _WIN32
-#include <unistd.h>
-#else
-#include <io.h>
-#endif
-
 #include <algorithm>
 #include <cassert>
 #include <cerrno>
@@ -38,6 +32,12 @@
 #include "absl/strings/escaping.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/span.h"
+
+#ifndef _WIN32
+#include <unistd.h>
+#else
+#include <io.h>
+#endif
 
 #if defined(_WIN32)
 

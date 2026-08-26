@@ -386,7 +386,7 @@ class LayoutImpl<std::tuple<Elements...>, std::index_sequence<StaticSizeSeq...>,
 
   template <size_t N>
   using ElementAlignment =
-      AlignOf<typename std::tuple_element<N, std::tuple<Elements...>>::type>;
+      AlignOf<std::tuple_element_t<N, std::tuple<Elements...>>>;
 
  public:
   // Element types of all arrays packed in a tuple.
@@ -394,7 +394,7 @@ class LayoutImpl<std::tuple<Elements...>, std::index_sequence<StaticSizeSeq...>,
 
   // Element type of the Nth array.
   template <size_t N>
-  using ElementType = typename std::tuple_element<N, ElementTypes>::type;
+  using ElementType = std::tuple_element_t<N, ElementTypes>;
 
   constexpr explicit LayoutImpl(IntToSize<RuntimeSizeSeq>... sizes)
       : size_{sizes...} {}

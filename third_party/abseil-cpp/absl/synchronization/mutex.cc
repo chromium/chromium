@@ -14,19 +14,6 @@
 
 #include "absl/synchronization/mutex.h"
 
-
-#ifdef _WIN32
-#include <windows.h>
-#ifdef ERROR
-#undef ERROR
-#endif
-#else
-#include <fcntl.h>
-#include <pthread.h>
-#include <sched.h>
-#include <sys/time.h>
-#endif
-
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,6 +26,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 #include <thread>  // NOLINT(build/c++11)
 
 #include "absl/base/attributes.h"
@@ -67,6 +55,18 @@
 #include "absl/synchronization/internal/per_thread_sem.h"
 #include "absl/time/clock.h"
 #include "absl/time/time.h"
+
+#ifdef _WIN32
+#include <windows.h>
+#ifdef ERROR
+#undef ERROR
+#endif
+#else
+#include <fcntl.h>
+#include <pthread.h>
+#include <sched.h>
+#include <sys/time.h>
+#endif
 
 using absl::base_internal::CurrentThreadIdentityIfPresent;
 using absl::base_internal::CycleClock;
@@ -442,10 +442,10 @@ static void PostSynchEvent(void* obj, int ev) {
   // or it explicitly says to log
   if (e == nullptr || e->log) {
     void* pcs[40];
-    int n = absl::GetStackTrace(pcs, ABSL_ARRAYSIZE(pcs), 1);
+    int n = absl::GetStackTrace(pcs, std::size(pcs), 1);
     // A buffer with enough space for the ASCII for all the PCs, even on a
     // 64-bit machine.
-    char buffer[ABSL_ARRAYSIZE(pcs) * 24];
+    char buffer[std::size(pcs) * 24];
     int pos = snprintf(buffer, sizeof(buffer), " @");
     for (int i = 0; i != n; i++) {
       int b = snprintf(&buffer[pos], sizeof(buffer) - static_cast<size_t>(pos),
@@ -1247,7 +1247,7 @@ static void LockEnter(Mutex* mu, GraphId id, SynchLocksHeld* held_locks) {
     i++;
   }
   if (i == n) {
-    if (n == ABSL_ARRAYSIZE(held_locks->locks)) {
+    if (n == static_cast<int>(std::size(held_locks->locks))) {
       held_locks->overflow = true;  // lost some data
     } else {                        // we have room for lock
       held_locks->locks[i].mu = mu;
@@ -1353,7 +1353,7 @@ static char* StackString(void** pcs, int n, char* buf, int maxlen,
 
 static char* CurrentStackString(char* buf, int maxlen, bool symbolize) {
   void* pcs[40];
-  return StackString(pcs, absl::GetStackTrace(pcs, ABSL_ARRAYSIZE(pcs), 2), buf,
+  return StackString(pcs, absl::GetStackTrace(pcs, std::size(pcs), 2), buf,
                      maxlen, symbolize);
 }
 
@@ -1444,9 +1444,10 @@ static GraphId DeadlockCheck(Mutex* mu) {
                    "historical lock ordering graph has been observed",
                    static_cast<void*>(mu), b->buf);
       ABSL_RAW_LOG(ERROR, "Cycle: ");
-      int path_len = deadlock_graph->FindPath(mu_id, other_node_id,
-                                              ABSL_ARRAYSIZE(b->path), b->path);
-      for (int j = 0; j != path_len && j != ABSL_ARRAYSIZE(b->path); j++) {
+      int path_len = deadlock_graph->FindPath(
+          mu_id, other_node_id, static_cast<int>(std::size(b->path)), b->path);
+      for (int j = 0;
+           j != path_len && j != static_cast<int>(std::size(b->path)); j++) {
         GraphId id = b->path[j];
         Mutex* path_mu = static_cast<Mutex*>(deadlock_graph->Ptr(id));
         if (path_mu == nullptr) continue;
@@ -1459,7 +1460,7 @@ static GraphId DeadlockCheck(Mutex* mu) {
                     symbolize);
         ABSL_RAW_LOG(ERROR, "%s", b->buf);
       }
-      if (path_len > static_cast<int>(ABSL_ARRAYSIZE(b->path))) {
+      if (path_len > static_cast<int>(std::size(b->path))) {
         ABSL_RAW_LOG(ERROR, "(long cycle; list truncated)");
       }
       if (synch_deadlock_detection.load(std::memory_order_acquire) ==

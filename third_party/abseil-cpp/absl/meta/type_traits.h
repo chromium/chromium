@@ -54,9 +54,13 @@
 #include <span>  // NOLINT(build/c++20)
 #endif
 
-// Defines the default alignment. `__STDCPP_DEFAULT_NEW_ALIGNMENT__` is
-// predefined by every C++17 implementation.
+// Defines the default alignment. `__STDCPP_DEFAULT_NEW_ALIGNMENT__` is a C++17
+// feature, but GCC leaves it undefined under -fno-aligned-new.
+#if defined(__STDCPP_DEFAULT_NEW_ALIGNMENT__)
 #define ABSL_INTERNAL_DEFAULT_NEW_ALIGNMENT __STDCPP_DEFAULT_NEW_ALIGNMENT__
+#else  // defined(__STDCPP_DEFAULT_NEW_ALIGNMENT__)
+#define ABSL_INTERNAL_DEFAULT_NEW_ALIGNMENT alignof(std::max_align_t)
+#endif  // defined(__STDCPP_DEFAULT_NEW_ALIGNMENT__)
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN

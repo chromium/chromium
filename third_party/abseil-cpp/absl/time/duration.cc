@@ -49,10 +49,6 @@
 //
 // Arithmetic overflows/underflows to +/- infinity and saturates.
 
-#if defined(_MSC_VER)
-#include <winsock2.h>  // for timeval
-#endif
-
 #include <algorithm>
 #include <cassert>
 #include <chrono>  // NOLINT(build/c++11)
@@ -72,6 +68,10 @@
 #include "absl/strings/string_view.h"
 #include "absl/strings/strip.h"
 #include "absl/time/time.h"
+
+#if defined(_MSC_VER)
+#include <winsock2.h>  // for timeval
+#endif
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN

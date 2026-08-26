@@ -14,6 +14,8 @@
 
 #include "absl/strings/internal/cordz_sample_token.h"
 
+#include <cstddef>
+#include <iterator>
 #include <memory>
 #include <type_traits>
 #include <vector>
@@ -26,6 +28,7 @@
 #include "absl/strings/internal/cord_rep_flat.h"
 #include "absl/strings/internal/cordz_handle.h"
 #include "absl/strings/internal/cordz_info.h"
+#include "absl/strings/internal/cordz_update_tracker.h"
 #include "absl/synchronization/internal/thread_pool.h"
 #include "absl/synchronization/notification.h"
 #include "absl/time/clock.h"

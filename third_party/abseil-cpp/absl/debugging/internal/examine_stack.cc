@@ -16,13 +16,21 @@
 
 #include "absl/debugging/internal/examine_stack.h"
 
+#include <csignal>
+#include <cstdint>
+#include <cstdio>
 #include <iterator>
+
+#include "absl/base/attributes.h"
+#include "absl/base/config.h"
+#include "absl/base/internal/raw_logging.h"
+#include "absl/base/macros.h"
+#include "absl/debugging/stacktrace.h"
+#include "absl/debugging/symbolize.h"
 
 #ifndef _WIN32
 #include <unistd.h>
 #endif
-
-#include "absl/base/config.h"
 
 #ifdef ABSL_HAVE_MMAP
 #include <sys/mman.h>
@@ -34,15 +42,6 @@
 #if defined(__linux__) || defined(__APPLE__)
 #include <sys/ucontext.h>
 #endif
-
-#include <csignal>
-#include <cstdio>
-
-#include "absl/base/attributes.h"
-#include "absl/base/internal/raw_logging.h"
-#include "absl/base/macros.h"
-#include "absl/debugging/stacktrace.h"
-#include "absl/debugging/symbolize.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN

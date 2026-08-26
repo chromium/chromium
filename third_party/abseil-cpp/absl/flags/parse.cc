@@ -29,10 +29,6 @@
 #include <utility>
 #include <vector>
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
 #include "absl/algorithm/container.h"
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
@@ -57,6 +53,10 @@
 #include "absl/strings/string_view.h"
 #include "absl/strings/strip.h"
 #include "absl/synchronization/mutex.h"
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 // --------------------------------------------------------------------
 

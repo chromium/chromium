@@ -60,6 +60,7 @@ absl_test("hash_test") {
     "//third_party/abseil-cpp/absl/memory",
     "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/numeric:bits",
+    "//third_party/abseil-cpp/absl/strings:cord",
     "//third_party/abseil-cpp/absl/strings:cord_test_helpers",
     "//third_party/abseil-cpp/absl/strings:string_view",
   ]

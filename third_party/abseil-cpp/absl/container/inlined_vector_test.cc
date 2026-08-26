@@ -32,7 +32,6 @@
 #include "gtest/gtest.h"
 #include "absl/base/attributes.h"
 #include "absl/base/internal/exception_testing.h"
-#include "absl/base/internal/hardening.h"
 #include "absl/base/internal/iterator_traits_test_helper.h"
 #include "absl/base/macros.h"
 #include "absl/base/options.h"
@@ -295,7 +294,6 @@ TEST(IntVec, Hardened) {
   Fill(&v, 10);
   EXPECT_EQ(v[9], 9);
 #if !defined(NDEBUG) || ABSL_OPTION_HARDENED
-  absl::base_internal::ScopedSetAbslHardeningForTesting hardener(true);
   EXPECT_DEATH_IF_SUPPORTED(v[10], "");
   EXPECT_DEATH_IF_SUPPORTED(v[static_cast<size_t>(-1)], "");
 #endif

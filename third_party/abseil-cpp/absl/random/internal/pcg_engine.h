@@ -15,6 +15,12 @@
 #ifndef ABSL_RANDOM_INTERNAL_PCG_ENGINE_H_
 #define ABSL_RANDOM_INTERNAL_PCG_ENGINE_H_
 
+#include <cstddef>
+#include <cstdint>
+#include <ios>
+#include <istream>
+#include <limits>
+#include <ostream>
 #include <type_traits>
 
 #include "absl/base/config.h"

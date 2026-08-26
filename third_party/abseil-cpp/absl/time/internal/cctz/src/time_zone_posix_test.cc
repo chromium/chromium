@@ -33,7 +33,7 @@ using ::testing::IsEmpty;
 // them).  So, ...
 //
 //   spec = abbr offset [ abbr [ offset ] datetime datetime ]
-//   abbr = <.*?> | [^-+,\d]{3,}
+//   abbr = <.+?> | [^-+,\d]{3,}
 //   offset = [+|-]hh[:mm[:ss]]
 //   datetime = , ( Jn | n | Mm.w.d ) [ / offset ]
 
@@ -141,7 +141,9 @@ TEST(TimeZonePosix, ParseErrors) {
   EXPECT_FALSE(ParsePosixSpec("ET+", &zone));
   EXPECT_FALSE(ParsePosixSpec("ET-", &zone));
   EXPECT_FALSE(ParsePosixSpec("ET,", &zone));
+  EXPECT_FALSE(ParsePosixSpec("<", &zone));
   EXPECT_FALSE(ParsePosixSpec("<00", &zone));
+  EXPECT_FALSE(ParsePosixSpec("<>0", &zone));
 
   // STD offset errors.
   EXPECT_FALSE(ParsePosixSpec("<00>", &zone));
@@ -154,6 +156,7 @@ TEST(TimeZonePosix, ParseErrors) {
   EXPECT_FALSE(ParsePosixSpec("EST5EDT+,M3.2.0,M11.1.0", &zone));
   EXPECT_FALSE(ParsePosixSpec("EST5EDT-,M3.2.0,M11.1.0", &zone));
   EXPECT_FALSE(ParsePosixSpec("<00>0<-01", &zone));
+  EXPECT_FALSE(ParsePosixSpec("EST5<>,M3.2.0,M11.1.0", &zone));
 
   // DST offset errors.
   EXPECT_FALSE(ParsePosixSpec("<01>1<00>?,0,0", &zone));

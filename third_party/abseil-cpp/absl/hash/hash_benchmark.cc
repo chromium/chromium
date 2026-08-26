@@ -196,7 +196,7 @@ auto MakeLongTuple() {
   auto t6 = std::tuple_cat(t5, t5);
   // Ideally this would be much larger, but some configurations can't handle
   // making tuples with that many elements. They break inside std::tuple itself.
-  static_assert(std::tuple_size<decltype(t6)>::value == 32);
+  static_assert(std::tuple_size_v<decltype(t6)> == 32);
   return t6;
 }
 

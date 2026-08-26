@@ -681,11 +681,11 @@ class NodeHashMapPolicy
   static Value& value(value_type* elem) { return elem->second; }
   static const Value& value(const value_type* elem) { return elem->second; }
 
-  template <class Hash, bool kIsDefault>
+  template <class Hash, bool kIsDefault, size_t kSeedShift>
   static constexpr HashSlotFn get_hash_slot_fn() {
     return memory_internal::IsLayoutCompatible<Key, Value>::value
                ? &TypeErasedDerefAndApplyToSlotFirstFn<Hash, value_type,
-                                                       kIsDefault>
+                                                       kIsDefault, kSeedShift>
                : nullptr;
   }
 };

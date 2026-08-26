@@ -15,6 +15,8 @@
 #include "absl/numeric/int128.h"
 
 #include <algorithm>
+#include <cmath>
+#include <cstdint>
 #include <limits>
 #include <random>
 #include <tuple>

@@ -14,12 +14,6 @@
 
 #include "absl/time/time.h"
 
-#include "absl/time/civil_time.h"
-
-#if defined(_MSC_VER)
-#include <winsock2.h>  // for timeval
-#endif
-
 #include "absl/base/config.h"
 
 // For feature testing and determining which headers can be included.
@@ -45,8 +39,13 @@
 #include "absl/hash/hash_testing.h"
 #include "absl/numeric/int128.h"
 #include "absl/strings/str_format.h"
+#include "absl/time/civil_time.h"
 #include "absl/time/clock.h"
 #include "absl/time/internal/test_util.h"
+
+#if defined(_MSC_VER)
+#include <winsock2.h>  // for timeval
+#endif
 
 namespace {
 

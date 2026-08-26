@@ -20,6 +20,7 @@
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "absl/numeric/internal/bits.h"
 #include "absl/random/random.h"
 
 namespace absl {
