@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_test_utils.h"
@@ -180,8 +181,10 @@ void SetEngagementScore(BrowserWindowInterface* browser,
       ->ResetBaseScoreForURL(url, score);
   // Make sure the setting we want gets applied; it might not if background
   // load of a WebUI queried things before it got called.
+  base::test::TestFuture<const std::vector<lookalikes::DomainInfo>&> configured;
   LookalikeUrlServiceFactory::GetForProfile(browser->GetProfile())
-      ->ForceUpdateEngagedSites(base::DoNothing());
+      ->ForceUpdateEngagedSites(configured.GetCallback());
+  EXPECT_TRUE(configured.Wait());
 }
 
 // Clicks the location icon to open the page info bubble.
