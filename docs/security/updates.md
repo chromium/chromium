@@ -26,10 +26,10 @@ and phishing. Every release of Chrome includes not just security patches, but
 new security features and other defensive improvements developed by the Chrome
 Security team.
 
-Chrome releases [stable milestones][release-cycle] every four weeks (MXXX), with “refresh”
-releases in-between milestones. Milestones are refreshed with updates that can
-contain security fixes and functional bug fixes for high-impact bugs. There are
-planned security refreshes weekly for every milestone, with all of the
+Chrome releases [stable milestones][release-cycle] every two weeks (MXXX), with
+“refresh” releases in-between milestones. Milestones are refreshed with updates
+that can contain security fixes and functional bug fixes for high-impact bugs.
+There are planned security refreshes weekly for every milestone, with all of the
 security fixes since the previous release. Chrome may have unscheduled updates
 between milestones to fix critical security issues, address breaking functional
 bugs, or patch known in-the-wild exploits. Updates and rapid response are part
