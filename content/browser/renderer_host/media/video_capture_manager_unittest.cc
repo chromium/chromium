@@ -82,6 +82,10 @@ class WrappedDeviceFactory final : public media::FakeVideoCaptureDeviceFactory {
     }
 
     void RequestRefreshFrame() override { device_->RequestRefreshFrame(); }
+    void InvalidateBuffers() override {
+      factory_->WillInvalidateBuffers();
+      device_->InvalidateBuffers();
+    }
 
     void MaybeSuspend() override {
       factory_->WillSuspendDevice();
@@ -145,6 +149,7 @@ class WrappedDeviceFactory final : public media::FakeVideoCaptureDeviceFactory {
 
   bool has_active_devices() const { return !devices_.empty(); }
 
+  MOCK_METHOD0(WillInvalidateBuffers, void());
   MOCK_METHOD0(WillSuspendDevice, void());
   MOCK_METHOD0(WillResumeDevice, void());
 
@@ -910,6 +915,44 @@ TEST_F(VideoCaptureManagerTest, PauseAndResumeClient) {
 
   StopClient(client_id);
   StopClient(client_id2);
+
+  EXPECT_CALL(*listener_,
+              Closed(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, _));
+  vcm_->Close(video_session_id);
+
+  // Wait to check callbacks before removing the listener.
+  base::RunLoop().RunUntilIdle();
+  vcm_->UnregisterListener(listener_.get());
+}
+
+TEST_F(VideoCaptureManagerTest, InvalidateBuffersOnMultipleClientsDisconnect) {
+  EXPECT_CALL(*listener_,
+              Opened(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, _));
+  EXPECT_CALL(*frame_observer_, OnStarted(_)).Times(2);
+
+  const base::UnguessableToken video_session_id = vcm_->Open(devices_.front());
+
+  // Start first client.
+  const VideoCaptureControllerID client_id1 =
+      StartClient(video_session_id, true);
+
+  // Start second client.
+  const VideoCaptureControllerID client_id2 =
+      StartClient(video_session_id, true);
+
+  // Disconnect the first client. Since there is another active client
+  // (client_id2), InvalidateBuffers should be called on device to rotate the
+  // buffers. This will call WIllInvalidateBuffers on the factory.
+  EXPECT_CALL(*video_capture_device_factory_, WillInvalidateBuffers()).Times(1);
+  StopClient(client_id1);
+  Mock::VerifyAndClearExpectations(video_capture_device_factory_);
+
+  // Disconnect the second client. Since it's the last client, the controller
+  // is about to be destroyed, so InvalidateBuffers should NOT be called.
+  // Therefore WillInvalidateBuffers should not be called on the factory.
+  EXPECT_CALL(*video_capture_device_factory_, WillInvalidateBuffers()).Times(0);
+  StopClient(client_id2);
+  Mock::VerifyAndClearExpectations(video_capture_device_factory_);
 
   EXPECT_CALL(*listener_,
               Closed(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, _));
