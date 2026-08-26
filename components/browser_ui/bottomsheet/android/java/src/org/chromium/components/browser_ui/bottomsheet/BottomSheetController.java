@@ -287,5 +287,5 @@ public interface BottomSheetController {
      * @param content The content prospectively being shown in the bottom sheet.
      * @return Whether the bottom sheet should use the large form factor UI for the given content.
      */
-    boolean isLargeFormFactorUiEnabled(BottomSheetContent content);
+    boolean isLargeFormFactorUiEnabled(@Nullable BottomSheetContent content);
 }

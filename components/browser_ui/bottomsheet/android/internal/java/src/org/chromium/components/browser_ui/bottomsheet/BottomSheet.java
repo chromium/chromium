@@ -1317,6 +1317,7 @@ class BottomSheet extends BottomSheetView
         mCurrentState = state;
 
         if (mCurrentState == SheetState.HALF || mCurrentState == SheetState.FULL) {
+            updateContentContainerHeight();
             assumeNonNull(getCurrentSheetContent());
 
             // TalkBack will announce the pane title via sendPaneChangeAccessibilityEvent and
@@ -1688,6 +1689,16 @@ class BottomSheet extends BottomSheetView
         mToolbarHolder.setBackgroundColor(Color.TRANSPARENT);
     }
 
+    private @SheetState int getTargetOrCurrentState() {
+        if (mTargetState != SheetState.NONE && mTargetState != SheetState.SCROLLING) {
+            return mTargetState;
+        }
+        if (mCurrentState != SheetState.NONE && mCurrentState != SheetState.SCROLLING) {
+            return mCurrentState;
+        }
+        return SheetState.FULL;
+    }
+
     private void updateContentContainerHeight() {
         MarginLayoutParams params =
                 (MarginLayoutParams) mBottomSheetContentContainer.getLayoutParams();
@@ -1707,10 +1718,17 @@ class BottomSheet extends BottomSheetView
             newHeight = Math.min(mVisibleViewportRect.height(), newHeight);
             mModel.set(BottomSheetProperties.CONTAINER_HEIGHT, newHeight);
         } else {
-            int targetHeight =
-                    isLargeFormFactorUiEnabled()
-                            ? (int) getSheetHeightForState(SheetState.FULL) - topMargin
-                            : ViewGroup.LayoutParams.MATCH_PARENT;
+            int targetHeight;
+            if (isLargeFormFactorUiEnabled()) {
+                if (isFullHeightWrapContent()) {
+                    targetHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
+                } else {
+                    targetHeight =
+                            (int) getSheetHeightForState(getTargetOrCurrentState()) - topMargin;
+                }
+            } else {
+                targetHeight = ViewGroup.LayoutParams.MATCH_PARENT;
+            }
             mModel.set(BottomSheetProperties.CONTAINER_HEIGHT, targetHeight);
 
             @Px int viewportBottomInset = getViewportBottomInset();
@@ -1758,6 +1776,9 @@ class BottomSheet extends BottomSheetView
 
         // The true visual height of the sheet's cosmetic wrapper.
         int visibleHeight = (int) Math.max(0, mCurrentOffsetPx);
+        if (visibleHeight == 0) {
+            return;
+        }
 
         // Ensure we don't accidentally ask for a bounds size larger than the actual layout limits.
         int targetFullHeight = (int) getSheetHeightForState(SheetState.FULL);

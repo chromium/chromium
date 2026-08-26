@@ -1526,4 +1526,63 @@ public class BottomSheetUnitTest {
         assertFalse(mSheetContainer.getClipChildren());
         assertFalse(mSheetContainer.getClipToPadding());
     }
+
+    @Test
+    public void testContentContainerHeight_LargeFormFactor() {
+        BottomSheet.setSmallScreenForTesting(false);
+        int containerHeight = 1000;
+        BottomSheet sheet =
+                (BottomSheet)
+                        LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_desktop, null);
+        mSheetContainer.removeAllViews();
+        mSheetContainer.addView(sheet);
+        mSheetContainer.layout(0, 0, 1000, containerHeight);
+        sheet.setSheetContainerForTesting(mSheetContainer);
+        sheet.setToolbarHolderForTesting(mToolbarHolder);
+        TouchRestrictingFrameLayout contentContainer =
+                sheet.findViewById(R.id.bottom_sheet_content);
+        sheet.setBottomSheetContentContainerForTesting(contentContainer);
+        sheet.setSheetBackgroundForTesting(mSheetBackground);
+        sheet.setShadowLayerForTesting(mShadowLayerView);
+
+        sheet.init(
+                mActivity.getWindow(),
+                /* keyboardDelegate= */ mKeyboardDelegate,
+                /* alwaysFullWidth= */ false,
+                /* edgeToEdgeBottomInsetSupplier= */ () -> 0,
+                /* appHeaderHeight= */ 0,
+                /* bottomMargin= */ 0,
+                mInsetObserver,
+                /* isLargeFormFactor= */ true);
+
+        doReturn(true).when(mSheetContent).supportsLargeFormFactor();
+        doReturn(0.5f).when(mSheetContent).getHalfHeightRatio();
+        doReturn(1.0f).when(mSheetContent).getFullHeightRatio();
+        doReturn(new View(mActivity)).when(mSheetContent).getContentView();
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
+        sheet.showContent(mSheetContent);
+
+        // When resting in half state, container height must be bounded to half height.
+        sheet.setSheetState(SheetState.HALF, false);
+        assertEquals(
+                (int) (sheet.getMaxSheetHeight() * 0.5f),
+                contentContainer.getLayoutParams().height);
+
+        // When resting in full state, container height must expand to full height.
+        sheet.setSheetState(SheetState.FULL, false);
+        assertEquals(sheet.getMaxSheetHeight(), contentContainer.getLayoutParams().height);
+
+        // For wrap-content sheets, container height is WRAP_CONTENT.
+        BottomSheetContent wrapContent = mock(BottomSheetContent.class);
+        doReturn(true).when(wrapContent).supportsLargeFormFactor();
+        doReturn((float) HeightMode.WRAP_CONTENT).when(wrapContent).getFullHeightRatio();
+        doReturn(new View(mActivity)).when(wrapContent).getContentView();
+        doReturn(android.R.string.ok).when(wrapContent).getSheetFullHeightAccessibilityStringId();
+        doReturn(android.R.string.ok).when(wrapContent).getSheetHalfHeightAccessibilityStringId();
+        doReturn(android.R.string.ok).when(wrapContent).getSheetHiddenAccessibilityStringId();
+        doReturn(android.R.string.ok).when(wrapContent).getSheetClosedAccessibilityStringId();
+        sheet.showContent(wrapContent);
+        assertEquals(
+                ViewGroup.LayoutParams.WRAP_CONTENT, contentContainer.getLayoutParams().height);
+    }
 }

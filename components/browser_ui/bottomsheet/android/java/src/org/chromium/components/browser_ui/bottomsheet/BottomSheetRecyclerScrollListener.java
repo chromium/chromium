@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
 
-/** Listener for scroll events of the recycler view inside a bottom sheet. */
 @NullMarked
 public class BottomSheetRecyclerScrollListener extends RecyclerView.OnScrollListener {
     private final BottomSheetController mBottomSheetController;
@@ -25,7 +24,14 @@ public class BottomSheetRecyclerScrollListener extends RecyclerView.OnScrollList
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
         super.onScrolled(recyclerView, dx, dy);
         mY = recyclerView.computeVerticalScrollOffset();
-        if (isScrolledToTop() && mBottomSheetController.getSheetState() == HALF) {
+        boolean isLargeFormFactor =
+                mBottomSheetController.isLargeFormFactorUiEnabled(
+                        mBottomSheetController.getCurrentSheetContent());
+        // On desktop, avoid layout suppression in HALF state to allow smooth content
+        // resizing and scrolling.
+        if (isScrolledToTop()
+                && mBottomSheetController.getSheetState() == HALF
+                && !isLargeFormFactor) {
             recyclerView.suppressLayout(/* suppress= */ true);
         }
     }

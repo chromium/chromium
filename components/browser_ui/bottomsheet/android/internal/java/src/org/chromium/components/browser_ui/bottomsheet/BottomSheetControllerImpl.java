@@ -811,7 +811,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     }
 
     @Override
-    public boolean isLargeFormFactorUiEnabled(BottomSheetContent content) {
+    public boolean isLargeFormFactorUiEnabled(@Nullable BottomSheetContent content) {
         return isLargeFormFactor() && content != null && content.supportsLargeFormFactor();
     }
 
