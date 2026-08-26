@@ -1102,6 +1102,14 @@
       status: {"Android": "", "default": "stable"},
     },
     {
+      // Keeps the caret outside an editable atomic inline - e.g.
+      // <div contenteditable style="display:inline-block"> - for a click that
+      // landed next to the box rather than on it.
+      // https://crbug.com/40780191
+      name: "CaretOutsideEditableAtomicInline",
+      status: "stable",
+    },
+    {
       // Kill switch for changes to RenderFrameMetadataObserverImpl in connection with Engagement
       // Signals. See https://crrev.com/c/4544201 and https://crbug.com/1458640.
       name: "CCTNewRFMPushBehavior",

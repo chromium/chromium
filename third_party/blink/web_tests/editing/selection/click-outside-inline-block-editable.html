@@ -1,0 +1,54 @@
+<!doctype html>
+<!--
+Clicking next to - rather than on - an editable atomic inline must not move the
+selection into it, and therefore must not focus it. See crbug.com/40780191.
+-->
+<script src="../../resources/ahem.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+<script src="../../resources/testdriver-actions.js"></script>
+<style>
+body { margin: 0; }
+#wrapper { padding: 50px; font: 20px/1 Ahem; }
+#target { display: inline-block; width: 100px; height: 20px; }
+</style>
+<div id="wrapper"><div id="target" contenteditable>XX</div></div>
+<script>
+const target = document.getElementById('target');
+
+async function clickAt(x, y) {
+  target.blur();
+  getSelection().removeAllRanges();
+  await new test_driver.Actions()
+      .pointerMove(x, y)
+      .pointerDown()
+      .pointerUp()
+      .send();
+}
+
+function clickBeside(name, dx) {
+  promise_test(async () => {
+    const rect = target.getBoundingClientRect();
+    const x = dx < 0 ? rect.left + dx : rect.right + dx;
+    await clickAt(Math.round(x), Math.round(rect.top + rect.height / 2));
+    assert_not_equals(document.activeElement, target,
+                      'target should not be focused');
+    assert_false(target.contains(getSelection().anchorNode),
+                 'selection should not be inside target');
+  }, name);
+}
+
+clickBeside('click to the left of an inline-block contenteditable', -20);
+clickBeside('click to the right of an inline-block contenteditable', 20);
+
+promise_test(async () => {
+  const rect = target.getBoundingClientRect();
+  await clickAt(Math.round(rect.left + rect.width / 2),
+                Math.round(rect.top + rect.height / 2));
+  assert_equals(document.activeElement, target, 'target should be focused');
+  assert_true(target.contains(getSelection().anchorNode),
+              'selection should be inside target');
+}, 'click inside an inline-block contenteditable still focuses it');
+</script>

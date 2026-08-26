@@ -1518,6 +1518,34 @@ void PhysicalBoxFragment::AddOutlineRectsForDescendant(
   }
 }
 
+namespace {
+
+// True if |position| sits in a non-editable container directly beside an
+// editable atomic inline.
+bool IsNextToNestedEditableAtomicInline(const Position& position) {
+  if (!RuntimeEnabledFeatures::CaretOutsideEditableAtomicInlineEnabled()) {
+    return false;
+  }
+  const Node* container = position.ComputeContainerNode();
+  if (!container || IsEditable(*container)) {
+    return false;
+  }
+  // The box is the node on either side of |position|.
+  for (const Node* child : {position.ComputeNodeBeforePosition(),
+                            position.ComputeNodeAfterPosition()}) {
+    if (!child || !IsEditable(*child)) {
+      continue;
+    }
+    const LayoutObject* layout_object = child->GetLayoutObject();
+    if (layout_object && layout_object->IsAtomicInline()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
+
 PositionWithAffinity PhysicalBoxFragment::PositionForPoint(
     PhysicalOffset point) const {
   if (layout_object_->IsLayoutReplaced()) {
@@ -1534,8 +1562,13 @@ PositionWithAffinity PhysicalBoxFragment::PositionForPoint(
       InlineCursor cursor(*this, *items);
       if (const PositionWithAffinity position =
               cursor.PositionForPointInInlineFormattingContext(
-                  point_in_contents, *this))
+                  point_in_contents, *this)) {
+        // Adjusting would snap a deliberately-outside position back in.
+        if (IsNextToNestedEditableAtomicInline(position.GetPosition())) {
+          return position;
+        }
         return AdjustForEditingBoundary(position);
+      }
       return layout_object_->CreatePositionWithAffinity(0);
     }
   }
