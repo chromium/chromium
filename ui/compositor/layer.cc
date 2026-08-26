@@ -1059,9 +1059,6 @@ bool Layer::SchedulePaint(const gfx::Rect& invalid_rect) {
   }
 
   damaged_region_.Union(invalid_rect);
-  if (layer_mask_)
-    layer_mask_->damaged_region_.Union(invalid_rect);
-
   OnPaintScheduled();
   return true;
 }

@@ -375,10 +375,12 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   float GetTargetOpacity() const;
 
   // Set a layer mask for a layer.
-  // Note the provided layer mask can neither have a layer mask itself nor can
-  // it have any children. The ownership of |layer_mask| will not be
-  // transferred with this call.
-  // Furthermore: A mask layer can only be set to one layer.
+  // - Callers are responsible for updating the mask layer's bounds and
+  //   scheduling paint invalidations on the mask layer when needed.
+  // - The provided layer mask can neither have a layer mask itself nor can it
+  //   have any children.
+  // - The ownership of `layer_mask` will not be transferred with this call.
+  // - A mask layer can only be set to one layer.
   void SetMaskLayer(LayerTextured* layer_mask);
   LayerTextured* layer_mask_layer() { return layer_mask_; }
   const LayerTextured* layer_mask_layer() const { return layer_mask_; }
