@@ -3773,6 +3773,103 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
             PermissionStatus::ASK);
 }
 
+// Verifies that moving an entry with a downgraded read grant transfers the
+// downgraded state to the destination path, and moving the entry back to its
+// original path does not restore the read grant.
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       NotifyEntryMoved_DowngradedReadGrantFollowsMove) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kFileSystemAccessRevokeReadOnRemove);
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
+
+  const auto file_path_info =
+      PathInfo(kTestPathInfo.path.AppendASCII("test_file.txt"));
+  const auto temp_path_info =
+      PathInfo(kTestPathInfo.path.AppendASCII("temp_file.txt"));
+
+  // Initialize read and write permissions for the target file path.
+  auto read_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, file_path_info, HandleType::kFile, UserAction::kSave);
+  auto write_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, file_path_info, HandleType::kFile, UserAction::kSave);
+  EXPECT_EQ(read_grant->GetStatus(), PermissionStatus::GRANTED);
+  EXPECT_EQ(write_grant->GetStatus(), PermissionStatus::GRANTED);
+
+  // Calling `NotifyEntryRemoved()` downgrades the read grant and records the
+  // path in `downgraded_read_paths`.
+  permission_context()->NotifyEntryRemoved(kTestOrigin, file_path_info);
+  EXPECT_EQ(read_grant->GetStatus(), PermissionStatus::DENIED);
+  EXPECT_EQ(write_grant->GetStatus(), PermissionStatus::GRANTED);
+  EXPECT_TRUE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, file_path_info.path));
+
+  // Calling `NotifyEntryMoved()` transfers the downgraded read state to the
+  // destination path.
+  permission_context()->NotifyEntryMoved(kTestOrigin, file_path_info,
+                                         temp_path_info);
+  EXPECT_EQ(read_grant->GetPath(), temp_path_info.path);
+  EXPECT_EQ(read_grant->GetStatus(), PermissionStatus::DENIED);
+  EXPECT_FALSE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, file_path_info.path));
+  EXPECT_TRUE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, temp_path_info.path));
+
+  // Moving the entry back to its original path retains the `DENIED` read grant
+  // because the origin has not authored new content at the destination.
+  permission_context()->NotifyEntryMoved(kTestOrigin, temp_path_info,
+                                         file_path_info);
+  EXPECT_EQ(read_grant->GetPath(), file_path_info.path);
+  EXPECT_EQ(read_grant->GetStatus(), PermissionStatus::DENIED);
+  EXPECT_EQ(write_grant->GetStatus(), PermissionStatus::GRANTED);
+  EXPECT_TRUE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, file_path_info.path));
+  EXPECT_FALSE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, temp_path_info.path));
+
+  // Calling `NotifyEntryModified()` at the original path restores the read
+  // grant.
+  permission_context()->NotifyEntryModified(kTestOrigin, file_path_info);
+  EXPECT_EQ(read_grant->GetStatus(), PermissionStatus::GRANTED);
+  EXPECT_FALSE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, file_path_info.path));
+}
+
+// Verifies that moving a handle with a downgraded read grant successfully
+// updates the grant path without triggering assertion failures.
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       NotifyEntryMoved_DowngradedReadGrantMigratesWithoutAssertionFailure) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kFileSystemAccessRevokeReadOnRemove);
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
+
+  const auto file_path_info =
+      PathInfo(kTestPathInfo.path.AppendASCII("test_file.txt"));
+  const auto temp_path_info =
+      PathInfo(kTestPathInfo.path.AppendASCII("temp_file.txt"));
+
+  // Initialize read and write grants.
+  auto read_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, file_path_info, HandleType::kFile, UserAction::kSave);
+  auto write_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, file_path_info, HandleType::kFile, UserAction::kSave);
+  EXPECT_EQ(read_grant->GetStatus(), PermissionStatus::GRANTED);
+  EXPECT_EQ(write_grant->GetStatus(), PermissionStatus::GRANTED);
+
+  // Downgrade the read grant to `DENIED` via `NotifyEntryRemoved()`.
+  permission_context()->NotifyEntryRemoved(kTestOrigin, file_path_info);
+  EXPECT_EQ(read_grant->GetStatus(), PermissionStatus::DENIED);
+
+  // Moving the handle invokes `PermissionGrantImpl::UpdateGrantPath()`.
+  // This operation must successfully update the grant path for a `DENIED`
+  // grant without triggering assertion failures in debug builds.
+  permission_context()->NotifyEntryMoved(kTestOrigin, file_path_info,
+                                         temp_path_info);
+  EXPECT_EQ(read_grant->GetPath(), temp_path_info.path);
+  EXPECT_EQ(read_grant->GetStatus(), PermissionStatus::DENIED);
+}
+
 // Tests that moving a file to a destination with a pre-existing permission
 // grant works correctly.
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
