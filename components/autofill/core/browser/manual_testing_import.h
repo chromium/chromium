@@ -100,12 +100,34 @@ namespace autofill {
 //         "Merchant name": "Example Store",
 //         "Product names": "Widget, Gadget"
 //       }
+//     },
+//     {
+//       "entity_type": "Passport",
+//       "record_type": "personalContext",
+//       "sources": [
+//         {
+//           "type": "photos",
+//           "url": "https://photos.google.com/sample"
+//         },
+//         {
+//           "type": "gmail",
+//           "url": "https://mail.google.com/sample"
+//         }
+//       ],
+//       "attributes": {
+//         "Number": "123456789",
+//         "Name": "John Doe",
+//         "Country": "US"
+//       }
 //     }
 //   ]
 // }
 // The "record_type" is optional. For profiles, it can either be "account" or
 // "localOrSyncable" (defaulting to "localOrSyncable"). For entities, it can
 // be "local", "serverWallet", or "personalContext" (defaulting to "local").
+// For entities with "personalContext" record type, the "sources" list is
+// optional and can contain objects with "type" ("gmail" or "photos") and
+// "url".
 // The "initial_creator_id" is an optional int value which sets the profile's
 // property of the same name. The "nickname" in credit cards optional as well.
 // "field-type" corresponds to FieldTypes like "NAME_FULL". For profiles and

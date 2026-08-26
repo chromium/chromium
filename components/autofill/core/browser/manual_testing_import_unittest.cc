@@ -378,6 +378,53 @@ TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_RecordType) {
             EntityInstance::RecordType::kPersonalContext);
 }
 
+// Tests that personalContext sources are parsed correctly.
+TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_PersonalContext_Sources) {
+  base::FilePath file_path = GetFilePath();
+  base::WriteFile(file_path, R"({
+    "entities" : [
+      {
+        "entity_type" : "Passport",
+        "record_type" : "personalContext",
+        "sources" : [
+          {
+            "type" : "photos",
+            "url" : "https://photos.google.com/sample"
+          },
+          {
+            "type" : "gmail",
+            "url" : "https://mail.google.com/sample"
+          }
+        ],
+        "attributes" : {
+          "Number" : "12345"
+        }
+      }
+    ]
+  })");
+
+  std::optional<std::vector<EntityInstance>> entities =
+      LoadEntitiesFromFile(file_path);
+  ASSERT_TRUE(entities.has_value());
+  ASSERT_EQ(entities->size(), 1u);
+
+  using Source = EntityInstance::PersonalContextRecordTypePayload::Source;
+  using PersonalContextRecordTypePayload =
+      EntityInstance::PersonalContextRecordTypePayload;
+  const EntityInstance& entity = entities->front();
+  ASSERT_EQ(entity.record_type(), EntityInstance::RecordType::kPersonalContext);
+  const auto* payload =
+      std::get_if<PersonalContextRecordTypePayload>(&entity.record_type_data());
+  ASSERT_TRUE(payload);
+  EXPECT_EQ(*payload, (PersonalContextRecordTypePayload{
+                          .sources = {
+                              {.type = Source::Type::kPhotos,
+                               .url = "https://photos.google.com/sample"},
+                              {.type = Source::Type::kGmail,
+                               .url = "https://mail.google.com/sample"},
+                          }}));
+}
+
 // Tests that invalid entity record_type fails import.
 TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_InvalidRecordType) {
   base::FilePath file_path = GetFilePath();
