@@ -1055,7 +1055,7 @@ For example, some websites may respond to this request by showing you ads that a
         Opt-out request
       </message>
       <message name="IDS_UNIVERSAL_OPT_OUT_INFO_TEXT" desc="Info text for the 'Universal Opt Out' preference." translateable="false">
-        Depending on the laws in your region, this opt-out request may affect the sale or sharing of your data, or it may affect how your data is used for targeted advertising. The sites you visit, including Google, are responsible for determining how they respond to this request.
+        The sites you visit, including Google, are responsible for determining how they respond to this request. Depending on the laws in your region, sites may respond by limiting the sale or sharing of your data or its use for personalized ads.
       </message>
       <message name="IDS_CAN_MAKE_PAYMENT_TITLE" desc="Title for preference to allow websites to know whether you have payment methods available through PaymentRequest.CanMakePayment interface">
         Access payment methods
