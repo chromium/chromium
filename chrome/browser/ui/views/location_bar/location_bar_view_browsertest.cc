@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -97,7 +98,9 @@ class TestLocationBarObserver : public LocationBar::Observer {
 
 class LocationBarViewBrowserTest : public InProcessBrowserTest {
  protected:
-  LocationBarViewBrowserTest() = default;
+  LocationBarViewBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(features::kWebUILocationBar);
+  }
 
   LocationBarViewBrowserTest(const LocationBarViewBrowserTest&) = delete;
   LocationBarViewBrowserTest& operator=(const LocationBarViewBrowserTest&) =
@@ -154,6 +157,9 @@ class LocationBarViewBrowserTest : public InProcessBrowserTest {
   }
 
   raw_ptr<ZoomBubbleCoordinator> zoom_bubble_coordinator_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Ensure the location bar decoration is added when zooming, and is removed when
@@ -376,21 +382,16 @@ IN_PROC_BROWSER_TEST_F(TouchLocationBarViewBrowserTest, AccessibleProperties) {
   EXPECT_EQ(data.role, ax::mojom::Role::kGroup);
 }
 
-class SecurityIndicatorTest : public InProcessBrowserTest {
+class SecurityIndicatorTest : public LocationBarViewBrowserTest {
  public:
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-  }
-
   SecurityIndicatorTest() = default;
 
   SecurityIndicatorTest(const SecurityIndicatorTest&) = delete;
   SecurityIndicatorTest& operator=(const SecurityIndicatorTest&) = delete;
 
-  LocationBarView* GetLocationBarView() {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    return browser_view->GetLocationBarView();
+  void SetUpOnMainThread() override {
+    LocationBarViewBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
   }
 };
 
@@ -441,6 +442,7 @@ class LocationBarViewGeolocationBackForwardCacheBrowserTest
   }
 
   void SetUpOnMainThread() override {
+    LocationBarViewBrowserTest::SetUpOnMainThread();
     // Replace any hostname to 127.0.0.1. (e.g. b.com -> 127.0.0.1)
     host_resolver()->AddRule("*", "127.0.0.1");
   }
@@ -530,11 +532,13 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewGeolocationBackForwardCacheBrowserTest,
 }
 
 class LocationBarViewPageActionHideWhileEditingTests
-    : public InProcessBrowserTest {
+    : public LocationBarViewBrowserTest {
  public:
   LocationBarViewPageActionHideWhileEditingTests() = default;
 
   void SetUpOnMainThread() override {
+    LocationBarViewBrowserTest::SetUpOnMainThread();
+
     // 1. Ensure the Zoom action is globally visible/enabled.
     auto* zoom_action =
         actions::ActionManager::Get().FindAction(kActionShowZoomBubble);
@@ -564,18 +568,11 @@ class LocationBarViewPageActionHideWhileEditingTests
         kActionShowZoomBubble);
   }
 
-  LocationBarView* GetLocationBarView() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->GetLocationBarView();
-  }
-
   OmniboxView* GetOmniboxView() {
     return GetLocationBarView()->GetOmniboxView();
   }
 
   void EnsureLayout() { views::test::RunScheduledLayout(GetLocationBarView()); }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(LocationBarViewPageActionHideWhileEditingTests,
@@ -624,7 +621,7 @@ class LocationBarViewAddContextButtonBrowserTest
     : public LocationBarViewBrowserTest {
  public:
   LocationBarViewAddContextButtonBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
+    feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{omnibox::internal::kWebUIOmniboxAimPopup,
           {{omnibox::kShowToolsAndModels.name, "true"}}},
@@ -641,7 +638,7 @@ class LocationBarViewAddContextButtonBrowserTest
   ~LocationBarViewAddContextButtonBrowserTest() override = default;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // TODO(crbug.com/459561205): This test is flaky on Linux.
