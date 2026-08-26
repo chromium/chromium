@@ -35,6 +35,7 @@ FlexGapAccumulator::FlexGapAccumulator(
     gap_geometry_->ReserveMainGaps(num_lines - 1);
   }
   gap_geometry_->ResizeFlexCrossGapSizes(num_lines);
+  gap_geometry_->SetMainDirection(is_column_ ? kForColumns : kForRows);
   if (is_column_) {
     // Entries use global-line indexing. Pre-size the vector so lines skipped
     // by this fragment still have entries, even when the fragment has no row
@@ -45,8 +46,6 @@ FlexGapAccumulator::FlexGapAccumulator(
   // `ApplyReversals` puts `flex_lines` in geometric order before this
   // accumulator is constructed. Record the reversal so paint can assign gap
   // decoration values in placement order.
-  // TODO(javiercon): Handle fragmentation with reversals and add
-  // fragmentation WPTs.
   if (placement_reversal) {
     gap_geometry_->SetFlexGapPlacementReversal(*placement_reversal);
   }
@@ -69,7 +68,6 @@ const GapGeometry* FlexGapAccumulator::BuildGapGeometry(
     // the cross axis gaps become the "rows".
     gap_geometry_->SetInlineGapSize(effective_gap_between_lines_);
     gap_geometry_->SetBlockGapSize(gap_between_items_);
-    gap_geometry_->SetMainDirection(kForColumns);
   } else {
     gap_geometry_->SetBlockGapSize(effective_gap_between_lines_);
     gap_geometry_->SetInlineGapSize(gap_between_items_);
@@ -132,6 +130,7 @@ void FlexGapAccumulator::InitializeFragmentedColumnGapGeometry(
 void FlexGapAccumulator::BuildGapsForCurrentItem(
     const FlexLineVector& flex_lines,
     wtf_size_t global_line_index,
+    wtf_size_t item_index_in_line,
     LogicalOffset item_offset,
     bool is_first_item,
     bool is_last_item,
@@ -222,6 +221,14 @@ void FlexGapAccumulator::BuildGapsForCurrentItem(
   PopulateCrossGapForCurrentItem(
       flex_line, global_line_index, fragment_relative_line_index, is_first_line,
       is_last_line, single_line, main_intersection_offset, line_cross_start);
+  // Store this `CrossGap`'s index in the full gap-decoration value list.
+  const GridTrackSizingDirection cross_direction =
+      is_column_ ? kForRows : kForColumns;
+  if (in_fragmentation &&
+      gap_geometry_->HasNonIdentityDecorationOrder(cross_direction)) {
+    RecordFragmentedFlexCrossGapDecorationIndex(flex_lines, global_line_index,
+                                                item_index_in_line);
+  }
 
   if (is_last_item) {
     const LayoutUnit last_gap_offset =
@@ -230,6 +237,42 @@ void FlexGapAccumulator::BuildGapsForCurrentItem(
             : gap_geometry_->GetCrossGaps().back().GetGapOffset().inline_offset;
     content_main_end_ = std::max(last_gap_offset, container_main_end);
   }
+}
+
+void FlexGapAccumulator::RecordFragmentedFlexCrossGapDecorationIndex(
+    const FlexLineVector& flex_lines,
+    wtf_size_t global_line_index,
+    wtf_size_t item_index_in_line) {
+  CHECK_GT(item_index_in_line, 0u);
+  if (fragmented_flex_line_gap_ranges_.empty()) {
+    // Record each flex line's first `CrossGap` index and number of `CrossGap`s
+    // in the full flexbox.
+    fragmented_flex_line_gap_ranges_.ReserveInitialCapacity(flex_lines.size());
+    wtf_size_t line_start = 0;
+    for (const FlexLine& line : flex_lines) {
+      const wtf_size_t line_gap_count =
+          line.item_indices.empty() ? 0u : line.item_indices.size() - 1;
+      fragmented_flex_line_gap_ranges_.emplace_back(
+          GapGeometry::GapIndexRange{line_start, line_gap_count});
+      line_start += line_gap_count;
+    }
+  }
+  const GapGeometry::GapIndexRange line_range =
+      fragmented_flex_line_gap_ranges_[global_line_index];
+  const GapGeometry::GapIndexRange last_line_range =
+      fragmented_flex_line_gap_ranges_.back();
+  const wtf_size_t total_gap_count =
+      last_line_range.start + last_line_range.count;
+
+  // Convert the line-local gap index to its index in the full flexbox.
+  const wtf_size_t stitched_geometric_index =
+      line_range.start + item_index_in_line - 1;
+
+  // Find which gap-decoration value belongs to this gap.
+  const wtf_size_t decoration_index = gap_geometry_->DecorationIndexForCrossGap(
+      stitched_geometric_index, line_range, total_gap_count);
+  gap_geometry_->AddFragmentedFlexCrossGapDecorationIndex(decoration_index,
+                                                          total_gap_count);
 }
 
 void FlexGapAccumulator::PopulateMainGapForFirstItem(LayoutUnit cross_end) {

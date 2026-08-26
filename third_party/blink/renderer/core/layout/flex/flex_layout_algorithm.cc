@@ -2065,8 +2065,9 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
             item_index_in_line == flex_line.item_indices.size() - 1;
 
         gap_accumulator->BuildGapsForCurrentItem(
-            *flex_lines, flex_line_idx, offset, is_first_item, is_last_item,
-            is_last_line, flex_line.cross_axis_offset, flex_line.LineCrossEnd(),
+            *flex_lines, flex_line_idx, item_index_in_line, offset,
+            is_first_item, is_last_item, is_last_line,
+            flex_line.cross_axis_offset, flex_line.LineCrossEnd(),
             container_main_end);
       }
 
@@ -2652,9 +2653,9 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       }
 
       gap_accumulator->BuildGapsForCurrentItem(
-          *flex_lines, flex_line_idx, offset, is_first_item_in_line,
-          is_last_item_in_line, is_last_line, line_cross_start, line_cross_end,
-          container_main_end,
+          *flex_lines, flex_line_idx, flex_item_idx, offset,
+          is_first_item_in_line, is_last_item_in_line, is_last_line,
+          line_cross_start, line_cross_end, container_main_end,
           /*in_fragmentation=*/true);
 
       if (!is_column_ && is_last_item_in_line &&

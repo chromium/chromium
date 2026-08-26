@@ -147,7 +147,7 @@ bool GapGeometry::HasNonIdentityDecorationOrder(
          flex_gap_placement_reversal_->reverse_lines;
 }
 
-std::pair<wtf_size_t, wtf_size_t> GapGeometry::GetFlexLineCrossGapStartAndCount(
+GapGeometry::GapIndexRange GapGeometry::FlexLineCrossGapRange(
     wtf_size_t owning_main_gap_index) const {
   CHECK(flex_gap_placement_reversal_.has_value());
 
@@ -171,49 +171,46 @@ std::pair<wtf_size_t, wtf_size_t> GapGeometry::GetFlexLineCrossGapStartAndCount(
           last_main_gap.GetCrossGapAfterCount()};
 }
 
-wtf_size_t GapGeometry::DecorationIndexForGap(
-    GridTrackSizingDirection track_direction,
-    wtf_size_t geometric_index,
-    std::optional<wtf_size_t> owning_main_gap_index,
+wtf_size_t GapGeometry::DecorationIndexForMainGap(
+    wtf_size_t stitched_geometric_index,
     wtf_size_t total_gap_count) const {
-  CHECK(HasNonIdentityDecorationOrder(track_direction));
-  CHECK_LT(geometric_index, total_gap_count);
+  CHECK(flex_gap_placement_reversal_);
+  CHECK(flex_gap_placement_reversal_->reverse_lines);
+  CHECK_LT(stitched_geometric_index, total_gap_count);
+  return total_gap_count - 1 - stitched_geometric_index;
+}
 
-  if (IsMainDirection(track_direction)) {
-    return total_gap_count - 1 - geometric_index;
-  }
+wtf_size_t GapGeometry::DecorationIndexForCrossGap(
+    wtf_size_t stitched_geometric_index,
+    GapIndexRange line_range,
+    wtf_size_t total_gap_count) const {
+  CHECK(flex_gap_placement_reversal_);
+  CHECK_LT(stitched_geometric_index, total_gap_count);
+  CHECK_GE(stitched_geometric_index, line_range.start);
+  CHECK_LE(line_range.count, total_gap_count - line_range.start);
 
-  CHECK(owning_main_gap_index.has_value());
-
-  // TODO(javiercon): For fragmented flex containers, use the first fragment's
-  // break-token data to map fragment-local indices into the global decoration
-  // pattern. We'll need to pass the first fragment's data here.
-  const auto [line_start, line_gap_count] =
-      GetFlexLineCrossGapStartAndCount(*owning_main_gap_index);
-
-  CHECK_GE(geometric_index, line_start);
   // Geometric order is the order in which gaps are stored and painted, based
   // on their logical positions in the container.
-  const wtf_size_t geometric_index_in_line = geometric_index - line_start;
-  CHECK_LT(geometric_index_in_line, line_gap_count);
+  const wtf_size_t geometric_index_in_line =
+      stitched_geometric_index - line_range.start;
+  CHECK_LT(geometric_index_in_line, line_range.count);
 
   // Next, reverse the gap's index within its line for a reversed
   // `flex-direction`.
   wtf_size_t placement_index_in_line = geometric_index_in_line;
   if (flex_gap_placement_reversal_->reverse_items_in_line) {
-    CHECK_LE(placement_index_in_line, line_gap_count - 1);
-    placement_index_in_line = line_gap_count - 1 - placement_index_in_line;
+    placement_index_in_line = line_range.count - 1 - placement_index_in_line;
   }
 
   // Finally, move the complete line group to its placement-order position for
   // `wrap-reverse`.
-  CHECK_LE(line_start, total_gap_count);
-  CHECK_LE(line_gap_count, total_gap_count - line_start);
   const wtf_size_t line_start_in_placement_order =
       flex_gap_placement_reversal_->reverse_lines
-          ? total_gap_count - line_start - line_gap_count
-          : line_start;
-  return line_start_in_placement_order + placement_index_in_line;
+          ? total_gap_count - line_range.start - line_range.count
+          : line_range.start;
+  const wtf_size_t decoration_index =
+      line_start_in_placement_order + placement_index_in_line;
+  return decoration_index;
 }
 
 PhysicalRect GapGeometry::ComputeInkOverflowForGaps(

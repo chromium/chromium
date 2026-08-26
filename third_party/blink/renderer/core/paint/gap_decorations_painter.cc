@@ -259,9 +259,12 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
 
   const bool has_row_gap_fragmentation =
       gap_geometry.HasRowGapFragmentation(box_fragment_, is_main);
-
+  const bool has_fragmented_flex_cross_gap_indices =
+      !is_main && gap_geometry.HasFragmentedFlexCrossGapDecorationIndices();
   wtf_size_t total_gap_count = fragment_relative_gap_count;
-  if (has_row_gap_fragmentation) {
+  if (has_fragmented_flex_cross_gap_indices) {
+    total_gap_count = gap_geometry.FragmentedFlexCrossGapCount();
+  } else if (has_row_gap_fragmentation) {
     const BreakTokenAlgorithmData* first_fragment_data =
         GetFirstFragmentBreakTokenData(box_fragment_);
     CHECK(first_fragment_data);
@@ -289,15 +292,9 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
         cross_rule_widths, cross_gap_count);
   }
 
-  const bool all_rules_single_valued = rule_widths.HasSingleValue() &&
-                                       rule_styles.HasSingleValue() &&
-                                       rule_colors.HasSingleValue();
-  // Random access is unnecessary when decoration order matches geometric paint
-  // order, this axis has fewer than two gaps, or every rule has one value.
-  // TODO(javiercon): Preserve placement-order indices across fragmented flex
-  // containers. Until then, reversal patterns restart in each fragment.
+  // Random access is needed when decoration order differs from geometric paint
+  // order.
   const bool needs_decoration_reversal =
-      fragment_relative_gap_count > 1 && !all_rules_single_valued &&
       gap_geometry.HasNonIdentityDecorationOrder(track_direction);
 
   // TODO(javiercon): After profiling reversed and fragmented cases, consider
@@ -311,11 +308,11 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
   std::optional<GapDataListIterator<StyleColor>> color_iterator;
   if (needs_decoration_reversal) {
     reversal_width_accessor.emplace(rule_widths.GetGapDataList(),
-                                    fragment_relative_gap_count);
+                                    total_gap_count);
     reversal_style_accessor.emplace(rule_styles.GetGapDataList(),
-                                    fragment_relative_gap_count);
+                                    total_gap_count);
     reversal_color_accessor.emplace(rule_colors.GetGapDataList(),
-                                    fragment_relative_gap_count);
+                                    total_gap_count);
   } else {
     width_iterator.emplace(rule_widths.GetGapDataList(), total_gap_count);
     style_iterator.emplace(rule_styles.GetGapDataList(), total_gap_count);
@@ -359,39 +356,49 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
       AdvanceCrossGapOwnerCursor(gap_geometry, gap_index,
                                  *cross_gap_owner_index);
     }
-    // `geometric_gap_index` is the gap's index in stored paint order, based on
-    // its logical position in the container. Gap-decoration list order must be
-    // maintained across fragments, so resolve that index in the global
-    // unfragmented context when needed.
-    wtf_size_t geometric_gap_index = gap_index;
-    if (has_row_gap_fragmentation) {
-      // TODO(crbug.com/343257585): If grid-lanes gap decorations gain
-      // fragmentation support, do not pass the lane owner index to
-      // `StitchedRowGapIndex`, which expects a flex-line index.
-      CHECK(gap_geometry.GetContainerType() !=
-            GapGeometry::ContainerType::kGridLanes);
-      geometric_gap_index =
+    // `stitched_geometric_index` is this gap's index in the full container's
+    // geometric paint order. It starts as the fragment-local index and is
+    // updated below when row gaps are fragmented.
+    wtf_size_t stitched_geometric_index = gap_index;
+    if (has_row_gap_fragmentation && !has_fragmented_flex_cross_gap_indices) {
+      stitched_geometric_index =
           box_fragment_.GetLayoutObject()->StitchedRowGapIndex(
               box_fragment_, gap_index, cross_gap_owner_index);
     }
+    CHECK_LT(stitched_geometric_index, total_gap_count);
 
     StyleColor rule_color;
     EBorderStyle rule_style_value;
     int rule_width_value;
     if (needs_decoration_reversal) {
-      const wtf_size_t decoration_index = gap_geometry.DecorationIndexForGap(
-          track_direction, gap_index, cross_gap_owner_index,
-          fragment_relative_gap_count);
+      wtf_size_t decoration_index;
+      if (is_main) {
+        decoration_index = gap_geometry.DecorationIndexForMainGap(
+            stitched_geometric_index, total_gap_count);
+      } else {
+        // Fragmentation can change a `CrossGap`'s local index, so use the index
+        // saved during layout.
+        if (has_fragmented_flex_cross_gap_indices) {
+          decoration_index =
+              gap_geometry.FragmentedFlexCrossGapDecorationIndexAt(gap_index);
+        } else {
+          CHECK(cross_gap_owner_index.has_value());
+          decoration_index = gap_geometry.DecorationIndexForCrossGap(
+              stitched_geometric_index,
+              gap_geometry.FlexLineCrossGapRange(*cross_gap_owner_index),
+              total_gap_count);
+        }
+      }
       rule_color = reversal_color_accessor->ValueAt(decoration_index);
       rule_style_value = reversal_style_accessor->ValueAt(decoration_index);
       rule_width_value = reversal_width_accessor->ValueAt(decoration_index);
     } else {
-      // Advance the iterators to `geometric_gap_index` so the 'color', 'style'
-      // and 'width' patterns are maintained across fragments.
+      // Advance the iterators to `stitched_geometric_index` so the 'color',
+      // 'style' and 'width' patterns are maintained across fragments.
       if (has_row_gap_fragmentation) {
-        color_iterator->AdvanceUpTo(geometric_gap_index);
-        style_iterator->AdvanceUpTo(geometric_gap_index);
-        width_iterator->AdvanceUpTo(geometric_gap_index);
+        color_iterator->AdvanceUpTo(stitched_geometric_index);
+        style_iterator->AdvanceUpTo(stitched_geometric_index);
+        width_iterator->AdvanceUpTo(stitched_geometric_index);
       }
       rule_color = color_iterator->Next();
       rule_style_value = style_iterator->Next();

@@ -200,6 +200,7 @@ class CORE_EXPORT FlexGapAccumulator {
   // `third_party/blink/renderer/core/layout/gap/README.md`.
   void BuildGapsForCurrentItem(const FlexLineVector& flex_lines,
                                wtf_size_t global_line_index,
+                               wtf_size_t item_index_in_line,
                                LogicalOffset item_offset,
                                bool is_first_item,
                                bool is_last_item,
@@ -263,6 +264,14 @@ class CORE_EXPORT FlexGapAccumulator {
       std::optional<LayoutUnit> new_cross_end = std::nullopt);
 
  private:
+  // Stores the index used to select the color, style, and width for the
+  // `CrossGap` just added. This is needed because its fragment-local index may
+  // differ from its index in the unfragmented flexbox.
+  void RecordFragmentedFlexCrossGapDecorationIndex(
+      const FlexLineVector& flex_lines,
+      wtf_size_t global_line_index,
+      wtf_size_t item_index_in_line);
+
   // This must be done after we are done laying out, so that we know the final
   // block size of the fragment. This only needs to be done for column
   // flexboxes, since the main end in such cases will be the final block end
@@ -303,6 +312,10 @@ class CORE_EXPORT FlexGapAccumulator {
   // row gaps exist per line in a column flex container while in the case of a
   // row flex container, row gaps separate flex lines in a given fragment.
   Vector<FlexRowGapBreakTokenData> row_gap_break_token_data_;
+
+  // For every flex line, stores its first `CrossGap` index and number of
+  // `CrossGap`s in the full flexbox.
+  Vector<GapGeometry::GapIndexRange> fragmented_flex_line_gap_ranges_;
 };
 
 }  // namespace blink
