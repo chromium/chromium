@@ -557,6 +557,8 @@ export class GlicAppController implements WebviewDelegate {
   }
 
   private async load(): Promise<void> {
+    this.destroyWebview();
+
     // profileReadyState isn't available right away. Wait until it's ready.
     this.trackLoadingStageStart(LoadingStage.AWAITING_PROFILE_READY);
     await this.profileReadyInitialState.promise;
@@ -614,7 +616,6 @@ export class GlicAppController implements WebviewDelegate {
 
     // Load the web client only after cookie sync is complete.
     this.trackLoadingStageStart(LoadingStage.LOADING_WEB_CLIENT);
-    this.destroyWebview();
     this.webview = new WebviewController(
         $.webviewContainer, this.browserProxy, this,
         this.webviewPersistentState);
