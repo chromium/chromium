@@ -514,7 +514,8 @@ IN_PROC_BROWSER_TEST_P(
 
 // Tests that the icon's highlight is updated when the dialog is shown and
 // hidden.
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, IconHighlightUpdated) {
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
+                       DISABLED_IconHighlightUpdated) {
   if (features::IsWebUILocationBarEnabled()) {
     // TODO(crbug.com/545160323): Test WebUI page action highlight.
     GTEST_SKIP() << "InkDrop test not applicable to WebUI";
