@@ -66,6 +66,7 @@
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/app/safe_mode_app_state_agent.h"
 #import "ios/chrome/app/scene_identifier_map.h"
+#import "ios/chrome/app/scene_identifier_map_impl.h"
 #import "ios/chrome/app/startup/app_startup_utils.h"
 #import "ios/chrome/app/startup/chrome_app_startup_parameters.h"
 #import "ios/chrome/app/startup/chrome_main_starter.h"
@@ -560,10 +561,18 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   _chromeMain = [ChromeMainStarter startChromeMain];
 
   ApplicationContext* applicationContext = GetApplicationContext();
-  _sceneIdentifierMap = std::make_unique<LegacySceneIdentifierMap>(
-      self.appState,
-      applicationContext->GetProfileManager()->GetProfileAttributesStorage(),
-      base::ios::IsMultipleScenesSupported());
+  if (base::FeatureList::IsEnabled(kRecoverTabsOfLastClosedWindow)) {
+    _sceneIdentifierMap = std::make_unique<SceneIdentifierMapImpl>(
+        applicationContext->GetLocalState(),
+        applicationContext->GetProfileManager()->GetProfileAttributesStorage(),
+        base::ios::IsMultipleScenesSupported());
+  } else {
+    _sceneIdentifierMap = std::make_unique<LegacySceneIdentifierMap>(
+        self.appState,
+        applicationContext->GetProfileManager()->GetProfileAttributesStorage(),
+        base::ios::IsMultipleScenesSupported());
+  }
+  CHECK(_sceneIdentifierMap);
 
   // Register the ChangeProfileCommands handler with AccountProfileMapper.
   applicationContext->GetAccountProfileMapper()
