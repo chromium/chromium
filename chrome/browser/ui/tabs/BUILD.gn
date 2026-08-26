@@ -100,7 +100,6 @@ if (!is_android) {
       "glic_tab_sub_menu_model.h",
       "tab_menu_model.h",
       "tab_menu_model_delegate.h",
-      "tab_menu_model_factory.h",
     ]
 
     public_deps = [
@@ -151,7 +150,6 @@ if (!is_android) {
     sources = [
       "glic_tab_sub_menu_model.cc",
       "tab_menu_model.cc",
-      "tab_menu_model_factory.cc",
     ]
 
     deps = [

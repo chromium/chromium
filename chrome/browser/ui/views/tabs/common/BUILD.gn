@@ -172,6 +172,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/animation",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_menu",
     "//chrome/browser/ui/tabs/tab_strip_api",
     "//chrome/browser/ui/views/animations",
     "//chrome/browser/ui/views/tabs/hovercard",

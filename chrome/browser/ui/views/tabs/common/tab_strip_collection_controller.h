@@ -9,7 +9,6 @@
 
 #include "base/callback_list.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/tabs/common/tab_drag_handler.h"
@@ -49,9 +48,7 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
                                RootTabCollectionNode& root_node,
                                TabDragHandler& drag_handler,
                                TabHoverCardController* hover_card_controller,
-                               TabStripOrientation orientation,
-                               std::unique_ptr<TabMenuModelFactory>
-                                   menu_model_factory_override = nullptr);
+                               TabStripOrientation orientation);
   TabStripCollectionController(const TabStripCollectionController&) = delete;
   TabStripCollectionController& operator=(const TabStripCollectionController&) =
       delete;
@@ -165,7 +162,6 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
   void AnnounceTabRemovedFromGroup(tab_groups::TabGroupId group_id);
 
   std::unique_ptr<TabContextMenuController> context_menu_controller_;
-  std::unique_ptr<TabMenuModelFactory> menu_model_factory_;
   std::unique_ptr<ExpandOnHoverLock> expand_on_hover_lock_;
 
   raw_ptr<TabStripModel> model_;

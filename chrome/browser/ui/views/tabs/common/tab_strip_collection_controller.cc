@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
-#include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
+#include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -60,8 +60,7 @@ TabStripCollectionController::TabStripCollectionController(
     RootTabCollectionNode& root_node,
     TabDragHandler& drag_handler,
     TabHoverCardController* hover_card_controller,
-    TabStripOrientation orientation,
-    std::unique_ptr<TabMenuModelFactory> menu_model_factory_override)
+    TabStripOrientation orientation)
     : model_(model),
       browser_view_(browser_view),
       root_node_(root_node),
@@ -72,12 +71,6 @@ TabStripCollectionController::TabStripCollectionController(
   if (orientation == TabStripOrientation::kHorizontal) {
     tab_closing_helper_ =
         std::make_unique<HorizontalTabClosingHelper>(root_node);
-  }
-
-  if (menu_model_factory_override) {
-    menu_model_factory_ = std::move(menu_model_factory_override);
-  } else {
-    menu_model_factory_ = std::make_unique<TabMenuModelFactory>();
   }
 
   if (GlassFrameService* service = GlassFrameService::GetInstance()) {
@@ -452,7 +445,7 @@ void TabStripCollectionController::ShowTabContextMenu(
   context_menu_controller_ =
       std::make_unique<TabContextMenuController>(tab->GetHandle(), this);
 
-  auto model = menu_model_factory_->Create(
+  auto model = std::make_unique<TabMenuModel>(
       context_menu_controller_.get(),
       browser_view_->browser()->GetFeatures().tab_menu_model_delegate(), model_,
       tab_index.value());
@@ -467,10 +460,9 @@ void TabStripCollectionController::ShowTabContextMenu(
       base::BindRepeating(&TabStripCollectionController::OnTabContextMenuClosed,
                           base::Unretained(this));
 
-  ui::SimpleMenuModel* model_ptr = model.get();
-  context_menu_controller_->LoadModel(
-      std::move(model), menu_model_factory_->AsTabMenuModel(model_ptr),
-      std::move(on_menu_closed));
+  TabMenuModel* model_ptr = model.get();
+  context_menu_controller_->LoadModel(std::move(model), model_ptr,
+                                      std::move(on_menu_closed));
 
   context_menu_controller_->RunMenuAt(point, source_type,
                                       collection_node->view()->GetWidget());

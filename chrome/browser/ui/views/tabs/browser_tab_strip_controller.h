@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/tabs/hover_tab_selector.h"
-#include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
@@ -44,10 +43,7 @@ class BrowserTabStripController : public TabStripController,
                                   public TabStripModelObserver,
                                   public TabContextMenuController::Delegate {
  public:
-  BrowserTabStripController(TabStripModel* model,
-                            BrowserView* browser_view,
-                            std::unique_ptr<TabMenuModelFactory>
-                                menu_model_factory_override = nullptr);
+  BrowserTabStripController(TabStripModel* model, BrowserView* browser_view);
   BrowserTabStripController(const BrowserTabStripController&) = delete;
   BrowserTabStripController& operator=(const BrowserTabStripController&) =
       delete;
@@ -187,8 +183,6 @@ class BrowserTabStripController : public TabStripController,
   // top-of-window views to be revealed when the user is dragging `tabstrip`'s
   // tabs.
   std::unique_ptr<ImmersiveRevealedLock> immersive_reveal_lock_;
-
-  std::unique_ptr<TabMenuModelFactory> menu_model_factory_;
 
   base::CallbackListSubscription glass_frame_service_subscription_;
 };
