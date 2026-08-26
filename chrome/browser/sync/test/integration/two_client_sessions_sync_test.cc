@@ -32,9 +32,11 @@ using sessions_helper::DeleteForeignSession;
 using sessions_helper::ForeignSessionsMatchChecker;
 using sessions_helper::GetSessionData;
 using sessions_helper::NavigateTab;
+using sessions_helper::NavigateTabInWindow;
 using sessions_helper::OpenMultipleTabs;
 using sessions_helper::OpenTab;
 using sessions_helper::OpenTabAtIndex;
+using sessions_helper::OpenTabAtIndexInWindow;
 using sessions_helper::ScopedWindowMap;
 using sessions_helper::SyncedSessionVector;
 
@@ -217,12 +219,13 @@ IN_PROC_BROWSER_TEST_P(TwoClientSessionsSyncTest, MultipleWindowsMultipleTabs) {
   ASSERT_TRUE(CheckInitialState(1));
 
   NavigateTab(0, GURL(kURL1));
-  EXPECT_TRUE(OpenTabAtIndex(0, 1, GURL(kURL2)));
+  EXPECT_TRUE(OpenTabAtIndex(0, /*tab_index=*/1, GURL(kURL2)));
 
-  // Add a second browser for profile 0. This browser ends up in index 2.
+  // Add a second browser for profile 0.
   AddBrowser(0);
-  NavigateTab(2, GURL(kURL3));
-  EXPECT_TRUE(OpenTabAtIndex(2, 1, GURL(kURL4)));
+  NavigateTabInWindow(0, /*window_index=*/1, GURL(kURL3));
+  EXPECT_TRUE(OpenTabAtIndexInWindow(0, /*window_index=*/1, /*tab_index=*/1,
+                                     GURL(kURL4)));
 
   EXPECT_TRUE(WaitForForeignSessionsToSync(0, 1));
 }

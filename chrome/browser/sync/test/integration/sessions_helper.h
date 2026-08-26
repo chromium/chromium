@@ -27,23 +27,23 @@ using SyncedSessionVector = std::vector<
 using ScopedWindowMap =
     std::map<SessionID, std::unique_ptr<sync_sessions::SyncedSessionWindow>>;
 
-// Copies the local session windows of profile at |index| to |local_windows|.
-// Returns true if successful.
-bool GetLocalWindows(int browser_index, ScopedWindowMap* local_windows);
+// Copies the local session windows of profile at `profile_index` to
+// `local_windows`. Returns true if successful.
+bool GetLocalWindows(int profile_index, ScopedWindowMap* local_windows);
 
 // Checks that window count and foreign session count are 0.
-bool CheckInitialState(int browser_index);
+bool CheckInitialState(int profile_index);
 
 // Returns number of open windows for a profile.
-int GetNumWindows(int browser_index);
+int GetNumWindows(int profile_index);
 
 // Returns number of foreign sessions for a profile.
-int GetNumForeignSessions(int browser_index);
+int GetNumForeignSessions(int profile_index);
 
 // Fills the sessions vector with the SyncableService's foreign session data.
-// Caller owns |sessions|, but not SyncedSessions objects within.
+// Caller owns `sessions`, but not SyncedSessions objects within.
 // Returns true if foreign sessions were found, false otherwise.
-bool GetSessionData(int browser_index, SyncedSessionVector* sessions);
+bool GetSessionData(int profile_index, SyncedSessionVector* sessions);
 
 // Compares two tab navigations base on the parameters we sync.
 // (Namely, we don't sync state or type mask)
@@ -60,60 +60,73 @@ bool NavigationEquals(const sessions::SerializedNavigationEntry& expected,
 // - false otherwise.
 bool WindowsMatch(const ScopedWindowMap& win1, const ScopedWindowMap& win2);
 
-// Opens (appends) a single tab  in the browser at |index| and block until the
-// sessions bridge is aware of it. Returns true upon success, false otherwise.
-bool OpenTab(int browser_index, const GURL& url);
+// Opens (appends) a single tab in the primary browser at `profile_index` and
+// blocks until the sessions bridge is aware of it. Returns true upon success.
+bool OpenTab(int profile_index, const GURL& url);
 
-// See OpenTab, except that the tab is opened in position |tab_index|.
-// If |tab_index| is -1 or greater than the number of tabs, the tab will be
+// Opens (appends) a single tab in the browser at `window_index` for
+// `profile_index` and blocks until the sessions bridge is aware of it.
+bool OpenTabInWindow(int profile_index, int window_index, const GURL& url);
+
+// See OpenTab, except that the tab is opened in position `tab_index`.
+// If `tab_index` is -1 or greater than the number of tabs, the tab will be
 // appended to the end of the strip. i.e. if tab_index is 3 for a tab strip of
 // size 1, the new tab will be in position 1.
-bool OpenTabAtIndex(int browser_index, int tab_index, const GURL& url);
+bool OpenTabAtIndex(int profile_index, int tab_index, const GURL& url);
+bool OpenTabAtIndexInWindow(int profile_index,
+                            int window_index,
+                            int tab_index,
+                            const GURL& url);
 
-// Opens multiple tabs and blocks until the sessions bridge is aware of all of
-// them. Returns true on success, false on failure.
-bool OpenMultipleTabs(int browser_index, const std::vector<GURL>& urls);
+// Opens multiple tabs in the primary browser for `profile_index` and blocks
+// until the sessions bridge is aware of all of them. Returns true on success,
+// false on failure.
+bool OpenMultipleTabs(int profile_index, const std::vector<GURL>& urls);
 
-// Closes the tab |tab_index| in the browser at |index|.
-void CloseTab(int browser_index, int tab_index);
+// Closes the tab `tab_index` in the primary browser at `profile_index`.
+void CloseTab(int profile_index, int tab_index);
 
-// Moves the tab in position |tab_index| in the TabStrip for browser at
-// |from_browser_index| to the TabStrip for browser at |to_browser_index|.
-void MoveTab(int from_browser_index, int to_browser_index, int tab_index);
+// Moves the tab in position `tab_index` in the TabStrip for `from_window_index`
+// to the TabStrip for `to_window_index` in `profile_index`.
+void MoveTab(int profile_index,
+             int from_window_index,
+             int to_window_index,
+             int tab_index);
 
-// Navigate the active tab for browser in position |index| to the given
+// Navigate the active tab for primary browser of `profile_index` to the given
 // URL.
-void NavigateTab(int browser_index, const GURL& url);
+void NavigateTab(int profile_index, const GURL& url);
+void NavigateTabInWindow(int profile_index, int window_index, const GURL& url);
 
-// Navigate the active tab for browser in position |index| back by one;
-// if this isn't possible, does nothing
-void NavigateTabBack(int browser_index);
+// Navigate the active tab for the primary browser of |profile_index| back by
+// one; if this isn't possible, does nothing.
+void NavigateTabBack(int profile_index);
 
-// Navigate the active tab for browser in position |index| forward by
-// one; if this isn't possible, does nothing
-void NavigateTabForward(int browser_index);
+// Navigate the active tab for the primary browser of |profile_index| forward
+// by one; if this isn't possible, does nothing.
+void NavigateTabForward(int profile_index);
 
 // Wait for a session change to |web_contents| to propagate to the model
 // associator. Will return true once |url| has been found, or false if it times
 // out while waiting.
-bool WaitForTabToLoad(int browser_index,
+bool WaitForTabToLoad(int profile_index,
                       const GURL& url,
                       content::WebContents* web_contents);
 
 // Wait for each url in |urls| to load. The ordering of |urls| is assumed to
 // match the ordering of the corresponding tabs.
-bool WaitForTabsToLoad(int browser_index, const std::vector<GURL>& urls);
+bool WaitForTabsToLoad(int profile_index, const std::vector<GURL>& urls);
 
 // Stores a pointer to the local session for a given profile in |session|.
 // Returns true on success, false on failure.
-bool GetLocalSession(int browser_index,
+bool GetLocalSession(int profile_index,
                      const sync_sessions::SyncedSession** session);
 
 // Deletes the foreign session with tag |session_tag| from the profile specified
-// by |index|. This will affect all synced clients.
+// by |profile_index|. This will affect all synced clients.
 // Note: We pass the session_tag in by value to ensure it's not a reference
 // to the session tag within the SyncedSession we plan to delete.
-void DeleteForeignSession(int browser_index, std::string session_tag);
+void DeleteForeignSession(int profile_index, std::string session_tag);
 
 // Checker to block until the foreign sessions for a particular profile matches
 // the local sessions from another profile.

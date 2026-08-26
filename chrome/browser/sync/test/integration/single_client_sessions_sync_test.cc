@@ -73,6 +73,7 @@ using sessions_helper::NavigateTabBack;
 using sessions_helper::NavigateTabForward;
 using sessions_helper::OpenTab;
 using sessions_helper::OpenTabAtIndex;
+using sessions_helper::OpenTabInWindow;
 using sessions_helper::ScopedWindowMap;
 using sessions_helper::SessionEntitiesChecker;
 using sessions_helper::SyncedSessionVector;
@@ -662,7 +663,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, OpenNewWindow) {
   GURL new_window_url =
       embedded_test_server()->GetURL("www.host2.com", "/sync/simple.html");
   AddBrowser(0);
-  ASSERT_TRUE(OpenTab(1, new_window_url));
+  ASSERT_TRUE(OpenTabInWindow(0, /*window_index=*/1, new_window_url));
 
   WaitForHierarchyOnServer(
       SessionsHierarchy({{base_url.spec()}, {new_window_url.spec()}}));
@@ -828,13 +829,14 @@ IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, TabMovedToOtherWindow) {
   GURL new_window_url =
       embedded_test_server()->GetURL("www.host2.com", "/sync/simple.html");
   AddBrowser(0);
-  ASSERT_TRUE(OpenTab(1, new_window_url));
+  ASSERT_TRUE(OpenTabInWindow(0, /*window_index=*/1, new_window_url));
 
   WaitForHierarchyOnServer(SessionsHierarchy(
       {{base_url.spec(), moved_tab_url.spec()}, {new_window_url.spec()}}));
 
-  // Move tab 1 in browser 0 to browser 1.
-  MoveTab(0, 1, 1);
+  // Move tab 1 in window 0 to window 1.
+  MoveTab(/*profile_index=*/0, /*from_window_index=*/0, /*to_window_index=*/1,
+          /*tab_index=*/1);
 
   WaitForHierarchyOnServer(SessionsHierarchy(
       {{base_url.spec()}, {new_window_url.spec(), moved_tab_url.spec()}}));

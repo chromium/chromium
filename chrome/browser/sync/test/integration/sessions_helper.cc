@@ -45,22 +45,22 @@ namespace sessions_helper {
 
 namespace {
 
-Profile* GetProfileOrDie(int browser_index) {
-  Profile* profile = test()->GetProfile(browser_index);
+Profile* GetProfileOrDie(int profile_index) {
+  Profile* profile = test()->GetProfile(profile_index);
   CHECK(profile);
   return profile;
 }
 
-BrowserWindowInterface* GetBrowserOrDie(int browser_index) {
-  BrowserWindowInterface* browser = test()->GetBrowser(browser_index);
+Browser* GetBrowserOrDie(int profile_index, int window_index = 0) {
+  Browser* browser = test()->GetBrowser(profile_index, window_index);
   CHECK(browser);
   return browser;
 }
 
-bool SessionsSyncBridgeHasTabWithURL(int browser_index, const GURL& url) {
+bool SessionsSyncBridgeHasTabWithURL(int profile_index, const GURL& url) {
   content::RunAllPendingInMessageLoop();
   const sync_sessions::SyncedSession* local_session;
-  if (!GetLocalSession(browser_index, &local_session)) {
+  if (!GetLocalSession(profile_index, &local_session)) {
     return false;
   }
 
@@ -129,12 +129,12 @@ std::vector<sync_pb::SessionSpecifics> SyncEntitiesToSessionSpecifics(
 
 }  // namespace
 
-bool GetLocalSession(int browser_index,
+bool GetLocalSession(int profile_index,
                      const sync_sessions::SyncedSession** session) {
   CHECK(session);
   sync_sessions::SessionSyncService* session_sync_service =
       SessionSyncServiceFactory::GetInstance()->GetForProfile(
-          GetProfileOrDie(browser_index));
+          GetProfileOrDie(profile_index));
   CHECK(session_sync_service);
   sync_sessions::OpenTabsUIDelegate* delegate =
       session_sync_service->GetOpenTabsUIDelegate();
@@ -144,86 +144,102 @@ bool GetLocalSession(int browser_index,
   return delegate->GetLocalSession(session);
 }
 
-bool OpenTab(int browser_index, const GURL& url) {
-  DVLOG(1) << "Opening tab: " << url.spec() << " using browser "
-           << browser_index << ".";
-  TabStripModel* tab_strip = GetBrowserOrDie(browser_index)->tab_strip_model();
+bool OpenTab(int profile_index, const GURL& url) {
+  return OpenTabInWindow(profile_index, /*window_index=*/0, url);
+}
+
+bool OpenTabInWindow(int profile_index, int window_index, const GURL& url) {
+  DVLOG(1) << "Opening tab: " << url.spec() << " using profile "
+           << profile_index << " window " << window_index << ".";
+  TabStripModel* tab_strip =
+      GetBrowserOrDie(profile_index, window_index)->tab_strip_model();
   int tab_index = tab_strip->count();
-  return OpenTabAtIndex(browser_index, tab_index, url);
+  return OpenTabAtIndexInWindow(profile_index, window_index, tab_index, url);
 }
 
-bool OpenTabAtIndex(int browser_index, int tab_index, const GURL& url) {
-  chrome::AddTabAt(GetBrowserOrDie(browser_index), url, tab_index, true);
-  return WaitForTabToLoad(browser_index, url,
-                          test()
-                              ->GetBrowser(browser_index)
-                              ->tab_strip_model()
-                              ->GetWebContentsAt(tab_index));
+bool OpenTabAtIndex(int profile_index, int tab_index, const GURL& url) {
+  return OpenTabAtIndexInWindow(profile_index, /*window_index=*/0, tab_index,
+                                url);
 }
 
-bool OpenMultipleTabs(int browser_index, const std::vector<GURL>& urls) {
-  BrowserWindowInterface* browser = GetBrowserOrDie(browser_index);
+bool OpenTabAtIndexInWindow(int profile_index,
+                            int window_index,
+                            int tab_index,
+                            const GURL& url) {
+  Browser* browser = GetBrowserOrDie(profile_index, window_index);
+  chrome::AddTabAt(browser, url, tab_index, true);
+  return WaitForTabToLoad(
+      profile_index, url,
+      browser->tab_strip_model()->GetWebContentsAt(tab_index));
+}
+
+bool OpenMultipleTabs(int profile_index, const std::vector<GURL>& urls) {
+  BrowserWindowInterface* browser = GetBrowserOrDie(profile_index);
   for (const GURL& url : urls) {
-    DVLOG(1) << "Opening tab: " << url.spec() << " using browser "
-             << browser_index << ".";
+    DVLOG(1) << "Opening tab: " << url.spec() << " using profile "
+             << profile_index << ".";
     ShowSingletonTab(browser, url);
   }
-  return WaitForTabsToLoad(browser_index, urls);
+  return WaitForTabsToLoad(profile_index, urls);
 }
 
-void CloseTab(int browser_index, int tab_index) {
-  TabStripModel* tab_strip = GetBrowserOrDie(browser_index)->tab_strip_model();
+void CloseTab(int profile_index, int tab_index) {
+  TabStripModel* tab_strip = GetBrowserOrDie(profile_index)->tab_strip_model();
   tab_strip->CloseWebContentsAt(tab_index, TabCloseTypes::CLOSE_USER_GESTURE);
 }
 
-void MoveTab(int from_browser_index, int to_browser_index, int tab_index) {
-  std::unique_ptr<tabs::TabModel> detached_tab =
-      test()
-          ->GetBrowser(from_browser_index)
-          ->tab_strip_model()
-          ->DetachTabAtForInsertion(tab_index);
+void MoveTab(int profile_index,
+             int from_window_index,
+             int to_window_index,
+             int tab_index) {
+  Browser* from_browser = GetBrowserOrDie(profile_index, from_window_index);
+  Browser* to_browser = GetBrowserOrDie(profile_index, to_window_index);
 
-  TabStripModel* target_strip =
-      test()->GetBrowser(to_browser_index)->tab_strip_model();
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      from_browser->tab_strip_model()->DetachTabAtForInsertion(tab_index);
+
+  TabStripModel* target_strip = to_browser->tab_strip_model();
   target_strip->InsertDetachedTabAt(
       target_strip->count(), std::move(detached_tab), AddTabTypes::ADD_ACTIVE);
 }
 
-void NavigateTab(int browser_index, const GURL& url) {
-  NavigateParams params(GetBrowserOrDie(browser_index), url,
+void NavigateTab(int profile_index, const GURL& url) {
+  NavigateTabInWindow(profile_index, /*window_index=*/0, url);
+}
+
+void NavigateTabInWindow(int profile_index, int window_index, const GURL& url) {
+  NavigateParams params(GetBrowserOrDie(profile_index, window_index), url,
                         ui::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::CURRENT_TAB;
   ui_test_utils::NavigateToURL(&params);
 }
 
-void NavigateTabBack(int browser_index) {
+void NavigateTabBack(int profile_index) {
   content::WebContents* web_contents =
-      GetBrowserOrDie(browser_index)->tab_strip_model()->GetWebContentsAt(0);
+      GetBrowserOrDie(profile_index)->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver observer(web_contents);
   web_contents->GetController().GoBack();
   observer.WaitForNavigationFinished();
 }
 
-void NavigateTabForward(int browser_index) {
+void NavigateTabForward(int profile_index) {
   content::WebContents* web_contents =
-      GetBrowserOrDie(browser_index)->tab_strip_model()->GetWebContentsAt(0);
+      GetBrowserOrDie(profile_index)->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver observer(web_contents);
   web_contents->GetController().GoForward();
   observer.WaitForNavigationFinished();
 }
 
-bool WaitForTabsToLoad(int browser_index, const std::vector<GURL>& urls) {
+bool WaitForTabsToLoad(int profile_index, const std::vector<GURL>& urls) {
+  TabStripModel* tab_strip = GetBrowserOrDie(profile_index)->tab_strip_model();
   int tab_index = 0;
   for (const GURL& url : urls) {
-    content::WebContents* web_contents = test()
-                                             ->GetBrowser(browser_index)
-                                             ->tab_strip_model()
-                                             ->GetWebContentsAt(tab_index);
+    content::WebContents* web_contents = tab_strip->GetWebContentsAt(tab_index);
     if (!web_contents) {
       LOG(ERROR) << "Tab " << tab_index << " does not exist";
       return false;
     }
-    bool success = WaitForTabToLoad(browser_index, url, web_contents);
+    bool success = WaitForTabToLoad(profile_index, url, web_contents);
     if (!success) {
       return false;
     }
@@ -232,7 +248,7 @@ bool WaitForTabsToLoad(int browser_index, const std::vector<GURL>& urls) {
   return true;
 }
 
-bool WaitForTabToLoad(int browser_index,
+bool WaitForTabToLoad(int profile_index,
                       const GURL& url,
                       content::WebContents* web_contents) {
   CHECK(web_contents);
@@ -241,7 +257,7 @@ bool WaitForTabToLoad(int browser_index,
   base::TimeTicks end_time = start_time + TestTimeouts::action_max_timeout();
   bool found = false;
   while (!found) {
-    found = SessionsSyncBridgeHasTabWithURL(browser_index, url);
+    found = SessionsSyncBridgeHasTabWithURL(profile_index, url);
     if (base::TimeTicks::Now() >= end_time) {
       LOG(ERROR) << "Failed to find url " << url.spec() << " in tab after "
                  << TestTimeouts::action_max_timeout().InSecondsF()
@@ -255,11 +271,11 @@ bool WaitForTabToLoad(int browser_index,
   return true;
 }
 
-bool GetLocalWindows(int browser_index, ScopedWindowMap* local_windows) {
+bool GetLocalWindows(int profile_index, ScopedWindowMap* local_windows) {
   // The local session provided by GetLocalSession is owned, and has lifetime
   // controlled, by the sessions sync manager, so we must make our own copy.
   const sync_sessions::SyncedSession* local_session;
-  if (!GetLocalSession(browser_index, &local_session)) {
+  if (!GetLocalSession(profile_index, &local_session)) {
     return false;
   }
   for (const auto& [window_id, synced_window] : local_session->windows) {
@@ -282,28 +298,28 @@ bool GetLocalWindows(int browser_index, ScopedWindowMap* local_windows) {
   return true;
 }
 
-bool CheckInitialState(int browser_index) {
-  if (0 != GetNumWindows(browser_index)) {
+bool CheckInitialState(int profile_index) {
+  if (0 != GetNumWindows(profile_index)) {
     return false;
   }
-  if (0 != GetNumForeignSessions(browser_index)) {
+  if (0 != GetNumForeignSessions(profile_index)) {
     return false;
   }
   return true;
 }
 
-int GetNumWindows(int browser_index) {
+int GetNumWindows(int profile_index) {
   const sync_sessions::SyncedSession* local_session;
-  if (!GetLocalSession(browser_index, &local_session)) {
+  if (!GetLocalSession(profile_index, &local_session)) {
     return 0;
   }
   return local_session->windows.size();
 }
 
-int GetNumForeignSessions(int browser_index) {
+int GetNumForeignSessions(int profile_index) {
   SyncedSessionVector sessions;
   if (!SessionSyncServiceFactory::GetInstance()
-           ->GetForProfile(GetProfileOrDie(browser_index))
+           ->GetForProfile(GetProfileOrDie(profile_index))
            ->GetOpenTabsUIDelegate()
            ->GetAllForeignSessions(&sessions)) {
     return 0;
@@ -311,9 +327,9 @@ int GetNumForeignSessions(int browser_index) {
   return sessions.size();
 }
 
-bool GetSessionData(int browser_index, SyncedSessionVector* sessions) {
+bool GetSessionData(int profile_index, SyncedSessionVector* sessions) {
   if (!SessionSyncServiceFactory::GetInstance()
-           ->GetForProfile(GetProfileOrDie(browser_index))
+           ->GetForProfile(GetProfileOrDie(profile_index))
            ->GetOpenTabsUIDelegate()
            ->GetAllForeignSessions(sessions)) {
     return false;
@@ -389,9 +405,9 @@ bool WindowsMatch(const ScopedWindowMap& win1, const ScopedWindowMap& win2) {
   return true;
 }
 
-void DeleteForeignSession(int browser_index, std::string session_tag) {
+void DeleteForeignSession(int profile_index, std::string session_tag) {
   SessionSyncServiceFactory::GetInstance()
-      ->GetForProfile(GetProfileOrDie(browser_index))
+      ->GetForProfile(GetProfileOrDie(profile_index))
       ->GetOpenTabsUIDelegate()
       ->DeleteForeignSession(session_tag);
 }

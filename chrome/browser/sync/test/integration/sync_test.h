@@ -176,16 +176,12 @@ class SyncTest : public PlatformBrowserTest,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Returns a pointer to a particular browser. Callee owns the object
-  // and manages its lifetime. The called browser must not be closed before.
-  Browser* GetBrowser(int index);
+  // Returns a pointer to the browser at `window_index` for profile
+  // `profile_index`. Callee owns the object and manages its lifetime.
+  Browser* GetBrowser(int profile_index, int window_index = 0) const;
 
-  // Adds a new browser belonging to the profile at |profile_index|, and appends
-  // it to the list of browsers. Creates a copy of the Profile pointer in
-  // position |profile_index| and appends it to the list of profiles. This is
-  // done so that the profile associated with the new browser can be found at
-  // the same index as it. Tests typically use browser indexes and profile
-  // indexes interchangeably; this allows them to do so freely.
+  // Adds a new browser belonging to profile `profile_index`, and appends
+  // it to that client's list of browsers.
   Browser* AddBrowser(int profile_index);
 #endif
 
@@ -407,35 +403,39 @@ class SyncTest : public PlatformBrowserTest,
   // .cc file.
   raw_ptr<Profile, AcrossTasksDanglingUntriaged> previous_profile_ = nullptr;
 
-  // Collection of sync profiles used by a test. A sync profile maintains sync
-  // data contained within its own subdirectory under the chrome user data
-  // directory. Profiles are owned by the ProfileManager.
-  // TODO(crbug.com/40855871): store |profiles_|, |browsers_| and |clients_| in
-  // one structure.
-  std::vector<raw_ptr<Profile, AcrossTasksDanglingUntriaged>> profiles_;
+  // Stores the state of a sync client, including its profile, sync service
+  // harness, and associated browser windows.
+  struct SyncClientState {
+    SyncClientState();
+    ~SyncClientState();
+    SyncClientState(SyncClientState&&);
+    SyncClientState& operator=(SyncClientState&&);
+
+    // The profile for this sync client. Owned by ProfileManager. Can be null if
+    // destroyed earlier (e.g. in OnProfileWillBeDestroyed).
+    raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile = nullptr;
+    std::unique_ptr<SyncServiceImplHarness> harness;
+#if !BUILDFLAG(IS_ANDROID)
+    std::vector<raw_ptr<Browser, AcrossTasksDanglingUntriaged>> browsers;
+#endif
+  };
 
   // List of temporary directories that need to be deleted when the test is
   // completed, used for two-client tests with external server.
   std::vector<std::unique_ptr<base::ScopedTempDir>> scoped_temp_dirs_;
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Collection of pointers to the browser objects used by a test. One browser
-  // instance is created for each sync profile. Browser object lifetime is
-  // managed by BrowserList, so we don't use a std::vector<std::unique_ptr<>>
-  // here.
-  std::vector<raw_ptr<Browser, AcrossTasksDanglingUntriaged>> browsers_;
-
   class ClosedBrowserObserver;
   std::unique_ptr<ClosedBrowserObserver> browser_list_observer_;
 #endif
 
-  // Collection of sync clients used by a test. A sync client is associated
-  // with a sync profile, and implements methods that sync the contents of the
-  // profile with the server.
-  std::vector<std::unique_ptr<SyncServiceImplHarness>> clients_;
+  // Collection of sync clients used by a test, storing each client's profile,
+  // sync harness, and browser windows.
+  std::vector<SyncClientState> clients_;
 
   // Used to deliver invalidations to different profiles within
   // FakeSyncServerInvalidationSender.
+  // TODO(crbug.com/40855871): Move this into SyncClientState.
   std::map<raw_ptr<Profile, AcrossTasksDanglingUntriaged>,
            raw_ptr<FakeSyncGCMDriver, AcrossTasksDanglingUntriaged>>
       profile_to_fake_gcm_driver_;
