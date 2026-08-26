@@ -402,8 +402,6 @@ scoped_refptr<VideoFrame> CreateVideoFrameFromGpuMemoryBufferHandle(
     gfx::BufferUsage buffer_usage,
     gpu::SharedImageInterface* sii) {
   CHECK(sii);
-  const bool supports_zero_copy_webgpu_import =
-      gmb_handle.native_pixmap_handle().supports_zero_copy_webgpu_import;
 
   auto si_format = VideoPixelFormatToSharedImageFormat(pixel_format);
   DCHECK(si_format);
@@ -426,11 +424,6 @@ scoped_refptr<VideoFrame> CreateVideoFrameFromGpuMemoryBufferHandle(
   }
 
   video_frame->set_color_space(color_space);
-
-  // We only support importing non-DISJOINT multi-planar GbmBuffer right now.
-  // TODO(crbug.com/40201271): Add DISJOINT support.
-  video_frame->metadata().is_webgpu_compatible =
-      supports_zero_copy_webgpu_import;
   video_frame->metadata().tracking_token = base::UnguessableToken::Create();
 
   return video_frame;
