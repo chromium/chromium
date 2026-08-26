@@ -229,7 +229,7 @@ class BookmarkDesktopNavigationMediator extends BookmarkModelObserver
         updateSelectionHighlight();
 
         if (Objects.equals(folder, mBookmarkModel.getRootFolderId()) && !isSmallScreen()) {
-            openFirstFolder();
+            refreshNavigationList();
         }
     }
 
@@ -258,8 +258,12 @@ class BookmarkDesktopNavigationMediator extends BookmarkModelObserver
         for (ListItem item : mModelList) {
             if (item.type == NavigationPaneProperties.ITEM_TYPE_NAVIGATION_ITEM) {
                 BookmarkId id = item.model.get(BookmarkDesktopNavigationProperties.BOOKMARK_ID);
-                mBookmarkDelegate.replaceFolder(id);
-                break;
+                if (id != null
+                        && mBookmarkModel.doesBookmarkExist(id)
+                        && !Objects.equals(id, mBookmarkModel.getRootFolderId())) {
+                    mBookmarkDelegate.replaceFolder(id);
+                    break;
+                }
             }
         }
     }

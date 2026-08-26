@@ -1221,6 +1221,17 @@ class BookmarkManagerMediator
             }
         }
 
+        // Pop any invalid states from the top of the stack (e.g. if an account bookmark folder was
+        // removed upon sign out). If the stack is now empty, fall back to the default folder.
+        while (!mStateStack.isEmpty() && !mStateStack.peekLast().isValid(mBookmarkModel)) {
+            mStateStack.removeLast();
+        }
+        if (mStateStack.isEmpty()) {
+            BookmarkId defaultFolder = assumeNonNull(mBookmarkModel.getDefaultFolderViewLocation());
+            setState(BookmarkUiState.createFolderState(defaultFolder, mBookmarkModel));
+            return;
+        }
+
         notifyUi(mStateStack.peekLast(), /* preserveFolderBookmarksOnEmptySearch= */ false);
     }
 

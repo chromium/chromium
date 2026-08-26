@@ -463,6 +463,7 @@ public class BookmarkManagerMediatorTest {
         // Setup BookmarkModel.
         doReturn(false).when(mBookmarkModel).areAccountBookmarkFoldersActive();
         doReturn(mRootFolderId).when(mBookmarkModel).getRootFolderId();
+        doReturn(mRootFolderId).when(mBookmarkModel).getDefaultFolderViewLocation();
         doReturn(mDesktopFolderId).when(mBookmarkModel).getDesktopFolderId();
         doReturn(mDesktopFolderItem).when(mBookmarkModel).getBookmarkById(mDesktopFolderId);
         doReturn(mMobileFolderId).when(mBookmarkModel).getMobileFolderId();
@@ -2708,6 +2709,24 @@ public class BookmarkManagerMediatorTest {
         // This should no-op as the folder is gone.
         onClick3.run();
         verify(mBookmarkModel, never()).getChildIds(mFolderId3);
+    }
+
+    @Test
+    public void testRefreshWithDeletedCurrentFolder_fallsBackToDefaultFolder() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        verify(mBookmarkModel, times(1)).getChildIds(mFolderId1);
+
+        // Simulate folder 1 being deleted (e.g. on sign out).
+        when(mBookmarkModel.doesBookmarkExist(mFolderId1)).thenReturn(false);
+
+        verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
+        BookmarkModelObserver observer = mBookmarkModelObserverArgumentCaptor.getValue();
+        observer.bookmarkModelChanged();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Should fall back to defaultFolder (root folder).
+        assertEquals(mRootFolderId, mMediator.getCurrentFolderId());
     }
 
     @Test

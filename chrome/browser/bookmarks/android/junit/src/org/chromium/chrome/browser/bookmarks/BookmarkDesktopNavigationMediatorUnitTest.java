@@ -342,6 +342,31 @@ public class BookmarkDesktopNavigationMediatorUnitTest {
         verify(mBookmarkDelegate, never()).replaceFolder(any());
     }
 
+    @Test
+    public void testOnFolderStateSet_withStaleAccountFolder_refreshesAndRedirectsToLocalFolder() {
+        // Start with active account folders.
+        mBookmarkModel.setAreAccountBookmarkFoldersActive(true);
+        mMediator.bookmarkModelChanged();
+
+        // Account desktop folder is currently the first folder item.
+        BookmarkId accountDesktopId = mBookmarkModel.getAccountDesktopFolderId();
+        assertEquals(
+                accountDesktopId,
+                mModelList.get(1).model.get(BookmarkDesktopNavigationProperties.BOOKMARK_ID));
+
+        // Simulate sign-out: account bookmark folders become inactive/removed in the model.
+        mBookmarkModel.setAreAccountBookmarkFoldersActive(false);
+
+        // BookmarkManagerMediator falls back to root folder and calls onFolderStateSet(root)
+        // BEFORE BookmarkDesktopNavigationMediator's BookmarkModelObserver receives the event.
+        mMediator.onFolderStateSet(mBookmarkModel.getRootFolderId());
+
+        // Verify that replaceFolder was called with local desktop folder, NOT the stale account
+        // folder.
+        verify(mBookmarkDelegate).replaceFolder(mBookmarkModel.getDesktopFolderId());
+        verify(mBookmarkDelegate, never()).replaceFolder(accountDesktopId);
+    }
+
     private void assertFolderItem(
             int index, BookmarkId expectedId, String expectedTitle, int expectedIconRes) {
         ListItem item = mModelList.get(index);
