@@ -816,6 +816,7 @@ input[pseudo="-webkit-media-controls-timeline" i]::-internal-track-segment-highl
 input[pseudo="-webkit-media-controls-volume-slider" i]::-internal-track-segment-highlight-before,
 input[pseudo="-webkit-media-controls-volume-slider" i]::-internal-track-segment-highlight-after {
   position: absolute;
+  left: 0;
   height: 4px;
 }
 

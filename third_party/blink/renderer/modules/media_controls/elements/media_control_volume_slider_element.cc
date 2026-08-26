@@ -170,7 +170,7 @@ void MediaControlVolumeSliderElement::DefaultEventHandler(Event& event) {
 
 void MediaControlVolumeSliderElement::SetVolumeInternal(double volume) {
   SetupBarSegments();
-  SetAfterSegmentPosition(MediaControlSliderElement::Position(0, volume));
+  SetAfterSegmentFraction(volume);
   int percent_vol = 100 * volume;
   setAttribute(html_names::kAriaValuenowAttr,
                AtomicString::Number(percent_vol));

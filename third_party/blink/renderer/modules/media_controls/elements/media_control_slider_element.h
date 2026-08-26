@@ -20,13 +20,6 @@ class MODULES_EXPORT MediaControlSliderElement
  public:
   void Trace(Visitor*) const override;
 
-  // Stores the position of the segment in proportion from 0.0 to 1.0.
-  struct Position {
-    Position(double left, double width) : left(left), width(width) {}
-    double left;
-    double width;
-  };
-
   // Width in CSS pixels * layoutZoomFactor (ignores CSS transforms for
   // simplicity; deliberately ignores pinch zoom's pageScaleFactor).
   int TrackWidth();
@@ -42,8 +35,8 @@ class MODULES_EXPORT MediaControlSliderElement
   MediaControlSliderElement(MediaControlsImpl&);
 
   void SetupBarSegments();
-  void SetBeforeSegmentPosition(Position);
-  void SetAfterSegmentPosition(Position);
+  void SetBeforeSegmentFraction(double fraction);
+  void SetAfterSegmentFraction(double fraction);
 
   void NotifyElementSizeChanged();
 
@@ -52,8 +45,8 @@ class MODULES_EXPORT MediaControlSliderElement
   float ZoomFactor() const;
 
  private:
-  Position before_segment_position_;
-  Position after_segment_position_;
+  double before_segment_fraction_ = 0.0;
+  double after_segment_fraction_ = 0.0;
 
   Member<HTMLDivElement> segment_highlight_before_;
   Member<HTMLDivElement> segment_highlight_after_;

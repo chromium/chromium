@@ -18,45 +18,35 @@
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
+namespace blink {
+
 namespace {
 
-void SetSegmentDivPosition(blink::HTMLDivElement* segment,
-                           blink::MediaControlSliderElement::Position position,
+void SetSegmentDivFraction(HTMLDivElement* segment,
+                           double fraction,
                            int width,
                            float zoom_factor) {
-  int segment_width =
-      blink::ClampTo<int>(floor((position.width * width) / zoom_factor));
-  int segment_left =
-      blink::ClampTo<int>(floor((position.left * width) / zoom_factor));
-  int current_width = 0;
-  int current_left = 0;
+  const int segment_width =
+      ClampTo<int>(floor((fraction * width) / zoom_factor));
 
-  // Get the current width and left for the segment. If the box is not present
+  // Get the current width for the segment. If the box is not present
   // then it will be a nullptr so we should assume zero.
-  blink::LayoutBox* box = segment->GetLayoutBox();
-  if (box) {
-    blink::LogicalRect rect = box->LogicalRectInContainer();
-    current_width = rect.size.inline_size.ToInt();
-    current_left = rect.offset.inline_offset.ToInt();
+  const LayoutBox* box = segment->GetLayoutBox();
+  const int current_width = box ? box->OffsetWidth().Round() : 0;
+
+  // If the width has not changed then do not update the segment.
+  if (segment_width == current_width) {
+    return;
   }
 
-  // If the width and left has not changed then do not update the segment.
-  if (segment_width == current_width && segment_left == current_left)
-    return;
-
-  blink::StringBuilder builder;
+  StringBuilder builder;
   builder.Append("width: ");
   builder.AppendNumber(segment_width);
-  builder.Append("px; left: ");
-  builder.AppendNumber(segment_left);
   builder.Append("px;");
-  segment->setAttribute(blink::html_names::kStyleAttr,
-                        builder.ToAtomicString());
+  segment->setAttribute(html_names::kStyleAttr, builder.ToAtomicString());
 }
 
 }  // namespace.
-
-namespace blink {
 
 class MediaControlSliderElement::MediaControlSliderElementResizeObserverDelegate
     final : public ResizeObserver::Delegate {
@@ -87,8 +77,6 @@ class MediaControlSliderElement::MediaControlSliderElementResizeObserverDelegate
 MediaControlSliderElement::MediaControlSliderElement(
     MediaControlsImpl& media_controls)
     : MediaControlInputElement(media_controls),
-      before_segment_position_(0, 0),
-      after_segment_position_(0, 0),
       segment_highlight_before_(nullptr),
       segment_highlight_after_(nullptr),
       resize_observer_(ResizeObserver::Create(
@@ -137,19 +125,17 @@ void MediaControlSliderElement::SetupBarSegments() {
       AtomicString("-internal-track-segment-highlight-after"), background);
 }
 
-void MediaControlSliderElement::SetBeforeSegmentPosition(
-    MediaControlSliderElement::Position position) {
+void MediaControlSliderElement::SetBeforeSegmentFraction(double fraction) {
   DCHECK(segment_highlight_before_);
-  before_segment_position_ = position;
-  SetSegmentDivPosition(segment_highlight_before_, before_segment_position_,
+  before_segment_fraction_ = fraction;
+  SetSegmentDivFraction(segment_highlight_before_, before_segment_fraction_,
                         TrackWidth(), ZoomFactor());
 }
 
-void MediaControlSliderElement::SetAfterSegmentPosition(
-    MediaControlSliderElement::Position position) {
+void MediaControlSliderElement::SetAfterSegmentFraction(double fraction) {
   DCHECK(segment_highlight_after_);
-  after_segment_position_ = position;
-  SetSegmentDivPosition(segment_highlight_after_, after_segment_position_,
+  after_segment_fraction_ = fraction;
+  SetSegmentDivFraction(segment_highlight_after_, after_segment_fraction_,
                         TrackWidth(), ZoomFactor());
 }
 
@@ -164,9 +150,9 @@ float MediaControlSliderElement::ZoomFactor() const {
 }
 
 void MediaControlSliderElement::NotifyElementSizeChanged() {
-  SetSegmentDivPosition(segment_highlight_before_, before_segment_position_,
+  SetSegmentDivFraction(segment_highlight_before_, before_segment_fraction_,
                         TrackWidth(), ZoomFactor());
-  SetSegmentDivPosition(segment_highlight_after_, after_segment_position_,
+  SetSegmentDivFraction(segment_highlight_after_, after_segment_fraction_,
                         TrackWidth(), ZoomFactor());
 }
 
