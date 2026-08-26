@@ -181,4 +181,8 @@ COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_FEATURE(kWebAuthnEnclaveUseAuthDataFromEnclave,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enabled by default in M152. Remove in or after M155.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_FEATURE(kWebAuthnModalProviderIcons, base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace device

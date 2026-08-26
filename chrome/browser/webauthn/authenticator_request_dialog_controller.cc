@@ -349,7 +349,12 @@ const gfx::VectorIcon& GetMechanismIcon(
       absl::Overload{
           [ui_presentation](const Mechanism::Credential& credential)
               -> const gfx::VectorIcon& {
-            if (ui_presentation == UIPresentation::kModalImmediate) {
+            const bool show_modal_provider_icons =
+                ui_presentation == UIPresentation::kModalImmediate ||
+                (ui_presentation == UIPresentation::kModal &&
+                 base::FeatureList::IsEnabled(
+                     device::kWebAuthnModalProviderIcons));
+            if (show_modal_provider_icons) {
               switch (credential.value().source) {
                 case AuthenticatorType::kICloudKeychain:
                   return kIcloudKeychainColorCustomIcon;
@@ -363,7 +368,7 @@ const gfx::VectorIcon& GetMechanismIcon(
                   break;
               }
             }
-            // Default icon for non-immediate mode or other credential sources.
+            // Default icon for non-modal mode or other credential sources.
             return GetCredentialIcon(credential.value().source);
           },
           [](const Mechanism::Password&) -> const gfx::VectorIcon& {

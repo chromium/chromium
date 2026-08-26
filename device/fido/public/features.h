@@ -154,6 +154,12 @@ BASE_DECLARE_FEATURE(kWebAuthnGpmPasskeyEmbeddedRecoveryUrl);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnEnclaveUseAuthDataFromEnclave);
 
+// Displays provider-specific vector icons (Google Password Manager,
+// Apple Passwords, Windows Hello, etc.) for passkey credentials in modal
+// requests.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE(kWebAuthnModalProviderIcons);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_PUBLIC_FEATURES_H_
