@@ -22,6 +22,7 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "snapshot/fuchsia/memory_map_region_snapshot_fuchsia.h"
 #include "test/multiprocess_exec.h"

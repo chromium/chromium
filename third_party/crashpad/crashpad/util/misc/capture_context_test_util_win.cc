@@ -16,6 +16,7 @@
 
 #include <iterator>
 
+#include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "util/win/context_wrappers.h"
 

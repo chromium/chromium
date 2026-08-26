@@ -20,6 +20,7 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "snapshot/win/exception_snapshot_win.h"
 #include "snapshot/win/process_snapshot_win.h"
