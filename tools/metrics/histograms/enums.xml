@@ -5058,6 +5058,7 @@ shown properly on the user-facing crash UI.
   <int value="-2147024641" label="ERROR_EA_LIST_INCONSISTENT"/>
   <int value="-2147024638" label="WAIT_TIMEOUT"/>
   <int value="-2147024637" label="DRM_E_NOMORE_DATA"/>
+  <int value="-2147024579" label="ERROR_MR_MID_NOT_FOUND"/>
   <int value="-2147024463" label="ERROR_NO_SUCH_DEVICE"/>
   <int value="-2147024413" label="ERROR_DEVICE_HARDWARE_ERROR"/>
   <int value="-2147024362" label="DRM_E_ARITHMETIC_OVERFLOW (0x80070216)"/>
@@ -5166,8 +5167,10 @@ shown properly on the user-facing crash UI.
   <int value="-2005139430" label="AEERR_ITEM_NOT_FOUND"/>
   <int value="-2005139426" label="AEERR_INVALID_CONNECTION_FORMAT"/>
   <int value="-2005139410" label="AEERR_ADG_ALREADY_CONNECTED"/>
+  <int value="-2005139405" label="AEERR_TIMED_OUT"/>
   <int value="-2005139398" label="AEERR_APO_NOT_REGISTERED"/>
   <int value="-2005139372" label="AEERR_BUFFER_SIZE_MISMATCH"/>
+  <int value="-2005073912" label="APOERR_INVALID_OUTPUT_MAXFRAMECOUNT"/>
   <int value="-2004287487" label="AUDCLNT_E_NOT_INITIALIZED"/>
   <int value="-2004287486" label="AUDCLNT_E_ALREADY_INITIALIZED"/>
   <int value="-2004287485" label="AUDCLNT_E_WRONG_ENDPOINT_TYPE"/>
