@@ -2972,8 +2972,9 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
                        NSAccessibilityScrollToVisibleAction, nil];
 
   // VoiceOver expects the "press" action to be first.
-  if (_owner->IsClickable())
+  if (_owner->HasDefaultAction()) {
     [actions insertObject:NSAccessibilityPressAction atIndex:0];
+  }
 
   if (ui::IsMenuRelated(_owner->GetRole()))
     [actions addObject:NSAccessibilityCancelAction];
