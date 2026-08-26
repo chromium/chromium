@@ -58,7 +58,6 @@ class CONTENT_EXPORT IOSurfaceCaptureDeviceBase
   void AllocateAndStart(const media::VideoCaptureParams& params,
                         std::unique_ptr<Client> client) final;
   void StopAndDeAllocate() final;
-  void InvalidateBuffers() final;
 
   // This class assumes single threaded access.
   THREAD_CHECKER(thread_checker_);

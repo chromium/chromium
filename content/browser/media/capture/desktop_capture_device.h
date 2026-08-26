@@ -74,7 +74,6 @@ class CONTENT_EXPORT DesktopCaptureDevice : public media::VideoCaptureDevice {
   // a frame sent to the consumer with a delay of up to one second.
   void RequestRefreshFrame() override;
 
-  void InvalidateBuffers() override;
   // Set the platform-dependent window id for the notification window.
   void SetNotificationWindowId(gfx::NativeViewId window_id);
 

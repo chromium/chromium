@@ -94,7 +94,6 @@ class MockLaunchedVideoCaptureDevice : public LaunchedVideoCaptureDevice {
           uint32_t sub_capture_target_version,
           base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>));
   MOCK_METHOD0(RequestRefreshFrame, void());
-  MOCK_METHOD0(InvalidateBuffers, void());
   MOCK_METHOD2(DoSetDesktopCaptureWindowId,
                void(gfx::NativeViewId window_id, base::OnceClosure* done_cb));
   MOCK_METHOD1(OnUtilizationReport, void(media::VideoCaptureFeedback));

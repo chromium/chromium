@@ -96,11 +96,6 @@ void ServiceLaunchedVideoCaptureDevice::RequestRefreshFrame() {
   // frames.
 }
 
-void ServiceLaunchedVideoCaptureDevice::InvalidateBuffers() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  subscription_->InvalidateBuffers();
-}
-
 void ServiceLaunchedVideoCaptureDevice::SetDesktopCaptureWindowIdAsync(
     gfx::NativeViewId window_id,
     base::OnceClosure done_cb) {

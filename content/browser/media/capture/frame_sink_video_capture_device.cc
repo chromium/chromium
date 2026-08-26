@@ -684,12 +684,3 @@ void FrameSinkVideoCaptureDevice::RequestWakeLock() {
 }
 
 }  // namespace content
-
-namespace content {
-void FrameSinkVideoCaptureDevice::InvalidateBuffers() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (capturer_) {
-    capturer_->InvalidateBuffers();
-  }
-}
-}  // namespace content

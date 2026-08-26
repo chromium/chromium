@@ -146,16 +146,6 @@ void InProcessLaunchedVideoCaptureDevice::RequestRefreshFrame() {
                                 base::Unretained(device_.get())));
 }
 
-void InProcessLaunchedVideoCaptureDevice::InvalidateBuffers() {
-  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M154);
-  // Unretained() is safe to use here because |device| would be null if it
-  // was scheduled for shutdown and destruction, and because this task is
-  // guaranteed to run before the task that destroys the |device|.
-  device_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&media::VideoCaptureDevice::InvalidateBuffers,
-                                base::Unretained(device_.get())));
-}
-
 void InProcessLaunchedVideoCaptureDevice::SetDesktopCaptureWindowIdAsync(
     gfx::NativeViewId window_id,
     base::OnceClosure done_cb) {
