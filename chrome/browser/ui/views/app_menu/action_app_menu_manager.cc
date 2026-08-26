@@ -15,9 +15,11 @@
 #include "base/memory/raw_ptr.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/defaults.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -28,13 +30,17 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #endif
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
+#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
+#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_section_action_item.h"
 #include "chrome/browser/ui/views/app_menu/bookmarks_dynamic_menu.h"
 #include "chrome/browser/ui/views/app_menu/recent_tabs_dynamic_menu.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
@@ -243,7 +249,8 @@ void ActionAppMenuManager::CreateMenuHierarchy() {
 }
 
 void ActionAppMenuManager::AddBlockHeaderActions(actions::ActionItem* root) {
-  AppMenuBuilder(root)
+  auto builder = AppMenuBuilder(root);
+  builder
       .AddAction(kActionNewTab, DisplayType::kBlock,
                  /*text_override=*/std::nullopt,
                  /*icon_override=*/
@@ -251,9 +258,13 @@ void ActionAppMenuManager::AddBlockHeaderActions(actions::ActionItem* root) {
                      features::IsRoundedIconsEnabled() ? kTabIcon
                                                        : kNewTabRefreshOldIcon,
                      ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
-      .AddAction(kActionNewWindow, DisplayType::kBlock)
-      .AddAction(kActionNewIncognitoWindow, DisplayType::kBlock,
-                 /*text_override=*/l10n_util::GetStringUTF16(IDS_INCOGNITO));
+      .AddAction(kActionNewWindow, DisplayType::kBlock);
+
+  if (!browser_window_interface_->GetProfile()->IsGuestSession()) {
+    builder.AddAction(
+        kActionNewIncognitoWindow, DisplayType::kBlock,
+        /*text_override=*/l10n_util::GetStringUTF16(IDS_INCOGNITO));
+  }
 }
 
 void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
@@ -273,20 +284,25 @@ void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
                        });
   }
 
-  builder
-      .AddDynamicSubmenu(
-          kActionRecentTabsSubmenu,
-          base::BindRepeating(&RecentTabsDynamicMenu::BuildRecentTabsActions,
-                              recent_tabs_menu_->GetWeakPtr()))
-      .AddAction(kActionShowDownloads)
-      .AddDynamicSubmenu(
-          kActionBookmarksSubmenu,
-          base::BindRepeating(&BookmarksDynamicMenu::BuildBookmarksActions,
-                              bookmarks_menu_->GetWeakPtr()),
-          [](AppMenuBuilder& sub_builder) {
-            sub_builder.AddAction(kActionBookmarkThisTab)
-                .AddAction(kActionBookmarkAllTabs);
-          });
+  if (!profile->IsOffTheRecord()) {
+    builder.AddDynamicSubmenu(
+        kActionRecentTabsSubmenu,
+        base::BindRepeating(&RecentTabsDynamicMenu::BuildRecentTabsActions,
+                            recent_tabs_menu_->GetWeakPtr()));
+  }
+
+  builder.AddAction(kActionShowDownloads);
+
+  if (!profile->IsGuestSession()) {
+    builder.AddDynamicSubmenu(
+        kActionBookmarksSubmenu,
+        base::BindRepeating(&BookmarksDynamicMenu::BuildBookmarksActions,
+                            bookmarks_menu_->GetWeakPtr()),
+        [](AppMenuBuilder& sub_builder) {
+          sub_builder.AddAction(kActionBookmarkThisTab)
+              .AddAction(kActionBookmarkAllTabs);
+        });
+  }
 
   builder.AddSubmenu(kActionExtensionsSubmenu, [](AppMenuBuilder& sub) {
     sub.AddAction(kActionExtensionsSubmenuManageExtensions)
@@ -311,13 +327,19 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
           DisplayType::kCustom)
       .AddAction(kActionPrint);
 
-  if (glic::GlicEnabling::IsEnabledForProfile(
-          browser_window_interface_->GetProfile())) {
+  Profile* profile = browser_window_interface_->GetProfile();
+
+  if (glic::GlicEnabling::IsEnabledForProfile(profile)) {
     builder.AddAction(kActionOpenGlic);
   }
 
-  builder.AddAction(kActionShowLensOverlayFromAppMenu)
-      .AddAction(kActionShowTranslate);
+  if (auto* controller = lens::LensOverlayEntryPointController::From(
+          browser_window_interface_);
+      controller && controller->IsEnabled()) {
+    builder.AddAction(kActionShowLensOverlayFromAppMenu);
+  }
+
+  builder.AddAction(kActionShowTranslate);
 
   builder.AddSubmenu(kActionFindAndEditSubmenu, [](AppMenuBuilder& sub) {
     sub.AddAction(kActionFind)
@@ -345,15 +367,18 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
         }
       });
 
-  builder.AddSubmenu(kActionDeveloperSubmenu, [](AppMenuBuilder& sub) {
-    sub.AddAction(kActionTabSearch).AddAction(kActionNameWindow);
+  builder.AddSubmenu(kActionDeveloperSubmenu, [profile](AppMenuBuilder& sub) {
+    sub.AddAction(kActionTabSearch)
+        .AddAction(kActionNameWindow)
+        .AddAction(kActionToggleVerticalTabs);
 
-    if (tabs::IsVerticalTabsFeatureEnabled()) {
-      sub.AddAction(kActionToggleVerticalTabs);
+    if (CustomizeChromePageHandler::IsSupported(
+            NtpCustomBackgroundServiceFactory::GetForProfile(profile),
+            profile)) {
+      sub.AddAction(kActionSidePanelShowCustomizeChrome);
     }
 
-    sub.AddAction(kActionSidePanelShowCustomizeChrome)
-        .AddAction(kActionShowReadingModeSidePanel)
+    sub.AddAction(kActionShowReadingModeSidePanel)
         .AddAction(kActionPerformance)
         .AddAction(kActionTaskManagerAppMenu)
         .AddAction(kActionDevTools);
@@ -362,7 +387,14 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
       sub.AddAction(kActionProfilingEnabled);
     }
 
-    sub.AddAction(kActionShowChromeLabs);
+    if (IsChromeLabsEnabled()) {
+      UpdateChromeLabsNewBadgePrefs(profile);
+      if (ShouldShowChromeLabsUI(profile) &&
+          profile->GetPrefs()->GetBoolean(
+              chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy)) {
+        sub.AddAction(kActionShowChromeLabs);
+      }
+    }
   });
 }
 
@@ -396,5 +428,7 @@ void ActionAppMenuManager::AddFooterActions(actions::ActionItem* root) {
   builder.AddAction(kActionAbout, DisplayType::kFooter);
 #endif
 
-  builder.AddAction(kActionExit, DisplayType::kFooter);
+  if (browser_defaults::kShowExitMenuItem) {
+    builder.AddAction(kActionExit, DisplayType::kFooter);
+  }
 }
