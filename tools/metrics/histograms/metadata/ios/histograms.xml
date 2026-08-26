@@ -226,6 +226,52 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/promos_manager/model/constants.h:Promo) -->
 
+<histogram name="IOS.Actor.PageStability.Outcome"
+    enum="IOSPageStabilityOutcome" expires_after="2027-02-25">
+  <owner>kaklilu@google.com</owner>
+  <owner>bling-ai-foundations@google.com</owner>
+  <summary>
+    Records the final outcome of an iOS page stability monitoring check.
+
+    Page stability indicates that the web page is 'stable' (i.e. DOM mutations
+    have ceased or settled within configured thresholds) so that the Actor can
+    safely interact with, or extract content from, the page without race
+    conditions or layout shifts.
+
+    This metric is recorded once per page stability check when monitoring
+    terminates.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Actor.PageStability.TimeFromMonitoringToStable" units="ms"
+    expires_after="2027-02-25">
+  <owner>kaklilu@google.com</owner>
+  <owner>bling-ai-foundations@google.com</owner>
+  <summary>
+    The duration from when active page stability monitoring starts until page
+    stability is reached. Excludes any initial observation delay. This metric is
+    not recorded if monitoring times out or aborts (e.g., due to frame
+    destruction).
+  </summary>
+</histogram>
+
+<histogram name="IOS.Actor.PageStability.TotalTimeTo{Outcome}" units="ms"
+    expires_after="2027-02-25">
+  <owner>kaklilu@google.com</owner>
+  <owner>bling-ai-foundations@google.com</owner>
+  <summary>
+    The duration from when stability monitoring is requested until {Outcome}.
+  </summary>
+  <token key="Outcome">
+    <variant name="Stable"
+        summary="page stability is reached. Not recorded for timeouts or
+                 aborted checks"/>
+    <variant name="WebFrameGoingAway"
+        summary="the check is aborted because the monitored web frame was
+                 destroyed"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.AIHub.Action" enum="IOSAIHubAction"
     expires_after="2027-02-07">
   <owner>sebsg@chromium.org</owner>

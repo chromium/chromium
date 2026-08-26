@@ -20,20 +20,21 @@ class WebFrame;
 
 namespace actor {
 
+class PageStabilityMonitorDelegate;
+
 // Monitors page stability signals to determine when a page has settled.
 //
 // Mostly mirrored from the class used by the Desktop actor:
 // https://source.chromium.org/chromium/chromium/src/+/main:components/page_content_annotations/content/renderer/page_stability_monitor.h;l=32;drc=924b5bcf53a392fa97f0d517c0d8df67d2cffb1f
-//
-// TODO(crbug.com/498991756): introduce a PageStabilityMonitorDelegate and use
-// it to pass in constants and inform callers of page changes.
 class PageStabilityMonitor {
  public:
   using PageStabilityState = ::page_content_annotations::PageStabilityState;
   using State = PageStabilityState;
   using NotifyWhenStableCallback = base::OnceCallback<void()>;
 
-  PageStabilityMonitor(base::WeakPtr<web::WebFrame> target_frame);
+  explicit PageStabilityMonitor(base::WeakPtr<web::WebFrame> target_frame);
+  PageStabilityMonitor(base::WeakPtr<web::WebFrame> target_frame,
+                       std::unique_ptr<PageStabilityMonitorDelegate> delegate);
   ~PageStabilityMonitor();
 
   // Invokes the given callback when the page is deemed stable enough for an
@@ -95,6 +96,8 @@ class PageStabilityMonitor {
   bool monitoring_complete_ = false;
 
   std::vector<State> state_history_ = {State::kInitial};
+
+  std::unique_ptr<PageStabilityMonitorDelegate> delegate_;
 
   base::WeakPtrFactory<PageStabilityMonitor> weak_ptr_factory_{this};
 };

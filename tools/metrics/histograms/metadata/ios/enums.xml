@@ -1539,6 +1539,18 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Obsolete - Loading Started"/>
 </enum>
 
+<!-- LINT.IfChange(IOSPageStabilityOutcome) -->
+
+<enum name="IOSPageStabilityOutcome">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kStable"/>
+  <int value="2" label="kStableBeforeMinDelay"/>
+  <int value="3" label="kTimeout"/>
+  <int value="4" label="kWebFrameGoingAway"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/ios_page_stability_metrics.h:IOSPageStabilityOutcome) -->
+
 <enum name="IOSParcelTrackingOptInStatus">
   <int value="0" label="Never Track"/>
   <int value="1" label="Always Track"/>

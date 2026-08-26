@@ -19,6 +19,7 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/ios_page_stability_monitor_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/page_stability_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/page_stability_monitor.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -66,7 +67,9 @@ void ObservationDelayController::Wait(base::WeakPtr<web::WebState> web_state,
   web_state_observation_.Observe(web_state.get());
   if (web_frame) {
     web_frame_ = web_frame;
-    page_stability_monitor_ = std::make_unique<PageStabilityMonitor>(web_frame);
+    page_stability_monitor_ = std::make_unique<PageStabilityMonitor>(
+        web_frame,
+        std::make_unique<IOSPageStabilityMonitorDelegate>(task_id_, journal_));
   } else {
     UpdateTargetFrameIfNeeded();
   }
@@ -127,8 +130,9 @@ void ObservationDelayController::UpdateTargetFrameIfNeeded() {
     if (main_frame &&
         (state_ == State::kInitial || state_ == State::kWaitForPageStability) &&
         !page_stability_monitor_) {
-      page_stability_monitor_ =
-          std::make_unique<PageStabilityMonitor>(web_frame_);
+      page_stability_monitor_ = std::make_unique<PageStabilityMonitor>(
+          web_frame_, std::make_unique<IOSPageStabilityMonitorDelegate>(
+                          task_id_, journal_));
     }
   }
 }
@@ -222,13 +226,9 @@ void ObservationDelayController::WaitForPageStability() {
       // TODO(crbug.com/498991756): Use a delegate to provide this value,
       // matching Desktop's ability to configure it per tool.
       base::TimeDelta(),
-      base::BindOnce(
-          [](base::WeakPtr<ObservationDelayController> controller) {
-            if (controller) {
-              controller->MoveToState(State::kWaitForLoadCompletion);
-            }
-          },
-          weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&ObservationDelayController::MoveToState,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     State::kWaitForLoadCompletion));
 }
 
 void ObservationDelayController::DelayForLcp() {

@@ -427,7 +427,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="kMojoDisconnected"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/common/actor/page_stability_metrics_common.h:PageStabilityOutcome) -->
+<!-- LINT.ThenChange(//components/actor/core/page_stability_metrics_common.h:PageStabilityOutcome) -->
 
 <!-- LINT.IfChange(RendererResolvedTargetResult) -->
 

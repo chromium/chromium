@@ -465,6 +465,10 @@ source_set("java_script_features") {
 
 source_set("page_stability") {
   sources = [
+    "ios_page_stability_metrics.h",
+    "ios_page_stability_metrics.mm",
+    "ios_page_stability_monitor_delegate.h",
+    "ios_page_stability_monitor_delegate.mm",
     "observation_delay_controller.h",
     "observation_delay_controller.mm",
     "page_stability_monitor.h",
@@ -473,6 +477,7 @@ source_set("page_stability") {
   deps = [
     ":java_script_features",
     "//base",
+    "//components/actor/core",
     "//components/actor/core:journal",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
@@ -483,6 +488,7 @@ source_set("page_stability") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
+    "//url",
   ]
 }
 
@@ -542,6 +548,7 @@ source_set("unit_tests") {
     "fake_tool_delegate.h",
     "fake_tool_delegate.mm",
     "history_tool_unittest.mm",
+    "ios_page_stability_metrics_unittest.mm",
     "navigate_tool_unittest.mm",
     "observation_delay_controller_unittest.mm",
     "page_stability_java_script_feature_unittest.mm",
