@@ -79,3 +79,73 @@ source_set("new_tab_button_menu_model_impl") {
     "//ui/base/interaction",
   ]
 }
+
+source_set("tab_group") {
+  sources = [
+    "tab_group_header.h",
+    "tab_group_highlight.h",
+    "tab_group_style.h",
+    "tab_group_underline.h",
+    "tab_group_views.h",
+  ]
+
+  deps = [
+    ":base",
+    "//base",
+    "//chrome/browser/ui/tabs:tab_group",
+    "//chrome/browser/ui/views/tabs/groups",
+    "//chrome/browser/ui/views/tabs/hovercard",
+    "//components/tab_groups",
+    "//skia",
+    "//ui/base/interaction",
+    "//ui/base/metadata",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
+
+source_set("tab_group_impl") {
+  sources = [
+    "tab_group_header.cc",
+    "tab_group_highlight.cc",
+    "tab_group_style.cc",
+    "tab_group_underline.cc",
+    "tab_group_views.cc",
+  ]
+
+  deps = [
+    ":base",
+    ":tab_group",
+    "//base",
+    "//base:i18n",
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/tab_group_sync:factories",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_group",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/tabs/saved_tab_groups",
+    "//chrome/browser/ui/views/tabs/groups",
+    "//components/data_sharing/public",
+    "//components/saved_tab_groups/public",
+    "//components/strings",
+    "//components/tab_groups",
+    "//components/tabs:public",
+    "//components/vector_icons",
+    "//skia",
+    "//third_party/icu",
+    "//ui/base",
+    "//ui/base:features",
+    "//ui/base/interaction",
+    "//ui/base/metadata",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}

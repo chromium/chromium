@@ -2647,16 +2647,6 @@ static_library("ui") {
       "views/tabs/tab_container.h",
       "views/tabs/tab_container_impl.cc",
       "views/tabs/tab_container_impl.h",
-      "views/tabs/tab_group_header.cc",
-      "views/tabs/tab_group_header.h",
-      "views/tabs/tab_group_highlight.cc",
-      "views/tabs/tab_group_highlight.h",
-      "views/tabs/tab_group_style.cc",
-      "views/tabs/tab_group_style.h",
-      "views/tabs/tab_group_underline.cc",
-      "views/tabs/tab_group_underline.h",
-      "views/tabs/tab_group_views.cc",
-      "views/tabs/tab_group_views.h",
       "views/tabs/tab_slot_animation_delegate.cc",
       "views/tabs/tab_slot_animation_delegate.h",
       "views/tabs/tab_strip.cc",
@@ -2935,6 +2925,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/tabs:base_impl",
       "//chrome/browser/ui/views/tabs:new_tab_button_menu_model",
       "//chrome/browser/ui/views/tabs:new_tab_button_menu_model_impl",
+      "//chrome/browser/ui/views/tabs:tab_group",
+      "//chrome/browser/ui/views/tabs:tab_group_impl",
       "//chrome/browser/ui/views/tabs/common",
       "//chrome/browser/ui/views/tabs/dragging",
       "//chrome/browser/ui/views/tabs/dragging:impl",
@@ -3203,7 +3195,6 @@ static_library("ui") {
       # - c/b/ui/views/frame/browser_view.h
       # - c/b/ui/views/frame/themed_background.h
       # - c/b/ui/views/frame/vertical_tab_strip_region_view.h
-      # - c/b/ui/views/tabs/tab_group_style.h
       # - c/b/ui/views/tabs/tab_style_views.h
       # - c/b/ui/views/tabs/vertical_tab_style_views.h
       "//chrome/browser/ui/views/tabs/common:impl",
@@ -3223,6 +3214,12 @@ static_library("ui") {
       # following header gets componentized:
       # - c/b/ui/browser_commands.h
       "//chrome/browser/ui/views/tabs:new_tab_button_menu_model_impl",
+
+      # TODO(crbug.com/451609048): Remove this circular dependency when the
+      # following headers get componentized:
+      # - c/b/ui/views/tabs/tab.h
+      # - c/b/ui/views/tabs/tab_strip.h
+      "//chrome/browser/ui/views/tabs:tab_group_impl",
 
       # TODO(crbug.com/451609048): Remove this circular dependency - no
       # blockers.

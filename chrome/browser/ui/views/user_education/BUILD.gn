@@ -282,6 +282,7 @@ if (!is_chromeos_device) {
       "//chrome/browser/ui/tabs:tab_menu",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/global_media_controls",
+      "//chrome/browser/ui/views/tabs:tab_group",
       "//chrome/browser/ui/views/tabs/tab",
       "//chrome/browser/ui/webui/customize_buttons",
       "//chrome/browser/ui/webui/user_education_internals",
