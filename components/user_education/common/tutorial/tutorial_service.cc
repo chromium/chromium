@@ -287,6 +287,7 @@ void TutorialService::ResetRunningTutorial() {
   running_tutorial_.reset();
   running_tutorial_creation_params_.reset();
   running_tutorial_was_restarted_ = false;
+  is_final_bubble_ = false;
   HideCurrentBubbleIfShowing();
 }
 
