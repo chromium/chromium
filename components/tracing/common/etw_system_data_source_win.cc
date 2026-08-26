@@ -11,8 +11,11 @@
 
 #include <ios>
 
+#include "absl/container/flat_hash_map.h"
 #include "base/check.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "components/tracing/common/etw_consumer_win.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_writer.h"
@@ -159,9 +162,15 @@ void EtwSystemDataSource::OnStart(const StartArgs&) {
 
   bool privacy_filtering_enabled =
       data_source_config_.chrome_config().privacy_filtering_enabled();
-  consumer_ = {new EtwConsumer(client_pid_, CreateTraceWriter(),
-                               privacy_filtering_enabled),
-               base::OnTaskRunnerDeleter(consume_task_runner_)};
+  absl::flat_hash_map<base::FilePath, std::string> known_debug_ids;
+  for (const auto& entry : etw_config.stack_sampling_debug_ids()) {
+    known_debug_ids.emplace(base::FilePath(base::UTF8ToWide(entry.path())),
+                            entry.debug_id());
+  }
+  consumer_ = {
+      new EtwConsumer(client_pid_, CreateTraceWriter(),
+                      privacy_filtering_enabled, std::move(known_debug_ids)),
+      base::OnTaskRunnerDeleter(consume_task_runner_)};
   hr = consumer_->OpenRealtimeSession(kEtwSystemSessionName);
   if (FAILED(hr)) {
     etw_controller_.Stop(nullptr);

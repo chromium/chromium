@@ -203,6 +203,12 @@ class BASE_EXPORT ModuleCache {
   raw_ptr<AuxiliaryModuleProvider> auxiliary_module_provider_ = nullptr;
 };
 
+#if BUILDFLAG(IS_WIN)
+// Given a module's GUID and AGE fields, returns its unique Windows build ID.
+// This consists of the GUID and AGE concatenated, hyphens removed.
+BASE_EXPORT std::string AsBuildId(const GUID& guid, DWORD age);
+#endif
+
 }  // namespace base
 
 #endif  // BASE_PROFILER_MODULE_CACHE_H_

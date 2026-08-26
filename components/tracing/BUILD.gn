@@ -51,6 +51,8 @@ if (is_win) {
       "common/etw_consumer_win.h",
       "common/etw_export_win.cc",
       "common/etw_export_win.h",
+      "common/etw_stack_sampling_win.cc",
+      "common/etw_stack_sampling_win.h",
       "common/etw_system_data_source_win.cc",
       "common/etw_system_data_source_win.h",
       "common/inclusion_policy_win.cc",
@@ -64,6 +66,7 @@ if (is_win) {
 
     deps = [
       "//base",
+      "//base/win:pe_image",
       "//crypto",
       "//services/tracing/public/cpp:perfetto_interning_index",
       "//third_party/perfetto:libperfetto",

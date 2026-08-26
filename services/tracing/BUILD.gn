@@ -43,6 +43,10 @@ if (use_blink) {
       "//third_party/perfetto/include/perfetto/trace_processor:storage",
       "//third_party/perfetto/protos/perfetto/config:lite",
     ]
+
+    if (is_win) {
+      deps = [ "//components/tracing:tracing_etw" ]
+    }
   }
 }
 

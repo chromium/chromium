@@ -6,10 +6,10 @@
 
 #include <algorithm>
 
+#include "absl/container/flat_hash_map.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/path_service.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
 
 namespace tracing {
@@ -72,9 +72,12 @@ ActiveProcesses::Process::Process(uint32_t pid,
 
 ActiveProcesses::Process::~Process() = default;
 
-ActiveProcesses::ActiveProcesses(base::ProcessId client_pid)
+ActiveProcesses::ActiveProcesses(
+    base::ProcessId client_pid,
+    absl::flat_hash_map<base::FilePath, std::string> known_debug_ids)
     : client_pid_(client_pid),
-      application_dir_(DetermineApplicationDirectory()) {
+      application_dir_(DetermineApplicationDirectory()),
+      known_debug_ids_(std::move(known_debug_ids)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 

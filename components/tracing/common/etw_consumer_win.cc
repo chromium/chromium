@@ -10,6 +10,7 @@
 #include <tuple>
 #include <utility>
 
+#include "absl/container/flat_hash_map.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/buffer_iterator.h"
@@ -106,8 +107,9 @@ uint64_t GetTimestampNanoseconds(uint64_t qpc_timestamp) {
 EtwConsumer::EtwConsumer(
     base::ProcessId client_pid,
     std::unique_ptr<perfetto::TraceWriterBase> trace_writer,
-    bool privacy_filtering_enabled)
-    : active_processes_(client_pid),
+    bool privacy_filtering_enabled,
+    absl::flat_hash_map<base::FilePath, std::string> known_debug_ids)
+    : active_processes_(client_pid, std::move(known_debug_ids)),
       trace_writer_(std::move(trace_writer)),
       privacy_filtering_enabled_(privacy_filtering_enabled) {
   DETACH_FROM_SEQUENCE(sequence_checker_);

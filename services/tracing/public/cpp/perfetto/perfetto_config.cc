@@ -24,6 +24,10 @@
 #include "third_party/perfetto/protos/perfetto/config/chrome/histogram_samples.gen.h"
 #include "third_party/perfetto/protos/perfetto/config/track_event/track_event_config.gen.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "components/tracing/common/etw_stack_sampling_win.h"
+#endif
+
 namespace tracing {
 
 namespace {
@@ -240,6 +244,12 @@ void AdaptDataSourceConfig(
     AdaptTrackEventConfig(&track_event_config, privacy_filtering_enabled);
     config->set_track_event_config_raw(track_event_config.SerializeAsString());
   }
+
+#if BUILDFLAG(IS_WIN)
+  if (config->name() == "org.chromium.etw_system") {
+    AddEtwStackSamplingDebugIds(config);
+  }
+#endif
 }
 
 }  // namespace

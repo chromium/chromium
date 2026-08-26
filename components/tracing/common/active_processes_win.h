@@ -68,7 +68,9 @@ class TRACING_EXPORT ActiveProcesses {
   // identified by `client_pid`. This and 1) any of its direct children of it
   // with the same image filename and 2) any other program residing in the same
   // directory tree will be categorized as belonging to the tracing client.
-  explicit ActiveProcesses(base::ProcessId client_pid);
+  explicit ActiveProcesses(
+      base::ProcessId client_pid,
+      absl::flat_hash_map<base::FilePath, std::string> known_debug_ids = {});
   ActiveProcesses(const ActiveProcesses&) = delete;
   ActiveProcesses& operator=(const ActiveProcesses&) = delete;
   ~ActiveProcesses();
@@ -194,7 +196,6 @@ class TRACING_EXPORT ActiveProcesses {
   // A mapping of image path to debug ID, for loaded images (i.e., running
   // executables and loaded DLLs) of interest. Enables symbolization of call
   // stacks for ETW events.
-  // TODO(crbug.com/400769265): fill `known_debug_ids_` from the browser.
   absl::flat_hash_map<base::FilePath, std::string> known_debug_ids_;
 
   SEQUENCE_CHECKER(sequence_checker_);

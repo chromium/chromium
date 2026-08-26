@@ -12,7 +12,9 @@
 #include <string>
 #include <unordered_map>
 
+#include "absl/container/flat_hash_map.h"
 #include "base/containers/span.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
@@ -49,9 +51,11 @@ class TRACING_EXPORT EtwConsumer
   // process identified by `client_pid` and emit Perfetto events via
   // `trace_writer`. If `privacy_filtering_enabled` is true, omits strings from
   // the trace.
-  EtwConsumer(base::ProcessId client_pid,
-              std::unique_ptr<perfetto::TraceWriterBase> trace_writer,
-              bool privacy_filtering_enabled);
+  EtwConsumer(
+      base::ProcessId client_pid,
+      std::unique_ptr<perfetto::TraceWriterBase> trace_writer,
+      bool privacy_filtering_enabled,
+      absl::flat_hash_map<base::FilePath, std::string> known_debug_ids = {});
   EtwConsumer(const EtwConsumer&) = delete;
   EtwConsumer& operator=(const EtwConsumer&) = delete;
   ~EtwConsumer();

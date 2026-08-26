@@ -60,6 +60,10 @@
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "components/tracing/common/etw_stack_sampling_win.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/renderer_host/compositor_impl_android.h"
 #endif
@@ -756,6 +760,13 @@ void TracingHandler::Start(
     }
 
     ConvertToTrackEventConfigIfNeeded(trace_config);
+#if BUILDFLAG(IS_WIN)
+    // TODO(jessemckenna): replace this with
+    // `tracing::AdaptPerfettoConfigForChrome()`, to make sure all
+    // Chrome-specific config adaptations are applied.
+    tracing::AddEtwStackSamplingDebugIds(trace_config);
+#endif
+
   } else {
     base::trace_event::TraceConfig browser_config =
         base::trace_event::TraceConfig();

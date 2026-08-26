@@ -3469,7 +3469,10 @@ source_set("browser") {
   }
 
   if (is_win) {
-    deps += [ "//ui/base/ime/win" ]
+    deps += [
+      "//components/tracing:tracing_etw",
+      "//ui/base/ime/win",
+    ]
   }
 
   if (use_aura) {
