@@ -57,9 +57,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/ash/device_scheduled_reboot/reboot_notification_controller.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
@@ -96,6 +94,7 @@
 #include "extensions/browser/app_window/native_app_window.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/base_window.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
@@ -775,10 +774,8 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
                        PRE_FullRestoreOverridesSessionRestoreTest) {
   // Create a browser and create a tab for it. Its bounds should not equal
   // |kCurrentBounds|.
-  Browser* browser =
-      CreateBrowserWindow(
-          BrowserWindowCreateParams(profile(), /*from_user_gesture=*/true))
-          ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* browser = CreateBrowserWindow(
+      BrowserWindowCreateParams(profile(), /*from_user_gesture=*/true));
   PrefService* local_state = g_browser_process->local_state();
   static_cast<PrefRegistrySimple*>(local_state->DeprecatedGetPrefRegistry())
       ->RegisterIntegerPref(kRestoreIdPrefName, 0);
@@ -868,11 +865,9 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   const gfx::Rect expected_bounds(10, 10, 500, 300);
   const GURL expected_url("https://example.org");
 
-  Browser* new_browser =
-      CreateBrowserWindow(BrowserWindowCreateParams(
-                              BrowserWindowInterface::TYPE_NORMAL, profile(),
-                              /*from_user_gesture=*/false))
-          ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* new_browser = CreateBrowserWindow(
+      BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL, profile(),
+                                /*from_user_gesture=*/false));
 
   content::TestNavigationObserver navigation_observer(expected_url);
   navigation_observer.StartWatchingNewWebContents();
@@ -998,9 +993,8 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
   BrowserWindowCreateParams non_restored_params(profile(),
                                                 /*from_user_gesture=*/true);
   non_restored_params.initial_workspace = "2";
-  Browser* non_restored_browser =
-      CreateBrowserWindow(std::move(non_restored_params))
-          ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* non_restored_browser =
+      CreateBrowserWindow(std::move(non_restored_params));
   AddBlankTabAndShow(non_restored_browser);
   aura::Window* non_restored_window =
       non_restored_browser->GetWindow()->GetNativeWindow();
