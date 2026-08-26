@@ -37,6 +37,9 @@ const TestKey kTestKeys[] = {
     {"ECDSA_P256", "client_p256.pem", "client_p256.pk8", EVP_PKEY_EC},
     {"ECDSA_P384", "client_p384.pem", "client_p384.pk8", EVP_PKEY_EC},
     {"ECDSA_P521", "client_p521.pem", "client_p521.pk8", EVP_PKEY_EC},
+    {"MLDSA44", "client_mldsa44.pem", "client_mldsa44.pk8", EVP_PKEY_ML_DSA_44},
+    {"MLDSA65", "client_mldsa65.pem", "client_mldsa65.pk8", EVP_PKEY_ML_DSA_65},
+    {"MLDSA87", "client_mldsa87.pem", "client_mldsa87.pk8", EVP_PKEY_ML_DSA_87},
 };
 
 std::string TestKeyToString(const testing::TestParamInfo<TestKey>& params) {
@@ -50,6 +53,12 @@ class SSLPlatformKeyNSSTest : public testing::TestWithParam<TestKey>,
 
 TEST_P(SSLPlatformKeyNSSTest, KeyMatches) {
   const TestKey& test_key = GetParam();
+  if (!NSS_VersionCheck("3.128") && (test_key.type == EVP_PKEY_ML_DSA_44 ||
+                                     test_key.type == EVP_PKEY_ML_DSA_65 ||
+                                     test_key.type == EVP_PKEY_ML_DSA_87)) {
+    GTEST_SKIP()
+        << "Prior to NSS 3.128, NSS did not support ML-DSA in softoken";
+  }
 
   std::string pkcs8;
   base::FilePath pkcs8_path =
