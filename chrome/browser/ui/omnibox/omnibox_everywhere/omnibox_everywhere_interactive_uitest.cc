@@ -185,6 +185,45 @@ class OmniboxEverywhereBrowserTest : public InteractiveBrowserTest {
                  ReleaseMouse(ui_controls::LEFT));
   }
 
+  // Tests that OpenUrl creates a browser window when no other browsers are
+  // open, and updates widget visibility according to `ephemeral` mode.
+  void TestOpenUrlCreatesBrowserWhenNoBrowsers(bool ephemeral) {
+    Profile* profile = browser()->GetProfile();
+    set_exit_when_last_browser_closes(false);
+
+    GlobalFeatures* features = g_browser_process->GetFeatures();
+    ASSERT_TRUE(features);
+    auto* controller = features->omnibox_everywhere_controller();
+    ASSERT_TRUE(controller);
+
+    // Show the Omnibox Everywhere widget.
+    controller->OnInvoke(InvocationSource::kGlobalHotkey, profile);
+    EXPECT_TRUE(controller->IsVisible());
+
+    // Close the existing browser window so 0 browser windows exist.
+    CloseBrowserSynchronously(browser());
+    EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
+    EXPECT_TRUE(controller->IsVisible());
+
+    // Trigger OpenUrl from the Omnibox Everywhere service.
+    auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile);
+    ASSERT_TRUE(service);
+    service->OpenUrl(GURL("chrome://version/"),
+                     WindowOpenDisposition::CURRENT_TAB,
+                     ui::PAGE_TRANSITION_TYPED);
+
+    // Verify that a new browser window was created.
+    EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+    if (ephemeral) {
+      // In ephemeral mode, the popup widget is closed.
+      EXPECT_FALSE(controller->IsVisible());
+    } else {
+      // In persistent mode, the popup widget remains visible and is demoted.
+      EXPECT_TRUE(controller->IsVisible());
+      EXPECT_FALSE(controller->ui_manager()->IsActive());
+    }
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -584,6 +623,63 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywherePersistentBrowserTest,
       WaitForWidgetActiveState(true));
 }
 
+IN_PROC_BROWSER_TEST_F(OmniboxEverywherePersistentBrowserTest,
+                       DemoteOnQuerySubmitInPersistentMode) {
+  OmniboxEverywhereController* controller =
+      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
+  ASSERT_TRUE(controller);
+
+  EXPECT_FALSE(controller->IsVisible());
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOmniboxWebContentsId);
+
+  RunTestSequence(
+      // Show widget and activate.
+      InvokeViaHotkey(), CheckWidgetVisible(true),
+      WaitForWidgetActiveState(true),
+      WaitForOmniboxWebUIReady(kOmniboxWebContentsId),
+      // Submit query via OmniboxEverywhereService.
+      Do([this]() {
+        auto* service = OmniboxEverywhereServiceFactory::GetForProfile(
+            browser()->GetProfile());
+        ASSERT_TRUE(service);
+        service->OpenUrl(GURL("https://www.google.com/search?q=test"),
+                         WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                         ui::PAGE_TRANSITION_GENERATED);
+      }),
+      // In persistent mode, submitting a query should demote the widget
+      // (remains visible, but deactivated).
+      CheckWidgetVisible(true), WaitForWidgetActiveState(false));
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereEphemeralBrowserTest,
+                       CloseOnQuerySubmitInEphemeralMode) {
+  OmniboxEverywhereController* controller =
+      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
+  ASSERT_TRUE(controller);
+
+  EXPECT_FALSE(controller->IsVisible());
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOmniboxWebContentsId);
+
+  RunTestSequence(
+      // Show widget and activate.
+      InvokeViaHotkey(), CheckWidgetVisible(true),
+      WaitForWidgetActiveState(true),
+      WaitForOmniboxWebUIReady(kOmniboxWebContentsId),
+      // Submit query via OmniboxEverywhereService.
+      Do([this]() {
+        auto* service = OmniboxEverywhereServiceFactory::GetForProfile(
+            browser()->GetProfile());
+        ASSERT_TRUE(service);
+        service->OpenUrl(GURL("https://www.google.com/search?q=test"),
+                         WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                         ui::PAGE_TRANSITION_GENERATED);
+      }),
+      // In ephemeral mode, submitting a query should close the widget.
+      CheckWidgetVisible(false));
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_StatusIconLifecycle DISABLED_StatusIconLifecycle_
 #else
@@ -856,36 +952,22 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
   OpenUrlCreatesBrowserBeforeClosingPopupWhenNoBrowsers
 #endif
 IN_PROC_BROWSER_TEST_F(
-    OmniboxEverywhereBrowserTest,
+    OmniboxEverywhereEphemeralBrowserTest,
     MAYBE_OpenUrlCreatesBrowserBeforeClosingPopupWhenNoBrowsers) {
-  Profile* profile = browser()->GetProfile();
-  set_exit_when_last_browser_closes(false);
+  TestOpenUrlCreatesBrowserWhenNoBrowsers(/*ephemeral=*/true);
+}
 
-  GlobalFeatures* features = g_browser_process->GetFeatures();
-  ASSERT_TRUE(features);
-  auto* controller = features->omnibox_everywhere_controller();
-  ASSERT_TRUE(controller);
-
-  // Show the Omnibox Everywhere widget.
-  controller->OnInvoke(InvocationSource::kGlobalHotkey, profile);
-  EXPECT_TRUE(controller->IsVisible());
-
-  // Close the existing browser window so 0 browser windows exist.
-  CloseBrowserSynchronously(browser());
-  EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
-  EXPECT_TRUE(controller->IsVisible());
-
-  // Trigger OpenUrl from the Omnibox Everywhere service.
-  auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile);
-  ASSERT_TRUE(service);
-  service->OpenUrl(GURL("chrome://version/"),
-                   WindowOpenDisposition::CURRENT_TAB,
-                   ui::PAGE_TRANSITION_TYPED);
-
-  // Verify that a new browser window was created and the popup widget was
-  // closed.
-  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
-  EXPECT_FALSE(controller->IsVisible());
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_OpenUrlCreatesBrowserBeforeDemotingPopupWhenNoBrowsers \
+  DISABLED_OpenUrlCreatesBrowserBeforeDemotingPopupWhenNoBrowsers
+#else
+#define MAYBE_OpenUrlCreatesBrowserBeforeDemotingPopupWhenNoBrowsers \
+  OpenUrlCreatesBrowserBeforeDemotingPopupWhenNoBrowsers
+#endif
+IN_PROC_BROWSER_TEST_F(
+    OmniboxEverywherePersistentBrowserTest,
+    MAYBE_OpenUrlCreatesBrowserBeforeDemotingPopupWhenNoBrowsers) {
+  TestOpenUrlCreatesBrowserWhenNoBrowsers(/*ephemeral=*/false);
 }
 
 class OmniboxEverywhereCommandLineBrowserTest

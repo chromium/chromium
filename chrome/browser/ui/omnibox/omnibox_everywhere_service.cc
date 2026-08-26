@@ -95,7 +95,7 @@ void OmniboxEverywhereService::Shutdown() {
 
 void OmniboxEverywhereService::HidePopup() {
   if (controller()) {
-    controller()->Close();
+    controller()->Hide();
   }
 }
 

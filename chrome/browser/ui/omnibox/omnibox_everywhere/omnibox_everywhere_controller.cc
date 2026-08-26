@@ -342,12 +342,11 @@ void OmniboxEverywhereController::OnInvoke(InvocationSource source,
     case InvocationSource::kGlobalHotkey:
     case InvocationSource::kStatusTrayIcon:
       if (ui_manager_->profile() == profile) {
-        if (prefs::IsEphemeralModelEnabled() && ui_manager_->IsVisible()) {
-          Close();
-          return;
-        }
-        if (!prefs::IsEphemeralModelEnabled() && ui_manager_->IsActive()) {
-          ui_manager_->Demote();
+        const bool should_dismiss = prefs::IsEphemeralModelEnabled()
+                                        ? ui_manager_->IsVisible()
+                                        : ui_manager_->IsActive();
+        if (should_dismiss) {
+          Hide();
           return;
         }
       }
@@ -362,6 +361,14 @@ void OmniboxEverywhereController::OnInvoke(InvocationSource source,
 
 void OmniboxEverywhereController::Close() {
   ui_manager_->Close();
+}
+
+void OmniboxEverywhereController::Hide() {
+  if (prefs::IsEphemeralModelEnabled()) {
+    Close();
+  } else {
+    ui_manager_->Demote();
+  }
 }
 
 bool OmniboxEverywhereController::IsVisible() const {

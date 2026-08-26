@@ -232,6 +232,69 @@ TEST_F(OmniboxEverywhereControllerTest, MAYBE_OnInvokePersistentModeToggling) {
   EXPECT_EQ(widget->GetZOrderLevel(), ui::ZOrderLevel::kNormal);
 }
 
+// Tests that calling Hide() directly on the controller deactivates the widget
+// while keeping it visible in persistent mode.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_HidePersistentMode HidePersistentMode
+#else
+#define MAYBE_HidePersistentMode DISABLED_HidePersistentMode
+#endif
+TEST_F(OmniboxEverywhereControllerTest, MAYBE_HidePersistentMode) {
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+
+  FakeGlobalAcceleratorListener fake_listener;
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }),
+      &fake_listener);
+
+  EXPECT_FALSE(controller.IsVisible());
+
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
+                      profile_.get(), GetContext());
+  EXPECT_TRUE(controller.IsVisible());
+  views::Widget* widget = controller.ui_manager()->widget();
+  ASSERT_TRUE(widget);
+  views::test::WaitForWidgetActive(widget, true);
+  EXPECT_TRUE(controller.ui_manager()->IsActive());
+
+  controller.Hide();
+  EXPECT_TRUE(controller.IsVisible());
+  EXPECT_FALSE(controller.ui_manager()->IsActive());
+  EXPECT_EQ(widget->GetZOrderLevel(), ui::ZOrderLevel::kNormal);
+}
+
+// Tests that calling Hide() directly on the controller closes the widget
+// in ephemeral mode.
+TEST_F(OmniboxEverywhereControllerTest, HideEphemeralMode) {
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+
+  FakeGlobalAcceleratorListener fake_listener;
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }),
+      &fake_listener);
+
+  EXPECT_FALSE(controller.IsVisible());
+
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
+                      profile_.get(), GetContext());
+  EXPECT_TRUE(controller.IsVisible());
+  views::Widget* widget = controller.ui_manager()->widget();
+  ASSERT_TRUE(widget);
+  views::test::WaitForWidgetActive(widget, true);
+  EXPECT_TRUE(controller.ui_manager()->IsActive());
+
+  controller.Hide();
+  EXPECT_FALSE(controller.IsVisible());
+}
+
 TEST_F(OmniboxEverywhereControllerTest, NonGoogleDseBlocksOnInvoke) {
   SetDefaultSearchProvider(false);
 

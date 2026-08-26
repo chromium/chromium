@@ -85,8 +85,13 @@ class OmniboxEverywhereController
     return background_mode_manager_.get();
   }
 
-  // Closes the Omnibox Everywhere widget if it is open.
-  void Close();
+  // Dismisses the Omnibox Everywhere widget according to the active persistence
+  // model:
+  // - In ephemeral mode: Closes and hides the widget synchronously.
+  // - In persistent mode: Demotes the widget to normal Z-order at HWND_BOTTOM
+  //   and deactivates it without closing/destroying it, keeping it visible
+  //   on the desktop background layer.
+  void Hide();
 
   // Returns true if the Omnibox Everywhere widget is visible.
   bool IsVisible() const;
@@ -133,6 +138,9 @@ class OmniboxEverywhereController
   void OnStatusIconClicked();
   void OnProfilePicked(Profile* new_profile);
   void InvokeForActiveBrowserProfile(InvocationSource source);
+
+  // Closes and hides the Omnibox Everywhere widget synchronously.
+  void Close();
 
   // Invokes UI for the provided profile path.
   // Returns true if launch was initiated/handled, false if the path didn't
