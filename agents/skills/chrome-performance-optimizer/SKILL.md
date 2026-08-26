@@ -2,20 +2,30 @@
 name: chrome-performance-optimizer
 description: >-
   Autonomous performance optimization agent loop for Chromium and V8.
-  Analyzes Speedometer 3 and JetStream profiles from pprof links (https://pprof.corp.google.com/ or prof/?id=...),
-  profile IDs, or Sagacity MCP tools, identifies bottlenecks, implements architectural engine optimizations,
-  verifies local unit and web tests, submits CLs to Gerrit, triggers 150-iteration Pinpoint try jobs
-  on Apple Silicon M1 hardware, evaluates statistical significance, and either proposes winning CLs
-  or abandons non-improving changes.
+  Supports both profile-seeded mode (analyzing Speedometer 3 / JetStream profiles
+  from pprof links, profile IDs, or Sagacity MCP tools) and pattern-driven discovery
+  mode (mining high-leverage architectural patterns and historical winning CLs from
+  references/optimization_patterns.md). Identifies bottlenecks, formulates unexplored
+  macro hypotheses, implements engine optimizations, verifies local tests, submits CLs
+  to Gerrit, triggers 150-iteration Pinpoint try jobs on Apple Silicon M1 hardware,
+  evaluates statistical significance, and either proposes winning CLs or abandons non-improving changes.
 ---
 
 # Chrome & V8 Autonomous Performance Optimization Loop
 
-This skill provides an autonomous agent loop that ingests performance profiles
-(from web pprof links, profile IDs, Sagacity MCP, or Crossbench logs), designs
-macro-optimizations in Blink or V8, validates correctness locally, tests on
-Pinpoint hardware bots, and manages CL lifecycles based on statistical
-confidence.
+This skill provides an autonomous agent loop that operates in two primary modes:
+
+1. **Profile-Seeded Mode**: Ingests performance profiles (from web pprof links,
+   profile IDs, Sagacity MCP, or Crossbench logs) to pinpoint hot subtrees and
+   functions.
+2. **Pattern-Driven Mode (No Profile Seeded)**: Directly mines and
+   cross-references high-leverage architectural patterns from
+   [Macro-Optimization Patterns](references/optimization_patterns.md) and
+   historical top-win CLs, queries Gerrit for tried CLs, and formulates
+   unexplored macro-hypotheses across Blink and V8 subsystems.
+
+Both modes validate correctness locally, test on Pinpoint hardware bots, and
+manage CL lifecycles based on statistical confidence.
 
 ______________________________________________________________________
 
@@ -23,7 +33,7 @@ ______________________________________________________________________
 
 ```mermaid
 graph TD
-    A[1. Ingest Profile: pprof link / ID / Sagacity MCP] --> B[2. Fetch Tried CLs: topic:chrome-perf-opt-rejected & accepted]
+    A[1. Opportunity Discovery: Seeded Profile or Optimization Patterns] --> B[2. Fetch Tried CLs: topic:chrome-perf-opt-rejected & accepted]
     B --> C[3. Formulate Unexplored Macro Hypothesis]
     C --> D[4. Implement on Dedicated Branch]
     D --> E[5. Verify Locally: Tests & Crossbench]
@@ -39,9 +49,14 @@ graph TD
 
 ______________________________________________________________________
 
-## Step 1: Ingest & Analyze Performance Profiles
+## Step 1: Bottleneck & Opportunity Discovery
 
-You can provide one or multiple profile sources:
+The loop starts either from a provided profile or directly from known
+high-leverage optimization patterns:
+
+### Mode A: When a Performance Profile is Provided (Profile-Seeded)
+
+Ingest the profile from any of the following sources:
 
 - **Web pprof link(s)**: `pprof/?id=XYZ` or
   `https://pprof.corp.google.com/?id=XYZ`
@@ -49,94 +64,75 @@ You can provide one or multiple profile sources:
 - **Sagacity MCP Tools**: `fetch_uploaded_profile(profileKey="XYZ")`
 - **Local Benchmark Profiles**: Crossbench CSV, Linux perf, or `v8.log`
 
-### Profile Analysis Commands:
+#### Profile Analysis Commands:
 
 1. **Top Cumulative Call Stacks (identify caller subtrees)**:
-
    ```bash
    vpython3 agents/skills/chrome-performance-optimizer/scripts/analyze_profile.py "pprof/?id=XYZ" --mode=cum --nodecount=30
    ```
-
 2. **Top Flat Functions (identify hot leaf loops)**:
-
    ```bash
    vpython3 agents/skills/chrome-performance-optimizer/scripts/analyze_profile.py "pprof/?id=XYZ" --mode=flat --nodecount=30
    ```
-
 3. **Inspect Callers & Callees for a Specific Symbol**:
-
    ```bash
    vpython3 agents/skills/chrome-performance-optimizer/scripts/analyze_profile.py "pprof/?id=XYZ" --mode=peek --symbol="*HasOwnProperty*"
    ```
-
 4. **Compare Two Profiles (Diff Mode)**:
-
    ```bash
    vpython3 agents/skills/chrome-performance-optimizer/scripts/analyze_profile.py "pprof/?id=EXP_ID" --base="pprof/?id=BASE_ID" --mode=cum
    ```
 
-5. **Fetch & Exclude Previously Attempted CLs**: Before formulating any new
-   optimization hypothesis, you **MUST** query all previously attempted CLs on
-   Gerrit to avoid repeating rejected ideas and to build upon accepted ones:
+### Mode B: When No Profile is Provided (Pattern-Driven Discovery)
 
-   ```bash
-   vpython3 agents/skills/chrome-performance-optimizer/scripts/fetch_tried_cls.py
-   ```
+When starting without a seeded profile, systematically mine the historical top
+wins and architectural levers documented in
+[Macro-Optimization Patterns](references/optimization_patterns.md):
 
-   - **`topic:chrome-perf-opt-rejected`**: CLs that failed Pinpoint evaluation
-     ($p > 0.05$). You **MUST NOT** repeat or re-propose any of these changes or
-     micro-variations of them.
-   - **`topic:chrome-perf-opt-accepted`**: Validated benchmark winners. You may
-     use these as reference implementations.
+1. **Examine Subsystem Archetypes**:
 
-6. **Classify the Bottleneck Pattern & Search for High-Impact Levers**: You
-   **MUST** thoroughly study
-   [Macro-Optimization Patterns](references/optimization_patterns.md) before
-   formulating optimizations or writing code. Examine the historical top 20 CL
-   wins (+0.5% to +2.0% total score) to design changes of comparable structural
-   impact:
+   - **Blink Style & Cascade**: RuleSet deduplication, Matched Properties Cache
+     (MPC) by-value comparison and multi-candidate buckets, fast selector
+     bucketing for frequent attributes/pseudo-classes, UA rule walk elimination.
+   - **Blink Layout, Text & Font Shaping**: HarfBuzz AAT fast path and ligature
+     pair caching, short-text shape cache (`NSShapeCache`),
+     `LazyLineBreakIterator` fast Latin-1 tables and iterator resets,
+     devirtualizing `LayoutObject`/`Node` type checks.
+   - **Blink DOM Parsing & Mutation**: `HTMLFastPathParser` tag/attribute
+     expansion and routing for `DOMParser.parseFromString`, lazy state
+     initialization (`DocumentToken`, `VisitedLinkState`, `Editor`),
+     vector-backed observer sets, parsed SVG path caching.
+   - **V8 & Memory Management (GC / Oilpan)**: Oilpan (cppgc) idle and
+     concurrent sweeping, minor GC scheduling on context disposal, Sparkplug+
+     Embedded Feedback (EFB), macOS shared mutex optimizations, COW microtask
+     queues.
+   - **2D Canvas, Graphics & Memory Primitives**: Dedicated `PaintOp`s and
+     `SkPath` bypass for primitive shapes, `rapidhash` string hashing,
+     eliminating `HeapVector` inline storage zeroing.
+   - **Toolchain & PGO**: Clang PGO `-vp-counters-per-site` value profiling,
+     benchmark weighting.
 
-   - **Blink Style & Cascade**:
-     - *RuleSet deduplication* in `MatchRequest` (+1.5% SP3).
-     - *Matched Properties Cache (MPC)* by-value inherited property comparison &
-       multi-candidate full entries (+1.0%, +0.71%).
-     - *Selector Bucketing Maps* for frequent tag/attribute rules like
-       `input[type="..."]` (+0.9%).
-     - *UA stylesheet pruning* & replacing global rule walks with direct bit
-       flags (+0.5%).
-   - **Blink Layout, Text & Font Shaping**:
-     - *HarfBuzz AAT shaping* state machine pruning & ligature pair caching
-       (+1.2%, +0.7%).
-     - *Global/thread-local `ShapeCache` (`NSShapeCache`)* for short repeated
-       text (+0.8%).
-     - *`LazyLineBreakIterator`* ICU iterator reset on min-max & Latin-1 table
-       extension (+1.2%).
-     - *Devirtualizing `LayoutObject`/`Node` type checks* into base class
-       bitfields (+1.1%).
-   - **Blink DOM Parsing, Construction & Mutation**:
-     - *`HTMLFastPathParser` routing* for `DOMParser.parseFromString` (+1.0%).
-     - *Lazy initialization* of `DocumentToken`, `VisitedLinkState`, and Form
-       `Editor`s (+1.0%).
-     - *Vector-backed `HeapObserverSet`* to optimize synchronous DOM mutation
-       loops (+0.5%).
-     - *SVG Path parsing LRU cache* (+0.4%).
-   - **V8 & Memory Management (GC / Oilpan)**:
-     - *Oilpan (cppgc) idle & concurrent sweeping* to clear allocation blocking
-       (+2.0%).
-     - *Minor GC on context disposal* & embedder marking speed normalization
-       (+1.0%).
-     - *Sparkplug+ Embedded Feedback (EFB)* in bytecode operands (+0.7%).
-     - *Darwin `absl::Mutex`* replacing `std::shared_mutex` (+0.6%).
-     - *MicrotaskQueue copy-on-write* for completion callbacks (+0.4%).
-   - **2D Canvas, Graphics & Memory Primitives**:
-     - *Dedicated `PaintOp`s / `SkPath` bypass* for primitive shapes (arcs,
-       ovals, line segments) (+0.53%).
-     - *High-performance SIMD / `rapidhash`* string and token hashing (+0.5%).
-     - *Eliminating `HeapVector` inline storage zeroing* in constructors
-       (+0.5%).
-   - **Toolchain & PGO**:
-     - *LLVM Clang `-vp-counters-per-site`* value profiling on macOS (+0.8%).
-     - *Speedometer 3 iteration weighting* on PGO profile builders (+0.7%).
+2. **Cross-Check Codebase State**: Inspect the current Chromium / V8
+   implementation of the candidate target to see if the pattern is already
+   implemented, partially implemented, or can be extended to new element types,
+   CSS properties, or bytecode handlers.
+
+______________________________________________________________________
+
+### Fetch & Exclude Previously Attempted CLs
+
+In **both modes**, you **MUST** query all previously attempted CLs on Gerrit
+before writing code:
+
+```bash
+vpython3 agents/skills/chrome-performance-optimizer/scripts/fetch_tried_cls.py
+```
+
+- **`topic:chrome-perf-opt-rejected`**: CLs that failed Pinpoint evaluation ($p
+  \> 0.05$). You **MUST NOT** repeat or re-propose any of these changes or
+  micro-variations of them.
+- **`topic:chrome-perf-opt-accepted`**: Validated benchmark winners. Use these
+  as reference implementations and build atop them.
 
 ______________________________________________________________________
 
@@ -150,20 +146,6 @@ ______________________________________________________________________
 > 2. **No Micro-Tweaks**: Do NOT propose trivial micro-tweaks (such as isolated
 >    bounds checks, micro-inlining of small helpers, or single variable renames)
 >    that produce `< 0.1%` change and vanish in Pinpoint noise.
->
-> Every optimization hypothesis MUST aim for **architectural leverage**:
->
-> - **Allocation Elimination**: Eliminate heap / GC allocations in hot
->   per-element or per-token loops.
-> - **Invariant Caching**: Cache expensive cross-iteration computations (e.g.
->   style match trees, parsed SVG/path byte streams, shaped word glyphs).
-> - **Fast-Path Short-Circuits**: Bypass heavy multi-layer framework code (e.g.
->   ICU, HarfBuzz, SkPath, full CSS cascade) for common-case inputs.
-> - **Concurrency / Deferral**: Defer non-critical work to idle tasks or worker
->   threads (e.g. sweeping, lazy state initialization).
->
-> Continue iterating through candidate profiles and patterns autonomously until
-> a statistically significant win ($p < 0.05$) is confirmed on Pinpoint.
 >
 > Every optimization hypothesis MUST aim for **architectural leverage**:
 >
