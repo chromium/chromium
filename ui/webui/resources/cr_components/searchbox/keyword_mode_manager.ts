@@ -6,6 +6,19 @@ import {assert} from '//resources/js/assert.js';
 import {KeywordType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch, InputKeywordModel} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
+/**
+ * Loosely based on `metrics::OmniboxEventProto::KeywordModeEntryMethod` in
+ * third_party/metrics_proto/omnibox_event.proto, but not 1:1.
+ */
+export enum KeywordModeEntryMethod {
+  NONE = 0,
+  TAB = 1,
+  SPACE_AT_END = 2,
+  QUESTION_MARK = 3,
+  KEYBOARD_SHORTCUT = 4,
+  CLICK = 5,
+}
+
 export interface KeywordClearedEvent {
   restoredText: string;
   cursorPosition: number;
@@ -29,6 +42,7 @@ export interface KeywordModeManagerDelegate {
  */
 export class KeywordModeManager {
   private inputKeywordModel_: InputKeywordModel|null = null;
+  private entryMethod_: KeywordModeEntryMethod = KeywordModeEntryMethod.NONE;
   private delegate_: KeywordModeManagerDelegate;
 
   constructor(delegate: KeywordModeManagerDelegate) {
@@ -55,9 +69,15 @@ export class KeywordModeManager {
   }
 
   /**
-   * Enters keyword mode with the specified keyword and displayText hint.
+   * Enters keyword mode with the specified keyword, displayText hint, and entry
+   * method.
    */
-  enter(keyword: string, displayText: string): void {
+  enter(
+      keyword: string, displayText: string,
+      entryMethod: KeywordModeEntryMethod): void {
+    // TODO(crbug.com/546826241): To fully support keyword mode entryMethod
+    // state needs to be saved/restored across tabs.
+    this.entryMethod_ = entryMethod;
     this.inputKeywordModel = {
       type: KeywordType.kInKeyword,
       keyword: keyword,
@@ -66,9 +86,10 @@ export class KeywordModeManager {
   }
 
   /**
-   * Exits keyword mode, resetting the keyword model.
+   * Exits keyword mode, resetting the keyword model and entry state.
    */
   exit(): void {
+    this.entryMethod_ = KeywordModeEntryMethod.NONE;
     this.inputKeywordModel = null;
   }
 
@@ -84,12 +105,17 @@ export class KeywordModeManager {
       return false;
     }
 
-    const remainingText = inputState.value;
-    // TODO(b/504669216): Restoring keyword text correctly is more
-    //   complicated than just prepending keyword and a space.
-    const restoredKeywordText = this.activeKeyword + ' ';
-    const restoredText = restoredKeywordText + remainingText;
-    const newCursorPos = restoredKeywordText.length;
+    let prefix = this.activeKeyword ? `${this.activeKeyword} ` : '';
+    if (this.entryMethod_ === KeywordModeEntryMethod.TAB && !inputState.value) {
+      prefix = this.activeKeyword;
+    } else if (this.entryMethod_ === KeywordModeEntryMethod.QUESTION_MARK) {
+      prefix = '?';
+    } else if (this.entryMethod_ === KeywordModeEntryMethod.KEYBOARD_SHORTCUT) {
+      prefix = '';
+    }
+
+    const restoredText = prefix + inputState.value;
+    const newCursorPos = prefix.length;
 
     this.exit();
     this.delegate_.onKeywordCleared({
@@ -105,7 +131,9 @@ export class KeywordModeManager {
    */
   handleKeywordClick(match: AutocompleteMatch): void {
     assert(match.keywordModel);
-    this.enter(match.keywordModel.keyword, match.keywordModel.chipHint);
+    this.enter(
+        match.keywordModel.keyword, match.keywordModel.chipHint,
+        KeywordModeEntryMethod.CLICK);
     this.delegate_.onKeywordEntered();
   }
 
@@ -123,7 +151,9 @@ export class KeywordModeManager {
     if (!isDefaultMatch) {
       return false;
     }
-    this.enter(match.keywordModel.keyword, match.keywordModel.chipHint);
+    this.enter(
+        match.keywordModel.keyword, match.keywordModel.chipHint,
+        KeywordModeEntryMethod.TAB);
     this.delegate_.onKeywordEntered();
     return true;
   }
@@ -174,7 +204,9 @@ export class KeywordModeManager {
     // TODO(b/504669216): webUI isn't aware of
     //   `kKeywordSpaceTriggeringEnabled` pref.
 
-    this.enter(keyword, this.inputKeywordModel_.displayText);
+    this.enter(
+        keyword, this.inputKeywordModel_.displayText,
+        KeywordModeEntryMethod.SPACE_AT_END);
     return true;
   }
 
@@ -201,7 +233,7 @@ export class KeywordModeManager {
     // Input must have been typed, not pasted.
     // TODO(b/504669216): webUI doesn't track paste state yet.
 
-    this.enter('?', '');
+    this.enter('?', '', KeywordModeEntryMethod.QUESTION_MARK);
     return true;
   }
 

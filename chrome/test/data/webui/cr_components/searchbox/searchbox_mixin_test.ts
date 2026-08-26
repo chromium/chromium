@@ -2023,4 +2023,102 @@ suite('SearchboxMixinTest', () => {
             element.inputKeywordModel.type === KeywordType.kInKeyword);
         assertFalse(event.defaultPrevented);
       });
+
+  test('backspace at start exits keyword mode and restores text', async () => {
+    const mockInput = element.getInputElement();
+    const match = createSearchMatchForTesting({
+      allowedToBeDefaultMatch: true,
+      contents: 'youtube',
+      fillIntoEdit: 'youtube.com',
+      keywordModel: createMatchKeywordModelForTesting({
+        type: KeywordType.kChip,
+        keyword: 'youtube.com',
+        chipHint: 'Search YouTube',
+      }),
+    });
+    element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
+      input: 'youtube',
+      matches: [match],
+    }));
+    await microtasksFinished();
+
+    // Enter keyword mode via Tab key.
+    const tabEvent = new KeyboardEvent('keydown', {
+      key: 'Tab',
+      bubbles: true,
+      cancelable: true,
+    });
+    element.handleKeyNavigation(tabEvent);
+    await microtasksFinished();
+
+    assertTrue(element.keywordModeManager.isInKeywordMode);
+    assertEquals('', mockInput.inputElement.value);
+
+    // Press Backspace when input is empty.
+    const backspaceEvent = new KeyboardEvent('keydown', {
+      key: 'Backspace',
+      bubbles: true,
+      cancelable: true,
+    });
+    element.handleKeyNavigation(backspaceEvent);
+    await microtasksFinished();
+
+    assertFalse(element.keywordModeManager.isInKeywordMode);
+    assertEquals('youtube.com', mockInput.inputElement.value);
+    assertTrue(backspaceEvent.defaultPrevented);
+  });
+
+  test(
+      'backspace at start after typing restores keyword with space and ' +
+          'remaining text',
+      async () => {
+        const mockInput = element.getInputElement();
+        const match = createSearchMatchForTesting({
+          allowedToBeDefaultMatch: true,
+          contents: 'youtube',
+          fillIntoEdit: 'youtube.com',
+          keywordModel: createMatchKeywordModelForTesting({
+            type: KeywordType.kChip,
+            keyword: 'youtube.com',
+            chipHint: 'Search YouTube',
+          }),
+        });
+        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
+          input: 'youtube',
+          matches: [match],
+        }));
+        await microtasksFinished();
+
+        // Enter keyword mode via Tab key.
+        const tabEvent = new KeyboardEvent('keydown', {
+          key: 'Tab',
+          bubbles: true,
+          cancelable: true,
+        });
+        element.handleKeyNavigation(tabEvent);
+        await microtasksFinished();
+
+        // Type query 'q' in keyword mode.
+        await simulateUserTextInput(mockInput, 'q');
+
+        // Move cursor to start (selectionStart = 0).
+        mockInput.inputElement.selectionStart = 0;
+        mockInput.inputElement.selectionEnd = 0;
+
+        // Press Backspace.
+        const backspaceEvent = new KeyboardEvent('keydown', {
+          key: 'Backspace',
+          bubbles: true,
+          cancelable: true,
+        });
+        element.handleKeyNavigation(backspaceEvent);
+        await microtasksFinished();
+
+        assertFalse(element.keywordModeManager.isInKeywordMode);
+        assertEquals('youtube.com q', mockInput.inputElement.value);
+        assertEquals(12, mockInput.inputElement.selectionStart);
+        assertTrue(backspaceEvent.defaultPrevented);
+      });
 });
