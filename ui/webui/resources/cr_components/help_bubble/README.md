@@ -1,6 +1,6 @@
 # WebUI HelpBubble Implementation (Frontend)
 
-[Backend documentation can be found here.](/components/user_education/webui/README.md)
+[Backend documentation can be found here.](/components/user_education/webui/webui_help_bubble.md)
 
 Allows a WebUI page to support Polymer-based, blue material design ("Navi")
 [HelpBubble](/components/user_education/common/help_bubble/help_bubble.h)s that can be shown in the course of a
