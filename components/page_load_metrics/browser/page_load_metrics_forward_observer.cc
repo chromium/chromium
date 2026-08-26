@@ -365,6 +365,14 @@ void PageLoadMetricsForwardObserver::OnLoadedResource(
   parent_observer_->OnLoadedResource(extra_request_complete_info);
 }
 
+void PageLoadMetricsForwardObserver::DidLoadResourceFromMemoryCache(
+    const MemoryResourceLoadInfo& memory_resource_load_info) {
+  if (!parent_observer_) {
+    return;
+  }
+  parent_observer_->DidLoadResourceFromMemoryCache(memory_resource_load_info);
+}
+
 void PageLoadMetricsForwardObserver::FrameReceivedUserActivation(
     content::RenderFrameHost* render_frame_host) {
   if (!parent_observer_)

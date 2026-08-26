@@ -194,6 +194,9 @@ class AssertPageLoadMetricsObserver final
       const base::flat_map<int, gfx::Rect>& main_frame_ad_rects) override {}
   void OnLoadedResource(const page_load_metrics::ExtraRequestCompleteInfo&
                             extra_request_complete_info) override {}
+  void DidLoadResourceFromMemoryCache(
+      const page_load_metrics::MemoryResourceLoadInfo&
+          memory_resource_load_info) override {}
   void FrameReceivedUserActivation(
       content::RenderFrameHost* render_frame_host) override {}
   void FrameDisplayStateChanged(content::RenderFrameHost* render_frame_host,

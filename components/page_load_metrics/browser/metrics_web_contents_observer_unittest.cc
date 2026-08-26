@@ -273,6 +273,10 @@ class MetricsWebContentsObserverTest
     return embedder_interface_->loaded_resources();
   }
 
+  const std::vector<MemoryResourceLoadInfo>& memory_cached_resources() const {
+    return embedder_interface_->memory_cached_resources();
+  }
+
  protected:
   MetricsWebContentsObserver* observer() {
     return MetricsWebContentsObserver::FromWebContents(web_contents());
@@ -1073,6 +1077,143 @@ TEST_P(MetricsWebContentsObserverTest,
                               network::mojom::RequestDestination::kScript));
 
   EXPECT_TRUE(loaded_resources().empty());
+}
+
+TEST_P(MetricsWebContentsObserverTest, DidLoadResourceFromMemoryCache) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL(kDefaultTestUrl));
+  GURL memory_cached_url("https://www.google.com/test.js");
+  observer()->DidLoadResourceFromMemoryCache(
+      web_contents()->GetPrimaryMainFrame(), memory_cached_url,
+      "application/javascript", network::mojom::RequestDestination::kScript);
+
+  ASSERT_EQ(1u, memory_cached_resources().size());
+  EXPECT_EQ(url::SchemeHostPort(memory_cached_url),
+            memory_cached_resources().back().url);
+  EXPECT_EQ(network::mojom::RequestDestination::kScript,
+            memory_cached_resources().back().request_destination);
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId(),
+            memory_cached_resources().back().frame_tree_node_id);
+}
+
+TEST_P(MetricsWebContentsObserverTest,
+       DidLoadResourceFromMemoryCache_ResourceFromOtherRFHIgnored) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL(kDefaultTestUrl));
+
+  content::RenderFrameHost* old_rfh = web_contents()->GetPrimaryMainFrame();
+  content::LeaveInPendingDeletionState(old_rfh);
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL(kDefaultTestUrl2));
+
+  ASSERT_FALSE(old_rfh->IsActive());
+  GURL other_url("https://www.google.com/test.js");
+  observer()->DidLoadResourceFromMemoryCache(
+      old_rfh, other_url, "application/javascript",
+      network::mojom::RequestDestination::kScript);
+
+  EXPECT_TRUE(memory_cached_resources().empty());
+}
+
+TEST_P(MetricsWebContentsObserverTest,
+       DidLoadResourceFromMemoryCache_Subframe) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL(kDefaultTestUrl));
+
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
+  subframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL(kDefaultTestUrl2), subframe);
+
+  GURL memory_cached_url("https://www.google.com/subframe_script.js");
+  observer()->DidLoadResourceFromMemoryCache(
+      subframe, memory_cached_url, "application/javascript",
+      network::mojom::RequestDestination::kScript);
+
+  ASSERT_EQ(1u, memory_cached_resources().size());
+  EXPECT_EQ(url::SchemeHostPort(memory_cached_url),
+            memory_cached_resources().back().url);
+  EXPECT_EQ(network::mojom::RequestDestination::kScript,
+            memory_cached_resources().back().request_destination);
+  EXPECT_EQ(subframe->GetFrameTreeNodeId(),
+            memory_cached_resources().back().frame_tree_node_id);
+}
+
+TEST_P(MetricsWebContentsObserverTest,
+       DidLoadResourceFromMemoryCache_UntrackedSchemeIgnored) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL(kDefaultTestUrl));
+
+  GURL untracked_url("custom://www.example.com/script.js");
+  observer()->DidLoadResourceFromMemoryCache(
+      web_contents()->GetPrimaryMainFrame(), untracked_url,
+      "application/javascript", network::mojom::RequestDestination::kScript);
+
+  EXPECT_TRUE(memory_cached_resources().empty());
+}
+
+TEST_P(MetricsWebContentsObserverTest,
+       DidLoadResourceFromMemoryCache_InvalidUrlIgnored) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL(kDefaultTestUrl));
+
+  // Empty GURL.
+  GURL empty_url;
+  ASSERT_FALSE(empty_url.is_valid());
+  observer()->DidLoadResourceFromMemoryCache(
+      web_contents()->GetPrimaryMainFrame(), empty_url,
+      "application/javascript", network::mojom::RequestDestination::kScript);
+
+  // Invalid GURL.
+  GURL invalid_url("http://google.com:12three45");
+  ASSERT_FALSE(invalid_url.is_valid());
+  observer()->DidLoadResourceFromMemoryCache(
+      web_contents()->GetPrimaryMainFrame(), invalid_url,
+      "application/javascript", network::mojom::RequestDestination::kScript);
+
+  EXPECT_TRUE(memory_cached_resources().empty());
+}
+
+TEST_P(MetricsWebContentsObserverTest,
+       DidLoadResourceFromMemoryCache_MultipleSequentialResources) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL(kDefaultTestUrl));
+
+  GURL script_url("https://www.google.com/test.js");
+  observer()->DidLoadResourceFromMemoryCache(
+      web_contents()->GetPrimaryMainFrame(), script_url,
+      "application/javascript", network::mojom::RequestDestination::kScript);
+
+  GURL style_url("https://www.google.com/test.css");
+  observer()->DidLoadResourceFromMemoryCache(
+      web_contents()->GetPrimaryMainFrame(), style_url, "text/css",
+      network::mojom::RequestDestination::kStyle);
+
+  GURL image_url("https://www.google.com/test.png");
+  observer()->DidLoadResourceFromMemoryCache(
+      web_contents()->GetPrimaryMainFrame(), image_url, "image/png",
+      network::mojom::RequestDestination::kImage);
+
+  GURL font_url("https://www.google.com/test.woff2");
+  observer()->DidLoadResourceFromMemoryCache(
+      web_contents()->GetPrimaryMainFrame(), font_url, "font/woff2",
+      network::mojom::RequestDestination::kFont);
+
+  ASSERT_EQ(4u, memory_cached_resources().size());
+  EXPECT_EQ(url::SchemeHostPort(script_url), memory_cached_resources()[0].url);
+  EXPECT_EQ(network::mojom::RequestDestination::kScript,
+            memory_cached_resources()[0].request_destination);
+  EXPECT_EQ(url::SchemeHostPort(style_url), memory_cached_resources()[1].url);
+  EXPECT_EQ(network::mojom::RequestDestination::kStyle,
+            memory_cached_resources()[1].request_destination);
+  EXPECT_EQ(url::SchemeHostPort(image_url), memory_cached_resources()[2].url);
+  EXPECT_EQ(network::mojom::RequestDestination::kImage,
+            memory_cached_resources()[2].request_destination);
+  EXPECT_EQ(url::SchemeHostPort(font_url), memory_cached_resources()[3].url);
+  EXPECT_EQ(network::mojom::RequestDestination::kFont,
+            memory_cached_resources()[3].request_destination);
 }
 
 TEST_P(MetricsWebContentsObserverTest, RecordFeatureUsage) {

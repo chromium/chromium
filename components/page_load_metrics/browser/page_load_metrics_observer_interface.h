@@ -25,6 +25,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace blink {
 struct JavaScriptFrameworkDetectionResult;
@@ -106,6 +107,18 @@ struct ExtraRequestCompleteInfo {
 
   // Additional timing information.
   const std::unique_ptr<net::LoadTimingInfo> load_timing_info;
+};
+
+// Information related to resource loads from the in-renderer memory cache.
+struct MemoryResourceLoadInfo {
+  // The scheme, host, and port of the loaded memory cache resource.
+  const url::SchemeHostPort url;
+
+  // The request destination of the resource (e.g. script, image, style).
+  const network::mojom::RequestDestination request_destination;
+
+  // The ID of the frame tree node that initiated the request.
+  const content::FrameTreeNodeId frame_tree_node_id;
 };
 
 // Information related to failed provisional loads.
@@ -550,6 +563,14 @@ class PageLoadMetricsObserverInterface {
   // to requests with HTTP or HTTPS only schemes.
   virtual void OnLoadedResource(
       const ExtraRequestCompleteInfo& extra_request_complete_info) = 0;
+
+  // Called whenever a resource is loaded from the in-renderer memory cache.
+  // Note: in-renderer memory cache loads do not trigger OnLoadedResource().
+  // Observers that need to track all resource loads (both network/HTTP cache
+  // and in-renderer memory cache) should implement both OnLoadedResource() and
+  // DidLoadResourceFromMemoryCache().
+  virtual void DidLoadResourceFromMemoryCache(
+      const MemoryResourceLoadInfo& memory_resource_load_info) = 0;
 
   virtual void FrameReceivedUserActivation(
       content::RenderFrameHost* render_frame_host) = 0;

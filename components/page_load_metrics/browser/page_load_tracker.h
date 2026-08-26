@@ -340,6 +340,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
 
   void OnLoadedResource(
       const ExtraRequestCompleteInfo& extra_request_complete_info);
+  void DidLoadResourceFromMemoryCache(
+      const MemoryResourceLoadInfo& memory_resource_load_info);
 
   void FrameReceivedUserActivation(content::RenderFrameHost* rfh);
   void FrameDisplayStateChanged(content::RenderFrameHost* render_frame_host,

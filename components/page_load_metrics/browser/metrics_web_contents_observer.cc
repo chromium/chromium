@@ -505,6 +505,23 @@ void MetricsWebContentsObserver::ResourceLoadComplete(
   }
 }
 
+void MetricsWebContentsObserver::DidLoadResourceFromMemoryCache(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& url,
+    const std::string& mime_type,
+    network::mojom::RequestDestination request_destination) {
+  if (!url.is_valid() || !ShouldTrackScheme(url.scheme())) {
+    return;
+  }
+
+  if (PageLoadTracker* tracker = GetPageLoadTracker(render_frame_host)) {
+    MemoryResourceLoadInfo memory_resource_load_info{
+        url::SchemeHostPort(url), request_destination,
+        render_frame_host->GetFrameTreeNodeId()};
+    tracker->DidLoadResourceFromMemoryCache(memory_resource_load_info);
+  }
+}
+
 void MetricsWebContentsObserver::FrameReceivedUserActivation(
     content::RenderFrameHost* render_frame_host) {
   if (PageLoadTracker* tracker = GetPageLoadTracker(render_frame_host)) {

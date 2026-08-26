@@ -82,6 +82,10 @@ class TestMetricsWebContentsObserverEmbedder
     return loaded_resources_;
   }
 
+  const std::vector<MemoryResourceLoadInfo>& memory_cached_resources() const {
+    return memory_cached_resources_;
+  }
+
   // committed URLs passed to FilteringPageLoadMetricsObserver::OnComplete().
   const std::vector<GURL>& completed_filtered_urls() const {
     return completed_filtered_urls_;
@@ -100,6 +104,7 @@ class TestMetricsWebContentsObserverEmbedder
   std::vector<GURL> observed_committed_urls_;
   std::vector<GURL> observed_aborted_urls_;
   std::vector<ExtraRequestCompleteInfo> loaded_resources_;
+  std::vector<MemoryResourceLoadInfo> memory_cached_resources_;
   std::vector<GURL> completed_filtered_urls_;
   std::vector<blink::UseCounterFeature> observed_features_;
   std::optional<bool> is_first_navigation_in_web_contents_;

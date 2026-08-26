@@ -231,6 +231,8 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
       const FailedProvisionalLoadInfo& failed_provisional_load_info) override {}
   void OnLoadedResource(
       const ExtraRequestCompleteInfo& extra_request_complete_info) override {}
+  void DidLoadResourceFromMemoryCache(
+      const MemoryResourceLoadInfo& memory_resource_load_info) override {}
   void FrameReceivedUserActivation(
       content::RenderFrameHost* render_frame_host) override {}
   void FrameDisplayStateChanged(content::RenderFrameHost* render_frame_host,

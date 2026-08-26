@@ -765,6 +765,13 @@ void PageLoadTracker::OnLoadedResource(
   }
 }
 
+void PageLoadTracker::DidLoadResourceFromMemoryCache(
+    const MemoryResourceLoadInfo& memory_resource_load_info) {
+  for (const auto& observer : observers_) {
+    observer->DidLoadResourceFromMemoryCache(memory_resource_load_info);
+  }
+}
+
 void PageLoadTracker::FrameReceivedUserActivation(
     content::RenderFrameHost* rfh) {
   for (const auto& observer : observers_) {
