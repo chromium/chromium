@@ -8,9 +8,15 @@
 #include <string>
 #include <string_view>
 
+#include "base/functional/callback.h"
 #include "base/i18n/language_tag.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/proto/features/read_aloud_synthesize.pb.h"
+#include "mojo/public/cpp/base/big_buffer.h"
+
+class OptimizationGuideKeyedService;
 
 namespace readaloud {
 
@@ -25,6 +31,13 @@ class SpeechSynthesisBroker {
   static constexpr char kDefaultVoiceId[] = "en-US-Wavenet-A";
   static inline const base::i18n::LanguageTag kDefaultLanguageTag =
       base::i18n::GetKnownLanguageTag("en");
+
+  // Callback invoked when speech synthesis completes.
+  // Receives raw response payload bytes (mojo_base::BigBuffer) and success
+  // status.
+  using SynthesizeSpeechCallback =
+      base::OnceCallback<void(mojo_base::BigBuffer response_bytes,
+                              bool success)>;
 
   SpeechSynthesisBroker();
   SpeechSynthesisBroker(const SpeechSynthesisBroker&) = delete;
@@ -46,11 +59,26 @@ class SpeechSynthesisBroker {
   optimization_guide::proto::ReadAloudSynthesizeRequest BuildSynthesizeRequest(
       std::u16string_view text_chunk) const;
 
+  // Issues an asynchronous speech synthesis request via
+  // OptimizationGuideKeyedService. Enforces Rule of Two security boundary by
+  // returning raw payload bytes in BigBuffer without deserializing
+  // ReadAloudSynthesizeResponse in the Browser process.
+  void SynthesizeSpeech(OptimizationGuideKeyedService* opt_guide_service,
+                        std::u16string_view text_chunk,
+                        SynthesizeSpeechCallback callback);
+
  private:
+  void OnModelExecutionResult(
+      SynthesizeSpeechCallback callback,
+      optimization_guide::OptimizationGuideModelExecutionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+
   std::string voice_id_{kDefaultVoiceId};
   base::i18n::LanguageTag language_tag_{kDefaultLanguageTag};
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<SpeechSynthesisBroker> weak_factory_{this};
 };
 
 }  // namespace readaloud

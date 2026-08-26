@@ -4,12 +4,21 @@
 
 #include "chrome/browser/readaloud/audio_generation/speech_synthesis_broker.h"
 
+#include <string_view>
+
+#include "base/test/bind.h"
+#include "base/types/expected.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace readaloud {
 
 class SpeechSynthesisBrokerTest : public ::testing::Test {
  protected:
+  content::BrowserTaskEnvironment task_environment_;
   SpeechSynthesisBroker broker_;
 };
 
@@ -77,6 +86,109 @@ TEST_F(SpeechSynthesisBrokerTest, SetLanguageCodeInvalidTagFallback) {
   broker_.SetLanguageCode("invalid_xyz_tag_123");
   // Invalid language tags should be rejected safely and fall back to default.
   EXPECT_EQ(broker_.language_code(), "en");
+}
+
+TEST_F(SpeechSynthesisBrokerTest, SynthesizeSpeechNullOptGuideService) {
+  bool callback_called = false;
+  broker_.SynthesizeSpeech(
+      /*opt_guide_service=*/nullptr, u"Hello world",
+      base::BindLambdaForTesting(
+          [&](mojo_base::BigBuffer response_bytes, bool success) {
+            callback_called = true;
+            EXPECT_FALSE(success);
+            EXPECT_EQ(response_bytes.size(), 0u);
+          }));
+  EXPECT_TRUE(callback_called);
+}
+
+TEST_F(SpeechSynthesisBrokerTest, SynthesizeSpeechEmptyTextChunk) {
+  testing::NiceMock<MockOptimizationGuideKeyedService> mock_opt_guide;
+  bool callback_called = false;
+  broker_.SynthesizeSpeech(
+      &mock_opt_guide, u"",
+      base::BindLambdaForTesting(
+          [&](mojo_base::BigBuffer response_bytes, bool success) {
+            callback_called = true;
+            EXPECT_FALSE(success);
+            EXPECT_EQ(response_bytes.size(), 0u);
+          }));
+  EXPECT_TRUE(callback_called);
+}
+
+TEST_F(SpeechSynthesisBrokerTest, SynthesizeSpeechModelExecutionSuccess) {
+  testing::NiceMock<MockOptimizationGuideKeyedService> mock_opt_guide;
+
+  std::string fake_response_payload = "fake_serialized_proto_bytes_12345";
+  optimization_guide::proto::Any any;
+  any.set_value(fake_response_payload);
+
+  EXPECT_CALL(
+      mock_opt_guide,
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kReadAloudSynthesize,
+          testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&any](
+              optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            optimization_guide::OptimizationGuideModelExecutionResult result(
+                any, /*execution_info=*/nullptr);
+            std::move(callback).Run(std::move(result), /*log_entry=*/nullptr);
+          });
+
+  bool callback_called = false;
+  broker_.SynthesizeSpeech(
+      &mock_opt_guide, u"Hello world",
+      base::BindLambdaForTesting(
+          [&](mojo_base::BigBuffer response_bytes, bool success) {
+            callback_called = true;
+            EXPECT_TRUE(success);
+            std::string_view result_bytes(
+                reinterpret_cast<const char*>(response_bytes.data()),
+                response_bytes.size());
+            EXPECT_EQ(result_bytes, "fake_serialized_proto_bytes_12345");
+          }));
+  EXPECT_TRUE(callback_called);
+}
+
+TEST_F(SpeechSynthesisBrokerTest, SynthesizeSpeechModelExecutionFailure) {
+  testing::NiceMock<MockOptimizationGuideKeyedService> mock_opt_guide;
+
+  EXPECT_CALL(
+      mock_opt_guide,
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kReadAloudSynthesize,
+          testing::_, testing::_, testing::_))
+      .WillOnce(
+          [](optimization_guide::ModelBasedCapabilityKey feature,
+             const google::protobuf::MessageLite& request_metadata,
+             const optimization_guide::ModelExecutionOptions& options,
+             optimization_guide::OptimizationGuideModelExecutionResultCallback
+                 callback) {
+            optimization_guide::OptimizationGuideModelExecutionResult result(
+                base::unexpected(
+                    optimization_guide::OptimizationGuideModelExecutionError::
+                        FromModelExecutionError(
+                            optimization_guide::
+                                OptimizationGuideModelExecutionError::
+                                    ModelExecutionError::kGenericFailure)),
+                /*execution_info=*/nullptr);
+            std::move(callback).Run(std::move(result), /*log_entry=*/nullptr);
+          });
+
+  bool callback_called = false;
+  broker_.SynthesizeSpeech(
+      &mock_opt_guide, u"Hello world",
+      base::BindLambdaForTesting(
+          [&](mojo_base::BigBuffer response_bytes, bool success) {
+            callback_called = true;
+            EXPECT_FALSE(success);
+            EXPECT_EQ(response_bytes.size(), 0u);
+          }));
+  EXPECT_TRUE(callback_called);
 }
 
 }  // namespace readaloud

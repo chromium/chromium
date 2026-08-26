@@ -4,9 +4,12 @@
 
 #include "chrome/browser/readaloud/audio_generation/speech_synthesis_broker.h"
 
+#include "base/containers/span.h"
 #include "base/i18n/tag_converters.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 
 namespace readaloud {
 
@@ -70,6 +73,49 @@ SpeechSynthesisBroker::BuildSynthesizeRequest(
   request.set_voice_id(voice_id_);
   request.set_language_code(std::string(language_tag_.tag_string()));
   return request;
+}
+
+void SpeechSynthesisBroker::SynthesizeSpeech(
+    OptimizationGuideKeyedService* opt_guide_service,
+    std::u16string_view text_chunk,
+    SynthesizeSpeechCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!opt_guide_service || text_chunk.empty()) {
+    std::move(callback).Run(mojo_base::BigBuffer(), /*success=*/false);
+    return;
+  }
+
+  optimization_guide::proto::ReadAloudSynthesizeRequest request =
+      BuildSynthesizeRequest(text_chunk);
+
+  opt_guide_service->ExecuteModel(
+      optimization_guide::ModelBasedCapabilityKey::kReadAloudSynthesize,
+      request,
+      /*options=*/{},
+      base::BindOnce(&SpeechSynthesisBroker::OnModelExecutionResult,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void SpeechSynthesisBroker::OnModelExecutionResult(
+    SynthesizeSpeechCallback callback,
+    optimization_guide::OptimizationGuideModelExecutionResult result,
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!result.response.has_value()) {
+    std::move(callback).Run(mojo_base::BigBuffer(), /*success=*/false);
+    return;
+  }
+
+  // Rule of Two Security Boundary: Extract raw serialized proto::Any byte
+  // string without deserializing ReadAloudSynthesizeResponse in the privileged
+  // Browser process.
+  const std::string& raw_bytes = result.response.value().value();
+  if (raw_bytes.empty()) {
+    std::move(callback).Run(mojo_base::BigBuffer(), /*success=*/false);
+    return;
+  }
+  mojo_base::BigBuffer buffer(base::as_byte_span(raw_bytes));
+  std::move(callback).Run(std::move(buffer), /*success=*/true);
 }
 
 }  // namespace readaloud
