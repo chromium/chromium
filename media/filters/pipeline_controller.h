@@ -59,12 +59,12 @@ class MEDIA_EXPORT PipelineController {
   //   - |error_cb| is called if any operation on |pipeline_| does not result
   //     in PIPELINE_OK or its error callback is called.
   PipelineController(std::unique_ptr<Pipeline> pipeline,
-                     RepeatingPipelineStatusCallback started_cb,
+                     PipelineStatusCB started_cb,
                      SeekedCB seeked_cb,
                      SuspendedCB suspended_cb,
                      BeforeResumeCB before_resume_cb,
                      ResumedCB resumed_cb,
-                     RepeatingPipelineStatusCallback error_cb);
+                     PipelineStatusCB error_cb);
 
   PipelineController(const PipelineController&) = delete;
   PipelineController& operator=(const PipelineController&) = delete;
@@ -175,7 +175,7 @@ class MEDIA_EXPORT PipelineController {
 
   // Called immediately when |pipeline_| completes starting, i.e., when
   // metadata are ready.
-  const RepeatingPipelineStatusCallback started_cb_;
+  const PipelineStatusCB started_cb_;
 
   // Called after seeks (which includes Start()) upon reaching a stable state.
   // Multiple seeks result in only one callback if no stable state occurs
@@ -192,7 +192,7 @@ class MEDIA_EXPORT PipelineController {
   const ResumedCB resumed_cb_;
 
   // Called immediately when any operation on |pipeline_| results in an error.
-  const RepeatingPipelineStatusCallback error_cb_;
+  const PipelineStatusCB error_cb_;
 
   // State for handling StartWaitingForSeek()/CancelPendingSeek().
   raw_ptr<Demuxer> demuxer_ = nullptr;

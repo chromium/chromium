@@ -9,14 +9,13 @@
 
 namespace media {
 
-PipelineController::PipelineController(
-    std::unique_ptr<Pipeline> pipeline,
-    RepeatingPipelineStatusCallback started_cb,
-    SeekedCB seeked_cb,
-    SuspendedCB suspended_cb,
-    BeforeResumeCB before_resume_cb,
-    ResumedCB resumed_cb,
-    RepeatingPipelineStatusCallback error_cb)
+PipelineController::PipelineController(std::unique_ptr<Pipeline> pipeline,
+                                       PipelineStatusCB started_cb,
+                                       SeekedCB seeked_cb,
+                                       SuspendedCB suspended_cb,
+                                       BeforeResumeCB before_resume_cb,
+                                       ResumedCB resumed_cb,
+                                       PipelineStatusCB error_cb)
     : pipeline_(std::move(pipeline)),
       started_cb_(std::move(started_cb)),
       seeked_cb_(std::move(seeked_cb)),
