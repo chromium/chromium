@@ -740,6 +740,16 @@ TEST_F(RlzLibTest, SendFinancialPingDuringShutdown) {
 
   EXPECT_TRUE(rlz_lib::test::WasSendFinancialPingInterrupted());
   rlz_lib::test::ResetSendFinancialPingInterrupted();
+
+  // Wait for the background thread to finish and clean up any pending network
+  // requests so that the URLLoaderFactory remote is disconnected before
+  // `test_url_loader_factory` is destroyed.
+  io_thread.Stop();
+  while (test_url_loader_factory.NumPending() > 0) {
+    test_url_loader_factory.SimulateResponseForPendingRequest(
+        test_url_loader_factory.GetPendingRequest(0)->request.url.spec(), "",
+        net::HTTP_NOT_FOUND);
+  }
 }
 
 TEST_F(RlzLibTest, ClearProductState) {
