@@ -1690,6 +1690,10 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 
   [self removeDefaultPassiveCardSection];
 
+  if (IsDefaultBrowserPictureInPictureEnabled()) {
+    [self.sceneHandler closePresentedViews];
+  }
+
   BOOL useDefaultAppsDestination =
       IsDefaultBrowserPictureInPictureEnabled()
           ? IsDefaultAppsPictureInPictureVariant()
