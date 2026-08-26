@@ -251,6 +251,7 @@ let mojoPrimaryProfile = Profile(
         .jsGoldenPrimary_NestedEnum,
         .jsGoldenExternalEnum,
     ] + commonMojoEnumerations,
-    additionalOptionsBags: [] + commonMojoOptionsBags,
+    additionalOptionsBags: [
+    ] + commonMojoOptionsBags,
     optionalPostProcessor: nil
 )

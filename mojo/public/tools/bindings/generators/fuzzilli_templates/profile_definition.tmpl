@@ -97,6 +97,10 @@ let mojo{{primary.name}}Profile = Profile(
         .{{enum|format_il_type}},
 {%- endfor %}
     ] + commonMojoEnumerations,
-    additionalOptionsBags: [] + commonMojoOptionsBags,
+    additionalOptionsBags: [
+{%- for union in unions %}
+        .{{union|format_unique_name|to_camel(True)}},
+{%- endfor %}
+    ] + commonMojoOptionsBags,
     optionalPostProcessor: nil
 )
