@@ -27,6 +27,13 @@ luci.bucket(
             groups = "project-chromium-admins",
         ),
     ],
+    bindings = [
+        # Allow everyone to view Turbo CI workflows
+        luci.binding(
+            roles = "role/turboci.nodeReaderExternal",
+            groups = "all",
+        ),
+    ],
 )
 
 luci.bucket(
